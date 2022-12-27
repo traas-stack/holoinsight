@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>io.holoinsight.server</groupId>
+	<artifactId>server-parent</artifactId>
+	<packaging>pom</packaging>
+	<version>1.0.0-SNAPSHOT</version>
+	<modules>
+		<module>../common/common</module>
+		<module>../common/common-dao</module>
+		<module>../common/common-dao-gen</module>
+
+		<module>../registry/registry-model</module>
+		<module>../registry/registry-dao-gen</module>
+		<module>../registry/registry-grpc-gen</module>
+		<module>../registry/registry-core</module>
+		<module>../registry/registry-boot</module>
+		<module>../registry/registry-bootstrap</module>
+
+
+
+		<module>../meta/meta-proto</module>
+		<module>../meta/meta-common</module>
+		<module>../meta/meta-facade</module>
+		<module>../meta/meta-dal</module>
+		<module>../meta/meta-core</module>
+		<module>../meta/meta-boot</module>
+		<module>../meta/meta-bootstrap</module>
+
+		<module>../gateway/gateway-dao-gen</module>
+		<module>../gateway/gateway-grpc-gen</module>
+		<module>../gateway/gateway-core</module>
+		<module>../gateway/gateway-boot</module>
+		<module>../gateway/gateway-bootstrap</module>
+
+		<module>../query/query-common</module>
+		<module>../query/query-service</module>
+		<module>../query/query-bootstrap</module>
+		<module>../query/query-client</module>
+		<module>../query/query-dal</module>
+		<module>../query/query-server</module>
+		<module>../query/query-boot</module>
+		<module>../query/query-grpc-gen</module>
+
+		<module>../storage/storage-client</module>
+		<module>../storage/storage-common</module>
+		<module>../storage/storage-server</module>
+		<module>../storage/storage-bootstrap</module>
+
+		<module>../common/common-service</module>
+		<module>../holoinsight-dependencies</module>
+		<module>../all-in-one/all-in-one-bootstrap</module>
+		<module>../storage/storage-boot</module>
+		<module>../common/grpc-server-starter-boot-autoconfigure</module>
+
+		<module>../home/home-alert</module>
+		<module>../home/home-dal</module>
+		<module>../home/home-common</module>
+		<module>../home/home-facade</module>
+		<module>../home/home-proto</module>
+		<module>../home/home-bootstrap</module>
+		<module>../home/home-boot</module>
+		<module>../home/home-service</module>
+
+	</modules>
+
+	<parent>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-parent</artifactId>
+		<version>2.6.6</version>
+	</parent>
+
+	<properties>
+		<spring.boot.version>2.6.6</spring.boot.version>
+		<grpc.version>1.42.2</grpc.version>
+		<protobuf.version>3.18.2</protobuf.version>
+		<elasticsearch.version>7.8.0</elasticsearch.version>
+	</properties>
+
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-starter</artifactId>
+				<version>${spring.boot.version}</version>
+				<exclusions>
+					<exclusion>
+						<groupId>org.springframework.boot</groupId>
+						<artifactId>spring-boot-starter-logging</artifactId>
+					</exclusion>
+				</exclusions>
+			</dependency>
+
+			<dependency>
+				<groupId>io.holoinsight.server</groupId>
+				<artifactId>holoinsight-dependencies</artifactId>
+				<version>1.0.0-SNAPSHOT</version>
+				<scope>import</scope>
+				<type>pom</type>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
+
+	<dependencies>
+		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+			<version>1.18.22</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-configuration-processor</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<extensions>
+			<extension>
+				<groupId>kr.motd.maven</groupId>
+				<artifactId>os-maven-plugin</artifactId>
+				<version>1.6.2</version>
+			</extension>
+		</extensions>
+
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<groupId>pl.project13.maven</groupId>
+					<artifactId>git-commit-id-plugin</artifactId>
+					<version>2.2.5</version>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+
+		<plugins>
+<!--			<plugin>-->
+<!--				<groupId>org.apache.maven.plugins</groupId>-->
+<!--				<artifactId>maven-compiler-plugin</artifactId>-->
+<!--				<configuration>-->
+<!--					<compilerArgs>-->
+<!--						<arg>-Xlint:none</arg>-->
+<!--						<arg>-Xpkginfo:always</arg>-->
+<!--					</compilerArgs>-->
+<!--				</configuration>-->
+<!--			</plugin>-->
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<version>2.9.1</version>
+				<executions>
+					<execution>
+						<id>attach-javadocs</id>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+						<configuration>
+							<additionalparam>-Xdoclint:none</additionalparam>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+
+			<plugin>
+				<groupId>com.mycila</groupId>
+				<artifactId>license-maven-plugin</artifactId>
+				<version>3.0</version>
+				<executions>
+					<execution>
+						<phase>none</phase>
+						<goals>
+							<goal>remove</goal>
+							<goal>format</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<quiet>true</quiet>
+					<header>${user.dir}/HEADER</header>
+					<excludes>
+						<exclude>**/*.properties</exclude>
+						<exclude>*.sh</exclude>
+						<exclude>*.yml</exclude>
+						<exclude>.editorconfig</exclude>
+						<exclude>.gitignore</exclude>
+						<exclude>**/*.md</exclude>
+						<exclude>**/*.xml</exclude>
+					</excludes>
+					<includes>
+						<include>**/*.java</include>
+					</includes>
+					<strictCheck>true</strictCheck>
+					<mapping>
+						<java>SLASHSTAR_STYLE</java>
+					</mapping>
+				</configuration>
+			</plugin>
+
+		</plugins>
+
+	</build>
+
+</project>
