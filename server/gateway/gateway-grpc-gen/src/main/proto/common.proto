@@ -1,0 +1,92 @@
+syntax = "proto3";
+
+// TODO 这个common文件如何在  agent/registry/gateway 之间共享?
+// agent 要开源
+// registry/gateway 不开源
+
+package io.holoinsight.server.gateway.grpc.common;
+
+option java_multiple_files = true;
+option java_package = "io.holoinsight.server.gateway.grpc.common";
+option java_outer_classname = "CommonProtos";
+
+// 该文件存放通用模型
+
+
+// 通用数据结构 begin
+message GenericData {
+  int32 type = 1;
+  bytes data = 2;
+}
+
+message GenericDataBatch {
+  repeated GenericData data = 1;
+}
+
+
+// 通用的rpc消息模型
+message GenericRpcCommand {
+  // 描述data的类型, 这是需要agent与registry约定好的
+  // 0: oneway
+  // 1: req
+  // 2: resp
+  // 3: client_handshake
+  // 4: server_handshake
+  // 因为这个字段名称如果交租type很容易用错... 所以故意加个 rpc 前缀
+  int32 rpc_type = 1;
+  // req_id for req and resp case
+  int64 req_id = 2;
+  // user data type
+  int32 biz_type = 3;
+  // user data
+  bytes data = 4;
+}
+// 通用数据结构 end
+
+
+// 文件相关 begin
+// 直接文件: 不跟进symbol的结果
+// 目标文件: 也叫最终文件, 是跟进symbol的结果
+message FileNode {
+  // 名字
+  string name = 1;
+  // 如果是目录, 则持有子文件
+  repeated FileNode children = 2;
+  // 目标文件是否是目录
+  bool dir = 3;
+  // 对 目标文件 做stat的结果
+  FileInfo stat = 4;
+  // 直接文件是否是一个symbol
+  bool symbol = 5;
+  // 对agent来说, 目标文件是否可读: 目标文件不存在/权限/目标文件不是常规类型
+  // 对于dir, 该字段表示是否有权限list出该目录下的文件(即r权限)
+  // 但如果dir缺少x权限的话会导致无法"进入目录", 会导致无法读该目录下的文件及其元信息 (只能读到子文件名, 无法读到子文件信息, 更无法读子文件)
+  bool readable = 6;
+  // 目标文件是否存在, 对于symbol该值可能是false, 意味着此时symbol指向一个不存在的文件
+  bool exist = 7;
+}
+
+// 模拟 golang 里的 fs.FileInfo
+message FileInfo {
+  int64 size = 1;
+  int64 mod_time = 2;
+  int32 mode = 3;
+  // 上层已经有dir了, 这里就不放了
+  // bool dir = 3;
+}
+
+// 文件相关 end
+
+
+message CommonRequestHeader {
+  string apikey = 1;
+  string trace_id = 2;
+  map<string, string> extension = 3;
+}
+
+message CommonResponseHeader {
+  // 具体每个code是什么含义由每个业务自己定
+  // 但规定 code == 0 表示业务成功
+  int32 code = 1;
+  string message = 2;
+}

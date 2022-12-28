@@ -1,0 +1,257 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration debug="true" status="INFO">
+
+
+	<Properties>
+		<!-- 将系统属性进行一次本地转换 -->
+		<Property name="LOG_PATH">${sys:logging.path:-./logs}/holoinsight-registry</Property>
+	</Properties>
+
+	<Appenders>
+		<!-- 每个文件最多1GB, 最多保留2个rolling文件, 不按天滚动是按文件大小滚动 -->
+		<RollingFile name="ERROR-APPENDER" fileName="${LOG_PATH}/common-error.log"
+		             filePattern="${LOG_PATH}/common-error.log.%i" immediateFlush="true">
+			<!-- only print error log -->
+			<DefaultRolloverStrategy max="2"/>
+			<PatternLayout charset="utf-8">
+				<pattern>%d %-5p [%t] %c{1.} - %m%n</pattern>
+			</PatternLayout>
+			<!--最多1+2=3个文件 common-error.log common-error.log.1 common-error.log.2 -->
+			<Policies>
+				<!--每1GB滚动一个文件-->
+				<SizeBasedTriggeringPolicy size="1GB"/>
+			</Policies>
+			<ThresholdFilter level="ERROR" onMatch="ACCEPT" onMismatch="DENY"/>
+		</RollingFile>
+
+		<!--
+			1. 每天最多保留7个文件
+			2. 如果文件修改时间是2天前的就删除
+			3. 如果文件累计超过10个则删除旧的
+			4. 如果文件累计超过10GB则删除旧的
+			5. 对齐到整天滚动(因为 modulate=true), 如果filePattern里的时间格式包含小时, 比如"yyyy-MM-dd-HH" 那么就是对齐到整小时滚动
+			6. 单个文件累计超过2GB就滚动
+		-->
+		<RollingFile name="ROOT-APPENDER" fileName="${LOG_PATH}/common-default.log"
+		             filePattern="${LOG_PATH}/common-default.log.%d{yyyy-MM-dd}.%i" immediateFlush="true">
+			<!--打印INFO和WARN-->
+			<DefaultRolloverStrategy max="7">
+				<Delete basePath="${LOG_PATH}" maxDepth="1">
+					<IfAny>
+						<IfAccumulatedFileCount exceeds="10"/>
+						<IfAccumulatedFileSize exceeds="10GB"/>
+						<IfLastModified age="2d"/>
+					</IfAny>
+					<IfFileName glob="common-default.log.*"/>
+				</Delete>
+			</DefaultRolloverStrategy>
+			<LevelRangeFilter maxLevel="INFO" minLevel="WARN" onMatch="ACCEPT" onMismatch="DENY"/>
+			<PatternLayout charset="utf-8">
+				<pattern>%d %-5p [%t] %c{1.} - %m%n</pattern>
+			</PatternLayout>
+			<Policies>
+				<SizeBasedTriggeringPolicy size="2GB"/>
+			</Policies>
+		</RollingFile>
+
+		<RollingFile name="TEMPLATE" fileName="${LOG_PATH}/template.log"
+		             filePattern="${LOG_PATH}/template.log.%d{yyyy-MM-dd}.%i" immediateFlush="true">
+			<PatternLayout charset="utf-8">
+				<pattern>%d %p [%t] - %m%n</pattern>
+			</PatternLayout>
+			<Policies>
+				<SizeBasedTriggeringPolicy size="2GB"/>
+				<TimeBasedTriggeringPolicy modulate="true"/>
+			</Policies>
+			<!--打印INFO和WARN-->
+			<DefaultRolloverStrategy max="7">
+				<Delete basePath="${LOG_PATH}" maxDepth="1">
+					<IfAny>
+						<IfAccumulatedFileCount exceeds="10"/>
+						<IfAccumulatedFileSize exceeds="10GB"/>
+						<IfLastModified age="2d"/>
+					</IfAny>
+					<IfFileName glob="template.log.*"/>
+				</Delete>
+			</DefaultRolloverStrategy>
+		</RollingFile>
+
+		<RollingFile name="DIM" fileName="${LOG_PATH}/dim.log"
+		             filePattern="${LOG_PATH}/dim.log.%d{yyyy-MM-dd}.%i" immediateFlush="true">
+			<!--打印INFO和WARN-->
+			<DefaultRolloverStrategy max="7">
+				<Delete basePath="${LOG_PATH}" maxDepth="1">
+					<IfAny>
+						<IfAccumulatedFileCount exceeds="10"/>
+						<IfAccumulatedFileSize exceeds="10GB"/>
+						<IfLastModified age="2d"/>
+					</IfAny>
+					<IfFileName glob="dim.log.*"/>
+				</Delete>
+			</DefaultRolloverStrategy>
+			<PatternLayout charset="utf-8">
+				<pattern>%d %p [%t] %c{1.} - %m%n</pattern>
+			</PatternLayout>
+			<Policies>
+				<SizeBasedTriggeringPolicy size="2GB"/>
+				<TimeBasedTriggeringPolicy modulate="true"/>
+			</Policies>
+		</RollingFile>
+
+
+		<RollingFile name="AGENT" fileName="${LOG_PATH}/agent.log"
+		             filePattern="${LOG_PATH}/agent.log.%d{yyyy-MM-dd}.%i" immediateFlush="true">
+			<!--打印INFO和WARN-->
+			<DefaultRolloverStrategy max="7">
+				<Delete basePath="${LOG_PATH}" maxDepth="1">
+					<IfAny>
+						<IfAccumulatedFileCount exceeds="10"/>
+						<IfAccumulatedFileSize exceeds="10GB"/>
+						<IfLastModified age="2d"/>
+					</IfAny>
+					<IfFileName glob="agent.log.*"/>
+				</Delete>
+			</DefaultRolloverStrategy>
+			<PatternLayout charset="utf-8">
+				<pattern>%d %p [%t] - %m%n</pattern>
+			</PatternLayout>
+			<Policies>
+				<SizeBasedTriggeringPolicy size="2GB"/>
+				<TimeBasedTriggeringPolicy modulate="true"/>
+			</Policies>
+		</RollingFile>
+
+		<RollingFile name="BISTREAM" fileName="${LOG_PATH}/bistream.log"
+		             filePattern="${LOG_PATH}/bistream.log.%d{yyyy-MM-dd}.%i" immediateFlush="true">
+			<!--打印INFO和WARN-->
+			<DefaultRolloverStrategy max="7">
+				<Delete basePath="${LOG_PATH}" maxDepth="1">
+					<IfAny>
+						<IfAccumulatedFileCount exceeds="10"/>
+						<IfAccumulatedFileSize exceeds="10GB"/>
+						<IfLastModified age="2d"/>
+					</IfAny>
+					<IfFileName glob="bistream.log.*"/>
+				</Delete>
+			</DefaultRolloverStrategy>
+			<PatternLayout charset="utf-8">
+				<pattern>%d %p [%t] %c{1.} - %m%n</pattern>
+			</PatternLayout>
+			<Policies>
+				<SizeBasedTriggeringPolicy size="2GB"/>
+				<TimeBasedTriggeringPolicy modulate="true"/>
+			</Policies>
+		</RollingFile>
+
+		<RollingFile name="DIM" fileName="${LOG_PATH}/dim.log"
+		             filePattern="${LOG_PATH}/dim.log.%d{yyyy-MM-dd}.%i" immediateFlush="true">
+			<!--打印INFO和WARN-->
+			<DefaultRolloverStrategy max="7">
+				<Delete basePath="${LOG_PATH}" maxDepth="1">
+					<IfAny>
+						<IfAccumulatedFileCount exceeds="10"/>
+						<IfAccumulatedFileSize exceeds="10GB"/>
+						<IfLastModified age="2d"/>
+					</IfAny>
+					<IfFileName glob="dim.log.*"/>
+				</Delete>
+			</DefaultRolloverStrategy>
+			<PatternLayout charset="utf-8">
+				<pattern>%d %p [%t] %c{1.} - %m%n</pattern>
+			</PatternLayout>
+			<Policies>
+				<SizeBasedTriggeringPolicy size="2GB"/>
+				<TimeBasedTriggeringPolicy modulate="true"/>
+			</Policies>
+		</RollingFile>
+
+		<RollingFile name="TARGET" fileName="${LOG_PATH}/target.log"
+		             filePattern="${LOG_PATH}/target.log.%d{yyyy-MM-dd}.%i" immediateFlush="true">
+			<!--打印INFO和WARN-->
+			<DefaultRolloverStrategy max="7">
+				<Delete basePath="${LOG_PATH}" maxDepth="1">
+					<IfAny>
+						<IfAccumulatedFileCount exceeds="10"/>
+						<IfAccumulatedFileSize exceeds="10GB"/>
+						<IfLastModified age="2d"/>
+					</IfAny>
+					<IfFileName glob="target.log.*"/>
+				</Delete>
+			</DefaultRolloverStrategy>
+			<PatternLayout charset="utf-8">
+				<pattern>%d %p [%t] %c{1.} - %m%n</pattern>
+			</PatternLayout>
+			<Policies>
+				<SizeBasedTriggeringPolicy size="2GB"/>
+				<TimeBasedTriggeringPolicy modulate="true"/>
+			</Policies>
+		</RollingFile>
+
+		<RollingFile name="STAT" fileName="${LOG_PATH}/stat.log"
+		             filePattern="${LOG_PATH}/stat.log.%i" immediateFlush="true">
+			<!--打印INFO和WARN-->
+			<DefaultRolloverStrategy max="1"/>
+			<PatternLayout charset="utf-8">
+				<pattern>%d %m%n</pattern>
+			</PatternLayout>
+			<Policies>
+				<SizeBasedTriggeringPolicy size="1MB"/>
+			</Policies>
+		</RollingFile>
+
+		<RollingFile name="STAT1S" fileName="${LOG_PATH}/stat1s.log"
+		             filePattern="${LOG_PATH}/stat1s.log.%i" immediateFlush="true">
+			<!--打印INFO和WARN-->
+			<DefaultRolloverStrategy max="1"/>
+			<PatternLayout charset="utf-8">
+				<pattern>%d %m%n</pattern>
+			</PatternLayout>
+			<Policies>
+				<SizeBasedTriggeringPolicy size="1MB"/>
+			</Policies>
+		</RollingFile>
+
+	</Appenders>
+
+	<Loggers>
+		<Logger name="TEMPLATE" additivity="false" level="INFO">
+			<Appender-Ref ref="TEMPLATE"/>
+		</Logger>
+		<Logger name="SYNC" additivity="false" level="INFO">
+			<Appender-Ref ref="DIM"/>
+		</Logger>
+		<Logger name="AGENT" additivity="false" level="INFO">
+			<Appender-Ref ref="AGENT"/>
+		</Logger>
+		<Logger name="com.alipay.dimservice" additivity="false" level="INFO">
+			<Appender-Ref ref="DIM"/>
+		</Logger>
+		<Logger name="BISTREAM" additivity="false" level="INFO">
+			<Appender-Ref ref="BISTREAM"/>
+		</Logger>
+		<Logger name="com.alipay.cloudmonitor.registry.core.grpc.stream" additivity="false" level="INFO">
+			<Appender-Ref ref="BISTREAM"/>
+		</Logger>
+		<Logger name="com.alipay.cloudmonitor.registry.core.grpc.streambiz" additivity="false" level="INFO">
+			<Appender-Ref ref="BISTREAM"/>
+		</Logger>
+		<Logger name="com.alipay.cloudmonitor.meta" additivity="false" level="INFO">
+			<Appender-Ref ref="DIM"/>
+		</Logger>
+		<Logger name="TARGET" additivity="false" level="INFO">
+			<Appender-Ref ref="TARGET"/>
+		</Logger>
+		<Logger name="STAT" additivity="false" level="INFO">
+			<Appender-Ref ref="STAT"/>
+		</Logger>
+		<Logger name="STAT1S" additivity="false" level="INFO">
+			<Appender-Ref ref="STAT1S"/>
+		</Logger>
+		<Root level="INFO">
+			<Appender-Ref level="INFO" ref="ROOT-APPENDER"/>
+			<Appender-Ref level="ERROR" ref="ERROR-APPENDER"/>
+		</Root>
+	</Loggers>
+
+
+</Configuration>

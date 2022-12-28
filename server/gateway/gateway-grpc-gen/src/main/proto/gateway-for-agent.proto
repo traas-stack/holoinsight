@@ -1,0 +1,183 @@
+syntax = "proto3";
+
+package io.holoinsight.server.gateway.grpc;
+
+option java_multiple_files = true;
+option java_package = "io.holoinsight.server.gateway.grpc";
+option java_outer_classname = "GatewayProtos";
+
+import "google/protobuf/empty.proto";
+import "common.proto";
+
+message GetControlConfigsRequest {
+  common.CommonRequestHeader header = 1;
+  string agent_id = 2;
+}
+
+message GetControlConfigsResponse {
+  common.CommonResponseHeader header = 1;
+  // TODO 想一下服务端会有哪些控制参数
+  // 1. 重新建连的频率, 比如默认是 30min 重新建连
+  // 2. 如果曾经出现上报失败, 是否在未来等到网络通了之后, 将 "上报失败" 这个信息上报上去, 这样服务端可以知道当时上报失败了(虽然是事后)
+  // 首先上报失败肯定要有本地日志统计, 现在就是想办法把这个失败统计写到远端去, 当然这个写本身也可能失败, 但它是比较重要的调试信息, 所以希望能进行一些持久化然后重试, 比如做一个10分钟粒度的
+}
+
+// 对应ceresdb的一个数据点
+message Point {
+  string metric_name = 1;
+  // 秒级时间戳
+  int64 timestamp = 2;
+  map<string, string> tags = 3;
+  // ceresdb 支持2种values: float/string
+  // 别用Any/OneOf, 那样效率太低, 直接分成两个, 并且规定一旦同名的话 number 优先级 > string
+  map<string, double> number_values = 4;
+  map<string, string> string_values = 5;
+}
+
+
+// 可以存下各种类型的万能字段
+message DataNode {
+  // 表示数据类型, 其实这里不存也行, 根据配置元数据理论是可以知道的
+  // 比如约定:
+  // 0 的话 value 就是聚合后的结果, count是聚合次数(可能没用)
+  // 1 的话 value 表示聚合类型是avg, count是聚合次数, value是sum值, 此时用 sum/count 可以得到正确的avg, 方便做分布式avg计算
+  // 2 的话 表示 bytes 是字符串, 需要根据具体业务语义进行解释
+  // 3 的话 表示 bytes 是复杂的字节数据, 需要根据具体业务语义进行解释
+  int32 type = 1;
+  // 聚合次数
+  int32 count = 2;
+  // 聚合的值, 根据情况可能是一个聚合结果, 或avg的sum值(此时需要与count配合使用)
+  double value = 3;
+  // 还能携带任意二进制数据, 字符串也可以使用这种方式存
+  bytes bytes = 4;
+}
+
+// TODO 写数据接口 v1
+// 优点是简单, 基本和用户的数据是匹配的, 可以很简单转换
+// 缺点是彻底失去对内容的控制能力, agent传过来啥就写啥, 会不会有点不太好?
+// 另外还有一个是数据的keys大量冗余
+message WriteMetricsRequestV1 {
+  // 在请求头里还有apikey, 可以供我们找出租户
+  common.CommonRequestHeader header = 1;
+  repeated Point point = 2;
+  // 是否同步处理
+  bool sync = 3;
+}
+
+// TODO 写数据接口 v2
+// 优点是 调整结构使得数据复用程度提高
+// 缺点是用户发数据的时候需要按我的格式调整
+message WriteMetricsRequestV2 {
+  common.CommonRequestHeader header = 1;
+  repeated Batch batch = 2;
+
+  message Batch {
+    BatchHeader header = 1;
+    repeated BatchValue value = 2;
+  }
+
+  message BatchHeader {
+    string metric_name = 1;
+    repeated string tag_keys = 2;
+
+    // 由于存在多种values的值, 这里有2种设计方式
+    // 1. 针对每种数据类型有自己的数据
+    repeated string number_keys = 3;
+    repeated string string_keys = 4;
+
+    // 2. 使用一种更通用的数据类型来包装我们的多种数据类型
+    repeated string data_keys = 5;
+  }
+
+  message BatchValue {
+    int64 timestamp = 1;
+    repeated string tag_values = 2;
+
+    repeated double number_values = 3;
+    repeated string string_values = 4;
+
+    repeated DataNode data_values = 5;
+  }
+
+}
+
+// TODO 写数据接口 v3
+// 优点 数据复用程度最高, 传输效率应该也是最高
+// 缺点 该格式基本是为我们的agent而定制的了
+message WriteMetricsRequestV3 {
+  common.CommonRequestHeader header = 1;
+  repeated TaskBatch batch = 2;
+
+  message TaskBatch {
+    // 任务的key TODO 这个有点冗余, 其实下面2个key够用了
+    string key = 1;
+    // 对应哪个采集配置
+    string ref_collect_key = 2;
+    // 对应哪个采集目标
+    string ref_target_key = 3;
+    // 指标名
+    // string metric_name = 4;
+    WriteMetricsRequestV2.Batch batch = 4;
+  }
+}
+
+// 相比v3进一步提升为table形式
+message WriteMetricsRequestV4 {
+  common.CommonRequestHeader header = 1;
+  repeated TaskResult results = 2;
+
+  // 采集任务的结果
+  message TaskResult {
+    // 任务的key TODO 这个有点冗余, 其实下面2个key够用了
+    string key = 1;
+    // 对应哪个采集配置
+    string ref_collect_key = 2;
+    // 对应哪个采集目标
+    string ref_target_key = 3;
+    // 数据结果, 使用表的形式
+    Table table = 4;
+  }
+
+  message Table {
+    // 表头
+    Header header = 1;
+    // 每个行就是一个维度组合的聚合结果
+    repeated Row rows = 2;
+  }
+
+  // 表头
+  message Header {
+    string metric_name = 1;
+    repeated string tag_keys = 2;
+    repeated string value_keys = 3;
+  }
+
+  // 行
+  message Row {
+    int64 timestamp = 1;
+    repeated string tag_values = 2;
+    repeated DataNode value_values = 3;
+  }
+}
+
+message WriteMetricsResponse {
+  common.CommonResponseHeader header = 1;
+}
+
+service GatewayService {
+  rpc ping(google.protobuf.Empty) returns(google.protobuf.Empty) {}
+
+  // 查询控制参数
+  rpc get_control_configs(GetControlConfigsRequest) returns(GetControlConfigsResponse) {}
+
+  // deprecated
+  rpc write_metrics_v1 (WriteMetricsRequestV1) returns (WriteMetricsResponse) {}
+
+  // deprecated
+  rpc write_metrics_v2 (WriteMetricsRequestV2) returns (WriteMetricsResponse) {}
+
+  // deprecated
+  rpc write_metrics_v3 (WriteMetricsRequestV3) returns (WriteMetricsResponse) {}
+
+  rpc write_metrics_v4 (WriteMetricsRequestV4) returns (WriteMetricsResponse) {}
+}
