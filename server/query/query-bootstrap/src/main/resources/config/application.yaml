@@ -1,0 +1,30 @@
+spring:
+  application:
+    name: holoinsight-query
+
+server:
+  port: 8080
+grpc:
+  server:
+    port: 9090
+
+cloudmonitor:
+  storage:
+    address: TODO
+    
+management:
+  endpoints:
+    web:
+      exposure:
+        include: prometheus
+      path-mapping:
+        prometheus: metrics
+      base-path: /
+    enabled-by-default: false
+  endpoint:
+    prometheus:
+      enabled: true
+
+holoinsight:
+  roles:
+    active: query

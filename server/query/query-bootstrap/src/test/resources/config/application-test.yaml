@@ -1,0 +1,9 @@
+spring:
+  datasource:
+    url: jdbc:mysql://11.158.167.57:3307/cloudmonitor
+    username: root
+    password: TEST
+
+cloudmonitor:
+  storage:
+    address: http://11.158.167.57:8082
