@@ -1,0 +1,356 @@
+syntax = "proto3";
+package io.holoinsight.server.query.grpc;
+option java_package = "io.holoinsight.server.query.grpc";
+
+message QueryRequest {
+  // 租户
+  string tenant = 1;
+  // 联合查询，例如 (a+b)*c，a、b、c为datasource的name引用
+  optional string query = 2;
+  // 查询数据源
+  repeated Datasource datasources = 3;
+  // 缺省数据填充策略（for 联合查询）
+  optional string downsample = 4;
+  optional string fillPolicy = 5;
+}
+
+message QueryMetricsRequest {
+  // 租户
+  string tenant = 1;
+  // metric名称
+  string name = 2;
+  // 是否精确查询
+  bool explicit = 3;
+  // 返回数量限制
+  int32 limit = 4;
+}
+
+message Datasource {
+  // 数据源名称，配合外层联合查询使用
+  optional string name = 1;
+  // 查询开始时间
+  int64 start = 2;
+  // 查询截止时间
+  int64 end = 3;
+  // 查询指标
+  string metric = 4;
+  // 过滤条件
+  repeated QueryFilter filters = 5;
+  // 聚合方式
+  string aggregator = 6;
+  // 降精度查询周期，例如1m、5m，降精度聚合方式为aggregator所表示的聚合函数
+  optional string downsample = 7;
+  // 滑动窗口查询
+  SlidingWindow slidingWindow = 8;
+  // 聚合分组
+  repeated string groupBy = 9;
+  // 缺省数据填充策略
+  optional string fillPolicy = 10;
+}
+
+message SlidingWindow{
+  // 窗口长度
+  int64 windowMs = 1;
+  // 聚合方式
+  string aggregator = 2;
+}
+
+message QueryFilter {
+  // 过滤类型，参考com.alibaba.hitsdb.client.value.type.FilterType
+  string type = 1;
+  // 过滤tagk
+  string name = 2;
+  // 过滤tagv
+  string value = 3;
+}
+
+message QueryResponse {
+  repeated Result results = 1;
+}
+
+message Result {
+  string metric = 1;
+  map<string, string> tags = 2;
+  repeated Point points = 3;
+}
+
+message Point {
+  int64 timestamp = 1;
+  double value = 2;
+  string strValue = 3;
+}
+
+message QuerySchemaResponse {
+  repeated KeysResult results = 1;
+}
+
+message KeysResult {
+  string metric = 1;
+  repeated string keys = 2;
+}
+
+message QueryMetricsResponse {
+  repeated MetricResult results = 1;
+}
+
+message MetricResult {
+  string name = 1;
+}
+
+message PqlInstantRequest {
+  // 租户
+  string tenant = 1;
+  // pql
+  string query = 2;
+  // 评估时间
+  int64 time = 3;
+  // 超时时间
+  string timeout = 4;
+  // 间隔
+  string delta = 5;
+}
+
+message PqlRangeRequest {
+  // 租户
+  string tenant = 1;
+  // pql
+  string query = 2;
+  // 起始时间
+  int64  start = 3;
+  // 截止时间
+  int64 end = 4;
+  // 步长
+  int64 step = 5;
+  // 超时时间
+  string timeout = 6;
+  // 间隔
+  string delta = 7;
+  // 是否补零
+  bool fillZero = 8;
+}
+
+message QueryTraceRequest {
+  string tenant = 1;
+  optional string serviceName = 2;
+  optional string serviceInstanceName = 3;
+  repeated string traceIds = 4;
+  optional string endpointName = 5;
+  optional int64 start = 6;
+  optional int64 end = 7;
+  optional int32 minTraceDuration = 8;
+  optional int32 maxTraceDuration = 9;
+  optional string traceState = 10;
+  optional string queryOrder = 11;
+  optional int32 pageNum = 12;
+  optional int32 pageSize = 13;
+  map<string, string> tags = 14;
+}
+
+message TraceBrief {
+  repeated BasicTrace traces = 1;
+}
+
+message BasicTrace {
+  string segmentId = 1;
+  repeated string serviceNames = 2;
+  repeated string serviceInstanceNames = 3;
+  repeated string endpointNames = 4;
+  int32 duration = 5;
+  int64 start = 6;
+  bool  isError = 7;
+  repeated string traceIds = 8;
+}
+
+message Trace{
+  repeated Span spans = 1;
+}
+
+
+message Span {
+  string traceId = 1;
+  string segmentId = 2;
+  string  spanId = 3;
+  string parentSpanId = 4;
+  repeated  Ref refs = 5;
+  string serviceCode = 6;
+  string serviceInstanceName = 7;
+  int64  startTime = 8;
+  int64  endTime = 9;
+  string  endpointName = 10;
+  string type = 11;
+  string peer = 12;
+  string component = 13;
+  bool  isError = 14;
+  string layer = 15;
+  repeated  KeyValue tags = 16;
+  repeated  LogEntity logs = 17;
+  bool  isRoot = 18;
+  string  segmentSpanId = 19;
+  string  segmentParentSpanId = 20;
+}
+
+message KeyValue{
+  string key = 1;
+  string value = 2;
+}
+
+message LogEntity{
+  int64 time = 1;
+  repeated KeyValue data = 2;
+}
+
+message  Ref{
+  string traceId = 1;
+  string parentSegmentId = 2;
+  string  parentSpanId = 3;
+  string type = 4;
+}
+
+message QueryMetaRequest {
+  string tenant = 1;
+  optional string serviceName = 2;
+  optional string endpointName = 3;
+  optional string address = 4;
+  int64 start = 5;
+  int64 end = 6;
+  optional bool isEntry = 7;
+  int64 traceIdSize = 8;
+  string category = 9;
+}
+
+message QueryTopologyRequest {
+  string tenant = 1;
+  int64 start = 2;
+  int64 end = 3;
+  optional string serviceName = 4;
+  optional string serviceInstanceName = 5;
+  optional string endpointName = 6;
+  optional string address = 7;
+  optional int32 depth = 8;
+  string category = 9;
+  map<string, string> termParams = 10;
+}
+
+message ResponseMetric {
+  double avgLatency = 1;
+  double p95Latency = 2;
+  double p99Latency = 3;
+  int32 totalCount = 4;
+  int32 errorCount = 5;
+  double successRate = 6;
+}
+
+message Meta {
+  string name = 1;
+  ResponseMetric metric = 2;
+}
+
+message QueryMetaResponse {
+  repeated Meta mata = 1;
+}
+
+message VirtualComponent {
+  string address = 1;
+  string type = 2;
+  ResponseMetric metric = 3;
+}
+
+message QueryVirtualComponentResponse {
+  repeated VirtualComponent component = 1;
+}
+
+message SlowSql {
+  string address = 1;
+  string serviceName = 2;
+  string statement = 3;
+  int32 latency = 4;
+  int64 startTime = 5;
+  string traceId = 6;
+}
+
+message QuerySlowSqlResponse {
+  repeated SlowSql slowSql = 1;
+}
+
+message Node {
+  string id = 1;
+  string name = 2;
+  string type = 3;
+  bool isReal = 4;
+  string serviceName = 5;
+  ResponseMetric metric = 6;
+}
+
+message Call {
+  string id = 1;
+  string sourceId = 2;
+  string sourceName = 3;
+  string destId = 4;
+  string destName = 5;
+  string sourceServiceName = 6;
+  string destServiceName = 7;
+  ResponseMetric metric = 8;
+}
+
+message Topology {
+  repeated Node node = 1;
+  repeated Call call = 2;
+}
+
+message TraceIds {
+  repeated string traceId = 1;
+}
+
+message BizopsEndpoint {
+  string service = 1;
+  string endpoint = 2;
+  string stamp = 3;
+  string spanLayer = 4;
+  string errorCode = 5;
+  string rootErrorCode = 6;
+  repeated string traceIds = 7;
+  ResponseMetric metric = 8;
+}
+
+message BizopsEndpoints {
+  repeated BizopsEndpoint endpoints = 1;
+}
+
+service QueryService {
+  rpc QueryData(QueryRequest) returns (QueryResponse);
+
+  rpc QueryTags(QueryRequest) returns (QueryResponse);
+
+  rpc QuerySchema(QueryRequest) returns (QuerySchemaResponse);
+
+  rpc QueryMetrics(QueryMetricsRequest) returns (QueryMetricsResponse);
+
+  rpc DeleteKeys(QueryRequest) returns (QueryResponse);
+
+  rpc pqlInstantQuery(PqlInstantRequest) returns (QueryResponse);
+
+  rpc pqlRangeQuery(PqlRangeRequest) returns (QueryResponse);
+
+  rpc QueryBasicTraces(QueryTraceRequest) returns (TraceBrief);
+
+  rpc QueryTrace(QueryTraceRequest) returns (Trace);
+
+  rpc QueryServiceList(QueryMetaRequest) returns (QueryMetaResponse);
+
+  rpc QueryEndpointList(QueryMetaRequest) returns (QueryMetaResponse);
+
+  rpc QueryServiceInstanceList(QueryMetaRequest) returns (QueryMetaResponse);
+
+  rpc QueryComponentList(QueryMetaRequest) returns (QueryVirtualComponentResponse);
+
+  rpc QueryComponentTraceIds(QueryMetaRequest) returns (TraceIds);
+
+  rpc QueryTopology(QueryTopologyRequest) returns (Topology);
+
+  rpc QueryBizEndpointList(QueryMetaRequest) returns (BizopsEndpoints);
+
+  rpc QueryBizErrorCodeList(QueryMetaRequest) returns (BizopsEndpoints);
+
+  rpc QuerySlowSqlList(QueryMetaRequest) returns (QuerySlowSqlResponse);
+
+}
