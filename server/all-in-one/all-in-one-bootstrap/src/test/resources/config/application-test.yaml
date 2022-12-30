@@ -1,0 +1,10 @@
+spring:
+  datasource:
+    url: TODO
+    username: TODO
+    password: TODO
+
+prod:
+  meta:
+    domain: TODO
+
