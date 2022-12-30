@@ -1,0 +1,38 @@
+fail_fast: false
+default_stages:
+  - commit
+  - commit-msg
+  - push
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.4.0
+    hooks:
+      - id: check-yaml
+      - id: check-json
+      #- id: end-of-file-fixer
+      #- id: trailing-whitespace
+      - id: no-commit-to-branch
+      - id: check-added-large-files
+        args:
+          - --maxkb=100
+      - id: check-case-conflict
+
+  - repo: https://github.com/commitizen-tools/commitizen
+    rev: v2.38.0
+    hooks:
+      - id: commitizen
+      - id: commitizen-branch
+        stages: [ push ]
+
+  - repo: https://github.com/Lucas-C/pre-commit-hooks
+    rev: v1.3.1
+    hooks:
+      - id: insert-license
+        name: add license for java
+        files: \.java$
+        args:
+          - --license-filepath
+          - HEADER
+          - --comment-style
+          - /*| *| */
+          #- --remove-header
