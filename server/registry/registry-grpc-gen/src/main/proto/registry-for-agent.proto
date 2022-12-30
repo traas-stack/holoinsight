@@ -1,0 +1,274 @@
+syntax = "proto3";
+
+package io.holoinsight.server.registry.grpc.agent;
+
+option java_multiple_files = true;
+option java_package = "io.holoinsight.server.registry.grpc.agent";
+option java_outer_classname = "RegistryForAgentProtos";
+
+import "google/protobuf/empty.proto";
+import "common.proto";
+
+// agent与registry/gateway 的交互至少要开启gzip压缩, 节省流量
+// lz4比较适合块压缩, 流压缩不是很强(应该比gzip差)
+
+// 常见模型 begin
+
+// 一个采集任务 = 采集配置 + 采集目标 的结合体
+message CollectTask {
+  // 对于页面上一个配置对应的同一个采集目标, 即使配置或目标的**内容**发生了变化, 该key始终保持不变
+  string key = 1;
+  // 这里不指持有实际的采集配置和采集目标, 而是持有它们的key
+  string collect_config_key = 2;
+  string collect_target_key = 3;
+}
+
+// 一个采集配置
+message CollectConfig {
+  // 实际上也就是对应 table_name
+  string key = 1;
+  // 对于页面上一个配置对应的同一个采集目标, 如果内容发生变化则该version会更新
+  // TODO 当用户拿着2个version, 怎么知道哪个是新的呢?
+  string version = 2;
+  // 用于描述content的类型
+  string type = 3;
+  // 配置内容, 可能是一个大json, 但总之使用bytes来描述
+  bytes content = 4;
+}
+
+// 采集目标
+message CollectTarget {
+  // TODO 元数据内容是否也可能变化?
+  string key = 1;
+  string type = 2;
+  string version = 3;
+  map<string, string> meta = 4;
+}
+
+message CollectConfigsBucket {
+  // 该bucket的状态
+  string state = 1;
+  // 属于该bucket的所有采集任务, 如果state与请求里的相同, 那么说明没有变化, 此时tasks为空
+  repeated CollectTask collect_tasks = 2;
+}
+
+message Agent {
+  // 唯一识别该agent的id
+  string id = 1;
+  // 该agent的ip
+  string ip = 2;
+  string hostname = 3;
+  // TODO 版本号
+  // 其他扩展字段
+  map<string, string> other = 4;
+}
+
+// 描述一个采集过程中的错误
+message ProcessingError {
+  string message = 1;
+}
+
+// 常见模型 end
+
+message RegisterAgentRequest {
+  io.holoinsight.server.common.grpc.CommonRequestHeader header = 1;
+  // 唯一识别该agent的id, 见文档 https://yuque.antfin.com/neo-matrix/lgdwtb/dfybbw#ytxVB
+  string agent_id = 2;
+  string agent_version = 3;
+  // 该agent的ip, 对于多网卡的场景需要想办法取到正确的ip地址
+  // 比如应该排除docker0网卡上的ip, 具体可以参考一些java的NetUtils类
+  string ip = 4;
+  // 主机名, 启动时缓存, 不用考虑主机名变化的case
+  string hostname = 5;
+  // 见 golang 的 runtime.GOOS
+  string os = 6;
+  // 见 golang 的 runtime.GOARCH
+  string arch = 7;
+  // 其他扩展字段
+  // TODO 具体有哪些以及来源都要明确文档
+  // 比如我可以想到的, 如果发现用户跑在aws下
+  // aws.instanceId
+  // aws.type 规格, t3.large TODO 是不是叫这个名字 可能是有个专门的单词的
+  map<string, string> labels = 8;
+  // 关联的app
+  string app = 9;
+  // k8s 场景下使用
+  AgentK8sInfo k8s = 10;
+  // sidecar daemonset clusteragent
+  string mode = 11;
+  string workspace = 12;
+  string cluster = 13;
+}
+
+message AgentK8sInfo {
+  string host_ip = 1;
+  string namespace = 2;
+  string pod = 3;
+  string node_hostname = 4;
+}
+
+message RegisterAgentResponse {
+  io.holoinsight.server.common.grpc.CommonResponseHeader header = 1;
+  string tenant = 2;
+  // 模拟http, reg返回给agent一个cookie, 以后agent所有的请求都带上该id
+  // TODO 这个涉及有具体的用处吗?
+  // string agent_cookie = 3;
+}
+
+// 发送agent的心跳
+message SendAgentHeartbeatRequest {
+  io.holoinsight.server.common.grpc.CommonRequestHeader header = 1;
+  string agent_id = 2;
+}
+
+message SendAgentHeartbeatResponse {
+  io.holoinsight.server.common.grpc.CommonResponseHeader header = 1;
+}
+
+message GetControlConfigsRequest {
+  io.holoinsight.server.common.grpc.CommonRequestHeader header = 1;
+  string agent_id = 2;
+}
+
+message GetControlConfigsResponse {
+  io.holoinsight.server.common.grpc.CommonResponseHeader header = 1;
+  BasicConfig basic_config = 2;
+  DebugConfig debug_config = 3;
+}
+
+// TODO 具体有哪些配置很大程度取决于agent
+// 以及服务端想要试下怎样的控制能力, 需要在实践中修改
+// 基础配置
+message BasicConfig {
+  // 如果>0则每隔多少秒发一次心跳, 代码里会检查最小值是5s, 默认是60秒
+  int32 heartbeat_interval_seconds = 1;
+  int32 reconnect_interval = 2;
+  int32 sync_configs_interval_seconds = 3;
+}
+
+// 调试相关的配置
+message DebugConfig {
+  // 是否打印详细日志, 默认是false
+  bool log_verbose = 1;
+  // 如果>0则表示允许每台agent每分钟上报多少条处理错误到服务端, 有助于排查问题(自助诊断), 程序内部可以再限制一个值, 默认是0
+  int32 reportProcessingErrorCount = 2;
+}
+
+// 同步配置的请求
+// 之类展开说一下同步配置的细节:
+// 1. 该接口做的是全量同步
+// 2. 最简单的做法是返回的配置是一个数组 [{...}]
+// 3. 但显然这样返回的内容会有点多, 每次哪怕只有1个元素变了, 也要返回所有元素 (这在域外可能是可以接受的, 配置少), 但在主站是不太好的
+// 4. 这在公有云上也不太好, 因为SLB可能是按流量收费的
+// 5. 所以要像办法减少传输的数据量, 只传输必要的数据(但方案又不能太复杂
+// 于是有了如下的buckets分桶方案
+// 1. 将配置分在若干个桶里即 map<string, [{}]>, agent不用管桶的key是如何决定的, 对agent来说就是一个字符串而已
+// 2. registry侧决定桶的key的具体取值, 比如在主站(对于vessel)可以取agentIp, 按agentIp分桶, 对于域外, 如果认为配置数不多, 那么可以总是取为 "", 这样相当于不分桶
+// 3. registry会保证, 对于同一个配置始终是在一个桶里, 也就是说这个分配的算法是不能改变的
+// 4. 该方案实际上只是通过分桶减少了发生改变时需要传递的数据量, 但并没有完全减少不必要的传输
+// 5. 想做到理想的完全避免不必要的传输, 则双方需要交换 task keys, 通过对比新旧 task keys 决定出哪些 tasks 需要变更; 这个流程比较繁琐, 在云上不一定要实现
+message GetCollectTasksRequest {
+  io.holoinsight.server.common.grpc.CommonRequestHeader header = 1;
+  string agent_id = 2;
+  // agent持有的所有buckets的状态
+  map<string, string> buckets = 3;
+}
+
+message GetCollectTasksResponse {
+  io.holoinsight.server.common.grpc.CommonResponseHeader header = 1;
+  // 返回每个bucket的最新状态, 如果bucket里的state与agent上的state相同, 那么说明该bucket没有任何变化
+  // 此时其对应的 collect_tasks 也会为空
+  map<string, CollectConfigsBucket> buckets = 2;
+  // 引用的配置
+  map<string, CollectConfig> collect_configs = 3;
+  // 应用的采集目标, 绝大多数只会有一个目标, 就是本机
+  map<string, CollectTarget> collect_targets = 4;
+}
+
+message BiStreamClientHandshakeRequest {
+  string agent_id = 1;
+  int64 version = 2;
+}
+
+message BiStreamClientHandshakeResponse {
+  io.holoinsight.server.common.grpc.CommonResponseHeader header = 1;
+}
+
+message MetaSync {
+  message FullSyncRequest {
+    io.holoinsight.server.common.grpc.CommonRequestHeader header = 1;
+    string temp = 2 ;
+    string workspace = 3;
+    string type = 4;
+    repeated Resource resource = 5;
+    string cluster = 6;
+  }
+
+  message DeltaSyncRequest {
+    io.holoinsight.server.common.grpc.CommonRequestHeader header = 1;
+    string temp = 2;
+    string workspace = 3;
+    string type = 4;
+    repeated Resource add = 5;
+    repeated Resource del = 6;
+    string cluster = 7;
+  }
+
+  message Resource {
+    string name = 1;
+    string namespace = 2;
+    map<string, string> labels = 3;
+    map<string, string> annotations = 4;
+
+    // 下面几个指标, 并不是每种 resource 都有
+    string app = 5;
+    string ip = 6;
+    string hostname = 7;
+    string hostIP = 8;
+
+    // 通用字段, 需要根据type来解释
+    map<string, string> spec = 9;
+  }
+}
+
+// 有一个问题, grpc的client能否感知到连接曾经断开? 一般来说当重新连上某个reg时, 需要重新执行 get_auth_info, register_agent
+// 也就是关闭grpc的自动重试机制, ... 感觉是我们的设计有点不好
+
+service RegistryServiceForAgent {
+  rpc ping(google.protobuf.Empty) returns(google.protobuf.Empty) {}
+  // agent与registry第一个交互就是
+
+  // 查询鉴权信息
+  // rpc get_auth_info(GetAuthInfoRequest) returns (GetAuthInfoResponse) {}
+
+  // 查询registry端支持的特性信息, 暂时无用
+  // rpc get_features(GetFeaturesRequest) returns (GetFeaturesResponse) {}
+
+  // 向服务端注册一个agent, 每N时间执行一次, 携带的信息比较多
+  rpc register_agent(RegisterAgentRequest) returns (RegisterAgentResponse) {}
+
+  // 发送Agent心跳
+  rpc send_agent_heartbeat(SendAgentHeartbeatRequest) returns(SendAgentHeartbeatResponse) {}
+
+  // 查询registry对该agent的控制参数
+  rpc get_control_configs(GetControlConfigsRequest) returns(GetControlConfigsResponse) {}
+
+  // 查询采集配置
+  rpc get_collect_tasks(GetCollectTasksRequest) returns(GetCollectTasksResponse) {}
+
+  // 这是一种复杂的同步方式, 但理论上效率高, 先不考虑实现
+  // 流式地同步采集配置:
+  // 1. agent发起请求给registry, 并带上自己每个buckets里的状态
+  // 2. registry在服务端计算出每个buckets的最新状态
+  // 3. 对于发生变化的bucket, registry向agent查询该bucket对应的tasks的keys&versions (以批量的形式)
+  // 4. registry 对比新旧keys, 可以得出: 1.需要新增的tasks 2.需要删除的tasks 3.需要更新的tasks
+  // 5. registry 发送 change 命令给agent, 让它 按 4. 里得出的结论修改配置
+  // rpc sync_collect_configs(stream GenericEvent) returns(stream GenericEvent) {}
+
+  // 双向流 用于实现反向调用, 实现 reverse rpc on grpc
+  // 见文档 https://yuque.antfin.com/neo-matrix/lgdwtb/oevt3g
+  rpc bi_streams(stream io.holoinsight.server.common.grpc.GenericRpcCommand) returns(stream io.holoinsight.server.common.grpc.GenericRpcCommand) {}
+
+  rpc meta_full_sync(MetaSync.FullSyncRequest)returns(google.protobuf.Empty){}
+  rpc meta_delta_sync(MetaSync.DeltaSyncRequest)returns(google.protobuf.Empty){}
+}

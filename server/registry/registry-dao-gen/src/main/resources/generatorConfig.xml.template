@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE generatorConfiguration
+	PUBLIC "-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN"
+	"http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd">
+
+<generatorConfiguration>
+
+	<context id="DB2Tables" targetRuntime="MyBatis3">
+		<!--给关键字加引号-->
+		<property name="autoDelimitKeywords" value="true"/>
+		<property name="beginningDelimiter" value="`"/>
+		<property name="endingDelimiter" value="`"/>
+
+		<plugin type="org.mybatis.generator.plugins.ToStringPlugin"/>
+		<plugin type="org.mybatis.generator.plugins.EqualsHashCodePlugin"/>
+
+		<plugin type="com.itfsw.mybatis.generator.plugins.SelectOneByExamplePlugin"/>
+		<plugin type="com.itfsw.mybatis.generator.plugins.LimitPlugin"/>
+		<plugin type="com.itfsw.mybatis.generator.plugins.ModelBuilderPlugin"/>
+		<plugin type="com.itfsw.mybatis.generator.plugins.ExampleEnhancedPlugin"/>
+		<plugin type="com.itfsw.mybatis.generator.plugins.BatchInsertPlugin"/>
+		<plugin type="com.itfsw.mybatis.generator.plugins.ModelColumnPlugin"/>
+		<plugin type="com.itfsw.mybatis.generator.plugins.UpsertPlugin">
+			<!--
+				https://github.com/itfsw/mybatis-generator-plugin#9-%E5%AD%98%E5%9C%A8%E5%8D%B3%E6%9B%B4%E6%96%B0%E6%8F%92%E4%BB%B6
+			-->
+			<property name="allowMultiQueries" value="false"/>
+			<property name="allowBatchUpsert" value="false"/>
+		</plugin>
+		<plugin type="com.itfsw.mybatis.generator.plugins.SelectiveEnhancedPlugin"/>
+		<plugin type="com.itfsw.mybatis.generator.plugins.SelectSelectivePlugin"/>
+		<plugin type="com.itfsw.mybatis.generator.plugins.OptimisticLockerPlugin"/>
+		<!--cloneable插件-->
+<!--		<plugin type="com.itfsw.mybatis.generator.plugins.ModelCloneablePlugin"/>-->
+		<plugin type="com.itfsw.mybatis.generator.plugins.MapperAnnotationPlugin">
+			<!-- @Mapper 默认开启 -->
+			<property name="@Mapper" value="true"/>
+			<!-- @Repository 默认关闭，开启后解决IDEA工具@Autowired报错 -->
+			<property name="@Repository" value="true"/>
+		</plugin>
+
+		<!-- <plugin type="com.zzh.mbg.plugin.MysqlBatchUpdatePlugin" /> -->
+		<commentGenerator>
+			<property name="suppressAllComments" value="true"/>
+			<property name="suppressDate" value="true"/>
+			<property name="addRemarkComments" value="true"/>
+		</commentGenerator>
+
+		<jdbcConnection driverClass="com.mysql.jdbc.Driver"
+		                connectionURL="jdbc:mysql://${DB_ADDR}/${DB_NAME}?useUnicode=true&amp;zeroDateTimeBehavior=convertToNull&amp;characterEncoding=utf8&amp;socketTimeout=15000&amp;connectTimeout=3000"
+		                userId="${DB_USER}" password="${DB_PASSWORD}">
+		</jdbcConnection>
+
+		<javaTypeResolver>
+			<property name="forceBigDecimals" value="false"/>
+		</javaTypeResolver>
+		<!--域模型层,生成的目标包,项目目标源文件 -->
+		<javaModelGenerator targetPackage="io.holoinsight.server.common.dao.entity"
+		                    targetProject="src/main/java">
+			<property name="enableSubPackages" value="true"/>
+			<property name="trimStrings" value="true"/>
+		</javaModelGenerator>
+		<!--XML映射文件,生成的位置（目标包）,源代码文件夹 -->
+		<sqlMapGenerator targetPackage="sqlmap" targetProject="src/main/resources">
+			<property name="enableSubPackages" value="true"/>
+		</sqlMapGenerator>
+		<!--XML对应的Mapper类 -->
+		<javaClientGenerator type="XMLMAPPER"
+		                     targetPackage="io.holoinsight.server.common.dao.mapper" targetProject="src/main/java">
+			<property name="enableSubPackages" value="true"/>
+		</javaClientGenerator>
+		<!--下面是数据库表名和项目中需要生成类的名称，建议和数据库保持一致，如果有多个表，添加多个节点即可 -->
+
+		<table tableName="gaea_config" domainObjectName="GaeaConfigDO" enableSelectByExample="true">
+			<generatedKey column="id" sqlStatement="JDBC" identity="true"/>
+		</table>
+
+		<table tableName="gaea_collect_config" domainObjectName="GaeaCollectConfigDO" enableSelectByExample="true">
+			<generatedKey column="id" sqlStatement="JDBC" identity="true"/>
+		</table>
+
+		<table tableName="gaea_agent" domainObjectName="GaeaAgentDO" enableSelectByExample="true">
+			<generatedKey column="id" sqlStatement="JDBC" identity="true"/>
+		</table>
+
+		<table tableName="gaea_lock" domainObjectName="GaeaLockDO" enableSelectByExample="true">
+			<generatedKey column="id" sqlStatement="JDBC" identity="true"/>
+		</table>
+
+		<table tableName="gaea_master" domainObjectName="GaeaMasterDO" enableSelectByExample="true">
+			<generatedKey column="id" sqlStatement="JDBC" identity="true"/>
+		</table>
+
+		<table tableName="gaea_cluster_config" domainObjectName="GaeaClusterConfigDO" enableSelectByExample="true">
+			<generatedKey column="id" sqlStatement="JDBC" identity="true"/>
+		</table>
+
+		<table tableName="apikey" domainObjectName="ApikeyDO" enableSelectByExample="true">
+			<generatedKey column="id" sqlStatement="JDBC" identity="true"/>
+		</table>
+
+	</context>
+
+</generatorConfiguration>

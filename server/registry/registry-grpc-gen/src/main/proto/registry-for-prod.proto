@@ -1,0 +1,184 @@
+syntax = "proto3";
+
+package io.holoinsight.server.registry.grpc.prod;
+
+option java_multiple_files = true;
+option java_package = "io.holoinsight.server.registry.grpc.prod";
+option java_outer_classname = "RegistryForProdProtos";
+
+// 这样写生成代码没问题, 但编辑器不认识
+import "common.proto";
+
+// 通知配置变更
+message NotifyCollectConfigUpdatedRequest {
+  io.holoinsight.server.common.grpc.CommonRequestHeader header = 1;
+  // 以下参数二选一
+  // 涉及的id
+  repeated string ids = 2;
+  // 变更的表名
+  repeated string table_names = 3;
+}
+
+message NotifyCollectConfigUpdatedResponse {
+  io.holoinsight.server.common.grpc.CommonResponseHeader header = 1;
+}
+
+message TargetIdentifier {
+  string tenant = 1;
+  string target_uk = 2;
+}
+
+message ListFilesRequest {
+  // request header
+  io.holoinsight.server.common.grpc.CommonRequestHeader header = 1;
+  // agent id
+  // deprecated : use tenant + target_uk
+  string agent_id = 2;
+  // dir path
+  string name = 3;
+  // max depths
+  int32 max_depth = 4;
+  repeated string include_exts = 5;
+  // 如果为true则显示父目录
+  bool include_parents = 6;
+
+  TargetIdentifier target = 7;
+}
+
+message ListFilesResponse {
+  io.holoinsight.server.common.grpc.CommonResponseHeader header = 1;
+  repeated io.holoinsight.server.common.grpc.FileNode nodes = 2;
+}
+
+message PreviewFileRequest {
+  io.holoinsight.server.common.grpc.CommonRequestHeader header = 1;
+  string agent_id = 2;
+  // 日志路径
+  string path = 3;
+  // 如果没有提供编码则agent会猜测编码
+  string charset = 4;
+  // 最多的行数
+  int32 maxLines = 5;
+  // 最多的字节数
+  int32 maxBytes = 6;
+  TargetIdentifier target = 7;
+}
+
+message PreviewFileResponse {
+  io.holoinsight.server.common.grpc.CommonResponseHeader header = 1;
+  // 解析好的日志行
+  repeated string content = 2;
+  // 日志使用的编码
+  // 如果用户请求里没有提供编码, 那么此时该编码是猜测的编码
+  string charset = 3;
+}
+
+// 试切分/正则切分结果预览
+message SplitLogRequest {
+  io.holoinsight.server.common.grpc.CommonRequestHeader header = 1;
+  string agent_id = 2;
+  string content = 3;
+  string regexp = 4;
+  TargetIdentifier target = 5;
+}
+
+message SplitLogResponse {
+  io.holoinsight.server.common.grpc.CommonResponseHeader header = 1;
+  map<string, string> result = 2;
+}
+
+message InspectRequest {
+  io.holoinsight.server.common.grpc.CommonRequestHeader header = 1;
+  string agent_id = 2;
+  TargetIdentifier target = 3;
+}
+
+message InspectResponse {
+  io.holoinsight.server.common.grpc.CommonResponseHeader header = 1;
+  string result = 2;
+}
+
+message MatchFilesRequest {
+  io.holoinsight.server.common.grpc.CommonRequestHeader header = 1;
+  string agent_id = 2;
+  // path/format/glob/regexp
+  string type = 3;
+  // used when type in (path,format,glob,regexp)
+  string pattern = 4;
+  // used when type=regexp
+  string dir = 5;
+  // used when glob&regexp
+  int32 maxVisited = 6;
+  // used when glob&regexp
+  int32 maxMatched = 7;
+  TargetIdentifier target = 8;
+}
+
+message MatchFilesResponse {
+  io.holoinsight.server.common.grpc.CommonResponseHeader header = 1;
+  repeated string files = 2;
+  int32 visited = 3;
+}
+
+// dry run
+message DryRunRequest {
+  // common request header
+  io.holoinsight.server.common.grpc.CommonRequestHeader header = 1;
+  // agent id
+  string agent_id = 2;
+  // 配置类型
+  string type = 3;
+  // 采集配置, 格式和 gaea_collect_config 的 json 字段保持一致
+  string json = 4;
+
+  TargetIdentifier target = 5;
+
+  message DryRunInput {
+    // 如果提供了contents, 则直接使用这些数据进行试跑
+    // 否则使用agent_id对应的本机器上的文件的最后N行进行试跑(这会导致结果不确定)
+    repeated string content = 1;
+  }
+}
+
+message DryRunResponse {
+  // common response header
+  io.holoinsight.server.common.grpc.CommonResponseHeader header = 1;
+}
+
+message HttpProxyRequest {
+  io.holoinsight.server.common.grpc.CommonRequestHeader header = 1;
+  string agent_id = 2;
+  string url = 3;
+  map<string, string> headers = 4;
+  bytes body = 5;
+}
+
+message HttpProxyResponse {
+  io.holoinsight.server.common.grpc.CommonResponseHeader header = 1;
+  int32 code = 2;
+  map<string, string> headers = 3;
+  bytes body = 4;
+  int32 cost = 5;
+}
+
+
+// 路径匹配测试
+// 配置试跑
+
+// 提供给 prod 调用的 registry 服务
+service RegistryServiceForProd {
+  rpc notify_collect_config_update(NotifyCollectConfigUpdatedRequest) returns(NotifyCollectConfigUpdatedResponse) {}
+
+  // 查询目录
+  // TODO 禁止list某些目录
+  // / 根目录
+  // 所有 . 开头的目录
+  // /etc 等其他一些敏感目录
+  rpc list_files(ListFilesRequest) returns(ListFilesResponse) {}
+
+  // 预览文件
+  rpc preview_file(PreviewFileRequest) returns(PreviewFileResponse) {}
+
+  // 查询agent基本信息
+  rpc inspect(InspectRequest) returns(InspectResponse) {}
+}

@@ -1,0 +1,41 @@
+spring:
+  application:
+    name: holoinsight-registry
+  datasource:
+    url: TODO
+    username: TODO
+    password: TODO
+    hikari:
+      connection-timeout: 60000
+
+mybatis-plus:
+  config-location: classpath:mybatis/mybatis-config.xml
+  mapper-locations:
+    - classpath*:sqlmap/*.xml
+    - classpath*:sqlmap-ext/*.xml
+
+mongodb_config:
+  key-need-convert: false
+
+management:
+  endpoints:
+    web:
+      base-path: /
+      exposure:
+        include: prometheus,health
+      path-mapping:
+        prometheus: metrics
+    enabled-by-default: false
+  endpoint:
+    prometheus:
+      enabled: true
+    health:
+      show-details: ALWAYS
+
+prod:
+  meta:
+    domain: meta.holoinsight-meta
+
+holoinsight:
+  roles:
+    active: registry

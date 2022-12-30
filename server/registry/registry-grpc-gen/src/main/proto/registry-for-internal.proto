@@ -1,0 +1,32 @@
+syntax = "proto3";
+
+package io.holoinsight.server.registry.grpc.internal;
+
+option java_multiple_files = true;
+option java_package = "io.holoinsight.server.registry.grpc.internal";
+option java_outer_classname = "RegistryForInternalProtos";
+
+import "google/protobuf/empty.proto";
+import "common.proto";
+
+message BiStreamProxyRequest {
+  string agent_id = 1;
+  int32 biz_type = 2;
+  bytes payload = 3;
+}
+
+message BiStreamProxyResponse {
+  int32 type = 1;
+  bytes payload = 2;
+}
+
+// registry 自己集群内部通信, 一般是一些 消息&事件&数据查询
+service RegistryServiceForInternal {
+  // 批量发送消息
+  rpc send_events(io.holoinsight.server.common.grpc.GenericDataBatch) returns(google.protobuf.Empty) {}
+  rpc bistream_proxy(BiStreamProxyRequest) returns(BiStreamProxyResponse) {}
+}
+
+// 预留这么一个service, 它是用于将来registry的master节点对其他worker阶段做**控制**的通道
+//service RegistryControlServiceForInternal {
+//}
