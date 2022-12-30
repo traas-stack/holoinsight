@@ -1,0 +1,19 @@
+spring:
+  application:
+    name: holoinsight
+
+mybatis-plus:
+  config-location: classpath:mybatis/mybatis-config.xml
+  mapper-locations:
+  - classpath*:sqlmap/*.xml
+  - classpath*:sqlmap-ext/*.xml
+
+management:
+  endpoints:
+    enabled-by-default: false
+  server:
+    port: 8089
+
+holoinsight:
+  roles:
+    active: registry,gateway
