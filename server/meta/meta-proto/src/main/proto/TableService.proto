@@ -1,0 +1,83 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "io.holoinsight.server.meta.proto.table";
+option java_outer_classname = "TableServiceProto";
+
+package scheduler;
+
+
+message CreateTableRequest {
+  string tableName = 1;
+  string fromApp = 2;
+  string fromIp = 3;
+}
+
+message DeleteTableRequest {
+  string tableName = 1;
+  string fromApp = 2;
+  string fromIp = 3;
+}
+
+message TableBaseResponse {
+  bool success = 1;
+  string errMsg = 2;
+}
+
+message TableDataResponse {
+  bool success = 1;
+  string errMsg = 2;
+  string rowsJson = 3;
+}
+
+message CreateIndexKeyRequest {
+  string tableName = 1;
+  string indexKey = 2;
+  bool asc = 3;
+  string fromApp = 4;
+  string fromIp = 5;
+}
+
+message DeleteIndexKeyRequest {
+  string tableName = 1;
+  string indexKey = 2;
+  string fromApp = 3;
+  string fromIp = 4;
+}
+
+message UpdateTableStatusRequest {
+  string table = 1;
+  bool isOnlineStatus = 2;
+  string fromApp = 3;
+  string fromIp = 4;
+}
+
+message TableHello {
+  int32 count = 1;
+  string fromApp = 2;
+  string fromIp = 3;
+}
+
+service TableService {
+  rpc createTable (CreateTableRequest) returns (TableBaseResponse) {
+  }
+
+  rpc deleteTable (DeleteTableRequest) returns (TableBaseResponse) {
+  }
+
+  rpc createIndexKey (CreateIndexKeyRequest) returns (TableBaseResponse) {
+  }
+
+  rpc deleteIndexKey (DeleteIndexKeyRequest) returns (TableBaseResponse) {
+  }
+
+  rpc getIndexInfo (CreateIndexKeyRequest) returns (TableDataResponse) {
+  }
+
+  rpc updateTableStatus (UpdateTableStatusRequest) returns (TableBaseResponse) {
+  }
+
+  //心跳
+  rpc heartBeat (TableHello) returns (TableHello) {
+  }
+}
