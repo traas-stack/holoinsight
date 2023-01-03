@@ -1,0 +1,23 @@
+spring:
+  application:
+    name: holoinsight-storage
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: prometheus
+      base-path: /
+      path-mapping:
+        prometheus: metrics
+    enable-by-default: false
+  endpoint:
+    prometheus:
+      enabled: true
+
+holoinsight:
+  roles:
+    active: storage
+  storage:
+    elasticsearch:
+      hosts: 127.0.0.1
