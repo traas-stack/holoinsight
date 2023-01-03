@@ -1,0 +1,144 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "io.holoinsight.server.meta.proto.data";
+option java_outer_classname = "DataServiceProto";
+
+package scheduler;
+
+// 定义Query相关接口
+service DataService {
+
+  rpc insertOrUpdate (InsertOrUpdateRequest) returns (DataBaseResponse) {
+  }
+
+  rpc insert (InsertOrUpdateRequest) returns (DataBaseResponse) {
+  }
+
+  rpc update (InsertOrUpdateRequest) returns (DataBaseResponse) {
+  }
+
+  rpc queryDataByTable (QueryDataByTableRequest) returns (QueryDataResponse) {
+  }
+
+  rpc queryDataByPk (QueryDataByPkRequest) returns (QueryOneDataResponse) {
+  }
+
+  rpc queryDataByPks (QueryDataByPksRequest) returns (QueryDataResponse) {
+  }
+
+  rpc queryDataByTableStream (QueryDataByTableRequest) returns (stream QueryDataResponse) {
+  }
+
+  rpc batchDeleteByPk (BatchDeleteByPkRequest) returns (DataBaseResponse) {
+  }
+
+  rpc deleteByExample (DeleteDataByExampleRequest) returns (DataBaseResponse) {
+
+  }
+
+  rpc deleteByRowMap (DeleteDataByExampleRequest) returns (DataBaseResponse) {
+
+  }
+
+  rpc updateByExample (UpdateDataByExampleRequest) returns (DataBaseResponse) {
+
+  }
+
+  rpc queryByExample (QueryDataByExampleRequest) returns (QueryDataResponse) {
+  }
+
+  rpc fuzzyByExample (QueryDataByExampleRequest) returns (QueryDataResponse) {
+  }
+
+  rpc queryByExampleStream (QueryDataByExampleRequest) returns (stream QueryDataResponse) {
+  }
+
+  //心跳
+  rpc heartBeat (DataHello) returns (DataHello) {
+  }
+
+}
+
+
+message InsertOrUpdateRequest {
+  string tableName = 1;
+  string rowsJson = 2;
+  string fromApp = 3;
+  string fromIp = 4;
+}
+
+message QueryDataByTableRequest {
+  string tableName = 1;
+  string fromApp = 2;
+  string fromIp = 3;
+}
+
+message QueryDataByPkRequest {
+  string tableName = 1;
+  string pkVal = 2;
+  string fromApp = 3;
+  string fromIp = 4;
+}
+
+message QueryDataByPksRequest {
+  string tableName = 1;
+  string pkValsJson = 2;
+  string fromApp = 3;
+  string fromIp = 4;
+}
+
+message DeleteDataByExampleRequest {
+  string tableName = 1;
+  string exampleJson = 2;
+  string fromApp = 3;
+  string fromIp = 4;
+}
+
+message QueryDataByExampleRequest {
+  string tableName = 1;
+  string exampleJson = 2;
+  string fromApp = 3;
+  string fromIp = 4;
+}
+
+message UpdateDataByExampleRequest {
+  string tableName = 1;
+  string exampleJson = 2;
+  string rowJson = 3;
+  string fromApp = 4;
+  string fromIp = 5;
+}
+
+message BatchDeleteByPkRequest {
+  string tableName = 1;
+  string primaryKeyValsJson = 2;
+  string fromApp = 3;
+  string fromIp = 4;
+}
+
+message DataBaseResponse {
+  bool success = 1;
+  string errMsg = 2;
+  string rowsJson = 3;
+}
+
+message QueryDataResponse {
+  bool success = 1;
+  string errMsg = 2;
+  string rowsJson = 3;
+}
+
+message QueryOneDataResponse {
+  bool success = 1;
+  string errMsg = 2;
+  string rowJson = 3;
+}
+
+
+message DataHello {
+  int32 count = 1;
+  string fromApp = 2;
+  string fromIp = 3;
+}
+

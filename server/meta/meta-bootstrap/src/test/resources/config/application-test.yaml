@@ -1,0 +1,10 @@
+spring:
+  datasource:
+    url: TODO
+    username: TODO
+    password: TODO
+  data:
+    mongodb:
+      uri: TODO
+
+db_data_mode: TODO
