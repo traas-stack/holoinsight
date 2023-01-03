@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="INFO" debug="true">
+
+	<Appenders>
+		<!-- 每个文件最多1GB, 最多保留2个rolling文件, 不按天滚动是按文件大小滚动 -->
+		<Console name="ERROR-APPENDER">
+			<!-- only print error log -->
+			<ThresholdFilter level="ERROR" onMatch="ACCEPT" onMismatch="DENY"/>
+			<PatternLayout charset="utf-8">
+				<pattern>%d %-5p [%t] %c{1.} - %m%n</pattern>
+			</PatternLayout>
+		</Console>
+
+		<!--
+			1. 每天最多保留7个文件
+			2. 如果文件修改时间是2天前的就删除
+			3. 如果文件累计超过10个则删除旧的
+			4. 如果文件累计超过10GB则删除旧的
+			5. 对齐到整天滚动(因为 modulate=true), 如果filePattern里的时间格式包含小时, 比如"yyyy-MM-dd-HH" 那么就是对齐到整小时滚动
+			6. 单个文件累计超过2GB就滚动
+		-->
+		<Console name="ROOT-APPENDER">
+			<!--打印INFO和WARN-->
+			<LevelRangeFilter minLevel="WARN" maxLevel="INFO" onMatch="ACCEPT" onMismatch="DENY"/>
+			<PatternLayout charset="utf-8">
+				<pattern>%d %-5p [%t] %c{1.} - %m%n</pattern>
+			</PatternLayout>
+		</Console>
+
+	</Appenders>
+
+	<Loggers>
+		<Root level="INFO">
+			<Appender-Ref ref="ROOT-APPENDER" level="INFO"/>
+			<Appender-Ref ref="ERROR-APPENDER" level="ERROR"/>
+		</Root>
+		<Logger name="SYNC" additivity="false" level="off"/>
+	</Loggers>
+</Configuration>
