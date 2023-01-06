@@ -18,7 +18,7 @@
 		<netty.version>4.1.63.Final</netty.version>
 		<micrometer.version>1.9.5</micrometer.version>
 		<xzchaoo.commons.version>1.11.0</xzchaoo.commons.version>
-		<protobuf.version>3.18.2</protobuf.version>
+		<protobuf.version>3.19.6</protobuf.version>
 		<mybatis-generator.version>1.4.0</mybatis-generator.version>
 		<mybatis-pagehelper.version>5.3.0</mybatis-pagehelper.version>
 		<mybatis-springboot-starter.version>2.2.2</mybatis-springboot-starter.version>
