@@ -49,11 +49,11 @@
 		<module>../storage/storage-common</module>
 		<module>../storage/storage-server</module>
 		<module>../storage/storage-bootstrap</module>
+		<module>../storage/storage-boot</module>
 
 		<module>../common/common-service</module>
 		<module>../holoinsight-dependencies</module>
 		<module>../all-in-one/all-in-one-bootstrap</module>
-		<module>../storage/storage-boot</module>
 		<module>../common/grpc-server-starter-boot-autoconfigure</module>
 
 		<module>../home/home-alert</module>
@@ -156,22 +156,22 @@
 <!--				</configuration>-->
 <!--			</plugin>-->
 
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-javadoc-plugin</artifactId>
-				<version>2.9.1</version>
-				<executions>
-					<execution>
-						<id>attach-javadocs</id>
-						<goals>
-							<goal>jar</goal>
-						</goals>
-						<configuration>
-							<additionalparam>-Xdoclint:none</additionalparam>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
+<!--			<plugin>-->
+<!--				<groupId>org.apache.maven.plugins</groupId>-->
+<!--				<artifactId>maven-javadoc-plugin</artifactId>-->
+<!--				<version>2.9.1</version>-->
+<!--				<executions>-->
+<!--					<execution>-->
+<!--						<id>attach-javadocs</id>-->
+<!--						<goals>-->
+<!--							<goal>jar</goal>-->
+<!--						</goals>-->
+<!--						<configuration>-->
+<!--							<additionalparam>-Xdoclint:none</additionalparam>-->
+<!--						</configuration>-->
+<!--					</execution>-->
+<!--				</executions>-->
+<!--			</plugin>-->
 
 			<plugin>
 				<groupId>com.mycila</groupId>
