@@ -15,21 +15,21 @@ import java.util.List;
 @Data
 public class ComputeTask {
 
-    /**
-     * traceId
-     */
-    private String traceId;
+  /**
+   * traceId
+   */
+  private String traceId;
 
-    /**
-     * 检测时间点
-     */
-    private long timestamp;
+  /**
+   * 检测时间点
+   */
+  private long timestamp;
 
-    /**
-     * 告警配置
-     */
-    public List<InspectConfig> inspectConfigs;
+  /**
+   * 告警配置
+   */
+  public List<InspectConfig> inspectConfigs;
 
-    // 后续可以考虑聚合数据源查询
+  // 后续可以考虑聚合数据源查询
 
 }

@@ -18,11 +18,12 @@ import java.util.List;
 @ConditionalOnFeature("trace")
 public class ServiceInstanceServiceImpl implements ServiceInstanceService {
 
-    @Autowired
-    private ServiceInstanceEsService serviceInstanceEsService;
+  @Autowired
+  private ServiceInstanceEsService serviceInstanceEsService;
 
-    @Override
-    public List<ServiceInstance> getServiceInstanceList(String tenant, String service, long startTime, long endTime) throws IOException {
-        return serviceInstanceEsService.getServiceInstanceList(tenant, service, startTime, endTime);
-    }
+  @Override
+  public List<ServiceInstance> getServiceInstanceList(String tenant, String service, long startTime,
+      long endTime) throws IOException {
+    return serviceInstanceEsService.getServiceInstanceList(tenant, service, startTime, endTime);
+  }
 }

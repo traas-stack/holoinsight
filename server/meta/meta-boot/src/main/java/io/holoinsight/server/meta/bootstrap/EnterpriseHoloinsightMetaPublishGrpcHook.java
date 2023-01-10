@@ -11,17 +11,19 @@ import io.holoinsight.server.common.hook.PublishGrpcHook;
 import org.springframework.stereotype.Component;
 
 /**
- * <p>created at 2022/12/20
+ * <p>
+ * created at 2022/12/20
  *
  * @author jsy1001de
  */
 @Component
 public class EnterpriseHoloinsightMetaPublishGrpcHook implements PublishGrpcHook {
-    @Override
-    public void onPublish(ServerBuilder<?> b, ServerServiceDefinition ssd) {
-        // Compatible with old agent version. After all agents move to new version, remove this code.
-        if (ssd.getServiceDescriptor().getName().startsWith("io.holoinsight.server.meta")) {
-            b.addService(GrpcUtils.rebind(ssd, "io.holoinsight.server.meta", "com.alipay.cloudmonitor.meta"));
-        }
+  @Override
+  public void onPublish(ServerBuilder<?> b, ServerServiceDefinition ssd) {
+    // Compatible with old agent version. After all agents move to new version, remove this code.
+    if (ssd.getServiceDescriptor().getName().startsWith("io.holoinsight.server.meta")) {
+      b.addService(
+          GrpcUtils.rebind(ssd, "io.holoinsight.server.meta", "com.alipay.cloudmonitor.meta"));
     }
+  }
 }

@@ -12,24 +12,24 @@ import lombok.Data;
 @Data
 public class UserInfo {
 
-    /**
-     * 用户id
-     */
-    private String userId;
+  /**
+   * 用户id
+   */
+  private String userId;
 
-    /**
-     * 电话区域码
-     */
-    private String region;
+  /**
+   * 电话区域码
+   */
+  private String region;
 
-    /**
-     * 用户电话
-     */
-    private String mobile;
+  /**
+   * 用户电话
+   */
+  private String mobile;
 
-    /**
-     * 用户邮箱
-     */
-    private String userEmail;
+  /**
+   * 用户邮箱
+   */
+  private String userEmail;
 
 }

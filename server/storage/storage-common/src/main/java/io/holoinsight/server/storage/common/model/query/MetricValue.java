@@ -17,6 +17,6 @@ import java.util.Map;
 @AllArgsConstructor
 @NoArgsConstructor
 public class MetricValue {
-    private Map<String, String> tags;
-    private Map<Long, Double>   values;
+  private Map<String, String> tags;
+  private Map<Long, Double> values;
 }

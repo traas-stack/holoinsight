@@ -11,29 +11,29 @@ import java.util.Date;
 @Data
 public class CustomPlugin {
 
-    @TableId(type = IdType.AUTO)
-    public Long id;
-    public String tenant;
+  @TableId(type = IdType.AUTO)
+  public Long id;
+  public String tenant;
 
-    public Long parentFolderId;
+  public Long parentFolderId;
 
-    public String name;
+  public String name;
 
-    public String pluginType;
+  public String pluginType;
 
-    public String status;
+  public String status;
 
-    public String periodType;
+  public String periodType;
 
-    public String conf;
+  public String conf;
 
-    public String sampleLog;
+  public String sampleLog;
 
-    public String creator;
+  public String creator;
 
-    public String modifier;
+  public String modifier;
 
-    public Date gmtCreate;
+  public Date gmtCreate;
 
-    public Date gmtModified;
+  public Date gmtModified;
 }

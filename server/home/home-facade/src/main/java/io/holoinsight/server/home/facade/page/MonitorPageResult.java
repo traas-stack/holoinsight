@@ -15,15 +15,15 @@ import java.util.List;
  */
 @Data
 public class MonitorPageResult<T> implements Serializable {
-    private static final long serialVersionUID = -8352196951709213541L;
+  private static final long serialVersionUID = -8352196951709213541L;
 
-    private int               pageNum          = 1;
+  private int pageNum = 1;
 
-    private int               pageSize         = 10;
+  private int pageSize = 10;
 
-    private long              totalCount;
-    private long              totalPage;
+  private long totalCount;
+  private long totalPage;
 
-    private List<T>           items;
+  private List<T> items;
 
 }

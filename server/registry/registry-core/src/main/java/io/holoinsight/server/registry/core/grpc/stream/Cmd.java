@@ -9,16 +9,17 @@ import lombok.Data;
 
 /**
  * biz cmd
- * <p>created at 2022/3/3
+ * <p>
+ * created at 2022/3/3
  *
  * @author zzhb101
  */
 @Data
 public final class Cmd {
-    final int type;
-    final ByteString data;
+  final int type;
+  final ByteString data;
 
-    public static Cmd of(int type, ByteString data) {
-        return new Cmd(type, data);
-    }
+  public static Cmd of(int type, ByteString data) {
+    return new Cmd(type, data);
+  }
 }

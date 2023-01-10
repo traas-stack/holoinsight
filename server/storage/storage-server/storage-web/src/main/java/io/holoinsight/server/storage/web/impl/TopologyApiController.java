@@ -18,100 +18,115 @@ import java.io.IOException;
 @Slf4j
 public class TopologyApiController implements TopologyApi {
 
-    @Autowired
-    private TopologyService topologyService;
+  @Autowired
+  private TopologyService topologyService;
 
-    @Override
-    public ResponseEntity<Topology> queryTenantTopology(QueryTopologyRequest request) throws IOException {
-        String tenant;
-        if (!Strings.isNullOrEmpty(request.getTenant())) {
-            tenant = request.getTenant();
-        } else {
-            throw new IllegalArgumentException("The condition must contains tenant.");
-        }
-
-        Topology tenantTopology = topologyService.getTenantTopology(tenant, request.getStartTime(), request.getEndTime(), request.getTermParams());
-
-        return ResponseEntity.ok(tenantTopology);
+  @Override
+  public ResponseEntity<Topology> queryTenantTopology(QueryTopologyRequest request)
+      throws IOException {
+    String tenant;
+    if (!Strings.isNullOrEmpty(request.getTenant())) {
+      tenant = request.getTenant();
+    } else {
+      throw new IllegalArgumentException("The condition must contains tenant.");
     }
 
-    @Override
-    public ResponseEntity<Topology> queryServiceTopology(QueryTopologyRequest request) throws IOException {
-        String tenant = request.getTenant();
-        String service = request.getServiceName();
+    Topology tenantTopology = topologyService.getTenantTopology(tenant, request.getStartTime(),
+        request.getEndTime(), request.getTermParams());
 
-        if (Strings.isNullOrEmpty(tenant) || Strings.isNullOrEmpty(service)) {
-            throw new IllegalArgumentException("The condition must contains tenant and service.");
-        }
+    return ResponseEntity.ok(tenantTopology);
+  }
 
-        int depth = request.getDepth() <= 0 ? 2 : request.getDepth();
+  @Override
+  public ResponseEntity<Topology> queryServiceTopology(QueryTopologyRequest request)
+      throws IOException {
+    String tenant = request.getTenant();
+    String service = request.getServiceName();
 
-        Topology serviceTopology = topologyService.getServiceTopology(tenant, service, request.getStartTime(), request.getEndTime(), depth, request.getTermParams());
-
-        return ResponseEntity.ok(serviceTopology);
+    if (Strings.isNullOrEmpty(tenant) || Strings.isNullOrEmpty(service)) {
+      throw new IllegalArgumentException("The condition must contains tenant and service.");
     }
 
-    @Override
-    public ResponseEntity<Topology> queryServiceInstanceTopology(QueryTopologyRequest request) throws IOException {
-        String tenant = request.getTenant();
-        String service = request.getServiceName();
-        String serviceInstanceName = request.getServiceInstanceName();
+    int depth = request.getDepth() <= 0 ? 2 : request.getDepth();
 
-        if (Strings.isNullOrEmpty(tenant) || Strings.isNullOrEmpty(service) || Strings.isNullOrEmpty(serviceInstanceName)) {
-            throw new IllegalArgumentException("The condition must contains tenant and service and serviceInstanceName.");
-        }
+    Topology serviceTopology = topologyService.getServiceTopology(tenant, service,
+        request.getStartTime(), request.getEndTime(), depth, request.getTermParams());
 
-        int depth = request.getDepth() <= 0 ? 2 : request.getDepth();
+    return ResponseEntity.ok(serviceTopology);
+  }
 
-        Topology serviceInstanceTopology = topologyService.getServiceInstanceTopology(tenant, service, serviceInstanceName, request.getStartTime(), request.getEndTime(), depth, request.getTermParams());
+  @Override
+  public ResponseEntity<Topology> queryServiceInstanceTopology(QueryTopologyRequest request)
+      throws IOException {
+    String tenant = request.getTenant();
+    String service = request.getServiceName();
+    String serviceInstanceName = request.getServiceInstanceName();
 
-        return ResponseEntity.ok(serviceInstanceTopology);
+    if (Strings.isNullOrEmpty(tenant) || Strings.isNullOrEmpty(service)
+        || Strings.isNullOrEmpty(serviceInstanceName)) {
+      throw new IllegalArgumentException(
+          "The condition must contains tenant and service and serviceInstanceName.");
     }
 
-    @Override
-    public ResponseEntity<Topology> queryEndpointTopology(QueryTopologyRequest request) throws IOException {
-        String tenant = request.getTenant();
-        String service = request.getServiceName();
-        String endpoint = request.getEndpointName();
+    int depth = request.getDepth() <= 0 ? 2 : request.getDepth();
 
-        if (Strings.isNullOrEmpty(tenant) || Strings.isNullOrEmpty(service) || Strings.isNullOrEmpty(endpoint)) {
-            throw new IllegalArgumentException("The condition must contains tenant and service and endpoint.");
-        }
+    Topology serviceInstanceTopology =
+        topologyService.getServiceInstanceTopology(tenant, service, serviceInstanceName,
+            request.getStartTime(), request.getEndTime(), depth, request.getTermParams());
 
-        int depth = request.getDepth() <= 0 ? 2 : request.getDepth();
+    return ResponseEntity.ok(serviceInstanceTopology);
+  }
 
-        Topology endpointTopology = topologyService.getEndpointTopology(tenant, service, endpoint, request.getStartTime(), request.getEndTime(), depth, request.getTermParams());
+  @Override
+  public ResponseEntity<Topology> queryEndpointTopology(QueryTopologyRequest request)
+      throws IOException {
+    String tenant = request.getTenant();
+    String service = request.getServiceName();
+    String endpoint = request.getEndpointName();
 
-        return ResponseEntity.ok(endpointTopology);
+    if (Strings.isNullOrEmpty(tenant) || Strings.isNullOrEmpty(service)
+        || Strings.isNullOrEmpty(endpoint)) {
+      throw new IllegalArgumentException(
+          "The condition must contains tenant and service and endpoint.");
     }
 
-    @Override
-    public ResponseEntity<Topology> queryDbTopology(QueryTopologyRequest request) throws IOException {
-        String tenant = request.getTenant();
-        String address = request.getAddress();
+    int depth = request.getDepth() <= 0 ? 2 : request.getDepth();
 
-        if (Strings.isNullOrEmpty(tenant) || Strings.isNullOrEmpty(address)) {
-            throw new IllegalArgumentException("The condition must contains tenant and address.");
-        }
+    Topology endpointTopology = topologyService.getEndpointTopology(tenant, service, endpoint,
+        request.getStartTime(), request.getEndTime(), depth, request.getTermParams());
 
-        Topology dbTopology = topologyService.getDbTopology(tenant, address, request.getStartTime(), request.getEndTime(), request.getTermParams());
+    return ResponseEntity.ok(endpointTopology);
+  }
 
-        return ResponseEntity.ok(dbTopology);
+  @Override
+  public ResponseEntity<Topology> queryDbTopology(QueryTopologyRequest request) throws IOException {
+    String tenant = request.getTenant();
+    String address = request.getAddress();
+
+    if (Strings.isNullOrEmpty(tenant) || Strings.isNullOrEmpty(address)) {
+      throw new IllegalArgumentException("The condition must contains tenant and address.");
     }
 
-    @Override
-    public ResponseEntity<Topology> queryMQTopology(QueryTopologyRequest request) throws IOException {
-        String tenant = request.getTenant();
-        String address = request.getAddress();
+    Topology dbTopology = topologyService.getDbTopology(tenant, address, request.getStartTime(),
+        request.getEndTime(), request.getTermParams());
 
-        if (Strings.isNullOrEmpty(tenant) || Strings.isNullOrEmpty(address)) {
-            throw new IllegalArgumentException("The condition must contains tenant and address.");
-        }
+    return ResponseEntity.ok(dbTopology);
+  }
 
-        Topology mqTopology = topologyService.getMQTopology(tenant, address, request.getStartTime(), request.getEndTime(), request.getTermParams());
+  @Override
+  public ResponseEntity<Topology> queryMQTopology(QueryTopologyRequest request) throws IOException {
+    String tenant = request.getTenant();
+    String address = request.getAddress();
 
-        return ResponseEntity.ok(mqTopology);
+    if (Strings.isNullOrEmpty(tenant) || Strings.isNullOrEmpty(address)) {
+      throw new IllegalArgumentException("The condition must contains tenant and address.");
     }
+
+    Topology mqTopology = topologyService.getMQTopology(tenant, address, request.getStartTime(),
+        request.getEndTime(), request.getTermParams());
+
+    return ResponseEntity.ok(mqTopology);
+  }
 
 
 }

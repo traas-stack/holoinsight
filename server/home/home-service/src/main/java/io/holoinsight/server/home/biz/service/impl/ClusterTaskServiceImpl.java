@@ -2,7 +2,6 @@
  * Copyright 2022 Holoinsight Project Authors. Licensed under Apache-2.0.
  */
 
-
 package io.holoinsight.server.home.biz.service.impl;
 
 import io.holoinsight.server.common.AddressUtil;
@@ -24,54 +23,54 @@ import java.util.Map;
  */
 @Service
 public class ClusterTaskServiceImpl extends ServiceImpl<ClusterTaskMapper, ClusterTask>
-                                    implements ClusterTaskService {
+    implements ClusterTaskService {
 
-    public static final String TASK_UNDONE = "undone";
-    public static final String TASK_DOING  = "doing";
-    public static final String TASK_DONE   = "done";
-    public static final String TASK_ERROR  = "error";
+  public static final String TASK_UNDONE = "undone";
+  public static final String TASK_DOING = "doing";
+  public static final String TASK_DONE = "done";
+  public static final String TASK_ERROR = "error";
 
-    // 批量生成任务
-    public void batchInsert(List<ClusterTask> cts) {
-        for (ClusterTask ct : cts) {
-            ct.setGmtCreate(new Date());
-            ct.setGmtModified(new Date());
-            save(ct);
-        }
+  // 批量生成任务
+  public void batchInsert(List<ClusterTask> cts) {
+    for (ClusterTask ct : cts) {
+      ct.setGmtCreate(new Date());
+      ct.setGmtModified(new Date());
+      save(ct);
     }
+  }
 
-    public void insert(ClusterTask ct) {
-        ct.setGmtCreate(new Date());
-        ct.setGmtModified(new Date());
-        save(ct);
+  public void insert(ClusterTask ct) {
+    ct.setGmtCreate(new Date());
+    ct.setGmtModified(new Date());
+    save(ct);
+  }
+
+  // 获取我的undone任务, 并标注为doing
+  public List<ClusterTask> getMyTask(long period) {
+
+    Map<String, Object> columnMap = new HashMap<>();
+    columnMap.put("status", TASK_UNDONE);
+    columnMap.put("cluster_ip", AddressUtil.getLocalHostIPV4());
+    columnMap.put("period", period);
+
+    List<ClusterTask> res = listByMap(columnMap);
+    for (ClusterTask ct : res) {
+      ct.setStatus(TASK_DOING);
+      ct.setGmtModified(new Date());
+      updateById(ct);
     }
+    return res;
+  }
 
-    // 获取我的undone任务, 并标注为doing
-    public List<ClusterTask> getMyTask(long period) {
-
-        Map<String, Object> columnMap = new HashMap<>();
-        columnMap.put("status", TASK_UNDONE);
-        columnMap.put("cluster_ip", AddressUtil.getLocalHostIPV4());
-        columnMap.put("period", period);
-
-        List<ClusterTask> res = listByMap(columnMap);
-        for (ClusterTask ct : res) {
-            ct.setStatus(TASK_DOING);
-            ct.setGmtModified(new Date());
-            updateById(ct);
-        }
-        return res;
+  // 完成了我的任务，标注为done
+  public void doneTask(ClusterTask task, Boolean success, String res) {
+    task.setGmtModified(new Date());
+    if (success) {
+      task.setStatus(TASK_DONE);
+    } else {
+      task.setStatus(TASK_ERROR);
+      task.setResult(res);
     }
-
-    // 完成了我的任务，标注为done
-    public void doneTask(ClusterTask task, Boolean success, String res) {
-        task.setGmtModified(new Date());
-        if (success) {
-            task.setStatus(TASK_DONE);
-        } else {
-            task.setStatus(TASK_ERROR);
-            task.setResult(res);
-        }
-        updateById(task);
-    }
+    updateById(task);
+  }
 }

@@ -16,34 +16,35 @@ import org.slf4j.LoggerFactory;
 import io.holoinsight.server.registry.core.grpc.RegistryServiceForInternalImpl;
 
 /**
- * <p>created at 2022/4/17
+ * <p>
+ * created at 2022/4/17
  *
  * @author zzhb101
  */
 public class LocalMemberServer {
-    private static final Logger LOGGER = LoggerFactory.getLogger(LocalMemberServer.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(LocalMemberServer.class);
 
-    private final int    port;
-    private       Server server;
+  private final int port;
+  private Server server;
 
-    public LocalMemberServer(int port, RegistryServiceForInternalImpl service, Executor executor) {
-        this.port = port;
-        this.server = ServerBuilder.forPort(port) //
-            .addService(service) //
-            .executor(executor) //
-            .build(); //
+  public LocalMemberServer(int port, RegistryServiceForInternalImpl service, Executor executor) {
+    this.port = port;
+    this.server = ServerBuilder.forPort(port) //
+        .addService(service) //
+        .executor(executor) //
+        .build(); //
+  }
+
+  public void start() throws IOException {
+    server.start();
+  }
+
+  public void stop() {
+    server.shutdownNow();
+    try {
+      server.awaitTermination(10, TimeUnit.SECONDS);
+    } catch (InterruptedException e) {
+      LOGGER.warn("await server termination interrupted", e);
     }
-
-    public void start() throws IOException {
-        server.start();
-    }
-
-    public void stop() {
-        server.shutdownNow();
-        try {
-            server.awaitTermination(10, TimeUnit.SECONDS);
-        } catch (InterruptedException e) {
-            LOGGER.warn("await server termination interrupted", e);
-        }
-    }
+  }
 }

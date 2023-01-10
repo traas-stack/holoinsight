@@ -12,12 +12,12 @@ import lombok.Data;
  */
 @Data
 public class AuthTarget {
-    public AuthTargetType authTargetType;
-    public String quthTargetId;
+  public AuthTargetType authTargetType;
+  public String quthTargetId;
 
-    public AuthTarget(AuthTargetType authTargetType, String quthTargetId) {
-        super();
-        this.authTargetType = authTargetType;
-        this.quthTargetId = quthTargetId;
-    }
+  public AuthTarget(AuthTargetType authTargetType, String quthTargetId) {
+    super();
+    this.authTargetType = authTargetType;
+    this.quthTargetId = quthTargetId;
+  }
 }

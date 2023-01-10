@@ -21,42 +21,43 @@ import java.util.List;
 @Service
 public class AlertManagerSendMsgHandler implements AlertHandlerExecutor {
 
-    private static Logger LOGGER = LoggerFactory.getLogger(AlertManagerSendMsgHandler.class);
+  private static Logger LOGGER = LoggerFactory.getLogger(AlertManagerSendMsgHandler.class);
 
-    public void handle(List<AlertNotify> alarmNotifies) {
+  public void handle(List<AlertNotify> alarmNotifies) {
 
-        // 发送单聊钉钉
+    // 发送单聊钉钉
 
-        // 发送webhook
-        // 查询所有租户的webhook
-        try {
-            alarmNotifies.forEach(alarmNotify -> {
-                if (alarmNotify.getWebhookInfos() != null) {
-                    alarmNotify.getWebhookInfos().forEach(webhookInfo -> {
-                        XHttpResponse xHttpResponse = WebhookUtil.sendWebhook(webhookInfo);
-                        LOGGER.info("XHttpResponse: {} ", G.get().toJson(xHttpResponse));
-                    }  );
-                }
-            });
-
-            LOGGER.info("AlarmSendWebhook SUCCESS {} ", G.get().toJson(alarmNotifies));
-        } catch (Exception e) {
-            LOGGER.error("AlarmSendWebhook Exception", e);
+    // 发送webhook
+    // 查询所有租户的webhook
+    try {
+      alarmNotifies.forEach(alarmNotify -> {
+        if (alarmNotify.getWebhookInfos() != null) {
+          alarmNotify.getWebhookInfos().forEach(webhookInfo -> {
+            XHttpResponse xHttpResponse = WebhookUtil.sendWebhook(webhookInfo);
+            LOGGER.info("XHttpResponse: {} ", G.get().toJson(xHttpResponse));
+          });
         }
-        // 发送钉钉群机器人
+      });
 
-        try {
-            alarmNotifies.forEach(alarmNotify -> {
-                if (alarmNotify.getDingdingUrl() != null) {
-                    // 修改为网关发送
-//                    alarmNotify.getDingdingUrl()
-//                            .forEach(dingdingUrl -> MsgSendUtil.sendGocAarMsg("告警通知：", alarmNotify.getMsg(), dingdingUrl));
-                }
-            });
-            LOGGER.info("AlarmSendMsgHandler SUCCESS {} ", G.get().toJson(alarmNotifies));
-        } catch (Exception e) {
-            LOGGER.error("AlarmSendMsgHandler Exception", e);
-        }
-
+      LOGGER.info("AlarmSendWebhook SUCCESS {} ", G.get().toJson(alarmNotifies));
+    } catch (Exception e) {
+      LOGGER.error("AlarmSendWebhook Exception", e);
     }
+    // 发送钉钉群机器人
+
+    try {
+      alarmNotifies.forEach(alarmNotify -> {
+        if (alarmNotify.getDingdingUrl() != null) {
+          // 修改为网关发送
+          // alarmNotify.getDingdingUrl()
+          // .forEach(dingdingUrl -> MsgSendUtil.sendGocAarMsg("告警通知：", alarmNotify.getMsg(),
+          // dingdingUrl));
+        }
+      });
+      LOGGER.info("AlarmSendMsgHandler SUCCESS {} ", G.get().toJson(alarmNotifies));
+    } catch (Exception e) {
+      LOGGER.error("AlarmSendMsgHandler Exception", e);
+    }
+
+  }
 }

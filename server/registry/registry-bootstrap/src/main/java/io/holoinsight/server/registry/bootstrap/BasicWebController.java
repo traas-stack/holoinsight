@@ -13,27 +13,29 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * <p>created at 2022/2/25
+ * <p>
+ * created at 2022/2/25
  *
  * @author zzhb101
  */
 @RestController
 @RequestMapping("/internal/api/registry/basic")
 public class BasicWebController {
-    @GetMapping("/git")
-    public Object git() throws IOException {
-        Properties properties = new Properties();
-        InputStream is = getClass().getClassLoader().getResourceAsStream("cloudmonitor-registry-git.properties");
-        if (is != null) {
-            properties.load(is);
-        } else {
-            properties.put("message", "fail to find git.properties in classpath");
-        }
-        return properties;
+  @GetMapping("/git")
+  public Object git() throws IOException {
+    Properties properties = new Properties();
+    InputStream is =
+        getClass().getClassLoader().getResourceAsStream("cloudmonitor-registry-git.properties");
+    if (is != null) {
+      properties.load(is);
+    } else {
+      properties.put("message", "fail to find git.properties in classpath");
     }
+    return properties;
+  }
 
-    @GetMapping("/ip")
-    public Object ip() throws IOException {
-        return InetAddress.getLocalHost().getHostAddress();
-    }
+  @GetMapping("/ip")
+  public Object ip() throws IOException {
+    return InetAddress.getLocalHost().getHostAddress();
+  }
 }

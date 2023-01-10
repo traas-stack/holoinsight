@@ -25,108 +25,112 @@ import org.springframework.context.SmartLifecycle;
 import org.springframework.stereotype.Component;
 
 /**
- * <p>created at 2022/2/25
+ * <p>
+ * created at 2022/2/25
  *
  * @author sw1136562366
  */
 @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
 @Component
 public class GatewayServerForAgent implements SmartLifecycle {
-    private static final Logger                LOGGER    = LoggerFactory.getLogger(GatewayServerForAgent.class);
-    private              Server                server;
-    @Autowired
-    private              GatewayProperties     gatewayProperties;
-    @Autowired(required = false)
-    @GatewayGrpcForAgent
-    private              List<BindableService> services2 = new ArrayList<>();
-    @Autowired
-    private CommonThreadPools  commonThreadPools;
-    @Autowired
-    private CommonHooksManager commonHooksManager;
+  private static final Logger LOGGER = LoggerFactory.getLogger(GatewayServerForAgent.class);
+  private Server server;
+  @Autowired
+  private GatewayProperties gatewayProperties;
+  @Autowired(required = false)
+  @GatewayGrpcForAgent
+  private List<BindableService> services2 = new ArrayList<>();
+  @Autowired
+  private CommonThreadPools commonThreadPools;
+  @Autowired
+  private CommonHooksManager commonHooksManager;
 
-    /**
-     * <p>Constructor for GatewayServerForAgent.</p>
-     */
-    public GatewayServerForAgent() {
-    }
+  /**
+   * <p>
+   * Constructor for GatewayServerForAgent.
+   * </p>
+   */
+  public GatewayServerForAgent() {}
 
-    /** {@inheritDoc} */
-    @Override
-    public void start() {
-        try {
-            GatewayProperties.Grpc grpc = gatewayProperties.getServer().getGrpc();
-            int port = grpc.getPort();
-            NettyServerBuilder b = NettyServerBuilder.forPort(port) //
-                .executor(commonThreadPools.getRpcServer()) //
-                .maxInboundMessageSize(64 * 1024 * 1024); //
+  /** {@inheritDoc} */
+  @Override
+  public void start() {
+    try {
+      GatewayProperties.Grpc grpc = gatewayProperties.getServer().getGrpc();
+      int port = grpc.getPort();
+      NettyServerBuilder b = NettyServerBuilder.forPort(port) //
+          .executor(commonThreadPools.getRpcServer()) //
+          .maxInboundMessageSize(64 * 1024 * 1024); //
 
-            if (grpc.isSslEnabled()) {
-                InputStream cert = grpc.getServerCert().getInputStream();
-                InputStream key = grpc.getServerKey().getInputStream();
-                b.useTransportSecurity(cert, key);
-                cert.close();
-                key.close();
-            }
+      if (grpc.isSslEnabled()) {
+        InputStream cert = grpc.getServerCert().getInputStream();
+        InputStream key = grpc.getServerKey().getInputStream();
+        b.useTransportSecurity(cert, key);
+        cert.close();
+        key.close();
+      }
 
-            for (BindableService bs : services2) {
-                ServerServiceDefinition ssd = bs.bindService();
-                b.addService(ssd);
-                commonHooksManager.triggerPublishGrpcHooks(b, ssd);
-            }
-            b.addStreamTracerFactory(new ServerStreamTracer.Factory() {
-                @Override
-                public ServerStreamTracer newServerStreamTracer(String fullMethodName, Metadata headers) {
-                    return new TrafficTracer();
-                }
-            });
-
-            server = b.build();
-
-            server.start();
-
-            LOGGER.info("gateway for agent grpc server listen at 0.0.0.0:{} with ssl {}", //
-                port, //
-                grpc.isSslEnabled() ? "enabled" : "disabled"); //
-        } catch (IOException e) {
-            throw new IllegalStateException("fail to start grpc server", e);
+      for (BindableService bs : services2) {
+        ServerServiceDefinition ssd = bs.bindService();
+        b.addService(ssd);
+        commonHooksManager.triggerPublishGrpcHooks(b, ssd);
+      }
+      b.addStreamTracerFactory(new ServerStreamTracer.Factory() {
+        @Override
+        public ServerStreamTracer newServerStreamTracer(String fullMethodName, Metadata headers) {
+          return new TrafficTracer();
         }
-    }
+      });
 
-    /** {@inheritDoc} */
-    @Override
-    public void stop() {
-        server.shutdown();
-        try {
-            server.awaitTermination(10, TimeUnit.SECONDS);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new IllegalStateException("wait for grpc server shutdown interrupted", e);
-        }
-        server = null;
-    }
+      server = b.build();
 
-    /** {@inheritDoc} */
-    @Override
-    public boolean isRunning() {
-        return server != null;
-    }
+      server.start();
 
-    /**
-     * <p>restart.</p>
-     */
-    public synchronized void restart(int delayStart) throws InterruptedException {
-        Server server = this.server;
-        if (server != null) {
-            server.shutdown();
-            server.awaitTermination(1, TimeUnit.MINUTES);
-            LOGGER.info("[grpcserver] shutdown");
-        }
-        if (delayStart > 10) {
-            delayStart = 10;
-        }
-        if (delayStart >= 0) {
-            TimeUnit.SECONDS.sleep(delayStart);
-        }
-        start();
+      LOGGER.info("gateway for agent grpc server listen at 0.0.0.0:{} with ssl {}", //
+          port, //
+          grpc.isSslEnabled() ? "enabled" : "disabled"); //
+    } catch (IOException e) {
+      throw new IllegalStateException("fail to start grpc server", e);
     }
+  }
+
+  /** {@inheritDoc} */
+  @Override
+  public void stop() {
+    server.shutdown();
+    try {
+      server.awaitTermination(10, TimeUnit.SECONDS);
+    } catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new IllegalStateException("wait for grpc server shutdown interrupted", e);
+    }
+    server = null;
+  }
+
+  /** {@inheritDoc} */
+  @Override
+  public boolean isRunning() {
+    return server != null;
+  }
+
+  /**
+   * <p>
+   * restart.
+   * </p>
+   */
+  public synchronized void restart(int delayStart) throws InterruptedException {
+    Server server = this.server;
+    if (server != null) {
+      server.shutdown();
+      server.awaitTermination(1, TimeUnit.MINUTES);
+      LOGGER.info("[grpcserver] shutdown");
+    }
+    if (delayStart > 10) {
+      delayStart = 10;
+    }
+    if (delayStart >= 0) {
+      TimeUnit.SECONDS.sleep(delayStart);
+    }
+    start();
+  }
 }

@@ -20,10 +20,10 @@ import java.util.List;
 @NoArgsConstructor
 public class Trace implements Serializable {
 
-    private static final long serialVersionUID = 3436393920339302223L;
+  private static final long serialVersionUID = 3436393920339302223L;
 
-    /**
-     * span 列表
-     */
-    private List<Span> spans = new ArrayList<>();
+  /**
+   * span 列表
+   */
+  private List<Span> spans = new ArrayList<>();
 }

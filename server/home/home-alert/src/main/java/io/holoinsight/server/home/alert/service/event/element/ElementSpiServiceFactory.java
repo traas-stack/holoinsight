@@ -9,21 +9,21 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * @description:    diag spi factory
+ * @description: diag spi factory
  * @author: jianyu.wl
  * @date: 2021/2/4 9:25 下午
  * @version: 1.0
  */
 public class ElementSpiServiceFactory {
 
-    private static Map<String, IElementHandler> serviceMap = new ConcurrentHashMap<>();
+  private static Map<String, IElementHandler> serviceMap = new ConcurrentHashMap<>();
 
-    public static IElementHandler getServiceByType(String spiType){
-        return serviceMap.get(spiType);
-    }
+  public static IElementHandler getServiceByType(String spiType) {
+    return serviceMap.get(spiType);
+  }
 
-    public static void register(String spiType, IElementHandler iElementHandler){
-        Assert.notNull(spiType,"spiType can't be null");
-        serviceMap.put(spiType, iElementHandler);
-    }
+  public static void register(String spiType, IElementHandler iElementHandler) {
+    Assert.notNull(spiType, "spiType can't be null");
+    serviceMap.put(spiType, iElementHandler);
+  }
 }

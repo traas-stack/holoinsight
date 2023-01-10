@@ -11,7 +11,8 @@ import lombok.ToString;
 
 /**
  * metric 模型
- * <p>created at 2022/3/2
+ * <p>
+ * created at 2022/3/2
  *
  * @author sw1136562366
  */
@@ -19,7 +20,7 @@ import lombok.ToString;
 @Setter
 @ToString
 public class Metric {
-    private String name;
-    private Map<String, String> tags;
-    private Map<String, Object> values;
+  private String name;
+  private Map<String, String> tags;
+  private Map<String, Object> values;
 }

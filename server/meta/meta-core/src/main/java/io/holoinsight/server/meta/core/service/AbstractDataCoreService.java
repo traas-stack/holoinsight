@@ -25,83 +25,94 @@ import static io.holoinsight.server.meta.common.util.ConstModel.default_type;
  */
 public abstract class AbstractDataCoreService implements DBCoreService {
 
-    public static final Logger logger = LoggerFactory.getLogger(AbstractDataCoreService.class);
+  public static final Logger logger = LoggerFactory.getLogger(AbstractDataCoreService.class);
 
-    @Autowired
-    private MetaTableService metaTableService;
+  @Autowired
+  private MetaTableService metaTableService;
 
-    public List<Map<String, Object>> addUkValues(String tableName,
-                                                 List<Map<String, Object>> rows) {
+  public List<Map<String, Object>> addUkValues(String tableName, List<Map<String, Object>> rows) {
 
-        List<Map<String, Object>> filterRows = new ArrayList<>();
-        Map<String, List<String>> ukMaps = metaTableService.getUksForCache(tableName);
+    List<Map<String, Object>> filterRows = new ArrayList<>();
+    Map<String, List<String>> ukMaps = metaTableService.getUksForCache(tableName);
 
-        for (Map<String, Object> row : rows) {
+    for (Map<String, Object> row : rows) {
 
-            if (row.containsKey(default_pk)) {
-                filterRows.add(row);
-                continue;
-            }
+      if (row.containsKey(default_pk)) {
+        filterRows.add(row);
+        continue;
+      }
 
-            // 所有元数据都需要 关键字 _type
-            if (!row.containsKey(default_type)) {
-                logger.info("[addUkValues] has not _type, table={}, row={}.", tableName, row.toString());
-                continue;
-            }
+      // 所有元数据都需要 关键字 _type
+      if (!row.containsKey(default_type)) {
+        logger.info("[addUkValues] has not _type, table={}, row={}.", tableName, row.toString());
+        continue;
+      }
 
-            //if (!ukMaps.containsKey(row.get(default_type).toString().toLowerCase())) {
-            //    logger.info("[addUkValues] has not uks, table={}, type={}, row={}.", tableName, row.get(default_type), row.toString());
-            //    continue;
-            //}
-            List<String> uks = ukMaps.getOrDefault(row.get(default_type).toString().toLowerCase(), Collections.singletonList("_uk"));
+      // if (!ukMaps.containsKey(row.get(default_type).toString().toLowerCase())) {
+      // logger.info("[addUkValues] has not uks, table={}, type={}, row={}.", tableName,
+      // row.get(default_type), row.toString());
+      // continue;
+      // }
+      List<String> uks = ukMaps.getOrDefault(row.get(default_type).toString().toLowerCase(),
+          Collections.singletonList("_uk"));
 
-            StringBuilder ukValue = new StringBuilder();
-            for (String uk : uks) {
-                if (null == row.get(uk) || StringUtils.isBlank(row.get(uk).toString())) {continue;}
-                ukValue.append(row.get(uk));
-            }
-            if (StringUtils.isBlank(ukValue)) { continue; }
-
-            row.put(default_pk, MD5Hash.getMD5(ukValue.toString()));
-            filterRows.add(row);
+      StringBuilder ukValue = new StringBuilder();
+      for (String uk : uks) {
+        if (null == row.get(uk) || StringUtils.isBlank(row.get(uk).toString())) {
+          continue;
         }
+        ukValue.append(row.get(uk));
+      }
+      if (StringUtils.isBlank(ukValue)) {
+        continue;
+      }
 
-        return filterRows;
+      row.put(default_pk, MD5Hash.getMD5(ukValue.toString()));
+      filterRows.add(row);
     }
 
-    public List<String> getUks(String tableName,
-                               List<Map<String, Object>> rows) {
+    return filterRows;
+  }
 
-        Map<String, List<String>> ukMaps = metaTableService.getUksForCache(tableName);
+  public List<String> getUks(String tableName, List<Map<String, Object>> rows) {
 
-        List<String> uniqueKeys = new ArrayList<>();
-        for (Map<String, Object> row : rows) {
-            if (row.containsKey(default_pk) && null != row.get(default_pk) && StringUtils.isNotBlank(row.get(default_pk).toString())) {
-                uniqueKeys.add(row.get(default_pk).toString());
-                continue;
-            }
+    Map<String, List<String>> ukMaps = metaTableService.getUksForCache(tableName);
 
-            // 所有元数据都需要 关键字 _type
-            if (!row.containsKey(default_type)) {
-                logger.info("[getUks] has not _type, table={}, row={}.", tableName, row.toString());
-                continue;
-            }
+    List<String> uniqueKeys = new ArrayList<>();
+    for (Map<String, Object> row : rows) {
+      if (row.containsKey(default_pk) && null != row.get(default_pk)
+          && StringUtils.isNotBlank(row.get(default_pk).toString())) {
+        uniqueKeys.add(row.get(default_pk).toString());
+        continue;
+      }
 
-            //if (!ukMaps.containsKey(row.get(default_type).toString().toLowerCase())) {
-            //    logger.info("[getUks] has not uks, table={}, type={}, row={}.", tableName, row.get(default_type), row.toString());
-            //    continue;
-            //}
-            List<String> uks = ukMaps.getOrDefault(row.get(default_type).toString().toLowerCase(), Collections.singletonList("_uk"));
+      // 所有元数据都需要 关键字 _type
+      if (!row.containsKey(default_type)) {
+        logger.info("[getUks] has not _type, table={}, row={}.", tableName, row.toString());
+        continue;
+      }
 
-            StringBuilder ukValue = new StringBuilder();
-            for (String uk : uks) {
-                if (null == row.get(uk) || StringUtils.isBlank(row.get(uk).toString())) {continue;}
-                ukValue.append(row.get(uk));
-            }
-            if (StringUtils.isBlank(ukValue)) { continue; }
-            uniqueKeys.add(MD5Hash.getMD5(ukValue.toString()));
+      // if (!ukMaps.containsKey(row.get(default_type).toString().toLowerCase())) {
+      // logger.info("[getUks] has not uks, table={}, type={}, row={}.", tableName,
+      // row.get(default_type), row.toString());
+      // continue;
+      // }
+      List<String> uks = ukMaps.getOrDefault(row.get(default_type).toString().toLowerCase(),
+          Collections.singletonList("_uk"));
+
+      StringBuilder ukValue = new StringBuilder();
+      for (String uk : uks) {
+        if (null == row.get(uk) || StringUtils.isBlank(row.get(uk).toString())) {
+          continue;
         }
-
-        return uniqueKeys;
+        ukValue.append(row.get(uk));
+      }
+      if (StringUtils.isBlank(ukValue)) {
+        continue;
+      }
+      uniqueKeys.add(MD5Hash.getMD5(ukValue.toString()));
     }
+
+    return uniqueKeys;
+  }
 }

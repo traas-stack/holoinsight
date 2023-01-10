@@ -11,18 +11,19 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 
 /**
- * <p>created at 2022/11/25
+ * <p>
+ * created at 2022/11/25
  *
  * @author sw1136562366
  */
 @SpringBootApplication
 public class HoloinsightGatewayBootstrap {
-    public static void main(String[] args) {
-        try {
-            ContextHolder.ctx = SpringApplication.run(HoloinsightGatewayBootstrap.class, args);
-        } catch (Throwable e) {
-            e.printStackTrace();
-            System.exit(1);
-        }
+  public static void main(String[] args) {
+    try {
+      ContextHolder.ctx = SpringApplication.run(HoloinsightGatewayBootstrap.class, args);
+    } catch (Throwable e) {
+      e.printStackTrace();
+      System.exit(1);
     }
+  }
 }

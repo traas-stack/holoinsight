@@ -9,15 +9,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 /**
- * <p>created at 2022/3/12
+ * <p>
+ * created at 2022/3/12
  *
  * @author zzhb101
  */
 @Service
 public class MasterService {
-    @Autowired
-    private GaeaMasterDOMapper mapper;
+  @Autowired
+  private GaeaMasterDOMapper mapper;
 
-    public void acquire(String tenant, String name, String json) {
-    }
+  public void acquire(String tenant, String name, String json) {}
 }

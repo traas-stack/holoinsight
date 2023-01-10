@@ -12,7 +12,8 @@ import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
- * <p>created at 2022/11/18
+ * <p>
+ * created at 2022/11/18
  *
  * @author xzchaoo
  */
@@ -20,8 +21,8 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @Getter
 @Setter
 public class HoloinsightSecurityProperties {
-    /**
-     * Http requests with 'host' header in this 'whiteHosts' are allowed without any auth checks.
-     */
-    private Set<String> whiteHosts = new HashSet<>();
+  /**
+   * Http requests with 'host' header in this 'whiteHosts' are allowed without any auth checks.
+   */
+  private Set<String> whiteHosts = new HashSet<>();
 }

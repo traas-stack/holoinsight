@@ -13,17 +13,17 @@ import lombok.RequiredArgsConstructor;
  */
 public class PaginationUtils {
 
-    public static Page exchange(Pagination paging) {
-        int limit = paging.getPageSize();
-        int from = paging.getPageSize() * ((paging.getPageNum() == 0 ? 1 : paging.getPageNum()) - 1);
+  public static Page exchange(Pagination paging) {
+    int limit = paging.getPageSize();
+    int from = paging.getPageSize() * ((paging.getPageNum() == 0 ? 1 : paging.getPageNum()) - 1);
 
-        return new Page(from, limit);
-    }
+    return new Page(from, limit);
+  }
 
-    @Data
-    @RequiredArgsConstructor
-    public static class Page {
-        private final int from;
-        private final int limit;
-    }
+  @Data
+  @RequiredArgsConstructor
+  public static class Page {
+    private final int from;
+    private final int limit;
+  }
 }

@@ -16,14 +16,14 @@ import java.util.Map;
 @Setter
 public class OpenmetricsScraperTask extends GaeaTask {
 
-    private String schema;
-    private String metricsPath;
-    private String scrapeInterval;
-    private String scrapeTimeout;
-    private String scrapePort;
-    private List<String> targets;
-    private Map<String, String> labels;
-    private Boolean honorLabels;
-    private Boolean honorTimestamps;
+  private String schema;
+  private String metricsPath;
+  private String scrapeInterval;
+  private String scrapeTimeout;
+  private String scrapePort;
+  private List<String> targets;
+  private Map<String, String> labels;
+  private Boolean honorLabels;
+  private Boolean honorTimestamps;
 
 }

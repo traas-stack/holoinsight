@@ -10,7 +10,7 @@ package io.holoinsight.server.home.common.util.cache.local;
  */
 public class CacheConst {
 
-    public static final String USER_CACHE_KEY                  = "user_cache_key";
-    public static final String APP_META_KEY                    = "app_meta_key";
-    public static final String INTEGRATION_GENERATED_CACHE_KEY = "integration_generated_cache_key";
+  public static final String USER_CACHE_KEY = "user_cache_key";
+  public static final String APP_META_KEY = "app_meta_key";
+  public static final String INTEGRATION_GENERATED_CACHE_KEY = "integration_generated_cache_key";
 }

@@ -9,15 +9,16 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /**
- * <p>created at 2022/11/30
+ * <p>
+ * created at 2022/11/30
  *
  * @author jiwliu
  */
 @Configuration
 @ConditionalOnFeature("trace")
 public class StorageSchedulerConfiguration {
-    @Bean
-    public CacheUpdateScheduler cacheUpdateScheduler() {
-        return new CacheUpdateScheduler();
-    }
+  @Bean
+  public CacheUpdateScheduler cacheUpdateScheduler() {
+    return new CacheUpdateScheduler();
+  }
 }

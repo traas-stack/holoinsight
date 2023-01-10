@@ -19,49 +19,50 @@ import io.netty.channel.socket.nio.NioSocketChannel;
  * 
  */
 public class Client {
-    int port;
-    String ip;
-    Channel channel;
-    EventLoopGroup workGroup = new NioEventLoopGroup();
+  int port;
+  String ip;
+  Channel channel;
+  EventLoopGroup workGroup = new NioEventLoopGroup();
 
-    /**
-     * Constructor
-     * @param port {@link Integer} port of server
-     */
-    public Client(int port, String ip) {
-        this.port = port;
-        this.ip = ip;
-    }
+  /**
+   * Constructor
+   * 
+   * @param port {@link Integer} port of server
+   */
+  public Client(int port, String ip) {
+    this.port = port;
+    this.ip = ip;
+  }
 
-    /**
-     * 	Startup the client
-     * 
-     * @return {@link ChannelFuture} 
-     * @throws Exception
-     */
-    public ChannelFuture startup() throws Exception {
-        try{
-            Bootstrap b = new Bootstrap();
-            b.group(workGroup);
-            b.channel(NioSocketChannel.class);
-            b.option(ChannelOption.SO_KEEPALIVE, true);
-            b.handler(new ChannelInitializer<SocketChannel>() {
-                protected void initChannel(SocketChannel socketChannel) throws Exception {
-                    socketChannel.pipeline().addLast(new NettyHandler());
-                }
-            });
-            ChannelFuture channelFuture = b.connect(ip, this.port).sync();
-            this.channel = channelFuture.channel();
-
-            return channelFuture;
-        }finally{
+  /**
+   * Startup the client
+   * 
+   * @return {@link ChannelFuture}
+   * @throws Exception
+   */
+  public ChannelFuture startup() throws Exception {
+    try {
+      Bootstrap b = new Bootstrap();
+      b.group(workGroup);
+      b.channel(NioSocketChannel.class);
+      b.option(ChannelOption.SO_KEEPALIVE, true);
+      b.handler(new ChannelInitializer<SocketChannel>() {
+        protected void initChannel(SocketChannel socketChannel) throws Exception {
+          socketChannel.pipeline().addLast(new NettyHandler());
         }
+      });
+      ChannelFuture channelFuture = b.connect(ip, this.port).sync();
+      this.channel = channelFuture.channel();
+
+      return channelFuture;
+    } finally {
     }
-    
-    /**
-     *	Shutdown a client 
-     */
-    public void shutdown(){
-        workGroup.shutdownGracefully();
-    }
+  }
+
+  /**
+   * Shutdown a client
+   */
+  public void shutdown() {
+    workGroup.shutdownGracefully();
+  }
 }

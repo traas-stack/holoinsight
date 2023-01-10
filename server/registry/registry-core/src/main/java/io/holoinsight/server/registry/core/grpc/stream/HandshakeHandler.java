@@ -9,10 +9,11 @@ import io.holoinsight.server.common.grpc.GenericRpcCommand;
 import reactor.core.publisher.Mono;
 
 /**
- * <p>created at 2022/3/3
+ * <p>
+ * created at 2022/3/3
  *
  * @author zzhb101
  */
 public interface HandshakeHandler {
-    Mono<GenericRpcCommand> handle(GenericRpcCommand cmd, HandshakeContext ctx);
+  Mono<GenericRpcCommand> handle(GenericRpcCommand cmd, HandshakeContext ctx);
 }

@@ -8,8 +8,5 @@ package io.holoinsight.server.storage.common.model.query;
  * @version : Step.java, v 0.1 2022年09月20日 15:37 wanpeng.xwp Exp $
  */
 public enum Step {
-    DAY,
-    HOUR,
-    MINUTE,
-    SECOND
+  DAY, HOUR, MINUTE, SECOND
 }

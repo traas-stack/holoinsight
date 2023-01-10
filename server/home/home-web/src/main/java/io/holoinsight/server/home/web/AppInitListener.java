@@ -15,40 +15,41 @@ import org.springframework.stereotype.Service;
 
 /**
  * 初始化启动任务
+ * 
  * @author jsy1001de
  * @version 1.0: AppInitListener.java, v 0.1 2022年03月15日 8:15 下午 jinsong.yjs Exp $
  */
 @Service
 public class AppInitListener implements InitializingBean {
 
-    @Autowired
-    private SuperCacheService superCacheService;
+  @Autowired
+  private SuperCacheService superCacheService;
 
-    @Autowired
-    private ClusterSchedulerTask clusterSchedulerTask;
+  @Autowired
+  private ClusterSchedulerTask clusterSchedulerTask;
 
-    @Autowired
-    private MonitorTaskManager monitorTaskManager;
+  @Autowired
+  private MonitorTaskManager monitorTaskManager;
 
-    @Autowired
-    private LocalCacheManage localCacheManage;
+  @Autowired
+  private LocalCacheManage localCacheManage;
 
-    @Autowired
-    private AlertClusterService alertClusterService;
+  @Autowired
+  private AlertClusterService alertClusterService;
 
-    //@Autowired
-    //private SampleEventWriteTask sampleEventWriteTask;
+  // @Autowired
+  // private SampleEventWriteTask sampleEventWriteTask;
 
-    @Override
-    public void afterPropertiesSet() {
-        try {
-            ScheduleLoadTask.registerTask(superCacheService, true);
-            ScheduleLoadTask.registerTask(localCacheManage, true);
-            ScheduleLoadTask.registerTask(clusterSchedulerTask, true);
-            ScheduleLoadTask.registerTask(monitorTaskManager, true);
-            ScheduleLoadTask.registerTask(alertClusterService, true);
-        } catch (Exception e) {
-            throw new RuntimeException("init config fail", e);
-        }
+  @Override
+  public void afterPropertiesSet() {
+    try {
+      ScheduleLoadTask.registerTask(superCacheService, true);
+      ScheduleLoadTask.registerTask(localCacheManage, true);
+      ScheduleLoadTask.registerTask(clusterSchedulerTask, true);
+      ScheduleLoadTask.registerTask(monitorTaskManager, true);
+      ScheduleLoadTask.registerTask(alertClusterService, true);
+    } catch (Exception e) {
+      throw new RuntimeException("init config fail", e);
     }
+  }
 }

@@ -2,7 +2,6 @@
  * Copyright 2022 Holoinsight Project Authors. Licensed under Apache-2.0.
  */
 
-
 package io.holoinsight.server.home.web.config;
 
 import io.holoinsight.server.home.web.interceptor.MonitorScopeAuthInterceptor;
@@ -26,52 +25,53 @@ import java.util.List;
  */
 @Configuration
 public class WebMvcConfig implements WebMvcConfigurer {
-    //@Bean
-    //public FilterRegistrationBean testFilterRegistration() {
-    //    FilterRegistrationBean registration = new FilterRegistrationBean();
-    //
-    //    String exclusions = "*.css,*.png,*.gif,*.png,*.jpg,*.js,*.html,/api/*,";
-    //    registration.addInitParameter("exclusions", exclusions);
-    //    registration.setName("ssoFilter");
-    //    registration.setOrder(1);
-    //    return registration;
-    //}
+  // @Bean
+  // public FilterRegistrationBean testFilterRegistration() {
+  // FilterRegistrationBean registration = new FilterRegistrationBean();
+  //
+  // String exclusions = "*.css,*.png,*.gif,*.png,*.jpg,*.js,*.html,/api/*,";
+  // registration.addInitParameter("exclusions", exclusions);
+  // registration.setName("ssoFilter");
+  // registration.setOrder(1);
+  // return registration;
+  // }
 
-    @Override
-    public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        //String staticPath = "file:/home/admin/cloudmonitor/cloudmonitor-front/";
-        //registry.addResourceHandler("/**")
-        //        .addResourceLocations(staticPath, "classpath:/META-INF/resources/", "classpath:/resources/",
-        //                "classpath:/static/", "classpath:/public/").setCachePeriod(60);
-        //registry.addResourceHandler("swagger-ui.html");
-    }
+  @Override
+  public void addResourceHandlers(ResourceHandlerRegistry registry) {
+    // String staticPath = "file:/home/admin/cloudmonitor/cloudmonitor-front/";
+    // registry.addResourceHandler("/**")
+    // .addResourceLocations(staticPath, "classpath:/META-INF/resources/", "classpath:/resources/",
+    // "classpath:/static/", "classpath:/public/").setCachePeriod(60);
+    // registry.addResourceHandler("swagger-ui.html");
+  }
 
-    @Bean
-    public DefaultPointcutAdvisor defaultPointcutAdvisor2() {
+  @Bean
+  public DefaultPointcutAdvisor defaultPointcutAdvisor2() {
 
-        DefaultPointcutAdvisor advisor = new DefaultPointcutAdvisor();
-        advisor.setAdvice(new MonitorScopeAuthInterceptor());
+    DefaultPointcutAdvisor advisor = new DefaultPointcutAdvisor();
+    advisor.setAdvice(new MonitorScopeAuthInterceptor());
 
-        AspectJExpressionPointcut pointcut = new AspectJExpressionPointcut();
-        //pointcut.setExpression("@annotation(com.alipay.cloudmonitor.prod.web.interceptor.MonitorScopeAuth)");
-        pointcut.setExpression("@annotation(io.holoinsight.server.home.web.interceptor.MonitorScopeAuth)");
-        advisor.setPointcut(pointcut);
-        return advisor;
-    }
+    AspectJExpressionPointcut pointcut = new AspectJExpressionPointcut();
+    // pointcut.setExpression("@annotation(com.alipay.cloudmonitor.prod.web.interceptor.MonitorScopeAuth)");
+    pointcut
+        .setExpression("@annotation(io.holoinsight.server.home.web.interceptor.MonitorScopeAuth)");
+    advisor.setPointcut(pointcut);
+    return advisor;
+  }
 
-    @Bean
-    public HttpMessageConverter<String> responseBodyStringConverter() {
-        return new StringHttpMessageConverter(StandardCharsets.UTF_8);
-    }
+  @Bean
+  public HttpMessageConverter<String> responseBodyStringConverter() {
+    return new StringHttpMessageConverter(StandardCharsets.UTF_8);
+  }
 
-    @Override
-    public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
-        converters.add(responseBodyStringConverter());
-    }
+  @Override
+  public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
+    converters.add(responseBodyStringConverter());
+  }
 
-    @Override
-    public void addInterceptors(InterceptorRegistry registry) {
-//        registry.addInterceptor(new RefererInterceptor());
-//        registry.addInterceptor(new AuthInterceptor()).addPathPatterns("/**");
-    }
+  @Override
+  public void addInterceptors(InterceptorRegistry registry) {
+    // registry.addInterceptor(new RefererInterceptor());
+    // registry.addInterceptor(new AuthInterceptor()).addPathPatterns("/**");
+  }
 }

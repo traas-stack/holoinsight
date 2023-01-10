@@ -16,27 +16,27 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
- * <p>created at 2022/11/30
+ * <p>
+ * created at 2022/11/30
  *
  * @author jiwliu
  */
 @Slf4j
 public class StorageGrpcServer {
-    @Autowired
-    private TraceOtelServiceImpl   traceOtelService;
-    @Autowired
-    private CommonThreadPools commonThreadPools;
+  @Autowired
+  private TraceOtelServiceImpl traceOtelService;
+  @Autowired
+  private CommonThreadPools commonThreadPools;
 
-    @PostConstruct
-    public void start() throws IOException {
-        int port = 12801;
-        // TODO 线程池
-        Server server = ServerBuilder.forPort(port) //
-            .executor(commonThreadPools.getRpcServer())
-            .addService(traceOtelService) //
-            .maxInboundMessageSize(100 * 1024 * 1024) //
-            .build(); //
-        server.start();
-        log.info("[storage] start grpc server at port {}", port);
-    }
+  @PostConstruct
+  public void start() throws IOException {
+    int port = 12801;
+    // TODO 线程池
+    Server server = ServerBuilder.forPort(port) //
+        .executor(commonThreadPools.getRpcServer()).addService(traceOtelService) //
+        .maxInboundMessageSize(100 * 1024 * 1024) //
+        .build(); //
+    server.start();
+    log.info("[storage] start grpc server at port {}", port);
+  }
 }

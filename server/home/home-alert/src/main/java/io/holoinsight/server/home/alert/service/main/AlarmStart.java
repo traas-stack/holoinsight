@@ -19,30 +19,30 @@ import javax.annotation.Resource;
 @Component
 public class AlarmStart {
 
-    private static Logger LOGGER = LoggerFactory.getLogger(AlarmStart.class);
+  private static Logger LOGGER = LoggerFactory.getLogger(AlarmStart.class);
 
-    @Resource
-    private CacheAlarmConfig cacheAlarmConfig;
+  @Resource
+  private CacheAlarmConfig cacheAlarmConfig;
 
-    @Resource
-    private CacheAlarmTask cacheAlarmTask;
+  @Resource
+  private CacheAlarmTask cacheAlarmTask;
 
-    @Resource
-    private AlarmTaskScheduler alarmTaskScheduler;
+  @Resource
+  private AlarmTaskScheduler alarmTaskScheduler;
 
 
-    public void start() {
-        try {
-            //启动获取告警配置缓存
-            cacheAlarmConfig.start();
+  public void start() {
+    try {
+      // 启动获取告警配置缓存
+      cacheAlarmConfig.start();
 
-            //启动获取告警任务缓存
-            cacheAlarmTask.start();
+      // 启动获取告警任务缓存
+      cacheAlarmTask.start();
 
-            //启动执行告警任务
-            alarmTaskScheduler.start();
-        }catch (Exception e){
-            LOGGER.error("fail to start task for {}", e.getMessage(), e);
-        }
+      // 启动执行告警任务
+      alarmTaskScheduler.start();
+    } catch (Exception e) {
+      LOGGER.error("fail to start task for {}", e.getMessage(), e);
     }
+  }
 }

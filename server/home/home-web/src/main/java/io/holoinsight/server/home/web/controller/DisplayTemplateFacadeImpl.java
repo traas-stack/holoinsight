@@ -2,7 +2,6 @@
  * Copyright 2022 Holoinsight Project Authors. Licensed under Apache-2.0.
  */
 
-
 package io.holoinsight.server.home.web.controller;
 
 import io.holoinsight.server.home.biz.service.DisplayTemplateService;
@@ -50,187 +49,184 @@ import java.util.Map;
 @RequestMapping("/webapi/displaytemplate")
 public class DisplayTemplateFacadeImpl extends BaseFacade {
 
-    @Autowired
-    private UserOpLogService       userOpLogService;
+  @Autowired
+  private UserOpLogService userOpLogService;
 
-    @Autowired
-    private DisplayTemplateService displayTemplateService;
+  @Autowired
+  private DisplayTemplateService displayTemplateService;
 
-    @PostMapping("/update")
-    @ResponseBody
-    @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.SUPER_ADMIN)
-    public JsonResult<Object> update(@RequestBody DisplayTemplate template) {
-        final JsonResult<DisplayTemplateDTO> result = new JsonResult<>();
-        facadeTemplate.manage(result, new ManageCallback() {
-            @Override
-            public void checkParameter() {
-                ParaCheckUtil.checkParaNotNull(template.id, "id");
-                ParaCheckUtil.checkParaNotBlank(template.type, "type");
-                ParaCheckUtil.checkParaNotBlank(template.config, "config");
-                ParaCheckUtil.checkParaNotNull(template.refId, "refId");
-                //ParaCheckUtil.checkParaNotNull(template.getTenant(), "tenant");
-                //ParaCheckUtil.checkEquals(template.getTenant(),
-                //    RequestContext.getContext().ms.getTenant(), "tenant is illegal");
+  @PostMapping("/update")
+  @ResponseBody
+  @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.SUPER_ADMIN)
+  public JsonResult<Object> update(@RequestBody DisplayTemplate template) {
+    final JsonResult<DisplayTemplateDTO> result = new JsonResult<>();
+    facadeTemplate.manage(result, new ManageCallback() {
+      @Override
+      public void checkParameter() {
+        ParaCheckUtil.checkParaNotNull(template.id, "id");
+        ParaCheckUtil.checkParaNotBlank(template.type, "type");
+        ParaCheckUtil.checkParaNotBlank(template.config, "config");
+        ParaCheckUtil.checkParaNotNull(template.refId, "refId");
+        // ParaCheckUtil.checkParaNotNull(template.getTenant(), "tenant");
+        // ParaCheckUtil.checkEquals(template.getTenant(),
+        // RequestContext.getContext().ms.getTenant(), "tenant is illegal");
 
-                //DisplayTemplateDTO item = displayTemplateService.queryById(template.getId(),
-                //    RequestContext.getContext().ms.getTenant());
+        // DisplayTemplateDTO item = displayTemplateService.queryById(template.getId(),
+        // RequestContext.getContext().ms.getTenant());
 
-                //if (null == item) {
-                //    throw new MonitorException("cannot find record: " + template.getId());
-                //}
-                //if (!item.getTenant().equalsIgnoreCase(template.getTenant())) {
-                //    throw new MonitorException("the tenant parameter is invalid");
-                //}
-            }
+        // if (null == item) {
+        // throw new MonitorException("cannot find record: " + template.getId());
+        // }
+        // if (!item.getTenant().equalsIgnoreCase(template.getTenant())) {
+        // throw new MonitorException("the tenant parameter is invalid");
+        // }
+      }
 
-            @Override
-            public void doManage() {
+      @Override
+      public void doManage() {
 
-                MonitorScope ms = RequestContext.getContext().ms;
-                MonitorUser mu = RequestContext.getContext().mu;
+        MonitorScope ms = RequestContext.getContext().ms;
+        MonitorUser mu = RequestContext.getContext().mu;
 
-                DisplayTemplate update = new DisplayTemplate();
+        DisplayTemplate update = new DisplayTemplate();
 
-                BeanUtils.copyProperties(template, update);
+        BeanUtils.copyProperties(template, update);
 
-                if (null != mu) {
-                    update.setModifier(mu.getLoginName());
-                }
-                update.setTenant("-1");
-                update.setGmtModified(new Date());
-                displayTemplateService.updateById(update);
+        if (null != mu) {
+          update.setModifier(mu.getLoginName());
+        }
+        update.setTenant("-1");
+        update.setGmtModified(new Date());
+        displayTemplateService.updateById(update);
 
-                assert mu != null;
-                userOpLogService.append("display_template", String.valueOf(template.getId()),
-                    OpType.UPDATE, mu.getLoginName(), ms.getTenant(), J.toJson(template),
-                    J.toJson(update), null, "display_template_update");
-            }
-        });
+        assert mu != null;
+        userOpLogService.append("display_template", String.valueOf(template.getId()), OpType.UPDATE,
+            mu.getLoginName(), ms.getTenant(), J.toJson(template), J.toJson(update), null,
+            "display_template_update");
+      }
+    });
 
-        return JsonResult.createSuccessResult(true);
-    }
+    return JsonResult.createSuccessResult(true);
+  }
 
-    @PostMapping("/create")
-    @ResponseBody
-    @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.SUPER_ADMIN)
-    public JsonResult<DisplayTemplate> save(@RequestBody DisplayTemplate template) {
-        final JsonResult<DisplayTemplate> result = new JsonResult<>();
-        facadeTemplate.manage(result, new ManageCallback() {
-            @Override
-            public void checkParameter() {
-                ParaCheckUtil.checkParaNotBlank(template.type, "type");
-                ParaCheckUtil.checkParaNotBlank(template.config, "config");
-                ParaCheckUtil.checkParaNotNull(template.refId, "refId");
-            }
+  @PostMapping("/create")
+  @ResponseBody
+  @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.SUPER_ADMIN)
+  public JsonResult<DisplayTemplate> save(@RequestBody DisplayTemplate template) {
+    final JsonResult<DisplayTemplate> result = new JsonResult<>();
+    facadeTemplate.manage(result, new ManageCallback() {
+      @Override
+      public void checkParameter() {
+        ParaCheckUtil.checkParaNotBlank(template.type, "type");
+        ParaCheckUtil.checkParaNotBlank(template.config, "config");
+        ParaCheckUtil.checkParaNotNull(template.refId, "refId");
+      }
 
-            @Override
-            public void doManage() {
-                MonitorScope ms = RequestContext.getContext().ms;
-                MonitorUser mu = RequestContext.getContext().mu;
-                if (null != mu) {
-                    template.setCreator(mu.getLoginName());
-                    template.setModifier(mu.getLoginName());
-                }
-                //if (null != ms && !StringUtils.isEmpty(ms.tenant)) {
-                //    template.setTenant(ms.tenant);
-                //}
-                template.setTenant("-1");
-                template.setTenant(MonitorCookieUtil.getTenantOrException());
-                template.setGmtCreate(new Date());
-                template.setGmtModified(new Date());
-                displayTemplateService.save(template);
-                JsonResult.createSuccessResult(result, template);
+      @Override
+      public void doManage() {
+        MonitorScope ms = RequestContext.getContext().ms;
+        MonitorUser mu = RequestContext.getContext().mu;
+        if (null != mu) {
+          template.setCreator(mu.getLoginName());
+          template.setModifier(mu.getLoginName());
+        }
+        // if (null != ms && !StringUtils.isEmpty(ms.tenant)) {
+        // template.setTenant(ms.tenant);
+        // }
+        template.setTenant("-1");
+        template.setTenant(MonitorCookieUtil.getTenantOrException());
+        template.setGmtCreate(new Date());
+        template.setGmtModified(new Date());
+        displayTemplateService.save(template);
+        JsonResult.createSuccessResult(result, template);
 
-                assert mu != null;
-                userOpLogService.append("display_template", String.valueOf(template.getId()),
-                    OpType.CREATE, mu.getLoginName(), ms.getTenant(), J.toJson(template), null,
-                    null, "display_template_create");
+        assert mu != null;
+        userOpLogService.append("display_template", String.valueOf(template.getId()), OpType.CREATE,
+            mu.getLoginName(), ms.getTenant(), J.toJson(template), null, null,
+            "display_template_create");
 
-            }
-        });
+      }
+    });
 
-        return result;
-    }
+    return result;
+  }
 
-    @GetMapping(value = "/query/{id}")
-    @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.VIEW)
-    public JsonResult<DisplayTemplateDTO> queryById(@PathVariable("id") Long id) {
-        final JsonResult<DisplayTemplateDTO> result = new JsonResult<>();
-        facadeTemplate.manage(result, new ManageCallback() {
-            @Override
-            public void checkParameter() {
-                ParaCheckUtil.checkParaNotNull(id, "id");
-            }
+  @GetMapping(value = "/query/{id}")
+  @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.VIEW)
+  public JsonResult<DisplayTemplateDTO> queryById(@PathVariable("id") Long id) {
+    final JsonResult<DisplayTemplateDTO> result = new JsonResult<>();
+    facadeTemplate.manage(result, new ManageCallback() {
+      @Override
+      public void checkParameter() {
+        ParaCheckUtil.checkParaNotNull(id, "id");
+      }
 
-            @Override
-            public void doManage() {
-                DisplayTemplateDTO template = displayTemplateService.queryById(id);
+      @Override
+      public void doManage() {
+        DisplayTemplateDTO template = displayTemplateService.queryById(id);
 
-                if (null == template) {
-                    throw new MonitorException(ResultCodeEnum.CANNOT_FIND_RECORD,
-                        "can not find record");
-                }
-                JsonResult.createSuccessResult(result, template);
-            }
-        });
-        return result;
-    }
+        if (null == template) {
+          throw new MonitorException(ResultCodeEnum.CANNOT_FIND_RECORD, "can not find record");
+        }
+        JsonResult.createSuccessResult(result, template);
+      }
+    });
+    return result;
+  }
 
-    @GetMapping(value = "/query/{type}/{refId}")
-    @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.VIEW)
-    public JsonResult<DisplayTemplateDTO> queryByTypeRefId(@PathVariable("refId") Long refId,
-                                                           @PathVariable("type") String type) {
-        final JsonResult<DisplayTemplateDTO> result = new JsonResult<>();
-        facadeTemplate.manage(result, new ManageCallback() {
-            @Override
-            public void checkParameter() {
-                ParaCheckUtil.checkParaNotNull(refId, "refId");
-                ParaCheckUtil.checkParaNotNull(type, "type");
-            }
+  @GetMapping(value = "/query/{type}/{refId}")
+  @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.VIEW)
+  public JsonResult<DisplayTemplateDTO> queryByTypeRefId(@PathVariable("refId") Long refId,
+      @PathVariable("type") String type) {
+    final JsonResult<DisplayTemplateDTO> result = new JsonResult<>();
+    facadeTemplate.manage(result, new ManageCallback() {
+      @Override
+      public void checkParameter() {
+        ParaCheckUtil.checkParaNotNull(refId, "refId");
+        ParaCheckUtil.checkParaNotNull(type, "type");
+      }
 
-            @Override
-            public void doManage() {
-                Map<String, Object> columnMap = new HashMap<>();
-                columnMap.put("ref_id", refId);
-                columnMap.put("type", type);
-                List<DisplayTemplateDTO> displayTemplates = displayTemplateService
-                    .findByMap(columnMap);
+      @Override
+      public void doManage() {
+        Map<String, Object> columnMap = new HashMap<>();
+        columnMap.put("ref_id", refId);
+        columnMap.put("type", type);
+        List<DisplayTemplateDTO> displayTemplates = displayTemplateService.findByMap(columnMap);
 
-                if (CollectionUtils.isEmpty(displayTemplates)) {
-                    throw new MonitorException(ResultCodeEnum.CANNOT_FIND_RECORD,
-                        "can not find record");
-                }
-                JsonResult.createSuccessResult(result, displayTemplates.get(0));
-            }
-        });
-        return result;
-    }
+        if (CollectionUtils.isEmpty(displayTemplates)) {
+          throw new MonitorException(ResultCodeEnum.CANNOT_FIND_RECORD, "can not find record");
+        }
+        JsonResult.createSuccessResult(result, displayTemplates.get(0));
+      }
+    });
+    return result;
+  }
 
-    //@DeleteMapping(value = "/delete/{id}")
-    //@MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.EDIT)
-    //public JsonResult<Object> deleteById(@PathVariable("id") Long id) {
-    //    final JsonResult<Object> result = new JsonResult<>();
-    //    facadeTemplate.manage(result, new ManageCallback() {
-    //        @Override
-    //        public void checkParameter() {
-    //            ParaCheckUtil.checkParaNotNull(id, "id");
-    //        }
-    //
-    //        @Override
-    //        public void doManage() {
-    //
-    //
-    //            DisplayTemplate byId = displayTemplateService.queryById(id,
-    //                RequestContext.getContext().ms.getTenant());
-    //            displayTemplateService.removeById(id);
-    //            JsonResult.createSuccessResult(result, null);
-    //            userOpLogService.append("display_template", String.valueOf(byId.getId()), OpType.DELETE,
-    //                RequestContext.getContext().mu.getLoginName(),
-    //                RequestContext.getContext().ms.getTenant(), J.toJson(byId), null, null,
-    //                "display_template_delete");
-    //
-    //        }
-    //    });
-    //    return result;
-    //}
+  // @DeleteMapping(value = "/delete/{id}")
+  // @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.EDIT)
+  // public JsonResult<Object> deleteById(@PathVariable("id") Long id) {
+  // final JsonResult<Object> result = new JsonResult<>();
+  // facadeTemplate.manage(result, new ManageCallback() {
+  // @Override
+  // public void checkParameter() {
+  // ParaCheckUtil.checkParaNotNull(id, "id");
+  // }
+  //
+  // @Override
+  // public void doManage() {
+  //
+  //
+  // DisplayTemplate byId = displayTemplateService.queryById(id,
+  // RequestContext.getContext().ms.getTenant());
+  // displayTemplateService.removeById(id);
+  // JsonResult.createSuccessResult(result, null);
+  // userOpLogService.append("display_template", String.valueOf(byId.getId()), OpType.DELETE,
+  // RequestContext.getContext().mu.getLoginName(),
+  // RequestContext.getContext().ms.getTenant(), J.toJson(byId), null, null,
+  // "display_template_delete");
+  //
+  // }
+  // });
+  // return result;
+  // }
 }

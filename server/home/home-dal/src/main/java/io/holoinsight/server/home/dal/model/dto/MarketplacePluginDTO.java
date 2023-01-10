@@ -14,30 +14,30 @@ import java.util.Date;
  */
 @Data
 public class MarketplacePluginDTO {
-    public Long    id;
+  public Long id;
 
-    public String  tenant;
+  public String tenant;
 
-    public String  name;
+  public String name;
 
-    public String  product;
+  public String product;
 
-    public String  type;
+  public String type;
 
-    /**
-     * 数据范围
-     */
-    public String  dataRange;
+  /**
+   * 数据范围
+   */
+  public String dataRange;
 
-    public String  json;
+  public String json;
 
-    public Boolean status;
+  public Boolean status;
 
-    public String  creator;
+  public String creator;
 
-    public String  modifier;
+  public String modifier;
 
-    public Date    gmtCreate;
+  public Date gmtCreate;
 
-    public Date    gmtModified;
+  public Date gmtModified;
 }

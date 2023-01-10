@@ -2,7 +2,6 @@
  * Copyright 2022 Holoinsight Project Authors. Licensed under Apache-2.0.
  */
 
-
 package io.holoinsight.server.home.web.interceptor;
 
 import io.holoinsight.server.home.common.util.ResultCodeEnum;
@@ -35,112 +34,112 @@ import java.util.Set;
 @Slf4j
 @Service
 public class MonitorScopeAuthInterceptor implements MethodInterceptor {
-    @Override
-    public Object invoke(MethodInvocation methodInvocation) throws Throwable {
-        try {
+  @Override
+  public Object invoke(MethodInvocation methodInvocation) throws Throwable {
+    try {
 
-            Context context = RequestContext.getContext();
-            MonitorScope ms = context.ms;
-            MonitorUser mu = context.mu;
-            MonitorAuth ma = context.ma;
+      Context context = RequestContext.getContext();
+      MonitorScope ms = context.ms;
+      MonitorUser mu = context.mu;
+      MonitorAuth ma = context.ma;
 
-            if (mu.isSuper() || mu.getIdentityType() == IdentityType.OUTTOKEN) {
-                return methodInvocation.proceed();
-            }
+      if (mu.isSuper() || mu.getIdentityType() == IdentityType.OUTTOKEN) {
+        return methodInvocation.proceed();
+      }
 
-            Method method = AopUtils.getMostSpecificMethod(methodInvocation.getMethod(),
-                methodInvocation.getThis().getClass());
+      Method method = AopUtils.getMostSpecificMethod(methodInvocation.getMethod(),
+          methodInvocation.getThis().getClass());
 
-            MonitorScopeAuth monitorScopeAuth = AnnotationUtils.findAnnotation(method,
-                MonitorScopeAuth.class);
+      MonitorScopeAuth monitorScopeAuth =
+          AnnotationUtils.findAnnotation(method, MonitorScopeAuth.class);
 
-            assert monitorScopeAuth != null;
-            PowerConstants needPower = monitorScopeAuth.needPower();
-            if (needPower == PowerConstants.NO_AUTH || mu.isSuper()) {
-                return methodInvocation.proceed();
-            }
-            AuthTargetType authType = monitorScopeAuth.targetType();
+      assert monitorScopeAuth != null;
+      PowerConstants needPower = monitorScopeAuth.needPower();
+      if (needPower == PowerConstants.NO_AUTH || mu.isSuper()) {
+        return methodInvocation.proceed();
+      }
+      AuthTargetType authType = monitorScopeAuth.targetType();
 
-            if (authType == AuthTargetType.SRE && mu.getIdentityType() != IdentityType.OUTTOKEN) {
-                JsonResult<Object> resp = new JsonResult<Object>();
-                JsonResult.createFailResult(resp, ResultCodeEnum.NO_AUTH.name(), "no auth");
-                return resp;
-            }
+      if (authType == AuthTargetType.SRE && mu.getIdentityType() != IdentityType.OUTTOKEN) {
+        JsonResult<Object> resp = new JsonResult<Object>();
+        JsonResult.createFailResult(resp, ResultCodeEnum.NO_AUTH.name(), "no auth");
+        return resp;
+      }
 
-            ma = ma.treeExtend(); // 扩展好，准备检测
-            AuthTargetType checkAuthType = getRealAuthType(authType, ms);
+      ma = ma.treeExtend(); // 扩展好，准备检测
+      AuthTargetType checkAuthType = getRealAuthType(authType, ms);
 
-            boolean pass = authCheckByType(checkAuthType, needPower, ma, ms, mu);
+      boolean pass = authCheckByType(checkAuthType, needPower, ma, ms, mu);
 
-            if (!pass) {
-                JsonResult<String> resp = new JsonResult<String>();
-                resp.setSuccess(false);
-                resp.setMessage("monitor tenant auth not enough, need power: " + needPower);
-                log.warn("monitor tenant auth not enough, need power: " + needPower + ", ma:"
-                        + J.toJson(ma) + ", mu:" + J.toJson(mu) + ",ms:" + J.toJson(ms));
-                resp.setResultCode(ResultCodeEnum.NO_AUTH.name());
-                return resp;
-            }
-            return methodInvocation.proceed();
-        } catch (Exception e) {
-            log.error("auth failed", e);
-            throw e;
-        }
+      if (!pass) {
+        JsonResult<String> resp = new JsonResult<String>();
+        resp.setSuccess(false);
+        resp.setMessage("monitor tenant auth not enough, need power: " + needPower);
+        log.warn("monitor tenant auth not enough, need power: " + needPower + ", ma:" + J.toJson(ma)
+            + ", mu:" + J.toJson(mu) + ",ms:" + J.toJson(ms));
+        resp.setResultCode(ResultCodeEnum.NO_AUTH.name());
+        return resp;
+      }
+      return methodInvocation.proceed();
+    } catch (Exception e) {
+      log.error("auth failed", e);
+      throw e;
     }
+  }
 
-    private AuthTargetType getRealAuthType(AuthTargetType authType, MonitorScope ms) {
-        AuthTargetType checkAuthType = authType;
-        if (authType.equals(AuthTargetType.CONTEXT)) {
-            // 上下文校验, 精准定位到是哪个对象, 从下往上
-            if (MonitorScope.legalValue(ms.tenant)) {
-                checkAuthType = AuthTargetType.TENANT;
-            }
-        }
-        // 其他的需要谁的权限，就搞谁
-        return checkAuthType;
+  private AuthTargetType getRealAuthType(AuthTargetType authType, MonitorScope ms) {
+    AuthTargetType checkAuthType = authType;
+    if (authType.equals(AuthTargetType.CONTEXT)) {
+      // 上下文校验, 精准定位到是哪个对象, 从下往上
+      if (MonitorScope.legalValue(ms.tenant)) {
+        checkAuthType = AuthTargetType.TENANT;
+      }
     }
+    // 其他的需要谁的权限，就搞谁
+    return checkAuthType;
+  }
 
-    boolean authCheckByType(AuthTargetType authType, PowerConstants needPower, MonitorAuth ma,
-                            MonitorScope ms, MonitorUser mu) {
-        // 超级管理员优先过
-        if (superCheck(mu, needPower)) {
-            return true;
-        }
-        if (authType.equals(AuthTargetType.SITE)) {
-            // 站点校验
-            return true;//authCheck(new AuthTarget(AuthTargetType.SITE, ms.siteId), needPower, ma);
-        } else if (authType.equals(AuthTargetType.TENANT)) {
-            return authCheck(new AuthTarget(AuthTargetType.TENANT, ms.tenant), needPower, ma);
-
-        }
-        return false;
+  boolean authCheckByType(AuthTargetType authType, PowerConstants needPower, MonitorAuth ma,
+      MonitorScope ms, MonitorUser mu) {
+    // 超级管理员优先过
+    if (superCheck(mu, needPower)) {
+      return true;
     }
+    if (authType.equals(AuthTargetType.SITE)) {
+      // 站点校验
+      return true;// authCheck(new AuthTarget(AuthTargetType.SITE, ms.siteId), needPower, ma);
+    } else if (authType.equals(AuthTargetType.TENANT)) {
+      return authCheck(new AuthTarget(AuthTargetType.TENANT, ms.tenant), needPower, ma);
 
-    private boolean authCheck(AuthTarget at, PowerConstants needPower, MonitorAuth ma) {
-        // auth check
-        Set<PowerConstants> pcs = ma.powerConstants.get(at);
-        boolean paas = needPower.powerEnough(pcs);
-        if (paas) {
-            return true;
-        }
-        // 尝试获取继承下来的权限
-        at = new AuthTarget(at.getAuthTargetType(), MonitorAuth.ALL_ID);
-        pcs = ma.powerConstants.get(at);
-        paas = needPower.powerEnough(pcs);
-        if (paas) {
-            return true;
-        }
-        return false;
     }
+    return false;
+  }
 
-    public boolean superCheck(MonitorUser mu, PowerConstants needPower) {
-        PowerConstants p = PowerConstants.NO_AUTH;
-        // 从高往低取权限
-        if (mu.isSuperAdmin()) {
-            p = PowerConstants.SUPER_ADMIN;
-        } else if (mu.isSuperViewer()) {
-            p = PowerConstants.SUPER_VIEW;
-        }
-        return needPower.powerEnough(p);
+  private boolean authCheck(AuthTarget at, PowerConstants needPower, MonitorAuth ma) {
+    // auth check
+    Set<PowerConstants> pcs = ma.powerConstants.get(at);
+    boolean paas = needPower.powerEnough(pcs);
+    if (paas) {
+      return true;
     }
+    // 尝试获取继承下来的权限
+    at = new AuthTarget(at.getAuthTargetType(), MonitorAuth.ALL_ID);
+    pcs = ma.powerConstants.get(at);
+    paas = needPower.powerEnough(pcs);
+    if (paas) {
+      return true;
+    }
+    return false;
+  }
+
+  public boolean superCheck(MonitorUser mu, PowerConstants needPower) {
+    PowerConstants p = PowerConstants.NO_AUTH;
+    // 从高往低取权限
+    if (mu.isSuperAdmin()) {
+      p = PowerConstants.SUPER_ADMIN;
+    } else if (mu.isSuperViewer()) {
+      p = PowerConstants.SUPER_VIEW;
+    }
+    return needPower.powerEnough(p);
+  }
 }

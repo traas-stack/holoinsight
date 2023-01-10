@@ -12,7 +12,7 @@ import lombok.Data;
  */
 @Data
 public class MetaTableCol {
-    public String  name;
-    public String  colType;
-    public String  desc;
+  public String name;
+  public String colType;
+  public String desc;
 }

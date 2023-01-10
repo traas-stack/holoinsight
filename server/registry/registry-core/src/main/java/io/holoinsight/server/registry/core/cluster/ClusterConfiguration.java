@@ -12,29 +12,31 @@ import io.holoinsight.server.registry.core.grpc.GrpcForInternal;
 import io.holoinsight.server.registry.core.grpc.RegistryServiceForInternalImpl;
 
 /**
- * <p>created at 2022/3/12
+ * <p>
+ * created at 2022/3/12
  *
  * @author zzhb101
  */
 @Configuration
 public class ClusterConfiguration {
-    @Bean
-    public HandlerRegistry internalHandlerRegistry() {
-        return new HandlerRegistry();
-    }
+  @Bean
+  public HandlerRegistry internalHandlerRegistry() {
+    return new HandlerRegistry();
+  }
 
-    @Bean
-    @GrpcForInternal
-    public RegistryServiceForInternalImpl registryServiceForInternalImpl(HandlerRegistry registry) {
-        return new RegistryServiceForInternalImpl(registry);
-    }
+  @Bean
+  @GrpcForInternal
+  public RegistryServiceForInternalImpl registryServiceForInternalImpl(HandlerRegistry registry) {
+    return new RegistryServiceForInternalImpl(registry);
+  }
 
-    @Bean(initMethod = "start", destroyMethod = "stop")
-    public DefaultCluster defaultCluster(CommonThreadPools commonThreadPools, RegistryServiceForInternalImpl service) {
-        // TODO 集群内部通信使用专门的线程池吧...
-        return new DefaultCluster(new StaticMemberProvider(), //
-            commonThreadPools.getRpcServer(), //
-            commonThreadPools.getRpcClient(), //
-            commonThreadPools.getScheduler(), new DefaultDynamicProvider(), service); //
-    }
+  @Bean(initMethod = "start", destroyMethod = "stop")
+  public DefaultCluster defaultCluster(CommonThreadPools commonThreadPools,
+      RegistryServiceForInternalImpl service) {
+    // TODO 集群内部通信使用专门的线程池吧...
+    return new DefaultCluster(new StaticMemberProvider(), //
+        commonThreadPools.getRpcServer(), //
+        commonThreadPools.getRpcClient(), //
+        commonThreadPools.getScheduler(), new DefaultDynamicProvider(), service); //
+  }
 }

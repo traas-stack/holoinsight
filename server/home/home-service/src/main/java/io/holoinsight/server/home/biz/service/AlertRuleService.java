@@ -17,15 +17,15 @@ import java.util.List;
  */
 public interface AlertRuleService extends IService<AlarmRule> {
 
-    Long save(AlarmRuleDTO alarmRuleDTO);
+  Long save(AlarmRuleDTO alarmRuleDTO);
 
-    Boolean updateById(AlarmRuleDTO alarmRuleDTO);
+  Boolean updateById(AlarmRuleDTO alarmRuleDTO);
 
-    AlarmRuleDTO queryById(Long id, String tenant);
+  AlarmRuleDTO queryById(Long id, String tenant);
 
-    MonitorPageResult<AlarmRuleDTO> getListByPage(MonitorPageRequest<AlarmRuleDTO> pageRequest);
+  MonitorPageResult<AlarmRuleDTO> getListByPage(MonitorPageRequest<AlarmRuleDTO> pageRequest);
 
-    List<AlarmRuleDTO> getListByKeyword(String keyword, String tenant);
+  List<AlarmRuleDTO> getListByKeyword(String keyword, String tenant);
 
-    List<AlarmRuleDTO> findByIds(List<String> ids);
+  List<AlarmRuleDTO> findByIds(List<String> ids);
 }

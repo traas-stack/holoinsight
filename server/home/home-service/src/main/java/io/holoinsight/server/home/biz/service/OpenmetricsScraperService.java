@@ -1,7 +1,6 @@
 /*
  * Copyright 2022 Holoinsight Project Authors. Licensed under Apache-2.0.
  */
-
 package io.holoinsight.server.home.biz.service;
 
 import io.holoinsight.server.home.dal.model.OpenmetricsScraper;
@@ -12,15 +11,16 @@ import com.baomidou.mybatisplus.extension.service.IService;
 
 public interface OpenmetricsScraperService extends IService<OpenmetricsScraper> {
 
-    OpenmetricsScraperDTO queryById(Long id, String tenant);
+  OpenmetricsScraperDTO queryById(Long id, String tenant);
 
-    void saveByDTO(OpenmetricsScraperDTO openmetricsScraperDTO);
+  void saveByDTO(OpenmetricsScraperDTO openmetricsScraperDTO);
 
-    void deleteById(Long id);
+  void deleteById(Long id);
 
-    OpenmetricsScraperDTO toDTO(OpenmetricsScraper model);
+  OpenmetricsScraperDTO toDTO(OpenmetricsScraper model);
 
-    OpenmetricsScraper toDO(OpenmetricsScraperDTO dto);
+  OpenmetricsScraper toDO(OpenmetricsScraperDTO dto);
 
-    MonitorPageResult<OpenmetricsScraperDTO> getListByPage(MonitorPageRequest<OpenmetricsScraperDTO> request);
+  MonitorPageResult<OpenmetricsScraperDTO> getListByPage(
+      MonitorPageRequest<OpenmetricsScraperDTO> request);
 }

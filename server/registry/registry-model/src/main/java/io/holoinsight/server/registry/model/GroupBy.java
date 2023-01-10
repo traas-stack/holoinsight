@@ -10,7 +10,8 @@ import lombok.Setter;
 import lombok.ToString;
 
 /**
- * <p>created at 2022/3/21
+ * <p>
+ * created at 2022/3/21
  *
  * @author zzhb101
  */
@@ -18,14 +19,14 @@ import lombok.ToString;
 @Getter
 @Setter
 public class GroupBy {
-    private int maxKeys;
-    private List<Group> groups;
+  private int maxKeys;
+  private List<Group> groups;
 
-    @ToString
-    @Getter
-    @Setter
-    public static class Group {
-        private String name;
-        private Elect elect;
-    }
+  @ToString
+  @Getter
+  @Setter
+  public static class Group {
+    private String name;
+    private Elect elect;
+  }
 }

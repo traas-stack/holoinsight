@@ -21,37 +21,22 @@ import javax.validation.Valid;
 import java.io.IOException;
 import java.util.List;
 
-@javax.annotation.Generated(
-        value = "io.swagger.codegen.languages.SpringCodegen")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen")
 @Api(value = "slowSql", description = "the slowSql API")
 @RequestMapping("/api/v1/slowSql")
 public interface SlowSqlApi {
 
-    @ApiOperation(
-            value = "query slow sql list",
-            nickname = "querySlowSqlList",
-            notes = "查询慢sql列表",
-            response = SlowSql.class,
-            authorizations = {
-                    @Authorization(value = "APIKeyHeader"),
-                    @Authorization(value = "APIKeyQueryParam")
-            },
-            tags = {
-                    "slowSqlList",
-            })
-    @ApiResponses(
-            value = {
-                    @ApiResponse(code = 200, message = "请求正常。", response = SlowSql.class),
-                    @ApiResponse(code = 400, message = "请求失败。", response = FailResponse.class)
-            })
-    @RequestMapping(
-            value = "/query",
-            produces = {"application/json"},
-            consumes = {"application/json"},
-            method = RequestMethod.POST)
-    ResponseEntity<List<SlowSql>> querySlowSqlList(
-            @ApiParam(value = "查询条件。", required = true) @Valid @RequestBody
-            QueryComponentRequest request) throws IOException;
+  @ApiOperation(value = "query slow sql list", nickname = "querySlowSqlList", notes = "查询慢sql列表",
+      response = SlowSql.class, authorizations = {@Authorization(value = "APIKeyHeader"),
+          @Authorization(value = "APIKeyQueryParam")},
+      tags = {"slowSqlList",})
+  @ApiResponses(value = {@ApiResponse(code = 200, message = "请求正常。", response = SlowSql.class),
+      @ApiResponse(code = 400, message = "请求失败。", response = FailResponse.class)})
+  @RequestMapping(value = "/query", produces = {"application/json"},
+      consumes = {"application/json"}, method = RequestMethod.POST)
+  ResponseEntity<List<SlowSql>> querySlowSqlList(
+      @ApiParam(value = "查询条件。", required = true) @Valid @RequestBody QueryComponentRequest request)
+      throws IOException;
 
 
 }

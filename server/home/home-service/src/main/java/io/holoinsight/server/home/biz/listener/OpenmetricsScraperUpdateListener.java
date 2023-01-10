@@ -1,7 +1,6 @@
 /*
  * Copyright 2022 Holoinsight Project Authors. Licensed under Apache-2.0.
  */
-
 package io.holoinsight.server.home.biz.listener;
 
 import io.holoinsight.server.home.biz.common.GaeaConvertUtil;
@@ -22,55 +21,56 @@ import java.util.Map;
 @Component
 public class OpenmetricsScraperUpdateListener {
 
-    @Autowired
-    private GaeaCollectConfigService gaeaCollectConfigService;
+  @Autowired
+  private GaeaCollectConfigService gaeaCollectConfigService;
 
-    @PostConstruct
-    void register() {
-        EventBusHolder.register(this);
-    }
+  @PostConstruct
+  void register() {
+    EventBusHolder.register(this);
+  }
 
-    @Subscribe
-    @AllowConcurrentEvents
-    public void onEvent(OpenmetricsScraperDTO openmetricsScraperDTO) {
-        upsert(openmetricsScraperDTO);
-    }
+  @Subscribe
+  @AllowConcurrentEvents
+  public void onEvent(OpenmetricsScraperDTO openmetricsScraperDTO) {
+    upsert(openmetricsScraperDTO);
+  }
 
-    private void upsert(OpenmetricsScraperDTO openmetricsScraperDTO) {
+  private void upsert(OpenmetricsScraperDTO openmetricsScraperDTO) {
 
-        OpenmetricsScraperTask task = new OpenmetricsScraperTask();
-        task.setSchema(openmetricsScraperDTO.getSchema());
-        task.setMetricsPath(openmetricsScraperDTO.getMetricsPath());
-        task.setScrapeInterval(openmetricsScraperDTO.getScrapeInterval());
-        task.setScrapeTimeout(openmetricsScraperDTO.getScrapeTimeout());
-        task.setScrapePort(openmetricsScraperDTO.getPort());
+    OpenmetricsScraperTask task = new OpenmetricsScraperTask();
+    task.setSchema(openmetricsScraperDTO.getSchema());
+    task.setMetricsPath(openmetricsScraperDTO.getMetricsPath());
+    task.setScrapeInterval(openmetricsScraperDTO.getScrapeInterval());
+    task.setScrapeTimeout(openmetricsScraperDTO.getScrapeTimeout());
+    task.setScrapePort(openmetricsScraperDTO.getPort());
 
-        //List<String> targets = new ArrayList<>();
-        ////暂时 mock 一下
-        //targets.add(openmetricsScraperDTO.getIp() + ":" + openmetricsScraperDTO.getPort());
-        //task.setTargets(targets);
+    // List<String> targets = new ArrayList<>();
+    //// 暂时 mock 一下
+    // targets.add(openmetricsScraperDTO.getIp() + ":" + openmetricsScraperDTO.getPort());
+    // task.setTargets(targets);
 
-        GaeaCollectConfigDTO gaeaCollectConfigDTO = new GaeaCollectConfigDTO();
-        gaeaCollectConfigDTO.tenant = openmetricsScraperDTO.getTenant();
-        gaeaCollectConfigDTO.deleted = false;
-        gaeaCollectConfigDTO.type = openmetricsScraperDTO.getClass().getName();
-        gaeaCollectConfigDTO.refId = "openmetrics_" + openmetricsScraperDTO.getId();
-        gaeaCollectConfigDTO.executorSelector = new HashMap<>();
-        gaeaCollectConfigDTO.json = task;
-        gaeaCollectConfigDTO.tableName = "openmetrics_" + openmetricsScraperDTO.getId();
-        gaeaCollectConfigDTO.collectRange = GaeaConvertUtil.convertCollectRange(openmetricsScraperDTO.getCollectRanges());
-        gaeaCollectConfigDTO.executorSelector = convertExecutorSelector();
+    GaeaCollectConfigDTO gaeaCollectConfigDTO = new GaeaCollectConfigDTO();
+    gaeaCollectConfigDTO.tenant = openmetricsScraperDTO.getTenant();
+    gaeaCollectConfigDTO.deleted = false;
+    gaeaCollectConfigDTO.type = openmetricsScraperDTO.getClass().getName();
+    gaeaCollectConfigDTO.refId = "openmetrics_" + openmetricsScraperDTO.getId();
+    gaeaCollectConfigDTO.executorSelector = new HashMap<>();
+    gaeaCollectConfigDTO.json = task;
+    gaeaCollectConfigDTO.tableName = "openmetrics_" + openmetricsScraperDTO.getId();
+    gaeaCollectConfigDTO.collectRange =
+        GaeaConvertUtil.convertCollectRange(openmetricsScraperDTO.getCollectRanges());
+    gaeaCollectConfigDTO.executorSelector = convertExecutorSelector();
 
-        GaeaCollectConfigDTO upsert = gaeaCollectConfigService.upsert(gaeaCollectConfigDTO);
-    }
+    GaeaCollectConfigDTO upsert = gaeaCollectConfigService.upsert(gaeaCollectConfigDTO);
+  }
 
-    private Map<String, Object> convertExecutorSelector() {
+  private Map<String, Object> convertExecutorSelector() {
 
-        Map<String, Object> executorSelector = new HashMap<>();
-        executorSelector.put("type", "sidecar");
-        executorSelector.put("sidecar", new HashMap<>());
+    Map<String, Object> executorSelector = new HashMap<>();
+    executorSelector.put("type", "sidecar");
+    executorSelector.put("sidecar", new HashMap<>());
 
-        return executorSelector;
-    }
+    return executorSelector;
+  }
 
 }

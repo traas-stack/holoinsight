@@ -16,9 +16,9 @@ import java.util.List;
 @Mapper(componentModel = "spring")
 public interface AlarmBlockConverter {
 
-    AlarmBlockDTO doToDTO(AlarmBlock alarmBlock);
+  AlarmBlockDTO doToDTO(AlarmBlock alarmBlock);
 
-    AlarmBlock dtoToDO(AlarmBlockDTO blockDTO);
+  AlarmBlock dtoToDO(AlarmBlockDTO blockDTO);
 
-    List<AlarmBlockDTO> dosToDTOs(Iterable<AlarmBlock> alarmBlocks);
+  List<AlarmBlockDTO> dosToDTOs(Iterable<AlarmBlock> alarmBlocks);
 }

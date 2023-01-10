@@ -14,10 +14,10 @@ import java.util.Date;
  */
 @Data
 public class TenantOpsDTO {
-    public Long             id;
-    public String           tenant;
-    public TenantOpsStorage storage;
+  public Long id;
+  public String tenant;
+  public TenantOpsStorage storage;
 
-    public Date             gmtCreate;
-    public Date             gmtModified;
+  public Date gmtCreate;
+  public Date gmtModified;
 }

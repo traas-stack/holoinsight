@@ -18,12 +18,13 @@ import java.util.List;
 @ConditionalOnFeature("trace")
 public class EndpointServiceImpl implements EndpointService {
 
-    @Autowired
-    private EndpointEsService endpointEsService;
+  @Autowired
+  private EndpointEsService endpointEsService;
 
-    @Override
-    public List<Endpoint> getEndpointList(String tenant, String service, long startTime, long endTime) throws IOException {
-        return endpointEsService.getEndpointList(tenant, service, startTime, endTime);
-    }
+  @Override
+  public List<Endpoint> getEndpointList(String tenant, String service, long startTime, long endTime)
+      throws IOException {
+    return endpointEsService.getEndpointList(tenant, service, startTime, endTime);
+  }
 
 }

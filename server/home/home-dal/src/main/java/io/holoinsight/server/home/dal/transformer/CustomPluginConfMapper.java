@@ -15,13 +15,12 @@ import java.lang.reflect.Type;
  * @version 1.0: CustomPluginConfMapper.java, v 0.1 2022年03月14日 8:46 下午 jinsong.yjs Exp $
  */
 public class CustomPluginConfMapper {
-    public static String asString(CustomPluginConf conf) {
-        return J.toJson(conf);
-    }
+  public static String asString(CustomPluginConf conf) {
+    return J.toJson(conf);
+  }
 
-    public static CustomPluginConf asObj(String conf) {
-        Type t = new TypeToken<CustomPluginConf>() {
-        }.getType();
-        return J.fromJson(conf, t);
-    }
+  public static CustomPluginConf asObj(String conf) {
+    Type t = new TypeToken<CustomPluginConf>() {}.getType();
+    return J.fromJson(conf, t);
+  }
 }

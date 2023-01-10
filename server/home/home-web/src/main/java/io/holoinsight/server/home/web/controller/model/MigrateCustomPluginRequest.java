@@ -1,7 +1,6 @@
 /*
  * Copyright 2022 Holoinsight Project Authors. Licensed under Apache-2.0.
  */
-
 package io.holoinsight.server.home.web.controller.model;
 
 import lombok.Data;
@@ -14,18 +13,18 @@ import lombok.Data;
 @Data
 public class MigrateCustomPluginRequest {
 
-    /**
-     * custom plugin id
-     */
-    private Long pluginId;
+  /**
+   * custom plugin id
+   */
+  private Long pluginId;
 
-    /**
-     * target tenant
-     */
-    private String targetTenant;
+  /**
+   * target tenant
+   */
+  private String targetTenant;
 
-    /**
-     * source tenant
-     */
-    private String sourceTenant;
+  /**
+   * source tenant
+   */
+  private String sourceTenant;
 }

@@ -22,46 +22,49 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
- * <p>created at 2022/2/28
+ * <p>
+ * created at 2022/2/28
  *
  * @author zzhb101
  */
 @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
 public class RegistryServerForInternal {
-    private static final Logger LOGGER = LoggerFactory.getLogger(RegistryServerForInternal.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(RegistryServerForInternal.class);
 
-    @Autowired
-    private RegistryProperties registryProperties;
-    private Server             server;
+  @Autowired
+  private RegistryProperties registryProperties;
+  private Server server;
 
-    @Autowired(required = false)
-    @GrpcForInternal
-    private List<BindableService> services2 = new ArrayList<>();
+  @Autowired(required = false)
+  @GrpcForInternal
+  private List<BindableService> services2 = new ArrayList<>();
 
-    @Autowired
-    private CommonThreadPools commonThreadPools;
+  @Autowired
+  private CommonThreadPools commonThreadPools;
 
-    @PostConstruct
-    public void start() throws IOException {
-        RegistryProperties.ForInternal forInternal = registryProperties.getServer().getForInternal();
+  @PostConstruct
+  public void start() throws IOException {
+    RegistryProperties.ForInternal forInternal = registryProperties.getServer().getForInternal();
 
-        ServerBuilder<?> b = ServerBuilder.forPort(forInternal.getPort() + 3).executor(commonThreadPools.getRpcServer());
+    ServerBuilder<?> b =
+        ServerBuilder.forPort(forInternal.getPort() + 3).executor(commonThreadPools.getRpcServer());
 
-        for (BindableService bs : services2) {
-            ServerServiceDefinition ssd = bs.bindService();
-            LOGGER.info("[registryserver] [forinternal] add service {}", ssd.getServiceDescriptor().getName());
-            b.addService(ssd);
-        }
-
-        server = b.build();
-        server.start();
-
-        LOGGER.info("[registryserver] [forinternal] start grpc server at 0.0.0.0:{}", //
-            forInternal.getPort()); //
+    for (BindableService bs : services2) {
+      ServerServiceDefinition ssd = bs.bindService();
+      LOGGER.info("[registryserver] [forinternal] add service {}",
+          ssd.getServiceDescriptor().getName());
+      b.addService(ssd);
     }
 
-    @PreDestroy
-    public void stop() {
-        server.shutdown();
-    }
+    server = b.build();
+    server.start();
+
+    LOGGER.info("[registryserver] [forinternal] start grpc server at 0.0.0.0:{}", //
+        forInternal.getPort()); //
+  }
+
+  @PreDestroy
+  public void stop() {
+    server.shutdown();
+  }
 }

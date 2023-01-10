@@ -2,7 +2,6 @@
  * Copyright 2022 Holoinsight Project Authors. Licensed under Apache-2.0.
  */
 
-
 package io.holoinsight.server.home.web.controller;
 
 import io.holoinsight.server.home.biz.service.UserOpLogService;
@@ -40,55 +39,57 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j
 public class UserOpLogFacadeImpl extends BaseFacade {
 
-    @Autowired
-    private UserOpLogService userOpLogService;
+  @Autowired
+  private UserOpLogService userOpLogService;
 
-    @GetMapping(value = "/query/{id}")
-    @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower= PowerConstants.VIEW)
-    public JsonResult<UserOpLog> queryById(@PathVariable("id") Long id) {
-        final JsonResult<UserOpLog> result = new JsonResult<>();
-        facadeTemplate.manage(result, new ManageCallback() {
-            @Override
-            public void checkParameter() {
-                ParaCheckUtil.checkParaNotNull(id, "id");
-            }
+  @GetMapping(value = "/query/{id}")
+  @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.VIEW)
+  public JsonResult<UserOpLog> queryById(@PathVariable("id") Long id) {
+    final JsonResult<UserOpLog> result = new JsonResult<>();
+    facadeTemplate.manage(result, new ManageCallback() {
+      @Override
+      public void checkParameter() {
+        ParaCheckUtil.checkParaNotNull(id, "id");
+      }
 
-            @Override
-            public void doManage() {
-                UserOpLog userOpLog = userOpLogService.queryById(id, RequestContext.getContext().ms.getTenant());
+      @Override
+      public void doManage() {
+        UserOpLog userOpLog =
+            userOpLogService.queryById(id, RequestContext.getContext().ms.getTenant());
 
-                if (null == userOpLog) {
-                    throw new MonitorException(ResultCodeEnum.CANNOT_FIND_RECORD, "can not find record:" + id);
-                }
-                JsonResult.createSuccessResult(result, userOpLog);
-            }
-        });
-        return result;
-    }
+        if (null == userOpLog) {
+          throw new MonitorException(ResultCodeEnum.CANNOT_FIND_RECORD,
+              "can not find record:" + id);
+        }
+        JsonResult.createSuccessResult(result, userOpLog);
+      }
+    });
+    return result;
+  }
 
-    @PostMapping("/pageQuery")
-    @ResponseBody
-    @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower= PowerConstants.VIEW)
-    public JsonResult<MonitorPageResult<UserOpLog>> pageQuery(@RequestBody MonitorTimePageRequest<UserOpLog> userOpLogRequest) {
-        final JsonResult<MonitorPageResult<UserOpLog>> result = new JsonResult<>();
-        facadeTemplate.manage(result, new ManageCallback() {
-            @Override
-            public void checkParameter() {
-                ParaCheckUtil.checkParaNotNull(userOpLogRequest.getTarget(), "target");
-            }
+  @PostMapping("/pageQuery")
+  @ResponseBody
+  @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.VIEW)
+  public JsonResult<MonitorPageResult<UserOpLog>> pageQuery(
+      @RequestBody MonitorTimePageRequest<UserOpLog> userOpLogRequest) {
+    final JsonResult<MonitorPageResult<UserOpLog>> result = new JsonResult<>();
+    facadeTemplate.manage(result, new ManageCallback() {
+      @Override
+      public void checkParameter() {
+        ParaCheckUtil.checkParaNotNull(userOpLogRequest.getTarget(), "target");
+      }
 
-            @Override
-            public void doManage() {
-                MonitorScope ms = RequestContext.getContext().ms;
-                if (null != ms && !StringUtils.isEmpty(ms.tenant)) {
-                    userOpLogRequest.getTarget().setTenant(ms.tenant);
-                }
-                JsonResult.createSuccessResult(result,
-                    userOpLogService.getListByPage(userOpLogRequest));
-            }
-        });
+      @Override
+      public void doManage() {
+        MonitorScope ms = RequestContext.getContext().ms;
+        if (null != ms && !StringUtils.isEmpty(ms.tenant)) {
+          userOpLogRequest.getTarget().setTenant(ms.tenant);
+        }
+        JsonResult.createSuccessResult(result, userOpLogService.getListByPage(userOpLogRequest));
+      }
+    });
 
-        return result;
-    }
+    return result;
+  }
 
 }

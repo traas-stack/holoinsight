@@ -2,7 +2,6 @@
  * Copyright 2022 Holoinsight Project Authors. Licensed under Apache-2.0.
  */
 
-
 package io.holoinsight.server.home.web.controller;
 
 import io.holoinsight.server.home.biz.service.AlertRuleService;
@@ -45,211 +44,210 @@ import java.util.regex.Pattern;
 @RestController
 @RequestMapping("/webapi/search")
 public class SearchFacadeImpl extends BaseFacade {
-    private static ThreadPoolTaskExecutor queryThreadPool = CommonThreadPool.createThreadPool(4, 10,
-        20, "search-query-worker-");
+  private static ThreadPoolTaskExecutor queryThreadPool =
+      CommonThreadPool.createThreadPool(4, 10, 20, "search-query-worker-");
 
-    @Autowired
-    private CustomPluginService           customPluginService;
+  @Autowired
+  private CustomPluginService customPluginService;
 
-    @Autowired
-    private FolderService                 folderService;
+  @Autowired
+  private FolderService folderService;
 
-    @Autowired
-    private DashboardService              dashboardService;
+  @Autowired
+  private DashboardService dashboardService;
 
-    @Autowired
-    private AlertRuleService              alarmRuleService;
+  @Autowired
+  private AlertRuleService alarmRuleService;
 
-    @Autowired
-    private DataClientService             dataClientService;
+  @Autowired
+  private DataClientService dataClientService;
 
-    @ResponseBody
-    @PostMapping(value = "/queryByKeyword")
-    public JsonResult<Object> query(@RequestBody QueryKeywordReq req) {
+  @ResponseBody
+  @PostMapping(value = "/queryByKeyword")
+  public JsonResult<Object> query(@RequestBody QueryKeywordReq req) {
 
-        final JsonResult<Object> result = new JsonResult<>();
+    final JsonResult<Object> result = new JsonResult<>();
 
-        facadeTemplate.manage(result, new ManageCallback() {
-            @Override
-            public void checkParameter() {
-                ParaCheckUtil.checkParaNotNull(req, "req");
-                ParaCheckUtil.checkParaNotNull(req.keyword, "keyword");
-                ParaCheckUtil.checkParaNotNull(req.tenant, "tenant");
-                ParaCheckUtil.checkEquals(req.tenant, RequestContext.getContext().ms.getTenant(),
-                    "tenant is illegal");
+    facadeTemplate.manage(result, new ManageCallback() {
+      @Override
+      public void checkParameter() {
+        ParaCheckUtil.checkParaNotNull(req, "req");
+        ParaCheckUtil.checkParaNotNull(req.keyword, "keyword");
+        ParaCheckUtil.checkParaNotNull(req.tenant, "tenant");
+        ParaCheckUtil.checkEquals(req.tenant, RequestContext.getContext().ms.getTenant(),
+            "tenant is illegal");
+      }
+
+      @Override
+      public void doManage() {
+
+        MonitorScope ms = RequestContext.getContext().ms;
+        String tenant = ms.tenant;
+
+        List<SearchKeywordRet> ret = new ArrayList<>();
+        List<Future<SearchKeywordRet>> futures = new ArrayList<>();
+        futures.add(queryThreadPool.submit(() -> {
+          return searchLogEntity(req.keyword, tenant);
+        }));
+
+        futures.add(queryThreadPool.submit(() -> {
+          return searchFolderEntity(req.keyword, tenant);
+        }));
+
+        futures.add(queryThreadPool.submit(() -> {
+          return searchDashboardEntity(req.keyword, tenant);
+        }));
+
+        futures.add(queryThreadPool.submit(() -> {
+          return searchInfraEntity(req.keyword, tenant);
+        }));
+
+        futures.add(queryThreadPool.submit(() -> {
+          return searchAppEntity(req.keyword, tenant);
+        }));
+
+        futures.add(queryThreadPool.submit(() -> {
+          return searchAlarmEntity(req.keyword, tenant);
+        }));
+
+        // 多线程
+        for (Future<SearchKeywordRet> future : futures) {
+          try {
+            SearchKeywordRet result = future.get();
+            if (result != null) {
+              ret.add(result);
             }
+          } catch (Exception e) {
+            log.info("error in search future, " + J.toJson(future));
+          }
+        }
+        JsonResult.createSuccessResult(result, ret);
+      }
+    });
 
-            @Override
-            public void doManage() {
+    return result;
 
-                MonitorScope ms = RequestContext.getContext().ms;
-                String tenant = ms.tenant;
+  }
 
-                List<SearchKeywordRet> ret = new ArrayList<>();
-                List<Future<SearchKeywordRet>> futures = new ArrayList<>();
-                futures.add(queryThreadPool.submit(() -> {
-                    return searchLogEntity(req.keyword, tenant);
-                }));
+  @ResponseBody
+  @PostMapping(value = "/configSearch")
+  public JsonResult<Object> configSearch(@RequestBody QueryKeywordReq req) {
 
-                futures.add(queryThreadPool.submit(() -> {
-                    return searchFolderEntity(req.keyword, tenant);
-                }));
+    final JsonResult<Object> result = new JsonResult<>();
 
-                futures.add(queryThreadPool.submit(() -> {
-                    return searchDashboardEntity(req.keyword, tenant);
-                }));
+    facadeTemplate.manage(result, new ManageCallback() {
+      @Override
+      public void checkParameter() {
+        ParaCheckUtil.checkParaNotNull(req, "req");
+        ParaCheckUtil.checkParaNotNull(req.keyword, "keyword");
+        ParaCheckUtil.checkParaNotNull(req.tenant, "tenant");
+        ParaCheckUtil.checkEquals(req.tenant, RequestContext.getContext().ms.getTenant(),
+            "tenant is illegal");
+      }
 
-                futures.add(queryThreadPool.submit(() -> {
-                    return searchInfraEntity(req.keyword, tenant);
-                }));
+      @Override
+      public void doManage() {
 
-                futures.add(queryThreadPool.submit(() -> {
-                    return searchAppEntity(req.keyword, tenant);
-                }));
+        MonitorScope ms = RequestContext.getContext().ms;
+        String tenant = ms.tenant;
 
-                futures.add(queryThreadPool.submit(() -> {
-                    return searchAlarmEntity(req.keyword, tenant);
-                }));
+        List<SearchKeywordRet> ret = new ArrayList<>();
+        List<Future<SearchKeywordRet>> futures = new ArrayList<>();
+        futures.add(queryThreadPool.submit(() -> {
+          List<CustomPluginDTO> listByKeyword =
+              customPluginService.getListByNameLike(req.keyword, tenant);
+          return genSearchResult("log", listByKeyword);
+        }));
 
-                // 多线程
-                for (Future<SearchKeywordRet> future : futures) {
-                    try {
-                        SearchKeywordRet result = future.get();
-                        if (result != null) {
-                            ret.add(result);
-                        }
-                    } catch (Exception e) {
-                        log.info("error in search future, " + J.toJson(future));
-                    }
-                }
-                JsonResult.createSuccessResult(result, ret);
+        futures.add(queryThreadPool.submit(() -> {
+          List<Folder> listByKeyword = folderService.getListByNameLike(req.keyword, tenant);
+
+          return genSearchResult("folder", listByKeyword);
+        }));
+
+        // 多线程
+        for (Future<SearchKeywordRet> future : futures) {
+          try {
+            SearchKeywordRet result = future.get();
+            if (result != null) {
+              ret.add(result);
             }
-        });
+          } catch (Exception e) {
+            log.info("error in search future, " + J.toJson(future));
+          }
+        }
+        JsonResult.createSuccessResult(result, ret);
+      }
+    });
 
-        return result;
+    return result;
 
-    }
+  }
 
-    @ResponseBody
-    @PostMapping(value = "/configSearch")
-    public JsonResult<Object> configSearch(@RequestBody QueryKeywordReq req) {
+  public SearchKeywordRet searchLogEntity(String keyword, String tenant) {
 
-        final JsonResult<Object> result = new JsonResult<>();
+    List<CustomPluginDTO> listByKeyword = customPluginService.getListByKeyword(keyword, tenant);
+    return genSearchResult("log", listByKeyword);
+  }
 
-        facadeTemplate.manage(result, new ManageCallback() {
-            @Override
-            public void checkParameter() {
-                ParaCheckUtil.checkParaNotNull(req, "req");
-                ParaCheckUtil.checkParaNotNull(req.keyword, "keyword");
-                ParaCheckUtil.checkParaNotNull(req.tenant, "tenant");
-                ParaCheckUtil.checkEquals(req.tenant, RequestContext.getContext().ms.getTenant(),
-                    "tenant is illegal");
-            }
+  public SearchKeywordRet searchFolderEntity(String keyword, String tenant) {
 
-            @Override
-            public void doManage() {
+    List<Folder> listByKeyword = folderService.getListByKeyword(keyword, tenant);
+    return genSearchResult("folder", listByKeyword);
+  }
 
-                MonitorScope ms = RequestContext.getContext().ms;
-                String tenant = ms.tenant;
+  public SearchKeywordRet searchDashboardEntity(String keyword, String tenant) {
 
-                List<SearchKeywordRet> ret = new ArrayList<>();
-                List<Future<SearchKeywordRet>> futures = new ArrayList<>();
-                futures.add(queryThreadPool.submit(() -> {
-                    List<CustomPluginDTO> listByKeyword = customPluginService
-                        .getListByNameLike(req.keyword, tenant);
-                    return genSearchResult("log", listByKeyword);
-                }));
+    return genSearchResult("dashboard", dashboardService.getListByKeyword(keyword, tenant));
+  }
 
-                futures.add(queryThreadPool.submit(() -> {
-                    List<Folder> listByKeyword = folderService.getListByNameLike(req.keyword,
-                        tenant);
+  public SearchKeywordRet searchInfraEntity(String keyword, String tenant) {
 
-                    return genSearchResult("folder", listByKeyword);
-                }));
+    QueryExample queryExample = new QueryExample();
+    queryExample.getParams().put("ip",
+        Pattern.compile(String.format("^.*%s.*$", keyword), Pattern.CASE_INSENSITIVE));
+    queryExample.getParams().put("hostname",
+        Pattern.compile(String.format("^.*%s.*$", keyword), Pattern.CASE_INSENSITIVE));
 
-                // 多线程
-                for (Future<SearchKeywordRet> future : futures) {
-                    try {
-                        SearchKeywordRet result = future.get();
-                        if (result != null) {
-                            ret.add(result);
-                        }
-                    } catch (Exception e) {
-                        log.info("error in search future, " + J.toJson(future));
-                    }
-                }
-                JsonResult.createSuccessResult(result, ret);
-            }
-        });
+    List<Map<String, Object>> list = dataClientService
+        .fuzzyByExample(TenantMetaUtil.genTenantServerTableName(tenant), queryExample);
 
-        return result;
+    return genSearchResult("infra", list);
+  }
 
-    }
+  public SearchKeywordRet searchAppEntity(String keyword, String tenant) {
 
-    public SearchKeywordRet searchLogEntity(String keyword, String tenant) {
+    QueryExample queryExample = new QueryExample();
+    queryExample.getParams().put("app",
+        Pattern.compile(String.format("^.*%s.*$", keyword), Pattern.CASE_INSENSITIVE));
+    List<Map<String, Object>> list = dataClientService
+        .fuzzyByExample(TenantMetaUtil.genTenantAppTableName(tenant), queryExample);
 
-        List<CustomPluginDTO> listByKeyword = customPluginService.getListByKeyword(keyword, tenant);
-        return genSearchResult("log", listByKeyword);
-    }
+    return genSearchResult("app", list);
+  }
 
-    public SearchKeywordRet searchFolderEntity(String keyword, String tenant) {
+  public SearchKeywordRet searchAlarmEntity(String keyword, String tenant) {
 
-        List<Folder> listByKeyword = folderService.getListByKeyword(keyword, tenant);
-        return genSearchResult("folder", listByKeyword);
-    }
+    return genSearchResult("alarm", alarmRuleService.getListByKeyword(keyword, tenant));
+  }
 
-    public SearchKeywordRet searchDashboardEntity(String keyword, String tenant) {
+  public SearchKeywordRet genSearchResult(String type, List<?> datas) {
+    SearchKeywordRet skr = new SearchKeywordRet();
+    skr.count = datas.size();
+    skr.datas = datas;
+    skr.name = type;
 
-        return genSearchResult("dashboard", dashboardService.getListByKeyword(keyword, tenant));
-    }
+    return skr;
+  }
 
-    public SearchKeywordRet searchInfraEntity(String keyword, String tenant) {
+  public static class QueryKeywordReq {
+    public String keyword;
+    public String tenant;
+  }
 
-        QueryExample queryExample = new QueryExample();
-        queryExample.getParams().put("ip",
-            Pattern.compile(String.format("^.*%s.*$", keyword), Pattern.CASE_INSENSITIVE));
-        queryExample.getParams().put("hostname",
-            Pattern.compile(String.format("^.*%s.*$", keyword), Pattern.CASE_INSENSITIVE));
-
-        List<Map<String, Object>> list = dataClientService
-            .fuzzyByExample(TenantMetaUtil.genTenantServerTableName(tenant), queryExample);
-
-        return genSearchResult("infra", list);
-    }
-
-    public SearchKeywordRet searchAppEntity(String keyword, String tenant) {
-
-        QueryExample queryExample = new QueryExample();
-        queryExample.getParams().put("app",
-            Pattern.compile(String.format("^.*%s.*$", keyword), Pattern.CASE_INSENSITIVE));
-        List<Map<String, Object>> list = dataClientService
-            .fuzzyByExample(TenantMetaUtil.genTenantAppTableName(tenant), queryExample);
-
-        return genSearchResult("app", list);
-    }
-
-    public SearchKeywordRet searchAlarmEntity(String keyword, String tenant) {
-
-        return genSearchResult("alarm", alarmRuleService.getListByKeyword(keyword, tenant));
-    }
-
-    public SearchKeywordRet genSearchResult(String type, List<?> datas) {
-        SearchKeywordRet skr = new SearchKeywordRet();
-        skr.count = datas.size();
-        skr.datas = datas;
-        skr.name = type;
-
-        return skr;
-    }
-
-    public static class QueryKeywordReq {
-        public String keyword;
-        public String tenant;
-    }
-
-    public static class SearchKeywordRet {
-        public String  name;
-        public Integer count;
-        public List<?> datas;
-    }
+  public static class SearchKeywordRet {
+    public String name;
+    public Integer count;
+    public List<?> datas;
+  }
 }

@@ -19,29 +19,30 @@ import com.google.common.collect.Sets;
 
 /**
  * 该 filter 用于拦截那些直接通过 servlet 定义的处理器
- * <p>created at 2022/11/18
+ * <p>
+ * created at 2022/11/18
  *
  * @author xzchaoo
  */
 @WebFilter(urlPatterns = "/")
 public class InternalWebApiFilter extends OncePerRequestFilter {
-    private static final Set<String>               URIS = Sets.newHashSet("/metrics");
-    @Autowired
-    private              InternalWebApiInterceptor internalWebApiInterceptor;
+  private static final Set<String> URIS = Sets.newHashSet("/metrics");
+  @Autowired
+  private InternalWebApiInterceptor internalWebApiInterceptor;
 
-    @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
-        throws ServletException, IOException {
+  @Override
+  protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
+      FilterChain filterChain) throws ServletException, IOException {
 
-        String uri = request.getRequestURI();
+    String uri = request.getRequestURI();
 
-        if (internalWebApiInterceptor.isInternal(request) || URIS.contains(uri)) {
-            if (!internalWebApiInterceptor.isSafeAccess(request)) {
-                internalWebApiInterceptor.writeForbiddenResponse(response);
-                return;
-            }
-        }
-
-        filterChain.doFilter(request, response);
+    if (internalWebApiInterceptor.isInternal(request) || URIS.contains(uri)) {
+      if (!internalWebApiInterceptor.isSafeAccess(request)) {
+        internalWebApiInterceptor.writeForbiddenResponse(response);
+        return;
+      }
     }
+
+    filterChain.doFilter(request, response);
+  }
 }

@@ -14,13 +14,13 @@ import java.util.List;
 @Data
 public class AlarmSubscribeDTO {
 
-    private String uniqueId;
+  private String uniqueId;
 
-    private List<AlarmSubscribeInfo> alarmSubscribe;
+  private List<AlarmSubscribeInfo> alarmSubscribe;
 
-    /**
-     * 环境类型
-     */
-    private String envType;
+  /**
+   * 环境类型
+   */
+  private String envType;
 
 }

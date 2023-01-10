@@ -12,67 +12,67 @@ import java.util.Date;
 
 /**
  * @author wangsiyuan
- * @date 2022/6/15  4:52 下午
+ * @date 2022/6/15 4:52 下午
  */
 @Data
 public class AlarmBlockDTO {
-    /**
-     * id
-     */
-    private Long id;
+  /**
+   * id
+   */
+  private Long id;
 
-    /**
-     * 创建时间
-     */
-    private Date gmtCreate;
+  /**
+   * 创建时间
+   */
+  private Date gmtCreate;
 
-    /**
-     * 修改时间
-     */
-    private Date gmtModified;
+  /**
+   * 修改时间
+   */
+  private Date gmtModified;
 
-    /**
-     * 创建者
-     */
-    private String creator;
+  /**
+   * 创建者
+   */
+  private String creator;
 
-    /**
-     * 修改者
-     */
-    private String modifier;
+  /**
+   * 修改者
+   */
+  private String modifier;
 
-    /**
-     * 暂停小时
-     */
-    private int hour;
+  /**
+   * 暂停小时
+   */
+  private int hour;
 
-    /**
-     * 暂停分钟
-     */
-    private int minute;
+  /**
+   * 暂停分钟
+   */
+  private int minute;
 
-    /**
-     * 告警id
-     */
-    private String uniqueId;
+  /**
+   * 告警id
+   */
+  private String uniqueId;
 
-    /**
-     * 原因
-     */
-    private String reason;
+  /**
+   * 原因
+   */
+  private String reason;
 
-    /**
-     * 租户id
-     */
-    private String tenant;
+  /**
+   * 租户id
+   */
+  private String tenant;
 
-    /**
-     * 屏蔽维度
-     */
-    private String tags;
+  /**
+   * 屏蔽维度
+   */
+  private String tags;
 
-    /**
-     * 额外信息
-     */
-    private String extra;
+  /**
+   * 额外信息
+   */
+  private String extra;
 }

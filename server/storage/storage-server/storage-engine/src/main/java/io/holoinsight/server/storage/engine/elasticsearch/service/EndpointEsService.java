@@ -10,7 +10,10 @@ import java.util.List;
 
 public interface EndpointEsService {
 
-    List<Endpoint> getEndpointList(String tenant, String service, long startTime, long endTime) throws IOException;
-//    List<BizopsEndpoint> getEntryEndpointList(String tenant, long startTime, long endTime) throws IOException;
-//    List<BizopsEndpoint> getErrorCodeList(String tenant, String service, String endpoint, boolean isEntry, int traceIdSize, long startTime, long endTime) throws IOException;
+  List<Endpoint> getEndpointList(String tenant, String service, long startTime, long endTime)
+      throws IOException;
+  // List<BizopsEndpoint> getEntryEndpointList(String tenant, long startTime, long endTime) throws
+  // IOException;
+  // List<BizopsEndpoint> getErrorCodeList(String tenant, String service, String endpoint, boolean
+  // isEntry, int traceIdSize, long startTime, long endTime) throws IOException;
 }

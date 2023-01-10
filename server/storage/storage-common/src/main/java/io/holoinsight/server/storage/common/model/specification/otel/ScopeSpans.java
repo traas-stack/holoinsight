@@ -17,7 +17,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ScopeSpans {
-    private InstrumentationScope scope;
-    private List<Span>           spans;
-    private String               schemaUrl;
+  private InstrumentationScope scope;
+  private List<Span> spans;
+  private String schemaUrl;
 }

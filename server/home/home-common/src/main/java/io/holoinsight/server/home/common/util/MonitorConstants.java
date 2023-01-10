@@ -11,6 +11,6 @@ package io.holoinsight.server.home.common.util;
 public interface MonitorConstants {
 
 
-    int     QUERY_DEFAULT_DPS_LIMIT = 86400;
-    int     QUERY_DEFAULT_TAGS_LIMIT    = 50000;
+  int QUERY_DEFAULT_DPS_LIMIT = 86400;
+  int QUERY_DEFAULT_TAGS_LIMIT = 50000;
 }

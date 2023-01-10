@@ -9,18 +9,19 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * <p>created at 2022/7/28
+ * <p>
+ * created at 2022/7/28
  *
  * @author zzhb101
  */
 @RestController
 @RequestMapping("/internal/api/registry/agent/daemonset")
 public class DaemonsetAgentWebController {
-    @Autowired
-    private DaemonsetAgentService daemonsetAgentService;
+  @Autowired
+  private DaemonsetAgentService daemonsetAgentService;
 
-    @GetMapping("/state")
-    public Object get() {
-        return daemonsetAgentService.getState();
-    }
+  @GetMapping("/state")
+  public Object get() {
+    return daemonsetAgentService.getState();
+  }
 }

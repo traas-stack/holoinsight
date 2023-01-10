@@ -4,12 +4,13 @@
 package io.holoinsight.server.common.auth;
 
 /**
- * <p>created at 2022/6/21
+ * <p>
+ * created at 2022/6/21
  *
  * @author xzchaoo
  */
 public class AuthErrorException extends RuntimeException {
-    public AuthErrorException(String message) {
-        super(message);
-    }
+  public AuthErrorException(String message) {
+    super(message);
+  }
 }

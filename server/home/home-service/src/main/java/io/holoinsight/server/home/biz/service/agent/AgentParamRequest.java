@@ -2,7 +2,6 @@
  * Copyright 2022 Holoinsight Project Authors. Licensed under Apache-2.0.
  */
 
-
 package io.holoinsight.server.home.biz.service.agent;
 
 import lombok.Data;
@@ -16,9 +15,9 @@ import java.util.Map;
  */
 @Data
 public class AgentParamRequest {
-    String              ip;
-    String              hostname;
-    String              app;
-    Map<String, String> label;
-    String              logpath;
+  String ip;
+  String hostname;
+  String app;
+  Map<String, String> label;
+  String logpath;
 }

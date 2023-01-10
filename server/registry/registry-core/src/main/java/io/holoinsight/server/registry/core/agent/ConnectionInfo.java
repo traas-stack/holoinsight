@@ -9,7 +9,8 @@ import lombok.Setter;
 import lombok.ToString;
 
 /**
- * <p>created at 2022/11/1
+ * <p>
+ * created at 2022/11/1
  *
  * @author zzhb101
  */
@@ -18,5 +19,5 @@ import lombok.ToString;
 @ToString
 @EqualsAndHashCode
 public class ConnectionInfo {
-    private String registry;
+  private String registry;
 }

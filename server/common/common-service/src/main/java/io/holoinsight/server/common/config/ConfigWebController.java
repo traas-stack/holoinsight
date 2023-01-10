@@ -21,7 +21,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.xzchaoo.commons.basic.config.spring.AbstractConfig;
 
 /**
- * <p>created at 2022/2/25
+ * <p>
+ * created at 2022/2/25
  *
  * @author xzchaoo
  */
@@ -29,39 +30,39 @@ import com.xzchaoo.commons.basic.config.spring.AbstractConfig;
 @RequestMapping("/internal/api/config")
 @InternalWebApi
 public class ConfigWebController {
-    @Autowired(required = false)
-    private List<AbstractConfig> children = new ArrayList<>();
+  @Autowired(required = false)
+  private List<AbstractConfig> children = new ArrayList<>();
 
-    @Autowired
-    private ConfigService configService;
+  @Autowired
+  private ConfigService configService;
 
-    /**
-     * 打印出自身动态配置
-     *
-     * @return
-     */
-    @GetMapping("/tree")
-    public Object tree() {
-        Map<String, AbstractConfig> m = new LinkedHashMap<>();
-        for (AbstractConfig c : children) {
-            m.put(c.getClass().getSimpleName(), c);
-        }
-        return m;
+  /**
+   * 打印出自身动态配置
+   *
+   * @return
+   */
+  @GetMapping("/tree")
+  public Object tree() {
+    Map<String, AbstractConfig> m = new LinkedHashMap<>();
+    for (AbstractConfig c : children) {
+      m.put(c.getClass().getSimpleName(), c);
     }
+    return m;
+  }
 
-    @GetMapping("/pset")
-    public Object pset(@RequestParam("key") String key, @RequestParam("value") String value) {
-        if (StringUtils.isAnyEmpty(key, value)) {
-            throw new IllegalArgumentException("key or value is empty");
-        }
-        configService.set(key, value);
-        return ApiResp.success();
+  @GetMapping("/pset")
+  public Object pset(@RequestParam("key") String key, @RequestParam("value") String value) {
+    if (StringUtils.isAnyEmpty(key, value)) {
+      throw new IllegalArgumentException("key or value is empty");
     }
+    configService.set(key, value);
+    return ApiResp.success();
+  }
 
-    @GetMapping("/pdel")
-    public Object pdel(@RequestParam("key") String key) {
-        configService.delete(key);
-        return ApiResp.success();
-    }
+  @GetMapping("/pdel")
+  public Object pdel(@RequestParam("key") String key) {
+    configService.delete(key);
+    return ApiResp.success();
+  }
 
 }

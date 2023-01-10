@@ -7,17 +7,20 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /**
- * <p>created at 2022/11/25
+ * <p>
+ * created at 2022/11/25
  *
  * @author xzchaoo
  */
 @Configuration
 public class ThreadPoolConfiguration {
-    /**
-     * <p>commonThreadPools.</p>
-     */
-    @Bean
-    public CommonThreadPools commonThreadPools() {
-        return new CommonThreadPools();
-    }
+  /**
+   * <p>
+   * commonThreadPools.
+   * </p>
+   */
+  @Bean
+  public CommonThreadPools commonThreadPools() {
+    return new CommonThreadPools();
+  }
 }

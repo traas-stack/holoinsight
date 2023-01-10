@@ -27,68 +27,68 @@ import java.util.*;
  * @date 2022/6/21 9:33 下午
  */
 public class DoConvert {
-    private static Logger LOGGER = LoggerFactory.getLogger(DoConvert.class);
+  private static Logger LOGGER = LoggerFactory.getLogger(DoConvert.class);
 
-    public static InspectConfig alarmRuleConverter(AlarmRule alarmRuleDO) {
-        InspectConfig inspectConfig = new InspectConfig();
-        try {
-            inspectConfig.setTraceId(UUID.randomUUID().toString());
-            BeanUtils.copyProperties(alarmRuleDO, inspectConfig);
-            inspectConfig.setUniqueId(alarmRuleDO.getRuleType() + "_" + alarmRuleDO.getId().toString());
-            if (alarmRuleDO.getRuleType().equals("pql")) {
-                PqlRule pqlRule = new PqlRule();
-                pqlRule.setPql(alarmRuleDO.getPql());
-                pqlRule.setDataResult(new ArrayList<>());
-                inspectConfig.setIsPql(true);
-                inspectConfig.setPqlRule(pqlRule);
-            } else {
-                inspectConfig.setRule(G.get().fromJson(alarmRuleDO.getRule(), Rule.class));
-                inspectConfig.setIsPql(false);
-            }
-            inspectConfig.setTimeFilter(G.get().fromJson(alarmRuleDO.getTimeFilter(), TimeFilter.class));
-            inspectConfig.setStatus(alarmRuleDO.getStatus() != 0);
-            inspectConfig.setIsMerge(alarmRuleDO.getIsMerge() != 0);
-            inspectConfig.setRecover(alarmRuleDO.getRecover() != 0);
-            inspectConfig.setEnvType(alarmRuleDO.getEnvType());
-        } catch (Exception e) {
-            LOGGER.error("fail to convert alarmRule {}", G.get().toJson(alarmRuleDO), e);
-        }
-        return inspectConfig;
+  public static InspectConfig alarmRuleConverter(AlarmRule alarmRuleDO) {
+    InspectConfig inspectConfig = new InspectConfig();
+    try {
+      inspectConfig.setTraceId(UUID.randomUUID().toString());
+      BeanUtils.copyProperties(alarmRuleDO, inspectConfig);
+      inspectConfig.setUniqueId(alarmRuleDO.getRuleType() + "_" + alarmRuleDO.getId().toString());
+      if (alarmRuleDO.getRuleType().equals("pql")) {
+        PqlRule pqlRule = new PqlRule();
+        pqlRule.setPql(alarmRuleDO.getPql());
+        pqlRule.setDataResult(new ArrayList<>());
+        inspectConfig.setIsPql(true);
+        inspectConfig.setPqlRule(pqlRule);
+      } else {
+        inspectConfig.setRule(G.get().fromJson(alarmRuleDO.getRule(), Rule.class));
+        inspectConfig.setIsPql(false);
+      }
+      inspectConfig.setTimeFilter(G.get().fromJson(alarmRuleDO.getTimeFilter(), TimeFilter.class));
+      inspectConfig.setStatus(alarmRuleDO.getStatus() != 0);
+      inspectConfig.setIsMerge(alarmRuleDO.getIsMerge() != 0);
+      inspectConfig.setRecover(alarmRuleDO.getRecover() != 0);
+      inspectConfig.setEnvType(alarmRuleDO.getEnvType());
+    } catch (Exception e) {
+      LOGGER.error("fail to convert alarmRule {}", G.get().toJson(alarmRuleDO), e);
     }
+    return inspectConfig;
+  }
 
-    public static WebhookInfo alertWebhookDoConverter(AlarmWebhook alertWebhook) {
-        WebhookInfo webhookInfo = new WebhookInfo();
-        if (alertWebhook != null) {
-            BeanUtils.copyProperties(alertWebhook, webhookInfo);
-        }
-        return webhookInfo;
+  public static WebhookInfo alertWebhookDoConverter(AlarmWebhook alertWebhook) {
+    WebhookInfo webhookInfo = new WebhookInfo();
+    if (alertWebhook != null) {
+      BeanUtils.copyProperties(alertWebhook, webhookInfo);
     }
+    return webhookInfo;
+  }
 
-    public static AlarmHistory alertHistoryConverter(AlertNotify alertNotify) {
-        AlarmHistory alarmHistory = new AlarmHistory();
-        BeanUtils.copyProperties(alertNotify, alarmHistory);
-        if (alertNotify.isPqlNotify()) {
-            alarmHistory.setTriggerContent(J.toJson(Arrays.asList(alertNotify.getPqlRule().getPql())));
-        } else {
-            Set<String> triggerContent = new HashSet<>();
-            List<NotifyDataInfo> notifyDataInfos = new ArrayList<>();
-            alertNotify.getNotifyDataInfos().forEach((key, value) -> {
-                notifyDataInfos.addAll(value);
-            });
-            notifyDataInfos.forEach(e -> triggerContent.add(e.getTriggerContent()));
-            alarmHistory.setTriggerContent(G.get().toJson(triggerContent));
-        }
-        alarmHistory.setGmtCreate(new Date());
-        alarmHistory.setAlarmTime(new Date(alertNotify.getAlarmTime()));
-
-        return alarmHistory;
+  public static AlarmHistory alertHistoryConverter(AlertNotify alertNotify) {
+    AlarmHistory alarmHistory = new AlarmHistory();
+    BeanUtils.copyProperties(alertNotify, alarmHistory);
+    if (alertNotify.isPqlNotify()) {
+      alarmHistory.setTriggerContent(J.toJson(Arrays.asList(alertNotify.getPqlRule().getPql())));
+    } else {
+      Set<String> triggerContent = new HashSet<>();
+      List<NotifyDataInfo> notifyDataInfos = new ArrayList<>();
+      alertNotify.getNotifyDataInfos().forEach((key, value) -> {
+        notifyDataInfos.addAll(value);
+      });
+      notifyDataInfos.forEach(e -> triggerContent.add(e.getTriggerContent()));
+      alarmHistory.setTriggerContent(G.get().toJson(triggerContent));
     }
+    alarmHistory.setGmtCreate(new Date());
+    alarmHistory.setAlarmTime(new Date(alertNotify.getAlarmTime()));
 
-    public static AlertNotify eventInfoConverter(AlertmanagerWebhook alertmanagerWebhook) {
-        AlertNotify alertNotify = new AlertNotify();
-        BeanUtils.copyProperties(alertmanagerWebhook, alertNotify);
-//        alarmNotify.setMembers(alertmanagerWebhook.getSucribeInfoListOrBuilderList().stream().map(AlarmWebhook.SubcribeInfoOrBuilder::getNoticeId).collect(Collectors.toList()));
-        return alertNotify;
-    }
+    return alarmHistory;
+  }
+
+  public static AlertNotify eventInfoConverter(AlertmanagerWebhook alertmanagerWebhook) {
+    AlertNotify alertNotify = new AlertNotify();
+    BeanUtils.copyProperties(alertmanagerWebhook, alertNotify);
+    // alarmNotify.setMembers(alertmanagerWebhook.getSucribeInfoListOrBuilderList().stream().map(AlarmWebhook.SubcribeInfoOrBuilder::getNoticeId).collect(Collectors.toList()));
+    return alertNotify;
+  }
 
 }

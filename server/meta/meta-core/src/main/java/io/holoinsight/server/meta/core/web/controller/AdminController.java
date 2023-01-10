@@ -22,15 +22,15 @@ import java.util.List;
 @RequestMapping("/webapi/admin")
 public class AdminController {
 
-    @Autowired
-    private MongoDbHelper mongoDbHelper;
+  @Autowired
+  private MongoDbHelper mongoDbHelper;
 
 
-    @RequestMapping("/mongodb/query/{collection}")
-    public JsonResult<Object> query(@PathVariable("collection") String collection) {
+  @RequestMapping("/mongodb/query/{collection}")
+  public JsonResult<Object> query(@PathVariable("collection") String collection) {
 
-        List<Document> all = mongoDbHelper.findAll(Document.class, collection);
-        return JsonResult.createSuccessResult(all);
-    }
+    List<Document> all = mongoDbHelper.findAll(Document.class, collection);
+    return JsonResult.createSuccessResult(all);
+  }
 
 }

@@ -8,16 +8,17 @@ import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 /**
- * <p>created at 2022/11/11
+ * <p>
+ * created at 2022/11/11
  *
  * @author xzchaoo
  */
 public class HoloinsightSecurityWebMvcConfigurer implements WebMvcConfigurer {
-    @Autowired
-    private InternalWebApiInterceptor internalWebApiInterceptor;
+  @Autowired
+  private InternalWebApiInterceptor internalWebApiInterceptor;
 
-    @Override
-    public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(internalWebApiInterceptor);
-    }
+  @Override
+  public void addInterceptors(InterceptorRegistry registry) {
+    registry.addInterceptor(internalWebApiInterceptor);
+  }
 }

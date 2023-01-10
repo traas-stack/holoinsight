@@ -10,13 +10,13 @@ import org.mapstruct.Mapper;
 
 import java.util.List;
 
-@Mapper(componentModel = "spring", uses = { TenantOpsStorageMapper.class })
+@Mapper(componentModel = "spring", uses = {TenantOpsStorageMapper.class})
 public interface TenantOpsConverter {
 
-    TenantOpsDTO doToDTO(TenantOps tenantOps);
+  TenantOpsDTO doToDTO(TenantOps tenantOps);
 
-    TenantOps dtoToDO(TenantOpsDTO tenantOpsDTO);
+  TenantOps dtoToDO(TenantOpsDTO tenantOpsDTO);
 
-    List<TenantOpsDTO> dosToDTOs(Iterable<TenantOps> tenantOps);
+  List<TenantOpsDTO> dosToDTOs(Iterable<TenantOps> tenantOps);
 
 }

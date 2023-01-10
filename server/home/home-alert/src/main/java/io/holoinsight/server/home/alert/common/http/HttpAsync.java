@@ -76,355 +76,360 @@ import java.util.List;
  */
 public class HttpAsync {
 
+  @Getter
+  public static class HttpConfig {
+
+    public static int DEFALUT_CONNECTION_TIMEOUT = 2000;
+
+    public static int DEFALUT_SOCKET_TIMEOUT = 5000;
+
+    private int socketTimeout = DEFALUT_SOCKET_TIMEOUT; // 两个报文之间的间隔时间
+
+    private int connectTimeout = DEFALUT_CONNECTION_TIMEOUT; // 连接超时
+
+    private int connectRequestTimeout = DEFALUT_CONNECTION_TIMEOUT; // 连接池获取连接的时间
+
+    private int poolSize = 3000; // 连接池最大连接数
+
+    private int maxPerRoute = 1500; // 每个主机的并发最多只有1500
+
+    private String username;
+
+    private String password;
+
+    private boolean auth = false;
+
+    private String proxyHost;
+
+    private int proxyPort;
+
+    private boolean proxy = false;
+
+    public void proxy(String host, int port) {
+      proxy = true;
+      this.proxyHost = host;
+      this.proxyPort = port;
+    }
+
+    public void auth(String username, String password) {
+      auth = true;
+      this.username = username;
+      this.password = password;
+    }
+
+    public void connectionRequestTimeout(int timeout) {
+      this.connectRequestTimeout = timeout;
+    }
+
+    public void socketTimeout(int socketTimeout) {
+      this.socketTimeout = socketTimeout;
+    }
+
+    public void connectTimeout(int connectTimeout) {
+      this.connectTimeout = connectTimeout;
+    }
+
+    public void poolSize(int poolSize) {
+      this.poolSize = poolSize;
+    }
+
+    public void maxPerRoute(int maxPerRoute) {
+      this.maxPerRoute = maxPerRoute;
+    }
+
+    public HttpAsyncClient build() throws Exception {
+      return new HttpAsyncClient(this, createAsyncClient());
+    }
+
+    private CloseableHttpAsyncClient createAsyncClient()
+        throws KeyManagementException, UnrecoverableKeyException, NoSuchAlgorithmException,
+        KeyStoreException, MalformedChallengeException, IOReactorException {
+      RequestConfig requestConfig = RequestConfig.custom().setConnectTimeout(connectTimeout)
+          .setSocketTimeout(socketTimeout).build();
+      SSLContext sslcontext = SSLContexts.createDefault();
+      // 设置协议http和https对应的处理socket链接工厂的对象
+      Registry<SchemeIOSessionStrategy> sessionStrategyRegistry = RegistryBuilder
+          .<SchemeIOSessionStrategy>create().register("http", NoopIOSessionStrategy.INSTANCE)
+          .register("https", new SSLIOSessionStrategy(sslcontext)).build();
+
+      // 配置io线程
+      IOReactorConfig ioReactorConfig = IOReactorConfig.custom()
+          .setIoThreadCount(Runtime.getRuntime().availableProcessors()).build();
+      // 设置连接池大小
+      ConnectingIOReactor ioReactor;
+      ioReactor = new DefaultConnectingIOReactor(ioReactorConfig);
+      PoolingNHttpClientConnectionManager conMgr = new PoolingNHttpClientConnectionManager(
+          ioReactor, null, sessionStrategyRegistry, (DnsResolver) null);
+      if (poolSize > 0) {
+        conMgr.setMaxTotal(poolSize);
+      }
+      if (maxPerRoute > 0) {
+        conMgr.setDefaultMaxPerRoute(maxPerRoute);
+      } else {
+        conMgr.setDefaultMaxPerRoute(10);
+      }
+      ConnectionConfig connectionConfig =
+          ConnectionConfig.custom().setMalformedInputAction(CodingErrorAction.IGNORE)
+              .setUnmappableInputAction(CodingErrorAction.IGNORE).setCharset(Consts.UTF_8).build();
+
+      Lookup<AuthSchemeProvider> authSchemeRegistry = RegistryBuilder.<AuthSchemeProvider>create()
+          .register(AuthSchemes.BASIC, new BasicSchemeFactory())
+          .register(AuthSchemes.DIGEST, new DigestSchemeFactory())
+          .register(AuthSchemes.NTLM, new NTLMSchemeFactory())
+          .register(AuthSchemes.SPNEGO, new SPNegoSchemeFactory())
+          .register(AuthSchemes.KERBEROS, new KerberosSchemeFactory()).build();
+      conMgr.setDefaultConnectionConfig(connectionConfig);
+      HttpAsyncClientBuilder builder = HttpAsyncClients.custom().setConnectionManager(conMgr)
+          .setDefaultAuthSchemeRegistry(authSchemeRegistry)
+          .setDefaultCookieStore(new BasicCookieStore()).setDefaultRequestConfig(requestConfig)
+          .setRedirectStrategy(new LaxRedirectStrategy());
+
+      if (auth) {
+        UsernamePasswordCredentials credentials =
+            new UsernamePasswordCredentials(username, password);
+        CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
+        credentialsProvider.setCredentials(AuthScope.ANY, credentials);
+        builder.setDefaultCredentialsProvider(credentialsProvider);
+      }
+      if (proxy) {
+        builder.setProxy(new HttpHost(proxyHost, proxyPort));
+      }
+      return builder.build();
+    }
+  }
+
+  public static interface HttpAsyncHandler {
+
+    public void handle(XHttpResponse rep);
+
+    public void onFail(String msg, Exception e);
+
+  }
+
+  public static interface HttpAsyncRetryHandler {
+
+    public void handle(XHttpResponse rep);
+
+    public void onFail(String msg, Exception e, int retryCnt, int maxRetryTimes);
+  }
+
+  public static class HttpAsyncClient {
+    private HttpAsyncClient(HttpConfig httpConfig, CloseableHttpAsyncClient asyncHttpClient) {
+      this.config = httpConfig;
+      this.asyncHttpClient = asyncHttpClient;
+      this.asyncHttpClient.start();
+    }
+
+    private CloseableHttpAsyncClient asyncHttpClient;
     @Getter
-    public static class HttpConfig {
+    private HttpConfig config;
 
-        public static int DEFALUT_CONNECTION_TIMEOUT = 2000;
-
-        public static int DEFALUT_SOCKET_TIMEOUT     = 5000;
-
-        private int       socketTimeout              = DEFALUT_SOCKET_TIMEOUT;    // 两个报文之间的间隔时间
-
-        private int       connectTimeout             = DEFALUT_CONNECTION_TIMEOUT; // 连接超时
-
-        private int       connectRequestTimeout      = DEFALUT_CONNECTION_TIMEOUT; // 连接池获取连接的时间
-
-        private int       poolSize                   = 3000;                      // 连接池最大连接数
-
-        private int       maxPerRoute                = 1500;                      // 每个主机的并发最多只有1500
-
-        private String    username;
-
-        private String    password;
-
-        private boolean   auth                       = false;
-
-        private String    proxyHost;
-
-        private int       proxyPort;
-
-        private boolean   proxy                      = false;
-
-        public void proxy(String host, int port) {
-            proxy = true;
-            this.proxyHost = host;
-            this.proxyPort = port;
-        }
-
-        public void auth(String username, String password) {
-            auth = true;
-            this.username = username;
-            this.password = password;
-        }
-
-        public void connectionRequestTimeout(int timeout) {
-            this.connectRequestTimeout = timeout;
-        }
-
-        public void socketTimeout(int socketTimeout) {
-            this.socketTimeout = socketTimeout;
-        }
-
-        public void connectTimeout(int connectTimeout) {
-            this.connectTimeout = connectTimeout;
-        }
-
-        public void poolSize(int poolSize) {
-            this.poolSize = poolSize;
-        }
-
-        public void maxPerRoute(int maxPerRoute) {
-            this.maxPerRoute = maxPerRoute;
-        }
-
-        public HttpAsyncClient build() throws Exception {
-            return new HttpAsyncClient(this, createAsyncClient());
-        }
-
-        private CloseableHttpAsyncClient createAsyncClient() throws KeyManagementException, UnrecoverableKeyException,
-                                                            NoSuchAlgorithmException, KeyStoreException,
-                MalformedChallengeException, IOReactorException {
-            RequestConfig requestConfig = RequestConfig.custom().setConnectTimeout(connectTimeout)
-                .setSocketTimeout(socketTimeout).build();
-            SSLContext sslcontext = SSLContexts.createDefault();
-            // 设置协议http和https对应的处理socket链接工厂的对象
-            Registry<SchemeIOSessionStrategy> sessionStrategyRegistry = RegistryBuilder
-                .<SchemeIOSessionStrategy> create().register("http", NoopIOSessionStrategy.INSTANCE)
-                .register("https", new SSLIOSessionStrategy(sslcontext)).build();
-
-            // 配置io线程
-            IOReactorConfig ioReactorConfig = IOReactorConfig.custom()
-                .setIoThreadCount(Runtime.getRuntime().availableProcessors()).build();
-            // 设置连接池大小
-            ConnectingIOReactor ioReactor;
-            ioReactor = new DefaultConnectingIOReactor(ioReactorConfig);
-            PoolingNHttpClientConnectionManager conMgr = new PoolingNHttpClientConnectionManager(ioReactor, null,
-                sessionStrategyRegistry, (DnsResolver) null);
-            if (poolSize > 0) {
-                conMgr.setMaxTotal(poolSize);
-            }
-            if (maxPerRoute > 0) {
-                conMgr.setDefaultMaxPerRoute(maxPerRoute);
-            } else {
-                conMgr.setDefaultMaxPerRoute(10);
-            }
-            ConnectionConfig connectionConfig = ConnectionConfig.custom()
-                .setMalformedInputAction(CodingErrorAction.IGNORE).setUnmappableInputAction(CodingErrorAction.IGNORE)
-                .setCharset(Consts.UTF_8).build();
-
-            Lookup<AuthSchemeProvider> authSchemeRegistry = RegistryBuilder.<AuthSchemeProvider> create()
-                .register(AuthSchemes.BASIC, new BasicSchemeFactory())
-                .register(AuthSchemes.DIGEST, new DigestSchemeFactory())
-                .register(AuthSchemes.NTLM, new NTLMSchemeFactory())
-                .register(AuthSchemes.SPNEGO, new SPNegoSchemeFactory())
-                .register(AuthSchemes.KERBEROS, new KerberosSchemeFactory()).build();
-            conMgr.setDefaultConnectionConfig(connectionConfig);
-            HttpAsyncClientBuilder builder = HttpAsyncClients.custom().setConnectionManager(conMgr)
-                .setDefaultAuthSchemeRegistry(authSchemeRegistry).setDefaultCookieStore(new BasicCookieStore())
-                .setDefaultRequestConfig(requestConfig).setRedirectStrategy(new LaxRedirectStrategy());
-
-            if (auth) {
-                UsernamePasswordCredentials credentials = new UsernamePasswordCredentials(username, password);
-                CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
-                credentialsProvider.setCredentials(AuthScope.ANY, credentials);
-                builder.setDefaultCredentialsProvider(credentialsProvider);
-            }
-            if (proxy) {
-                builder.setProxy(new HttpHost(proxyHost, proxyPort));
-            }
-            return builder.build();
-        }
-    }
-
-    public static interface HttpAsyncHandler {
-
-        public void handle(XHttpResponse rep);
-
-        public void onFail(String msg, Exception e);
-
-    }
-
-    public static interface HttpAsyncRetryHandler {
-
-        public void handle(XHttpResponse rep);
-
-        public void onFail(String msg, Exception e, int retryCnt, int maxRetryTimes);
-    }
-
-    public static class HttpAsyncClient {
-        private HttpAsyncClient(HttpConfig httpConfig, CloseableHttpAsyncClient asyncHttpClient) {
-            this.config = httpConfig;
-            this.asyncHttpClient = asyncHttpClient;
-            this.asyncHttpClient.start();
-        }
-
-        private CloseableHttpAsyncClient asyncHttpClient;
-        @Getter
-        private HttpConfig               config;
-
-        public void request(XHttpRequest req, HttpAsyncHandler handler) {
+    public void request(XHttpRequest req, HttpAsyncHandler handler) {
+      try {
+        HttpRequestBase requestBase = buildHttpRequestBase(req);
+        HttpClientContext localContext = HttpClientContext.create();
+        BasicCookieStore cookieStore = new BasicCookieStore();
+        localContext.setAttribute(HttpClientContext.COOKIE_STORE, cookieStore);
+        asyncHttpClient.execute(requestBase, localContext, new FutureCallback<HttpResponse>() {
+          @Override
+          public void failed(Exception ex) {
             try {
-                HttpRequestBase requestBase = buildHttpRequestBase(req);
-                HttpClientContext localContext = HttpClientContext.create();
-                BasicCookieStore cookieStore = new BasicCookieStore();
-                localContext.setAttribute(HttpClientContext.COOKIE_STORE, cookieStore);
-                asyncHttpClient.execute(requestBase, localContext, new FutureCallback<HttpResponse>() {
-                    @Override
-                    public void failed(Exception ex) {
-                        try {
-                            handler.onFail(req.toString(), ex);
-                        } finally {
-                            requestBase.releaseConnection();
-                        }
-                    }
-
-                    @Override
-                    public void completed(HttpResponse response) {
-                        try {
-                            HttpEntity entity = response.getEntity();
-                            String headerEtag = null;
-                            if (response.containsHeader("ETag")) {
-                                Header etagHeader = response.getFirstHeader("ETag");
-                                if (etagHeader != null) {
-                                    headerEtag = etagHeader.getValue();
-                                }
-                            }
-                            String headerLastModify = null;
-                            if (response.containsHeader("Last-Modified")) {
-                                Header lastModifyHeader = response.getFirstHeader("Last-Modified");
-                                if (lastModifyHeader != null) {
-                                    headerLastModify = lastModifyHeader.getValue();
-                                }
-                            }
-                            byte[] byteResponse = EntityUtils.toByteArray(entity);
-                            XHttpResponse rep = new XHttpResponse(response.getStatusLine().getStatusCode(),
-                                byteResponse == null ? EntityUtils.toString(entity) : null, headerEtag,
-                                headerLastModify);
-                            rep.byteResponse = byteResponse;
-                            handler.handle(rep);
-                        } catch (Exception e) {
-                            failed(e);
-                        } finally {
-                            requestBase.releaseConnection();
-                        }
-                    }
-
-                    @Override
-                    public void cancelled() {
-                        failed(new RuntimeException("The reques is cancelled."));
-                    }
-                });
-
-            } catch (Exception e) {
-                handler.onFail(e.getMessage(), e);
+              handler.onFail(req.toString(), ex);
+            } finally {
+              requestBase.releaseConnection();
             }
-        }
+          }
 
-        public void request(XHttpRequest req, HttpAsyncRetryHandler handler, int retryCnt, int maxRetryTimes) {
+          @Override
+          public void completed(HttpResponse response) {
             try {
-                HttpRequestBase requestBase = buildHttpRequestBase(req);
-                HttpClientContext localContext = HttpClientContext.create();
-                BasicCookieStore cookieStore = new BasicCookieStore();
-                localContext.setAttribute(HttpClientContext.COOKIE_STORE, cookieStore);
-                asyncHttpClient.execute(requestBase, localContext, new FutureCallback<HttpResponse>() {
-                    @Override
-                    public void failed(Exception ex) {
-                        try {
-                            handler.onFail(req.toString(), ex, retryCnt, maxRetryTimes);
-                        } finally {
-                            requestBase.releaseConnection();
-                        }
-                    }
-
-                    @Override
-                    public void completed(HttpResponse response) {
-                        try {
-                            HttpEntity entity = response.getEntity();
-                            String headerEtag = null;
-                            if (response.containsHeader("ETag")) {
-                                Header etagHeader = response.getFirstHeader("ETag");
-                                if (etagHeader != null) {
-                                    headerEtag = etagHeader.getValue();
-                                }
-                            }
-                            String headerLastModify = null;
-                            if (response.containsHeader("Last-Modified")) {
-                                Header lastModifyHeader = response.getFirstHeader("Last-Modified");
-                                if (lastModifyHeader != null) {
-                                    headerLastModify = lastModifyHeader.getValue();
-                                }
-                            }
-                            byte[] byteResponse = EntityUtils.toByteArray(entity);
-                            XHttpResponse rep = new XHttpResponse(response.getStatusLine().getStatusCode(),
-                                    byteResponse == null ? EntityUtils.toString(entity) : null, headerEtag,
-                                    headerLastModify);
-                            rep.byteResponse = byteResponse;
-                            handler.handle(rep);
-                        } catch (Exception e) {
-                            failed(e);
-                        } finally {
-                            requestBase.releaseConnection();
-                        }
-                    }
-
-                    @Override
-                    public void cancelled() {
-                        failed(new RuntimeException("The reques is cancelled."));
-                    }
-                });
-
+              HttpEntity entity = response.getEntity();
+              String headerEtag = null;
+              if (response.containsHeader("ETag")) {
+                Header etagHeader = response.getFirstHeader("ETag");
+                if (etagHeader != null) {
+                  headerEtag = etagHeader.getValue();
+                }
+              }
+              String headerLastModify = null;
+              if (response.containsHeader("Last-Modified")) {
+                Header lastModifyHeader = response.getFirstHeader("Last-Modified");
+                if (lastModifyHeader != null) {
+                  headerLastModify = lastModifyHeader.getValue();
+                }
+              }
+              byte[] byteResponse = EntityUtils.toByteArray(entity);
+              XHttpResponse rep = new XHttpResponse(response.getStatusLine().getStatusCode(),
+                  byteResponse == null ? EntityUtils.toString(entity) : null, headerEtag,
+                  headerLastModify);
+              rep.byteResponse = byteResponse;
+              handler.handle(rep);
             } catch (Exception e) {
-                handler.onFail(e.getMessage(), e, retryCnt, maxRetryTimes);
+              failed(e);
+            } finally {
+              requestBase.releaseConnection();
             }
-        }
+          }
 
-        private byte[] download(HttpEntity entity) throws Exception {
-            long length = entity.getContentLength();
-            if (length <= 0) {
-                return null;
-            }
-            InputStream in = entity.getContent();
-            return ByteUtil.readStream(in);
-        }
+          @Override
+          public void cancelled() {
+            failed(new RuntimeException("The reques is cancelled."));
+          }
+        });
 
-        private HttpRequestBase buildHttpRequestBase(XHttpRequest req) throws Exception {
-            HttpRequestBase base = doBuildHttpRequestBase(req);
-            base.setConfig(buildTimeOutConfig(req.timeoutMillisecond));
-            if (req.inHeaders != null) {
-                base.setHeaders(Util.buildHeaders(req.inHeaders));
-            }
-            return base;
-        }
-
-        /**
-         * 构建一个自定义的超时参数
-         */
-        private RequestConfig buildTimeOutConfig(int timeoutMillisecond) {
-            Builder builder = RequestConfig.custom();
-            if (timeoutMillisecond <= 0) {
-                timeoutMillisecond = config.getSocketTimeout();
-            }
-            builder.setConnectionRequestTimeout(config.getConnectRequestTimeout());
-            builder.setConnectTimeout(timeoutMillisecond);
-            builder.setSocketTimeout(timeoutMillisecond);
-            RequestConfig requestConfig = builder.build();
-            return requestConfig;
-        }
-
-        private static HttpRequestBase doBuildHttpRequestBase(XHttpRequest req) throws Exception {
-            String method = req.method.toLowerCase();
-            URI uri = URI.create(req.url);
-            if (req.params != null && !req.params.isEmpty()) {
-                List<NameValuePair> pairs = new LinkedList<>();
-                req.params.forEach((k, v) -> {
-                    pairs.add(new BasicNameValuePair(k, v + ""));
-                });
-                uri = new URIBuilder(uri).addParameters(pairs).build();
-            }
-            if (method.equals("get")) {
-                HttpGet get = new HttpGet(uri);
-                return get;
-            } else if (method.equals("post")) {
-                HttpPost post = new HttpPost(uri);
-                AbstractHttpEntity httpEntity = null;
-                if (req.postBody != null) {
-                    httpEntity = new ByteArrayEntity(req.postBody);
-                } else if (req.postForm != null) {
-                    httpEntity = new UrlEncodedFormEntity(Util.buildFormPostBody(req.postForm));
-                } else if (req.raw != null) {
-                    httpEntity = new StringEntity(req.raw);
-                }
-                if (httpEntity != null) {
-                    if (req.contentType != null) { httpEntity.setContentType(req.contentType); }
-                    post.setEntity(httpEntity);
-                }
-                return post;
-            } else if (method.equals("put")) {
-                HttpPut put = new HttpPut(uri);
-                AbstractHttpEntity httpEntity = null;
-                if (req.raw != null) {
-                    httpEntity = new StringEntity(req.raw);
-                }
-                if (req.file != null) {
-                    File file = new File(req.file);
-                    httpEntity = new NFileEntity(file);
-                }
-                if (httpEntity != null) {
-                    if (req.contentType != null) {
-                        httpEntity.setContentType(req.contentType);
-                    }
-                    if (req.charset != null) {
-                        httpEntity.setContentEncoding(req.charset);
-                    }
-                    put.setEntity(httpEntity);
-                }
-                return put;
-            } else if (method.equals("delete")) {
-                HttpDelete delete = new HttpDelete(uri);
-                return delete;
-            } else {
-                throw new HttpException("unsupport method");
-            }
-        }
+      } catch (Exception e) {
+        handler.onFail(e.getMessage(), e);
+      }
     }
+
+    public void request(XHttpRequest req, HttpAsyncRetryHandler handler, int retryCnt,
+        int maxRetryTimes) {
+      try {
+        HttpRequestBase requestBase = buildHttpRequestBase(req);
+        HttpClientContext localContext = HttpClientContext.create();
+        BasicCookieStore cookieStore = new BasicCookieStore();
+        localContext.setAttribute(HttpClientContext.COOKIE_STORE, cookieStore);
+        asyncHttpClient.execute(requestBase, localContext, new FutureCallback<HttpResponse>() {
+          @Override
+          public void failed(Exception ex) {
+            try {
+              handler.onFail(req.toString(), ex, retryCnt, maxRetryTimes);
+            } finally {
+              requestBase.releaseConnection();
+            }
+          }
+
+          @Override
+          public void completed(HttpResponse response) {
+            try {
+              HttpEntity entity = response.getEntity();
+              String headerEtag = null;
+              if (response.containsHeader("ETag")) {
+                Header etagHeader = response.getFirstHeader("ETag");
+                if (etagHeader != null) {
+                  headerEtag = etagHeader.getValue();
+                }
+              }
+              String headerLastModify = null;
+              if (response.containsHeader("Last-Modified")) {
+                Header lastModifyHeader = response.getFirstHeader("Last-Modified");
+                if (lastModifyHeader != null) {
+                  headerLastModify = lastModifyHeader.getValue();
+                }
+              }
+              byte[] byteResponse = EntityUtils.toByteArray(entity);
+              XHttpResponse rep = new XHttpResponse(response.getStatusLine().getStatusCode(),
+                  byteResponse == null ? EntityUtils.toString(entity) : null, headerEtag,
+                  headerLastModify);
+              rep.byteResponse = byteResponse;
+              handler.handle(rep);
+            } catch (Exception e) {
+              failed(e);
+            } finally {
+              requestBase.releaseConnection();
+            }
+          }
+
+          @Override
+          public void cancelled() {
+            failed(new RuntimeException("The reques is cancelled."));
+          }
+        });
+
+      } catch (Exception e) {
+        handler.onFail(e.getMessage(), e, retryCnt, maxRetryTimes);
+      }
+    }
+
+    private byte[] download(HttpEntity entity) throws Exception {
+      long length = entity.getContentLength();
+      if (length <= 0) {
+        return null;
+      }
+      InputStream in = entity.getContent();
+      return ByteUtil.readStream(in);
+    }
+
+    private HttpRequestBase buildHttpRequestBase(XHttpRequest req) throws Exception {
+      HttpRequestBase base = doBuildHttpRequestBase(req);
+      base.setConfig(buildTimeOutConfig(req.timeoutMillisecond));
+      if (req.inHeaders != null) {
+        base.setHeaders(Util.buildHeaders(req.inHeaders));
+      }
+      return base;
+    }
+
+    /**
+     * 构建一个自定义的超时参数
+     */
+    private RequestConfig buildTimeOutConfig(int timeoutMillisecond) {
+      Builder builder = RequestConfig.custom();
+      if (timeoutMillisecond <= 0) {
+        timeoutMillisecond = config.getSocketTimeout();
+      }
+      builder.setConnectionRequestTimeout(config.getConnectRequestTimeout());
+      builder.setConnectTimeout(timeoutMillisecond);
+      builder.setSocketTimeout(timeoutMillisecond);
+      RequestConfig requestConfig = builder.build();
+      return requestConfig;
+    }
+
+    private static HttpRequestBase doBuildHttpRequestBase(XHttpRequest req) throws Exception {
+      String method = req.method.toLowerCase();
+      URI uri = URI.create(req.url);
+      if (req.params != null && !req.params.isEmpty()) {
+        List<NameValuePair> pairs = new LinkedList<>();
+        req.params.forEach((k, v) -> {
+          pairs.add(new BasicNameValuePair(k, v + ""));
+        });
+        uri = new URIBuilder(uri).addParameters(pairs).build();
+      }
+      if (method.equals("get")) {
+        HttpGet get = new HttpGet(uri);
+        return get;
+      } else if (method.equals("post")) {
+        HttpPost post = new HttpPost(uri);
+        AbstractHttpEntity httpEntity = null;
+        if (req.postBody != null) {
+          httpEntity = new ByteArrayEntity(req.postBody);
+        } else if (req.postForm != null) {
+          httpEntity = new UrlEncodedFormEntity(Util.buildFormPostBody(req.postForm));
+        } else if (req.raw != null) {
+          httpEntity = new StringEntity(req.raw);
+        }
+        if (httpEntity != null) {
+          if (req.contentType != null) {
+            httpEntity.setContentType(req.contentType);
+          }
+          post.setEntity(httpEntity);
+        }
+        return post;
+      } else if (method.equals("put")) {
+        HttpPut put = new HttpPut(uri);
+        AbstractHttpEntity httpEntity = null;
+        if (req.raw != null) {
+          httpEntity = new StringEntity(req.raw);
+        }
+        if (req.file != null) {
+          File file = new File(req.file);
+          httpEntity = new NFileEntity(file);
+        }
+        if (httpEntity != null) {
+          if (req.contentType != null) {
+            httpEntity.setContentType(req.contentType);
+          }
+          if (req.charset != null) {
+            httpEntity.setContentEncoding(req.charset);
+          }
+          put.setEntity(httpEntity);
+        }
+        return put;
+      } else if (method.equals("delete")) {
+        HttpDelete delete = new HttpDelete(uri);
+        return delete;
+      } else {
+        throw new HttpException("unsupport method");
+      }
+    }
+  }
 }

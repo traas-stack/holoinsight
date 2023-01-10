@@ -17,27 +17,29 @@ import io.holoinsight.server.common.dao.entity.GaeaConfigDOExample;
 import io.holoinsight.server.common.dao.mapper.GaeaConfigDOMapper;
 
 /**
- * <p>created at 2022/2/25
+ * <p>
+ * created at 2022/2/25
  *
  * @author xzchaoo
  */
 class ConfigDao {
-    private static final Logger LOGGER = LoggerFactory.getLogger(ConfigDao.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(ConfigDao.class);
 
-    private final GaeaConfigDOMapper mapper;
+  private final GaeaConfigDOMapper mapper;
 
-    ConfigDao(GaeaConfigDOMapper mapper) {
-        this.mapper = Objects.requireNonNull(mapper);
-    }
+  ConfigDao(GaeaConfigDOMapper mapper) {
+    this.mapper = Objects.requireNonNull(mapper);
+  }
 
-    Map<String, String> getConfig() {
-        List<GaeaConfigDO> configs = mapper.selectByExampleWithBLOBs(GaeaConfigDOExample.newAndCreateCriteria() //
+  Map<String, String> getConfig() {
+    List<GaeaConfigDO> configs =
+        mapper.selectByExampleWithBLOBs(GaeaConfigDOExample.newAndCreateCriteria() //
             .andTenantEqualTo(ConfigService.TENANT) //
             .example());
-        Map<String, String> map = Maps.newHashMapWithExpectedSize(configs.size());
-        for (GaeaConfigDO c : configs) {
-            map.put(c.getConfKey(), c.getConfValue());
-        }
-        return map;
+    Map<String, String> map = Maps.newHashMapWithExpectedSize(configs.size());
+    for (GaeaConfigDO c : configs) {
+      map.put(c.getConfKey(), c.getConfValue());
     }
+    return map;
+  }
 }

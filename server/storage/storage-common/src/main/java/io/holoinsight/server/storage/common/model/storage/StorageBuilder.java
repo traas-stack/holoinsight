@@ -11,7 +11,7 @@ import java.util.Map;
  */
 public interface StorageBuilder<T> {
 
-    T storage2Entity(Map<String, Object> map);
+  T storage2Entity(Map<String, Object> map);
 
-    Map<String, Object> entity2Storage(T entity);
+  Map<String, Object> entity2Storage(T entity);
 }

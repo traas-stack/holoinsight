@@ -18,16 +18,16 @@ import java.util.List;
 @ConditionalOnFeature("trace")
 public class NetworkAddressMappingServiceImpl implements NetworkAddressMappingService {
 
-    @Autowired
-    private NetworkAddressMappingEsService networkAddressMappingEsService;
+  @Autowired
+  private NetworkAddressMappingEsService networkAddressMappingEsService;
 
-    @Override
-    public void insert(List<NetworkAddressMappingEsDO> addressMappingList) throws IOException {
-        networkAddressMappingEsService.batchInsert(addressMappingList);
-    }
+  @Override
+  public void insert(List<NetworkAddressMappingEsDO> addressMappingList) throws IOException {
+    networkAddressMappingEsService.batchInsert(addressMappingList);
+  }
 
-    @Override
-    public List<NetworkAddressMappingEsDO> loadByTime(long timeBucketInMinute) throws IOException {
-        return networkAddressMappingEsService.loadByTime(timeBucketInMinute);
-    }
+  @Override
+  public List<NetworkAddressMappingEsDO> loadByTime(long timeBucketInMinute) throws IOException {
+    return networkAddressMappingEsService.loadByTime(timeBucketInMinute);
+  }
 }

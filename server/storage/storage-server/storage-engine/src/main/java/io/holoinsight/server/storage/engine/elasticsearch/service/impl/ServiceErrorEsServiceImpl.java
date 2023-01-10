@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 @ConditionalOnFeature("trace")
 @Service
-public class ServiceErrorEsServiceImpl extends RecordEsService<ServiceErrorEsDO> implements ServiceErrorEsService {
+public class ServiceErrorEsServiceImpl extends RecordEsService<ServiceErrorEsDO>
+    implements ServiceErrorEsService {
 
 }

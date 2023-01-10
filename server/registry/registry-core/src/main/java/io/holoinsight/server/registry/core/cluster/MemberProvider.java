@@ -6,10 +6,11 @@ package io.holoinsight.server.registry.core.cluster;
 import java.util.Set;
 
 /**
- * <p>created at 2022/3/12
+ * <p>
+ * created at 2022/3/12
  *
  * @author zzhb101
  */
 public interface MemberProvider {
-    Set<Endpoint> members();
+  Set<Endpoint> members();
 }

@@ -1,7 +1,6 @@
 /*
  * Copyright 2022 Holoinsight Project Authors. Licensed under Apache-2.0.
  */
-
 package io.holoinsight.server.home.alert.model.data;
 
 import lombok.Data;
@@ -16,13 +15,13 @@ import java.util.List;
 @Data
 public class PqlRule {
 
-    /**
-     * pql
-     */
-    private String pql;
+  /**
+   * pql
+   */
+  private String pql;
 
-    /**
-     * 告警pql查询数据
-     */
-    private List<DataResult> dataResult;
+  /**
+   * 告警pql查询数据
+   */
+  private List<DataResult> dataResult;
 }

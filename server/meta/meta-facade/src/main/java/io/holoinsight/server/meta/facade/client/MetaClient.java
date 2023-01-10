@@ -19,43 +19,44 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class MetaClient {
 
-    private static volatile TableClientService    tableClientService;
-    private static volatile DataClientService     dataClientService;
-    private static volatile AgentHeartBeatService agentHeartBeatService;
+  private static volatile TableClientService tableClientService;
+  private static volatile DataClientService dataClientService;
+  private static volatile AgentHeartBeatService agentHeartBeatService;
 
-    public static DataClientService getDataClientService(String domain) {
+  public static DataClientService getDataClientService(String domain) {
+    if (dataClientService == null) {
+      synchronized (MetaClient.class) {
         if (dataClientService == null) {
-            synchronized (MetaClient.class) {
-                if (dataClientService == null) {
-                    log.info("new instance of dataClientService, target address={}, remote={}", null, false);
-                    dataClientService = DataClientServiceImpl.getInstance(domain);
-                }
-            }
+          log.info("new instance of dataClientService, target address={}, remote={}", null, false);
+          dataClientService = DataClientServiceImpl.getInstance(domain);
         }
-        return dataClientService;
+      }
     }
+    return dataClientService;
+  }
 
-    public static TableClientService getTableClientService(String domain) {
+  public static TableClientService getTableClientService(String domain) {
+    if (tableClientService == null) {
+      synchronized (MetaClient.class) {
         if (tableClientService == null) {
-            synchronized (MetaClient.class) {
-                if (tableClientService == null) {
-                    log.info("new instance of tableClientService, target address={}, remote={}", null, false);
-                    tableClientService = TableClientServiceImpl.getInstance(domain);
-                }
-            }
+          log.info("new instance of tableClientService, target address={}, remote={}", null, false);
+          tableClientService = TableClientServiceImpl.getInstance(domain);
         }
-        return tableClientService;
+      }
     }
+    return tableClientService;
+  }
 
-    public static AgentHeartBeatService getAgentHeartBeatService(String domain) {
+  public static AgentHeartBeatService getAgentHeartBeatService(String domain) {
+    if (agentHeartBeatService == null) {
+      synchronized (MetaClient.class) {
         if (agentHeartBeatService == null) {
-            synchronized (MetaClient.class) {
-                if (agentHeartBeatService == null) {
-                    log.info("new instance of agentHeartBeatService, target address={}, remote={}", null, false);
-                    agentHeartBeatService = AgentHeartBeatServiceImpl.getInstance(domain);
-                }
-            }
+          log.info("new instance of agentHeartBeatService, target address={}, remote={}", null,
+              false);
+          agentHeartBeatService = AgentHeartBeatServiceImpl.getInstance(domain);
         }
-        return agentHeartBeatService;
+      }
     }
+    return agentHeartBeatService;
+  }
 }

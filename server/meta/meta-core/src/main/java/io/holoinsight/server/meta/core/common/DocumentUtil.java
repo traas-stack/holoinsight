@@ -19,23 +19,23 @@ import java.util.Map;
  */
 public class DocumentUtil {
 
-    public static List<Document> parseList(List<Map<String, Object>> rows) {
-        List<Document> list = new ArrayList<>();
-        rows.forEach(row ->
-                list.add(Document.parse(J.toJson(row)))
-        );
-        return list;
+  public static List<Document> parseList(List<Map<String, Object>> rows) {
+    List<Document> list = new ArrayList<>();
+    rows.forEach(row -> list.add(Document.parse(J.toJson(row))));
+    return list;
+  }
+
+  public static List<Map<String, Object>> toMapList(List<Document> documents) {
+    List<Map<String, Object>> mapList = new ArrayList<>();
+
+    if (CollectionUtils.isEmpty(documents)) {
+      return mapList;
     }
 
-    public static List<Map<String, Object>> toMapList(List<Document> documents) {
-        List<Map<String, Object>> mapList = new ArrayList<>();
-
-        if (CollectionUtils.isEmpty(documents)) { return mapList; }
-
-        for (Document document : documents) {
-            mapList.add(new HashMap<String, Object>(document));
-        }
-
-        return mapList;
+    for (Document document : documents) {
+      mapList.add(new HashMap<String, Object>(document));
     }
+
+    return mapList;
+  }
 }

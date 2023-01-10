@@ -12,32 +12,32 @@ import java.util.Date;
 @Data
 public class IntegrationPlugin {
 
-    @TableId(type = IdType.AUTO)
-    public Long   id;
+  @TableId(type = IdType.AUTO)
+  public Long id;
 
-    public String tenant;
+  public String tenant;
 
-    public String name;
+  public String name;
 
-    public String product;
+  public String product;
 
-    public String type;
+  public String type;
 
-    public boolean status;
+  public boolean status;
 
-    public String json;
+  public String json;
 
-    public String collectRange;
+  public String collectRange;
 
-    public String template;
+  public String template;
 
-    public String creator;
+  public String creator;
 
-    public String modifier;
+  public String modifier;
 
-    public Date gmtCreate;
+  public Date gmtCreate;
 
-    public Date gmtModified;
+  public Date gmtModified;
 
-    public String version;
+  public String version;
 }

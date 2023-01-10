@@ -2,7 +2,6 @@
  * Copyright 2022 Holoinsight Project Authors. Licensed under Apache-2.0.
  */
 
-
 package io.holoinsight.server.home.biz.service.impl;
 
 import io.holoinsight.server.home.biz.service.TenantService;
@@ -28,42 +27,43 @@ import java.util.Map;
 @Service
 public class TenantServiceImpl extends ServiceImpl<TenantMapper, Tenant> implements TenantService {
 
-    @Autowired
-    private TenantConverter tenantConverter;
+  @Autowired
+  private TenantConverter tenantConverter;
 
-    public List<TenantDTO> queryAll() {
+  public List<TenantDTO> queryAll() {
 
-        return tenantConverter.dosToDTOs(list());
-    }
+    return tenantConverter.dosToDTOs(list());
+  }
 
-    public TenantDTO get(Long id) {
-        Tenant byId = getById(id);
-        return tenantConverter.doToDTO(byId);
-    }
+  public TenantDTO get(Long id) {
+    Tenant byId = getById(id);
+    return tenantConverter.doToDTO(byId);
+  }
 
-    @Override
-    public TenantDTO getByCode(String code) {
-        Map<String, Object> columnMap = new HashMap<>();
-        columnMap.put("code", code);
-        List<Tenant> tenants = listByMap(columnMap);
-        if(CollectionUtils.isEmpty(tenants)) return null;
-        return tenantConverter.doToDTO(tenants.get(0));
-    }
+  @Override
+  public TenantDTO getByCode(String code) {
+    Map<String, Object> columnMap = new HashMap<>();
+    columnMap.put("code", code);
+    List<Tenant> tenants = listByMap(columnMap);
+    if (CollectionUtils.isEmpty(tenants))
+      return null;
+    return tenantConverter.doToDTO(tenants.get(0));
+  }
 
-    public void create(TenantDTO tenantDTO) {
-        tenantDTO.setGmtCreate(new Date());
-        tenantDTO.setGmtModified(new Date());
+  public void create(TenantDTO tenantDTO) {
+    tenantDTO.setGmtCreate(new Date());
+    tenantDTO.setGmtModified(new Date());
 
-        save(tenantConverter.dtoToDO(tenantDTO));
-    }
+    save(tenantConverter.dtoToDO(tenantDTO));
+  }
 
-    public void update(TenantDTO tenantDTO) {
-        tenantDTO.setGmtModified(new Date());
-        updateById(tenantConverter.dtoToDO(tenantDTO));
-    }
+  public void update(TenantDTO tenantDTO) {
+    tenantDTO.setGmtModified(new Date());
+    updateById(tenantConverter.dtoToDO(tenantDTO));
+  }
 
-    public void deleteById(Long id) {
-        removeById(id);
-    }
+  public void deleteById(Long id) {
+    removeById(id);
+  }
 
 }

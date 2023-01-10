@@ -2,7 +2,6 @@
  * Copyright 2022 Holoinsight Project Authors. Licensed under Apache-2.0.
  */
 
-
 package io.holoinsight.server.home.web.controller;
 
 import io.holoinsight.server.home.biz.service.AlarmHistoryService;
@@ -38,53 +37,56 @@ import org.springframework.web.bind.annotation.RestController;
 @TokenUrls("/webapi/alarmHistory/query")
 public class AlarmHistoryFacadeImpl extends BaseFacade {
 
-    @Autowired
-    private AlarmHistoryService alarmHistoryService;
+  @Autowired
+  private AlarmHistoryService alarmHistoryService;
 
 
-    @GetMapping("/query/{id}")
-    @ResponseBody
-    @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.EDIT)
-    public JsonResult<AlarmHistoryDTO> queryById(@PathVariable("id") Long id) {
-        final JsonResult<AlarmHistoryDTO> result = new JsonResult<>();
-        facadeTemplate.manage(result, new ManageCallback() {
-            @Override
-            public void checkParameter() {
-                ParaCheckUtil.checkParaNotNull(id, "id");
-            }
+  @GetMapping("/query/{id}")
+  @ResponseBody
+  @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.EDIT)
+  public JsonResult<AlarmHistoryDTO> queryById(@PathVariable("id") Long id) {
+    final JsonResult<AlarmHistoryDTO> result = new JsonResult<>();
+    facadeTemplate.manage(result, new ManageCallback() {
+      @Override
+      public void checkParameter() {
+        ParaCheckUtil.checkParaNotNull(id, "id");
+      }
 
-            @Override
-            public void doManage() {
+      @Override
+      public void doManage() {
 
-                AlarmHistoryDTO save = alarmHistoryService.queryById(id, RequestContext.getContext().ms.getTenant());
-                JsonResult.createSuccessResult(result, save);
-            }
-        });
+        AlarmHistoryDTO save =
+            alarmHistoryService.queryById(id, RequestContext.getContext().ms.getTenant());
+        JsonResult.createSuccessResult(result, save);
+      }
+    });
 
-        return result;
-    }
-    
-    @PostMapping("/pageQuery")
-    @ResponseBody
-    @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.VIEW)
-    public JsonResult<MonitorPageResult<AlarmHistoryDTO>> pageQuery(@RequestBody MonitorPageRequest<AlarmHistoryDTO> pageRequest) {
-        final JsonResult<MonitorPageResult<AlarmHistoryDTO>> result = new JsonResult<>();
-        facadeTemplate.manage(result, new ManageCallback() {
-            @Override
-            public void checkParameter() {
-                ParaCheckUtil.checkParaNotNull(pageRequest.getTarget(), "target");
-            }
+    return result;
+  }
 
-            @Override
-            public void doManage() {
-                MonitorScope ms = RequestContext.getContext().ms;
-                if (null != ms && !StringUtils.isEmpty(ms.tenant)) {
-                    pageRequest.getTarget().setTenant(ms.tenant);
-                }
-                JsonResult.createSuccessResult(result, alarmHistoryService.getListByPage(pageRequest, null));
-            }
-        });
+  @PostMapping("/pageQuery")
+  @ResponseBody
+  @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.VIEW)
+  public JsonResult<MonitorPageResult<AlarmHistoryDTO>> pageQuery(
+      @RequestBody MonitorPageRequest<AlarmHistoryDTO> pageRequest) {
+    final JsonResult<MonitorPageResult<AlarmHistoryDTO>> result = new JsonResult<>();
+    facadeTemplate.manage(result, new ManageCallback() {
+      @Override
+      public void checkParameter() {
+        ParaCheckUtil.checkParaNotNull(pageRequest.getTarget(), "target");
+      }
 
-        return result;
-    }
+      @Override
+      public void doManage() {
+        MonitorScope ms = RequestContext.getContext().ms;
+        if (null != ms && !StringUtils.isEmpty(ms.tenant)) {
+          pageRequest.getTarget().setTenant(ms.tenant);
+        }
+        JsonResult.createSuccessResult(result,
+            alarmHistoryService.getListByPage(pageRequest, null));
+      }
+    });
+
+    return result;
+  }
 }

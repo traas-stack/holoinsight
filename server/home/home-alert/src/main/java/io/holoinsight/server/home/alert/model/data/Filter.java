@@ -12,10 +12,10 @@ import lombok.Data;
 @Data
 public class Filter {
 
-    private String type;
+  private String type;
 
-    private String name;
+  private String name;
 
-    private String value;
+  private String value;
 
 }

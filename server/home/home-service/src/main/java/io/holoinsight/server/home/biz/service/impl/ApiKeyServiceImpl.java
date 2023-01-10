@@ -2,7 +2,6 @@
  * Copyright 2022 Holoinsight Project Authors. Licensed under Apache-2.0.
  */
 
-
 package io.holoinsight.server.home.biz.service.impl;
 
 import io.holoinsight.server.home.biz.service.ApiKeyService;
@@ -19,12 +18,12 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class ApiKeyServiceImpl extends ServiceImpl<ApiKeyMapper, ApiKey> implements ApiKeyService {
-    @Override
-    public ApiKey queryById(Long id, String tenant) {
-        QueryWrapper<ApiKey> wrapper = new QueryWrapper<>();
-        wrapper.eq("tenant", tenant);
-        wrapper.eq("id", id);
-        wrapper.last("LIMIT 1");
-        return this.getOne(wrapper);
-    }
+  @Override
+  public ApiKey queryById(Long id, String tenant) {
+    QueryWrapper<ApiKey> wrapper = new QueryWrapper<>();
+    wrapper.eq("tenant", tenant);
+    wrapper.eq("id", id);
+    wrapper.last("LIMIT 1");
+    return this.getOne(wrapper);
+  }
 }

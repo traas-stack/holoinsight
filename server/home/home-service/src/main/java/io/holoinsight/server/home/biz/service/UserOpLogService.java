@@ -2,7 +2,6 @@
  * Copyright 2022 Holoinsight Project Authors. Licensed under Apache-2.0.
  */
 
-
 package io.holoinsight.server.home.biz.service;
 
 import io.holoinsight.server.home.common.util.page.MonitorTimePageRequest;
@@ -17,12 +16,12 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface UserOpLogService extends IService<UserOpLog> {
 
-    UserOpLog queryById(Long id, String tenant);
+  UserOpLog queryById(Long id, String tenant);
 
-    UserOpLog create(UserOpLog userOpLog);
+  UserOpLog create(UserOpLog userOpLog);
 
-    MonitorPageResult<UserOpLog> getListByPage(MonitorTimePageRequest<UserOpLog> userOpLogRequest);
+  MonitorPageResult<UserOpLog> getListByPage(MonitorTimePageRequest<UserOpLog> userOpLogRequest);
 
-    UserOpLog append(String tableName, String tableEntityId, String opType, String user,
-                     String tenant, String before, String after, String relate, String name);
+  UserOpLog append(String tableName, String tableEntityId, String opType, String user,
+      String tenant, String before, String after, String relate, String name);
 }

@@ -30,33 +30,34 @@ import java.util.List;
 @ConditionalOnFeature("trace")
 public class TraceServiceImpl implements TraceService {
 
-    @Autowired
-    private SegmentEsService segmentEsService;
+  @Autowired
+  private SegmentEsService segmentEsService;
 
-    @Autowired
-    private SpanEsService spanEsService;
+  @Autowired
+  private SpanEsService spanEsService;
 
-    @Override
-    public TraceBrief queryBasicTraces(String tenant, String serviceName, String serviceInstanceName,
-                                       String endpointName, List<String> traceIds, int minTraceDuration, int maxTraceDuration,
-                                       TraceState traceState, QueryOrder queryOrder, Pagination paging,
-                                       long start, long end, List<Tag> tags) throws IOException {
-        return spanEsService.queryBasicTraces(tenant, serviceName, serviceInstanceName, endpointName, traceIds, minTraceDuration,
-                maxTraceDuration, traceState, queryOrder, paging, start, end, tags);
-    }
+  @Override
+  public TraceBrief queryBasicTraces(String tenant, String serviceName, String serviceInstanceName,
+      String endpointName, List<String> traceIds, int minTraceDuration, int maxTraceDuration,
+      TraceState traceState, QueryOrder queryOrder, Pagination paging, long start, long end,
+      List<Tag> tags) throws IOException {
+    return spanEsService.queryBasicTraces(tenant, serviceName, serviceInstanceName, endpointName,
+        traceIds, minTraceDuration, maxTraceDuration, traceState, queryOrder, paging, start, end,
+        tags);
+  }
 
-    @Override
-    public Trace queryTrace(String traceId) throws IOException {
-        return spanEsService.queryTrace(traceId);
-    }
+  @Override
+  public Trace queryTrace(String traceId) throws IOException {
+    return spanEsService.queryTrace(traceId);
+  }
 
-    @Override
-    public void insert(List<SegmentEsDO> segments) throws IOException {
-        segmentEsService.batchInsert(segments);
-    }
+  @Override
+  public void insert(List<SegmentEsDO> segments) throws IOException {
+    segmentEsService.batchInsert(segments);
+  }
 
-    @Override
-    public void insertSpans(List<SpanEsDO> spans) throws IOException {
-        spanEsService.batchInsert(spans);
-    }
+  @Override
+  public void insertSpans(List<SpanEsDO> spans) throws IOException {
+    spanEsService.batchInsert(spans);
+  }
 }

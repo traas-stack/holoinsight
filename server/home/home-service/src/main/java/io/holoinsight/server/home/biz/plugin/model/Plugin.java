@@ -13,26 +13,26 @@ import org.apache.commons.lang3.StringUtils;
  */
 public abstract class Plugin {
 
-    public String version;
-    public String name;
+  public String version;
+  public String name;
 
-    public void setVersion(String version) {
-        this.version = version;
+  public void setVersion(String version) {
+    this.version = version;
+  }
+
+  public void setName(String name) {
+    this.name = name;
+  }
+
+  public abstract PluginType getPluginType();
+
+
+  protected void checkTenantAndName() {
+    if (StringUtils.isEmpty(this.version)) {
+      throw new IllegalArgumentException("plugin version can not be empty.");
     }
-
-    public void setName(String name) {
-        this.name = name;
+    if (StringUtils.isEmpty(this.name)) {
+      throw new IllegalArgumentException("plugin name can not be empty.");
     }
-
-    public abstract PluginType getPluginType();
-
-
-    protected void checkTenantAndName(){
-        if(StringUtils.isEmpty(this.version)){
-            throw new IllegalArgumentException("plugin version can not be empty.");
-        }
-        if(StringUtils.isEmpty(this.name)){
-            throw new IllegalArgumentException("plugin name can not be empty.");
-        }
-    }
+  }
 }

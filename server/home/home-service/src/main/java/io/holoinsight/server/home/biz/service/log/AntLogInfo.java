@@ -1,7 +1,6 @@
 /*
  * Copyright 2022 Holoinsight Project Authors. Licensed under Apache-2.0.
  */
-
 package io.holoinsight.server.home.biz.service.log;
 
 import lombok.Data;
@@ -14,54 +13,54 @@ import lombok.Data;
 @Data
 public class AntLogInfo {
 
-    /**
-     * project id in DTM DB
-     */
-    private Integer projectId;
+  /**
+   * project id in DTM DB
+   */
+  private Integer projectId;
 
-    /**
-     * SLS project
-     */
-    private String projectName;
+  /**
+   * SLS project
+   */
+  private String projectName;
 
-    /**
-     * store ID
-     */
-    private Integer storeId;
+  /**
+   * store ID
+   */
+  private Integer storeId;
 
-    /**
-     * SLS logstore
-     */
-    private String logstoreName;
+  /**
+   * SLS logstore
+   */
+  private String logstoreName;
 
-    /**
-     * 完整路径表示
-     */
-    private String fullPath;
+  /**
+   * 完整路径表示
+   */
+  private String fullPath;
 
-    /**
-     * 目录部分
-     */
-    private String logPath;
+  /**
+   * 目录部分
+   */
+  private String logPath;
 
-    /**
-     * 文件名
-     */
-    private String filePattern;
+  /**
+   * 文件名
+   */
+  private String filePattern;
 
-    /**
-     * 目录下的最大遍历深度
-     */
-    private Integer maxDepth;
+  /**
+   * 目录下的最大遍历深度
+   */
+  private Integer maxDepth;
 
-    /**
-     * 编码 UTF8 / GBK
-     */
-    private String encoding;
+  /**
+   * 编码 UTF8 / GBK
+   */
+  private String encoding;
 
-    /**
-     * 文件类型 regular / virtual
-     */
-    private String type;
+  /**
+   * 文件类型 regular / virtual
+   */
+  private String type;
 
 }

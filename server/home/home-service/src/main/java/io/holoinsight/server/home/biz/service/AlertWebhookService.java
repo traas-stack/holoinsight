@@ -11,19 +11,19 @@ import io.holoinsight.server.home.facade.page.MonitorPageResult;
 
 import java.util.List;
 
-/**  
+/**
  * @author wangsiyuan
- * @date 2022/6/15  4:56 下午
+ * @date 2022/6/15 4:56 下午
  */
 public interface AlertWebhookService extends IService<AlarmWebhook> {
 
-    AlarmWebhookDTO save(AlarmWebhookDTO AlarmWebhookDTO);
+  AlarmWebhookDTO save(AlarmWebhookDTO AlarmWebhookDTO);
 
-    Boolean updateById(AlarmWebhookDTO AlarmWebhookDTO);
+  Boolean updateById(AlarmWebhookDTO AlarmWebhookDTO);
 
-    AlarmWebhookDTO queryById(Long id, String tenant);
+  AlarmWebhookDTO queryById(Long id, String tenant);
 
-    MonitorPageResult<AlarmWebhookDTO> getListByPage(MonitorPageRequest<AlarmWebhookDTO> pageRequest);
+  MonitorPageResult<AlarmWebhookDTO> getListByPage(MonitorPageRequest<AlarmWebhookDTO> pageRequest);
 
-    List<AlarmWebhookDTO> getListByKeyword(String keyword, String tenant);
+  List<AlarmWebhookDTO> getListByKeyword(String keyword, String tenant);
 }

@@ -17,8 +17,8 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class InstrumentationScope {
-    private String         name;
-    private String         version;
-    private List<KeyValue> attributes;
-    private int            droppedAttributesCount;
+  private String name;
+  private String version;
+  private List<KeyValue> attributes;
+  private int droppedAttributesCount;
 }

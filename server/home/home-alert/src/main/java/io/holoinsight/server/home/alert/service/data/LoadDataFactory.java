@@ -18,22 +18,22 @@ import javax.annotation.Resource;
 @Service
 public class LoadDataFactory {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(LoadDataFactory.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(LoadDataFactory.class);
 
-    @Resource
-    private AIAlarmLoadData aiAlarmLoadData;
+  @Resource
+  private AIAlarmLoadData aiAlarmLoadData;
 
-    @Resource
-    private RuleAlarmLoadData ruleAlarmLoadData;
+  @Resource
+  private RuleAlarmLoadData ruleAlarmLoadData;
 
-    public AlarmLoadData getLoadDataService(String type) {
-        if (type.equals("RULE")) {
-            return ruleAlarmLoadData;
-        } else if (type.equals("AI")) {
-            return aiAlarmLoadData;
-        }
-        return ruleAlarmLoadData;
+  public AlarmLoadData getLoadDataService(String type) {
+    if (type.equals("RULE")) {
+      return ruleAlarmLoadData;
+    } else if (type.equals("AI")) {
+      return aiAlarmLoadData;
     }
+    return ruleAlarmLoadData;
+  }
 
 
 }

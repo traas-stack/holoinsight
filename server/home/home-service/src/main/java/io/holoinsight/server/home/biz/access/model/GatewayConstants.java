@@ -2,7 +2,6 @@
  * Copyright 2022 Holoinsight Project Authors. Licensed under Apache-2.0.
  */
 
-
 package io.holoinsight.server.home.biz.access.model;
 
 /**
@@ -12,7 +11,7 @@ package io.holoinsight.server.home.biz.access.model;
  */
 public interface GatewayConstants {
 
-    int     RPC_QUERY_DEFAULT_DPS_LIMIT = 86400;
-    int     WEB_QUERY_DEFAULT_DPS_LIMIT = 86400;
-    int     QUERY_DEFAULT_TAGS_LIMIT    = 50000;
+  int RPC_QUERY_DEFAULT_DPS_LIMIT = 86400;
+  int WEB_QUERY_DEFAULT_DPS_LIMIT = 86400;
+  int QUERY_DEFAULT_TAGS_LIMIT = 50000;
 }

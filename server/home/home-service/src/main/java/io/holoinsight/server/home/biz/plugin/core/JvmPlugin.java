@@ -2,7 +2,6 @@
  * Copyright 2022 Holoinsight Project Authors. Licensed under Apache-2.0.
  */
 
-
 package io.holoinsight.server.home.biz.plugin.core;
 
 import io.holoinsight.server.home.biz.plugin.model.PluginModel;
@@ -24,35 +23,35 @@ import java.util.List;
 @PluginModel(name = "com.alipay.holoinsight.plugin.JvmPlugin", version = "1")
 public class JvmPlugin extends AbstractLocalIntegrationPlugin<JvmPlugin> {
 
-    public JvmTask jvmTask;
+  public JvmTask jvmTask;
 
-    @Override
-    JvmTask buildTask() {
-        return jvmTask;
+  @Override
+  JvmTask buildTask() {
+    return jvmTask;
+  }
+
+  @Override
+  public List<JvmPlugin> genPluginList(IntegrationPluginDTO integrationPluginDTO) {
+
+    List<JvmPlugin> jvmPlugins = new ArrayList<>();
+    JvmPlugin jvmPlugin = new JvmPlugin();
+    {
+      JvmTask jvmTask =
+          J.fromJson(integrationPluginDTO.json, new TypeToken<JvmTask>() {}.getType());
+
+      jvmTask.setExecuteRule(getExecuteRule());
+      jvmTask.setRefMetas(getRefMeta());
+      jvmTask.setType(JvmTask.class.getName());
+      jvmPlugin.jvmTask = jvmTask;
+      jvmPlugin.gaeaTableName = integrationPluginDTO.name;
+      jvmPlugin.collectRange = integrationPluginDTO.collectRange.cloudmonitor;
+      jvmPlugin.collectPlugin = JvmTask.class.getName();
     }
 
-    @Override
-    public List<JvmPlugin> genPluginList(IntegrationPluginDTO integrationPluginDTO) {
+    jvmPlugins.add(jvmPlugin);
 
-        List<JvmPlugin> jvmPlugins = new ArrayList<>();
-        JvmPlugin jvmPlugin = new JvmPlugin();
-        {
-            JvmTask jvmTask = J.fromJson(integrationPluginDTO.json, new TypeToken<JvmTask>() {
-            }.getType());
+    return jvmPlugins;
 
-            jvmTask.setExecuteRule(getExecuteRule());
-            jvmTask.setRefMetas(getRefMeta());
-            jvmTask.setType(JvmTask.class.getName());
-            jvmPlugin.jvmTask = jvmTask;
-            jvmPlugin.gaeaTableName = integrationPluginDTO.name;
-            jvmPlugin.collectRange = integrationPluginDTO.collectRange.cloudmonitor;
-            jvmPlugin.collectPlugin = JvmTask.class.getName();
-        }
-
-        jvmPlugins.add(jvmPlugin);
-
-        return jvmPlugins;
-
-    }
+  }
 
 }

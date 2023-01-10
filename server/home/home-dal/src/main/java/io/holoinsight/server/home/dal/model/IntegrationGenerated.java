@@ -2,7 +2,6 @@
  * Copyright 2022 Holoinsight Project Authors. Licensed under Apache-2.0.
  */
 
-
 package io.holoinsight.server.home.dal.model;
 
 import com.baomidou.mybatisplus.annotation.IdType;
@@ -18,28 +17,28 @@ import java.util.Date;
  */
 @Data
 public class IntegrationGenerated {
-    @TableId(type = IdType.AUTO)
-    public Long    id;
+  @TableId(type = IdType.AUTO)
+  public Long id;
 
-    public String  tenant;
+  public String tenant;
 
-    public String  name;
+  public String name;
 
-    public String  product;
+  public String product;
 
-    public String  item;
+  public String item;
 
-    public String  config;
+  public String config;
 
-    public boolean deleted;
+  public boolean deleted;
 
-    public boolean custom;
+  public boolean custom;
 
-    public String  creator;
+  public String creator;
 
-    public String  modifier;
+  public String modifier;
 
-    public Date    gmtCreate;
+  public Date gmtCreate;
 
-    public Date    gmtModified;
+  public Date gmtModified;
 }

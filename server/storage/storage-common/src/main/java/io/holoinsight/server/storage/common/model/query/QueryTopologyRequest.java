@@ -7,9 +7,9 @@ import lombok.Data;
 
 @Data
 public class QueryTopologyRequest extends Request {
-    private String serviceName;
-    private String serviceInstanceName;
-    private String endpointName;
-    private String address;
-    private int depth;
+  private String serviceName;
+  private String serviceInstanceName;
+  private String endpointName;
+  private String address;
+  private int depth;
 }

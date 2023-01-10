@@ -21,134 +21,130 @@ import java.util.Comparator;
 import java.util.List;
 
 /**
- * 用来协调 alarm 集群的任务分配，主要分为两步：
- * order 阶段：
- * 1. 通过心跳记录，获取任务分布的预方案；
- * 2. index * 2s 进行报数，确认能参与任务计算的节点；
- * 3. 最多等待 size*2s，所有节点报数完毕，按照报数领取告警规则任务；
- * calculate 阶段：
- * 1. 所有节点计算，完毕后广播 ack；
- * 2. 对于没有 ack 的节点，由 ack 的里面序号最小的负责重试
- * 2.1 重试：使用规则 id 查询告警历史，如果有，说明计算成功，只是 ack 失败；否则说明计算失败或者该规则不会触发告警，可以安全重试；
+ * 用来协调 alarm 集群的任务分配，主要分为两步： order 阶段： 1. 通过心跳记录，获取任务分布的预方案； 2. index * 2s 进行报数，确认能参与任务计算的节点； 3.
+ * 最多等待 size*2s，所有节点报数完毕，按照报数领取告警规则任务； calculate 阶段： 1. 所有节点计算，完毕后广播 ack； 2. 对于没有 ack 的节点，由 ack
+ * 的里面序号最小的负责重试 2.1 重试：使用规则 id 查询告警历史，如果有，说明计算成功，只是 ack 失败；否则说明计算失败或者该规则不会触发告警，可以安全重试；
  *
  * @author masaimu
  * @version 2022-10-18 15:06:00
  */
 @Service
 public class CoordinatorService {
-    private static Logger LOGGER = LoggerFactory.getLogger(CoordinatorService.class);
+  private static Logger LOGGER = LoggerFactory.getLogger(CoordinatorService.class);
 
-    @Resource
-    private ClusterMapper clusterMapper;
-    @Autowired
-    private CacheAlarmTask cacheAlarmTask;
+  @Resource
+  private ClusterMapper clusterMapper;
+  @Autowired
+  private CacheAlarmTask cacheAlarmTask;
 
-    private List<String> otherMembers = new ArrayList<>();
-    protected static final int PORT = 9527;
-    public OrderMap orderMap = new OrderMap();
+  private List<String> otherMembers = new ArrayList<>();
+  protected static final int PORT = 9527;
+  public OrderMap orderMap = new OrderMap();
 
-    /**
-     * 查询最近一分钟的心跳记录，然后根据 ip 排序，找到自己的 order 顺序
-     *
-     * @return
-     */
-    public int getOrder() {
-        long minuteBefore = System.currentTimeMillis() - 60_000L;
-        QueryWrapper<Cluster> condition = new QueryWrapper<>();
-        condition.eq("role", AlertClusterService.role);
-        condition.ge("last_heartbeat_time", minuteBefore);
+  /**
+   * 查询最近一分钟的心跳记录，然后根据 ip 排序，找到自己的 order 顺序
+   *
+   * @return
+   */
+  public int getOrder() {
+    long minuteBefore = System.currentTimeMillis() - 60_000L;
+    QueryWrapper<Cluster> condition = new QueryWrapper<>();
+    condition.eq("role", AlertClusterService.role);
+    condition.ge("last_heartbeat_time", minuteBefore);
 
-        List<Cluster> clusters = this.clusterMapper.selectList(condition);
+    List<Cluster> clusters = this.clusterMapper.selectList(condition);
 
-        clusters.sort(Comparator.comparing(Cluster::getIp));
-        String myIp = AddressUtil.getLocalHostIPV4();
-        LOGGER.info("get order by my ip {} in {}", myIp, J.toJson(clusters));
-        this.otherMembers = new ArrayList<>();
-        int order = -1;
-        for (int i = 0; i < clusters.size(); i++) {
-            Cluster cluster = clusters.get(i);
-            if (myIp.equals(cluster.getIp())) {
-                order = i;
-            } else {
-                this.otherMembers.add(cluster.getIp());
-            }
-        }
-        return order;
+    clusters.sort(Comparator.comparing(Cluster::getIp));
+    String myIp = AddressUtil.getLocalHostIPV4();
+    LOGGER.info("get order by my ip {} in {}", myIp, J.toJson(clusters));
+    this.otherMembers = new ArrayList<>();
+    int order = -1;
+    for (int i = 0; i < clusters.size(); i++) {
+      Cluster cluster = clusters.get(i);
+      if (myIp.equals(cluster.getIp())) {
+        order = i;
+      } else {
+        this.otherMembers.add(cluster.getIp());
+      }
     }
+    return order;
+  }
 
-    public void spread(long heartbeat) {
-        int order = getOrder();
-        if (order < 0) {
-            LOGGER.info("fail to get order, give up allocating task.");
-            return;
-        }
-        long periodId = orderMap.curPeriod();
-        LOGGER.info("gossip spread preorder orderId {}, periodId {}, otherMenbers {}", order, periodId, this.otherMembers);
-        CoordinatorSender sender = new CoordinatorSender(this.otherMembers, String.valueOf(order),
-                String.valueOf(periodId), this, orderMap);
-        sender.sendOrder(heartbeat);
-
-        int realOrder = orderMap.getRealOrder();
-        if(realOrder < 0){
-            return;
-        }
-        double realSize = orderMap.getRealSize().doubleValue();
-        double ruleSize = this.cacheAlarmTask.ruleSize().doubleValue();
-        // 领取任务，[(order-1)*(ruleSize/realSize), order*(ruleSize/realSize))
-        LOGGER.info("gossip order realOrder {}, realSize {}, ruleSize {}", realOrder, realSize, ruleSize);
-        int pageSize = (int) Math.ceil(ruleSize / realSize);
-        int pageNum = pageSize * realOrder;
-        this.cacheAlarmTask.setPageSize(pageSize);
-        this.cacheAlarmTask.setPageNum(pageNum);
+  public void spread(long heartbeat) {
+    int order = getOrder();
+    if (order < 0) {
+      LOGGER.info("fail to get order, give up allocating task.");
+      return;
     }
+    long periodId = orderMap.curPeriod();
+    LOGGER.info("gossip spread preorder orderId {}, periodId {}, otherMenbers {}", order, periodId,
+        this.otherMembers);
+    CoordinatorSender sender = new CoordinatorSender(this.otherMembers, String.valueOf(order),
+        String.valueOf(periodId), this, orderMap);
+    sender.sendOrder(heartbeat);
 
-    public void buildCluster() throws Exception {
-//        List<Address> addresses = otherMembers.stream()
-//                .map(host -> Address.create(host, PORT))
-//                .collect(Collectors.toList());
-
-//        ClusterConfig clusterConfig =
-//                new ClusterConfig()
-//                        .memberAlias(ip)
-//                        .membership(opts -> opts.seedMembers(addresses))
-//                        .transport(opts -> opts.port(PORT));
-//        CoordinatorService coordinatorService = this;
-//        endpoint =
-//                new ClusterImpl(clusterConfig)
-//                        .transportFactory(TcpTransportFactory::new)
-//                        .handler(
-//                                cluster -> {
-//                                    return new ClusterMessageHandler() {
-//                                        @Override
-//                                        public void onGossip(Message gossip) {
-//                                            // 处理1：报数的 msg，如果是本周期的，存下来，如果是过期的，丢弃
-//                                            // 处理2：处理完毕后的广播 ack,
-//                                            CoordinatorReceiver.parseMsg(coordinatorService, gossip.data());
-//                                        }
-//
-//                                        @Override
-//                                        public void onMessage(Message message) {
-//                                            LOGGER.info("receive message {} {}", message.data(), message.sender());
-//                                        }
-//                                    };
-//                                })
-//                        .startAwait();
-        new NettyServer(this).startup(PORT);
+    int realOrder = orderMap.getRealOrder();
+    if (realOrder < 0) {
+      return;
     }
+    double realSize = orderMap.getRealSize().doubleValue();
+    double ruleSize = this.cacheAlarmTask.ruleSize().doubleValue();
+    // 领取任务，[(order-1)*(ruleSize/realSize), order*(ruleSize/realSize))
+    LOGGER.info("gossip order realOrder {}, realSize {}, ruleSize {}", realOrder, realSize,
+        ruleSize);
+    int pageSize = (int) Math.ceil(ruleSize / realSize);
+    int pageNum = pageSize * realOrder;
+    this.cacheAlarmTask.setPageSize(pageSize);
+    this.cacheAlarmTask.setPageNum(pageNum);
+  }
 
-    public void putOrderingMap(String ip, String order) {
-        this.orderMap.putOrdering(ip, order);
-    }
+  public void buildCluster() throws Exception {
+    // List<Address> addresses = otherMembers.stream()
+    // .map(host -> Address.create(host, PORT))
+    // .collect(Collectors.toList());
 
-    public void count(String data) {
-        this.orderMap.count(data);
-    }
+    // ClusterConfig clusterConfig =
+    // new ClusterConfig()
+    // .memberAlias(ip)
+    // .membership(opts -> opts.seedMembers(addresses))
+    // .transport(opts -> opts.port(PORT));
+    // CoordinatorService coordinatorService = this;
+    // endpoint =
+    // new ClusterImpl(clusterConfig)
+    // .transportFactory(TcpTransportFactory::new)
+    // .handler(
+    // cluster -> {
+    // return new ClusterMessageHandler() {
+    // @Override
+    // public void onGossip(Message gossip) {
+    // // 处理1：报数的 msg，如果是本周期的，存下来，如果是过期的，丢弃
+    // // 处理2：处理完毕后的广播 ack,
+    // CoordinatorReceiver.parseMsg(coordinatorService, gossip.data());
+    // }
+    //
+    // @Override
+    // public void onMessage(Message message) {
+    // LOGGER.info("receive message {} {}", message.data(), message.sender());
+    // }
+    // };
+    // })
+    // .startAwait();
+    new NettyServer(this).startup(PORT);
+  }
 
-    public void distribute(String ip, String data) {
-        this.orderMap.distribute(ip, data);
-    }
+  public void putOrderingMap(String ip, String order) {
+    this.orderMap.putOrdering(ip, order);
+  }
 
-    public List getSortedOrderedMap() {
-        return this.orderMap.getSortedOrderedMap();
-    }
+  public void count(String data) {
+    this.orderMap.count(data);
+  }
+
+  public void distribute(String ip, String data) {
+    this.orderMap.distribute(ip, data);
+  }
+
+  public List getSortedOrderedMap() {
+    return this.orderMap.getSortedOrderedMap();
+  }
 }

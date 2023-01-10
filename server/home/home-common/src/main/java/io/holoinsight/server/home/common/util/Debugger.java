@@ -12,37 +12,40 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 public class Debugger {
-    /**
-     * 打印调试信息
-     * @param msg 信息
-     * @param args 参数
-     */
-    public static void print(String ukFlag, String msg) {
-        if (GlobalFlag.isDebugEnable(ukFlag)) {
-            log.info(msg);
-        }
+  /**
+   * 打印调试信息
+   * 
+   * @param msg 信息
+   * @param args 参数
+   */
+  public static void print(String ukFlag, String msg) {
+    if (GlobalFlag.isDebugEnable(ukFlag)) {
+      log.info(msg);
     }
+  }
 
-    /**
-     * 打印调试信息
-     * @param msg 信息
-     * @param args 参数
-     */
-    public static void print(String ukFlag, String var1, Object... var2) {
+  /**
+   * 打印调试信息
+   * 
+   * @param msg 信息
+   * @param args 参数
+   */
+  public static void print(String ukFlag, String var1, Object... var2) {
 
-        if (GlobalFlag.isDebugEnable(ukFlag)) {
-            log.info(var1, var2);
-        }
+    if (GlobalFlag.isDebugEnable(ukFlag)) {
+      log.info(var1, var2);
     }
+  }
 
-    /**
-     * 打印调试信息
-     * @param msg 消息
-     * @param t 异常
-     */
-    public static void print(String ukFlag, String msg, Throwable t) {
-        if (GlobalFlag.isDebugEnable(ukFlag)) {
-            log.error(msg, t);
-        }
+  /**
+   * 打印调试信息
+   * 
+   * @param msg 消息
+   * @param t 异常
+   */
+  public static void print(String ukFlag, String msg, Throwable t) {
+    if (GlobalFlag.isDebugEnable(ukFlag)) {
+      log.error(msg, t);
     }
+  }
 }

@@ -19,21 +19,21 @@ import java.util.Date;
 @Data
 @TableName("tenant")
 public class Tenant {
-    @TableId(type = IdType.AUTO)
-    public Long   id;
-    public String name;
+  @TableId(type = IdType.AUTO)
+  public Long id;
+  public String name;
 
-    public String code;
+  public String code;
 
-    @TableField(value = "`desc`")
-    public String desc;
+  @TableField(value = "`desc`")
+  public String desc;
 
-    public String md5;
+  public String md5;
 
-    @TableField(value = "`gmt_create`")
-    public Date   gmtCreate;
+  @TableField(value = "`gmt_create`")
+  public Date gmtCreate;
 
-    @TableField(value = "`gmt_modified`")
-    public Date   gmtModified;
+  @TableField(value = "`gmt_modified`")
+  public Date gmtModified;
 
 }

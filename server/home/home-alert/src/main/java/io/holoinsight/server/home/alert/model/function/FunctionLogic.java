@@ -15,14 +15,14 @@ import java.io.Serializable;
  */
 public interface FunctionLogic extends Serializable {
 
-    FunctionEnum getFunc();
+  FunctionEnum getFunc();
 
-    /**
-     *
-     * @param dataResult
-     * @param functionConfigParam
-     * @return
-     */
-    TriggerResult invoke(DataResult dataResult, FunctionConfigParam functionConfigParam);
+  /**
+   *
+   * @param dataResult
+   * @param functionConfigParam
+   * @return
+   */
+  TriggerResult invoke(DataResult dataResult, FunctionConfigParam functionConfigParam);
 
 }

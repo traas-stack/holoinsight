@@ -27,80 +27,76 @@ import io.netty.util.concurrent.GlobalEventExecutor;
  */
 public class NettyServer {
 
-    private final EventLoopGroup bossLoopGroup;
+  private final EventLoopGroup bossLoopGroup;
 
-    private final EventLoopGroup workerLoopGroup;
+  private final EventLoopGroup workerLoopGroup;
 
-    private final ChannelGroup channelGroup;
+  private final ChannelGroup channelGroup;
 
-    private CoordinatorService service;
+  private CoordinatorService service;
 
-    /**
-     * Initialize the netty server class
-     *
-     * @param service
-     */
-    public NettyServer(CoordinatorService service) {
-        // Initialization private members
+  /**
+   * Initialize the netty server class
+   *
+   * @param service
+   */
+  public NettyServer(CoordinatorService service) {
+    // Initialization private members
 
-        this.bossLoopGroup = new NioEventLoopGroup();
+    this.bossLoopGroup = new NioEventLoopGroup();
 
-        this.workerLoopGroup = new NioEventLoopGroup();
+    this.workerLoopGroup = new NioEventLoopGroup();
 
-        this.channelGroup = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
+    this.channelGroup = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
 
-        this.service = service;
+    this.service = service;
+  }
+
+
+  /**
+   * Startup the TCP server
+   *
+   * @param port port of the server
+   * @throws Exception if any {@link Exception}
+   */
+  public final void startup(int port) throws Exception {
+    ServerBootstrap bootstrap = new ServerBootstrap();
+    bootstrap.group(bossLoopGroup, workerLoopGroup).channel(NioServerSocketChannel.class)
+        .option(ChannelOption.SO_BACKLOG, 1024).option(ChannelOption.AUTO_CLOSE, true)
+        .option(ChannelOption.SO_REUSEADDR, true).childOption(ChannelOption.SO_KEEPALIVE, true)
+        .childOption(ChannelOption.TCP_NODELAY, true)
+        .childHandler(new ChannelInitializer<SocketChannel>() {
+          @Override
+          public void initChannel(SocketChannel ch) throws Exception {
+            ChannelPipeline pipeline = ch.pipeline();
+
+            // LineBasedFrameDecoder按行分割消息
+            pipeline.addLast(new LineBasedFrameDecoder(Integer.MAX_VALUE));
+            // 再按UTF-8编码转成字符串
+            pipeline.addLast(new StringDecoder(CharsetUtil.UTF_8));
+
+            pipeline.addLast(new CoordinatorReceiver(service));
+          }
+        });
+
+    try {
+      ChannelFuture channelFuture = bootstrap.bind(port).sync();
+      channelGroup.add(channelFuture.channel());
+    } catch (Exception e) {
+      shutdown();
+      throw e;
     }
+  }
 
-
-    /**
-     * Startup the TCP server
-     *
-     * @param port port of the server
-     * @throws Exception if any {@link Exception}
-     */
-    public final void startup(int port) throws Exception {
-        ServerBootstrap bootstrap = new ServerBootstrap();
-        bootstrap.group(bossLoopGroup, workerLoopGroup)
-                .channel(NioServerSocketChannel.class)
-                .option(ChannelOption.SO_BACKLOG, 1024)
-                .option(ChannelOption.AUTO_CLOSE, true)
-                .option(ChannelOption.SO_REUSEADDR, true)
-                .childOption(ChannelOption.SO_KEEPALIVE, true)
-                .childOption(ChannelOption.TCP_NODELAY, true)
-                .childHandler(new ChannelInitializer<SocketChannel>() {
-                    @Override
-                    public void initChannel(SocketChannel ch)
-                            throws Exception {
-                        ChannelPipeline pipeline = ch.pipeline();
-
-                        // LineBasedFrameDecoder按行分割消息
-                        pipeline.addLast(new LineBasedFrameDecoder(Integer.MAX_VALUE));
-                        // 再按UTF-8编码转成字符串
-                        pipeline.addLast(new StringDecoder(CharsetUtil.UTF_8));
-
-                        pipeline.addLast(new CoordinatorReceiver(service));
-                    }
-                });
-
-        try {
-            ChannelFuture channelFuture = bootstrap.bind(port).sync();
-            channelGroup.add(channelFuture.channel());
-        } catch (Exception e) {
-            shutdown();
-            throw e;
-        }
-    }
-
-    /**
-     * Shutdown the server
-     *
-     * @throws Exception
-     */
-    public final void shutdown() throws Exception {
-        channelGroup.close();
-        bossLoopGroup.shutdownGracefully();
-        workerLoopGroup.shutdownGracefully();
-    }
+  /**
+   * Shutdown the server
+   *
+   * @throws Exception
+   */
+  public final void shutdown() throws Exception {
+    channelGroup.close();
+    bossLoopGroup.shutdownGracefully();
+    workerLoopGroup.shutdownGracefully();
+  }
 
 }

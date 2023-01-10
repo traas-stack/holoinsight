@@ -1,7 +1,6 @@
 /*
  * Copyright 2022 Holoinsight Project Authors. Licensed under Apache-2.0.
  */
-
 package io.holoinsight.server.home.biz.service;
 
 import io.holoinsight.server.home.facade.page.MonitorPageRequest;
@@ -15,20 +14,21 @@ import java.util.Map;
 
 public interface IntegrationProductService extends IService<IntegrationProduct> {
 
-    IntegrationProductDTO findById(Long id);
+  IntegrationProductDTO findById(Long id);
 
-    List<IntegrationProductDTO> findByMap(Map<String, Object> columnMap);
+  List<IntegrationProductDTO> findByMap(Map<String, Object> columnMap);
 
-    IntegrationProductDTO create(IntegrationProductDTO IntegrationProductDTO);
+  IntegrationProductDTO create(IntegrationProductDTO IntegrationProductDTO);
 
-    void deleteById(Long id);
+  void deleteById(Long id);
 
-    IntegrationProductDTO updateByRequest(IntegrationProductDTO IntegrationProductDTO);
+  IntegrationProductDTO updateByRequest(IntegrationProductDTO IntegrationProductDTO);
 
-    MonitorPageResult<IntegrationProductDTO> getListByPage(MonitorPageRequest<IntegrationProductDTO> IntegrationProductDTORequest);
+  MonitorPageResult<IntegrationProductDTO> getListByPage(
+      MonitorPageRequest<IntegrationProductDTO> IntegrationProductDTORequest);
 
-    List<IntegrationProductDTO> getListByKeyword(String keyword, String tenant);
+  List<IntegrationProductDTO> getListByKeyword(String keyword, String tenant);
 
-    List<IntegrationProductDTO> getListByNameLike(String name, String tenant);
+  List<IntegrationProductDTO> getListByNameLike(String name, String tenant);
 
 }

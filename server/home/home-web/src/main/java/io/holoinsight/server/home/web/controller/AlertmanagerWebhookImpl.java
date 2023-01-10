@@ -1,7 +1,6 @@
 /*
  * Copyright 2022 Holoinsight Project Authors. Licensed under Apache-2.0.
  */
-
 package io.holoinsight.server.home.web.controller;
 
 import io.holoinsight.server.common.J;
@@ -37,152 +36,152 @@ import java.util.Date;
 @RequestMapping("/webapi/alertmanager/webhook")
 public class AlertmanagerWebhookImpl extends BaseFacade {
 
-    @Autowired
-    private AlertmanagerWebhookService   alertmanagerWebhookService;
+  @Autowired
+  private AlertmanagerWebhookService alertmanagerWebhookService;
 
-    @Autowired
-    private AlertmanagerWebhookConverter alertmanagerWebhookConverter;
+  @Autowired
+  private AlertmanagerWebhookConverter alertmanagerWebhookConverter;
 
-    @Autowired
-    private UserOpLogService             userOpLogService;
+  @Autowired
+  private UserOpLogService userOpLogService;
 
-    @PostMapping("/pageQuery")
-    @ResponseBody
-    @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.VIEW)
-    public JsonResult<MonitorPageResult<AlertmanagerWebhook>> pageQuery(@RequestBody MonitorPageRequest<AlertmanagerWebhook> request) {
-        final JsonResult<MonitorPageResult<AlertmanagerWebhook>> result = new JsonResult<>();
-        facadeTemplate.manage(result, new ManageCallback() {
-            @Override
-            public void checkParameter() {
-                ParaCheckUtil.checkParaNotNull(request.getTarget(), "target");
-            }
+  @PostMapping("/pageQuery")
+  @ResponseBody
+  @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.VIEW)
+  public JsonResult<MonitorPageResult<AlertmanagerWebhook>> pageQuery(
+      @RequestBody MonitorPageRequest<AlertmanagerWebhook> request) {
+    final JsonResult<MonitorPageResult<AlertmanagerWebhook>> result = new JsonResult<>();
+    facadeTemplate.manage(result, new ManageCallback() {
+      @Override
+      public void checkParameter() {
+        ParaCheckUtil.checkParaNotNull(request.getTarget(), "target");
+      }
 
-            @Override
-            public void doManage() {
-                request.getTarget().setTenant(RequestContext.getContext().ms.getTenant());
-                JsonResult.createSuccessResult(result,
-                    alertmanagerWebhookService.getListByPage(request));
-            }
-        });
+      @Override
+      public void doManage() {
+        request.getTarget().setTenant(RequestContext.getContext().ms.getTenant());
+        JsonResult.createSuccessResult(result, alertmanagerWebhookService.getListByPage(request));
+      }
+    });
 
-        return result;
+    return result;
+  }
+
+  // @GetMapping
+  // public JsonResult<Object> index(@RequestParam(value = "pageNum", defaultValue="1") Integer
+  // pageNum, @RequestParam(value = "pageSize", defaultValue="10") Integer pageSize) {
+  // MonitorScope ms = RequestContext.getContext().ms;
+  //
+  // Page<AlertmanagerWebhook> page = new Page<>(pageNum, pageSize);
+  // QueryWrapper<AlertmanagerWebhook> wrapper = new QueryWrapper<>();
+  // wrapper.eq("tenant", ms.getTenant());
+  // alertmanagerWebhookService.page(page, wrapper);
+  //
+  // MonitorPageResult<AlertmanagerWebhookDTO> result = new MonitorPageResult<>();
+  //
+  // result.setItems(alertmanagerWebhookConverter.dosToDTOs(page.getRecords()));
+  // result.setPageNum(pageNum);
+  // result.setPageSize(pageSize);
+  // result.setTotalCount(page.getTotal());
+  // result.setTotalPage(page.getPages());
+  //
+  // return JsonResult.createSuccessResult(result);
+  // }
+
+  @GetMapping("/{id}")
+  public JsonResult<Object> get(@PathVariable("id") Long id) {
+    MonitorScope ms = RequestContext.getContext().ms;
+
+    AlertmanagerWebhook model =
+        alertmanagerWebhookService.queryById(id, RequestContext.getContext().ms.getTenant());
+    if (model == null || !model.getTenant().equals(ms.getTenant())) {
+      return JsonResult.createFailResult("can not find the record");
     }
 
-    //@GetMapping
-    //public JsonResult<Object> index(@RequestParam(value = "pageNum", defaultValue="1") Integer pageNum, @RequestParam(value = "pageSize", defaultValue="10") Integer pageSize) {
-    //    MonitorScope ms = RequestContext.getContext().ms;
-    //
-    //    Page<AlertmanagerWebhook> page = new Page<>(pageNum, pageSize);
-    //    QueryWrapper<AlertmanagerWebhook> wrapper = new QueryWrapper<>();
-    //    wrapper.eq("tenant", ms.getTenant());
-    //    alertmanagerWebhookService.page(page, wrapper);
-    //
-    //    MonitorPageResult<AlertmanagerWebhookDTO> result = new MonitorPageResult<>();
-    //
-    //    result.setItems(alertmanagerWebhookConverter.dosToDTOs(page.getRecords()));
-    //    result.setPageNum(pageNum);
-    //    result.setPageSize(pageSize);
-    //    result.setTotalCount(page.getTotal());
-    //    result.setTotalPage(page.getPages());
-    //
-    //    return JsonResult.createSuccessResult(result);
-    //}
+    return JsonResult.createSuccessResult(alertmanagerWebhookConverter.doToDTO(model));
+  }
 
-    @GetMapping("/{id}")
-    public JsonResult<Object> get(@PathVariable("id") Long id) {
+  @PostMapping
+  public JsonResult<Object> create(@RequestBody AlertmanagerWebhookDTO alertmanagerWebhookDTO) {
+    MonitorScope ms = RequestContext.getContext().ms;
+    MonitorUser mu = RequestContext.getContext().mu;
+    AlertmanagerWebhook alertmanagerWebhook =
+        alertmanagerWebhookConverter.dtoToDO(alertmanagerWebhookDTO);
+    alertmanagerWebhook.setTenant(ms.getTenant());
+    alertmanagerWebhook.setModifier(mu.getLoginName());
+    alertmanagerWebhook.setCreator(mu.getLoginName());
+    alertmanagerWebhook.setGmtCreate(new Date());
+    alertmanagerWebhook.setGmtModified(new Date());
+    alertmanagerWebhookService.save(alertmanagerWebhook);
+
+    alertmanagerWebhookDTO = alertmanagerWebhookConverter.doToDTO(alertmanagerWebhook);
+
+    userOpLogService.append("alertmanager_webhook", String.valueOf(alertmanagerWebhookDTO.getId()),
+        OpType.CREATE, mu.getLoginName(), ms.getTenant(), J.toJson(alertmanagerWebhookDTO), null,
+        null, "alertmanager_webhook_create");
+
+    return JsonResult.createSuccessResult(alertmanagerWebhookDTO);
+  }
+
+  @PostMapping("/update/{id}")
+  public JsonResult<AlertmanagerWebhookDTO> update(@PathVariable("id") Long id,
+      @RequestBody AlertmanagerWebhookDTO alertmanagerWebhookDTO) {
+
+    final JsonResult<AlertmanagerWebhookDTO> result = new JsonResult<>();
+    facadeTemplate.manage(result, new ManageCallback() {
+      @Override
+      public void checkParameter() {
+        ParaCheckUtil.checkParaNotNull(id, "id");
+        ParaCheckUtil.checkParaNotNull(alertmanagerWebhookDTO.getTenant(), "tenant");
+        ParaCheckUtil.checkEquals(alertmanagerWebhookDTO.getTenant(),
+            RequestContext.getContext().ms.getTenant(), "tenant is illegal");
+      }
+
+      @Override
+      public void doManage() {
         MonitorScope ms = RequestContext.getContext().ms;
 
-        AlertmanagerWebhook model = alertmanagerWebhookService.queryById(id,
-            RequestContext.getContext().ms.getTenant());
+        AlertmanagerWebhook model =
+            alertmanagerWebhookService.queryById(id, RequestContext.getContext().ms.getTenant());
         if (model == null || !model.getTenant().equals(ms.getTenant())) {
-            return JsonResult.createFailResult("can not find the record");
+          JsonResult.createFailResult("can not find the record");
+          return;
         }
 
-        return JsonResult.createSuccessResult(alertmanagerWebhookConverter.doToDTO(model));
+        alertmanagerWebhookDTO.setModifier(RequestContext.getContext().mu.getLoginName());
+        alertmanagerWebhookDTO.setGmtModified(new Date());
+        alertmanagerWebhookDTO.setId(model.getId());
+        model = alertmanagerWebhookConverter.dtoToDO(alertmanagerWebhookDTO);
+        alertmanagerWebhookService.updateById(model);
+
+        userOpLogService.append("alertmanager_webhook", String.valueOf(id), OpType.UPDATE,
+            RequestContext.getContext().mu.getLoginName(), ms.getTenant(), J.toJson(model),
+            J.toJson(alertmanagerWebhookDTO), null, "alertmanager_webhook_update");
+
+        JsonResult.createSuccessResult(result, alertmanagerWebhookDTO);
+      }
+    });
+
+    return result;
+
+  }
+
+  @PostMapping("/delete/{id}")
+  public JsonResult<Object> delete(@PathVariable("id") Long id) {
+    MonitorScope ms = RequestContext.getContext().ms;
+
+    AlertmanagerWebhook model =
+        alertmanagerWebhookService.queryById(id, RequestContext.getContext().ms.getTenant());
+    if (model == null || !model.getTenant().equals(ms.getTenant())) {
+      return JsonResult.createFailResult("can not find the record");
     }
 
-    @PostMapping
-    public JsonResult<Object> create(@RequestBody AlertmanagerWebhookDTO alertmanagerWebhookDTO) {
-        MonitorScope ms = RequestContext.getContext().ms;
-        MonitorUser mu = RequestContext.getContext().mu;
-        AlertmanagerWebhook alertmanagerWebhook = alertmanagerWebhookConverter
-            .dtoToDO(alertmanagerWebhookDTO);
-        alertmanagerWebhook.setTenant(ms.getTenant());
-        alertmanagerWebhook.setModifier(mu.getLoginName());
-        alertmanagerWebhook.setCreator(mu.getLoginName());
-        alertmanagerWebhook.setGmtCreate(new Date());
-        alertmanagerWebhook.setGmtModified(new Date());
-        alertmanagerWebhookService.save(alertmanagerWebhook);
+    alertmanagerWebhookService.removeById(id);
+    userOpLogService.append("alertmanager_webhook", String.valueOf(id), OpType.DELETE,
+        RequestContext.getContext().mu.getLoginName(), RequestContext.getContext().ms.getTenant(),
+        J.toJson(id), null, null, "alertmanager_webhook_delete");
 
-        alertmanagerWebhookDTO = alertmanagerWebhookConverter.doToDTO(alertmanagerWebhook);
-
-        userOpLogService.append("alertmanager_webhook", String.valueOf(alertmanagerWebhookDTO.getId()),
-                OpType.CREATE, mu.getLoginName(), ms.getTenant(), J.toJson(alertmanagerWebhookDTO),
-                null, null, "alertmanager_webhook_create");
-
-        return JsonResult.createSuccessResult(alertmanagerWebhookDTO);
-    }
-
-    @PostMapping("/update/{id}")
-    public JsonResult<AlertmanagerWebhookDTO> update(@PathVariable("id") Long id,
-                                                     @RequestBody AlertmanagerWebhookDTO alertmanagerWebhookDTO) {
-
-        final JsonResult<AlertmanagerWebhookDTO> result = new JsonResult<>();
-        facadeTemplate.manage(result, new ManageCallback() {
-            @Override
-            public void checkParameter() {
-                ParaCheckUtil.checkParaNotNull(id, "id");
-                ParaCheckUtil.checkParaNotNull(alertmanagerWebhookDTO.getTenant(), "tenant");
-                ParaCheckUtil.checkEquals(alertmanagerWebhookDTO.getTenant(),
-                    RequestContext.getContext().ms.getTenant(), "tenant is illegal");
-            }
-
-            @Override
-            public void doManage() {
-                MonitorScope ms = RequestContext.getContext().ms;
-
-                AlertmanagerWebhook model = alertmanagerWebhookService.queryById(id,
-                    RequestContext.getContext().ms.getTenant());
-                if (model == null || !model.getTenant().equals(ms.getTenant())) {
-                    JsonResult.createFailResult("can not find the record");
-                    return;
-                }
-
-                alertmanagerWebhookDTO.setModifier(RequestContext.getContext().mu.getLoginName());
-                alertmanagerWebhookDTO.setGmtModified(new Date());
-                alertmanagerWebhookDTO.setId(model.getId());
-                model = alertmanagerWebhookConverter.dtoToDO(alertmanagerWebhookDTO);
-                alertmanagerWebhookService.updateById(model);
-
-                userOpLogService.append("alertmanager_webhook", String.valueOf(id),
-                        OpType.UPDATE, RequestContext.getContext().mu.getLoginName(), ms.getTenant(), J.toJson(model),
-                        J.toJson(alertmanagerWebhookDTO), null, "alertmanager_webhook_update");
-
-                JsonResult.createSuccessResult(result, alertmanagerWebhookDTO);
-            }
-        });
-
-        return result;
-
-    }
-
-    @PostMapping("/delete/{id}")
-    public JsonResult<Object> delete(@PathVariable("id") Long id) {
-        MonitorScope ms = RequestContext.getContext().ms;
-
-        AlertmanagerWebhook model = alertmanagerWebhookService.queryById(id,
-            RequestContext.getContext().ms.getTenant());
-        if (model == null || !model.getTenant().equals(ms.getTenant())) {
-            return JsonResult.createFailResult("can not find the record");
-        }
-
-        alertmanagerWebhookService.removeById(id);
-        userOpLogService.append("alertmanager_webhook", String.valueOf(id), OpType.DELETE,
-            RequestContext.getContext().mu.getLoginName(),
-            RequestContext.getContext().ms.getTenant(), J.toJson(id), null, null,
-            "alertmanager_webhook_delete");
-
-        return JsonResult.createSuccessResult(model);
-    }
+    return JsonResult.createSuccessResult(model);
+  }
 
 }

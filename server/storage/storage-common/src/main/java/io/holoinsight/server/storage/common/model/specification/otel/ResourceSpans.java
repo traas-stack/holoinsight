@@ -15,7 +15,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ResourceSpans {
-    private Resource   resource;
-    private ScopeSpans scopeSpans;
-    private String     schemaUrl;
+  private Resource resource;
+  private ScopeSpans scopeSpans;
+  private String schemaUrl;
 }

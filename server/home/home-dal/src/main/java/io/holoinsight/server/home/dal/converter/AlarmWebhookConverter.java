@@ -16,9 +16,9 @@ import java.util.List;
 @Mapper(componentModel = "spring")
 public interface AlarmWebhookConverter {
 
-    AlarmWebhookDTO doToDTO(AlarmWebhook alarmWebhook);
+  AlarmWebhookDTO doToDTO(AlarmWebhook alarmWebhook);
 
-    AlarmWebhook dtoToDO(AlarmWebhookDTO alarmWebhookDTO);
+  AlarmWebhook dtoToDO(AlarmWebhookDTO alarmWebhookDTO);
 
-    List<AlarmWebhookDTO> dosToDTOs(Iterable<AlarmWebhook> alarmWebhooks);
+  List<AlarmWebhookDTO> dosToDTOs(Iterable<AlarmWebhook> alarmWebhooks);
 }

@@ -18,13 +18,12 @@ import retrofit2.http.POST;
  */
 public interface CeresDBRetrofitService {
 
-    /**
-     * 获取租户列表
-     */
-    @Headers("Content-Type: application/json")
-    @POST("api/inner/admin/tenants")
-    Call<CreateTenantResponse> createOrUpdateTenant(@Header("X-CeresDB-AccessUser") String accessUser,
-                                                    @Header("X-CeresDB-AccessToken") String accessToken,
-                                                    @Body CreateTenantRequest params);
+  /**
+   * 获取租户列表
+   */
+  @Headers("Content-Type: application/json")
+  @POST("api/inner/admin/tenants")
+  Call<CreateTenantResponse> createOrUpdateTenant(@Header("X-CeresDB-AccessUser") String accessUser,
+      @Header("X-CeresDB-AccessToken") String accessToken, @Body CreateTenantRequest params);
 
 }

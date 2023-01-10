@@ -14,10 +14,10 @@ import io.holoinsight.server.home.dal.transformer.JsonObjectMapper;
 @Mapper(componentModel = "spring", uses = {JsonObjectMapper.class})
 public interface MarketplacePluginConverter {
 
-    MarketplacePluginDTO doToDTO(MarketplacePlugin integrationPlugin);
+  MarketplacePluginDTO doToDTO(MarketplacePlugin integrationPlugin);
 
-    MarketplacePlugin dtoToDO(MarketplacePluginDTO integrationPluginDTO);
+  MarketplacePlugin dtoToDO(MarketplacePluginDTO integrationPluginDTO);
 
-    List<MarketplacePluginDTO> dosToDTOs(Iterable<MarketplacePlugin> integrationPlugins);
+  List<MarketplacePluginDTO> dosToDTOs(Iterable<MarketplacePlugin> integrationPlugins);
 
 }

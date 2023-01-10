@@ -30,37 +30,38 @@ import java.util.Map;
 @Slf4j
 public class EsDataCleaner implements DataCleaner {
 
-    private Map<String, Long> indexLatestSuccess = new HashMap<>();
+  private Map<String, Long> indexLatestSuccess = new HashMap<>();
 
-    @Autowired
-    private RestHighLevelClient esClient;
+  @Autowired
+  private RestHighLevelClient esClient;
 
-    @Override
-    public void clean(Model model) throws IOException {
-        String name = model.getName();
-        long ttl = model.getTtl();
-        long deadline = Long.parseLong(new DateTime().plus(-ttl).toString("yyyyMMdd"));
-        Long latestSuccessDeadline = this.indexLatestSuccess.get(name);
-        if (latestSuccessDeadline != null && deadline <= latestSuccessDeadline) {
-            return;
-        }
-        GetAliasesResponse getAliasesResponse = esClient.indices().getAlias(new GetAliasesRequest(name), RequestOptions.DEFAULT);
-        Collection<String> indices = getAliasesResponse.getAliases().keySet();
-        if (CollectionUtils.isNotEmpty(indices)) {
-            for (String index : indices) {
-                String indexSuffix = index.substring(index.lastIndexOf(Const.LINE) + 1);
-                if (!StringUtils.isNumeric(indexSuffix)) {
-                    continue;
-                }
-                long indexTimeBucket = Long.parseLong(indexSuffix);
-                if (deadline >= indexTimeBucket) {
-                    AcknowledgedResponse acknowledgedResponse = esClient.indices().delete(new DeleteIndexRequest(index),
-                            RequestOptions.DEFAULT);
-                    if (acknowledgedResponse.isAcknowledged()) {
-                        this.indexLatestSuccess.put(name, deadline);
-                    }
-                }
-            }
-        }
+  @Override
+  public void clean(Model model) throws IOException {
+    String name = model.getName();
+    long ttl = model.getTtl();
+    long deadline = Long.parseLong(new DateTime().plus(-ttl).toString("yyyyMMdd"));
+    Long latestSuccessDeadline = this.indexLatestSuccess.get(name);
+    if (latestSuccessDeadline != null && deadline <= latestSuccessDeadline) {
+      return;
     }
+    GetAliasesResponse getAliasesResponse =
+        esClient.indices().getAlias(new GetAliasesRequest(name), RequestOptions.DEFAULT);
+    Collection<String> indices = getAliasesResponse.getAliases().keySet();
+    if (CollectionUtils.isNotEmpty(indices)) {
+      for (String index : indices) {
+        String indexSuffix = index.substring(index.lastIndexOf(Const.LINE) + 1);
+        if (!StringUtils.isNumeric(indexSuffix)) {
+          continue;
+        }
+        long indexTimeBucket = Long.parseLong(indexSuffix);
+        if (deadline >= indexTimeBucket) {
+          AcknowledgedResponse acknowledgedResponse =
+              esClient.indices().delete(new DeleteIndexRequest(index), RequestOptions.DEFAULT);
+          if (acknowledgedResponse.isAcknowledged()) {
+            this.indexLatestSuccess.put(name, deadline);
+          }
+        }
+      }
+    }
+  }
 }

@@ -12,26 +12,28 @@ import io.grpc.Server;
 import io.grpc.netty.shaded.io.grpc.netty.NettyServerBuilder;
 
 /**
- * <p>created at 2022/12/1
+ * <p>
+ * created at 2022/12/1
  *
  * @author xzchaoo
  */
 public class GrpcServer {
-    private int                   port;
-    private List<BindableService> services;
-    private Server                server;
+  private int port;
+  private List<BindableService> services;
+  private Server server;
 
-    public void start() throws IOException {
-        NettyServerBuilder b = NettyServerBuilder.forPort(port).maxInboundMessageSize(100 * 1024 * 1024);
-        server = b.build();
-        for (BindableService bs : services) {
-            b.addService(bs);
-        }
-        server.start();
+  public void start() throws IOException {
+    NettyServerBuilder b =
+        NettyServerBuilder.forPort(port).maxInboundMessageSize(100 * 1024 * 1024);
+    server = b.build();
+    for (BindableService bs : services) {
+      b.addService(bs);
     }
+    server.start();
+  }
 
-    public void stop() throws InterruptedException {
-        server.shutdown();
-        server.awaitTermination(10, TimeUnit.SECONDS);
-    }
+  public void stop() throws InterruptedException {
+    server.shutdown();
+    server.awaitTermination(10, TimeUnit.SECONDS);
+  }
 }

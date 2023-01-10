@@ -21,41 +21,41 @@ import static io.holoinsight.server.storage.engine.elasticsearch.model.SlowSqlEs
 @ModelAnnotation(name = INDEX_NAME)
 public class SlowSqlEsDO extends RecordEsDO {
 
-    public static final String INDEX_NAME          = "holoinsight-slow-sql";
-    public static final String ADDRESS = "address";
-    public static final String SERVICE_NAME        = "service_name";
-    public static final String STATEMENT           = "statement";
-    public static final String START_TIME          = "start_time";
-    public static final String TENANT              = "tenant";
-    public static final String LATENCY              = "latency";
-    public static final String TRACE_ID              = "trace_id";
+  public static final String INDEX_NAME = "holoinsight-slow-sql";
+  public static final String ADDRESS = "address";
+  public static final String SERVICE_NAME = "service_name";
+  public static final String STATEMENT = "statement";
+  public static final String START_TIME = "start_time";
+  public static final String TENANT = "tenant";
+  public static final String LATENCY = "latency";
+  public static final String TRACE_ID = "trace_id";
 
-    @Id
-    private String id;
-    @Column(name = TENANT)
-    private String tenant;
-    @Column(name = ADDRESS)
-    private String address;
-    @Column(name = SERVICE_NAME)
-    private String serviceName;
-    @Column(name = STATEMENT)
-    private String statement;
-    @Column(name = TRACE_ID)
-    private String traceId;
-    @Column(name = START_TIME)
-    private long startTime;
-    @Column(name = LATENCY)
-    private int latency;
+  @Id
+  private String id;
+  @Column(name = TENANT)
+  private String tenant;
+  @Column(name = ADDRESS)
+  private String address;
+  @Column(name = SERVICE_NAME)
+  private String serviceName;
+  @Column(name = STATEMENT)
+  private String statement;
+  @Column(name = TRACE_ID)
+  private String traceId;
+  @Column(name = START_TIME)
+  private long startTime;
+  @Column(name = LATENCY)
+  private int latency;
 
-    @Override
-    public String indexName() {
-        return INDEX_NAME;
-    }
+  @Override
+  public String indexName() {
+    return INDEX_NAME;
+  }
 
-    public static SlowSqlEsDO fromSlowSql(SlowSql slowSql) {
-        SlowSqlEsDO slowSqlEsDO = new SlowSqlEsDO();
-        BeanUtils.copyProperties(slowSql, slowSqlEsDO);
-        return slowSqlEsDO;
-    }
+  public static SlowSqlEsDO fromSlowSql(SlowSql slowSql) {
+    SlowSqlEsDO slowSqlEsDO = new SlowSqlEsDO();
+    BeanUtils.copyProperties(slowSql, slowSqlEsDO);
+    return slowSqlEsDO;
+  }
 
 }

@@ -12,22 +12,22 @@ import java.util.Date;
 @Data
 @TableName("agent_configuration")
 public class AgentConfiguration {
-    private String tenant;
+  private String tenant;
 
-    private String service;
+  private String service;
 
-    @Column(name = "app_id")
-    private String appId;
+  @Column(name = "app_id")
+  private String appId;
 
-    @Column(name = "env_id")
-    private String envId;
+  @Column(name = "env_id")
+  private String envId;
 
-    private String value;
+  private String value;
 
-    @Column(name = "gmt_create")
-    private Date gmtCreate;
+  @Column(name = "gmt_create")
+  private Date gmtCreate;
 
-    @Column(name = "gmt_modified")
-    private Date gmtModified;
+  @Column(name = "gmt_modified")
+  private Date gmtModified;
 
 }

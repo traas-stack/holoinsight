@@ -2,7 +2,6 @@
  * Copyright 2022 Holoinsight Project Authors. Licensed under Apache-2.0.
  */
 
-
 package io.holoinsight.server.home.biz.service.impl;
 
 import io.holoinsight.server.home.biz.service.DisplayTemplateService;
@@ -25,28 +24,28 @@ import java.util.Map;
  */
 @Service
 public class DisplayTemplateServiceImpl extends ServiceImpl<DisplayTemplateMapper, DisplayTemplate>
-                                    implements DisplayTemplateService {
+    implements DisplayTemplateService {
 
-    @Autowired
-    private DisplayTemplateConverter displayTemplateConverter;
+  @Autowired
+  private DisplayTemplateConverter displayTemplateConverter;
 
-    @Override
-    public DisplayTemplateDTO queryById(Long id) {
-        return displayTemplateConverter.doToDTO(getById(id));
-    }
+  @Override
+  public DisplayTemplateDTO queryById(Long id) {
+    return displayTemplateConverter.doToDTO(getById(id));
+  }
 
-    @Override
-    public DisplayTemplateDTO queryById(Long id, String tenant) {
-        QueryWrapper<DisplayTemplate> wrapper = new QueryWrapper<>();
-        wrapper.eq("tenant", tenant);
-        wrapper.eq("id", id);
-        wrapper.last("LIMIT 1");
+  @Override
+  public DisplayTemplateDTO queryById(Long id, String tenant) {
+    QueryWrapper<DisplayTemplate> wrapper = new QueryWrapper<>();
+    wrapper.eq("tenant", tenant);
+    wrapper.eq("id", id);
+    wrapper.last("LIMIT 1");
 
-        return displayTemplateConverter.doToDTO(this.getOne(wrapper));
-    }
+    return displayTemplateConverter.doToDTO(this.getOne(wrapper));
+  }
 
-    @Override
-    public List<DisplayTemplateDTO> findByMap(Map<String, Object> columnMap) {
-        return displayTemplateConverter.dosToDTOs(listByMap(columnMap));
-    }
+  @Override
+  public List<DisplayTemplateDTO> findByMap(Map<String, Object> columnMap) {
+    return displayTemplateConverter.dosToDTOs(listByMap(columnMap));
+  }
 }

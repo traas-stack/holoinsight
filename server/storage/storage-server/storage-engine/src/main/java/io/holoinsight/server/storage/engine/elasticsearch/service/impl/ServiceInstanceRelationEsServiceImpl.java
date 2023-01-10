@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 
 @ConditionalOnFeature("trace")
 @Service
-public class ServiceInstanceRelationEsServiceImpl extends RecordEsService<ServiceInstanceRelationEsDO>
-        implements ServiceInstanceRelationEsService {
+public class ServiceInstanceRelationEsServiceImpl extends
+    RecordEsService<ServiceInstanceRelationEsDO> implements ServiceInstanceRelationEsService {
 
 }

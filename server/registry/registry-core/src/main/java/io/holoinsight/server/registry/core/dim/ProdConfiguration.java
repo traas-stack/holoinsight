@@ -13,25 +13,28 @@ import org.springframework.context.annotation.Configuration;
 
 
 /**
- * <p>created at 2022/4/11
+ * <p>
+ * created at 2022/4/11
  *
  * @author zzhb101
  */
 @Configuration
 public class ProdConfiguration {
-    @Bean
-    public DataClientService getDataClientService(@Value("${holoinsight.registry.meta.vip}") String vip) {
-        DataClientService dcs = MetaClient.getDataClientService(vip);
-        return dcs;
-    }
+  @Bean
+  public DataClientService getDataClientService(
+      @Value("${holoinsight.registry.meta.vip}") String vip) {
+    DataClientService dcs = MetaClient.getDataClientService(vip);
+    return dcs;
+  }
 
-    @Bean
-    public AgentHeartBeatService agentHeartBeatService(@Value("${holoinsight.registry.meta.vip}") String vip) {
-        return MetaClient.getAgentHeartBeatService(vip);
-    }
+  @Bean
+  public AgentHeartBeatService agentHeartBeatService(
+      @Value("${holoinsight.registry.meta.vip}") String vip) {
+    return MetaClient.getAgentHeartBeatService(vip);
+  }
 
-    @Bean
-    public ProdDimService prodDimService() {
-        return new ProdDimService();
-    }
+  @Bean
+  public ProdDimService prodDimService() {
+    return new ProdDimService();
+  }
 }

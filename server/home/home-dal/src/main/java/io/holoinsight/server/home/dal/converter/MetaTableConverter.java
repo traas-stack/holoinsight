@@ -11,11 +11,12 @@ import org.mapstruct.Mapper;
 
 import java.util.List;
 
-@Mapper(componentModel = "spring", uses = {MetaTableSchemaMapper.class, MetaTableConfigMapper.class})
+@Mapper(componentModel = "spring",
+    uses = {MetaTableSchemaMapper.class, MetaTableConfigMapper.class})
 public interface MetaTableConverter {
-    MetaTableDTO doToDTO(MetaTable metaTable);
+  MetaTableDTO doToDTO(MetaTable metaTable);
 
-    MetaTable dtoToDO(MetaTableDTO metaTableDTO);
+  MetaTable dtoToDO(MetaTableDTO metaTableDTO);
 
-    List<MetaTableDTO> dosToDTOs(Iterable<MetaTable> metaTables);
+  List<MetaTableDTO> dosToDTOs(Iterable<MetaTable> metaTables);
 }

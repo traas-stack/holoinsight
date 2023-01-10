@@ -6,14 +6,15 @@ package io.holoinsight.server.common.auth;
 import reactor.core.publisher.Mono;
 
 /**
- * <p>created at 2022/11/25
+ * <p>
+ * created at 2022/11/25
  *
  * @author xzchaoo
  */
 public interface ApikeyAuthService {
-    Mono<AuthInfo> get(String apikey);
+  Mono<AuthInfo> get(String apikey);
 
-    Mono<AuthInfo> get(String apikey, boolean cacheFirst);
+  Mono<AuthInfo> get(String apikey, boolean cacheFirst);
 
-    AuthInfo getFromCache(String apikey);
+  AuthInfo getFromCache(String apikey);
 }

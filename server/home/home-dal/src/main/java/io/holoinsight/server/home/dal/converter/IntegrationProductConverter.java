@@ -12,13 +12,14 @@ import org.mapstruct.Mapper;
 
 import java.util.List;
 
-@Mapper(componentModel = "spring", uses = {MetricJsonMapper.class, MapJsonMapper.class, FormJsonMapper.class})
+@Mapper(componentModel = "spring",
+    uses = {MetricJsonMapper.class, MapJsonMapper.class, FormJsonMapper.class})
 public interface IntegrationProductConverter {
 
-    IntegrationProductDTO doToDTO(IntegrationProduct IntegrationProduct);
+  IntegrationProductDTO doToDTO(IntegrationProduct IntegrationProduct);
 
-    IntegrationProduct dtoToDO(IntegrationProductDTO IntegrationProductDTO);
+  IntegrationProduct dtoToDO(IntegrationProductDTO IntegrationProductDTO);
 
-    List<IntegrationProductDTO> dosToDTOs(Iterable<IntegrationProduct> IntegrationProducts);
+  List<IntegrationProductDTO> dosToDTOs(Iterable<IntegrationProduct> IntegrationProducts);
 
 }

@@ -13,7 +13,7 @@ import lombok.Data;
 @Data
 public class CompareParam {
 
-    CompareOperationEnum cmp;
+  CompareOperationEnum cmp;
 
-    Double cmpValue;
+  Double cmpValue;
 }

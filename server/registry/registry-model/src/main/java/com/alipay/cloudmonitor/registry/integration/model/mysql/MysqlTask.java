@@ -20,14 +20,14 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class MysqlTask extends CentralIntegrationTask {
-    private List<MysqlConf> confs;
+  private List<MysqlConf> confs;
 
-    private IntegrationTask desensitize() {
-        if (this.confs != null) {
-            this.confs.forEach(conf -> {
-                conf.setPassword(DesensitizeUtil.around(conf.getPassword(), 3, 3));
-            });
-        }
-        return this;
+  private IntegrationTask desensitize() {
+    if (this.confs != null) {
+      this.confs.forEach(conf -> {
+        conf.setPassword(DesensitizeUtil.around(conf.getPassword(), 3, 3));
+      });
     }
+    return this;
+  }
 }

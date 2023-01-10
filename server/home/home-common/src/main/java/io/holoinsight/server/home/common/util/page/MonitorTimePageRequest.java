@@ -14,14 +14,14 @@ import java.io.Serializable;
  */
 @Data
 public class MonitorTimePageRequest<T> implements Serializable {
-    private static final long serialVersionUID = -551884919124077414L;
-    private Long              startTime;
-    private Long              endTime;
+  private static final long serialVersionUID = -551884919124077414L;
+  private Long startTime;
+  private Long endTime;
 
-    private T                 target;
+  private T target;
 
-    private int               pageNum          = 1;
+  private int pageNum = 1;
 
-    private int               pageSize         = 10;
+  private int pageSize = 10;
 
 }

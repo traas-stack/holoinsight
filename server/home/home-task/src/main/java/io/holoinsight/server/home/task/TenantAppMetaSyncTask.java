@@ -2,7 +2,6 @@
  * Copyright 2022 Holoinsight Project Authors. Licensed under Apache-2.0.
  */
 
-
 package io.holoinsight.server.home.task;
 
 import io.holoinsight.server.home.biz.service.MetaTableService;
@@ -32,125 +31,125 @@ import java.util.Set;
 @TaskHandler(TaskEnum.TENANT_APP_META_SYNC)
 public class TenantAppMetaSyncTask extends AbstractMonitorTask {
 
-    @Autowired
-    private MetaTableService  metaTableService;
+  @Autowired
+  private MetaTableService metaTableService;
 
-    @Autowired
-    private DataClientService dataClientService;
+  @Autowired
+  private DataClientService dataClientService;
 
-    public TenantAppMetaSyncTask() {
-        super(1, 2, TaskEnum.TENANT_APP_META_SYNC);
-    }
+  public TenantAppMetaSyncTask() {
+    super(1, 2, TaskEnum.TENANT_APP_META_SYNC);
+  }
 
-    @Override
-    public boolean needRun() {
+  @Override
+  public boolean needRun() {
+    return true;
+  }
+
+  @Override
+  public List<MonitorTaskJob> buildJobs(long period) throws Throwable {
+    List<MonitorTaskJob> jobs = new ArrayList<>();
+
+    jobs.add(new MonitorTaskJob() {
+      @Override
+      public boolean run() throws Throwable {
+
+        syncAoAction();
         return true;
-    }
+      }
 
-    @Override
-    public List<MonitorTaskJob> buildJobs(long period) throws Throwable {
-        List<MonitorTaskJob> jobs = new ArrayList<>();
+      @Override
+      public String id() {
+        return "TenantAppMetaSyncTask";
+      }
+    });
+    return jobs;
+  }
 
-        jobs.add(new MonitorTaskJob() {
-            @Override
-            public boolean run() throws Throwable {
+  private void syncAoAction() {
+    List<MetaTableDTO> all = metaTableService.findAll();
 
-                syncAoAction();
-                return true;
-            }
+    if (CollectionUtils.isEmpty(all))
+      return;
 
-            @Override
-            public String id() {
-                return "TenantAppMetaSyncTask";
-            }
-        });
-        return jobs;
-    }
+    for (MetaTableDTO metaTableDTO : all) {
+      List<Map<String, Object>> mapList = dataClientService.queryAll(metaTableDTO.getName());
+      Debugger.print("TenantAppMetaSyncTask", "qurey meta list from table={} size={}",
+          metaTableDTO.name, mapList.size());
+      if (CollectionUtils.isEmpty(mapList)) {
+        continue;
+      }
 
-    private void syncAoAction() {
-        List<MetaTableDTO> all = metaTableService.findAll();
+      Set<String> appSets = new HashSet<>();
 
-        if (CollectionUtils.isEmpty(all))
-            return;
-
-        for (MetaTableDTO metaTableDTO : all) {
-            List<Map<String, Object>> mapList = dataClientService.queryAll(metaTableDTO.getName());
-            Debugger.print("TenantAppMetaSyncTask", "qurey meta list from table={} size={}",
-                metaTableDTO.name, mapList.size());
-            if (CollectionUtils.isEmpty(mapList)) {
-                continue;
-            }
-
-            Set<String> appSets = new HashSet<>();
-
-            Map<String, String> appTypes = new HashMap<>();
-            for (Map<String, Object> map : mapList) {
-                if (!map.containsKey("app")) {
-                    continue;
-                }
-
-                String app = map.get("app").toString();
-                appSets.add(app);
-
-                if (map.containsKey("_type")) {
-                    appTypes.put(app, map.get("_type").toString());
-                }
-            }
-
-            Debugger.print("TenantAppMetaSyncTask", "qurey app list from table={} size={}",
-                metaTableDTO.name, appSets.size());
-
-            if (CollectionUtils.isEmpty(appSets)) {
-                continue;
-            }
-
-            String tableName = metaTableDTO.getTenant() + "_app";
-
-            Set<String> dbApps = getDbApps(tableName);
-
-            List<Map<String, Object>> rows = new ArrayList<>();
-            appSets.forEach(app -> {
-                if (StringUtil.isBlank(app) || "-".equalsIgnoreCase(app)) {
-                    return;
-                }
-
-                Map<String, Object> map = new HashMap<>();
-                map.put("_modifier", "admin");
-                map.put("_modified", System.currentTimeMillis());
-                map.put("_type", "app");
-                map.put("app", app);
-
-                Map<String, Object> labelMap = new HashMap<>();
-                labelMap.put("machineType", appTypes.get(app));
-                map.put("_label", labelMap);
-
-                rows.add(map);
-
-                dbApps.remove(app);
-            });
-
-            dataClientService.insertOrUpdate(tableName, rows);
-
-            if (!CollectionUtils.isEmpty(dbApps)) {
-                dataClientService.delete(tableName, new ArrayList<>(dbApps));
-            }
-
+      Map<String, String> appTypes = new HashMap<>();
+      for (Map<String, Object> map : mapList) {
+        if (!map.containsKey("app")) {
+          continue;
         }
+
+        String app = map.get("app").toString();
+        appSets.add(app);
+
+        if (map.containsKey("_type")) {
+          appTypes.put(app, map.get("_type").toString());
+        }
+      }
+
+      Debugger.print("TenantAppMetaSyncTask", "qurey app list from table={} size={}",
+          metaTableDTO.name, appSets.size());
+
+      if (CollectionUtils.isEmpty(appSets)) {
+        continue;
+      }
+
+      String tableName = metaTableDTO.getTenant() + "_app";
+
+      Set<String> dbApps = getDbApps(tableName);
+
+      List<Map<String, Object>> rows = new ArrayList<>();
+      appSets.forEach(app -> {
+        if (StringUtil.isBlank(app) || "-".equalsIgnoreCase(app)) {
+          return;
+        }
+
+        Map<String, Object> map = new HashMap<>();
+        map.put("_modifier", "admin");
+        map.put("_modified", System.currentTimeMillis());
+        map.put("_type", "app");
+        map.put("app", app);
+
+        Map<String, Object> labelMap = new HashMap<>();
+        labelMap.put("machineType", appTypes.get(app));
+        map.put("_label", labelMap);
+
+        rows.add(map);
+
+        dbApps.remove(app);
+      });
+
+      dataClientService.insertOrUpdate(tableName, rows);
+
+      if (!CollectionUtils.isEmpty(dbApps)) {
+        dataClientService.delete(tableName, new ArrayList<>(dbApps));
+      }
+
     }
+  }
 
-    private Set<String> getDbApps(String tableName) {
-        List<Map<String, Object>> dbLists = dataClientService.queryAll(tableName);
+  private Set<String> getDbApps(String tableName) {
+    List<Map<String, Object>> dbLists = dataClientService.queryAll(tableName);
 
-        Set<String> appSets = new HashSet<>();
-        if (CollectionUtils.isEmpty(dbLists))
-            return appSets;
+    Set<String> appSets = new HashSet<>();
+    if (CollectionUtils.isEmpty(dbLists))
+      return appSets;
 
-        dbLists.forEach(db -> {
-            if (!db.containsKey("app"))
-                return;
-            appSets.add(db.get("app").toString());
-        });
+    dbLists.forEach(db -> {
+      if (!db.containsKey("app"))
+        return;
+      appSets.add(db.get("app").toString());
+    });
 
-        return appSets;
-    }
+    return appSets;
+  }
 }

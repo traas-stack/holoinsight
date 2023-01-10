@@ -6,7 +6,8 @@ package io.holoinsight.server.registry.core.template;
 import org.springframework.context.annotation.Configuration;
 
 /**
- * <p>created at 2022/2/28
+ * <p>
+ * created at 2022/2/28
  *
  * @author zzhb101
  */

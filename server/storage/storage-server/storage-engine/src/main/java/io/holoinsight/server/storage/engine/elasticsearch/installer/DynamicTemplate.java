@@ -20,11 +20,11 @@ import java.util.Map;
 @NoArgsConstructor
 public class DynamicTemplate {
 
-    private String              matchMappingType;
-    private String              match;
-    private String              matchPattern;
-    private String              unmatch;
-    private String              pathMatch;
-    private String              pathUnmatch;
-    private Map<String, String> mapping;
+  private String matchMappingType;
+  private String match;
+  private String matchPattern;
+  private String unmatch;
+  private String pathMatch;
+  private String pathUnmatch;
+  private Map<String, String> mapping;
 }

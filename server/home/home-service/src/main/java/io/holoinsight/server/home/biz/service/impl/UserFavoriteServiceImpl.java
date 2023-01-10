@@ -2,7 +2,6 @@
  * Copyright 2022 Holoinsight Project Authors. Licensed under Apache-2.0.
  */
 
-
 package io.holoinsight.server.home.biz.service.impl;
 
 import io.holoinsight.server.home.biz.service.UserFavoriteService;
@@ -29,139 +28,140 @@ import java.util.Map;
  */
 @Service
 public class UserFavoriteServiceImpl extends ServiceImpl<UserFavoriteMapper, UserFavorite>
-                                     implements UserFavoriteService {
+    implements UserFavoriteService {
 
-    @Override
-    public UserFavorite queryById(Long id, String tenant) {
-        QueryWrapper<UserFavorite> wrapper = new QueryWrapper<>();
-        wrapper.eq("tenant", tenant);
-        wrapper.eq("id", id);
-        wrapper.last("LIMIT 1");
+  @Override
+  public UserFavorite queryById(Long id, String tenant) {
+    QueryWrapper<UserFavorite> wrapper = new QueryWrapper<>();
+    wrapper.eq("tenant", tenant);
+    wrapper.eq("id", id);
+    wrapper.last("LIMIT 1");
 
-        return this.getOne(wrapper);
+    return this.getOne(wrapper);
+  }
+
+  public List<UserFavorite> getByUser(String userLoginName) {
+
+    Map<String, Object> columnMap = new HashMap<>();
+    columnMap.put("user_login_name", userLoginName);
+    return listByMap(columnMap);
+  }
+
+  public List<UserFavorite> getByUserAndTenant(String userLoginName, String tenant) {
+    Map<String, Object> columnMap = new HashMap<>();
+    columnMap.put("user_login_name", userLoginName);
+    columnMap.put("tenant", tenant);
+    return listByMap(columnMap);
+  }
+
+  public List<UserFavorite> getByUserAndTenantAndRelateId(String userLoginName, String tenant,
+      String relateId, String type) {
+    Map<String, Object> columnMap = new HashMap<>();
+    columnMap.put("user_login_name", userLoginName);
+    columnMap.put("tenant", tenant);
+    columnMap.put("type", type);
+    columnMap.put("relate_id", relateId);
+    return listByMap(columnMap);
+  }
+
+  public List<UserFavorite> getByUserAndTenantAndRelateIds(String userLoginName, String tenant,
+      List<String> relateIds, String type) {
+
+    QueryWrapper<UserFavorite> wrapper = new QueryWrapper<>();
+    wrapper.eq("user_login_name", userLoginName);
+    wrapper.eq("tenant", tenant);
+    wrapper.eq("type", type);
+    wrapper.select().in("relate_id", relateIds);
+
+    return baseMapper.selectList(wrapper);
+  }
+
+  public UserFavorite create(UserFavorite userFavorite) {
+    userFavorite.setGmtCreate(new Date());
+    userFavorite.setGmtModified(new Date());
+    save(userFavorite);
+    return userFavorite;
+  }
+
+  @Override
+  public void deleteById(Long id) {
+    removeById(id);
+  }
+
+  public void update(UserFavorite userFavorite) {
+    userFavorite.setGmtModified(new Date());
+    updateById(userFavorite);
+  }
+
+  public MonitorPageResult<UserFavorite> getListByPage(
+      MonitorPageRequest<UserFavorite> userFavoriteRequest) {
+
+    if (userFavoriteRequest.getTarget() == null) {
+      return null;
     }
 
-    public List<UserFavorite> getByUser(String userLoginName) {
+    QueryWrapper<UserFavorite> wrapper = new QueryWrapper<>();
 
-        Map<String, Object> columnMap = new HashMap<>();
-        columnMap.put("user_login_name", userLoginName);
-        return listByMap(columnMap);
+    UserFavorite userFavorite = userFavoriteRequest.getTarget();
+
+    if (null != userFavorite.getGmtCreate()) {
+      wrapper.ge("gmt_create", userFavorite.getGmtCreate());
+    }
+    if (null != userFavorite.getGmtModified()) {
+      wrapper.le("gmt_modified", userFavorite.getGmtCreate());
     }
 
-    public List<UserFavorite> getByUserAndTenant(String userLoginName, String tenant) {
-        Map<String, Object> columnMap = new HashMap<>();
-        columnMap.put("user_login_name", userLoginName);
-        columnMap.put("tenant", tenant);
-        return listByMap(columnMap);
+    if (StringUtil.isNotBlank(userFavorite.getUserLoginName())) {
+      wrapper.eq("user_login_name", userFavorite.getUserLoginName().trim());
     }
 
-    public List<UserFavorite> getByUserAndTenantAndRelateId(String userLoginName, String tenant,
-                                                            String relateId, String type) {
-        Map<String, Object> columnMap = new HashMap<>();
-        columnMap.put("user_login_name", userLoginName);
-        columnMap.put("tenant", tenant);
-        columnMap.put("type", type);
-        columnMap.put("relate_id", relateId);
-        return listByMap(columnMap);
+    if (null != userFavorite.getId()) {
+      wrapper.eq("id", userFavorite.getId());
     }
 
-    public List<UserFavorite> getByUserAndTenantAndRelateIds(String userLoginName, String tenant,
-                                                             List<String> relateIds, String type) {
-
-        QueryWrapper<UserFavorite> wrapper = new QueryWrapper<>();
-        wrapper.eq("user_login_name", userLoginName);
-        wrapper.eq("tenant", tenant);
-        wrapper.eq("type", type);
-        wrapper.select().in("relate_id", relateIds);
-
-        return baseMapper.selectList(wrapper);
+    if (StringUtil.isNotBlank(userFavorite.getName())) {
+      wrapper.like("name", userFavorite.getName().trim());
     }
 
-    public UserFavorite create(UserFavorite userFavorite) {
-        userFavorite.setGmtCreate(new Date());
-        userFavorite.setGmtModified(new Date());
-        save(userFavorite);
-        return userFavorite;
+    if (StringUtil.isNotBlank(userFavorite.getType())) {
+      wrapper.like("type", userFavorite.getType().trim());
     }
 
-    @Override
-    public void deleteById(Long id) {
-        removeById(id);
+    if (null != userFavorite.getRelateId()) {
+      wrapper.eq("relate_id", userFavorite.getRelateId());
     }
 
-    public void update(UserFavorite userFavorite) {
-        userFavorite.setGmtModified(new Date());
-        updateById(userFavorite);
+    if (null != userFavorite.getTenant()) {
+      wrapper.eq("tenant", userFavorite.getTenant());
     }
 
-    public MonitorPageResult<UserFavorite> getListByPage(MonitorPageRequest<UserFavorite> userFavoriteRequest) {
-
-        if (userFavoriteRequest.getTarget() == null) {
-            return null;
-        }
-
-        QueryWrapper<UserFavorite> wrapper = new QueryWrapper<>();
-
-        UserFavorite userFavorite = userFavoriteRequest.getTarget();
-
-        if (null != userFavorite.getGmtCreate()) {
-            wrapper.ge("gmt_create", userFavorite.getGmtCreate());
-        }
-        if (null != userFavorite.getGmtModified()) {
-            wrapper.le("gmt_modified", userFavorite.getGmtCreate());
-        }
-
-        if (StringUtil.isNotBlank(userFavorite.getUserLoginName())) {
-            wrapper.eq("user_login_name", userFavorite.getUserLoginName().trim());
-        }
-
-        if (null != userFavorite.getId()) {
-            wrapper.eq("id", userFavorite.getId());
-        }
-
-        if (StringUtil.isNotBlank(userFavorite.getName())) {
-            wrapper.like("name", userFavorite.getName().trim());
-        }
-
-        if (StringUtil.isNotBlank(userFavorite.getType())) {
-            wrapper.like("type", userFavorite.getType().trim());
-        }
-
-        if (null != userFavorite.getRelateId()) {
-            wrapper.eq("relate_id", userFavorite.getRelateId());
-        }
-
-        if (null != userFavorite.getTenant()) {
-            wrapper.eq("tenant", userFavorite.getTenant());
-        }
-
-        if (StringUtil.isNotBlank(userFavoriteRequest.getSortBy())
-                && StringUtil.isNotBlank(userFavoriteRequest.getSortRule())) {
-            if (userFavoriteRequest.getSortRule().toLowerCase(Locale.ROOT).equals("desc")) {
-                wrapper.orderByDesc(userFavoriteRequest.getSortBy());
-            } else {
-                wrapper.orderByAsc(userFavoriteRequest.getSortBy());
-            }
-        } else {
-            wrapper.orderByDesc("gmt_modified");
-        }
-
-        wrapper.select(UserFavorite.class, info -> !info.getColumn().equals("user_login_name"));
-
-        Page<UserFavorite> page = new Page<>(userFavoriteRequest.getPageNum(),
-            userFavoriteRequest.getPageSize());
-
-        page = page(page, wrapper);
-
-        MonitorPageResult<UserFavorite> dtos = new MonitorPageResult<>();
-
-        dtos.setItems(page.getRecords());
-        dtos.setPageNum(userFavoriteRequest.getPageNum());
-        dtos.setPageSize(userFavoriteRequest.getPageSize());
-        dtos.setTotalCount(page.getTotal());
-        dtos.setTotalPage(page.getPages());
-
-        return dtos;
-
+    if (StringUtil.isNotBlank(userFavoriteRequest.getSortBy())
+        && StringUtil.isNotBlank(userFavoriteRequest.getSortRule())) {
+      if (userFavoriteRequest.getSortRule().toLowerCase(Locale.ROOT).equals("desc")) {
+        wrapper.orderByDesc(userFavoriteRequest.getSortBy());
+      } else {
+        wrapper.orderByAsc(userFavoriteRequest.getSortBy());
+      }
+    } else {
+      wrapper.orderByDesc("gmt_modified");
     }
+
+    wrapper.select(UserFavorite.class, info -> !info.getColumn().equals("user_login_name"));
+
+    Page<UserFavorite> page =
+        new Page<>(userFavoriteRequest.getPageNum(), userFavoriteRequest.getPageSize());
+
+    page = page(page, wrapper);
+
+    MonitorPageResult<UserFavorite> dtos = new MonitorPageResult<>();
+
+    dtos.setItems(page.getRecords());
+    dtos.setPageNum(userFavoriteRequest.getPageNum());
+    dtos.setPageSize(userFavoriteRequest.getPageSize());
+    dtos.setTotalCount(page.getTotal());
+    dtos.setTotalPage(page.getPages());
+
+    return dtos;
+
+  }
 }

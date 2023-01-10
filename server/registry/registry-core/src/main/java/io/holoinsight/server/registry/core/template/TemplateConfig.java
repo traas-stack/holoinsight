@@ -14,40 +14,41 @@ import org.springframework.stereotype.Component;
 import com.xzchaoo.commons.basic.config.spring.AbstractConfig;
 
 /**
- * <p>created at 2022/3/1
+ * <p>
+ * created at 2022/3/1
  *
  * @author zzhb101
  */
 @Component
 @Getter
 public class TemplateConfig extends AbstractConfig {
-    private volatile Sync  sync  = new Sync();
-    private volatile Build build = new Build();
+  private volatile Sync sync = new Sync();
+  private volatile Build build = new Build();
 
-    @Override
-    protected void refresh(Binder binder) {
-        binder.bind("template.sync", Sync.class).ifBound(x -> sync = x);
-        binder.bind("template.build", Build.class).ifBound(x -> build = x);
-    }
+  @Override
+  protected void refresh(Binder binder) {
+    binder.bind("template.sync", Sync.class).ifBound(x -> sync = x);
+    binder.bind("template.build", Build.class).ifBound(x -> build = x);
+  }
 
-    @Data
-    public static class Sync {
-        /**
-         * 增量同步时间
-         */
-        private Duration interval     = Duration.ofSeconds(5);
-        /**
-         * 增量同步延迟
-         */
-        private Duration delay        = Duration.ofSeconds(5);
-        /**
-         * 全量同步时间
-         */
-        private Duration fullInterval = Duration.ofMinutes(1);
-    }
+  @Data
+  public static class Sync {
+    /**
+     * 增量同步时间
+     */
+    private Duration interval = Duration.ofSeconds(5);
+    /**
+     * 增量同步延迟
+     */
+    private Duration delay = Duration.ofSeconds(5);
+    /**
+     * 全量同步时间
+     */
+    private Duration fullInterval = Duration.ofMinutes(1);
+  }
 
-    @Data
-    public static class Build {
-        private Duration interval = Duration.ofMinutes(1);
-    }
+  @Data
+  public static class Build {
+    private Duration interval = Duration.ofMinutes(1);
+  }
 }

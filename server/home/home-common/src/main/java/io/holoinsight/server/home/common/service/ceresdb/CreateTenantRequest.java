@@ -12,16 +12,16 @@ import lombok.Data;
  */
 @Data
 public class CreateTenantRequest {
-    /**
-     * 租户，唯一键
-     */
-    public String  name;
-    /**
-     * token
-     */
-    public String  token;
-    /**
-     * 数据存储时长
-     */
-    public Integer ttlHour;
+  /**
+   * 租户，唯一键
+   */
+  public String name;
+  /**
+   * token
+   */
+  public String token;
+  /**
+   * 数据存储时长
+   */
+  public Integer ttlHour;
 }

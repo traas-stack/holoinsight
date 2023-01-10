@@ -17,13 +17,12 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class MetaTableConfigMapper {
-    public static String asString(MetaTableConfig config) {
-        return J.toJson(config);
-    }
+  public static String asString(MetaTableConfig config) {
+    return J.toJson(config);
+  }
 
-    public static MetaTableConfig asObj(String config) {
-        Type t = new TypeToken<MetaTableConfig>() {
-        }.getType();
-        return J.fromJson(config, t);
-    }
+  public static MetaTableConfig asObj(String config) {
+    Type t = new TypeToken<MetaTableConfig>() {}.getType();
+    return J.fromJson(config, t);
+  }
 }

@@ -2,7 +2,6 @@
  * Copyright 2022 Holoinsight Project Authors. Licensed under Apache-2.0.
  */
 
-
 package io.holoinsight.server.home.dal.model.dto;
 
 import lombok.Data;
@@ -16,10 +15,10 @@ import java.util.List;
  */
 @Data
 public class DisplayMenuConfig {
-    private String                  name;
-    private String                  url;
-    private String                  type;
-    private String                  templateId;
-    private String                  showItem;
-    private List<DisplayMenuConfig> children;
+  private String name;
+  private String url;
+  private String type;
+  private String templateId;
+  private String showItem;
+  private List<DisplayMenuConfig> children;
 }

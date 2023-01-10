@@ -12,19 +12,19 @@ import org.mapstruct.Mapper;
  */
 @Mapper(componentModel = "spring")
 public interface PositionBizRuleConverter {
-    /**
-     * do转dto
-     *
-     * @param positionBizRule
-     * @return
-     */
-    PositionBizRuleDTO convertToDTO(PositionBizRule positionBizRule);
+  /**
+   * do转dto
+   *
+   * @param positionBizRule
+   * @return
+   */
+  PositionBizRuleDTO convertToDTO(PositionBizRule positionBizRule);
 
-    /**
-     * dto转do
-     *
-     * @param positionBizRuleDTO
-     * @return
-     */
-    PositionBizRule convertToDO(PositionBizRuleDTO positionBizRuleDTO);
+  /**
+   * dto转do
+   *
+   * @param positionBizRuleDTO
+   * @return
+   */
+  PositionBizRule convertToDO(PositionBizRuleDTO positionBizRuleDTO);
 }

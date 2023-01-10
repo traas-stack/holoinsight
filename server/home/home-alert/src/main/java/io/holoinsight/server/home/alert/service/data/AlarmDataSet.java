@@ -26,57 +26,58 @@ import java.util.List;
 @Service
 public class AlarmDataSet {
 
-    private static Logger LOGGER = LoggerFactory.getLogger(AlarmDataSet.class);
+  private static Logger LOGGER = LoggerFactory.getLogger(AlarmDataSet.class);
 
-    private AlarmLoadData alarmLoadData;
+  private AlarmLoadData alarmLoadData;
 
-    @Resource
-    private LoadDataFactory loadDataFactory;
+  @Resource
+  private LoadDataFactory loadDataFactory;
 
-    @Resource
-    private PqlAlarmLoadData pqlAlarmLoadData;
+  @Resource
+  private PqlAlarmLoadData pqlAlarmLoadData;
 
-    public void loadData(ComputeTaskPackage computeTaskPackage) {
+  public void loadData(ComputeTaskPackage computeTaskPackage) {
 
-        if (computeTaskPackage == null || computeTaskPackage.getComputeTaskList() == null) {
-            return;
-        }
-        for (ComputeTask computeTask : computeTaskPackage.getComputeTaskList()) {
-            computeTask.getInspectConfigs().parallelStream().forEach(inspectConfig -> {
-                // 处理pql告警逻辑
-                if (inspectConfig.getIsPql()) {
-                    try {
-                        PqlRule pqlRule = inspectConfig.getPqlRule();
-                        if (pqlRule != null && !StringUtils.isEmpty(pqlRule.getPql())) {
-                            List<DataResult> result = pqlAlarmLoadData.queryDataResult(computeTask, inspectConfig);
-                            pqlRule.setDataResult(result);
-                            inspectConfig.setPqlRule(pqlRule);
-                        }
-                    }
-                    catch (Exception exception) {
-                        LOGGER.error("Pql query Exception", exception);
-                    }
-                }
-                // 处理current&ai告警逻辑
-                else {
-                    Rule rule = inspectConfig.getRule();
-                    if(rule == null || CollectionUtils.isEmpty(rule.getTriggers())){
-                        return;
-                    }
-                    for (Trigger trigger : rule.getTriggers()) {
-                        try {
-                            // 接入统一数据源，查询数据信息
-                            alarmLoadData = loadDataFactory.getLoadDataService(trigger.getType().getType());
-                            List<DataResult> dataResults = alarmLoadData.queryDataResult(computeTask, inspectConfig, trigger);
-                            trigger.setDataResult(dataResults);
-                        } catch (Exception exception) {
-                            LOGGER.error("AlarmLoadData Exception", exception);
-                        }
-                    }
-                }
-
-            });
-        }
-        //LOGGER.info("AlarmDataSet SUCCESS {} ", G.get().toJson(computeTaskPackage));
+    if (computeTaskPackage == null || computeTaskPackage.getComputeTaskList() == null) {
+      return;
     }
+    for (ComputeTask computeTask : computeTaskPackage.getComputeTaskList()) {
+      computeTask.getInspectConfigs().parallelStream().forEach(inspectConfig -> {
+        // 处理pql告警逻辑
+        if (inspectConfig.getIsPql()) {
+          try {
+            PqlRule pqlRule = inspectConfig.getPqlRule();
+            if (pqlRule != null && !StringUtils.isEmpty(pqlRule.getPql())) {
+              List<DataResult> result =
+                  pqlAlarmLoadData.queryDataResult(computeTask, inspectConfig);
+              pqlRule.setDataResult(result);
+              inspectConfig.setPqlRule(pqlRule);
+            }
+          } catch (Exception exception) {
+            LOGGER.error("Pql query Exception", exception);
+          }
+        }
+        // 处理current&ai告警逻辑
+        else {
+          Rule rule = inspectConfig.getRule();
+          if (rule == null || CollectionUtils.isEmpty(rule.getTriggers())) {
+            return;
+          }
+          for (Trigger trigger : rule.getTriggers()) {
+            try {
+              // 接入统一数据源，查询数据信息
+              alarmLoadData = loadDataFactory.getLoadDataService(trigger.getType().getType());
+              List<DataResult> dataResults =
+                  alarmLoadData.queryDataResult(computeTask, inspectConfig, trigger);
+              trigger.setDataResult(dataResults);
+            } catch (Exception exception) {
+              LOGGER.error("AlarmLoadData Exception", exception);
+            }
+          }
+        }
+
+      });
+    }
+    // LOGGER.info("AlarmDataSet SUCCESS {} ", G.get().toJson(computeTaskPackage));
+  }
 }

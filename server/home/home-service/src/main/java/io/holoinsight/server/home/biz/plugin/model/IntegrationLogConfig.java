@@ -16,5 +16,5 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(callSuper = true)
 @Data
 public class IntegrationLogConfig extends IntegrationConfig {
-    public CustomPluginConf conf;
+  public CustomPluginConf conf;
 }

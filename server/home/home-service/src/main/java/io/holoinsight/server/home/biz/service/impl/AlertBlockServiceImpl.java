@@ -26,97 +26,101 @@ import java.util.Locale;
  * @date 2022/4/1 10:44 上午
  */
 @Service
-public class AlertBlockServiceImpl extends ServiceImpl<AlarmBlockMapper, AlarmBlock> implements AlertBlockService {
+public class AlertBlockServiceImpl extends ServiceImpl<AlarmBlockMapper, AlarmBlock>
+    implements AlertBlockService {
 
-    @Resource
-    private AlarmBlockConverter alarmBlockConverter;
+  @Resource
+  private AlarmBlockConverter alarmBlockConverter;
 
-    @Override
-    public Long save(AlarmBlockDTO alarmBlockDTO) {
-        AlarmBlock alarmBlock = alarmBlockConverter.dtoToDO(alarmBlockDTO);
-        long currentTime = System.currentTimeMillis();
-        long endTime = currentTime + alarmBlock.getHour() * 1000 * 3600 + alarmBlock.getMinute() * 1000 * 60;
-        alarmBlock.setStartTime(new Date(currentTime));
-        alarmBlock.setEndTime(new Date(endTime));
-        this.save(alarmBlock);
-        return alarmBlock.getId();
+  @Override
+  public Long save(AlarmBlockDTO alarmBlockDTO) {
+    AlarmBlock alarmBlock = alarmBlockConverter.dtoToDO(alarmBlockDTO);
+    long currentTime = System.currentTimeMillis();
+    long endTime =
+        currentTime + alarmBlock.getHour() * 1000 * 3600 + alarmBlock.getMinute() * 1000 * 60;
+    alarmBlock.setStartTime(new Date(currentTime));
+    alarmBlock.setEndTime(new Date(endTime));
+    this.save(alarmBlock);
+    return alarmBlock.getId();
+  }
+
+  @Override
+  public Boolean updateById(AlarmBlockDTO alarmBlockDTO) {
+    AlarmBlock alarmBlock = alarmBlockConverter.dtoToDO(alarmBlockDTO);
+    return this.updateById(alarmBlock);
+  }
+
+  @Override
+  public AlarmBlockDTO queryById(Long id, String tenant) {
+
+    QueryWrapper<AlarmBlock> wrapper = new QueryWrapper<>();
+    wrapper.eq("tenant", tenant);
+    wrapper.eq("id", id);
+    wrapper.last("LIMIT 1");
+    AlarmBlock alarmBlock = this.getOne(wrapper);
+    return alarmBlockConverter.doToDTO(alarmBlock);
+  }
+
+  @Override
+  public MonitorPageResult<AlarmBlockDTO> getListByPage(
+      MonitorPageRequest<AlarmBlockDTO> pageRequest) {
+    if (pageRequest.getTarget() == null) {
+      return null;
     }
 
-    @Override
-    public Boolean updateById(AlarmBlockDTO alarmBlockDTO) {
-        AlarmBlock alarmBlock = alarmBlockConverter.dtoToDO(alarmBlockDTO);
-        return this.updateById(alarmBlock);
+    QueryWrapper<AlarmBlock> wrapper = new QueryWrapper<>();
+
+    AlarmBlock alarmBlock = alarmBlockConverter.dtoToDO(pageRequest.getTarget());
+
+    if (null != alarmBlock.getId()) {
+      wrapper.eq("id", alarmBlock.getId());
     }
 
-    @Override
-    public AlarmBlockDTO queryById(Long id, String tenant) {
-
-        QueryWrapper<AlarmBlock> wrapper = new QueryWrapper<>();
-        wrapper.eq("tenant", tenant);
-        wrapper.eq("id", id);
-        wrapper.last("LIMIT 1");
-        AlarmBlock alarmBlock = this.getOne(wrapper);
-        return alarmBlockConverter.doToDTO(alarmBlock);
+    if (StringUtils.isNotBlank(alarmBlock.getTenant())) {
+      wrapper.eq("tenant", alarmBlock.getTenant().trim());
     }
 
-    @Override
-    public MonitorPageResult<AlarmBlockDTO> getListByPage(MonitorPageRequest<AlarmBlockDTO> pageRequest) {
-        if (pageRequest.getTarget() == null) {
-            return null;
+
+    if (StringUtils.isNotBlank(pageRequest.getSortBy())
+        && StringUtils.isNotBlank(pageRequest.getSortRule())) {
+      if (pageRequest.getSortBy().equals("gmtCreate")) {
+        if (pageRequest.getSortRule().toLowerCase(Locale.ROOT).equals("desc")) {
+          wrapper.orderByDesc("gmt_create");
+        } else {
+          wrapper.orderByAsc("gmt_create");
         }
-
-        QueryWrapper<AlarmBlock> wrapper = new QueryWrapper<>();
-
-        AlarmBlock alarmBlock = alarmBlockConverter.dtoToDO(pageRequest.getTarget());
-
-        if (null != alarmBlock.getId()) {
-            wrapper.eq("id", alarmBlock.getId());
-        }
-
-        if (StringUtils.isNotBlank(alarmBlock.getTenant())) {
-            wrapper.eq("tenant", alarmBlock.getTenant().trim());
-        }
-
-
-        if (StringUtils.isNotBlank(pageRequest.getSortBy()) && StringUtils.isNotBlank(pageRequest.getSortRule())) {
-            if (pageRequest.getSortBy().equals("gmtCreate")) {
-                if (pageRequest.getSortRule().toLowerCase(Locale.ROOT).equals("desc")) {
-                    wrapper.orderByDesc("gmt_create");
-                } else {
-                    wrapper.orderByAsc("gmt_create");
-                }
-            }
-        }
-        wrapper.select(AlarmBlock.class, info -> !info.getColumn().equals("creator")
-                && !info.getColumn().equals("modifier"));
-
-        Page<AlarmBlock> page = new Page<>(pageRequest.getPageNum(), pageRequest.getPageSize());
-
-        page = page(page, wrapper);
-
-        MonitorPageResult<AlarmBlockDTO> alarmBlocks = new MonitorPageResult<>();
-
-        List<AlarmBlockDTO> alarmBlockList = alarmBlockConverter.dosToDTOs(page.getRecords());
-
-        alarmBlocks.setItems(alarmBlockList);
-        alarmBlocks.setPageNum(pageRequest.getPageNum());
-        alarmBlocks.setPageSize(pageRequest.getPageSize());
-        alarmBlocks.setTotalCount(page.getTotal());
-        alarmBlocks.setTotalPage(page.getPages());
-
-        return alarmBlocks;
+      }
     }
+    wrapper.select(AlarmBlock.class,
+        info -> !info.getColumn().equals("creator") && !info.getColumn().equals("modifier"));
 
-    @Override
-    public List<AlarmBlockDTO> getListByKeyword(String keyword, String tenant) {
-        QueryWrapper<AlarmBlock> wrapper = new QueryWrapper<>();
-        if (StringUtils.isNotBlank(tenant)) {
-            wrapper.eq("tenant", tenant);
-        }
-        wrapper.like("id", keyword).or().like("rule_name", keyword);
-        Page<AlarmBlock> page = new Page<>(1, 20);
-        page = page(page, wrapper);
+    Page<AlarmBlock> page = new Page<>(pageRequest.getPageNum(), pageRequest.getPageSize());
 
-        return alarmBlockConverter.dosToDTOs(page.getRecords());
+    page = page(page, wrapper);
+
+    MonitorPageResult<AlarmBlockDTO> alarmBlocks = new MonitorPageResult<>();
+
+    List<AlarmBlockDTO> alarmBlockList = alarmBlockConverter.dosToDTOs(page.getRecords());
+
+    alarmBlocks.setItems(alarmBlockList);
+    alarmBlocks.setPageNum(pageRequest.getPageNum());
+    alarmBlocks.setPageSize(pageRequest.getPageSize());
+    alarmBlocks.setTotalCount(page.getTotal());
+    alarmBlocks.setTotalPage(page.getPages());
+
+    return alarmBlocks;
+  }
+
+  @Override
+  public List<AlarmBlockDTO> getListByKeyword(String keyword, String tenant) {
+    QueryWrapper<AlarmBlock> wrapper = new QueryWrapper<>();
+    if (StringUtils.isNotBlank(tenant)) {
+      wrapper.eq("tenant", tenant);
     }
+    wrapper.like("id", keyword).or().like("rule_name", keyword);
+    Page<AlarmBlock> page = new Page<>(1, 20);
+    page = page(page, wrapper);
+
+    return alarmBlockConverter.dosToDTOs(page.getRecords());
+  }
 }

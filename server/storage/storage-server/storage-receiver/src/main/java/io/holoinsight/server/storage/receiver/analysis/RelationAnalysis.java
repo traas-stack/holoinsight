@@ -35,258 +35,282 @@ import java.util.Map;
 @Slf4j
 public class RelationAnalysis {
 
-    @Autowired
-    private NetworkAddressMappingCache networkAddressMappingCache;
+  @Autowired
+  private NetworkAddressMappingCache networkAddressMappingCache;
 
-    public List<RelationBuilder> analysisServerSpan(Span span, Map<String, AnyValue> spanAttrMap, Map<String, AnyValue> resourceAttrMap) {
-        List<RelationBuilder> callingInTraffic = new ArrayList<>(10);
+  public List<RelationBuilder> analysisServerSpan(Span span, Map<String, AnyValue> spanAttrMap,
+      Map<String, AnyValue> resourceAttrMap) {
+    List<RelationBuilder> callingInTraffic = new ArrayList<>(10);
 
-        String serviceName = resourceAttrMap.get(ResourceAttributes.SERVICE_NAME.getKey()).getStringValue();
-        String instanceName = resourceAttrMap.get(Const.OTLP_RESOURCE_SERVICE_INSTANCE_NAME).getStringValue();
+    String serviceName =
+        resourceAttrMap.get(ResourceAttributes.SERVICE_NAME.getKey()).getStringValue();
+    String instanceName =
+        resourceAttrMap.get(Const.OTLP_RESOURCE_SERVICE_INSTANCE_NAME).getStringValue();
 
-        if (span.getLinksCount() > 0) {
-            for (Span.Link link : span.getLinksList()) {
-                RelationBuilder sourceBuilder = new RelationBuilder();
-
-                String networkAddressUsedAtPeer = null;
-                String parentServiceName = null;
-                String parentInstanceName = null;
-                String parentEndpointName = Const.USER_ENDPOINT_NAME;
-
-                for (KeyValue keyValue : link.getAttributesList()) {
-                    if (Const.SW_REF_NETWORK_ADDRESSUSEDATPEER.equals(keyValue.getKey())) {
-                        networkAddressUsedAtPeer = keyValue.getValue().getStringValue();
-                    } else if (Const.SW_REF_PARENT_SERVICE.equals(keyValue.getKey())) {
-                        parentServiceName = keyValue.getValue().getStringValue();
-                    } else if (Const.SW_REF_PARENT_SERVICE_INSTANCE_NAME.equals(keyValue.getKey())) {
-                        parentInstanceName = keyValue.getValue().getStringValue();
-                    } else if (Const.SW_REF_PARENT_ENDPOINT.equals(keyValue.getKey())) {
-                        parentEndpointName = keyValue.getValue().getStringValue();
-                    }
-                }
-
-                if (Span.SpanKind.SPAN_KIND_CONSUMER == span.getKind()) {
-                    sourceBuilder.setSourceServiceName(networkAddressUsedAtPeer);
-                    sourceBuilder.setSourceEndpointOwnerServiceName(parentServiceName);
-                    sourceBuilder.setSourceServiceInstanceName(networkAddressUsedAtPeer);
-                    sourceBuilder.setSourceLayer(Layer.VIRTUAL_MQ);
-                    sourceBuilder.setSourceEndpointOwnerServiceLayer(Layer.GENERAL);
-                } else {
-                    sourceBuilder.setSourceServiceName(parentServiceName);
-                    sourceBuilder.setSourceServiceInstanceName(parentInstanceName);
-                    sourceBuilder.setSourceLayer(Layer.GENERAL);
-                }
-
-                sourceBuilder.setSourceEndpointName(parentEndpointName);
-                sourceBuilder.setDestEndpointName(span.getName());
-                sourceBuilder.setDestServiceInstanceName(instanceName);
-                sourceBuilder.setDestServiceName(serviceName);
-                sourceBuilder.setDestLayer(Layer.GENERAL);
-                sourceBuilder.setDetectPoint(DetectPoint.SERVER);
-                PublicAttr.setPublicAttrs(sourceBuilder, span, spanAttrMap, resourceAttrMap);
-                callingInTraffic.add(sourceBuilder);
-            }
-        } else {
-            RelationBuilder sourceBuilder = new RelationBuilder();
-            sourceBuilder.setSourceServiceName(Const.USER_SERVICE_NAME);
-            sourceBuilder.setSourceServiceInstanceName(Const.USER_INSTANCE_NAME);
-            sourceBuilder.setSourceEndpointName(Const.USER_ENDPOINT_NAME);
-            sourceBuilder.setSourceLayer(Layer.UNDEFINED);
-            sourceBuilder.setDestServiceInstanceName(instanceName);
-            sourceBuilder.setDestServiceName(serviceName);
-            sourceBuilder.setDestLayer(Layer.GENERAL);
-            sourceBuilder.setDestEndpointName(span.getName());
-            sourceBuilder.setDetectPoint(DetectPoint.SERVER);
-
-            PublicAttr.setPublicAttrs(sourceBuilder, span, spanAttrMap, resourceAttrMap);
-            callingInTraffic.add(sourceBuilder);
-        }
-
-        return callingInTraffic;
-    }
-
-    public List<RelationBuilder> analysisClientSpan(Span span, Map<String, AnyValue> spanAttrMap, Map<String, AnyValue> resourceAttrMap, Map<String, String> endpointMap) {
-        List<RelationBuilder> callingOutTraffic = new ArrayList<>(10);
+    if (span.getLinksCount() > 0) {
+      for (Span.Link link : span.getLinksList()) {
         RelationBuilder sourceBuilder = new RelationBuilder();
 
-        AnyValue peerName = spanAttrMap.get(SemanticAttributes.NET_PEER_NAME.getKey());
-        AnyValue peerPort = spanAttrMap.get(SemanticAttributes.NET_PEER_PORT.getKey());
+        String networkAddressUsedAtPeer = null;
+        String parentServiceName = null;
+        String parentInstanceName = null;
+        String parentEndpointName = Const.USER_ENDPOINT_NAME;
 
-        if (peerName == null  && peerPort == null) {
-            return callingOutTraffic;
+        for (KeyValue keyValue : link.getAttributesList()) {
+          if (Const.SW_REF_NETWORK_ADDRESSUSEDATPEER.equals(keyValue.getKey())) {
+            networkAddressUsedAtPeer = keyValue.getValue().getStringValue();
+          } else if (Const.SW_REF_PARENT_SERVICE.equals(keyValue.getKey())) {
+            parentServiceName = keyValue.getValue().getStringValue();
+          } else if (Const.SW_REF_PARENT_SERVICE_INSTANCE_NAME.equals(keyValue.getKey())) {
+            parentInstanceName = keyValue.getValue().getStringValue();
+          } else if (Const.SW_REF_PARENT_ENDPOINT.equals(keyValue.getKey())) {
+            parentEndpointName = keyValue.getValue().getStringValue();
+          }
         }
 
-        String spanLayer = spanAttrMap.get(Const.OTLP_SPANLAYER).getStringValue();
-        String serviceName = resourceAttrMap.get(ResourceAttributes.SERVICE_NAME.getKey()).getStringValue();
-        String instanceName = resourceAttrMap.get(Const.OTLP_RESOURCE_SERVICE_INSTANCE_NAME).getStringValue();;
-
-        String networkAddress = peerPort == null ? peerName.getStringValue() :  peerName.getStringValue() + ":" + peerPort.getStringValue();
-        sourceBuilder.setSourceServiceName(serviceName);
-        sourceBuilder.setSourceServiceInstanceName(instanceName);
-        sourceBuilder.setSourceLayer(Layer.GENERAL);
-        sourceBuilder.setSourceEndpointName(endpointMap.getOrDefault(Hex.encodeHexString(span.getParentSpanId().toByteArray()), ""));
-
-        final NetworkAddressMappingEsDO networkAddressMapping = networkAddressMappingCache.get(networkAddress);
-        if (networkAddressMapping == null) {
-            sourceBuilder.setDestServiceName(networkAddress);
-            sourceBuilder.setDestServiceInstanceName(networkAddress);
-            sourceBuilder.setDestLayer(identifyRemoteServiceLayer(spanLayer));
-            sourceBuilder.setDestEndpointName(span.getName());
+        if (Span.SpanKind.SPAN_KIND_CONSUMER == span.getKind()) {
+          sourceBuilder.setSourceServiceName(networkAddressUsedAtPeer);
+          sourceBuilder.setSourceEndpointOwnerServiceName(parentServiceName);
+          sourceBuilder.setSourceServiceInstanceName(networkAddressUsedAtPeer);
+          sourceBuilder.setSourceLayer(Layer.VIRTUAL_MQ);
+          sourceBuilder.setSourceEndpointOwnerServiceLayer(Layer.GENERAL);
         } else {
-            return callingOutTraffic;
+          sourceBuilder.setSourceServiceName(parentServiceName);
+          sourceBuilder.setSourceServiceInstanceName(parentInstanceName);
+          sourceBuilder.setSourceLayer(Layer.GENERAL);
         }
 
-        sourceBuilder.setDetectPoint(DetectPoint.CLIENT);
+        sourceBuilder.setSourceEndpointName(parentEndpointName);
+        sourceBuilder.setDestEndpointName(span.getName());
+        sourceBuilder.setDestServiceInstanceName(instanceName);
+        sourceBuilder.setDestServiceName(serviceName);
+        sourceBuilder.setDestLayer(Layer.GENERAL);
+        sourceBuilder.setDetectPoint(DetectPoint.SERVER);
         PublicAttr.setPublicAttrs(sourceBuilder, span, spanAttrMap, resourceAttrMap);
-        callingOutTraffic.add(sourceBuilder);
+        callingInTraffic.add(sourceBuilder);
+      }
+    } else {
+      RelationBuilder sourceBuilder = new RelationBuilder();
+      sourceBuilder.setSourceServiceName(Const.USER_SERVICE_NAME);
+      sourceBuilder.setSourceServiceInstanceName(Const.USER_INSTANCE_NAME);
+      sourceBuilder.setSourceEndpointName(Const.USER_ENDPOINT_NAME);
+      sourceBuilder.setSourceLayer(Layer.UNDEFINED);
+      sourceBuilder.setDestServiceInstanceName(instanceName);
+      sourceBuilder.setDestServiceName(serviceName);
+      sourceBuilder.setDestLayer(Layer.GENERAL);
+      sourceBuilder.setDestEndpointName(span.getName());
+      sourceBuilder.setDetectPoint(DetectPoint.SERVER);
 
-        return callingOutTraffic;
+      PublicAttr.setPublicAttrs(sourceBuilder, span, spanAttrMap, resourceAttrMap);
+      callingInTraffic.add(sourceBuilder);
     }
 
+    return callingInTraffic;
+  }
 
-    public List<SlowSqlEsDO> analysisClientSpan(Span span, Map<String, AnyValue> spanAttrMap, Map<String, AnyValue> resourceAttrMap) {
-        List<SlowSqlEsDO> result = new ArrayList<>(10);
+  public List<RelationBuilder> analysisClientSpan(Span span, Map<String, AnyValue> spanAttrMap,
+      Map<String, AnyValue> resourceAttrMap, Map<String, String> endpointMap) {
+    List<RelationBuilder> callingOutTraffic = new ArrayList<>(10);
+    RelationBuilder sourceBuilder = new RelationBuilder();
 
-        String serviceName = resourceAttrMap.get(ResourceAttributes.SERVICE_NAME.getKey()).getStringValue();
-        AnyValue statement = spanAttrMap.get(SemanticAttributes.DB_STATEMENT.getKey());
-        AnyValue peerName = spanAttrMap.get(SemanticAttributes.NET_PEER_NAME.getKey());
-        AnyValue peerPort = spanAttrMap.get(SemanticAttributes.NET_PEER_PORT.getKey());
-        long latency = TimeUtils.unixNano2MS(span.getEndTimeUnixNano()) - TimeUtils.unixNano2MS(span.getStartTimeUnixNano());
+    AnyValue peerName = spanAttrMap.get(SemanticAttributes.NET_PEER_NAME.getKey());
+    AnyValue peerPort = spanAttrMap.get(SemanticAttributes.NET_PEER_PORT.getKey());
 
-        if ((peerName == null && peerPort == null) || statement == null || latency < Const.SLOW_SQL_THRESHOLD) {
-            return result;
+    if (peerName == null && peerPort == null) {
+      return callingOutTraffic;
+    }
+
+    String spanLayer = spanAttrMap.get(Const.OTLP_SPANLAYER).getStringValue();
+    String serviceName =
+        resourceAttrMap.get(ResourceAttributes.SERVICE_NAME.getKey()).getStringValue();
+    String instanceName =
+        resourceAttrMap.get(Const.OTLP_RESOURCE_SERVICE_INSTANCE_NAME).getStringValue();;
+
+    String networkAddress = peerPort == null ? peerName.getStringValue()
+        : peerName.getStringValue() + ":" + peerPort.getStringValue();
+    sourceBuilder.setSourceServiceName(serviceName);
+    sourceBuilder.setSourceServiceInstanceName(instanceName);
+    sourceBuilder.setSourceLayer(Layer.GENERAL);
+    sourceBuilder.setSourceEndpointName(
+        endpointMap.getOrDefault(Hex.encodeHexString(span.getParentSpanId().toByteArray()), ""));
+
+    final NetworkAddressMappingEsDO networkAddressMapping =
+        networkAddressMappingCache.get(networkAddress);
+    if (networkAddressMapping == null) {
+      sourceBuilder.setDestServiceName(networkAddress);
+      sourceBuilder.setDestServiceInstanceName(networkAddress);
+      sourceBuilder.setDestLayer(identifyRemoteServiceLayer(spanLayer));
+      sourceBuilder.setDestEndpointName(span.getName());
+    } else {
+      return callingOutTraffic;
+    }
+
+    sourceBuilder.setDetectPoint(DetectPoint.CLIENT);
+    PublicAttr.setPublicAttrs(sourceBuilder, span, spanAttrMap, resourceAttrMap);
+    callingOutTraffic.add(sourceBuilder);
+
+    return callingOutTraffic;
+  }
+
+
+  public List<SlowSqlEsDO> analysisClientSpan(Span span, Map<String, AnyValue> spanAttrMap,
+      Map<String, AnyValue> resourceAttrMap) {
+    List<SlowSqlEsDO> result = new ArrayList<>(10);
+
+    String serviceName =
+        resourceAttrMap.get(ResourceAttributes.SERVICE_NAME.getKey()).getStringValue();
+    AnyValue statement = spanAttrMap.get(SemanticAttributes.DB_STATEMENT.getKey());
+    AnyValue peerName = spanAttrMap.get(SemanticAttributes.NET_PEER_NAME.getKey());
+    AnyValue peerPort = spanAttrMap.get(SemanticAttributes.NET_PEER_PORT.getKey());
+    long latency = TimeUtils.unixNano2MS(span.getEndTimeUnixNano())
+        - TimeUtils.unixNano2MS(span.getStartTimeUnixNano());
+
+    if ((peerName == null && peerPort == null) || statement == null
+        || latency < Const.SLOW_SQL_THRESHOLD) {
+      return result;
+    }
+
+    String dbAddress = peerPort == null ? peerName.getStringValue()
+        : peerName.getStringValue() + ":" + peerPort.getStringValue();
+    SlowSqlEsDO slowSqlEsDO = new SlowSqlEsDO();
+    slowSqlEsDO.setTenant(resourceAttrMap.get(Const.TENANT).getStringValue());
+    slowSqlEsDO.setServiceName(serviceName);
+    slowSqlEsDO.setAddress(dbAddress);
+    slowSqlEsDO.setLatency((int) latency);
+    slowSqlEsDO.setStartTime(TimeUtils.unixNano2MS(span.getStartTimeUnixNano()));
+    slowSqlEsDO.setTimeBucket(
+        TimeBucket.getRecordTimeBucket(TimeUtils.unixNano2MS(span.getStartTimeUnixNano())));
+    slowSqlEsDO.setTraceId(Hex.encodeHexString(span.getTraceId().toByteArray()));
+    slowSqlEsDO.setStatement(statement.getStringValue());
+
+    result.add(slowSqlEsDO);
+    return result;
+  }
+
+  public List<RelationBuilder> analysisInternalSpan(Span span, Map<String, AnyValue> spanAttrMap,
+      Map<String, AnyValue> resourceAttrMap) {
+    List<RelationBuilder> result = new ArrayList<>(10);
+
+    if (span.getLinksCount() > 0) {
+      for (int i = 0; i < span.getLinksCount(); i++) {
+        Span.Link link = span.getLinks(i);
+        RelationBuilder sourceBuilder = new RelationBuilder();
+
+        String serviceName =
+            resourceAttrMap.get(ResourceAttributes.SERVICE_NAME.getKey()).getStringValue();
+        String instanceName =
+            resourceAttrMap.get(Const.OTLP_RESOURCE_SERVICE_INSTANCE_NAME).getStringValue();
+        String networkAddressUsedAtPeer = null;
+        String parentServiceName = null;
+        String parentInstanceName = null;
+        String parentEndpointName = Const.USER_ENDPOINT_NAME;
+
+        for (KeyValue keyValue : link.getAttributesList()) {
+          if (Const.SW_REF_NETWORK_ADDRESSUSEDATPEER.equals(keyValue.getKey())) {
+            networkAddressUsedAtPeer = keyValue.getValue().getStringValue();
+          } else if (Const.SW_REF_PARENT_SERVICE.equals(keyValue.getKey())) {
+            parentServiceName = keyValue.getValue().getStringValue();
+          } else if (Const.SW_REF_PARENT_SERVICE_INSTANCE_NAME.equals(keyValue.getKey())) {
+            parentInstanceName = keyValue.getValue().getStringValue();
+          } else if (Const.SW_REF_PARENT_ENDPOINT.equals(keyValue.getKey())) {
+            parentEndpointName = keyValue.getValue().getStringValue();
+          }
         }
 
-        String dbAddress = peerPort == null ? peerName.getStringValue() :  peerName.getStringValue() + ":" + peerPort.getStringValue();
-        SlowSqlEsDO slowSqlEsDO = new SlowSqlEsDO();
-        slowSqlEsDO.setTenant(resourceAttrMap.get(Const.TENANT).getStringValue());
-        slowSqlEsDO.setServiceName(serviceName);
-        slowSqlEsDO.setAddress(dbAddress);
-        slowSqlEsDO.setLatency((int) latency);
-        slowSqlEsDO.setStartTime(TimeUtils.unixNano2MS(span.getStartTimeUnixNano()));
-        slowSqlEsDO.setTimeBucket(TimeBucket.getRecordTimeBucket(TimeUtils.unixNano2MS(span.getStartTimeUnixNano())));
-        slowSqlEsDO.setTraceId(Hex.encodeHexString(span.getTraceId().toByteArray()));
-        slowSqlEsDO.setStatement(statement.getStringValue());
-
-        result.add(slowSqlEsDO);
-        return result;
-    }
-
-    public List<RelationBuilder> analysisInternalSpan(Span span, Map<String, AnyValue> spanAttrMap, Map<String, AnyValue> resourceAttrMap) {
-        List<RelationBuilder> result = new ArrayList<>(10);
-
-        if (span.getLinksCount() > 0) {
-            for (int i = 0; i < span.getLinksCount(); i++) {
-                Span.Link link = span.getLinks(i);
-                RelationBuilder sourceBuilder = new RelationBuilder();
-
-                String serviceName = resourceAttrMap.get(ResourceAttributes.SERVICE_NAME.getKey()).getStringValue();
-                String instanceName = resourceAttrMap.get(Const.OTLP_RESOURCE_SERVICE_INSTANCE_NAME).getStringValue();
-                String networkAddressUsedAtPeer = null;
-                String parentServiceName = null;
-                String parentInstanceName = null;
-                String parentEndpointName = Const.USER_ENDPOINT_NAME;
-
-                for (KeyValue keyValue : link.getAttributesList()) {
-                    if (Const.SW_REF_NETWORK_ADDRESSUSEDATPEER.equals(keyValue.getKey())) {
-                        networkAddressUsedAtPeer = keyValue.getValue().getStringValue();
-                    } else if (Const.SW_REF_PARENT_SERVICE.equals(keyValue.getKey())) {
-                        parentServiceName = keyValue.getValue().getStringValue();
-                    } else if (Const.SW_REF_PARENT_SERVICE_INSTANCE_NAME.equals(keyValue.getKey())) {
-                        parentInstanceName = keyValue.getValue().getStringValue();
-                    } else if (Const.SW_REF_PARENT_ENDPOINT.equals(keyValue.getKey())) {
-                        parentEndpointName = keyValue.getValue().getStringValue();
-                    }
-                }
-
-                if (Span.SpanKind.SPAN_KIND_CONSUMER == span.getKind()) {
-                    sourceBuilder.setSourceServiceName(networkAddressUsedAtPeer);
-                    sourceBuilder.setSourceEndpointOwnerServiceName(parentServiceName);
-                    sourceBuilder.setSourceServiceInstanceName(networkAddressUsedAtPeer);
-                    sourceBuilder.setSourceLayer(Layer.VIRTUAL_MQ);
-                    sourceBuilder.setSourceEndpointOwnerServiceLayer(Layer.GENERAL);
-                } else {
-                    sourceBuilder.setSourceServiceName(parentServiceName);
-                    sourceBuilder.setSourceServiceInstanceName(parentInstanceName);
-                    sourceBuilder.setSourceLayer(Layer.GENERAL);
-                }
-
-                sourceBuilder.setSourceEndpointName(parentEndpointName);
-                sourceBuilder.setDestEndpointName(span.getName());
-                sourceBuilder.setDestServiceInstanceName(instanceName);
-                sourceBuilder.setDestServiceName(serviceName);
-                sourceBuilder.setDestLayer(Layer.GENERAL);
-                sourceBuilder.setDetectPoint(DetectPoint.SERVER);
-                PublicAttr.setPublicAttrs(sourceBuilder, span, spanAttrMap, resourceAttrMap);
-                result.add(sourceBuilder);
-            }
+        if (Span.SpanKind.SPAN_KIND_CONSUMER == span.getKind()) {
+          sourceBuilder.setSourceServiceName(networkAddressUsedAtPeer);
+          sourceBuilder.setSourceEndpointOwnerServiceName(parentServiceName);
+          sourceBuilder.setSourceServiceInstanceName(networkAddressUsedAtPeer);
+          sourceBuilder.setSourceLayer(Layer.VIRTUAL_MQ);
+          sourceBuilder.setSourceEndpointOwnerServiceLayer(Layer.GENERAL);
+        } else {
+          sourceBuilder.setSourceServiceName(parentServiceName);
+          sourceBuilder.setSourceServiceInstanceName(parentInstanceName);
+          sourceBuilder.setSourceLayer(Layer.GENERAL);
         }
 
-        return result;
+        sourceBuilder.setSourceEndpointName(parentEndpointName);
+        sourceBuilder.setDestEndpointName(span.getName());
+        sourceBuilder.setDestServiceInstanceName(instanceName);
+        sourceBuilder.setDestServiceName(serviceName);
+        sourceBuilder.setDestLayer(Layer.GENERAL);
+        sourceBuilder.setDetectPoint(DetectPoint.SERVER);
+        PublicAttr.setPublicAttrs(sourceBuilder, span, spanAttrMap, resourceAttrMap);
+        result.add(sourceBuilder);
+      }
     }
 
+    return result;
+  }
 
-    /**
-     * get a mapping ip:port -> serviceName use for analysis service relation from exit span
-     *
-     * @param span
-     * @return
-     */
-    public List<NetworkAddressMappingEsDO> generateNetworkAddressMapping(Span span, Map<String, AnyValue> spanAttrMap, Map<String, AnyValue> resourceAttrMap) {
-        List<NetworkAddressMappingEsDO> networkAddressMappings = new ArrayList<>(10);
 
-        for (Span.Link link : span.getLinksList()) {
-            Map<String, AnyValue> linkAttrMap = TransformAttr.attList2Map(link.getAttributesList());
-            String refType = linkAttrMap.get(Const.SW_REF_REFTYPE).getStringValue();
-            if (!RefType.CrossProcess.name().equals(refType)) {
-                continue;
-            }
+  /**
+   * get a mapping ip:port -> serviceName use for analysis service relation from exit span
+   *
+   * @param span
+   * @return
+   */
+  public List<NetworkAddressMappingEsDO> generateNetworkAddressMapping(Span span,
+      Map<String, AnyValue> spanAttrMap, Map<String, AnyValue> resourceAttrMap) {
+    List<NetworkAddressMappingEsDO> networkAddressMappings = new ArrayList<>(10);
 
-            String networkAddressUsedAtPeer = linkAttrMap.get(Const.SW_REF_NETWORK_ADDRESSUSEDATPEER).getStringValue();
-            String serviceName = resourceAttrMap.get(ResourceAttributes.SERVICE_NAME.getKey()).getStringValue();
-            String instanceName = resourceAttrMap.get(Const.OTLP_RESOURCE_SERVICE_INSTANCE_NAME).getStringValue();
+    for (Span.Link link : span.getLinksList()) {
+      Map<String, AnyValue> linkAttrMap = TransformAttr.attList2Map(link.getAttributesList());
+      String refType = linkAttrMap.get(Const.SW_REF_REFTYPE).getStringValue();
+      if (!RefType.CrossProcess.name().equals(refType)) {
+        continue;
+      }
 
-            final NetworkAddressMapping networkAddressMapping = new NetworkAddressMapping();
-            networkAddressMapping.setAddress(networkAddressUsedAtPeer);
-            networkAddressMapping.setServiceName(serviceName);
-            networkAddressMapping.setServiceNormal(true);
-            networkAddressMapping.setServiceInstanceName(instanceName);
-            networkAddressMapping.setTimeBucket(TimeBucket.getRecordTimeBucket(TimeUtils.unixNano2MS(span.getStartTimeUnixNano())));
-            networkAddressMapping.prepare();
+      String networkAddressUsedAtPeer =
+          linkAttrMap.get(Const.SW_REF_NETWORK_ADDRESSUSEDATPEER).getStringValue();
+      String serviceName =
+          resourceAttrMap.get(ResourceAttributes.SERVICE_NAME.getKey()).getStringValue();
+      String instanceName =
+          resourceAttrMap.get(Const.OTLP_RESOURCE_SERVICE_INSTANCE_NAME).getStringValue();
 
-            // address mapping has existed
-            NetworkAddressMappingEsDO old = networkAddressMappingCache.get(networkAddressUsedAtPeer);
-            if (old != null && networkAddressMapping.getServiceName().equals(old.getServiceName())) {
-                continue;
-            }
+      final NetworkAddressMapping networkAddressMapping = new NetworkAddressMapping();
+      networkAddressMapping.setAddress(networkAddressUsedAtPeer);
+      networkAddressMapping.setServiceName(serviceName);
+      networkAddressMapping.setServiceNormal(true);
+      networkAddressMapping.setServiceInstanceName(instanceName);
+      networkAddressMapping.setTimeBucket(
+          TimeBucket.getRecordTimeBucket(TimeUtils.unixNano2MS(span.getStartTimeUnixNano())));
+      networkAddressMapping.prepare();
 
-            networkAddressMappings.add(NetworkAddressMappingEsDO.fromNetworkAddressMapping(networkAddressMapping));
-        }
+      // address mapping has existed
+      NetworkAddressMappingEsDO old = networkAddressMappingCache.get(networkAddressUsedAtPeer);
+      if (old != null && networkAddressMapping.getServiceName().equals(old.getServiceName())) {
+        continue;
+      }
 
-        return networkAddressMappings;
+      networkAddressMappings
+          .add(NetworkAddressMappingEsDO.fromNetworkAddressMapping(networkAddressMapping));
     }
 
+    return networkAddressMappings;
+  }
 
 
-    public Layer identifyRemoteServiceLayer(String spanLayer) {
-        switch (spanLayer) {
-            case "Unknown" :
-            case "UNRECOGNIZED":
-                return Layer.UNDEFINED;
-            case "Database":
-                return Layer.VIRTUAL_DATABASE;
-            case "RPCFramework":
-            case "Http":
-                return Layer.GENERAL;
-            case "MQ":
-                return Layer.VIRTUAL_MQ;
-            case "Cache":
-                return Layer.VIRTUAL_CACHE;
-            case "FAAS":
-                return Layer.FAAS;
-            default:
-                throw new UnexpectedException("Can't transfer to the Layer. SpanLayer=" + spanLayer);
-        }
+
+  public Layer identifyRemoteServiceLayer(String spanLayer) {
+    switch (spanLayer) {
+      case "Unknown":
+      case "UNRECOGNIZED":
+        return Layer.UNDEFINED;
+      case "Database":
+        return Layer.VIRTUAL_DATABASE;
+      case "RPCFramework":
+      case "Http":
+        return Layer.GENERAL;
+      case "MQ":
+        return Layer.VIRTUAL_MQ;
+      case "Cache":
+        return Layer.VIRTUAL_CACHE;
+      case "FAAS":
+        return Layer.FAAS;
+      default:
+        throw new UnexpectedException("Can't transfer to the Layer. SpanLayer=" + spanLayer);
     }
+  }
 
 }

@@ -17,34 +17,33 @@ import java.util.List;
 @Slf4j
 class RuntimeDictLoader implements DictLoader {
 
-    @Override
-    public List<DictData> load() {
-        List<DictData> datas = new LinkedList<>();
-        System.getProperties().forEach((k, v) -> {
-            if (k instanceof String) {
-                if (((String) k).startsWith("metaservice.")) {
-                    datas.add(
-                            new DictData(level(), ConstPool.COMMON_DICT_DOMAIN,
-                                    ConstPool.COMMON_DICT_DOMAIN, (String) k, null, (String) v));
-                    log.info("RuntimeDictLoader load property, {}={}.", k, v);
-                }
-            }
-        });
-        return datas;
-    }
+  @Override
+  public List<DictData> load() {
+    List<DictData> datas = new LinkedList<>();
+    System.getProperties().forEach((k, v) -> {
+      if (k instanceof String) {
+        if (((String) k).startsWith("metaservice.")) {
+          datas.add(new DictData(level(), ConstPool.COMMON_DICT_DOMAIN,
+              ConstPool.COMMON_DICT_DOMAIN, (String) k, null, (String) v));
+          log.info("RuntimeDictLoader load property, {}={}.", k, v);
+        }
+      }
+    });
+    return datas;
+  }
 
-    /**
-     * 启动参数一般不可以修改
-     *
-     * @return
-     */
-    @Override
-    public int level() {
-        return 100;
-    }
+  /**
+   * 启动参数一般不可以修改
+   *
+   * @return
+   */
+  @Override
+  public int level() {
+    return 100;
+  }
 
-    @Override
-    public int timerRefresh() {
-        return -1;
-    }
+  @Override
+  public int timerRefresh() {
+    return -1;
+  }
 }

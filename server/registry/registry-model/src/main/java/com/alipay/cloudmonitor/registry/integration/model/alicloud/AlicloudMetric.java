@@ -17,8 +17,8 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class AlicloudMetric {
-    private String       aliyunMetricName;
-    private String       convertedMetricName;
-    private List<String> dimensions;
-    private List<String> aggregations;
+  private String aliyunMetricName;
+  private String convertedMetricName;
+  private List<String> dimensions;
+  private List<String> aggregations;
 }

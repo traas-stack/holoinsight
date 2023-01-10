@@ -15,19 +15,19 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 public class PortCheckTask extends IntegrationTask {
-    // [必填] 探测的端口
-    public Integer port;
+  // [必填] 探测的端口
+  public Integer port;
 
-    // [可选] 默认是tcp
-    public String network;
+  // [可选] 默认是tcp
+  public String network;
 
-    // [可选] 超时时间 单位是ms 默认是3000
-    public Long timeout;
+  // [可选] 超时时间 单位是ms 默认是3000
+  public Long timeout;
 
-    // [可选] 连续执行几次探测
-    public Integer times;
+  // [可选] 连续执行几次探测
+  public Integer times;
 
-    // [可选] 网络模式, 默认是AGENT
-    public String networkMode;
+  // [可选] 网络模式, 默认是AGENT
+  public String networkMode;
 
 }

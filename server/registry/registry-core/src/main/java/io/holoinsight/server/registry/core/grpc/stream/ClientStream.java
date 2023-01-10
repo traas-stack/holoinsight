@@ -10,19 +10,20 @@ import io.grpc.stub.StreamObserver;
 import reactor.core.publisher.Mono;
 
 /**
- * <p>created at 2022/3/3
+ * <p>
+ * created at 2022/3/3
  *
  * @author zzhb101
  */
 public interface ClientStream extends Stream {
-    /**
-     * 握手
-     *
-     * @param bizType
-     * @param data
-     * @return
-     */
-    Mono<Void> handshake(int bizType, ByteString data);
+  /**
+   * 握手
+   *
+   * @param bizType
+   * @param data
+   * @return
+   */
+  Mono<Void> handshake(int bizType, ByteString data);
 
-    void setWriter(StreamObserver<GenericRpcCommand> reader);
+  void setWriter(StreamObserver<GenericRpcCommand> reader);
 }

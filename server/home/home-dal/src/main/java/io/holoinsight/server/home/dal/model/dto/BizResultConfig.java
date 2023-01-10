@@ -9,28 +9,28 @@ import lombok.Data;
 @Data
 public class BizResultConfig implements Serializable {
 
-    private static final long serialVersionUID = -4474941839733988335L;
-    /**
-     * 字段名
-     */
-    private String fieldName;
+  private static final long serialVersionUID = -4474941839733988335L;
+  /**
+   * 字段名
+   */
+  private String fieldName;
 
 
-    /**
-     * 操作类型
-     */
-    private String operateType;
+  /**
+   * 操作类型
+   */
+  private String operateType;
 
 
-    /**
-     * 字段值
-     */
-    private String fieldValue;
+  /**
+   * 字段值
+   */
+  private String fieldValue;
 
 
-    /**
-     * 字段类型
-     */
-    private String fieldType;
+  /**
+   * 字段类型
+   */
+  private String fieldType;
 
 }

@@ -2,7 +2,6 @@
  * Copyright 2022 Holoinsight Project Authors. Licensed under Apache-2.0.
  */
 
-
 package io.holoinsight.server.home.web.controller;
 
 import io.holoinsight.server.home.biz.service.ApiKeyService;
@@ -52,218 +51,218 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/webapi/apikey")
 public class ApiKeyFacadeImpl extends BaseFacade {
-    @Autowired
-    private ApiKeyService    apiKeyService;
+  @Autowired
+  private ApiKeyService apiKeyService;
 
-    @Autowired
-    private UserOpLogService userOpLogService;
+  @Autowired
+  private UserOpLogService userOpLogService;
 
-    @PostMapping("/update")
-    @ResponseBody
-    @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.EDIT)
-    public JsonResult<Object> update(@RequestBody ApiKey apiKey) {
-        final JsonResult<ApiKey> result = new JsonResult<>();
-        facadeTemplate.manage(result, new ManageCallback() {
-            @Override
-            public void checkParameter() {
-                ParaCheckUtil.checkParaNotNull(apiKey.id, "id");
-                ParaCheckUtil.checkParaNotBlank(apiKey.apiKey, "apiKey");
-                ParaCheckUtil.checkParaNotBlank(apiKey.name, "name");
-                ParaCheckUtil.checkParaNotNull(apiKey.status, "status");
+  @PostMapping("/update")
+  @ResponseBody
+  @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.EDIT)
+  public JsonResult<Object> update(@RequestBody ApiKey apiKey) {
+    final JsonResult<ApiKey> result = new JsonResult<>();
+    facadeTemplate.manage(result, new ManageCallback() {
+      @Override
+      public void checkParameter() {
+        ParaCheckUtil.checkParaNotNull(apiKey.id, "id");
+        ParaCheckUtil.checkParaNotBlank(apiKey.apiKey, "apiKey");
+        ParaCheckUtil.checkParaNotBlank(apiKey.name, "name");
+        ParaCheckUtil.checkParaNotNull(apiKey.status, "status");
 
-                ParaCheckUtil.checkParaNotNull(apiKey.getTenant(), "tenant");
-                ParaCheckUtil.checkEquals(apiKey.getTenant(),
-                        RequestContext.getContext().ms.getTenant(), "tenant is illegal");
+        ParaCheckUtil.checkParaNotNull(apiKey.getTenant(), "tenant");
+        ParaCheckUtil.checkEquals(apiKey.getTenant(), RequestContext.getContext().ms.getTenant(),
+            "tenant is illegal");
 
-                ApiKey item = apiKeyService.queryById(apiKey.getId(), RequestContext.getContext().ms.getTenant());
+        ApiKey item =
+            apiKeyService.queryById(apiKey.getId(), RequestContext.getContext().ms.getTenant());
 
-                if(null == item){
-                    throw new MonitorException("cannot find record: " + apiKey.getId());
-                }
-                if(!item.getTenant().equalsIgnoreCase(apiKey.getTenant())){
-                    throw new MonitorException("the tenant parameter is invalid");
-                }
-            }
+        if (null == item) {
+          throw new MonitorException("cannot find record: " + apiKey.getId());
+        }
+        if (!item.getTenant().equalsIgnoreCase(apiKey.getTenant())) {
+          throw new MonitorException("the tenant parameter is invalid");
+        }
+      }
 
-            @Override
-            public void doManage() {
+      @Override
+      public void doManage() {
 
-                MonitorScope ms = RequestContext.getContext().ms;
-                MonitorUser mu = RequestContext.getContext().mu;
+        MonitorScope ms = RequestContext.getContext().ms;
+        MonitorUser mu = RequestContext.getContext().mu;
 
-                ApiKey update = new ApiKey();
+        ApiKey update = new ApiKey();
 
-                BeanUtils.copyProperties(apiKey, update);
+        BeanUtils.copyProperties(apiKey, update);
 
-                if (null != mu) {
-                    update.setModifier(mu.getLoginName());
-                }
-                if (null != ms && !StringUtils.isEmpty(ms.tenant)) {
-                    update.setTenant(ms.tenant);
-                }
-                update.setGmtModified(new Date());
-                apiKeyService.updateById(update);
+        if (null != mu) {
+          update.setModifier(mu.getLoginName());
+        }
+        if (null != ms && !StringUtils.isEmpty(ms.tenant)) {
+          update.setTenant(ms.tenant);
+        }
+        update.setGmtModified(new Date());
+        apiKeyService.updateById(update);
 
-                assert mu != null;
-                userOpLogService.append("apikey", String.valueOf(apiKey.getId()), OpType.UPDATE,
-                    mu.getLoginName(), ms.getTenant(), J.toJson(apiKey), J.toJson(update), null,
-                    "apikey_update");
-            }
+        assert mu != null;
+        userOpLogService.append("apikey", String.valueOf(apiKey.getId()), OpType.UPDATE,
+            mu.getLoginName(), ms.getTenant(), J.toJson(apiKey), J.toJson(update), null,
+            "apikey_update");
+      }
+    });
+
+    return JsonResult.createSuccessResult(true);
+  }
+
+  @PostMapping("/create")
+  @ResponseBody
+  @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.EDIT)
+  public JsonResult<ApiKey> save(@RequestBody ApiKey apiKey) {
+    final JsonResult<ApiKey> result = new JsonResult<>();
+    facadeTemplate.manage(result, new ManageCallback() {
+      @Override
+      public void checkParameter() {
+        ParaCheckUtil.checkParaNotNull(apiKey.name, "name");
+        ParaCheckUtil.checkParaNotNull(apiKey.status, "status");
+      }
+
+      @Override
+      public void doManage() {
+        MonitorScope ms = RequestContext.getContext().ms;
+        MonitorUser mu = RequestContext.getContext().mu;
+        if (null != mu) {
+          apiKey.setCreator(mu.getLoginName());
+          apiKey.setModifier(mu.getLoginName());
+        }
+        if (null != ms && !StringUtils.isEmpty(ms.tenant)) {
+          apiKey.setTenant(ms.tenant);
+        }
+        apiKey.setApiKey(UUID.randomUUID().toString());
+        apiKey.setTenant(MonitorCookieUtil.getTenantOrException());
+        apiKey.setGmtCreate(new Date());
+        apiKey.setGmtModified(new Date());
+        apiKeyService.save(apiKey);
+        JsonResult.createSuccessResult(result, apiKey);
+
+        assert mu != null;
+        userOpLogService.append("apikey", String.valueOf(apiKey.getId()), OpType.CREATE,
+            mu.getLoginName(), ms.getTenant(), J.toJson(apiKey), null, null, "apikey_create");
+
+      }
+    });
+
+    return result;
+  }
+
+  @GetMapping(value = "/query/{id}")
+  @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.VIEW)
+  public JsonResult<ApiKey> queryById(@PathVariable("id") Long id) {
+    final JsonResult<ApiKey> result = new JsonResult<>();
+    facadeTemplate.manage(result, new ManageCallback() {
+      @Override
+      public void checkParameter() {
+        ParaCheckUtil.checkParaNotNull(id, "id");
+      }
+
+      @Override
+      public void doManage() {
+        ApiKey apiKey = apiKeyService.queryById(id, RequestContext.getContext().ms.getTenant());
+
+        if (null == apiKey) {
+          throw new MonitorException(ResultCodeEnum.CANNOT_FIND_RECORD, "can not find record");
+        }
+        JsonResult.createSuccessResult(result, apiKey);
+      }
+    });
+    return result;
+  }
+
+  @GetMapping(value = "/queryAll")
+  @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.VIEW)
+  public JsonResult<List<ApiKey>> queryAll() {
+    final JsonResult<List<ApiKey>> result = new JsonResult<>();
+    facadeTemplate.manage(result, new ManageCallback() {
+      @Override
+      public void checkParameter() {
+
+      }
+
+      @Override
+      public void doManage() {
+        MonitorScope ms = RequestContext.getContext().ms;
+        Map<String, Object> conditions = new HashMap<>();
+        conditions.put("tenant", ms.getTenant());
+
+        List<ApiKey> apiKeys = apiKeyService.listByMap(conditions);
+        apiKeys.forEach(apiKey -> {
+          apiKey.setCreator(null);
+          apiKey.setModifier(null);
         });
+        JsonResult.createSuccessResult(result, apiKeys);
+      }
+    });
+    return result;
+  }
 
-        return JsonResult.createSuccessResult(true);
-    }
+  @DeleteMapping(value = "/delete/{id}")
+  @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.EDIT)
+  public JsonResult<Object> deleteById(@PathVariable("id") Long id) {
+    final JsonResult<Object> result = new JsonResult<>();
+    facadeTemplate.manage(result, new ManageCallback() {
+      @Override
+      public void checkParameter() {
+        ParaCheckUtil.checkParaNotNull(id, "id");
+      }
 
-    @PostMapping("/create")
-    @ResponseBody
-    @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.EDIT)
-    public JsonResult<ApiKey> save(@RequestBody ApiKey apiKey) {
-        final JsonResult<ApiKey> result = new JsonResult<>();
-        facadeTemplate.manage(result, new ManageCallback() {
-            @Override
-            public void checkParameter() {
-                ParaCheckUtil.checkParaNotNull(apiKey.name, "name");
-                ParaCheckUtil.checkParaNotNull(apiKey.status, "status");
-            }
+      @Override
+      public void doManage() {
+        ApiKey byId = apiKeyService.queryById(id, RequestContext.getContext().ms.getTenant());
+        if (byId == null) {
+          return;
+        }
 
-            @Override
-            public void doManage() {
-                MonitorScope ms = RequestContext.getContext().ms;
-                MonitorUser mu = RequestContext.getContext().mu;
-                if (null != mu) {
-                    apiKey.setCreator(mu.getLoginName());
-                    apiKey.setModifier(mu.getLoginName());
-                }
-                if (null != ms && !StringUtils.isEmpty(ms.tenant)) {
-                    apiKey.setTenant(ms.tenant);
-                }
-                apiKey.setApiKey(UUID.randomUUID().toString());
-                apiKey.setTenant(MonitorCookieUtil.getTenantOrException());
-                apiKey.setGmtCreate(new Date());
-                apiKey.setGmtModified(new Date());
-                apiKeyService.save(apiKey);
-                JsonResult.createSuccessResult(result, apiKey);
+        apiKeyService.removeById(id);
+        JsonResult.createSuccessResult(result, null);
+        userOpLogService.append("apikey", String.valueOf(byId.getId()), OpType.DELETE,
+            RequestContext.getContext().mu.getLoginName(),
+            RequestContext.getContext().ms.getTenant(), J.toJson(byId), null, null,
+            "apikey_delete");
 
-                assert mu != null;
-                userOpLogService.append("apikey", String.valueOf(apiKey.getId()), OpType.CREATE,
-                    mu.getLoginName(), ms.getTenant(), J.toJson(apiKey), null, null,
-                    "apikey_create");
+      }
+    });
+    return result;
+  }
 
-            }
-        });
+  @DeleteMapping(value = "/deleteByName/{name}")
+  @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.EDIT)
+  public JsonResult<Object> deleteByName(@PathVariable("name") String name) {
+    final JsonResult<Object> result = new JsonResult<>();
+    facadeTemplate.manage(result, new ManageCallback() {
+      @Override
+      public void checkParameter() {
+        ParaCheckUtil.checkParaNotNull(name, "name");
+      }
 
-        return result;
-    }
+      @Override
+      public void doManage() {
+        Map<String, Object> columnMap = new HashMap<>();
+        columnMap.put("name", name);
+        columnMap.put("tenant", RequestContext.getContext().ms.getTenant());
+        List<ApiKey> apiKeys = apiKeyService.listByMap(columnMap);
+        if (CollectionUtils.isEmpty(apiKeys)) {
+          return;
+        }
 
-    @GetMapping(value = "/query/{id}")
-    @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.VIEW)
-    public JsonResult<ApiKey> queryById(@PathVariable("id") Long id) {
-        final JsonResult<ApiKey> result = new JsonResult<>();
-        facadeTemplate.manage(result, new ManageCallback() {
-            @Override
-            public void checkParameter() {
-                ParaCheckUtil.checkParaNotNull(id, "id");
-            }
+        List<Long> ids = apiKeys.stream().map(ApiKey::getId).collect(Collectors.toList());
 
-            @Override
-            public void doManage() {
-                ApiKey apiKey = apiKeyService.queryById(id, RequestContext.getContext().ms.getTenant());
-
-                if (null == apiKey) {
-                    throw new MonitorException(ResultCodeEnum.CANNOT_FIND_RECORD, "can not find record");
-                }
-                JsonResult.createSuccessResult(result, apiKey);
-            }
-        });
-        return result;
-    }
-
-    @GetMapping(value = "/queryAll")
-    @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.VIEW)
-    public JsonResult<List<ApiKey>> queryAll() {
-        final JsonResult<List<ApiKey>> result = new JsonResult<>();
-        facadeTemplate.manage(result, new ManageCallback() {
-            @Override
-            public void checkParameter() {
-
-            }
-
-            @Override
-            public void doManage() {
-                MonitorScope ms = RequestContext.getContext().ms;
-                Map<String, Object> conditions = new HashMap<>();
-                conditions.put("tenant", ms.getTenant());
-
-                List<ApiKey> apiKeys = apiKeyService.listByMap(conditions);
-                apiKeys.forEach(apiKey -> {
-                    apiKey.setCreator(null);
-                    apiKey.setModifier(null);
-                });
-                JsonResult.createSuccessResult(result, apiKeys);
-            }
-        });
-        return result;
-    }
-
-    @DeleteMapping(value = "/delete/{id}")
-    @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.EDIT)
-    public JsonResult<Object> deleteById(@PathVariable("id") Long id) {
-        final JsonResult<Object> result = new JsonResult<>();
-        facadeTemplate.manage(result, new ManageCallback() {
-            @Override
-            public void checkParameter() {
-                ParaCheckUtil.checkParaNotNull(id, "id");
-            }
-
-            @Override
-            public void doManage() {
-                ApiKey byId = apiKeyService.queryById(id, RequestContext.getContext().ms.getTenant());
-                if(byId == null){
-                    return;
-                }
-
-                apiKeyService.removeById(id);
-                JsonResult.createSuccessResult(result, null);
-                userOpLogService.append("apikey", String.valueOf(byId.getId()), OpType.DELETE,
-                    RequestContext.getContext().mu.getLoginName(),
-                    RequestContext.getContext().ms.getTenant(), J.toJson(byId), null, null,
-                    "apikey_delete");
-
-            }
-        });
-        return result;
-    }
-
-    @DeleteMapping(value = "/deleteByName/{name}")
-    @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.EDIT)
-    public JsonResult<Object> deleteByName(@PathVariable("name") String name) {
-        final JsonResult<Object> result = new JsonResult<>();
-        facadeTemplate.manage(result, new ManageCallback() {
-            @Override
-            public void checkParameter() {
-                ParaCheckUtil.checkParaNotNull(name, "name");
-            }
-
-            @Override
-            public void doManage() {
-                Map<String, Object> columnMap = new HashMap<>();
-                columnMap.put("name", name);
-                columnMap.put("tenant", RequestContext.getContext().ms.getTenant());
-                List<ApiKey> apiKeys = apiKeyService.listByMap(columnMap);
-                if(CollectionUtils.isEmpty(apiKeys)){
-                    return;
-                }
-
-                List<Long> ids = apiKeys.stream().map(ApiKey::getId).collect(Collectors.toList());
-
-                apiKeyService.removeBatchByIds(ids);
-                JsonResult.createSuccessResult(result, null);
-                userOpLogService.append("apikey", String.valueOf(ids.toString()), OpType.DELETE,
-                        RequestContext.getContext().mu.getLoginName(),
-                        RequestContext.getContext().ms.getTenant(), J.toJson(apiKeys), null, null,
-                        "apikey_delete");
-            }
-        });
-        return result;
-    }
+        apiKeyService.removeBatchByIds(ids);
+        JsonResult.createSuccessResult(result, null);
+        userOpLogService.append("apikey", String.valueOf(ids.toString()), OpType.DELETE,
+            RequestContext.getContext().mu.getLoginName(),
+            RequestContext.getContext().ms.getTenant(), J.toJson(apiKeys), null, null,
+            "apikey_delete");
+      }
+    });
+    return result;
+  }
 }

@@ -12,7 +12,8 @@ import java.lang.annotation.Target;
 import org.springframework.context.annotation.Conditional;
 
 /**
- * <p>created at 2022/11/30
+ * <p>
+ * created at 2022/11/30
  *
  * @author xzchaoo
  */
@@ -21,10 +22,10 @@ import org.springframework.context.annotation.Conditional;
 @Documented
 @Conditional(ConditionalOnRoleFeature.class)
 public @interface ConditionalOnFeature {
-    /**
-     * Annotated target is active when any of features is active.
-     *
-     * @return
-     */
-    String[] value();
+  /**
+   * Annotated target is active when any of features is active.
+   *
+   * @return
+   */
+  String[] value();
 }

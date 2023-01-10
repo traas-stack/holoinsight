@@ -9,7 +9,8 @@ import lombok.Setter;
 import lombok.ToString;
 
 /**
- * <p>created at 2022/3/21
+ * <p>
+ * created at 2022/3/21
  *
  * @author zzhb101
  */
@@ -17,11 +18,11 @@ import lombok.ToString;
 @Getter
 @Setter
 public class SqlTask extends GaeaTask {
-    private Select select;
-    private From from;
-    private Where where;
-    private GroupBy groupBy;
-    private Window window;
-    private Output output;
-    private ExecuteRule executeRule;
+  private Select select;
+  private From from;
+  private Where where;
+  private GroupBy groupBy;
+  private Window window;
+  private Output output;
+  private ExecuteRule executeRule;
 }

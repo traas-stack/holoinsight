@@ -15,11 +15,11 @@ import java.util.List;
  */
 @Data
 public class Translate implements Serializable {
-    private static final long serialVersionUID = 8300941265450477069L;
+  private static final long serialVersionUID = 8300941265450477069L;
 
-    /**
-     * 转换函数
-     */
-    public List<ColumnCalExpr> exprs;
+  /**
+   * 转换函数
+   */
+  public List<ColumnCalExpr> exprs;
 
 }

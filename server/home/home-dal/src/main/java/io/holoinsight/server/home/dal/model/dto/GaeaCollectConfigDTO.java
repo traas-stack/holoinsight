@@ -20,43 +20,43 @@ import java.util.Map;
 @Data
 public class GaeaCollectConfigDTO {
 
-    public Long                id;
+  public Long id;
 
-    public String              refId;
+  public String refId;
 
-    public String              tenant;
-    public String              tableName;
+  public String tenant;
+  public String tableName;
 
-    public Boolean             deleted;
-    public Long                version;
+  public Boolean deleted;
+  public Long version;
 
+  public String type;
+  public GaeaTask json;
+
+  public GaeaCollectRange collectRange;
+
+  public Map<String, Object> executorSelector;
+
+  public Date gmtCreate;
+
+  public Date gmtModified;
+
+  @Data
+  @NoArgsConstructor
+  @AllArgsConstructor
+  public static class GaeaCollectRange implements Serializable {
+    private static final long serialVersionUID = -2140563386879600142L;
     public String type;
-    public GaeaTask            json;
+    public CloudMonitorRange cloudmonitor;
 
-    public GaeaCollectRange    collectRange;
-
-    public Map<String, Object> executorSelector;
-
-    public Date                gmtCreate;
-
-    public Date                gmtModified;
-
-    @Data
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class GaeaCollectRange implements Serializable {
-        private static final long serialVersionUID = -2140563386879600142L;
-        public String type;
-        public CloudMonitorRange cloudmonitor;
-
-        public boolean isEqual(GaeaCollectRange originalRecord) {
-            if((originalRecord == null)
-                    ||(this.cloudmonitor == null && originalRecord.cloudmonitor != null)
-                    ||(this.cloudmonitor != null && originalRecord.cloudmonitor == null)){
-                return false;
-            }
-            return this.cloudmonitor.isEqual(originalRecord.cloudmonitor);
-        }
+    public boolean isEqual(GaeaCollectRange originalRecord) {
+      if ((originalRecord == null)
+          || (this.cloudmonitor == null && originalRecord.cloudmonitor != null)
+          || (this.cloudmonitor != null && originalRecord.cloudmonitor == null)) {
+        return false;
+      }
+      return this.cloudmonitor.isEqual(originalRecord.cloudmonitor);
     }
+  }
 
 }

@@ -11,7 +11,7 @@ import io.holoinsight.server.storage.common.model.storage.Model;
  */
 public interface ModelInstaller {
 
-    void install(Model model);
+  void install(Model model);
 
-    boolean isExists(Model model) ;
+  boolean isExists(Model model);
 }

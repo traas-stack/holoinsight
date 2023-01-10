@@ -15,21 +15,21 @@ import java.util.Map;
  */
 public interface DataClientService {
 
-    void insertOrUpdate(String tableName, List<Map<String, Object>> rows);
+  void insertOrUpdate(String tableName, List<Map<String, Object>> rows);
 
-    void insert(String tableName, List<Map<String, Object>> rows);
+  void insert(String tableName, List<Map<String, Object>> rows);
 
-    void update(String tableName, List<Map<String, Object>> rows);
+  void update(String tableName, List<Map<String, Object>> rows);
 
-    void delete(String tableName, List<String> uks);
+  void delete(String tableName, List<String> uks);
 
-    List<Map<String, Object>> queryAll(String tableName);
+  List<Map<String, Object>> queryAll(String tableName);
 
-    void deleteByExample(String tableName, QueryExample example);
+  void deleteByExample(String tableName, QueryExample example);
 
-    void updateByExample(String tableName, QueryExample example, Map<String, Object> row);
+  void updateByExample(String tableName, QueryExample example, Map<String, Object> row);
 
-    List<Map<String, Object>> queryByExample(String tableName, QueryExample example);
+  List<Map<String, Object>> queryByExample(String tableName, QueryExample example);
 
-    List<Map<String, Object>> fuzzyByExample(String tableName, QueryExample example);
+  List<Map<String, Object>> fuzzyByExample(String tableName, QueryExample example);
 }

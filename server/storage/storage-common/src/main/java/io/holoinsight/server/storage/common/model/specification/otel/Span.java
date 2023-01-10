@@ -17,19 +17,19 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Span {
-    private String         traceId;
-    private String         spanId;
-    private String         traceState;
-    private String         parentSpanId;
-    private String         name;
-    private SpanKind       kind;
-    private long           startTimeUnixNano;
-    private long           endTimeUnixNano;
-    private List<KeyValue> attributes;
-    private int            droppedAttributesCount;
-    private List<Event>    events;
-    private int            droppedEventsCount;
-    private List<Link>     links;
-    private int            droppedLinksCount;
-    private Status         status;
+  private String traceId;
+  private String spanId;
+  private String traceState;
+  private String parentSpanId;
+  private String name;
+  private SpanKind kind;
+  private long startTimeUnixNano;
+  private long endTimeUnixNano;
+  private List<KeyValue> attributes;
+  private int droppedAttributesCount;
+  private List<Event> events;
+  private int droppedEventsCount;
+  private List<Link> links;
+  private int droppedLinksCount;
+  private Status status;
 }

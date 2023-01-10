@@ -18,17 +18,18 @@ import java.util.List;
 @ConditionalOnFeature("trace")
 public class SlowSqlServiceImpl implements SlowSqlService {
 
-    @Autowired
-    private SlowSqlEsService slowSqlEsService;
+  @Autowired
+  private SlowSqlEsService slowSqlEsService;
 
-    @Override
-    public void insert(List<SlowSqlEsDO> slowSqlEsDOList) throws IOException {
-        slowSqlEsService.batchInsert(slowSqlEsDOList);
-    }
+  @Override
+  public void insert(List<SlowSqlEsDO> slowSqlEsDOList) throws IOException {
+    slowSqlEsService.batchInsert(slowSqlEsDOList);
+  }
 
-    @Override
-    public List<SlowSql> getSlowSqlList(String tenant, String serviceName, String dbAddress, long startTime, long endTime) throws IOException {
-        return slowSqlEsService.getSlowSqlList(tenant, serviceName, dbAddress, startTime, endTime);
-    }
+  @Override
+  public List<SlowSql> getSlowSqlList(String tenant, String serviceName, String dbAddress,
+      long startTime, long endTime) throws IOException {
+    return slowSqlEsService.getSlowSqlList(tenant, serviceName, dbAddress, startTime, endTime);
+  }
 
 }

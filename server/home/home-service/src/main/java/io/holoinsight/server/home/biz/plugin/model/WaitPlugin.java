@@ -15,27 +15,27 @@ import org.springframework.stereotype.Component;
 @PluginModel(name = "com.alipay.holoinsight.plugin.WaitPlugin", version = "1")
 public class WaitPlugin extends ChainPlugin {
 
-    public WaitPlugin() {
+  public WaitPlugin() {
 
-    }
+  }
 
-    @Override
-    public boolean input(Object input, PluginContext context) {
-        return false;
-    }
+  @Override
+  public boolean input(Object input, PluginContext context) {
+    return false;
+  }
 
-    @Override
-    public Object output() {
-        return ScheduleTimeEnum.WAIT_5_SEC;
-    }
+  @Override
+  public Object output() {
+    return ScheduleTimeEnum.WAIT_5_SEC;
+  }
 
-    @Override
-    public void handle() throws Exception {
+  @Override
+  public void handle() throws Exception {
 
-    }
+  }
 
-    @Override
-    public PluginType getPluginType() {
-        return PluginType.scheduler;
-    }
+  @Override
+  public PluginType getPluginType() {
+    return PluginType.scheduler;
+  }
 }

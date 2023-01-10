@@ -17,22 +17,22 @@ import java.util.Map;
 @TableName(autoResultMap = true)
 public class Dashboard {
 
-    @TableId(type = IdType.AUTO)
-    private Long                id;
-    private String              title;
-    @TableField(typeHandler = JacksonTypeHandler.class)
-    private Map<String, Object> conf;
+  @TableId(type = IdType.AUTO)
+  private Long id;
+  private String title;
+  @TableField(typeHandler = JacksonTypeHandler.class)
+  private Map<String, Object> conf;
 
-    public String               tenant;
+  public String tenant;
 
-    public String               type;
+  public String type;
 
-    public Date                 gmtCreate;
+  public Date gmtCreate;
 
-    public Date                 gmtModified;
+  public Date gmtModified;
 
-    public String               creator;
+  public String creator;
 
-    public String               modifier;
+  public String modifier;
 
 }

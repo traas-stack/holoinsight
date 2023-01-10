@@ -11,19 +11,20 @@ import org.springframework.web.bind.annotation.RestController;
 import io.holoinsight.server.registry.core.utils.ApiResp;
 
 /**
- * <p>created at 2022/4/19
+ * <p>
+ * created at 2022/4/19
  *
  * @author zzhb101
  */
 @RestController
 @RequestMapping("/internal/api/registry/cluster")
 public class ClusterWebController {
-    @Autowired
-    private DefaultCluster defaultCluster;
+  @Autowired
+  private DefaultCluster defaultCluster;
 
-    @GetMapping("/info")
-    public ApiResp info() {
-        DefaultCluster.State state = defaultCluster.state;
-        return ApiResp.success(state.memberMap.keySet());
-    }
+  @GetMapping("/info")
+  public ApiResp info() {
+    DefaultCluster.State state = defaultCluster.state;
+    return ApiResp.success(state.memberMap.keySet());
+  }
 }

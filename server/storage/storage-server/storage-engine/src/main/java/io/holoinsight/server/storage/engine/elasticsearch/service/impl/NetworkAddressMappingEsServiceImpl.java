@@ -25,28 +25,31 @@ import java.util.List;
 @ConditionalOnFeature("trace")
 @Service
 public class NetworkAddressMappingEsServiceImpl extends RecordEsService<NetworkAddressMappingEsDO>
-        implements NetworkAddressMappingEsService {
+    implements NetworkAddressMappingEsService {
 
-    @Autowired
-    private RestHighLevelClient esClient;
+  @Autowired
+  private RestHighLevelClient esClient;
 
-    @Override
-    public List<NetworkAddressMappingEsDO> loadByTime(long timeBucketInMinute) throws IOException {
-        List<NetworkAddressMappingEsDO> networkAddressMapping = new ArrayList<>();
+  @Override
+  public List<NetworkAddressMappingEsDO> loadByTime(long timeBucketInMinute) throws IOException {
+    List<NetworkAddressMappingEsDO> networkAddressMapping = new ArrayList<>();
 
-        SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
-        searchSourceBuilder.size(1000);
-        searchSourceBuilder.query(new RangeQueryBuilder(NetworkAddressMappingEsDO.TIME_BUCKET).gte(timeBucketInMinute));
-        SearchRequest searchRequest = new SearchRequest(new String[] {NetworkAddressMappingEsDO.INDEX_NAME}, searchSourceBuilder);
+    SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
+    searchSourceBuilder.size(1000);
+    searchSourceBuilder.query(
+        new RangeQueryBuilder(NetworkAddressMappingEsDO.TIME_BUCKET).gte(timeBucketInMinute));
+    SearchRequest searchRequest =
+        new SearchRequest(new String[] {NetworkAddressMappingEsDO.INDEX_NAME}, searchSourceBuilder);
 
-        SearchResponse searchResponse = esClient.search(searchRequest, RequestOptions.DEFAULT);
+    SearchResponse searchResponse = esClient.search(searchRequest, RequestOptions.DEFAULT);
 
-        for (SearchHit searchHit : searchResponse.getHits().getHits()) {
-            String hitJson = searchHit.getSourceAsString();
-            NetworkAddressMappingEsDO networkAddressMappingEsDO = EsGsonUtils.esGson().fromJson(hitJson, NetworkAddressMappingEsDO.class);
-            networkAddressMapping.add(networkAddressMappingEsDO);
-        }
-
-        return networkAddressMapping;
+    for (SearchHit searchHit : searchResponse.getHits().getHits()) {
+      String hitJson = searchHit.getSourceAsString();
+      NetworkAddressMappingEsDO networkAddressMappingEsDO =
+          EsGsonUtils.esGson().fromJson(hitJson, NetworkAddressMappingEsDO.class);
+      networkAddressMapping.add(networkAddressMappingEsDO);
     }
+
+    return networkAddressMapping;
+  }
 }

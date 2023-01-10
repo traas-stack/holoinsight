@@ -16,31 +16,32 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Getter
 public enum StatusCode {
-    /**
-     * The default status.
-     */
-    UNSET(0),
+  /**
+   * The default status.
+   */
+  UNSET(0),
 
-    /**
-     * The operation has been validated by an Application developers or Operator to have completed successfully.
-     */
-    OK(1),
+  /**
+   * The operation has been validated by an Application developers or Operator to have completed
+   * successfully.
+   */
+  OK(1),
 
-    /**
-     * The operation contains an error.
-     */
-    ERROR(2);
+  /**
+   * The operation contains an error.
+   */
+  ERROR(2);
 
-    private int code;
+  private int code;
 
-    public static StatusCode fromProto(Status.StatusCode code) {
-        switch (code) {
-            case STATUS_CODE_OK:
-                return OK;
-            case STATUS_CODE_ERROR:
-                return ERROR;
-            default:
-                return UNSET;
-        }
+  public static StatusCode fromProto(Status.StatusCode code) {
+    switch (code) {
+      case STATUS_CODE_OK:
+        return OK;
+      case STATUS_CODE_ERROR:
+        return ERROR;
+      default:
+        return UNSET;
     }
+  }
 }

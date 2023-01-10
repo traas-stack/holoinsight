@@ -18,8 +18,8 @@ import java.util.List;
 @NoArgsConstructor
 public class ObTask extends LocalIntegrationTask {
 
-    public String             network;
-    public Integer            port;
-    public String             dbName;
-    public List<ObMetricConf> metrics;
+  public String network;
+  public Integer port;
+  public String dbName;
+  public List<ObMetricConf> metrics;
 }

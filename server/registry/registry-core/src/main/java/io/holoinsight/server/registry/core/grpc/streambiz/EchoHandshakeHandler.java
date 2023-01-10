@@ -21,36 +21,37 @@ import lombok.Getter;
 import reactor.core.publisher.Mono;
 
 /**
- * <p>created at 2022/3/3
+ * <p>
+ * created at 2022/3/3
  *
  * @author zzhb101
  */
 public class EchoHandshakeHandler implements HandshakeHandler {
-    private static final Logger LOGGER = LoggerFactory.getLogger(EchoHandshakeHandler.class);
-    @Getter
-    private BiStreamClientHandshakeRequest request;
+  private static final Logger LOGGER = LoggerFactory.getLogger(EchoHandshakeHandler.class);
+  @Getter
+  private BiStreamClientHandshakeRequest request;
 
-    @Override
-    public Mono<GenericRpcCommand> handle(GenericRpcCommand reqCmd, HandshakeContext ctx) {
-        LOGGER.info("服务端收到客户端的握手请求 [{}]", reqCmd.getData().toStringUtf8());
+  @Override
+  public Mono<GenericRpcCommand> handle(GenericRpcCommand reqCmd, HandshakeContext ctx) {
+    LOGGER.info("服务端收到客户端的握手请求 [{}]", reqCmd.getData().toStringUtf8());
 
-        try {
-            request = BiStreamClientHandshakeRequest.parseFrom(reqCmd.getData());
-        } catch (InvalidProtocolBufferException e) {
-            return Mono.error(e);
-        }
-
-        // TODO auth with req
-
-        ByteString respData = BiStreamClientHandshakeResponse.newBuilder() //
-            .setHeader(CommonResponseHeader.newBuilder() //
-                .setCode(0) //
-                .setMessage("OK") //
-                .build())
-            .build() //
-            .toByteString(); //
-
-        GenericRpcCommand resp = RpcCmds.create(Stream.TYPE_SERVER_HAND_SHAKE, 0, 0, respData);
-        return Mono.just(resp);
+    try {
+      request = BiStreamClientHandshakeRequest.parseFrom(reqCmd.getData());
+    } catch (InvalidProtocolBufferException e) {
+      return Mono.error(e);
     }
+
+    // TODO auth with req
+
+    ByteString respData = BiStreamClientHandshakeResponse.newBuilder() //
+        .setHeader(CommonResponseHeader.newBuilder() //
+            .setCode(0) //
+            .setMessage("OK") //
+            .build())
+        .build() //
+        .toByteString(); //
+
+    GenericRpcCommand resp = RpcCmds.create(Stream.TYPE_SERVER_HAND_SHAKE, 0, 0, respData);
+    return Mono.just(resp);
+  }
 }

@@ -10,34 +10,34 @@ import java.util.List;
 
 /**
  * @author wangsiyuan
- * @date 2022/3/17  9:51 下午
+ * @date 2022/3/17 9:51 下午
  */
 @Data
 public class FunctionConfigParam {
 
-    /**
-     * 执行时间点
-     */
-    private Long period;
+  /**
+   * 执行时间点
+   */
+  private Long period;
 
-    /**
-     * 数据周期
-     */
-    private Long stepTime;
+  /**
+   * 数据周期
+   */
+  private Long stepTime;
 
-    /**
-     * 持续时间
-     */
-    private int duration;
+  /**
+   * 持续时间
+   */
+  private int duration;
 
-    /**
-     * 比较类型,算法：up/down
-     */
-    private List<CompareParam> cmp;
+  /**
+   * 比较类型,算法：up/down
+   */
+  private List<CompareParam> cmp;
 
-    /**
-     * 跟踪id
-     */
-    private String traceId;
+  /**
+   * 跟踪id
+   */
+  private String traceId;
 
 }

@@ -20,13 +20,13 @@ import java.util.List;
 @NoArgsConstructor
 public class BasicTrace implements Serializable {
 
-    private static final long         serialVersionUID     = -4060937279918402711L;
-    private              String       segmentId;
-    private              List<String> serviceNames         = new ArrayList<>();
-    private              List<String> serviceInstanceNames = new ArrayList<>();
-    private              List<String> endpointNames        = new ArrayList<>();
-    private              int          duration;
-    private              long         start;
-    private              boolean      isError;
-    private              List<String> traceIds             = new ArrayList<>();
+  private static final long serialVersionUID = -4060937279918402711L;
+  private String segmentId;
+  private List<String> serviceNames = new ArrayList<>();
+  private List<String> serviceInstanceNames = new ArrayList<>();
+  private List<String> endpointNames = new ArrayList<>();
+  private int duration;
+  private long start;
+  private boolean isError;
+  private List<String> traceIds = new ArrayList<>();
 }

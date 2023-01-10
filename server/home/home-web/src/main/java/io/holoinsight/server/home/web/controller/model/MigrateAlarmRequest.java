@@ -1,7 +1,6 @@
 /*
  * Copyright 2022 Holoinsight Project Authors. Licensed under Apache-2.0.
  */
-
 package io.holoinsight.server.home.web.controller.model;
 
 import lombok.Data;
@@ -14,9 +13,9 @@ import lombok.Data;
 @Data
 public class MigrateAlarmRequest {
 
-    private Long alarmRuleId;
+  private Long alarmRuleId;
 
-    private String sourceTenant;
+  private String sourceTenant;
 
-    private String targetTenant;
+  private String targetTenant;
 }

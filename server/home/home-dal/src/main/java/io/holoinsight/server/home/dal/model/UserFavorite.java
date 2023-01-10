@@ -19,23 +19,23 @@ import java.util.Date;
 @Table(name = "user_favorite")
 public class UserFavorite {
 
-    @Id
-    @TableId(type = IdType.AUTO)
-    public Long   id;
+  @Id
+  @TableId(type = IdType.AUTO)
+  public Long id;
 
-    public String userLoginName;
+  public String userLoginName;
 
-    public String relateId;
+  public String relateId;
 
-    public String type;
+  public String type;
 
-    public String name;
+  public String name;
 
-    public String url;
+  public String url;
 
-    public String tenant;
+  public String tenant;
 
-    public Date   gmtCreate;
+  public Date gmtCreate;
 
-    public Date   gmtModified;
+  public Date gmtModified;
 }

@@ -12,11 +12,11 @@ import java.util.Map;
 
 public class TransformAttr {
 
-    public static Map<String, AnyValue> attList2Map(List<KeyValue> attributes) {
-        Map<String, AnyValue> result = new HashMap<>(attributes.size());
-        for (io.opentelemetry.proto.common.v1.KeyValue attribute : attributes) {
-            result.put(attribute.getKey(), attribute.getValue());
-        }
-        return result;
+  public static Map<String, AnyValue> attList2Map(List<KeyValue> attributes) {
+    Map<String, AnyValue> result = new HashMap<>(attributes.size());
+    for (io.opentelemetry.proto.common.v1.KeyValue attribute : attributes) {
+      result.put(attribute.getKey(), attribute.getValue());
     }
+    return result;
+  }
 }

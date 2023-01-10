@@ -7,10 +7,10 @@ import lombok.Data;
 
 @Data
 public class SlowSql {
-    private String serviceName;
-    private String address;
-    private String statement;
-    private String traceId;
-    private int latency;
-    private long startTime;
+  private String serviceName;
+  private String address;
+  private String statement;
+  private String traceId;
+  private int latency;
+  private long startTime;
 }

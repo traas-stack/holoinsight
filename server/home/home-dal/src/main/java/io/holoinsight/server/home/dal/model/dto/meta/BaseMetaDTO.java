@@ -16,52 +16,52 @@ import java.util.Map;
  */
 @Data
 public class BaseMetaDTO implements Serializable {
-    private static final long  serialVersionUID = 7465376185453994081L;
+  private static final long serialVersionUID = 7465376185453994081L;
 
-    /**
-     * 主键ID，和default_pk 保持一致
-     */
-    public String              id;
+  /**
+   * 主键ID，和default_pk 保持一致
+   */
+  public String id;
 
-    /**
-     * 租户ID, 避免字段冲突，使用 _
-     */
-    public String              _tenant;
+  /**
+   * 租户ID, 避免字段冲突，使用 _
+   */
+  public String _tenant;
 
-    /**
-     * 来源
-     */
-    public String              _source;
+  /**
+   * 来源
+   */
+  public String _source;
 
-    /**
-     * 状态
-     */
-    public String              _status;
-    /**
-     * 创建时间
-     */
-    public Date                _gmtCreate;
-    /**
-     * 修改时间
-     */
-    public Date                _gmtModified;
-    /**
-     * 删除时间
-     */
-    public Date                _gmtDeleted;
-    /**
-     * 是否删除
-     */
-    public Boolean             _deleted;
+  /**
+   * 状态
+   */
+  public String _status;
+  /**
+   * 创建时间
+   */
+  public Date _gmtCreate;
+  /**
+   * 修改时间
+   */
+  public Date _gmtModified;
+  /**
+   * 删除时间
+   */
+  public Date _gmtDeleted;
+  /**
+   * 是否删除
+   */
+  public Boolean _deleted;
 
-    /**
-     * 唯一键
-     */
-    public String              _uk;
+  /**
+   * 唯一键
+   */
+  public String _uk;
 
-    /**
-     * label 列表
-     */
-    public Map<String, Object> labelMap;
+  /**
+   * label 列表
+   */
+  public Map<String, Object> labelMap;
 
 }

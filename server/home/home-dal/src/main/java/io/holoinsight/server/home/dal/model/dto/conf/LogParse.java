@@ -14,29 +14,29 @@ import java.io.Serializable;
  */
 @Data
 public class LogParse implements Serializable {
-    private static final long serialVersionUID = -6851861666491078095L;
+  private static final long serialVersionUID = -6851861666491078095L;
 
-    // 分隔符切分/左起右至/正则表达式
-    public String             splitType;
+  // 分隔符切分/左起右至/正则表达式
+  public String splitType;
 
-    public LogSeparator       separator;
-    public LogRegexp          regexp;
+  public LogSeparator separator;
+  public LogRegexp regexp;
 
-    public Integer            maxKeySize       = -1;
+  public Integer maxKeySize = -1;
 
-    /**
-     * 指定行头/行尾
-     */
-    public MultiLine          multiLine;
+  /**
+   * 指定行头/行尾
+   */
+  public MultiLine multiLine;
 
-    @Data
-    public static class LogSeparator {
-        public String separatorPoint;
-    }
+  @Data
+  public static class LogSeparator {
+    public String separatorPoint;
+  }
 
-    @Data
-    public static class LogRegexp {
-        public String expression;
-    }
+  @Data
+  public static class LogRegexp {
+    public String expression;
+  }
 
 }

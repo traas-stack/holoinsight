@@ -20,20 +20,22 @@ import java.util.List;
 @Slf4j
 public class EndpointApiController implements EndpointApi {
 
-    @Autowired
-    private EndpointService endpointService;
+  @Autowired
+  private EndpointService endpointService;
 
-    @Override
-    public ResponseEntity<List<Endpoint>> queryEndpointList(QueryEndpointRequest request) throws IOException {
-        String tenant = request.getTenant();
-        String service = request.getServiceName();
+  @Override
+  public ResponseEntity<List<Endpoint>> queryEndpointList(QueryEndpointRequest request)
+      throws IOException {
+    String tenant = request.getTenant();
+    String service = request.getServiceName();
 
-        if (Strings.isNullOrEmpty(tenant) || Strings.isNullOrEmpty(service)) {
-            throw new IllegalArgumentException("The condition must contains tenant and service.");
-        }
-
-        List<Endpoint> endpointList = endpointService.getEndpointList(tenant, service, request.getStartTime(), request.getEndTime());
-
-        return ResponseEntity.ok(endpointList);
+    if (Strings.isNullOrEmpty(tenant) || Strings.isNullOrEmpty(service)) {
+      throw new IllegalArgumentException("The condition must contains tenant and service.");
     }
+
+    List<Endpoint> endpointList = endpointService.getEndpointList(tenant, service,
+        request.getStartTime(), request.getEndTime());
+
+    return ResponseEntity.ok(endpointList);
+  }
 }

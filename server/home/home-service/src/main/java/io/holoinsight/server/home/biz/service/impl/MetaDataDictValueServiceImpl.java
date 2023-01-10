@@ -15,6 +15,6 @@ import org.springframework.stereotype.Service;
  * @version 1.0: MetaDictValueServiceImpl.java, v 0.1 2022年11月03日 下午9:15 jinsong.yjs Exp $
  */
 @Service
-public class MetaDataDictValueServiceImpl extends ServiceImpl<MetaDataDictValueMapper, MetaDataDictValue>
-        implements MetaDataDictValueService {
+public class MetaDataDictValueServiceImpl extends
+    ServiceImpl<MetaDataDictValueMapper, MetaDataDictValue> implements MetaDataDictValueService {
 }

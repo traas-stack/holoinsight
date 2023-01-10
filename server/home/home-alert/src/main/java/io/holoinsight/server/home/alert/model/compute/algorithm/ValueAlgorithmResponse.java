@@ -11,14 +11,14 @@ import lombok.Data;
  */
 @Data
 public class ValueAlgorithmResponse {
-    private String taskId;
-    private String abnormalCategory;
-    private AbnormalFeatures abnormalFeatures;
-    private Integer anomalyDuration;
-    private Object extInfo;
-    private Boolean isException;
-    private Object isRecovery;
-    private String msg;
-    private PassReasons passReasons;
-    private String router;
+  private String taskId;
+  private String abnormalCategory;
+  private AbnormalFeatures abnormalFeatures;
+  private Integer anomalyDuration;
+  private Object extInfo;
+  private Boolean isException;
+  private Object isRecovery;
+  private String msg;
+  private PassReasons passReasons;
+  private String router;
 }

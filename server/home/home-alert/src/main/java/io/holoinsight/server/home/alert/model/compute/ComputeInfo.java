@@ -15,19 +15,19 @@ import lombok.Data;
 @Data
 public class ComputeInfo {
 
-    private String traceId;
+  private String traceId;
 
-    private long period;
+  private long period;
 
-    private String tenant;
+  private String tenant;
 
 
-    public static ComputeInfo getComputeInfo(InspectConfig inspectConfig, long period) {
-        ComputeInfo computeInfo = new ComputeInfo();
-        computeInfo.setPeriod(period);
-        computeInfo.setTraceId(inspectConfig.getTraceId());
-        computeInfo.setTenant(inspectConfig.getTenant());
-        return computeInfo;
-    }
+  public static ComputeInfo getComputeInfo(InspectConfig inspectConfig, long period) {
+    ComputeInfo computeInfo = new ComputeInfo();
+    computeInfo.setPeriod(period);
+    computeInfo.setTraceId(inspectConfig.getTraceId());
+    computeInfo.setTenant(inspectConfig.getTenant());
+    return computeInfo;
+  }
 
 }

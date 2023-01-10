@@ -28,29 +28,30 @@ import java.util.stream.Collectors;
 @Component
 public class MetricsManager {
 
-    @Value("classpath:metrics/metrics-span.json")
-    private Resource resource;
+  @Value("classpath:metrics/metrics-span.json")
+  private Resource resource;
 
-    @Getter
-    private Map<String, MetricDefine> metricDefines = new HashMap<>();
+  @Getter
+  private Map<String, MetricDefine> metricDefines = new HashMap<>();
 
-    @PostConstruct
-    public void load() throws IOException {
-        String metricDefineJson = IOUtils.toString(resource.getInputStream(), Charset.defaultCharset());
-        List<MetricDefine> metricDefineList = GsonUtils.get().fromJson(metricDefineJson, new TypeToken<List<MetricDefine>>() {
-        }.getType());
-        if (metricDefineList != null) {
-            this.metricDefines = metricDefineList.stream().collect(Collectors.toMap(MetricDefine::getName, Function.identity()));
-        }
+  @PostConstruct
+  public void load() throws IOException {
+    String metricDefineJson = IOUtils.toString(resource.getInputStream(), Charset.defaultCharset());
+    List<MetricDefine> metricDefineList = GsonUtils.get().fromJson(metricDefineJson,
+        new TypeToken<List<MetricDefine>>() {}.getType());
+    if (metricDefineList != null) {
+      this.metricDefines = metricDefineList.stream()
+          .collect(Collectors.toMap(MetricDefine::getName, Function.identity()));
     }
+  }
 
-    public List<String> listMetrics() {
-        List<String> metrics = new ArrayList<>(this.metricDefines.keySet());
-        metrics.sort(String::compareTo);
-        return metrics;
-    }
+  public List<String> listMetrics() {
+    List<String> metrics = new ArrayList<>(this.metricDefines.keySet());
+    metrics.sort(String::compareTo);
+    return metrics;
+  }
 
-    public MetricDefine getMetric(String name) {
-        return this.metricDefines.get(name);
-    }
+  public MetricDefine getMetric(String name) {
+    return this.metricDefines.get(name);
+  }
 }

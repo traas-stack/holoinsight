@@ -11,5 +11,5 @@ import java.lang.reflect.Type;
  */
 public interface DataTypeMapping {
 
-    String transform(Class<?> type, Type genericType);
+  String transform(Class<?> type, Type genericType);
 }

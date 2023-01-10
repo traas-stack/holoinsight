@@ -17,30 +17,30 @@ import java.util.Date;
 @Data
 public class MarketplaceProduct {
 
-    @TableId(type = IdType.AUTO)
-    public Long    id;
+  @TableId(type = IdType.AUTO)
+  public Long id;
 
-    private String name;
+  private String name;
 
-    private String profile;
+  private String profile;
 
-    private String overview;
+  private String overview;
 
-    private String configuration;
+  private String configuration;
 
-    private String price;
+  private String price;
 
-    public String  feature;
+  public String feature;
 
-    private String type;
+  private String type;
 
-    public boolean status;
+  public boolean status;
 
-    public String  creator;
+  public String creator;
 
-    public String  modifier;
+  public String modifier;
 
-    public Date    gmtCreate;
+  public Date gmtCreate;
 
-    public Date    gmtModified;
+  public Date gmtModified;
 }

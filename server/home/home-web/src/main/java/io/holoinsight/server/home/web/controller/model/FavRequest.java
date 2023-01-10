@@ -2,7 +2,6 @@
  * Copyright 2022 Holoinsight Project Authors. Licensed under Apache-2.0.
  */
 
-
 package io.holoinsight.server.home.web.controller.model;
 
 import lombok.Data;
@@ -16,7 +15,7 @@ import java.util.List;
  */
 @Data
 public class FavRequest {
-    private List<FavRequestCmd> favRequestCmds;
-    private String              userLoginName;
-    private String              tenant;
+  private List<FavRequestCmd> favRequestCmds;
+  private String userLoginName;
+  private String tenant;
 }

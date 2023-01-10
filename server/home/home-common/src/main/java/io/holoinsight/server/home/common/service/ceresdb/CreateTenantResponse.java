@@ -12,12 +12,12 @@ import lombok.Data;
  */
 @Data
 public class CreateTenantResponse {
-    public String        name;
-    public CeresDBTenant tenant;
+  public String name;
+  public CeresDBTenant tenant;
 
-    @Data
-    public static class CeresDBTenant {
-        public Integer duration;
-        public String  token;
-    }
+  @Data
+  public static class CeresDBTenant {
+    public Integer duration;
+    public String token;
+  }
 }

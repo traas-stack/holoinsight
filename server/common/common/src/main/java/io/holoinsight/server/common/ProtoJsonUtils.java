@@ -8,21 +8,25 @@ import com.google.protobuf.MessageOrBuilder;
 import com.google.protobuf.util.JsonFormat;
 
 /**
- * <p>created at 2022/12/14
+ * <p>
+ * created at 2022/12/14
  *
  * @author xzchaoo
  */
 public class ProtoJsonUtils {
-    private static final JsonFormat.Printer PRINTER = JsonFormat.printer().omittingInsignificantWhitespace().includingDefaultValueFields();
+  private static final JsonFormat.Printer PRINTER =
+      JsonFormat.printer().omittingInsignificantWhitespace().includingDefaultValueFields();
 
-    /**
-     * <p>toJson.</p>
-     */
-    public static String toJson(MessageOrBuilder msg) {
-        try {
-            return PRINTER.print(msg);
-        } catch (InvalidProtocolBufferException e) {
-            throw new IllegalStateException("protobuf json printer error", e);
-        }
+  /**
+   * <p>
+   * toJson.
+   * </p>
+   */
+  public static String toJson(MessageOrBuilder msg) {
+    try {
+      return PRINTER.print(msg);
+    } catch (InvalidProtocolBufferException e) {
+      throw new IllegalStateException("protobuf json printer error", e);
     }
+  }
 }

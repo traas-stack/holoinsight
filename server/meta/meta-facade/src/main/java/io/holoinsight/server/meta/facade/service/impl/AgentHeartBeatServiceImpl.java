@@ -16,47 +16,49 @@ import java.util.Map;
  * @author jsy1001de
  * @version 1.0: AgentHeartBeatServiceImpl.java, v 0.1 2022年03月28日 2:55 下午 jinsong.yjs Exp $
  */
-public class AgentHeartBeatServiceImpl extends AbstractCacheInteractService implements AgentHeartBeatService {
+public class AgentHeartBeatServiceImpl extends AbstractCacheInteractService
+    implements AgentHeartBeatService {
 
-    private static volatile AgentHeartBeatServiceImpl instance;
+  private static volatile AgentHeartBeatServiceImpl instance;
 
-    public static AgentHeartBeatServiceImpl getInstance(String domain) {
+  public static AgentHeartBeatServiceImpl getInstance(String domain) {
+    if (instance == null) {
+      synchronized (AgentHeartBeatServiceImpl.class) {
         if (instance == null) {
-            synchronized (AgentHeartBeatServiceImpl.class) {
-                if (instance == null) {
-                    instance = new AgentHeartBeatServiceImpl();
-                    instance.domains.add(domain);
-                }
-            }
+          instance = new AgentHeartBeatServiceImpl();
+          instance.domains.add(domain);
         }
-        return instance;
+      }
     }
+    return instance;
+  }
 
-    @Override
-    public int getPort() {
-        return ConstPool.GRPC_PORT_DATA;
-    }
+  @Override
+  public int getPort() {
+    return ConstPool.GRPC_PORT_DATA;
+  }
 
-    @Override
-    public boolean healthCheck() {
-        if (cookie == null) {
-            return false;
-        }
-        return cookie.dataHeartBeat();
+  @Override
+  public boolean healthCheck() {
+    if (cookie == null) {
+      return false;
     }
+    return cookie.dataHeartBeat();
+  }
 
-    @Override
-    public void agentInsertOrUpdate(String tableName, String ip, String hostname, Map<String, Object> row) {
-        pickOneCookie().agentInsertOrUpdate(tableName, ip, hostname, row);
-    }
+  @Override
+  public void agentInsertOrUpdate(String tableName, String ip, String hostname,
+      Map<String, Object> row) {
+    pickOneCookie().agentInsertOrUpdate(tableName, ip, hostname, row);
+  }
 
-    @Override
-    public void agentInsertOrUpdate(String tableName, MetaType type, List<Map<String, Object>> rows) {
-        pickOneCookie().agentInsertOrUpdate(tableName, type, rows);
-    }
+  @Override
+  public void agentInsertOrUpdate(String tableName, MetaType type, List<Map<String, Object>> rows) {
+    pickOneCookie().agentInsertOrUpdate(tableName, type, rows);
+  }
 
-    @Override
-    public void agentDelete(String tableName, MetaType type, List<Map<String, Object>> rows) {
-        pickOneCookie().agentDelete(tableName, type, rows);
-    }
+  @Override
+  public void agentDelete(String tableName, MetaType type, List<Map<String, Object>> rows) {
+    pickOneCookie().agentDelete(tableName, type, rows);
+  }
 }

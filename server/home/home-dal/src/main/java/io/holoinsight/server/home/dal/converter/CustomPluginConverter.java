@@ -13,10 +13,10 @@ import java.util.List;
 @Mapper(componentModel = "spring", uses = {CustomPluginConfMapper.class})
 public interface CustomPluginConverter {
 
-    CustomPluginDTO doToDTO(CustomPlugin customPlugin);
+  CustomPluginDTO doToDTO(CustomPlugin customPlugin);
 
-    CustomPlugin dtoToDO(CustomPluginDTO customPluginDTO);
+  CustomPlugin dtoToDO(CustomPluginDTO customPluginDTO);
 
-    List<CustomPluginDTO> dosToDTOs(Iterable<CustomPlugin> customPlugins);
+  List<CustomPluginDTO> dosToDTOs(Iterable<CustomPlugin> customPlugins);
 
 }

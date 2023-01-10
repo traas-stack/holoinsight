@@ -12,6 +12,7 @@
 	<description>'holoinsight-dependencies' module is used to manage dependencies for all holoinsight related modules.</description>
 
 	<properties>
+		<project.build.sourceEncoding>utf-8</project.build.sourceEncoding>
 		<spring.boot.version>2.6.6</spring.boot.version>
 		<prometheus.version>0.15.0</prometheus.version>
 		<grpc.version>1.42.2</grpc.version>

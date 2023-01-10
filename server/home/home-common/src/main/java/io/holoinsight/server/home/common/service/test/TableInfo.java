@@ -15,10 +15,10 @@ import java.util.List;
 @Data
 public class TableInfo {
 
-    private List<String> fieldTypes;
-    private List<String> fields;
-    private String       periodType;
-    private String       table;
-    private String tenant;
+  private List<String> fieldTypes;
+  private List<String> fields;
+  private String periodType;
+  private String table;
+  private String tenant;
 
 }

@@ -17,5 +17,5 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class MetricValues {
-    private List<MetricValue> values;
+  private List<MetricValue> values;
 }

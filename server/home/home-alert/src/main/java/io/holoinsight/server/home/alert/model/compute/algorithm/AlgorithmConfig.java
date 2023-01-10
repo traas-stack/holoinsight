@@ -13,20 +13,20 @@ import java.io.Serializable;
  */
 @Data
 public class AlgorithmConfig implements Serializable {
-    /**
-     * 算法类型
-     */
-    private String algorithmType;
-    /**
-     * 检测类型
-     */
-    private String detectType;
-    /**
-     * 严格政策
-     */
-    private String strictPolicy;
-    /**
-     * 默认时间
-     */
-    private Integer defaultDuration;
+  /**
+   * 算法类型
+   */
+  private String algorithmType;
+  /**
+   * 检测类型
+   */
+  private String detectType;
+  /**
+   * 严格政策
+   */
+  private String strictPolicy;
+  /**
+   * 默认时间
+   */
+  private Integer defaultDuration;
 }

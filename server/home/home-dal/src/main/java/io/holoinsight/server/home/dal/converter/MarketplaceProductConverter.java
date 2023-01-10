@@ -15,10 +15,10 @@ import io.holoinsight.server.home.dal.transformer.MetricJsonMapper;
 @Mapper(componentModel = "spring", uses = {MetricJsonMapper.class, FormJsonMapper.class})
 public interface MarketplaceProductConverter {
 
-    MarketplaceProductDTO doToDTO(MarketplaceProduct MarketplaceProduct);
+  MarketplaceProductDTO doToDTO(MarketplaceProduct MarketplaceProduct);
 
-    MarketplaceProduct dtoToDO(MarketplaceProductDTO MarketplaceProductDTO);
+  MarketplaceProduct dtoToDO(MarketplaceProductDTO MarketplaceProductDTO);
 
-    List<MarketplaceProductDTO> dosToDTOs(Iterable<MarketplaceProduct> MarketplaceProducts);
+  List<MarketplaceProductDTO> dosToDTOs(Iterable<MarketplaceProduct> MarketplaceProducts);
 
 }

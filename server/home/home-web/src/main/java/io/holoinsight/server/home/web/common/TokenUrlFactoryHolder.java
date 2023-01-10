@@ -14,29 +14,29 @@ import java.util.Set;
  */
 public class TokenUrlFactoryHolder {
 
-    private static final Set<String> tokenUrls = Sets.newHashSet();
+  private static final Set<String> tokenUrls = Sets.newHashSet();
 
-    public static Set<String> getTokenUrls() {
-        synchronized (tokenUrls) {
-            return tokenUrls;
-        }
+  public static Set<String> getTokenUrls() {
+    synchronized (tokenUrls) {
+      return tokenUrls;
     }
+  }
 
-    public static Boolean checkIsExist(String path) {
-        synchronized (tokenUrls) {
-            for (String url : tokenUrls) {
-                if (path.contains(url)) {
-                    return true;
-                }
-            }
-            return false;
+  public static Boolean checkIsExist(String path) {
+    synchronized (tokenUrls) {
+      for (String url : tokenUrls) {
+        if (path.contains(url)) {
+          return true;
         }
+      }
+      return false;
     }
+  }
 
-    public static void setUrl(String name) {
-        synchronized (tokenUrls) {
-            tokenUrls.add(name);
-        }
+  public static void setUrl(String name) {
+    synchronized (tokenUrls) {
+      tokenUrls.add(name);
     }
+  }
 
 }

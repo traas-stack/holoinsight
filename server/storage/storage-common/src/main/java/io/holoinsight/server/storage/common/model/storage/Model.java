@@ -17,8 +17,8 @@ import java.util.List;
 @NoArgsConstructor
 @Data
 public class Model {
-    private String            name;
-    private List<ModelColumn> columns;
-    private boolean           isTimeSeries;
-    private long              ttl;
+  private String name;
+  private List<ModelColumn> columns;
+  private boolean isTimeSeries;
+  private long ttl;
 }

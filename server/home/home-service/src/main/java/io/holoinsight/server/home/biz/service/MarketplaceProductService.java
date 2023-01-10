@@ -2,7 +2,6 @@
  * Copyright 2022 Holoinsight Project Authors. Licensed under Apache-2.0.
  */
 
-
 package io.holoinsight.server.home.biz.service;
 
 import io.holoinsight.server.home.dal.model.MarketplaceProduct;
@@ -21,19 +20,20 @@ import java.util.Map;
  */
 public interface MarketplaceProductService extends IService<MarketplaceProduct> {
 
-    MarketplaceProductDTO findById(Long id);
+  MarketplaceProductDTO findById(Long id);
 
-    List<MarketplaceProductDTO> findByMap(Map<String, Object> columnMap);
+  List<MarketplaceProductDTO> findByMap(Map<String, Object> columnMap);
 
-    MarketplaceProductDTO create(MarketplaceProductDTO MarketplaceProductDTO);
+  MarketplaceProductDTO create(MarketplaceProductDTO MarketplaceProductDTO);
 
-    void deleteById(Long id);
+  void deleteById(Long id);
 
-    MarketplaceProductDTO updateByRequest(MarketplaceProductDTO MarketplaceProductDTO);
+  MarketplaceProductDTO updateByRequest(MarketplaceProductDTO MarketplaceProductDTO);
 
-    MonitorPageResult<MarketplaceProductDTO> getListByPage(MonitorPageRequest<MarketplaceProductDTO> MarketplaceProductDTORequest);
+  MonitorPageResult<MarketplaceProductDTO> getListByPage(
+      MonitorPageRequest<MarketplaceProductDTO> MarketplaceProductDTORequest);
 
-    List<MarketplaceProductDTO> getListByKeyword(String keyword, String tenant);
+  List<MarketplaceProductDTO> getListByKeyword(String keyword, String tenant);
 
-    List<MarketplaceProductDTO> getListByNameLike(String name, String tenant);
+  List<MarketplaceProductDTO> getListByNameLike(String name, String tenant);
 }

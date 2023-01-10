@@ -16,54 +16,53 @@ import java.util.List;
  */
 @Data
 public class CustomPluginConf implements Serializable {
-    private static final long  serialVersionUID = 7595849765231492514L;
+  private static final long serialVersionUID = 7595849765231492514L;
 
-    /**
-     * 日志路径
-     */
-    public List<LogPath>       logPaths;
+  /**
+   * 日志路径
+   */
+  public List<LogPath> logPaths;
 
-    /**
-     * 前置过滤黑名单
-     */
-    public List<Filter>        blackFilters;
+  /**
+   * 前置过滤黑名单
+   */
+  public List<Filter> blackFilters;
 
-    /**
-     * 前置过滤白名单
-     */
-    public List<Filter>        whiteFilters;
+  /**
+   * 前置过滤白名单
+   */
+  public List<Filter> whiteFilters;
 
-    /**
-     * 日志切分规则
-     * 分隔符切分/左起右至/正则表达式
-     */
-    public LogParse            logParse = new LogParse();
+  /**
+   * 日志切分规则 分隔符切分/左起右至/正则表达式
+   */
+  public LogParse logParse = new LogParse();
 
-    /**
-     * 采集范围
-     */
-    public CloudMonitorRange   collectRanges;
+  /**
+   * 采集范围
+   */
+  public CloudMonitorRange collectRanges;
 
-    /**
-     * 全局维度定义
-     */
-    public List<SplitCol>      splitCols;
+  /**
+   * 全局维度定义
+   */
+  public List<SplitCol> splitCols;
 
-    /**
-     * 监控指标定义
-     */
-    public List<CollectMetric> collectMetrics;
+  /**
+   * 监控指标定义
+   */
+  public List<CollectMetric> collectMetrics;
 
-    @Data
-    public static class SplitCol implements Serializable {
+  @Data
+  public static class SplitCol implements Serializable {
 
-        private static final long serialVersionUID = -8509759191868776391L;
+    private static final long serialVersionUID = -8509759191868776391L;
 
-        public String             name;
+    public String name;
 
-        public Rule               rule;
+    public Rule rule;
 
-        public String             colType;
-    }
+    public String colType;
+  }
 
 }

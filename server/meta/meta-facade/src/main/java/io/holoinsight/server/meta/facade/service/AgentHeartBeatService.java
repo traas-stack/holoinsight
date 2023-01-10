@@ -15,28 +15,31 @@ import java.util.Map;
  */
 public interface AgentHeartBeatService {
 
-    /**
-     * 普通 vm 新增/更新
-     * @param tableName
-     * @param ip
-     * @param hostname
-     * @param row
-     */
-    void agentInsertOrUpdate(String tableName, String ip, String hostname, Map<String, Object> row);
+  /**
+   * 普通 vm 新增/更新
+   * 
+   * @param tableName
+   * @param ip
+   * @param hostname
+   * @param row
+   */
+  void agentInsertOrUpdate(String tableName, String ip, String hostname, Map<String, Object> row);
 
-    /**
-     * 批量节点 新增/更新
-     * @param tableName
-     * @param type 类型, pod, node, container, service, ingress
-     * @param row
-     */
-    void agentInsertOrUpdate(String tableName, MetaType type, List<Map<String, Object>> rows);
+  /**
+   * 批量节点 新增/更新
+   * 
+   * @param tableName
+   * @param type 类型, pod, node, container, service, ingress
+   * @param row
+   */
+  void agentInsertOrUpdate(String tableName, MetaType type, List<Map<String, Object>> rows);
 
-    /**
-     * 节点 删除
-     * @param tableName
-     * @param type 类型, pod, node, container, service, ingress
-     * @param row
-     */
-    void agentDelete(String tableName, MetaType type, List<Map<String, Object>> rows);
+  /**
+   * 节点 删除
+   * 
+   * @param tableName
+   * @param type 类型, pod, node, container, service, ingress
+   * @param row
+   */
+  void agentDelete(String tableName, MetaType type, List<Map<String, Object>> rows);
 }

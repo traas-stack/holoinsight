@@ -15,29 +15,29 @@ import java.util.Date;
  */
 @Data
 public class CustomPluginDTO {
-    public Long                   id;
+  public Long id;
 
-    public String                 tenant;
+  public String tenant;
 
-    public Long                   parentFolderId;
+  public Long parentFolderId;
 
-    public String                 name;
+  public String name;
 
-    public String                 pluginType;
+  public String pluginType;
 
-    public CustomPluginStatus     status;
+  public CustomPluginStatus status;
 
-    public CustomPluginPeriodType periodType;
+  public CustomPluginPeriodType periodType;
 
-    public CustomPluginConf       conf;
+  public CustomPluginConf conf;
 
-    public String                 sampleLog;
+  public String sampleLog;
 
-    public String                 creator;
+  public String creator;
 
-    public String                 modifier;
+  public String modifier;
 
-    public Date                   gmtCreate;
+  public Date gmtCreate;
 
-    public Date                   gmtModified;
+  public Date gmtModified;
 }

@@ -9,5 +9,5 @@ package io.holoinsight.server.home.common.util.cache.local;
  * @version $Id: LocalCache.java, v 0.1 2020年03月18日 07:55 jinsong.yjs Exp $
  */
 public interface LocalCache {
-    void refresh();
+  void refresh();
 }

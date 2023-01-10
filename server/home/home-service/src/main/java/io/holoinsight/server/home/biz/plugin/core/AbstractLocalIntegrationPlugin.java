@@ -2,7 +2,6 @@
  * Copyright 2022 Holoinsight Project Authors. Licensed under Apache-2.0.
  */
 
-
 package io.holoinsight.server.home.biz.plugin.core;
 
 import io.holoinsight.server.home.biz.common.GaeaConvertUtil;
@@ -20,30 +19,30 @@ import java.util.Map;
  */
 public abstract class AbstractLocalIntegrationPlugin<T> extends AbstractIntegrationPlugin {
 
-    public Map<String, Elect.RefMeta> getRefMeta() {
-        Map<String, Elect.RefMeta> refMetas = new HashMap<>();
-        refMetas.put("app", new Elect.RefMeta("app"));
-        return refMetas;
-    }
+  public Map<String, Elect.RefMeta> getRefMeta() {
+    Map<String, Elect.RefMeta> refMetas = new HashMap<>();
+    refMetas.put("app", new Elect.RefMeta("app"));
+    return refMetas;
+  }
 
-    public ExecuteRule getExecuteRule() {
-        ExecuteRule executeRule = new ExecuteRule();
-        executeRule.setType("fixedRate");
-        executeRule.setFixedRate(60000);
+  public ExecuteRule getExecuteRule() {
+    ExecuteRule executeRule = new ExecuteRule();
+    executeRule.setType("fixedRate");
+    executeRule.setFixedRate(60000);
 
-        return executeRule;
-    }
+    return executeRule;
+  }
 
-    public Map<String, Object> getExecutorSelector() {
+  public Map<String, Object> getExecutorSelector() {
 
-        Map<String, Object> executorSelector = new HashMap<>();
-        executorSelector.put("type", "sidecar");
-        executorSelector.put("sidecar", new HashMap<>());
+    Map<String, Object> executorSelector = new HashMap<>();
+    executorSelector.put("type", "sidecar");
+    executorSelector.put("sidecar", new HashMap<>());
 
-        return executorSelector;
-    }
+    return executorSelector;
+  }
 
-    public GaeaCollectRange getGaeaCollectRange() {
-        return GaeaConvertUtil.convertCollectRange(this.collectRange);
-    }
+  public GaeaCollectRange getGaeaCollectRange() {
+    return GaeaConvertUtil.convertCollectRange(this.collectRange);
+  }
 }

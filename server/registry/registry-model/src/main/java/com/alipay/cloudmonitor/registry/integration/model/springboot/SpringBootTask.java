@@ -14,5 +14,5 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 public class SpringBootTask extends LocalIntegrationTask {
-    private SpringBootConf conf;
+  private SpringBootConf conf;
 }

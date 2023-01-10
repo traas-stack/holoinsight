@@ -9,10 +9,10 @@ import java.util.List;
 
 /**
  * @author wangsiyuan
- * @date 2022/2/28  5:36 下午
+ * @date 2022/2/28 5:36 下午
  */
 public interface AlertHandlerExecutor {
 
-    void handle(List<AlertNotify> alarmNotifies);
+  void handle(List<AlertNotify> alarmNotifies);
 
 }

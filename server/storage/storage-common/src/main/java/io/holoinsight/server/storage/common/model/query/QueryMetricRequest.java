@@ -17,8 +17,8 @@ import java.util.Map;
 @AllArgsConstructor
 @NoArgsConstructor
 public class QueryMetricRequest {
-    private String              tenant;
-    private String              metric;
-    private Duration            duration;
-    private Map<String, Object> conditions;
+  private String tenant;
+  private String metric;
+  private Duration duration;
+  private Map<String, Object> conditions;
 }

@@ -1,7 +1,6 @@
 /*
  * Copyright 2022 Holoinsight Project Authors. Licensed under Apache-2.0.
  */
-
 package io.holoinsight.server.home.biz.service;
 
 import io.holoinsight.server.home.facade.page.MonitorPageRequest;
@@ -15,24 +14,25 @@ import java.util.Map;
 
 public interface CustomPluginService extends IService<CustomPlugin> {
 
-    CustomPluginDTO queryById(Long id, String tenant);
+  CustomPluginDTO queryById(Long id, String tenant);
 
-    List<CustomPluginDTO> findByMap(Map<String, Object> columnMap);
+  List<CustomPluginDTO> findByMap(Map<String, Object> columnMap);
 
-    List<CustomPluginDTO> findByIds(List<String> ids);
+  List<CustomPluginDTO> findByIds(List<String> ids);
 
-    CustomPluginDTO create(CustomPluginDTO customPluginDTO);
+  CustomPluginDTO create(CustomPluginDTO customPluginDTO);
 
-    void deleteById(Long id) ;
+  void deleteById(Long id);
 
-    CustomPluginDTO updateByRequest(CustomPluginDTO customPluginDTO);
+  CustomPluginDTO updateByRequest(CustomPluginDTO customPluginDTO);
 
-    MonitorPageResult<CustomPluginDTO> getListByPage(MonitorPageRequest<CustomPluginDTO> customPluginDTORequest);
+  MonitorPageResult<CustomPluginDTO> getListByPage(
+      MonitorPageRequest<CustomPluginDTO> customPluginDTORequest);
 
-    List<CustomPluginDTO> getListByKeyword(String keyword,  String tenant);
+  List<CustomPluginDTO> getListByKeyword(String keyword, String tenant);
 
-    List<CustomPluginDTO> getListByNameLike(String name,  String tenant);
+  List<CustomPluginDTO> getListByNameLike(String name, String tenant);
 
-    Boolean updateById(CustomPluginDTO customPluginDTO);
+  Boolean updateById(CustomPluginDTO customPluginDTO);
 
 }

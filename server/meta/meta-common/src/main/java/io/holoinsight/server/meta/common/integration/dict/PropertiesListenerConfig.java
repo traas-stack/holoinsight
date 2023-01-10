@@ -24,39 +24,40 @@ import java.util.Properties;
 @Slf4j
 public class PropertiesListenerConfig {
 
-    private static final Logger logger = LoggerFactory.getLogger(PropertiesListenerConfig.class);
+  private static final Logger logger = LoggerFactory.getLogger(PropertiesListenerConfig.class);
 
-    public static Map<String, String> propertiesMap = new HashMap<>();
+  public static Map<String, String> propertiesMap = new HashMap<>();
 
-    private static void processProperties(Properties props) throws BeansException {
-        propertiesMap = new HashMap<String, String>();
-        for (Object key : props.keySet()) {
-            String keyStr = key.toString();
-            try {
-                // PropertiesLoaderUtils的默认编码是ISO-8859-1,在这里转码一下
-                propertiesMap.put(keyStr, new String(props.getProperty(keyStr).getBytes(StandardCharsets.ISO_8859_1),
-                        StandardCharsets.UTF_8));
-            } catch (Exception e) {
-                logger.error("get properties error", e);
-            }
-        }
-        log.info(">>>>allProperty : " + J.toJson(propertiesMap));
+  private static void processProperties(Properties props) throws BeansException {
+    propertiesMap = new HashMap<String, String>();
+    for (Object key : props.keySet()) {
+      String keyStr = key.toString();
+      try {
+        // PropertiesLoaderUtils的默认编码是ISO-8859-1,在这里转码一下
+        propertiesMap.put(keyStr,
+            new String(props.getProperty(keyStr).getBytes(StandardCharsets.ISO_8859_1),
+                StandardCharsets.UTF_8));
+      } catch (Exception e) {
+        logger.error("get properties error", e);
+      }
     }
+    log.info(">>>>allProperty : " + J.toJson(propertiesMap));
+  }
 
-    public static void loadAllProperties(String propertyFileName) {
-        try {
-            Properties properties = PropertiesLoaderUtils.loadAllProperties(propertyFileName);
-            processProperties(properties);
-        } catch (IOException e) {
-            logger.error("load properties error", e);
-        }
+  public static void loadAllProperties(String propertyFileName) {
+    try {
+      Properties properties = PropertiesLoaderUtils.loadAllProperties(propertyFileName);
+      processProperties(properties);
+    } catch (IOException e) {
+      logger.error("load properties error", e);
     }
+  }
 
-    public static String getProperty(String name) {
-        return propertiesMap.get(name);
-    }
+  public static String getProperty(String name) {
+    return propertiesMap.get(name);
+  }
 
-    public static Map<String, String> getAllProperty() {
-        return propertiesMap;
-    }
+  public static Map<String, String> getAllProperty() {
+    return propertiesMap;
+  }
 }

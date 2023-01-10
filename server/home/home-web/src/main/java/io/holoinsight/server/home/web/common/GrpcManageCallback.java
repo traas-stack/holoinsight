@@ -2,7 +2,6 @@
  * Copyright 2022 Holoinsight Project Authors. Licensed under Apache-2.0.
  */
 
-
 package io.holoinsight.server.home.web.common;
 
 /**
@@ -12,8 +11,8 @@ package io.holoinsight.server.home.web.common;
  */
 public interface GrpcManageCallback {
 
-    void checkParameter();
+  void checkParameter();
 
-    void doManage();
+  void doManage();
 
 }

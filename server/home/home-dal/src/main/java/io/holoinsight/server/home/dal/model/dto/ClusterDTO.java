@@ -14,11 +14,11 @@ import java.util.Date;
  */
 @Data
 public class ClusterDTO {
-    public Long    id;
-    public String  ip;
-    public String  hostname;
-    public Long    lastHeartBeatTime;
-    public Date    gmtModified;
-    public String  role;
-    public Boolean manualClose;
+  public Long id;
+  public String ip;
+  public String hostname;
+  public Long lastHeartBeatTime;
+  public Date gmtModified;
+  public String role;
+  public Boolean manualClose;
 }

@@ -16,8 +16,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class MysqlConf {
-    private String host;
-    private int port;
-    private String user;
-    private String password;
+  private String host;
+  private int port;
+  private String user;
+  private String password;
 }

@@ -17,5 +17,5 @@ import java.util.Map;
 @Data
 public class QueryExample implements Serializable {
 
-    private Map<String, Object> params = new HashMap<>();
+  private Map<String, Object> params = new HashMap<>();
 }

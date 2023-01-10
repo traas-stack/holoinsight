@@ -19,7 +19,8 @@ import org.springframework.stereotype.Component;
 import com.google.protobuf.Empty;
 
 /**
- * <p>created at 2022/2/28
+ * <p>
+ * created at 2022/2/28
  *
  * @author sw1136562366
  */
@@ -27,31 +28,31 @@ import com.google.protobuf.Empty;
 @Component
 public class GatewayServerForAgentHealthIndicator extends AbstractHealthIndicator {
 
-    @Autowired
-    private GatewayProperties gatewayProperties;
+  @Autowired
+  private GatewayProperties gatewayProperties;
 
-    /** {@inheritDoc} */
-    @Override
-    protected void doHealthCheck(Health.Builder builder) throws Exception {
-        GatewayProperties.Grpc grpc = gatewayProperties.getServer().getGrpc();
-        int port = grpc.getPort();
-        NettyChannelBuilder b = NettyChannelBuilder.forAddress("127.0.0.1", port);
-        if (grpc.isSslEnabled()) {
-            InputStream cert = grpc.getCaCert().getInputStream();
-            b.sslContext(GrpcSslContexts.forClient().trustManager(cert).build());
-            cert.close();
-        } else {
-            b.usePlaintext();
-        }
-        ManagedChannel channel = b.build();
-        try {
-            GatewayServiceGrpc.newBlockingStub(channel).ping(Empty.getDefaultInstance());
-            builder.up().withDetail("ssl", grpc.isSslEnabled()).build();
-        } catch (Throwable e) {
-            builder.down(e);
-            throw e;
-        } finally {
-            channel.shutdown();
-        }
+  /** {@inheritDoc} */
+  @Override
+  protected void doHealthCheck(Health.Builder builder) throws Exception {
+    GatewayProperties.Grpc grpc = gatewayProperties.getServer().getGrpc();
+    int port = grpc.getPort();
+    NettyChannelBuilder b = NettyChannelBuilder.forAddress("127.0.0.1", port);
+    if (grpc.isSslEnabled()) {
+      InputStream cert = grpc.getCaCert().getInputStream();
+      b.sslContext(GrpcSslContexts.forClient().trustManager(cert).build());
+      cert.close();
+    } else {
+      b.usePlaintext();
     }
+    ManagedChannel channel = b.build();
+    try {
+      GatewayServiceGrpc.newBlockingStub(channel).ping(Empty.getDefaultInstance());
+      builder.up().withDetail("ssl", grpc.isSslEnabled()).build();
+    } catch (Throwable e) {
+      builder.down(e);
+      throw e;
+    } finally {
+      channel.shutdown();
+    }
+  }
 }

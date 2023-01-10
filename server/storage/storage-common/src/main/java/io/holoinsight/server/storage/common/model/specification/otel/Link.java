@@ -18,10 +18,10 @@ import java.util.List;
 @NoArgsConstructor
 public class Link {
 
-    private String         traceId;
-    private String         spanId;
-    private String         traceState;
-    private List<KeyValue> attributes;
-    private int            droppedAttributesCount;
+  private String traceId;
+  private String spanId;
+  private String traceState;
+  private List<KeyValue> attributes;
+  private int droppedAttributesCount;
 
 }

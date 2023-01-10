@@ -8,18 +8,19 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 /**
- * <p>created at 2022/11/26
+ * <p>
+ * created at 2022/11/26
  *
  * @author xiangwanpeng
  */
 @SpringBootApplication
 public class HoloinsightQueryBootstrap {
-    public static void main(String[] args) {
-        try {
-            ContextHolder.ctx = SpringApplication.run(HoloinsightQueryBootstrap.class, args);
-        } catch (Throwable e) {
-            e.printStackTrace();
-            System.exit(1);
-        }
+  public static void main(String[] args) {
+    try {
+      ContextHolder.ctx = SpringApplication.run(HoloinsightQueryBootstrap.class, args);
+    } catch (Throwable e) {
+      e.printStackTrace();
+      System.exit(1);
     }
+  }
 }

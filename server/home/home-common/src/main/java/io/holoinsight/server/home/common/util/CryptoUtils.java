@@ -21,57 +21,57 @@ import java.util.Map;
  */
 @Slf4j
 public class CryptoUtils {
-    public static Map<String, String> getCookies(HttpServletRequest request) {
-        Map<String, String> ret = new HashMap<String, String>();
-        Cookie[] cookies = request.getCookies();
-        for (Cookie cookie : cookies) {
-            String v = cookie.getValue();
-            ret.put(cookie.getName(), v);
-        }
-        return ret;
+  public static Map<String, String> getCookies(HttpServletRequest request) {
+    Map<String, String> ret = new HashMap<String, String>();
+    Cookie[] cookies = request.getCookies();
+    for (Cookie cookie : cookies) {
+      String v = cookie.getValue();
+      ret.put(cookie.getName(), v);
     }
+    return ret;
+  }
 
-    public static String getCookie(HttpServletRequest request, String key) {
-        Cookie[] cookies = request.getCookies();
-        if (cookies == null)
-            return null;
-        for (Cookie cookie : cookies) {
-            String v = cookie.getValue();
-            if (cookie.getName().equalsIgnoreCase(key)) {
-                return v;
-            }
-        }
-        return null;
+  public static String getCookie(HttpServletRequest request, String key) {
+    Cookie[] cookies = request.getCookies();
+    if (cookies == null)
+      return null;
+    for (Cookie cookie : cookies) {
+      String v = cookie.getValue();
+      if (cookie.getName().equalsIgnoreCase(key)) {
+        return v;
+      }
     }
+    return null;
+  }
 
-    public static String decrypt(String content) {
-        if (StringUtils.isBlank(content)) {
-            return content;
-        }
-        try {
-            byte[] buffer = Hex.decodeHex(content.toCharArray());
-            Cipher cipher = CipherUtils.getDec();
-            byte[] result = cipher.doFinal(buffer);
-            return new String(result, StandardCharsets.UTF_8);
-        } catch (Exception e) {
-            log.error("decrypt", e);
-        }
-        return null;
+  public static String decrypt(String content) {
+    if (StringUtils.isBlank(content)) {
+      return content;
     }
+    try {
+      byte[] buffer = Hex.decodeHex(content.toCharArray());
+      Cipher cipher = CipherUtils.getDec();
+      byte[] result = cipher.doFinal(buffer);
+      return new String(result, StandardCharsets.UTF_8);
+    } catch (Exception e) {
+      log.error("decrypt", e);
+    }
+    return null;
+  }
 
-    public static String encrypt(String content) {
-        if (StringUtils.isBlank(content)) {
-            return content;
-        }
-        try {
-            Cipher cipher = CipherUtils.getEnc();
-            byte[] byteContent = content.getBytes(StandardCharsets.UTF_8);
-            byte[] result = cipher.doFinal(byteContent);
-            String enc = String.valueOf(Hex.encodeHex(result));
-            return enc.replaceAll("\\n", "");
-        } catch (Exception e) {
-            log.error("encrypt", e);
-        }
-        return null;
+  public static String encrypt(String content) {
+    if (StringUtils.isBlank(content)) {
+      return content;
     }
+    try {
+      Cipher cipher = CipherUtils.getEnc();
+      byte[] byteContent = content.getBytes(StandardCharsets.UTF_8);
+      byte[] result = cipher.doFinal(byteContent);
+      String enc = String.valueOf(Hex.encodeHex(result));
+      return enc.replaceAll("\\n", "");
+    } catch (Exception e) {
+      log.error("encrypt", e);
+    }
+    return null;
+  }
 }

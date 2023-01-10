@@ -14,5 +14,5 @@ import java.util.Map;
  */
 public interface IElementHandler {
 
-    String handler(String element, Map<String, String> requestMap);
+  String handler(String element, Map<String, String> requestMap);
 }

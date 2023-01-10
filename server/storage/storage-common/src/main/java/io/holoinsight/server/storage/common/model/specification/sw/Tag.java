@@ -22,21 +22,21 @@ import java.util.stream.Collectors;
 @NoArgsConstructor
 public class Tag implements Serializable {
 
-    private static final long serialVersionUID = 336711058457422187L;
-    private String key;
-    private String value;
+  private static final long serialVersionUID = 336711058457422187L;
+  private String key;
+  private String value;
 
-    @Override
-    public String toString() {
-        return key + "=" + value;
-    }
+  @Override
+  public String toString() {
+    return key + "=" + value;
+  }
 
-    public static class Util {
-        public static List<String> toStringList(List<Tag> list) {
-            if (CollectionUtils.isEmpty(list)) {
-                return Collections.emptyList();
-            }
-            return list.stream().map(Tag::toString).collect(Collectors.toList());
-        }
+  public static class Util {
+    public static List<String> toStringList(List<Tag> list) {
+      if (CollectionUtils.isEmpty(list)) {
+        return Collections.emptyList();
+      }
+      return list.stream().map(Tag::toString).collect(Collectors.toList());
     }
+  }
 }

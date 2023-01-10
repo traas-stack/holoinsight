@@ -2,7 +2,6 @@
  * Copyright 2022 Holoinsight Project Authors. Licensed under Apache-2.0.
  */
 
-
 package io.holoinsight.server.home.biz.plugin.config;
 
 import lombok.Data;
@@ -15,7 +14,7 @@ import lombok.EqualsAndHashCode;
  */
 @EqualsAndHashCode(callSuper = true)
 @Data
-public class LogPluginConfig extends BasePluginConfig{
-    public String       name;
+public class LogPluginConfig extends BasePluginConfig {
+  public String name;
 
 }

@@ -2,7 +2,6 @@
  * Copyright 2022 Holoinsight Project Authors. Licensed under Apache-2.0.
  */
 
-
 package io.holoinsight.server.home.biz.service;
 
 
@@ -11,8 +10,8 @@ import com.baomidou.mybatisplus.extension.service.IService;
 
 public interface AgentConfigurationService extends IService<AgentConfiguration> {
 
-    AgentConfiguration get(AgentConfiguration agentConfiguration);
+  AgentConfiguration get(AgentConfiguration agentConfiguration);
 
-    boolean createOrUpdate(AgentConfiguration agentConfiguration);
+  boolean createOrUpdate(AgentConfiguration agentConfiguration);
 
 }

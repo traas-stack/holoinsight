@@ -1,7 +1,6 @@
 /*
  * Copyright 2022 Holoinsight Project Authors. Licensed under Apache-2.0.
  */
-
 package io.holoinsight.server.home.alert.common;
 
 import io.holoinsight.server.common.J;
@@ -16,8 +15,8 @@ import java.util.List;
  */
 public class AlarmContentGenerator {
 
-    public static String genPqlAlarmContent(String pql, List<DataResult> dataResult) {
-        return J.toJson(Arrays.asList(pql + "," + "当前告警点为:" + J.toJson(dataResult)));
-    }
-    
+  public static String genPqlAlarmContent(String pql, List<DataResult> dataResult) {
+    return J.toJson(Arrays.asList(pql + "," + "当前告警点为:" + J.toJson(dataResult)));
+  }
+
 }

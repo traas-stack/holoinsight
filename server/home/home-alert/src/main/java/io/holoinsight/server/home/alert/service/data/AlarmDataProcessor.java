@@ -8,5 +8,5 @@ package io.holoinsight.server.home.alert.service.data;
  * @date 2022/7/12 11:22 上午
  */
 public interface AlarmDataProcessor<T, E> {
-    E process(T task);
+  E process(T task);
 }

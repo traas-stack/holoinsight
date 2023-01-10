@@ -17,21 +17,21 @@ import java.util.Date;
 @Data
 public class ClusterTask {
 
-    @TableId(type = IdType.AUTO)
-    public Long   id;
-    public Long   period;
+  @TableId(type = IdType.AUTO)
+  public Long id;
+  public Long period;
 
-    public String taskId;
+  public String taskId;
 
-    public String clusterIp;
+  public String clusterIp;
 
-    public String status;
+  public String status;
 
-    public String context;
+  public String context;
 
-    public String result;
+  public String result;
 
-    public Date   gmtCreate;
+  public Date gmtCreate;
 
-    public Date   gmtModified;
+  public Date gmtModified;
 }

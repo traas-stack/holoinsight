@@ -14,8 +14,8 @@ import java.util.List;
 @Data
 public class ComputeTaskPackage {
 
-    private String type = "alarmRule"; // 不同的计算流程（spark、pql）
+  private String type = "alarmRule"; // 不同的计算流程（spark、pql）
 
-    private List<ComputeTask> computeTaskList;
+  private List<ComputeTask> computeTaskList;
 
 }

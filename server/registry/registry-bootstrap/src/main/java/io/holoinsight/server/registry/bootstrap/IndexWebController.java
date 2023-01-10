@@ -7,14 +7,15 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * <p>created at 2022/11/21
+ * <p>
+ * created at 2022/11/21
  *
  * @author zzhb101
  */
 @RestController
 public class IndexWebController {
-    @GetMapping("")
-    public Object index() {
-        return "Holoinsight Registry";
-    }
+  @GetMapping("")
+  public Object index() {
+    return "Holoinsight Registry";
+  }
 }

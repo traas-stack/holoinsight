@@ -6,14 +6,15 @@ package io.holoinsight.server.registry.core.agent;
 import lombok.Data;
 
 /**
- * <p>created at 2022/7/19
+ * <p>
+ * created at 2022/7/19
  *
  * @author zzhb101
  */
 @Data
 public class AgentK8sConfig {
-    private String hostIP;
-    private String namespace;
-    private String pod;
-    private String nodeHostname;
+  private String hostIP;
+  private String namespace;
+  private String pod;
+  private String nodeHostname;
 }

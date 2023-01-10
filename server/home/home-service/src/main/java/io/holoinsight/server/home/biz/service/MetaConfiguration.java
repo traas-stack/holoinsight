@@ -2,7 +2,6 @@
  * Copyright 2022 Holoinsight Project Authors. Licensed under Apache-2.0.
  */
 
-
 package io.holoinsight.server.home.biz.service;
 
 import io.holoinsight.server.meta.facade.client.MetaClient;
@@ -20,18 +19,19 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class MetaConfiguration {
 
-    @Bean("dataClientService")
-    public DataClientService getDataClientService(@Value("${holoinsight.meta.domain}") String domain) {
-        return MetaClient.getDataClientService(domain);
-    }
+  @Bean("dataClientService")
+  public DataClientService getDataClientService(
+      @Value("${holoinsight.meta.domain}") String domain) {
+    return MetaClient.getDataClientService(domain);
+  }
 
-    @Bean("homeTableClientService")
-    public TableClientService tableClientService(@Value("${holoinsight.meta.domain}") String domain) {
-        return MetaClient.getTableClientService(domain);
-    }
+  @Bean("homeTableClientService")
+  public TableClientService tableClientService(@Value("${holoinsight.meta.domain}") String domain) {
+    return MetaClient.getTableClientService(domain);
+  }
 
-    @Bean("homeProdDimService")
-    public MetaConfiguration prodDimService() {
-        return new MetaConfiguration();
-    }
+  @Bean("homeProdDimService")
+  public MetaConfiguration prodDimService() {
+    return new MetaConfiguration();
+  }
 }

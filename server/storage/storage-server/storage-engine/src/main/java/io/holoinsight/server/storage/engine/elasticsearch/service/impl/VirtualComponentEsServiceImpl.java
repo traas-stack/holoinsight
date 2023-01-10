@@ -32,81 +32,81 @@ import java.util.List;
 @Service
 public class VirtualComponentEsServiceImpl implements VirtualComponentEsService {
 
-    @Autowired
-    private RestHighLevelClient client;
+  @Autowired
+  private RestHighLevelClient client;
 
-    @Override
-    public List<VirtualComponent> getComponentList(String tenant, String service, long startTime, long endTime, RequestType type, String sourceOrDest) throws IOException {
-        BoolQueryBuilder queryBuilder = QueryBuilders.boolQuery()
-                .must(QueryBuilders.termQuery(ServiceRelationEsDO.TENANT, tenant))
-                .must(QueryBuilders.termQuery(sourceOrDest + "_service_name", service))
-                .must(QueryBuilders.termQuery(ServiceRelationEsDO.TYPE, type.name()))
-                .must(QueryBuilders.rangeQuery(ServiceRelationEsDO.START_TIME).gte(startTime).lte(endTime));
+  @Override
+  public List<VirtualComponent> getComponentList(String tenant, String service, long startTime,
+      long endTime, RequestType type, String sourceOrDest) throws IOException {
+    BoolQueryBuilder queryBuilder = QueryBuilders.boolQuery()
+        .must(QueryBuilders.termQuery(ServiceRelationEsDO.TENANT, tenant))
+        .must(QueryBuilders.termQuery(sourceOrDest + "_service_name", service))
+        .must(QueryBuilders.termQuery(ServiceRelationEsDO.TYPE, type.name()))
+        .must(QueryBuilders.rangeQuery(ServiceRelationEsDO.START_TIME).gte(startTime).lte(endTime));
 
-        SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
-        sourceBuilder.size(1000);
-        sourceBuilder.query(queryBuilder);
-        sourceBuilder.aggregation(CommonBuilder.buildAgg(ServiceRelationEsDO.ENTITY_ID));
+    SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
+    sourceBuilder.size(1000);
+    sourceBuilder.query(queryBuilder);
+    sourceBuilder.aggregation(CommonBuilder.buildAgg(ServiceRelationEsDO.ENTITY_ID));
 
-        SearchRequest searchRequest = new SearchRequest(ServiceRelationEsDO.INDEX_NAME);
-        searchRequest.source(sourceBuilder);
-        SearchResponse response = client.search(searchRequest, RequestOptions.DEFAULT);
+    SearchRequest searchRequest = new SearchRequest(ServiceRelationEsDO.INDEX_NAME);
+    searchRequest.source(sourceBuilder);
+    SearchResponse response = client.search(searchRequest, RequestOptions.DEFAULT);
 
-        return buildComponentList(response, sourceOrDest);
+    return buildComponentList(response, sourceOrDest);
+  }
+
+  @Override
+  public List<String> getTraceIds(String tenant, String service, String address, long startTime,
+      long endTime) throws IOException {
+    TermsAggregationBuilder aggregationBuilder = AggregationBuilders
+        .terms(ServiceRelationEsDO.TRACE_ID).field(ServiceRelationEsDO.TRACE_ID)
+        .executionHint("map").collectMode(Aggregator.SubAggCollectionMode.BREADTH_FIRST).size(1000);
+
+    BoolQueryBuilder queryBuilder = QueryBuilders.boolQuery()
+        .must(QueryBuilders.termQuery(ServiceRelationEsDO.TENANT, tenant))
+        .must(QueryBuilders.termQuery(ServiceRelationEsDO.DEST_SERVICE_NAME, address))
+        .must(QueryBuilders.rangeQuery(ServiceRelationEsDO.START_TIME).gte(startTime).lte(endTime));
+    if (!StringUtils.isEmpty(service)) {
+      queryBuilder.must(QueryBuilders.termQuery(ServiceRelationEsDO.SOURCE_SERVICE_NAME, service));
     }
 
-    @Override
-    public List<String> getTraceIds(String tenant, String service, String address, long startTime, long endTime) throws IOException {
-        TermsAggregationBuilder aggregationBuilder = AggregationBuilders
-                .terms(ServiceRelationEsDO.TRACE_ID).field(ServiceRelationEsDO.TRACE_ID)
-                .executionHint("map")
-                .collectMode(Aggregator.SubAggCollectionMode.BREADTH_FIRST)
-                .size(1000);
+    SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
+    sourceBuilder.size(1000);
+    sourceBuilder.query(queryBuilder);
+    sourceBuilder.aggregation(aggregationBuilder);
 
-        BoolQueryBuilder queryBuilder = QueryBuilders.boolQuery()
-                .must(QueryBuilders.termQuery(ServiceRelationEsDO.TENANT, tenant))
-                .must(QueryBuilders.termQuery(ServiceRelationEsDO.DEST_SERVICE_NAME, address))
-                .must(QueryBuilders.rangeQuery(ServiceRelationEsDO.START_TIME).gte(startTime).lte(endTime));
-        if (!StringUtils.isEmpty(service)) {
-            queryBuilder.must(QueryBuilders.termQuery(ServiceRelationEsDO.SOURCE_SERVICE_NAME, service));
-        }
+    SearchRequest searchRequest = new SearchRequest(ServiceRelationEsDO.INDEX_NAME);
+    searchRequest.source(sourceBuilder);
+    SearchResponse response = client.search(searchRequest, RequestOptions.DEFAULT);
 
-        SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
-        sourceBuilder.size(1000);
-        sourceBuilder.query(queryBuilder);
-        sourceBuilder.aggregation(aggregationBuilder);
+    List<String> traceIds = new ArrayList<>();
+    Terms terms = response.getAggregations().get(ServiceRelationEsDO.TRACE_ID);
 
-        SearchRequest searchRequest = new SearchRequest(ServiceRelationEsDO.INDEX_NAME);
-        searchRequest.source(sourceBuilder);
-        SearchResponse response = client.search(searchRequest, RequestOptions.DEFAULT);
-
-        List<String> traceIds = new ArrayList<>();
-        Terms terms = response.getAggregations().get(ServiceRelationEsDO.TRACE_ID);
-
-        for (Terms.Bucket bucket : terms.getBuckets()) {
-            String traceId = bucket.getKey().toString();
-            traceIds.add(traceId);
-        }
-
-        return traceIds;
+    for (Terms.Bucket bucket : terms.getBuckets()) {
+      String traceId = bucket.getKey().toString();
+      traceIds.add(traceId);
     }
 
-    private List<VirtualComponent> buildComponentList(SearchResponse response, String sourceOrDest) {
-        List<VirtualComponent> result = new ArrayList<>();
-        Terms terms = response.getAggregations().get(EndpointRelationEsDO.ENTITY_ID);
-        for (Terms.Bucket bucket : terms.getBuckets()) {
-            String entityId = bucket.getKey().toString();
-            Terms componentTerm = bucket.getAggregations().get(ServiceRelationEsDO.COMPONENT);
-            String component = componentTerm.getBuckets().get(0).getKey().toString();
+    return traceIds;
+  }
 
-            VirtualComponent db = new VirtualComponent();
-            db.buildFromServiceRelation(entityId, component, sourceOrDest);
-            db.setMetric(CommonBuilder.buildMetric(bucket));
+  private List<VirtualComponent> buildComponentList(SearchResponse response, String sourceOrDest) {
+    List<VirtualComponent> result = new ArrayList<>();
+    Terms terms = response.getAggregations().get(EndpointRelationEsDO.ENTITY_ID);
+    for (Terms.Bucket bucket : terms.getBuckets()) {
+      String entityId = bucket.getKey().toString();
+      Terms componentTerm = bucket.getAggregations().get(ServiceRelationEsDO.COMPONENT);
+      String component = componentTerm.getBuckets().get(0).getKey().toString();
 
-            result.add(db);
-        }
+      VirtualComponent db = new VirtualComponent();
+      db.buildFromServiceRelation(entityId, component, sourceOrDest);
+      db.setMetric(CommonBuilder.buildMetric(bucket));
 
-        return result;
+      result.add(db);
     }
+
+    return result;
+  }
 
 }

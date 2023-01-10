@@ -14,13 +14,12 @@ import java.util.List;
  * @date 2022/4/14 5:35 下午
  */
 public class ListJsonMapper {
-    public static String asString(List<String> list) {
-        return J.toJson(list);
-    }
+  public static String asString(List<String> list) {
+    return J.toJson(list);
+  }
 
-    public static List<String> asObj(String list) {
-        Type t = new TypeToken<List<String>>() {
-        }.getType();
-        return J.fromJson(list, t);
-    }
+  public static List<String> asObj(String list) {
+    Type t = new TypeToken<List<String>>() {}.getType();
+    return J.fromJson(list, t);
+  }
 }

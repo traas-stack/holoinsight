@@ -15,12 +15,12 @@ import java.util.List;
 @Data
 public class DataInput implements Serializable {
 
-    private String query; // 表达式
+  private String query; // 表达式
 
-    private List<DataSource> datasources; // 数据源
+  private List<DataSource> datasources; // 数据源
 
-    private Long downsample; // 周期时间
+  private Long downsample; // 周期时间
 
-    private String aggregator; // 周期聚合函数
+  private String aggregator; // 周期聚合函数
 
 }

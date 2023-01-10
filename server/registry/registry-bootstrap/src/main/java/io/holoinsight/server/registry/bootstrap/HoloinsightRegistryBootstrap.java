@@ -9,18 +9,19 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 /**
- * <p>created at 2022/11/14
+ * <p>
+ * created at 2022/11/14
  *
  * @author zzhb101
  */
 @SpringBootApplication
 public class HoloinsightRegistryBootstrap {
-    public static void main(String[] args) throws Exception {
-        try {
-            ContextHolder.ctx = SpringApplication.run(HoloinsightRegistryBootstrap.class, args);
-        } catch (Throwable e) {
-            e.printStackTrace();
-            System.exit(1);
-        }
+  public static void main(String[] args) throws Exception {
+    try {
+      ContextHolder.ctx = SpringApplication.run(HoloinsightRegistryBootstrap.class, args);
+    } catch (Throwable e) {
+      e.printStackTrace();
+      System.exit(1);
     }
+  }
 }

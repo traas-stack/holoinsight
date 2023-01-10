@@ -20,19 +20,19 @@ import java.util.Map;
 @Data
 public class EventInfo {
 
-    private String uniqueId;
+  private String uniqueId;
 
-    private Long alarmTime;
+  private Long alarmTime;
 
-    private BoolOperationEnum boolOperation;
+  private BoolOperationEnum boolOperation;
 
-    private Boolean isRecover;
+  private Boolean isRecover;
 
-    private Boolean isPql;
+  private Boolean isPql;
 
-    private PqlRule pqlRule;
+  private PqlRule pqlRule;
 
-    private Map<Trigger, List<TriggerResult>> alarmTriggerResults = new HashMap<>();
+  private Map<Trigger, List<TriggerResult>> alarmTriggerResults = new HashMap<>();
 
-    private String envType;
+  private String envType;
 }

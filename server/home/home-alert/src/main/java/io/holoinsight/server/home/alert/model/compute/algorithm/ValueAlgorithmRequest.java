@@ -12,13 +12,13 @@ import lombok.Data;
 @Data
 public class ValueAlgorithmRequest {
 
-    private AlgorithmConfig algorithmConfig;
+  private AlgorithmConfig algorithmConfig;
 
-    private DatasourceConfig datasourceConfig;
+  private DatasourceConfig datasourceConfig;
 
-    private Long detectTime;
+  private Long detectTime;
 
-    private ExtendConfig extendConfig;
+  private ExtendConfig extendConfig;
 
-    private String taskId;
+  private String taskId;
 }

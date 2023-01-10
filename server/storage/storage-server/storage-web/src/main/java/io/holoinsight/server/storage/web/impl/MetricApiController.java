@@ -21,24 +21,26 @@ import java.util.List;
 @Slf4j
 public class MetricApiController implements MetricApi {
 
-    @Autowired
-    private MetricService metricService;
+  @Autowired
+  private MetricService metricService;
 
-    @Override
-    public ResponseEntity<List<String>> listMetrics() throws IOException {
-        List<String> metrics = metricService.listMetrics();
-        return ResponseEntity.ok(metrics);
-    }
+  @Override
+  public ResponseEntity<List<String>> listMetrics() throws IOException {
+    List<String> metrics = metricService.listMetrics();
+    return ResponseEntity.ok(metrics);
+  }
 
-    @Override
-    public ResponseEntity<MetricValues> queryMetricData(QueryMetricRequest request) throws IOException {
-        MetricValues metricValues = metricService.queryMetric(request.getTenant(), request.getMetric(), request.getDuration(),
-                request.getConditions());
-        return ResponseEntity.ok(metricValues);
-    }
+  @Override
+  public ResponseEntity<MetricValues> queryMetricData(QueryMetricRequest request)
+      throws IOException {
+    MetricValues metricValues = metricService.queryMetric(request.getTenant(), request.getMetric(),
+        request.getDuration(), request.getConditions());
+    return ResponseEntity.ok(metricValues);
+  }
 
-    @Override
-    public ResponseEntity<List<String>> queryMetricSchema(QueryMetricRequest request) throws IOException {
-        return ResponseEntity.ok(metricService.querySchema(request.getMetric()));
-    }
+  @Override
+  public ResponseEntity<List<String>> queryMetricSchema(QueryMetricRequest request)
+      throws IOException {
+    return ResponseEntity.ok(metricService.querySchema(request.getMetric()));
+  }
 }

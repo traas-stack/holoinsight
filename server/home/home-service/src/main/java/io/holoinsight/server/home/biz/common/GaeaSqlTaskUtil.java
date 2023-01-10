@@ -2,7 +2,6 @@
  * Copyright 2022 Holoinsight Project Authors. Licensed under Apache-2.0.
  */
 
-
 package io.holoinsight.server.home.biz.common;
 
 import io.holoinsight.server.home.common.util.StringUtil;
@@ -54,491 +53,491 @@ import java.util.Map;
  */
 public class GaeaSqlTaskUtil {
 
-    private static final String contains   = "CONTAINS";
-    private static final String leftRight  = "LR";
-    private static final String separator  = "SEP";
-    private static final String regexp     = "REGEXP";
-    private static final String dimColType = "DIM";
-    private static final String valColType = "VALUE";
+  private static final String contains = "CONTAINS";
+  private static final String leftRight = "LR";
+  private static final String separator = "SEP";
+  private static final String regexp = "REGEXP";
+  private static final String dimColType = "DIM";
+  private static final String valColType = "VALUE";
 
-    public static Map<String, Map<String, SplitCol>> convertSplitColMap(List<SplitCol> splitCols) {
-        Map<String, Map<String, SplitCol>> splitColMap = new HashMap<>();
-        if (CollectionUtils.isEmpty(splitCols))
-            return splitColMap;
-        splitCols.forEach(splitCol -> {
-            if (!splitColMap.containsKey(splitCol.getColType())) {
-                splitColMap.put(splitCol.getColType(), new HashMap<>());
-            }
+  public static Map<String, Map<String, SplitCol>> convertSplitColMap(List<SplitCol> splitCols) {
+    Map<String, Map<String, SplitCol>> splitColMap = new HashMap<>();
+    if (CollectionUtils.isEmpty(splitCols))
+      return splitColMap;
+    splitCols.forEach(splitCol -> {
+      if (!splitColMap.containsKey(splitCol.getColType())) {
+        splitColMap.put(splitCol.getColType(), new HashMap<>());
+      }
 
-            Map<String, SplitCol> stringSplitColMap = splitColMap.get(splitCol.getColType());
-            if (!stringSplitColMap.containsKey(splitCol.name)) {
-                stringSplitColMap.put(splitCol.name, splitCol);
-            }
-        });
+      Map<String, SplitCol> stringSplitColMap = splitColMap.get(splitCol.getColType());
+      if (!stringSplitColMap.containsKey(splitCol.name)) {
+        stringSplitColMap.put(splitCol.name, splitCol);
+      }
+    });
 
-        return splitColMap;
-    }
+    return splitColMap;
+  }
 
 
-    public static Select buildSelect(LogParse logParse,
-                                     Map<String, Map<String, SplitCol>> splitColMap,
-                                     CollectMetric collectMetric) {
+  public static Select buildSelect(LogParse logParse,
+      Map<String, Map<String, SplitCol>> splitColMap, CollectMetric collectMetric) {
 
-        List<Metric> metrics = collectMetric.getMetrics();
+    List<Metric> metrics = collectMetric.getMetrics();
 
-        Select select = new Select();
-        metrics.forEach(m -> {
-            SelectItem selectItem = new SelectItem();
+    Select select = new Select();
+    metrics.forEach(m -> {
+      SelectItem selectItem = new SelectItem();
 
-            if (collectMetric.getMetricType().equalsIgnoreCase("select")) {
+      if (collectMetric.getMetricType().equalsIgnoreCase("select")) {
 
-                SplitCol value = splitColMap.get(valColType).get(m.name);
-                if (null == value) {
-                    return;
-                }
-                Rule rule = value.rule;
-
-                if (null != rule) {
-                    Elect elect = new Elect();
-                    switch (logParse.splitType) {
-                        case leftRight:
-                            Elect.LeftRight leftRight = new Elect.LeftRight();
-                            leftRight.setLeft(rule.left);
-                            leftRight.setLeftIndex(rule.leftIndex);
-                            leftRight.setRight(rule.right);
-
-                            elect.setType("leftRight");
-                            elect.setLeftRight(leftRight);
-                            break;
-
-                        case separator:
-                            elect.setType("refIndex");
-                            elect.setRefIndex(new RefIndex());
-                            elect.getRefIndex().setIndex(rule.pos);
-                            break;
-                        case regexp:
-                            if(StringUtils.isNotEmpty(rule.regexpName)){
-                                elect.setType("refName");
-                                elect.setRefName(new RefName());
-                                elect.getRefName().setName(rule.regexpName);
-                            }else if(rule.pos != null){
-                                elect.setType("refIndex");
-                                elect.setRefIndex(new RefIndex());
-                                elect.getRefIndex().setIndex(rule.pos);
-                            }
-                            break;
-                        default:
-                            break;
-                    }
-
-                    if (null != rule.translate) {
-                        Translate translate = rule.translate;
-                        List<ColumnCalExpr> exprs = translate.exprs;
-
-                        Transform transform = new Transform();
-                        List<TransformItem> transformItems = new ArrayList<>();
-                        if (!CollectionUtils.isEmpty(exprs)) {
-                            exprs.forEach(expr -> {
-                                TransformItem transformItem = new TransformItem();
-                                transformItem.setArg(expr.getParams());
-                                transformItem.setFunc(expr.getFunc());
-                                transformItems.add(transformItem);
-                            });
-                        }
-
-                        transform.setTransforms(transformItems);
-                        elect.setTransform(transform);
-                    }
-
-                    if (StringUtils.isNotEmpty(rule.defaultValue)) {
-                        elect.setDefaultValue(rule.defaultValue);
-                    }
-                    selectItem.setElect(elect);
-                }
-            }
-
-            selectItem.setAgg(m.func);
-            selectItem.setAs(m.name);
-
-            select.getValues().add(selectItem);
-        });
-
-        return select;
-    }
-
-    public static From buildFrom(List<LogPath> logPaths, LogParse logParse, List<Filter> whiteFilters, List<Filter> blackFilters) {
-
-        Log fromLog = new Log();
-        {
-            Parse parse = new Parse();
-
-            if (StringUtil.isBlank(logParse.splitType)) {
-                parse.setType("none");
-            } else {
-                switch (logParse.splitType) {
-                    case leftRight:
-                        parse.setType("none");
-                        break;
-                    case separator:
-                        parse.setType("separator");
-                        parse.setSeparator(new Separator());
-                        parse.getSeparator().setSeparator(logParse.separator.separatorPoint);
-                        break;
-                    case regexp:
-                        parse.setType("regexp");
-                        parse.setRegexp(new Log.Regexp());
-                        parse.getRegexp().setExpression(logParse.regexp.expression);
-                        break;
-                    default:
-                        parse.setType("none");
-                }
-            }
-
-            if (null != logParse.getMultiLine() && logParse.getMultiLine().multi) {
-                parse.setMultiline(new Multiline());
-                parse.getMultiline().setWhat(
-                        logParse.getMultiLine().lineType.equalsIgnoreCase("logHead") ? "previous"
-                                : "next");
-
-                Regexp regexp = new Regexp();
-                regexp.setExpression(logParse.getMultiLine().logRegexp);
-                regexp.setElect(new Elect());
-                regexp.getElect().setType("line");
-
-                Where where = new Where();
-                where.setRegexp(regexp);
-                parse.getMultiline().setMatch(where);
-
-            }
-
-            parse.setWhere(buildFrontFilterWhere(whiteFilters, blackFilters, logParse.splitType));
-
-            TimeParse timeParse = new TimeParse();
-            timeParse.setType("auto");
-
-            fromLog.setTime(timeParse);
-
-            List<Log.LogPath> pathList = new ArrayList<>();
-            logPaths.forEach(logPath -> {
-                Log.LogPath path = new Log.LogPath();
-                path.setPattern(logPath.path);
-                path.setType(logPath.type);
-                path.setDir(logPath.dir);
-                pathList.add(path);
-            });
-            fromLog.setPath(pathList);
-            fromLog.setCharset(logPaths.get(0).charset);
-            fromLog.setParse(parse);
-
-            MultiLine multiLine = logParse.multiLine;
-            if (null != multiLine && null != multiLine.multi && multiLine.multi) {
-                Multiline logMultiLine = new Multiline();
-
-                if (multiLine.lineType.equalsIgnoreCase("logHead")) {
-                    logMultiLine.setWhat("next");
-                } else {
-                    logMultiLine.setWhat("previous");
-                }
-                Where match = new Where();
-                Regexp regexp = new Regexp();
-                regexp.setElect(new Elect());
-                regexp.getElect().setType("line");
-                match.setRegexp(regexp);
-                regexp.setExpression(multiLine.logRegexp);
-                logMultiLine.setMatch(match);
-                fromLog.setMultiline(logMultiLine);
-            }
-
+        SplitCol value = splitColMap.get(valColType).get(m.name);
+        if (null == value) {
+          return;
         }
+        Rule rule = value.rule;
 
-        From from = new From();
-        from.setType("log");
-        from.setLog(fromLog);
-        return from;
-    }
+        if (null != rule) {
+          Elect elect = new Elect();
+          switch (logParse.splitType) {
+            case leftRight:
+              Elect.LeftRight leftRight = new Elect.LeftRight();
+              leftRight.setLeft(rule.left);
+              leftRight.setLeftIndex(rule.leftIndex);
+              leftRight.setRight(rule.right);
 
-    // 前置过滤
-    public static Where buildFrontFilterWhere(List<Filter> whiteFilters, List<Filter> blackFilters, String splitType) {
+              elect.setType("leftRight");
+              elect.setLeftRight(leftRight);
+              break;
 
+            case separator:
+              elect.setType("refIndex");
+              elect.setRefIndex(new RefIndex());
+              elect.getRefIndex().setIndex(rule.pos);
+              break;
+            case regexp:
+              if (StringUtils.isNotEmpty(rule.regexpName)) {
+                elect.setType("refName");
+                elect.setRefName(new RefName());
+                elect.getRefName().setName(rule.regexpName);
+              } else if (rule.pos != null) {
+                elect.setType("refIndex");
+                elect.setRefIndex(new RefIndex());
+                elect.getRefIndex().setIndex(rule.pos);
+              }
+              break;
+            default:
+              break;
+          }
+
+          if (null != rule.translate) {
+            Translate translate = rule.translate;
+            List<ColumnCalExpr> exprs = translate.exprs;
+
+            Transform transform = new Transform();
+            List<TransformItem> transformItems = new ArrayList<>();
+            if (!CollectionUtils.isEmpty(exprs)) {
+              exprs.forEach(expr -> {
+                TransformItem transformItem = new TransformItem();
+                transformItem.setArg(expr.getParams());
+                transformItem.setFunc(expr.getFunc());
+                transformItems.add(transformItem);
+              });
+            }
+
+            transform.setTransforms(transformItems);
+            elect.setTransform(transform);
+          }
+
+          if (StringUtils.isNotEmpty(rule.defaultValue)) {
+            elect.setDefaultValue(rule.defaultValue);
+          }
+          selectItem.setElect(elect);
+        }
+      }
+
+      selectItem.setAgg(m.func);
+      selectItem.setAs(m.name);
+
+      select.getValues().add(selectItem);
+    });
+
+    return select;
+  }
+
+  public static From buildFrom(List<LogPath> logPaths, LogParse logParse, List<Filter> whiteFilters,
+      List<Filter> blackFilters) {
+
+    Log fromLog = new Log();
+    {
+      Parse parse = new Parse();
+
+      if (StringUtil.isBlank(logParse.splitType)) {
+        parse.setType("none");
+      } else {
+        switch (logParse.splitType) {
+          case leftRight:
+            parse.setType("none");
+            break;
+          case separator:
+            parse.setType("separator");
+            parse.setSeparator(new Separator());
+            parse.getSeparator().setSeparator(logParse.separator.separatorPoint);
+            break;
+          case regexp:
+            parse.setType("regexp");
+            parse.setRegexp(new Log.Regexp());
+            parse.getRegexp().setExpression(logParse.regexp.expression);
+            break;
+          default:
+            parse.setType("none");
+        }
+      }
+
+      if (null != logParse.getMultiLine() && logParse.getMultiLine().multi) {
+        parse.setMultiline(new Multiline());
+        parse.getMultiline().setWhat(
+            logParse.getMultiLine().lineType.equalsIgnoreCase("logHead") ? "previous" : "next");
+
+        Regexp regexp = new Regexp();
+        regexp.setExpression(logParse.getMultiLine().logRegexp);
+        regexp.setElect(new Elect());
+        regexp.getElect().setType("line");
 
         Where where = new Where();
-        List<Where> ands = new ArrayList<>();
-        if (!CollectionUtils.isEmpty(whiteFilters)) {
-            whiteFilters.forEach(w -> {
+        where.setRegexp(regexp);
+        parse.getMultiline().setMatch(where);
 
-                Where and = new Where();
-                Elect elect = new Elect();
-                switch (w.type) {
-                    case leftRight:
-                        Elect.LeftRight leftRight = new Elect.LeftRight();
-                        leftRight.setLeft(w.rule.left);
-                        leftRight.setLeftIndex(w.rule.leftIndex);
-                        leftRight.setRight(w.rule.right);
+      }
 
-                        elect.setType("leftRight");
-                        elect.setLeftRight(leftRight);
+      parse.setWhere(buildFrontFilterWhere(whiteFilters, blackFilters, logParse.splitType));
 
-                        Where.In in = new Where.In();
-                        in.setValues(w.values);
-                        in.setElect(elect);
-                        and.setIn(in);
-                        break;
+      TimeParse timeParse = new TimeParse();
+      timeParse.setType("auto");
 
-                    case contains:
-                        ContainsAny contains = new ContainsAny();
-                        elect.setType("line");
-                        contains.setElect(elect);
-                        contains.setValues(w.values);
-                        and.setContainsAny(contains);
-                        break;
+      fromLog.setTime(timeParse);
 
-                    default:
-                        break;
-                }
+      List<Log.LogPath> pathList = new ArrayList<>();
+      logPaths.forEach(logPath -> {
+        Log.LogPath path = new Log.LogPath();
+        path.setPattern(logPath.path);
+        path.setType(logPath.type);
+        path.setDir(logPath.dir);
+        pathList.add(path);
+      });
+      fromLog.setPath(pathList);
+      fromLog.setCharset(logPaths.get(0).charset);
+      fromLog.setParse(parse);
 
-                ands.add(and);
-            });
+      MultiLine multiLine = logParse.multiLine;
+      if (null != multiLine && null != multiLine.multi && multiLine.multi) {
+        Multiline logMultiLine = new Multiline();
+
+        if (multiLine.lineType.equalsIgnoreCase("logHead")) {
+          logMultiLine.setWhat("next");
+        } else {
+          logMultiLine.setWhat("previous");
+        }
+        Where match = new Where();
+        Regexp regexp = new Regexp();
+        regexp.setElect(new Elect());
+        regexp.getElect().setType("line");
+        match.setRegexp(regexp);
+        regexp.setExpression(multiLine.logRegexp);
+        logMultiLine.setMatch(match);
+        fromLog.setMultiline(logMultiLine);
+      }
+
+    }
+
+    From from = new From();
+    from.setType("log");
+    from.setLog(fromLog);
+    return from;
+  }
+
+  // 前置过滤
+  public static Where buildFrontFilterWhere(List<Filter> whiteFilters, List<Filter> blackFilters,
+      String splitType) {
+
+
+    Where where = new Where();
+    List<Where> ands = new ArrayList<>();
+    if (!CollectionUtils.isEmpty(whiteFilters)) {
+      whiteFilters.forEach(w -> {
+
+        Where and = new Where();
+        Elect elect = new Elect();
+        switch (w.type) {
+          case leftRight:
+            Elect.LeftRight leftRight = new Elect.LeftRight();
+            leftRight.setLeft(w.rule.left);
+            leftRight.setLeftIndex(w.rule.leftIndex);
+            leftRight.setRight(w.rule.right);
+
+            elect.setType("leftRight");
+            elect.setLeftRight(leftRight);
+
+            Where.In in = new Where.In();
+            in.setValues(w.values);
+            in.setElect(elect);
+            and.setIn(in);
+            break;
+
+          case contains:
+            ContainsAny contains = new ContainsAny();
+            elect.setType("line");
+            contains.setElect(elect);
+            contains.setValues(w.values);
+            and.setContainsAny(contains);
+            break;
+
+          default:
+            break;
         }
 
-        if (!CollectionUtils.isEmpty(blackFilters)) {
-            blackFilters.forEach(w -> {
-                Where and = new Where();
+        ands.add(and);
+      });
+    }
 
-                Elect elect = new Elect();
-                switch (splitType) {
-                    case leftRight:
-                        Elect.LeftRight leftRight = new Elect.LeftRight();
-                        leftRight.setLeft(w.rule.left);
-                        leftRight.setLeftIndex(w.rule.leftIndex);
-                        leftRight.setRight(w.rule.right);
-                        elect.setType("leftRight");
-                        elect.setLeftRight(leftRight);
-                        NotIn notIn = new NotIn();
-                        notIn.setValues(w.values);
-                        notIn.setElect(elect);
+    if (!CollectionUtils.isEmpty(blackFilters)) {
+      blackFilters.forEach(w -> {
+        Where and = new Where();
 
-                        and.setNotIn(notIn);
-                        break;
-                    case contains:
-                        ContainsAny contains = new ContainsAny();
-                        elect.setType("line");
-                        contains.setElect(elect);
-                        contains.setValues(w.values);
+        Elect elect = new Elect();
+        switch (splitType) {
+          case leftRight:
+            Elect.LeftRight leftRight = new Elect.LeftRight();
+            leftRight.setLeft(w.rule.left);
+            leftRight.setLeftIndex(w.rule.leftIndex);
+            leftRight.setRight(w.rule.right);
+            elect.setType("leftRight");
+            elect.setLeftRight(leftRight);
+            NotIn notIn = new NotIn();
+            notIn.setValues(w.values);
+            notIn.setElect(elect);
 
-                        Where not = new Where();
-                        not.setContainsAny(contains);
+            and.setNotIn(notIn);
+            break;
+          case contains:
+            ContainsAny contains = new ContainsAny();
+            elect.setType("line");
+            contains.setElect(elect);
+            contains.setValues(w.values);
 
-                        and.setNot(not);
-                        break;
-                    default:
-                        break;
-                }
+            Where not = new Where();
+            not.setContainsAny(contains);
 
-                ands.add(and);
-            });
+            and.setNot(not);
+            break;
+          default:
+            break;
         }
 
-        where.setAnd(ands);
-        return where;
+        ands.add(and);
+      });
     }
 
-    public static Where buildWhere(LogParse logParse, Map<String, Map<String, SplitCol>> splitColMap,
-                             CollectMetric collectMetric) {
+    where.setAnd(ands);
+    return where;
+  }
 
-        //List<String> tags = collectMetric.tags;
-        //
-        Where where = new Where();
-        //List<Where> ands = new ArrayList<>();
-        //tags.forEach(t -> {
-        //
-        //    SplitCol dim = splitColMap.get(dimColType).get(t);
-        //    if (null == dim) {
-        //        return;
-        //    }
-        //    Rule rule = dim.rule;
-        //    Where and = new Where();
-        //    Elect elect = new Elect();
-        //    switch (logParse.splitType) {
-        //        case leftRight:
-        //            Elect.LeftRight leftRight = new Elect.LeftRight();
-        //            leftRight.setLeft(rule.left);
-        //            leftRight.setLeftIndex(rule.leftIndex);
-        //            leftRight.setRight(rule.right);
-        //
-        //            elect.setType("leftRight");
-        //            elect.setLeftRight(leftRight);
-        //            break;
-        //
-        //        case separator:
-        //            elect.setType("refIndex");
-        //            elect.setRefIndex(new RefIndex());
-        //            elect.getRefIndex().setIndex(rule.pos);
-        //            break;
-        //        case regexp:
-        //            elect.setType("refName");
-        //            elect.setRefName(new RefName());
-        //            elect.getRefName().setName(rule.regexpName);
-        //            break;
-        //        default:
-        //            break;
-        //    }
-        //
-        //    if (null != rule.translate) {
-        //        Translate translate = rule.translate;
-        //        List<ColumnCalExpr> exprs = translate.exprs;
-        //
-        //        Transform transform = new Transform();
-        //        List<Elect.TransformItem> transformItems = new ArrayList<>();
-        //        if (!CollectionUtils.isEmpty(exprs)) {
-        //            exprs.forEach(expr -> {
-        //                Elect.TransformItem transformItem = new TransformItem();
-        //                transformItem.setArg(expr.getParams());
-        //                transformItem.setFunc(expr.getFunc());
-        //                transformItems.add(transformItem);
-        //            });
-        //        }
-        //
-        //        transform.setTransforms(transformItems);
-        //        elect.setTransform(transform);
-        //    }
-        //
-        //    if (!StringUtils.isEmpty(rule.defaultValue)) {
-        //        elect.setDefaultValue(rule.defaultValue);
-        //    }
-        //
-        //    Where.In in = new Where.In();
-        //    in.setValues(t.values);
-        //    in.setElect(elect);
-        //    and.setIn(in);
-        //
-        //    ands.add(and);
-        //});
-        //
-        //if (collectMetric.metricType.equalsIgnoreCase("contains")) {
-        //    Where and = new Where();
-        //    Elect elect = new Elect();
-        //    Contains contains = new Contains();
-        //    elect.setType("line");
-        //    contains.setElect(elect);
-        //    contains.setValue(collectMetric.containValue);
-        //    and.setContains(contains);
-        //}
-        //
-        //where.setAnd(ands);
-        return where;
+  public static Where buildWhere(LogParse logParse, Map<String, Map<String, SplitCol>> splitColMap,
+      CollectMetric collectMetric) {
+
+    // List<String> tags = collectMetric.tags;
+    //
+    Where where = new Where();
+    // List<Where> ands = new ArrayList<>();
+    // tags.forEach(t -> {
+    //
+    // SplitCol dim = splitColMap.get(dimColType).get(t);
+    // if (null == dim) {
+    // return;
+    // }
+    // Rule rule = dim.rule;
+    // Where and = new Where();
+    // Elect elect = new Elect();
+    // switch (logParse.splitType) {
+    // case leftRight:
+    // Elect.LeftRight leftRight = new Elect.LeftRight();
+    // leftRight.setLeft(rule.left);
+    // leftRight.setLeftIndex(rule.leftIndex);
+    // leftRight.setRight(rule.right);
+    //
+    // elect.setType("leftRight");
+    // elect.setLeftRight(leftRight);
+    // break;
+    //
+    // case separator:
+    // elect.setType("refIndex");
+    // elect.setRefIndex(new RefIndex());
+    // elect.getRefIndex().setIndex(rule.pos);
+    // break;
+    // case regexp:
+    // elect.setType("refName");
+    // elect.setRefName(new RefName());
+    // elect.getRefName().setName(rule.regexpName);
+    // break;
+    // default:
+    // break;
+    // }
+    //
+    // if (null != rule.translate) {
+    // Translate translate = rule.translate;
+    // List<ColumnCalExpr> exprs = translate.exprs;
+    //
+    // Transform transform = new Transform();
+    // List<Elect.TransformItem> transformItems = new ArrayList<>();
+    // if (!CollectionUtils.isEmpty(exprs)) {
+    // exprs.forEach(expr -> {
+    // Elect.TransformItem transformItem = new TransformItem();
+    // transformItem.setArg(expr.getParams());
+    // transformItem.setFunc(expr.getFunc());
+    // transformItems.add(transformItem);
+    // });
+    // }
+    //
+    // transform.setTransforms(transformItems);
+    // elect.setTransform(transform);
+    // }
+    //
+    // if (!StringUtils.isEmpty(rule.defaultValue)) {
+    // elect.setDefaultValue(rule.defaultValue);
+    // }
+    //
+    // Where.In in = new Where.In();
+    // in.setValues(t.values);
+    // in.setElect(elect);
+    // and.setIn(in);
+    //
+    // ands.add(and);
+    // });
+    //
+    // if (collectMetric.metricType.equalsIgnoreCase("contains")) {
+    // Where and = new Where();
+    // Elect elect = new Elect();
+    // Contains contains = new Contains();
+    // elect.setType("line");
+    // contains.setElect(elect);
+    // contains.setValue(collectMetric.containValue);
+    // and.setContains(contains);
+    // }
+    //
+    // where.setAnd(ands);
+    return where;
+  }
+
+  public static GroupBy buildGroupBy(LogParse logParse,
+      Map<String, Map<String, SplitCol>> splitColMap, CollectMetric collectMetric) {
+
+    List<String> tags = collectMetric.getTags();
+
+    GroupBy groupBy = new GroupBy();
+    groupBy.setGroups(new ArrayList<>());
+    if (CollectionUtils.isEmpty(tags)) {
+      return groupBy;
     }
+    tags.forEach(t -> {
 
-    public static GroupBy buildGroupBy(LogParse logParse, Map<String, Map<String, SplitCol>> splitColMap,
-                                 CollectMetric collectMetric) {
+      SplitCol dim = splitColMap.get(dimColType).get(t);
+      if (null == dim) {
+        return;
+      }
+      Rule rule = dim.rule;
 
-        List<String> tags = collectMetric.getTags();
+      Elect elect = new Elect();
 
-        GroupBy groupBy = new GroupBy();
-        groupBy.setGroups(new ArrayList<>());
-        if (CollectionUtils.isEmpty(tags)) {
-            return groupBy;
+      switch (logParse.splitType) {
+        case leftRight:
+          Elect.LeftRight leftRight = new Elect.LeftRight();
+          leftRight.setLeft(rule.left);
+          leftRight.setLeftIndex(rule.leftIndex);
+          leftRight.setRight(rule.right);
+
+          elect.setType("leftRight");
+          elect.setLeftRight(leftRight);
+          break;
+
+        case separator:
+          elect.setType("refIndex");
+          elect.setRefIndex(new RefIndex());
+          elect.getRefIndex().setIndex(rule.pos);
+          break;
+        case regexp:
+          if (StringUtils.isNotEmpty(rule.regexpName)) {
+            elect.setType("refName");
+            elect.setRefName(new RefName());
+            elect.getRefName().setName(rule.regexpName);
+          } else if (rule.pos != null) {
+            elect.setType("refIndex");
+            elect.setRefIndex(new RefIndex());
+            elect.getRefIndex().setIndex(rule.pos);
+          }
+          break;
+        default:
+          break;
+      }
+
+      if (null != rule.translate) {
+        Translate translate = rule.translate;
+        List<ColumnCalExpr> exprs = translate.exprs;
+
+        Transform transform = new Transform();
+        List<TransformItem> transformItems = new ArrayList<>();
+        if (!CollectionUtils.isEmpty(exprs)) {
+          exprs.forEach(expr -> {
+            TransformItem transformItem = new TransformItem();
+            transformItem.setArg(expr.getParams());
+            transformItem.setFunc(expr.getFunc());
+            transformItems.add(transformItem);
+          });
         }
-        tags.forEach(t -> {
 
-            SplitCol dim = splitColMap.get(dimColType).get(t);
-            if (null == dim) {
-                return;
-            }
-            Rule rule = dim.rule;
+        transform.setTransforms(transformItems);
+        elect.setTransform(transform);
+      }
 
-            Elect elect = new Elect();
+      if (StringUtils.isNotEmpty(rule.defaultValue)) {
+        elect.setDefaultValue(rule.defaultValue);
+      }
 
-            switch (logParse.splitType) {
-                case leftRight:
-                    Elect.LeftRight leftRight = new Elect.LeftRight();
-                    leftRight.setLeft(rule.left);
-                    leftRight.setLeftIndex(rule.leftIndex);
-                    leftRight.setRight(rule.right);
+      GroupBy.Group group = new GroupBy.Group();
+      {
+        group.setName(t);
+        group.setElect(elect);
+      }
+      groupBy.setMaxKeys(logParse.maxKeySize);
+      groupBy.getGroups().add(group);
+    });
 
-                    elect.setType("leftRight");
-                    elect.setLeftRight(leftRight);
-                    break;
+    return groupBy;
+  }
 
-                case separator:
-                    elect.setType("refIndex");
-                    elect.setRefIndex(new RefIndex());
-                    elect.getRefIndex().setIndex(rule.pos);
-                    break;
-                case regexp:
-                    if(StringUtils.isNotEmpty(rule.regexpName)){
-                        elect.setType("refName");
-                        elect.setRefName(new RefName());
-                        elect.getRefName().setName(rule.regexpName);
-                    }else if(rule.pos != null){
-                        elect.setType("refIndex");
-                        elect.setRefIndex(new RefIndex());
-                        elect.getRefIndex().setIndex(rule.pos);
-                    }
-                    break;
-                default:
-                    break;
-            }
+  public static Window buildWindow(int dataUnitMs) {
 
-            if (null != rule.translate) {
-                Translate translate = rule.translate;
-                List<ColumnCalExpr> exprs = translate.exprs;
+    Window window = new Window();
+    window.setInterval(dataUnitMs);
+    return window;
+  }
 
-                Transform transform = new Transform();
-                List<TransformItem> transformItems = new ArrayList<>();
-                if (!CollectionUtils.isEmpty(exprs)) {
-                    exprs.forEach(expr -> {
-                        TransformItem transformItem = new TransformItem();
-                        transformItem.setArg(expr.getParams());
-                        transformItem.setFunc(expr.getFunc());
-                        transformItems.add(transformItem);
-                    });
-                }
+  public static Output buildOutput(String targetTableName) {
+    Output output = new Output();
+    output.setType("gateway");
+    output.setGateway(new Gateway());
+    output.getGateway().setMetricName(targetTableName);
+    return output;
+  }
 
-                transform.setTransforms(transformItems);
-                elect.setTransform(transform);
-            }
+  public static ExecuteRule buildExecuteRule() {
+    return new ExecuteRule();
+  }
 
-            if (StringUtils.isNotEmpty(rule.defaultValue)) {
-                elect.setDefaultValue(rule.defaultValue);
-            }
+  public static Map<String, Object> convertExecutorSelector() {
 
-            GroupBy.Group group = new GroupBy.Group();
-            {
-                group.setName(t);
-                group.setElect(elect);
-            }
-            groupBy.setMaxKeys(logParse.maxKeySize);
-            groupBy.getGroups().add(group);
-        });
+    Map<String, Object> executorSelector = new HashMap<>();
+    executorSelector.put("type", "sidecar");
+    executorSelector.put("sidecar", new HashMap<>());
 
-        return groupBy;
-    }
-
-    public static Window buildWindow(int dataUnitMs) {
-
-        Window window = new Window();
-        window.setInterval(dataUnitMs);
-        return window;
-    }
-
-    public static Output buildOutput(String targetTableName) {
-        Output output = new Output();
-        output.setType("gateway");
-        output.setGateway(new Gateway());
-        output.getGateway().setMetricName(targetTableName);
-        return output;
-    }
-
-    public static ExecuteRule buildExecuteRule() {
-        return new ExecuteRule();
-    }
-
-    public static Map<String, Object> convertExecutorSelector() {
-
-        Map<String, Object> executorSelector = new HashMap<>();
-        executorSelector.put("type", "sidecar");
-        executorSelector.put("sidecar", new HashMap<>());
-
-        return executorSelector;
-    }
+    return executorSelector;
+  }
 }

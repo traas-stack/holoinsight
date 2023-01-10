@@ -10,6 +10,6 @@ import java.util.List;
 
 public interface EndpointRelationEsService {
 
-    void batchInsert(final List<EndpointRelationEsDO> relationList) throws IOException;
+  void batchInsert(final List<EndpointRelationEsDO> relationList) throws IOException;
 
 }

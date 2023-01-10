@@ -14,13 +14,12 @@ import java.lang.reflect.Type;
  * @date 2022/4/14 5:35 下午
  */
 public class FormJsonMapper {
-    public static String asString(IntegrationFormDTO form) {
-        return J.toJson(form);
-    }
+  public static String asString(IntegrationFormDTO form) {
+    return J.toJson(form);
+  }
 
-    public static IntegrationFormDTO asObj(String str) {
-        Type t = new TypeToken<IntegrationFormDTO>() {
-        }.getType();
-        return J.fromJson(str, t);
-    }
+  public static IntegrationFormDTO asObj(String str) {
+    Type t = new TypeToken<IntegrationFormDTO>() {}.getType();
+    return J.fromJson(str, t);
+  }
 }

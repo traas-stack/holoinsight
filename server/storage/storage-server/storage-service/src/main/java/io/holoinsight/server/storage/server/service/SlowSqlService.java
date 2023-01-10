@@ -12,7 +12,8 @@ import java.util.List;
 
 public interface SlowSqlService {
 
-    void insert(final List<SlowSqlEsDO> slowSqlEsDOList) throws IOException;
+  void insert(final List<SlowSqlEsDO> slowSqlEsDOList) throws IOException;
 
-    List<SlowSql> getSlowSqlList(String tenant, String serviceName, String dbAddress, long startTime, long endTime) throws IOException;
+  List<SlowSql> getSlowSqlList(String tenant, String serviceName, String dbAddress, long startTime,
+      long endTime) throws IOException;
 }

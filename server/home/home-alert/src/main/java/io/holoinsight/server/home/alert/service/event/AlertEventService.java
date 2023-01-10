@@ -22,42 +22,46 @@ import java.util.concurrent.TimeUnit;
 @Service
 public class AlertEventService implements AlertEventExecutor<AlertEvent> {
 
-    private static final ScheduledExecutorService executorService = Executors.newScheduledThreadPool(100);
+  private static final ScheduledExecutorService executorService =
+      Executors.newScheduledThreadPool(100);
 
-    private static final Logger logger = LoggerFactory.getLogger(AlertEventService.class);
+  private static final Logger logger = LoggerFactory.getLogger(AlertEventService.class);
 
-    @Autowired
-    private AlertServiceRegistry alertServiceRegistry;
+  @Autowired
+  private AlertServiceRegistry alertServiceRegistry;
 
-    /**
-     * 生成的告警Graph
-     */
-    public void handleEvent(AlertEvent alertEvent) {
+  /**
+   * 生成的告警Graph
+   */
+  public void handleEvent(AlertEvent alertEvent) {
+    try {
+      executorService.schedule(() -> {
         try {
-            executorService.schedule(() -> {
-                try {
-                    // 获取数据处理管道
-                    List<? extends AlertHandlerExecutor> pipeline = this.alertServiceRegistry.getAlertEventHanderList();
+          // 获取数据处理管道
+          List<? extends AlertHandlerExecutor> pipeline =
+              this.alertServiceRegistry.getAlertEventHanderList();
 
-                    if (CollectionUtils.isEmpty(pipeline)) {
-                        logger.error(String.format("[%s] pipeline is empty.", alertEvent.getEventTypeEnum()));
-                        return;
-                    }
+          if (CollectionUtils.isEmpty(pipeline)) {
+            logger.error(String.format("[%s] pipeline is empty.", alertEvent.getEventTypeEnum()));
+            return;
+          }
 
-                    for (AlertHandlerExecutor handler : pipeline) {
-                        try {
-                            // 当前处理器处理数据，并返回是否继续向下处理
-                            handler.handle(alertEvent.getAlarmNotifies());
-                        } catch (Throwable ex) {
-                            logger.error(String.format("HandleException,handler=%s", handler.getClass().getSimpleName()), ex);
-                        }
-                    }
-                } catch (Throwable e) {
-                    logger.error("fail to handle alertEvent: {}", alertEvent, e);
-                }
-            }, 0, TimeUnit.MICROSECONDS);
+          for (AlertHandlerExecutor handler : pipeline) {
+            try {
+              // 当前处理器处理数据，并返回是否继续向下处理
+              handler.handle(alertEvent.getAlarmNotifies());
+            } catch (Throwable ex) {
+              logger.error(
+                  String.format("HandleException,handler=%s", handler.getClass().getSimpleName()),
+                  ex);
+            }
+          }
         } catch (Throwable e) {
-            logger.error("[HandleEventSchedulerError]", e);
+          logger.error("fail to handle alertEvent: {}", alertEvent, e);
         }
+      }, 0, TimeUnit.MICROSECONDS);
+    } catch (Throwable e) {
+      logger.error("[HandleEventSchedulerError]", e);
     }
+  }
 }

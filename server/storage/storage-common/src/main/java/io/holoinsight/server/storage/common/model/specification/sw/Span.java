@@ -20,43 +20,43 @@ import java.util.List;
 @NoArgsConstructor
 public class Span implements Serializable {
 
-    private static final long serialVersionUID = 98205008356521571L;
+  private static final long serialVersionUID = 98205008356521571L;
 
-    private String traceId;
+  private String traceId;
 
-    private String segmentId;
+  private String segmentId;
 
-    private String spanId;
+  private String spanId;
 
-    private String parentSpanId;
+  private String parentSpanId;
 
-    private List<Ref> refs = new ArrayList<>();
+  private List<Ref> refs = new ArrayList<>();
 
-    private String serviceCode;
+  private String serviceCode;
 
-    private String serviceInstanceName;
+  private String serviceInstanceName;
 
-    private long startTime;
+  private long startTime;
 
-    private long endTime;
+  private long endTime;
 
-    private String endpointName;
+  private String endpointName;
 
-    private String type;
+  private String type;
 
-    private String peer;
+  private String peer;
 
-    private String component;
+  private String component;
 
-    private boolean isError;
+  private boolean isError;
 
-    private String          layer;
-    private List<KeyValue>  tags = new ArrayList<>();
-    private List<LogEntity> logs = new ArrayList<>();
+  private String layer;
+  private List<KeyValue> tags = new ArrayList<>();
+  private List<LogEntity> logs = new ArrayList<>();
 
-    private boolean isRoot;
+  private boolean isRoot;
 
-    private String segmentSpanId;
+  private String segmentSpanId;
 
-    private String segmentParentSpanId;
+  private String segmentParentSpanId;
 }

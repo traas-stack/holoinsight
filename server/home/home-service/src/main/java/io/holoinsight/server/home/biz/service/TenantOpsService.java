@@ -2,7 +2,6 @@
  * Copyright 2022 Holoinsight Project Authors. Licensed under Apache-2.0.
  */
 
-
 package io.holoinsight.server.home.biz.service;
 
 
@@ -17,13 +16,13 @@ import io.holoinsight.server.common.dao.entity.dto.TenantOpsDTO;
  */
 public interface TenantOpsService extends IService<TenantOps> {
 
-    TenantOpsDTO get(Long id);
+  TenantOpsDTO get(Long id);
 
-    void create(TenantOpsDTO tenantOpsDTO);
+  void create(TenantOpsDTO tenantOpsDTO);
 
-    void update(TenantOpsDTO tenantOpsDTO);
+  void update(TenantOpsDTO tenantOpsDTO);
 
-    void deleteById(Long id);
+  void deleteById(Long id);
 
-    void createOrUpdate(TenantOpsDTO tenantOpsDTO);
+  void createOrUpdate(TenantOpsDTO tenantOpsDTO);
 }

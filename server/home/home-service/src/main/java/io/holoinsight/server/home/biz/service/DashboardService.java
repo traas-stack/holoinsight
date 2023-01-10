@@ -1,7 +1,6 @@
 /*
  * Copyright 2022 Holoinsight Project Authors. Licensed under Apache-2.0.
  */
-
 package io.holoinsight.server.home.biz.service;
 
 import io.holoinsight.server.home.dal.model.Dashboard;
@@ -14,15 +13,16 @@ import java.util.List;
 
 public interface DashboardService extends IService<Dashboard> {
 
-    Dashboard queryById(Long id, String tenant);
+  Dashboard queryById(Long id, String tenant);
 
-    DashboardDTO save(DashboardDTO dashboardDTO);
-    List<Dashboard> findByIds(List<String> ids);
+  DashboardDTO save(DashboardDTO dashboardDTO);
 
-    List<Dashboard> getListByKeyword(String keyword, String tenant);
+  List<Dashboard> findByIds(List<String> ids);
 
-    MonitorPageResult<Dashboard> getListByPage(MonitorPageRequest<Dashboard> request);
+  List<Dashboard> getListByKeyword(String keyword, String tenant);
 
-    Long create(Dashboard dashboard);
+  MonitorPageResult<Dashboard> getListByPage(MonitorPageRequest<Dashboard> request);
+
+  Long create(Dashboard dashboard);
 
 }

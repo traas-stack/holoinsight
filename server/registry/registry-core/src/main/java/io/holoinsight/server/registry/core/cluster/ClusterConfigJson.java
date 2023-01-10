@@ -6,11 +6,12 @@ package io.holoinsight.server.registry.core.cluster;
 import lombok.Data;
 
 /**
- * <p>created at 2022/3/14
+ * <p>
+ * created at 2022/3/14
  *
  * @author zzhb101
  */
 @Data
 public class ClusterConfigJson {
-    
+
 }

@@ -14,31 +14,30 @@ import java.io.Serializable;
  */
 @Data
 public class LogPath implements Serializable {
-    private static final long serialVersionUID = 5655374551833224541L;
+  private static final long serialVersionUID = 5655374551833224541L;
 
-    /**
-     * path/glob/regexp/format
-     */
-    public String             type;
+  /**
+   * path/glob/regexp/format
+   */
+  public String type;
 
-    /**
-     * type == path; 绝对路径
-     * type == glob; 表达式 /common-error*.log
-     * type == format; /{time:yyyy}/{time:MM}/{time:dd}/common-error.log
-     */
-    public String             path;
+  /**
+   * type == path; 绝对路径 type == glob; 表达式 /common-error*.log type == format;
+   * /{time:yyyy}/{time:MM}/{time:dd}/common-error.log
+   */
+  public String path;
 
-    /**
-     * type = regexp, 填写父目录，/home/admin/logs
-     */
-    public String             dir;
+  /**
+   * type = regexp, 填写父目录，/home/admin/logs
+   */
+  public String dir;
 
-    ///**
-    // * type == regexp,， 填写正则表达式，匹配全路径
-    // */
-    //public String             regexp;
-    // 大于0则表示要设置阈值限流
-    public Integer            agentLimitKB     = -1;
+  /// **
+  // * type == regexp,， 填写正则表达式，匹配全路径
+  // */
+  // public String regexp;
+  // 大于0则表示要设置阈值限流
+  public Integer agentLimitKB = -1;
 
-    public String             charset          = "utf-8";
+  public String charset = "utf-8";
 }

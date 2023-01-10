@@ -12,9 +12,9 @@ import lombok.Data;
  */
 @Data
 public class IntegrationConfig {
-    public String                 name;
+  public String name;
 
-    public CustomPluginPeriodType periodType;
+  public CustomPluginPeriodType periodType;
 
-    public Object                 conf;
+  public Object conf;
 }

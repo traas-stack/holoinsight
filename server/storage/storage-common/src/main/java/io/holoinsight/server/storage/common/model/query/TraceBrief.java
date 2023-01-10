@@ -20,6 +20,6 @@ import java.util.List;
 @NoArgsConstructor
 public class TraceBrief implements Serializable {
 
-    private static final long serialVersionUID = -5452437207833607799L;
-    private List<BasicTrace> traces = new ArrayList<>();
+  private static final long serialVersionUID = -5452437207833607799L;
+  private List<BasicTrace> traces = new ArrayList<>();
 }

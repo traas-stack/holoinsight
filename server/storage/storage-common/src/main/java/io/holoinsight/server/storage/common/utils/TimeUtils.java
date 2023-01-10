@@ -5,7 +5,7 @@ package io.holoinsight.server.storage.common.utils;
 
 public class TimeUtils {
 
-    public static long unixNano2MS(long unixNano) {
-        return unixNano / 1000000;
-    }
+  public static long unixNano2MS(long unixNano) {
+    return unixNano / 1000000;
+  }
 }

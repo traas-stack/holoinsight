@@ -15,13 +15,12 @@ import java.lang.reflect.Type;
  * @version 1.0: GaeaCollectConfigJsonMapper.java, v 0.1 2022年03月31日 8:52 下午 jinsong.yjs Exp $
  */
 public class GaeaCollectConfigJsonMapper {
-    public static String asString(GaeaTask json) {
-        return J.toJson(json);
-    }
+  public static String asString(GaeaTask json) {
+    return J.toJson(json);
+  }
 
-    public static GaeaTask asObj(String json) {
-        Type t = new TypeToken<GaeaTask>() {
-        }.getType();
-        return J.fromJson(json, t);
-    }
+  public static GaeaTask asObj(String json) {
+    Type t = new TypeToken<GaeaTask>() {}.getType();
+    return J.fromJson(json, t);
+  }
 }

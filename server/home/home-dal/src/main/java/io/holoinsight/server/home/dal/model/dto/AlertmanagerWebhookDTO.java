@@ -10,27 +10,27 @@ import java.util.Date;
 @Data
 public class AlertmanagerWebhookDTO {
 
-    private Long   id;
-    private String name;
-    private String tenant;
+  private Long id;
+  private String name;
+  private String tenant;
 
-    /**
-     * 创建时间
-     */
-    private Date gmtCreate;
+  /**
+   * 创建时间
+   */
+  private Date gmtCreate;
 
-    /**
-     * 修改时间
-     */
-    private Date gmtModified;
+  /**
+   * 修改时间
+   */
+  private Date gmtModified;
 
-    /**
-     * 创建者
-     */
-    private String creator;
+  /**
+   * 创建者
+   */
+  private String creator;
 
-    /**
-     * 修改者
-     */
-    private String modifier;
+  /**
+   * 修改者
+   */
+  private String modifier;
 }

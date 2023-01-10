@@ -11,9 +11,9 @@ import lombok.Data;
  */
 @Data
 public class AbnormalFeatures {
-    private String abnormalCategory;
-    private Double anomalyDuration;
-    private Double baseLine;
-    private Double changeRate;
-    private Double currentValue;
+  private String abnormalCategory;
+  private Double anomalyDuration;
+  private Double baseLine;
+  private Double changeRate;
+  private Double currentValue;
 }

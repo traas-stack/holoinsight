@@ -7,15 +7,9 @@ package io.holoinsight.server.storage.common.model.specification.sw;
  * RPC request type.
  */
 public enum RequestType {
-    DATABASE,
-    HTTP,
-    RPC,
-    GRPC,
-    /**
-     * Logic request only.
-     */
-    LOGIC,
-    TCP,
-    MQ,
-    CACHE
+  DATABASE, HTTP, RPC, GRPC,
+  /**
+   * Logic request only.
+   */
+  LOGIC, TCP, MQ, CACHE
 }

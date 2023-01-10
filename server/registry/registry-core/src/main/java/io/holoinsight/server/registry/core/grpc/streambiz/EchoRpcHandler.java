@@ -9,13 +9,14 @@ import io.holoinsight.server.registry.core.grpc.stream.RpcHandler;
 import reactor.core.publisher.Mono;
 
 /**
- * <p>created at 2022/3/3
+ * <p>
+ * created at 2022/3/3
  *
  * @author zzhb101
  */
 public class EchoRpcHandler implements RpcHandler {
-    @Override
-    public Mono<Cmd> handle(Cmd req) {
-        return Mono.just(Cmd.of(BizTypes.ECHO, req.getData()));
-    }
+  @Override
+  public Mono<Cmd> handle(Cmd req) {
+    return Mono.just(Cmd.of(BizTypes.ECHO, req.getData()));
+  }
 }

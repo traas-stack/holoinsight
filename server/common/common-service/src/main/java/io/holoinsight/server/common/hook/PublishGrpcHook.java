@@ -7,10 +7,11 @@ import io.grpc.ServerBuilder;
 import io.grpc.ServerServiceDefinition;
 
 /**
- * <p>created at 2022/12/6
+ * <p>
+ * created at 2022/12/6
  *
  * @author xzchaoo
  */
 public interface PublishGrpcHook {
-    void onPublish(ServerBuilder<?> b, ServerServiceDefinition ssd);
+  void onPublish(ServerBuilder<?> b, ServerServiceDefinition ssd);
 }

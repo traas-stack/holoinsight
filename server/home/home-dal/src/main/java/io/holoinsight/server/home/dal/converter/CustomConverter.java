@@ -10,13 +10,13 @@ import org.mapstruct.Mapper;
 
 import java.util.List;
 
-@Mapper(componentModel = "spring", uses = { BooleanIntegerMapper.class })
+@Mapper(componentModel = "spring", uses = {BooleanIntegerMapper.class})
 public interface CustomConverter {
 
-    ClusterDTO doToDTO(Cluster cluster);
+  ClusterDTO doToDTO(Cluster cluster);
 
-    Cluster dtoToDO(ClusterDTO clusterDTO);
+  Cluster dtoToDO(ClusterDTO clusterDTO);
 
-    List<ClusterDTO> dosToDTOs(Iterable<Cluster> clusters);
+  List<ClusterDTO> dosToDTOs(Iterable<Cluster> clusters);
 
 }

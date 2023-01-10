@@ -18,14 +18,14 @@ import java.util.List;
  */
 public interface AlertGroupService extends IService<AlarmGroup> {
 
-    Long save(AlarmGroupDTO alarmGroupDTO);
+  Long save(AlarmGroupDTO alarmGroupDTO);
 
-    Boolean updateById(AlarmGroupDTO alarmGroupDTO);
+  Boolean updateById(AlarmGroupDTO alarmGroupDTO);
 
-    AlarmGroupDTO queryById(Long id, String tenant);
+  AlarmGroupDTO queryById(Long id, String tenant);
 
-    List<AlarmGroupDTO> getListByUserLike(String userId, String tenant);
+  List<AlarmGroupDTO> getListByUserLike(String userId, String tenant);
 
-    MonitorPageResult<AlarmGroupDTO> getListByPage(MonitorPageRequest<AlarmGroupDTO> pageRequest);
+  MonitorPageResult<AlarmGroupDTO> getListByPage(MonitorPageRequest<AlarmGroupDTO> pageRequest);
 
 }

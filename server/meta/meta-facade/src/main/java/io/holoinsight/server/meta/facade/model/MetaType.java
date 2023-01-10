@@ -10,18 +10,18 @@ package io.holoinsight.server.meta.facade.model;
  */
 public enum MetaType {
 
-    VM,
+  VM,
 
-    POD,
+  POD,
 
-    NODE,
+  NODE,
 
-    CONTAINER,
+  CONTAINER,
 
-    SERVICE,
+  SERVICE,
 
-    INGRESS,
+  INGRESS,
 
-    // 我们的agent, 包含 daemonset clusteragent central
-    AGENT
+  // 我们的agent, 包含 daemonset clusteragent central
+  AGENT
 }

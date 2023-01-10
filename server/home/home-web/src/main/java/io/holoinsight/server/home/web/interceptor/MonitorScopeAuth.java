@@ -2,7 +2,6 @@
  * Copyright 2022 Holoinsight Project Authors. Licensed under Apache-2.0.
  */
 
-
 package io.holoinsight.server.home.web.interceptor;
 
 import io.holoinsight.server.home.common.util.scope.AuthTargetType;
@@ -21,7 +20,7 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
 public @interface MonitorScopeAuth {
-    AuthTargetType targetType();
+  AuthTargetType targetType();
 
-    PowerConstants needPower() default PowerConstants.NO_AUTH;
+  PowerConstants needPower() default PowerConstants.NO_AUTH;
 }

@@ -8,7 +8,5 @@ package io.holoinsight.server.home.biz.plugin.model;
  * @version 2022-11-14 22:09:00
  */
 public enum PluginType {
-    datasource,
-    notification,
-    scheduler
+  datasource, notification, scheduler
 }

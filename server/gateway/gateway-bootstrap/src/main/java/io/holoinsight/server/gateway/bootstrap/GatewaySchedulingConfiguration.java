@@ -14,7 +14,8 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.concurrent.ConcurrentTaskScheduler;
 
 /**
- * <p>created at 2022/3/4
+ * <p>
+ * created at 2022/3/4
  *
  * @author sw1136562366
  */
@@ -22,14 +23,14 @@ import org.springframework.scheduling.concurrent.ConcurrentTaskScheduler;
 @Configuration
 @Import(ThreadPoolConfiguration.class)
 public class GatewaySchedulingConfiguration {
-    /**
-     * Spring 会使用这个 scheduler 去执行 @Scheduled 注解的任务
-     *
-     * @param commonThreadPools
-     * @return
-     */
-    @Bean
-    public TaskScheduler taskScheduler(CommonThreadPools commonThreadPools) {
-        return new ConcurrentTaskScheduler(commonThreadPools.getScheduler());
-    }
+  /**
+   * Spring 会使用这个 scheduler 去执行 @Scheduled 注解的任务
+   *
+   * @param commonThreadPools
+   * @return
+   */
+  @Bean
+  public TaskScheduler taskScheduler(CommonThreadPools commonThreadPools) {
+    return new ConcurrentTaskScheduler(commonThreadPools.getScheduler());
+  }
 }

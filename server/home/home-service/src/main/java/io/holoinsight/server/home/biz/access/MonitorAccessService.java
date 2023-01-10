@@ -2,7 +2,6 @@
  * Copyright 2022 Holoinsight Project Authors. Licensed under Apache-2.0.
  */
 
-
 package io.holoinsight.server.home.biz.access;
 
 import com.alibaba.fastjson.JSON;
@@ -30,123 +29,127 @@ import java.nio.charset.StandardCharsets;
 @Component
 public class MonitorAccessService {
 
-    @Autowired
-    private AccessConfigService accessConfigService;
+  @Autowired
+  private AccessConfigService accessConfigService;
 
-    /**
-     * 申请token，如果入参非法报错
-     *
-     * @param accessId
-     * @param accessKey
-     * @return
-     */
-    public String apply(String accessId, String accessKey) {
+  /**
+   * 申请token，如果入参非法报错
+   *
+   * @param accessId
+   * @param accessKey
+   * @return
+   */
+  public String apply(String accessId, String accessKey) {
 
-        final MonitorAccessConfig accessConfig = accessConfigService.getAccessConfigDOMap().get(accessKey);
+    final MonitorAccessConfig accessConfig =
+        accessConfigService.getAccessConfigDOMap().get(accessKey);
 
-        if (accessConfig == null) {
-            throw new IllegalArgumentException("accessId is illegal, " + accessId);
-        }
-
-        if (!StringUtils.equals(accessKey, accessConfig.getAccessKey())) {
-            throw new IllegalArgumentException("accessKey is invalid");
-        }
-
-        try {
-            // AES专用密钥
-            final String aesKey = accessConfigService.getTokenAesKey();
-            final SecretKeySpec key = new SecretKeySpec(Hex.decodeHex(aesKey.toCharArray()), "AES");
-
-            // 密码器
-            final Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
-            cipher.init(Cipher.ENCRYPT_MODE, key);
-
-            final MonitorTokenData tokenData = new MonitorTokenData().setAccessId(accessId).setAccessKey(accessConfig.getAccessKey())
-                    .setTenant(accessConfig.getTenant())
-                    .setTime(System.currentTimeMillis());
-
-            final byte[] token = cipher.doFinal(JSON.toJSONString(tokenData).getBytes(StandardCharsets.UTF_8));
-
-            return new String(Hex.encodeHex(token));
-        } catch (Exception e) {
-            throw new RuntimeException("apply token fail", e);
-        }
+    if (accessConfig == null) {
+      throw new IllegalArgumentException("accessId is illegal, " + accessId);
     }
 
-    /**
-     * 解析token，并检验是否过期
-     *
-     * @param token
-     * @return
-     */
-    public MonitorTokenData checkWithExpire(String token, long expireInSecond) {
-        final MonitorTokenData tokenData = check(token);
-
-        if (System.currentTimeMillis() - tokenData.time > expireInSecond * 1000) {
-            throw new RuntimeException("token expired, " + tokenData);
-        }
-
-        return tokenData;
+    if (!StringUtils.equals(accessKey, accessConfig.getAccessKey())) {
+      throw new IllegalArgumentException("accessKey is invalid");
     }
 
-    public Boolean tokenExpire(String token, long expireInSecond) {
-        final MonitorTokenData tokenData = check(token);
+    try {
+      // AES专用密钥
+      final String aesKey = accessConfigService.getTokenAesKey();
+      final SecretKeySpec key = new SecretKeySpec(Hex.decodeHex(aesKey.toCharArray()), "AES");
 
-        if (System.currentTimeMillis() - tokenData.time <= expireInSecond * 1000) {
-            MonitorScope monitorScope = new MonitorScope();
-            monitorScope.tenant = tokenData.tenant;
-            monitorScope.accessId = tokenData.accessId;
-            monitorScope.accessKey = tokenData.accessKey;
-            Context c = new Context(monitorScope);
-            RequestContext.setContext(c);
-            return false;
-        }
-        return true;
+      // 密码器
+      final Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
+      cipher.init(Cipher.ENCRYPT_MODE, key);
+
+      final MonitorTokenData tokenData =
+          new MonitorTokenData().setAccessId(accessId).setAccessKey(accessConfig.getAccessKey())
+              .setTenant(accessConfig.getTenant()).setTime(System.currentTimeMillis());
+
+      final byte[] token =
+          cipher.doFinal(JSON.toJSONString(tokenData).getBytes(StandardCharsets.UTF_8));
+
+      return new String(Hex.encodeHex(token));
+    } catch (Exception e) {
+      throw new RuntimeException("apply token fail", e);
+    }
+  }
+
+  /**
+   * 解析token，并检验是否过期
+   *
+   * @param token
+   * @return
+   */
+  public MonitorTokenData checkWithExpire(String token, long expireInSecond) {
+    final MonitorTokenData tokenData = check(token);
+
+    if (System.currentTimeMillis() - tokenData.time > expireInSecond * 1000) {
+      throw new RuntimeException("token expired, " + tokenData);
     }
 
-    public Boolean accessCheck(String accessKey) {
+    return tokenData;
+  }
 
-        MonitorAccessConfig monitorAccessConfig = accessConfigService.getAccessConfigDOMap().get(accessKey);
+  public Boolean tokenExpire(String token, long expireInSecond) {
+    final MonitorTokenData tokenData = check(token);
 
-        if (null == monitorAccessConfig) {
-            return false;
-        }
+    if (System.currentTimeMillis() - tokenData.time <= expireInSecond * 1000) {
+      MonitorScope monitorScope = new MonitorScope();
+      monitorScope.tenant = tokenData.tenant;
+      monitorScope.accessId = tokenData.accessId;
+      monitorScope.accessKey = tokenData.accessKey;
+      Context c = new Context(monitorScope);
+      RequestContext.setContext(c);
+      return false;
+    }
+    return true;
+  }
 
-        MonitorScope monitorScope = new MonitorScope();
-        monitorScope.tenant = monitorAccessConfig.getTenant();
-        monitorScope.accessId = monitorAccessConfig.getAccessId();
-        monitorScope.accessKey = monitorAccessConfig.getAccessKey();
-        Context c = new Context(monitorScope);
-        RequestContext.setContext(c);
+  public Boolean accessCheck(String accessKey) {
 
-        return true;
+    MonitorAccessConfig monitorAccessConfig =
+        accessConfigService.getAccessConfigDOMap().get(accessKey);
+
+    if (null == monitorAccessConfig) {
+      return false;
     }
 
-    /**
-     * 解析token，并检验是否过期
-     *
-     * @param token
-     * @return
-     */
-    public MonitorTokenData check(String token) {
-        if (StringUtils.isBlank(token)) {
-            throw new IllegalArgumentException("token is empty");
-        }
+    MonitorScope monitorScope = new MonitorScope();
+    monitorScope.tenant = monitorAccessConfig.getTenant();
+    monitorScope.accessId = monitorAccessConfig.getAccessId();
+    monitorScope.accessKey = monitorAccessConfig.getAccessKey();
+    Context c = new Context(monitorScope);
+    RequestContext.setContext(c);
 
-        try {
-            // AES专用密钥
-            final String aesKey = accessConfigService.getTokenAesKey();
-            final SecretKeySpec key = new SecretKeySpec(Hex.decodeHex(aesKey.toCharArray()), "AES");
+    return true;
+  }
 
-            // 密码器
-            final Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
-            cipher.init(Cipher.DECRYPT_MODE, key);
-
-            final byte[] tokenData = cipher.doFinal(Hex.decodeHex(token.toCharArray()));
-
-            return JSON.parseObject(new String(tokenData, StandardCharsets.UTF_8), MonitorTokenData.class);
-        } catch (Exception e) {
-            throw new RuntimeException("token invalid", e);
-        }
+  /**
+   * 解析token，并检验是否过期
+   *
+   * @param token
+   * @return
+   */
+  public MonitorTokenData check(String token) {
+    if (StringUtils.isBlank(token)) {
+      throw new IllegalArgumentException("token is empty");
     }
+
+    try {
+      // AES专用密钥
+      final String aesKey = accessConfigService.getTokenAesKey();
+      final SecretKeySpec key = new SecretKeySpec(Hex.decodeHex(aesKey.toCharArray()), "AES");
+
+      // 密码器
+      final Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
+      cipher.init(Cipher.DECRYPT_MODE, key);
+
+      final byte[] tokenData = cipher.doFinal(Hex.decodeHex(token.toCharArray()));
+
+      return JSON.parseObject(new String(tokenData, StandardCharsets.UTF_8),
+          MonitorTokenData.class);
+    } catch (Exception e) {
+      throw new RuntimeException("token invalid", e);
+    }
+  }
 }

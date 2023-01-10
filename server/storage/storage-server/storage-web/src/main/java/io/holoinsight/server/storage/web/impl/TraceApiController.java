@@ -29,39 +29,41 @@ import static java.util.Objects.nonNull;
 @Slf4j
 public class TraceApiController implements TraceApi {
 
-    @Autowired
-    private TraceService traceService;
+  @Autowired
+  private TraceService traceService;
 
-    @Override
-    public ResponseEntity<TraceBrief> queryBasicTraces(QueryTraceRequest request) throws IOException {
-        long start = 0;
-        long end = 0;
-        List<String> traceIds = Collections.EMPTY_LIST;
+  @Override
+  public ResponseEntity<TraceBrief> queryBasicTraces(QueryTraceRequest request) throws IOException {
+    long start = 0;
+    long end = 0;
+    List<String> traceIds = Collections.EMPTY_LIST;
 
-        if (CollectionUtils.isNotEmpty(request.getTraceIds())) {
-            traceIds = request.getTraceIds();
-        } else if (nonNull(request.getDuration())) {
-            start = request.getDuration().getStart();
-            end = request.getDuration().getEnd();
-        } else {
-            throw new IllegalArgumentException("The condition must contains either queryDuration or traceId.");
-        }
-
-        int minDuration = request.getMinTraceDuration();
-        int maxDuration = request.getMaxTraceDuration();
-        String endpointName = request.getEndpointName();
-        TraceState traceState = request.getTraceState();
-        QueryOrder queryOrder = request.getQueryOrder();
-        Pagination pagination = request.getPaging();
-        TraceBrief traceBrief = traceService.queryBasicTraces(request.getTenant(), request.getServiceName(), request.getServiceInstanceName(),
-                endpointName, traceIds, minDuration, maxDuration, traceState, queryOrder, pagination, start, end,
-                request.getTags());
-        return ResponseEntity.ok(traceBrief);
+    if (CollectionUtils.isNotEmpty(request.getTraceIds())) {
+      traceIds = request.getTraceIds();
+    } else if (nonNull(request.getDuration())) {
+      start = request.getDuration().getStart();
+      end = request.getDuration().getEnd();
+    } else {
+      throw new IllegalArgumentException(
+          "The condition must contains either queryDuration or traceId.");
     }
 
-    @Override
-    public ResponseEntity<Trace> queryTrace(QueryTraceRequest request) throws IOException {
-        Trace trace = traceService.queryTrace(request.getTraceIds().get(0));
-        return ResponseEntity.ok(trace);
-    }
+    int minDuration = request.getMinTraceDuration();
+    int maxDuration = request.getMaxTraceDuration();
+    String endpointName = request.getEndpointName();
+    TraceState traceState = request.getTraceState();
+    QueryOrder queryOrder = request.getQueryOrder();
+    Pagination pagination = request.getPaging();
+    TraceBrief traceBrief =
+        traceService.queryBasicTraces(request.getTenant(), request.getServiceName(),
+            request.getServiceInstanceName(), endpointName, traceIds, minDuration, maxDuration,
+            traceState, queryOrder, pagination, start, end, request.getTags());
+    return ResponseEntity.ok(traceBrief);
+  }
+
+  @Override
+  public ResponseEntity<Trace> queryTrace(QueryTraceRequest request) throws IOException {
+    Trace trace = traceService.queryTrace(request.getTraceIds().get(0));
+    return ResponseEntity.ok(trace);
+  }
 }

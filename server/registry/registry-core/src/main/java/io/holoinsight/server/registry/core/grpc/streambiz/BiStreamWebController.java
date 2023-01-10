@@ -41,237 +41,244 @@ import com.google.protobuf.util.JsonFormat;
 
 /**
  * 双向流运维接口
- * <p>created at 2022/3/10
+ * <p>
+ * created at 2022/3/10
  *
  * @author zzhb101
  */
 @RestController
 @RequestMapping("/internal/api/registry/bistream")
 public class BiStreamWebController {
-    @Autowired
-    private ServerStreamManager m;
-    @Autowired
-    private BiStreamService     biStreamService;
+  @Autowired
+  private ServerStreamManager m;
+  @Autowired
+  private BiStreamService biStreamService;
 
-    @GetMapping({"", "/ids"})
-    public ApiResp get() {
-        return ApiResp.success(m.getIds());
+  @GetMapping({"", "/ids"})
+  public ApiResp get() {
+    return ApiResp.success(m.getIds());
+  }
+
+  @GetMapping("/ping")
+  public Object ping(@RequestParam("agentId") String agentId, @RequestParam("msg") String msg) {
+    return biStreamService.proxy(agentId, BizTypes.ECHO, ByteString.copyFromUtf8(msg)) //
+        .map(ByteString::toStringUtf8); //
+  }
+
+
+  @GetMapping("/perf")
+  public Object perf(@RequestParam("agentId") String agentId, //
+      @RequestParam(value = "count", defaultValue = "count") int count, //
+      @RequestParam(value = "concurrency", defaultValue = "16") int concurrency) { //
+    ServerStream s = m.get(agentId);
+    if (s == null) {
+      return ApiResp.error("not found " + agentId);
     }
+    long begin = System.currentTimeMillis();
+    return Flux.range(0, count) //
+        .flatMap(ignored -> {
+          return s.rpc(BizTypes.ECHO, ByteString.copyFromUtf8("msg")) //
+              .timeout(Duration.ofSeconds(3)); //
+        }, concurrency) //
+        .ignoreElements().then(Mono.fromCallable(() -> {
+          long cost = System.currentTimeMillis() - begin;
+          return String.format("count=%d concurrency=%d cost=%d", count, concurrency, cost);
+        }));
+  }
 
-    @GetMapping("/ping")
-    public Object ping(@RequestParam("agentId") String agentId, @RequestParam("msg") String msg) {
-        return biStreamService.proxy(agentId, BizTypes.ECHO, ByteString.copyFromUtf8(msg)) //
-            .map(ByteString::toStringUtf8); //
+  @GetMapping("/listFiles")
+  public Object listFiles(@RequestParam("agentId") String agentId, //
+      @RequestParam(value = "name") String name, //
+      @RequestParam(value = "depth", defaultValue = "2") int depth,
+      @RequestParam(value = "exts", defaultValue = "") List<String> exts,
+      @RequestParam(value = "includeParents", defaultValue = "false") boolean includeParents) { //
+    ServerStream s = m.get(agentId);
+    if (s == null) {
+      return ApiResp.error("not found " + agentId);
     }
+    ListFilesRequest request = ListFilesRequest.newBuilder() //
+        .setName(name) //
+        .setMaxDepth(depth) //
+        .addAllIncludeExts(exts) //
+        .setIncludeParents(includeParents) //
+        .build(); //
+    return s.rpc(BizTypes.LIST_FILES, request.toByteString()) //
+        .timeout(Duration.ofSeconds(3)) //
+        .map(respCmd -> { //
+          ListFilesResponse resp;
+          try {
+            resp = ListFilesResponse.parseFrom(respCmd.getData());
+          } catch (InvalidProtocolBufferException e) {
+            throw new RuntimeException(e);
+          }
+          try {
+            return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON)
+                .body(JsonFormat.printer().print(resp));
+          } catch (InvalidProtocolBufferException e) {
+            throw new RuntimeException(e);
+          }
+        });
+  }
 
-
-    @GetMapping("/perf")
-    public Object perf(@RequestParam("agentId") String agentId, //
-        @RequestParam(value = "count", defaultValue = "count") int count, //
-        @RequestParam(value = "concurrency", defaultValue = "16") int concurrency) { //
-        ServerStream s = m.get(agentId);
-        if (s == null) {
-            return ApiResp.error("not found " + agentId);
-        }
-        long begin = System.currentTimeMillis();
-        return Flux.range(0, count) //
-            .flatMap(ignored -> {
-                return s.rpc(BizTypes.ECHO, ByteString.copyFromUtf8("msg")) //
-                    .timeout(Duration.ofSeconds(3)); //
-            }, concurrency) //
-            .ignoreElements().then(Mono.fromCallable(() -> {
-                long cost = System.currentTimeMillis() - begin;
-                return String.format("count=%d concurrency=%d cost=%d", count, concurrency, cost);
-            }));
+  @GetMapping("/previewFile")
+  public Object previewFile(@RequestParam("agentId") String agentId, //
+      @RequestParam(value = "path") String path, //
+      @RequestParam(value = "maxBytes", defaultValue = "4096") int maxBytes, //
+      @RequestParam(value = "maxLines", defaultValue = "10") int maxLines, //
+      @RequestParam(value = "charset", defaultValue = "") String charset) {
+    ServerStream s = m.get(agentId);
+    if (s == null) {
+      return ApiResp.error("not found " + agentId);
     }
+    PreviewFileRequest request = PreviewFileRequest.newBuilder() //
+        .setPath(path) //
+        .setMaxBytes(maxBytes) //
+        .setMaxLines(maxLines) //
+        .setCharset(charset) //
+        .build(); //
+    return s.rpc(BizTypes.PREVIEW_FILE, request.toByteString()) //
+        .timeout(Duration.ofSeconds(3)) //
+        .map(respCmd -> { //
+          if (respCmd.getBizType() == BizTypes.BIZ_ERROR) {
+            return respCmd.getData().toStringUtf8();
+          }
+          PreviewFileResponse resp;
+          try {
+            resp = PreviewFileResponse.parseFrom(respCmd.getData());
+          } catch (InvalidProtocolBufferException e) {
+            throw new RuntimeException(e);
+          }
+          try {
+            return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON)
+                .body(JsonFormat.printer().print(resp));
+          } catch (InvalidProtocolBufferException e) {
+            throw new RuntimeException(e);
+          }
+        });
+  }
 
-    @GetMapping("/listFiles")
-    public Object listFiles(@RequestParam("agentId") String agentId, //
-        @RequestParam(value = "name") String name,//
-        @RequestParam(value = "depth", defaultValue = "2") int depth, @RequestParam(value = "exts", defaultValue = "") List<String> exts,
-        @RequestParam(value = "includeParents", defaultValue = "false") boolean includeParents) { //
-        ServerStream s = m.get(agentId);
-        if (s == null) {
-            return ApiResp.error("not found " + agentId);
-        }
-        ListFilesRequest request = ListFilesRequest.newBuilder() //
-            .setName(name) //
-            .setMaxDepth(depth) //
-            .addAllIncludeExts(exts) //
-            .setIncludeParents(includeParents) //
-            .build(); //
-        return s.rpc(BizTypes.LIST_FILES, request.toByteString()) //
-            .timeout(Duration.ofSeconds(3)) //
-            .map(respCmd -> { //
-                ListFilesResponse resp;
-                try {
-                    resp = ListFilesResponse.parseFrom(respCmd.getData());
-                } catch (InvalidProtocolBufferException e) {
-                    throw new RuntimeException(e);
-                }
-                try {
-                    return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(JsonFormat.printer().print(resp));
-                } catch (InvalidProtocolBufferException e) {
-                    throw new RuntimeException(e);
-                }
-            });
+  @PostMapping("/splitLog")
+  public Object splitLog(@RequestParam("agentId") String agentId, //
+      @RequestParam(value = "content") String content, //
+      @RequestParam(value = "regexp") String regexp) {
+    ServerStream s = m.get(agentId);
+    if (s == null) {
+      return ApiResp.error("not found " + agentId);
     }
+    SplitLogRequest request = SplitLogRequest.newBuilder() //
+        .setContent(content) //
+        .setRegexp(regexp) //
+        .build(); //
+    return s.rpc(BizTypes.SPLIT_LOG, request.toByteString()) //
+        .timeout(Duration.ofSeconds(3)) //
+        .map(respCmd -> { //
+          SplitLogResponse resp;
+          try {
+            resp = SplitLogResponse.parseFrom(respCmd.getData());
+          } catch (InvalidProtocolBufferException e) {
+            throw new RuntimeException(e);
+          }
+          try {
+            return JsonFormat.printer().print(resp);
+          } catch (InvalidProtocolBufferException e) {
+            throw new RuntimeException(e);
+          }
+        });
+  }
 
-    @GetMapping("/previewFile")
-    public Object previewFile(@RequestParam("agentId") String agentId, //
-        @RequestParam(value = "path") String path, //
-        @RequestParam(value = "maxBytes", defaultValue = "4096") int maxBytes, //
-        @RequestParam(value = "maxLines", defaultValue = "10") int maxLines, //
-        @RequestParam(value = "charset", defaultValue = "") String charset) {
-        ServerStream s = m.get(agentId);
-        if (s == null) {
-            return ApiResp.error("not found " + agentId);
-        }
-        PreviewFileRequest request = PreviewFileRequest.newBuilder() //
-            .setPath(path) //
-            .setMaxBytes(maxBytes) //
-            .setMaxLines(maxLines) //
-            .setCharset(charset) //
-            .build(); //
-        return s.rpc(BizTypes.PREVIEW_FILE, request.toByteString()) //
-            .timeout(Duration.ofSeconds(3)) //
-            .map(respCmd -> { //
-                if (respCmd.getBizType() == BizTypes.BIZ_ERROR) {
-                    return respCmd.getData().toStringUtf8();
-                }
-                PreviewFileResponse resp;
-                try {
-                    resp = PreviewFileResponse.parseFrom(respCmd.getData());
-                } catch (InvalidProtocolBufferException e) {
-                    throw new RuntimeException(e);
-                }
-                try {
-                    return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(JsonFormat.printer().print(resp));
-                } catch (InvalidProtocolBufferException e) {
-                    throw new RuntimeException(e);
-                }
-            });
+  @GetMapping("/inspect")
+  public Object inspect(@RequestParam("agentId") String agentId) {
+    ServerStream s = m.get(agentId);
+    if (s == null) {
+      return ApiResp.error("not found " + agentId);
     }
+    return s.rpc(BizTypes.INSPECT, ByteString.EMPTY) //
+        .timeout(Duration.ofSeconds(3)) //
+        .map(respCmd -> { //
+          try {
+            return InspectResponse.parseFrom(respCmd.getData()).getResult();
+          } catch (Throwable e) {
+            throw new RuntimeException(e);
+          }
+        });
+  }
 
-    @PostMapping("/splitLog")
-    public Object splitLog(@RequestParam("agentId") String agentId, //
-        @RequestParam(value = "content") String content, //
-        @RequestParam(value = "regexp") String regexp) {
-        ServerStream s = m.get(agentId);
-        if (s == null) {
-            return ApiResp.error("not found " + agentId);
-        }
-        SplitLogRequest request = SplitLogRequest.newBuilder() //
-            .setContent(content) //
-            .setRegexp(regexp) //
-            .build(); //
-        return s.rpc(BizTypes.SPLIT_LOG, request.toByteString()) //
-            .timeout(Duration.ofSeconds(3)) //
-            .map(respCmd -> { //
-                SplitLogResponse resp;
-                try {
-                    resp = SplitLogResponse.parseFrom(respCmd.getData());
-                } catch (InvalidProtocolBufferException e) {
-                    throw new RuntimeException(e);
-                }
-                try {
-                    return JsonFormat.printer().print(resp);
-                } catch (InvalidProtocolBufferException e) {
-                    throw new RuntimeException(e);
-                }
-            });
+  @GetMapping("/matchFiles")
+  public Object matchFiles(@RequestParam("agentId") String agentId, //
+      @RequestParam("type") String type, //
+      @RequestParam("pattern") String pattern, //
+      @RequestParam(value = "dir", defaultValue = "") String dir, //
+      @RequestParam(value = "maxVisited", defaultValue = "1000") int maxVisited, //
+      @RequestParam(value = "maxMatched", defaultValue = "100") int maxMatched) { //
+
+    ServerStream s = m.get(agentId);
+    if (s == null) {
+      return ApiResp.error("not found " + agentId);
     }
+    MatchFilesRequest req = MatchFilesRequest.newBuilder() //
+        .setAgentId(agentId) //
+        .setType(type) //
+        .setPattern(pattern) //
+        .setDir(dir) //
+        .setMaxVisited(maxVisited) //
+        .setMaxMatched(maxMatched) //
+        .build(); //
 
-    @GetMapping("/inspect")
-    public Object inspect(@RequestParam("agentId") String agentId) {
-        ServerStream s = m.get(agentId);
-        if (s == null) {
-            return ApiResp.error("not found " + agentId);
-        }
-        return s.rpc(BizTypes.INSPECT, ByteString.EMPTY) //
-            .timeout(Duration.ofSeconds(3)) //
-            .map(respCmd -> { //
-                try {
-                    return InspectResponse.parseFrom(respCmd.getData()).getResult();
-                } catch (Throwable e) {
-                    throw new RuntimeException(e);
-                }
-            });
+    return s.rpc(BizTypes.MATCH_FILES, req.toByteString()) //
+        .timeout(Duration.ofSeconds(3)) //
+        .map(respCmd -> { //
+          try {
+            MatchFilesResponse resp = MatchFilesResponse.parseFrom(respCmd.getData());
+            return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON)
+                .body(JsonFormat.printer().print(resp));
+          } catch (Throwable e) {
+            throw new RuntimeException(e);
+          }
+        });
+  }
+
+  @GetMapping("/dryRun")
+  public Object dryRun(@RequestParam("agentId") String agentId) { //
+    ServerStream s = m.get(agentId);
+    if (s == null) {
+      return ApiResp.error("not found " + agentId);
     }
+    DryRunRequest req = DryRunRequest.newBuilder() //
+        .setAgentId(agentId) //
+        .build();
+    return s.rpc(BizTypes.DRY_RUN, req.toByteString()) //
+        .timeout(Duration.ofSeconds(3)) //
+        .map(respCmd -> { //
+          try {
+            DryRunResponse resp = DryRunResponse.parseFrom(respCmd.getData());
+            return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON)
+                .body(JsonFormat.printer().print(resp));
+          } catch (Throwable e) {
+            throw new RuntimeException(e);
+          }
+        });
+  }
 
-    @GetMapping("/matchFiles")
-    public Object matchFiles(@RequestParam("agentId") String agentId, //
-        @RequestParam("type") String type, //
-        @RequestParam("pattern") String pattern, //
-        @RequestParam(value = "dir", defaultValue = "") String dir, //
-        @RequestParam(value = "maxVisited", defaultValue = "1000") int maxVisited, //
-        @RequestParam(value = "maxMatched", defaultValue = "100") int maxMatched) { //
-
-        ServerStream s = m.get(agentId);
-        if (s == null) {
-            return ApiResp.error("not found " + agentId);
-        }
-        MatchFilesRequest req = MatchFilesRequest.newBuilder() //
-            .setAgentId(agentId) //
-            .setType(type) //
-            .setPattern(pattern) //
-            .setDir(dir) //
-            .setMaxVisited(maxVisited) //
-            .setMaxMatched(maxMatched) //
-            .build(); //
-
-        return s.rpc(BizTypes.MATCH_FILES, req.toByteString()) //
-            .timeout(Duration.ofSeconds(3)) //
-            .map(respCmd -> { //
-                try {
-                    MatchFilesResponse resp = MatchFilesResponse.parseFrom(respCmd.getData());
-                    return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(JsonFormat.printer().print(resp));
-                } catch (Throwable e) {
-                    throw new RuntimeException(e);
-                }
-            });
+  @GetMapping("/httpProxy")
+  public Object httpProxy(@RequestParam("agentId") String agentId) { //
+    ServerStream s = m.get(agentId);
+    if (s == null) {
+      return ApiResp.error("not found " + agentId);
     }
-
-    @GetMapping("/dryRun")
-    public Object dryRun(@RequestParam("agentId") String agentId) { //
-        ServerStream s = m.get(agentId);
-        if (s == null) {
-            return ApiResp.error("not found " + agentId);
-        }
-        DryRunRequest req = DryRunRequest.newBuilder() //
-            .setAgentId(agentId) //
-            .build();
-        return s.rpc(BizTypes.DRY_RUN, req.toByteString()) //
-            .timeout(Duration.ofSeconds(3)) //
-            .map(respCmd -> { //
-                try {
-                    DryRunResponse resp = DryRunResponse.parseFrom(respCmd.getData());
-                    return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(JsonFormat.printer().print(resp));
-                } catch (Throwable e) {
-                    throw new RuntimeException(e);
-                }
-            });
-    }
-
-    @GetMapping("/httpProxy")
-    public Object httpProxy(@RequestParam("agentId") String agentId) { //
-        ServerStream s = m.get(agentId);
-        if (s == null) {
-            return ApiResp.error("not found " + agentId);
-        }
-        HttpProxyRequest req = HttpProxyRequest.newBuilder() //
-            .setAgentId(agentId) //
-            .setUrl("http://localhost:9117") //
-            .build(); //
-        return s.rpc(BizTypes.HTTP_PROXY, req.toByteString()) //
-            .timeout(Duration.ofSeconds(3)) //
-            .map(respCmd -> { //
-                try {
-                    HttpProxyResponse resp = HttpProxyResponse.parseFrom(respCmd.getData());
-                    return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(JsonFormat.printer().print(resp));
-                } catch (Throwable e) {
-                    throw new RuntimeException(e);
-                }
-            });
-    }
+    HttpProxyRequest req = HttpProxyRequest.newBuilder() //
+        .setAgentId(agentId) //
+        .setUrl("http://localhost:9117") //
+        .build(); //
+    return s.rpc(BizTypes.HTTP_PROXY, req.toByteString()) //
+        .timeout(Duration.ofSeconds(3)) //
+        .map(respCmd -> { //
+          try {
+            HttpProxyResponse resp = HttpProxyResponse.parseFrom(respCmd.getData());
+            return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON)
+                .body(JsonFormat.printer().print(resp));
+          } catch (Throwable e) {
+            throw new RuntimeException(e);
+          }
+        });
+  }
 }

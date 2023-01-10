@@ -15,37 +15,38 @@ import java.util.Set;
  */
 public class GlobalFlag {
 
-    private static final Set<String> ukFlags     = new HashSet<>();
+  private static final Set<String> ukFlags = new HashSet<>();
 
 
-    /**
-     * 调试是否开启
-     * @return 调试是否开启
-     */
-    public static boolean isDebugEnable(String ukFlag) {
-        return ukFlags.contains(ukFlag);
+  /**
+   * 调试是否开启
+   * 
+   * @return 调试是否开启
+   */
+  public static boolean isDebugEnable(String ukFlag) {
+    return ukFlags.contains(ukFlag);
+  }
+
+  /**
+   * 开启调试
+   */
+  public static void enableDebug(String ukFlag) {
+    if (StringUtils.isNotBlank(ukFlag)) {
+      ukFlags.add(ukFlag);
     }
+  }
 
-    /**
-     * 开启调试
-     */
-    public static void enableDebug(String ukFlag) {
-        if (StringUtils.isNotBlank(ukFlag)) {
-            ukFlags.add(ukFlag);
-        }
-    }
+  /**
+   * 关闭调试
+   */
+  public static void disableDebug() {
+    ukFlags.clear();
+  }
 
-    /**
-     * 关闭调试
-     */
-    public static void disableDebug() {
-        ukFlags.clear();
-    }
-
-    /**
-     * 变量
-     */
-    public static Set<String> getUkFlags() {
-        return ukFlags;
-    }
+  /**
+   * 变量
+   */
+  public static Set<String> getUkFlags() {
+    return ukFlags;
+  }
 }

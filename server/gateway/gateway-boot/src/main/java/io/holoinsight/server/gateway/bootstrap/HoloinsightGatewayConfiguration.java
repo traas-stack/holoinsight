@@ -23,7 +23,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 
 /**
- * <p>created at 2022/11/25
+ * <p>
+ * created at 2022/11/25
  *
  * @author sw1136562366
  */
@@ -32,11 +33,11 @@ import org.springframework.context.annotation.Import;
 @ComponentScan({"io.holoinsight.server.gateway",})
 @MapperScan(basePackageClasses = {AgentConfigurationDOMapper.class})
 @EnableConfigurationProperties({HoloinsightProperties.class, GatewayProperties.class})
-@Import({ConfigConfiguration.class, GroovyConfiguration.class, ThreadPoolConfiguration.class, InternalWebApiSecurityConfiguration.class,
-    ApiKeyAutoConfiguration.class})
+@Import({ConfigConfiguration.class, GroovyConfiguration.class, ThreadPoolConfiguration.class,
+    InternalWebApiSecurityConfiguration.class, ApiKeyAutoConfiguration.class})
 public class HoloinsightGatewayConfiguration {
-    @Bean
-    public MetricStorage metricStorage() {
-        return new NoopMetricStorage();
-    }
+  @Bean
+  public MetricStorage metricStorage() {
+    return new NoopMetricStorage();
+  }
 }

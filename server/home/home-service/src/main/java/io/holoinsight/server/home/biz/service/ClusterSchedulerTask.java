@@ -2,7 +2,6 @@
  * Copyright 2022 Holoinsight Project Authors. Licensed under Apache-2.0.
  */
 
-
 package io.holoinsight.server.home.biz.service;
 
 import io.holoinsight.server.common.AddressUtil;
@@ -24,52 +23,52 @@ import java.util.Date;
  */
 @Service
 public class ClusterSchedulerTask extends ScheduleLoadTask {
-    public static int      HEARTBEAT_PERIOD_SECOND = 10;
+  public static int HEARTBEAT_PERIOD_SECOND = 10;
 
-    @Autowired
-    private ClusterService clusterService;
+  @Autowired
+  private ClusterService clusterService;
 
-    @Value("${holoinsight.home.role}")
-    private String         role;
+  @Value("${holoinsight.home.role}")
+  private String role;
 
-    @Override
-    public void load() throws Exception {
-        try {
-            long s = System.currentTimeMillis();
-            startHeartBeat();
-            ProdLog.info("update heart beat success, cost:" + (System.currentTimeMillis() - s));
-        } catch (Exception e) {
-            ProdLog.error("update heartbeat error", e);
-        }
+  @Override
+  public void load() throws Exception {
+    try {
+      long s = System.currentTimeMillis();
+      startHeartBeat();
+      ProdLog.info("update heart beat success, cost:" + (System.currentTimeMillis() - s));
+    } catch (Exception e) {
+      ProdLog.error("update heartbeat error", e);
+    }
+  }
+
+  private void startHeartBeat() {
+    String myIp = AddressUtil.getLocalHostIPV4();
+    String hostName = AddressUtil.getLocalHostName();
+    ClusterDTO cluster = new ClusterDTO();
+    cluster.setLastHeartBeatTime(System.currentTimeMillis());
+    cluster.setRole(getRole());
+    cluster.setIp(myIp);
+    cluster.setHostname(hostName);
+    cluster.setGmtModified(new Date());
+    clusterService.upsert(cluster);
+  }
+
+  @Override
+  public int periodInSeconds() {
+    return HEARTBEAT_PERIOD_SECOND;
+  }
+
+  @Override
+  public String getTaskName() {
+    return "ClusterHeartbeatTask";
+  }
+
+  private String getRole() {
+    if (StringUtil.isBlank(role)) {
+      return CLUSTER_ROLE_CONST.PROD;
     }
 
-    private void startHeartBeat() {
-        String myIp = AddressUtil.getLocalHostIPV4();
-        String hostName = AddressUtil.getLocalHostName();
-        ClusterDTO cluster = new ClusterDTO();
-        cluster.setLastHeartBeatTime(System.currentTimeMillis());
-        cluster.setRole(getRole());
-        cluster.setIp(myIp);
-        cluster.setHostname(hostName);
-        cluster.setGmtModified(new Date());
-        clusterService.upsert(cluster);
-    }
-
-    @Override
-    public int periodInSeconds() {
-        return HEARTBEAT_PERIOD_SECOND;
-    }
-
-    @Override
-    public String getTaskName() {
-        return "ClusterHeartbeatTask";
-    }
-
-    private String getRole() {
-        if (StringUtil.isBlank(role)) {
-            return CLUSTER_ROLE_CONST.PROD;
-        }
-
-        return role;
-    }
+    return role;
+  }
 }

@@ -20,25 +20,25 @@ import java.util.List;
 @Component
 public class ColumnTypeEsMapping implements DataTypeMapping {
 
-    @Override
-    public String transform(Class<?> type, Type genericType) {
-        if (Integer.class.equals(type) || int.class.equals(type) || Layer.class.equals(type)) {
-            return "integer";
-        } else if (Long.class.equals(type) || long.class.equals(type)) {
-            return "long";
-        } else if (Double.class.equals(type) || double.class.equals(type)) {
-            return "double";
-        } else if (String.class.equals(type) || RequestType.class.equals(type)) {
-            return "keyword";
-        } else if (byte[].class.equals(type)) {
-            return "binary";
-        } else if (JsonObject.class.equals(type)) {
-            return "text";
-        } else if (List.class.isAssignableFrom(type)) {
-            final Type elementType = ((ParameterizedType) genericType).getActualTypeArguments()[0];
-            return transform((Class<?>) elementType, elementType);
-        } else {
-            throw new IllegalArgumentException("Unsupported data type: " + type.getName());
-        }
+  @Override
+  public String transform(Class<?> type, Type genericType) {
+    if (Integer.class.equals(type) || int.class.equals(type) || Layer.class.equals(type)) {
+      return "integer";
+    } else if (Long.class.equals(type) || long.class.equals(type)) {
+      return "long";
+    } else if (Double.class.equals(type) || double.class.equals(type)) {
+      return "double";
+    } else if (String.class.equals(type) || RequestType.class.equals(type)) {
+      return "keyword";
+    } else if (byte[].class.equals(type)) {
+      return "binary";
+    } else if (JsonObject.class.equals(type)) {
+      return "text";
+    } else if (List.class.isAssignableFrom(type)) {
+      final Type elementType = ((ParameterizedType) genericType).getActualTypeArguments()[0];
+      return transform((Class<?>) elementType, elementType);
+    } else {
+      throw new IllegalArgumentException("Unsupported data type: " + type.getName());
     }
+  }
 }

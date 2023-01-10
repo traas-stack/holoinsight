@@ -19,66 +19,66 @@ import java.util.Map;
  */
 @Service
 public class MetaDictValueService {
-    @Resource
-    private MetaDataDictValueService metaDataDictValueService;
+  @Resource
+  private MetaDataDictValueService metaDataDictValueService;
 
-    public Map<String /* type */, Map<String /* k */, MetaDataDictValue>> getMetaDictValue() {
+  public Map<String /* type */, Map<String /* k */, MetaDataDictValue>> getMetaDictValue() {
 
-        Map<String /* type */, Map<String /* k */, MetaDataDictValue>> mapMap = Maps.newHashMap();
-        List<MetaDataDictValue> metaDataDictValues = metaDataDictValueService.list();
+    Map<String /* type */, Map<String /* k */, MetaDataDictValue>> mapMap = Maps.newHashMap();
+    List<MetaDataDictValue> metaDataDictValues = metaDataDictValueService.list();
 
-        metaDataDictValues.forEach(metaDataDictValue -> {
-            // 当type/key/version为空的时候，过滤掉该数据
-            if (null == metaDataDictValue.getVersion() || null == metaDataDictValue.getType()
-                || null == metaDataDictValue.getDictValue()) {
-                return;
-            }
-            if (!mapMap.containsKey(metaDataDictValue.getType())) {
-                Map<String /* k */, MetaDataDictValue> kMap = Maps.newHashMap();
-                kMap.put(metaDataDictValue.getDictKey(), metaDataDictValue);
-                mapMap.put(metaDataDictValue.getType(), kMap);
-            } else {
-                Map<String, MetaDataDictValue> newKMap = mapMap.get(metaDataDictValue.getType());
-                if (!newKMap.containsKey(metaDataDictValue.getDictKey())) {
-                    newKMap.put(metaDataDictValue.getDictKey(), metaDataDictValue);
-                    mapMap.put(metaDataDictValue.getType(), newKMap);
-                } else {
-                    // 取 version 最大的
-                    if (newKMap.get(metaDataDictValue.getDictKey()).getVersion() < metaDataDictValue
-                        .getVersion()) {
-                        newKMap.put(metaDataDictValue.getDictKey(), metaDataDictValue);
-                    }
-                    mapMap.put(metaDataDictValue.getType(), newKMap);
-                }
-            }
-        });
+    metaDataDictValues.forEach(metaDataDictValue -> {
+      // 当type/key/version为空的时候，过滤掉该数据
+      if (null == metaDataDictValue.getVersion() || null == metaDataDictValue.getType()
+          || null == metaDataDictValue.getDictValue()) {
+        return;
+      }
+      if (!mapMap.containsKey(metaDataDictValue.getType())) {
+        Map<String /* k */, MetaDataDictValue> kMap = Maps.newHashMap();
+        kMap.put(metaDataDictValue.getDictKey(), metaDataDictValue);
+        mapMap.put(metaDataDictValue.getType(), kMap);
+      } else {
+        Map<String, MetaDataDictValue> newKMap = mapMap.get(metaDataDictValue.getType());
+        if (!newKMap.containsKey(metaDataDictValue.getDictKey())) {
+          newKMap.put(metaDataDictValue.getDictKey(), metaDataDictValue);
+          mapMap.put(metaDataDictValue.getType(), newKMap);
+        } else {
+          // 取 version 最大的
+          if (newKMap.get(metaDataDictValue.getDictKey()).getVersion() < metaDataDictValue
+              .getVersion()) {
+            newKMap.put(metaDataDictValue.getDictKey(), metaDataDictValue);
+          }
+          mapMap.put(metaDataDictValue.getType(), newKMap);
+        }
+      }
+    });
 
-        return mapMap;
-    }
+    return mapMap;
+  }
 
-    public MetaDataDictValue getById(Long id) {
-        return metaDataDictValueService.getById(id);
-    }
+  public MetaDataDictValue getById(Long id) {
+    return metaDataDictValueService.getById(id);
+  }
 
-    public MetaDataDictValue create(MetaDataDictValue metaDataDictValue) {
-        metaDataDictValue.setGmtCreate(new Date());
-        metaDataDictValue.setGmtModified(new Date());
-        metaDataDictValueService.save(metaDataDictValue);
-        return metaDataDictValue;
-    }
+  public MetaDataDictValue create(MetaDataDictValue metaDataDictValue) {
+    metaDataDictValue.setGmtCreate(new Date());
+    metaDataDictValue.setGmtModified(new Date());
+    metaDataDictValueService.save(metaDataDictValue);
+    return metaDataDictValue;
+  }
 
-    public MetaDataDictValue update(MetaDataDictValue metaDataDictValue) {
-        metaDataDictValue.setGmtModified(new Date());
-        metaDataDictValueService.saveOrUpdate(metaDataDictValue);
-        return metaDataDictValue;
-    }
+  public MetaDataDictValue update(MetaDataDictValue metaDataDictValue) {
+    metaDataDictValue.setGmtModified(new Date());
+    metaDataDictValueService.saveOrUpdate(metaDataDictValue);
+    return metaDataDictValue;
+  }
 
-    public void updateById(MetaDataDictValue metaDataDictValue) {
-        metaDataDictValueService.saveOrUpdate(metaDataDictValue);
-    }
+  public void updateById(MetaDataDictValue metaDataDictValue) {
+    metaDataDictValueService.saveOrUpdate(metaDataDictValue);
+  }
 
-    public void deleteById(Long id) {
-        metaDataDictValueService.removeById(id);
-    }
+  public void deleteById(Long id) {
+    metaDataDictValueService.removeById(id);
+  }
 
 }

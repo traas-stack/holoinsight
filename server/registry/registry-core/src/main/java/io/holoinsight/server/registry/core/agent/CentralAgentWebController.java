@@ -9,18 +9,19 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * <p>created at 2022/6/21
+ * <p>
+ * created at 2022/6/21
  *
  * @author zzhb101
  */
 @RestController
 @RequestMapping("/internal/api/registry/agent/central")
 public class CentralAgentWebController {
-    @Autowired
-    private CentralAgentService centralAgentService;
+  @Autowired
+  private CentralAgentService centralAgentService;
 
-    @GetMapping("/state")
-    public Object getState() {
-        return centralAgentService.getState();
-    }
+  @GetMapping("/state")
+  public Object getState() {
+    return centralAgentService.getState();
+  }
 }

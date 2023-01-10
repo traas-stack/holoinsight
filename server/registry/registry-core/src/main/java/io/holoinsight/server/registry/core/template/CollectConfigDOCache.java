@@ -10,25 +10,23 @@ import java.util.List;
 
 /**
  * 基于sqlite做一个cache0, 提高加载速度
- * <p>created at 2022/2/28
+ * <p>
+ * created at 2022/2/28
  *
  * @author zzhb101
  */
 public class CollectConfigDOCache {
-    public GaeaCollectConfigDO get(long id) {
-        return null;
-    }
+  public GaeaCollectConfigDO get(long id) {
+    return null;
+  }
 
-    public void delete(long id) {
-    }
+  public void delete(long id) {}
 
-    public List<GaeaCollectConfigDO> selectAll() {
-        return Collections.emptyList();
-    }
+  public List<GaeaCollectConfigDO> selectAll() {
+    return Collections.emptyList();
+  }
 
-    public void batchInsert(List<GaeaCollectConfigDO> configs) {
-    }
+  public void batchInsert(List<GaeaCollectConfigDO> configs) {}
 
-    public void batchDelete(List<Long> ids) {
-    }
+  public void batchDelete(List<Long> ids) {}
 }

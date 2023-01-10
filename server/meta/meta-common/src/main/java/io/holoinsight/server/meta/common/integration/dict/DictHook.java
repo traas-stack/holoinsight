@@ -10,11 +10,11 @@ package io.holoinsight.server.meta.common.integration.dict;
  */
 public interface DictHook {
 
-    /**
-     * dict有变化时触发回调操作
-     *
-     * @param origin 原始值
-     * @param update 更新值
-     */
-    void update(String origin, String update);
+  /**
+   * dict有变化时触发回调操作
+   *
+   * @param origin 原始值
+   * @param update 更新值
+   */
+  void update(String origin, String update);
 }

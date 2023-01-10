@@ -13,10 +13,10 @@ import java.lang.annotation.Target;
 import org.springframework.context.annotation.Conditional;
 
 /**
- * {@link ConditionalOnRole} that checks if the specified holoinsight role is activated.
- * You can set property 'holoinsight.roles.active=registry,meta' to activate 'registry' and
- * 'meta' role.
- * <p>created at 2022/11/25
+ * {@link ConditionalOnRole} that checks if the specified holoinsight role is activated. You can set
+ * property 'holoinsight.roles.active=registry,meta' to activate 'registry' and 'meta' role.
+ * <p>
+ * created at 2022/11/25
  *
  * @author xzchaoo
  */
@@ -25,10 +25,10 @@ import org.springframework.context.annotation.Conditional;
 @Documented
 @Conditional(ConditionalOnRoleCondition.class)
 public @interface ConditionalOnRole {
-    /**
-     * Holoinsight role
-     *
-     * @return
-     */
-    String[] value();
+  /**
+   * Holoinsight role
+   *
+   * @return
+   */
+  String[] value();
 }

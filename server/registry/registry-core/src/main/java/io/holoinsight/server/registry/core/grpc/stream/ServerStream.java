@@ -10,15 +10,16 @@ import io.grpc.stub.StreamObserver;
 import reactor.core.publisher.Mono;
 
 /**
- * <p>created at 2022/3/3
+ * <p>
+ * created at 2022/3/3
  *
  * @author zzhb101
  */
 public interface ServerStream extends Stream {
 
-    Mono<GenericRpcCommand> rpc(int bizType, ByteString data);
+  Mono<GenericRpcCommand> rpc(int bizType, ByteString data);
 
-    void oneway(int bizType, ByteString data);
+  void oneway(int bizType, ByteString data);
 
-    StreamObserver<GenericRpcCommand> getReader();
+  StreamObserver<GenericRpcCommand> getReader();
 }

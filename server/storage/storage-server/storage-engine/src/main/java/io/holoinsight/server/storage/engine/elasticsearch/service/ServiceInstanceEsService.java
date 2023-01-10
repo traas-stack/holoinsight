@@ -10,5 +10,6 @@ import java.util.List;
 
 public interface ServiceInstanceEsService {
 
-    List<ServiceInstance> getServiceInstanceList(String tenant, String service, long startTime, long endTime) throws IOException;
+  List<ServiceInstance> getServiceInstanceList(String tenant, String service, long startTime,
+      long endTime) throws IOException;
 }

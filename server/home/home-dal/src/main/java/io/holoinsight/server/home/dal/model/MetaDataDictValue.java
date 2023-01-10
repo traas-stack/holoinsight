@@ -19,27 +19,27 @@ import java.util.Date;
 @TableName("metadata_dictvalue")
 public class MetaDataDictValue {
 
-    @Id
-    @TableId(type = IdType.AUTO)
-    public Long    id;
+  @Id
+  @TableId(type = IdType.AUTO)
+  public Long id;
 
-    public String  type;
+  public String type;
 
-    public String  dictKey;
+  public String dictKey;
 
-    public String  dictValue;
+  public String dictValue;
 
-    public String  dictValueType;
+  public String dictValueType;
 
-    public String  dictDesc;
+  public String dictDesc;
 
-    public Integer version;
+  public Integer version;
 
-    public String  creator;
+  public String creator;
 
-    public String  modifier;
+  public String modifier;
 
-    public Date    gmtCreate;
+  public Date gmtCreate;
 
-    public Date    gmtModified;
+  public Date gmtModified;
 }

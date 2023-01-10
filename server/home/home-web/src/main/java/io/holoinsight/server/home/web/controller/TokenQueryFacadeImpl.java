@@ -2,7 +2,6 @@
  * Copyright 2022 Holoinsight Project Authors. Licensed under Apache-2.0.
  */
 
-
 package io.holoinsight.server.home.web.controller;
 
 import io.holoinsight.server.home.biz.access.MonitorAccessService;
@@ -25,30 +24,30 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/webapi/token/apply")
 public class TokenQueryFacadeImpl extends BaseFacade {
 
-    @Autowired
-    private MonitorAccessService monitorAccessService;
+  @Autowired
+  private MonitorAccessService monitorAccessService;
 
-    @PostMapping
-    public JsonResult<String> query(@RequestBody TokenQueryRequest request) {
+  @PostMapping
+  public JsonResult<String> query(@RequestBody TokenQueryRequest request) {
 
-        final JsonResult<String> result = new JsonResult<>();
+    final JsonResult<String> result = new JsonResult<>();
 
 
-        facadeTemplate.manage(result, new ManageCallback() {
-            @Override
-            public void checkParameter() {
-                ParaCheckUtil.checkParaNotNull(request, "request");
-                ParaCheckUtil.checkParaNotNull(request.accessId, "accessId");
-                ParaCheckUtil.checkParaNotNull(request.accessKey, "accessKey");
-            }
+    facadeTemplate.manage(result, new ManageCallback() {
+      @Override
+      public void checkParameter() {
+        ParaCheckUtil.checkParaNotNull(request, "request");
+        ParaCheckUtil.checkParaNotNull(request.accessId, "accessId");
+        ParaCheckUtil.checkParaNotNull(request.accessKey, "accessKey");
+      }
 
-            @Override
-            public void doManage() {
-                String apply = monitorAccessService.apply(request.accessId, request.accessKey);
-                JsonResult.createSuccessResult(result, apply);
-            }
-        });
+      @Override
+      public void doManage() {
+        String apply = monitorAccessService.apply(request.accessId, request.accessKey);
+        JsonResult.createSuccessResult(result, apply);
+      }
+    });
 
-        return result;
-    }
+    return result;
+  }
 }

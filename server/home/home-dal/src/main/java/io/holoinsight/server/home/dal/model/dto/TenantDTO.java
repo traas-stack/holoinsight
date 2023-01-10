@@ -15,13 +15,13 @@ import java.util.Date;
 @Data
 public class TenantDTO {
 
-    public Long   id;
-    public String name;
-    public String code;
-    public String json;
-    public String desc;
-    public String md5;
+  public Long id;
+  public String name;
+  public String code;
+  public String json;
+  public String desc;
+  public String md5;
 
-    public Date   gmtCreate;
-    public Date   gmtModified;
+  public Date gmtCreate;
+  public Date gmtModified;
 }

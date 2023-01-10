@@ -2,7 +2,6 @@
  * Copyright 2022 Holoinsight Project Authors. Licensed under Apache-2.0.
  */
 
-
 package io.holoinsight.server.home.biz.service;
 
 import io.holoinsight.server.home.dal.model.AlarmHistory;
@@ -20,8 +19,9 @@ import java.util.List;
  */
 public interface AlarmHistoryService extends IService<AlarmHistory> {
 
-    AlarmHistoryDTO queryById(Long id, String tenant);
+  AlarmHistoryDTO queryById(Long id, String tenant);
 
-    MonitorPageResult<AlarmHistoryDTO> getListByPage(MonitorPageRequest<AlarmHistoryDTO> pageRequest, List<String> uniqueIds);
+  MonitorPageResult<AlarmHistoryDTO> getListByPage(MonitorPageRequest<AlarmHistoryDTO> pageRequest,
+      List<String> uniqueIds);
 
 }

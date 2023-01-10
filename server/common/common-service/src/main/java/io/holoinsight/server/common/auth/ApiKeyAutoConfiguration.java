@@ -8,22 +8,23 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /**
- * <p>created at 2022/12/1
+ * <p>
+ * created at 2022/12/1
  *
  * @author xzchaoo
  */
 @Configuration
 public class ApiKeyAutoConfiguration {
-    @Bean
-    @ConditionalOnMissingBean
-    public ApikeyService apikeyService() {
-        return new ApikeyService();
-    }
+  @Bean
+  @ConditionalOnMissingBean
+  public ApikeyService apikeyService() {
+    return new ApikeyService();
+  }
 
-    @Bean
-    @ConditionalOnMissingBean
-    public ApikeyAuthService apikeyAuthService() {
-        return new DefaultApikeyAuthService();
-    }
+  @Bean
+  @ConditionalOnMissingBean
+  public ApikeyAuthService apikeyAuthService() {
+    return new DefaultApikeyAuthService();
+  }
 
 }

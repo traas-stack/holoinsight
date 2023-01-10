@@ -9,25 +9,25 @@ import lombok.Setter;
 
 public class EndpointMeta extends Source {
 
-    @Getter
-    private String serviceId;
-    @Getter
-    @Setter
-    private String serviceName;
-    @Setter
-    @Getter
-    private boolean isServiceNormal;
-    @Getter
-    @Setter
-    private String endpoint;
+  @Getter
+  private String serviceId;
+  @Getter
+  @Setter
+  private String serviceName;
+  @Setter
+  @Getter
+  private boolean isServiceNormal;
+  @Getter
+  @Setter
+  private String endpoint;
 
-    @Override
-    public String getEntityId() {
-        return IDManager.EndpointID.buildId(serviceId, endpoint);
-    }
+  @Override
+  public String getEntityId() {
+    return IDManager.EndpointID.buildId(serviceId, endpoint);
+  }
 
-    @Override
-    public void prepare() {
-        this.serviceId = IDManager.ServiceID.buildId(serviceName, isServiceNormal);
-    }
+  @Override
+  public void prepare() {
+    this.serviceId = IDManager.ServiceID.buildId(serviceName, isServiceNormal);
+  }
 }

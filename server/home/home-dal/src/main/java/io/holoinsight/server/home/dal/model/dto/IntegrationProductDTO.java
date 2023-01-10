@@ -15,33 +15,33 @@ import java.util.Map;
 @Data
 public class IntegrationProductDTO {
 
-    public Long                  id;
+  public Long id;
 
-    public String                name;
+  public String name;
 
-    public String                profile;
+  public String profile;
 
-    public String                overview;
+  public String overview;
 
-    public String                configuration;
+  public String configuration;
 
-    public Map<String, Object>   template;
+  public Map<String, Object> template;
 
-    public IntegrationMetricsDTO metrics;
+  public IntegrationMetricsDTO metrics;
 
-    public Boolean               status;
+  public Boolean status;
 
-    public String                type;
+  public String type;
 
-    public IntegrationFormDTO    form;
+  public IntegrationFormDTO form;
 
-    public String                creator;
+  public String creator;
 
-    public String                modifier;
+  public String modifier;
 
-    public Date                  gmtCreate;
+  public Date gmtCreate;
 
-    public Date                  gmtModified;
+  public Date gmtModified;
 
-    public String                version;
+  public String version;
 }

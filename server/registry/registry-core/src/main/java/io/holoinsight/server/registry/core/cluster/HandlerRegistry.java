@@ -7,23 +7,24 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * <p>created at 2022/4/17
+ * <p>
+ * created at 2022/4/17
  *
  * @author zzhb101
  */
 public class HandlerRegistry {
-    private Map<Integer, Handler> map = new HashMap<>();
+  private Map<Integer, Handler> map = new HashMap<>();
 
-    public Handler get(int type) {
-        return map.get(type);
+  public Handler get(int type) {
+    return map.get(type);
+  }
+
+  public void register(Handler h) {
+    int[] types = h.types();
+    for (int type : types) {
+      if (map.put(type, h) != null) {
+        throw new IllegalStateException("duplicated handler type " + type);
+      }
     }
-    
-    public void register(Handler h) {
-        int[] types = h.types();
-        for (int type : types) {
-            if (map.put(type, h) != null) {
-                throw new IllegalStateException("duplicated handler type " + type);
-            }
-        }
-    }
+  }
 }

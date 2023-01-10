@@ -2,7 +2,6 @@
  * Copyright 2022 Holoinsight Project Authors. Licensed under Apache-2.0.
  */
 
-
 package io.holoinsight.server.home.web.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -22,21 +21,21 @@ import java.text.DateFormat;
  */
 @Configuration
 public class JacksonConfig {
-    @Autowired
-    private Jackson2ObjectMapperBuilder jackson2ObjectMapperBuilder;
+  @Autowired
+  private Jackson2ObjectMapperBuilder jackson2ObjectMapperBuilder;
 
-    @Bean
-    @ConditionalOnMissingBean
-    public MappingJackson2HttpMessageConverter mappingJackson2HttpMessageConverter() {
+  @Bean
+  @ConditionalOnMissingBean
+  public MappingJackson2HttpMessageConverter mappingJackson2HttpMessageConverter() {
 
-        ObjectMapper mapper = jackson2ObjectMapperBuilder.build();
+    ObjectMapper mapper = jackson2ObjectMapperBuilder.build();
 
-        DateFormat dateFormat = mapper.getDateFormat();
-        mapper.setDateFormat(new MonitorDateFormat(dateFormat));
+    DateFormat dateFormat = mapper.getDateFormat();
+    mapper.setDateFormat(new MonitorDateFormat(dateFormat));
 
-        MappingJackson2HttpMessageConverter mappingJsonpHttpMessageConverter = new MappingJackson2HttpMessageConverter(
-                mapper);
-        return mappingJsonpHttpMessageConverter;
-    }
+    MappingJackson2HttpMessageConverter mappingJsonpHttpMessageConverter =
+        new MappingJackson2HttpMessageConverter(mapper);
+    return mappingJsonpHttpMessageConverter;
+  }
 
 }

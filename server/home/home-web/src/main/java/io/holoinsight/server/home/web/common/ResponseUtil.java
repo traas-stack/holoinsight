@@ -2,7 +2,6 @@
  * Copyright 2022 Holoinsight Project Authors. Licensed under Apache-2.0.
  */
 
-
 package io.holoinsight.server.home.web.common;
 
 import io.holoinsight.server.common.J;
@@ -19,17 +18,17 @@ import java.io.IOException;
 @Slf4j
 public class ResponseUtil {
 
-    public static void response(HttpServletResponse res, Object obj) {
-        if (obj == null) {
-            return;
-        }
-        try {
-            String r = J.toJson(obj);
-            res.setContentType("application/json; charset=UTF-8");
-            res.getWriter().write(r);
-        } catch (IOException e) {
-            log.error("响应JSON数据出错", e);
-        }
+  public static void response(HttpServletResponse res, Object obj) {
+    if (obj == null) {
+      return;
     }
+    try {
+      String r = J.toJson(obj);
+      res.setContentType("application/json; charset=UTF-8");
+      res.getWriter().write(r);
+    } catch (IOException e) {
+      log.error("响应JSON数据出错", e);
+    }
+  }
 
 }

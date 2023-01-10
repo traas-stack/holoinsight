@@ -12,9 +12,9 @@ import lombok.Data;
  */
 @Data
 public class IntegrationMetricDTO {
-    private String name;
-    private String unit;
-    private String desc;
-    private String format;
-    private String aggregator;
+  private String name;
+  private String unit;
+  private String desc;
+  private String format;
+  private String aggregator;
 }

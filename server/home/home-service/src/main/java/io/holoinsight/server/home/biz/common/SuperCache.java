@@ -15,5 +15,5 @@ import java.util.Map;
  */
 public class SuperCache {
 
-    public Map<String /* type */, Map<String /* k */, MetaDataDictValue>> metaDataDictValueMap;
+  public Map<String /* type */, Map<String /* k */, MetaDataDictValue>> metaDataDictValueMap;
 }

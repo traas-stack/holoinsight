@@ -16,9 +16,9 @@ import java.util.List;
 @Mapper(componentModel = "spring")
 public interface AlarmDingDingRobotConverter {
 
-    AlarmDingDingRobotDTO doToDTO(AlarmDingDingRobot alarmDingDingRobot);
+  AlarmDingDingRobotDTO doToDTO(AlarmDingDingRobot alarmDingDingRobot);
 
-    AlarmDingDingRobot dtoToDO(AlarmDingDingRobotDTO alarmDingDingRobotDTO);
+  AlarmDingDingRobot dtoToDO(AlarmDingDingRobotDTO alarmDingDingRobotDTO);
 
-    List<AlarmDingDingRobotDTO> dosToDTOs(Iterable<AlarmDingDingRobot> alarmDingDingRobots);
+  List<AlarmDingDingRobotDTO> dosToDTOs(Iterable<AlarmDingDingRobot> alarmDingDingRobots);
 }

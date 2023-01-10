@@ -19,35 +19,33 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class CeresDBService {
 
-    @Value("${ceresdb.host}")
-    public  String ceresdbhost;
+  @Value("${ceresdb.host}")
+  public String ceresdbhost;
 
-    @Value("${ceresdb.port}")
-    public  String ceresdbport;
+  @Value("${ceresdb.port}")
+  public String ceresdbport;
 
-    @Value("${ceresdb.accessUser}")
-    public  String ceresdbuser;
+  @Value("${ceresdb.accessUser}")
+  public String ceresdbuser;
 
-    @Value("${ceresdb.accessToken}")
-    public  String ceresdbtoken;
-    
-    private static CeresDBRetrofitApiService client = null;
+  @Value("${ceresdb.accessToken}")
+  public String ceresdbtoken;
 
-    public void init() {
-        client = new RetrofitApiFactory()
-                .create("http://" + ceresdbhost + ":"
-                                + ceresdbport,
-                        CeresDBRetrofitApiService.class, CeresDBRetrofitService.class);
+  private static CeresDBRetrofitApiService client = null;
 
-    }
+  public void init() {
+    client = new RetrofitApiFactory().create("http://" + ceresdbhost + ":" + ceresdbport,
+        CeresDBRetrofitApiService.class, CeresDBRetrofitService.class);
+
+  }
 
 
-    public CreateTenantResponse createOrUpdateTenant(String tenant, String token, Integer ttl) {
-        CreateTenantRequest params = new CreateTenantRequest();
-        params.setName(tenant);
-        params.setToken(token);
-        params.setTtlHour(ttl);
+  public CreateTenantResponse createOrUpdateTenant(String tenant, String token, Integer ttl) {
+    CreateTenantRequest params = new CreateTenantRequest();
+    params.setName(tenant);
+    params.setToken(token);
+    params.setTtlHour(ttl);
 
-        return client.createOrUpdateTenant(ceresdbuser, ceresdbtoken, params);
-    }
+    return client.createOrUpdateTenant(ceresdbuser, ceresdbtoken, params);
+  }
 }

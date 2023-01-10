@@ -18,26 +18,26 @@ import java.util.Date;
 @TableName("user_oplog")
 public class UserOpLog {
 
-    @TableId(type = IdType.AUTO)
-    public Long   id;
+  @TableId(type = IdType.AUTO)
+  public Long id;
 
-    public String tableName;
+  public String tableName;
 
-    public String tableEntityId;
+  public String tableEntityId;
 
-    public String opType;
+  public String opType;
 
-    public String opBeforeContext;
+  public String opBeforeContext;
 
-    public String opAfterContext;
+  public String opAfterContext;
 
-    public String name;
+  public String name;
 
-    public String relate;
+  public String relate;
 
-    public String tenant;
+  public String tenant;
 
-    public String creator;
+  public String creator;
 
-    public Date   gmtCreate;
+  public Date gmtCreate;
 }

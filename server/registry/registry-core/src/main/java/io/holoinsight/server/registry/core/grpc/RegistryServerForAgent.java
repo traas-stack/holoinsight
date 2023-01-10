@@ -30,97 +30,101 @@ import org.springframework.stereotype.Component;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
 /**
- * <p>created at 2022/2/28
+ * <p>
+ * created at 2022/2/28
  *
  * @author zzhb101
  */
 @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
 @Component
 public class RegistryServerForAgent {
-    private static final Logger LOGGER = LoggerFactory.getLogger(RegistryServerForAgent.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(RegistryServerForAgent.class);
 
-    @Autowired
-    private RegistryProperties registryProperties;
-    private Server             server;
+  @Autowired
+  private RegistryProperties registryProperties;
+  private Server server;
 
-    @Autowired(required = false)
-    @RegistryGrpcForAgent
-    private List<ServerServiceDefinition> services1 = new ArrayList<>();
+  @Autowired(required = false)
+  @RegistryGrpcForAgent
+  private List<ServerServiceDefinition> services1 = new ArrayList<>();
 
-    @Autowired(required = false)
-    @RegistryGrpcForAgent
-    private List<BindableService> services2 = new ArrayList<>();
-    private ThreadPoolExecutor executor;
-    @Autowired
-    private CommonHooksManager commonHooksManager;
+  @Autowired(required = false)
+  @RegistryGrpcForAgent
+  private List<BindableService> services2 = new ArrayList<>();
+  private ThreadPoolExecutor executor;
+  @Autowired
+  private CommonHooksManager commonHooksManager;
 
-    public void start() throws IOException {
-        RegistryProperties.ForAgent forAgent = registryProperties.getServer().getForAgent();
+  public void start() throws IOException {
+    RegistryProperties.ForAgent forAgent = registryProperties.getServer().getForAgent();
 
-        ServerBuilder<?> b = ServerBuilder.forPort(forAgent.getPort());
-        // b.intercept(new CompetibleServerInterceptor());
+    ServerBuilder<?> b = ServerBuilder.forPort(forAgent.getPort());
+    // b.intercept(new CompetibleServerInterceptor());
 
-        if (forAgent.isSslEnabled()) {
-            if (forAgent.getServerCert() == null || !forAgent.getServerCert().exists()) {
-                throw new IllegalStateException("file not found serverCert=[" + forAgent.getServerCert() + "]");
-            }
-            if (forAgent.getServerKey() == null || !forAgent.getServerKey().exists()) {
-                throw new IllegalStateException("file not found serverKey=[" + forAgent.getServerKey() + "]");
-            }
-            InputStream certIs = forAgent.getServerCert().getInputStream();
-            InputStream keyIs = forAgent.getServerKey().getInputStream();
-            b.useTransportSecurity(certIs, keyIs);
-            certIs.close();
-            keyIs.close();
-            b.addTransportFilter(new ServerTransportFilter() {
-                @Override
-                public Attributes transportReady(Attributes transportAttrs) {
-                    return super.transportReady(transportAttrs);
-                }
-            });
+    if (forAgent.isSslEnabled()) {
+      if (forAgent.getServerCert() == null || !forAgent.getServerCert().exists()) {
+        throw new IllegalStateException(
+            "file not found serverCert=[" + forAgent.getServerCert() + "]");
+      }
+      if (forAgent.getServerKey() == null || !forAgent.getServerKey().exists()) {
+        throw new IllegalStateException(
+            "file not found serverKey=[" + forAgent.getServerKey() + "]");
+      }
+      InputStream certIs = forAgent.getServerCert().getInputStream();
+      InputStream keyIs = forAgent.getServerKey().getInputStream();
+      b.useTransportSecurity(certIs, keyIs);
+      certIs.close();
+      keyIs.close();
+      b.addTransportFilter(new ServerTransportFilter() {
+        @Override
+        public Attributes transportReady(Attributes transportAttrs) {
+          return super.transportReady(transportAttrs);
         }
-        for (ServerServiceDefinition ssd : services1) {
-            LOGGER.info("[registryserver] [foragent] add service {}", ssd.getServiceDescriptor().getName());
-            b.addService(ssd);
-        }
-        for (BindableService bs : services2) {
-            ServerServiceDefinition ssd = bs.bindService();
-            LOGGER.info("[registryserver] [foragent] add service {}", ssd.getServiceDescriptor().getName());
-            b.addService(ssd);
-            commonHooksManager.triggerPublishGrpcHooks(b, ssd);
-        }
-
-        // 专用连接池
-        int size = Runtime.getRuntime().availableProcessors() * 2;
-        executor = new ThreadPoolExecutor(
-            size, //
-            size, //
-            0, TimeUnit.MINUTES, //
-            new ArrayBlockingQueue<>(65536), //
-            new ThreadFactoryBuilder().setNameFormat("grpc-for-agent-%d").build(), //
-            new ThreadPoolExecutor.AbortPolicy());
-
-        b.executor(executor);
-        server = b.build();
-        server.start();
-
-        LOGGER.info("[registryserver] [foragent] start grpc server at 0.0.0.0:{} with ssl {}", //
-            forAgent.getPort(), //
-            forAgent.isSslEnabled() ? "enabled" : "disabled"); //
+      });
+    }
+    for (ServerServiceDefinition ssd : services1) {
+      LOGGER.info("[registryserver] [foragent] add service {}",
+          ssd.getServiceDescriptor().getName());
+      b.addService(ssd);
+    }
+    for (BindableService bs : services2) {
+      ServerServiceDefinition ssd = bs.bindService();
+      LOGGER.info("[registryserver] [foragent] add service {}",
+          ssd.getServiceDescriptor().getName());
+      b.addService(ssd);
+      commonHooksManager.triggerPublishGrpcHooks(b, ssd);
     }
 
-    @PreDestroy
-    public void stop() {
-        ThreadPoolExecutor executor = this.executor;
-        this.executor = null;
-        if (executor != null) {
-            executor.shutdown();
-        }
-        Server server = this.server;
-        this.server = null;
-        if (server != null) {
-            server.shutdown();
-        }
+    // 专用连接池
+    int size = Runtime.getRuntime().availableProcessors() * 2;
+    executor = new ThreadPoolExecutor(size, //
+        size, //
+        0, TimeUnit.MINUTES, //
+        new ArrayBlockingQueue<>(65536), //
+        new ThreadFactoryBuilder().setNameFormat("grpc-for-agent-%d").build(), //
+        new ThreadPoolExecutor.AbortPolicy());
+
+    b.executor(executor);
+    server = b.build();
+    server.start();
+
+    LOGGER.info("[registryserver] [foragent] start grpc server at 0.0.0.0:{} with ssl {}", //
+        forAgent.getPort(), //
+        forAgent.isSslEnabled() ? "enabled" : "disabled"); //
+  }
+
+  @PreDestroy
+  public void stop() {
+    ThreadPoolExecutor executor = this.executor;
+    this.executor = null;
+    if (executor != null) {
+      executor.shutdown();
     }
+    Server server = this.server;
+    this.server = null;
+    if (server != null) {
+      server.shutdown();
+    }
+  }
 
 }

@@ -22,59 +22,62 @@ import com.google.common.collect.Sets;
 
 /**
  * 该 interceptor 用于拦截通过 spring mvc 定义的处理器
- * <p>created at 2022/11/11
+ * <p>
+ * created at 2022/11/11
  *
  * @author xzchaoo
  */
 public class InternalWebApiInterceptor implements HandlerInterceptor {
-    static final         Set<String> LOCALHOST            = Sets.newHashSet("localhost", "127.0.0.1", "0:0:0:0:0:0:0:1");
-    private static final Set<String> INTERNAL_WHITE_HOSTS = Sets.newHashSet("gateway.cloudmonitor-gateway", "gateway.holoinsight-gateway",
-        "gateway.holoinsight-server");
+  static final Set<String> LOCALHOST = Sets.newHashSet("localhost", "127.0.0.1", "0:0:0:0:0:0:0:1");
+  private static final Set<String> INTERNAL_WHITE_HOSTS = Sets.newHashSet(
+      "gateway.cloudmonitor-gateway", "gateway.holoinsight-gateway", "gateway.holoinsight-server");
 
-    @Autowired
-    private HoloinsightSecurityProperties properties;
+  @Autowired
+  private HoloinsightSecurityProperties properties;
 
-    @Override
-    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-        if (handler instanceof HandlerMethod) {
-            HandlerMethod hm = (HandlerMethod) handler;
-            if (isInternal(request) || isInternal(hm)) {
-                if (!isSafeAccess(request)) {
-                    writeForbiddenResponse(response);
-                    return false;
-                }
-            }
+  @Override
+  public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
+      throws Exception {
+    if (handler instanceof HandlerMethod) {
+      HandlerMethod hm = (HandlerMethod) handler;
+      if (isInternal(request) || isInternal(hm)) {
+        if (!isSafeAccess(request)) {
+          writeForbiddenResponse(response);
+          return false;
         }
-        return HandlerInterceptor.super.preHandle(request, response, handler);
+      }
     }
+    return HandlerInterceptor.super.preHandle(request, response, handler);
+  }
 
-    private boolean isInternal(HandlerMethod hm) {
-        return AnnotatedElementUtils.hasAnnotation(hm.getBeanType(), InternalWebApi.class) || hm.getMethodAnnotation(InternalWebApi.class) != null;
-    }
+  private boolean isInternal(HandlerMethod hm) {
+    return AnnotatedElementUtils.hasAnnotation(hm.getBeanType(), InternalWebApi.class)
+        || hm.getMethodAnnotation(InternalWebApi.class) != null;
+  }
 
-    boolean isInternal(HttpServletRequest request) {
-        return request.getRequestURI().startsWith("/internal/");
-    }
+  boolean isInternal(HttpServletRequest request) {
+    return request.getRequestURI().startsWith("/internal/");
+  }
 
-    boolean isSafeAccess(HttpServletRequest request) {
-        String forwardFor = request.getHeader("x-forward-for");
-        if (StringUtils.isNotEmpty(forwardFor)) {
-            return false;
-        }
-        String host = StringUtils.substringBefore(request.getHeader("host"), ":");
-        if (host != null && INTERNAL_WHITE_HOSTS.contains(host)) {
-            return true;
-        }
-        if (host != null && properties.getWhiteHosts().contains(host)) {
-            return true;
-        }
-        String localIp = NetUtils.getLocalIp();
-        String addr = request.getRemoteAddr();
-        return LOCALHOST.contains(addr) || StringUtils.equals(host, localIp);
+  boolean isSafeAccess(HttpServletRequest request) {
+    String forwardFor = request.getHeader("x-forward-for");
+    if (StringUtils.isNotEmpty(forwardFor)) {
+      return false;
     }
+    String host = StringUtils.substringBefore(request.getHeader("host"), ":");
+    if (host != null && INTERNAL_WHITE_HOSTS.contains(host)) {
+      return true;
+    }
+    if (host != null && properties.getWhiteHosts().contains(host)) {
+      return true;
+    }
+    String localIp = NetUtils.getLocalIp();
+    String addr = request.getRemoteAddr();
+    return LOCALHOST.contains(addr) || StringUtils.equals(host, localIp);
+  }
 
-    void writeForbiddenResponse(HttpServletResponse response) throws IOException {
-        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-        response.getWriter().println("forbidden");
-    }
+  void writeForbiddenResponse(HttpServletResponse response) throws IOException {
+    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+    response.getWriter().println("forbidden");
+  }
 }

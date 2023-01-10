@@ -4,11 +4,11 @@
 package io.holoinsight.server.storage.common.exception;
 
 public class UnexpectedException extends RuntimeException {
-    public UnexpectedException(String message) {
-        super(message);
-    }
+  public UnexpectedException(String message) {
+    super(message);
+  }
 
-    public UnexpectedException(String message, Exception cause) {
-        super(message, cause);
-    }
+  public UnexpectedException(String message, Exception cause) {
+    super(message, cause);
+  }
 }

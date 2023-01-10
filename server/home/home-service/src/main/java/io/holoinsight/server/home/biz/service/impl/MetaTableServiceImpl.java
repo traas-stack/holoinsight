@@ -2,7 +2,6 @@
  * Copyright 2022 Holoinsight Project Authors. Licensed under Apache-2.0.
  */
 
-
 package io.holoinsight.server.home.biz.service.impl;
 
 import io.holoinsight.server.home.biz.service.MetaTableService;
@@ -30,92 +29,93 @@ import java.util.Map;
  * @version 1.0: MetaTableServiceImpl.java, v 0.1 2022年11月03日 下午9:03 jinsong.yjs Exp $
  */
 @Service
-public class MetaTableServiceImpl extends ServiceImpl<MetaTableMapper, MetaTable> implements MetaTableService {
+public class MetaTableServiceImpl extends ServiceImpl<MetaTableMapper, MetaTable>
+    implements MetaTableService {
 
-    @Autowired
-    private MetaTableConverter metaTableConverter;
+  @Autowired
+  private MetaTableConverter metaTableConverter;
 
 
-    @Override
-    public MetaTableDTO queryById(Long id, String tenant) {
-        QueryWrapper<MetaTable> wrapper = new QueryWrapper<>();
-        wrapper.eq("tenant", tenant);
-        wrapper.eq("id", id);
-        wrapper.last("LIMIT 1");
+  @Override
+  public MetaTableDTO queryById(Long id, String tenant) {
+    QueryWrapper<MetaTable> wrapper = new QueryWrapper<>();
+    wrapper.eq("tenant", tenant);
+    wrapper.eq("id", id);
+    wrapper.last("LIMIT 1");
 
-        MetaTable model = this.getOne(wrapper);
-        if (model == null) {
-            return null;
-        }
-
-        return metaTableConverter.doToDTO(model);
+    MetaTable model = this.getOne(wrapper);
+    if (model == null) {
+      return null;
     }
 
-    @Override
-    public List<MetaTableDTO> findByTenant(String tenant) {
-        Map<String, Object> columnMap = new HashMap<>();
-        columnMap.put("tenant", tenant);
-        return metaTableConverter.dosToDTOs(listByMap(columnMap));
+    return metaTableConverter.doToDTO(model);
+  }
+
+  @Override
+  public List<MetaTableDTO> findByTenant(String tenant) {
+    Map<String, Object> columnMap = new HashMap<>();
+    columnMap.put("tenant", tenant);
+    return metaTableConverter.dosToDTOs(listByMap(columnMap));
+  }
+
+  @Override
+  public List<MetaTableDTO> findAll() {
+    return metaTableConverter.dosToDTOs(list());
+  }
+
+  @Override
+  public List<MetaTableDTO> findByName(String name) {
+    Map<String, Object> columnMap = new HashMap<>();
+    columnMap.put("name", name);
+    return metaTableConverter.dosToDTOs(listByMap(columnMap));
+  }
+
+  @Override
+  public MetaTableDTO create(MetaTableDTO metaTableDTO) {
+    metaTableDTO.setGmtCreate(new Date());
+    metaTableDTO.setGmtModified(new Date());
+    MetaTable metaTable = metaTableConverter.dtoToDO(metaTableDTO);
+
+    save(metaTable);
+
+    MetaTableDTO create = metaTableConverter.doToDTO(metaTable);
+    EventBusHolder.post(create);
+    return create;
+  }
+
+  @Override
+  public void deleteById(Long id) {
+    removeById(id);
+  }
+
+  @Override
+  public MetaTableDTO update(MetaTableDTO metaTableDTO) {
+    metaTableDTO.setGmtModified(new Date());
+
+    MetaTable target = metaTableConverter.dtoToDO(metaTableDTO);
+    // 从数据库中获取对象
+    MetaTable original = getById(metaTableDTO.getId());
+    // 复制想要更改的字段值
+    BeanUtils.copyProperties(target, original, JpaUpdateUtil.getNullPropertyNames(target));
+    // 更新操作
+
+    saveOrUpdate(original);
+
+    MetaTableDTO update = metaTableConverter.doToDTO(original);
+    EventBusHolder.post(update);
+    return update;
+  }
+
+  @Override
+  public MetaTableDTO insertOrUpate(MetaTableDTO metaTableDTO) {
+    List<MetaTableDTO> byName = findByName(metaTableDTO.name);
+
+    if (CollectionUtils.isEmpty(byName)) {
+      return create(metaTableDTO);
     }
 
-    @Override
-    public List<MetaTableDTO> findAll() {
-        return metaTableConverter.dosToDTOs(list());
-    }
-
-    @Override
-    public List<MetaTableDTO> findByName(String name) {
-        Map<String, Object> columnMap = new HashMap<>();
-        columnMap.put("name", name);
-        return metaTableConverter.dosToDTOs(listByMap(columnMap));
-    }
-
-    @Override
-    public MetaTableDTO create(MetaTableDTO metaTableDTO) {
-        metaTableDTO.setGmtCreate(new Date());
-        metaTableDTO.setGmtModified(new Date());
-        MetaTable metaTable = metaTableConverter.dtoToDO(metaTableDTO);
-
-        save(metaTable);
-
-        MetaTableDTO create = metaTableConverter.doToDTO(metaTable);
-        EventBusHolder.post(create);
-        return create;
-    }
-
-    @Override
-    public void deleteById(Long id) {
-        removeById(id);
-    }
-
-    @Override
-    public MetaTableDTO update(MetaTableDTO metaTableDTO) {
-        metaTableDTO.setGmtModified(new Date());
-
-        MetaTable target = metaTableConverter.dtoToDO(metaTableDTO);
-        // 从数据库中获取对象
-        MetaTable original = getById(metaTableDTO.getId());
-        // 复制想要更改的字段值
-        BeanUtils.copyProperties(target, original, JpaUpdateUtil.getNullPropertyNames(target));
-        // 更新操作
-
-        saveOrUpdate(original);
-
-        MetaTableDTO update = metaTableConverter.doToDTO(original);
-        EventBusHolder.post(update);
-        return update;
-    }
-
-    @Override
-    public MetaTableDTO insertOrUpate(MetaTableDTO metaTableDTO) {
-        List<MetaTableDTO> byName = findByName(metaTableDTO.name);
-
-        if (CollectionUtils.isEmpty(byName)) {
-            return create(metaTableDTO);
-        }
-
-        metaTableDTO.setGmtCreate(byName.get(0).gmtCreate);
-        metaTableDTO.setId(byName.get(0).id);
-        return update(metaTableDTO);
-    }
+    metaTableDTO.setGmtCreate(byName.get(0).gmtCreate);
+    metaTableDTO.setId(byName.get(0).id);
+    return update(metaTableDTO);
+  }
 }

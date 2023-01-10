@@ -19,25 +19,25 @@ import java.util.Date;
 @Data
 @TableName("apikey")
 public class ApiKey {
-    @TableId(type = IdType.AUTO)
-    public Long    id;
-    public String  name;
-    public String  tenant;
-    @TableField("apikey")
-    public String  apiKey;
-    public String  role;
-    public String  creator;
-    public String  modifier;
+  @TableId(type = IdType.AUTO)
+  public Long id;
+  public String name;
+  public String tenant;
+  @TableField("apikey")
+  public String apiKey;
+  public String role;
+  public String creator;
+  public String modifier;
 
-    @TableField(value = "`status`")
-    public Boolean status;
+  @TableField(value = "`status`")
+  public Boolean status;
 
-    @TableField(value = "`desc`")
-    public String  desc;
+  @TableField(value = "`desc`")
+  public String desc;
 
-    public String  accessConfig;
+  public String accessConfig;
 
-    public Date    gmtCreate;
-    public Date    gmtModified;
+  public Date gmtCreate;
+  public Date gmtModified;
 
 }

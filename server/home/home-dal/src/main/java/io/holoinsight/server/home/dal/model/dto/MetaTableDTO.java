@@ -17,33 +17,32 @@ import java.util.List;
  */
 @Data
 public class MetaTableDTO {
-    public Long               id;
+  public Long id;
 
-    public String             tenant;
+  public String tenant;
 
-    public String             name;
+  public String name;
 
-    public MetaTableConfig    config;
+  public MetaTableConfig config;
 
-    public List<MetaTableCol> tableSchema;
+  public List<MetaTableCol> tableSchema;
 
-    public TableStatus        status;
+  public TableStatus status;
 
-    public String             creator;
+  public String creator;
 
-    public String             modifier;
+  public String modifier;
 
-    public Date               gmtCreate;
+  public Date gmtCreate;
 
-    public Date               gmtModified;
+  public Date gmtModified;
 
-    /**
-     *
-     * @author jsy1001de
-     * @version 1.0: TableStatus.java, v 0.1 2022年03月14日 8:05 下午 jinsong.yjs Exp $
-     */
-    public enum TableStatus {
-        ONLINE,
-        OFFLINE
-    }
+  /**
+   *
+   * @author jsy1001de
+   * @version 1.0: TableStatus.java, v 0.1 2022年03月14日 8:05 下午 jinsong.yjs Exp $
+   */
+  public enum TableStatus {
+    ONLINE, OFFLINE
+  }
 }

@@ -16,34 +16,34 @@ import java.util.Map;
  */
 public class PropertiesDictLoader implements DictLoader {
 
-    public PropertiesDictLoader(int priority) {
-        this.priority = priority;
+  public PropertiesDictLoader(int priority) {
+    this.priority = priority;
+  }
+
+
+  private int priority;
+
+  @Override
+  public List<DictData> load() {
+
+    List<DictData> datas = new LinkedList<>();
+
+    Map<String, String> allProperty = PropertiesListenerConfig.getAllProperty();
+
+    for (String key : allProperty.keySet()) {
+      datas.add(new DictData(priority, ConstPool.COMMON_DICT_DOMAIN, ConstPool.COMMON_DICT_DOMAIN,
+          key, null, allProperty.get(key)));
     }
+    return datas;
+  }
 
+  @Override
+  public int level() {
+    return priority;
+  }
 
-    private int priority;
-
-    @Override
-    public List<DictData> load() {
-
-        List<DictData> datas = new LinkedList<>();
-
-        Map<String, String> allProperty = PropertiesListenerConfig.getAllProperty();
-
-        for (String key : allProperty.keySet()) {
-            datas.add(new DictData(priority, ConstPool.COMMON_DICT_DOMAIN, ConstPool.COMMON_DICT_DOMAIN, key, null,
-                    allProperty.get(key)));
-        }
-        return datas;
-    }
-
-    @Override
-    public int level() {
-        return priority;
-    }
-
-    @Override
-    public int timerRefresh() {
-        return -1;
-    }
+  @Override
+  public int timerRefresh() {
+    return -1;
+  }
 }

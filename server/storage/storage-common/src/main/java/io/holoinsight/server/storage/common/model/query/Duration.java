@@ -18,10 +18,10 @@ import java.io.Serializable;
 @NoArgsConstructor
 public class Duration implements Serializable {
 
-    private static final long serialVersionUID = 7983574358510487461L;
+  private static final long serialVersionUID = 7983574358510487461L;
 
-    private long start;
-    private long end;
-    private String step;
+  private long start;
+  private long end;
+  private String step;
 
 }

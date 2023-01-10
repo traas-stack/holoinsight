@@ -15,18 +15,20 @@ import org.springframework.context.annotation.Import;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
 /**
- * <p>created at 2022/11/25
+ * <p>
+ * created at 2022/11/25
  *
  * @author xiangwanpeng
  */
-@ComponentScan({"io.holoinsight.server.query","com.alipay.cloudmonitor.query"})
+@ComponentScan({"io.holoinsight.server.query", "com.alipay.cloudmonitor.query"})
 @EnableScheduling
-@MapperScan(basePackages = {"io.holoinsight.server.query.dal.mapper", "io.holoinsight.server.common.dao.mapper"})
+@MapperScan(basePackages = {"io.holoinsight.server.query.dal.mapper",
+    "io.holoinsight.server.common.dao.mapper"})
 @ConditionalOnRole("query")
 @Import({ThreadPoolConfiguration.class})
 public class HoloinsightQueryConfiguration {
-    @Bean
-    public QueryService queryService(){
-        return new NoopQueryServiceImpl();
-    }
+  @Bean
+  public QueryService queryService() {
+    return new NoopQueryServiceImpl();
+  }
 }

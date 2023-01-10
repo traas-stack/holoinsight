@@ -12,13 +12,14 @@ import org.mapstruct.Mapper;
 
 import java.util.List;
 
-@Mapper(componentModel = "spring", uses = {JsonObjectMapper.class, MapJsonMapper.class, GaeaCollectRangeMapper.class})
+@Mapper(componentModel = "spring",
+    uses = {JsonObjectMapper.class, MapJsonMapper.class, GaeaCollectRangeMapper.class})
 public interface IntegrationPluginConverter {
 
-    IntegrationPluginDTO doToDTO(IntegrationPlugin integrationPlugin);
+  IntegrationPluginDTO doToDTO(IntegrationPlugin integrationPlugin);
 
-    IntegrationPlugin dtoToDO(IntegrationPluginDTO integrationPluginDTO);
+  IntegrationPlugin dtoToDO(IntegrationPluginDTO integrationPluginDTO);
 
-    List<IntegrationPluginDTO> dosToDTOs(Iterable<IntegrationPlugin> integrationPlugins);
+  List<IntegrationPluginDTO> dosToDTOs(Iterable<IntegrationPlugin> integrationPlugins);
 
 }

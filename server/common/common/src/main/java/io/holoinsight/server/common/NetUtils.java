@@ -7,26 +7,29 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 
 /**
- * <p>created at 2022/5/13
+ * <p>
+ * created at 2022/5/13
  *
  * @author xzchaoo
  */
 public class NetUtils {
-    /** Constant <code>LOCAL_IP</code> */
-    public static final String LOCAL_IP;
+  /** Constant <code>LOCAL_IP</code> */
+  public static final String LOCAL_IP;
 
-    static {
-        try {
-            LOCAL_IP = InetAddress.getLocalHost().getHostAddress();
-        } catch (UnknownHostException e) {
-            throw new IllegalStateException(e);
-        }
+  static {
+    try {
+      LOCAL_IP = InetAddress.getLocalHost().getHostAddress();
+    } catch (UnknownHostException e) {
+      throw new IllegalStateException(e);
     }
+  }
 
-    /**
-     * <p>getLocalIp.</p>
-     */
-    public static String getLocalIp() {
-        return LOCAL_IP;
-    }
+  /**
+   * <p>
+   * getLocalIp.
+   * </p>
+   */
+  public static String getLocalIp() {
+    return LOCAL_IP;
+  }
 }

@@ -14,11 +14,11 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class JsonObjectMapper {
-    public static String asString(JsonObject jsonObject) {
-        return J.toJson(jsonObject);
-    }
+  public static String asString(JsonObject jsonObject) {
+    return J.toJson(jsonObject);
+  }
 
-    public static JsonObject asObj(String json) {
-        return J.get().fromJson(json, JsonObject.class);
-    }
+  public static JsonObject asObj(String json) {
+    return J.get().fromJson(json, JsonObject.class);
+  }
 }

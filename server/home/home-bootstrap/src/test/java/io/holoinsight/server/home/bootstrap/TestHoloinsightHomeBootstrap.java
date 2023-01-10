@@ -12,8 +12,9 @@ import org.springframework.boot.builder.SpringApplicationBuilder;
  * @version 2022-12-08 10:26:00
  */
 public class TestHoloinsightHomeBootstrap {
-    public static void main(String[] args) {
-        // System.setProperty("debug", "true");
-        ContextHolder.ctx = new SpringApplicationBuilder(HoloinsightHomeBootstrap.class).profiles("test").build().run(args);
-    }
+  public static void main(String[] args) {
+    // System.setProperty("debug", "true");
+    ContextHolder.ctx = new SpringApplicationBuilder(HoloinsightHomeBootstrap.class)
+        .profiles("test").build().run(args);
+  }
 }

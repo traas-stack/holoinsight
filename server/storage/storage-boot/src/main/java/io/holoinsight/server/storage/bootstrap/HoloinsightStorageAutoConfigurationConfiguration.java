@@ -21,7 +21,8 @@ import org.springframework.context.annotation.Import;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
 /**
- * <p>created at 2022/11/28
+ * <p>
+ * created at 2022/11/28
  *
  * @author jiwliu
  */
@@ -31,49 +32,50 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @Import(ThreadPoolConfiguration.class)
 public class HoloinsightStorageAutoConfigurationConfiguration {
 
-    @Configuration
-    @ConditionalOnFeature("trace")
-    public static class StorageTraceConfiguration {
+  @Configuration
+  @ConditionalOnFeature("trace")
+  public static class StorageTraceConfiguration {
 
-        /**
-         * 当 storage 和 gateway 一起部署时, storage 的 grpc-server 就没用了, 直接走本地调用
-         *
-         * @return
-         */
-        @Bean
-        @ConditionalOnProperty(value = "holoinsight.storage.grpcserver.enabled", havingValue = "true", matchIfMissing = true)
-        public StorageGrpcServer storageGrpcServer() {
-            return new StorageGrpcServer();
-        }
-
-        @Bean
-        public TraceOtelServiceImpl storage_traceOtelServiceImpl() {
-            return new TraceOtelServiceImpl();
-        }
-
-        @Bean
-        public EsModelInstaller esModelInstaller() {
-            return new EsModelInstaller();
-        }
-
-        @Bean
-        public ModelCenter modelCenter() {
-            return new ModelCenter();
-        }
-
-        @Bean
-        public ModelTtlManager modelTtlManager() {
-            return new ModelTtlManager();
-        }
-
-        @Bean
-        public ModelInstallManager modelInstallManager() {
-            return new ModelInstallManager();
-        }
-
-        @Bean
-        public EsDataCleaner esDataCleaner() {
-            return new EsDataCleaner();
-        }
+    /**
+     * 当 storage 和 gateway 一起部署时, storage 的 grpc-server 就没用了, 直接走本地调用
+     *
+     * @return
+     */
+    @Bean
+    @ConditionalOnProperty(value = "holoinsight.storage.grpcserver.enabled", havingValue = "true",
+        matchIfMissing = true)
+    public StorageGrpcServer storageGrpcServer() {
+      return new StorageGrpcServer();
     }
+
+    @Bean
+    public TraceOtelServiceImpl storage_traceOtelServiceImpl() {
+      return new TraceOtelServiceImpl();
+    }
+
+    @Bean
+    public EsModelInstaller esModelInstaller() {
+      return new EsModelInstaller();
+    }
+
+    @Bean
+    public ModelCenter modelCenter() {
+      return new ModelCenter();
+    }
+
+    @Bean
+    public ModelTtlManager modelTtlManager() {
+      return new ModelTtlManager();
+    }
+
+    @Bean
+    public ModelInstallManager modelInstallManager() {
+      return new ModelInstallManager();
+    }
+
+    @Bean
+    public EsDataCleaner esDataCleaner() {
+      return new EsDataCleaner();
+    }
+  }
 }

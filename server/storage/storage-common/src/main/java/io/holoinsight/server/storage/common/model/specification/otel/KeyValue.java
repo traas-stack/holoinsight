@@ -15,6 +15,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class KeyValue {
-    private String key;
-    private Object value;
+  private String key;
+  private Object value;
 }

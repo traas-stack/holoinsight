@@ -2,7 +2,6 @@
  * Copyright 2022 Holoinsight Project Authors. Licensed under Apache-2.0.
  */
 
-
 package io.holoinsight.server.home.biz.service.agent;
 
 import java.util.HashMap;
@@ -15,18 +14,18 @@ import java.util.Map;
  */
 public class FileTailResponse {
 
-    Map<String, Object> datas = new HashMap<String, Object>();
+  Map<String, Object> datas = new HashMap<String, Object>();
 
-    public void addToDatas(String key, Object value) {
-        datas.put(key, value);
-    }
+  public void addToDatas(String key, Object value) {
+    datas.put(key, value);
+  }
 
-    public Map<String, Object> getDatas() {
-        return datas;
-    }
+  public Map<String, Object> getDatas() {
+    return datas;
+  }
 
-    public void setDatas(Map<String, Object> datas) {
-        this.datas = datas;
-    }
+  public void setDatas(Map<String, Object> datas) {
+    this.datas = datas;
+  }
 
 }

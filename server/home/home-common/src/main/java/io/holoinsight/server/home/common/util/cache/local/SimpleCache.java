@@ -19,15 +19,15 @@ import java.util.concurrent.TimeUnit;
 @Component
 public class SimpleCache extends AbstractLocalCache {
 
-    private static Map<String, Object> cacheMap  = new HashMap<>();
-    private static List<Object>        cacheList = new ArrayList<>();
+  private static Map<String, Object> cacheMap = new HashMap<>();
+  private static List<Object> cacheList = new ArrayList<>();
 
-    @Override
-    public void doRefresh() {
-        // 清空
-        cacheMap.clear();
-        cacheList.clear();
-        // 10分钟
-        super.setCacheTime(10, TimeUnit.MINUTES);
-    }
+  @Override
+  public void doRefresh() {
+    // 清空
+    cacheMap.clear();
+    cacheList.clear();
+    // 10分钟
+    super.setCacheTime(10, TimeUnit.MINUTES);
+  }
 }

@@ -7,6 +7,6 @@ import lombok.Data;
 
 @Data
 public class QueryComponentRequest extends Request {
-    private String serviceName;
-    private String address;
+  private String serviceName;
+  private String address;
 }

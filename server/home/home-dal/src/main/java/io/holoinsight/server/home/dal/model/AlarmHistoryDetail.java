@@ -15,74 +15,74 @@ import java.util.Date;
 
 @Data
 @Table(name = "alarm_history_detail")
-public class AlarmHistoryDetail  {
-    /**
-     * id
-     */
-    @Id
-    @TableId(type = IdType.AUTO)
-    private Long id;
+public class AlarmHistoryDetail {
+  /**
+   * id
+   */
+  @Id
+  @TableId(type = IdType.AUTO)
+  private Long id;
 
-    /**
-     * 创建时间
-     */
-    @Column(name = "gmt_create")
-    private Date gmtCreate;
+  /**
+   * 创建时间
+   */
+  @Column(name = "gmt_create")
+  private Date gmtCreate;
 
-    /**
-     * 修改时间
-     */
-    @Column(name = "gmt_modified")
-    private Date gmtModified;
+  /**
+   * 修改时间
+   */
+  @Column(name = "gmt_modified")
+  private Date gmtModified;
 
-    /**
-     * 告警时间
-     */
-    @Column(name = "alarm_time")
-    private Date alarmTime;
+  /**
+   * 告警时间
+   */
+  @Column(name = "alarm_time")
+  private Date alarmTime;
 
-    /**
-     * 告警id
-     */
-    @Column(name = "unique_id")
-    private String uniqueId;
+  /**
+   * 告警id
+   */
+  @Column(name = "unique_id")
+  private String uniqueId;
 
-    /**
-     * 告警历史id
-     */
-    @Column(name = "history_id")
-    private Long historyId;
+  /**
+   * 告警历史id
+   */
+  @Column(name = "history_id")
+  private Long historyId;
 
-    /**
-     * 租户id
-     */
-    private String tenant;
+  /**
+   * 租户id
+   */
+  private String tenant;
 
-    /**
-     * 报警维度
-     */
-    private String tags;
+  /**
+   * 报警维度
+   */
+  private String tags;
 
-    /**
-     * 触发方式简述
-     */
-    @Column(name = "alarm_content")
-    private String alarmContent;
+  /**
+   * 触发方式简述
+   */
+  @Column(name = "alarm_content")
+  private String alarmContent;
 
-    /**
-     * 数据源信息
-     */
-    private String datasource;
+  /**
+   * 数据源信息
+   */
+  private String datasource;
 
-    /**
-     * 额外信息
-     */
-    private String extra;
+  /**
+   * 额外信息
+   */
+  private String extra;
 
-    /**
-     * 环境类型
-     */
-    @Column(name = "env_type")
-    private String envType;
+  /**
+   * 环境类型
+   */
+  @Column(name = "env_type")
+  private String envType;
 
 }

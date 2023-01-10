@@ -2,7 +2,6 @@
  * Copyright 2022 Holoinsight Project Authors. Licensed under Apache-2.0.
  */
 
-
 package io.holoinsight.server.home.biz.service.impl;
 
 import io.holoinsight.server.home.biz.service.DisplayMenuService;
@@ -25,23 +24,23 @@ import java.util.Map;
  */
 @Service
 public class DisplayMenuServiceImpl extends ServiceImpl<DisplayMenuMapper, DisplayMenu>
-                                    implements DisplayMenuService {
+    implements DisplayMenuService {
 
-    @Autowired
-    private DisplayMenuConverter displayMenuConverter;
+  @Autowired
+  private DisplayMenuConverter displayMenuConverter;
 
-    @Override
-    public DisplayMenuDTO queryById(Long id, String tenant) {
-        QueryWrapper<DisplayMenu> wrapper = new QueryWrapper<>();
-        wrapper.eq("tenant", tenant);
-        wrapper.eq("id", id);
-        wrapper.last("LIMIT 1");
+  @Override
+  public DisplayMenuDTO queryById(Long id, String tenant) {
+    QueryWrapper<DisplayMenu> wrapper = new QueryWrapper<>();
+    wrapper.eq("tenant", tenant);
+    wrapper.eq("id", id);
+    wrapper.last("LIMIT 1");
 
-        return displayMenuConverter.doToDTO(this.getOne(wrapper));
-    }
+    return displayMenuConverter.doToDTO(this.getOne(wrapper));
+  }
 
-    @Override
-    public List<DisplayMenuDTO> findByMap(Map<String, Object> columnMap) {
-        return displayMenuConverter.dosToDTOs(listByMap(columnMap));
-    }
+  @Override
+  public List<DisplayMenuDTO> findByMap(Map<String, Object> columnMap) {
+    return displayMenuConverter.dosToDTOs(listByMap(columnMap));
+  }
 }

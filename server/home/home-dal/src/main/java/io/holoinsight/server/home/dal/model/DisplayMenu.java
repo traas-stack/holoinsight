@@ -2,7 +2,6 @@
  * Copyright 2022 Holoinsight Project Authors. Licensed under Apache-2.0.
  */
 
-
 package io.holoinsight.server.home.dal.model;
 
 import com.baomidou.mybatisplus.annotation.IdType;
@@ -18,15 +17,15 @@ import java.util.Date;
  */
 @Data
 public class DisplayMenu {
-    @TableId(type = IdType.AUTO)
-    public Long   id;
-    public Long   refId;
-    public String tenant;
-    public String type;
-    public String config;
+  @TableId(type = IdType.AUTO)
+  public Long id;
+  public Long refId;
+  public String tenant;
+  public String type;
+  public String config;
 
-    public String creator;
-    public String modifier;
-    public Date   gmtCreate;
-    public Date   gmtModified;
+  public String creator;
+  public String modifier;
+  public Date gmtCreate;
+  public Date gmtModified;
 }

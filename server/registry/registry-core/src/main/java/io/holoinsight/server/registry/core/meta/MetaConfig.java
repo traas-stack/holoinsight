@@ -12,22 +12,23 @@ import org.springframework.stereotype.Component;
 import com.xzchaoo.commons.basic.config.spring.AbstractConfig;
 
 /**
- * <p>created at 2022/11/1
+ * <p>
+ * created at 2022/11/1
  *
  * @author zzhb101
  */
 @Component
 @Getter
 public class MetaConfig extends AbstractConfig {
-    private volatile Basic basic = new Basic();
+  private volatile Basic basic = new Basic();
 
-    @Override
-    protected void refresh(Binder binder) {
-        binder.bind("meta", Basic.class).ifBound(x -> basic = x);
-    }
+  @Override
+  protected void refresh(Binder binder) {
+    binder.bind("meta", Basic.class).ifBound(x -> basic = x);
+  }
 
-    @Data
-    public static class Basic {
-        private boolean verbose = false;
-    }
+  @Data
+  public static class Basic {
+    private boolean verbose = false;
+  }
 }

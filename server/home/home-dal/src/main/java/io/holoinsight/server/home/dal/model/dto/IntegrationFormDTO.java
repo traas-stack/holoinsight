@@ -13,10 +13,10 @@ import java.util.List;
  */
 @Data
 public class IntegrationFormDTO {
-    private String                       formType;
-    private List<IntegrationFormInfoDTO> formList;
-    private List<String>                 filters;
+  private String formType;
+  private List<IntegrationFormInfoDTO> formList;
+  private List<String> filters;
 
-    private List<IntegrationConfig>      configList;
+  private List<IntegrationConfig> configList;
 
 }

@@ -2,7 +2,6 @@
  * Copyright 2022 Holoinsight Project Authors. Licensed under Apache-2.0.
  */
 
-
 package io.holoinsight.server.home.task.eventengine.event;
 
 import lombok.Data;
@@ -15,25 +14,25 @@ import org.apache.commons.lang3.StringUtils;
  */
 @Data
 public class Event {
-    private String          topic;
+  private String topic;
 
-    private String          data;
+  private String data;
 
-    private EventStatusEnum status;
+  private EventStatusEnum status;
 
-    private int             retryTimes;
+  private int retryTimes;
 
-    public Event(String topic) {
-        this.topic = topic;
-    }
+  public Event(String topic) {
+    this.topic = topic;
+  }
 
-    public Event(String topic, String data) {
-        this.topic = topic;
-        this.data = data;
-    }
+  public Event(String topic, String data) {
+    this.topic = topic;
+    this.data = data;
+  }
 
-    public boolean isValid() {
-        return StringUtils.isNotBlank(topic);
-    }
+  public boolean isValid() {
+    return StringUtils.isNotBlank(topic);
+  }
 
 }

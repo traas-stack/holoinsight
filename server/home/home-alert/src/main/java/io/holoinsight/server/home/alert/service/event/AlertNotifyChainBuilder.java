@@ -14,5 +14,6 @@ import java.util.List;
  */
 public interface AlertNotifyChainBuilder {
 
-    List<NotifyChain> buildNotifyChains(String traceId, List<IntegrationPluginDTO> integrationPlugins);
+  List<NotifyChain> buildNotifyChains(String traceId,
+      List<IntegrationPluginDTO> integrationPlugins);
 }

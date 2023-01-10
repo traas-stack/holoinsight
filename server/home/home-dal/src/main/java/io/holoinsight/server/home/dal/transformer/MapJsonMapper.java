@@ -15,19 +15,18 @@ import com.google.gson.reflect.TypeToken;
  * @version 1.0: GaeaCollectExcutorSelectMapper.java, v 0.1 2022年03月31日 8:52 下午 jinsong.yjs Exp $
  */
 public class MapJsonMapper {
-    public static String asString(Map<String, Object> map) {
-        if (map != null) {
-            return J.toJson(map);
-        }
-        return null;
+  public static String asString(Map<String, Object> map) {
+    if (map != null) {
+      return J.toJson(map);
     }
+    return null;
+  }
 
-    public static Map<String, Object> asObj(String map) {
-        if (map != null) {
-            Type t = new TypeToken<Map<String, Object>>() {
-            }.getType();
-            return J.fromJson(map, t);
-        }
-        return null;
+  public static Map<String, Object> asObj(String map) {
+    if (map != null) {
+      Type t = new TypeToken<Map<String, Object>>() {}.getType();
+      return J.fromJson(map, t);
     }
+    return null;
+  }
 }

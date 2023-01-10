@@ -12,10 +12,10 @@ import java.util.List;
 @Mapper(componentModel = "spring")
 public interface OpenmetricsScraperConverter {
 
-    OpenmetricsScraperDTO doToDTO(OpenmetricsScraper model);
+  OpenmetricsScraperDTO doToDTO(OpenmetricsScraper model);
 
-    OpenmetricsScraper dtoToDO(OpenmetricsScraperDTO dto);
+  OpenmetricsScraper dtoToDO(OpenmetricsScraperDTO dto);
 
-    List<OpenmetricsScraperDTO> dosToDTOs(Iterable<OpenmetricsScraper> models);
+  List<OpenmetricsScraperDTO> dosToDTOs(Iterable<OpenmetricsScraper> models);
 
 }

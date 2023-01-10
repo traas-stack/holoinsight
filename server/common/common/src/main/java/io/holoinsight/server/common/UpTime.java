@@ -4,11 +4,12 @@
 package io.holoinsight.server.common;
 
 /**
- * <p>created at 2022/4/18
+ * <p>
+ * created at 2022/4/18
  *
  * @author xzchaoo
  */
 public class UpTime {
-    /** Constant <code>TIME=System.currentTimeMillis()</code> */
-    public static final long TIME = System.currentTimeMillis();
+  /** Constant <code>TIME=System.currentTimeMillis()</code> */
+  public static final long TIME = System.currentTimeMillis();
 }

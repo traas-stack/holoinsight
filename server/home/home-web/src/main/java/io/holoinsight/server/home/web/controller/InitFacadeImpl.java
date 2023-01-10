@@ -2,7 +2,6 @@
  * Copyright 2022 Holoinsight Project Authors. Licensed under Apache-2.0.
  */
 
-
 package io.holoinsight.server.home.web.controller;
 
 import io.holoinsight.server.common.dao.entity.TenantOps;
@@ -60,238 +59,238 @@ import java.util.UUID;
 @Slf4j
 public class InitFacadeImpl extends BaseFacade {
 
-    private static List<String> metricList = Arrays.asList();
+  private static List<String> metricList = Arrays.asList();
 
-    @Autowired
-    private MetaTableService    metaTableService;
+  @Autowired
+  private MetaTableService metaTableService;
 
-    @Autowired
-    private CeresDBService      ceresDBService;
+  @Autowired
+  private CeresDBService ceresDBService;
 
-    @Autowired
-    private ApiKeyService       apiKeyService;
+  @Autowired
+  private ApiKeyService apiKeyService;
 
-    @Autowired
-    private TenantOpsService    tenantOpsService;
+  @Autowired
+  private TenantOpsService tenantOpsService;
 
-    @Value("${ceresdb.host}")
-    private String              ceresdbHost;
+  @Value("${ceresdb.host}")
+  private String ceresdbHost;
 
-    @Value("${ceresdb.port}")
-    private String              ceresdbPort;
+  @Value("${ceresdb.port}")
+  private String ceresdbPort;
 
-    @ResponseBody
-    @GetMapping(value = "/tenantCheck")
-    public JsonResult<Boolean> tenantCheck() {
+  @ResponseBody
+  @GetMapping(value = "/tenantCheck")
+  public JsonResult<Boolean> tenantCheck() {
 
-        final JsonResult<Boolean> result = new JsonResult<>();
-        facadeTemplate.manage(result, new ManageCallback() {
-            @Override
-            public void checkParameter() {
+    final JsonResult<Boolean> result = new JsonResult<>();
+    facadeTemplate.manage(result, new ManageCallback() {
+      @Override
+      public void checkParameter() {
 
-            }
+      }
 
-            @Override
-            public void doManage() {
-                String tenant = RequestContext.getContext().ms.getTenant();
-                Map<String, Object> colMap = new HashMap<>();
-                colMap.put("tenant", tenant);
-                Debugger.print("InitFacadeImpl", "currentTenant: " + tenant);
-                List<TenantOps> tenantOps = tenantOpsService.listByMap(colMap);
-                if (CollectionUtils.isEmpty(tenantOps)) {
-                    JsonResult.createSuccessResult(result, true);
-                    return;
-                }
-
-                List<MetaTableDTO> byTenant = metaTableService.findByTenant(tenant);
-                if (CollectionUtils.isEmpty(byTenant)) {
-                    JsonResult.createSuccessResult(result, true);
-                    return;
-                }
-
-                JsonResult.createSuccessResult(result, false);
-            }
-        });
-        return result;
-
-    }
-
-    @ResponseBody
-    @GetMapping(value = "/tenantSwitch/{tenant}")
-    public JsonResult<Boolean> tenantSwitch(@PathVariable("tenant") String tenant,
-                                            HttpServletResponse response) {
-
-        final JsonResult<Boolean> result = new JsonResult<>();
-        facadeTemplate.manage(result, new ManageCallback() {
-            @Override
-            public void checkParameter() {
-
-            }
-
-            @Override
-            public void doManage() {
-                MonitorCookieUtil.addTenantCookie(tenant, response);
-                JsonResult.createSuccessResult(result, true);
-            }
-        });
-        return result;
-
-    }
-
-    @ResponseBody
-    @GetMapping(value = "/tenant")
-    public JsonResult<Boolean> sys() {
-
-        final JsonResult<Boolean> result = new JsonResult<>();
-        facadeTemplate.manage(result, new ManageCallback() {
-            @Override
-            public void checkParameter() {
-                //String tenant = RequestContext.getContext().ms.getTenant();
-                //Map<String, Object> colMap = new HashMap<>();
-                //colMap.put("tenant", tenant);
-                //List<TenantOps> tenantOps = tenantOpsService.listByMap(colMap);
-                //if (!CollectionUtils.isEmpty(tenantOps)) {
-                //    throw new MonitorException("tenant is existed in tenant_ops, " + tenant);
-                //}
-            }
-
-            @Override
-            public void doManage() {
-                // step1 存储默认创建租户空间
-                CreateTenantResponse ceresDBTenant = createCeresDBTenant();
-                log.info("init tenant, create creresdb tenant: " + J.toJson(ceresDBTenant));
-
-                // step2 存储空间配置 保存到 tenant_ops 表中
-                TenantOpsDTO tenantOpsTable = createTenantOpsTable(ceresDBTenant);
-                log.info("init tenant, create tenant ops: " + J.toJson(tenantOpsTable));
-
-                // step3 元数据默认创建schema
-                MetaTableDTO table = createTable();
-                log.info("init tenant, create table: " + J.toJson(table));
-
-                // step4 新创建一个租户对应的API KEY
-                ApiKey apiKey = createApiKey();
-                log.info("init apikey : " + J.toJson(apiKey));
-
-                // step
-                // 创建元数据索引
-
-                // step5
-                JsonResult.createSuccessResult(result, true);
-            }
-        });
-        return result;
-
-    }
-
-    private CreateTenantResponse createCeresDBTenant() {
-
-        MonitorScope ms = RequestContext.getContext().ms;
-        String token = ms.getTenant() + "token";
-
-        // 默认保存7天
-        return ceresDBService.createOrUpdateTenant(ms.getTenant(), token, 7 * 24);
-
-    }
-
-    private ApiKey createApiKey() {
-
-        MonitorScope ms = RequestContext.getContext().ms;
-        MonitorUser mu = RequestContext.getContext().mu;
-        Map<String, Object> conditions = new HashMap<>();
-        conditions.put("tenant", ms.getTenant());
-        conditions.put("status", true);
-        List<ApiKey> apiKeys = apiKeyService.listByMap(conditions);
-
-        if (CollectionUtils.isEmpty(apiKeys)) {
-            ApiKey apiKey = new ApiKey();
-            if (null != mu) {
-                apiKey.setCreator(mu.getLoginName());
-                apiKey.setModifier(mu.getLoginName());
-            }
-            if (!StringUtils.isEmpty(ms.tenant)) {
-                apiKey.setTenant(ms.tenant);
-            }
-            apiKey.setStatus(true);
-            apiKey.setName("init");
-            apiKey.setDesc("初始化创建");
-            apiKey.setApiKey(UUID.randomUUID().toString());
-            apiKey.setGmtCreate(new Date());
-            apiKey.setGmtModified(new Date());
-            apiKeyService.save(apiKey);
-            return apiKey;
+      @Override
+      public void doManage() {
+        String tenant = RequestContext.getContext().ms.getTenant();
+        Map<String, Object> colMap = new HashMap<>();
+        colMap.put("tenant", tenant);
+        Debugger.print("InitFacadeImpl", "currentTenant: " + tenant);
+        List<TenantOps> tenantOps = tenantOpsService.listByMap(colMap);
+        if (CollectionUtils.isEmpty(tenantOps)) {
+          JsonResult.createSuccessResult(result, true);
+          return;
         }
 
-        return apiKeys.get(0);
+        List<MetaTableDTO> byTenant = metaTableService.findByTenant(tenant);
+        if (CollectionUtils.isEmpty(byTenant)) {
+          JsonResult.createSuccessResult(result, true);
+          return;
+        }
+
+        JsonResult.createSuccessResult(result, false);
+      }
+    });
+    return result;
+
+  }
+
+  @ResponseBody
+  @GetMapping(value = "/tenantSwitch/{tenant}")
+  public JsonResult<Boolean> tenantSwitch(@PathVariable("tenant") String tenant,
+      HttpServletResponse response) {
+
+    final JsonResult<Boolean> result = new JsonResult<>();
+    facadeTemplate.manage(result, new ManageCallback() {
+      @Override
+      public void checkParameter() {
+
+      }
+
+      @Override
+      public void doManage() {
+        MonitorCookieUtil.addTenantCookie(tenant, response);
+        JsonResult.createSuccessResult(result, true);
+      }
+    });
+    return result;
+
+  }
+
+  @ResponseBody
+  @GetMapping(value = "/tenant")
+  public JsonResult<Boolean> sys() {
+
+    final JsonResult<Boolean> result = new JsonResult<>();
+    facadeTemplate.manage(result, new ManageCallback() {
+      @Override
+      public void checkParameter() {
+        // String tenant = RequestContext.getContext().ms.getTenant();
+        // Map<String, Object> colMap = new HashMap<>();
+        // colMap.put("tenant", tenant);
+        // List<TenantOps> tenantOps = tenantOpsService.listByMap(colMap);
+        // if (!CollectionUtils.isEmpty(tenantOps)) {
+        // throw new MonitorException("tenant is existed in tenant_ops, " + tenant);
+        // }
+      }
+
+      @Override
+      public void doManage() {
+        // step1 存储默认创建租户空间
+        CreateTenantResponse ceresDBTenant = createCeresDBTenant();
+        log.info("init tenant, create creresdb tenant: " + J.toJson(ceresDBTenant));
+
+        // step2 存储空间配置 保存到 tenant_ops 表中
+        TenantOpsDTO tenantOpsTable = createTenantOpsTable(ceresDBTenant);
+        log.info("init tenant, create tenant ops: " + J.toJson(tenantOpsTable));
+
+        // step3 元数据默认创建schema
+        MetaTableDTO table = createTable();
+        log.info("init tenant, create table: " + J.toJson(table));
+
+        // step4 新创建一个租户对应的API KEY
+        ApiKey apiKey = createApiKey();
+        log.info("init apikey : " + J.toJson(apiKey));
+
+        // step
+        // 创建元数据索引
+
+        // step5
+        JsonResult.createSuccessResult(result, true);
+      }
+    });
+    return result;
+
+  }
+
+  private CreateTenantResponse createCeresDBTenant() {
+
+    MonitorScope ms = RequestContext.getContext().ms;
+    String token = ms.getTenant() + "token";
+
+    // 默认保存7天
+    return ceresDBService.createOrUpdateTenant(ms.getTenant(), token, 7 * 24);
+
+  }
+
+  private ApiKey createApiKey() {
+
+    MonitorScope ms = RequestContext.getContext().ms;
+    MonitorUser mu = RequestContext.getContext().mu;
+    Map<String, Object> conditions = new HashMap<>();
+    conditions.put("tenant", ms.getTenant());
+    conditions.put("status", true);
+    List<ApiKey> apiKeys = apiKeyService.listByMap(conditions);
+
+    if (CollectionUtils.isEmpty(apiKeys)) {
+      ApiKey apiKey = new ApiKey();
+      if (null != mu) {
+        apiKey.setCreator(mu.getLoginName());
+        apiKey.setModifier(mu.getLoginName());
+      }
+      if (!StringUtils.isEmpty(ms.tenant)) {
+        apiKey.setTenant(ms.tenant);
+      }
+      apiKey.setStatus(true);
+      apiKey.setName("init");
+      apiKey.setDesc("初始化创建");
+      apiKey.setApiKey(UUID.randomUUID().toString());
+      apiKey.setGmtCreate(new Date());
+      apiKey.setGmtModified(new Date());
+      apiKeyService.save(apiKey);
+      return apiKey;
     }
 
-    private TenantOpsDTO createTenantOpsTable(CreateTenantResponse ceresDBTenant) {
+    return apiKeys.get(0);
+  }
 
-        TenantOpsDTO tenantOpsDTO = new TenantOpsDTO();
-        tenantOpsDTO.setTenant(ceresDBTenant.getName());
+  private TenantOpsDTO createTenantOpsTable(CreateTenantResponse ceresDBTenant) {
 
-        StorageCeresDB ceresDB = new StorageCeresDB();
-        ceresDB.setAccessUser(ceresDBTenant.name);
-        ceresDB.setAccessKey(ceresDBTenant.tenant.token);
-        ceresDB.setAddress(ceresdbHost);
-        ceresDB.setPort("5000");
+    TenantOpsDTO tenantOpsDTO = new TenantOpsDTO();
+    tenantOpsDTO.setTenant(ceresDBTenant.getName());
 
-        StorageMetric storageMetric = new StorageMetric();
-        storageMetric.setType("ceresdb");
-        storageMetric.setCeresdb(ceresDB);
+    StorageCeresDB ceresDB = new StorageCeresDB();
+    ceresDB.setAccessUser(ceresDBTenant.name);
+    ceresDB.setAccessKey(ceresDBTenant.tenant.token);
+    ceresDB.setAddress(ceresdbHost);
+    ceresDB.setPort("5000");
 
-        TenantOpsStorage tenantOpsStorage = new TenantOpsStorage();
-        tenantOpsStorage.setMetric(storageMetric);
+    StorageMetric storageMetric = new StorageMetric();
+    storageMetric.setType("ceresdb");
+    storageMetric.setCeresdb(ceresDB);
 
-        tenantOpsDTO.setStorage(tenantOpsStorage);
+    TenantOpsStorage tenantOpsStorage = new TenantOpsStorage();
+    tenantOpsStorage.setMetric(storageMetric);
 
-        tenantOpsService.createOrUpdate(tenantOpsDTO);
+    tenantOpsDTO.setStorage(tenantOpsStorage);
 
-        return tenantOpsDTO;
-    }
+    tenantOpsService.createOrUpdate(tenantOpsDTO);
 
-    private MetaTableDTO createTable() {
-        MonitorScope ms = RequestContext.getContext().ms;
-        MonitorUser mu = RequestContext.getContext().mu;
-        MetaTableDTO metaTable = new MetaTableDTO();
-        metaTable.setCreator(mu.getLoginName());
-        metaTable.setModifier(mu.getLoginName());
-        metaTable.setTenant(MonitorCookieUtil.getTenantOrException());
-        metaTable.setGmtCreate(new Date());
-        metaTable.setGmtModified(new Date());
+    return tenantOpsDTO;
+  }
 
-        metaTable.setName(TenantMetaUtil.genTenantServerTableName(ms.getTenant()));
-        metaTable.setStatus(TableStatus.ONLINE);
+  private MetaTableDTO createTable() {
+    MonitorScope ms = RequestContext.getContext().ms;
+    MonitorUser mu = RequestContext.getContext().mu;
+    MetaTableDTO metaTable = new MetaTableDTO();
+    metaTable.setCreator(mu.getLoginName());
+    metaTable.setModifier(mu.getLoginName());
+    metaTable.setTenant(MonitorCookieUtil.getTenantOrException());
+    metaTable.setGmtCreate(new Date());
+    metaTable.setGmtModified(new Date());
 
-        List<MetaTableCol> tableSchema = new ArrayList<>();
-        //MetaTableCol ipCol = new MetaTableCol();
-        //ipCol.setName("ip");
-        //ipCol.setColType("String");
-        //ipCol.setDesc("IP");
-        //tableSchema.add(ipCol);
-        //
-        //MetaTableCol hostNameCol = new MetaTableCol();
-        //hostNameCol.setName("hostname");
-        //hostNameCol.setColType("String");
-        //hostNameCol.setDesc("HostName");
-        //tableSchema.add(hostNameCol);
+    metaTable.setName(TenantMetaUtil.genTenantServerTableName(ms.getTenant()));
+    metaTable.setStatus(TableStatus.ONLINE);
 
-        metaTable.setTableSchema(tableSchema);
+    List<MetaTableCol> tableSchema = new ArrayList<>();
+    // MetaTableCol ipCol = new MetaTableCol();
+    // ipCol.setName("ip");
+    // ipCol.setColType("String");
+    // ipCol.setDesc("IP");
+    // tableSchema.add(ipCol);
+    //
+    // MetaTableCol hostNameCol = new MetaTableCol();
+    // hostNameCol.setName("hostname");
+    // hostNameCol.setColType("String");
+    // hostNameCol.setDesc("HostName");
+    // tableSchema.add(hostNameCol);
 
-        MetaTableConfig metaTableConfig = new MetaTableConfig();
-        metaTableConfig.setSource("input");
-        metaTableConfig.setRateSec(60);
-        metaTableConfig.setMetricList(metricList);
+    metaTable.setTableSchema(tableSchema);
 
-        Map<String, List<String>> ukMaps = new HashMap<>();
-        ukMaps.put("vm", Collections.singletonList("ip"));
-        ukMaps.put("node", Collections.singletonList("name"));
-        ukMaps.put("pod", Arrays.asList("name", "namespace"));
-        ukMaps.put("container", Arrays.asList("name", "namespace"));
-        metaTableConfig.setUkMaps(ukMaps);
+    MetaTableConfig metaTableConfig = new MetaTableConfig();
+    metaTableConfig.setSource("input");
+    metaTableConfig.setRateSec(60);
+    metaTableConfig.setMetricList(metricList);
 
-        metaTable.setConfig(metaTableConfig);
+    Map<String, List<String>> ukMaps = new HashMap<>();
+    ukMaps.put("vm", Collections.singletonList("ip"));
+    ukMaps.put("node", Collections.singletonList("name"));
+    ukMaps.put("pod", Arrays.asList("name", "namespace"));
+    ukMaps.put("container", Arrays.asList("name", "namespace"));
+    metaTableConfig.setUkMaps(ukMaps);
 
-        return metaTableService.insertOrUpate(metaTable);
-    }
+    metaTable.setConfig(metaTableConfig);
+
+    return metaTableService.insertOrUpate(metaTable);
+  }
 }

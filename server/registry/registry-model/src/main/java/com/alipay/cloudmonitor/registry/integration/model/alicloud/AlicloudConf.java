@@ -17,10 +17,10 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class AlicloudConf {
-    private String       accountId;
-    private String       accessKeyId;
-    private String       accessKeySecret;
-    private String       filters;
-    private List<String> rangeNames;
-    private Range        range;
+  private String accountId;
+  private String accessKeyId;
+  private String accessKeySecret;
+  private String filters;
+  private List<String> rangeNames;
+  private Range range;
 }

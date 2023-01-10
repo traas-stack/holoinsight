@@ -15,20 +15,19 @@ import java.io.Serializable;
 @Data
 public class MultiLine implements Serializable {
 
-    private static final long serialVersionUID = 5669276660916689598L;
-    /**
-     * 日志开头/结尾是否是同一行，是否是多行日志
-     */
-    public Boolean            multi;
+  private static final long serialVersionUID = 5669276660916689598L;
+  /**
+   * 日志开头/结尾是否是同一行，是否是多行日志
+   */
+  public Boolean multi;
 
-    /**
-     * 行头/行尾
-     * logHead, logTail
-     */
-    public String             lineType;
+  /**
+   * 行头/行尾 logHead, logTail
+   */
+  public String lineType;
 
-    /**
-     * 正则表达式
-     */
-    public String             logRegexp;
+  /**
+   * 正则表达式
+   */
+  public String logRegexp;
 }

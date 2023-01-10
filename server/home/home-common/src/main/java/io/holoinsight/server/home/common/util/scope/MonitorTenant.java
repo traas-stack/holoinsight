@@ -14,6 +14,6 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 public class MonitorTenant {
-    String code;
-    String name;
+  String code;
+  String name;
 }

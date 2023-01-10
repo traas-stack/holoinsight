@@ -8,7 +8,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 
 /**
  * @author wangsiyuan
- * @date 2022/6/15  4:52 下午
+ * @date 2022/6/15 4:52 下午
  */
 public interface AlarmWebhookMapper extends BaseMapper<AlarmWebhook> {
 }

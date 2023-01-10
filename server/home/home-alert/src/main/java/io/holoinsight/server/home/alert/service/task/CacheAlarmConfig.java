@@ -30,57 +30,62 @@ import java.util.stream.Collectors;
 @Service
 public class CacheAlarmConfig {
 
-    private static Logger LOGGER = LoggerFactory.getLogger(CacheAlarmConfig.class);
+  private static Logger LOGGER = LoggerFactory.getLogger(CacheAlarmConfig.class);
 
-    private static final ScheduledThreadPoolExecutor EXECUTOR = new ScheduledThreadPoolExecutor(2,
-            r -> new Thread(r, "InspectCtlParamDictSync"));
+  private static final ScheduledThreadPoolExecutor EXECUTOR =
+      new ScheduledThreadPoolExecutor(2, r -> new Thread(r, "InspectCtlParamDictSync"));
 
-    private static final ScheduledExecutorService syncExecutorService = Executors.newSingleThreadScheduledExecutor();
+  private static final ScheduledExecutorService syncExecutorService =
+      Executors.newSingleThreadScheduledExecutor();
 
-    @Autowired
-    private EnvironmentProperties environmentProperties;
+  @Autowired
+  private EnvironmentProperties environmentProperties;
 
-    private Map<String, Object> configMap;
+  private Map<String, Object> configMap;
 
-    @Resource
-    private MetaDataDictValueMapper metadataDictvalueDOMapper;
+  @Resource
+  private MetaDataDictValueMapper metadataDictvalueDOMapper;
 
-    public void start() {
-        LOGGER.info("[AlarmConfig] start alarm config syn!");
+  public void start() {
+    LOGGER.info("[AlarmConfig] start alarm config syn!");
 
-        getAlarmConfigCache();
-        syncExecutorService.scheduleWithFixedDelay(this::getAlarmConfigCache, 5, 10, TimeUnit.SECONDS);
-        LOGGER.info("[AlarmConfig] alarm config sync finish!");
+    getAlarmConfigCache();
+    syncExecutorService.scheduleWithFixedDelay(this::getAlarmConfigCache, 5, 10, TimeUnit.SECONDS);
+    LOGGER.info("[AlarmConfig] alarm config sync finish!");
+  }
+
+  private void getAlarmConfigCache() {
+    try {
+      QueryWrapper<MetaDataDictValue> condition = new QueryWrapper<>();
+      condition.eq("type", "alarm_" + this.environmentProperties.getDeploymentSite());
+
+      List<MetaDataDictValue> metadataDictvalueDOS =
+          metadataDictvalueDOMapper.selectList(condition);
+      if (metadataDictvalueDOS == null || metadataDictvalueDOS.size() == 0) {
+        LOGGER.warn("[AlarmGlobalConfigManager],emptyConfigs! env: {}}",
+            this.environmentProperties.getDeploymentSite());
+        return;
+      }
+
+      Map<String, Object> map = generateConfigMap(metadataDictvalueDOS);
+
+      configMap = map;
+
+      LOGGER.info("AlarmGlobalConfig Sync SUCCESS");
+      // LOGGER.info("AlarmGlobalConfig Sync SUCCESS {} ", G.get().toJson(metadataDictvalueDOS));
+
+    } catch (Exception e) {
+      LOGGER.error("InspectCtlParam Sync Exception", e);
     }
+  }
 
-    private void getAlarmConfigCache() {
-        try {
-            QueryWrapper<MetaDataDictValue> condition = new QueryWrapper<>();
-            condition.eq("type", "alarm_" + this.environmentProperties.getDeploymentSite());
+  public Object getConfig(String key) {
+    return configMap.get(key);
+  }
 
-            List<MetaDataDictValue> metadataDictvalueDOS = metadataDictvalueDOMapper.selectList(condition);
-            if (metadataDictvalueDOS == null || metadataDictvalueDOS.size() == 0) {
-                LOGGER.warn("[AlarmGlobalConfigManager],emptyConfigs! env: {}}", this.environmentProperties.getDeploymentSite());
-                return;
-            }
-
-            Map<String, Object> map = generateConfigMap(metadataDictvalueDOS);
-
-            configMap = map;
-
-            LOGGER.info("AlarmGlobalConfig Sync SUCCESS");
-            //LOGGER.info("AlarmGlobalConfig Sync SUCCESS {} ", G.get().toJson(metadataDictvalueDOS));
-
-        } catch (Exception e) {
-            LOGGER.error("InspectCtlParam Sync Exception", e);
-        }
-    }
-
-    public Object getConfig (String key) {
-        return configMap.get(key);
-    }
-
-    private static Map<String, Object> generateConfigMap(List<MetaDataDictValue> metadataDictvalueDOS) {
-        return metadataDictvalueDOS.stream().collect(Collectors.toMap(MetaDataDictValue::getDictKey, MetaDataDictValue::getDictValue));
-    }
+  private static Map<String, Object> generateConfigMap(
+      List<MetaDataDictValue> metadataDictvalueDOS) {
+    return metadataDictvalueDOS.stream()
+        .collect(Collectors.toMap(MetaDataDictValue::getDictKey, MetaDataDictValue::getDictValue));
+  }
 }

@@ -10,7 +10,8 @@ import lombok.Setter;
 import lombok.ToString;
 
 /**
- * <p>created at 2022/2/28
+ * <p>
+ * created at 2022/2/28
  *
  * @author zzhb101
  */
@@ -18,12 +19,12 @@ import lombok.ToString;
 @Setter
 @ToString
 public class Agent {
-    public static final String    MODE_SIDECAR   = "sidecar";
-    public static final String    MODE_DAEMONSET = "daemonset";
-    public static final String    MODE_CENTRAL   = "central";
-    public static final String    MODE_CLUSTERAGENT   = "clusteragent";
-    private             String    id;
-    private             String    tenant;
-    private             AgentJson json;
-    private             Date      lastHeartbeat;
+  public static final String MODE_SIDECAR = "sidecar";
+  public static final String MODE_DAEMONSET = "daemonset";
+  public static final String MODE_CENTRAL = "central";
+  public static final String MODE_CLUSTERAGENT = "clusteragent";
+  private String id;
+  private String tenant;
+  private AgentJson json;
+  private Date lastHeartbeat;
 }

@@ -22,55 +22,55 @@ import java.util.Random;
  */
 @Service
 public class ClientServiceImpl implements ClientService {
-    private static final Random RANDOM = new Random();
+  private static final Random RANDOM = new Random();
 
-    private static final String LOCAL_DOMAIN = "localhost";
+  private static final String LOCAL_DOMAIN = "localhost";
 
-    @Override
-    public List<String> getCacheServers() {
-        if (Env.isDevEnv()) {
-            return Collections.singletonList(LOCAL_DOMAIN);
-        }
-        String serverStr = D.getDict("metaservice.cache.servers");
-        String[] serverArr = StringUtils.split(serverStr, ",");
-        if (serverArr == null) {
-            return null;
-        }
-        return Arrays.asList(serverArr);
+  @Override
+  public List<String> getCacheServers() {
+    if (Env.isDevEnv()) {
+      return Collections.singletonList(LOCAL_DOMAIN);
     }
-
-    @Override
-    public String getCacheServer() {
-        if (Env.isDevEnv()) {
-            return LOCAL_DOMAIN;
-        }
-        List<String> servers = getCacheServers();
-        if (CollectionUtils.isEmpty(servers)) {
-            return null;
-        }
-        return servers.get(RANDOM.nextInt(servers.size()));
+    String serverStr = D.getDict("metaservice.cache.servers");
+    String[] serverArr = StringUtils.split(serverStr, ",");
+    if (serverArr == null) {
+      return null;
     }
+    return Arrays.asList(serverArr);
+  }
 
-    @Override
-    public String getCurrentApp() {
-        return Env.app();
+  @Override
+  public String getCacheServer() {
+    if (Env.isDevEnv()) {
+      return LOCAL_DOMAIN;
     }
+    List<String> servers = getCacheServers();
+    if (CollectionUtils.isEmpty(servers)) {
+      return null;
+    }
+    return servers.get(RANDOM.nextInt(servers.size()));
+  }
 
-    @Override
-    public String getLocalIp() {
-        return Env.localIp();
-    }
+  @Override
+  public String getCurrentApp() {
+    return Env.app();
+  }
 
-    @Override
-    public String getDomain() {
-        if (Env.isDevEnv()) {
-            return LOCAL_DOMAIN;
-        }
-        return D.getDict("metaservice.domain");
-    }
+  @Override
+  public String getLocalIp() {
+    return Env.localIp();
+  }
 
-    @Override
-    public boolean isRemote() {
-        return Env.isRemote();
+  @Override
+  public String getDomain() {
+    if (Env.isDevEnv()) {
+      return LOCAL_DOMAIN;
     }
+    return D.getDict("metaservice.domain");
+  }
+
+  @Override
+  public boolean isRemote() {
+    return Env.isRemote();
+  }
 }

@@ -14,5 +14,5 @@ import java.util.Map;
  */
 @Data
 public abstract class LocalIntegrationTask extends IntegrationTask {
-    private Map<String, Elect.RefMeta> refMetas;
+  private Map<String, Elect.RefMeta> refMetas;
 }

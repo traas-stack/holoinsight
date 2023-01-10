@@ -2,7 +2,6 @@
  * Copyright 2022 Holoinsight Project Authors. Licensed under Apache-2.0.
  */
 
-
 package io.holoinsight.server.home.web.controller.model;
 
 import lombok.Data;
@@ -17,5 +16,5 @@ import java.util.Map;
  */
 @Data
 public class TenantServerMeta {
-    public List<Map<String, Object>> dataList;
+  public List<Map<String, Object>> dataList;
 }

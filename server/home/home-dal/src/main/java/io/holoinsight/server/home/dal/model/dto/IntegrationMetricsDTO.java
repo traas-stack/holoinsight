@@ -14,5 +14,5 @@ import java.util.Map;
  */
 @Data
 public class IntegrationMetricsDTO {
-    Map<String, List<IntegrationMetricDTO>> subMetrics;
+  Map<String, List<IntegrationMetricDTO>> subMetrics;
 }

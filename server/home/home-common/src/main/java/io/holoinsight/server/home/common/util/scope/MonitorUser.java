@@ -14,54 +14,54 @@ import java.util.Set;
  */
 @Data
 public class MonitorUser {
-    public static String MONITOR_USER = "MONITOR_USER";
-    // 来自于哪里
-    private IdentityType identityType;
+  public static String MONITOR_USER = "MONITOR_USER";
+  // 来自于哪里
+  private IdentityType identityType;
 
-    // 用户上的权限，这里是为了权限点的爆炸为顶层人民设计的
-    boolean              superViewer;
-    boolean              superAdmin;
+  // 用户上的权限，这里是为了权限点的爆炸为顶层人民设计的
+  boolean superViewer;
+  boolean superAdmin;
 
-    private Long         exprie;
+  private Long exprie;
 
-    // 以下用户明细，酌情添加
-    String               userId;                       // 用户唯一id
-    String               empId;                        // 工号
-    String               userName;                     // 用户名称
-    String               email;                        // Email
-    String               loginName;                    // 登录名，
-    String               mobile;                       // 电话
+  // 以下用户明细，酌情添加
+  String userId; // 用户唯一id
+  String empId; // 工号
+  String userName; // 用户名称
+  String email; // Email
+  String loginName; // 登录名，
+  String mobile; // 电话
 
-    String               authToken;                    // authToken，
-    String               loginTenant;                  // 当前登陆租户
+  String authToken; // authToken，
+  String loginTenant; // 当前登陆租户
 
-    String               sourceIp;                     // 源用户ip，用户校验
+  String sourceIp; // 源用户ip，用户校验
 
-    Set<PowerConstants>  powerConstants;
+  Set<PowerConstants> powerConstants;
 
-    public boolean isSuper() {
-        return isSuperAdmin() || isSuperViewer();
-    }
+  public boolean isSuper() {
+    return isSuperAdmin() || isSuperViewer();
+  }
 
-    public static MonitorUser adminUser;
+  public static MonitorUser adminUser;
 
-    static {
-        adminUser = new MonitorUser();
-        adminUser.identityType = IdentityType.INNER;
-        adminUser.loginName = "admin";
-        adminUser.email = "admin";
-        adminUser.authToken = "admin";
-        // 特权用户，拥有监控最高权限
-        adminUser.superAdmin = true;
-    }
+  static {
+    adminUser = new MonitorUser();
+    adminUser.identityType = IdentityType.INNER;
+    adminUser.loginName = "admin";
+    adminUser.email = "admin";
+    adminUser.authToken = "admin";
+    // 特权用户，拥有监控最高权限
+    adminUser.superAdmin = true;
+  }
 
-    public static MonitorUser newTokenUser(String token) {
-        MonitorUser tokenUser = new MonitorUser();
-        tokenUser.identityType = IdentityType.OUTTOKEN;
-        tokenUser.loginName = token;
-        tokenUser.email = token;
-        tokenUser.authToken = token;
-        tokenUser.superAdmin = false;
-        return tokenUser;
-    }
+  public static MonitorUser newTokenUser(String token) {
+    MonitorUser tokenUser = new MonitorUser();
+    tokenUser.identityType = IdentityType.OUTTOKEN;
+    tokenUser.loginName = token;
+    tokenUser.email = token;
+    tokenUser.authToken = token;
+    tokenUser.superAdmin = false;
+    return tokenUser;
+  }
 }

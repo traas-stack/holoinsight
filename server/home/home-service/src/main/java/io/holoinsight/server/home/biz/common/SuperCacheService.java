@@ -18,31 +18,31 @@ import org.springframework.stereotype.Service;
 @Slf4j
 @Service
 public class SuperCacheService extends ScheduleLoadTask {
-    private SuperCache sc;
+  private SuperCache sc;
 
-    @Autowired
-    private MetaDictValueService metaDictValueService;
+  @Autowired
+  private MetaDictValueService metaDictValueService;
 
-    public SuperCache getSc() {
-        return sc;
-    }
+  public SuperCache getSc() {
+    return sc;
+  }
 
-    @Override
-    public void load() throws Exception {
-        ProdLog.info("[SuperCahce] load start");
-        SuperCache sc = new SuperCache();
-        sc.metaDataDictValueMap = metaDictValueService.getMetaDictValue();
-        this.sc = sc;
-        ProdLog.info("[SuperCahce] load end");
-    }
+  @Override
+  public void load() throws Exception {
+    ProdLog.info("[SuperCahce] load start");
+    SuperCache sc = new SuperCache();
+    sc.metaDataDictValueMap = metaDictValueService.getMetaDictValue();
+    this.sc = sc;
+    ProdLog.info("[SuperCahce] load end");
+  }
 
-    @Override
-    public int periodInSeconds() {
-        return 10;
-    }
+  @Override
+  public int periodInSeconds() {
+    return 10;
+  }
 
-    @Override
-    public String getTaskName() {
-        return "SuperCacheService";
-    }
+  @Override
+  public String getTaskName() {
+    return "SuperCacheService";
+  }
 }

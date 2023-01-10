@@ -16,34 +16,34 @@ import java.util.Date;
 @Data
 public class IntegrationProduct {
 
-    @TableId(type = IdType.AUTO)
-    public Long id;
+  @TableId(type = IdType.AUTO)
+  public Long id;
 
-    private String name;
+  private String name;
 
-    private String profile;
+  private String profile;
 
-    private String overview;
+  private String overview;
 
-    private String configuration;
+  private String configuration;
 
-    private String metrics;
+  private String metrics;
 
-    private String type;
+  private String type;
 
-    public String form;
+  public String form;
 
-    public String template;
+  public String template;
 
-    public boolean status;
+  public boolean status;
 
-    public String creator;
+  public String creator;
 
-    public String modifier;
+  public String modifier;
 
-    public Date gmtCreate;
+  public Date gmtCreate;
 
-    public Date gmtModified;
+  public Date gmtModified;
 
-    public String version;
+  public String version;
 }

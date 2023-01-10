@@ -16,6 +16,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class SpringBootConf {
-    private int port;
-    private String baseUrl;
+  private int port;
+  private String baseUrl;
 }

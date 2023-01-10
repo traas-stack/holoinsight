@@ -25,23 +25,23 @@ import java.util.Map;
 @ConditionalOnFeature("trace")
 public class MetricServiceImpl implements MetricService {
 
-    @Autowired
-    @Qualifier("spanMetricEsServiceImpl")
-    private MetricEsService metricEsService;
+  @Autowired
+  @Qualifier("spanMetricEsServiceImpl")
+  private MetricEsService metricEsService;
 
-    @Override
-    public List<String> listMetrics() {
-        return metricEsService.listMetrics();
-    }
+  @Override
+  public List<String> listMetrics() {
+    return metricEsService.listMetrics();
+  }
 
-    @Override
-    public MetricValues queryMetric(String tenant, String metric, Duration duration, Map<String, Object> conditions)
-            throws IOException {
-        return metricEsService.queryMetric(tenant, metric, duration, conditions);
-    }
+  @Override
+  public MetricValues queryMetric(String tenant, String metric, Duration duration,
+      Map<String, Object> conditions) throws IOException {
+    return metricEsService.queryMetric(tenant, metric, duration, conditions);
+  }
 
-    @Override
-    public List<String> querySchema(String metric) {
-        return metricEsService.querySchema(metric);
-    }
+  @Override
+  public List<String> querySchema(String metric) {
+    return metricEsService.querySchema(metric);
+  }
 }

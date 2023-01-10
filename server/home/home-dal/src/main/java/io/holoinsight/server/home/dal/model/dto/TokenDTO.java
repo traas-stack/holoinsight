@@ -12,34 +12,34 @@ import lombok.Data;
  */
 @Data
 public class TokenDTO {
-    private Long id;
+  private Long id;
 
-    private String name;
+  private String name;
 
-    private String token;
+  private String token;
 
-    private Long queryLimit;
+  private Long queryLimit;
 
-    private Long tenantId;
+  private Long tenantId;
 
-    private Long workspaceId;
+  private Long workspaceId;
 
-    private Integer intervalCount;
+  private Integer intervalCount;
 
-    private Integer queueMaxSize;
+  private Integer queueMaxSize;
 
-    private Integer concurent;
+  private Integer concurent;
 
-    private Boolean share;
+  private Boolean share;
 
-    private String authTenant;
+  private String authTenant;
 
-    private String authBizDomain;
+  private String authBizDomain;
 
-    private String authWorkspace;
+  private String authWorkspace;
 
-    private Integer modelingQueueMaxSize;
+  private Integer modelingQueueMaxSize;
 
-    private String config;
+  private String config;
 
 }

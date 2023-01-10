@@ -17,40 +17,43 @@ import org.springframework.web.bind.annotation.RestController;
 
 
 /**
- * <p>created at 2022/4/15
+ * <p>
+ * created at 2022/4/15
  *
  * @author zzhb101
  */
 @RestController
 @RequestMapping("/internal/api/registry/dim")
 public class DimWebController {
-    @Autowired
-    private DataClientService dataClientService;
+  @Autowired
+  private DataClientService dataClientService;
 
-    @GetMapping("/queryAll")
-    public Object queryAll(@RequestParam("tableName") String tableName) {
-        return dataClientService.queryAll(tableName);
-    }
+  @GetMapping("/queryAll")
+  public Object queryAll(@RequestParam("tableName") String tableName) {
+    return dataClientService.queryAll(tableName);
+  }
 
-    @GetMapping("/queryById")
-    public Object queryById(@RequestParam("tableName") String tableName, @RequestParam("id") String id) {
-        QueryExample qe = new QueryExample();
-        qe.getParams().put("_uk", id);
-        List<Map<String, Object>> list = dataClientService.queryByExample(tableName, qe);
-        if (list.size() == 1) {
-            return list.get(0);
-        }
-        return list;
+  @GetMapping("/queryById")
+  public Object queryById(@RequestParam("tableName") String tableName,
+      @RequestParam("id") String id) {
+    QueryExample qe = new QueryExample();
+    qe.getParams().put("_uk", id);
+    List<Map<String, Object>> list = dataClientService.queryByExample(tableName, qe);
+    if (list.size() == 1) {
+      return list.get(0);
     }
+    return list;
+  }
 
-    @GetMapping("/queryByIp")
-    public Object queryByIp(@RequestParam("tableName") String tableName, @RequestParam("ip") String ip) {
-        QueryExample qe = new QueryExample();
-        qe.getParams().put("ip", ip);
-        List<Map<String, Object>> list = dataClientService.queryByExample(tableName, qe);
-        if (list.size() == 1) {
-            return list.get(0);
-        }
-        return list;
+  @GetMapping("/queryByIp")
+  public Object queryByIp(@RequestParam("tableName") String tableName,
+      @RequestParam("ip") String ip) {
+    QueryExample qe = new QueryExample();
+    qe.getParams().put("ip", ip);
+    List<Map<String, Object>> list = dataClientService.queryByExample(tableName, qe);
+    if (list.size() == 1) {
+      return list.get(0);
     }
+    return list;
+  }
 }

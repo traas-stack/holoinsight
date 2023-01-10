@@ -17,7 +17,8 @@ import java.net.UnknownHostException;
 import java.util.Properties;
 
 /**
- * <p>created at 2022/2/25
+ * <p>
+ * created at 2022/2/25
  *
  * @author sw1136562366
  */
@@ -25,38 +26,39 @@ import java.util.Properties;
 @RequestMapping("/internal/api/gateway/basic")
 @InternalWebApi
 public class BasicWebController {
-    /**
-     * 给出该实例的运行时基本信息
-     *
-     * @return
-     */
-    @GetMapping("/info")
-    public Object info() {
-        // 1. 各种重要资源的加载数量
-        return ApiResp.success();
-    }
+  /**
+   * 给出该实例的运行时基本信息
+   *
+   * @return
+   */
+  @GetMapping("/info")
+  public Object info() {
+    // 1. 各种重要资源的加载数量
+    return ApiResp.success();
+  }
 
-    @GetMapping("/ip")
-    public Object ip() throws UnknownHostException {
-        // 1. 各种重要资源的加载数量
-        return InetAddress.getLocalHost().getHostAddress();
-    }
+  @GetMapping("/ip")
+  public Object ip() throws UnknownHostException {
+    // 1. 各种重要资源的加载数量
+    return InetAddress.getLocalHost().getHostAddress();
+  }
 
-    @GetMapping("/ip2")
-    public Object ip2() throws UnknownHostException {
-        // 1. 各种重要资源的加载数量
-        return InetAddress.getLocalHost().getHostAddress();
-    }
+  @GetMapping("/ip2")
+  public Object ip2() throws UnknownHostException {
+    // 1. 各种重要资源的加载数量
+    return InetAddress.getLocalHost().getHostAddress();
+  }
 
-    @GetMapping("/git")
-    public Object git() throws IOException {
-        Properties properties = new Properties();
-        InputStream is = getClass().getClassLoader().getResourceAsStream("cloudmonitor-gateway-git.properties");
-        if (is != null) {
-            properties.load(is);
-        } else {
-            properties.put("message", "fail to find git.properties in classpath");
-        }
-        return properties;
+  @GetMapping("/git")
+  public Object git() throws IOException {
+    Properties properties = new Properties();
+    InputStream is =
+        getClass().getClassLoader().getResourceAsStream("cloudmonitor-gateway-git.properties");
+    if (is != null) {
+      properties.load(is);
+    } else {
+      properties.put("message", "fail to find git.properties in classpath");
     }
+    return properties;
+  }
 }

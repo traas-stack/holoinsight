@@ -8,13 +8,17 @@ import io.opentelemetry.proto.collector.trace.v1.ExportTraceServiceRequest;
 import io.opentelemetry.proto.collector.trace.v1.ExportTraceServiceResponse;
 
 /**
- * <p>created at 2022/11/30
+ * <p>
+ * created at 2022/11/30
  *
  * @author sw1136562366
  */
 public interface TraceExporter {
-    /**
-     * <p>export.</p>
-     */
-    void export(ExportTraceServiceRequest request, StreamObserver<ExportTraceServiceResponse> responseObserver);
+  /**
+   * <p>
+   * export.
+   * </p>
+   */
+  void export(ExportTraceServiceRequest request,
+      StreamObserver<ExportTraceServiceResponse> responseObserver);
 }

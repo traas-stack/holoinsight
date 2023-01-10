@@ -20,20 +20,22 @@ import com.google.common.base.Strings;
 @Slf4j
 public class ServiceApiController implements ServiceApi {
 
-    @Autowired
-    private ServiceOverviewService serviceOverviewService;
+  @Autowired
+  private ServiceOverviewService serviceOverviewService;
 
-    @Override
-    public ResponseEntity<List<Service>> queryServiceList(QueryServiceRequest request) throws IOException {
-        String tenant = request.getTenant();
+  @Override
+  public ResponseEntity<List<Service>> queryServiceList(QueryServiceRequest request)
+      throws IOException {
+    String tenant = request.getTenant();
 
-        if (Strings.isNullOrEmpty(tenant)) {
-            throw new IllegalArgumentException("The condition must contains tenant.");
-        }
-
-        List<Service> serviceList = serviceOverviewService.getServiceList(tenant, request.getStartTime(), request.getEndTime());
-
-        return ResponseEntity.ok(serviceList);
+    if (Strings.isNullOrEmpty(tenant)) {
+      throw new IllegalArgumentException("The condition must contains tenant.");
     }
+
+    List<Service> serviceList =
+        serviceOverviewService.getServiceList(tenant, request.getStartTime(), request.getEndTime());
+
+    return ResponseEntity.ok(serviceList);
+  }
 
 }

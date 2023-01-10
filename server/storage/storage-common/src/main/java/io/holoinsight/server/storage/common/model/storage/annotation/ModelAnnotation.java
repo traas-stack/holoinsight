@@ -15,7 +15,7 @@ import java.lang.annotation.Target;
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface ModelAnnotation {
-    String name();
+  String name();
 
-    long ttl() default 60000L * 60 * 24 * 3;
+  long ttl() default 60000L * 60 * 24 * 3;
 }

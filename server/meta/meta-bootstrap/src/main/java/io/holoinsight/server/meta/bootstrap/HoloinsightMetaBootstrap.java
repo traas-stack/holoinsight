@@ -14,14 +14,14 @@ import org.springframework.boot.builder.SpringApplicationBuilder;
  */
 @SpringBootApplication
 public class HoloinsightMetaBootstrap {
-    public static void main(String[] args) {
-        try {
-            SpringApplication app = new SpringApplicationBuilder(HoloinsightMetaBootstrap.class).build();
-            ContextHolder.ctx = app.run(args);
-        } catch (Throwable e) {
-            e.printStackTrace();
-            System.exit(1);
-        }
-
+  public static void main(String[] args) {
+    try {
+      SpringApplication app = new SpringApplicationBuilder(HoloinsightMetaBootstrap.class).build();
+      ContextHolder.ctx = app.run(args);
+    } catch (Throwable e) {
+      e.printStackTrace();
+      System.exit(1);
     }
+
+  }
 }

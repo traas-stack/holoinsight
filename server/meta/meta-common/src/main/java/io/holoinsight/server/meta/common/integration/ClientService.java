@@ -12,20 +12,20 @@ import java.util.List;
  */
 public interface ClientService {
 
-    String getCurrentApp();
+  String getCurrentApp();
 
-    String getLocalIp();
+  String getLocalIp();
 
-    String getDomain();
+  String getDomain();
 
-    List<String> getCacheServers();
+  List<String> getCacheServers();
 
-    String getCacheServer();
+  String getCacheServer();
 
-    /**
-     * 是否透传至服务端模式
-     *
-     * @return
-     */
-    boolean isRemote();
+  /**
+   * 是否透传至服务端模式
+   *
+   * @return
+   */
+  boolean isRemote();
 }

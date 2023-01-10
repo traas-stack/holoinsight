@@ -12,36 +12,36 @@ import java.util.TreeMap;
 
 /**
  * @author wangsiyuan
- * @date 2022/3/21  11:11 上午
+ * @date 2022/3/21 11:11 上午
  */
 @Data
 public class TriggerResult implements Serializable {
 
-    private static final long serialVersionUID = -4588929311293650475L;
+  private static final long serialVersionUID = -4588929311293650475L;
 
-    private String metric;
+  private String metric;
 
-    private String triggerContent;
+  private String triggerContent;
 
-    private Map<Long, Object> values = new TreeMap<>(java.util.Comparator.comparingLong(v -> v));
+  private Map<Long, Object> values = new TreeMap<>(java.util.Comparator.comparingLong(v -> v));
 
-    private boolean hit;
+  private boolean hit;
 
-    private List<CompareParam> compareParam;
+  private List<CompareParam> compareParam;
 
-    private Map<String, String> tags;
+  private Map<String, String> tags;
 
-    private Double currentValue;
+  private Double currentValue;
 
-    public static TriggerResult create() {
-        TriggerResult result =  new TriggerResult();
-        return result;
-    }
+  public static TriggerResult create() {
+    TriggerResult result = new TriggerResult();
+    return result;
+  }
 
-    public TriggerResult addValue(Long time, Object value) {
-        this.values.put(time, value);
-        return this;
-    }
+  public TriggerResult addValue(Long time, Object value) {
+    this.values.put(time, value);
+    return this;
+  }
 
 
 }

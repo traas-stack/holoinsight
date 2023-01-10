@@ -2,7 +2,6 @@
  * Copyright 2022 Holoinsight Project Authors. Licensed under Apache-2.0.
  */
 
-
 package io.holoinsight.server.home.biz.service;
 
 import io.holoinsight.server.home.dal.model.MetaTable;
@@ -18,20 +17,20 @@ import java.util.List;
  */
 public interface MetaTableService extends IService<MetaTable> {
 
-    MetaTableDTO queryById(Long id, String tenant);
+  MetaTableDTO queryById(Long id, String tenant);
 
-    List<MetaTableDTO> findByTenant(String tenant);
+  List<MetaTableDTO> findByTenant(String tenant);
 
-    List<MetaTableDTO> findAll();
+  List<MetaTableDTO> findAll();
 
-    List<MetaTableDTO> findByName(String name);
+  List<MetaTableDTO> findByName(String name);
 
-    MetaTableDTO create(MetaTableDTO metaTableDTO);
+  MetaTableDTO create(MetaTableDTO metaTableDTO);
 
-    void deleteById(Long id);
+  void deleteById(Long id);
 
-    MetaTableDTO update(MetaTableDTO metaTableDTO);
+  MetaTableDTO update(MetaTableDTO metaTableDTO);
 
-    MetaTableDTO insertOrUpate(MetaTableDTO metaTableDTO);
+  MetaTableDTO insertOrUpate(MetaTableDTO metaTableDTO);
 
 }

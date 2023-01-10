@@ -9,12 +9,13 @@ import io.holoinsight.server.common.ContextHolder;
 import org.springframework.boot.SpringApplication;
 
 /**
- * <p>created at 2022/11/25
+ * <p>
+ * created at 2022/11/25
  *
  * @author xzchaoo
  */
 public class TestHoloinsightAllInOneBootstrap {
-    public static void main(String[] args) {
-        ContextHolder.ctx = SpringApplication.run(HoloinsightAllInOneBootstrap.class);
-    }
+  public static void main(String[] args) {
+    ContextHolder.ctx = SpringApplication.run(HoloinsightAllInOneBootstrap.class);
+  }
 }

@@ -10,15 +10,15 @@ package io.holoinsight.server.home.common.util;
  */
 public class TenantMetaUtil {
 
-    public static String genTableName(String tenant, String key) {
-        return String.format("tenant_%s_%s", tenant, key);
-    }
+  public static String genTableName(String tenant, String key) {
+    return String.format("tenant_%s_%s", tenant, key);
+  }
 
-    public static String genTenantServerTableName(String tenant) {
-        return String.format("%s_server", tenant);
-    }
+  public static String genTenantServerTableName(String tenant) {
+    return String.format("%s_server", tenant);
+  }
 
-    public static String genTenantAppTableName(String tenant) {
-        return String.format("%s_app", tenant);
-    }
+  public static String genTenantAppTableName(String tenant) {
+    return String.format("%s_app", tenant);
+  }
 }

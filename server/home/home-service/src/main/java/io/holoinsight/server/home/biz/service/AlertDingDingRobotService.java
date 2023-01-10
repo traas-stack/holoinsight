@@ -16,12 +16,13 @@ import io.holoinsight.server.home.facade.page.MonitorPageResult;
  */
 public interface AlertDingDingRobotService extends IService<AlarmDingDingRobot> {
 
-    Long save(AlarmDingDingRobotDTO alarmDingDingRobotDTO);
+  Long save(AlarmDingDingRobotDTO alarmDingDingRobotDTO);
 
-    Boolean updateById(AlarmDingDingRobotDTO alarmDingDingRobotDTO);
+  Boolean updateById(AlarmDingDingRobotDTO alarmDingDingRobotDTO);
 
-    AlarmDingDingRobotDTO queryById(Long id, String tenant);
+  AlarmDingDingRobotDTO queryById(Long id, String tenant);
 
-    MonitorPageResult<AlarmDingDingRobotDTO> getListByPage(MonitorPageRequest<AlarmDingDingRobotDTO> pageRequest);
+  MonitorPageResult<AlarmDingDingRobotDTO> getListByPage(
+      MonitorPageRequest<AlarmDingDingRobotDTO> pageRequest);
 
 }

@@ -11,12 +11,12 @@ import lombok.Setter;
 @Setter
 public class ServiceMeta extends Source {
 
-    @Override
-    public String getEntityId() {
-        return IDManager.ServiceID.buildId(name, layer.isNormal());
-    }
+  @Override
+  public String getEntityId() {
+    return IDManager.ServiceID.buildId(name, layer.isNormal());
+  }
 
-    private String name;
-    private Layer layer;
+  private String name;
+  private Layer layer;
 
 }

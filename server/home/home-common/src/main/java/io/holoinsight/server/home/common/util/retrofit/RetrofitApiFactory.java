@@ -23,67 +23,66 @@ import com.google.gson.Gson;
  */
 public class RetrofitApiFactory {
 
-    private static volatile OkHttpClient mOkHttpClient;
+  private static volatile OkHttpClient mOkHttpClient;
 
-    public static OkHttpClient getOkHttpClient() {
+  public static OkHttpClient getOkHttpClient() {
+    if (mOkHttpClient == null) {
+      synchronized (RetrofitApiFactory.class) {
         if (mOkHttpClient == null) {
-            synchronized (RetrofitApiFactory.class) {
-                if (mOkHttpClient == null) {
-                    mOkHttpClient = new OkHttpClient.Builder()//
-                        //.authenticator(new Authenticator(token))//
-                        //.addInterceptor
-                        .readTimeout(5, TimeUnit.SECONDS) //
-                        .connectTimeout(5, TimeUnit.SECONDS) //
-                        .writeTimeout(5, TimeUnit.SECONDS)
-                        .connectionPool(new ConnectionPool(10, 30, TimeUnit.SECONDS))
-                        .sslSocketFactory(SSLSocketClient.getSSLSocketFactory(), SSLSocketClient.getX509TrustManager())
-                        .hostnameVerifier(SSLSocketClient.getHostnameVerifier())
-                        .build();
-                }
-            }
+          mOkHttpClient = new OkHttpClient.Builder()//
+              // .authenticator(new Authenticator(token))//
+              // .addInterceptor
+              .readTimeout(5, TimeUnit.SECONDS) //
+              .connectTimeout(5, TimeUnit.SECONDS) //
+              .writeTimeout(5, TimeUnit.SECONDS)
+              .connectionPool(new ConnectionPool(10, 30, TimeUnit.SECONDS))
+              .sslSocketFactory(SSLSocketClient.getSSLSocketFactory(),
+                  SSLSocketClient.getX509TrustManager())
+              .hostnameVerifier(SSLSocketClient.getHostnameVerifier()).build();
         }
-        return mOkHttpClient;
+      }
     }
+    return mOkHttpClient;
+  }
 
-    @SuppressWarnings("unchecked")
-    public <T, R> T create(String baseUrl, Class<T> apiClass, Class<R> retrofitServiceClass) {
-        R retrofitService = createRetrofitInstance(baseUrl, retrofitServiceClass);
-        return (T) Proxy.newProxyInstance(retrofitServiceClass.getClassLoader(),
-            new Class[] {apiClass}, new RetrofitProxy<R>(retrofitService));
-    }
+  @SuppressWarnings("unchecked")
+  public <T, R> T create(String baseUrl, Class<T> apiClass, Class<R> retrofitServiceClass) {
+    R retrofitService = createRetrofitInstance(baseUrl, retrofitServiceClass);
+    return (T) Proxy.newProxyInstance(retrofitServiceClass.getClassLoader(), new Class[] {apiClass},
+        new RetrofitProxy<R>(retrofitService));
+  }
 
-    public <T> T createRetrofitInstance(String baseUrl, Class<T> retrofitServiceClass) {
-        Retrofit retrofit = createRetrofit(baseUrl);
-        return retrofit.create(retrofitServiceClass);
-    }
+  public <T> T createRetrofitInstance(String baseUrl, Class<T> retrofitServiceClass) {
+    Retrofit retrofit = createRetrofit(baseUrl);
+    return retrofit.create(retrofitServiceClass);
+  }
 
-    protected Retrofit createRetrofit(String baseUrl) {
-        OkHttpClient client = getOkHttpClient();
-        return new Retrofit.Builder() //
-            .baseUrl(baseUrl)
-            .client(client)
-            .addConverterFactory(GsonConverterFactory.create()) //
-            .build();
-    }
+  protected Retrofit createRetrofit(String baseUrl) {
+    OkHttpClient client = getOkHttpClient();
+    return new Retrofit.Builder() //
+        .baseUrl(baseUrl).client(client).addConverterFactory(GsonConverterFactory.create()) //
+        .build();
+  }
 
-    @SuppressWarnings("unchecked")
-    public <T, R> T create(String baseUrl, Supplier<Gson> gsonConsumer, Class<T> apiClass, Class<R> retrofitServiceClass) {
-        R retrofitService = createRetrofitInstance(baseUrl, gsonConsumer, retrofitServiceClass);
-        return (T) Proxy.newProxyInstance(retrofitServiceClass.getClassLoader(),
-            new Class[] {apiClass}, new RetrofitProxy<R>(retrofitService));
-    }
+  @SuppressWarnings("unchecked")
+  public <T, R> T create(String baseUrl, Supplier<Gson> gsonConsumer, Class<T> apiClass,
+      Class<R> retrofitServiceClass) {
+    R retrofitService = createRetrofitInstance(baseUrl, gsonConsumer, retrofitServiceClass);
+    return (T) Proxy.newProxyInstance(retrofitServiceClass.getClassLoader(), new Class[] {apiClass},
+        new RetrofitProxy<R>(retrofitService));
+  }
 
-    public <T> T createRetrofitInstance(String baseUrl, Supplier<Gson> gsonConsumer, Class<T> retrofitServiceClass) {
-        Retrofit retrofit = createRetrofit(baseUrl, gsonConsumer);
-        return retrofit.create(retrofitServiceClass);
-    }
+  public <T> T createRetrofitInstance(String baseUrl, Supplier<Gson> gsonConsumer,
+      Class<T> retrofitServiceClass) {
+    Retrofit retrofit = createRetrofit(baseUrl, gsonConsumer);
+    return retrofit.create(retrofitServiceClass);
+  }
 
-    protected Retrofit createRetrofit(String baseUrl, Supplier<Gson> gsonConsumer) {
-        OkHttpClient client = getOkHttpClient();
-        return new Retrofit.Builder() //
-            .baseUrl(baseUrl)
-            .client(client)
-            .addConverterFactory(GsonConverterFactory.create(gsonConsumer.get())) //
-            .build();
-    }
+  protected Retrofit createRetrofit(String baseUrl, Supplier<Gson> gsonConsumer) {
+    OkHttpClient client = getOkHttpClient();
+    return new Retrofit.Builder() //
+        .baseUrl(baseUrl).client(client)
+        .addConverterFactory(GsonConverterFactory.create(gsonConsumer.get())) //
+        .build();
+  }
 }

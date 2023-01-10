@@ -15,35 +15,34 @@ import java.util.concurrent.Executors;
  */
 public class EventBusHolder {
 
-    public static AsyncEventBus asyncEventBus;
+  public static AsyncEventBus asyncEventBus;
 
-    private static Executor     executor = Executors.newFixedThreadPool(2);
+  private static Executor executor = Executors.newFixedThreadPool(2);
 
-    //双重锁单例模式
-    private static AsyncEventBus getAsynEventBus() {
+  // 双重锁单例模式
+  private static AsyncEventBus getAsynEventBus() {
+    if (asyncEventBus == null) {
+      synchronized (AsyncEventBus.class) {
         if (asyncEventBus == null) {
-            synchronized (AsyncEventBus.class) {
-                if (asyncEventBus == null) {
-                    asyncEventBus = new AsyncEventBus(executor);
-                }
-            }
+          asyncEventBus = new AsyncEventBus(executor);
         }
-        return asyncEventBus;
+      }
     }
+    return asyncEventBus;
+  }
 
-    private EventBusHolder() {
-    }
+  private EventBusHolder() {}
 
-    public static void post(Object event) {
-        getAsynEventBus().post(event);
-    }
+  public static void post(Object event) {
+    getAsynEventBus().post(event);
+  }
 
-    public static void register(Object listener) {
-        getAsynEventBus().register(listener);
-    }
+  public static void register(Object listener) {
+    getAsynEventBus().register(listener);
+  }
 
-    public static void unregister(Object listener) {
-        getAsynEventBus().unregister(listener);
-    }
+  public static void unregister(Object listener) {
+    getAsynEventBus().unregister(listener);
+  }
 
 }

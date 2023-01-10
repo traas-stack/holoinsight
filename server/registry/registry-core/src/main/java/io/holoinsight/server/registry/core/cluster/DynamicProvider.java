@@ -6,10 +6,11 @@ package io.holoinsight.server.registry.core.cluster;
 import io.grpc.stub.AbstractStub;
 
 /**
- * <p>created at 2022/4/17
+ * <p>
+ * created at 2022/4/17
  *
  * @author zzhb101
  */
 public interface DynamicProvider {
-    <S extends AbstractStub<S>> S customize(S stub);
+  <S extends AbstractStub<S>> S customize(S stub);
 }

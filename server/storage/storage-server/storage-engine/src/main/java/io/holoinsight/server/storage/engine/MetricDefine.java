@@ -19,11 +19,11 @@ import java.util.Map;
 @NoArgsConstructor
 public class MetricDefine {
 
-    private String              name;
-    private String              index;
-    private String              field;
-    private String              function;
-    private List<String>        groups;
-    private Map<String, Object> conditions;
+  private String name;
+  private String index;
+  private String field;
+  private String function;
+  private List<String> groups;
+  private Map<String, Object> conditions;
 
 }

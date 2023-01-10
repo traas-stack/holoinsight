@@ -13,51 +13,62 @@ import org.springframework.stereotype.Repository;
 @Mapper
 @Repository
 public interface GaeaConfigDOMapper {
-    long countByExample(GaeaConfigDOExample example);
+  long countByExample(GaeaConfigDOExample example);
 
-    int deleteByExample(GaeaConfigDOExample example);
+  int deleteByExample(GaeaConfigDOExample example);
 
-    int deleteByPrimaryKey(Long id);
+  int deleteByPrimaryKey(Long id);
 
-    int insert(GaeaConfigDO record);
+  int insert(GaeaConfigDO record);
 
-    int insertSelective(@Param("record") GaeaConfigDO record, @Param("selective") GaeaConfigDO.Column ... selective);
+  int insertSelective(@Param("record") GaeaConfigDO record,
+      @Param("selective") GaeaConfigDO.Column... selective);
 
-    GaeaConfigDO selectOneByExample(GaeaConfigDOExample example);
+  GaeaConfigDO selectOneByExample(GaeaConfigDOExample example);
 
-    GaeaConfigDO selectOneByExampleSelective(@Param("example") GaeaConfigDOExample example, @Param("selective") GaeaConfigDO.Column ... selective);
+  GaeaConfigDO selectOneByExampleSelective(@Param("example") GaeaConfigDOExample example,
+      @Param("selective") GaeaConfigDO.Column... selective);
 
-    GaeaConfigDO selectOneByExampleWithBLOBs(GaeaConfigDOExample example);
+  GaeaConfigDO selectOneByExampleWithBLOBs(GaeaConfigDOExample example);
 
-    List<GaeaConfigDO> selectByExampleSelective(@Param("example") GaeaConfigDOExample example, @Param("selective") GaeaConfigDO.Column ... selective);
+  List<GaeaConfigDO> selectByExampleSelective(@Param("example") GaeaConfigDOExample example,
+      @Param("selective") GaeaConfigDO.Column... selective);
 
-    List<GaeaConfigDO> selectByExampleWithBLOBs(GaeaConfigDOExample example);
+  List<GaeaConfigDO> selectByExampleWithBLOBs(GaeaConfigDOExample example);
 
-    List<GaeaConfigDO> selectByExample(GaeaConfigDOExample example);
+  List<GaeaConfigDO> selectByExample(GaeaConfigDOExample example);
 
-    GaeaConfigDO selectByPrimaryKeySelective(@Param("id") Long id, @Param("selective") GaeaConfigDO.Column ... selective);
+  GaeaConfigDO selectByPrimaryKeySelective(@Param("id") Long id,
+      @Param("selective") GaeaConfigDO.Column... selective);
 
-    GaeaConfigDO selectByPrimaryKey(Long id);
+  GaeaConfigDO selectByPrimaryKey(Long id);
 
-    int updateByExampleSelective(@Param("record") GaeaConfigDO record, @Param("example") GaeaConfigDOExample example, @Param("selective") GaeaConfigDO.Column ... selective);
+  int updateByExampleSelective(@Param("record") GaeaConfigDO record,
+      @Param("example") GaeaConfigDOExample example,
+      @Param("selective") GaeaConfigDO.Column... selective);
 
-    int updateByExampleWithBLOBs(@Param("record") GaeaConfigDO record, @Param("example") GaeaConfigDOExample example);
+  int updateByExampleWithBLOBs(@Param("record") GaeaConfigDO record,
+      @Param("example") GaeaConfigDOExample example);
 
-    int updateByExample(@Param("record") GaeaConfigDO record, @Param("example") GaeaConfigDOExample example);
+  int updateByExample(@Param("record") GaeaConfigDO record,
+      @Param("example") GaeaConfigDOExample example);
 
-    int updateByPrimaryKeySelective(@Param("record") GaeaConfigDO record, @Param("selective") GaeaConfigDO.Column ... selective);
+  int updateByPrimaryKeySelective(@Param("record") GaeaConfigDO record,
+      @Param("selective") GaeaConfigDO.Column... selective);
 
-    int updateByPrimaryKeyWithBLOBs(GaeaConfigDO record);
+  int updateByPrimaryKeyWithBLOBs(GaeaConfigDO record);
 
-    int updateByPrimaryKey(GaeaConfigDO record);
+  int updateByPrimaryKey(GaeaConfigDO record);
 
-    int batchInsert(@Param("list") List<GaeaConfigDO> list);
+  int batchInsert(@Param("list") List<GaeaConfigDO> list);
 
-    int batchInsertSelective(@Param("list") List<GaeaConfigDO> list, @Param("selective") GaeaConfigDO.Column ... selective);
+  int batchInsertSelective(@Param("list") List<GaeaConfigDO> list,
+      @Param("selective") GaeaConfigDO.Column... selective);
 
-    int upsert(GaeaConfigDO record);
+  int upsert(GaeaConfigDO record);
 
-    int upsertSelective(@Param("record") GaeaConfigDO record, @Param("selective") GaeaConfigDO.Column ... selective);
+  int upsertSelective(@Param("record") GaeaConfigDO record,
+      @Param("selective") GaeaConfigDO.Column... selective);
 
-    int upsertWithBLOBs(GaeaConfigDO record);
+  int upsertWithBLOBs(GaeaConfigDO record);
 }

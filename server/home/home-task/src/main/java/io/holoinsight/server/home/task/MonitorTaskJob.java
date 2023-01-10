@@ -2,7 +2,6 @@
  * Copyright 2022 Holoinsight Project Authors. Licensed under Apache-2.0.
  */
 
-
 package io.holoinsight.server.home.task;
 
 /**
@@ -12,10 +11,10 @@ package io.holoinsight.server.home.task;
  */
 public abstract class MonitorTaskJob {
 
-    // 执行
-    public abstract boolean run() throws Throwable;
+  // 执行
+  public abstract boolean run() throws Throwable;
 
-    // job id用于追踪
-    public abstract String id();
+  // job id用于追踪
+  public abstract String id();
 
 }

@@ -2,7 +2,6 @@
  * Copyright 2022 Holoinsight Project Authors. Licensed under Apache-2.0.
  */
 
-
 package io.holoinsight.server.home.biz.service;
 
 import io.holoinsight.server.home.dal.model.MarketplacePlugin;
@@ -21,22 +20,23 @@ import java.util.Map;
  */
 public interface MarketplacePluginService extends IService<MarketplacePlugin> {
 
-    MarketplacePluginDTO queryById(Long id, String tenant);
+  MarketplacePluginDTO queryById(Long id, String tenant);
 
-    List<MarketplacePluginDTO> queryByTenant(String tenant);
+  List<MarketplacePluginDTO> queryByTenant(String tenant);
 
-    List<MarketplacePluginDTO> findByMap(Map<String, Object> columnMap);
+  List<MarketplacePluginDTO> findByMap(Map<String, Object> columnMap);
 
-    MarketplacePluginDTO create(MarketplacePluginDTO integrationPluginDTO);
+  MarketplacePluginDTO create(MarketplacePluginDTO integrationPluginDTO);
 
-    void deleteById(Long id);
+  void deleteById(Long id);
 
-    MarketplacePluginDTO updateByRequest(MarketplacePluginDTO integrationPluginDTO);
+  MarketplacePluginDTO updateByRequest(MarketplacePluginDTO integrationPluginDTO);
 
-    MonitorPageResult<MarketplacePluginDTO> getListByPage(MonitorPageRequest<MarketplacePluginDTO> integrationPluginDTORequest);
+  MonitorPageResult<MarketplacePluginDTO> getListByPage(
+      MonitorPageRequest<MarketplacePluginDTO> integrationPluginDTORequest);
 
-    List<MarketplacePluginDTO> getListByKeyword(String keyword, String tenant);
+  List<MarketplacePluginDTO> getListByKeyword(String keyword, String tenant);
 
-    List<MarketplacePluginDTO> getListByNameLike(String name, String tenant);
-    
+  List<MarketplacePluginDTO> getListByNameLike(String name, String tenant);
+
 }

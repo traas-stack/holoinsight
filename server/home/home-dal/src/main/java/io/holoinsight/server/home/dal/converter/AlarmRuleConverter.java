@@ -14,12 +14,12 @@ import java.util.List;
  * @author wangsiyuan
  * @date 2022/4/12 9:40 下午
  */
-@Mapper(componentModel = "spring", uses = { MapJsonMapper.class })
+@Mapper(componentModel = "spring", uses = {MapJsonMapper.class})
 public interface AlarmRuleConverter {
 
-    AlarmRuleDTO doToDTO(AlarmRule tenant);
+  AlarmRuleDTO doToDTO(AlarmRule tenant);
 
-    AlarmRule dtoToDO(AlarmRuleDTO tenantDTO);
+  AlarmRule dtoToDO(AlarmRuleDTO tenantDTO);
 
-    List<AlarmRuleDTO> dosToDTOs(Iterable<AlarmRule> tenants);
+  List<AlarmRuleDTO> dosToDTOs(Iterable<AlarmRule> tenants);
 }

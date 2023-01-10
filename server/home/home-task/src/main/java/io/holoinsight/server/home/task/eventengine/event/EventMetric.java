@@ -2,7 +2,6 @@
  * Copyright 2022 Holoinsight Project Authors. Licensed under Apache-2.0.
  */
 
-
 package io.holoinsight.server.home.task.eventengine.event;
 
 import lombok.Data;
@@ -14,7 +13,7 @@ import lombok.Data;
  */
 @Data
 public class EventMetric {
-    private String name;
+  private String name;
 
-    private int value;
+  private int value;
 }

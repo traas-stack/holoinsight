@@ -19,12 +19,12 @@ import java.io.Serializable;
 @NoArgsConstructor
 public abstract class RecordEsDO implements Serializable {
 
-    private static final long serialVersionUID = -2175475836786269673L;
+  private static final long serialVersionUID = -2175475836786269673L;
 
-    public static final String TIME_BUCKET = "time_bucket";
+  public static final String TIME_BUCKET = "time_bucket";
 
-    @Column(name = TIME_BUCKET)
-    private long timeBucket;
+  @Column(name = TIME_BUCKET)
+  private long timeBucket;
 
-    public abstract String indexName();
+  public abstract String indexName();
 }

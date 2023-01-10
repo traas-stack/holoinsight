@@ -18,61 +18,68 @@ import java.util.List;
 @Slf4j
 public class VirtualComponentApiController implements VirtualComponentApi {
 
-    @Autowired
-    private VirtualComponentService virtualComponentService;
+  @Autowired
+  private VirtualComponentService virtualComponentService;
 
-    @Override
-    public ResponseEntity<List<VirtualComponent>> queryDbList(QueryComponentRequest request) throws IOException {
-        String tenant = request.getTenant();
-        String service = request.getServiceName();
+  @Override
+  public ResponseEntity<List<VirtualComponent>> queryDbList(QueryComponentRequest request)
+      throws IOException {
+    String tenant = request.getTenant();
+    String service = request.getServiceName();
 
-        if (Strings.isNullOrEmpty(tenant) || Strings.isNullOrEmpty(service)) {
-            throw new IllegalArgumentException("The condition must contains tenant and service.");
-        }
-
-        List<VirtualComponent> dbList = virtualComponentService.getDbList(tenant, service, request.getStartTime(), request.getEndTime());
-        return ResponseEntity.ok(dbList);
+    if (Strings.isNullOrEmpty(tenant) || Strings.isNullOrEmpty(service)) {
+      throw new IllegalArgumentException("The condition must contains tenant and service.");
     }
 
-    @Override
-    public ResponseEntity<List<VirtualComponent>> queryCacheList(QueryComponentRequest request) throws IOException {
-        String tenant = request.getTenant();
-        String service = request.getServiceName();
+    List<VirtualComponent> dbList = virtualComponentService.getDbList(tenant, service,
+        request.getStartTime(), request.getEndTime());
+    return ResponseEntity.ok(dbList);
+  }
 
-        if (Strings.isNullOrEmpty(tenant) || Strings.isNullOrEmpty(service)) {
-            throw new IllegalArgumentException("The condition must contains tenant and service.");
-        }
+  @Override
+  public ResponseEntity<List<VirtualComponent>> queryCacheList(QueryComponentRequest request)
+      throws IOException {
+    String tenant = request.getTenant();
+    String service = request.getServiceName();
 
-        List<VirtualComponent> cacheList = virtualComponentService.getCacheList(tenant, service, request.getStartTime(), request.getEndTime());
-        return ResponseEntity.ok(cacheList);
+    if (Strings.isNullOrEmpty(tenant) || Strings.isNullOrEmpty(service)) {
+      throw new IllegalArgumentException("The condition must contains tenant and service.");
     }
 
-    @Override
-    public ResponseEntity<List<VirtualComponent>> queryMQList(QueryComponentRequest request) throws IOException {
-        String tenant = request.getTenant();
-        String service = request.getServiceName();
+    List<VirtualComponent> cacheList = virtualComponentService.getCacheList(tenant, service,
+        request.getStartTime(), request.getEndTime());
+    return ResponseEntity.ok(cacheList);
+  }
 
-        if (Strings.isNullOrEmpty(tenant) || Strings.isNullOrEmpty(service)) {
-            throw new IllegalArgumentException("The condition must contains tenant and service.");
-        }
+  @Override
+  public ResponseEntity<List<VirtualComponent>> queryMQList(QueryComponentRequest request)
+      throws IOException {
+    String tenant = request.getTenant();
+    String service = request.getServiceName();
 
-        List<VirtualComponent> mqList = virtualComponentService.getMQList(tenant, service, request.getStartTime(), request.getEndTime());
-        return ResponseEntity.ok(mqList);
+    if (Strings.isNullOrEmpty(tenant) || Strings.isNullOrEmpty(service)) {
+      throw new IllegalArgumentException("The condition must contains tenant and service.");
     }
 
-    @Override
-    public ResponseEntity<List<String>> queryComponentTraceIds(QueryComponentRequest request) throws IOException {
-        String tenant = request.getTenant();
-        String address = request.getAddress();
+    List<VirtualComponent> mqList = virtualComponentService.getMQList(tenant, service,
+        request.getStartTime(), request.getEndTime());
+    return ResponseEntity.ok(mqList);
+  }
 
-        if (Strings.isNullOrEmpty(tenant) || Strings.isNullOrEmpty(address)) {
-            throw new IllegalArgumentException("The condition must contains tenant and address.");
-        }
+  @Override
+  public ResponseEntity<List<String>> queryComponentTraceIds(QueryComponentRequest request)
+      throws IOException {
+    String tenant = request.getTenant();
+    String address = request.getAddress();
 
-        List<String> traceIds = virtualComponentService.getTraceIds(tenant, request.getServiceName(), request.getAddress(),
-                request.getStartTime(), request.getEndTime());
-
-        return ResponseEntity.ok(traceIds);
+    if (Strings.isNullOrEmpty(tenant) || Strings.isNullOrEmpty(address)) {
+      throw new IllegalArgumentException("The condition must contains tenant and address.");
     }
+
+    List<String> traceIds = virtualComponentService.getTraceIds(tenant, request.getServiceName(),
+        request.getAddress(), request.getStartTime(), request.getEndTime());
+
+    return ResponseEntity.ok(traceIds);
+  }
 
 }

@@ -12,7 +12,7 @@ import lombok.Data;
 @Data
 public class GroupInfoDTO {
 
-    private Object groupInfo;
+  private Object groupInfo;
 
-    private int personNum;
+  private int personNum;
 }

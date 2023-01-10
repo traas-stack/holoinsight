@@ -16,13 +16,13 @@ import java.util.List;
 @Data
 public class DatasourceConfig {
 
-    /**
-     * 字段
-     */
-    private List<String> fields;
+  /**
+   * 字段
+   */
+  private List<String> fields;
 
-    /**
-     * 源
-     */
-    private String source;
+  /**
+   * 源
+   */
+  private String source;
 }

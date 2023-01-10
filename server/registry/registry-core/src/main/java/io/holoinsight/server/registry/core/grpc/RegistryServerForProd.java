@@ -24,49 +24,51 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /**
- * <p>created at 2022/2/28
+ * <p>
+ * created at 2022/2/28
  *
  * @author zzhb101
  */
 @Component
 public class RegistryServerForProd {
-    private static final Logger LOGGER = LoggerFactory.getLogger(RegistryServerForProd.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(RegistryServerForProd.class);
 
-    @Autowired
-    private RegistryProperties registryProperties;
-    private Server             server;
+  @Autowired
+  private RegistryProperties registryProperties;
+  private Server server;
 
-    @Autowired(required = false)
-    @RegistryGrpcForProd
-    private List<BindableService> services2 = new ArrayList<>();
+  @Autowired(required = false)
+  @RegistryGrpcForProd
+  private List<BindableService> services2 = new ArrayList<>();
 
-    @Autowired
-    private CommonThreadPools  commonThreadPools;
-    @Autowired
-    private CommonHooksManager commonHooksManager;
+  @Autowired
+  private CommonThreadPools commonThreadPools;
+  @Autowired
+  private CommonHooksManager commonHooksManager;
 
-    @PostConstruct
-    public void start() throws IOException {
-        RegistryProperties.ForProd forProd = registryProperties.getServer().getForProd();
+  @PostConstruct
+  public void start() throws IOException {
+    RegistryProperties.ForProd forProd = registryProperties.getServer().getForProd();
 
-        ServerBuilder<?> b = ServerBuilder.forPort(forProd.getPort()).executor(commonThreadPools.getRpcServer());
+    ServerBuilder<?> b =
+        ServerBuilder.forPort(forProd.getPort()).executor(commonThreadPools.getRpcServer());
 
-        for (BindableService bs : services2) {
-            ServerServiceDefinition ssd = bs.bindService();
-            b.addService(ssd);
-            commonHooksManager.triggerPublishGrpcHooks(b, ssd);
-        }
-
-        server = b.build();
-        server.start();
-
-        LOGGER.info("[registryserver] [forprod] start grpc server at 0.0.0.0:{}", //
-            forProd.getPort()); //
+    for (BindableService bs : services2) {
+      ServerServiceDefinition ssd = bs.bindService();
+      b.addService(ssd);
+      commonHooksManager.triggerPublishGrpcHooks(b, ssd);
     }
 
-    @PreDestroy
-    public void stop() {
-        server.shutdown();
-    }
+    server = b.build();
+    server.start();
+
+    LOGGER.info("[registryserver] [forprod] start grpc server at 0.0.0.0:{}", //
+        forProd.getPort()); //
+  }
+
+  @PreDestroy
+  public void stop() {
+    server.shutdown();
+  }
 
 }

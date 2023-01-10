@@ -18,56 +18,57 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /**
- * <p>created at 2022/11/30
+ * <p>
+ * created at 2022/11/30
  *
  * @author jiwliu
  */
 @Configuration
 @ConditionalOnFeature("trace")
 public class StorageWebConfiguration {
-    @Bean
-    public TatrisInitializer tatrisInitializer() {
-        return new TatrisInitializer();
-    }
+  @Bean
+  public TatrisInitializer tatrisInitializer() {
+    return new TatrisInitializer();
+  }
 
-    @Bean
-    public EndpointApiController endpointApiController() {
-        return new EndpointApiController();
-    }
+  @Bean
+  public EndpointApiController endpointApiController() {
+    return new EndpointApiController();
+  }
 
-    @Bean
-    public MetricApiController metricApiController() {
-        return new MetricApiController();
-    }
+  @Bean
+  public MetricApiController metricApiController() {
+    return new MetricApiController();
+  }
 
-    @Bean
-    public ServiceApiController serviceApiController() {
-        return new ServiceApiController();
-    }
+  @Bean
+  public ServiceApiController serviceApiController() {
+    return new ServiceApiController();
+  }
 
-    @Bean
-    public ServiceInstanceApiController serviceInstanceApiController() {
-        return new ServiceInstanceApiController();
-    }
+  @Bean
+  public ServiceInstanceApiController serviceInstanceApiController() {
+    return new ServiceInstanceApiController();
+  }
 
-    @Bean
-    public TopologyApiController topologyApiController() {
-        return new TopologyApiController();
-    }
+  @Bean
+  public TopologyApiController topologyApiController() {
+    return new TopologyApiController();
+  }
 
-    @Bean
-    public TraceApiController traceApiController() {
-        return new TraceApiController();
-    }
+  @Bean
+  public TraceApiController traceApiController() {
+    return new TraceApiController();
+  }
 
-    @Bean
-    public VirtualComponentApiController virtualComponentApiController() {
-        return new VirtualComponentApiController();
-    }
+  @Bean
+  public VirtualComponentApiController virtualComponentApiController() {
+    return new VirtualComponentApiController();
+  }
 
-    @Bean
-    public SlowSqlApiController slowSqlApiController() {
-        return new SlowSqlApiController();
-    }
+  @Bean
+  public SlowSqlApiController slowSqlApiController() {
+    return new SlowSqlApiController();
+  }
 
 }

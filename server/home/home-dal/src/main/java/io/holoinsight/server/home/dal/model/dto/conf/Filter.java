@@ -15,14 +15,14 @@ import java.util.List;
  */
 @Data
 public class Filter implements Serializable {
-    private static final long serialVersionUID = -3272585845278117842L;
+  private static final long serialVersionUID = -3272585845278117842L;
 
-    // 简易过滤，contains
-    // 高级过滤，leftRight
-    public String             type;
+  // 简易过滤，contains
+  // 高级过滤，leftRight
+  public String type;
 
-    public Rule               rule;
+  public Rule rule;
 
-    public List<String>       values;
+  public List<String> values;
 
 }

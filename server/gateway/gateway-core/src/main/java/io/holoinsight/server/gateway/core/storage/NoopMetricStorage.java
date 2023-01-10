@@ -13,38 +13,39 @@ import prometheus.Prometheus;
 import reactor.core.publisher.Mono;
 
 /**
- * <p>created at 2022/12/2
+ * <p>
+ * created at 2022/12/2
  *
  * @author sw1136562366
  */
 public class NoopMetricStorage implements MetricStorage {
-    /** {@inheritDoc} */
-    @Override
-    public Mono<Void> write(AuthInfo authInfo, WriteMetricsRequestV1 request) {
-        return Mono.empty();
-    }
+  /** {@inheritDoc} */
+  @Override
+  public Mono<Void> write(AuthInfo authInfo, WriteMetricsRequestV1 request) {
+    return Mono.empty();
+  }
 
-    /** {@inheritDoc} */
-    @Override
-    public Mono<Void> write(AuthInfo authInfo, WriteMetricsRequestV4 request) {
-        return Mono.empty();
-    }
+  /** {@inheritDoc} */
+  @Override
+  public Mono<Void> write(AuthInfo authInfo, WriteMetricsRequestV4 request) {
+    return Mono.empty();
+  }
 
-    /** {@inheritDoc} */
-    @Override
-    public Mono<Void> write(AuthInfo authInfo, Prometheus.WriteRequest writeRequest) {
-        return Mono.empty();
-    }
+  /** {@inheritDoc} */
+  @Override
+  public Mono<Void> write(AuthInfo authInfo, Prometheus.WriteRequest writeRequest) {
+    return Mono.empty();
+  }
 
-    /** {@inheritDoc} */
-    @Override
-    public Mono<Void> write(AuthInfo authInfo, List<Point> points) {
-        return Mono.empty();
-    }
+  /** {@inheritDoc} */
+  @Override
+  public Mono<Void> write(AuthInfo authInfo, List<Point> points) {
+    return Mono.empty();
+  }
 
-    /** {@inheritDoc} */
-    @Override
-    public void bar1() {
-        //
-    }
+  /** {@inheritDoc} */
+  @Override
+  public void bar1() {
+    //
+  }
 }

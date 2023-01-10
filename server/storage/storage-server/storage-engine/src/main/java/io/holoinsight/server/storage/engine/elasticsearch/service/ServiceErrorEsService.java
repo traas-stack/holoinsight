@@ -11,6 +11,6 @@ import java.util.List;
 
 public interface ServiceErrorEsService {
 
-    void batchInsert(final List<ServiceErrorEsDO> serviceErrorEsDOList) throws IOException;
+  void batchInsert(final List<ServiceErrorEsDO> serviceErrorEsDOList) throws IOException;
 
 }

@@ -12,10 +12,10 @@ import java.util.List;
 @Mapper(componentModel = "spring")
 public interface AlertmanagerWebhookConverter {
 
-    AlertmanagerWebhookDTO doToDTO(AlertmanagerWebhook model);
+  AlertmanagerWebhookDTO doToDTO(AlertmanagerWebhook model);
 
-    AlertmanagerWebhook dtoToDO(AlertmanagerWebhookDTO dto);
+  AlertmanagerWebhook dtoToDO(AlertmanagerWebhookDTO dto);
 
-    List<AlertmanagerWebhookDTO> dosToDTOs(Iterable<AlertmanagerWebhook> models);
+  List<AlertmanagerWebhookDTO> dosToDTOs(Iterable<AlertmanagerWebhook> models);
 
 }

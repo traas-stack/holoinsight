@@ -16,11 +16,11 @@ import java.util.Map;
  */
 public interface MetricEsService {
 
-    List<String> listMetrics();
+  List<String> listMetrics();
 
-    MetricValues queryMetric(String tenant, String metric, Duration duration, Map<String, Object> conditions)
-            throws IOException;
+  MetricValues queryMetric(String tenant, String metric, Duration duration,
+      Map<String, Object> conditions) throws IOException;
 
-    List<String> querySchema(String metric);
+  List<String> querySchema(String metric);
 
 }

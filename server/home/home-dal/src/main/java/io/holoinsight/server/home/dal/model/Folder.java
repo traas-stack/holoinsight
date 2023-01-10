@@ -16,17 +16,17 @@ import java.util.Date;
  */
 @Data
 public class Folder {
-    @TableId(type = IdType.AUTO)
-    public Long   id;
-    public String name;
-    public String tenant;
-    public Long   parentFolderId;
-    public String creator;
-    public String modifier;
+  @TableId(type = IdType.AUTO)
+  public Long id;
+  public String name;
+  public String tenant;
+  public Long parentFolderId;
+  public String creator;
+  public String modifier;
 
-    public Date   gmtCreate;
+  public Date gmtCreate;
 
-    public Date   gmtModified;
+  public Date gmtModified;
 
-    public String extInfo;
+  public String extInfo;
 }

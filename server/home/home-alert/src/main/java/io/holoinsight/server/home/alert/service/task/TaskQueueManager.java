@@ -11,49 +11,50 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 /**
  * @author wangsiyuan
- * @date 2022/2/24  3:14 下午
+ * @date 2022/2/24 3:14 下午
  */
 public class TaskQueueManager {
 
-    private static final Logger logger = LoggerFactory.getLogger(TaskQueueManager.class);
+  private static final Logger logger = LoggerFactory.getLogger(TaskQueueManager.class);
 
-    private final LinkedBlockingQueue<ComputeTaskPackage> taskJobLinkedBlockingQueue = new LinkedBlockingQueue<>(500_000);
+  private final LinkedBlockingQueue<ComputeTaskPackage> taskJobLinkedBlockingQueue =
+      new LinkedBlockingQueue<>(500_000);
 
-    private static TaskQueueManager instance;
+  private static TaskQueueManager instance;
 
-    public static TaskQueueManager getInstance() {
+  public static TaskQueueManager getInstance() {
+    if (null == instance) {
+      synchronized (TaskQueueManager.class) {
         if (null == instance) {
-            synchronized (TaskQueueManager.class) {
-                if (null == instance) {
-                    try {
-                        instance = new TaskQueueManager();
-                    } catch (Exception e) {
-                        throw new RuntimeException(e);
-                    }
-                }
-            }
+          try {
+            instance = new TaskQueueManager();
+          } catch (Exception e) {
+            throw new RuntimeException(e);
+          }
         }
-        return instance;
+      }
     }
+    return instance;
+  }
 
-    public boolean offer(ComputeTaskPackage computeTaskPackage) {
-        return taskJobLinkedBlockingQueue.offer(computeTaskPackage);
-    }
+  public boolean offer(ComputeTaskPackage computeTaskPackage) {
+    return taskJobLinkedBlockingQueue.offer(computeTaskPackage);
+  }
 
-    public ComputeTaskPackage peek() {
-        return taskJobLinkedBlockingQueue.peek();
-    }
+  public ComputeTaskPackage peek() {
+    return taskJobLinkedBlockingQueue.peek();
+  }
 
-    public ComputeTaskPackage poll() {
-        return taskJobLinkedBlockingQueue.poll();
-    }
+  public ComputeTaskPackage poll() {
+    return taskJobLinkedBlockingQueue.poll();
+  }
 
-    public ComputeTaskPackage take() {
-        try {
-            return taskJobLinkedBlockingQueue.take();
-        } catch (InterruptedException e) {
-            logger.error(e.getMessage(), e);
-            return null;
-        }
+  public ComputeTaskPackage take() {
+    try {
+      return taskJobLinkedBlockingQueue.take();
+    } catch (InterruptedException e) {
+      logger.error(e.getMessage(), e);
+      return null;
     }
+  }
 }

@@ -18,13 +18,12 @@ import java.util.List;
  */
 @Component
 public class MetaTableSchemaMapper {
-    public static String asString(List<MetaTableCol> schema) {
-        return J.toJson(schema);
-    }
+  public static String asString(List<MetaTableCol> schema) {
+    return J.toJson(schema);
+  }
 
-    public static List<MetaTableCol> asObj(String schema) {
-        Type t = new TypeToken<List<MetaTableCol>>() {
-        }.getType();
-        return J.fromJson(schema, t);
-    }
+  public static List<MetaTableCol> asObj(String schema) {
+    Type t = new TypeToken<List<MetaTableCol>>() {}.getType();
+    return J.fromJson(schema, t);
+  }
 }

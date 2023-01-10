@@ -15,10 +15,10 @@ import java.util.Map;
 @Data
 public class DataResult implements Serializable {
 
-    private String metric;
+  private String metric;
 
-    private Map<String, String> tags;
+  private Map<String, String> tags;
 
-    private Map<Long, Double> points;
+  private Map<Long, Double> points;
 
 }

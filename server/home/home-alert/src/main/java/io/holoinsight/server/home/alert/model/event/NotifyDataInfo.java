@@ -14,13 +14,13 @@ import java.util.Map;
 @Data
 public class NotifyDataInfo {
 
-    private String metric; // 监控项
+  private String metric; // 监控项
 
-    private Map<String, String> tags;
+  private Map<String, String> tags;
 
-    private String triggerContent; // 触发内容简述
+  private String triggerContent; // 触发内容简述
 
-    private Double currentValue; // 当前时间的值
+  private Double currentValue; // 当前时间的值
 
-    private String msg;// 告警消息
+  private String msg;// 告警消息
 }

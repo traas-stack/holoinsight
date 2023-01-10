@@ -11,17 +11,17 @@ import java.util.Map;
  * @version 2022-10-31 17:12:00
  */
 public class PluginContext {
-    private Map<String, Object> context = new HashMap<>();
+  private Map<String, Object> context = new HashMap<>();
 
-    public Object get(String key) {
-        return context.get(key);
-    }
+  public Object get(String key) {
+    return context.get(key);
+  }
 
-    public Object getOrDefault(String key, Object defaultValue) {
-        return context.getOrDefault(key, defaultValue);
-    }
+  public Object getOrDefault(String key, Object defaultValue) {
+    return context.getOrDefault(key, defaultValue);
+  }
 
-    public void put(String key, Object value) {
-        this.context.put(key, value);
-    }
+  public void put(String key, Object value) {
+    this.context.put(key, value);
+  }
 }

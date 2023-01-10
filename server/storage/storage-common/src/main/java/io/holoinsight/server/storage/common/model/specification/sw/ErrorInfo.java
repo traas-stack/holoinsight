@@ -7,17 +7,17 @@ import lombok.Data;
 
 @Data
 public class ErrorInfo extends Source {
-    private String errorKind;
-    private String serviceName;
-    private String serviceInstanceName;
+  private String errorKind;
+  private String serviceName;
+  private String serviceInstanceName;
 
-    @Override
-    public String getEntityId() {
-        return null;
-    }
+  @Override
+  public String getEntityId() {
+    return null;
+  }
 
-    @Override
-    public void prepare() {
-        super.prepare();
-    }
+  @Override
+  public void prepare() {
+    super.prepare();
+  }
 }

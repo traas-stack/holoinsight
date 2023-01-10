@@ -15,35 +15,35 @@ import java.util.Map;
 
 /**
  * @author wangsiyuan
- * @date 2022/3/17  9:54 下午
+ * @date 2022/3/17 9:54 下午
  */
 @Service
 public class FunctionManager implements InitializingBean {
 
-    public static final Map<FunctionEnum, FunctionLogic> functionMap = new HashMap<>();
+  public static final Map<FunctionEnum, FunctionLogic> functionMap = new HashMap<>();
 
-    @Resource
-    private Current current;
+  @Resource
+  private Current current;
 
-    @Resource
-    private Step step;
+  @Resource
+  private Step step;
 
-    @Resource
-    private ValueUpAbnormalDetect valueUpAbnormalDetect;
+  @Resource
+  private ValueUpAbnormalDetect valueUpAbnormalDetect;
 
-    @Resource
-    private ValueDownAbnormalDetect valueDownAbnormalDetect;
+  @Resource
+  private ValueDownAbnormalDetect valueDownAbnormalDetect;
 
-    public static void register(FunctionLogic function) {
-        functionMap.put(function.getFunc(), function);
-    }
+  public static void register(FunctionLogic function) {
+    functionMap.put(function.getFunc(), function);
+  }
 
-    @Override
-    public void afterPropertiesSet() {
-        register(current);
-        register(step);
-        register(valueUpAbnormalDetect);
-        register(valueDownAbnormalDetect);
+  @Override
+  public void afterPropertiesSet() {
+    register(current);
+    register(step);
+    register(valueUpAbnormalDetect);
+    register(valueDownAbnormalDetect);
 
-    }
+  }
 }

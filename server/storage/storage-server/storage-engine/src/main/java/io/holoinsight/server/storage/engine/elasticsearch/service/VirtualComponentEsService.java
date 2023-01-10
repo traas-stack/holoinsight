@@ -11,6 +11,9 @@ import java.util.List;
 
 public interface VirtualComponentEsService {
 
-    List<VirtualComponent> getComponentList(String tenant, String service, long startTime, long endTime, RequestType type, String sourceOrDest) throws IOException;
-    List<String> getTraceIds(String tenant, String service, String address, long startTime, long endTime) throws IOException;
+  List<VirtualComponent> getComponentList(String tenant, String service, long startTime,
+      long endTime, RequestType type, String sourceOrDest) throws IOException;
+
+  List<String> getTraceIds(String tenant, String service, String address, long startTime,
+      long endTime) throws IOException;
 }

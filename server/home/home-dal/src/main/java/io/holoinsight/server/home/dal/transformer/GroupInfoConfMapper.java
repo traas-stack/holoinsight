@@ -18,17 +18,17 @@ import java.util.Map;
  */
 @Component
 public class GroupInfoConfMapper {
-    public static String asString(GroupInfoDTO conf) {
-        return conf == null? null:J.toJson(conf.getGroupInfo());
-    }
+  public static String asString(GroupInfoDTO conf) {
+    return conf == null ? null : J.toJson(conf.getGroupInfo());
+  }
 
-    public static GroupInfoDTO asObj(String conf) {
-        GroupInfoDTO groupInfoDTO = new GroupInfoDTO();
-        if(StringUtils.isNotBlank(conf)){
-            Map<String, List<String>> groupInfo = J.fromJson(conf, Map.class);
-            groupInfoDTO.setGroupInfo(groupInfo);
-            groupInfoDTO.setPersonNum(groupInfo.get("person").size());
-        }
-        return groupInfoDTO;
+  public static GroupInfoDTO asObj(String conf) {
+    GroupInfoDTO groupInfoDTO = new GroupInfoDTO();
+    if (StringUtils.isNotBlank(conf)) {
+      Map<String, List<String>> groupInfo = J.fromJson(conf, Map.class);
+      groupInfoDTO.setGroupInfo(groupInfo);
+      groupInfoDTO.setPersonNum(groupInfo.get("person").size());
     }
+    return groupInfoDTO;
+  }
 }

@@ -15,7 +15,8 @@ import org.springframework.web.bind.annotation.RestController;
 import java.io.IOException;
 
 /**
- * <p>created at 2022/3/8
+ * <p>
+ * created at 2022/3/8
  *
  * @author sw1136562366
  */
@@ -23,15 +24,18 @@ import java.io.IOException;
 @RequestMapping("/internal/api/gateway/agent")
 @InternalWebApi
 public class GatewayForAgentWebController {
-    @Autowired
-    private GatewayServerForAgent gatewayServerForAgent;
+  @Autowired
+  private GatewayServerForAgent gatewayServerForAgent;
 
-    /**
-     * <p>restart.</p>
-     */
-    @GetMapping("/restart")
-    public ApiResp restart(@RequestParam(value = "delay", defaultValue = "3") int delayStart) throws IOException, InterruptedException {
-        gatewayServerForAgent.restart(delayStart);
-        return ApiResp.success();
-    }
+  /**
+   * <p>
+   * restart.
+   * </p>
+   */
+  @GetMapping("/restart")
+  public ApiResp restart(@RequestParam(value = "delay", defaultValue = "3") int delayStart)
+      throws IOException, InterruptedException {
+    gatewayServerForAgent.restart(delayStart);
+    return ApiResp.success();
+  }
 }

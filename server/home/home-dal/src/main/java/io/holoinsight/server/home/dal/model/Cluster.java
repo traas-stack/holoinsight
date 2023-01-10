@@ -17,18 +17,18 @@ import java.util.Date;
 @Data
 
 public class Cluster {
-    @TableId(type = IdType.AUTO)
-    public Long    id;
-    public String  ip;
+  @TableId(type = IdType.AUTO)
+  public Long id;
+  public String ip;
 
-    public String  hostname;
+  public String hostname;
 
-    public String  role;
+  public String role;
 
-    @TableField(value = "`last_heartbeat_time`")
-    public Long    lastHeartBeatTime;
+  @TableField(value = "`last_heartbeat_time`")
+  public Long lastHeartBeatTime;
 
-    public Date    gmtModified;
+  public Date gmtModified;
 
-    public Integer manualClose;
+  public Integer manualClose;
 }

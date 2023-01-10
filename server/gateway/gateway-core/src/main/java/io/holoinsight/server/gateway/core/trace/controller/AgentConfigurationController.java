@@ -15,7 +15,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 /**
- * <p>AgentConfigurationController class.</p>
+ * <p>
+ * AgentConfigurationController class.
+ * </p>
  *
  * @author sw1136562366
  */
@@ -23,23 +25,25 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @RequestMapping({"/api/agent/configuration", "/internal/api/gateway/agent/configuration"})
 public class AgentConfigurationController {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(AgentConfigurationController.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(AgentConfigurationController.class);
 
-    @Autowired
-    private AgentConfigurationScheduler agentConfigurationScheduler;
+  @Autowired
+  private AgentConfigurationScheduler agentConfigurationScheduler;
 
-    /**
-     * <p>getAgentConfiguration.</p>
-     */
-    @GetMapping("/query")
-    public AgentConfiguration getAgentConfiguration(@RequestParam String cacheKey) {
-        try {
-            return agentConfigurationScheduler.getValue(cacheKey);
-        } catch (Exception e) {
-            LOGGER.error("Query agent configuration error: ", e.getMessage());
-        }
-
-        return null;
+  /**
+   * <p>
+   * getAgentConfiguration.
+   * </p>
+   */
+  @GetMapping("/query")
+  public AgentConfiguration getAgentConfiguration(@RequestParam String cacheKey) {
+    try {
+      return agentConfigurationScheduler.getValue(cacheKey);
+    } catch (Exception e) {
+      LOGGER.error("Query agent configuration error: ", e.getMessage());
     }
+
+    return null;
+  }
 
 }

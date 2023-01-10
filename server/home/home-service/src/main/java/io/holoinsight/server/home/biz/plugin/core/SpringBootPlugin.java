@@ -2,7 +2,6 @@
  * Copyright 2022 Holoinsight Project Authors. Licensed under Apache-2.0.
  */
 
-
 package io.holoinsight.server.home.biz.plugin.core;
 
 import io.holoinsight.server.home.biz.plugin.model.PluginModel;
@@ -24,36 +23,36 @@ import java.util.List;
 @PluginModel(name = "com.alipay.holoinsight.plugin.SpringBootPlugin", version = "1")
 public class SpringBootPlugin extends AbstractLocalIntegrationPlugin<SpringBootPlugin> {
 
-    public SpringBootTask springBootTask;
+  public SpringBootTask springBootTask;
 
-    @Override
-    SpringBootTask buildTask() {
-        return springBootTask;
+  @Override
+  SpringBootTask buildTask() {
+    return springBootTask;
+  }
+
+  @Override
+  public List<SpringBootPlugin> genPluginList(IntegrationPluginDTO integrationPluginDTO) {
+
+    List<SpringBootPlugin> springBootPlugins = new ArrayList<>();
+    SpringBootPlugin springBootPlugin = new SpringBootPlugin();
+    {
+      SpringBootTask springBootTask =
+          J.fromJson(integrationPluginDTO.json, new TypeToken<SpringBootTask>() {}.getType());
+
+      springBootTask.setExecuteRule(getExecuteRule());
+
+      springBootTask.setRefMetas(getRefMeta());
+
+      springBootPlugin.springBootTask = springBootTask;
+      springBootPlugin.gaeaTableName = integrationPluginDTO.name;
+      springBootPlugin.collectRange = integrationPluginDTO.collectRange.cloudmonitor;
+      springBootPlugin.collectPlugin = SpringBootTask.class.getName();
     }
 
-    @Override
-    public List<SpringBootPlugin> genPluginList(IntegrationPluginDTO integrationPluginDTO) {
+    springBootPlugins.add(springBootPlugin);
 
-        List<SpringBootPlugin> springBootPlugins = new ArrayList<>();
-        SpringBootPlugin springBootPlugin = new SpringBootPlugin();
-        {
-            SpringBootTask springBootTask = J.fromJson(integrationPluginDTO.json, new TypeToken<SpringBootTask>() {
-            }.getType());
+    return springBootPlugins;
 
-            springBootTask.setExecuteRule(getExecuteRule());
-
-            springBootTask.setRefMetas(getRefMeta());
-
-            springBootPlugin.springBootTask = springBootTask;
-            springBootPlugin.gaeaTableName = integrationPluginDTO.name;
-            springBootPlugin.collectRange = integrationPluginDTO.collectRange.cloudmonitor;
-            springBootPlugin.collectPlugin = SpringBootTask.class.getName();
-        }
-
-        springBootPlugins.add(springBootPlugin);
-
-        return springBootPlugins;
-
-    }
+  }
 
 }

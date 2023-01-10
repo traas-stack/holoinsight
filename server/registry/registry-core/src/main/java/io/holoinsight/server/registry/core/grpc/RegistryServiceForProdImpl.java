@@ -24,50 +24,56 @@ import com.google.protobuf.Descriptors;
 import com.google.protobuf.GeneratedMessageV3;
 
 /**
- * <p>created at 2022/3/11
+ * <p>
+ * created at 2022/3/11
  *
  * @author zzhb101
  */
 @Service
 @RegistryGrpcForProd
-public class RegistryServiceForProdImpl extends RegistryServiceForProdGrpc.RegistryServiceForProdImplBase {
-    private static final Logger LOGGER = LoggerFactory.getLogger(RegistryServiceForProdImpl.class);
+public class RegistryServiceForProdImpl
+    extends RegistryServiceForProdGrpc.RegistryServiceForProdImplBase {
+  private static final Logger LOGGER = LoggerFactory.getLogger(RegistryServiceForProdImpl.class);
 
-    @Autowired
-    private BiStreamService biStreamService;
+  @Autowired
+  private BiStreamService biStreamService;
 
-    @Override
-    public void listFiles(ListFilesRequest request, StreamObserver<ListFilesResponse> o) {
-        proxy(request.getTarget(), BizTypes.LIST_FILES, request, ListFilesResponse.getDefaultInstance(), o);
-    }
+  @Override
+  public void listFiles(ListFilesRequest request, StreamObserver<ListFilesResponse> o) {
+    proxy(request.getTarget(), BizTypes.LIST_FILES, request, ListFilesResponse.getDefaultInstance(),
+        o);
+  }
 
-    @Override
-    public void previewFile(PreviewFileRequest request, StreamObserver<PreviewFileResponse> o) {
-        proxy(request.getTarget(), BizTypes.PREVIEW_FILE, request, PreviewFileResponse.getDefaultInstance(), o);
-    }
+  @Override
+  public void previewFile(PreviewFileRequest request, StreamObserver<PreviewFileResponse> o) {
+    proxy(request.getTarget(), BizTypes.PREVIEW_FILE, request,
+        PreviewFileResponse.getDefaultInstance(), o);
+  }
 
-    @Override
-    public void inspect(InspectRequest request, StreamObserver<InspectResponse> o) {
-        proxy(request.getTarget(), BizTypes.INSPECT, request, InspectResponse.getDefaultInstance(), o);
-    }
+  @Override
+  public void inspect(InspectRequest request, StreamObserver<InspectResponse> o) {
+    proxy(request.getTarget(), BizTypes.INSPECT, request, InspectResponse.getDefaultInstance(), o);
+  }
 
-    public <RESP extends GeneratedMessageV3> void proxy(TargetIdentifier target, int bizType, GeneratedMessageV3 request, RESP defaultResp,
-        StreamObserver<RESP> o) {
-        biStreamService.handleProxy(target, bizType, request, defaultResp, o);
-    }
+  public <RESP extends GeneratedMessageV3> void proxy(TargetIdentifier target, int bizType,
+      GeneratedMessageV3 request, RESP defaultResp, StreamObserver<RESP> o) {
+    biStreamService.handleProxy(target, bizType, request, defaultResp, o);
+  }
 
-    private static CommonResponseHeader respHeader(int code, String message) {
-        return CommonResponseHeader.newBuilder() //
-            .setCode(code) //
-            .setMessage(message) //
-            .build();
-    }
+  private static CommonResponseHeader respHeader(int code, String message) {
+    return CommonResponseHeader.newBuilder() //
+        .setCode(code) //
+        .setMessage(message) //
+        .build();
+  }
 
-    private static <RESP extends GeneratedMessageV3> RESP setRespHeader(RESP defaultResp, int code, String message) {
-        Descriptors.FieldDescriptor respHeaderFD = defaultResp.getDescriptorForType().getFields().get(0);
-        return (RESP) defaultResp.toBuilder() //
-            .setField(respHeaderFD, respHeader(code, message)) //
-            .build(); //
-    }
+  private static <RESP extends GeneratedMessageV3> RESP setRespHeader(RESP defaultResp, int code,
+      String message) {
+    Descriptors.FieldDescriptor respHeaderFD =
+        defaultResp.getDescriptorForType().getFields().get(0);
+    return (RESP) defaultResp.toBuilder() //
+        .setField(respHeaderFD, respHeader(code, message)) //
+        .build(); //
+  }
 
 }

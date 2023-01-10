@@ -2,7 +2,6 @@
  * Copyright 2022 Holoinsight Project Authors. Licensed under Apache-2.0.
  */
 
-
 package io.holoinsight.server.home.biz.service;
 
 import io.holoinsight.server.home.dal.model.GaeaCollectConfig;
@@ -18,21 +17,21 @@ import java.util.List;
 
 public interface GaeaCollectConfigService extends IService<GaeaCollectConfig> {
 
-    GaeaCollectConfigDTO findById(Long id);
+  GaeaCollectConfigDTO findById(Long id);
 
-    List<GaeaCollectConfigDTO> findByRefId(String refId);
+  List<GaeaCollectConfigDTO> findByRefId(String refId);
 
-    GaeaCollectConfigDTO upsert(GaeaCollectConfigDTO gaeaCollectConfigDTO);
+  GaeaCollectConfigDTO upsert(GaeaCollectConfigDTO gaeaCollectConfigDTO);
 
-    GaeaCollectConfigDTO create(GaeaCollectConfigDTO gaeaCollectConfigDTO);
+  GaeaCollectConfigDTO create(GaeaCollectConfigDTO gaeaCollectConfigDTO);
 
-    void deleteById(Long id);
+  void deleteById(Long id);
 
-    void updateDeleted(Long id);
+  void updateDeleted(Long id);
 
-    Long updateDeleted(String tableName);
+  Long updateDeleted(String tableName);
 
-    Long updateDeletedByRefId(String refId);
+  Long updateDeletedByRefId(String refId);
 
-    GaeaCollectConfigDTO update(GaeaCollectConfigDTO gaeaCollectConfigDTO);
+  GaeaCollectConfigDTO update(GaeaCollectConfigDTO gaeaCollectConfigDTO);
 }

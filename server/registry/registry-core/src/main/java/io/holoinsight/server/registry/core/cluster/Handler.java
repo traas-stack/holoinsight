@@ -6,12 +6,13 @@ package io.holoinsight.server.registry.core.cluster;
 import io.holoinsight.server.common.grpc.GenericData;
 
 /**
- * <p>created at 2022/4/17
+ * <p>
+ * created at 2022/4/17
  *
  * @author zzhb101
  */
 public interface Handler {
-    int[] types();
+  int[] types();
 
-    void handle(GenericData d);
+  void handle(GenericData d);
 }

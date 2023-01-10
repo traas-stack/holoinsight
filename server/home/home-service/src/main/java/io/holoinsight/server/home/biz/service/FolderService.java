@@ -2,7 +2,6 @@
  * Copyright 2022 Holoinsight Project Authors. Licensed under Apache-2.0.
  */
 
-
 package io.holoinsight.server.home.biz.service;
 
 import io.holoinsight.server.home.dal.model.Folder;
@@ -17,14 +16,14 @@ import java.util.List;
  */
 public interface FolderService extends IService<Folder> {
 
-    List<Folder> getListByKeyword(String keyword, String tenant);
+  List<Folder> getListByKeyword(String keyword, String tenant);
 
-    List<Folder> getListByNameLike(String name, String tenant);
+  List<Folder> getListByNameLike(String name, String tenant);
 
-    List<Folder> findByIds(List<String> ids);
+  List<Folder> findByIds(List<String> ids);
 
-    Folder queryById(Long id, String tenant);
+  Folder queryById(Long id, String tenant);
 
-    Long create(Folder folder);
+  Long create(Folder folder);
 
 }

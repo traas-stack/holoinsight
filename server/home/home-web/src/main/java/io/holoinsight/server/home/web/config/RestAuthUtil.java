@@ -2,7 +2,6 @@
  * Copyright 2022 Holoinsight Project Authors. Licensed under Apache-2.0.
  */
 
-
 package io.holoinsight.server.home.web.config;
 
 import javax.servlet.http.HttpServletRequest;
@@ -18,27 +17,25 @@ import java.util.Set;
  */
 public class RestAuthUtil {
 
-    public static RestAuthUtil       singleton      = new RestAuthUtil();
+  public static RestAuthUtil singleton = new RestAuthUtil();
 
-    public static final Set<String>  NO_AUTH_PATH   = Collections
-        .unmodifiableSet(new HashSet<>(Arrays.asList("/webapi/sys/authurl", "/webapi/sys/config",
-                "/webapi/token/apply",
-            "/webapi/sys/time", "/webapi/sys/logout", "/webapi/sys/checkservice")));
+  public static final Set<String> NO_AUTH_PATH = Collections.unmodifiableSet(new HashSet<>(
+      Arrays.asList("/webapi/sys/authurl", "/webapi/sys/config", "/webapi/token/apply",
+          "/webapi/sys/time", "/webapi/sys/logout", "/webapi/sys/checkservice")));
 
-    public static final Set<String>  AUTH_PATH   = Collections
-            .unmodifiableSet(new HashSet<>(Arrays.asList("/webapi", "/openapi/microapp")));
+  public static final Set<String> AUTH_PATH =
+      Collections.unmodifiableSet(new HashSet<>(Arrays.asList("/webapi", "/openapi/microapp")));
 
 
-    public static final List<String> NO_AUTH_PREFIX = Collections
-        .unmodifiableList(Arrays.asList("/actuator", "/internal/api/"));
+  public static final List<String> NO_AUTH_PREFIX =
+      Collections.unmodifiableList(Arrays.asList("/actuator", "/internal/api/"));
 
-    public boolean isNoAuthRequest(HttpServletRequest req) {
-        return NO_AUTH_PATH.contains(req.getServletPath()) || NO_AUTH_PREFIX.stream()
-            .anyMatch(prefix -> req.getServletPath().startsWith(prefix));
-    }
+  public boolean isNoAuthRequest(HttpServletRequest req) {
+    return NO_AUTH_PATH.contains(req.getServletPath())
+        || NO_AUTH_PREFIX.stream().anyMatch(prefix -> req.getServletPath().startsWith(prefix));
+  }
 
-    public boolean isAuthRequest(HttpServletRequest req) {
-        return AUTH_PATH.stream()
-                .anyMatch(prefix -> req.getServletPath().startsWith(prefix));
-    }
+  public boolean isAuthRequest(HttpServletRequest req) {
+    return AUTH_PATH.stream().anyMatch(prefix -> req.getServletPath().startsWith(prefix));
+  }
 }

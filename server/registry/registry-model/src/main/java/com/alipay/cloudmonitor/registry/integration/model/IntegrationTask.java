@@ -13,7 +13,7 @@ import lombok.Data;
  */
 @Data
 public abstract class IntegrationTask extends GaeaTask {
-    private String      name;
-    private String      type;
-    private ExecuteRule executeRule;
+  private String name;
+  private String type;
+  private ExecuteRule executeRule;
 }

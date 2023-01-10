@@ -15,6 +15,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ModelColumn {
-    private String   name;
-    private Class<?> type;
+  private String name;
+  private Class<?> type;
 }

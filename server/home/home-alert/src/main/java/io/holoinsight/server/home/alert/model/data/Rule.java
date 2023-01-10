@@ -16,7 +16,7 @@ import java.util.List;
 @Data
 public class Rule {
 
-    private BoolOperationEnum boolOperation;
+  private BoolOperationEnum boolOperation;
 
-    private List<Trigger> triggers;
+  private List<Trigger> triggers;
 }

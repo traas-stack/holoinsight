@@ -17,30 +17,30 @@ import java.util.Map;
 @TableName(autoResultMap = true)
 public class OpenmetricsScraper {
 
-    @TableId(type = IdType.AUTO)
-    private Long id;
-    private String name;
-    private String tenant;
-    @TableField(value = "`conf`", typeHandler = GsonTypeHandler.class)
-    private Map<String, String> conf;
+  @TableId(type = IdType.AUTO)
+  private Long id;
+  private String name;
+  private String tenant;
+  @TableField(value = "`conf`", typeHandler = GsonTypeHandler.class)
+  private Map<String, String> conf;
 
-    /**
-     * 创建时间
-     */
-    private Date gmtCreate;
+  /**
+   * 创建时间
+   */
+  private Date gmtCreate;
 
-    /**
-     * 修改时间
-     */
-    private Date gmtModified;
+  /**
+   * 修改时间
+   */
+  private Date gmtModified;
 
-    /**
-     * 创建者
-     */
-    private String creator;
+  /**
+   * 创建者
+   */
+  private String creator;
 
-    /**
-     * 修改者
-     */
-    private String modifier;
+  /**
+   * 修改者
+   */
+  private String modifier;
 }

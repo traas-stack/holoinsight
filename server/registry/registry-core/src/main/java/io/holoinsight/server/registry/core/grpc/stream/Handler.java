@@ -6,12 +6,13 @@ package io.holoinsight.server.registry.core.grpc.stream;
 import java.util.concurrent.Executor;
 
 /**
- * <p>created at 2022/3/3
+ * <p>
+ * created at 2022/3/3
  *
  * @author zzhb101
  */
 public interface Handler {
-    int executeType();
+  int executeType();
 
-    Executor executor();
+  Executor executor();
 }

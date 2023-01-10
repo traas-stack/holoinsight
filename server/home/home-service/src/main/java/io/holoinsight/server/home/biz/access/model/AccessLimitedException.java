@@ -2,7 +2,6 @@
  * Copyright 2022 Holoinsight Project Authors. Licensed under Apache-2.0.
  */
 
-
 package io.holoinsight.server.home.biz.access.model;
 
 /**
@@ -12,7 +11,7 @@ package io.holoinsight.server.home.biz.access.model;
  */
 public class AccessLimitedException extends RuntimeException {
 
-public AccessLimitedException(String message) {
-        super(message);
-        }
-        }
+  public AccessLimitedException(String message) {
+    super(message);
+  }
+}

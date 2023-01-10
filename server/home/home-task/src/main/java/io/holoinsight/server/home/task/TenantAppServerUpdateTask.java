@@ -2,7 +2,6 @@
  * Copyright 2022 Holoinsight Project Authors. Licensed under Apache-2.0.
  */
 
-
 package io.holoinsight.server.home.task;
 
 import io.holoinsight.server.home.biz.service.MetaTableService;
@@ -30,82 +29,81 @@ import java.util.Set;
 @TaskHandler(TaskEnum.TENANT_APP_SERVER_UPDATE)
 public class TenantAppServerUpdateTask extends AbstractMonitorTask {
 
-    public static long        EXPIRED = 60 * 60000;
+  public static long EXPIRED = 60 * 60000;
 
-    @Autowired
-    private MetaTableService  metaTableService;
+  @Autowired
+  private MetaTableService metaTableService;
 
-    @Autowired
-    private DataClientService dataClientService;
+  @Autowired
+  private DataClientService dataClientService;
 
-    public TenantAppServerUpdateTask() {
-        super(1, 2, TaskEnum.TENANT_APP_SERVER_UPDATE);
-    }
+  public TenantAppServerUpdateTask() {
+    super(1, 2, TaskEnum.TENANT_APP_SERVER_UPDATE);
+  }
 
-    @Override
-    public boolean needRun() {
+  @Override
+  public boolean needRun() {
+    return true;
+  }
+
+  @Override
+  public List<MonitorTaskJob> buildJobs(long period) throws Throwable {
+    List<MonitorTaskJob> jobs = new ArrayList<>();
+
+    jobs.add(new MonitorTaskJob() {
+      @Override
+      public boolean run() throws Throwable {
+
+        syncAoAction();
         return true;
-    }
+      }
 
-    @Override
-    public List<MonitorTaskJob> buildJobs(long period) throws Throwable {
-        List<MonitorTaskJob> jobs = new ArrayList<>();
+      @Override
+      public String id() {
+        return "TENANT_APP_SERVER_UPDATE";
+      }
+    });
+    return jobs;
+  }
 
-        jobs.add(new MonitorTaskJob() {
-            @Override
-            public boolean run() throws Throwable {
+  private void syncAoAction() {
+    List<MetaTableDTO> all = metaTableService.findAll();
 
-                syncAoAction();
-                return true;
-            }
+    if (CollectionUtils.isEmpty(all))
+      return;
 
-            @Override
-            public String id() {
-                return "TENANT_APP_SERVER_UPDATE";
-            }
-        });
-        return jobs;
-    }
+    for (MetaTableDTO metaTableDTO : all) {
+      List<Map<String, Object>> mapList = dataClientService.queryAll(metaTableDTO.getName());
+      Debugger.print("TenantAppServerUpdateTask", "qurey meta list from table={} size={}",
+          metaTableDTO.name, mapList.size());
+      if (CollectionUtils.isEmpty(mapList)) {
+        continue;
+      }
 
-    private void syncAoAction() {
-        List<MetaTableDTO> all = metaTableService.findAll();
+      Set<String> serverUkSets = new HashSet<>();
 
-        if (CollectionUtils.isEmpty(all))
-            return;
-
-        for (MetaTableDTO metaTableDTO : all) {
-            List<Map<String, Object>> mapList = dataClientService.queryAll(metaTableDTO.getName());
-            Debugger.print("TenantAppServerUpdateTask", "qurey meta list from table={} size={}",
-                metaTableDTO.name, mapList.size());
-            if (CollectionUtils.isEmpty(mapList)) {
-                continue;
-            }
-
-            Set<String> serverUkSets = new HashSet<>();
-
-            for (Map<String, Object> map : mapList) {
-                if (!map.containsKey("_modified")) {
-                    continue;
-                }
-
-                Double modified = (Double) map.get("_modified");
-
-                if ((System.currentTimeMillis() - modified) > EXPIRED) {
-                    serverUkSets.add((String) map.get("_uk"));
-                }
-            }
-            Debugger.print("TenantAppServerUpdateTask",
-                "need delete expried list from table={} size={}", metaTableDTO.name,
-                serverUkSets.size());
-
-            // 熔断
-            if ((serverUkSets.size() * 1.0 / mapList.size()) > 0.8) {
-                log.warn("need delete expried list from table={} size={} mapList={}, is fusing",
-                    metaTableDTO.name, serverUkSets.size(), mapList.size());
-                continue;
-            }
-
-            dataClientService.delete(metaTableDTO.name, new ArrayList<>(serverUkSets));
+      for (Map<String, Object> map : mapList) {
+        if (!map.containsKey("_modified")) {
+          continue;
         }
+
+        Double modified = (Double) map.get("_modified");
+
+        if ((System.currentTimeMillis() - modified) > EXPIRED) {
+          serverUkSets.add((String) map.get("_uk"));
+        }
+      }
+      Debugger.print("TenantAppServerUpdateTask", "need delete expried list from table={} size={}",
+          metaTableDTO.name, serverUkSets.size());
+
+      // 熔断
+      if ((serverUkSets.size() * 1.0 / mapList.size()) > 0.8) {
+        log.warn("need delete expried list from table={} size={} mapList={}, is fusing",
+            metaTableDTO.name, serverUkSets.size(), mapList.size());
+        continue;
+      }
+
+      dataClientService.delete(metaTableDTO.name, new ArrayList<>(serverUkSets));
     }
+  }
 }

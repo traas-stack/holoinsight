@@ -10,6 +10,6 @@ import java.util.List;
 
 public interface ServiceInstanceRelationEsService {
 
-    void batchInsert(final List<ServiceInstanceRelationEsDO> relationList) throws IOException;
+  void batchInsert(final List<ServiceInstanceRelationEsDO> relationList) throws IOException;
 
 }

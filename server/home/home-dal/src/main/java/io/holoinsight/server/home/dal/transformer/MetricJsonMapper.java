@@ -14,13 +14,12 @@ import java.lang.reflect.Type;
  * @date 2022/4/14 5:35 下午
  */
 public class MetricJsonMapper {
-    public static String asString(IntegrationMetricsDTO metrics) {
-        return J.toJson(metrics);
-    }
+  public static String asString(IntegrationMetricsDTO metrics) {
+    return J.toJson(metrics);
+  }
 
-    public static IntegrationMetricsDTO asObj(String str) {
-        Type t = new TypeToken<IntegrationMetricsDTO>() {
-        }.getType();
-        return J.fromJson(str, t);
-    }
+  public static IntegrationMetricsDTO asObj(String str) {
+    Type t = new TypeToken<IntegrationMetricsDTO>() {}.getType();
+    return J.fromJson(str, t);
+  }
 }

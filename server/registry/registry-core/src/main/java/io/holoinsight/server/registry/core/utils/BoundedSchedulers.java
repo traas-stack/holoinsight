@@ -11,17 +11,18 @@ import reactor.core.scheduler.Scheduler;
 import reactor.core.scheduler.Schedulers;
 
 /**
- * <p>created at 2022/3/2
+ * <p>
+ * created at 2022/3/2
  *
  * @author zzhb101
  */
 public class BoundedSchedulers {
-    public static final Scheduler BOUNDED;
+  public static final Scheduler BOUNDED;
 
-    static {
-        ThreadFactory tf = new ThreadFactoryBuilder() //
-            .setNameFormat("BOUNDED-%d") //
-            .build(); //
-        BOUNDED = Schedulers.newBoundedElastic(64, 65536, tf, 600);
-    }
+  static {
+    ThreadFactory tf = new ThreadFactoryBuilder() //
+        .setNameFormat("BOUNDED-%d") //
+        .build(); //
+    BOUNDED = Schedulers.newBoundedElastic(64, 65536, tf, 600);
+  }
 }

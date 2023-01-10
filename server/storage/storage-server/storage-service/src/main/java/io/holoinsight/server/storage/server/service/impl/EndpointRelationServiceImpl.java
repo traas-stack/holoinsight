@@ -18,11 +18,11 @@ import java.util.List;
 @ConditionalOnFeature("trace")
 public class EndpointRelationServiceImpl implements EndpointRelationService {
 
-    @Autowired
-    private EndpointRelationEsService endpointRelationEsService;
+  @Autowired
+  private EndpointRelationEsService endpointRelationEsService;
 
-    @Override
-    public void insert(List<EndpointRelationEsDO> relationList) throws IOException {
-        endpointRelationEsService.batchInsert(relationList);
-    }
+  @Override
+  public void insert(List<EndpointRelationEsDO> relationList) throws IOException {
+    endpointRelationEsService.batchInsert(relationList);
+  }
 }

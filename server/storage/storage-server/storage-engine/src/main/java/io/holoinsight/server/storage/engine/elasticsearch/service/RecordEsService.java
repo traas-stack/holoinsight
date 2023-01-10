@@ -27,22 +27,23 @@ import java.util.List;
 @Service
 public class RecordEsService<T extends RecordEsDO> {
 
-    @Autowired
-    private RestHighLevelClient esClient;
+  @Autowired
+  private RestHighLevelClient esClient;
 
-    public void batchInsert(List<T> entities) throws IOException {
-        if (CollectionUtils.isNotEmpty(entities)) {
-            BulkRequest bulkRequest = new BulkRequest();
-            entities.forEach(entity -> {
-                String writeIndexName = writeIndexName(entity.indexName(), entity.getTimeBucket());
-                bulkRequest.add(new IndexRequest(writeIndexName).source(EsGsonUtils.esGson().toJson(entity), XContentType.JSON));
-            });
-            esClient.bulk(bulkRequest, RequestOptions.DEFAULT);
-        }
+  public void batchInsert(List<T> entities) throws IOException {
+    if (CollectionUtils.isNotEmpty(entities)) {
+      BulkRequest bulkRequest = new BulkRequest();
+      entities.forEach(entity -> {
+        String writeIndexName = writeIndexName(entity.indexName(), entity.getTimeBucket());
+        bulkRequest.add(new IndexRequest(writeIndexName).source(EsGsonUtils.esGson().toJson(entity),
+            XContentType.JSON));
+      });
+      esClient.bulk(bulkRequest, RequestOptions.DEFAULT);
     }
+  }
 
-    private static String writeIndexName(String indexName, long timeBucket) {
-        return indexName + Const.LINE + timeBucket / 1000000;
-    }
+  private static String writeIndexName(String indexName, long timeBucket) {
+    return indexName + Const.LINE + timeBucket / 1000000;
+  }
 
 }

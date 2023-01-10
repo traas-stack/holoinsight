@@ -17,7 +17,7 @@ import java.io.Serializable;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Pagination implements Serializable {
-    private static final long serialVersionUID = 3817409052867396035L;
-    private int pageNum;
-    private int pageSize;
+  private static final long serialVersionUID = 3817409052867396035L;
+  private int pageNum;
+  private int pageSize;
 }

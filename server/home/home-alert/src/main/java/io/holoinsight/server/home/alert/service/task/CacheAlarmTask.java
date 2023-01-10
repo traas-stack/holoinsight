@@ -37,127 +37,129 @@ import java.util.concurrent.atomic.AtomicInteger;
 @Service
 public class CacheAlarmTask {
 
-    private static Logger LOGGER = LoggerFactory.getLogger(CacheAlarmTask.class);
+  private static Logger LOGGER = LoggerFactory.getLogger(CacheAlarmTask.class);
 
-    private static final ScheduledExecutorService syncExecutorService = new ScheduledThreadPoolExecutor(2,
-            r -> new Thread(r, "CacheAlarmTaskScheduled"));
+  private static final ScheduledExecutorService syncExecutorService =
+      new ScheduledThreadPoolExecutor(2, r -> new Thread(r, "CacheAlarmTaskScheduled"));
 
-    private static final Integer LIMIT = 5000;
-    //如果有多个 alarm 节点处理任务，则每个节点只取对应页的规则处理
-    private AtomicInteger pageSize = new AtomicInteger();
-    private AtomicInteger pageNum = new AtomicInteger();
+  private static final Integer LIMIT = 5000;
+  // 如果有多个 alarm 节点处理任务，则每个节点只取对应页的规则处理
+  private AtomicInteger pageSize = new AtomicInteger();
+  private AtomicInteger pageNum = new AtomicInteger();
 
-    @Resource
-    private AlarmRuleMapper alarmRuleDOMapper;
+  @Resource
+  private AlarmRuleMapper alarmRuleDOMapper;
 
-    @Resource
-    private CacheData cacheData;
+  @Resource
+  private CacheData cacheData;
 
-    @Autowired
-    private CacheAlarmConfig cacheAlarmConfig;
+  @Autowired
+  private CacheAlarmConfig cacheAlarmConfig;
 
-    public void start() {
-        LOGGER.info("[AlarmConfig] start alarm config syn!");
+  public void start() {
+    LOGGER.info("[AlarmConfig] start alarm config syn!");
 
-        syncExecutorService.scheduleAtFixedRate(this::getAlarmTaskCache, 0, 60, TimeUnit.SECONDS);
-        LOGGER.info("[AlarmConfig] alarm config sync finish!");
+    syncExecutorService.scheduleAtFixedRate(this::getAlarmTaskCache, 0, 60, TimeUnit.SECONDS);
+    LOGGER.info("[AlarmConfig] alarm config sync finish!");
+  }
+
+  private void getAlarmTaskCache() {
+    try {
+      // 获取数据库配置
+      List<AlarmRule> alarmRuleDOS = getAlarmRuleListByPage();
+      // LOGGER.info("[AlarmRuleDO] alarm rule info {}: {}", alarmRuleDOS.size(),
+      // G.get().toJson(alarmRuleDOS));
+      // 转换为告警配置(以dsid为维度)
+      ComputeTaskPackage computeTaskPackage = conver(alarmRuleDOS);
+      if (computeTaskPackage.getComputeTaskList() != null
+          && "true".equals(this.cacheAlarmConfig.getConfig("alarm_switch"))) {
+        TaskQueueManager.getInstance().offer(computeTaskPackage);
+      }
+
+    } catch (Exception e) {
+      LOGGER.error("InspectCtlParam Sync Exception", e);
     }
+  }
 
-    private void getAlarmTaskCache() {
-        try {
-            // 获取数据库配置
-            List<AlarmRule> alarmRuleDOS = getAlarmRuleListByPage();
-            //LOGGER.info("[AlarmRuleDO] alarm rule info {}: {}", alarmRuleDOS.size(), G.get().toJson(alarmRuleDOS));
-            // 转换为告警配置(以dsid为维度)
-            ComputeTaskPackage computeTaskPackage = conver(alarmRuleDOS);
-            if (computeTaskPackage.getComputeTaskList() != null && "true".equals(this.cacheAlarmConfig.getConfig("alarm_switch"))) {
-                TaskQueueManager.getInstance().offer(computeTaskPackage);
-            }
-
-        } catch (Exception e) {
-            LOGGER.error("InspectCtlParam Sync Exception", e);
+  public ComputeTaskPackage conver(List<AlarmRule> alarmRuleDOS) {
+    ComputeTaskPackage computeTaskPackage = new ComputeTaskPackage();
+    ComputeTask computeTask = new ComputeTask();
+    computeTask.setTraceId(UUID.randomUUID().toString());
+    List<InspectConfig> inspectConfigs = new ArrayList<>();
+    Map<String, InspectConfig> uniqueIdMap = new HashMap<>();
+    try {
+      alarmRuleDOS.forEach(alarmRuleDO -> {
+        InspectConfig inspectConfig = DoConvert.alarmRuleConverter(alarmRuleDO);
+        if (isFillter(inspectConfig)) {
+          // 放入缓存
+          uniqueIdMap.put(inspectConfig.getUniqueId(), inspectConfig);
+          inspectConfigs.add(inspectConfig);
         }
+      });
+      cacheData.setUniqueIdMap(uniqueIdMap);
+      if (inspectConfigs.size() != 0) {
+        computeTask.setInspectConfigs(inspectConfigs);
+        computeTaskPackage.setComputeTaskList(Arrays.asList(computeTask));
+      }
+    } catch (Exception e) {
+      LOGGER.error("fail to convert alarmRules for {}", e.getMessage(), e);
     }
+    return computeTaskPackage;
+  }
 
-    public ComputeTaskPackage conver(List<AlarmRule> alarmRuleDOS) {
-        ComputeTaskPackage computeTaskPackage = new ComputeTaskPackage();
-        ComputeTask computeTask = new ComputeTask();
-        computeTask.setTraceId(UUID.randomUUID().toString());
-        List<InspectConfig> inspectConfigs = new ArrayList<>();
-        Map<String, InspectConfig> uniqueIdMap = new HashMap<>();
-        try {
-            alarmRuleDOS.forEach(alarmRuleDO -> {
-                InspectConfig inspectConfig = DoConvert.alarmRuleConverter(alarmRuleDO);
-                if (isFillter(inspectConfig)) {
-                    // 放入缓存
-                    uniqueIdMap.put(inspectConfig.getUniqueId(), inspectConfig);
-                    inspectConfigs.add(inspectConfig);
-                }
-            });
-            cacheData.setUniqueIdMap(uniqueIdMap);
-            if (inspectConfigs.size() != 0) {
-                computeTask.setInspectConfigs(inspectConfigs);
-                computeTaskPackage.setComputeTaskList(Arrays.asList(computeTask));
-            }
-        } catch (Exception e) {
-            LOGGER.error("fail to convert alarmRules for {}", e.getMessage(), e);
-        }
-        return computeTaskPackage;
+  private boolean isFillter(InspectConfig inspectConfig) {
+    Boolean status = inspectConfig.getStatus();
+    return status != null && status;
+  }
+
+  private List<AlarmRule> getAlarmRuleList() {
+    List<AlarmRule> alarmRuleDOS = new ArrayList<>();
+    boolean batch = true;
+    long id = 0L;
+    while (batch) {
+      QueryWrapper<AlarmRule> condition = new QueryWrapper<>();
+      condition.gt("id", id);
+      condition.orderByDesc("id");
+      condition.last("LIMIT " + LIMIT);
+
+      List<AlarmRule> alarmRuleDo = alarmRuleDOMapper.selectList(condition);
+      if (alarmRuleDo.size() < LIMIT) {
+        batch = false;
+      } else {
+        id = alarmRuleDo.get(0).getId();
+      }
+      alarmRuleDOS.addAll(alarmRuleDo);
     }
+    return alarmRuleDOS;
+  }
 
-    private boolean isFillter(InspectConfig inspectConfig) {
-        Boolean status = inspectConfig.getStatus();
-        return status != null && status;
+  public Integer ruleSize() {
+    return this.alarmRuleDOMapper.selectCount(new QueryWrapper<>()).intValue();
+  }
+
+  private List<AlarmRule> getAlarmRuleListByPage() {
+    List<AlarmRule> alarmRuleDOS = new ArrayList<>();
+    int limit = LIMIT;
+    int offset = 0;
+    if (this.pageSize.get() > 0) {
+      limit = this.pageSize.get();
+      offset = this.pageNum.get();
     }
-
-    private List<AlarmRule> getAlarmRuleList() {
-        List<AlarmRule> alarmRuleDOS = new ArrayList<>();
-        boolean batch = true;
-        long id = 0L;
-        while (batch) {
-            QueryWrapper<AlarmRule> condition = new QueryWrapper<>();
-            condition.gt("id", id);
-            condition.orderByDesc("id");
-            condition.last("LIMIT " + LIMIT);
-
-            List<AlarmRule> alarmRuleDo = alarmRuleDOMapper.selectList(condition);
-            if (alarmRuleDo.size() < LIMIT) {
-                batch = false;
-            } else {
-                id = alarmRuleDo.get(0).getId();
-            }
-            alarmRuleDOS.addAll(alarmRuleDo);
-        }
-        return alarmRuleDOS;
+    QueryWrapper<AlarmRule> condition = new QueryWrapper();
+    condition.orderByDesc("id");
+    condition.last("limit " + limit + " offset " + offset);
+    List<AlarmRule> alarmRuleDo = alarmRuleDOMapper.selectList(condition);
+    if (!CollectionUtils.isEmpty(alarmRuleDo)) {
+      alarmRuleDOS.addAll(alarmRuleDo);
     }
+    return alarmRuleDOS;
+  }
 
-    public Integer ruleSize(){
-        return this.alarmRuleDOMapper.selectCount(new QueryWrapper<>()).intValue();
-    }
+  public void setPageSize(int size) {
+    this.pageSize.set(size);
+  }
 
-    private List<AlarmRule> getAlarmRuleListByPage() {
-        List<AlarmRule> alarmRuleDOS = new ArrayList<>();
-        int limit = LIMIT;
-        int offset = 0;
-        if (this.pageSize.get() > 0) {
-            limit = this.pageSize.get();
-            offset = this.pageNum.get();
-        }
-        QueryWrapper<AlarmRule> condition = new QueryWrapper();
-        condition.orderByDesc("id");
-        condition.last("limit " + limit +" offset " + offset);
-        List<AlarmRule> alarmRuleDo = alarmRuleDOMapper.selectList(condition);
-        if (!CollectionUtils.isEmpty(alarmRuleDo)) {
-            alarmRuleDOS.addAll(alarmRuleDo);
-        }
-        return alarmRuleDOS;
-    }
-
-    public void setPageSize(int size) {
-        this.pageSize.set(size);
-    }
-
-    public void setPageNum(int num) {
-        this.pageNum.set(num);
-    }
+  public void setPageNum(int num) {
+    this.pageNum.set(num);
+  }
 }

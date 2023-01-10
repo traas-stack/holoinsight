@@ -16,5 +16,6 @@ import java.util.List;
  */
 public interface AlarmLoadData {
 
-    List<DataResult> queryDataResult(ComputeTask computeTask, InspectConfig inspectConfig, Trigger trigger);
+  List<DataResult> queryDataResult(ComputeTask computeTask, InspectConfig inspectConfig,
+      Trigger trigger);
 }

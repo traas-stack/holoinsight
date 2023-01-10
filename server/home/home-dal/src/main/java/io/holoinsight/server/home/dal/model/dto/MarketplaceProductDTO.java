@@ -14,29 +14,29 @@ import java.util.Date;
  */
 @Data
 public class MarketplaceProductDTO {
-    public Long    id;
+  public Long id;
 
-    public String  name;
+  public String name;
 
-    public String  profile;
+  public String profile;
 
-    public String  overview;
+  public String overview;
 
-    public String  configuration;
+  public String configuration;
 
-    public String  price;
+  public String price;
 
-    public String  feature;
+  public String feature;
 
-    public Boolean status;
+  public Boolean status;
 
-    public String  type;
+  public String type;
 
-    public String  creator;
+  public String creator;
 
-    public String  modifier;
+  public String modifier;
 
-    public Date    gmtCreate;
+  public Date gmtCreate;
 
-    public Date    gmtModified;
+  public Date gmtModified;
 }

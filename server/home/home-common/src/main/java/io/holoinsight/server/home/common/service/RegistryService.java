@@ -31,78 +31,76 @@ import java.util.Map;
 @Service
 public class RegistryService {
 
-    @Value("${registry.domain}")
-    private String                                                               registryHost;
+  @Value("${registry.domain}")
+  private String registryHost;
 
-    private static ManagedChannel                                                channel;
-    private static RegistryServiceForProdGrpc.RegistryServiceForProdBlockingStub c;
+  private static ManagedChannel channel;
+  private static RegistryServiceForProdGrpc.RegistryServiceForProdBlockingStub c;
 
-    public void init() {
-        channel = ManagedChannelBuilder.forAddress(registryHost, 7201).usePlaintext().build();
-        c = RegistryServiceForProdGrpc.newBlockingStub(channel);
+  public void init() {
+    channel = ManagedChannelBuilder.forAddress(registryHost, 7201).usePlaintext().build();
+    c = RegistryServiceForProdGrpc.newBlockingStub(channel);
+  }
+
+  public List<FileNode> listFiles(String tenant, Map<String, Object> dim, String logPath) {
+    // 会自动忽略 '/' 根目录
+    // '.' 开头的隐藏目录
+
+    ListFilesRequest req = ListFilesRequest.newBuilder() //
+        .setName(logPath) //
+        // 最大深度
+        .setMaxDepth(5) //
+        // 如果为true, 会显示 home 和 admin 节点
+        .setIncludeParents(true) //
+        // 支持的扩展名 不传则允许任意
+        // .addAllIncludeExts(Arrays.asList("log"))
+        .setTarget(buildTarget(tenant, dim)).build(); //
+
+    ListFilesResponse listFilesResponse = c.listFiles(req);
+
+    if (listFilesResponse.getHeader().getCode() != 0) {
+      log.warn("listFiles failed, " + dim + " from " + logPath + ", errorMsg: "
+          + listFilesResponse.getHeader().getMessage());
+      throw new RuntimeException(
+          "listFiles failed, errorMsg: " + listFilesResponse.getHeader().getMessage());
     }
 
-    public List<FileNode> listFiles(String tenant, Map<String, Object> dim, String logPath) {
-        // 会自动忽略 '/' 根目录
-        // '.' 开头的隐藏目录
+    return listFilesResponse.getNodesList();
+  }
 
-        ListFilesRequest req = ListFilesRequest.newBuilder() //
-            .setName(logPath) //
-            // 最大深度
-            .setMaxDepth(5) //
-            // 如果为true, 会显示 home 和 admin 节点
-            .setIncludeParents(true) //
-            // 支持的扩展名 不传则允许任意
-            // .addAllIncludeExts(Arrays.asList("log"))
-            .setTarget(buildTarget(tenant, dim)).build(); //
+  public ProtocolStringList previewFile(String tenant, Map<String, Object> dim, String logPath) {
+    PreviewFileRequest req = PreviewFileRequest.newBuilder() //
+        .setPath(logPath) //
+        .setMaxBytes(4096) //
+        .setMaxLines(100) //
+        .setTarget(buildTarget(tenant, dim)).build();
 
-        ListFilesResponse listFilesResponse = c.listFiles(req);
+    PreviewFileResponse previewFileResponse = c.previewFile(req);
 
-        if (listFilesResponse.getHeader().getCode() != 0) {
-            log.warn("listFiles failed, " + dim + " from " + logPath + ", errorMsg: "
-                     + listFilesResponse.getHeader().getMessage());
-            throw new RuntimeException(
-                "listFiles failed, errorMsg: " + listFilesResponse.getHeader().getMessage());
-        }
-
-        return listFilesResponse.getNodesList();
+    if (previewFileResponse.getHeader().getCode() != 0) {
+      log.warn("previewFile failed, " + dim.get("ip") + " from " + logPath + ", errorMsg: "
+          + previewFileResponse.getHeader().getMessage());
+      throw new RuntimeException(
+          "previewFile failed, errorMsg: " + previewFileResponse.getHeader().getMessage());
     }
 
-    public ProtocolStringList previewFile(String tenant, Map<String, Object> dim, String logPath) {
-        PreviewFileRequest req = PreviewFileRequest.newBuilder() //
-            .setPath(logPath) //
-            .setMaxBytes(4096) //
-            .setMaxLines(100) //
-            .setTarget(buildTarget(tenant, dim)).build();
+    return previewFileResponse.getContentList();
+  }
 
-        PreviewFileResponse previewFileResponse = c.previewFile(req);
-
-        if (previewFileResponse.getHeader().getCode() != 0) {
-            log.warn("previewFile failed, " + dim.get("ip") + " from " + logPath + ", errorMsg: "
-                     + previewFileResponse.getHeader().getMessage());
-            throw new RuntimeException(
-                "previewFile failed, errorMsg: " + previewFileResponse.getHeader().getMessage());
-        }
-
-        return previewFileResponse.getContentList();
+  public String inspect(String tenant, Map<String, Object> dim) {
+    InspectRequest req = InspectRequest.newBuilder() //
+        .setTarget(buildTarget(tenant, dim)).build(); //
+    InspectResponse resp = c.inspect(req);
+    if (resp.getHeader().getCode() != 0) {
+      log.warn("inspect failed, " + dim.get("ip") + ", errorMsg: " + resp.getHeader().getMessage());
+      throw new RuntimeException("inspect failed, errorMsg: " + resp.getHeader().getMessage());
     }
 
-    public String inspect(String tenant, Map<String, Object> dim) {
-        InspectRequest req = InspectRequest.newBuilder() //
-            .setTarget(buildTarget(tenant, dim)).build(); //
-        InspectResponse resp = c.inspect(req);
-        if (resp.getHeader().getCode() != 0) {
-            log.warn(
-                "inspect failed, " + dim.get("ip") + ", errorMsg: " + resp.getHeader().getMessage());
-            throw new RuntimeException(
-                "inspect failed, errorMsg: " + resp.getHeader().getMessage());
-        }
+    return resp.getResult();
+  }
 
-        return resp.getResult();
-    }
-
-    private static TargetIdentifier buildTarget(String tenant, Map<String, Object> dim) {
-        return TargetIdentifier.newBuilder().setTenant(tenant).setTargetUk((String) dim.get("_uk"))
-            .build();
-    }
+  private static TargetIdentifier buildTarget(String tenant, Map<String, Object> dim) {
+    return TargetIdentifier.newBuilder().setTenant(tenant).setTargetUk((String) dim.get("_uk"))
+        .build();
+  }
 }

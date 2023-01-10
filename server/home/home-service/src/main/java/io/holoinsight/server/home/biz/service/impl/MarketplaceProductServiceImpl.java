@@ -2,7 +2,6 @@
  * Copyright 2022 Holoinsight Project Authors. Licensed under Apache-2.0.
  */
 
-
 package io.holoinsight.server.home.biz.service.impl;
 
 import io.holoinsight.server.home.biz.service.MarketplaceProductService;
@@ -30,134 +29,135 @@ import java.util.Map;
  * @version 1.0: MarketplaceProductServiceImpl.java, v 0.1 2022年10月13日 上午11:36 jinsong.yjs Exp $
  */
 @Service
-public class MarketplaceProductServiceImpl extends ServiceImpl<MarketplaceProductMapper, MarketplaceProduct>
-        implements MarketplaceProductService {
+public class MarketplaceProductServiceImpl extends
+    ServiceImpl<MarketplaceProductMapper, MarketplaceProduct> implements MarketplaceProductService {
 
-    @Autowired
-    private MarketplaceProductConverter marketplaceProductConverter;
+  @Autowired
+  private MarketplaceProductConverter marketplaceProductConverter;
 
 
-    @Override
-    public MarketplaceProductDTO findById(Long id) {
-        MarketplaceProduct model = getById(id);
-        if (model == null) {
-            return null;
-        }
-        return marketplaceProductConverter.doToDTO(model);
+  @Override
+  public MarketplaceProductDTO findById(Long id) {
+    MarketplaceProduct model = getById(id);
+    if (model == null) {
+      return null;
+    }
+    return marketplaceProductConverter.doToDTO(model);
+  }
+
+  @Override
+  public List<MarketplaceProductDTO> findByMap(Map<String, Object> columnMap) {
+    List<MarketplaceProduct> models = listByMap(columnMap);
+
+    return marketplaceProductConverter.dosToDTOs(models);
+  }
+
+  @Override
+  public MarketplaceProductDTO create(MarketplaceProductDTO MarketplaceProductDTO) {
+    MarketplaceProductDTO.setGmtCreate(new Date());
+    MarketplaceProductDTO.setGmtModified(new Date());
+    MarketplaceProduct model = marketplaceProductConverter.dtoToDO(MarketplaceProductDTO);
+    save(model);
+    MarketplaceProductDTO customPluginDTOId = marketplaceProductConverter.doToDTO(model);
+    EventBusHolder.post(customPluginDTOId);
+    return customPluginDTOId;
+  }
+
+  @Override
+  public void deleteById(Long id) {
+    MarketplaceProduct MarketplaceProduct = getById(id);
+    if (null == MarketplaceProduct) {
+      return;
+    }
+    removeById(id);
+    EventBusHolder.post(MarketplaceProduct);
+  }
+
+  @Override
+  public MarketplaceProductDTO updateByRequest(MarketplaceProductDTO MarketplaceProductDTO) {
+    MarketplaceProductDTO.setGmtModified(new Date());
+    MarketplaceProduct model = marketplaceProductConverter.dtoToDO(MarketplaceProductDTO);
+    saveOrUpdate(model);
+    MarketplaceProductDTO save = marketplaceProductConverter.doToDTO(model);
+    EventBusHolder.post(save);
+    return save;
+  }
+
+  @Override
+  public MonitorPageResult<MarketplaceProductDTO> getListByPage(
+      MonitorPageRequest<MarketplaceProductDTO> MarketplaceProductDTORequest) {
+    if (MarketplaceProductDTORequest.getTarget() == null) {
+      return null;
     }
 
-    @Override
-    public List<MarketplaceProductDTO> findByMap(Map<String, Object> columnMap) {
-        List<MarketplaceProduct> models = listByMap(columnMap);
+    QueryWrapper<MarketplaceProduct> wrapper = new QueryWrapper<>();
 
-        return marketplaceProductConverter.dosToDTOs(models);
+    MarketplaceProductDTO MarketplaceProductDTO = MarketplaceProductDTORequest.getTarget();
+
+    if (null != MarketplaceProductDTO.getGmtCreate()) {
+      wrapper.ge("gmt_create", MarketplaceProductDTO.getGmtCreate());
+    }
+    if (null != MarketplaceProductDTO.getGmtModified()) {
+      wrapper.le("gmt_modified", MarketplaceProductDTO.getGmtCreate());
     }
 
-    @Override
-    public MarketplaceProductDTO create(MarketplaceProductDTO MarketplaceProductDTO) {
-        MarketplaceProductDTO.setGmtCreate(new Date());
-        MarketplaceProductDTO.setGmtModified(new Date());
-        MarketplaceProduct model = marketplaceProductConverter.dtoToDO(MarketplaceProductDTO);
-        save(model);
-        MarketplaceProductDTO customPluginDTOId = marketplaceProductConverter.doToDTO(model);
-        EventBusHolder.post(customPluginDTOId);
-        return customPluginDTOId;
+    if (StringUtil.isNotBlank(MarketplaceProductDTO.getCreator())) {
+      wrapper.eq("creator", MarketplaceProductDTO.getCreator().trim());
     }
 
-    @Override
-    public void deleteById(Long id) {
-        MarketplaceProduct MarketplaceProduct = getById(id);
-        if (null == MarketplaceProduct) {
-            return;
-        }
-        removeById(id);
-        EventBusHolder.post(MarketplaceProduct);
+    if (StringUtil.isNotBlank(MarketplaceProductDTO.getModifier())) {
+      wrapper.eq("modifier", MarketplaceProductDTO.getModifier().trim());
     }
 
-    @Override
-    public MarketplaceProductDTO updateByRequest(MarketplaceProductDTO MarketplaceProductDTO) {
-        MarketplaceProductDTO.setGmtModified(new Date());
-        MarketplaceProduct model = marketplaceProductConverter.dtoToDO(MarketplaceProductDTO);
-        saveOrUpdate(model);
-        MarketplaceProductDTO save = marketplaceProductConverter.doToDTO(model);
-        EventBusHolder.post(save);
-        return save;
+    if (null != MarketplaceProductDTO.getId()) {
+      wrapper.eq("id", MarketplaceProductDTO.getId());
     }
 
-    @Override
-    public MonitorPageResult<MarketplaceProductDTO> getListByPage(MonitorPageRequest<MarketplaceProductDTO> MarketplaceProductDTORequest) {
-        if (MarketplaceProductDTORequest.getTarget() == null) {
-            return null;
-        }
-
-        QueryWrapper<MarketplaceProduct> wrapper = new QueryWrapper<>();
-
-        MarketplaceProductDTO MarketplaceProductDTO = MarketplaceProductDTORequest.getTarget();
-
-        if (null != MarketplaceProductDTO.getGmtCreate()) {
-            wrapper.ge("gmt_create", MarketplaceProductDTO.getGmtCreate());
-        }
-        if (null != MarketplaceProductDTO.getGmtModified()) {
-            wrapper.le("gmt_modified", MarketplaceProductDTO.getGmtCreate());
-        }
-
-        if (StringUtil.isNotBlank(MarketplaceProductDTO.getCreator())) {
-            wrapper.eq("creator", MarketplaceProductDTO.getCreator().trim());
-        }
-
-        if (StringUtil.isNotBlank(MarketplaceProductDTO.getModifier())) {
-            wrapper.eq("modifier", MarketplaceProductDTO.getModifier().trim());
-        }
-
-        if (null != MarketplaceProductDTO.getId()) {
-            wrapper.eq("id", MarketplaceProductDTO.getId());
-        }
-
-        if (StringUtil.isNotBlank(MarketplaceProductDTO.getName())) {
-            wrapper.like("name", MarketplaceProductDTO.getName().trim());
-        }
-
-
-        if (null != MarketplaceProductDTO.getStatus()) {
-            wrapper.eq("status", MarketplaceProductDTO.getStatus());
-        }
-        wrapper.select(MarketplaceProduct.class, info -> !info.getColumn().equals("creator")
-                && !info.getColumn().equals("modifier"));
-
-        Page<MarketplaceProduct> page = new Page<>(MarketplaceProductDTORequest.getPageNum(),
-                MarketplaceProductDTORequest.getPageSize());
-
-        page = page(page, wrapper);
-
-        MonitorPageResult<MarketplaceProductDTO> dtos = new MonitorPageResult<>();
-
-        dtos.setItems(marketplaceProductConverter.dosToDTOs(page.getRecords()));
-        dtos.setPageNum(MarketplaceProductDTORequest.getPageNum());
-        dtos.setPageSize(MarketplaceProductDTORequest.getPageSize());
-        dtos.setTotalCount(page.getTotal());
-        dtos.setTotalPage(page.getPages());
-
-        return dtos;
+    if (StringUtil.isNotBlank(MarketplaceProductDTO.getName())) {
+      wrapper.like("name", MarketplaceProductDTO.getName().trim());
     }
 
-    @Override
-    public List<MarketplaceProductDTO> getListByKeyword(String keyword, String tenant) {
-        QueryWrapper<MarketplaceProduct> wrapper = new QueryWrapper<>();
-        if (StringUtil.isNotBlank(tenant)) {
-            wrapper.eq("tenant", tenant);
-        }
-        wrapper.like("id", keyword).or().like("name", keyword);
-        Page<MarketplaceProduct> page = new Page<>(1, 20);
-        page = page(page, wrapper);
 
-        return marketplaceProductConverter.dosToDTOs(page.getRecords());
+    if (null != MarketplaceProductDTO.getStatus()) {
+      wrapper.eq("status", MarketplaceProductDTO.getStatus());
     }
+    wrapper.select(MarketplaceProduct.class,
+        info -> !info.getColumn().equals("creator") && !info.getColumn().equals("modifier"));
 
-    @Override
-    public List<MarketplaceProductDTO> getListByNameLike(String name, String tenant) {
-        QueryWrapper<MarketplaceProduct> wrapper = new QueryWrapper<>();
-        wrapper.select().like("name", name);
-        List<MarketplaceProduct> customPlugins = baseMapper.selectList(wrapper);
-        return marketplaceProductConverter.dosToDTOs(customPlugins);
+    Page<MarketplaceProduct> page = new Page<>(MarketplaceProductDTORequest.getPageNum(),
+        MarketplaceProductDTORequest.getPageSize());
+
+    page = page(page, wrapper);
+
+    MonitorPageResult<MarketplaceProductDTO> dtos = new MonitorPageResult<>();
+
+    dtos.setItems(marketplaceProductConverter.dosToDTOs(page.getRecords()));
+    dtos.setPageNum(MarketplaceProductDTORequest.getPageNum());
+    dtos.setPageSize(MarketplaceProductDTORequest.getPageSize());
+    dtos.setTotalCount(page.getTotal());
+    dtos.setTotalPage(page.getPages());
+
+    return dtos;
+  }
+
+  @Override
+  public List<MarketplaceProductDTO> getListByKeyword(String keyword, String tenant) {
+    QueryWrapper<MarketplaceProduct> wrapper = new QueryWrapper<>();
+    if (StringUtil.isNotBlank(tenant)) {
+      wrapper.eq("tenant", tenant);
     }
+    wrapper.like("id", keyword).or().like("name", keyword);
+    Page<MarketplaceProduct> page = new Page<>(1, 20);
+    page = page(page, wrapper);
+
+    return marketplaceProductConverter.dosToDTOs(page.getRecords());
+  }
+
+  @Override
+  public List<MarketplaceProductDTO> getListByNameLike(String name, String tenant) {
+    QueryWrapper<MarketplaceProduct> wrapper = new QueryWrapper<>();
+    wrapper.select().like("name", name);
+    List<MarketplaceProduct> customPlugins = baseMapper.selectList(wrapper);
+    return marketplaceProductConverter.dosToDTOs(customPlugins);
+  }
 }

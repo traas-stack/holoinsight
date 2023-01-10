@@ -27,53 +27,60 @@ import java.util.Collections;
 
 /**
  * @author wangsiyuan
- * @date 2022/10/11  9:12 下午
+ * @date 2022/10/11 9:12 下午
  */
 @Service
 public class ValueUpAbnormalDetect implements FunctionLogic {
-    private static final Logger LOGGER = LoggerFactory.getLogger(ValueUpAbnormalDetect.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(ValueUpAbnormalDetect.class);
 
-    @Value("${holoinsight.alert.algorithm.url}")
-    private String url;
+  @Value("${holoinsight.alert.algorithm.url}")
+  private String url;
 
-    @Override
-    public FunctionEnum getFunc() {
-        return FunctionEnum.ValueUp;
+  @Override
+  public FunctionEnum getFunc() {
+    return FunctionEnum.ValueUp;
+  }
+
+  @Override
+  public TriggerResult invoke(DataResult dataResult, FunctionConfigParam functionConfigParam) {
+    FunctionConfigAIParam functionConfigAIParam = (FunctionConfigAIParam) functionConfigParam;
+    TriggerAIResult triggerAIResult = new TriggerAIResult();
+    ValueAlgorithmRequest valueAlgorithmRequest = new ValueAlgorithmRequest();
+    AlgorithmConfig algorithmConfig = new AlgorithmConfig();
+    algorithmConfig.setAlgorithmType("value");
+    algorithmConfig.setDetectType("up");
+    algorithmConfig.setDefaultDuration(2);
+    algorithmConfig.setStrictPolicy("auto");
+
+    DatasourceConfig datasourceConfig = new DatasourceConfig();
+    datasourceConfig.setFields(Collections
+        .singletonList(functionConfigAIParam.getTrigger().getDatasources().get(0).getMetric()));
+    datasourceConfig.setSource("saas");
+
+    valueAlgorithmRequest.setTaskId(functionConfigAIParam.getTraceId());
+    valueAlgorithmRequest.setDatasourceConfig(datasourceConfig);
+    valueAlgorithmRequest
+        .setDetectTime(functionConfigAIParam.getPeriod() + PeriodType.MINUTE.intervalMillis());
+    valueAlgorithmRequest.setAlgorithmConfig(algorithmConfig);
+    valueAlgorithmRequest
+        .setExtendConfig(ExtendConfig.triggerConverter(dataResult, functionConfigAIParam));
+    // 设置算法接口名称
+    String algoUrl = url + "/serving";
+    // 调用算法接口
+    String abnormalResult =
+        AlgorithmHttp.invokeAlgorithm(algoUrl, G.get().toJson(valueAlgorithmRequest));
+    ValueAlgorithmResponse valueAlgorithmResponse =
+        G.get().fromJson(abnormalResult, ValueAlgorithmResponse.class);
+    if (valueAlgorithmResponse != null && valueAlgorithmResponse.getIsException()) {
+      triggerAIResult.setHit(true);
+      triggerAIResult
+          .setCurrentValue(valueAlgorithmResponse.getAbnormalFeatures().getCurrentValue());
+      triggerAIResult
+          .setAnomalyDuration(valueAlgorithmResponse.getAbnormalFeatures().getAnomalyDuration());
+      triggerAIResult.setBaseLine(valueAlgorithmResponse.getAbnormalFeatures().getBaseLine());
+      triggerAIResult.setChangeRate(valueAlgorithmResponse.getAbnormalFeatures().getChangeRate());
+      triggerAIResult.setMsg(valueAlgorithmResponse.getMsg());
     }
-
-    @Override
-    public TriggerResult invoke(DataResult dataResult, FunctionConfigParam functionConfigParam) {
-        FunctionConfigAIParam functionConfigAIParam = (FunctionConfigAIParam) functionConfigParam;
-        TriggerAIResult triggerAIResult = new TriggerAIResult();
-        ValueAlgorithmRequest valueAlgorithmRequest = new ValueAlgorithmRequest();
-        AlgorithmConfig algorithmConfig = new AlgorithmConfig();
-        algorithmConfig.setAlgorithmType("value");
-        algorithmConfig.setDetectType("up");
-        algorithmConfig.setDefaultDuration(2);
-        algorithmConfig.setStrictPolicy("auto");
-
-        DatasourceConfig datasourceConfig = new DatasourceConfig();
-        datasourceConfig.setFields(Collections.singletonList(functionConfigAIParam.getTrigger().getDatasources().get(0).getMetric()));
-        datasourceConfig.setSource("saas");
-
-        valueAlgorithmRequest.setTaskId(functionConfigAIParam.getTraceId());
-        valueAlgorithmRequest.setDatasourceConfig(datasourceConfig);
-        valueAlgorithmRequest.setDetectTime(functionConfigAIParam.getPeriod() + PeriodType.MINUTE.intervalMillis());
-        valueAlgorithmRequest.setAlgorithmConfig(algorithmConfig);
-        valueAlgorithmRequest.setExtendConfig(ExtendConfig.triggerConverter(dataResult, functionConfigAIParam));
-        // 设置算法接口名称
-        String algoUrl = url + "/serving";
-        // 调用算法接口
-        String abnormalResult = AlgorithmHttp.invokeAlgorithm(algoUrl, G.get().toJson(valueAlgorithmRequest));
-        ValueAlgorithmResponse valueAlgorithmResponse = G.get().fromJson(abnormalResult, ValueAlgorithmResponse.class);
-        if (valueAlgorithmResponse != null && valueAlgorithmResponse.getIsException()) {
-            triggerAIResult.setHit(true);
-            triggerAIResult.setCurrentValue(valueAlgorithmResponse.getAbnormalFeatures().getCurrentValue());
-            triggerAIResult.setAnomalyDuration(valueAlgorithmResponse.getAbnormalFeatures().getAnomalyDuration());
-            triggerAIResult.setBaseLine(valueAlgorithmResponse.getAbnormalFeatures().getBaseLine());
-            triggerAIResult.setChangeRate(valueAlgorithmResponse.getAbnormalFeatures().getChangeRate());
-            triggerAIResult.setMsg(valueAlgorithmResponse.getMsg());
-        }
-        return triggerAIResult;
-    }
+    return triggerAIResult;
+  }
 }

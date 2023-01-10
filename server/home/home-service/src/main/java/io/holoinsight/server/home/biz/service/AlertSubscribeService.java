@@ -18,12 +18,13 @@ import java.util.Map;
 public interface AlertSubscribeService extends IService<AlarmSubscribe> {
 
 
-    Boolean saveDataBatch(AlarmSubscribeDTO alarmSubscribeDTO, String creator, String tenant);
+  Boolean saveDataBatch(AlarmSubscribeDTO alarmSubscribeDTO, String creator, String tenant);
 
-    AlarmSubscribeDTO queryByUniqueId(Map<String, Object> columnMap);
-    List<AlarmSubscribeInfo> queryByMap(Map<String, Object> columnMap);
+  AlarmSubscribeDTO queryByUniqueId(Map<String, Object> columnMap);
 
-    Long save(AlarmSubscribeInfo alarmSubscribeInfo);
+  List<AlarmSubscribeInfo> queryByMap(Map<String, Object> columnMap);
 
-    Boolean updateById(AlarmSubscribeInfo alarmSubscribeInfo);
+  Long save(AlarmSubscribeInfo alarmSubscribeInfo);
+
+  Boolean updateById(AlarmSubscribeInfo alarmSubscribeInfo);
 }

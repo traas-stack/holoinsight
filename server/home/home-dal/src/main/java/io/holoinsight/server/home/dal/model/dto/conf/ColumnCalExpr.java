@@ -14,22 +14,21 @@ import java.io.Serializable;
  */
 @Data
 public class ColumnCalExpr implements Serializable {
-    private static final long serialVersionUID = 4667410956863321660L;
-    /**
-     * 函数
-     */
-    private String            func;
+  private static final long serialVersionUID = 4667410956863321660L;
+  /**
+   * 函数
+   */
+  private String func;
 
-    /**
-     * 参数
-     */
-    private String            params;
+  /**
+   * 参数
+   */
+  private String params;
 
-    public ColumnCalExpr() {
-    }
+  public ColumnCalExpr() {}
 
-    public ColumnCalExpr(String func, String params) {
-        this.func = func;
-        this.params = params;
-    }
+  public ColumnCalExpr(String func, String params) {
+    this.func = func;
+    this.params = params;
+  }
 }

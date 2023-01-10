@@ -9,19 +9,20 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /**
- * <p>created at 2022/12/1
+ * <p>
+ * created at 2022/12/1
  *
  * @author xiangwanpeng
  */
 @Configuration
 public class QueryGrpcServerConfiguration {
-    @Bean
-    public QueryGrpcService queryGrpcService() {
-        return new QueryGrpcService();
-    }
+  @Bean
+  public QueryGrpcService queryGrpcService() {
+    return new QueryGrpcService();
+  }
 
-    @Bean
-    public QueryGrpcServer queryGrpcServer() {
-        return new QueryGrpcServer();
-    }
+  @Bean
+  public QueryGrpcServer queryGrpcServer() {
+    return new QueryGrpcServer();
+  }
 }

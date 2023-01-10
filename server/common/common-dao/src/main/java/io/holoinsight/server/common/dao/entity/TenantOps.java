@@ -16,14 +16,14 @@ import java.util.Date;
  */
 @Data
 public class TenantOps {
-    @TableId(type = IdType.AUTO)
-    public Long   id;
+  @TableId(type = IdType.AUTO)
+  public Long id;
 
-    public String tenant;
+  public String tenant;
 
-    public String storage;
+  public String storage;
 
-    public Date   gmtCreate;
+  public Date gmtCreate;
 
-    public Date   gmtModified;
+  public Date gmtModified;
 }

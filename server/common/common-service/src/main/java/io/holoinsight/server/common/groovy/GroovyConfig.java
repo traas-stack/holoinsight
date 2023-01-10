@@ -13,22 +13,23 @@ import lombok.Data;
 import lombok.Getter;
 
 /**
- * <p>created at 2022/3/4
+ * <p>
+ * created at 2022/3/4
  *
  * @author xzchaoo
  */
 @Getter
 public class GroovyConfig extends AbstractConfig {
-    private volatile Basic basic = new Basic();
+  private volatile Basic basic = new Basic();
 
-    @Override
-    protected void refresh(Binder binder) {
-        // 不用 groovy.basic
-        binder.bind("groovy", Basic.class).ifBound(x -> basic = x);
-    }
+  @Override
+  protected void refresh(Binder binder) {
+    // 不用 groovy.basic
+    binder.bind("groovy", Basic.class).ifBound(x -> basic = x);
+  }
 
-    @Data
-    public static class Basic {
-        private String token = UUID.randomUUID().toString();
-    }
+  @Data
+  public static class Basic {
+    private String token = UUID.randomUUID().toString();
+  }
 }

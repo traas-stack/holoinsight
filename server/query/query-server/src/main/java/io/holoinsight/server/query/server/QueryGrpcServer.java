@@ -18,36 +18,37 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
- * <p>created at 2022/12/1
+ * <p>
+ * created at 2022/12/1
  *
  * @author xiangwanpeng
  */
 @Slf4j
 public class QueryGrpcServer {
 
-    @Autowired
-    private QueryGrpcService queryGrpcService;
+  @Autowired
+  private QueryGrpcService queryGrpcService;
 
-    @Autowired
-    private CommonThreadPools commonThreadPools;
+  @Autowired
+  private CommonThreadPools commonThreadPools;
 
-    @Autowired
-    private CommonHooksManager commonHooksManager;
+  @Autowired
+  private CommonHooksManager commonHooksManager;
 
-    @PostConstruct
-    public void start() throws IOException {
-        int port = 9090;
+  @PostConstruct
+  public void start() throws IOException {
+    int port = 9090;
 
-        ServerBuilder<?> b = ServerBuilder.forPort(port) //
-            .executor(commonThreadPools.getRpcServer()) //
-            .maxInboundMessageSize(100 * 1024 * 1024);
+    ServerBuilder<?> b = ServerBuilder.forPort(port) //
+        .executor(commonThreadPools.getRpcServer()) //
+        .maxInboundMessageSize(100 * 1024 * 1024);
 
-        ServerServiceDefinition ssd = queryGrpcService.bindService();
-        b.addService(ssd);
-        commonHooksManager.triggerPublishGrpcHooks(b, ssd);
+    ServerServiceDefinition ssd = queryGrpcService.bindService();
+    b.addService(ssd);
+    commonHooksManager.triggerPublishGrpcHooks(b, ssd);
 
-        Server server = b.build();
-        server.start();
-        log.info("[query] start grpc server at port {}", port);
-    }
+    Server server = b.build();
+    server.start();
+    log.info("[query] start grpc server at port {}", port);
+  }
 }

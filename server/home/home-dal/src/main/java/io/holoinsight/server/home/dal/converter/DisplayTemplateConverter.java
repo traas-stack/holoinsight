@@ -2,7 +2,6 @@
  * Copyright 2022 Holoinsight Project Authors. Licensed under Apache-2.0.
  */
 
-
 package io.holoinsight.server.home.dal.converter;
 
 import io.holoinsight.server.home.dal.model.DisplayTemplate;
@@ -20,10 +19,10 @@ import java.util.List;
  */
 @Mapper(componentModel = "spring", uses = {MapJsonMapper.class})
 public interface DisplayTemplateConverter {
-    DisplayTemplateDTO doToDTO(DisplayTemplate displayTemplate);
+  DisplayTemplateDTO doToDTO(DisplayTemplate displayTemplate);
 
-    DisplayTemplate dtoToDO(DisplayTemplateDTO displayTemplateDTO);
+  DisplayTemplate dtoToDO(DisplayTemplateDTO displayTemplateDTO);
 
-    List<DisplayTemplateDTO> dosToDTOs(Iterable<DisplayTemplate> displayTemplates);
+  List<DisplayTemplateDTO> dosToDTOs(Iterable<DisplayTemplate> displayTemplates);
 
 }

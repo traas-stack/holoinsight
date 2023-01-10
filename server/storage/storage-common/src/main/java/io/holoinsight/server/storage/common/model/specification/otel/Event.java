@@ -17,8 +17,8 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Event {
-    private long           timeUnixNano;
-    private String         name;
-    private List<KeyValue> attributes;
-    private int            droppedAttributesCount;
+  private long timeUnixNano;
+  private String name;
+  private List<KeyValue> attributes;
+  private int droppedAttributesCount;
 }

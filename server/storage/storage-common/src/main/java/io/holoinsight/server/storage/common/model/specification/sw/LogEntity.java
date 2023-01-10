@@ -18,6 +18,6 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class LogEntity {
-    private long           time;
-    private List<KeyValue> data = new ArrayList<>();
+  private long time;
+  private List<KeyValue> data = new ArrayList<>();
 }

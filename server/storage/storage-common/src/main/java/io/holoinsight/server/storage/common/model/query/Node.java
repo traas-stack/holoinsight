@@ -9,22 +9,22 @@ import lombok.Setter;
 @Getter
 @Setter
 public class Node implements NodeType {
-    private String id;
-    private String name;
-    private String type;
-    private boolean isReal;
-    private ResponseMetric metric;
+  private String id;
+  private String name;
+  private String type;
+  private boolean isReal;
+  private ResponseMetric metric;
 
-    @Getter
-    @Setter
-    public static class EndpointNode extends Node implements NodeType {
-        private String serviceName;
-    }
+  @Getter
+  @Setter
+  public static class EndpointNode extends Node implements NodeType {
+    private String serviceName;
+  }
 
 
-    @Getter
-    @Setter
-    public static class ServiceInstanceNode extends Node implements NodeType {
-        private String serviceName;
-    }
+  @Getter
+  @Setter
+  public static class ServiceInstanceNode extends Node implements NodeType {
+    private String serviceName;
+  }
 }

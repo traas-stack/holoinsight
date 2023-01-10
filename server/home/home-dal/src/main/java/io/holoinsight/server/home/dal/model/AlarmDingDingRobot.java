@@ -16,50 +16,50 @@ import java.util.Date;
 @Data
 public class AlarmDingDingRobot {
 
-    /**
-     * id
-     */
-    @TableId(type = IdType.AUTO)
-    private Long id;
+  /**
+   * id
+   */
+  @TableId(type = IdType.AUTO)
+  private Long id;
 
-    /**
-     * 创建时间
-     */
-    private Date gmtCreate;
+  /**
+   * 创建时间
+   */
+  private Date gmtCreate;
 
-    /**
-     * 修改时间
-     */
-    private Date gmtModified;
+  /**
+   * 修改时间
+   */
+  private Date gmtModified;
 
-    /**
-     * 创建者
-     */
-    private String creator;
+  /**
+   * 创建者
+   */
+  private String creator;
 
-    /**
-     * 修改者
-     */
-    private String modifier;
+  /**
+   * 修改者
+   */
+  private String modifier;
 
-    /**
-     * 群名称
-     */
-    private String groupName;
+  /**
+   * 群名称
+   */
+  private String groupName;
 
-    /**
-     * 机器人url
-     */
-    private String robotUrl;
+  /**
+   * 机器人url
+   */
+  private String robotUrl;
 
-    /**
-     * 租户id
-     */
-    private String tenant;
+  /**
+   * 租户id
+   */
+  private String tenant;
 
-    /**
-     * 额外信息
-     */
-    private String extra;
+  /**
+   * 额外信息
+   */
+  private String extra;
 
 }

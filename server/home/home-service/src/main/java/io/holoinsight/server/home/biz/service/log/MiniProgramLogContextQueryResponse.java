@@ -1,7 +1,6 @@
 /*
  * Copyright 2022 Holoinsight Project Authors. Licensed under Apache-2.0.
  */
-
 package io.holoinsight.server.home.biz.service.log;
 
 import lombok.Data;
@@ -16,28 +15,28 @@ import java.util.ArrayList;
 @Data
 public class MiniProgramLogContextQueryResponse {
 
-    /**
-     * 日志明细
-     */
-    private ArrayList<SlsLog> logs = new ArrayList<>();
+  /**
+   * 日志明细
+   */
+  private ArrayList<SlsLog> logs = new ArrayList<>();
 
-    /**
-     * 查询是否完成
-     */
-    private boolean                      isCompleted      = false;
+  /**
+   * 查询是否完成
+   */
+  private boolean isCompleted = false;
 
-    /**
-     * 查询范围内日志总量
-     */
-    private Integer count;
+  /**
+   * 查询范围内日志总量
+   */
+  private Integer count;
 
-    /**
-     * 往后查多少行，最多50
-     */
-    private Integer backLines;
+  /**
+   * 往后查多少行，最多50
+   */
+  private Integer backLines;
 
-    /**
-     * 往前查多少行, 最多50
-     */
-    private Integer forwardLines;
+  /**
+   * 往前查多少行, 最多50
+   */
+  private Integer forwardLines;
 }

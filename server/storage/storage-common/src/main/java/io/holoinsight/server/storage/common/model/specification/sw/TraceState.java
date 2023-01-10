@@ -9,5 +9,5 @@ package io.holoinsight.server.storage.common.model.specification.sw;
  * @version : TraceState.java, v 0.1 2022年09月20日 15:36 wanpeng.xwp Exp $
  */
 public enum TraceState {
-    ALL, SUCCESS, ERROR
+  ALL, SUCCESS, ERROR
 }

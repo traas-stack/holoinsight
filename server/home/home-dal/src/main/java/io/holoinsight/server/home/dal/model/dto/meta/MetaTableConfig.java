@@ -17,11 +17,11 @@ import java.util.Map;
 @Data
 public class MetaTableConfig {
 
-    public String                    source;
+  public String source;
 
-    public List<String>              metricList;
+  public List<String> metricList;
 
-    public Integer                   rateSec = 60;
+  public Integer rateSec = 60;
 
-    public Map<String, List<String>> ukMaps  = new HashMap<>();
+  public Map<String, List<String>> ukMaps = new HashMap<>();
 }

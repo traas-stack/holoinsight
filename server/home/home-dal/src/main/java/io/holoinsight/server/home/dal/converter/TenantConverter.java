@@ -12,10 +12,10 @@ import java.util.List;
 @Mapper(componentModel = "spring")
 public interface TenantConverter {
 
-    TenantDTO doToDTO(Tenant tenant);
+  TenantDTO doToDTO(Tenant tenant);
 
-    Tenant dtoToDO(TenantDTO tenantDTO);
+  Tenant dtoToDO(TenantDTO tenantDTO);
 
-    List<TenantDTO> dosToDTOs(Iterable<Tenant> tenants);
+  List<TenantDTO> dosToDTOs(Iterable<Tenant> tenants);
 
 }

@@ -12,15 +12,15 @@ import java.util.List;
  */
 public interface TableClientService {
 
-    void createTable(String tableName);
+  void createTable(String tableName);
 
-    void deleteTable(String tableName);
+  void deleteTable(String tableName);
 
-    void createIndex(String tableName, String indexKey, Boolean asc);
+  void createIndex(String tableName, String indexKey, Boolean asc);
 
-    void deleteIndex(String tableName, String indexKey);
+  void deleteIndex(String tableName, String indexKey);
 
-    List<Object> getIndexInfo(String tableName);
+  List<Object> getIndexInfo(String tableName);
 
 
 }

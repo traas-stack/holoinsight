@@ -1,7 +1,6 @@
 /*
  * Copyright 2022 Holoinsight Project Authors. Licensed under Apache-2.0.
  */
-
 package io.holoinsight.server.home.biz.service.log;
 
 import lombok.Data;
@@ -14,33 +13,33 @@ import lombok.Data;
 @Data
 public class MiniProgramLogContextQueryRequest {
 
-    /**
-     * 服务id
-     */
-    private String serviceId;
+  /**
+   * 服务id
+   */
+  private String serviceId;
 
-    /**
-     * packId
-     */
-    private String packID;
+  /**
+   * packId
+   */
+  private String packID;
 
-    /**
-     * packMeta
-     */
-    private String packMeta;
+  /**
+   * packMeta
+   */
+  private String packMeta;
 
-    /**
-     * 往后查多少行，最多50
-     */
-    private Integer backLines;
+  /**
+   * 往后查多少行，最多50
+   */
+  private Integer backLines;
 
-    /**
-     * 往前查多少行, 最多50
-     */
-    private Integer forwardLines;
+  /**
+   * 往前查多少行, 最多50
+   */
+  private Integer forwardLines;
 
-    /**
-     * 日志路径
-     */
-    private String logPath;
+  /**
+   * 日志路径
+   */
+  private String logPath;
 }

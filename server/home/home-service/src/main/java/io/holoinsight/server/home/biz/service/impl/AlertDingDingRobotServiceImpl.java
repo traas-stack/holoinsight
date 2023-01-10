@@ -26,85 +26,92 @@ import java.util.Locale;
  * @date 2022/4/1 10:44 上午
  */
 @Service
-public class AlertDingDingRobotServiceImpl extends ServiceImpl<AlarmDingDingRobotMapper, AlarmDingDingRobot> implements AlertDingDingRobotService {
+public class AlertDingDingRobotServiceImpl extends
+    ServiceImpl<AlarmDingDingRobotMapper, AlarmDingDingRobot> implements AlertDingDingRobotService {
 
-    @Resource
-    private AlarmDingDingRobotConverter alarmDingDingRobotConverter;
+  @Resource
+  private AlarmDingDingRobotConverter alarmDingDingRobotConverter;
 
-    @Override
-    public Long save(AlarmDingDingRobotDTO alarmDingDingRobotDTO) {
-        AlarmDingDingRobot alarmDingDingRobot = alarmDingDingRobotConverter.dtoToDO(alarmDingDingRobotDTO);
-        this.save(alarmDingDingRobot);
-        return alarmDingDingRobot.getId();
+  @Override
+  public Long save(AlarmDingDingRobotDTO alarmDingDingRobotDTO) {
+    AlarmDingDingRobot alarmDingDingRobot =
+        alarmDingDingRobotConverter.dtoToDO(alarmDingDingRobotDTO);
+    this.save(alarmDingDingRobot);
+    return alarmDingDingRobot.getId();
+  }
+
+  @Override
+  public Boolean updateById(AlarmDingDingRobotDTO alarmDingDingRobotDTO) {
+    AlarmDingDingRobot alarmDingDingRobot =
+        alarmDingDingRobotConverter.dtoToDO(alarmDingDingRobotDTO);
+    return this.updateById(alarmDingDingRobot);
+  }
+
+  @Override
+  public AlarmDingDingRobotDTO queryById(Long id, String tenant) {
+    QueryWrapper<AlarmDingDingRobot> wrapper = new QueryWrapper<>();
+    wrapper.eq("tenant", tenant);
+    wrapper.eq("id", id);
+    wrapper.last("LIMIT 1");
+    AlarmDingDingRobot alarmDingDingRobot = this.getOne(wrapper);
+    return alarmDingDingRobotConverter.doToDTO(alarmDingDingRobot);
+  }
+
+  @Override
+  public MonitorPageResult<AlarmDingDingRobotDTO> getListByPage(
+      MonitorPageRequest<AlarmDingDingRobotDTO> pageRequest) {
+    if (pageRequest.getTarget() == null) {
+      return null;
     }
 
-    @Override
-    public Boolean updateById(AlarmDingDingRobotDTO alarmDingDingRobotDTO) {
-        AlarmDingDingRobot alarmDingDingRobot = alarmDingDingRobotConverter.dtoToDO(alarmDingDingRobotDTO);
-        return this.updateById(alarmDingDingRobot);
+    QueryWrapper<AlarmDingDingRobot> wrapper = new QueryWrapper<>();
+
+    AlarmDingDingRobot alarmDingDingRobot =
+        alarmDingDingRobotConverter.dtoToDO(pageRequest.getTarget());
+
+    if (null != alarmDingDingRobot.getId()) {
+      wrapper.eq("id", alarmDingDingRobot.getId());
     }
 
-    @Override
-    public AlarmDingDingRobotDTO queryById(Long id, String tenant) {
-        QueryWrapper<AlarmDingDingRobot> wrapper = new QueryWrapper<>();
-        wrapper.eq("tenant", tenant);
-        wrapper.eq("id", id);
-        wrapper.last("LIMIT 1");
-        AlarmDingDingRobot alarmDingDingRobot = this.getOne(wrapper);
-        return alarmDingDingRobotConverter.doToDTO(alarmDingDingRobot);
+    if (StringUtil.isNotBlank(alarmDingDingRobot.getTenant())) {
+      wrapper.eq("tenant", alarmDingDingRobot.getTenant().trim());
     }
 
-    @Override
-    public MonitorPageResult<AlarmDingDingRobotDTO> getListByPage(MonitorPageRequest<AlarmDingDingRobotDTO> pageRequest) {
-        if (pageRequest.getTarget() == null) {
-            return null;
-        }
+    if (StringUtil.isNotBlank(alarmDingDingRobot.getGroupName())) {
+      wrapper.like("group_name", alarmDingDingRobot.getGroupName().trim());
+    }
 
-        QueryWrapper<AlarmDingDingRobot> wrapper = new QueryWrapper<>();
-
-        AlarmDingDingRobot alarmDingDingRobot = alarmDingDingRobotConverter.dtoToDO(pageRequest.getTarget());
-
-        if (null != alarmDingDingRobot.getId()) {
-            wrapper.eq("id", alarmDingDingRobot.getId());
-        }
-
-        if (StringUtil.isNotBlank(alarmDingDingRobot.getTenant())) {
-            wrapper.eq("tenant", alarmDingDingRobot.getTenant().trim());
-        }
-
-        if (StringUtil.isNotBlank(alarmDingDingRobot.getGroupName())) {
-            wrapper.like("group_name", alarmDingDingRobot.getGroupName().trim());
-        }
-
-        if (StringUtil.isNotBlank(pageRequest.getSortBy()) && StringUtil.isNotBlank(pageRequest.getSortRule())) {
-            if (pageRequest.getSortBy().equals("gmtCreate")) {
-                if (pageRequest.getSortRule().toLowerCase(Locale.ROOT).equals("desc")) {
-                    wrapper.orderByDesc("gmt_create");
-                } else {
-                    wrapper.orderByAsc("gmt_create");
-                }
-            }
+    if (StringUtil.isNotBlank(pageRequest.getSortBy())
+        && StringUtil.isNotBlank(pageRequest.getSortRule())) {
+      if (pageRequest.getSortBy().equals("gmtCreate")) {
+        if (pageRequest.getSortRule().toLowerCase(Locale.ROOT).equals("desc")) {
+          wrapper.orderByDesc("gmt_create");
         } else {
-            wrapper.orderByDesc("id");
+          wrapper.orderByAsc("gmt_create");
         }
-        wrapper.select(AlarmDingDingRobot.class, info -> !info.getColumn().equals("creator")
-                && !info.getColumn().equals("modifier"));
-
-
-        Page<AlarmDingDingRobot> page = new Page<>(pageRequest.getPageNum(), pageRequest.getPageSize());
-
-        page = page(page, wrapper);
-
-        MonitorPageResult<AlarmDingDingRobotDTO> alarmDingDingRobots = new MonitorPageResult<>();
-
-        List<AlarmDingDingRobotDTO> alarmDingDingRobotList = alarmDingDingRobotConverter.dosToDTOs(page.getRecords());
-
-        alarmDingDingRobots.setItems(alarmDingDingRobotList);
-        alarmDingDingRobots.setPageNum(pageRequest.getPageNum());
-        alarmDingDingRobots.setPageSize(pageRequest.getPageSize());
-        alarmDingDingRobots.setTotalCount(page.getTotal());
-        alarmDingDingRobots.setTotalPage(page.getPages());
-
-        return alarmDingDingRobots;
+      }
+    } else {
+      wrapper.orderByDesc("id");
     }
+    wrapper.select(AlarmDingDingRobot.class,
+        info -> !info.getColumn().equals("creator") && !info.getColumn().equals("modifier"));
+
+
+    Page<AlarmDingDingRobot> page = new Page<>(pageRequest.getPageNum(), pageRequest.getPageSize());
+
+    page = page(page, wrapper);
+
+    MonitorPageResult<AlarmDingDingRobotDTO> alarmDingDingRobots = new MonitorPageResult<>();
+
+    List<AlarmDingDingRobotDTO> alarmDingDingRobotList =
+        alarmDingDingRobotConverter.dosToDTOs(page.getRecords());
+
+    alarmDingDingRobots.setItems(alarmDingDingRobotList);
+    alarmDingDingRobots.setPageNum(pageRequest.getPageNum());
+    alarmDingDingRobots.setPageSize(pageRequest.getPageSize());
+    alarmDingDingRobots.setTotalCount(page.getTotal());
+    alarmDingDingRobots.setTotalPage(page.getPages());
+
+    return alarmDingDingRobots;
+  }
 }

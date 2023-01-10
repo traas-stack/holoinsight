@@ -20,33 +20,33 @@ import java.util.Date;
 @Data
 public class AlarmGroup {
 
-    @TableId(type = IdType.AUTO)
-    public Long   id;
-    public String tenant;
+  @TableId(type = IdType.AUTO)
+  public Long id;
+  public String tenant;
 
-    public String groupName;
+  public String groupName;
 
-    public String groupInfo;
+  public String groupInfo;
 
-    public String creator;
+  public String creator;
 
-    public String modifier;
+  public String modifier;
 
-    public Date   gmtCreate;
+  public Date gmtCreate;
 
-    public Date   gmtModified;
+  public Date gmtModified;
 
-    public String emailAddress;
+  public String emailAddress;
 
-    public String ddWebhook;
+  public String ddWebhook;
 
-    public String dyvmsPhone;
+  public String dyvmsPhone;
 
-    public String smsPhone;
+  public String smsPhone;
 
-    /**
-     * 环境类型
-     */
-    @Column(name = "env_type")
-    private String envType;
+  /**
+   * 环境类型
+   */
+  @Column(name = "env_type")
+  private String envType;
 }

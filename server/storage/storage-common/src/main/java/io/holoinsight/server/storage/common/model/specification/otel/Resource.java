@@ -17,6 +17,6 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Resource {
-    private List<KeyValue> attributes;
-    private int            droppedAttributesCount;
+  private List<KeyValue> attributes;
+  private int droppedAttributesCount;
 }

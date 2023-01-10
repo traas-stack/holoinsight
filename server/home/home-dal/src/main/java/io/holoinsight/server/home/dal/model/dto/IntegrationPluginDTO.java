@@ -17,60 +17,59 @@ import java.util.Map;
  */
 @Data
 public class IntegrationPluginDTO {
-    public Long                id;
+  public Long id;
 
-    public String              tenant;
+  public String tenant;
 
-    public String              name;
+  public String name;
 
-    public String              product;
+  public String product;
 
-    public String              type;
+  public String type;
 
-    /**
-     * 采集范围
-     */
-    public GaeaCollectRange    collectRange;
+  /**
+   * 采集范围
+   */
+  public GaeaCollectRange collectRange;
 
-    public Map<String, Object> template;
+  public Map<String, Object> template;
 
-    public String              json;
+  public String json;
 
-    public Boolean             status;
+  public Boolean status;
 
-    public String              creator;
+  public String creator;
 
-    public String              modifier;
+  public String modifier;
 
-    public Date                gmtCreate;
+  public Date gmtCreate;
 
-    public Date                gmtModified;
+  public Date gmtModified;
 
-    public String              version;
+  public String version;
 
-    public boolean checkVersion(IntegrationPluginDTO originalRecord) {
-        return StringUtils.isNotEmpty(version) && !version.equals(originalRecord.getVersion());
+  public boolean checkVersion(IntegrationPluginDTO originalRecord) {
+    return StringUtils.isNotEmpty(version) && !version.equals(originalRecord.getVersion());
+  }
+
+  public boolean checkJsonChange(IntegrationPluginDTO originalRecord) {
+    if ((originalRecord == null) || (this.json == null && originalRecord.json != null)
+        || (this.json != null && originalRecord.json == null)) {
+      return true;
     }
+    return !MD5Hash.getMD5(this.json).equalsIgnoreCase(MD5Hash.getMD5(originalRecord.json));
+  }
 
-    public boolean checkJsonChange(IntegrationPluginDTO originalRecord) {
-        if((originalRecord == null)
-                ||(this.json == null && originalRecord.json != null)
-                ||(this.json != null && originalRecord.json == null)){
-            return true;
-        }
-        return !MD5Hash.getMD5(this.json).equalsIgnoreCase(MD5Hash.getMD5(originalRecord.json));
+  public boolean checkCollectRange(IntegrationPluginDTO originalRecord) {
+    if ((originalRecord == null)
+        || (this.collectRange == null && originalRecord.collectRange != null)
+        || (this.collectRange != null && originalRecord.collectRange == null)) {
+      return true;
     }
+    return !this.collectRange.isEqual(originalRecord.collectRange);
+  }
 
-    public boolean checkCollectRange(IntegrationPluginDTO originalRecord) {
-        if((originalRecord == null)
-                ||(this.collectRange == null && originalRecord.collectRange != null)
-                ||(this.collectRange != null && originalRecord.collectRange == null)){
-            return true;
-        }
-        return !this.collectRange.isEqual(originalRecord.collectRange);
-    }
-
-    public boolean checkCollectConfig(IntegrationPluginDTO originalRecord) {
-        return false;
-    }
+  public boolean checkCollectConfig(IntegrationPluginDTO originalRecord) {
+    return false;
+  }
 }

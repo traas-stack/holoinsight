@@ -15,50 +15,51 @@ import lombok.Getter;
 
 /**
  * 与 CollectConfigDelta 类似, 但是解析成了我们的业务模型
- * <p>created at 2022/3/1
+ * <p>
+ * created at 2022/3/1
  *
  * @author zzhb101
  */
 @Getter
 public class CollectTemplateDelta {
-    private static final Logger LOGGER = LoggerFactory.getLogger(CollectTemplateDelta.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(CollectTemplateDelta.class);
 
-    final String tableName;
+  final String tableName;
 
-    List<CollectTemplate> add = new ArrayList<>(1);
+  List<CollectTemplate> add = new ArrayList<>(1);
 
-    List<CollectTemplate> delete = new ArrayList<>(1);
+  List<CollectTemplate> delete = new ArrayList<>(1);
 
-    public CollectTemplateDelta(String tableName) {
-        this.tableName = Objects.requireNonNull(tableName);
+  public CollectTemplateDelta(String tableName) {
+    this.tableName = Objects.requireNonNull(tableName);
+  }
+
+  public static CollectTemplateDelta one(CollectTemplate t) {
+    CollectTemplateDelta d = new CollectTemplateDelta(t.getTableName());
+    d.add = Collections.singletonList(t);
+    d.delete = Collections.emptyList();
+    return d;
+  }
+
+  public CollectTemplate getAdd0() {
+    return add.size() > 0 ? add.get(0) : null;
+  }
+
+  public void add(CollectTemplate t) {
+    for (CollectTemplate t2 : add) {
+      if (t.getId() == t2.getId()) {
+        return;
+      }
     }
+    add.add(t);
+  }
 
-    public static CollectTemplateDelta one(CollectTemplate t) {
-        CollectTemplateDelta d = new CollectTemplateDelta(t.getTableName());
-        d.add = Collections.singletonList(t);
-        d.delete = Collections.emptyList();
-        return d;
+  public void delete(CollectTemplate t) {
+    for (CollectTemplate t2 : delete) {
+      if (t.getId() == t2.getId()) {
+        return;
+      }
     }
-
-    public CollectTemplate getAdd0() {
-        return add.size() > 0 ? add.get(0) : null;
-    }
-
-    public void add(CollectTemplate t) {
-        for (CollectTemplate t2 : add) {
-            if (t.getId() == t2.getId()) {
-                return;
-            }
-        }
-        add.add(t);
-    }
-
-    public void delete(CollectTemplate t) {
-        for (CollectTemplate t2 : delete) {
-            if (t.getId() == t2.getId()) {
-                return;
-            }
-        }
-        delete.add(t);
-    }
+    delete.add(t);
+  }
 }

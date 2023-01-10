@@ -19,25 +19,25 @@ import java.util.Date;
 @Data
 @Table(name = "meta_table")
 public class MetaTable {
-    @Id
-    @TableId(type = IdType.AUTO)
-    public Long   id;
+  @Id
+  @TableId(type = IdType.AUTO)
+  public Long id;
 
-    public String name;
+  public String name;
 
-    public String tenant;
+  public String tenant;
 
-    public String status;
+  public String status;
 
-    public String config;
+  public String config;
 
-    public String tableSchema;
+  public String tableSchema;
 
-    public String creator;
+  public String creator;
 
-    public String modifier;
+  public String modifier;
 
-    public Date   gmtCreate;
-    public Date   gmtModified;
+  public Date gmtCreate;
+  public Date gmtModified;
 
 }

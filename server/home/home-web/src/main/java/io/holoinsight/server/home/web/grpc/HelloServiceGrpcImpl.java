@@ -2,7 +2,6 @@
  * Copyright 2022 Holoinsight Project Authors. Licensed under Apache-2.0.
  */
 
-
 package io.holoinsight.server.home.web.grpc;
 
 import io.holoinsight.server.home.proto.hello.HelloRequest;
@@ -20,17 +19,17 @@ import net.devh.boot.grpc.server.service.GrpcService;
 @Slf4j
 public class HelloServiceGrpcImpl extends HelloServiceGrpc.HelloServiceImplBase {
 
-    public void hello(HelloRequest request,
-                      io.grpc.stub.StreamObserver<HelloResponse> responseObserver) {
-        System.out.println( request );
+  public void hello(HelloRequest request,
+      io.grpc.stub.StreamObserver<HelloResponse> responseObserver) {
+    System.out.println(request);
 
-        String greeting = "Hi " + request.getName() + " you are " + request.getAge() + " years old" +
-                " your hoby is " + (request.getHobbiesList()) + " your tags " + request.getTagsMap();
+    String greeting = "Hi " + request.getName() + " you are " + request.getAge() + " years old"
+        + " your hoby is " + (request.getHobbiesList()) + " your tags " + request.getTagsMap();
 
-        HelloResponse response = HelloResponse.newBuilder().setGreeting( greeting ).build();
-        responseObserver.onNext( response );
-        responseObserver.onCompleted();
+    HelloResponse response = HelloResponse.newBuilder().setGreeting(greeting).build();
+    responseObserver.onNext(response);
+    responseObserver.onCompleted();
 
-        log.info("end add");
-    }
+    log.info("end add");
+  }
 }

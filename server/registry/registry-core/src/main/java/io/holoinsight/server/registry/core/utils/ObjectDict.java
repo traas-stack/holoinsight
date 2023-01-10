@@ -20,63 +20,64 @@ import java.util.concurrent.TimeUnit;
  */
 public class ObjectDict {
 
-    /**
-     * 缓存的全局字典
-     */
-    private static final Cache<Object, Object> DICT   = Caffeine.newBuilder()           //
-        .recordStats()                                                                  //
-        // .scheduler(CaffeineScheduler.SCHEDULER)                                         //
-        .expireAfterAccess(Duration.ofHours(1))                                         //
-        .build();                                                                       //
+  /**
+   * 缓存的全局字典
+   */
+  private static final Cache<Object, Object> DICT = Caffeine.newBuilder() //
+      .recordStats() //
+      // .scheduler(CaffeineScheduler.SCHEDULER) //
+      .expireAfterAccess(Duration.ofHours(1)) //
+      .build(); //
 
-    static {
-        // Executors.newSingleThreadScheduledExecutor() //
-        //     .scheduleWithFixedDelay(() -> {
-        //         EventLogger.LOGGER.info("ObjectDict {}", DICT.stats());
-        //     }, 1, 1, TimeUnit.MINUTES);
-    }
+  static {
+    // Executors.newSingleThreadScheduledExecutor() //
+    // .scheduleWithFixedDelay(() -> {
+    // EventLogger.LOGGER.info("ObjectDict {}", DICT.stats());
+    // }, 1, 1, TimeUnit.MINUTES);
+  }
 
-    /**
-     * 入参必须是可比较的值
-     * @param key
-     * @param <T>
-     * @return
-     */
-    public static <T> T get(T key) {
-        if (null == key) {
-            return null;
-        }
-        return (T) DICT.get(key, t -> t);
+  /**
+   * 入参必须是可比较的值
+   * 
+   * @param key
+   * @param <T>
+   * @return
+   */
+  public static <T> T get(T key) {
+    if (null == key) {
+      return null;
     }
+    return (T) DICT.get(key, t -> t);
+  }
 
-    public static <T> T[] replace(T[] keys) {
-        if (keys == null) {
-            return null;
-        }
-        for (int i = 0; i < keys.length; i++) {
-            keys[i] = get(keys[i]);
-        }
-        return keys;
+  public static <T> T[] replace(T[] keys) {
+    if (keys == null) {
+      return null;
     }
+    for (int i = 0; i < keys.length; i++) {
+      keys[i] = get(keys[i]);
+    }
+    return keys;
+  }
 
-    public static Map<String, String> hashMap(Map<String, String> map) {
-        if (map == null) {
-            return null;
-        }
-        if (map.isEmpty()) {
-            return Collections.emptyMap();
-        }
-        Map<String, String> newMap = Maps.newHashMapWithExpectedSize(map.size());
-        for (Map.Entry<String, String> e : map.entrySet()) {
-            newMap.put(get(e.getKey()), get(e.getValue()));
-        }
-        return newMap;
+  public static Map<String, String> hashMap(Map<String, String> map) {
+    if (map == null) {
+      return null;
     }
+    if (map.isEmpty()) {
+      return Collections.emptyMap();
+    }
+    Map<String, String> newMap = Maps.newHashMapWithExpectedSize(map.size());
+    for (Map.Entry<String, String> e : map.entrySet()) {
+      newMap.put(get(e.getKey()), get(e.getValue()));
+    }
+    return newMap;
+  }
 
-    public static Map<String, String> hashMapOrEmpty(Map<String, String> map) {
-        if (map == null) {
-            return Collections.emptyMap();
-        }
-        return hashMap(map);
+  public static Map<String, String> hashMapOrEmpty(Map<String, String> map) {
+    if (map == null) {
+      return Collections.emptyMap();
     }
+    return hashMap(map);
+  }
 }

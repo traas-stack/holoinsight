@@ -2,7 +2,6 @@
  * Copyright 2022 Holoinsight Project Authors. Licensed under Apache-2.0.
  */
 
-
 package io.holoinsight.server.home.dal.model.dto;
 
 import lombok.Data;
@@ -17,14 +16,14 @@ import java.util.List;
  */
 @Data
 public class DisplayMenuDTO {
-    private Long                    id;
-    private Long                    refId;
-    private String                  tenant;
-    private String                  type;
-    private List<DisplayMenuConfig> config;
+  private Long id;
+  private Long refId;
+  private String tenant;
+  private String type;
+  private List<DisplayMenuConfig> config;
 
-    private String                  creator;
-    private String                  modifier;
-    private Date                    gmtCreate;
-    private Date                    gmtModified;
+  private String creator;
+  private String modifier;
+  private Date gmtCreate;
+  private Date gmtModified;
 }

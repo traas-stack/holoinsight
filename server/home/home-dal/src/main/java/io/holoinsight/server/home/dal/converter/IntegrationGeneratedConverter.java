@@ -1,7 +1,6 @@
 /*
  * Copyright 2022 Holoinsight Project Authors. Licensed under Apache-2.0.
  */
-
 package io.holoinsight.server.home.dal.converter;
 
 import io.holoinsight.server.home.dal.model.IntegrationGenerated;
@@ -11,13 +10,13 @@ import org.mapstruct.Mapper;
 
 import java.util.List;
 
-@Mapper(componentModel = "spring", uses = { MapJsonMapper.class })
+@Mapper(componentModel = "spring", uses = {MapJsonMapper.class})
 public interface IntegrationGeneratedConverter {
 
-    IntegrationGeneratedDTO doToDTO(IntegrationGenerated integrationGenerated);
+  IntegrationGeneratedDTO doToDTO(IntegrationGenerated integrationGenerated);
 
-    IntegrationGenerated dtoToDO(IntegrationGeneratedDTO integrationGeneratedDTO);
+  IntegrationGenerated dtoToDO(IntegrationGeneratedDTO integrationGeneratedDTO);
 
-    List<IntegrationGeneratedDTO> dosToDTOs(Iterable<IntegrationGenerated> integrationGenerates);
+  List<IntegrationGeneratedDTO> dosToDTOs(Iterable<IntegrationGenerated> integrationGenerates);
 
 }

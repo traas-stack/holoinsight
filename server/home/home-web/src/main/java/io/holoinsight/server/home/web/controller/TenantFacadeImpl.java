@@ -2,7 +2,6 @@
  * Copyright 2022 Holoinsight Project Authors. Licensed under Apache-2.0.
  */
 
-
 package io.holoinsight.server.home.web.controller;
 
 import io.holoinsight.server.home.biz.service.TenantService;
@@ -45,133 +44,132 @@ import java.util.List;
 @Slf4j
 public class TenantFacadeImpl extends BaseFacade {
 
-    @Autowired
-    private TenantService    tenantService;
+  @Autowired
+  private TenantService tenantService;
 
-    @Autowired
-    private UserOpLogService userOpLogService;
+  @Autowired
+  private UserOpLogService userOpLogService;
 
-    @PostMapping("/create")
-    @ResponseBody
-    @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.EDIT)
-    public JsonResult<TenantDTO> save(@RequestBody TenantDTO tenant) {
-        final JsonResult<TenantDTO> result = new JsonResult<>();
-        facadeTemplate.manage(result, new ManageCallback() {
-            @Override
-            public void checkParameter() {
-                ParaCheckUtil.checkParaNotNull(tenant.name, "name");
-                ParaCheckUtil.checkParaNotNull(tenant.code, "code");
-            }
+  @PostMapping("/create")
+  @ResponseBody
+  @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.EDIT)
+  public JsonResult<TenantDTO> save(@RequestBody TenantDTO tenant) {
+    final JsonResult<TenantDTO> result = new JsonResult<>();
+    facadeTemplate.manage(result, new ManageCallback() {
+      @Override
+      public void checkParameter() {
+        ParaCheckUtil.checkParaNotNull(tenant.name, "name");
+        ParaCheckUtil.checkParaNotNull(tenant.code, "code");
+      }
 
-            @Override
-            public void doManage() {
+      @Override
+      public void doManage() {
 
-                if(MonitorEnv.isSaasFactoryEnv()){
-                    return;
-                }
+        if (MonitorEnv.isSaasFactoryEnv()) {
+          return;
+        }
 
-                MonitorUser mu = RequestContext.getContext().mu;
-                tenant.setGmtCreate(new Date());
-                tenant.setGmtModified(new Date());
+        MonitorUser mu = RequestContext.getContext().mu;
+        tenant.setGmtCreate(new Date());
+        tenant.setGmtModified(new Date());
 
-                tenant.setMd5(MD5Hash.getMD5(tenant.code));
-                tenantService.create(tenant);
+        tenant.setMd5(MD5Hash.getMD5(tenant.code));
+        tenantService.create(tenant);
 
-                TenantDTO byCode = tenantService.getByCode(tenant.getCode());
-                JsonResult.createSuccessResult(result, tenant);
+        TenantDTO byCode = tenantService.getByCode(tenant.getCode());
+        JsonResult.createSuccessResult(result, tenant);
 
-                assert mu != null;
-                userOpLogService.append("tenant", String.valueOf(byCode.getId()), OpType.CREATE,
-                    mu.getLoginName(), tenant.getCode(), J.toJson(byCode), null, null,
-                    "tenant_create");
-            }
-        });
+        assert mu != null;
+        userOpLogService.append("tenant", String.valueOf(byCode.getId()), OpType.CREATE,
+            mu.getLoginName(), tenant.getCode(), J.toJson(byCode), null, null, "tenant_create");
+      }
+    });
 
-        return result;
-    }
+    return result;
+  }
 
-    @PostMapping("/update")
-    @ResponseBody
-    @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.EDIT)
-    public JsonResult<Object> update(@RequestBody TenantDTO tenant) {
-        final JsonResult<TenantDTO> result = new JsonResult<>();
-        facadeTemplate.manage(result, new ManageCallback() {
-            @Override
-            public void checkParameter() {
-                ParaCheckUtil.checkParaNotNull(tenant.id, "id");
-                ParaCheckUtil.checkParaNotNull(tenant.name, "name");
-                ParaCheckUtil.checkParaNotNull(tenant.code, "code");
-            }
+  @PostMapping("/update")
+  @ResponseBody
+  @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.EDIT)
+  public JsonResult<Object> update(@RequestBody TenantDTO tenant) {
+    final JsonResult<TenantDTO> result = new JsonResult<>();
+    facadeTemplate.manage(result, new ManageCallback() {
+      @Override
+      public void checkParameter() {
+        ParaCheckUtil.checkParaNotNull(tenant.id, "id");
+        ParaCheckUtil.checkParaNotNull(tenant.name, "name");
+        ParaCheckUtil.checkParaNotNull(tenant.code, "code");
+      }
 
-            @Override
-            public void doManage() {
-                if(MonitorEnv.isSaasFactoryEnv()){
-                    return;
-                }
-                MonitorUser mu = RequestContext.getContext().mu;
+      @Override
+      public void doManage() {
+        if (MonitorEnv.isSaasFactoryEnv()) {
+          return;
+        }
+        MonitorUser mu = RequestContext.getContext().mu;
 
-                tenantService.update(tenant);
-                TenantDTO byCode = tenantService.getByCode(tenant.getCode());
-                assert mu != null;
-                userOpLogService.append("tenant", String.valueOf(byCode.getId()), OpType.UPDATE,
-                    mu.getLoginName(), tenant.code, J.toJson(tenant), J.toJson(byCode), null,
-                    "tenant_update");
+        tenantService.update(tenant);
+        TenantDTO byCode = tenantService.getByCode(tenant.getCode());
+        assert mu != null;
+        userOpLogService.append("tenant", String.valueOf(byCode.getId()), OpType.UPDATE,
+            mu.getLoginName(), tenant.code, J.toJson(tenant), J.toJson(byCode), null,
+            "tenant_update");
 
-            }
-        });
+      }
+    });
 
-        return JsonResult.createSuccessResult(true);
-    }
+    return JsonResult.createSuccessResult(true);
+  }
 
-    @GetMapping(value = "/query/{id}")
-    @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.VIEW)
-    public JsonResult<TenantDTO> queryById(@PathVariable("id") Long id) {
-        final JsonResult<TenantDTO> result = new JsonResult<>();
-        facadeTemplate.manage(result, new ManageCallback() {
-            @Override
-            public void checkParameter() {
-                ParaCheckUtil.checkParaNotNull(id, "id");
-            }
+  @GetMapping(value = "/query/{id}")
+  @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.VIEW)
+  public JsonResult<TenantDTO> queryById(@PathVariable("id") Long id) {
+    final JsonResult<TenantDTO> result = new JsonResult<>();
+    facadeTemplate.manage(result, new ManageCallback() {
+      @Override
+      public void checkParameter() {
+        ParaCheckUtil.checkParaNotNull(id, "id");
+      }
 
-            @Override
-            public void doManage() {
-                if(MonitorEnv.isSaasFactoryEnv()){
-                    return;
-                }
-                TenantDTO tenant = tenantService.get(id);
+      @Override
+      public void doManage() {
+        if (MonitorEnv.isSaasFactoryEnv()) {
+          return;
+        }
+        TenantDTO tenant = tenantService.get(id);
 
-                if (null == tenant) {
-                    throw new MonitorException(ResultCodeEnum.CANNOT_FIND_RECORD, "can not find record");
-                }
-                JsonResult.createSuccessResult(result, tenant);
-            }
-        });
-        return result;
-    }
+        if (null == tenant) {
+          throw new MonitorException(ResultCodeEnum.CANNOT_FIND_RECORD, "can not find record");
+        }
+        JsonResult.createSuccessResult(result, tenant);
+      }
+    });
+    return result;
+  }
 
-    @GetMapping(value = "/queryAll")
-//    @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.VIEW)
-    public JsonResult<List<TenantDTO>> queryAll() {
-        final JsonResult<List<TenantDTO>> result = new JsonResult<>();
-        facadeTemplate.manage(result, new ManageCallback() {
-            @Override
-            public void checkParameter() {
+  @GetMapping(value = "/queryAll")
+  // @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.VIEW)
+  public JsonResult<List<TenantDTO>> queryAll() {
+    final JsonResult<List<TenantDTO>> result = new JsonResult<>();
+    facadeTemplate.manage(result, new ManageCallback() {
+      @Override
+      public void checkParameter() {
 
-            }
+      }
 
-            @Override
-            public void doManage() {
-                if(MonitorEnv.isSaasFactoryEnv()){
-                    return;
-                }
-                List<TenantDTO> tenantDTOList = tenantService.queryAll();
+      @Override
+      public void doManage() {
+        if (MonitorEnv.isSaasFactoryEnv()) {
+          return;
+        }
+        List<TenantDTO> tenantDTOList = tenantService.queryAll();
 
-                if (null == tenantDTOList) {
-                    throw new MonitorException(ResultCodeEnum.CANNOT_FIND_RECORD, "can not find record");
-                }
-                JsonResult.createSuccessResult(result, tenantDTOList);
-            }
-        });
-        return result;
-    }
+        if (null == tenantDTOList) {
+          throw new MonitorException(ResultCodeEnum.CANNOT_FIND_RECORD, "can not find record");
+        }
+        JsonResult.createSuccessResult(result, tenantDTOList);
+      }
+    });
+    return result;
+  }
 }

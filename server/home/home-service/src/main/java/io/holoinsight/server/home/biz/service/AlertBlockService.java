@@ -13,17 +13,17 @@ import java.util.List;
 
 /**
  * @author wangsiyuan
- * @date 2022/6/15  4:56 下午
+ * @date 2022/6/15 4:56 下午
  */
 public interface AlertBlockService extends IService<AlarmBlock> {
 
-    Long save(AlarmBlockDTO AlarmBlockDTO);
+  Long save(AlarmBlockDTO AlarmBlockDTO);
 
-    Boolean updateById(AlarmBlockDTO AlarmBlockDTO);
+  Boolean updateById(AlarmBlockDTO AlarmBlockDTO);
 
-    AlarmBlockDTO queryById(Long id, String tenant);
+  AlarmBlockDTO queryById(Long id, String tenant);
 
-    MonitorPageResult<AlarmBlockDTO> getListByPage(MonitorPageRequest<AlarmBlockDTO> pageRequest);
+  MonitorPageResult<AlarmBlockDTO> getListByPage(MonitorPageRequest<AlarmBlockDTO> pageRequest);
 
-    List<AlarmBlockDTO> getListByKeyword(String keyword, String tenant);
+  List<AlarmBlockDTO> getListByKeyword(String keyword, String tenant);
 }

@@ -2,7 +2,6 @@
  * Copyright 2022 Holoinsight Project Authors. Licensed under Apache-2.0.
  */
 
-
 package io.holoinsight.server.home.biz.service;
 
 import io.holoinsight.server.home.dal.model.ClusterTask;
@@ -17,14 +16,14 @@ import java.util.List;
  */
 public interface ClusterTaskService extends IService<ClusterTask> {
 
-    void batchInsert(List<ClusterTask> cts);
+  void batchInsert(List<ClusterTask> cts);
 
-    void insert(ClusterTask ct);
+  void insert(ClusterTask ct);
 
-    // 获取我的undone任务, 并标注为doing
-    List<ClusterTask> getMyTask(long period);
+  // 获取我的undone任务, 并标注为doing
+  List<ClusterTask> getMyTask(long period);
 
-    // 完成了我的任务，标注为done
-    void doneTask(ClusterTask task, Boolean success, String res);
+  // 完成了我的任务，标注为done
+  void doneTask(ClusterTask task, Boolean success, String res);
 
 }

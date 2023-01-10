@@ -2,7 +2,6 @@
  * Copyright 2022 Holoinsight Project Authors. Licensed under Apache-2.0.
  */
 
-
 package io.holoinsight.server.home.biz.service;
 
 import io.holoinsight.server.home.dal.model.dto.ClusterDTO;
@@ -16,10 +15,10 @@ import java.util.List;
  */
 public interface ClusterService {
 
-    void upsert(ClusterDTO cluster);
+  void upsert(ClusterDTO cluster);
 
-    List<ClusterDTO> getClusterAliveSortedByRole(String role);
+  List<ClusterDTO> getClusterAliveSortedByRole(String role);
 
-    boolean checkBrain(List<ClusterDTO> clusters);
+  boolean checkBrain(List<ClusterDTO> clusters);
 
 }

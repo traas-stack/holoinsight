@@ -13,41 +13,53 @@ import org.springframework.stereotype.Repository;
 @Mapper
 @Repository
 public interface GaeaClusterConfigDOMapper {
-    long countByExample(GaeaClusterConfigDOExample example);
+  long countByExample(GaeaClusterConfigDOExample example);
 
-    int deleteByExample(GaeaClusterConfigDOExample example);
+  int deleteByExample(GaeaClusterConfigDOExample example);
 
-    int deleteByPrimaryKey(Long id);
+  int deleteByPrimaryKey(Long id);
 
-    int insert(GaeaClusterConfigDO record);
+  int insert(GaeaClusterConfigDO record);
 
-    int insertSelective(@Param("record") GaeaClusterConfigDO record, @Param("selective") GaeaClusterConfigDO.Column ... selective);
+  int insertSelective(@Param("record") GaeaClusterConfigDO record,
+      @Param("selective") GaeaClusterConfigDO.Column... selective);
 
-    GaeaClusterConfigDO selectOneByExample(GaeaClusterConfigDOExample example);
+  GaeaClusterConfigDO selectOneByExample(GaeaClusterConfigDOExample example);
 
-    GaeaClusterConfigDO selectOneByExampleSelective(@Param("example") GaeaClusterConfigDOExample example, @Param("selective") GaeaClusterConfigDO.Column ... selective);
+  GaeaClusterConfigDO selectOneByExampleSelective(
+      @Param("example") GaeaClusterConfigDOExample example,
+      @Param("selective") GaeaClusterConfigDO.Column... selective);
 
-    List<GaeaClusterConfigDO> selectByExampleSelective(@Param("example") GaeaClusterConfigDOExample example, @Param("selective") GaeaClusterConfigDO.Column ... selective);
+  List<GaeaClusterConfigDO> selectByExampleSelective(
+      @Param("example") GaeaClusterConfigDOExample example,
+      @Param("selective") GaeaClusterConfigDO.Column... selective);
 
-    List<GaeaClusterConfigDO> selectByExample(GaeaClusterConfigDOExample example);
+  List<GaeaClusterConfigDO> selectByExample(GaeaClusterConfigDOExample example);
 
-    GaeaClusterConfigDO selectByPrimaryKeySelective(@Param("id") Long id, @Param("selective") GaeaClusterConfigDO.Column ... selective);
+  GaeaClusterConfigDO selectByPrimaryKeySelective(@Param("id") Long id,
+      @Param("selective") GaeaClusterConfigDO.Column... selective);
 
-    GaeaClusterConfigDO selectByPrimaryKey(Long id);
+  GaeaClusterConfigDO selectByPrimaryKey(Long id);
 
-    int updateByExampleSelective(@Param("record") GaeaClusterConfigDO record, @Param("example") GaeaClusterConfigDOExample example, @Param("selective") GaeaClusterConfigDO.Column ... selective);
+  int updateByExampleSelective(@Param("record") GaeaClusterConfigDO record,
+      @Param("example") GaeaClusterConfigDOExample example,
+      @Param("selective") GaeaClusterConfigDO.Column... selective);
 
-    int updateByExample(@Param("record") GaeaClusterConfigDO record, @Param("example") GaeaClusterConfigDOExample example);
+  int updateByExample(@Param("record") GaeaClusterConfigDO record,
+      @Param("example") GaeaClusterConfigDOExample example);
 
-    int updateByPrimaryKeySelective(@Param("record") GaeaClusterConfigDO record, @Param("selective") GaeaClusterConfigDO.Column ... selective);
+  int updateByPrimaryKeySelective(@Param("record") GaeaClusterConfigDO record,
+      @Param("selective") GaeaClusterConfigDO.Column... selective);
 
-    int updateByPrimaryKey(GaeaClusterConfigDO record);
+  int updateByPrimaryKey(GaeaClusterConfigDO record);
 
-    int batchInsert(@Param("list") List<GaeaClusterConfigDO> list);
+  int batchInsert(@Param("list") List<GaeaClusterConfigDO> list);
 
-    int batchInsertSelective(@Param("list") List<GaeaClusterConfigDO> list, @Param("selective") GaeaClusterConfigDO.Column ... selective);
+  int batchInsertSelective(@Param("list") List<GaeaClusterConfigDO> list,
+      @Param("selective") GaeaClusterConfigDO.Column... selective);
 
-    int upsert(GaeaClusterConfigDO record);
+  int upsert(GaeaClusterConfigDO record);
 
-    int upsertSelective(@Param("record") GaeaClusterConfigDO record, @Param("selective") GaeaClusterConfigDO.Column ... selective);
+  int upsertSelective(@Param("record") GaeaClusterConfigDO record,
+      @Param("selective") GaeaClusterConfigDO.Column... selective);
 }

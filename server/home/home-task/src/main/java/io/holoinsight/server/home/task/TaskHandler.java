@@ -2,7 +2,6 @@
  * Copyright 2022 Holoinsight Project Authors. Licensed under Apache-2.0.
  */
 
-
 package io.holoinsight.server.home.task;
 
 import io.holoinsight.server.home.task.TaskEnum.TaskType;
@@ -20,7 +19,7 @@ import java.lang.annotation.Target;
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface TaskHandler {
-    TaskEnum value();
+  TaskEnum value();
 
-    TaskType type() default TaskType.TASK;
+  TaskType type() default TaskType.TASK;
 }

@@ -16,30 +16,30 @@ import java.util.Map;
  */
 public interface DBCoreService {
 
-    Pair<Integer, Integer> insertOrUpdate(String tableName,
-                                                                                   List<Map<String, Object>> rows);
+  Pair<Integer, Integer> insertOrUpdate(String tableName, List<Map<String, Object>> rows);
 
-    List<Map<String, Object>> insert(String tableName, List<Map<String, Object>> rows);
+  List<Map<String, Object>> insert(String tableName, List<Map<String, Object>> rows);
 
-    List<Map<String, Object>> update(String tableName, List<Map<String, Object>> rows);
+  List<Map<String, Object>> update(String tableName, List<Map<String, Object>> rows);
 
-    List<Map<String, Object>> updateByExample(String tableName, QueryExample queryExample, Map<String, Object> row);
+  List<Map<String, Object>> updateByExample(String tableName, QueryExample queryExample,
+      Map<String, Object> row);
 
-    List<Map<String, Object>> queryByTable(String tableName);
+  List<Map<String, Object>> queryByTable(String tableName);
 
-    //Map<String, Object> queryByPk(String tableName, String pkVal);
+  // Map<String, Object> queryByPk(String tableName, String pkVal);
 
-    List<Map<String, Object>> queryByPks(String tableName, List<String> pkValList);
+  List<Map<String, Object>> queryByPks(String tableName, List<String> pkValList);
 
-    List<Map<String, Object>> queryByExample(String tableName, QueryExample queryExample);
+  List<Map<String, Object>> queryByExample(String tableName, QueryExample queryExample);
 
-    List<Map<String, Object>> fuzzyByExample(String tableName, QueryExample queryExample);
+  List<Map<String, Object>> fuzzyByExample(String tableName, QueryExample queryExample);
 
-    //List<String> queryPksByExample(String tableName, QueryExample queryExample);
+  // List<String> queryPksByExample(String tableName, QueryExample queryExample);
 
-    long deleteByExample(String tableName, QueryExample queryExample);
+  long deleteByExample(String tableName, QueryExample queryExample);
 
-    long deleteByRowMap(String tableName, List<Map<String, Object>> rows);
+  long deleteByRowMap(String tableName, List<Map<String, Object>> rows);
 
-    long batchDeleteByPk(String tableName, List<String> default_pks);
+  long batchDeleteByPk(String tableName, List<String> default_pks);
 }

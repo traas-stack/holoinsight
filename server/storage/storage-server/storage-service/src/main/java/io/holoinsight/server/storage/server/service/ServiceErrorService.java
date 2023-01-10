@@ -11,6 +11,6 @@ import java.util.List;
 
 public interface ServiceErrorService {
 
-    void insert(List<ServiceErrorEsDO> serviceErrorEsDOList) throws IOException;
+  void insert(List<ServiceErrorEsDO> serviceErrorEsDOList) throws IOException;
 
 }

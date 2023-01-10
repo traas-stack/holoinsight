@@ -11,19 +11,22 @@ import io.opentelemetry.proto.collector.trace.v1.TraceServiceGrpc;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
- * <p>TraceServiceImpl class.</p>
+ * <p>
+ * TraceServiceImpl class.
+ * </p>
  *
  * @author sw1136562366
  */
 public class TraceServiceImpl extends TraceServiceGrpc.TraceServiceImplBase {
 
-    @Autowired
-    private TraceExporter exporter;
+  @Autowired
+  private TraceExporter exporter;
 
-    /** {@inheritDoc} */
-    @Override
-    public void export(ExportTraceServiceRequest request, StreamObserver<ExportTraceServiceResponse> responseObserver) {
-        exporter.export(request, responseObserver);
-    }
+  /** {@inheritDoc} */
+  @Override
+  public void export(ExportTraceServiceRequest request,
+      StreamObserver<ExportTraceServiceResponse> responseObserver) {
+    exporter.export(request, responseObserver);
+  }
 
 }

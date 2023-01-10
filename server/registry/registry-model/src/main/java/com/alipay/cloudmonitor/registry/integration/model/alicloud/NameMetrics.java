@@ -17,8 +17,8 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class NameMetrics {
-    private String               name;
-    private String               namespace;
-    private String               determineMetric;
-    private List<AlicloudMetric> metrics;
+  private String name;
+  private String namespace;
+  private String determineMetric;
+  private List<AlicloudMetric> metrics;
 }

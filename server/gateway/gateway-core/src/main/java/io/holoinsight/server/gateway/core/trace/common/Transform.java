@@ -4,21 +4,25 @@
 package io.holoinsight.server.gateway.core.trace.common;
 
 /**
- * <p>Transform class.</p>
+ * <p>
+ * Transform class.
+ * </p>
  *
  * @author sw1136562366
  */
 public class Transform {
 
-    /**
-     * <p>serviceInstanceTransform.</p>
-     */
-    public static String serviceInstanceTransform(String service, String serviceInstance) {
-        if (serviceInstance.contains("@")) {
-            // only get ip
-            return serviceInstance.split("@")[1];
-        }
-        return serviceInstance;
+  /**
+   * <p>
+   * serviceInstanceTransform.
+   * </p>
+   */
+  public static String serviceInstanceTransform(String service, String serviceInstance) {
+    if (serviceInstance.contains("@")) {
+      // only get ip
+      return serviceInstance.split("@")[1];
     }
+    return serviceInstance;
+  }
 
 }

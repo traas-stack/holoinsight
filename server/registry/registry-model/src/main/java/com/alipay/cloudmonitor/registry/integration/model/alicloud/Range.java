@@ -17,6 +17,6 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Range {
-    List<String>      names;
-    List<NameMetrics> nameMetrics;
+  List<String> names;
+  List<NameMetrics> nameMetrics;
 }

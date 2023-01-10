@@ -17,7 +17,7 @@ import java.util.List;
 @AllArgsConstructor
 public class AlertEvent {
 
-    EventTypeEnum eventTypeEnum;
+  EventTypeEnum eventTypeEnum;
 
-    List<AlertNotify> alarmNotifies;
+  List<AlertNotify> alarmNotifies;
 }

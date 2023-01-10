@@ -2,7 +2,6 @@
  * Copyright 2022 Holoinsight Project Authors. Licensed under Apache-2.0.
  */
 
-
 package io.holoinsight.server.home.web.controller.model;
 
 import lombok.Data;
@@ -14,12 +13,12 @@ import lombok.Data;
  */
 @Data
 public class TokenQueryRequest {
-    /**
-     * 系统名称
-     */
-    public String accessId;
-    /**
-     * 系统apiKey
-     */
-    public String accessKey;
+  /**
+   * 系统名称
+   */
+  public String accessId;
+  /**
+   * 系统apiKey
+   */
+  public String accessKey;
 }

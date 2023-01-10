@@ -2,7 +2,6 @@
  * Copyright 2022 Holoinsight Project Authors. Licensed under Apache-2.0.
  */
 
-
 package io.holoinsight.server.home.web.controller;
 
 import io.holoinsight.server.home.biz.service.MarketplaceProductService;
@@ -46,225 +45,220 @@ import java.util.stream.Collectors;
 @RequestMapping("/webapi/marketplace/product")
 public class MarketplaceProductFacadeImpl extends BaseFacade {
 
-    @Autowired
-    private MarketplaceProductService marketplaceProductService;
+  @Autowired
+  private MarketplaceProductService marketplaceProductService;
 
-    @Autowired
-    private UserOpLogService          userOpLogService;
+  @Autowired
+  private UserOpLogService userOpLogService;
 
-    @PostMapping("/update")
-    @ResponseBody
-    @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.EDIT)
-    public JsonResult<Object> update(@RequestBody MarketplaceProductDTO marketplaceProductDTO) {
-        final JsonResult<MarketplaceProductDTO> result = new JsonResult<>();
-        facadeTemplate.manage(result, new ManageCallback() {
-            @Override
-            public void checkParameter() {
-                ParaCheckUtil.checkParaNotNull(marketplaceProductDTO.id, "id");
-                ParaCheckUtil.checkParaNotBlank(marketplaceProductDTO.name, "name");
-                ParaCheckUtil.checkParaNotNull(marketplaceProductDTO.overview, "overview");
-                ParaCheckUtil.checkParaNotBlank(marketplaceProductDTO.configuration,
-                    "configuration");
-                ParaCheckUtil.checkParaNotNull(marketplaceProductDTO.status, "status");
-            }
+  @PostMapping("/update")
+  @ResponseBody
+  @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.EDIT)
+  public JsonResult<Object> update(@RequestBody MarketplaceProductDTO marketplaceProductDTO) {
+    final JsonResult<MarketplaceProductDTO> result = new JsonResult<>();
+    facadeTemplate.manage(result, new ManageCallback() {
+      @Override
+      public void checkParameter() {
+        ParaCheckUtil.checkParaNotNull(marketplaceProductDTO.id, "id");
+        ParaCheckUtil.checkParaNotBlank(marketplaceProductDTO.name, "name");
+        ParaCheckUtil.checkParaNotNull(marketplaceProductDTO.overview, "overview");
+        ParaCheckUtil.checkParaNotBlank(marketplaceProductDTO.configuration, "configuration");
+        ParaCheckUtil.checkParaNotNull(marketplaceProductDTO.status, "status");
+      }
 
-            @Override
-            public void doManage() {
+      @Override
+      public void doManage() {
 
-                MonitorScope ms = RequestContext.getContext().ms;
-                MonitorUser mu = RequestContext.getContext().mu;
-                if (null != mu) {
-                    marketplaceProductDTO.setModifier(mu.getLoginName());
-                }
-                marketplaceProductDTO.setGmtModified(new Date());
-                MarketplaceProductDTO update = marketplaceProductService
-                    .updateByRequest(marketplaceProductDTO);
+        MonitorScope ms = RequestContext.getContext().ms;
+        MonitorUser mu = RequestContext.getContext().mu;
+        if (null != mu) {
+          marketplaceProductDTO.setModifier(mu.getLoginName());
+        }
+        marketplaceProductDTO.setGmtModified(new Date());
+        MarketplaceProductDTO update =
+            marketplaceProductService.updateByRequest(marketplaceProductDTO);
 
-                assert mu != null;
-                userOpLogService.append("marketplace_product", String.valueOf(update.getId()),
-                    OpType.UPDATE, mu.getLoginName(), ms.getTenant(),
-                    J.toJson(marketplaceProductDTO), J.toJson(update), null,
-                    "marketplace_product_update");
+        assert mu != null;
+        userOpLogService.append("marketplace_product", String.valueOf(update.getId()),
+            OpType.UPDATE, mu.getLoginName(), ms.getTenant(), J.toJson(marketplaceProductDTO),
+            J.toJson(update), null, "marketplace_product_update");
 
-            }
-        });
+      }
+    });
 
-        return JsonResult.createSuccessResult(true);
-    }
+    return JsonResult.createSuccessResult(true);
+  }
 
-    @PostMapping("/create")
-    @ResponseBody
-    @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.EDIT)
-    public JsonResult<MarketplaceProductDTO> save(@RequestBody MarketplaceProductDTO marketplaceProductDTO) {
-        final JsonResult<MarketplaceProductDTO> result = new JsonResult<>();
-        facadeTemplate.manage(result, new ManageCallback() {
-            @Override
-            public void checkParameter() {
-                ParaCheckUtil.checkParaNotBlank(marketplaceProductDTO.name, "name");
-                ParaCheckUtil.checkParaNotNull(marketplaceProductDTO.overview, "overview");
-                ParaCheckUtil.checkParaNotBlank(marketplaceProductDTO.configuration,
-                    "configuration");
-                ParaCheckUtil.checkParaNotNull(marketplaceProductDTO.status, "status");
-            }
+  @PostMapping("/create")
+  @ResponseBody
+  @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.EDIT)
+  public JsonResult<MarketplaceProductDTO> save(
+      @RequestBody MarketplaceProductDTO marketplaceProductDTO) {
+    final JsonResult<MarketplaceProductDTO> result = new JsonResult<>();
+    facadeTemplate.manage(result, new ManageCallback() {
+      @Override
+      public void checkParameter() {
+        ParaCheckUtil.checkParaNotBlank(marketplaceProductDTO.name, "name");
+        ParaCheckUtil.checkParaNotNull(marketplaceProductDTO.overview, "overview");
+        ParaCheckUtil.checkParaNotBlank(marketplaceProductDTO.configuration, "configuration");
+        ParaCheckUtil.checkParaNotNull(marketplaceProductDTO.status, "status");
+      }
 
-            @Override
-            public void doManage() {
-                MonitorScope ms = RequestContext.getContext().ms;
-                MonitorUser mu = RequestContext.getContext().mu;
-                if (null != mu) {
-                    marketplaceProductDTO.setCreator(mu.getLoginName());
-                    marketplaceProductDTO.setModifier(mu.getLoginName());
-                }
-                MarketplaceProductDTO save = marketplaceProductService
-                    .create(marketplaceProductDTO);
-                JsonResult.createSuccessResult(result, save);
+      @Override
+      public void doManage() {
+        MonitorScope ms = RequestContext.getContext().ms;
+        MonitorUser mu = RequestContext.getContext().mu;
+        if (null != mu) {
+          marketplaceProductDTO.setCreator(mu.getLoginName());
+          marketplaceProductDTO.setModifier(mu.getLoginName());
+        }
+        MarketplaceProductDTO save = marketplaceProductService.create(marketplaceProductDTO);
+        JsonResult.createSuccessResult(result, save);
 
-                assert mu != null;
-                userOpLogService.append("marketplace_product", String.valueOf(save.getId()),
-                    OpType.CREATE, mu.getLoginName(), ms.getTenant(),
-                    J.toJson(marketplaceProductDTO), null, null, "marketplace_product_create");
+        assert mu != null;
+        userOpLogService.append("marketplace_product", String.valueOf(save.getId()), OpType.CREATE,
+            mu.getLoginName(), ms.getTenant(), J.toJson(marketplaceProductDTO), null, null,
+            "marketplace_product_create");
 
-            }
-        });
+      }
+    });
 
-        return result;
-    }
+    return result;
+  }
 
-    @GetMapping(value = "/queryById/{id}")
-    @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.VIEW)
-    public JsonResult<MarketplaceProductDTO> queryById(@PathVariable("id") Long id) {
-        final JsonResult<MarketplaceProductDTO> result = new JsonResult<>();
-        facadeTemplate.manage(result, new ManageCallback() {
-            @Override
-            public void checkParameter() {
-                ParaCheckUtil.checkParaNotNull(id, "id");
-            }
+  @GetMapping(value = "/queryById/{id}")
+  @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.VIEW)
+  public JsonResult<MarketplaceProductDTO> queryById(@PathVariable("id") Long id) {
+    final JsonResult<MarketplaceProductDTO> result = new JsonResult<>();
+    facadeTemplate.manage(result, new ManageCallback() {
+      @Override
+      public void checkParameter() {
+        ParaCheckUtil.checkParaNotNull(id, "id");
+      }
 
-            @Override
-            public void doManage() {
-                MarketplaceProductDTO marketplaceProductDTO = marketplaceProductService
-                    .findById(id);
+      @Override
+      public void doManage() {
+        MarketplaceProductDTO marketplaceProductDTO = marketplaceProductService.findById(id);
 
-                if (null == marketplaceProductDTO) {
-                    throw new MonitorException(ResultCodeEnum.CANNOT_FIND_RECORD,
-                        "can not find record:" + id);
-                }
-                JsonResult.createSuccessResult(result, marketplaceProductDTO);
-            }
-        });
-        return result;
-    }
+        if (null == marketplaceProductDTO) {
+          throw new MonitorException(ResultCodeEnum.CANNOT_FIND_RECORD,
+              "can not find record:" + id);
+        }
+        JsonResult.createSuccessResult(result, marketplaceProductDTO);
+      }
+    });
+    return result;
+  }
 
-    @GetMapping(value = "/queryByName/{name}")
-    @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.VIEW)
-    public JsonResult<List<MarketplaceProductDTO>> queryByName(@PathVariable("name") String name) {
-        final JsonResult<List<MarketplaceProductDTO>> result = new JsonResult<>();
-        facadeTemplate.manage(result, new ManageCallback() {
-            @Override
-            public void checkParameter() {
-                ParaCheckUtil.checkParaNotNull(name, "name");
-            }
+  @GetMapping(value = "/queryByName/{name}")
+  @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.VIEW)
+  public JsonResult<List<MarketplaceProductDTO>> queryByName(@PathVariable("name") String name) {
+    final JsonResult<List<MarketplaceProductDTO>> result = new JsonResult<>();
+    facadeTemplate.manage(result, new ManageCallback() {
+      @Override
+      public void checkParameter() {
+        ParaCheckUtil.checkParaNotNull(name, "name");
+      }
 
-            @Override
-            public void doManage() {
-                List<MarketplaceProductDTO> marketplaceProductDTOs = marketplaceProductService
-                    .findByMap(Collections.singletonMap("name", name));
-                JsonResult.createSuccessResult(result, marketplaceProductDTOs);
-            }
-        });
-        return result;
-    }
+      @Override
+      public void doManage() {
+        List<MarketplaceProductDTO> marketplaceProductDTOs =
+            marketplaceProductService.findByMap(Collections.singletonMap("name", name));
+        JsonResult.createSuccessResult(result, marketplaceProductDTOs);
+      }
+    });
+    return result;
+  }
 
-    @GetMapping(value = "/listAll")
-    @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.VIEW)
-    public JsonResult<List<MarketplaceProductDTO>> listAll() {
-        final JsonResult<List<MarketplaceProductDTO>> result = new JsonResult<>();
-        facadeTemplate.manage(result, new ManageCallback() {
-            @Override
-            public void checkParameter() {
-            }
+  @GetMapping(value = "/listAll")
+  @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.VIEW)
+  public JsonResult<List<MarketplaceProductDTO>> listAll() {
+    final JsonResult<List<MarketplaceProductDTO>> result = new JsonResult<>();
+    facadeTemplate.manage(result, new ManageCallback() {
+      @Override
+      public void checkParameter() {}
 
-            @Override
-            public void doManage() {
-                List<MarketplaceProductDTO> marketplaceProductDTOs = marketplaceProductService
-                    .findByMap(Collections.emptyMap());
+      @Override
+      public void doManage() {
+        List<MarketplaceProductDTO> marketplaceProductDTOs =
+            marketplaceProductService.findByMap(Collections.emptyMap());
 
-                JsonResult.createSuccessResult(result, marketplaceProductDTOs);
-            }
-        });
-        return result;
-    }
+        JsonResult.createSuccessResult(result, marketplaceProductDTOs);
+      }
+    });
+    return result;
+  }
 
-    @GetMapping(value = "/listAllNames")
-    @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.VIEW)
-    public JsonResult<List<String>> listAllNames() {
-        final JsonResult<List<String>> result = new JsonResult<>();
-        facadeTemplate.manage(result, new ManageCallback() {
-            @Override
-            public void checkParameter() {
-            }
+  @GetMapping(value = "/listAllNames")
+  @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.VIEW)
+  public JsonResult<List<String>> listAllNames() {
+    final JsonResult<List<String>> result = new JsonResult<>();
+    facadeTemplate.manage(result, new ManageCallback() {
+      @Override
+      public void checkParameter() {}
 
-            @Override
-            public void doManage() {
-                List<MarketplaceProductDTO> marketplaceProductDTOs = marketplaceProductService
-                    .findByMap(Collections.emptyMap());
-                List<String> names = marketplaceProductDTOs == null ? null
-                    : marketplaceProductDTOs.stream().map(MarketplaceProductDTO::getName)
-                        .collect(Collectors.toList());
-                JsonResult.createSuccessResult(result, names);
-            }
-        });
-        return result;
-    }
+      @Override
+      public void doManage() {
+        List<MarketplaceProductDTO> marketplaceProductDTOs =
+            marketplaceProductService.findByMap(Collections.emptyMap());
+        List<String> names = marketplaceProductDTOs == null ? null
+            : marketplaceProductDTOs.stream().map(MarketplaceProductDTO::getName)
+                .collect(Collectors.toList());
+        JsonResult.createSuccessResult(result, names);
+      }
+    });
+    return result;
+  }
 
-    @DeleteMapping(value = "/delete/{id}")
-    @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.EDIT)
-    public JsonResult<Object> deleteById(@PathVariable("id") Long id) {
-        final JsonResult<Object> result = new JsonResult<>();
-        facadeTemplate.manage(result, new ManageCallback() {
-            @Override
-            public void checkParameter() {
-                ParaCheckUtil.checkParaNotNull(id, "id");
-            }
+  @DeleteMapping(value = "/delete/{id}")
+  @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.EDIT)
+  public JsonResult<Object> deleteById(@PathVariable("id") Long id) {
+    final JsonResult<Object> result = new JsonResult<>();
+    facadeTemplate.manage(result, new ManageCallback() {
+      @Override
+      public void checkParameter() {
+        ParaCheckUtil.checkParaNotNull(id, "id");
+      }
 
-            @Override
-            public void doManage() {
-                MarketplaceProductDTO byId = marketplaceProductService.findById(id);
-                if (null == byId) {
-                    throw new MonitorException(ResultCodeEnum.CANNOT_FIND_RECORD,
-                            "can not find record:" + id);
-                }
+      @Override
+      public void doManage() {
+        MarketplaceProductDTO byId = marketplaceProductService.findById(id);
+        if (null == byId) {
+          throw new MonitorException(ResultCodeEnum.CANNOT_FIND_RECORD,
+              "can not find record:" + id);
+        }
 
-                marketplaceProductService.deleteById(id);
-                JsonResult.createSuccessResult(result, null);
-                userOpLogService.append("marketplace_product", String.valueOf(byId.getId()),
-                    OpType.DELETE, RequestContext.getContext().mu.getLoginName(),
-                    RequestContext.getContext().ms.getTenant(), J.toJson(byId), null, null,
-                    "marketplace_product_delete");
+        marketplaceProductService.deleteById(id);
+        JsonResult.createSuccessResult(result, null);
+        userOpLogService.append("marketplace_product", String.valueOf(byId.getId()), OpType.DELETE,
+            RequestContext.getContext().mu.getLoginName(),
+            RequestContext.getContext().ms.getTenant(), J.toJson(byId), null, null,
+            "marketplace_product_delete");
 
-            }
-        });
-        return result;
-    }
+      }
+    });
+    return result;
+  }
 
-    @PostMapping("/pageQuery")
-    @ResponseBody
-    @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.VIEW)
-    public JsonResult<MonitorPageResult<MarketplaceProductDTO>> pageQuery(@RequestBody MonitorPageRequest<MarketplaceProductDTO> customPluginRequest) {
-        final JsonResult<MonitorPageResult<MarketplaceProductDTO>> result = new JsonResult<>();
-        facadeTemplate.manage(result, new ManageCallback() {
-            @Override
-            public void checkParameter() {
-                ParaCheckUtil.checkParaNotNull(customPluginRequest.getTarget(), "target");
-            }
+  @PostMapping("/pageQuery")
+  @ResponseBody
+  @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.VIEW)
+  public JsonResult<MonitorPageResult<MarketplaceProductDTO>> pageQuery(
+      @RequestBody MonitorPageRequest<MarketplaceProductDTO> customPluginRequest) {
+    final JsonResult<MonitorPageResult<MarketplaceProductDTO>> result = new JsonResult<>();
+    facadeTemplate.manage(result, new ManageCallback() {
+      @Override
+      public void checkParameter() {
+        ParaCheckUtil.checkParaNotNull(customPluginRequest.getTarget(), "target");
+      }
 
-            @Override
-            public void doManage() {
-                JsonResult.createSuccessResult(result,
-                    marketplaceProductService.getListByPage(customPluginRequest));
-            }
-        });
+      @Override
+      public void doManage() {
+        JsonResult.createSuccessResult(result,
+            marketplaceProductService.getListByPage(customPluginRequest));
+      }
+    });
 
-        return result;
-    }
+    return result;
+  }
 }

@@ -2,7 +2,6 @@
  * Copyright 2022 Holoinsight Project Authors. Licensed under Apache-2.0.
  */
 
-
 package io.holoinsight.server.home.dal.model.dto;
 
 import lombok.Data;
@@ -17,34 +16,34 @@ import java.util.Map;
  */
 @Data
 public class IntegrationGeneratedDTO {
-    public Long                id;
+  public Long id;
 
-    public String              tenant;
+  public String tenant;
 
-    // appName or other
-    public String              name;
+  // appName or other
+  public String name;
 
-    // jvm,system,checkservice
-    public String              item;
+  // jvm,system,checkservice
+  public String item;
 
-    // integration, mysql, apm
-    public String              product;
+  // integration, mysql, apm
+  public String product;
 
 
-    // detail config
-    public Map<String, Object> config;
+  // detail config
+  public Map<String, Object> config;
 
-    // is deleted 0 or 1
-    public boolean             deleted;
+  // is deleted 0 or 1
+  public boolean deleted;
 
-    // is use custom
-    public boolean             custom;
+  // is use custom
+  public boolean custom;
 
-    public String              creator;
+  public String creator;
 
-    public String              modifier;
+  public String modifier;
 
-    public Date                gmtCreate;
+  public Date gmtCreate;
 
-    public Date                gmtModified;
+  public Date gmtModified;
 }

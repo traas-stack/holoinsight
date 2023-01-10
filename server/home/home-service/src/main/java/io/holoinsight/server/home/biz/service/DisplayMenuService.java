@@ -2,7 +2,6 @@
  * Copyright 2022 Holoinsight Project Authors. Licensed under Apache-2.0.
  */
 
-
 package io.holoinsight.server.home.biz.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
@@ -19,7 +18,7 @@ import java.util.Map;
  */
 public interface DisplayMenuService extends IService<DisplayMenu> {
 
-    DisplayMenuDTO queryById(Long id, String tenant);
+  DisplayMenuDTO queryById(Long id, String tenant);
 
-    List<DisplayMenuDTO> findByMap(Map<String, Object> columnMap);
+  List<DisplayMenuDTO> findByMap(Map<String, Object> columnMap);
 }

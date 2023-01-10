@@ -21,31 +21,30 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 public class ModelTtlManager {
 
-    @Autowired
-    private List<DataCleaner> cleaners;
+  @Autowired
+  private List<DataCleaner> cleaners;
 
-    @Autowired
-    @Lazy
-    private ModelCenter modelManager;
+  @Autowired
+  @Lazy
+  private ModelCenter modelManager;
 
-    public void start() {
-        Executors.newSingleThreadScheduledExecutor()
-                .scheduleAtFixedRate(() -> {
-                    try {
-                        clean();
-                    } catch (Exception e) {
-                        log.error("ttl clean fail",e);
-                    }
-                }, 0, 1, TimeUnit.MINUTES);
+  public void start() {
+    Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(() -> {
+      try {
+        clean();
+      } catch (Exception e) {
+        log.error("ttl clean fail", e);
+      }
+    }, 0, 1, TimeUnit.MINUTES);
+  }
+
+  private void clean() throws IOException {
+    List<Model> models = modelManager.allModels();
+    for (Model model : models) {
+      for (DataCleaner cleaner : cleaners) {
+        cleaner.clean(model);
+      }
     }
-
-    private void clean() throws IOException {
-        List<Model> models = modelManager.allModels();
-        for (Model model : models) {
-            for (DataCleaner cleaner : cleaners) {
-                cleaner.clean(model);
-            }
-        }
-    }
+  }
 
 }

@@ -1,7 +1,6 @@
 /*
  * Copyright 2022 Holoinsight Project Authors. Licensed under Apache-2.0.
  */
-
 package io.holoinsight.server.home.web.controller.model;
 
 import lombok.Data;
@@ -14,28 +13,28 @@ import lombok.Data;
 @Data
 public class PqlInstanceRequest {
 
-    /**
-     * 租户
-     */
-    private String tenant;
+  /**
+   * 租户
+   */
+  private String tenant;
 
-    /**
-     * pql
-     */
-    private String query;
+  /**
+   * pql
+   */
+  private String query;
 
-    /**
-     * 评估时间:ms
-     */
-    private Long time;
+  /**
+   * 评估时间:ms
+   */
+  private Long time;
 
-    /**
-     * 超时
-     */
-    private String timeout = "30s";
+  /**
+   * 超时
+   */
+  private String timeout = "30s";
 
-    /**
-     * 间隔
-     */
-    private String delta = "5m";
+  /**
+   * 间隔
+   */
+  private String delta = "5m";
 }

@@ -9,12 +9,12 @@ import java.util.List;
 
 @Data
 public class BizopsEndpoint {
-    private String service;
-    private String endpoint;
-    private String stamp;
-    private String spanLayer;
-    private String errorCode;
-    private String rootErrorCode;
-    private List<String> traceIds;
-    private ResponseMetric metric;
+  private String service;
+  private String endpoint;
+  private String stamp;
+  private String spanLayer;
+  private String errorCode;
+  private String rootErrorCode;
+  private List<String> traceIds;
+  private ResponseMetric metric;
 }

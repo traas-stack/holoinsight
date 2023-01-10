@@ -20,15 +20,15 @@ public class RpnResolver {
 
   private Stack<String> op = new Stack<>();
 
-  public List<String> expr2Infix(String expr){
-      Objects.requireNonNull(expr);
-      Pattern pattern_expr = Pattern.compile("(\\(|\\)|\\+|\\-|\\*|/|\\d+(\\.\\d+)?|\\w+)");
-      Matcher matcher = pattern_expr.matcher(expr);
-      List<String> exprs = new ArrayList<>();
-      while(matcher.find()) {
-          exprs.add(matcher.group(1));
-      }
-      return exprs;
+  public List<String> expr2Infix(String expr) {
+    Objects.requireNonNull(expr);
+    Pattern pattern_expr = Pattern.compile("(\\(|\\)|\\+|\\-|\\*|/|\\d+(\\.\\d+)?|\\w+)");
+    Matcher matcher = pattern_expr.matcher(expr);
+    List<String> exprs = new ArrayList<>();
+    while (matcher.find()) {
+      exprs.add(matcher.group(1));
+    }
+    return exprs;
   }
 
 
@@ -150,8 +150,8 @@ public class RpnResolver {
   }
 
   public static void main(String[] args) {
-      RpnResolver rpnResolver = new RpnResolver();
-      String expr = "((a1+2.22)*3.58+b2)/(c3*99)";
+    RpnResolver rpnResolver = new RpnResolver();
+    String expr = "((a1+2.22)*3.58+b2)/(c3*99)";
     List<String> exprArgs = rpnResolver.expr2Infix(expr);
     System.out.println(exprArgs);
     List list = new ArrayList();

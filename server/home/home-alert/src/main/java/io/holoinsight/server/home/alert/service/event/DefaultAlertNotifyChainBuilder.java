@@ -13,9 +13,10 @@ import java.util.List;
  * @author masaimu
  * @version 2022-12-14 16:12:00
  */
-public class DefaultAlertNotifyChainBuilder implements AlertNotifyChainBuilder{
-    @Override
-    public List<NotifyChain> buildNotifyChains(String traceId, List<IntegrationPluginDTO> integrationPlugins) {
-        return Collections.emptyList();
-    }
+public class DefaultAlertNotifyChainBuilder implements AlertNotifyChainBuilder {
+  @Override
+  public List<NotifyChain> buildNotifyChains(String traceId,
+      List<IntegrationPluginDTO> integrationPlugins) {
+    return Collections.emptyList();
+  }
 }

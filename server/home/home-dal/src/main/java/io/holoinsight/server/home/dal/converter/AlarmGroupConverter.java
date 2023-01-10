@@ -14,12 +14,12 @@ import java.util.List;
  * @author wangsiyuan
  * @date 2022/4/12 9:40 下午
  */
-@Mapper(componentModel = "spring", uses = { GroupInfoConfMapper.class })
+@Mapper(componentModel = "spring", uses = {GroupInfoConfMapper.class})
 public interface AlarmGroupConverter {
 
-    AlarmGroupDTO doToDTO(AlarmGroup tenant);
+  AlarmGroupDTO doToDTO(AlarmGroup tenant);
 
-    AlarmGroup dtoToDO(AlarmGroupDTO tenantDTO);
+  AlarmGroup dtoToDO(AlarmGroupDTO tenantDTO);
 
-    List<AlarmGroupDTO> dosToDTOs(Iterable<AlarmGroup> tenants);
+  List<AlarmGroupDTO> dosToDTOs(Iterable<AlarmGroup> tenants);
 }

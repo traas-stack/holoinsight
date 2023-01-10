@@ -14,35 +14,35 @@ import java.util.List;
 @Data
 public class AlarmSubscribeInfo {
 
-    private Long id;
+  private Long id;
 
-    /**
-     * 订阅者
-     */
-    private String subscriber;
+  /**
+   * 订阅者
+   */
+  private String subscriber;
 
-    /**
-     * 订阅组id
-     */
-    private Long groupId;
+  /**
+   * 订阅组id
+   */
+  private Long groupId;
 
-    /**
-     * 告警id
-     */
-    private String uniqueId;
+  /**
+   * 告警id
+   */
+  private String uniqueId;
 
-    /**
-     * 通知方式
-     */
-    private List<String> noticeType;
+  /**
+   * 通知方式
+   */
+  private List<String> noticeType;
 
-    /**
-     * 通知是否生效
-     */
-    private Byte status;
+  /**
+   * 通知是否生效
+   */
+  private Byte status;
 
-    /**
-     * 租户id
-     */
-    private String tenant;
+  /**
+   * 租户id
+   */
+  private String tenant;
 }

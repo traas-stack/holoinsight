@@ -2,7 +2,6 @@
  * Copyright 2022 Holoinsight Project Authors. Licensed under Apache-2.0.
  */
 
-
 package io.holoinsight.server.home.biz.service.impl;
 
 import io.holoinsight.server.home.biz.service.FolderService;
@@ -25,50 +24,50 @@ import java.util.List;
 @Service
 public class FolderServiceImpl extends ServiceImpl<FolderMapper, Folder> implements FolderService {
 
-    @Override
-    public List<Folder> getListByKeyword(String keyword, String tenant) {
-        QueryWrapper<Folder> wrapper = new QueryWrapper<>();
-        if (StringUtil.isNotBlank(tenant)) {
-            wrapper.eq("tenant", tenant);
-        }
-        wrapper.like("id", keyword).or().like("name", keyword);
-        Page<Folder> pluginPage = new Page<>(1, 20);
-        pluginPage = page(pluginPage, wrapper);
-
-        return pluginPage.getRecords();
+  @Override
+  public List<Folder> getListByKeyword(String keyword, String tenant) {
+    QueryWrapper<Folder> wrapper = new QueryWrapper<>();
+    if (StringUtil.isNotBlank(tenant)) {
+      wrapper.eq("tenant", tenant);
     }
+    wrapper.like("id", keyword).or().like("name", keyword);
+    Page<Folder> pluginPage = new Page<>(1, 20);
+    pluginPage = page(pluginPage, wrapper);
 
-    @Override
-    public List<Folder> getListByNameLike(String name, String tenant) {
-        QueryWrapper<Folder> wrapper = new QueryWrapper<>();
-        wrapper.eq("tenant",tenant);
-        wrapper.select().like("name",name);
-        return baseMapper.selectList(wrapper);
-    }
+    return pluginPage.getRecords();
+  }
 
-    @Override
-    public List<Folder> findByIds(List<String> ids) {
-        QueryWrapper<Folder> wrapper = new QueryWrapper<>();
-        wrapper.in("id", ids);
-        return baseMapper.selectList(wrapper);
-    }
+  @Override
+  public List<Folder> getListByNameLike(String name, String tenant) {
+    QueryWrapper<Folder> wrapper = new QueryWrapper<>();
+    wrapper.eq("tenant", tenant);
+    wrapper.select().like("name", name);
+    return baseMapper.selectList(wrapper);
+  }
 
-    @Override
-    public Folder queryById(Long id, String tenant) {
-        QueryWrapper<Folder> wrapper = new QueryWrapper<>();
-        wrapper.eq("tenant", tenant);
-        wrapper.eq("id", id);
-        wrapper.last("LIMIT 1");
+  @Override
+  public List<Folder> findByIds(List<String> ids) {
+    QueryWrapper<Folder> wrapper = new QueryWrapper<>();
+    wrapper.in("id", ids);
+    return baseMapper.selectList(wrapper);
+  }
 
-        return this.getOne(wrapper);
-    }
+  @Override
+  public Folder queryById(Long id, String tenant) {
+    QueryWrapper<Folder> wrapper = new QueryWrapper<>();
+    wrapper.eq("tenant", tenant);
+    wrapper.eq("id", id);
+    wrapper.last("LIMIT 1");
 
-    @Override
-    public Long create(Folder folder) {
-        folder.setGmtCreate(new Date());
-        folder.setGmtModified(new Date());
-        this.save(folder);
-        return folder.getId();
-    }
+    return this.getOne(wrapper);
+  }
+
+  @Override
+  public Long create(Folder folder) {
+    folder.setGmtCreate(new Date());
+    folder.setGmtModified(new Date());
+    this.save(folder);
+    return folder.getId();
+  }
 
 }

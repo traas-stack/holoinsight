@@ -18,48 +18,48 @@ import java.util.Map;
 @Data
 public class AlarmGroupDTO {
 
-    private Long   id;
+  private Long id;
 
-    private String tenant;
+  private String tenant;
 
-    private String groupName;
+  private String groupName;
 
-    private GroupInfoDTO groupInfo;
+  private GroupInfoDTO groupInfo;
 
-    private String creator;
+  private String creator;
 
-    private String modifier;
+  private String modifier;
 
-    private Date gmtCreate;
+  private Date gmtCreate;
 
-    private Date   gmtModified;
+  private Date gmtModified;
 
-    private String emailAddress;
+  private String emailAddress;
 
-    private String ddWebhook;
+  private String ddWebhook;
 
-    private String dyvmsPhone;
+  private String dyvmsPhone;
 
-    private String smsPhone;
+  private String smsPhone;
 
-    /**
-     * 环境类型
-     */
-    private String envType;
+  /**
+   * 环境类型
+   */
+  private String envType;
 
-    public List<String> getUserList(){
-        if(this.groupInfo == null){
-            return Collections.emptyList();
-        }
-        Object data = this.groupInfo.getGroupInfo();
-        if(!(data instanceof Map)){
-            return Collections.emptyList();
-        }
-        Map<String, List<String>> map = (Map<String, List<String>>) data;
-        List<String> personList = map.get("person");
-        if(CollectionUtils.isEmpty(personList)){
-            return Collections.emptyList();
-        }
-        return personList;
+  public List<String> getUserList() {
+    if (this.groupInfo == null) {
+      return Collections.emptyList();
     }
+    Object data = this.groupInfo.getGroupInfo();
+    if (!(data instanceof Map)) {
+      return Collections.emptyList();
+    }
+    Map<String, List<String>> map = (Map<String, List<String>>) data;
+    List<String> personList = map.get("person");
+    if (CollectionUtils.isEmpty(personList)) {
+      return Collections.emptyList();
+    }
+    return personList;
+  }
 }

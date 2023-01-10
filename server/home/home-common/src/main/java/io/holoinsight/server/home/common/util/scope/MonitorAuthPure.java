@@ -15,30 +15,30 @@ import java.util.Set;
  */
 public class MonitorAuthPure {
 
-    public Long                exprie;
+  public Long exprie;
 
-    public List<MonitorAuthPkg> pkgs = new ArrayList<>();
+  public List<MonitorAuthPkg> pkgs = new ArrayList<>();
 
-    public static class MonitorAuthPkg {
-        public AuthTargetPure atp;
-        public Set<String>    pcs = new HashSet<>();
+  public static class MonitorAuthPkg {
+    public AuthTargetPure atp;
+    public Set<String> pcs = new HashSet<>();
+  }
+
+  public static class AuthTargetPure {
+    public String at;
+    public String id;
+  }
+
+  public MonitorAuth toAdv() {
+    MonitorAuth ma = new MonitorAuth();
+    for (MonitorAuthPkg pkg : pkgs) {
+      AuthTarget at = new AuthTarget(AuthTargetType.valueOf(pkg.atp.at), pkg.atp.id);
+      Set<PowerConstants> pcs = new HashSet<>();
+      for (String pcPure : pkg.pcs) {
+        pcs.add(PowerConstants.valueOf(pcPure));
+      }
+      ma.powerConstants.put(at, pcs);
     }
-
-    public static class AuthTargetPure {
-        public String at;
-        public String id;
-    }
-
-    public MonitorAuth toAdv() {
-        MonitorAuth ma = new MonitorAuth();
-        for (MonitorAuthPkg pkg : pkgs) {
-            AuthTarget at = new AuthTarget(AuthTargetType.valueOf(pkg.atp.at), pkg.atp.id);
-            Set<PowerConstants> pcs = new HashSet<>();
-            for (String pcPure : pkg.pcs) {
-                pcs.add(PowerConstants.valueOf(pcPure));
-            }
-            ma.powerConstants.put(at, pcs);
-        }
-        return ma;
-    }
+    return ma;
+  }
 }

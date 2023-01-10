@@ -2,7 +2,6 @@
  * Copyright 2022 Holoinsight Project Authors. Licensed under Apache-2.0.
  */
 
-
 package io.holoinsight.server.home.biz.service;
 
 import io.holoinsight.server.home.dal.model.IntegrationGenerated;
@@ -18,7 +17,7 @@ import java.util.List;
  */
 public interface IntegrationGeneratedService extends IService<IntegrationGenerated> {
 
-    void insert(IntegrationGeneratedDTO integrationGeneratedDTO);
+  void insert(IntegrationGeneratedDTO integrationGeneratedDTO);
 
-    List<IntegrationGenerated> queryByTenant(String tenant);
+  List<IntegrationGenerated> queryByTenant(String tenant);
 }

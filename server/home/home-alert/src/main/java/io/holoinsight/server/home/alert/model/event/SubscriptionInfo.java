@@ -14,14 +14,14 @@ import lombok.Data;
 @Builder
 public class SubscriptionInfo {
 
-    /**
-     * 通知类型
-     */
-    String notifyType;
+  /**
+   * 通知类型
+   */
+  String notifyType;
 
-    /**
-     * 用户id
-     */
-    String userId;
+  /**
+   * 用户id
+   */
+  String userId;
 
 }

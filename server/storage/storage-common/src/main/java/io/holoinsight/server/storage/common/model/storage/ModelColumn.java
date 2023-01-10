@@ -17,7 +17,7 @@ import java.lang.reflect.Type;
 @NoArgsConstructor
 @Data
 public class ModelColumn {
-    private       String   name;
-    private       Class<?> type;
-    private  Type     genericType;
+  private String name;
+  private Class<?> type;
+  private Type genericType;
 }

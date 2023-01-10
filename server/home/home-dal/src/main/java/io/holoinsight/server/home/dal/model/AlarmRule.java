@@ -22,133 +22,133 @@ import java.util.Date;
 @Table(name = "alarm_rule")
 public class AlarmRule {
 
-    /**
-     * id
-     */
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
-    @TableId(type = IdType.AUTO)
-    private Long id;
+  /**
+   * id
+   */
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @Column(name = "id")
+  @TableId(type = IdType.AUTO)
+  private Long id;
 
-    /**
-     * 创建时间
-     */
-    @Column(name = "gmt_create")
-    private Date gmtCreate;
+  /**
+   * 创建时间
+   */
+  @Column(name = "gmt_create")
+  private Date gmtCreate;
 
-    /**
-     * 修改时间
-     */
-    @Column(name = "gmt_modified")
-    private Date gmtModified;
+  /**
+   * 修改时间
+   */
+  @Column(name = "gmt_modified")
+  private Date gmtModified;
 
-    /**
-     * 规则名称
-     */
-    @Column(name = "rule_name")
-    private String ruleName;
+  /**
+   * 规则名称
+   */
+  @Column(name = "rule_name")
+  private String ruleName;
 
-    /**
-     * 规则类型（AI、RULE）
-     */
-    @Column(name = "rule_type")
-    private String ruleType;
+  /**
+   * 规则类型（AI、RULE）
+   */
+  @Column(name = "rule_type")
+  private String ruleType;
 
-    /**
-     * 创建者
-     */
-    private String creator;
+  /**
+   * 创建者
+   */
+  private String creator;
 
-    /**
-     * 修改者
-     */
-    private String modifier;
+  /**
+   * 修改者
+   */
+  private String modifier;
 
-    /**
-     * 告警级别
-     */
-    @Column(name = "alarm_level")
-    private String alarmLevel;
+  /**
+   * 告警级别
+   */
+  @Column(name = "alarm_level")
+  private String alarmLevel;
 
-    /**
-     * 规则描述
-     */
-    @Column(name = "rule_describe")
-    private String ruleDescribe;
+  /**
+   * 规则描述
+   */
+  @Column(name = "rule_describe")
+  private String ruleDescribe;
 
-    /**
-     * 规则是否生效
-     */
-    private Byte status;
+  /**
+   * 规则是否生效
+   */
+  private Byte status;
 
-    /**
-     * 合并是否开启
-     */
-    @Column(name = "is_merge")
-    private Byte isMerge;
+  /**
+   * 合并是否开启
+   */
+  @Column(name = "is_merge")
+  private Byte isMerge;
 
-    /**
-     * 合并方式
-     */
-    @Column(name = "merge_type")
-    private String mergeType;
+  /**
+   * 合并方式
+   */
+  @Column(name = "merge_type")
+  private String mergeType;
 
-    /**
-     * 恢复通知是否开启
-     */
-    private Byte recover;
+  /**
+   * 恢复通知是否开启
+   */
+  private Byte recover;
 
-    /**
-     * 通知方式
-     */
-    @Column(name = "notice_type")
-    private String noticeType;
+  /**
+   * 通知方式
+   */
+  @Column(name = "notice_type")
+  private String noticeType;
 
-    /**
-     * 租户id
-     */
-    @Column(name = "tenant")
-    private String tenant;
+  /**
+   * 租户id
+   */
+  @Column(name = "tenant")
+  private String tenant;
 
-    /**
-     * 告警规则
-     */
-    private String rule;
+  /**
+   * 告警规则
+   */
+  private String rule;
 
-    /**
-     * pql
-     */
-    @Column(name = "pql")
-    private String pql;
+  /**
+   * pql
+   */
+  @Column(name = "pql")
+  private String pql;
 
-    /**
-     * 生效时间
-     */
-    @Column(name = "time_filter")
-    private String timeFilter;
+  /**
+   * 生效时间
+   */
+  @Column(name = "time_filter")
+  private String timeFilter;
 
-    /**
-     * 来源类型
-     */
-    @Column(name = "source_type")
-    private String sourceType;
+  /**
+   * 来源类型
+   */
+  @Column(name = "source_type")
+  private String sourceType;
 
-    /**
-     * 来源id
-     */
-    @Column(name = "source_id")
-    private Long sourceId;
+  /**
+   * 来源id
+   */
+  @Column(name = "source_id")
+  private Long sourceId;
 
-    /**
-     * 额外信息
-     */
-    private String extra;
+  /**
+   * 额外信息
+   */
+  private String extra;
 
-    /**
-     * 环境类型
-     */
-    @Column(name = "env_type")
-    private String envType;
+  /**
+   * 环境类型
+   */
+  @Column(name = "env_type")
+  private String envType;
 
 }

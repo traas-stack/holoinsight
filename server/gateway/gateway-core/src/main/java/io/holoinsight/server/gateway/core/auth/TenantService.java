@@ -22,41 +22,46 @@ import org.springframework.stereotype.Service;
 import com.google.common.collect.Maps;
 
 /**
- * <p>created at 2022/6/9
+ * <p>
+ * created at 2022/6/9
  *
  * @author sw1136562366
  */
 @Service
 public class TenantService {
-    private static final Logger LOGGER = LoggerFactory.getLogger(TenantService.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(TenantService.class);
 
-    @Autowired
-    private TenantOpsDOMapper mapper;
+  @Autowired
+  private TenantOpsDOMapper mapper;
 
-    @Getter
-    private Map<String, TenantOpsDO> tenantMap = Collections.emptyMap();
+  @Getter
+  private Map<String, TenantOpsDO> tenantMap = Collections.emptyMap();
 
-    /**
-     * <p>init.</p>
-     */
-    @PostConstruct
-    public void init() {
-        refresh();
+  /**
+   * <p>
+   * init.
+   * </p>
+   */
+  @PostConstruct
+  public void init() {
+    refresh();
+  }
+
+  /**
+   * <p>
+   * refresh.
+   * </p>
+   */
+  @Scheduled(initialDelay = 60000L, fixedDelay = 60000L)
+  public void refresh() {
+    long begin = System.currentTimeMillis();
+    List<TenantOpsDO> tenants = mapper.selectByExample(null);
+    Map<String, TenantOpsDO> tenantMap = Maps.newHashMapWithExpectedSize(tenants.size());
+    for (TenantOpsDO t : tenants) {
+      tenantMap.put(t.getTenant(), t);
     }
-
-    /**
-     * <p>refresh.</p>
-     */
-    @Scheduled(initialDelay = 60000L, fixedDelay = 60000L)
-    public void refresh() {
-        long begin = System.currentTimeMillis();
-        List<TenantOpsDO> tenants = mapper.selectByExample(null);
-        Map<String, TenantOpsDO> tenantMap = Maps.newHashMapWithExpectedSize(tenants.size());
-        for (TenantOpsDO t : tenants) {
-            tenantMap.put(t.getTenant(), t);
-        }
-        this.tenantMap = tenantMap;
-        long end = System.currentTimeMillis();
-        LOGGER.info("[tenant] size=[{}] cost=[{}]", tenants.size(), end - begin);
-    }
+    this.tenantMap = tenantMap;
+    long end = System.currentTimeMillis();
+    LOGGER.info("[tenant] size=[{}] cost=[{}]", tenants.size(), end - begin);
+  }
 }

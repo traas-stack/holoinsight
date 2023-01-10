@@ -1,7 +1,6 @@
 /*
  * Copyright 2022 Holoinsight Project Authors. Licensed under Apache-2.0.
  */
-
 package io.holoinsight.server.home.web.controller;
 
 import io.holoinsight.server.home.biz.service.AlertBlockService;
@@ -42,168 +41,166 @@ import java.util.Date;
 @RequestMapping("/webapi/alarmBlock")
 public class AlarmBlockFacadeImpl extends BaseFacade {
 
-    @Autowired
-    private AlertBlockService alarmBlockService;
+  @Autowired
+  private AlertBlockService alarmBlockService;
 
-    @Autowired
-    private UserOpLogService  userOpLogService;
+  @Autowired
+  private UserOpLogService userOpLogService;
 
-    @PostMapping("/create")
-    @ResponseBody
-    @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.EDIT)
-    public JsonResult<Long> save(@RequestBody AlarmBlockDTO alarmBlockDTO) {
-        final JsonResult<Long> result = new JsonResult<>();
-        facadeTemplate.manage(result, new ManageCallback() {
-            @Override
-            public void checkParameter() {
-            }
+  @PostMapping("/create")
+  @ResponseBody
+  @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.EDIT)
+  public JsonResult<Long> save(@RequestBody AlarmBlockDTO alarmBlockDTO) {
+    final JsonResult<Long> result = new JsonResult<>();
+    facadeTemplate.manage(result, new ManageCallback() {
+      @Override
+      public void checkParameter() {}
 
-            @Override
-            public void doManage() {
-                MonitorScope ms = RequestContext.getContext().ms;
-                MonitorUser mu = RequestContext.getContext().mu;
-                if (null != mu) {
-                    alarmBlockDTO.setCreator(mu.getLoginName());
-                }
-                if (null != ms && !StringUtils.isEmpty(ms.tenant)) {
-                    alarmBlockDTO.setTenant(ms.tenant);
-                }
-                alarmBlockDTO.setGmtCreate(new Date());
-                alarmBlockDTO.setGmtModified(new Date());
-                Long id = alarmBlockService.save(alarmBlockDTO);
+      @Override
+      public void doManage() {
+        MonitorScope ms = RequestContext.getContext().ms;
+        MonitorUser mu = RequestContext.getContext().mu;
+        if (null != mu) {
+          alarmBlockDTO.setCreator(mu.getLoginName());
+        }
+        if (null != ms && !StringUtils.isEmpty(ms.tenant)) {
+          alarmBlockDTO.setTenant(ms.tenant);
+        }
+        alarmBlockDTO.setGmtCreate(new Date());
+        alarmBlockDTO.setGmtModified(new Date());
+        Long id = alarmBlockService.save(alarmBlockDTO);
 
-                userOpLogService.append("alarm_block", String.valueOf(id), OpType.CREATE,
-                    mu.getLoginName(), ms.getTenant(), J.toJson(alarmBlockDTO), null, null,
-                    "alarm_block_create");
+        userOpLogService.append("alarm_block", String.valueOf(id), OpType.CREATE, mu.getLoginName(),
+            ms.getTenant(), J.toJson(alarmBlockDTO), null, null, "alarm_block_create");
 
-                JsonResult.createSuccessResult(result, id);
-            }
-        });
+        JsonResult.createSuccessResult(result, id);
+      }
+    });
 
-        return result;
-    }
+    return result;
+  }
 
-    @PostMapping("/update")
-    @ResponseBody
-    @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.EDIT)
-    public JsonResult<Boolean> update(@RequestBody AlarmBlockDTO alarmBlockDTO) {
-        final JsonResult<Boolean> result = new JsonResult<>();
-        facadeTemplate.manage(result, new ManageCallback() {
-            @Override
-            public void checkParameter() {
-                ParaCheckUtil.checkParaNotNull(alarmBlockDTO.getId(), "id");
-                ParaCheckUtil.checkParaNotNull(alarmBlockDTO.getTenant(), "tenant");
-                ParaCheckUtil.checkEquals(alarmBlockDTO.getTenant(),
-                    RequestContext.getContext().ms.getTenant(), "tenant is illegal");
+  @PostMapping("/update")
+  @ResponseBody
+  @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.EDIT)
+  public JsonResult<Boolean> update(@RequestBody AlarmBlockDTO alarmBlockDTO) {
+    final JsonResult<Boolean> result = new JsonResult<>();
+    facadeTemplate.manage(result, new ManageCallback() {
+      @Override
+      public void checkParameter() {
+        ParaCheckUtil.checkParaNotNull(alarmBlockDTO.getId(), "id");
+        ParaCheckUtil.checkParaNotNull(alarmBlockDTO.getTenant(), "tenant");
+        ParaCheckUtil.checkEquals(alarmBlockDTO.getTenant(),
+            RequestContext.getContext().ms.getTenant(), "tenant is illegal");
 
-            }
+      }
 
-            @Override
-            public void doManage() {
+      @Override
+      public void doManage() {
 
-                AlarmBlockDTO item = alarmBlockService.queryById(alarmBlockDTO.getId(),
-                    RequestContext.getContext().ms.getTenant());
-                if (null == item) {
-                    throw new MonitorException("cannot find record: " + alarmBlockDTO.getId());
-                }
-                if (!item.getTenant().equalsIgnoreCase(alarmBlockDTO.getTenant())) {
-                    throw new MonitorException("the tenant parameter is invalid");
-                }
+        AlarmBlockDTO item = alarmBlockService.queryById(alarmBlockDTO.getId(),
+            RequestContext.getContext().ms.getTenant());
+        if (null == item) {
+          throw new MonitorException("cannot find record: " + alarmBlockDTO.getId());
+        }
+        if (!item.getTenant().equalsIgnoreCase(alarmBlockDTO.getTenant())) {
+          throw new MonitorException("the tenant parameter is invalid");
+        }
 
-                MonitorUser mu = RequestContext.getContext().mu;
-                if (null != mu) {
-                    alarmBlockDTO.setModifier(mu.getLoginName());
-                }
-                alarmBlockDTO.setGmtModified(new Date());
-                boolean save = alarmBlockService.updateById(alarmBlockDTO);
-                userOpLogService.append("alarm_block", String.valueOf(item.getId()), OpType.UPDATE,
-                    RequestContext.getContext().mu.getLoginName(),
-                    RequestContext.getContext().ms.getTenant(), J.toJson(item),
-                    J.toJson(alarmBlockDTO), null, "alarm_block_update");
+        MonitorUser mu = RequestContext.getContext().mu;
+        if (null != mu) {
+          alarmBlockDTO.setModifier(mu.getLoginName());
+        }
+        alarmBlockDTO.setGmtModified(new Date());
+        boolean save = alarmBlockService.updateById(alarmBlockDTO);
+        userOpLogService.append("alarm_block", String.valueOf(item.getId()), OpType.UPDATE,
+            RequestContext.getContext().mu.getLoginName(),
+            RequestContext.getContext().ms.getTenant(), J.toJson(item), J.toJson(alarmBlockDTO),
+            null, "alarm_block_update");
 
-                JsonResult.createSuccessResult(result, save);
-            }
-        });
+        JsonResult.createSuccessResult(result, save);
+      }
+    });
 
-        return result;
-    }
+    return result;
+  }
 
-    @GetMapping("/query/{id}")
-    @ResponseBody
-    @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.EDIT)
-    public JsonResult<AlarmBlockDTO> queryById(@PathVariable("id") Long id) {
-        final JsonResult<AlarmBlockDTO> result = new JsonResult<>();
-        facadeTemplate.manage(result, new ManageCallback() {
-            @Override
-            public void checkParameter() {
-                ParaCheckUtil.checkParaNotNull(id, "id");
-            }
+  @GetMapping("/query/{id}")
+  @ResponseBody
+  @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.EDIT)
+  public JsonResult<AlarmBlockDTO> queryById(@PathVariable("id") Long id) {
+    final JsonResult<AlarmBlockDTO> result = new JsonResult<>();
+    facadeTemplate.manage(result, new ManageCallback() {
+      @Override
+      public void checkParameter() {
+        ParaCheckUtil.checkParaNotNull(id, "id");
+      }
 
-            @Override
-            public void doManage() {
+      @Override
+      public void doManage() {
 
-                AlarmBlockDTO save = alarmBlockService.queryById(id,
-                    RequestContext.getContext().ms.getTenant());
-                JsonResult.createSuccessResult(result, save);
-            }
-        });
+        AlarmBlockDTO save =
+            alarmBlockService.queryById(id, RequestContext.getContext().ms.getTenant());
+        JsonResult.createSuccessResult(result, save);
+      }
+    });
 
-        return result;
-    }
+    return result;
+  }
 
-    @DeleteMapping(value = "/delete/{id}")
-    @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.EDIT)
-    public JsonResult<Boolean> deleteById(@PathVariable("id") Long id) {
-        final JsonResult<Boolean> result = new JsonResult<>();
-        facadeTemplate.manage(result, new ManageCallback() {
-            @Override
-            public void checkParameter() {
-                ParaCheckUtil.checkParaNotNull(id, "id");
-            }
+  @DeleteMapping(value = "/delete/{id}")
+  @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.EDIT)
+  public JsonResult<Boolean> deleteById(@PathVariable("id") Long id) {
+    final JsonResult<Boolean> result = new JsonResult<>();
+    facadeTemplate.manage(result, new ManageCallback() {
+      @Override
+      public void checkParameter() {
+        ParaCheckUtil.checkParaNotNull(id, "id");
+      }
 
-            @Override
-            public void doManage() {
-                boolean rtn = false;
-                AlarmBlockDTO alarmBlockDTO = alarmBlockService.queryById(id,
-                    RequestContext.getContext().ms.getTenant());
-                if (alarmBlockDTO != null) {
-                    rtn = alarmBlockService.removeById(id);
-                }
+      @Override
+      public void doManage() {
+        boolean rtn = false;
+        AlarmBlockDTO alarmBlockDTO =
+            alarmBlockService.queryById(id, RequestContext.getContext().ms.getTenant());
+        if (alarmBlockDTO != null) {
+          rtn = alarmBlockService.removeById(id);
+        }
 
-                userOpLogService.append("alarm_block", String.valueOf(id), OpType.DELETE,
-                    RequestContext.getContext().mu.getLoginName(),
-                    RequestContext.getContext().ms.getTenant(), J.toJson(alarmBlockDTO), null, null,
-                    "alarm_block_delete");
+        userOpLogService.append("alarm_block", String.valueOf(id), OpType.DELETE,
+            RequestContext.getContext().mu.getLoginName(),
+            RequestContext.getContext().ms.getTenant(), J.toJson(alarmBlockDTO), null, null,
+            "alarm_block_delete");
 
-                JsonResult.createSuccessResult(result, rtn);
-            }
-        });
-        return result;
-    }
+        JsonResult.createSuccessResult(result, rtn);
+      }
+    });
+    return result;
+  }
 
-    @PostMapping("/pageQuery")
-    @ResponseBody
-    @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.VIEW)
-    public JsonResult<MonitorPageResult<AlarmBlockDTO>> pageQuery(@RequestBody MonitorPageRequest<AlarmBlockDTO> pageRequest) {
-        final JsonResult<MonitorPageResult<AlarmBlockDTO>> result = new JsonResult<>();
-        facadeTemplate.manage(result, new ManageCallback() {
-            @Override
-            public void checkParameter() {
-                ParaCheckUtil.checkParaNotNull(pageRequest.getTarget(), "target");
-            }
+  @PostMapping("/pageQuery")
+  @ResponseBody
+  @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.VIEW)
+  public JsonResult<MonitorPageResult<AlarmBlockDTO>> pageQuery(
+      @RequestBody MonitorPageRequest<AlarmBlockDTO> pageRequest) {
+    final JsonResult<MonitorPageResult<AlarmBlockDTO>> result = new JsonResult<>();
+    facadeTemplate.manage(result, new ManageCallback() {
+      @Override
+      public void checkParameter() {
+        ParaCheckUtil.checkParaNotNull(pageRequest.getTarget(), "target");
+      }
 
-            @Override
-            public void doManage() {
-                MonitorScope ms = RequestContext.getContext().ms;
-                if (null != ms && !StringUtils.isEmpty(ms.tenant)) {
-                    pageRequest.getTarget().setTenant(ms.tenant);
-                }
-                JsonResult.createSuccessResult(result,
-                    alarmBlockService.getListByPage(pageRequest));
-            }
-        });
+      @Override
+      public void doManage() {
+        MonitorScope ms = RequestContext.getContext().ms;
+        if (null != ms && !StringUtils.isEmpty(ms.tenant)) {
+          pageRequest.getTarget().setTenant(ms.tenant);
+        }
+        JsonResult.createSuccessResult(result, alarmBlockService.getListByPage(pageRequest));
+      }
+    });
 
-        return result;
-    }
+    return result;
+  }
 
 }

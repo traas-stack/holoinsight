@@ -6,11 +6,12 @@ package io.holoinsight.server.common;
 import org.springframework.context.ApplicationContext;
 
 /**
- * <p>created at 2022/2/28
+ * <p>
+ * created at 2022/2/28
  *
  * @author xzchaoo
  */
 public class ContextHolder {
-    /** Constant <code>ctx</code> */
-    public static ApplicationContext ctx;
+  /** Constant <code>ctx</code> */
+  public static ApplicationContext ctx;
 }

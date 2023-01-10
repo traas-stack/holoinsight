@@ -2,7 +2,6 @@
  * Copyright 2022 Holoinsight Project Authors. Licensed under Apache-2.0.
  */
 
-
 package io.holoinsight.server.home.biz.plugin.core;
 
 import io.holoinsight.server.home.biz.common.GaeaConvertUtil;
@@ -39,139 +38,136 @@ import java.util.Map;
  */
 public class LogPlugin extends AbstractLocalIntegrationPlugin<LogPlugin> {
 
-    public LogPlugin() {
+  public LogPlugin() {}
+
+  /**
+   * 日志路径
+   */
+  public List<LogPath> logPaths;
+
+  /**
+   * 前置过滤黑名单
+   */
+  public List<Filter> blackFilters;
+
+  /**
+   * 前置过滤白名单
+   */
+  public List<Filter> whiteFilters;
+
+  /**
+   * 日志切分规则 分隔符切分/左起右至/正则表达式
+   */
+  public LogParse logParse = new LogParse();
+
+  /**
+   * 全局维度定义
+   */
+  public List<CustomPluginConf.SplitCol> splitCols;
+
+  /**
+   * 监控指标定义
+   */
+  public CollectMetric collectMetric;
+
+  /**
+   * 时间粒度
+   */
+  public CustomPluginPeriodType periodType;
+
+  @Override
+  public SqlTask buildTask() {
+    Map<String, Map<String, CustomPluginConf.SplitCol>> splitColMap =
+        GaeaSqlTaskUtil.convertSplitColMap(splitCols);
+    Select select = GaeaSqlTaskUtil.buildSelect(logParse, splitColMap, collectMetric);
+    From from = GaeaSqlTaskUtil.buildFrom(logPaths, logParse, whiteFilters, blackFilters);
+    Where where = GaeaSqlTaskUtil.buildWhere(logParse, splitColMap, collectMetric);
+    GroupBy groupBy = GaeaSqlTaskUtil.buildGroupBy(logParse, splitColMap, collectMetric);
+    Window window = GaeaSqlTaskUtil.buildWindow(periodType.getDataUnitMs());
+    Output output = GaeaSqlTaskUtil.buildOutput(metricName);
+
+    SqlTask sqlTask = new SqlTask();
+    {
+      sqlTask.setSelect(select);
+      sqlTask.setFrom(from);
+      sqlTask.setWhere(where);
+      sqlTask.setGroupBy(groupBy);
+      sqlTask.setWindow(window);
+      sqlTask.setOutput(output);
+      sqlTask.setExecuteRule(GaeaSqlTaskUtil.buildExecuteRule());
     }
 
-    /**
-     * 日志路径
-     */
-    public List<LogPath>                   logPaths;
+    return sqlTask;
+  }
 
-    /**
-     * 前置过滤黑名单
-     */
-    public List<Filter>                    blackFilters;
+  public List<LogPlugin> genPluginList(IntegrationPluginDTO integrationPluginDTO) {
+    List<LogPlugin> logPlugins = new ArrayList<>();
 
-    /**
-     * 前置过滤白名单
-     */
-    public List<Filter>                    whiteFilters;
+    Map<String, Object> columnMap = new HashMap<>();
+    columnMap.put("version", integrationPluginDTO.version);
+    columnMap.put("name", integrationPluginDTO.product);
+    List<IntegrationProductDTO> byMap = integrationProductService.findByMap(columnMap);
+    if (CollectionUtils.isEmpty(byMap))
+      return logPlugins;
 
-    /**
-     * 日志切分规则
-     * 分隔符切分/左起右至/正则表达式
-     */
-    public LogParse                        logParse = new LogParse();
+    String json = integrationPluginDTO.json;
 
-    /**
-     * 全局维度定义
-     */
-    public List<CustomPluginConf.SplitCol> splitCols;
+    Map<String, Object> map = J.toMap(json);
+    if (!map.containsKey("confs"))
+      return logPlugins;
 
-    /**
-     * 监控指标定义
-     */
-    public CollectMetric                   collectMetric;
+    List<LogPluginConfig> logPluginConfigs =
+        J.fromJson(J.toJson(map.get("confs")), new TypeToken<List<LogPluginConfig>>() {}.getType());
 
-    /**
-     * 时间粒度
-     */
-    public CustomPluginPeriodType          periodType;
-
-    @Override
-    public SqlTask buildTask() {
-        Map<String, Map<String, CustomPluginConf.SplitCol>> splitColMap = GaeaSqlTaskUtil.convertSplitColMap(splitCols);
-        Select select = GaeaSqlTaskUtil.buildSelect(logParse, splitColMap, collectMetric);
-        From from = GaeaSqlTaskUtil.buildFrom(logPaths, logParse, whiteFilters, blackFilters);
-        Where where = GaeaSqlTaskUtil.buildWhere(logParse, splitColMap, collectMetric);
-        GroupBy groupBy = GaeaSqlTaskUtil.buildGroupBy(logParse, splitColMap, collectMetric);
-        Window window = GaeaSqlTaskUtil.buildWindow(periodType.getDataUnitMs());
-        Output output = GaeaSqlTaskUtil.buildOutput(metricName);
-
-        SqlTask sqlTask = new SqlTask();
-        {
-            sqlTask.setSelect(select);
-            sqlTask.setFrom(from);
-            sqlTask.setWhere(where);
-            sqlTask.setGroupBy(groupBy);
-            sqlTask.setWindow(window);
-            sqlTask.setOutput(output);
-            sqlTask.setExecuteRule(GaeaSqlTaskUtil.buildExecuteRule());
-        }
-
-        return sqlTask;
+    Map<String, LogPluginConfig> logPluginConfigMap = new HashMap<>();
+    for (LogPluginConfig config : logPluginConfigs) {
+      logPluginConfigMap.put(config.getName(), config);
     }
 
-    public List<LogPlugin> genPluginList(IntegrationPluginDTO integrationPluginDTO) {
-        List<LogPlugin> logPlugins = new ArrayList<>();
+    IntegrationProductDTO productDTO = byMap.get(0);
 
-        Map<String, Object> columnMap = new HashMap<>();
-        columnMap.put("version", integrationPluginDTO.version);
-        columnMap.put("name", integrationPluginDTO.product);
-        List<IntegrationProductDTO> byMap = integrationProductService.findByMap(columnMap);
-        if (CollectionUtils.isEmpty(byMap))
-            return logPlugins;
+    List<IntegrationConfig> configList = productDTO.getForm().getConfigList();
 
-        String json = integrationPluginDTO.json;
+    for (IntegrationConfig config : configList) {
+      CustomPluginConf customPluginConf =
+          J.fromJson(J.toJson(config.conf), new TypeToken<CustomPluginConf>() {}.getType());
 
-        Map<String, Object> map = J.toMap(json);
-        if (!map.containsKey("confs"))
-            return logPlugins;
+      if (CollectionUtils.isEmpty(customPluginConf.collectMetrics))
+        continue;
 
-        List<LogPluginConfig> logPluginConfigs = J.fromJson(J.toJson(map.get("confs")),
-            new TypeToken<List<LogPluginConfig>>() {
-            }.getType());
+      for (CollectMetric collectMetric : customPluginConf.getCollectMetrics()) {
+        LogPluginConfig logPluginConfig = logPluginConfigMap.get(config.getName());
 
-        Map<String, LogPluginConfig> logPluginConfigMap = new HashMap<>();
-        for (LogPluginConfig config : logPluginConfigs) {
-            logPluginConfigMap.put(config.getName(), config);
-        }
+        if (null == logPluginConfig)
+          continue;
 
-        IntegrationProductDTO productDTO = byMap.get(0);
+        LogPlugin logPlugin = new LogPlugin();
 
-        List<IntegrationConfig> configList = productDTO.getForm().getConfigList();
+        logPlugin.tenant = integrationPluginDTO.tenant;
+        logPlugin.logPaths = customPluginConf.logPaths;
+        logPlugin.blackFilters = customPluginConf.blackFilters;
+        logPlugin.whiteFilters = customPluginConf.whiteFilters;
+        logPlugin.logParse = customPluginConf.logParse;
+        logPlugin.splitCols = customPluginConf.splitCols;
+        logPlugin.collectMetric = collectMetric;
+        logPlugin.periodType = config.periodType;
+        logPlugin.metricName =
+            String.join("_", ANTGROUP_METRIC_PREFIX, integrationPluginDTO.product.toLowerCase(),
+                config.getName(), collectMetric.targetTable);
 
-        for (IntegrationConfig config : configList) {
-            CustomPluginConf customPluginConf = J.fromJson(J.toJson(config.conf),
-                new TypeToken<CustomPluginConf>() {
-                }.getType());
+        logPlugin.gaeaTableName =
+            integrationPluginDTO.name + "_" + config.name + "_" + collectMetric.targetTable;
 
-            if (CollectionUtils.isEmpty(customPluginConf.collectMetrics))
-                continue;
+        logPlugin.collectRange =
+            GaeaConvertUtil.convertCloudMonitorRange(integrationPluginDTO.getTenant() + "_server",
+                logPluginConfig.getMetaLabel(), logPluginConfig.range);
+        logPlugin.collectPlugin = SqlTask.class.getName();
 
-            for (CollectMetric collectMetric : customPluginConf.getCollectMetrics()) {
-                LogPluginConfig logPluginConfig = logPluginConfigMap.get(config.getName());
+        logPlugins.add(logPlugin);
+      }
 
-                if (null == logPluginConfig)
-                    continue;
-
-                LogPlugin logPlugin = new LogPlugin();
-
-                logPlugin.tenant = integrationPluginDTO.tenant;
-                logPlugin.logPaths = customPluginConf.logPaths;
-                logPlugin.blackFilters = customPluginConf.blackFilters;
-                logPlugin.whiteFilters = customPluginConf.whiteFilters;
-                logPlugin.logParse = customPluginConf.logParse;
-                logPlugin.splitCols = customPluginConf.splitCols;
-                logPlugin.collectMetric = collectMetric;
-                logPlugin.periodType = config.periodType;
-                logPlugin.metricName = String.join("_", ANTGROUP_METRIC_PREFIX,
-                    integrationPluginDTO.product.toLowerCase(), config.getName(),
-                    collectMetric.targetTable);
-
-                logPlugin.gaeaTableName = integrationPluginDTO.name + "_" + config.name + "_"
-                                          + collectMetric.targetTable;
-
-                logPlugin.collectRange = GaeaConvertUtil.convertCloudMonitorRange(
-                    integrationPluginDTO.getTenant() + "_server", logPluginConfig.getMetaLabel(),
-                    logPluginConfig.range);
-                logPlugin.collectPlugin = SqlTask.class.getName();
-
-                logPlugins.add(logPlugin);
-            }
-
-        }
-
-        return logPlugins;
     }
+
+    return logPlugins;
+  }
 }

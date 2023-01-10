@@ -2,7 +2,6 @@
  * Copyright 2022 Holoinsight Project Authors. Licensed under Apache-2.0.
  */
 
-
 package io.holoinsight.server.home.web.controller;
 
 import io.holoinsight.server.home.biz.service.CustomPluginService;
@@ -61,339 +60,337 @@ import java.util.Map;
 @Slf4j
 public class UserFavoriteFacadeImpl extends BaseFacade {
 
-    @Autowired
-    private UserFavoriteService userFavoriteService;
+  @Autowired
+  private UserFavoriteService userFavoriteService;
 
-    @Autowired
-    private CustomPluginService customPluginService;
+  @Autowired
+  private CustomPluginService customPluginService;
 
-    @Autowired
-    private FolderService       folderService;
+  @Autowired
+  private FolderService folderService;
 
-    @Autowired
-    private DashboardService    dashboardService;
+  @Autowired
+  private DashboardService dashboardService;
 
-    @Autowired
-    private UserOpLogService    userOpLogService;
+  @Autowired
+  private UserOpLogService userOpLogService;
 
-    @PostMapping("/create")
-    @ResponseBody
-    @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.EDIT)
-    public JsonResult<UserFavorite> save(@RequestBody UserFavorite userFavorite) {
-        final JsonResult<UserFavorite> result = new JsonResult<>();
-        facadeTemplate.manage(result, new ManageCallback() {
-            @Override
-            public void checkParameter() {
-                ParaCheckUtil.checkParaNotNull(userFavorite.relateId, "relateId");
-                ParaCheckUtil.checkParaNotBlank(userFavorite.type, "type");
-            }
+  @PostMapping("/create")
+  @ResponseBody
+  @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.EDIT)
+  public JsonResult<UserFavorite> save(@RequestBody UserFavorite userFavorite) {
+    final JsonResult<UserFavorite> result = new JsonResult<>();
+    facadeTemplate.manage(result, new ManageCallback() {
+      @Override
+      public void checkParameter() {
+        ParaCheckUtil.checkParaNotNull(userFavorite.relateId, "relateId");
+        ParaCheckUtil.checkParaNotBlank(userFavorite.type, "type");
+      }
 
-            @Override
-            public void doManage() {
-                MonitorScope ms = RequestContext.getContext().ms;
-                MonitorUser mu = RequestContext.getContext().mu;
-                if (null != mu) {
-                    userFavorite.setUserLoginName(mu.getLoginName());
-                }
-                if (null != ms && !StringUtils.isEmpty(ms.tenant)) {
-                    userFavorite.setTenant(ms.tenant);
-                }
-                userFavorite.setGmtCreate(new Date());
-                userFavorite.setGmtModified(new Date());
+      @Override
+      public void doManage() {
+        MonitorScope ms = RequestContext.getContext().ms;
+        MonitorUser mu = RequestContext.getContext().mu;
+        if (null != mu) {
+          userFavorite.setUserLoginName(mu.getLoginName());
+        }
+        if (null != ms && !StringUtils.isEmpty(ms.tenant)) {
+          userFavorite.setTenant(ms.tenant);
+        }
+        userFavorite.setGmtCreate(new Date());
+        userFavorite.setGmtModified(new Date());
 
-                userFavorite.setTenant(MonitorCookieUtil.getTenantOrException());
-                UserFavorite save = userFavoriteService.create(userFavorite);
-                JsonResult.createSuccessResult(result, save);
+        userFavorite.setTenant(MonitorCookieUtil.getTenantOrException());
+        UserFavorite save = userFavoriteService.create(userFavorite);
+        JsonResult.createSuccessResult(result, save);
 
-                assert mu != null;
-                userOpLogService.append("user_favorite", String.valueOf(save.getId()),
-                    OpType.CREATE, mu.getLoginName(), RequestContext.getContext().ms.getTenant(),
-                    J.toJson(save), null, null, "user_favorite_create");
-            }
+        assert mu != null;
+        userOpLogService.append("user_favorite", String.valueOf(save.getId()), OpType.CREATE,
+            mu.getLoginName(), RequestContext.getContext().ms.getTenant(), J.toJson(save), null,
+            null, "user_favorite_create");
+      }
+    });
+
+    return result;
+  }
+
+  @GetMapping(value = "/query/{id}")
+  @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.VIEW)
+  public JsonResult<UserFavorite> queryById(@PathVariable("id") Long id) {
+    final JsonResult<UserFavorite> result = new JsonResult<>();
+    facadeTemplate.manage(result, new ManageCallback() {
+      @Override
+      public void checkParameter() {
+        ParaCheckUtil.checkParaNotNull(id, "id");
+      }
+
+      @Override
+      public void doManage() {
+        UserFavorite userFavorite =
+            userFavoriteService.queryById(id, RequestContext.getContext().ms.getTenant());
+
+        if (null == userFavorite) {
+          throw new MonitorException(ResultCodeEnum.CANNOT_FIND_RECORD, "can not find record");
+        }
+        JsonResult.createSuccessResult(result, userFavorite);
+      }
+    });
+    return result;
+  }
+
+  @GetMapping(value = "/queryByRelateId/{type}/{relateId}")
+  @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.VIEW)
+  public JsonResult<UserFavorite> queryByRelateId(@PathVariable("type") String type,
+      @PathVariable("relateId") String id) {
+    final JsonResult<UserFavorite> result = new JsonResult<>();
+    facadeTemplate.manage(result, new ManageCallback() {
+      @Override
+      public void checkParameter() {
+        ParaCheckUtil.checkParaNotNull(id, "id");
+      }
+
+      @Override
+      public void doManage() {
+        MonitorScope ms = RequestContext.getContext().ms;
+        MonitorUser mu = RequestContext.getContext().mu;
+        List<UserFavorite> byUserAndTenantAndRelateId =
+            userFavoriteService.getByUserAndTenantAndRelateId(mu.getLoginName(),
+                ms.getTenantIdOrException(), id, type);
+
+        if (CollectionUtils.isEmpty(byUserAndTenantAndRelateId)) {
+          JsonResult.createSuccessResult(result, null);
+          return;
+        }
+        JsonResult.createSuccessResult(result, byUserAndTenantAndRelateId.get(0));
+      }
+    });
+    return result;
+  }
+
+  @PostMapping(value = "/queryByCondition")
+  @ResponseBody
+  @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.VIEW)
+  public JsonResult<List<UserFavorite>> queryByRelateId(@RequestBody FavRequest favRequest) {
+    final JsonResult<List<UserFavorite>> result = new JsonResult<>();
+    facadeTemplate.manage(result, new ManageCallback() {
+      @Override
+      public void checkParameter() {
+        ParaCheckUtil.checkParaNotEmpty(favRequest.getFavRequestCmds(), "favRequestCmds");
+      }
+
+      @Override
+      public void doManage() {
+        MonitorScope ms = RequestContext.getContext().ms;
+        MonitorUser mu = RequestContext.getContext().mu;
+
+        if (StringUtil.isBlank(favRequest.getUserLoginName())) {
+          favRequest.setUserLoginName(mu.getLoginName());
+        }
+
+        favRequest.setTenant(RequestContext.getContext().ms.getTenant());
+
+        List<UserFavorite> userFavorites = new ArrayList<>();
+        favRequest.getFavRequestCmds().forEach(favRequestCmd -> {
+          List<UserFavorite> favorites = userFavoriteService.getByUserAndTenantAndRelateIds(
+              mu.getLoginName(), ms.getTenantIdOrException(), favRequestCmd.getRelateIds(),
+              favRequestCmd.getType());
+
+          if (!CollectionUtils.isEmpty(favorites)) {
+            userFavorites.addAll(favorites);
+          }
         });
 
-        return result;
-    }
+        JsonResult.createSuccessResult(result, userFavorites);
+      }
+    });
+    return result;
+  }
 
-    @GetMapping(value = "/query/{id}")
-    @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.VIEW)
-    public JsonResult<UserFavorite> queryById(@PathVariable("id") Long id) {
-        final JsonResult<UserFavorite> result = new JsonResult<>();
-        facadeTemplate.manage(result, new ManageCallback() {
-            @Override
-            public void checkParameter() {
-                ParaCheckUtil.checkParaNotNull(id, "id");
-            }
+  @PostMapping("/pageQuery")
+  @ResponseBody
+  @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.VIEW)
+  public JsonResult<MonitorPageResult<UserFavorite>> pageQuery(
+      @RequestBody MonitorPageRequest<UserFavorite> userFavoriteRequest) {
+    final JsonResult<MonitorPageResult<UserFavorite>> result = new JsonResult<>();
+    facadeTemplate.manage(result, new ManageCallback() {
+      @Override
+      public void checkParameter() {
+        ParaCheckUtil.checkParaNotNull(userFavoriteRequest.getTarget(), "target");
+      }
 
-            @Override
-            public void doManage() {
-                UserFavorite userFavorite = userFavoriteService.queryById(id,
-                    RequestContext.getContext().ms.getTenant());
+      @Override
+      public void doManage() {
+        MonitorScope ms = RequestContext.getContext().ms;
+        if (null != ms && !StringUtils.isEmpty(ms.tenant)) {
+          userFavoriteRequest.getTarget().setTenant(ms.tenant);
+        }
+        JsonResult.createSuccessResult(result,
+            userFavoriteService.getListByPage(userFavoriteRequest));
+      }
+    });
 
-                if (null == userFavorite) {
-                    throw new MonitorException(ResultCodeEnum.CANNOT_FIND_RECORD,
-                        "can not find record");
-                }
-                JsonResult.createSuccessResult(result, userFavorite);
-            }
-        });
-        return result;
-    }
+    return result;
+  }
 
-    @GetMapping(value = "/queryByRelateId/{type}/{relateId}")
-    @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.VIEW)
-    public JsonResult<UserFavorite> queryByRelateId(@PathVariable("type") String type,
-                                                    @PathVariable("relateId") String id) {
-        final JsonResult<UserFavorite> result = new JsonResult<>();
-        facadeTemplate.manage(result, new ManageCallback() {
-            @Override
-            public void checkParameter() {
-                ParaCheckUtil.checkParaNotNull(id, "id");
-            }
+  @GetMapping("/queryAll")
+  @ResponseBody
+  @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.VIEW)
+  public JsonResult<List<UserFavorite>> queryAll() {
+    final JsonResult<List<UserFavorite>> result = new JsonResult<>();
+    facadeTemplate.manage(result, new ManageCallback() {
+      @Override
+      public void checkParameter() {}
 
-            @Override
-            public void doManage() {
-                MonitorScope ms = RequestContext.getContext().ms;
-                MonitorUser mu = RequestContext.getContext().mu;
-                List<UserFavorite> byUserAndTenantAndRelateId = userFavoriteService
-                    .getByUserAndTenantAndRelateId(mu.getLoginName(), ms.getTenantIdOrException(),
-                        id, type);
+      @Override
+      public void doManage() {
+        MonitorUser mu = RequestContext.getContext().mu;
+        MonitorScope ms = RequestContext.getContext().ms;
 
-                if (CollectionUtils.isEmpty(byUserAndTenantAndRelateId)) {
-                    JsonResult.createSuccessResult(result, null);
-                    return;
-                }
-                JsonResult.createSuccessResult(result, byUserAndTenantAndRelateId.get(0));
-            }
-        });
-        return result;
-    }
+        List<UserFavorite> byUserAndTenant =
+            userFavoriteService.getByUserAndTenant(mu.getLoginName(), ms.getTenantIdOrException());
 
-    @PostMapping(value = "/queryByCondition")
-    @ResponseBody
-    @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.VIEW)
-    public JsonResult<List<UserFavorite>> queryByRelateId(@RequestBody FavRequest favRequest) {
-        final JsonResult<List<UserFavorite>> result = new JsonResult<>();
-        facadeTemplate.manage(result, new ManageCallback() {
-            @Override
-            public void checkParameter() {
-                ParaCheckUtil.checkParaNotEmpty(favRequest.getFavRequestCmds(), "favRequestCmds");
-            }
+        if (CollectionUtils.isEmpty(byUserAndTenant)) {
+          JsonResult.createSuccessResult(result, byUserAndTenant);
+          return;
+        }
 
-            @Override
-            public void doManage() {
-                MonitorScope ms = RequestContext.getContext().ms;
-                MonitorUser mu = RequestContext.getContext().mu;
+        List<String> logs = new ArrayList<>();
+        List<String> folders = new ArrayList<>();
+        List<String> dashboards = new ArrayList<>();
 
-                if (StringUtil.isBlank(favRequest.getUserLoginName())) {
-                    favRequest.setUserLoginName(mu.getLoginName());
-                }
+        for (UserFavorite userFavorite : byUserAndTenant) {
+          switch (userFavorite.type) {
+            case "folder":
+              folders.add(userFavorite.getRelateId());
+              break;
+            case "dashobard":
+              dashboards.add(userFavorite.getRelateId());
+              break;
+            case "logmonitor":
+              logs.add(userFavorite.getRelateId());
+              break;
+          }
+        }
 
-                favRequest.setTenant(RequestContext.getContext().ms.getTenant());
+        Map<String, String> logMaps = new HashMap<>();
+        if (!CollectionUtils.isEmpty(logs)) {
+          List<CustomPluginDTO> byIds = customPluginService.findByIds(logs);
+          if (!CollectionUtils.isEmpty(byIds)) {
+            byIds.forEach(byId -> {
+              logMaps.put(String.valueOf(byId.getId()), byId.getName());
+            });
+          }
+        }
 
-                List<UserFavorite> userFavorites = new ArrayList<>();
-                favRequest.getFavRequestCmds().forEach(favRequestCmd -> {
-                    List<UserFavorite> favorites = userFavoriteService
-                        .getByUserAndTenantAndRelateIds(mu.getLoginName(),
-                            ms.getTenantIdOrException(), favRequestCmd.getRelateIds(),
-                            favRequestCmd.getType());
+        Map<String, String> folderMaps = new HashMap<>();
+        if (!CollectionUtils.isEmpty(folders)) {
+          List<Folder> byIds = folderService.findByIds(folders);
+          if (!CollectionUtils.isEmpty(byIds)) {
+            byIds.forEach(byId -> {
+              folderMaps.put(String.valueOf(byId.getId()), byId.getName());
+            });
+          }
+        }
 
-                    if (!CollectionUtils.isEmpty(favorites)) {
-                        userFavorites.addAll(favorites);
-                    }
-                });
+        Map<String, String> dashboardMaps = new HashMap<>();
+        if (!CollectionUtils.isEmpty(dashboards)) {
+          List<Dashboard> byIds = dashboardService.findByIds(dashboards);
+          if (!CollectionUtils.isEmpty(byIds)) {
+            byIds.forEach(byId -> {
+              dashboardMaps.put(String.valueOf(byId.getId()), byId.getTitle());
+            });
+          }
+        }
 
-                JsonResult.createSuccessResult(result, userFavorites);
-            }
-        });
-        return result;
-    }
+        for (UserFavorite userFavorite : byUserAndTenant) {
+          switch (userFavorite.type) {
+            case "folder":
+              if (folderMaps.containsKey(userFavorite.getRelateId())) {
+                userFavorite.setName(folderMaps.get(userFavorite.getRelateId()));
+              }
 
-    @PostMapping("/pageQuery")
-    @ResponseBody
-    @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.VIEW)
-    public JsonResult<MonitorPageResult<UserFavorite>> pageQuery(@RequestBody MonitorPageRequest<UserFavorite> userFavoriteRequest) {
-        final JsonResult<MonitorPageResult<UserFavorite>> result = new JsonResult<>();
-        facadeTemplate.manage(result, new ManageCallback() {
-            @Override
-            public void checkParameter() {
-                ParaCheckUtil.checkParaNotNull(userFavoriteRequest.getTarget(), "target");
-            }
+              break;
+            case "dashobard":
+              if (dashboardMaps.containsKey(userFavorite.getRelateId())) {
+                userFavorite.setName(dashboardMaps.get(userFavorite.getRelateId()));
+              }
+              break;
+            case "logmonitor":
+              if (logMaps.containsKey(userFavorite.getRelateId())) {
+                userFavorite.setName(logMaps.get(userFavorite.getRelateId()));
+              }
+              break;
+          }
+        }
 
-            @Override
-            public void doManage() {
-                MonitorScope ms = RequestContext.getContext().ms;
-                if (null != ms && !StringUtils.isEmpty(ms.tenant)) {
-                    userFavoriteRequest.getTarget().setTenant(ms.tenant);
-                }
-                JsonResult.createSuccessResult(result,
-                    userFavoriteService.getListByPage(userFavoriteRequest));
-            }
-        });
+        JsonResult.createSuccessResult(result, byUserAndTenant);
+      }
+    });
 
-        return result;
-    }
+    return result;
+  }
 
-    @GetMapping("/queryAll")
-    @ResponseBody
-    @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.VIEW)
-    public JsonResult<List<UserFavorite>> queryAll() {
-        final JsonResult<List<UserFavorite>> result = new JsonResult<>();
-        facadeTemplate.manage(result, new ManageCallback() {
-            @Override
-            public void checkParameter() {
-            }
+  @DeleteMapping(value = "/delete/{id}")
+  @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.EDIT)
+  public JsonResult<Boolean> deleteById(@PathVariable("id") Long id) {
+    final JsonResult<Boolean> result = new JsonResult<>();
+    facadeTemplate.manage(result, new ManageCallback() {
+      @Override
+      public void checkParameter() {
+        ParaCheckUtil.checkParaNotNull(id, "id");
+      }
 
-            @Override
-            public void doManage() {
-                MonitorUser mu = RequestContext.getContext().mu;
-                MonitorScope ms = RequestContext.getContext().ms;
+      @Override
+      public void doManage() {
+        UserFavorite byId =
+            userFavoriteService.queryById(id, RequestContext.getContext().ms.getTenant());
+        if (null == byId) {
+          throw new MonitorException(ResultCodeEnum.CANNOT_FIND_RECORD,
+              "can not find record:" + id);
+        }
+        userFavoriteService.deleteById(id);
+        JsonResult.createSuccessResult(result, true);
+        userOpLogService.append("user_favorite", String.valueOf(byId.getId()), OpType.DELETE,
+            RequestContext.getContext().mu.getLoginName(),
+            RequestContext.getContext().ms.getTenant(), J.toJson(byId), null, null,
+            "user_favorite_delete");
 
-                List<UserFavorite> byUserAndTenant = userFavoriteService
-                    .getByUserAndTenant(mu.getLoginName(), ms.getTenantIdOrException());
+      }
+    });
+    return result;
+  }
 
-                if (CollectionUtils.isEmpty(byUserAndTenant)) {
-                    JsonResult.createSuccessResult(result, byUserAndTenant);
-                    return;
-                }
+  @DeleteMapping(value = "/deleteByRelateId/{type}/{relateId}")
+  @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.EDIT)
+  public JsonResult<Boolean> deleteByRelateId(@PathVariable("relateId") String relateId,
+      @PathVariable("type") String type) {
+    final JsonResult<Boolean> result = new JsonResult<>();
+    facadeTemplate.manage(result, new ManageCallback() {
+      @Override
+      public void checkParameter() {
+        ParaCheckUtil.checkParaNotBlank(relateId, "relateId");
+      }
 
-                List<String> logs = new ArrayList<>();
-                List<String> folders = new ArrayList<>();
-                List<String> dashboards = new ArrayList<>();
+      @Override
+      public void doManage() {
+        MonitorUser mu = RequestContext.getContext().mu;
+        MonitorScope ms = RequestContext.getContext().ms;
+        List<UserFavorite> byId = userFavoriteService.getByUserAndTenantAndRelateId(
+            mu.getLoginName(), ms.getTenantIdOrException(), relateId, type);
 
-                for (UserFavorite userFavorite : byUserAndTenant) {
-                    switch (userFavorite.type) {
-                        case "folder":
-                            folders.add(userFavorite.getRelateId());
-                            break;
-                        case "dashobard":
-                            dashboards.add(userFavorite.getRelateId());
-                            break;
-                        case "logmonitor":
-                            logs.add(userFavorite.getRelateId());
-                            break;
-                    }
-                }
+        if (CollectionUtils.isEmpty(byId)) {
+          return;
+        }
 
-                Map<String, String> logMaps = new HashMap<>();
-                if (!CollectionUtils.isEmpty(logs)) {
-                    List<CustomPluginDTO> byIds = customPluginService.findByIds(logs);
-                    if (!CollectionUtils.isEmpty(byIds)) {
-                        byIds.forEach(byId -> {
-                            logMaps.put(String.valueOf(byId.getId()), byId.getName());
-                        });
-                    }
-                }
+        userFavoriteService.deleteById(byId.get(0).id);
+        JsonResult.createSuccessResult(result, true);
+        userOpLogService.append("user_favorite", String.valueOf(byId.get(0).id), OpType.DELETE,
+            RequestContext.getContext().mu.getLoginName(),
+            RequestContext.getContext().ms.getTenant(), J.toJson(byId), null, null,
+            "user_favorite_delete");
 
-                Map<String, String> folderMaps = new HashMap<>();
-                if (!CollectionUtils.isEmpty(folders)) {
-                    List<Folder> byIds = folderService.findByIds(folders);
-                    if (!CollectionUtils.isEmpty(byIds)) {
-                        byIds.forEach(byId -> {
-                            folderMaps.put(String.valueOf(byId.getId()), byId.getName());
-                        });
-                    }
-                }
-
-                Map<String, String> dashboardMaps = new HashMap<>();
-                if (!CollectionUtils.isEmpty(dashboards)) {
-                    List<Dashboard> byIds = dashboardService.findByIds(dashboards);
-                    if (!CollectionUtils.isEmpty(byIds)) {
-                        byIds.forEach(byId -> {
-                            dashboardMaps.put(String.valueOf(byId.getId()), byId.getTitle());
-                        });
-                    }
-                }
-
-                for (UserFavorite userFavorite : byUserAndTenant) {
-                    switch (userFavorite.type) {
-                        case "folder":
-                            if (folderMaps.containsKey(userFavorite.getRelateId())) {
-                                userFavorite.setName(folderMaps.get(userFavorite.getRelateId()));
-                            }
-
-                            break;
-                        case "dashobard":
-                            if (dashboardMaps.containsKey(userFavorite.getRelateId())) {
-                                userFavorite.setName(dashboardMaps.get(userFavorite.getRelateId()));
-                            }
-                            break;
-                        case "logmonitor":
-                            if (logMaps.containsKey(userFavorite.getRelateId())) {
-                                userFavorite.setName(logMaps.get(userFavorite.getRelateId()));
-                            }
-                            break;
-                    }
-                }
-
-                JsonResult.createSuccessResult(result, byUserAndTenant);
-            }
-        });
-
-        return result;
-    }
-
-    @DeleteMapping(value = "/delete/{id}")
-    @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.EDIT)
-    public JsonResult<Boolean> deleteById(@PathVariable("id") Long id) {
-        final JsonResult<Boolean> result = new JsonResult<>();
-        facadeTemplate.manage(result, new ManageCallback() {
-            @Override
-            public void checkParameter() {
-                ParaCheckUtil.checkParaNotNull(id, "id");
-            }
-
-            @Override
-            public void doManage() {
-                UserFavorite byId = userFavoriteService.queryById(id,
-                    RequestContext.getContext().ms.getTenant());
-                if (null == byId) {
-                    throw new MonitorException(ResultCodeEnum.CANNOT_FIND_RECORD,
-                        "can not find record:" + id);
-                }
-                userFavoriteService.deleteById(id);
-                JsonResult.createSuccessResult(result, true);
-                userOpLogService.append("user_favorite", String.valueOf(byId.getId()),
-                    OpType.DELETE, RequestContext.getContext().mu.getLoginName(),
-                    RequestContext.getContext().ms.getTenant(), J.toJson(byId), null, null,
-                    "user_favorite_delete");
-
-            }
-        });
-        return result;
-    }
-
-    @DeleteMapping(value = "/deleteByRelateId/{type}/{relateId}")
-    @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.EDIT)
-    public JsonResult<Boolean> deleteByRelateId(@PathVariable("relateId") String relateId,
-                                                @PathVariable("type") String type) {
-        final JsonResult<Boolean> result = new JsonResult<>();
-        facadeTemplate.manage(result, new ManageCallback() {
-            @Override
-            public void checkParameter() {
-                ParaCheckUtil.checkParaNotBlank(relateId, "relateId");
-            }
-
-            @Override
-            public void doManage() {
-                MonitorUser mu = RequestContext.getContext().mu;
-                MonitorScope ms = RequestContext.getContext().ms;
-                List<UserFavorite> byId = userFavoriteService.getByUserAndTenantAndRelateId(
-                    mu.getLoginName(), ms.getTenantIdOrException(), relateId, type);
-
-                if (CollectionUtils.isEmpty(byId)) {
-                    return;
-                }
-
-                userFavoriteService.deleteById(byId.get(0).id);
-                JsonResult.createSuccessResult(result, true);
-                userOpLogService.append("user_favorite", String.valueOf(byId.get(0).id),
-                    OpType.DELETE, RequestContext.getContext().mu.getLoginName(),
-                    RequestContext.getContext().ms.getTenant(), J.toJson(byId), null, null,
-                    "user_favorite_delete");
-
-            }
-        });
-        return result;
-    }
+      }
+    });
+    return result;
+  }
 }

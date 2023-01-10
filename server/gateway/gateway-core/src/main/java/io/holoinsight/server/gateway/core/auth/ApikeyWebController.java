@@ -13,25 +13,28 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * <p>created at 2022/10/12
+ * <p>
+ * created at 2022/10/12
  *
  * @author sw1136562366
  */
 @RestController
 @InternalWebApi
 public class ApikeyWebController {
-    @Autowired
-    private ApikeyAuthService apikeyAuthService;
+  @Autowired
+  private ApikeyAuthService apikeyAuthService;
 
-    /**
-     * <p>checkApikey.</p>
-     *
-     * @param apikey
-     */
-    @Deprecated
-    @GetMapping({"/api/apikey/check", "/internal/api/gateway/apikey/check"})
-    public AuthInfo checkApikey(@RequestParam String apikey) {
-        return apikeyAuthService.getFromCache(apikey);
-    }
+  /**
+   * <p>
+   * checkApikey.
+   * </p>
+   *
+   * @param apikey
+   */
+  @Deprecated
+  @GetMapping({"/api/apikey/check", "/internal/api/gateway/apikey/check"})
+  public AuthInfo checkApikey(@RequestParam String apikey) {
+    return apikeyAuthService.getFromCache(apikey);
+  }
 
 }

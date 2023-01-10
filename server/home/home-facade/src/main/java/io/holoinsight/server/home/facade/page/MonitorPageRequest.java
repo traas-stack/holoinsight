@@ -14,30 +14,30 @@ import java.io.Serializable;
  */
 @Data
 public class MonitorPageRequest<T> implements Serializable {
-    private static final long serialVersionUID = -8352196951709213541L;
+  private static final long serialVersionUID = -8352196951709213541L;
 
-    private int               pageNum          = 1;
+  private int pageNum = 1;
 
-    private int               pageSize         = 10;
+  private int pageSize = 10;
 
-    private String            sortBy;
+  private String sortBy;
 
-    private String            sortRule;
+  private String sortRule;
 
-    private T                 target;
-    //时间范围
-    private Long              from;
-    private Long              to;
+  private T target;
+  // 时间范围
+  private Long from;
+  private Long to;
 
-    public <K> MonitorPageRequest<K> cloneRequest(){
-        MonitorPageRequest<K> request = new MonitorPageRequest<>();
-        request.setPageSize(getPageSize());
-        request.setPageNum(getPageNum());
-        request.setSortBy(getSortBy());
-        request.setSortRule(getSortRule());
-        request.setFrom(getFrom());
-        request.setTo(getTo());
-        return request;
-    }
+  public <K> MonitorPageRequest<K> cloneRequest() {
+    MonitorPageRequest<K> request = new MonitorPageRequest<>();
+    request.setPageSize(getPageSize());
+    request.setPageNum(getPageNum());
+    request.setSortBy(getSortBy());
+    request.setSortRule(getSortRule());
+    request.setFrom(getFrom());
+    request.setTo(getTo());
+    return request;
+  }
 
 }

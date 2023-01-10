@@ -41,91 +41,94 @@ import java.util.stream.Collectors;
 @Service
 public class AlertTaskCompute implements AlarmTaskExecutor<ComputeTaskPackage> {
 
-    private static Logger LOGGER = LoggerFactory.getLogger(AlertTaskCompute.class);
+  private static Logger LOGGER = LoggerFactory.getLogger(AlertTaskCompute.class);
 
-    @Resource
-    private AlarmDataSet alarmDataSet;
+  @Resource
+  private AlarmDataSet alarmDataSet;
 
-    @Resource
-    private AbstractUniformInspectRunningRule abstractUniformInspectRunningRule;
+  @Resource
+  private AbstractUniformInspectRunningRule abstractUniformInspectRunningRule;
 
-    @Resource
-    private AlertEventService alertEventService;
+  @Resource
+  private AlertEventService alertEventService;
 
-    @Resource
-    private AlarmHistoryMapper alarmHistoryDOMapper;
+  @Resource
+  private AlarmHistoryMapper alarmHistoryDOMapper;
 
-    @Resource
-    private CacheData cacheData;
+  @Resource
+  private CacheData cacheData;
 
-    @Autowired
-    private EnvironmentProperties environmentProperties;
+  @Autowired
+  private EnvironmentProperties environmentProperties;
 
-    @Override
-    public void process(ComputeTaskPackage computeTaskPackage) {
+  @Override
+  public void process(ComputeTaskPackage computeTaskPackage) {
 
-        // 获取数据
-        alarmDataSet.loadData(computeTaskPackage);
+    // 获取数据
+    alarmDataSet.loadData(computeTaskPackage);
 
-        // 进行计算
-        List<EventInfo> eventLists = calculate(computeTaskPackage);
+    // 进行计算
+    List<EventInfo> eventLists = calculate(computeTaskPackage);
 
-        // 发送网关处理
-        if (!CollectionUtils.isEmpty(eventLists)) {
-            // 数据转换
-            Map<String, InspectConfig> inspectConfigMap = cacheData.getUniqueIdMap();
-            List<AlertNotify> alarmNotifies = eventLists.stream()
-                    .map(e -> AlertNotify.eventInfoConver(e, inspectConfigMap.get(e.getUniqueId())))
-                    .collect(Collectors.toList());
-            alertEventService.handleEvent(new AlertEvent(getEventKey(), alarmNotifies));
-        }
-
+    // 发送网关处理
+    if (!CollectionUtils.isEmpty(eventLists)) {
+      // 数据转换
+      Map<String, InspectConfig> inspectConfigMap = cacheData.getUniqueIdMap();
+      List<AlertNotify> alarmNotifies = eventLists.stream()
+          .map(e -> AlertNotify.eventInfoConver(e, inspectConfigMap.get(e.getUniqueId())))
+          .collect(Collectors.toList());
+      alertEventService.handleEvent(new AlertEvent(getEventKey(), alarmNotifies));
     }
 
-    private EventTypeEnum getEventKey() {
-        String env = this.environmentProperties.getDeploymentSite();
-        LOGGER.info("holoinsight.env value: {}", env);
-        if(StringUtils.isNotBlank(env) && env.startsWith("ats-cloudrun")){
-            return EventTypeEnum.CloudRun;
-        }
-        return EventTypeEnum.AlarmEvent;
+  }
+
+  private EventTypeEnum getEventKey() {
+    String env = this.environmentProperties.getDeploymentSite();
+    LOGGER.info("holoinsight.env value: {}", env);
+    if (StringUtils.isNotBlank(env) && env.startsWith("ats-cloudrun")) {
+      return EventTypeEnum.CloudRun;
     }
+    return EventTypeEnum.AlarmEvent;
+  }
 
-    private List<EventInfo> calculate(ComputeTaskPackage computeTaskPackage) {
-        List<EventInfo> eventLists = new ArrayList<>();
+  private List<EventInfo> calculate(ComputeTaskPackage computeTaskPackage) {
+    List<EventInfo> eventLists = new ArrayList<>();
 
-        try {
-            QueryWrapper<AlarmHistory> condition = new QueryWrapper<>();
-            condition.isNull("recover_time");
-            //获取未恢复的告警
-            List<AlarmHistory> alarmHistoryDOS = alarmHistoryDOMapper.selectList(condition);
-            List<String> uniqueIds = alarmHistoryDOS.stream().map(AlarmHistory::getUniqueId).collect(Collectors.toList());
+    try {
+      QueryWrapper<AlarmHistory> condition = new QueryWrapper<>();
+      condition.isNull("recover_time");
+      // 获取未恢复的告警
+      List<AlarmHistory> alarmHistoryDOS = alarmHistoryDOMapper.selectList(condition);
+      List<String> uniqueIds =
+          alarmHistoryDOS.stream().map(AlarmHistory::getUniqueId).collect(Collectors.toList());
 
-            // 进行计算,生成告警事件
-            for (ComputeTask computeTask : computeTaskPackage.getComputeTaskList()) {
-                for (InspectConfig inspectConfig : computeTask.getInspectConfigs()) {
+      // 进行计算,生成告警事件
+      for (ComputeTask computeTask : computeTaskPackage.getComputeTaskList()) {
+        for (InspectConfig inspectConfig : computeTask.getInspectConfigs()) {
 
-                    ComputeContext context = new ComputeContext();
-                    context.setTimestamp(computeTask.getTimestamp());
-                    context.setInspectConfig(inspectConfig);
-                    EventInfo eventList = abstractUniformInspectRunningRule.eval(context);
-                    if (eventList != null) {
-                        eventLists.add(eventList);
-                    } else if (uniqueIds.contains(inspectConfig.getUniqueId())) {
-                        eventList = new EventInfo();
-                        eventList.setAlarmTime(computeTask.getTimestamp());
-                        eventList.setUniqueId(inspectConfig.getUniqueId());
-                        eventList.setIsRecover(true);
-                        eventLists.add(eventList);
-                        eventList.setEnvType(inspectConfig.getEnvType());
-                    }
-                    LOGGER.info("{} {} {} calculate package {} ,eventList: {}", computeTask.getTraceId(), inspectConfig.getTraceId(), inspectConfig.getUniqueId(), G.get().toJson(inspectConfig), G.get().toJson(eventList));
-                }
-            }
-        } catch (Exception e) {
-            LOGGER.error("AlarmTaskCompute Exception for {}", e.getMessage(), e);
+          ComputeContext context = new ComputeContext();
+          context.setTimestamp(computeTask.getTimestamp());
+          context.setInspectConfig(inspectConfig);
+          EventInfo eventList = abstractUniformInspectRunningRule.eval(context);
+          if (eventList != null) {
+            eventLists.add(eventList);
+          } else if (uniqueIds.contains(inspectConfig.getUniqueId())) {
+            eventList = new EventInfo();
+            eventList.setAlarmTime(computeTask.getTimestamp());
+            eventList.setUniqueId(inspectConfig.getUniqueId());
+            eventList.setIsRecover(true);
+            eventLists.add(eventList);
+            eventList.setEnvType(inspectConfig.getEnvType());
+          }
+          LOGGER.info("{} {} {} calculate package {} ,eventList: {}", computeTask.getTraceId(),
+              inspectConfig.getTraceId(), inspectConfig.getUniqueId(),
+              G.get().toJson(inspectConfig), G.get().toJson(eventList));
         }
-        return eventLists;
+      }
+    } catch (Exception e) {
+      LOGGER.error("AlarmTaskCompute Exception for {}", e.getMessage(), e);
     }
+    return eventLists;
+  }
 
 }

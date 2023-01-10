@@ -18,32 +18,32 @@ import org.springframework.stereotype.Service;
 @Service("SpringContext")
 public class SpringContext implements ApplicationContextAware {
 
-    private static ApplicationContext applicationContext;
+  private static ApplicationContext applicationContext;
 
-    @Override
-    public void setApplicationContext(ApplicationContext ac) throws BeansException {
-        applicationContext = ac;
-        log.info("begin init spring context.");
-    }
+  @Override
+  public void setApplicationContext(ApplicationContext ac) throws BeansException {
+    applicationContext = ac;
+    log.info("begin init spring context.");
+  }
 
-    public static Object getBeanByName(String beanName) {
-        if (applicationContext == null) {
-            return null;
-        }
-        boolean contains = applicationContext.containsBean(beanName);
-        if (!contains) {
-            log.error("bean not exist in spring context? " + beanName);
-            return null;
-        }
-        return applicationContext.getBean(beanName);
+  public static Object getBeanByName(String beanName) {
+    if (applicationContext == null) {
+      return null;
     }
+    boolean contains = applicationContext.containsBean(beanName);
+    if (!contains) {
+      log.error("bean not exist in spring context? " + beanName);
+      return null;
+    }
+    return applicationContext.getBean(beanName);
+  }
 
-    public static ApplicationContext getContext() {
-        return applicationContext;
-    }
+  public static ApplicationContext getContext() {
+    return applicationContext;
+  }
 
-    //获取Bean
-    public static <T> T getBean(Class<T> requiredType) {
-        return (T) getContext().getBean(requiredType);
-    }
+  // 获取Bean
+  public static <T> T getBean(Class<T> requiredType) {
+    return (T) getContext().getBean(requiredType);
+  }
 }

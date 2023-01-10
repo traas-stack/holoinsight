@@ -1,7 +1,6 @@
 /*
  * Copyright 2022 Holoinsight Project Authors. Licensed under Apache-2.0.
  */
-
 package io.holoinsight.server.home.common.service.query;
 
 import lombok.Data;
@@ -15,6 +14,6 @@ import java.util.List;
 @Data
 public class KeyResult {
 
-    private String metric;
-    private List<String> tags;
+  private String metric;
+  private List<String> tags;
 }

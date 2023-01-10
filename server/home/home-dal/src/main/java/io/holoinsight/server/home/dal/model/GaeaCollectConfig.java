@@ -18,29 +18,29 @@ import java.util.Date;
 @Data
 public class GaeaCollectConfig {
 
-    @Id
-    @TableId(type = IdType.AUTO)
-    public Long    id;
+  @Id
+  @TableId(type = IdType.AUTO)
+  public Long id;
 
-    public String  tenant;
+  public String tenant;
 
-    public String  refId;
+  public String refId;
 
-    public String  tableName;
+  public String tableName;
 
-    public String  type;
+  public String type;
 
-    public String  json;
+  public String json;
 
-    public Integer deleted;
+  public Integer deleted;
 
-    public Long    version;
+  public Long version;
 
-    public String  collectRange;
+  public String collectRange;
 
-    public String  executorSelector;
+  public String executorSelector;
 
-    public Date    gmtCreate;
+  public Date gmtCreate;
 
-    public Date    gmtModified;
+  public Date gmtModified;
 }

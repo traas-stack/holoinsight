@@ -5,8 +5,8 @@ package io.holoinsight.server.home.alert.model.emuns;
 
 /**
  * @author wangsiyuan
- * @date 2022/3/21  7:48 下午
+ * @date 2022/3/21 7:48 下午
  */
 public enum BoolOperationEnum {
-    AND, OR;
+  AND, OR;
 }

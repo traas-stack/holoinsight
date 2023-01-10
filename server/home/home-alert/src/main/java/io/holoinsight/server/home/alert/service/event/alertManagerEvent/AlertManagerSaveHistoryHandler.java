@@ -23,27 +23,27 @@ import java.util.List;
 @Service
 public class AlertManagerSaveHistoryHandler implements AlertHandlerExecutor {
 
-    private static Logger LOGGER = LoggerFactory.getLogger(AlertManagerSaveHistoryHandler.class);
+  private static Logger LOGGER = LoggerFactory.getLogger(AlertManagerSaveHistoryHandler.class);
 
-    @Resource
-    private AlarmHistoryMapper alarmHistoryDOMap;
+  @Resource
+  private AlarmHistoryMapper alarmHistoryDOMap;
 
-    public void handle(List<AlertNotify> alarmNotifies){
-        try {
-            alarmNotifies.forEach(alarmNotify -> {
-                AlarmHistory alertHistoryDO = new AlarmHistory();
-                alertHistoryDO.setGmtCreate(new Date());
-                alertHistoryDO.setTenant(alarmNotify.getTenant());
-                alertHistoryDO.setUniqueId(alarmNotify.getUniqueId());
-                alertHistoryDO.setRuleName(alarmNotify.getRuleName());
-                alertHistoryDO.setAlarmTime(new Date(alarmNotify.getAlarmTime()));
-                alertHistoryDO.setAlarmLevel(alarmNotify.getAlarmLevel());
-                alarmHistoryDOMap.insert(alertHistoryDO);
-            });
+  public void handle(List<AlertNotify> alarmNotifies) {
+    try {
+      alarmNotifies.forEach(alarmNotify -> {
+        AlarmHistory alertHistoryDO = new AlarmHistory();
+        alertHistoryDO.setGmtCreate(new Date());
+        alertHistoryDO.setTenant(alarmNotify.getTenant());
+        alertHistoryDO.setUniqueId(alarmNotify.getUniqueId());
+        alertHistoryDO.setRuleName(alarmNotify.getRuleName());
+        alertHistoryDO.setAlarmTime(new Date(alarmNotify.getAlarmTime()));
+        alertHistoryDO.setAlarmLevel(alarmNotify.getAlarmLevel());
+        alarmHistoryDOMap.insert(alertHistoryDO);
+      });
 
-            LOGGER.info("AlertManagerSaveHistoryHandler SUCCESS {} ", G.get().toJson(alarmNotifies));
-        } catch (Exception e) {
-            LOGGER.error("AlertManagerSaveHistoryHandler Exception", e);
-        }
+      LOGGER.info("AlertManagerSaveHistoryHandler SUCCESS {} ", G.get().toJson(alarmNotifies));
+    } catch (Exception e) {
+      LOGGER.error("AlertManagerSaveHistoryHandler Exception", e);
     }
+  }
 }

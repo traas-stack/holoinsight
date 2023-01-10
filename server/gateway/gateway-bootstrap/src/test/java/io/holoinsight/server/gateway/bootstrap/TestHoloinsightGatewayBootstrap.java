@@ -8,15 +8,16 @@ import io.holoinsight.server.common.ContextHolder;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 
 /**
- * <p>created at 2022/11/25
+ * <p>
+ * created at 2022/11/25
  *
  * @author sw1136562366
  */
 public class TestHoloinsightGatewayBootstrap {
-    public static void main(String[] args) {
-        ContextHolder.ctx = new SpringApplicationBuilder(HoloinsightGatewayBootstrap.class) //
-            .profiles("dev") //
-            .build() //
-            .run(args); //
-    }
+  public static void main(String[] args) {
+    ContextHolder.ctx = new SpringApplicationBuilder(HoloinsightGatewayBootstrap.class) //
+        .profiles("dev") //
+        .build() //
+        .run(args); //
+  }
 }

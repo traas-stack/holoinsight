@@ -2,7 +2,6 @@
  * Copyright 2022 Holoinsight Project Authors. Licensed under Apache-2.0.
  */
 
-
 package io.holoinsight.server.home.task;
 
 import org.springframework.stereotype.Service;
@@ -18,19 +17,19 @@ import java.util.List;
 @TaskHandler(TaskEnum.TASK_DEMO)
 public class MonitorTaskDemo extends AbstractMonitorTask {
 
-    public MonitorTaskDemo() {
-        super(1, 2, TaskEnum.TASK_DEMO);
-    }
+  public MonitorTaskDemo() {
+    super(1, 2, TaskEnum.TASK_DEMO);
+  }
 
-    @Override
-    public List<MonitorTaskJob> buildJobs(long period) {
-        // TODO Auto-generated method stub
-        return null;
-    }
+  @Override
+  public List<MonitorTaskJob> buildJobs(long period) {
+    // TODO Auto-generated method stub
+    return null;
+  }
 
-    @Override
-    public boolean needRun() {
-        return true;
-    }
+  @Override
+  public boolean needRun() {
+    return true;
+  }
 
 }

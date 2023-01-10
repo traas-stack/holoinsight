@@ -2,7 +2,6 @@
  * Copyright 2022 Holoinsight Project Authors. Licensed under Apache-2.0.
  */
 
-
 package io.holoinsight.server.home.web.grpc;
 
 import io.holoinsight.server.home.biz.service.AlarmHistoryDetailService;
@@ -39,231 +38,233 @@ import java.util.Date;
 @GrpcService
 public class AlarmServiceGrpcImpl extends AlarmServiceGrpc.AlarmServiceImplBase {
 
-    @Autowired
-    private GrpcFacadeTemplate  grpcFacadeTemplate;
+  @Autowired
+  private GrpcFacadeTemplate grpcFacadeTemplate;
 
-    @Autowired
-    private AlertRuleService    alarmRuleService;
+  @Autowired
+  private AlertRuleService alarmRuleService;
 
-    @Autowired
-    private AlarmHistoryService alarmHistoryService;
+  @Autowired
+  private AlarmHistoryService alarmHistoryService;
 
-    @Autowired
-    private AlarmHistoryDetailService alarmHistoryDetailService;
+  @Autowired
+  private AlarmHistoryDetailService alarmHistoryDetailService;
 
-    @Override
-    public void queryById(QueryOrDeleteRequest request,
-                          StreamObserver<DataBaseResponse> responseObserver) {
+  @Override
+  public void queryById(QueryOrDeleteRequest request,
+      StreamObserver<DataBaseResponse> responseObserver) {
 
-        DataBaseResponse.Builder builder = DataBaseResponse.newBuilder();
-        builder.setTraceId(request.getTraceId());
-        grpcFacadeTemplate.manage(responseObserver, new GrpcManageCallback() {
+    DataBaseResponse.Builder builder = DataBaseResponse.newBuilder();
+    builder.setTraceId(request.getTraceId());
+    grpcFacadeTemplate.manage(responseObserver, new GrpcManageCallback() {
 
-            @Override
-            public void checkParameter() {
-                ParaCheckUtil.checkParaNotNull(request.getId(), "id");
-            }
+      @Override
+      public void checkParameter() {
+        ParaCheckUtil.checkParaNotNull(request.getId(), "id");
+      }
 
-            @Override
-            public void doManage() {
-                AlarmRuleDTO alarmRuleDTO = alarmRuleService.queryById(request.getId(), request.getTenant());
+      @Override
+      public void doManage() {
+        AlarmRuleDTO alarmRuleDTO =
+            alarmRuleService.queryById(request.getId(), request.getTenant());
 
-                builder.setSuccess(true);
-                builder.setRowsJson(J.toJson(alarmRuleDTO));
-            }
+        builder.setSuccess(true);
+        builder.setRowsJson(J.toJson(alarmRuleDTO));
+      }
 
-        }, builder);
-    }
+    }, builder);
+  }
 
-    @Override
-    public void deleteById(QueryOrDeleteRequest request,
-                           StreamObserver<DataBaseResponse> responseObserver) {
+  @Override
+  public void deleteById(QueryOrDeleteRequest request,
+      StreamObserver<DataBaseResponse> responseObserver) {
 
-        DataBaseResponse.Builder builder = DataBaseResponse.newBuilder();
-        builder.setTraceId(request.getTraceId());
-        grpcFacadeTemplate.manage(responseObserver, new GrpcManageCallback() {
+    DataBaseResponse.Builder builder = DataBaseResponse.newBuilder();
+    builder.setTraceId(request.getTraceId());
+    grpcFacadeTemplate.manage(responseObserver, new GrpcManageCallback() {
 
-            @Override
-            public void checkParameter() {
-                ParaCheckUtil.checkParaNotNull(request.getId(), "id");
-            }
+      @Override
+      public void checkParameter() {
+        ParaCheckUtil.checkParaNotNull(request.getId(), "id");
+      }
 
-            @Override
-            public void doManage() {
-                boolean b = alarmRuleService.removeById(request.getId());
-                builder.setSuccess(b);
-            }
+      @Override
+      public void doManage() {
+        boolean b = alarmRuleService.removeById(request.getId());
+        builder.setSuccess(b);
+      }
 
-        }, builder);
-    }
+    }, builder);
+  }
 
-    @Override
-    public void shutdownById(QueryOrDeleteRequest request,
-                             StreamObserver<DataBaseResponse> responseObserver) {
+  @Override
+  public void shutdownById(QueryOrDeleteRequest request,
+      StreamObserver<DataBaseResponse> responseObserver) {
 
-        DataBaseResponse.Builder builder = DataBaseResponse.newBuilder();
-        builder.setTraceId(request.getTraceId());
-        grpcFacadeTemplate.manage(responseObserver, new GrpcManageCallback() {
+    DataBaseResponse.Builder builder = DataBaseResponse.newBuilder();
+    builder.setTraceId(request.getTraceId());
+    grpcFacadeTemplate.manage(responseObserver, new GrpcManageCallback() {
 
-            @Override
-            public void checkParameter() {
-                ParaCheckUtil.checkParaNotNull(request.getId(), "id");
-            }
+      @Override
+      public void checkParameter() {
+        ParaCheckUtil.checkParaNotNull(request.getId(), "id");
+      }
 
-            @Override
-            public void doManage() {
-                AlarmRuleDTO alarmRuleDTO = alarmRuleService.queryById(request.getId(), request.getTenant());
-                if (null == alarmRuleDTO) {
-                    throw new MonitorException("queryById is null");
-                }
+      @Override
+      public void doManage() {
+        AlarmRuleDTO alarmRuleDTO =
+            alarmRuleService.queryById(request.getId(), request.getTenant());
+        if (null == alarmRuleDTO) {
+          throw new MonitorException("queryById is null");
+        }
 
-                alarmRuleDTO.setStatus((byte) 0);
-                Boolean aBoolean = alarmRuleService.updateById(alarmRuleDTO);
-                builder.setSuccess(aBoolean);
-                builder.setRowsJson(J.toJson(alarmRuleService.queryById(request.getId(), request.getTenant())));
-            }
+        alarmRuleDTO.setStatus((byte) 0);
+        Boolean aBoolean = alarmRuleService.updateById(alarmRuleDTO);
+        builder.setSuccess(aBoolean);
+        builder.setRowsJson(
+            J.toJson(alarmRuleService.queryById(request.getId(), request.getTenant())));
+      }
 
-        }, builder);
-    }
+    }, builder);
+  }
 
-    @Override
-    public void create(InsertOrUpdateRequest request,
-                       StreamObserver<DataBaseResponse> responseObserver) {
-        DataBaseResponse.Builder builder = DataBaseResponse.newBuilder();
-        builder.setTraceId(request.getTraceId());
+  @Override
+  public void create(InsertOrUpdateRequest request,
+      StreamObserver<DataBaseResponse> responseObserver) {
+    DataBaseResponse.Builder builder = DataBaseResponse.newBuilder();
+    builder.setTraceId(request.getTraceId());
 
-        String rowsJson = request.getRowsJson();
+    String rowsJson = request.getRowsJson();
 
-        AlarmRuleDTO alarmRuleDTO = J.fromJson(rowsJson, AlarmRuleDTO.class);
+    AlarmRuleDTO alarmRuleDTO = J.fromJson(rowsJson, AlarmRuleDTO.class);
 
-        grpcFacadeTemplate.manage(responseObserver, new GrpcManageCallback() {
+    grpcFacadeTemplate.manage(responseObserver, new GrpcManageCallback() {
 
-            @Override
-            public void checkParameter() {
-                ParaCheckUtil.checkParaNotBlank(alarmRuleDTO.getRuleName(), "ruleName");
-                ParaCheckUtil.checkParaNotBlank(alarmRuleDTO.getAlarmLevel(), "alarmLevel");
-                ParaCheckUtil.checkParaNotNull(alarmRuleDTO.getRule(), "rule");
-                ParaCheckUtil.checkParaNotNull(alarmRuleDTO.getTimeFilter(), "timeFilter");
-                ParaCheckUtil.checkParaNotNull(alarmRuleDTO.getStatus(), "status");
-                ParaCheckUtil.checkParaNotNull(alarmRuleDTO.getRecover(), "recover");
-                ParaCheckUtil.checkParaNotNull(alarmRuleDTO.getIsMerge(), "isMerge");
-            }
+      @Override
+      public void checkParameter() {
+        ParaCheckUtil.checkParaNotBlank(alarmRuleDTO.getRuleName(), "ruleName");
+        ParaCheckUtil.checkParaNotBlank(alarmRuleDTO.getAlarmLevel(), "alarmLevel");
+        ParaCheckUtil.checkParaNotNull(alarmRuleDTO.getRule(), "rule");
+        ParaCheckUtil.checkParaNotNull(alarmRuleDTO.getTimeFilter(), "timeFilter");
+        ParaCheckUtil.checkParaNotNull(alarmRuleDTO.getStatus(), "status");
+        ParaCheckUtil.checkParaNotNull(alarmRuleDTO.getRecover(), "recover");
+        ParaCheckUtil.checkParaNotNull(alarmRuleDTO.getIsMerge(), "isMerge");
+      }
 
-            @Override
-            public void doManage() {
-                alarmRuleDTO.setGmtCreate(new Date());
-                alarmRuleDTO.setGmtModified(new Date());
-                Long id = alarmRuleService.save(alarmRuleDTO);
+      @Override
+      public void doManage() {
+        alarmRuleDTO.setGmtCreate(new Date());
+        alarmRuleDTO.setGmtModified(new Date());
+        Long id = alarmRuleService.save(alarmRuleDTO);
 
-                AlarmRuleDTO alarmRule = alarmRuleService.queryById(id, alarmRuleDTO.getTenant());
+        AlarmRuleDTO alarmRule = alarmRuleService.queryById(id, alarmRuleDTO.getTenant());
 
-                builder.setSuccess(true);
-                builder.setRowsJson(J.toJson(alarmRule));
-            }
+        builder.setSuccess(true);
+        builder.setRowsJson(J.toJson(alarmRule));
+      }
 
-        }, builder);
-    }
+    }, builder);
+  }
 
-    @Override
-    public void update(InsertOrUpdateRequest request,
-                       StreamObserver<DataBaseResponse> responseObserver) {
-        DataBaseResponse.Builder builder = DataBaseResponse.newBuilder();
-        builder.setTraceId(request.getTraceId());
+  @Override
+  public void update(InsertOrUpdateRequest request,
+      StreamObserver<DataBaseResponse> responseObserver) {
+    DataBaseResponse.Builder builder = DataBaseResponse.newBuilder();
+    builder.setTraceId(request.getTraceId());
 
-        String rowsJson = request.getRowsJson();
+    String rowsJson = request.getRowsJson();
 
-        AlarmRuleDTO alarmRuleDTO = J.fromJson(rowsJson, AlarmRuleDTO.class);
+    AlarmRuleDTO alarmRuleDTO = J.fromJson(rowsJson, AlarmRuleDTO.class);
 
-        grpcFacadeTemplate.manage(responseObserver, new GrpcManageCallback() {
+    grpcFacadeTemplate.manage(responseObserver, new GrpcManageCallback() {
 
-            @Override
-            public void checkParameter() {
-                ParaCheckUtil.checkParaNotNull(alarmRuleDTO.getId(), "id");
-                ParaCheckUtil.checkParaNotBlank(alarmRuleDTO.getRuleName(), "ruleName");
-                ParaCheckUtil.checkParaNotBlank(alarmRuleDTO.getAlarmLevel(), "alarmLevel");
-                ParaCheckUtil.checkParaNotNull(alarmRuleDTO.getRule(), "rule");
-                ParaCheckUtil.checkParaNotNull(alarmRuleDTO.getTimeFilter(), "timeFilter");
-                ParaCheckUtil.checkParaNotNull(alarmRuleDTO.getStatus(), "status");
-                ParaCheckUtil.checkParaNotNull(alarmRuleDTO.getRecover(), "recover");
-                ParaCheckUtil.checkParaNotNull(alarmRuleDTO.getIsMerge(), "isMerge");
-            }
+      @Override
+      public void checkParameter() {
+        ParaCheckUtil.checkParaNotNull(alarmRuleDTO.getId(), "id");
+        ParaCheckUtil.checkParaNotBlank(alarmRuleDTO.getRuleName(), "ruleName");
+        ParaCheckUtil.checkParaNotBlank(alarmRuleDTO.getAlarmLevel(), "alarmLevel");
+        ParaCheckUtil.checkParaNotNull(alarmRuleDTO.getRule(), "rule");
+        ParaCheckUtil.checkParaNotNull(alarmRuleDTO.getTimeFilter(), "timeFilter");
+        ParaCheckUtil.checkParaNotNull(alarmRuleDTO.getStatus(), "status");
+        ParaCheckUtil.checkParaNotNull(alarmRuleDTO.getRecover(), "recover");
+        ParaCheckUtil.checkParaNotNull(alarmRuleDTO.getIsMerge(), "isMerge");
+      }
 
-            @Override
-            public void doManage() {
+      @Override
+      public void doManage() {
 
-                alarmRuleDTO.setGmtModified(new Date());
-                boolean save = alarmRuleService.updateById(alarmRuleDTO);
-                AlarmRuleDTO alarmRuleDTONew = alarmRuleService.queryById(alarmRuleDTO.getId(), alarmRuleDTO.getTenant());
+        alarmRuleDTO.setGmtModified(new Date());
+        boolean save = alarmRuleService.updateById(alarmRuleDTO);
+        AlarmRuleDTO alarmRuleDTONew =
+            alarmRuleService.queryById(alarmRuleDTO.getId(), alarmRuleDTO.getTenant());
 
-                builder.setSuccess(save);
-                builder.setRowsJson(J.toJson(alarmRuleDTONew));
-            }
+        builder.setSuccess(save);
+        builder.setRowsJson(J.toJson(alarmRuleDTONew));
+      }
 
-        }, builder);
-    }
+    }, builder);
+  }
 
-    @Override
-    public void queryAlarmHistoryByPage(QueryAlarmHistoryPageRequest request,
-                                        StreamObserver<DataBaseResponse> responseObserver) {
-        DataBaseResponse.Builder builder = DataBaseResponse.newBuilder();
-        builder.setTraceId(request.getTraceId());
+  @Override
+  public void queryAlarmHistoryByPage(QueryAlarmHistoryPageRequest request,
+      StreamObserver<DataBaseResponse> responseObserver) {
+    DataBaseResponse.Builder builder = DataBaseResponse.newBuilder();
+    builder.setTraceId(request.getTraceId());
 
-        String rowsJson = request.getRowsJson();
+    String rowsJson = request.getRowsJson();
 
-        MonitorPageRequest<AlarmHistoryDTO> pageRequest = J.fromJson(rowsJson,
-            new TypeToken<MonitorPageRequest<AlarmHistoryDTO>>() {
-            }.getType());
-        grpcFacadeTemplate.manage(responseObserver, new GrpcManageCallback() {
+    MonitorPageRequest<AlarmHistoryDTO> pageRequest =
+        J.fromJson(rowsJson, new TypeToken<MonitorPageRequest<AlarmHistoryDTO>>() {}.getType());
+    grpcFacadeTemplate.manage(responseObserver, new GrpcManageCallback() {
 
-            @Override
-            public void checkParameter() {
-                ParaCheckUtil.checkParaNotNull(pageRequest.getTarget(), "target");
+      @Override
+      public void checkParameter() {
+        ParaCheckUtil.checkParaNotNull(pageRequest.getTarget(), "target");
 
-            }
+      }
 
-            @Override
-            public void doManage() {
+      @Override
+      public void doManage() {
 
-                MonitorPageResult<AlarmHistoryDTO> listByPage = alarmHistoryService
-                    .getListByPage(pageRequest, null);
+        MonitorPageResult<AlarmHistoryDTO> listByPage =
+            alarmHistoryService.getListByPage(pageRequest, null);
 
-                builder.setSuccess(true);
-                builder.setRowsJson(J.toJson(listByPage));
-            }
+        builder.setSuccess(true);
+        builder.setRowsJson(J.toJson(listByPage));
+      }
 
-        }, builder);
-    }
+    }, builder);
+  }
 
-    @Override
-    public void queryAlarmHistoryDetailByPage(QueryAlarmHistoryDetailPageRequest request,
-                                              StreamObserver<DataBaseResponse> responseObserver) {
-        DataBaseResponse.Builder builder = DataBaseResponse.newBuilder();
-        builder.setTraceId(request.getTraceId());
+  @Override
+  public void queryAlarmHistoryDetailByPage(QueryAlarmHistoryDetailPageRequest request,
+      StreamObserver<DataBaseResponse> responseObserver) {
+    DataBaseResponse.Builder builder = DataBaseResponse.newBuilder();
+    builder.setTraceId(request.getTraceId());
 
-        String rowsJson = request.getRowsJson();
+    String rowsJson = request.getRowsJson();
 
-        MonitorPageRequest<AlarmHistoryDetailDTO> pageRequest = J.fromJson(rowsJson,
-                new TypeToken<MonitorPageRequest<AlarmHistoryDetailDTO>>() {
-                }.getType());
-        grpcFacadeTemplate.manage(responseObserver, new GrpcManageCallback() {
+    MonitorPageRequest<AlarmHistoryDetailDTO> pageRequest = J.fromJson(rowsJson,
+        new TypeToken<MonitorPageRequest<AlarmHistoryDetailDTO>>() {}.getType());
+    grpcFacadeTemplate.manage(responseObserver, new GrpcManageCallback() {
 
-            @Override
-            public void checkParameter() {
-                ParaCheckUtil.checkParaNotNull(pageRequest.getTarget(), "target");
+      @Override
+      public void checkParameter() {
+        ParaCheckUtil.checkParaNotNull(pageRequest.getTarget(), "target");
 
-            }
+      }
 
-            @Override
-            public void doManage() {
+      @Override
+      public void doManage() {
 
-                MonitorPageResult<AlarmHistoryDetailDTO> listByPage = alarmHistoryDetailService
-                        .getListByPage(pageRequest);
+        MonitorPageResult<AlarmHistoryDetailDTO> listByPage =
+            alarmHistoryDetailService.getListByPage(pageRequest);
 
-                builder.setSuccess(true);
-                builder.setRowsJson(J.toJson(listByPage));
-            }
+        builder.setSuccess(true);
+        builder.setRowsJson(J.toJson(listByPage));
+      }
 
-        }, builder);
-    }
+    }, builder);
+  }
 
 }

@@ -3,7 +3,6 @@
  */
 
 
-
 package io.holoinsight.server.home.web.config;
 
 import com.google.protobuf.util.JsonFormat;
@@ -16,10 +15,11 @@ import org.springframework.http.converter.protobuf.ProtobufJsonFormatHttpMessage
 @Configuration
 public class HomeApiConfig {
 
-    @Bean
-    @ConditionalOnMissingBean
-    public ProtobufJsonFormatHttpMessageConverter protobufHttpMessageConverter() {
-        return new ProtobufJsonFormatHttpMessageConverter(JsonFormat.parser().ignoringUnknownFields(), null);
-    }
+  @Bean
+  @ConditionalOnMissingBean
+  public ProtobufJsonFormatHttpMessageConverter protobufHttpMessageConverter() {
+    return new ProtobufJsonFormatHttpMessageConverter(JsonFormat.parser().ignoringUnknownFields(),
+        null);
+  }
 
 }

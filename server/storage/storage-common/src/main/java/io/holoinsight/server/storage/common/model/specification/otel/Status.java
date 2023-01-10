@@ -15,6 +15,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Status {
-    private String     message;
-    private StatusCode statusCode;
+  private String message;
+  private StatusCode statusCode;
 }

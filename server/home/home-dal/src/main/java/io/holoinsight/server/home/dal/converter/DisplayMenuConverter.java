@@ -2,7 +2,6 @@
  * Copyright 2022 Holoinsight Project Authors. Licensed under Apache-2.0.
  */
 
-
 package io.holoinsight.server.home.dal.converter;
 
 import io.holoinsight.server.home.dal.model.DisplayMenu;
@@ -19,10 +18,10 @@ import java.util.List;
  */
 @Mapper(componentModel = "spring", uses = {DisplayMenuConfigMapper.class})
 public interface DisplayMenuConverter {
-    DisplayMenuDTO doToDTO(DisplayMenu displayMenu);
+  DisplayMenuDTO doToDTO(DisplayMenu displayMenu);
 
-    DisplayMenu dtoToDO(DisplayMenuDTO displayMenuDTO);
+  DisplayMenu dtoToDO(DisplayMenuDTO displayMenuDTO);
 
-    List<DisplayMenuDTO> dosToDTOs(Iterable<DisplayMenu> displayMenus);
+  List<DisplayMenuDTO> dosToDTOs(Iterable<DisplayMenu> displayMenus);
 
 }

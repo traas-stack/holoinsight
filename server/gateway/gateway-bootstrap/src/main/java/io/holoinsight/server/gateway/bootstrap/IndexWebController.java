@@ -7,14 +7,15 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * <p>created at 2022/11/25
+ * <p>
+ * created at 2022/11/25
  *
  * @author sw1136562366
  */
 @RestController
 public class IndexWebController {
-    @GetMapping("")
-    public Object index() {
-        return "Holoinsight Gateway";
-    }
+  @GetMapping("")
+  public Object index() {
+    return "Holoinsight Gateway";
+  }
 }

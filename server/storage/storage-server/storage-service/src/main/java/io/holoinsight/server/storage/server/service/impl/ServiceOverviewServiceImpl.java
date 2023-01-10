@@ -17,12 +17,13 @@ import java.util.List;
 @ConditionalOnFeature("trace")
 public class ServiceOverviewServiceImpl implements ServiceOverviewService {
 
-    @Autowired
-    private ServiceOverviewEsService serviceOverviewEsService;
+  @Autowired
+  private ServiceOverviewEsService serviceOverviewEsService;
 
-    @Override
-    public List<io.holoinsight.server.storage.common.model.query.Service> getServiceList(String tenant, long startTime, long endTime) throws IOException {
-        return serviceOverviewEsService.getServiceList(tenant, startTime, endTime);
-    }
+  @Override
+  public List<io.holoinsight.server.storage.common.model.query.Service> getServiceList(
+      String tenant, long startTime, long endTime) throws IOException {
+    return serviceOverviewEsService.getServiceList(tenant, startTime, endTime);
+  }
 
 }

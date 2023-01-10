@@ -2,7 +2,6 @@
  * Copyright 2022 Holoinsight Project Authors. Licensed under Apache-2.0.
  */
 
-
 package io.holoinsight.server.home.biz.plugin.config;
 
 import lombok.Data;
@@ -14,5 +13,5 @@ import lombok.Data;
  */
 @Data
 public class ObPluginConfig {
-    public String name;
+  public String name;
 }

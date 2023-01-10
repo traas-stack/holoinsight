@@ -2,7 +2,6 @@
  * Copyright 2022 Holoinsight Project Authors. Licensed under Apache-2.0.
  */
 
-
 package io.holoinsight.server.home.biz.service.impl;
 
 import io.holoinsight.server.home.biz.service.CustomPluginService;
@@ -33,217 +32,217 @@ import java.util.Map;
  */
 @Service
 public class CustomPluginServiceImpl extends ServiceImpl<CustomPluginMapper, CustomPlugin>
-                                     implements CustomPluginService {
+    implements CustomPluginService {
 
-    @Autowired
-    private CustomPluginConverter customPluginConverter;
+  @Autowired
+  private CustomPluginConverter customPluginConverter;
 
-    @Override
-    public CustomPluginDTO queryById(Long id, String tenant) {
-        QueryWrapper<CustomPlugin> wrapper = new QueryWrapper<>();
-        wrapper.eq("tenant", tenant);
-        wrapper.eq("id", id);
-        wrapper.last("LIMIT 1");
+  @Override
+  public CustomPluginDTO queryById(Long id, String tenant) {
+    QueryWrapper<CustomPlugin> wrapper = new QueryWrapper<>();
+    wrapper.eq("tenant", tenant);
+    wrapper.eq("id", id);
+    wrapper.last("LIMIT 1");
 
-        CustomPlugin model = this.getOne(wrapper);
-        if (model == null) {
-            return null;
-        }
-        return doToDTO(model);
+    CustomPlugin model = this.getOne(wrapper);
+    if (model == null) {
+      return null;
+    }
+    return doToDTO(model);
+  }
+
+  @Override
+  public List<CustomPluginDTO> findByMap(Map<String, Object> columnMap) {
+    List<CustomPlugin> models = listByMap(columnMap);
+
+    return dosToDTOs(models);
+  }
+
+  @Override
+  public List<CustomPluginDTO> findByIds(List<String> ids) {
+
+    QueryWrapper<CustomPlugin> wrapper = new QueryWrapper<>();
+    wrapper.in("id", ids);
+    List<CustomPlugin> customPlugins = baseMapper.selectList(wrapper);
+    return dosToDTOs(customPlugins);
+  }
+
+  @Override
+  public CustomPluginDTO create(CustomPluginDTO customPluginDTO) {
+    customPluginDTO.setGmtCreate(new Date());
+    customPluginDTO.setGmtModified(new Date());
+    CustomPlugin model = customPluginConverter.dtoToDO(customPluginDTO);
+    save(model);
+    CustomPluginDTO customPluginDTOId = doToDTO(model);
+    EventBusHolder.post(customPluginDTOId);
+    return customPluginDTOId;
+  }
+
+  @Override
+  public void deleteById(Long id) {
+    CustomPlugin customPluginDTO = getById(id);
+    if (null == customPluginDTO) {
+      return;
+    }
+    removeById(id);
+    customPluginDTO.setStatus("OFFLINE");
+    EventBusHolder.post(customPluginDTO);
+  }
+
+  @Override
+  public CustomPluginDTO updateByRequest(CustomPluginDTO customPluginDTO) {
+    customPluginDTO.setGmtModified(new Date());
+    CustomPlugin model = customPluginConverter.dtoToDO(customPluginDTO);
+    updateById(model);
+    CustomPluginDTO save = doToDTO(model);
+    EventBusHolder.post(save);
+    return save;
+  }
+
+  @Override
+  public MonitorPageResult<CustomPluginDTO> getListByPage(
+      MonitorPageRequest<CustomPluginDTO> customPluginDTORequest) {
+    if (customPluginDTORequest.getTarget() == null) {
+      return null;
     }
 
-    @Override
-    public List<CustomPluginDTO> findByMap(Map<String, Object> columnMap) {
-        List<CustomPlugin> models = listByMap(columnMap);
+    QueryWrapper<CustomPlugin> wrapper = new QueryWrapper<>();
 
-        return dosToDTOs(models);
+    CustomPluginDTO customPluginDTO = customPluginDTORequest.getTarget();
+
+    if (null != customPluginDTO.getGmtCreate()) {
+      wrapper.ge("gmt_create", customPluginDTO.getGmtCreate());
+    }
+    if (null != customPluginDTO.getGmtModified()) {
+      wrapper.le("gmt_modified", customPluginDTO.getGmtCreate());
     }
 
-    @Override
-    public List<CustomPluginDTO> findByIds(List<String> ids) {
-
-        QueryWrapper<CustomPlugin> wrapper = new QueryWrapper<>();
-        wrapper.in("id", ids);
-        List<CustomPlugin> customPlugins = baseMapper.selectList(wrapper);
-        return dosToDTOs(customPlugins);
+    if (StringUtil.isNotBlank(customPluginDTO.getCreator())) {
+      wrapper.eq("creator", customPluginDTO.getCreator().trim());
     }
 
-    @Override
-    public CustomPluginDTO create(CustomPluginDTO customPluginDTO) {
-        customPluginDTO.setGmtCreate(new Date());
-        customPluginDTO.setGmtModified(new Date());
-        CustomPlugin model = customPluginConverter.dtoToDO(customPluginDTO);
-        save(model);
-        CustomPluginDTO customPluginDTOId = doToDTO(model);
-        EventBusHolder.post(customPluginDTOId);
-        return customPluginDTOId;
+    if (StringUtil.isNotBlank(customPluginDTO.getModifier())) {
+      wrapper.eq("modifier", customPluginDTO.getModifier().trim());
     }
 
-    @Override
-    public void deleteById(Long id) {
-        CustomPlugin customPluginDTO = getById(id);
-        if (null == customPluginDTO) {
-            return;
-        }
-        removeById(id);
-        customPluginDTO.setStatus("OFFLINE");
-        EventBusHolder.post(customPluginDTO);
+    if (null != customPluginDTO.getId()) {
+      wrapper.eq("id", customPluginDTO.getId());
     }
 
-    @Override
-    public CustomPluginDTO updateByRequest(CustomPluginDTO customPluginDTO) {
-        customPluginDTO.setGmtModified(new Date());
-        CustomPlugin model = customPluginConverter.dtoToDO(customPluginDTO);
-        updateById(model);
-        CustomPluginDTO save = doToDTO(model);
-        EventBusHolder.post(save);
-        return save;
+    if (StringUtil.isNotBlank(customPluginDTO.getTenant())) {
+      wrapper.eq("tenant", customPluginDTO.getTenant().trim());
     }
 
-    @Override
-    public MonitorPageResult<CustomPluginDTO> getListByPage(MonitorPageRequest<CustomPluginDTO> customPluginDTORequest) {
-        if (customPluginDTORequest.getTarget() == null) {
-            return null;
-        }
-
-        QueryWrapper<CustomPlugin> wrapper = new QueryWrapper<>();
-
-        CustomPluginDTO customPluginDTO = customPluginDTORequest.getTarget();
-
-        if (null != customPluginDTO.getGmtCreate()) {
-            wrapper.ge("gmt_create", customPluginDTO.getGmtCreate());
-        }
-        if (null != customPluginDTO.getGmtModified()) {
-            wrapper.le("gmt_modified", customPluginDTO.getGmtCreate());
-        }
-
-        if (StringUtil.isNotBlank(customPluginDTO.getCreator())) {
-            wrapper.eq("creator", customPluginDTO.getCreator().trim());
-        }
-
-        if (StringUtil.isNotBlank(customPluginDTO.getModifier())) {
-            wrapper.eq("modifier", customPluginDTO.getModifier().trim());
-        }
-
-        if (null != customPluginDTO.getId()) {
-            wrapper.eq("id", customPluginDTO.getId());
-        }
-
-        if (StringUtil.isNotBlank(customPluginDTO.getTenant())) {
-            wrapper.eq("tenant", customPluginDTO.getTenant().trim());
-        }
-
-        if (StringUtil.isNotBlank(customPluginDTO.getName())) {
-            wrapper.like("name", customPluginDTO.getName().trim());
-        }
-
-        if (null != customPluginDTO.getPeriodType()) {
-            wrapper.eq("period_type", customPluginDTO.getPeriodType().name());
-        }
-
-        if (StringUtil.isNotBlank(customPluginDTO.getPluginType())) {
-            wrapper.eq("plugin_type", customPluginDTO.getPluginType().trim());
-        }
-
-        if (null != customPluginDTO.getParentFolderId()) {
-            wrapper.eq("parent_folder_id", customPluginDTO.getParentFolderId());
-        }
-
-        if (StringUtil.isNotBlank(customPluginDTORequest.getSortBy())
-            && StringUtil.isNotBlank(customPluginDTORequest.getSortRule())) {
-            if (customPluginDTORequest.getSortBy().equals("gmtModified")) {
-                if (customPluginDTORequest.getSortRule().toLowerCase(Locale.ROOT).equals("desc")) {
-                    wrapper.orderByDesc("gmt_modified");
-                } else {
-                    wrapper.orderByAsc("gmt_modified");
-                }
-            }
-        }
-
-        wrapper.select(CustomPlugin.class,
-            info -> !info.getColumn().equals("creator") && !info.getColumn().equals("modifier"));
-
-        Page<CustomPlugin> page = new Page<>(customPluginDTORequest.getPageNum(),
-            customPluginDTORequest.getPageSize());
-
-        page = page(page, wrapper);
-
-        MonitorPageResult<CustomPluginDTO> customPluginDTOs = new MonitorPageResult<>();
-
-        customPluginDTOs.setItems(dosToDTOs(page.getRecords()));
-        customPluginDTOs.setPageNum(customPluginDTORequest.getPageNum());
-        customPluginDTOs.setPageSize(customPluginDTORequest.getPageSize());
-        customPluginDTOs.setTotalCount(page.getTotal());
-        customPluginDTOs.setTotalPage(page.getPages());
-
-        return customPluginDTOs;
+    if (StringUtil.isNotBlank(customPluginDTO.getName())) {
+      wrapper.like("name", customPluginDTO.getName().trim());
     }
 
-    @Override
-    public List<CustomPluginDTO> getListByKeyword(String keyword, String tenant) {
-        QueryWrapper<CustomPlugin> wrapper = new QueryWrapper<>();
-        if (StringUtil.isNotBlank(tenant)) {
-            wrapper.eq("tenant", tenant);
+    if (null != customPluginDTO.getPeriodType()) {
+      wrapper.eq("period_type", customPluginDTO.getPeriodType().name());
+    }
+
+    if (StringUtil.isNotBlank(customPluginDTO.getPluginType())) {
+      wrapper.eq("plugin_type", customPluginDTO.getPluginType().trim());
+    }
+
+    if (null != customPluginDTO.getParentFolderId()) {
+      wrapper.eq("parent_folder_id", customPluginDTO.getParentFolderId());
+    }
+
+    if (StringUtil.isNotBlank(customPluginDTORequest.getSortBy())
+        && StringUtil.isNotBlank(customPluginDTORequest.getSortRule())) {
+      if (customPluginDTORequest.getSortBy().equals("gmtModified")) {
+        if (customPluginDTORequest.getSortRule().toLowerCase(Locale.ROOT).equals("desc")) {
+          wrapper.orderByDesc("gmt_modified");
+        } else {
+          wrapper.orderByAsc("gmt_modified");
         }
-        wrapper.like("id", keyword).or().like("name", keyword);
-        Page<CustomPlugin> page = new Page<>(1, 20);
-        page = page(page, wrapper);
-
-        return dosToDTOs(page.getRecords());
+      }
     }
 
-    @Override
-    public List<CustomPluginDTO> getListByNameLike(String name, String tenant) {
-        QueryWrapper<CustomPlugin> wrapper = new QueryWrapper<>();
-        wrapper.eq("tenant", tenant);
-        wrapper.select().like("name", name);
-        List<CustomPlugin> customPlugins = baseMapper.selectList(wrapper);
-        return dosToDTOs(customPlugins);
+    wrapper.select(CustomPlugin.class,
+        info -> !info.getColumn().equals("creator") && !info.getColumn().equals("modifier"));
+
+    Page<CustomPlugin> page =
+        new Page<>(customPluginDTORequest.getPageNum(), customPluginDTORequest.getPageSize());
+
+    page = page(page, wrapper);
+
+    MonitorPageResult<CustomPluginDTO> customPluginDTOs = new MonitorPageResult<>();
+
+    customPluginDTOs.setItems(dosToDTOs(page.getRecords()));
+    customPluginDTOs.setPageNum(customPluginDTORequest.getPageNum());
+    customPluginDTOs.setPageSize(customPluginDTORequest.getPageSize());
+    customPluginDTOs.setTotalCount(page.getTotal());
+    customPluginDTOs.setTotalPage(page.getPages());
+
+    return customPluginDTOs;
+  }
+
+  @Override
+  public List<CustomPluginDTO> getListByKeyword(String keyword, String tenant) {
+    QueryWrapper<CustomPlugin> wrapper = new QueryWrapper<>();
+    if (StringUtil.isNotBlank(tenant)) {
+      wrapper.eq("tenant", tenant);
     }
+    wrapper.like("id", keyword).or().like("name", keyword);
+    Page<CustomPlugin> page = new Page<>(1, 20);
+    page = page(page, wrapper);
 
-    private CustomPluginDTO doToDTO(CustomPlugin customPlugin) {
-        CustomPluginDTO customPluginDTO = customPluginConverter.doToDTO(customPlugin);
+    return dosToDTOs(page.getRecords());
+  }
 
+  @Override
+  public List<CustomPluginDTO> getListByNameLike(String name, String tenant) {
+    QueryWrapper<CustomPlugin> wrapper = new QueryWrapper<>();
+    wrapper.eq("tenant", tenant);
+    wrapper.select().like("name", name);
+    List<CustomPlugin> customPlugins = baseMapper.selectList(wrapper);
+    return dosToDTOs(customPlugins);
+  }
+
+  private CustomPluginDTO doToDTO(CustomPlugin customPlugin) {
+    CustomPluginDTO customPluginDTO = customPluginConverter.doToDTO(customPlugin);
+
+    if (null != customPluginDTO.getConf()
+        && !CollectionUtils.isEmpty(customPluginDTO.getConf().collectMetrics)) {
+      customPluginDTO.getConf().collectMetrics.forEach(collectMetric -> {
+        if (StringUtil.isNotBlank(collectMetric.name)) {
+          collectMetric.targetTable = collectMetric.name;
+        } else {
+          collectMetric.targetTable = collectMetric.tableName + "_" + customPlugin.id;
+        }
+      });
+    }
+    return customPluginDTO;
+  }
+
+  private List<CustomPluginDTO> dosToDTOs(List<CustomPlugin> customPlugins) {
+    List<CustomPluginDTO> customPluginDTOS = customPluginConverter.dosToDTOs(customPlugins);
+
+    if (!CollectionUtils.isEmpty(customPluginDTOS)) {
+      customPluginDTOS.forEach(customPluginDTO -> {
         if (null != customPluginDTO.getConf()
             && !CollectionUtils.isEmpty(customPluginDTO.getConf().collectMetrics)) {
-            customPluginDTO.getConf().collectMetrics.forEach(collectMetric -> {
-                if (StringUtil.isNotBlank(collectMetric.name)) {
-                    collectMetric.targetTable = collectMetric.name;
-                } else {
-                    collectMetric.targetTable = collectMetric.tableName + "_" + customPlugin.id;
-                }
-            });
+          customPluginDTO.getConf().collectMetrics.forEach(collectMetric -> {
+            if (StringUtil.isNotBlank(collectMetric.name)) {
+              collectMetric.targetTable = collectMetric.name;
+            } else {
+              collectMetric.targetTable = collectMetric.tableName + "_" + customPluginDTO.id;
+            }
+          });
         }
-        return customPluginDTO;
+      });
     }
+    return customPluginDTOS;
+  }
 
-    private List<CustomPluginDTO> dosToDTOs(List<CustomPlugin> customPlugins) {
-        List<CustomPluginDTO> customPluginDTOS = customPluginConverter.dosToDTOs(customPlugins);
-
-        if (!CollectionUtils.isEmpty(customPluginDTOS)) {
-            customPluginDTOS.forEach(customPluginDTO -> {
-                if (null != customPluginDTO.getConf()
-                    && !CollectionUtils.isEmpty(customPluginDTO.getConf().collectMetrics)) {
-                    customPluginDTO.getConf().collectMetrics.forEach(collectMetric -> {
-                        if (StringUtil.isNotBlank(collectMetric.name)) {
-                            collectMetric.targetTable = collectMetric.name;
-                        } else {
-                            collectMetric.targetTable = collectMetric.tableName + "_"
-                                                        + customPluginDTO.id;
-                        }
-                    });
-                }
-            });
-        }
-        return customPluginDTOS;
-    }
-
-    @Override
-    public Boolean updateById(CustomPluginDTO customPluginDTO) {
-        CustomPlugin model = customPluginConverter.dtoToDO(customPluginDTO);
-        Boolean result = updateById(model);
-        CustomPluginDTO save = doToDTO(model);
-        EventBusHolder.post(save);
-        return result;
-    }
+  @Override
+  public Boolean updateById(CustomPluginDTO customPluginDTO) {
+    CustomPlugin model = customPluginConverter.dtoToDO(customPluginDTO);
+    Boolean result = updateById(model);
+    CustomPluginDTO save = doToDTO(model);
+    EventBusHolder.post(save);
+    return result;
+  }
 }

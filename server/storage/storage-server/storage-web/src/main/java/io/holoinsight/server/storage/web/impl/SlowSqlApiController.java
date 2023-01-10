@@ -18,18 +18,20 @@ import java.util.List;
 @Slf4j
 public class SlowSqlApiController implements SlowSqlApi {
 
-    @Autowired
-    private SlowSqlService slowSqlService;
+  @Autowired
+  private SlowSqlService slowSqlService;
 
-    @Override
-    public ResponseEntity<List<SlowSql>> querySlowSqlList(QueryComponentRequest request) throws IOException {
-        String tenant = request.getTenant();
+  @Override
+  public ResponseEntity<List<SlowSql>> querySlowSqlList(QueryComponentRequest request)
+      throws IOException {
+    String tenant = request.getTenant();
 
-        if (Strings.isNullOrEmpty(tenant)) {
-            throw new IllegalArgumentException("The condition must contains tenant.");
-        }
-
-        List<SlowSql> slowSqlList = slowSqlService.getSlowSqlList(tenant, request.getServiceName(), request.getAddress(), request.getStartTime(), request.getEndTime());
-        return ResponseEntity.ok(slowSqlList);
+    if (Strings.isNullOrEmpty(tenant)) {
+      throw new IllegalArgumentException("The condition must contains tenant.");
     }
+
+    List<SlowSql> slowSqlList = slowSqlService.getSlowSqlList(tenant, request.getServiceName(),
+        request.getAddress(), request.getStartTime(), request.getEndTime());
+    return ResponseEntity.ok(slowSqlList);
+  }
 }

@@ -15,6 +15,7 @@ import java.lang.annotation.Target;
 @Target({ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface PluginModel {
-    String name();
-    String version();
+  String name();
+
+  String version();
 }

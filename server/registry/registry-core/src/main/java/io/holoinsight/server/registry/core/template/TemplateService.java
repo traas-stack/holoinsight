@@ -11,34 +11,36 @@ import org.springframework.stereotype.Service;
 import io.holoinsight.server.common.dao.mapper.GaeaCollectConfigDOMapper;
 
 /**
- * <p>created at 2022/4/19
+ * <p>
+ * created at 2022/4/19
  *
  * @author zzhb101
  */
 @Service
 public class TemplateService {
-    @Autowired
-    private TemplateStorage           templateStorage;
-    @Autowired
-    private GaeaCollectConfigDOMapper mapper;
+  @Autowired
+  private TemplateStorage templateStorage;
+  @Autowired
+  private GaeaCollectConfigDOMapper mapper;
 
-    public CollectTemplate fuzzyGet(String t) {
-        try {
-            return templateStorage.get(Long.parseLong(t));
-        } catch (NumberFormatException ignored) {}
-
-        Set<Long> ids = templateStorage.get(t);
-        switch (ids.size()) {
-            case 0:
-                break;
-            case 1:
-                return templateStorage.get(ids.iterator().next());
-            default:
-                throw new IllegalStateException("template not found " + t);
-        }
-
-        //
-
-        return null;
+  public CollectTemplate fuzzyGet(String t) {
+    try {
+      return templateStorage.get(Long.parseLong(t));
+    } catch (NumberFormatException ignored) {
     }
+
+    Set<Long> ids = templateStorage.get(t);
+    switch (ids.size()) {
+      case 0:
+        break;
+      case 1:
+        return templateStorage.get(ids.iterator().next());
+      default:
+        throw new IllegalStateException("template not found " + t);
+    }
+
+    //
+
+    return null;
+  }
 }

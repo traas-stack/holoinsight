@@ -13,65 +13,59 @@ import java.util.Objects;
  */
 public class IndexStructures {
 
-    private final Map<String, Mappings> structures;
+  private final Map<String, Mappings> structures;
 
-    public IndexStructures() {
-        this.structures = new HashMap<>();
-    }
+  public IndexStructures() {
+    this.structures = new HashMap<>();
+  }
 
-    public Mappings getMapping(String tableName) {
-        Map<String, Object> properties =
-                structures.containsKey(tableName) ?
-                        structures.get(tableName).getProperties() : new HashMap<>();
-        return Mappings.builder()
-                .properties(properties)
-                .build();
-    }
+  public Mappings getMapping(String tableName) {
+    Map<String, Object> properties =
+        structures.containsKey(tableName) ? structures.get(tableName).getProperties()
+            : new HashMap<>();
+    return Mappings.builder().properties(properties).build();
+  }
 
-    /**
-     * Add or append field when the current structures don't contain the input structure or having new fields in it.
-     */
-    public void putStructure(String tableName, Mappings mapping) {
-        if (Objects.isNull(mapping)
-                || Objects.isNull(mapping.getProperties())
-                || mapping.getProperties().isEmpty()) {
-            return;
-        }
-        if (structures.containsKey(tableName)) {
-            structures.get(tableName).appendNewFields(mapping);
-        } else {
-            structures.put(tableName, mapping);
-        }
+  /**
+   * Add or append field when the current structures don't contain the input structure or having new
+   * fields in it.
+   */
+  public void putStructure(String tableName, Mappings mapping) {
+    if (Objects.isNull(mapping) || Objects.isNull(mapping.getProperties())
+        || mapping.getProperties().isEmpty()) {
+      return;
     }
+    if (structures.containsKey(tableName)) {
+      structures.get(tableName).appendNewFields(mapping);
+    } else {
+      structures.put(tableName, mapping);
+    }
+  }
 
-    /**
-     * Returns mappings with fields that not exist in the input mappings. The input mappings should be history mapping from current index.
-     * Do not return _source config to avoid current index update conflict.
-     */
-    public Mappings diffStructure(String tableName, Mappings mappings) {
-        if (!structures.containsKey(tableName)) {
-            return new Mappings();
-        }
-        Map<String, Object> properties = mappings.getProperties();
-        Map<String, Object> diffProperties =
-                structures.get(tableName).diffFields(mappings);
-        return Mappings.builder()
-                .properties(diffProperties)
-                .build();
+  /**
+   * Returns mappings with fields that not exist in the input mappings. The input mappings should be
+   * history mapping from current index. Do not return _source config to avoid current index update
+   * conflict.
+   */
+  public Mappings diffStructure(String tableName, Mappings mappings) {
+    if (!structures.containsKey(tableName)) {
+      return new Mappings();
     }
+    Map<String, Object> properties = mappings.getProperties();
+    Map<String, Object> diffProperties = structures.get(tableName).diffFields(mappings);
+    return Mappings.builder().properties(diffProperties).build();
+  }
 
-    /**
-     * Returns true when the current structures already contains the properties of the input mappings.
-     */
-    public boolean containsStructure(String tableName, Mappings mappings) {
-        if (Objects.isNull(mappings) ||
-                Objects.isNull(mappings.getProperties()) ||
-                mappings.getProperties().isEmpty()) {
-            return true;
-        }
-        return structures.containsKey(tableName)
-                && structures.get(tableName)
-                .containsAllFields(mappings);
+  /**
+   * Returns true when the current structures already contains the properties of the input mappings.
+   */
+  public boolean containsStructure(String tableName, Mappings mappings) {
+    if (Objects.isNull(mappings) || Objects.isNull(mappings.getProperties())
+        || mappings.getProperties().isEmpty()) {
+      return true;
     }
+    return structures.containsKey(tableName)
+        && structures.get(tableName).containsAllFields(mappings);
+  }
 
 }

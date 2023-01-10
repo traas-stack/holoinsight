@@ -13,6 +13,6 @@ import java.io.IOException;
  */
 public interface DataCleaner {
 
-    void clean(Model model) throws IOException;
+  void clean(Model model) throws IOException;
 
 }

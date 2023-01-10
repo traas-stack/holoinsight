@@ -10,7 +10,8 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * <p>created at 2022/12/1
+ * <p>
+ * created at 2022/12/1
  *
  * @author xzchaoo
  */
@@ -18,5 +19,5 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 public @interface GrpcService {
-    int port();
+  int port();
 }

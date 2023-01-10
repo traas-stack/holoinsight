@@ -22,7 +22,8 @@ import org.springframework.context.annotation.Import;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
 /**
- * <p>created at 2022/11/25
+ * <p>
+ * created at 2022/11/25
  *
  * @author zzhb101
  */
@@ -34,7 +35,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @EnableConfigurationProperties(RegistryProperties.class)
 @EnableScheduling
 @MapperScan(basePackageClasses = GaeaCollectConfigDOMapper.class)
-@Import({ConfigConfiguration.class, GroovyConfiguration.class, ThreadPoolConfiguration.class, InternalWebApiSecurityConfiguration.class,
-    ApiKeyAutoConfiguration.class})
+@Import({ConfigConfiguration.class, GroovyConfiguration.class, ThreadPoolConfiguration.class,
+    InternalWebApiSecurityConfiguration.class, ApiKeyAutoConfiguration.class})
 public class HoloinsightRegistryConfiguration {
 }

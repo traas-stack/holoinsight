@@ -13,28 +13,25 @@ import java.util.List;
  */
 public interface DictLoader {
 
-    /**
-     * 加载配置
-     *
-     * @return
-     */
-    List<DictData> load() throws IOException;
+  /**
+   * 加载配置
+   *
+   * @return
+   */
+  List<DictData> load() throws IOException;
 
-    /**
-     * 配置等级，支持多个loader之间覆盖
-     * <b>相同等级之间不确定</b>
-     *
-     * @return
-     */
-    int level();
+  /**
+   * 配置等级，支持多个loader之间覆盖 <b>相同等级之间不确定</b>
+   *
+   * @return
+   */
+  int level();
 
-    /**
-     * 定时刷新
-     * <b>-1:不支持定时刷新</b>
-     * <b>>0:定时刷新,单位ms</b>
-     *
-     * @return
-     */
-    int timerRefresh();
+  /**
+   * 定时刷新 <b>-1:不支持定时刷新</b> <b>>0:定时刷新,单位ms</b>
+   *
+   * @return
+   */
+  int timerRefresh();
 
 }

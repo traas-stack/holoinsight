@@ -13,13 +13,13 @@ import lombok.Data;
 @Data
 public class ComputeContext {
 
-    /**
-     * 时间点
-     */
-    private long timestamp;
+  /**
+   * 时间点
+   */
+  private long timestamp;
 
-    // 告警配置
-    private InspectConfig inspectConfig;
+  // 告警配置
+  private InspectConfig inspectConfig;
 
 
 }

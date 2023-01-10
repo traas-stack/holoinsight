@@ -14,12 +14,12 @@ import java.util.List;
  * @author wangsiyuan
  * @date 2022/4/12 9:40 下午
  */
-@Mapper(componentModel = "spring", uses = { ListJsonMapper.class })
+@Mapper(componentModel = "spring", uses = {ListJsonMapper.class})
 public interface AlarmHistoryConverter {
 
-    AlarmHistoryDTO doToDTO(AlarmHistory tenant);
+  AlarmHistoryDTO doToDTO(AlarmHistory tenant);
 
-    AlarmHistory dtoToDO(AlarmHistoryDTO tenantDTO);
+  AlarmHistory dtoToDO(AlarmHistoryDTO tenantDTO);
 
-    List<AlarmHistoryDTO> dosToDTOs(Iterable<AlarmHistory> tenants);
+  List<AlarmHistoryDTO> dosToDTOs(Iterable<AlarmHistory> tenants);
 }

@@ -2,7 +2,6 @@
  * Copyright 2022 Holoinsight Project Authors. Licensed under Apache-2.0.
  */
 
-
 package io.holoinsight.server.home.biz.plugin.core.log;
 
 import io.holoinsight.server.home.biz.plugin.core.LogPlugin;
@@ -19,6 +18,5 @@ import org.springframework.stereotype.Component;
 @PluginModel(name = "com.alipay.holoinsight.plugin.SpannerLogPlugin", version = "1")
 public class SpannerLogPlugin extends LogPlugin {
 
-    public SpannerLogPlugin() {
-    }
+  public SpannerLogPlugin() {}
 }

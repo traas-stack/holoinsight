@@ -10,13 +10,13 @@ import java.util.Map;
 @Data
 public class DashboardDTO {
 
-    private Boolean             overwrite;
-    private String              message;
-    private Long                folderId;
-    private Map<String, Object> dashboard;
-    private Map<String, Object> meta;
+  private Boolean overwrite;
+  private String message;
+  private Long folderId;
+  private Map<String, Object> dashboard;
+  private Map<String, Object> meta;
 
-    public String               tenant;
-    public String               type;
-    public String               modifier;
+  public String tenant;
+  public String type;
+  public String modifier;
 }

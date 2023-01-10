@@ -4,12 +4,11 @@
 package io.holoinsight.server.storage.common.model.specification.sw;
 
 public interface ISource {
-    long getTimeBucket();
+  long getTimeBucket();
 
-    void setTimeBucket(long timeBucket);
+  void setTimeBucket(long timeBucket);
 
-    String getEntityId();
+  String getEntityId();
 
-    default void prepare() {
-    }
+  default void prepare() {}
 }

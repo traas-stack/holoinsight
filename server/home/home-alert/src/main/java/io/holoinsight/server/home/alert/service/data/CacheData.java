@@ -18,8 +18,8 @@ import java.util.Map;
 @Service
 public class CacheData {
 
-    private Map<String, InspectConfig> uniqueIdMap = new HashMap<>();
+  private Map<String, InspectConfig> uniqueIdMap = new HashMap<>();
 
-    private Map<String, Object> configMap = new HashMap<>();
+  private Map<String, Object> configMap = new HashMap<>();
 
 }

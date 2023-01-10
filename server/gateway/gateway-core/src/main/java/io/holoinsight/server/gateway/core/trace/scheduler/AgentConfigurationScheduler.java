@@ -17,57 +17,63 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /**
- * <p>AgentConfigurationScheduler class.</p>
+ * <p>
+ * AgentConfigurationScheduler class.
+ * </p>
  *
  * @author sw1136562366
  */
 public class AgentConfigurationScheduler {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(AgentConfigurationScheduler.class);
-    @Autowired
-    private GetAgentConfigurationService getAgentConfigurations;
+  private static final Logger LOGGER = LoggerFactory.getLogger(AgentConfigurationScheduler.class);
+  @Autowired
+  private GetAgentConfigurationService getAgentConfigurations;
 
-    public Cache<String, AgentConfiguration> cache;
+  public Cache<String, AgentConfiguration> cache;
 
-    /**
-     * <p>init.</p>
-     */
-    @PostConstruct
-    public void init() {
-        cache = CacheBuilder.newBuilder().initialCapacity(10000)
-                .expireAfterWrite(50, TimeUnit.SECONDS)
-                .maximumSize(1_000_000L)
-                .build();
+  /**
+   * <p>
+   * init.
+   * </p>
+   */
+  @PostConstruct
+  public void init() {
+    cache = CacheBuilder.newBuilder().initialCapacity(10000).expireAfterWrite(50, TimeUnit.SECONDS)
+        .maximumSize(1_000_000L).build();
 
-        updateCache();
+    updateCache();
+  }
+
+
+
+  @Scheduled(cron = "*/30 * * * * *")
+  private void updateCache() {
+    try {
+      List<AgentConfiguration> allFromDB = getAgentConfigurations.getALLFromDB();
+      cache.cleanUp();
+      for (AgentConfiguration agentConfiguration : allFromDB) {
+        cache.put(agentConfiguration.getCacheKey(), agentConfiguration);
+      }
+    } catch (Exception e) {
+      LOGGER.error("Update agent configuration error: ", e.getMessage());
     }
+  }
 
+  /**
+   * <p>
+   * getValue.
+   * </p>
+   */
+  public AgentConfiguration getValue(String cacheKey) {
+    return cache.getIfPresent(cacheKey);
+  }
 
-
-    @Scheduled(cron = "*/30 * * * * *")
-    private void updateCache () {
-        try {
-            List<AgentConfiguration> allFromDB = getAgentConfigurations.getALLFromDB();
-            cache.cleanUp();
-            for (AgentConfiguration agentConfiguration : allFromDB) {
-                cache.put(agentConfiguration.getCacheKey(), agentConfiguration);
-            }
-        } catch (Exception e) {
-            LOGGER.error("Update agent configuration error: ", e.getMessage());
-        }
-    }
-
-    /**
-     * <p>getValue.</p>
-     */
-    public AgentConfiguration getValue(String cacheKey) {
-        return cache.getIfPresent(cacheKey);
-    }
-
-    /**
-     * <p>Getter for the field <code>cache</code>.</p>
-     */
-    public Cache<String, AgentConfiguration> getCache() {
-        return cache;
-    }
+  /**
+   * <p>
+   * Getter for the field <code>cache</code>.
+   * </p>
+   */
+  public Cache<String, AgentConfiguration> getCache() {
+    return cache;
+  }
 }

@@ -14,37 +14,37 @@ import lombok.Data;
 @Data
 public class InspectConfig {
 
-    private String traceId;
+  private String traceId;
 
-    private String uniqueId;
+  private String uniqueId;
 
-    private String tenant;
+  private String tenant;
 
-    private String ruleName;
+  private String ruleName;
 
-    private String ruleType;
+  private String ruleType;
 
-    private String alarmLevel; // 枚举
+  private String alarmLevel; // 枚举
 
-    private String ruleDescribe;
+  private String ruleDescribe;
 
-    private Rule rule;
+  private Rule rule;
 
-    private PqlRule pqlRule; // pql规则+数据
+  private PqlRule pqlRule; // pql规则+数据
 
-    private Boolean isPql;
+  private Boolean isPql;
 
-    private TimeFilter timeFilter; // 生效时间
+  private TimeFilter timeFilter; // 生效时间
 
-    private Boolean status; // 开启报警
+  private Boolean status; // 开启报警
 
-    private Boolean isMerge; // 开启合并
+  private Boolean isMerge; // 开启合并
 
-    private String mergeType; // 合并方式
+  private String mergeType; // 合并方式
 
-    private Boolean recover; // 恢复通知
+  private Boolean recover; // 恢复通知
 
-    private String noticeType; // 枚举，通知方式
+  private String noticeType; // 枚举，通知方式
 
-    private String envType; //环境类型(for 小程序云)
+  private String envType; // 环境类型(for 小程序云)
 }

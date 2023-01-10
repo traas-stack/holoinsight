@@ -2,7 +2,6 @@
  * Copyright 2022 Holoinsight Project Authors. Licensed under Apache-2.0.
  */
 
-
 package io.holoinsight.server.home.task.eventengine.event;
 
 import lombok.Data;
@@ -19,52 +18,52 @@ import java.util.List;
 @Data
 public class EventMetrics {
 
-    private Date              timestamp;
+  private Date timestamp;
 
-    private List<EventMetric> eventMetrics;
+  private List<EventMetric> eventMetrics;
 
 
-    public void add(EventMetric e) {
-        if (null == this.eventMetrics) {
-            this.eventMetrics = new ArrayList<EventMetric>();
-        }
-
-        this.eventMetrics.add(e);
+  public void add(EventMetric e) {
+    if (null == this.eventMetrics) {
+      this.eventMetrics = new ArrayList<EventMetric>();
     }
 
-    public void merge(EventMetrics eventMetrics) {
-        if (null == this.eventMetrics) {
-            this.eventMetrics = new ArrayList<EventMetric>();
-        }
+    this.eventMetrics.add(e);
+  }
 
-        for (EventMetric eventMetric : eventMetrics.getEventMetrics()) {
-
-            if (this.eventMetrics.contains(eventMetric)) {
-                EventMetric metric = this.eventMetrics.get(this.eventMetrics.indexOf(eventMetric));
-                metric.setValue(metric.getValue() + eventMetric.getValue());
-            } else {
-                this.eventMetrics.add(eventMetric);
-            }
-        }
+  public void merge(EventMetrics eventMetrics) {
+    if (null == this.eventMetrics) {
+      this.eventMetrics = new ArrayList<EventMetric>();
     }
 
-    public int get(String metricName) {
-        if (null != this.eventMetrics) {
-            for (EventMetric eventMetric : this.eventMetrics) {
-                if (eventMetric.getName().equals(metricName)) {
-                    return eventMetric.getValue();
-                }
-            }
-        }
+    for (EventMetric eventMetric : eventMetrics.getEventMetrics()) {
 
-        return 0;
+      if (this.eventMetrics.contains(eventMetric)) {
+        EventMetric metric = this.eventMetrics.get(this.eventMetrics.indexOf(eventMetric));
+        metric.setValue(metric.getValue() + eventMetric.getValue());
+      } else {
+        this.eventMetrics.add(eventMetric);
+      }
+    }
+  }
+
+  public int get(String metricName) {
+    if (null != this.eventMetrics) {
+      for (EventMetric eventMetric : this.eventMetrics) {
+        if (eventMetric.getName().equals(metricName)) {
+          return eventMetric.getValue();
+        }
+      }
     }
 
-    public List<EventMetric> getEventMetrics() {
-        if (null == this.eventMetrics) {
-            this.eventMetrics = new ArrayList<EventMetric>();
-        }
+    return 0;
+  }
 
-        return this.eventMetrics;
+  public List<EventMetric> getEventMetrics() {
+    if (null == this.eventMetrics) {
+      this.eventMetrics = new ArrayList<EventMetric>();
     }
+
+    return this.eventMetrics;
+  }
 }

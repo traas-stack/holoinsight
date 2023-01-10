@@ -18,13 +18,12 @@ import java.util.List;
  * @author jsy1001de
  * @version 1.0: GaeaCollectConfigMapper.java, v 0.1 2022年03月31日 8:50 下午 jinsong.yjs Exp $
  */
-@Mapper(componentModel = "spring", uses = { BooleanIntegerMapper.class,
-                                            GaeaCollectConfigJsonMapper.class, MapJsonMapper.class,
-                                            GaeaCollectRangeMapper.class })
+@Mapper(componentModel = "spring", uses = {BooleanIntegerMapper.class,
+    GaeaCollectConfigJsonMapper.class, MapJsonMapper.class, GaeaCollectRangeMapper.class})
 public interface GaeaCollectConfigMapper {
-    GaeaCollectConfigDTO doToDTO(GaeaCollectConfig gaeaCollectConfig);
+  GaeaCollectConfigDTO doToDTO(GaeaCollectConfig gaeaCollectConfig);
 
-    GaeaCollectConfig dtoToDO(GaeaCollectConfigDTO gaeaCollectConfigDTO);
+  GaeaCollectConfig dtoToDO(GaeaCollectConfigDTO gaeaCollectConfigDTO);
 
-    List<GaeaCollectConfigDTO> dosToDTOs(Iterable<GaeaCollectConfig> gaeaCollectConfigs);
+  List<GaeaCollectConfigDTO> dosToDTOs(Iterable<GaeaCollectConfig> gaeaCollectConfigs);
 }

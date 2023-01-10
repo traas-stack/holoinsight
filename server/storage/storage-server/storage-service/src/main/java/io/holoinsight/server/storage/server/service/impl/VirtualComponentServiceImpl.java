@@ -21,43 +21,51 @@ import java.util.List;
 @ConditionalOnFeature("trace")
 public class VirtualComponentServiceImpl implements VirtualComponentService {
 
-    @Autowired
-    private VirtualComponentEsService virtualComponentEsService;
+  @Autowired
+  private VirtualComponentEsService virtualComponentEsService;
 
-    @Override
-    public List<VirtualComponent> getDbList(String tenant, String service, long startTime, long endTime) throws IOException {
-        List<VirtualComponent> dbList = virtualComponentEsService.getComponentList(tenant, service, startTime, endTime, RequestType.DATABASE, Const.SOURCE);
-        dbList.forEach(db -> {
-            db.setType(db.getComponent());
-        });
+  @Override
+  public List<VirtualComponent> getDbList(String tenant, String service, long startTime,
+      long endTime) throws IOException {
+    List<VirtualComponent> dbList = virtualComponentEsService.getComponentList(tenant, service,
+        startTime, endTime, RequestType.DATABASE, Const.SOURCE);
+    dbList.forEach(db -> {
+      db.setType(db.getComponent());
+    });
 
-        return dbList;
-    }
+    return dbList;
+  }
 
-    @Override
-    public List<VirtualComponent> getCacheList(String tenant, String service, long startTime, long endTime) throws IOException {
-        List<VirtualComponent> cacheList = virtualComponentEsService.getComponentList(tenant, service, startTime, endTime, RequestType.CACHE, Const.SOURCE);
-        cacheList.forEach(cache -> {
-            cache.setType(cache.getComponent());
-        });
+  @Override
+  public List<VirtualComponent> getCacheList(String tenant, String service, long startTime,
+      long endTime) throws IOException {
+    List<VirtualComponent> cacheList = virtualComponentEsService.getComponentList(tenant, service,
+        startTime, endTime, RequestType.CACHE, Const.SOURCE);
+    cacheList.forEach(cache -> {
+      cache.setType(cache.getComponent());
+    });
 
-        return cacheList;
-    }
+    return cacheList;
+  }
 
-    @Override
-    public List<VirtualComponent> getMQList(String tenant, String service, long startTime, long endTime) throws IOException {
-        List<VirtualComponent> mqList = new ArrayList<>();
-        mqList.addAll(virtualComponentEsService.getComponentList(tenant, service, startTime, endTime, RequestType.MQ, Const.SOURCE));
-        mqList.addAll(virtualComponentEsService.getComponentList(tenant, service, startTime, endTime, RequestType.MQ, Const.DEST));
-        mqList.forEach(mq -> {
-            mq.setType(mq.getComponent());
-        });
+  @Override
+  public List<VirtualComponent> getMQList(String tenant, String service, long startTime,
+      long endTime) throws IOException {
+    List<VirtualComponent> mqList = new ArrayList<>();
+    mqList.addAll(virtualComponentEsService.getComponentList(tenant, service, startTime, endTime,
+        RequestType.MQ, Const.SOURCE));
+    mqList.addAll(virtualComponentEsService.getComponentList(tenant, service, startTime, endTime,
+        RequestType.MQ, Const.DEST));
+    mqList.forEach(mq -> {
+      mq.setType(mq.getComponent());
+    });
 
-        return mqList;
-    }
+    return mqList;
+  }
 
-    @Override
-    public List<String> getTraceIds(String tenant, String service, String address, long startTime, long endTime) throws IOException {
-        return virtualComponentEsService.getTraceIds(tenant, service, address, startTime, endTime);
-    }
+  @Override
+  public List<String> getTraceIds(String tenant, String service, String address, long startTime,
+      long endTime) throws IOException {
+    return virtualComponentEsService.getTraceIds(tenant, service, address, startTime, endTime);
+  }
 }

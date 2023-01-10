@@ -14,22 +14,23 @@ import java.util.Map;
 
 public interface IntegrationPluginService extends IService<IntegrationPlugin> {
 
-    IntegrationPluginDTO queryById(Long id, String tenant);
+  IntegrationPluginDTO queryById(Long id, String tenant);
 
-    List<IntegrationPluginDTO> queryByTenant(String tenant);
+  List<IntegrationPluginDTO> queryByTenant(String tenant);
 
-    List<IntegrationPluginDTO> findByMap(Map<String, Object> columnMap);
+  List<IntegrationPluginDTO> findByMap(Map<String, Object> columnMap);
 
-    IntegrationPluginDTO create(IntegrationPluginDTO integrationPluginDTO);
+  IntegrationPluginDTO create(IntegrationPluginDTO integrationPluginDTO);
 
-    void deleteById(Long id);
+  void deleteById(Long id);
 
-    IntegrationPluginDTO updateByRequest(IntegrationPluginDTO integrationPluginDTO);
+  IntegrationPluginDTO updateByRequest(IntegrationPluginDTO integrationPluginDTO);
 
-    MonitorPageResult<IntegrationPluginDTO> getListByPage(MonitorPageRequest<IntegrationPluginDTO> integrationPluginDTORequest);
+  MonitorPageResult<IntegrationPluginDTO> getListByPage(
+      MonitorPageRequest<IntegrationPluginDTO> integrationPluginDTORequest);
 
-    List<IntegrationPluginDTO> getListByKeyword(String keyword, String tenant);
+  List<IntegrationPluginDTO> getListByKeyword(String keyword, String tenant);
 
-    List<IntegrationPluginDTO> getListByNameLike(String name, String tenant);
+  List<IntegrationPluginDTO> getListByNameLike(String name, String tenant);
 
 }

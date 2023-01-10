@@ -16,21 +16,21 @@ import java.util.Map;
 @Data
 public class MonitorParams {
 
-    private Map<String, String> params = new HashMap<>();
+  private Map<String, String> params = new HashMap<>();
 
-    public void put(String k, String v) {
-        params.put(k, v);
-    }
+  public void put(String k, String v) {
+    params.put(k, v);
+  }
 
-    public void remove(String k) {
-        params.remove(k);
-    }
+  public void remove(String k) {
+    params.remove(k);
+  }
 
-    public String get(String k) {
-        return params.get(k);
-    }
+  public String get(String k) {
+    return params.get(k);
+  }
 
-    public Boolean contains(String k) {
-        return params.containsKey(k);
-    }
+  public Boolean contains(String k) {
+    return params.containsKey(k);
+  }
 }

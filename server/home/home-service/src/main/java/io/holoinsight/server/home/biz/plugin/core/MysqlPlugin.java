@@ -2,7 +2,6 @@
  * Copyright 2022 Holoinsight Project Authors. Licensed under Apache-2.0.
  */
 
-
 package io.holoinsight.server.home.biz.plugin.core;
 
 import io.holoinsight.server.home.biz.plugin.model.PluginModel;
@@ -24,32 +23,32 @@ import java.util.List;
 @PluginModel(name = "com.alipay.holoinsight.plugin.MysqlPlugin", version = "1")
 public class MysqlPlugin extends AbstractCentralIntegrationPlugin<MysqlPlugin> {
 
-    public MysqlTask mysqlTask;
+  public MysqlTask mysqlTask;
 
-    @Override
-    MysqlTask buildTask() {
-        return mysqlTask;
+  @Override
+  MysqlTask buildTask() {
+    return mysqlTask;
+  }
+
+  @Override
+  public List<MysqlPlugin> genPluginList(IntegrationPluginDTO integrationPluginDTO) {
+
+    List<MysqlPlugin> mysqlPlugins = new ArrayList<>();
+    MysqlPlugin mysqlPlugin = new MysqlPlugin();
+    {
+      MysqlTask mysqlTask =
+          J.fromJson(integrationPluginDTO.json, new TypeToken<MysqlTask>() {}.getType());
+
+      mysqlTask.setExecuteRule(getExecuteRule());
+
+      mysqlPlugin.mysqlTask = mysqlTask;
+      mysqlPlugin.gaeaTableName = integrationPluginDTO.name;
+      mysqlPlugin.collectPlugin = MysqlTask.class.getName();
     }
 
-    @Override
-    public List<MysqlPlugin> genPluginList(IntegrationPluginDTO integrationPluginDTO) {
+    mysqlPlugins.add(mysqlPlugin);
 
-        List<MysqlPlugin> mysqlPlugins = new ArrayList<>();
-        MysqlPlugin mysqlPlugin = new MysqlPlugin();
-        {
-            MysqlTask mysqlTask = J.fromJson(integrationPluginDTO.json, new TypeToken<MysqlTask>() {
-            }.getType());
+    return mysqlPlugins;
 
-            mysqlTask.setExecuteRule(getExecuteRule());
-
-            mysqlPlugin.mysqlTask = mysqlTask;
-            mysqlPlugin.gaeaTableName = integrationPluginDTO.name;
-            mysqlPlugin.collectPlugin = MysqlTask.class.getName();
-        }
-
-        mysqlPlugins.add(mysqlPlugin);
-
-        return mysqlPlugins;
-
-    }
+  }
 }

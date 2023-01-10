@@ -2,7 +2,6 @@
  * Copyright 2022 Holoinsight Project Authors. Licensed under Apache-2.0.
  */
 
-
 package io.holoinsight.server.home.web.config;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -25,18 +24,19 @@ import java.io.IOException;
 @Component
 @Order(2)
 public class UrlRewriteFilterConfig extends UrlRewriteFilter {
-    private static final String URL_REWRITE = "classpath:/urlrewrite.xml";
+  private static final String URL_REWRITE = "classpath:/urlrewrite.xml";
 
-    @Value(URL_REWRITE)
-    private Resource resource;
+  @Value(URL_REWRITE)
+  private Resource resource;
 
-    protected void loadUrlRewriter(FilterConfig filterConfig) throws ServletException {
-        try {
-            Conf conf = new Conf(filterConfig.getServletContext(), resource.getInputStream(), resource.getFilename(),
-                    "@@traceability@@");
-            checkConf(conf);
-        } catch (IOException ex) {
-            throw new ServletException("Unable to load URL rewrite configuration file from " + URL_REWRITE, ex);
-        }
+  protected void loadUrlRewriter(FilterConfig filterConfig) throws ServletException {
+    try {
+      Conf conf = new Conf(filterConfig.getServletContext(), resource.getInputStream(),
+          resource.getFilename(), "@@traceability@@");
+      checkConf(conf);
+    } catch (IOException ex) {
+      throw new ServletException(
+          "Unable to load URL rewrite configuration file from " + URL_REWRITE, ex);
     }
+  }
 }

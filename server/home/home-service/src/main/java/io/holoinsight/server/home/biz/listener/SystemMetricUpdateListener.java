@@ -2,7 +2,6 @@
  * Copyright 2022 Holoinsight Project Authors. Licensed under Apache-2.0.
  */
 
-
 package io.holoinsight.server.home.biz.listener;
 
 import io.holoinsight.server.home.biz.service.GaeaCollectConfigService;
@@ -45,175 +44,176 @@ import java.util.Map;
 @Component
 public class SystemMetricUpdateListener {
 
-    @Autowired
-    private GaeaCollectConfigService gaeaCollectConfigService;
+  @Autowired
+  private GaeaCollectConfigService gaeaCollectConfigService;
 
-    @PostConstruct
-    void register() {
-        EventBusHolder.register(this);
+  @PostConstruct
+  void register() {
+    EventBusHolder.register(this);
+  }
+
+  @Subscribe
+  @AllowConcurrentEvents
+  public void onEvent(MetaTableDTO metaTableDTO) {
+    // 1. 转换模型
+    // 2. 落库
+    // 3. 通知registry
+
+    List<String> metricList = metaTableDTO.config.metricList;
+    if (CollectionUtils.isEmpty(metricList))
+      return;
+    Map<String, SqlTask> sqlTasks = new HashMap<>();
+
+    metricList.forEach(metric -> {
+      sqlTasks.put("system_" + metric + "_" + metaTableDTO.tenant,
+          buildSqlTask(metric, metaTableDTO.config.rateSec));
+    });
+
+    if (CollectionUtils.isEmpty(sqlTasks))
+      return;
+
+    // 更新
+    List<Long> upsert = upsert(sqlTasks, metaTableDTO);
+
+    // 通知registry
+    notify(upsert);
+  }
+
+  private List<Long> upsert(Map<String, SqlTask> sqlTasks, MetaTableDTO metaTableDTO) {
+
+    Map<String, Object> executorSelector = convertExecutorSelector();
+
+    List<Long> upsertList = new ArrayList<>();
+    for (Map.Entry<String, SqlTask> entry : sqlTasks.entrySet()) {
+      GaeaCollectConfigDTO gaeaCollectConfigDTO = new GaeaCollectConfigDTO();
+      gaeaCollectConfigDTO.tenant = metaTableDTO.tenant;
+      gaeaCollectConfigDTO.deleted = false;
+      gaeaCollectConfigDTO.json = entry.getValue();
+      gaeaCollectConfigDTO.tableName = entry.getKey();
+      gaeaCollectConfigDTO.collectRange = convertCollectRange(metaTableDTO.name);
+      gaeaCollectConfigDTO.executorSelector = executorSelector;
+      gaeaCollectConfigDTO.version = 1L;
+
+      // 下线配置直接置为 deleted=1
+      if (metaTableDTO.getStatus() == TableStatus.OFFLINE) {
+        Long aLong = gaeaCollectConfigService.updateDeleted(gaeaCollectConfigDTO.tableName);
+        if (null != aLong)
+          upsertList.add(aLong);
+        continue;
+      }
+      GaeaCollectConfigDTO upsert = gaeaCollectConfigService.upsert(gaeaCollectConfigDTO);
+      if (null != upsert) {
+        upsertList.add(upsert.id);
+      }
     }
 
-    @Subscribe
-    @AllowConcurrentEvents
-    public void onEvent(MetaTableDTO metaTableDTO) {
-        // 1. 转换模型
-        // 2. 落库
-        // 3. 通知registry
+    return upsertList;
+  }
 
-        List<String> metricList = metaTableDTO.config.metricList;
-        if (CollectionUtils.isEmpty(metricList))
-            return;
-        Map<String, SqlTask> sqlTasks = new HashMap<>();
+  /**
+   * type = cpu, mem, disk, load, traffic, processperf
+   * 
+   * @param type
+   * @param rateSec 周期
+   * @return
+   */
+  private SqlTask buildSqlTask(String type, Integer rateSec) {
+    Map<String, String> metaStrs = new HashMap<>();
+    metaStrs.put("ip", "ip");
+    metaStrs.put("hostname", "hostname");
 
-        metricList.forEach(metric -> {
-            sqlTasks.put("system_" + metric + "_" + metaTableDTO.tenant,
-                buildSqlTask(metric, metaTableDTO.config.rateSec));
-        });
+    Select select = new Select();
+    From from = buildFrom(type);
+    Where where = new Where();
+    GroupBy groupBy = buildGroupBy(metaStrs);
+    Window window = new Window();
+    Output output = buildOutput(type);
+    ExecuteRule executeRule = buildExecuteRule(rateSec);
 
-        if (CollectionUtils.isEmpty(sqlTasks))
-            return;
-
-        // 更新
-        List<Long> upsert = upsert(sqlTasks, metaTableDTO);
-
-        // 通知registry
-        notify(upsert);
+    SqlTask sqlTask = new SqlTask();
+    {
+      sqlTask.setSelect(select);
+      sqlTask.setFrom(from);
+      sqlTask.setWhere(where);
+      sqlTask.setGroupBy(groupBy);
+      sqlTask.setWindow(window);
+      sqlTask.setOutput(output);
+      sqlTask.setExecuteRule(executeRule);
     }
 
-    private List<Long> upsert(Map<String, SqlTask> sqlTasks, MetaTableDTO metaTableDTO) {
+    return sqlTask;
+  }
 
-        Map<String, Object> executorSelector = convertExecutorSelector();
+  private From buildFrom(String type) {
+    From from = new From();
+    from.setType(type);
+    return from;
+  }
 
-        List<Long> upsertList = new ArrayList<>();
-        for (Map.Entry<String, SqlTask> entry : sqlTasks.entrySet()) {
-            GaeaCollectConfigDTO gaeaCollectConfigDTO = new GaeaCollectConfigDTO();
-            gaeaCollectConfigDTO.tenant = metaTableDTO.tenant;
-            gaeaCollectConfigDTO.deleted = false;
-            gaeaCollectConfigDTO.json = entry.getValue();
-            gaeaCollectConfigDTO.tableName = entry.getKey();
-            gaeaCollectConfigDTO.collectRange = convertCollectRange(metaTableDTO.name);
-            gaeaCollectConfigDTO.executorSelector = executorSelector;
-            gaeaCollectConfigDTO.version = 1L;
+  private GroupBy buildGroupBy(Map<String, String> metaStrs) {
 
-            // 下线配置直接置为 deleted=1
-            if (metaTableDTO.getStatus() == TableStatus.OFFLINE) {
-                Long aLong = gaeaCollectConfigService.updateDeleted(gaeaCollectConfigDTO.tableName);
-                if (null != aLong)
-                    upsertList.add(aLong);
-                continue;
-            }
-            GaeaCollectConfigDTO upsert = gaeaCollectConfigService.upsert(gaeaCollectConfigDTO);
-            if (null != upsert) {
-                upsertList.add(upsert.id);
-            }
-        }
+    GroupBy groupBy = new GroupBy();
+    groupBy.setGroups(new ArrayList<>());
+    metaStrs.forEach((k, v) -> {
 
-        return upsertList;
+      Elect elect = new Elect();
+      elect.setType("refMeta");
+      elect.setRefMeta(new RefMeta());
+      elect.getRefMeta().setName(k);
+
+      GroupBy.Group group = new GroupBy.Group();
+      {
+        group.setName(v);
+        group.setElect(elect);
+      }
+      groupBy.getGroups().add(group);
+    });
+
+    return groupBy;
+  }
+
+  private Output buildOutput(String tableName) {
+    Output output = new Output();
+    if (!StringUtils.isEmpty(tableName)) {
+      output.setType("gateway");
+      output.setGateway(new Gateway());
+      output.getGateway().setMetricName("system_%s");
     }
+    return output;
+  }
 
-    /**
-     * type = cpu, mem, disk, load, traffic, processperf
-     * @param type
-     * @param rateSec 周期
-     * @return
-     */
-    private SqlTask buildSqlTask(String type, Integer rateSec) {
-        Map<String, String> metaStrs = new HashMap<>();
-        metaStrs.put("ip", "ip");
-        metaStrs.put("hostname", "hostname");
+  private ExecuteRule buildExecuteRule(Integer rateSec) {
+    ExecuteRule executeRule = new ExecuteRule();
+    executeRule.setType("fixedRate");
+    executeRule.setFixedRate(rateSec * 1000);
+    return executeRule;
+  }
 
-        Select select = new Select();
-        From from = buildFrom(type);
-        Where where = new Where();
-        GroupBy groupBy = buildGroupBy(metaStrs);
-        Window window = new Window();
-        Output output = buildOutput(type);
-        ExecuteRule executeRule = buildExecuteRule(rateSec);
+  private GaeaCollectRange convertCollectRange(String table) {
+    GaeaCollectRange gaeaCollectRange = new GaeaCollectRange();
+    gaeaCollectRange.setType("cloudmonitor");
+    CloudMonitorRange cloudMonitorRange = new CloudMonitorRange();
+    cloudMonitorRange.setTable(table);
 
-        SqlTask sqlTask = new SqlTask();
-        {
-            sqlTask.setSelect(select);
-            sqlTask.setFrom(from);
-            sqlTask.setWhere(where);
-            sqlTask.setGroupBy(groupBy);
-            sqlTask.setWindow(window);
-            sqlTask.setOutput(output);
-            sqlTask.setExecuteRule(executeRule);
-        }
+    Map<String, List<String>> map = new HashMap<>();
+    map.put("_status", Collections.singletonList("ONLINE"));
+    map.put("_type", Collections.singletonList("VM"));
+    cloudMonitorRange.setCondition(Collections.singletonList(map));
+    gaeaCollectRange.setCloudmonitor(cloudMonitorRange);
+    return gaeaCollectRange;
+  }
 
-        return sqlTask;
-    }
+  private Map<String, Object> convertExecutorSelector() {
 
-    private From buildFrom(String type) {
-        From from = new From();
-        from.setType(type);
-        return from;
-    }
+    Map<String, Object> executorSelector = new HashMap<>();
+    executorSelector.put("type", "sidecar");
+    executorSelector.put("sidecar", new HashMap<>());
 
-    private GroupBy buildGroupBy(Map<String, String> metaStrs) {
+    return executorSelector;
+  }
 
-        GroupBy groupBy = new GroupBy();
-        groupBy.setGroups(new ArrayList<>());
-        metaStrs.forEach((k, v) -> {
+  private void notify(List<Long> upsertList) {
 
-            Elect elect = new Elect();
-            elect.setType("refMeta");
-            elect.setRefMeta(new RefMeta());
-            elect.getRefMeta().setName(k);
-
-            GroupBy.Group group = new GroupBy.Group();
-            {
-                group.setName(v);
-                group.setElect(elect);
-            }
-            groupBy.getGroups().add(group);
-        });
-
-        return groupBy;
-    }
-
-    private Output buildOutput(String tableName) {
-        Output output = new Output();
-        if (!StringUtils.isEmpty(tableName)) {
-            output.setType("gateway");
-            output.setGateway(new Gateway());
-            output.getGateway().setMetricName("system_%s");
-        }
-        return output;
-    }
-
-    private ExecuteRule buildExecuteRule(Integer rateSec) {
-        ExecuteRule executeRule = new ExecuteRule();
-        executeRule.setType("fixedRate");
-        executeRule.setFixedRate(rateSec * 1000);
-        return executeRule;
-    }
-
-    private GaeaCollectRange convertCollectRange(String table) {
-        GaeaCollectRange gaeaCollectRange = new GaeaCollectRange();
-        gaeaCollectRange.setType("cloudmonitor");
-        CloudMonitorRange cloudMonitorRange = new CloudMonitorRange();
-        cloudMonitorRange.setTable(table);
-
-        Map<String, List<String>> map = new HashMap<>();
-        map.put("_status", Collections.singletonList("ONLINE"));
-        map.put("_type", Collections.singletonList("VM"));
-        cloudMonitorRange.setCondition(Collections.singletonList(map));
-        gaeaCollectRange.setCloudmonitor(cloudMonitorRange);
-        return gaeaCollectRange;
-    }
-
-    private Map<String, Object> convertExecutorSelector() {
-
-        Map<String, Object> executorSelector = new HashMap<>();
-        executorSelector.put("type", "sidecar");
-        executorSelector.put("sidecar", new HashMap<>());
-
-        return executorSelector;
-    }
-
-    private void notify(List<Long> upsertList) {
-
-        // grpc 通知id更新
-    }
+    // grpc 通知id更新
+  }
 }

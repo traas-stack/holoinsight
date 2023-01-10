@@ -20,31 +20,31 @@ import java.util.Map;
 @Data
 public class CloudMonitorRange {
 
-    public String                          table;
-    public Boolean                         all;
-    public List<Map<String, List<String>>> condition;
+  public String table;
+  public Boolean all;
+  public List<Map<String, List<String>>> condition;
 
-    public boolean isEqual(CloudMonitorRange cloudmonitor) {
-        if(cloudmonitor == null){
-            return false;
-        }
-        if(!StringUtils.equals(this.table, cloudmonitor.table)){
-            return false;
-        }
-        sortConditionValues();
-        cloudmonitor.sortConditionValues();
-        return CollectionUtils.containsAny(condition, cloudmonitor.condition)
-                && CollectionUtils.containsAny(cloudmonitor.condition, condition);
+  public boolean isEqual(CloudMonitorRange cloudmonitor) {
+    if (cloudmonitor == null) {
+      return false;
     }
+    if (!StringUtils.equals(this.table, cloudmonitor.table)) {
+      return false;
+    }
+    sortConditionValues();
+    cloudmonitor.sortConditionValues();
+    return CollectionUtils.containsAny(condition, cloudmonitor.condition)
+        && CollectionUtils.containsAny(cloudmonitor.condition, condition);
+  }
 
-    private void sortConditionValues() {
-        if(condition == null){
-            return;
-        }
-        for (Map<String, List<String>> entry : condition){
-            for (List<String> list : entry.values()){
-                Collections.sort(list);
-            }
-        }
+  private void sortConditionValues() {
+    if (condition == null) {
+      return;
     }
+    for (Map<String, List<String>> entry : condition) {
+      for (List<String> list : entry.values()) {
+        Collections.sort(list);
+      }
+    }
+  }
 }

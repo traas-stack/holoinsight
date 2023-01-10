@@ -19,30 +19,30 @@ import java.util.Map;
  */
 @Service
 public class Current implements FunctionLogic {
-    @Override
-    public FunctionEnum getFunc() {
-        return FunctionEnum.Current;
-    }
+  @Override
+  public FunctionEnum getFunc() {
+    return FunctionEnum.Current;
+  }
 
-    @Override
-    public TriggerResult invoke(DataResult dataResult, FunctionConfigParam functionConfigParam) {
-        TriggerResult result = new TriggerResult();
-        result.setHit(false);
-        Map<Long, Double> points = dataResult.getPoints();
-        result.setCurrentValue(points.get(functionConfigParam.getPeriod()));
-        long duration = functionConfigParam.getDuration();
-        for (long i = 0; i < duration; i++) {
-            // 循环条件(增加枚举)
-            long time = functionConfigParam.getPeriod() - i * 60000L;
-            Double value = points.get(time);
-            for (CompareParam cmp : functionConfigParam.getCmp()) {
-                if (!TriggerLogicNew.compareValue(cmp, value)) {
-                    return result;
-                }
-            }
-            result.getValues().put(time, value);
+  @Override
+  public TriggerResult invoke(DataResult dataResult, FunctionConfigParam functionConfigParam) {
+    TriggerResult result = new TriggerResult();
+    result.setHit(false);
+    Map<Long, Double> points = dataResult.getPoints();
+    result.setCurrentValue(points.get(functionConfigParam.getPeriod()));
+    long duration = functionConfigParam.getDuration();
+    for (long i = 0; i < duration; i++) {
+      // 循环条件(增加枚举)
+      long time = functionConfigParam.getPeriod() - i * 60000L;
+      Double value = points.get(time);
+      for (CompareParam cmp : functionConfigParam.getCmp()) {
+        if (!TriggerLogicNew.compareValue(cmp, value)) {
+          return result;
         }
-        result.setHit(true);
-        return result;
+      }
+      result.getValues().put(time, value);
     }
+    result.setHit(true);
+    return result;
+  }
 }

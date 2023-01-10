@@ -6,10 +6,11 @@ package io.holoinsight.server.registry.core.cluster;
 import io.holoinsight.server.common.grpc.GenericData;
 
 /**
- * <p>created at 2022/3/12
+ * <p>
+ * created at 2022/3/12
  *
  * @author zzhb101
  */
 public interface Cluster {
-    void broadcast(GenericData msg);
+  void broadcast(GenericData msg);
 }

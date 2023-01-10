@@ -20,29 +20,30 @@ import static io.holoinsight.server.storage.engine.elasticsearch.model.NetworkAd
 @ModelAnnotation(name = INDEX_NAME)
 public class NetworkAddressMappingEsDO extends RecordEsDO {
 
-    public static final String INDEX_NAME            = "holoinsight-network_address_mapping";
-    public static final String ADDRESS               = "address";
-    public static final String SERVICE_NAME          = "service_name";
-    public static final String SERVICE_INSTANCE_NAME = "service_instance_name";
+  public static final String INDEX_NAME = "holoinsight-network_address_mapping";
+  public static final String ADDRESS = "address";
+  public static final String SERVICE_NAME = "service_name";
+  public static final String SERVICE_INSTANCE_NAME = "service_instance_name";
 
-    @Id
-    private String id;
-    @Column(name = ADDRESS)
-    private String address;
-    @Column(name = SERVICE_NAME)
-    private String serviceName;
-    @Column(name = SERVICE_INSTANCE_NAME)
-    private String serviceInstanceName;
+  @Id
+  private String id;
+  @Column(name = ADDRESS)
+  private String address;
+  @Column(name = SERVICE_NAME)
+  private String serviceName;
+  @Column(name = SERVICE_INSTANCE_NAME)
+  private String serviceInstanceName;
 
-    @Override
-    public String indexName() {
-        return INDEX_NAME;
-    }
+  @Override
+  public String indexName() {
+    return INDEX_NAME;
+  }
 
-    public static NetworkAddressMappingEsDO fromNetworkAddressMapping(NetworkAddressMapping networkAddressMapping) {
-        NetworkAddressMappingEsDO networkAddressMappingEsDO = new NetworkAddressMappingEsDO();
-        BeanUtils.copyProperties(networkAddressMapping, networkAddressMappingEsDO);
-        return networkAddressMappingEsDO;
-    }
+  public static NetworkAddressMappingEsDO fromNetworkAddressMapping(
+      NetworkAddressMapping networkAddressMapping) {
+    NetworkAddressMappingEsDO networkAddressMappingEsDO = new NetworkAddressMappingEsDO();
+    BeanUtils.copyProperties(networkAddressMapping, networkAddressMappingEsDO);
+    return networkAddressMappingEsDO;
+  }
 
 }

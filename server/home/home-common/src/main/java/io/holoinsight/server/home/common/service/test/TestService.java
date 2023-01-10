@@ -17,10 +17,10 @@ import retrofit2.http.Path;
  */
 public interface TestService {
 
-    //定义一条接口请求
-    @POST("1.0.0/table")
-    Call<JsonResult<TableInfo>> createTable(@Body TableInfo table);
+  // 定义一条接口请求
+  @POST("1.0.0/table")
+  Call<JsonResult<TableInfo>> createTable(@Body TableInfo table);
 
-    @GET("/api/meta/tsd/query/{name}")
-    Call<JsonResult<TableInfo>> queryTable(@Path("name") String name);
+  @GET("/api/meta/tsd/query/{name}")
+  Call<JsonResult<TableInfo>> queryTable(@Path("name") String name);
 }

@@ -15,46 +15,46 @@ import java.io.Serializable;
 @Data
 public class Rule implements Serializable {
 
-    private static final long serialVersionUID = -6789267340963441905L;
+  private static final long serialVersionUID = -6789267340963441905L;
 
-    /**
-     * 分隔符切分对应的位置
-     */
-    public Integer            pos;
+  /**
+   * 分隔符切分对应的位置
+   */
+  public Integer pos;
 
-    /**
-     * 是否可空
-     */
-    public Boolean            nullable;
+  /**
+   * 是否可空
+   */
+  public Boolean nullable;
 
-    /**
-     * 正则表达式对应字段
-     */
-    public String             regexpName;
+  /**
+   * 正则表达式对应字段
+   */
+  public String regexpName;
 
-    /**------------------左起右至 字段---------------------*/
-    /**
-     * 左起第几个
-     */
-    public int                leftIndex;
+  /** ------------------左起右至 字段--------------------- */
+  /**
+   * 左起第几个
+   */
+  public int leftIndex;
 
-    /**
-     * 左起字符串
-     */
-    public String             left;
+  /**
+   * 左起字符串
+   */
+  public String left;
 
-    /**
-     * 右至字符串
-     */
-    public String             right;
+  /**
+   * 右至字符串
+   */
+  public String right;
 
-    /**
-     * 单词翻译转换
-     */
-    public Translate          translate;
+  /**
+   * 单词翻译转换
+   */
+  public Translate translate;
 
-    /**
-     * 默认值
-     */
-    public String             defaultValue;
+  /**
+   * 默认值
+   */
+  public String defaultValue;
 }

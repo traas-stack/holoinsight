@@ -6,13 +6,14 @@ package io.holoinsight.server.registry.core.cluster;
 import io.grpc.stub.AbstractStub;
 
 /**
- * <p>created at 2022/4/17
+ * <p>
+ * created at 2022/4/17
  *
  * @author zzhb101
  */
 public class DefaultDynamicProvider implements DynamicProvider {
-    @Override
-    public <S extends AbstractStub<S>> S customize(S stub) {
-        return stub.withCompression("gzip");
-    }
+  @Override
+  public <S extends AbstractStub<S>> S customize(S stub) {
+    return stub.withCompression("gzip");
+  }
 }

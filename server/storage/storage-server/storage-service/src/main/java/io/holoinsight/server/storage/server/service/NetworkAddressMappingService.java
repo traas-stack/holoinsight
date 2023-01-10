@@ -11,7 +11,7 @@ import java.util.List;
 
 public interface NetworkAddressMappingService {
 
-    void insert(final List<NetworkAddressMappingEsDO> addressMappingList) throws IOException;
+  void insert(final List<NetworkAddressMappingEsDO> addressMappingList) throws IOException;
 
-    List<NetworkAddressMappingEsDO> loadByTime(long timeBucketInMinute) throws IOException;
+  List<NetworkAddressMappingEsDO> loadByTime(long timeBucketInMinute) throws IOException;
 }

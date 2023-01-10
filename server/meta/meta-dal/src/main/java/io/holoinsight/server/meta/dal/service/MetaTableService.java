@@ -23,37 +23,38 @@ import java.util.concurrent.TimeUnit;
 @Service
 public class MetaTableService {
 
-    private static final Map<String, List<String>> ukMaps = new HashMap<>();
+  private static final Map<String, List<String>> ukMaps = new HashMap<>();
 
-    static {
-        ukMaps.put("container", Arrays.asList("name", "namespace"));
-        ukMaps.put("pod", Arrays.asList("name", "namespace"));
-        ukMaps.put("node", Collections.singletonList("name"));
-        ukMaps.put("vm", Collections.singletonList("ip"));
-        ukMaps.put("node_tenant", Collections.singletonList("_uk"));
+  static {
+    ukMaps.put("container", Arrays.asList("name", "namespace"));
+    ukMaps.put("pod", Arrays.asList("name", "namespace"));
+    ukMaps.put("node", Collections.singletonList("name"));
+    ukMaps.put("vm", Collections.singletonList("ip"));
+    ukMaps.put("node_tenant", Collections.singletonList("_uk"));
+  }
+
+  private static Cache<String, Map<String, List<String>>> tableUkCacheMaps =
+      CacheBuilder.newBuilder().expireAfterWrite(5, TimeUnit.MINUTES).build();
+
+  public Map<String, List<String>> getUksForCache(String tableName) {
+
+    Map<String, List<String>> strings = tableUkCacheMaps.getIfPresent(tableName);
+    if (!CollectionUtils.isEmpty(strings)) {
+      return strings;
+    }
+    Map<String, List<String>> uks = getUks(tableName);
+    tableUkCacheMaps.put(tableName, uks);
+    return uks;
+  }
+
+  public Map<String, List<String>> getUks(String tableName) {
+
+    if (tableName.endsWith("_app")) {
+      Map<String, List<String>> appParam = new HashMap<>();
+      appParam.put("app", Collections.singletonList("app"));
+      return appParam;
     }
 
-    private static Cache<String, Map<String, List<String>>> tableUkCacheMaps = CacheBuilder.newBuilder()
-            .expireAfterWrite(5, TimeUnit.MINUTES)
-            .build();
-
-    public Map<String, List<String>> getUksForCache(String tableName) {
-
-        Map<String, List<String>> strings = tableUkCacheMaps.getIfPresent(tableName);
-        if (!CollectionUtils.isEmpty(strings)) { return strings; }
-        Map<String, List<String>> uks = getUks(tableName);
-        tableUkCacheMaps.put(tableName, uks);
-        return uks;
-    }
-
-    public Map<String, List<String>> getUks(String tableName) {
-
-        if (tableName.endsWith("_app")) {
-            Map<String, List<String>> appParam = new HashMap<>();
-            appParam.put("app", Collections.singletonList("app"));
-            return appParam;
-        }
-
-        return ukMaps;
-    }
+    return ukMaps;
+  }
 }

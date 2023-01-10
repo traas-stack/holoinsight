@@ -11,53 +11,53 @@ import io.holoinsight.server.meta.facade.service.DataClientService;
 
 /**
  * TODO 实现本地调用避免grpc
- * <p>created at 2022/12/6
+ * <p>
+ * created at 2022/12/6
  *
  * @author jsy1001de
  */
 public class LocalDataClientService implements DataClientService {
 
-    @Override
-    public void insertOrUpdate(String tableName, List<Map<String, Object>> rows) {
-    }
+  @Override
+  public void insertOrUpdate(String tableName, List<Map<String, Object>> rows) {}
 
-    @Override
-    public void insert(String tableName, List<Map<String, Object>> rows) {
+  @Override
+  public void insert(String tableName, List<Map<String, Object>> rows) {
 
-    }
+  }
 
-    @Override
-    public void update(String tableName, List<Map<String, Object>> rows) {
+  @Override
+  public void update(String tableName, List<Map<String, Object>> rows) {
 
-    }
+  }
 
-    @Override
-    public void delete(String tableName, List<String> uks) {
+  @Override
+  public void delete(String tableName, List<String> uks) {
 
-    }
+  }
 
-    @Override
-    public List<Map<String, Object>> queryAll(String tableName) {
-        return null;
-    }
+  @Override
+  public List<Map<String, Object>> queryAll(String tableName) {
+    return null;
+  }
 
-    @Override
-    public void deleteByExample(String tableName, QueryExample example) {
+  @Override
+  public void deleteByExample(String tableName, QueryExample example) {
 
-    }
+  }
 
-    @Override
-    public void updateByExample(String tableName, QueryExample example, Map<String, Object> row) {
+  @Override
+  public void updateByExample(String tableName, QueryExample example, Map<String, Object> row) {
 
-    }
+  }
 
-    @Override
-    public List<Map<String, Object>> queryByExample(String tableName, QueryExample example) {
-        return null;
-    }
+  @Override
+  public List<Map<String, Object>> queryByExample(String tableName, QueryExample example) {
+    return null;
+  }
 
-    @Override
-    public List<Map<String, Object>> fuzzyByExample(String tableName, QueryExample example) {
-        return null;
-    }
+  @Override
+  public List<Map<String, Object>> fuzzyByExample(String tableName, QueryExample example) {
+    return null;
+  }
 }

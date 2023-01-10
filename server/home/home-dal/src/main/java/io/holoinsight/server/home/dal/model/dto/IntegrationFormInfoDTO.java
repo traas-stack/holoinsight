@@ -14,12 +14,12 @@ import java.util.Map;
  */
 @Data
 public class IntegrationFormInfoDTO {
-    private String                    type;
-    private String                    name;
-    private String                    attr;
-    private String                    value;
-    private List<String>              validate;
+  private String type;
+  private String name;
+  private String attr;
+  private String value;
+  private List<String> validate;
 
-    private Boolean                   required = true;
-    private List<Map<String, Object>> optionValues;
+  private Boolean required = true;
+  private List<Map<String, Object>> optionValues;
 }

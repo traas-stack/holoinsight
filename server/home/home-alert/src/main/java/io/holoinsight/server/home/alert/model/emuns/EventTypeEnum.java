@@ -4,7 +4,5 @@
 package io.holoinsight.server.home.alert.model.emuns;
 
 public enum EventTypeEnum {
-    AlarmEvent,
-    AlertManagerEvent,
-    CloudRun;
+  AlarmEvent, AlertManagerEvent, CloudRun;
 }

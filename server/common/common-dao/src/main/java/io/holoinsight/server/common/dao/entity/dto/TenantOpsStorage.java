@@ -7,37 +7,29 @@ import lombok.Data;
 
 /**
  *
- * {
- *   "metric": {
- *     "type": "ceresdb",
- *     "ceresdb": {
- *       "accessUser": null, // 租户名称
- *       "accessKey": null,  // token
- *       "address": "address",
- *       "port": 5000
- *     }
- *   }
- * }
+ * { "metric": { "type": "ceresdb", "ceresdb": { "accessUser": null, // 租户名称 "accessKey": null, //
+ * token "address": "address", "port": 5000 } } }
+ * 
  * @author xzchaoo
  * @version 1.0: TenantOpsStorage.java, v 0.1 2022年06月21日 3:08 下午 jinsong.yjs Exp $
  */
 @Data
 public class TenantOpsStorage {
-    public StorageMetric metric;
+  public StorageMetric metric;
 
-    @Data
-    public static class StorageMetric {
+  @Data
+  public static class StorageMetric {
 
-        public String         type;
-        public StorageCeresDB ceresdb;
-    }
+    public String type;
+    public StorageCeresDB ceresdb;
+  }
 
-    @Data
-    public static class StorageCeresDB {
-        public String accessUser; // tenant
-        public String accessKey;  // token
-        public String address;    // ceresdb address
-        public String port;       // ceresdb port
-        public Long   ttl;        // 保存数据周期
-    }
+  @Data
+  public static class StorageCeresDB {
+    public String accessUser; // tenant
+    public String accessKey; // token
+    public String address; // ceresdb address
+    public String port; // ceresdb port
+    public Long ttl; // 保存数据周期
+  }
 }

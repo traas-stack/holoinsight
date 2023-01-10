@@ -14,5 +14,6 @@ import io.holoinsight.server.home.common.service.ceresdb.CreateTenantResponse;
  */
 public interface CeresDBRetrofitApiService {
 
-    CreateTenantResponse createOrUpdateTenant(String accessUser, String accessToken, CreateTenantRequest params);
+  CreateTenantResponse createOrUpdateTenant(String accessUser, String accessToken,
+      CreateTenantRequest params);
 }

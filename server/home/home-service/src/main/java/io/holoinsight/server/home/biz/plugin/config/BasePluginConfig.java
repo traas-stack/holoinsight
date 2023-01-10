@@ -2,7 +2,6 @@
  * Copyright 2022 Holoinsight Project Authors. Licensed under Apache-2.0.
  */
 
-
 package io.holoinsight.server.home.biz.plugin.config;
 
 import lombok.Data;
@@ -16,7 +15,7 @@ import java.util.List;
  */
 @Data
 public class BasePluginConfig {
-    public List<String> range;
+  public List<String> range;
 
-    public MetaLabel    metaLabel;
+  public MetaLabel metaLabel;
 }

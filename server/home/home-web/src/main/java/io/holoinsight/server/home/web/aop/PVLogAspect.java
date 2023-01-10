@@ -2,7 +2,6 @@
  * Copyright 2022 Holoinsight Project Authors. Licensed under Apache-2.0.
  */
 
-
 package io.holoinsight.server.home.web.aop;
 
 import org.aspectj.lang.JoinPoint;
@@ -26,41 +25,39 @@ import javax.servlet.http.HttpServletRequest;
 @Aspect
 @Component
 public class PVLogAspect {
-    private Logger                                logger             = LoggerFactory
-        .getLogger(PVLogAspect.class);
+  private Logger logger = LoggerFactory.getLogger(PVLogAspect.class);
 
-    private static ThreadLocal<WebRequestContext> threadLocalContext = new ThreadLocal<WebRequestContext>();
+  private static ThreadLocal<WebRequestContext> threadLocalContext =
+      new ThreadLocal<WebRequestContext>();
 
-    @Pointcut("execution(public * com.alipay.cloudmonitor.prod.web.controller..*.*(..))")
-    public void pvLog() {
-    }
+  @Pointcut("execution(public * com.alipay.cloudmonitor.prod.web.controller..*.*(..))")
+  public void pvLog() {}
 
-    @Before("pvLog()")
-    public void doBefore(JoinPoint joinPoint) {
-        ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder
-            .getRequestAttributes();
-        HttpServletRequest request = attributes.getRequest();
-        WebRequestContext ctx = new WebRequestContext();
-        ctx.URI = request.getRequestURI();
-        ctx.method = request.getMethod();
-        ctx.remoteIP = request.getRemoteAddr();
-        ctx.start = System.currentTimeMillis();
-        threadLocalContext.set(ctx);
-    }
+  @Before("pvLog()")
+  public void doBefore(JoinPoint joinPoint) {
+    ServletRequestAttributes attributes =
+        (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+    HttpServletRequest request = attributes.getRequest();
+    WebRequestContext ctx = new WebRequestContext();
+    ctx.URI = request.getRequestURI();
+    ctx.method = request.getMethod();
+    ctx.remoteIP = request.getRemoteAddr();
+    ctx.start = System.currentTimeMillis();
+    threadLocalContext.set(ctx);
+  }
 
-    @AfterReturning("pvLog()")
-    public void doAfter() {
-        WebRequestContext ctx = threadLocalContext.get();
-        Long cost = System.currentTimeMillis() - ctx.start;
+  @AfterReturning("pvLog()")
+  public void doAfter() {
+    WebRequestContext ctx = threadLocalContext.get();
+    Long cost = System.currentTimeMillis() - ctx.start;
 
-        logger.info("[PV] url=[" + ctx.URI + "], method=["
-                    + ctx.method + "], cost=[" + cost + "ms]");
-    }
+    logger.info("[PV] url=[" + ctx.URI + "], method=[" + ctx.method + "], cost=[" + cost + "ms]");
+  }
 
-    public static class WebRequestContext {
-        public String URI;
-        public String method;
-        public Long   start;
-        public String remoteIP;
-    }
+  public static class WebRequestContext {
+    public String URI;
+    public String method;
+    public Long start;
+    public String remoteIP;
+  }
 }

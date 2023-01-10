@@ -8,16 +8,17 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.converter.protobuf.ProtobufJsonFormatHttpMessageConverter;
 
 /**
- * <p>created at 2022/11/26
+ * <p>
+ * created at 2022/11/26
  *
  * @author xiangwanpeng
  */
 @Configuration
 public class ApiConfig {
 
-    @Bean
-    public ProtobufJsonFormatHttpMessageConverter protobufHttpMessageConverter() {
-        return new ProtobufJsonFormatHttpMessageConverter();
-    }
+  @Bean
+  public ProtobufJsonFormatHttpMessageConverter protobufHttpMessageConverter() {
+    return new ProtobufJsonFormatHttpMessageConverter();
+  }
 
 }

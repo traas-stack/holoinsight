@@ -10,11 +10,11 @@ import java.util.List;
 
 @Getter
 public class Topology {
-    private final List<Node> nodes;
-    private final List<Call> calls;
+  private final List<Node> nodes;
+  private final List<Call> calls;
 
-    public Topology() {
-        this.nodes = new ArrayList<>();
-        this.calls = new ArrayList<>();
-    }
+  public Topology() {
+    this.nodes = new ArrayList<>();
+    this.calls = new ArrayList<>();
+  }
 }

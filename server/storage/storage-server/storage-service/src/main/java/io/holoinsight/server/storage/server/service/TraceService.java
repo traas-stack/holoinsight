@@ -21,23 +21,15 @@ import java.util.List;
  */
 public interface TraceService {
 
-    TraceBrief queryBasicTraces(final String tenant,
-                                final String serviceName,
-                                final String serviceInstanceName,
-                                final String endpointName,
-                                final List<String> traceIds,
-                                final int minTraceDuration,
-                                int maxTraceDuration,
-                                final TraceState traceState,
-                                final QueryOrder queryOrder,
-                                final Pagination paging,
-                                final long start,
-                                final long end,
-                                final List<Tag> tags) throws IOException;
+  TraceBrief queryBasicTraces(final String tenant, final String serviceName,
+      final String serviceInstanceName, final String endpointName, final List<String> traceIds,
+      final int minTraceDuration, int maxTraceDuration, final TraceState traceState,
+      final QueryOrder queryOrder, final Pagination paging, final long start, final long end,
+      final List<Tag> tags) throws IOException;
 
-    Trace queryTrace(final String traceId) throws IOException;
+  Trace queryTrace(final String traceId) throws IOException;
 
-    void insert(final List<SegmentEsDO> segments) throws IOException;
+  void insert(final List<SegmentEsDO> segments) throws IOException;
 
-    void insertSpans(final List<SpanEsDO> spans) throws IOException;
+  void insertSpans(final List<SpanEsDO> spans) throws IOException;
 }

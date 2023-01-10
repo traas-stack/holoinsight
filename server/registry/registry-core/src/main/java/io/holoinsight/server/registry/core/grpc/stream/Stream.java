@@ -6,20 +6,21 @@ package io.holoinsight.server.registry.core.grpc.stream;
 import reactor.core.publisher.Mono;
 
 /**
- * <p>created at 2022/3/3
+ * <p>
+ * created at 2022/3/3
  *
  * @author zzhb101
  */
 public interface Stream {
-    int TYPE_ONEWAY = 0;
-    int TYPE_REQ = 1;
-    int TYPE_RESP = 2;
-    int TYPE_CLIENT_HAND_SHAKE = 3;
-    int TYPE_SERVER_HAND_SHAKE = 4;
+  int TYPE_ONEWAY = 0;
+  int TYPE_REQ = 1;
+  int TYPE_RESP = 2;
+  int TYPE_CLIENT_HAND_SHAKE = 3;
+  int TYPE_SERVER_HAND_SHAKE = 4;
 
-    void start();
+  void start();
 
-    void stop();
+  void stop();
 
-    Mono<Void> waitHandshakeDone();
+  Mono<Void> waitHandshakeDone();
 }

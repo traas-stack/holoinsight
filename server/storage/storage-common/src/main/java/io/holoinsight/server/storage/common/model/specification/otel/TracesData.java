@@ -17,5 +17,5 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class TracesData {
-    private List<ResourceSpans> resourceSpans;
+  private List<ResourceSpans> resourceSpans;
 }

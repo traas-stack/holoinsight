@@ -8,13 +8,13 @@ import lombok.Data;
 
 /**
  * @author wangsiyuan
- * @date 2022/3/17  9:51 下午
+ * @date 2022/3/17 9:51 下午
  */
 @Data
 public class FunctionConfigAIParam extends FunctionConfigParam {
 
-    private String tenant;
+  private String tenant;
 
-    private Trigger trigger;
+  private Trigger trigger;
 
 }

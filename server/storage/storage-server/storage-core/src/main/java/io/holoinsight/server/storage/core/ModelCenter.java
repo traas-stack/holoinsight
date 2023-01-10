@@ -23,25 +23,25 @@ import org.springframework.beans.factory.annotation.Autowired;
 @Slf4j
 public class ModelCenter {
 
-    @Autowired
-    private ModelInstallManager modelInstallManager;
+  @Autowired
+  private ModelInstallManager modelInstallManager;
 
-    @Autowired
-    private ModelTtlManager modelTtlManager;
+  @Autowired
+  private ModelTtlManager modelTtlManager;
 
-    private final Map<String, Model> models = new HashMap<>();
+  private final Map<String, Model> models = new HashMap<>();
 
-    public void init() throws IOException {
-        modelInstallManager.start();
-        modelTtlManager.start();
-    }
+  public void init() throws IOException {
+    modelInstallManager.start();
+    modelTtlManager.start();
+  }
 
-    public synchronized List<Model> allModels() {
-        return new ArrayList<>(this.models.values());
-    }
+  public synchronized List<Model> allModels() {
+    return new ArrayList<>(this.models.values());
+  }
 
-    public synchronized void register(Model model) {
-        models.put(model.getName(), model);
-    }
+  public synchronized void register(Model model) {
+    models.put(model.getName(), model);
+  }
 
 }

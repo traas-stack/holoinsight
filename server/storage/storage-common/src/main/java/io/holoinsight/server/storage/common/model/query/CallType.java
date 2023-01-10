@@ -6,10 +6,8 @@ package io.holoinsight.server.storage.common.model.query;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
-@JsonTypeInfo( use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "@type")
-@JsonSubTypes({
-        @JsonSubTypes.Type(value = Call.class, name = "call"),
-        @JsonSubTypes.Type(value = Call.DeepCall.class, name = "deepCall"),
-})
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "@type")
+@JsonSubTypes({@JsonSubTypes.Type(value = Call.class, name = "call"),
+    @JsonSubTypes.Type(value = Call.DeepCall.class, name = "deepCall"),})
 public interface CallType {
 }

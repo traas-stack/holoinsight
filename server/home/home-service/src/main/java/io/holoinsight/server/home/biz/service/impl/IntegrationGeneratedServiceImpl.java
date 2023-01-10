@@ -2,7 +2,6 @@
  * Copyright 2022 Holoinsight Project Authors. Licensed under Apache-2.0.
  */
 
-
 package io.holoinsight.server.home.biz.service.impl;
 
 import io.holoinsight.server.home.biz.service.IntegrationGeneratedService;
@@ -23,24 +22,24 @@ import java.util.List;
  * @version 1.0: IntegrationGeneratedServiceImpl.java, v 0.1 2022年12月14日 上午11:54 jinsong.yjs Exp $
  */
 @Service
-public class IntegrationGeneratedServiceImpl extends
-                                             ServiceImpl<IntegrationGeneratedMapper, IntegrationGenerated>
-                                             implements IntegrationGeneratedService {
+public class IntegrationGeneratedServiceImpl
+    extends ServiceImpl<IntegrationGeneratedMapper, IntegrationGenerated>
+    implements IntegrationGeneratedService {
 
-    @Autowired
-    private IntegrationGeneratedConverter integrationGeneratedConverter;
+  @Autowired
+  private IntegrationGeneratedConverter integrationGeneratedConverter;
 
-    @Override
-    public void insert(IntegrationGeneratedDTO integrationGeneratedDTO) {
-        save(integrationGeneratedConverter.dtoToDO(integrationGeneratedDTO));
-    }
+  @Override
+  public void insert(IntegrationGeneratedDTO integrationGeneratedDTO) {
+    save(integrationGeneratedConverter.dtoToDO(integrationGeneratedDTO));
+  }
 
-    @Override
-    public List<IntegrationGenerated> queryByTenant(String tenant) {
-        QueryWrapper<IntegrationGenerated> queryWrapper = new QueryWrapper<>();
-        queryWrapper.select("name", "product", "tenant", "item", "id").eq("deleted", 0).eq("tenant",
-            tenant);
+  @Override
+  public List<IntegrationGenerated> queryByTenant(String tenant) {
+    QueryWrapper<IntegrationGenerated> queryWrapper = new QueryWrapper<>();
+    queryWrapper.select("name", "product", "tenant", "item", "id").eq("deleted", 0).eq("tenant",
+        tenant);
 
-        return baseMapper.selectList(queryWrapper);
-    }
+    return baseMapper.selectList(queryWrapper);
+  }
 }

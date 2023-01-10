@@ -11,7 +11,8 @@ import org.springframework.context.annotation.Import;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
 /**
- * <p>created at 2022/11/24
+ * <p>
+ * created at 2022/11/24
  *
  * @author jsy1001de
  */
@@ -19,4 +20,5 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @EnableScheduling
 @ConditionalOnRole("meta")
 @Import(MongoAutoConfiguration.class)
-public class HoloinsightMetaConfiguration {}
+public class HoloinsightMetaConfiguration {
+}

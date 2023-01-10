@@ -11,6 +11,6 @@ import java.util.List;
 
 public interface ServiceRelationService {
 
-    void insert(final List<ServiceRelationEsDO> relationList) throws IOException;
+  void insert(final List<ServiceRelationEsDO> relationList) throws IOException;
 
 }

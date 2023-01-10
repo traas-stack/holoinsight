@@ -10,17 +10,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.util.Set;
 
 /**
- * <p>created at 2022/3/14
+ * <p>
+ * created at 2022/3/14
  *
  * @author zzhb101
  */
 public class DbMemberProvider implements MemberProvider {
-    @Autowired
-    private GaeaClusterConfigDOMapper mapper;
+  @Autowired
+  private GaeaClusterConfigDOMapper mapper;
 
-    @Override
-    public Set<Endpoint> members() {
-        // mapper.selectByExample("")
-        return null;
-    }
+  @Override
+  public Set<Endpoint> members() {
+    // mapper.selectByExample("")
+    return null;
+  }
 }

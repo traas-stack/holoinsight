@@ -14,12 +14,12 @@ import java.util.List;
 
 public class ServiceErrorServiceImpl implements ServiceErrorService {
 
-    @Autowired
-    private ServiceErrorEsService serviceErrorEsService;
+  @Autowired
+  private ServiceErrorEsService serviceErrorEsService;
 
-    @Override
-    public void insert(List<ServiceErrorEsDO> serviceErrorEsDOList) throws IOException {
-        serviceErrorEsService.batchInsert(serviceErrorEsDOList);
-    }
+  @Override
+  public void insert(List<ServiceErrorEsDO> serviceErrorEsDOList) throws IOException {
+    serviceErrorEsService.batchInsert(serviceErrorEsDOList);
+  }
 
 }

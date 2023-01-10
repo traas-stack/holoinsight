@@ -7,18 +7,20 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /**
- * <p>created at 2022/11/25
+ * <p>
+ * created at 2022/11/25
  *
  * @author xzchaoo
  */
 @Configuration
 public class GroovyConfiguration {
-    @Bean
-    public GroovyConfig groovyConfig() {
-        return new GroovyConfig();
-    }
-    @Bean
-    public GroovyWebController groovyWebController(){
-        return new GroovyWebController();
-    }
+  @Bean
+  public GroovyConfig groovyConfig() {
+    return new GroovyConfig();
+  }
+
+  @Bean
+  public GroovyWebController groovyWebController() {
+    return new GroovyWebController();
+  }
 }

@@ -20,15 +20,15 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class AliCloudTask extends CentralIntegrationTask {
-    private List<AlicloudConf> confs;
+  private List<AlicloudConf> confs;
 
-    private IntegrationTask desensitize() {
-        if (this.confs != null) {
-            this.confs.forEach(conf -> {
-                conf.setAccessKeyId(DesensitizeUtil.around(conf.getAccessKeyId(), 3, 3));
-                conf.setAccessKeySecret(DesensitizeUtil.around(conf.getAccessKeySecret(), 3, 3));
-            });
-        }
-        return this;
+  private IntegrationTask desensitize() {
+    if (this.confs != null) {
+      this.confs.forEach(conf -> {
+        conf.setAccessKeyId(DesensitizeUtil.around(conf.getAccessKeyId(), 3, 3));
+        conf.setAccessKeySecret(DesensitizeUtil.around(conf.getAccessKeySecret(), 3, 3));
+      });
     }
+    return this;
+  }
 }

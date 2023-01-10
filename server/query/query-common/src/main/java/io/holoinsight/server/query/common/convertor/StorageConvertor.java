@@ -58,11 +58,8 @@ public class StorageConvertor {
     if (traceProto == null) {
       return null;
     }
-    Trace trace =
-        new Trace(
-            traceProto.getSpansList().stream()
-                .map(StorageConvertor::convertSpan)
-                .collect(Collectors.toList()));
+    Trace trace = new Trace(traceProto.getSpansList().stream().map(StorageConvertor::convertSpan)
+        .collect(Collectors.toList()));
     return trace;
   }
 
@@ -84,44 +81,30 @@ public class StorageConvertor {
   }
 
   public static TraceBrief convertTraceBrief(QueryProto.TraceBrief traceBriefProto) {
-    return new TraceBrief(
-        traceBriefProto.getTracesList().stream()
-            .map(StorageConvertor::convertBasicTrace)
-            .collect(Collectors.toList()));
+    return new TraceBrief(traceBriefProto.getTracesList().stream()
+        .map(StorageConvertor::convertBasicTrace).collect(Collectors.toList()));
   }
 
   public static QueryProto.BasicTrace convertBasicTrace(BasicTrace basicTrace) {
-    return QueryProto.BasicTrace.newBuilder()
-        .setSegmentId(basicTrace.getSegmentId())
+    return QueryProto.BasicTrace.newBuilder().setSegmentId(basicTrace.getSegmentId())
         .addAllServiceNames(basicTrace.getServiceNames())
         .addAllServiceInstanceNames(basicTrace.getServiceInstanceNames())
-        .addAllEndpointNames(basicTrace.getEndpointNames())
-        .setDuration(basicTrace.getDuration())
-        .setStart(basicTrace.getStart())
-        .setIsError(basicTrace.isError())
-        .addAllTraceIds(basicTrace.getTraceIds())
-        .build();
+        .addAllEndpointNames(basicTrace.getEndpointNames()).setDuration(basicTrace.getDuration())
+        .setStart(basicTrace.getStart()).setIsError(basicTrace.isError())
+        .addAllTraceIds(basicTrace.getTraceIds()).build();
   }
 
   public static BasicTrace convertBasicTrace(QueryProto.BasicTrace basicTraceProto) {
-    return new BasicTrace(
-        basicTraceProto.getSegmentId(),
-        basicTraceProto.getServiceNamesList(),
-        basicTraceProto.getServiceInstanceNamesList(),
-        basicTraceProto.getEndpointNamesList(),
-        basicTraceProto.getDuration(),
-        basicTraceProto.getStart(),
-        basicTraceProto.getIsError(),
+    return new BasicTrace(basicTraceProto.getSegmentId(), basicTraceProto.getServiceNamesList(),
+        basicTraceProto.getServiceInstanceNamesList(), basicTraceProto.getEndpointNamesList(),
+        basicTraceProto.getDuration(), basicTraceProto.getStart(), basicTraceProto.getIsError(),
         basicTraceProto.getTraceIdsList());
   }
 
   public static QueryProto.Span convertSpan(Span span) {
     QueryProto.Span.Builder spanBuilder =
-        QueryProto.Span.newBuilder()
-            .setTraceId(span.getTraceId())
-            .setSegmentId(span.getSegmentId())
-            .setSpanId(span.getSpanId())
-            .setParentSpanId(span.getParentSpanId());
+        QueryProto.Span.newBuilder().setTraceId(span.getTraceId()).setSegmentId(span.getSegmentId())
+            .setSpanId(span.getSpanId()).setParentSpanId(span.getParentSpanId());
     List<Ref> refs = span.getRefs();
     if (CollectionUtils.isNotEmpty(refs)) {
       spanBuilder.addAllRefs(Iterables.transform(refs, StorageConvertor::convertRef));
@@ -173,34 +156,18 @@ public class StorageConvertor {
     if (spanProto == null) {
       return null;
     }
-    Span span =
-        new Span(
-            spanProto.getTraceId(),
-            spanProto.getSegmentId(),
-            spanProto.getSpanId(),
-            spanProto.getParentSpanId(),
-            spanProto.getRefsList().stream()
-                .map(StorageConvertor::convertRef)
-                .collect(Collectors.toList()),
-            spanProto.getServiceCode(),
-            spanProto.getServiceInstanceName(),
-            spanProto.getStartTime(),
-            spanProto.getEndTime(),
-            spanProto.getEndpointName(),
-            spanProto.getType(),
-            spanProto.getPeer(),
-            spanProto.getComponent(),
-            spanProto.getIsError(),
-            spanProto.getLayer(),
-            spanProto.getTagsList().stream()
-                .map(StorageConvertor::convertKeyValue)
-                .collect(Collectors.toList()),
-            spanProto.getLogsList().stream()
-                .map(StorageConvertor::convertLogEntity)
-                .collect(Collectors.toList()),
-            spanProto.getIsRoot(),
-            spanProto.getSegmentSpanId(),
-            spanProto.getSegmentParentSpanId());
+    Span span = new Span(spanProto.getTraceId(), spanProto.getSegmentId(), spanProto.getSpanId(),
+        spanProto.getParentSpanId(),
+        spanProto.getRefsList().stream().map(StorageConvertor::convertRef)
+            .collect(Collectors.toList()),
+        spanProto.getServiceCode(), spanProto.getServiceInstanceName(), spanProto.getStartTime(),
+        spanProto.getEndTime(), spanProto.getEndpointName(), spanProto.getType(),
+        spanProto.getPeer(), spanProto.getComponent(), spanProto.getIsError(), spanProto.getLayer(),
+        spanProto.getTagsList().stream().map(StorageConvertor::convertKeyValue)
+            .collect(Collectors.toList()),
+        spanProto.getLogsList().stream().map(StorageConvertor::convertLogEntity)
+            .collect(Collectors.toList()),
+        spanProto.getIsRoot(), spanProto.getSegmentSpanId(), spanProto.getSegmentParentSpanId());
     return span;
   }
 
@@ -223,19 +190,13 @@ public class StorageConvertor {
     if (refProto == null) {
       return null;
     }
-    Ref ref =
-        new Ref(
-            refProto.getTraceId(),
-            refProto.getParentSegmentId(),
-            refProto.getParentSpanId(),
-            RefType.valueOf(refProto.getType()));
+    Ref ref = new Ref(refProto.getTraceId(), refProto.getParentSegmentId(),
+        refProto.getParentSpanId(), RefType.valueOf(refProto.getType()));
     return ref;
   }
 
   public static QueryProto.KeyValue convertKeyValue(KeyValue keyValue) {
-    return QueryProto.KeyValue.newBuilder()
-        .setKey(keyValue.getKey())
-        .setValue(keyValue.getValue())
+    return QueryProto.KeyValue.newBuilder().setKey(keyValue.getKey()).setValue(keyValue.getValue())
         .build();
   }
 
@@ -250,8 +211,7 @@ public class StorageConvertor {
     if (tagsMap == null || tagsMap.isEmpty()) {
       return null;
     } else {
-      return tagsMap.entrySet().stream()
-          .map(entry -> new Tag(entry.getKey(), entry.getValue()))
+      return tagsMap.entrySet().stream().map(entry -> new Tag(entry.getKey(), entry.getValue()))
           .collect(Collectors.toList());
     }
   }
@@ -279,11 +239,8 @@ public class StorageConvertor {
     if (logEntityProto == null) {
       return null;
     }
-    return new LogEntity(
-        logEntityProto.getTime(),
-        logEntityProto.getDataList().stream()
-            .map(StorageConvertor::convertKeyValue)
-            .collect(Collectors.toList()));
+    return new LogEntity(logEntityProto.getTime(), logEntityProto.getDataList().stream()
+        .map(StorageConvertor::convertKeyValue).collect(Collectors.toList()));
   }
 
   public static QueryProto.ResponseMetric convertResponseMetric(ResponseMetric metric) {
@@ -401,18 +358,12 @@ public class StorageConvertor {
   public static QueryProto.Topology convertTopology(Topology topology) {
     QueryProto.Topology.Builder builder = QueryProto.Topology.newBuilder();
 
-    topology
-        .getNodes()
-        .forEach(
-            node -> {
-              builder.addNode(convertNode(node));
-            });
-    topology
-        .getCalls()
-        .forEach(
-            call -> {
-              builder.addCall(convertCall(call));
-            });
+    topology.getNodes().forEach(node -> {
+      builder.addNode(convertNode(node));
+    });
+    topology.getCalls().forEach(call -> {
+      builder.addCall(convertCall(call));
+    });
 
     return builder.build();
   }
@@ -420,18 +371,12 @@ public class StorageConvertor {
   public static Topology deConvertTopology(QueryProto.Topology topology) {
     Topology result = new Topology();
 
-    topology
-        .getNodeList()
-        .forEach(
-            node -> {
-              result.getNodes().add(deConvertNode(node));
-            });
-    topology
-        .getCallList()
-        .forEach(
-            call -> {
-              result.getCalls().add(deConvertCall(call));
-            });
+    topology.getNodeList().forEach(node -> {
+      result.getNodes().add(deConvertNode(node));
+    });
+    topology.getCallList().forEach(call -> {
+      result.getCalls().add(deConvertCall(call));
+    });
 
     return result;
   }

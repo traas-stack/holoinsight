@@ -13,23 +13,23 @@ import org.springframework.stereotype.Service;
 @Service
 public class ErrorAnalysis {
 
-    public ErrorInfo analysis(SpanObject span, SegmentObject segmentObject) {
-        if (span.getLogsList().size() > 0) {
-            ErrorInfo errorInfo = new ErrorInfo();
-            errorInfo.setServiceName(segmentObject.getService());
-            errorInfo.setServiceInstanceName(segmentObject.getServiceInstance());
-            errorInfo.setTraceId(segmentObject.getTraceId());
-            errorInfo.setStartTime(span.getStartTime());
-            errorInfo.setEndTime(span.getEndTime());
-            errorInfo.setTimeBucket(TimeBucket.getRecordTimeBucket(span.getStartTime()));
+  public ErrorInfo analysis(SpanObject span, SegmentObject segmentObject) {
+    if (span.getLogsList().size() > 0) {
+      ErrorInfo errorInfo = new ErrorInfo();
+      errorInfo.setServiceName(segmentObject.getService());
+      errorInfo.setServiceInstanceName(segmentObject.getServiceInstance());
+      errorInfo.setTraceId(segmentObject.getTraceId());
+      errorInfo.setStartTime(span.getStartTime());
+      errorInfo.setEndTime(span.getEndTime());
+      errorInfo.setTimeBucket(TimeBucket.getRecordTimeBucket(span.getStartTime()));
 
-            span.getLogs(0).getDataList().forEach(keyStringValuePair -> {
-                if ("error.kind".equals(keyStringValuePair.getKey())) {
-                    errorInfo.setErrorKind(keyStringValuePair.getValue());
-                }
-            });
-            return errorInfo;
+      span.getLogs(0).getDataList().forEach(keyStringValuePair -> {
+        if ("error.kind".equals(keyStringValuePair.getKey())) {
+          errorInfo.setErrorKind(keyStringValuePair.getValue());
         }
-        return null;
+      });
+      return errorInfo;
     }
+    return null;
+  }
 }

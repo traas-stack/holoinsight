@@ -8,28 +8,28 @@ import lombok.Setter;
 
 public abstract class Source implements ISource {
 
-    @Getter
-    @Setter
-    private long timeBucket;
-    @Getter
-    @Setter
-    private long startTime;
-    @Getter
-    @Setter
-    private long endTime;
-    @Getter
-    @Setter
-    private String tenant;
-    @Getter
-    @Setter
-    private String traceId;
-    @Getter
-    @Setter
-    private String appId;
-    @Getter
-    @Setter
-    private String envId;
-    @Getter
-    @Setter
-    private String stamp;
+  @Getter
+  @Setter
+  private long timeBucket;
+  @Getter
+  @Setter
+  private long startTime;
+  @Getter
+  @Setter
+  private long endTime;
+  @Getter
+  @Setter
+  private String tenant;
+  @Getter
+  @Setter
+  private String traceId;
+  @Getter
+  @Setter
+  private String appId;
+  @Getter
+  @Setter
+  private String envId;
+  @Getter
+  @Setter
+  private String stamp;
 }

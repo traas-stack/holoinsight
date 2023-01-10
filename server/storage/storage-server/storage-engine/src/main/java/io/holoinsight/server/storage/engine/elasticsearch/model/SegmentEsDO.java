@@ -29,85 +29,86 @@ import static io.holoinsight.server.storage.engine.elasticsearch.model.SegmentEs
 @ModelAnnotation(name = INDEX_NAME)
 public class SegmentEsDO extends RecordEsDO {
 
-    private static final long serialVersionUID = 6774160380930019988L;
+  private static final long serialVersionUID = 6774160380930019988L;
 
-    public static final String INDEX_NAME = "holoinsight-segment";
+  public static final String INDEX_NAME = "holoinsight-segment";
 
-    public static final String ADDITIONAL_TAG_TABLE = "segment_tag";
+  public static final String ADDITIONAL_TAG_TABLE = "segment_tag";
 
-    public static final String TENANT = "tenant";
+  public static final String TENANT = "tenant";
 
-    public static final String AGENT_VERSION         = "agent_version";
-    public static final String SEGMENT_ID            = "segment_id";
-    public static final String TRACE_ID              = "trace_id";
-    public static final String SERVICE_NAME          = "service_name";
-    public static final String SERVICE_INSTANCE_NAME = "service_instance_name";
-    public static final String ENDPOINT_NAME         = "endpoint_name";
-    public static final String START_TIME            = "start_time";
-    public static final String END_TIME              = "end_time";
-    public static final String LATENCY               = "latency";
-    public static final String IS_ERROR              = "is_error";
-    public static final String DATA_BINARY           = "data_binary";
-    public static final String TAGS                  = "tags";
-    public static final String ENTRYLAYER            = "entry_layer";
-    public static final String ENTRYROOTERRORCODE    = "entry_root_error_code";
-    public static final String ENTRYERRORCODE        = "entry_error_code";
-    public static final String STAMP                 = "stamp";
-    public static final String HAS_ENTRY             = "has_entry";
+  public static final String AGENT_VERSION = "agent_version";
+  public static final String SEGMENT_ID = "segment_id";
+  public static final String TRACE_ID = "trace_id";
+  public static final String SERVICE_NAME = "service_name";
+  public static final String SERVICE_INSTANCE_NAME = "service_instance_name";
+  public static final String ENDPOINT_NAME = "endpoint_name";
+  public static final String START_TIME = "start_time";
+  public static final String END_TIME = "end_time";
+  public static final String LATENCY = "latency";
+  public static final String IS_ERROR = "is_error";
+  public static final String DATA_BINARY = "data_binary";
+  public static final String TAGS = "tags";
+  public static final String ENTRYLAYER = "entry_layer";
+  public static final String ENTRYROOTERRORCODE = "entry_root_error_code";
+  public static final String ENTRYERRORCODE = "entry_error_code";
+  public static final String STAMP = "stamp";
+  public static final String HAS_ENTRY = "has_entry";
 
-    public static final Set<String> RESERVED_FIELDS = Sets.newHashSet(TENANT, AGENT_VERSION, SEGMENT_ID, TRACE_ID, SERVICE_NAME,
-            SERVICE_INSTANCE_NAME, ENDPOINT_NAME, START_TIME, END_TIME, LATENCY, IS_ERROR, DATA_BINARY, ENTRYLAYER, ENTRYROOTERRORCODE,
-            ENTRYERRORCODE, STAMP, HAS_ENTRY);
+  public static final Set<String> RESERVED_FIELDS =
+      Sets.newHashSet(TENANT, AGENT_VERSION, SEGMENT_ID, TRACE_ID, SERVICE_NAME,
+          SERVICE_INSTANCE_NAME, ENDPOINT_NAME, START_TIME, END_TIME, LATENCY, IS_ERROR,
+          DATA_BINARY, ENTRYLAYER, ENTRYROOTERRORCODE, ENTRYERRORCODE, STAMP, HAS_ENTRY);
 
-    @Id
-    private String       id;
-    @Column(name = TENANT)
-    private String       tenant;
-    @Column(name = SEGMENT_ID)
-    private String       segmentId;
-    @Column(name = TRACE_ID)
-    private String       traceId;
-    @Column(name = SERVICE_NAME)
-    private String       serviceName;
-    @Column(name = SERVICE_INSTANCE_NAME)
-    private String       serviceInstanceName;
-    @Column(name = ENDPOINT_NAME)
-    private String       endpointName;
-    @Column(name = START_TIME)
-    private long         startTime;
-    @Column(name = END_TIME)
-    private long         endTime;
-    @Column(name = LATENCY)
-    private int          latency;
-    @Column(name = IS_ERROR)
-    private int          isError;
-    @Column(name = DATA_BINARY)
-    private byte[]       dataBinary;
-    @Column(name = TAGS)
-    private List<String> tags;
-    @Column(name = HAS_ENTRY)
-    private int          hasEntry;
+  @Id
+  private String id;
+  @Column(name = TENANT)
+  private String tenant;
+  @Column(name = SEGMENT_ID)
+  private String segmentId;
+  @Column(name = TRACE_ID)
+  private String traceId;
+  @Column(name = SERVICE_NAME)
+  private String serviceName;
+  @Column(name = SERVICE_INSTANCE_NAME)
+  private String serviceInstanceName;
+  @Column(name = ENDPOINT_NAME)
+  private String endpointName;
+  @Column(name = START_TIME)
+  private long startTime;
+  @Column(name = END_TIME)
+  private long endTime;
+  @Column(name = LATENCY)
+  private int latency;
+  @Column(name = IS_ERROR)
+  private int isError;
+  @Column(name = DATA_BINARY)
+  private byte[] dataBinary;
+  @Column(name = TAGS)
+  private List<String> tags;
+  @Column(name = HAS_ENTRY)
+  private int hasEntry;
 
-    // for bizops
-    @Column(name = ENTRYLAYER)
-    private String entryLayer;
-    @Column(name = ENTRYROOTERRORCODE)
-    private String entryRootErrorCode;
-    @Column(name = ENTRYERRORCODE)
-    private String entryErrorCode;
-    @Column(name = STAMP)
-    private String stamp;
+  // for bizops
+  @Column(name = ENTRYLAYER)
+  private String entryLayer;
+  @Column(name = ENTRYROOTERRORCODE)
+  private String entryRootErrorCode;
+  @Column(name = ENTRYERRORCODE)
+  private String entryErrorCode;
+  @Column(name = STAMP)
+  private String stamp;
 
-    @Override
-    public String indexName() {
-        return INDEX_NAME;
-    }
+  @Override
+  public String indexName() {
+    return INDEX_NAME;
+  }
 
-    public static SegmentEsDO fromSegment(Segment segment) {
-        SegmentEsDO segmentEsDO = new SegmentEsDO();
-        BeanUtils.copyProperties(segment, segmentEsDO, SegmentEsDO.TAGS);
-        segmentEsDO.setTags(Tag.Util.toStringList(segment.getTags()));
-        return segmentEsDO;
-    }
+  public static SegmentEsDO fromSegment(Segment segment) {
+    SegmentEsDO segmentEsDO = new SegmentEsDO();
+    BeanUtils.copyProperties(segment, segmentEsDO, SegmentEsDO.TAGS);
+    segmentEsDO.setTags(Tag.Util.toStringList(segment.getTags()));
+    return segmentEsDO;
+  }
 
 }

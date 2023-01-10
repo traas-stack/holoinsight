@@ -6,10 +6,11 @@ package io.holoinsight.server.registry.core.grpc.stream;
 import reactor.core.publisher.Mono;
 
 /**
- * <p>created at 2022/3/3
+ * <p>
+ * created at 2022/3/3
  *
  * @author zzhb101
  */
 public interface RpcHandler {
-    Mono<Cmd> handle(Cmd req);
+  Mono<Cmd> handle(Cmd req);
 }

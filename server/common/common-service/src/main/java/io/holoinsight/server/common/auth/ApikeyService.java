@@ -22,36 +22,37 @@ import org.springframework.scheduling.annotation.Scheduled;
 import com.google.common.collect.Maps;
 
 /**
- * <p>created at 2022/11/25
+ * <p>
+ * created at 2022/11/25
  *
  * @author xzchaoo
  */
 public class ApikeyService {
-    private static final Logger LOGGER = LoggerFactory.getLogger(ApikeyService.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(ApikeyService.class);
 
-    @Autowired
-    private ApikeyDOMapper mapper;
+  @Autowired
+  private ApikeyDOMapper mapper;
 
-    @Getter
-    private Map<String, ApikeyDO> apikeyMap = Collections.emptyMap();
+  @Getter
+  private Map<String, ApikeyDO> apikeyMap = Collections.emptyMap();
 
-    @PostConstruct
-    public void init() {
-        refresh();
+  @PostConstruct
+  public void init() {
+    refresh();
+  }
+
+  @Scheduled(initialDelay = 60000L, fixedDelay = 60000L)
+  public void refresh() {
+    long begin = System.currentTimeMillis();
+    List<ApikeyDO> apikeys = mapper.selectByExample(ApikeyDOExample.newAndCreateCriteria() //
+        .andStatusEqualTo((byte) 1) //
+        .example()); //
+    Map<String, ApikeyDO> apikeyMap = Maps.newHashMapWithExpectedSize(apikeys.size());
+    for (ApikeyDO a : apikeys) {
+      apikeyMap.put(a.getApikey(), a);
     }
-
-    @Scheduled(initialDelay = 60000L, fixedDelay = 60000L)
-    public void refresh() {
-        long begin = System.currentTimeMillis();
-        List<ApikeyDO> apikeys = mapper.selectByExample(ApikeyDOExample.newAndCreateCriteria() //
-            .andStatusEqualTo((byte) 1) //
-            .example()); //
-        Map<String, ApikeyDO> apikeyMap = Maps.newHashMapWithExpectedSize(apikeys.size());
-        for (ApikeyDO a : apikeys) {
-            apikeyMap.put(a.getApikey(), a);
-        }
-        this.apikeyMap = apikeyMap;
-        long end = System.currentTimeMillis();
-        LOGGER.info("[apikey] size=[{}] cost=[{}]", apikeys.size(), end - begin);
-    }
+    this.apikeyMap = apikeyMap;
+    long end = System.currentTimeMillis();
+    LOGGER.info("[apikey] size=[{}] cost=[{}]", apikeys.size(), end - begin);
+  }
 }

@@ -16,6 +16,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ObMetricConf {
-    public String name;
-    public String metricType;
+  public String name;
+  public String metricType;
 }

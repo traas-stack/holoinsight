@@ -7,6 +7,6 @@ import lombok.Data;
 
 @Data
 public class Service {
-    private String name;
-    private ResponseMetric metric;
+  private String name;
+  private ResponseMetric metric;
 }

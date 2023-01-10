@@ -2,7 +2,6 @@
  * Copyright 2022 Holoinsight Project Authors. Licensed under Apache-2.0.
  */
 
-
 package io.holoinsight.server.home.biz.service;
 
 import io.holoinsight.server.home.facade.page.MonitorPageRequest;
@@ -19,24 +18,25 @@ import java.util.List;
  */
 public interface UserFavoriteService extends IService<UserFavorite> {
 
-    UserFavorite queryById(Long id, String tenant);
+  UserFavorite queryById(Long id, String tenant);
 
-    List<UserFavorite> getByUser(String userLoginName);
+  List<UserFavorite> getByUser(String userLoginName);
 
-    List<UserFavorite> getByUserAndTenant(String userLoginName, String tenant);
+  List<UserFavorite> getByUserAndTenant(String userLoginName, String tenant);
 
-    List<UserFavorite> getByUserAndTenantAndRelateId(String userLoginName, String tenant,
-                                                     String relateId, String type);
+  List<UserFavorite> getByUserAndTenantAndRelateId(String userLoginName, String tenant,
+      String relateId, String type);
 
-    List<UserFavorite> getByUserAndTenantAndRelateIds(String userLoginName, String tenant,
-                                                      List<String> relateIds, String type);
+  List<UserFavorite> getByUserAndTenantAndRelateIds(String userLoginName, String tenant,
+      List<String> relateIds, String type);
 
-    UserFavorite create(UserFavorite userFavorite);
+  UserFavorite create(UserFavorite userFavorite);
 
-    void deleteById(Long id);
+  void deleteById(Long id);
 
-    void update(UserFavorite userFavorite);
+  void update(UserFavorite userFavorite);
 
-    MonitorPageResult<UserFavorite> getListByPage(MonitorPageRequest<UserFavorite> userFavoriteRequest);
+  MonitorPageResult<UserFavorite> getListByPage(
+      MonitorPageRequest<UserFavorite> userFavoriteRequest);
 
 }

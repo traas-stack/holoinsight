@@ -33,93 +33,95 @@ import org.springframework.stereotype.Service;
  */
 public class NoopQueryServiceImpl implements QueryService {
 
-    @Override
-    public QueryResponse queryData(QueryRequest request) throws QueryException {
-        return null;
-    }
+  @Override
+  public QueryResponse queryData(QueryRequest request) throws QueryException {
+    return null;
+  }
 
-    @Override
-    public QueryResponse queryTags(QueryRequest request) throws QueryException {
-        return null;
-    }
+  @Override
+  public QueryResponse queryTags(QueryRequest request) throws QueryException {
+    return null;
+  }
 
-    @Override
-    public QueryResponse deleteKeys(QueryRequest request) throws QueryException {
-        return null;
-    }
+  @Override
+  public QueryResponse deleteKeys(QueryRequest request) throws QueryException {
+    return null;
+  }
 
-    @Override
-    public QuerySchemaResponse querySchema(QueryRequest request) throws QueryException {
-        return null;
-    }
+  @Override
+  public QuerySchemaResponse querySchema(QueryRequest request) throws QueryException {
+    return null;
+  }
 
-    @Override
-    public QueryMetricsResponse queryMetrics(QueryMetricsRequest request) throws QueryException {
-        return null;
-    }
+  @Override
+  public QueryMetricsResponse queryMetrics(QueryMetricsRequest request) throws QueryException {
+    return null;
+  }
 
-    @Override
-    public QueryResponse pqlInstantQuery(PqlInstantRequest request) throws QueryException {
-        return null;
-    }
+  @Override
+  public QueryResponse pqlInstantQuery(PqlInstantRequest request) throws QueryException {
+    return null;
+  }
 
-    @Override
-    public QueryResponse pqlRangeQuery(PqlRangeRequest request) throws QueryException {
-        return null;
-    }
+  @Override
+  public QueryResponse pqlRangeQuery(PqlRangeRequest request) throws QueryException {
+    return null;
+  }
 
-    @Override
-    public TraceBrief queryBasicTraces(QueryTraceRequest request) throws Exception {
-        return null;
-    }
+  @Override
+  public TraceBrief queryBasicTraces(QueryTraceRequest request) throws Exception {
+    return null;
+  }
 
-    @Override
-    public Trace queryTrace(QueryTraceRequest request) throws Exception {
-        return null;
-    }
+  @Override
+  public Trace queryTrace(QueryTraceRequest request) throws Exception {
+    return null;
+  }
 
-    @Override
-    public QueryMetaResponse queryServiceList(QueryMetaRequest request) throws Exception {
-        return null;
-    }
+  @Override
+  public QueryMetaResponse queryServiceList(QueryMetaRequest request) throws Exception {
+    return null;
+  }
 
-    @Override
-    public QueryMetaResponse queryEndpointList(QueryMetaRequest request) throws Exception {
-        return null;
-    }
+  @Override
+  public QueryMetaResponse queryEndpointList(QueryMetaRequest request) throws Exception {
+    return null;
+  }
 
-    @Override
-    public QueryMetaResponse queryServiceInstanceList(QueryMetaRequest request) throws Exception {
-        return null;
-    }
+  @Override
+  public QueryMetaResponse queryServiceInstanceList(QueryMetaRequest request) throws Exception {
+    return null;
+  }
 
-    @Override
-    public QueryVirtualComponentResponse queryComponentList(QueryMetaRequest request) throws Exception {
-        return null;
-    }
+  @Override
+  public QueryVirtualComponentResponse queryComponentList(QueryMetaRequest request)
+      throws Exception {
+    return null;
+  }
 
-    @Override
-    public TraceIds queryComponentTraceIds(QueryMetaRequest request) throws Exception {
-        return null;
-    }
+  @Override
+  public TraceIds queryComponentTraceIds(QueryMetaRequest request) throws Exception {
+    return null;
+  }
 
-    @Override
-    public Topology queryTopology(QueryTopologyRequest request) throws Exception {
-        return null;
-    }
+  @Override
+  public Topology queryTopology(QueryTopologyRequest request) throws Exception {
+    return null;
+  }
 
-    @Override
-    public BizopsEndpoints queryBizEndpointList(QueryMetaRequest request) throws Exception {
-        return null;
-    }
+  @Override
+  public BizopsEndpoints queryBizEndpointList(QueryMetaRequest request) throws Exception {
+    return null;
+  }
 
-    @Override
-    public BizopsEndpoints queryBizErrorCodeList(QueryMetaRequest request) throws Exception {
-        return null;
-    }
+  @Override
+  public BizopsEndpoints queryBizErrorCodeList(QueryMetaRequest request) throws Exception {
+    return null;
+  }
 
-    @Override
-    public QueryProto.QuerySlowSqlResponse querySlowSqlList(QueryMetaRequest request) throws Exception {
-        return null;
-    }
+  @Override
+  public QueryProto.QuerySlowSqlResponse querySlowSqlList(QueryMetaRequest request)
+      throws Exception {
+    return null;
+  }
 }

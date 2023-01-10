@@ -12,38 +12,38 @@ import lombok.Data;
 @Data
 public class AlarmWebhookTestDTO {
 
-    /**
-     * 请求方式
-     */
-    private String requestType;
+  /**
+   * 请求方式
+   */
+  private String requestType;
 
-    /**
-     * 请求地址
-     */
-    private String requestUrl;
+  /**
+   * 请求地址
+   */
+  private String requestUrl;
 
-    /**
-     * 租户id
-     */
-    private String tenant;
+  /**
+   * 租户id
+   */
+  private String tenant;
 
-    /**
-     * 请求头
-     */
-    private String requestHeaders;
+  /**
+   * 请求头
+   */
+  private String requestHeaders;
 
-    /**
-     * 请求体
-     */
-    private String requestBody;
+  /**
+   * 请求体
+   */
+  private String requestBody;
 
-    /**
-     * 测试体
-     */
-    private String testBody;
+  /**
+   * 测试体
+   */
+  private String testBody;
 
-    /**
-     * 额外信息
-     */
-    private String extra;
+  /**
+   * 额外信息
+   */
+  private String extra;
 }

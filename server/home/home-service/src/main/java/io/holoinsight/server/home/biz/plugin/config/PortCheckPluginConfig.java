@@ -2,7 +2,6 @@
  * Copyright 2022 Holoinsight Project Authors. Licensed under Apache-2.0.
  */
 
-
 package io.holoinsight.server.home.biz.plugin.config;
 
 import lombok.Data;
@@ -15,6 +14,6 @@ import lombok.EqualsAndHashCode;
  */
 @EqualsAndHashCode(callSuper = true)
 @Data
-public class PortCheckPluginConfig extends BasePluginConfig{
-    public Integer      port;
+public class PortCheckPluginConfig extends BasePluginConfig {
+  public Integer port;
 }

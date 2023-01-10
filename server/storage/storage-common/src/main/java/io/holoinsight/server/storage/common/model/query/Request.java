@@ -13,8 +13,8 @@ import java.util.Map;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Request {
-    private String tenant;
-    private long startTime;
-    private long endTime;
-    private Map<String, String> termParams;
+  private String tenant;
+  private long startTime;
+  private long endTime;
+  private Map<String, String> termParams;
 }

@@ -2,7 +2,6 @@
  * Copyright 2022 Holoinsight Project Authors. Licensed under Apache-2.0.
  */
 
-
 package io.holoinsight.server.home.dal.transformer;
 
 import io.holoinsight.server.common.J;
@@ -19,13 +18,12 @@ import java.lang.reflect.Type;
  */
 @Component
 public class TenantOpsStorageMapper {
-    public static String asString(TenantOpsStorage storage) {
-        return J.toJson(storage);
-    }
+  public static String asString(TenantOpsStorage storage) {
+    return J.toJson(storage);
+  }
 
-    public static TenantOpsStorage asObj(String storage) {
-        Type t = new TypeToken<TenantOpsStorage>() {
-        }.getType();
-        return J.fromJson(storage, t);
-    }
+  public static TenantOpsStorage asObj(String storage) {
+    Type t = new TypeToken<TenantOpsStorage>() {}.getType();
+    return J.fromJson(storage, t);
+  }
 }

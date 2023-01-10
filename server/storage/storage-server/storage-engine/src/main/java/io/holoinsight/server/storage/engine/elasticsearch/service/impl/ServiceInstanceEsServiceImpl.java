@@ -27,40 +27,43 @@ import java.util.List;
 @Service
 public class ServiceInstanceEsServiceImpl implements ServiceInstanceEsService {
 
-    @Autowired
-    private RestHighLevelClient client;
+  @Autowired
+  private RestHighLevelClient client;
 
-    @Override
-    public List<ServiceInstance> getServiceInstanceList(String tenant, String service, long startTime, long endTime) throws IOException {
-        List<ServiceInstance> result = new ArrayList<>();
+  @Override
+  public List<ServiceInstance> getServiceInstanceList(String tenant, String service, long startTime,
+      long endTime) throws IOException {
+    List<ServiceInstance> result = new ArrayList<>();
 
-        BoolQueryBuilder queryBuilder = QueryBuilders.boolQuery()
-                .must(QueryBuilders.termQuery(SpanEsDO.resource(SpanEsDO.TENANT), tenant))
-                .must(QueryBuilders.boolQuery().should(QueryBuilders.termQuery(SpanEsDO.KIND, SpanKind.SERVER))
-                        .should(QueryBuilders.termQuery(SpanEsDO.KIND, SpanKind.CONSUMER)))
-                .must(QueryBuilders.termQuery(SpanEsDO.resource(SpanEsDO.SERVICE_NAME), service))
-                .must(QueryBuilders.rangeQuery(SpanEsDO.START_TIME).gte(startTime).lte(endTime));
+    BoolQueryBuilder queryBuilder = QueryBuilders.boolQuery()
+        .must(QueryBuilders.termQuery(SpanEsDO.resource(SpanEsDO.TENANT), tenant))
+        .must(QueryBuilders.boolQuery()
+            .should(QueryBuilders.termQuery(SpanEsDO.KIND, SpanKind.SERVER))
+            .should(QueryBuilders.termQuery(SpanEsDO.KIND, SpanKind.CONSUMER)))
+        .must(QueryBuilders.termQuery(SpanEsDO.resource(SpanEsDO.SERVICE_NAME), service))
+        .must(QueryBuilders.rangeQuery(SpanEsDO.START_TIME).gte(startTime).lte(endTime));
 
-        SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
-        sourceBuilder.size(1000);
-        sourceBuilder.query(queryBuilder);
-        sourceBuilder.aggregation(CommonBuilder.buildAgg(SpanEsDO.resource(SpanEsDO.SERVICE_INSTANCE_NAME)));
+    SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
+    sourceBuilder.size(1000);
+    sourceBuilder.query(queryBuilder);
+    sourceBuilder
+        .aggregation(CommonBuilder.buildAgg(SpanEsDO.resource(SpanEsDO.SERVICE_INSTANCE_NAME)));
 
-        SearchRequest searchRequest = new SearchRequest(SpanEsDO.INDEX_NAME);
-        searchRequest.source(sourceBuilder);
-        SearchResponse response = client.search(searchRequest, RequestOptions.DEFAULT);
+    SearchRequest searchRequest = new SearchRequest(SpanEsDO.INDEX_NAME);
+    searchRequest.source(sourceBuilder);
+    SearchResponse response = client.search(searchRequest, RequestOptions.DEFAULT);
 
-        Terms terms = response.getAggregations().get(SpanEsDO.resource(SpanEsDO.SERVICE_INSTANCE_NAME));
-        for (Terms.Bucket bucket : terms.getBuckets()) {
-            String serviceInstanceName = bucket.getKey().toString();
+    Terms terms = response.getAggregations().get(SpanEsDO.resource(SpanEsDO.SERVICE_INSTANCE_NAME));
+    for (Terms.Bucket bucket : terms.getBuckets()) {
+      String serviceInstanceName = bucket.getKey().toString();
 
-            ServiceInstance serviceInstance = new ServiceInstance();
-            serviceInstance.setName(serviceInstanceName);
-            serviceInstance.setMetric(CommonBuilder.buildMetric(bucket));
+      ServiceInstance serviceInstance = new ServiceInstance();
+      serviceInstance.setName(serviceInstanceName);
+      serviceInstance.setMetric(CommonBuilder.buildMetric(bucket));
 
-            result.add(serviceInstance);
-        }
-
-        return result;
+      result.add(serviceInstance);
     }
+
+    return result;
+  }
 }

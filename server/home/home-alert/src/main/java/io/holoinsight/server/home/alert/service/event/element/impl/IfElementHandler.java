@@ -27,52 +27,55 @@ import java.util.Map;
 @Component
 public class IfElementHandler implements IElementHandler, InitializingBean {
 
-    @Override
-    public String handler(String oldElement, Map<String, String> requestMap) {
-        StringBuffer newElement = new StringBuffer();
-        Boolean conditionResult = false;
-        if (!oldElement.contains(AlarmConstant.IF_START_ELEMENT)) {
-            return oldElement;
-        }
-        String[] elements = oldElement.split(AlarmConstant.IF_END_ELEMENT);
-        synchronized (IfElementHandler.class) {
-            for (String element : elements) {
-                try {
-                    if (StringUtils.isEmpty(element) || !element.contains(AlarmConstant.IF_START_ELEMENT)) {
-                        newElement.append(element);
-                        continue;
-                    }
-                    if (!element.startsWith(AlarmConstant.IF_START_ELEMENT)) {
-                        newElement.append(element.substring(0, element.indexOf(AlarmConstant.IF_START_ELEMENT)));
-                    }
-                    String tmpElement = element.substring(element.indexOf(AlarmConstant.IF_START_ELEMENT)) + AlarmConstant.IF_END_ELEMENT;
-                    Document document = DocumentUtil.generateSaxReader().read(new ByteArrayInputStream(tmpElement.getBytes("UTF-8")));
-                    //  将If 条件转成 root节点
-                    Element root = document.getRootElement();
-                    //ognl表达式判断
-                    String condition = root.attribute(AlarmConstant.TEST_PROPERTY).getValue();
-                    Object condObj = Ognl.parseExpression(condition);
-                    Object value = Ognl.getValue(condObj, requestMap);
-
-                    if (value instanceof Boolean) {
-                        conditionResult = (Boolean) value;
-                    } else {
-                        throw new RuntimeException();
-                    }
-                    if (conditionResult) {
-                        String content = root.getText();
-                        newElement.append(content);
-                    }
-                } catch (Exception e) {
-
-                }
-            }
-        }
-        return newElement.toString();
+  @Override
+  public String handler(String oldElement, Map<String, String> requestMap) {
+    StringBuffer newElement = new StringBuffer();
+    Boolean conditionResult = false;
+    if (!oldElement.contains(AlarmConstant.IF_START_ELEMENT)) {
+      return oldElement;
     }
+    String[] elements = oldElement.split(AlarmConstant.IF_END_ELEMENT);
+    synchronized (IfElementHandler.class) {
+      for (String element : elements) {
+        try {
+          if (StringUtils.isEmpty(element) || !element.contains(AlarmConstant.IF_START_ELEMENT)) {
+            newElement.append(element);
+            continue;
+          }
+          if (!element.startsWith(AlarmConstant.IF_START_ELEMENT)) {
+            newElement
+                .append(element.substring(0, element.indexOf(AlarmConstant.IF_START_ELEMENT)));
+          }
+          String tmpElement = element.substring(element.indexOf(AlarmConstant.IF_START_ELEMENT))
+              + AlarmConstant.IF_END_ELEMENT;
+          Document document = DocumentUtil.generateSaxReader()
+              .read(new ByteArrayInputStream(tmpElement.getBytes("UTF-8")));
+          // 将If 条件转成 root节点
+          Element root = document.getRootElement();
+          // ognl表达式判断
+          String condition = root.attribute(AlarmConstant.TEST_PROPERTY).getValue();
+          Object condObj = Ognl.parseExpression(condition);
+          Object value = Ognl.getValue(condObj, requestMap);
 
-    @Override
-    public void afterPropertiesSet() throws Exception {
-        ElementSpiServiceFactory.register(ElementSpiEnum.IF_ELEMENT.getName(), this);
+          if (value instanceof Boolean) {
+            conditionResult = (Boolean) value;
+          } else {
+            throw new RuntimeException();
+          }
+          if (conditionResult) {
+            String content = root.getText();
+            newElement.append(content);
+          }
+        } catch (Exception e) {
+
+        }
+      }
     }
+    return newElement.toString();
+  }
+
+  @Override
+  public void afterPropertiesSet() throws Exception {
+    ElementSpiServiceFactory.register(ElementSpiEnum.IF_ELEMENT.getName(), this);
+  }
 }

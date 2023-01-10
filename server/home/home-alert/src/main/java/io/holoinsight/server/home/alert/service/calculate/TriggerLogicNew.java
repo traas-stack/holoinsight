@@ -14,25 +14,25 @@ import java.io.Serializable;
  */
 public class TriggerLogicNew implements Serializable {
 
-    public static boolean compareValue(CompareParam compareParam, Double value) {
-        CompareOperationEnum cmp = compareParam.getCmp();
-        Double cmpValue = compareParam.getCmpValue();
-        if (cmp == CompareOperationEnum.GT) {
-            return value != null && value > cmpValue;
-        } else if (cmp == CompareOperationEnum.GTE) {
-            return value != null && value >= cmpValue;
-        } else if (cmp == CompareOperationEnum.LT) {
-            return value != null && value < cmpValue;
-        } else if (cmp == CompareOperationEnum.LTE) {
-            return value != null && value <= cmpValue;
-        } else if (cmp == CompareOperationEnum.EQ) {
-            return cmpValue.equals(value);
-        } else if (cmp == CompareOperationEnum.NEQ) {
-            return !cmpValue.equals(value);
-        } else if (cmp == CompareOperationEnum.NULL) {
-            return value == null;
-        } else {
-            return false;
-        }
+  public static boolean compareValue(CompareParam compareParam, Double value) {
+    CompareOperationEnum cmp = compareParam.getCmp();
+    Double cmpValue = compareParam.getCmpValue();
+    if (cmp == CompareOperationEnum.GT) {
+      return value != null && value > cmpValue;
+    } else if (cmp == CompareOperationEnum.GTE) {
+      return value != null && value >= cmpValue;
+    } else if (cmp == CompareOperationEnum.LT) {
+      return value != null && value < cmpValue;
+    } else if (cmp == CompareOperationEnum.LTE) {
+      return value != null && value <= cmpValue;
+    } else if (cmp == CompareOperationEnum.EQ) {
+      return cmpValue.equals(value);
+    } else if (cmp == CompareOperationEnum.NEQ) {
+      return !cmpValue.equals(value);
+    } else if (cmp == CompareOperationEnum.NULL) {
+      return value == null;
+    } else {
+      return false;
     }
+  }
 }

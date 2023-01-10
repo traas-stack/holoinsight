@@ -7,8 +7,8 @@ import lombok.Data;
 
 @Data
 public class QueryEndpointRequest extends Request {
-    private String serviceName;
-    private String endpointName;
-    private boolean isEntry;
-    private int traceIdSize;
+  private String serviceName;
+  private String endpointName;
+  private boolean isEntry;
+  private int traceIdSize;
 }

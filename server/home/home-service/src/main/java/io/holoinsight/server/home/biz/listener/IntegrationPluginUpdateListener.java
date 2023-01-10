@@ -2,7 +2,6 @@
  * Copyright 2022 Holoinsight Project Authors. Licensed under Apache-2.0.
  */
 
-
 package io.holoinsight.server.home.biz.listener;
 
 import io.holoinsight.server.home.biz.plugin.PluginRepository;
@@ -27,66 +26,65 @@ import java.util.List;
 @Component
 public class IntegrationPluginUpdateListener {
 
-    @Autowired
-    private GaeaCollectConfigService gaeaCollectConfigService;
-    @Autowired
-    private PluginRepository         pluginRepository;
+  @Autowired
+  private GaeaCollectConfigService gaeaCollectConfigService;
+  @Autowired
+  private PluginRepository pluginRepository;
 
-    @PostConstruct
-    void register() {
-        EventBusHolder.register(this);
+  @PostConstruct
+  void register() {
+    EventBusHolder.register(this);
+  }
+
+  @Subscribe
+  @AllowConcurrentEvents
+  public void onEvent(IntegrationPluginDTO integrationPluginDTO) {
+    List<Long> upsert = upsert(integrationPluginDTO);
+    notify(upsert);
+  }
+
+  private List<Long> upsert(IntegrationPluginDTO integrationPluginDTO) {
+    GaeaCollectConfigDTO gaeaCollectConfigDTO = new GaeaCollectConfigDTO();
+    gaeaCollectConfigDTO.tenant = integrationPluginDTO.tenant;
+    gaeaCollectConfigDTO.deleted = false;
+    if (!integrationPluginDTO.status) {
+      gaeaCollectConfigDTO.deleted = true;
     }
+    List<Long> upsertList = new ArrayList<>();
+    if (this.pluginRepository.contains(integrationPluginDTO.type)) {
 
-    @Subscribe
-    @AllowConcurrentEvents
-    public void onEvent(IntegrationPluginDTO integrationPluginDTO) {
-        List<Long> upsert = upsert(integrationPluginDTO);
-        notify(upsert);
-    }
+      AbstractIntegrationPlugin plugin = (AbstractIntegrationPlugin) this.pluginRepository
+          .getTemplate(integrationPluginDTO.type, integrationPluginDTO.version);
 
-    private List<Long> upsert(IntegrationPluginDTO integrationPluginDTO) {
-        GaeaCollectConfigDTO gaeaCollectConfigDTO = new GaeaCollectConfigDTO();
-        gaeaCollectConfigDTO.tenant = integrationPluginDTO.tenant;
-        gaeaCollectConfigDTO.deleted = false;
-        if (!integrationPluginDTO.status) {
-            gaeaCollectConfigDTO.deleted = true;
+      List<AbstractIntegrationPlugin> abstractIntegrationPlugins =
+          plugin.genPluginList(integrationPluginDTO);
+      for (AbstractIntegrationPlugin integrationPlugin : abstractIntegrationPlugins) {
+        gaeaCollectConfigDTO.collectRange = integrationPlugin.getGaeaCollectRange();
+        gaeaCollectConfigDTO.type = integrationPlugin.collectPlugin;
+        gaeaCollectConfigDTO.tableName = integrationPlugin.gaeaTableName;
+        gaeaCollectConfigDTO.refId = "integration_" + integrationPluginDTO.getId();
+        gaeaCollectConfigDTO.executorSelector = integrationPlugin.getExecutorSelector();
+        gaeaCollectConfigDTO.version = 1L;
+        gaeaCollectConfigDTO.json = integrationPlugin.generateCollectConfig();
+
+        if (gaeaCollectConfigDTO.deleted) {
+          Long deletedId = gaeaCollectConfigService.updateDeleted(gaeaCollectConfigDTO.tableName);
+          if (deletedId != null) {
+            upsertList.add(deletedId);
+          }
+        } else {
+          GaeaCollectConfigDTO upsert = gaeaCollectConfigService.upsert(gaeaCollectConfigDTO);
+          if (null != upsert) {
+            upsertList.add(upsert.id);
+          }
         }
-        List<Long> upsertList = new ArrayList<>();
-        if (this.pluginRepository.contains(integrationPluginDTO.type)) {
-
-            AbstractIntegrationPlugin plugin = (AbstractIntegrationPlugin)this.pluginRepository.getTemplate(integrationPluginDTO.type,
-                integrationPluginDTO.version);
-
-            List<AbstractIntegrationPlugin> abstractIntegrationPlugins = plugin.genPluginList(integrationPluginDTO);
-            for (AbstractIntegrationPlugin integrationPlugin : abstractIntegrationPlugins) {
-                gaeaCollectConfigDTO.collectRange = integrationPlugin.getGaeaCollectRange();
-                gaeaCollectConfigDTO.type = integrationPlugin.collectPlugin;
-                gaeaCollectConfigDTO.tableName = integrationPlugin.gaeaTableName;
-                gaeaCollectConfigDTO.refId = "integration_" + integrationPluginDTO.getId();
-                gaeaCollectConfigDTO.executorSelector = integrationPlugin.getExecutorSelector();
-                gaeaCollectConfigDTO.version = 1L;
-                gaeaCollectConfigDTO.json = integrationPlugin.generateCollectConfig();
-
-                if (gaeaCollectConfigDTO.deleted) {
-                    Long deletedId = gaeaCollectConfigService
-                        .updateDeleted(gaeaCollectConfigDTO.tableName);
-                    if (deletedId != null) {
-                        upsertList.add(deletedId);
-                    }
-                } else {
-                    GaeaCollectConfigDTO upsert = gaeaCollectConfigService
-                        .upsert(gaeaCollectConfigDTO);
-                    if (null != upsert) {
-                        upsertList.add(upsert.id);
-                    }
-                }
-            }
-        }
-        return upsertList;
+      }
     }
+    return upsertList;
+  }
 
-    private void notify(List<Long> upsertList) {
+  private void notify(List<Long> upsertList) {
 
-        // grpc 通知id更新
-    }
+    // grpc 通知id更新
+  }
 }

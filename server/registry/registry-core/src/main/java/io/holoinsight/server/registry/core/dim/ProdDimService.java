@@ -24,103 +24,104 @@ import com.google.common.collect.Maps;
 import com.xzchaoo.commons.caffeine.SafeCaffeine;
 
 /**
- * <p>created at 2022/4/15
+ * <p>
+ * created at 2022/4/15
  *
  * @author zzhb101
  */
 public class ProdDimService {
-    private static final Logger LOGGER = LoggerFactory.getLogger(ProdDimService.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(ProdDimService.class);
 
-    @Autowired
-    private DataClientService dataClientService;
+  @Autowired
+  private DataClientService dataClientService;
 
-    // TODO 定期更新
-    private SafeCaffeine<String, Map<String, Map<String, Object>>>   queryAllCache;
-    private SafeCaffeine<CacheKey, Map<String, Map<String, Object>>> queryByExampleCache;
+  // TODO 定期更新
+  private SafeCaffeine<String, Map<String, Map<String, Object>>> queryAllCache;
+  private SafeCaffeine<CacheKey, Map<String, Map<String, Object>>> queryByExampleCache;
 
-    @PostConstruct
-    public void init() {
-        queryAllCache = new SafeCaffeine<>( //
-            Caffeine.newBuilder() //
-                .expireAfterWrite(Duration.ofSeconds(10)), //
-            new SafeCaffeine.F<String, Map<String, Map<String, Object>>>() { //
-                @Override
-                public @Nullable Map<String, Map<String, Object>> load(@NonNull String table) {
-                    List<Map<String, Object>> rows = dataClientService.queryAll(table);
-                    Map<String, Map<String, Object>> m = Maps.newHashMapWithExpectedSize(rows.size());
-                    for (Map<String, Object> row : rows) {
-                        m.put((String) row.get("_uk"), row);
-                    }
-                    return m;
-                }
-
-                @Override
-                public void onError(@NonNull String table, Throwable throwable) {
-                    LOGGER.error("query all error {}", table, throwable);
-                }
-            }, //
-            10_000);
-
-        queryByExampleCache = new SafeCaffeine<>( //
-            Caffeine.newBuilder() //
-                .expireAfterWrite(Duration.ofSeconds(10)), //
-            new SafeCaffeine.F<CacheKey, Map<String, Map<String, Object>>>() { //
-                @Override
-                public @Nullable Map<String, Map<String, Object>> load(@NonNull CacheKey s) { //
-                    List<Map<String, Object>> rows = dataClientService.queryByExample(s.table, s.example);
-                    Map<String, Map<String, Object>> m = Maps.newHashMapWithExpectedSize(rows.size());
-                    for (Map<String, Object> row : rows) {
-                        m.put((String) row.get("_uk"), row);
-                    }
-                    return m;
-                }
-
-                @Override
-                public void onError(@NonNull CacheKey s, Throwable throwable) {
-                    LOGGER.error("load error {}", s);
-                }
-            }, 10_000);
-    }
-
-    public Map<String, Map<String, Object>> queryByExample(String table, QueryExample example) {
-        CacheKey k = new CacheKey(table, example);
-        return queryByExampleCache.get(k);
-    }
-
-    public Map<String, Object> queryByDimIdRealTime(String table, String dimId) {
-        QueryExample qe = new QueryExample();
-        qe.getParams().put("_uk", dimId);
-        List<Map<String, Object>> rows = dataClientService.queryByExample(table, qe);
-        if (rows.size() == 1) {
-            return rows.get(0);
-        }
-        return null;
-    }
-
-    public Map<String, Object> queryByDimId(String table, String dimId, boolean useCache) {
-        if (useCache) {
-            Map<String, Map<String, Object>> m = queryAllCache.get(table);
-            if (m != null) {
-                return m.get(dimId);
+  @PostConstruct
+  public void init() {
+    queryAllCache = new SafeCaffeine<>( //
+        Caffeine.newBuilder() //
+            .expireAfterWrite(Duration.ofSeconds(10)), //
+        new SafeCaffeine.F<String, Map<String, Map<String, Object>>>() { //
+          @Override
+          public @Nullable Map<String, Map<String, Object>> load(@NonNull String table) {
+            List<Map<String, Object>> rows = dataClientService.queryAll(table);
+            Map<String, Map<String, Object>> m = Maps.newHashMapWithExpectedSize(rows.size());
+            for (Map<String, Object> row : rows) {
+              m.put((String) row.get("_uk"), row);
             }
-            return null;
-        } else {
-            QueryExample qe = new QueryExample();
-            qe.getParams().put("_uk", dimId);
-            List<Map<String, Object>> rows = dataClientService.queryByExample(table, qe);
-            if (rows.size() == 1) {
-                return rows.get(0);
-            }
-            if (rows.size() > 1) {
-                throw new IllegalStateException("duplicated key " + dimId);
-            }
-            return null;
-        }
-    }
+            return m;
+          }
 
-    @Data
-    public static class CacheKey {
-        private final String       table;
-        private final QueryExample example;
+          @Override
+          public void onError(@NonNull String table, Throwable throwable) {
+            LOGGER.error("query all error {}", table, throwable);
+          }
+        }, //
+        10_000);
+
+    queryByExampleCache = new SafeCaffeine<>( //
+        Caffeine.newBuilder() //
+            .expireAfterWrite(Duration.ofSeconds(10)), //
+        new SafeCaffeine.F<CacheKey, Map<String, Map<String, Object>>>() { //
+          @Override
+          public @Nullable Map<String, Map<String, Object>> load(@NonNull CacheKey s) { //
+            List<Map<String, Object>> rows = dataClientService.queryByExample(s.table, s.example);
+            Map<String, Map<String, Object>> m = Maps.newHashMapWithExpectedSize(rows.size());
+            for (Map<String, Object> row : rows) {
+              m.put((String) row.get("_uk"), row);
+            }
+            return m;
+          }
+
+          @Override
+          public void onError(@NonNull CacheKey s, Throwable throwable) {
+            LOGGER.error("load error {}", s);
+          }
+        }, 10_000);
+  }
+
+  public Map<String, Map<String, Object>> queryByExample(String table, QueryExample example) {
+    CacheKey k = new CacheKey(table, example);
+    return queryByExampleCache.get(k);
+  }
+
+  public Map<String, Object> queryByDimIdRealTime(String table, String dimId) {
+    QueryExample qe = new QueryExample();
+    qe.getParams().put("_uk", dimId);
+    List<Map<String, Object>> rows = dataClientService.queryByExample(table, qe);
+    if (rows.size() == 1) {
+      return rows.get(0);
     }
+    return null;
+  }
+
+  public Map<String, Object> queryByDimId(String table, String dimId, boolean useCache) {
+    if (useCache) {
+      Map<String, Map<String, Object>> m = queryAllCache.get(table);
+      if (m != null) {
+        return m.get(dimId);
+      }
+      return null;
+    } else {
+      QueryExample qe = new QueryExample();
+      qe.getParams().put("_uk", dimId);
+      List<Map<String, Object>> rows = dataClientService.queryByExample(table, qe);
+      if (rows.size() == 1) {
+        return rows.get(0);
+      }
+      if (rows.size() > 1) {
+        throw new IllegalStateException("duplicated key " + dimId);
+      }
+      return null;
+    }
+  }
+
+  @Data
+  public static class CacheKey {
+    private final String table;
+    private final QueryExample example;
+  }
 }

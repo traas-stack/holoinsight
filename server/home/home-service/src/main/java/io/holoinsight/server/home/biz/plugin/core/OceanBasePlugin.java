@@ -2,7 +2,6 @@
  * Copyright 2022 Holoinsight Project Authors. Licensed under Apache-2.0.
  */
 
-
 package io.holoinsight.server.home.biz.plugin.core;
 
 import io.holoinsight.server.common.J;
@@ -31,53 +30,51 @@ import java.util.Map;
 @PluginModel(name = "com.alipay.holoinsight.plugin.OceanBasePlugin", version = "1")
 public class OceanBasePlugin extends AbstractCentralIntegrationPlugin<OceanBasePlugin> {
 
-    public ObTask obTask;
+  public ObTask obTask;
 
-    @Override
-    ObTask buildTask() {
-        return obTask;
+  @Override
+  ObTask buildTask() {
+    return obTask;
+  }
+
+  @Override
+  public List<OceanBasePlugin> genPluginList(IntegrationPluginDTO integrationPluginDTO) {
+    List<OceanBasePlugin> oceanBasePlugins = new ArrayList<>();
+
+    Map<String, Object> columnMap = new HashMap<>();
+    columnMap.put("version", integrationPluginDTO.version);
+    columnMap.put("name", integrationPluginDTO.product);
+    List<IntegrationProductDTO> byMap = integrationProductService.findByMap(columnMap);
+    if (CollectionUtils.isEmpty(byMap))
+      return oceanBasePlugins;
+
+    IntegrationProductDTO productDTO = byMap.get(0);
+    List<IntegrationConfig> configList = productDTO.getForm().getConfigList();
+
+    for (IntegrationConfig config : configList) {
+
+
+      OceanBasePlugin oceanBasePlugin = new OceanBasePlugin();
+
+      ObTask obTask = J.fromJson(J.toJson(config.getConf()), new TypeToken<ObTask>() {}.getType());
+
+      {
+        oceanBasePlugin.tenant = integrationPluginDTO.tenant;
+        oceanBasePlugin.metricName = String.join("_", ANTGROUP_METRIC_PREFIX,
+            integrationPluginDTO.product.toLowerCase(), config.name);
+
+        oceanBasePlugin.collectRange = GaeaConvertUtil.convertCloudMonitorRange("ob_node_tenant",
+            MetaLabel.allApp, new ArrayList<>());
+        oceanBasePlugin.gaeaTableName = integrationPluginDTO.name + "_" + config.name;
+
+        oceanBasePlugin.obTask = obTask;
+        oceanBasePlugin.collectPlugin = "obcollector";
+      }
+
+      oceanBasePlugins.add(oceanBasePlugin);
     }
 
-    @Override
-    public List<OceanBasePlugin> genPluginList(IntegrationPluginDTO integrationPluginDTO) {
-        List<OceanBasePlugin> oceanBasePlugins = new ArrayList<>();
-
-        Map<String, Object> columnMap = new HashMap<>();
-        columnMap.put("version", integrationPluginDTO.version);
-        columnMap.put("name", integrationPluginDTO.product);
-        List<IntegrationProductDTO> byMap = integrationProductService.findByMap(columnMap);
-        if (CollectionUtils.isEmpty(byMap))
-            return oceanBasePlugins;
-
-        IntegrationProductDTO productDTO = byMap.get(0);
-        List<IntegrationConfig> configList = productDTO.getForm().getConfigList();
-
-        for (IntegrationConfig config : configList) {
-
-
-            OceanBasePlugin oceanBasePlugin = new OceanBasePlugin();
-
-            ObTask obTask = J.fromJson(J.toJson(config.getConf()),
-                    new TypeToken<ObTask>() {
-                    }.getType());
-
-            {
-                oceanBasePlugin.tenant = integrationPluginDTO.tenant;
-                oceanBasePlugin.metricName = String.join("_", ANTGROUP_METRIC_PREFIX,
-                    integrationPluginDTO.product.toLowerCase(), config.name);
-
-                oceanBasePlugin.collectRange = GaeaConvertUtil.convertCloudMonitorRange("ob_node_tenant",
-                    MetaLabel.allApp, new ArrayList<>());
-                oceanBasePlugin.gaeaTableName = integrationPluginDTO.name + "_" + config.name;
-
-                oceanBasePlugin.obTask = obTask;
-                oceanBasePlugin.collectPlugin = "obcollector";
-            }
-
-            oceanBasePlugins.add(oceanBasePlugin);
-        }
-
-        return oceanBasePlugins;
-    }
+    return oceanBasePlugins;
+  }
 
 }

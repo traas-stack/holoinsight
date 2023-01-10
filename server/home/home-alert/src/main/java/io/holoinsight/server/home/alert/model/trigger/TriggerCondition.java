@@ -14,12 +14,12 @@ import java.util.List;
 @Data
 public class TriggerCondition {
 
-    private String stepTime;
+  private String stepTime;
 
-    private int stepNum;
+  private int stepNum;
 
-    private String triggerStepNum;
+  private String triggerStepNum;
 
-    List<CompareParam> compareParam;
+  List<CompareParam> compareParam;
 
 }

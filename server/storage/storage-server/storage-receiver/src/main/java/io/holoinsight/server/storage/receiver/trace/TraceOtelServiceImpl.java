@@ -12,13 +12,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 public class TraceOtelServiceImpl extends TraceServiceGrpc.TraceServiceImplBase {
 
-    @Autowired
-    private SpanHandler spanHandler;
+  @Autowired
+  private SpanHandler spanHandler;
 
-    @Override
-    public void export(ExportTraceServiceRequest request, StreamObserver<ExportTraceServiceResponse> responseObserver) {
-        spanHandler.handleResourceSpans(request.getResourceSpansList());
-        responseObserver.onNext(ExportTraceServiceResponse.newBuilder().build());
-        responseObserver.onCompleted();
-    }
+  @Override
+  public void export(ExportTraceServiceRequest request,
+      StreamObserver<ExportTraceServiceResponse> responseObserver) {
+    spanHandler.handleResourceSpans(request.getResourceSpansList());
+    responseObserver.onNext(ExportTraceServiceResponse.newBuilder().build());
+    responseObserver.onCompleted();
+  }
 }

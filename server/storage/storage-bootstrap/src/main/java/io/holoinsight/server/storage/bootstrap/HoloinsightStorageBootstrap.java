@@ -11,12 +11,12 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 
 @SpringBootApplication
 public class HoloinsightStorageBootstrap {
-    public static void main(String[] args) {
-        try {
-            ContextHolder.ctx = SpringApplication.run(HoloinsightStorageBootstrap.class, args);
-        } catch (Throwable e) {
-            e.printStackTrace();
-            System.exit(1);
-        }
+  public static void main(String[] args) {
+    try {
+      ContextHolder.ctx = SpringApplication.run(HoloinsightStorageBootstrap.class, args);
+    } catch (Throwable e) {
+      e.printStackTrace();
+      System.exit(1);
     }
+  }
 }
