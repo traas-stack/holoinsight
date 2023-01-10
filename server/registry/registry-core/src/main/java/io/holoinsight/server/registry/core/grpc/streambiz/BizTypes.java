@@ -28,4 +28,10 @@ public final class BizTypes {
   public static final int DRY_RUN_RESP = 61;
   public static final int HTTP_PROXY = 70;
   public static final int HTTP_PROXY_RESP = 71;
+
+  /**
+   * Dry run request and response biz code
+   */
+  public static final int CHECK_TASK = 80;
+  public static final int CHECK_TASK_RESP = 81;
 }

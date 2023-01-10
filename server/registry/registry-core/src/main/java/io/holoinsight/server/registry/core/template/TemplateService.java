@@ -30,6 +30,9 @@ public class TemplateService {
     }
 
     Set<Long> ids = templateStorage.get(t);
+    if (ids == null) {
+      return null;
+    }
     switch (ids.size()) {
       case 0:
         break;

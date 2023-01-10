@@ -201,9 +201,43 @@ message HttpProxyResponse {
   int32 cost = 5;
 }
 
+message CheckConfigDistributionRequest {
+  io.holoinsight.server.common.grpc.CommonRequestHeader header = 1;
+  string table_name = 2;
+  int64 config_id = 3;
+}
 
-// 路径匹配测试
-// 配置试跑
+message CheckConfigDistributionResponse {
+  io.holoinsight.server.common.grpc.CommonResponseHeader header = 1;
+  // 匹配了多少dims
+  int32 dims = 2;
+  // 构建了多少tasks
+  int32 tasks = 3;
+  // 运行最新版本的数量
+  int32 latest_version = 4;
+  // 运行旧版本的数量
+  int32 old_version = 5;
+  // 未知, 可能是没连通
+  int32 unknown = 6;
+}
+
+message CheckConfigTaskDistributionRequest {
+  io.holoinsight.server.common.grpc.CommonRequestHeader header = 1;
+  repeated SubTask sub_tasks = 2;
+  message SubTask {
+    string config_key = 1;
+    string config_version = 2;
+    string target_key = 3;
+    string target_version = 4;
+  }
+}
+
+message CheckConfigTaskDistributionResponse {
+  io.holoinsight.server.common.grpc.CommonResponseHeader header = 1;
+  repeated int32 status = 2;
+}
+
+
 
 // 提供给 prod 调用的 registry 服务
 service RegistryServiceForProd {
@@ -220,4 +254,8 @@ service RegistryServiceForProd {
 
   // 配置试运行
   rpc dry_run(DryRunRequest) returns(DryRunResponse) {}
+
+  // 检查配置下发情况
+  rpc check_config_distribution(CheckConfigDistributionRequest) returns(CheckConfigDistributionResponse) {}
 }
+

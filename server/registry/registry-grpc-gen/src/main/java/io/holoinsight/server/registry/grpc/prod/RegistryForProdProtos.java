@@ -75,6 +75,16 @@ public final class RegistryForProdProtos {
   static final com.google.protobuf.GeneratedMessageV3.FieldAccessorTable internal_static_io_holoinsight_server_registry_grpc_prod_HttpProxyResponse_fieldAccessorTable;
   static final com.google.protobuf.Descriptors.Descriptor internal_static_io_holoinsight_server_registry_grpc_prod_HttpProxyResponse_HeadersEntry_descriptor;
   static final com.google.protobuf.GeneratedMessageV3.FieldAccessorTable internal_static_io_holoinsight_server_registry_grpc_prod_HttpProxyResponse_HeadersEntry_fieldAccessorTable;
+  static final com.google.protobuf.Descriptors.Descriptor internal_static_io_holoinsight_server_registry_grpc_prod_CheckConfigDistributionRequest_descriptor;
+  static final com.google.protobuf.GeneratedMessageV3.FieldAccessorTable internal_static_io_holoinsight_server_registry_grpc_prod_CheckConfigDistributionRequest_fieldAccessorTable;
+  static final com.google.protobuf.Descriptors.Descriptor internal_static_io_holoinsight_server_registry_grpc_prod_CheckConfigDistributionResponse_descriptor;
+  static final com.google.protobuf.GeneratedMessageV3.FieldAccessorTable internal_static_io_holoinsight_server_registry_grpc_prod_CheckConfigDistributionResponse_fieldAccessorTable;
+  static final com.google.protobuf.Descriptors.Descriptor internal_static_io_holoinsight_server_registry_grpc_prod_CheckConfigTaskDistributionRequest_descriptor;
+  static final com.google.protobuf.GeneratedMessageV3.FieldAccessorTable internal_static_io_holoinsight_server_registry_grpc_prod_CheckConfigTaskDistributionRequest_fieldAccessorTable;
+  static final com.google.protobuf.Descriptors.Descriptor internal_static_io_holoinsight_server_registry_grpc_prod_CheckConfigTaskDistributionRequest_SubTask_descriptor;
+  static final com.google.protobuf.GeneratedMessageV3.FieldAccessorTable internal_static_io_holoinsight_server_registry_grpc_prod_CheckConfigTaskDistributionRequest_SubTask_fieldAccessorTable;
+  static final com.google.protobuf.Descriptors.Descriptor internal_static_io_holoinsight_server_registry_grpc_prod_CheckConfigTaskDistributionResponse_descriptor;
+  static final com.google.protobuf.GeneratedMessageV3.FieldAccessorTable internal_static_io_holoinsight_server_registry_grpc_prod_CheckConfigTaskDistributionResponse_fieldAccessorTable;
 
   public static com.google.protobuf.Descriptors.FileDescriptor getDescriptor() {
     return descriptor;
@@ -197,21 +207,45 @@ public final class RegistryForProdProtos {
         + ".holoinsight.server.registry.grpc.prod.H"
         + "ttpProxyResponse.HeadersEntry\022\014\n\004body\030\004 "
         + "\001(\014\022\014\n\004cost\030\005 \001(\005\032.\n\014HeadersEntry\022\013\n\003key"
-        + "\030\001 \001(\t\022\r\n\005value\030\002 \001(\t:\0028\0012\363\005\n\026RegistrySe"
-        + "rviceForProd\022\273\001\n\034notify_collect_config_u"
-        + "pdate\022K.io.holoinsight.server.registry.g" + "rpc.prod.NotifyCollectConfigUpdatedReque"
-        + "st\032L.io.holoinsight.server.registry.grpc" + ".prod.NotifyCollectConfigUpdatedResponse"
-        + "\"\000\022\207\001\n\nlist_files\022:.io.holoinsight.serve"
-        + "r.registry.grpc.prod.ListFilesRequest\032;." + "io.holoinsight.server.registry.grpc.prod"
-        + ".ListFilesResponse\"\000\022\215\001\n\014preview_file\022<."
-        + "io.holoinsight.server.registry.grpc.prod" + ".PreviewFileRequest\032=.io.holoinsight.ser"
-        + "ver.registry.grpc.prod.PreviewFileRespon"
-        + "se\"\000\022\200\001\n\007inspect\0228.io.holoinsight.server"
-        + ".registry.grpc.prod.InspectRequest\0329.io." + "holoinsight.server.registry.grpc.prod.In"
-        + "spectResponse\"\000\022~\n\007dry_run\0227.io.holoinsi"
-        + "ght.server.registry.grpc.prod.DryRunRequ" + "est\0328.io.holoinsight.server.registry.grp"
-        + "c.prod.DryRunResponse\"\000BC\n(io.holoinsigh"
-        + "t.server.registry.grpc.prodB\025RegistryFor" + "ProdProtosP\001b\006proto3"};
+        + "\030\001 \001(\t\022\r\n\005value\030\002 \001(\t:\0028\001\"\217\001\n\036CheckConfi"
+        + "gDistributionRequest\022F\n\006header\030\001 \001(\01326.i"
+        + "o.holoinsight.server.common.grpc.CommonR"
+        + "equestHeader\022\022\n\ntable_name\030\002 \001(\t\022\021\n\tconf"
+        + "ig_id\030\003 \001(\003\"\305\001\n\037CheckConfigDistributionR"
+        + "esponse\022G\n\006header\030\001 \001(\01327.io.holoinsight"
+        + ".server.common.grpc.CommonResponseHeader"
+        + "\022\014\n\004dims\030\002 \001(\005\022\r\n\005tasks\030\003 \001(\005\022\026\n\016latest_"
+        + "version\030\004 \001(\005\022\023\n\013old_version\030\005 \001(\005\022\017\n\007un"
+        + "known\030\006 \001(\005\"\270\002\n\"CheckConfigTaskDistribut"
+        + "ionRequest\022F\n\006header\030\001 \001(\01326.io.holoinsi"
+        + "ght.server.common.grpc.CommonRequestHead"
+        + "er\022g\n\tsub_tasks\030\002 \003(\0132T.io.holoinsight.s"
+        + "erver.registry.grpc.prod.CheckConfigTask"
+        + "DistributionRequest.SubTask\032a\n\007SubTask\022\022"
+        + "\n\nconfig_key\030\001 \001(\t\022\026\n\016config_version\030\002 \001"
+        + "(\t\022\022\n\ntarget_key\030\003 \001(\t\022\026\n\016target_version"
+        + "\030\004 \001(\t\"~\n#CheckConfigTaskDistributionRes"
+        + "ponse\022G\n\006header\030\001 \001(\01327.io.holoinsight.s"
+        + "erver.common.grpc.CommonResponseHeader\022\016"
+        + "\n\006status\030\002 \003(\0052\250\007\n\026RegistryServiceForPro"
+        + "d\022\273\001\n\034notify_collect_config_update\022K.io."
+        + "holoinsight.server.registry.grpc.prod.No" + "tifyCollectConfigUpdatedRequest\032L.io.hol"
+        + "oinsight.server.registry.grpc.prod.Notif"
+        + "yCollectConfigUpdatedResponse\"\000\022\207\001\n\nlist"
+        + "_files\022:.io.holoinsight.server.registry."
+        + "grpc.prod.ListFilesRequest\032;.io.holoinsi" + "ght.server.registry.grpc.prod.ListFilesR"
+        + "esponse\"\000\022\215\001\n\014preview_file\022<.io.holoinsi"
+        + "ght.server.registry.grpc.prod.PreviewFil" + "eRequest\032=.io.holoinsight.server.registr"
+        + "y.grpc.prod.PreviewFileResponse\"\000\022\200\001\n\007in"
+        + "spect\0228.io.holoinsight.server.registry.g"
+        + "rpc.prod.InspectRequest\0329.io.holoinsight" + ".server.registry.grpc.prod.InspectRespon"
+        + "se\"\000\022~\n\007dry_run\0227.io.holoinsight.server."
+        + "registry.grpc.prod.DryRunRequest\0328.io.ho" + "loinsight.server.registry.grpc.prod.DryR"
+        + "unResponse\"\000\022\262\001\n\031check_config_distributi"
+        + "on\022H.io.holoinsight.server.registry.grpc"
+        + ".prod.CheckConfigDistributionRequest\032I.i" + "o.holoinsight.server.registry.grpc.prod."
+        + "CheckConfigDistributionResponse\"\000BC\n(io."
+        + "holoinsight.server.registry.grpc.prodB\025R" + "egistryForProdProtosP\001b\006proto3"};
     descriptor = com.google.protobuf.Descriptors.FileDescriptor.internalBuildGeneratedFileFrom(
         descriptorData, new com.google.protobuf.Descriptors.FileDescriptor[] {
             io.holoinsight.server.common.grpc.CommonProtos.getDescriptor(),});
@@ -411,6 +445,38 @@ public final class RegistryForProdProtos {
         new com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
             internal_static_io_holoinsight_server_registry_grpc_prod_HttpProxyResponse_HeadersEntry_descriptor,
             new java.lang.String[] {"Key", "Value",});
+    internal_static_io_holoinsight_server_registry_grpc_prod_CheckConfigDistributionRequest_descriptor =
+        getDescriptor().getMessageTypes().get(17);
+    internal_static_io_holoinsight_server_registry_grpc_prod_CheckConfigDistributionRequest_fieldAccessorTable =
+        new com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+            internal_static_io_holoinsight_server_registry_grpc_prod_CheckConfigDistributionRequest_descriptor,
+            new java.lang.String[] {"Header", "TableName", "ConfigId",});
+    internal_static_io_holoinsight_server_registry_grpc_prod_CheckConfigDistributionResponse_descriptor =
+        getDescriptor().getMessageTypes().get(18);
+    internal_static_io_holoinsight_server_registry_grpc_prod_CheckConfigDistributionResponse_fieldAccessorTable =
+        new com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+            internal_static_io_holoinsight_server_registry_grpc_prod_CheckConfigDistributionResponse_descriptor,
+            new java.lang.String[] {"Header", "Dims", "Tasks", "LatestVersion", "OldVersion",
+                "Unknown",});
+    internal_static_io_holoinsight_server_registry_grpc_prod_CheckConfigTaskDistributionRequest_descriptor =
+        getDescriptor().getMessageTypes().get(19);
+    internal_static_io_holoinsight_server_registry_grpc_prod_CheckConfigTaskDistributionRequest_fieldAccessorTable =
+        new com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+            internal_static_io_holoinsight_server_registry_grpc_prod_CheckConfigTaskDistributionRequest_descriptor,
+            new java.lang.String[] {"Header", "SubTasks",});
+    internal_static_io_holoinsight_server_registry_grpc_prod_CheckConfigTaskDistributionRequest_SubTask_descriptor =
+        internal_static_io_holoinsight_server_registry_grpc_prod_CheckConfigTaskDistributionRequest_descriptor
+            .getNestedTypes().get(0);
+    internal_static_io_holoinsight_server_registry_grpc_prod_CheckConfigTaskDistributionRequest_SubTask_fieldAccessorTable =
+        new com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+            internal_static_io_holoinsight_server_registry_grpc_prod_CheckConfigTaskDistributionRequest_SubTask_descriptor,
+            new java.lang.String[] {"ConfigKey", "ConfigVersion", "TargetKey", "TargetVersion",});
+    internal_static_io_holoinsight_server_registry_grpc_prod_CheckConfigTaskDistributionResponse_descriptor =
+        getDescriptor().getMessageTypes().get(20);
+    internal_static_io_holoinsight_server_registry_grpc_prod_CheckConfigTaskDistributionResponse_fieldAccessorTable =
+        new com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+            internal_static_io_holoinsight_server_registry_grpc_prod_CheckConfigTaskDistributionResponse_descriptor,
+            new java.lang.String[] {"Header", "Status",});
     io.holoinsight.server.common.grpc.CommonProtos.getDescriptor();
   }
 
