@@ -22,7 +22,7 @@ import java.io.IOException;
 
 @javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen")
 @Api(value = "topology", description = "the topology API")
-@RequestMapping("/api/v1/topology")
+@RequestMapping("/cluster/api/v1/topology")
 public interface TopologyApi {
 
   @ApiOperation(value = "query tenant topology", nickname = "queryTenantTopology",

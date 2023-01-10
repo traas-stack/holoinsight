@@ -24,7 +24,7 @@ import java.util.List;
 
 @javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen")
 @Api(value = "component", description = "the component API")
-@RequestMapping("/api/v1/component")
+@RequestMapping("/cluster/api/v1/component")
 public interface VirtualComponentApi {
 
   @ApiOperation(value = "query db list", nickname = "queryDbList", notes = "查询数据库列表",
