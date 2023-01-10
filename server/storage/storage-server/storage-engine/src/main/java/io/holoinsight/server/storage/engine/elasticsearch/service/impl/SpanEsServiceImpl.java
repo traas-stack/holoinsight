@@ -4,9 +4,11 @@
 package io.holoinsight.server.storage.engine.elasticsearch.service.impl;
 
 import io.holoinsight.server.common.springboot.ConditionalOnFeature;
+import io.holoinsight.server.storage.common.constants.Const;
 import io.holoinsight.server.storage.common.model.query.BasicTrace;
 import io.holoinsight.server.storage.common.model.query.Pagination;
 import io.holoinsight.server.storage.common.model.query.QueryOrder;
+import io.holoinsight.server.storage.common.model.query.StatisticData;
 import io.holoinsight.server.storage.common.model.query.TraceBrief;
 import io.holoinsight.server.storage.common.model.specification.OtlpMappings;
 import io.holoinsight.server.storage.common.model.specification.otel.Event;
@@ -35,6 +37,11 @@ import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.index.query.*;
+import org.elasticsearch.search.aggregations.AggregationBuilders;
+import org.elasticsearch.search.aggregations.Aggregator;
+import org.elasticsearch.search.aggregations.bucket.terms.Terms;
+import org.elasticsearch.search.aggregations.bucket.terms.TermsAggregationBuilder;
+import org.elasticsearch.search.aggregations.metrics.ParsedCardinality;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.elasticsearch.search.sort.SortOrder;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -202,6 +209,59 @@ public class SpanEsServiceImpl extends RecordEsService<SpanEsDO> implements Span
     trace.getSpans().addAll(sortedSpans);
     return trace;
   }
+
+  @Override
+  public List<StatisticData> statisticTrace(long startTime, long endTime) throws IOException {
+    List<StatisticData> result = new ArrayList<>();
+
+    BoolQueryBuilder queryBuilder = QueryBuilders.boolQuery()
+            .must(QueryBuilders.rangeQuery(SpanEsDO.START_TIME).gte(startTime).lte(endTime));
+
+    TermsAggregationBuilder aggregationBuilder = AggregationBuilders
+            .terms(SpanEsDO.attributes(Const.APPID)).field(SpanEsDO.attributes(Const.APPID))
+            .subAggregation(
+                    AggregationBuilders.terms(SpanEsDO.attributes(Const.ENVID))
+                            .field(SpanEsDO.attributes(Const.ENVID))
+                            .subAggregation(AggregationBuilders.cardinality("service_count").field(SpanEsDO.resource(SpanEsDO.SERVICE_NAME)))
+                            .subAggregation(AggregationBuilders.cardinality("trace_count").field(SpanEsDO.TRACE_ID))
+                            .executionHint("map")
+                            .collectMode(Aggregator.SubAggCollectionMode.BREADTH_FIRST)
+                            .size(1000));
+
+    SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
+    sourceBuilder.size(1000);
+    sourceBuilder.query(queryBuilder);
+    sourceBuilder.aggregation(aggregationBuilder);
+
+    SearchRequest searchRequest = new SearchRequest(SpanEsDO.INDEX_NAME);
+    searchRequest.source(sourceBuilder);
+    SearchResponse response = esClient.search(searchRequest, RequestOptions.DEFAULT);
+
+    Terms terms = response.getAggregations().get(SpanEsDO.attributes(Const.APPID));
+    for (Terms.Bucket bucket : terms.getBuckets()) {
+      String appId = bucket.getKey().toString();
+      Terms envTerms = bucket.getAggregations().get(SpanEsDO.attributes(Const.ENVID));
+      for (Terms.Bucket envBucket : envTerms.getBuckets()) {
+        String envId = envBucket.getKey().toString();
+
+        ParsedCardinality serviceTerm = envBucket.getAggregations().get("service_count");
+        long serviceCount = serviceTerm.getValue();
+
+        ParsedCardinality traceTerm = envBucket.getAggregations().get("trace_count");
+        long traceCount = traceTerm.getValue();
+
+        StatisticData statisticData = new StatisticData();
+        statisticData.setAppId(appId);
+        statisticData.setEnvId(envId);
+        statisticData.setServiceCount(serviceCount);
+        statisticData.setTraceCount(traceCount);
+
+        result.add(statisticData);
+      }
+    }
+    return result;
+  }
+
 
   private Span buildSpan(SpanEsDO spanEsDO) {
     Span span = new Span();
