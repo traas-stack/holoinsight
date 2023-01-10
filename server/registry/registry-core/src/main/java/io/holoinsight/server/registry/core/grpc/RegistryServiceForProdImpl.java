@@ -3,6 +3,7 @@
  */
 package io.holoinsight.server.registry.core.grpc;
 
+import io.grpc.Status;
 import io.grpc.stub.StreamObserver;
 import io.holoinsight.server.registry.core.grpc.streambiz.BizTypes;
 import io.holoinsight.server.registry.grpc.prod.DryRunRequest;
@@ -14,9 +15,8 @@ import io.holoinsight.server.registry.grpc.prod.ListFilesResponse;
 import io.holoinsight.server.registry.grpc.prod.PreviewFileRequest;
 import io.holoinsight.server.registry.grpc.prod.PreviewFileResponse;
 import io.holoinsight.server.registry.grpc.prod.RegistryServiceForProdGrpc;
+import lombok.extern.slf4j.Slf4j;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -29,34 +29,39 @@ import org.springframework.stereotype.Service;
  */
 @Service
 @RegistryGrpcForProd
+@Slf4j
 public class RegistryServiceForProdImpl
     extends RegistryServiceForProdGrpc.RegistryServiceForProdImplBase {
-  private static final Logger LOGGER = LoggerFactory.getLogger(RegistryServiceForProdImpl.class);
 
   @Autowired
   private BiStreamService biStreamService;
 
   @Override
   public void listFiles(ListFilesRequest request, StreamObserver<ListFilesResponse> o) {
-    biStreamService.proxy(request.getTarget(), BizTypes.LIST_FILES, request,
+    biStreamService.proxyForDim(request.getTarget(), BizTypes.LIST_FILES, request,
         ListFilesResponse.getDefaultInstance(), o);
   }
 
   @Override
   public void previewFile(PreviewFileRequest request, StreamObserver<PreviewFileResponse> o) {
-    biStreamService.proxy(request.getTarget(), BizTypes.PREVIEW_FILE, request,
+    biStreamService.proxyForDim(request.getTarget(), BizTypes.PREVIEW_FILE, request,
         PreviewFileResponse.getDefaultInstance(), o);
   }
 
   @Override
   public void inspect(InspectRequest request, StreamObserver<InspectResponse> o) {
-    biStreamService.proxy(request.getTarget(), BizTypes.INSPECT, request,
+    biStreamService.proxyForDim(request.getTarget(), BizTypes.INSPECT, request,
         InspectResponse.getDefaultInstance(), o);
   }
 
   @Override
   public void dryRun(DryRunRequest request, StreamObserver<DryRunResponse> o) {
-    biStreamService.proxy(request.getTarget(), BizTypes.DRY_RUN, request,
-        DryRunResponse.getDefaultInstance(), o);
+    try {
+      biStreamService.proxyForDim(request.getTarget(), BizTypes.DRY_RUN, request,
+          DryRunResponse.getDefaultInstance(), o);
+    } catch (Throwable e) {
+      log.error("dryRun error", e);
+      o.onError(Status.INTERNAL.withCause(e).withDescription(e.getMessage()).asRuntimeException());
+    }
   }
 }

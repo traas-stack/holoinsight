@@ -5,12 +5,14 @@ package io.holoinsight.server.registry.core.grpc;
 
 import java.time.Duration;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
 import io.grpc.Channel;
+import io.grpc.Status;
 import io.grpc.stub.StreamObserver;
 import io.holoinsight.server.common.JsonUtils;
 import io.holoinsight.server.common.ProtoJsonUtils;
@@ -30,6 +32,10 @@ import io.holoinsight.server.registry.core.grpc.streambiz.BizTypes;
 import io.holoinsight.server.registry.grpc.internal.BiStreamProxyRequest;
 import io.holoinsight.server.registry.grpc.internal.BiStreamProxyResponse;
 import io.holoinsight.server.registry.grpc.internal.RegistryServiceForInternalGrpc;
+import io.holoinsight.server.registry.grpc.prod.DryRunResponse;
+import io.holoinsight.server.registry.grpc.prod.InspectResponse;
+import io.holoinsight.server.registry.grpc.prod.ListFilesResponse;
+import io.holoinsight.server.registry.grpc.prod.PreviewFileResponse;
 import io.holoinsight.server.registry.grpc.prod.TargetIdentifier;
 import lombok.val;
 import reactor.core.publisher.Mono;
@@ -46,6 +52,11 @@ import com.google.protobuf.GeneratedMessageV3;
 import com.google.protobuf.InvalidProtocolBufferException;
 
 /**
+ * Bidirectional Stream Service is response for:
+ * <ul>
+ * <li>handle local requests whose target agent is connecting to current regsitry instance</li>
+ * <li>route requests to other registry instance whose target agent is connecting to</li>
+ * </ul>
  * <p>
  * created at 2022/12/30
  *
@@ -54,6 +65,17 @@ import com.google.protobuf.InvalidProtocolBufferException;
 @Service
 public class BiStreamService {
   private static final Logger LOGGER = LoggerFactory.getLogger(BiStreamService.class);
+  private static final String NO_CONNECTION_MSG =
+      "No connection to holoinsight-agent found. This may be caused by a temporary network failure between agent and server";
+  private static final Map<Integer, Object> defaultRespMap = new HashMap<>();
+
+  static {
+    defaultRespMap.put(BizTypes.ECHO, ByteString.EMPTY);
+    defaultRespMap.put(BizTypes.INSPECT, InspectResponse.getDefaultInstance());
+    defaultRespMap.put(BizTypes.LIST_FILES, ListFilesResponse.getDefaultInstance());
+    defaultRespMap.put(BizTypes.PREVIEW_FILE, PreviewFileResponse.getDefaultInstance());
+    defaultRespMap.put(BizTypes.DRY_RUN, DryRunResponse.getDefaultInstance());
+  }
 
   @Autowired
   private AgentStorage agentStorage;
@@ -78,7 +100,15 @@ public class BiStreamService {
     cache.stop();
   }
 
-  public Mono<ByteString> proxy(String agentId, int bizType, ByteString payload) {
+  /**
+   * proxySimple proxy a rpc request to agent. Request and response must be {@link ByteString}.
+   *
+   * @param agentId
+   * @param bizType
+   * @param payload
+   * @return
+   */
+  public Mono<ByteString> proxySimple(String agentId, int bizType, ByteString payload) {
     Agent agent = agentStorage.get(agentId);
     if (agent == null) {
       return Mono.error(new IllegalStateException("no agent " + agentId));
@@ -87,15 +117,8 @@ public class BiStreamService {
     // 1. 获取 Agent 正在和哪台 Registry 建联
     ConnectionInfo ci = agent.getJson().getConnectionInfo();
     if (ci == null || StringUtils.isEmpty(ci.getRegistry())) {
-      String msg =
-          "No connection to holoinsight-agent found. This may be caused by a temporary network failure between agent and server";
-      return Mono.error(new IllegalStateException(msg));
+      return Mono.error(new IllegalStateException(NO_CONNECTION_MSG));
     }
-
-    // 2. 将请求转发给这台 Registry, 这台 Registry 去和 Agent 发请求
-    Channel channel = cache.getChannel(ci.getRegistry());
-    // TODO channel 销毁
-    val stub = RegistryServiceForInternalGrpc.newStub(channel);
 
     BiStreamProxyRequest proxyRequest = BiStreamProxyRequest.newBuilder() //
         .setAgentId(agentId) //
@@ -104,6 +127,10 @@ public class BiStreamService {
         .build(); //
 
     return Mono.create(sink -> {
+      // 2. 将请求转发给这台 Registry, 这台 Registry 去和 Agent 发请求
+      Channel channel = cache.getChannel(ci.getRegistry());
+      val stub = RegistryServiceForInternalGrpc.newStub(channel);
+
       stub.bistreamProxy(proxyRequest, new StreamObserver<BiStreamProxyResponse>() {
         @Override
         public void onNext(BiStreamProxyResponse resp) {
@@ -128,7 +155,17 @@ public class BiStreamService {
     });
   }
 
-  public <RESP extends GeneratedMessageV3> void proxy(TargetIdentifier target, int bizType,
+  /**
+   * proxy proxy a rpc request to agent. request and response must be {@link GeneratedMessageV3}.
+   *
+   * @param target target of dim
+   * @param bizType rpc biz type
+   * @param request rpc request
+   * @param defaultResp default rpc response
+   * @param o grpc observer
+   * @param <RESP> response type
+   */
+  public <RESP extends GeneratedMessageV3> void proxyForDim(TargetIdentifier target, int bizType,
       GeneratedMessageV3 request, RESP defaultResp, StreamObserver<? super RESP> o) {
 
     String tenant = target.getTenant();
@@ -137,7 +174,7 @@ public class BiStreamService {
     // TODO 将表信息带在 请求体里
     Map<String, Object> row = prodDimService.queryByDimId(tenant + "_server", targetUk, false);
     if (row == null) {
-      throw new IllegalStateException("no dim data " + target);
+      throw new IllegalStateException("no dim data " + ProtoJsonUtils.toJson(target));
     }
 
     // TODO 其他类型想办法支持
@@ -164,9 +201,7 @@ public class BiStreamService {
     }
 
     request = appendRequestHeader(request, header);
-    LOGGER.info("proxy row={} header={}", JsonUtils.toJson(row), JsonUtils.toJson(header));
 
-    // TODO
     // 1. 获取 Agent 正在和哪台 Registry 建联
     String connectingRegistry = null;
     Agent agent = agentStorage.get(rpcAgentId);
@@ -177,13 +212,12 @@ public class BiStreamService {
       }
     }
     if (connectingRegistry == null) {
-      String msg =
-          "No connection to holoinsight-agent found. This may be caused by a temporary network failure between agent and server";
-      RESP errResp = setRespHeader(defaultResp, RpcCodes.RESOURCE_NOT_FOUND, msg);
+      RESP errResp = setRespHeader(defaultResp, RpcCodes.RESOURCE_NOT_FOUND, NO_CONNECTION_MSG);
       o.onNext(errResp);
       o.onCompleted();
       return;
     }
+    String finalConnectingRegistry = connectingRegistry;
 
     // 2. 将请求转发给这台 Registry, 这台 Registry 去和 Agent 发请求
     Channel channel = cache.getChannel(connectingRegistry);
@@ -209,8 +243,10 @@ public class BiStreamService {
       }
 
       @Override
-      public void onError(Throwable throwable) {
-        o.onError(throwable);
+      public void onError(Throwable e) {
+        LOGGER.error("stub.bistreamProxy error, connectingRegistry={}", finalConnectingRegistry, e);
+        o.onError(Status.INTERNAL.withCause(e)
+            .withDescription("internal proxy error: " + e.getMessage()).asRuntimeException());
       }
 
       @Override
@@ -220,20 +256,21 @@ public class BiStreamService {
     });
   }
 
-  public void handleLocal(BiStreamProxyRequest request, Object defaultResp,
-      StreamObserver<BiStreamProxyResponse> o) {
+  public void handleLocal(BiStreamProxyRequest request, StreamObserver<BiStreamProxyResponse> o) {
+    Object defaultResp = defaultRespMap.get(request.getBizType());
+    if (defaultResp == null) {
+      throw new IllegalStateException("unsupported bizType " + request.getBizType());
+    }
+
     ServerStream s = streamManager.get(request.getAgentId());
 
     if (s == null) {
-      String msg =
-          "No connection to holoinsight-agent found. This may be caused by a temporary network failure between agent and server";
       ByteString respPayload;
-      if (defaultResp instanceof GeneratedMessageV3) {
-        respPayload =
-            setRespHeader((GeneratedMessageV3) defaultResp, RpcCodes.RESOURCE_NOT_FOUND, msg)
-                .toByteString();
-      } else {
+      if (request.getBizType() == BizTypes.ECHO) {
         respPayload = (ByteString) defaultResp;
+      } else {
+        respPayload = setRespHeader((GeneratedMessageV3) defaultResp, RpcCodes.RESOURCE_NOT_FOUND,
+            NO_CONNECTION_MSG).toByteString();
       }
       BiStreamProxyResponse resp = BiStreamProxyResponse.newBuilder() //
           .setType(request.getBizType() + 1) //
@@ -244,11 +281,10 @@ public class BiStreamService {
       return;
     }
 
-    GeneratedMessageV3 requestBak = request;
     s.rpc(request.getBizType(), request.getPayload()) //
         .timeout(Duration.ofSeconds(3)) //
         .subscribe(respCmd -> {
-          if (request.getBizType() == 0) {
+          if (request.getBizType() == BizTypes.ECHO) {
             BiStreamProxyResponse resp =
                 BiStreamProxyResponse.newBuilder().setType(request.getBizType() + 1) //
                     .setPayload(respCmd.getData()) //
@@ -286,10 +322,10 @@ public class BiStreamService {
             o.onCompleted();
           }
         }, error -> {
-          LOGGER.error("[{}] rpc error", getTraceId(requestBak), error);
+          LOGGER.error("[{}] rpc error", getTraceId(request), error);
           BiStreamProxyResponse resp;
-          if (request.getBizType() == 0) {
-            resp = BiStreamProxyResponse.newBuilder().setType(0) //
+          if (request.getBizType() == BizTypes.ECHO) {
+            resp = BiStreamProxyResponse.newBuilder().setType(BizTypes.ECHO) //
                 .setPayload(ByteString.copyFromUtf8("internal error:" + error.getMessage())) //
                 .build(); //
           } else {

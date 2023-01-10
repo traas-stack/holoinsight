@@ -61,7 +61,7 @@ public class BiStreamWebController {
 
   @GetMapping("/ping")
   public Object ping(@RequestParam("agentId") String agentId, @RequestParam("msg") String msg) {
-    return biStreamService.proxy(agentId, BizTypes.ECHO, ByteString.copyFromUtf8(msg)) //
+    return biStreamService.proxySimple(agentId, BizTypes.ECHO, ByteString.copyFromUtf8(msg)) //
         .map(ByteString::toStringUtf8); //
   }
 

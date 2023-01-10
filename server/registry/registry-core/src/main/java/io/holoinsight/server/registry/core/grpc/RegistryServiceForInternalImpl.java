@@ -3,8 +3,6 @@
  */
 package io.holoinsight.server.registry.core.grpc;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Objects;
 
 import io.grpc.stub.StreamObserver;
@@ -13,24 +11,13 @@ import io.holoinsight.server.common.grpc.GenericData;
 import io.holoinsight.server.common.grpc.GenericDataBatch;
 import io.holoinsight.server.registry.core.cluster.Handler;
 import io.holoinsight.server.registry.core.cluster.HandlerRegistry;
-import io.holoinsight.server.registry.core.grpc.stream.ServerStreamManager;
-import io.holoinsight.server.registry.core.grpc.streambiz.BizTypes;
 import io.holoinsight.server.registry.grpc.internal.BiStreamProxyRequest;
 import io.holoinsight.server.registry.grpc.internal.BiStreamProxyResponse;
 import io.holoinsight.server.registry.grpc.internal.RegistryServiceForInternalGrpc;
-import io.holoinsight.server.registry.grpc.prod.DryRunRequest;
-import io.holoinsight.server.registry.grpc.prod.DryRunResponse;
-import io.holoinsight.server.registry.grpc.prod.InspectResponse;
-import io.holoinsight.server.registry.grpc.prod.ListFilesResponse;
-import io.holoinsight.server.registry.grpc.prod.PreviewFileResponse;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.google.protobuf.ByteString;
 import com.google.protobuf.Empty;
-import com.google.protobuf.GeneratedMessageV3;
 
 /**
  * <p>
@@ -40,15 +27,6 @@ import com.google.protobuf.GeneratedMessageV3;
  */
 public class RegistryServiceForInternalImpl
     extends RegistryServiceForInternalGrpc.RegistryServiceForInternalImplBase {
-  private static final Map<Integer, Object> defaultRespMap = new HashMap<>();
-
-  static {
-    defaultRespMap.put(BizTypes.ECHO, ByteString.EMPTY);
-    defaultRespMap.put(BizTypes.INSPECT, InspectResponse.getDefaultInstance());
-    defaultRespMap.put(BizTypes.LIST_FILES, ListFilesResponse.getDefaultInstance());
-    defaultRespMap.put(BizTypes.PREVIEW_FILE, PreviewFileResponse.getDefaultInstance());
-    defaultRespMap.put(BizTypes.DRY_RUN, DryRunResponse.getDefaultInstance());
-  }
 
   // TODO
   private final HandlerRegistry registry;
@@ -74,16 +52,11 @@ public class RegistryServiceForInternalImpl
 
   @Override
   public void bistreamProxy(BiStreamProxyRequest request, StreamObserver<BiStreamProxyResponse> o) {
-    Object defaultResp = defaultRespMap.get(request.getBizType());
-    if (defaultResp == null) {
-      throw new IllegalStateException("invalid bizType " + request.getBizType());
-    }
-    proxy0(request, defaultResp, o);
+    proxy0(request, o);
   }
 
-  public void proxy0(BiStreamProxyRequest request, Object defaultResp,
-      StreamObserver<BiStreamProxyResponse> o) {
-    biStreamService.handleLocal(request, defaultResp, o);
+  public void proxy0(BiStreamProxyRequest request, StreamObserver<BiStreamProxyResponse> o) {
+    biStreamService.handleLocal(request, o);
   }
 
 }
