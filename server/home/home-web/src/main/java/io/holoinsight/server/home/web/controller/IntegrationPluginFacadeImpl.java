@@ -4,7 +4,7 @@
 
 package io.holoinsight.server.home.web.controller;
 
-import com.alipay.cloudmonitor.registry.integration.model.LocalIntegrationTask;
+import io.holoinsight.server.registry.model.integration.LocalIntegrationTask;
 import io.holoinsight.server.common.J;
 import io.holoinsight.server.common.JsonResult;
 import io.holoinsight.server.home.biz.service.IntegrationPluginService;

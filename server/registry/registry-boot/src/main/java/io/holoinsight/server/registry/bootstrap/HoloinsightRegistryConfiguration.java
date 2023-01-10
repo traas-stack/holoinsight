@@ -29,7 +29,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
  */
 @Configuration
 @ConditionalOnRole("registry")
-@ComponentScan(basePackages = {"com.alipay.cloudmonitor.registry", //
+@ComponentScan(basePackages = {
     "io.holoinsight.server.registry", //
 })
 @EnableConfigurationProperties(RegistryProperties.class)

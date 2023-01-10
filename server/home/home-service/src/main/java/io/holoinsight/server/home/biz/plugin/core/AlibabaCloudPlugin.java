@@ -8,10 +8,10 @@ import io.holoinsight.server.home.biz.common.MetaDictUtil;
 import io.holoinsight.server.home.biz.plugin.model.PluginModel;
 import io.holoinsight.server.home.dal.model.dto.CloudMonitorRange;
 import io.holoinsight.server.home.dal.model.dto.IntegrationPluginDTO;
-import com.alipay.cloudmonitor.registry.integration.model.alicloud.AliCloudTask;
-import com.alipay.cloudmonitor.registry.integration.model.alicloud.AlicloudConf;
-import com.alipay.cloudmonitor.registry.integration.model.alicloud.NameMetrics;
-import com.alipay.cloudmonitor.registry.integration.model.alicloud.Range;
+import io.holoinsight.server.registry.model.integration.alicloud.AliCloudTask;
+import io.holoinsight.server.registry.model.integration.alicloud.AlicloudConf;
+import io.holoinsight.server.registry.model.integration.alicloud.NameMetrics;
+import io.holoinsight.server.registry.model.integration.alicloud.Range;
 import io.holoinsight.server.common.J;
 import com.google.gson.reflect.TypeToken;
 import org.springframework.stereotype.Component;
@@ -29,7 +29,7 @@ import java.util.stream.Collectors;
  * @version 1.0: AlibabaCloudPlugin.java, v 0.1 2022年11月22日 上午11:14 jinsong.yjs Exp $
  */
 @Component
-@PluginModel(name = "com.alipay.holoinsight.plugin.AlibabaCloudPlugin", version = "1")
+@PluginModel(name = "io.holoinsight.plugin.AlibabaCloudPlugin", version = "1")
 public class AlibabaCloudPlugin extends AbstractCentralIntegrationPlugin<AlibabaCloudPlugin> {
 
   public AliCloudTask aliCloudTask;

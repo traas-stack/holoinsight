@@ -3,6 +3,7 @@
  */
 package io.holoinsight.server.query.server.config;
 
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.converter.protobuf.ProtobufJsonFormatHttpMessageConverter;
@@ -14,9 +15,10 @@ import org.springframework.http.converter.protobuf.ProtobufJsonFormatHttpMessage
  * @author xiangwanpeng
  */
 @Configuration
-public class ApiConfig {
+public class QueryApiConfig {
 
   @Bean
+  @ConditionalOnMissingBean
   public ProtobufJsonFormatHttpMessageConverter protobufHttpMessageConverter() {
     return new ProtobufJsonFormatHttpMessageConverter();
   }

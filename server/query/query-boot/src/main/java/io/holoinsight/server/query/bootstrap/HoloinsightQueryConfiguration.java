@@ -20,7 +20,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
  *
  * @author xiangwanpeng
  */
-@ComponentScan({"io.holoinsight.server.query", "com.alipay.cloudmonitor.query"})
+@ComponentScan({"io.holoinsight.server.query"})
 @EnableScheduling
 @MapperScan(basePackages = {"io.holoinsight.server.query.dal.mapper",
     "io.holoinsight.server.common.dao.mapper"})
