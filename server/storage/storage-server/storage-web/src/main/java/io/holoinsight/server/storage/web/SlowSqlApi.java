@@ -23,7 +23,7 @@ import java.util.List;
 
 @javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen")
 @Api(value = "slowSql", description = "the slowSql API")
-@RequestMapping("/api/v1/slowSql")
+@RequestMapping("/cluster/api/v1/slowSql")
 public interface SlowSqlApi {
 
   @ApiOperation(value = "query slow sql list", nickname = "querySlowSqlList", notes = "查询慢sql列表",

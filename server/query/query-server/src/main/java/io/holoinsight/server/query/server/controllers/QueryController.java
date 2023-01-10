@@ -22,7 +22,7 @@ import java.util.Collections;
  * @author xiangwanpeng
  */
 @RestController
-@RequestMapping("/api/v1/query")
+@RequestMapping("/cluster/api/v1/query")
 public class QueryController {
 
   @Autowired

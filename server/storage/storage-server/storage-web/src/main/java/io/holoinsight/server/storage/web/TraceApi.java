@@ -24,7 +24,7 @@ import java.io.IOException;
 @javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen",
     date = "2020-01-21T07:37:08.930Z")
 @Api(value = "trace", description = "the trace API")
-@RequestMapping("/api/v1/trace")
+@RequestMapping("/cluster/api/v1/trace")
 public interface TraceApi {
 
   @ApiOperation(value = "query basic traces", nickname = "queryTraces",

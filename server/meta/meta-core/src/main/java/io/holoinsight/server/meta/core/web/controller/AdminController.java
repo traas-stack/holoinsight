@@ -19,7 +19,7 @@ import java.util.List;
  * @version : TestController.java, v 0.1 2022年03月03日 5:07 下午 jinsong.yjs Exp $
  */
 @RestController
-@RequestMapping("/webapi/admin")
+@RequestMapping("/internal/api/meta")
 public class AdminController {
 
   @Autowired

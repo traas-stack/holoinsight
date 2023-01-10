@@ -23,7 +23,7 @@ import java.util.List;
 
 @javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen")
 @Api(value = "endpoint", description = "the endpoint API")
-@RequestMapping("/api/v1/endpoint")
+@RequestMapping("/cluster/api/v1/endpoint")
 public interface EndpointApi {
 
   @ApiOperation(value = "query endpoint list", nickname = "queryEndpointList", notes = "查询接口列表",

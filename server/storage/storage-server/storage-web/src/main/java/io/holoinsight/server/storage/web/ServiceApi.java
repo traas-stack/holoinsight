@@ -23,7 +23,7 @@ import java.util.List;
 
 @javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen")
 @Api(value = "service", description = "the service API")
-@RequestMapping("/api/v1/service")
+@RequestMapping("/cluster/api/v1/service")
 public interface ServiceApi {
 
   @ApiOperation(value = "query service list", nickname = "queryServiceList", notes = "查询服务列表",

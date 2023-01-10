@@ -23,7 +23,7 @@ import java.util.List;
 @javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen",
     date = "2020-01-21T07:37:08.930Z")
 @Api(value = "trace", description = "the trace API")
-@RequestMapping("/api/v1/metric")
+@RequestMapping("/cluster/api/v1/metric")
 public interface MetricApi {
 
   @ApiOperation(value = "list metrics", nickname = "listMetrics", notes = "列出所有指标名称。",
