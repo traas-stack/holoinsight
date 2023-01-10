@@ -190,6 +190,42 @@ public final class RegistryServiceForProdGrpc {
     return getDryRunMethod;
   }
 
+  private static volatile io.grpc.MethodDescriptor<io.holoinsight.server.registry.grpc.prod.CheckConfigDistributionRequest, io.holoinsight.server.registry.grpc.prod.CheckConfigDistributionResponse> getCheckConfigDistributionMethod;
+
+  @io.grpc.stub.annotations.RpcMethod(
+      fullMethodName = SERVICE_NAME + '/' + "check_config_distribution",
+      requestType = io.holoinsight.server.registry.grpc.prod.CheckConfigDistributionRequest.class,
+      responseType = io.holoinsight.server.registry.grpc.prod.CheckConfigDistributionResponse.class,
+      methodType = io.grpc.MethodDescriptor.MethodType.UNARY)
+  public static io.grpc.MethodDescriptor<io.holoinsight.server.registry.grpc.prod.CheckConfigDistributionRequest, io.holoinsight.server.registry.grpc.prod.CheckConfigDistributionResponse> getCheckConfigDistributionMethod() {
+    io.grpc.MethodDescriptor<io.holoinsight.server.registry.grpc.prod.CheckConfigDistributionRequest, io.holoinsight.server.registry.grpc.prod.CheckConfigDistributionResponse> getCheckConfigDistributionMethod;
+    if ((getCheckConfigDistributionMethod =
+        RegistryServiceForProdGrpc.getCheckConfigDistributionMethod) == null) {
+      synchronized (RegistryServiceForProdGrpc.class) {
+        if ((getCheckConfigDistributionMethod =
+            RegistryServiceForProdGrpc.getCheckConfigDistributionMethod) == null) {
+          RegistryServiceForProdGrpc.getCheckConfigDistributionMethod =
+              getCheckConfigDistributionMethod =
+                  io.grpc.MethodDescriptor.<io.holoinsight.server.registry.grpc.prod.CheckConfigDistributionRequest, io.holoinsight.server.registry.grpc.prod.CheckConfigDistributionResponse>newBuilder()
+                      .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
+                      .setFullMethodName(
+                          generateFullMethodName(SERVICE_NAME, "check_config_distribution"))
+                      .setSampledToLocalTracing(true)
+                      .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+                          io.holoinsight.server.registry.grpc.prod.CheckConfigDistributionRequest
+                              .getDefaultInstance()))
+                      .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+                          io.holoinsight.server.registry.grpc.prod.CheckConfigDistributionResponse
+                              .getDefaultInstance()))
+                      .setSchemaDescriptor(new RegistryServiceForProdMethodDescriptorSupplier(
+                          "check_config_distribution"))
+                      .build();
+        }
+      }
+    }
+    return getCheckConfigDistributionMethod;
+  }
+
   /**
    * Creates a new async stub that supports all call types for the service
    */
@@ -266,6 +302,17 @@ public final class RegistryServiceForProdGrpc {
       asyncUnimplementedUnaryCall(getDryRunMethod(), responseObserver);
     }
 
+    /**
+     * <pre>
+     * 检查配置下发情况
+     * </pre>
+     */
+    public void checkConfigDistribution(
+        io.holoinsight.server.registry.grpc.prod.CheckConfigDistributionRequest request,
+        io.grpc.stub.StreamObserver<io.holoinsight.server.registry.grpc.prod.CheckConfigDistributionResponse> responseObserver) {
+      asyncUnimplementedUnaryCall(getCheckConfigDistributionMethod(), responseObserver);
+    }
+
     @java.lang.Override
     public final io.grpc.ServerServiceDefinition bindService() {
       return io.grpc.ServerServiceDefinition.builder(getServiceDescriptor())
@@ -284,6 +331,9 @@ public final class RegistryServiceForProdGrpc {
           .addMethod(getDryRunMethod(), asyncUnaryCall(
               new MethodHandlers<io.holoinsight.server.registry.grpc.prod.DryRunRequest, io.holoinsight.server.registry.grpc.prod.DryRunResponse>(
                   this, METHODID_DRY_RUN)))
+          .addMethod(getCheckConfigDistributionMethod(), asyncUnaryCall(
+              new MethodHandlers<io.holoinsight.server.registry.grpc.prod.CheckConfigDistributionRequest, io.holoinsight.server.registry.grpc.prod.CheckConfigDistributionResponse>(
+                  this, METHODID_CHECK_CONFIG_DISTRIBUTION)))
           .build();
     }
   }
@@ -361,6 +411,18 @@ public final class RegistryServiceForProdGrpc {
       asyncUnaryCall(getChannel().newCall(getDryRunMethod(), getCallOptions()), request,
           responseObserver);
     }
+
+    /**
+     * <pre>
+     * 检查配置下发情况
+     * </pre>
+     */
+    public void checkConfigDistribution(
+        io.holoinsight.server.registry.grpc.prod.CheckConfigDistributionRequest request,
+        io.grpc.stub.StreamObserver<io.holoinsight.server.registry.grpc.prod.CheckConfigDistributionResponse> responseObserver) {
+      asyncUnaryCall(getChannel().newCall(getCheckConfigDistributionMethod(), getCallOptions()),
+          request, responseObserver);
+    }
   }
 
   /**
@@ -431,6 +493,17 @@ public final class RegistryServiceForProdGrpc {
     public io.holoinsight.server.registry.grpc.prod.DryRunResponse dryRun(
         io.holoinsight.server.registry.grpc.prod.DryRunRequest request) {
       return blockingUnaryCall(getChannel(), getDryRunMethod(), getCallOptions(), request);
+    }
+
+    /**
+     * <pre>
+     * 检查配置下发情况
+     * </pre>
+     */
+    public io.holoinsight.server.registry.grpc.prod.CheckConfigDistributionResponse checkConfigDistribution(
+        io.holoinsight.server.registry.grpc.prod.CheckConfigDistributionRequest request) {
+      return blockingUnaryCall(getChannel(), getCheckConfigDistributionMethod(), getCallOptions(),
+          request);
     }
   }
 
@@ -504,6 +577,17 @@ public final class RegistryServiceForProdGrpc {
         io.holoinsight.server.registry.grpc.prod.DryRunRequest request) {
       return futureUnaryCall(getChannel().newCall(getDryRunMethod(), getCallOptions()), request);
     }
+
+    /**
+     * <pre>
+     * 检查配置下发情况
+     * </pre>
+     */
+    public com.google.common.util.concurrent.ListenableFuture<io.holoinsight.server.registry.grpc.prod.CheckConfigDistributionResponse> checkConfigDistribution(
+        io.holoinsight.server.registry.grpc.prod.CheckConfigDistributionRequest request) {
+      return futureUnaryCall(
+          getChannel().newCall(getCheckConfigDistributionMethod(), getCallOptions()), request);
+    }
   }
 
   private static final int METHODID_NOTIFY_COLLECT_CONFIG_UPDATE = 0;
@@ -511,6 +595,7 @@ public final class RegistryServiceForProdGrpc {
   private static final int METHODID_PREVIEW_FILE = 2;
   private static final int METHODID_INSPECT = 3;
   private static final int METHODID_DRY_RUN = 4;
+  private static final int METHODID_CHECK_CONFIG_DISTRIBUTION = 5;
 
   private static final class MethodHandlers<Req, Resp>
       implements io.grpc.stub.ServerCalls.UnaryMethod<Req, Resp>,
@@ -550,6 +635,11 @@ public final class RegistryServiceForProdGrpc {
         case METHODID_DRY_RUN:
           serviceImpl.dryRun((io.holoinsight.server.registry.grpc.prod.DryRunRequest) request,
               (io.grpc.stub.StreamObserver<io.holoinsight.server.registry.grpc.prod.DryRunResponse>) responseObserver);
+          break;
+        case METHODID_CHECK_CONFIG_DISTRIBUTION:
+          serviceImpl.checkConfigDistribution(
+              (io.holoinsight.server.registry.grpc.prod.CheckConfigDistributionRequest) request,
+              (io.grpc.stub.StreamObserver<io.holoinsight.server.registry.grpc.prod.CheckConfigDistributionResponse>) responseObserver);
           break;
         default:
           throw new AssertionError();
@@ -615,7 +705,7 @@ public final class RegistryServiceForProdGrpc {
               .setSchemaDescriptor(new RegistryServiceForProdFileDescriptorSupplier())
               .addMethod(getNotifyCollectConfigUpdateMethod()).addMethod(getListFilesMethod())
               .addMethod(getPreviewFileMethod()).addMethod(getInspectMethod())
-              .addMethod(getDryRunMethod()).build();
+              .addMethod(getDryRunMethod()).addMethod(getCheckConfigDistributionMethod()).build();
         }
       }
     }

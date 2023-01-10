@@ -11,6 +11,17 @@ import java.util.Map;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.google.protobuf.ByteString;
+import com.google.protobuf.Descriptors;
+import com.google.protobuf.GeneratedMessageV3;
+import com.google.protobuf.InvalidProtocolBufferException;
+
 import io.grpc.Channel;
 import io.grpc.Status;
 import io.grpc.stub.StreamObserver;
@@ -20,6 +31,7 @@ import io.holoinsight.server.common.grpc.CommonRequestHeader;
 import io.holoinsight.server.common.grpc.CommonResponseHeader;
 import io.holoinsight.server.common.threadpool.CommonThreadPools;
 import io.holoinsight.server.meta.facade.model.MetaType;
+import io.holoinsight.server.registry.core.RegistryProperties;
 import io.holoinsight.server.registry.core.agent.Agent;
 import io.holoinsight.server.registry.core.agent.AgentStorage;
 import io.holoinsight.server.registry.core.agent.ConnectionInfo;
@@ -32,6 +44,7 @@ import io.holoinsight.server.registry.core.grpc.streambiz.BizTypes;
 import io.holoinsight.server.registry.grpc.internal.BiStreamProxyRequest;
 import io.holoinsight.server.registry.grpc.internal.BiStreamProxyResponse;
 import io.holoinsight.server.registry.grpc.internal.RegistryServiceForInternalGrpc;
+import io.holoinsight.server.registry.grpc.prod.CheckConfigTaskDistributionResponse;
 import io.holoinsight.server.registry.grpc.prod.DryRunResponse;
 import io.holoinsight.server.registry.grpc.prod.InspectResponse;
 import io.holoinsight.server.registry.grpc.prod.ListFilesResponse;
@@ -39,17 +52,6 @@ import io.holoinsight.server.registry.grpc.prod.PreviewFileResponse;
 import io.holoinsight.server.registry.grpc.prod.TargetIdentifier;
 import lombok.val;
 import reactor.core.publisher.Mono;
-
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import com.google.protobuf.ByteString;
-import com.google.protobuf.Descriptors;
-import com.google.protobuf.GeneratedMessageV3;
-import com.google.protobuf.InvalidProtocolBufferException;
 
 /**
  * Bidirectional Stream Service is response for:
@@ -75,6 +77,8 @@ public class BiStreamService {
     defaultRespMap.put(BizTypes.LIST_FILES, ListFilesResponse.getDefaultInstance());
     defaultRespMap.put(BizTypes.PREVIEW_FILE, PreviewFileResponse.getDefaultInstance());
     defaultRespMap.put(BizTypes.DRY_RUN, DryRunResponse.getDefaultInstance());
+    defaultRespMap.put(BizTypes.CHECK_TASK,
+        CheckConfigTaskDistributionResponse.getDefaultInstance());
   }
 
   @Autowired
@@ -89,9 +93,13 @@ public class BiStreamService {
   @Autowired
   private ServerStreamManager streamManager;
 
+  @Autowired
+  private RegistryProperties registryProperties;
+
   @PostConstruct
   public void init() {
-    cache = new BiStreamRegistryChannelCache(commonThreadPools);
+    cache = new BiStreamRegistryChannelCache(commonThreadPools,
+        registryProperties.getServer().getForInternal().getPort());
     cache.start();
   }
 
@@ -166,7 +174,7 @@ public class BiStreamService {
    * @param <RESP> response type
    */
   public <RESP extends GeneratedMessageV3> void proxyForDim(TargetIdentifier target, int bizType,
-      GeneratedMessageV3 request, RESP defaultResp, StreamObserver<? super RESP> o) {
+      GeneratedMessageV3 request, RESP defaultResp, StreamObserver<RESP> o) {
 
     String tenant = target.getTenant();
     String targetUk = target.getTargetUk();

@@ -14,25 +14,44 @@ import io.grpc.Channel;
 import io.grpc.ManagedChannel;
 import io.grpc.netty.shaded.io.grpc.netty.NettyChannelBuilder;
 import io.holoinsight.server.common.threadpool.CommonThreadPools;
+import lombok.extern.slf4j.Slf4j;
 
 /**
+ * Registry channel cache
  * <p>
  * created at 2022/12/14
  *
- * @author zzhb101
+ * @author xzchaoo
  */
+@Slf4j
 class BiStreamRegistryChannelCache {
+  /**
+   * The interval of evicting expired connections, in minutes.
+   */
+  private static final int EVICT_INTERVAL = 1;
+  /**
+   * Idle time of a connection before it is evicted, in minutes.
+   */
+  private static final int IDLE_TIME = 10;
+  /**
+   * Time to delay closing a connection, in minutes.
+   */
+  private static final int DELAY_CLOSE = 1;
+
   private final ConcurrentHashMap<String, CacheItem> channels = new ConcurrentHashMap<>();
   private final CommonThreadPools commonThreadPools;
+  private final int port;
   private ScheduledFuture<?> scheduledFuture;
 
-  BiStreamRegistryChannelCache(CommonThreadPools commonThreadPools) {
+  BiStreamRegistryChannelCache(CommonThreadPools commonThreadPools, int port) {
     this.commonThreadPools = commonThreadPools;
+    this.port = port;
   }
 
   void start() {
-    scheduledFuture = commonThreadPools.getScheduler()
-        .scheduleWithFixedDelay(this::removeExpiredChannels, 1, 1, TimeUnit.MINUTES);
+    scheduledFuture =
+        commonThreadPools.getScheduler().scheduleWithFixedDelay(this::evictExpiredChannels, //
+            EVICT_INTERVAL, EVICT_INTERVAL, TimeUnit.MINUTES);
   }
 
   void stop() {
@@ -46,20 +65,21 @@ class BiStreamRegistryChannelCache {
 
   Channel getChannel(String registryIp) {
     CacheItem item = getItem0(registryIp);
-    item.lastAccessTime.set(System.currentTimeMillis());
+    item.lastAccessTime.lazySet(System.currentTimeMillis());
     return item.channel;
   }
 
-  synchronized void removeExpiredChannels() {
+  synchronized void evictExpiredChannels() {
     Iterator<Map.Entry<String, CacheItem>> iter = channels.entrySet().iterator();
-    long expiredTime = System.currentTimeMillis() - TimeUnit.MINUTES.toMillis(10);
+    long expiredTime = System.currentTimeMillis() - TimeUnit.MINUTES.toMillis(IDLE_TIME);
     while (iter.hasNext()) {
       Map.Entry<String, CacheItem> e = iter.next();
       CacheItem item = e.getValue();
       if (item.lastAccessTime.get() < expiredTime) {
         iter.remove();
-        // delay shutdown 1min
-        commonThreadPools.getScheduler().schedule(item::shutdownNow, 1, TimeUnit.MINUTES);
+        // The channel may be used just now, so don't close it right now.
+        // Just delay closing the channel.
+        commonThreadPools.getScheduler().schedule(item::shutdownNow, DELAY_CLOSE, TimeUnit.MINUTES);
       }
     }
   }
@@ -76,7 +96,7 @@ class BiStreamRegistryChannelCache {
         return item;
       }
 
-      ManagedChannel channel = NettyChannelBuilder.forAddress(registryIp, 7200) //
+      ManagedChannel channel = NettyChannelBuilder.forAddress(registryIp, port) //
           .usePlaintext() //
           .executor(commonThreadPools.getRpcClient()) //
           .build(); //
