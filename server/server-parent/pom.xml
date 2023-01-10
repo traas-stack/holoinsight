@@ -187,7 +187,7 @@
 					</execution>
 				</executions>
 				<configuration>
-					<quiet>true</quiet>
+					<quiet>false</quiet>
 					<header>${user.dir}/HEADER</header>
 					<excludes>
 						<exclude>**/*.properties</exclude>

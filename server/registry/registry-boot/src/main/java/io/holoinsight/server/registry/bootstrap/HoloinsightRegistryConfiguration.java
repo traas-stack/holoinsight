@@ -29,8 +29,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
  */
 @Configuration
 @ConditionalOnRole("registry")
-@ComponentScan(basePackages = {
-    "io.holoinsight.server.registry", //
+@ComponentScan(basePackages = {"io.holoinsight.server.registry", //
 })
 @EnableConfigurationProperties(RegistryProperties.class)
 @EnableScheduling
