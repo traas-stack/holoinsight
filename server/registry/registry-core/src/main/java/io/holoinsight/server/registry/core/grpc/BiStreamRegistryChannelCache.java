@@ -38,6 +38,8 @@ class BiStreamRegistryChannelCache {
             scheduledFuture.cancel(true);
         }
         scheduledFuture = null;
+        channels.values().forEach(CacheItem::shutdownNow);
+        channels.clear();
     }
 
     Channel getChannel(String registryIp) {
@@ -54,6 +56,7 @@ class BiStreamRegistryChannelCache {
             CacheItem item = e.getValue();
             if (item.lastAccessTime.get() < expiredTime) {
                 iter.remove();
+                // delay shutdown 1min
                 commonThreadPools.getScheduler().schedule(item::shutdownNow, 1, TimeUnit.MINUTES);
             }
         }

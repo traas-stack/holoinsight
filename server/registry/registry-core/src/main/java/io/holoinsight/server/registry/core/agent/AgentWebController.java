@@ -33,6 +33,12 @@ public class AgentWebController {
     @Autowired
     private AgentService agentService;
 
+    /**
+     * list all agents
+     *
+     * @param tenant
+     * @return
+     */
     @GetMapping("/list")
     public Object list(@RequestParam(value = "tenant", required = false) String tenant) {
         List<Agent> ret = new ArrayList<>();
@@ -48,6 +54,12 @@ public class AgentWebController {
         return ApiResp.success(ret);
     }
 
+    /**
+     * list all agents connecting to current registry instance
+     *
+     * @param tenant
+     * @return
+     */
     @GetMapping("/listConnecting")
     public Object listConnecting(@RequestParam(value = "tenant", required = false) String tenant) {
         List<Agent> ret = new ArrayList<>();

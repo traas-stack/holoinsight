@@ -6,6 +6,7 @@ package io.holoinsight.server.registry.core.grpc.streambiz;
 import java.time.Duration;
 import java.util.List;
 
+import io.holoinsight.server.registry.core.grpc.BiStreamService;
 import io.holoinsight.server.registry.core.grpc.stream.ServerStream;
 import io.holoinsight.server.registry.core.grpc.stream.ServerStreamManager;
 import io.holoinsight.server.registry.core.utils.ApiResp;
@@ -49,6 +50,8 @@ import com.google.protobuf.util.JsonFormat;
 public class BiStreamWebController {
     @Autowired
     private ServerStreamManager m;
+    @Autowired
+    private BiStreamService     biStreamService;
 
     @GetMapping({"", "/ids"})
     public ApiResp get() {
@@ -56,17 +59,11 @@ public class BiStreamWebController {
     }
 
     @GetMapping("/ping")
-    public Object ping(@RequestParam("agentId") String agentId, //
-        @RequestParam("msg") String msg) {
-        ServerStream s = m.get(agentId);
-        if (s == null) {
-            return ApiResp.error("not found " + agentId);
-        }
-        return s.rpc(BizTypes.ECHO, ByteString.copyFromUtf8(msg)) //
-            .map(resp -> { //
-                return ApiResp.success(resp.getData().toStringUtf8());
-            }).timeout(Duration.ofSeconds(3)); //
+    public Object ping(@RequestParam("agentId") String agentId, @RequestParam("msg") String msg) {
+        return biStreamService.proxy(agentId, BizTypes.ECHO, ByteString.copyFromUtf8(msg)) //
+            .map(ByteString::toStringUtf8); //
     }
+
 
     @GetMapping("/perf")
     public Object perf(@RequestParam("agentId") String agentId, //
