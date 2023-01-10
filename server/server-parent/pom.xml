@@ -64,6 +64,8 @@
 		<module>../home/home-bootstrap</module>
 		<module>../home/home-boot</module>
 		<module>../home/home-service</module>
+		<module>../home/home-task</module>
+		<module>../home/home-web</module>
 
 	</modules>
 

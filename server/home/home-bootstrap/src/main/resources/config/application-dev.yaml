@@ -1,0 +1,43 @@
+# tomcat\u914D\u7F6E
+monitor:
+  role: prod
+  env: dev
+#management.endpoints.web.exposure.include=*
+iam_host: 127.0.0.1
+
+spring:
+  datasource:
+    url: jdbc:mysql://11.158.167.57:3307/cloudmonitor?useSSL=false
+    username: root
+    password: TEST
+
+holoinsight:
+  env:
+    deploymentSite: dev
+
+grpc:
+  client:
+    queryService:
+      address: static://100.83.61.201:9090
+      negotiationType: PLAINTEXT
+    alarmCentreService:
+      address: static://11.166.169.151:9092
+      negotiationType: PLAINTEXT
+
+
+crypto:
+  client:
+    key: 6148847a-2f2c-497c-a3e1-2cb3f12b1232
+registry:
+  domain: 127.0.0.1
+metaservice:
+  domain: 100.83.61.201
+
+# ceresdb \u914D\u7F6E
+ceresdb:
+  host: ceresdb-daily.alibaba.net
+  port: 5001
+  accessUser: CeresDBAwesomeAdmin
+  accessToken: CeresDBAwesomeToken$$@@
+
+
