@@ -27,7 +27,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
  * @author jiwliu
  */
 @ConditionalOnRole("storage")
-@ComponentScan(basePackages = {"com.alipay.cloudmonitor.storage", "io.holoinsight.server.storage"})
+@ComponentScan(basePackages = {"io.holoinsight.server.storage"})
 @EnableScheduling
 @Import(ThreadPoolConfiguration.class)
 public class HoloinsightStorageAutoConfigurationConfiguration {

@@ -1,9 +1,9 @@
 /*
  * Copyright 2022 Holoinsight Project Authors. Licensed under Apache-2.0.
  */
-package com.alipay.cloudmonitor.registry.integration.model.jvm;
+package io.holoinsight.server.registry.model.integration.jvm;
 
-import com.alipay.cloudmonitor.registry.integration.model.LocalIntegrationTask;
+import io.holoinsight.server.registry.model.integration.LocalIntegrationTask;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 

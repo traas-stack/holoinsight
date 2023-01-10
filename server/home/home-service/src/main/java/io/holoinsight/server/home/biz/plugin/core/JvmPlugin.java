@@ -6,7 +6,7 @@ package io.holoinsight.server.home.biz.plugin.core;
 
 import io.holoinsight.server.home.biz.plugin.model.PluginModel;
 import io.holoinsight.server.home.dal.model.dto.IntegrationPluginDTO;
-import com.alipay.cloudmonitor.registry.integration.model.jvm.JvmTask;
+import io.holoinsight.server.registry.model.integration.jvm.JvmTask;
 import io.holoinsight.server.common.J;
 import com.google.gson.reflect.TypeToken;
 import org.springframework.stereotype.Component;
@@ -20,7 +20,7 @@ import java.util.List;
  * @version 1.0: JvmPlugin.java, v 0.1 2022年11月22日 上午11:14 jinsong.yjs Exp $
  */
 @Component
-@PluginModel(name = "com.alipay.holoinsight.plugin.JvmPlugin", version = "1")
+@PluginModel(name = "io.holoinsight.plugin.JvmPlugin", version = "1")
 public class JvmPlugin extends AbstractLocalIntegrationPlugin<JvmPlugin> {
 
   public JvmTask jvmTask;

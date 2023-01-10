@@ -52,7 +52,6 @@ public class WebMvcConfig implements WebMvcConfigurer {
     advisor.setAdvice(new MonitorScopeAuthInterceptor());
 
     AspectJExpressionPointcut pointcut = new AspectJExpressionPointcut();
-    // pointcut.setExpression("@annotation(com.alipay.cloudmonitor.prod.web.interceptor.MonitorScopeAuth)");
     pointcut
         .setExpression("@annotation(io.holoinsight.server.home.web.interceptor.MonitorScopeAuth)");
     advisor.setPointcut(pointcut);

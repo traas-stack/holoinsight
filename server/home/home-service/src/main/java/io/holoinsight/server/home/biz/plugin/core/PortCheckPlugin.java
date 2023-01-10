@@ -9,7 +9,7 @@ import io.holoinsight.server.home.biz.plugin.config.PortCheckPluginConfig;
 import io.holoinsight.server.home.biz.plugin.model.PluginModel;
 import io.holoinsight.server.home.biz.plugin.model.PluginType;
 import io.holoinsight.server.home.dal.model.dto.IntegrationPluginDTO;
-import com.alipay.cloudmonitor.registry.integration.model.portcheck.PortCheckTask;
+import io.holoinsight.server.registry.model.integration.portcheck.PortCheckTask;
 import io.holoinsight.server.common.J;
 import com.google.gson.reflect.TypeToken;
 import io.holoinsight.server.registry.model.ExecuteRule;
@@ -25,7 +25,7 @@ import java.util.Map;
  * @version 1.0: PortCheckPlugin.java, v 0.1 2022年11月18日 下午5:56 jinsong.yjs Exp $
  */
 @Component
-@PluginModel(name = "com.alipay.holoinsight.plugin.PortCheckPlugin", version = "1")
+@PluginModel(name = "io.holoinsight.plugin.PortCheckPlugin", version = "1")
 public class PortCheckPlugin extends AbstractLocalIntegrationPlugin<PortCheckPlugin> {
 
   public PortCheckTask portCheckTask;

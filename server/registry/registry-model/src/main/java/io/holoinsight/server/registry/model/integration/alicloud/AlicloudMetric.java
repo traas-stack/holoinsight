@@ -1,7 +1,7 @@
 /*
  * Copyright 2022 Holoinsight Project Authors. Licensed under Apache-2.0.
  */
-package com.alipay.cloudmonitor.registry.integration.model.alicloud;
+package io.holoinsight.server.registry.model.integration.alicloud;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -16,9 +16,9 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class NameMetrics {
-  private String name;
-  private String namespace;
-  private String determineMetric;
-  private List<AlicloudMetric> metrics;
+public class AlicloudMetric {
+  private String aliyunMetricName;
+  private String convertedMetricName;
+  private List<String> dimensions;
+  private List<String> aggregations;
 }

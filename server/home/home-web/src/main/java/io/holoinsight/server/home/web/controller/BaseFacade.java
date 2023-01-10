@@ -26,7 +26,7 @@ import java.util.Date;
  * @version 1.0: BaseFacade.java, v 0.1 2022年03月21日 3:55 下午 jinsong.yjs Exp $
  */
 @Slf4j
-@ControllerAdvice({"io.holoinsight.server.home", "com.alipay.cloudmonitor.prod.web"})
+@ControllerAdvice({"io.holoinsight.server.home"})
 public class BaseFacade {
 
   @Autowired

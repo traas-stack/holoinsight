@@ -8,6 +8,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
+
 import io.holoinsight.server.common.JsonUtils;
 import io.holoinsight.server.common.dao.entity.GaeaCollectConfigDO;
 import io.holoinsight.server.meta.common.model.QueryExample;
@@ -17,8 +19,6 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-
-import org.apache.commons.lang3.StringUtils;
 
 /**
  * <p>
@@ -83,7 +83,7 @@ public class TemplateUtils {
 
     // TODO 临时代码
     if (t.getExecutorSelector().getType() == null) {
-      if ("com.alipay.cloudmonitor.prod.dal.model.dto.OpenmetricsScraperDTO".equals(t.getType())) {
+      if (t.getType().endsWith("OpenmetricsScraperDTO")) {
         t.getExecutorSelector().setType(ExecutorSelector.SIDECAR);
       }
     }

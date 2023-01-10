@@ -3,7 +3,7 @@
 
 
 	<Properties>
-		<Property name="LOG_PATH">${sys:logging.path:-./logs}/holoinsight</Property>
+		<Property name="LOG_PATH">${sys:logging.path:-./logs}/holoinsight-server</Property>
 	</Properties>
 
 	<Appenders>
@@ -222,19 +222,16 @@
 		<Logger name="AGENT" additivity="false" level="INFO">
 			<Appender-Ref ref="AGENT"/>
 		</Logger>
-		<Logger name="com.alipay.dimservice" additivity="false" level="INFO">
-			<Appender-Ref ref="DIM"/>
-		</Logger>
 		<Logger name="BISTREAM" additivity="false" level="INFO">
 			<Appender-Ref ref="BISTREAM"/>
 		</Logger>
-		<Logger name="com.alipay.cloudmonitor.registry.core.grpc.stream" additivity="false" level="INFO">
+		<Logger name="io.holoinsight.server.registry.core.grpc.stream" additivity="false" level="INFO">
 			<Appender-Ref ref="BISTREAM"/>
 		</Logger>
-		<Logger name="com.alipay.cloudmonitor.registry.core.grpc.streambiz" additivity="false" level="INFO">
+		<Logger name="io.holoinsight.server.registry.core.grpc.streambiz" additivity="false" level="INFO">
 			<Appender-Ref ref="BISTREAM"/>
 		</Logger>
-		<Logger name="com.alipay.cloudmonitor.meta" additivity="false" level="INFO">
+		<Logger name="io.holoinsight.server.meta" additivity="false" level="INFO">
 			<Appender-Ref ref="DIM"/>
 		</Logger>
 		<Logger name="TARGET" additivity="false" level="INFO">

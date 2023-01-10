@@ -22,7 +22,6 @@ public class ApiExceptionHandler {
   @ExceptionHandler
   ResponseEntity<FailResponse> exceptionHandler(Exception e) {
     log.error(e.getMessage(), e);
-    e.printStackTrace();
     return new ResponseEntity<>(FailResponse.builder()
         .code(String.valueOf(HttpStatus.BAD_REQUEST.value())).msg(e.getMessage()).build(),
         HttpStatus.BAD_REQUEST);

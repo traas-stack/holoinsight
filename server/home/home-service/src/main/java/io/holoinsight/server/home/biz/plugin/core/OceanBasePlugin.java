@@ -11,7 +11,7 @@ import io.holoinsight.server.home.biz.plugin.model.PluginModel;
 import io.holoinsight.server.home.dal.model.dto.IntegrationConfig;
 import io.holoinsight.server.home.dal.model.dto.IntegrationPluginDTO;
 import io.holoinsight.server.home.dal.model.dto.IntegrationProductDTO;
-import com.alipay.cloudmonitor.registry.integration.model.ob.ObTask;
+import io.holoinsight.server.registry.model.integration.ob.ObTask;
 import com.google.gson.reflect.TypeToken;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
@@ -27,7 +27,7 @@ import java.util.Map;
  * @version 1.0: PortCheckPlugin.java, v 0.1 2022年11月18日 下午5:56 jinsong.yjs Exp $
  */
 @Component
-@PluginModel(name = "com.alipay.holoinsight.plugin.OceanBasePlugin", version = "1")
+@PluginModel(name = "io.holoinsight.plugin.OceanBasePlugin", version = "1")
 public class OceanBasePlugin extends AbstractCentralIntegrationPlugin<OceanBasePlugin> {
 
   public ObTask obTask;
