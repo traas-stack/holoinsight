@@ -215,18 +215,17 @@ public class SpanEsServiceImpl extends RecordEsService<SpanEsDO> implements Span
     List<StatisticData> result = new ArrayList<>();
 
     BoolQueryBuilder queryBuilder = QueryBuilders.boolQuery()
-            .must(QueryBuilders.rangeQuery(SpanEsDO.START_TIME).gte(startTime).lte(endTime));
+        .must(QueryBuilders.rangeQuery(SpanEsDO.START_TIME).gte(startTime).lte(endTime));
 
     TermsAggregationBuilder aggregationBuilder = AggregationBuilders
-            .terms(SpanEsDO.attributes(Const.APPID)).field(SpanEsDO.attributes(Const.APPID))
-            .subAggregation(
-                    AggregationBuilders.terms(SpanEsDO.attributes(Const.ENVID))
-                            .field(SpanEsDO.attributes(Const.ENVID))
-                            .subAggregation(AggregationBuilders.cardinality("service_count").field(SpanEsDO.resource(SpanEsDO.SERVICE_NAME)))
-                            .subAggregation(AggregationBuilders.cardinality("trace_count").field(SpanEsDO.TRACE_ID))
-                            .executionHint("map")
-                            .collectMode(Aggregator.SubAggCollectionMode.BREADTH_FIRST)
-                            .size(1000));
+        .terms(SpanEsDO.attributes(Const.APPID)).field(SpanEsDO.attributes(Const.APPID))
+        .subAggregation(AggregationBuilders.terms(SpanEsDO.attributes(Const.ENVID))
+            .field(SpanEsDO.attributes(Const.ENVID))
+            .subAggregation(AggregationBuilders.cardinality("service_count")
+                .field(SpanEsDO.resource(SpanEsDO.SERVICE_NAME)))
+            .subAggregation(AggregationBuilders.cardinality("trace_count").field(SpanEsDO.TRACE_ID))
+            .executionHint("map").collectMode(Aggregator.SubAggCollectionMode.BREADTH_FIRST)
+            .size(1000));
 
     SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
     sourceBuilder.size(1000);

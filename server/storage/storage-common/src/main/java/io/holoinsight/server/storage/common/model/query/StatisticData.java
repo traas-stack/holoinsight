@@ -7,10 +7,10 @@ import lombok.Data;
 
 @Data
 public class StatisticData {
-    private String appId;
-    private String envId;
-    private String tenant;
-    private long serviceCount;
-    private long traceCount;
+  private String appId;
+  private String envId;
+  private String tenant;
+  private long serviceCount;
+  private long traceCount;
 
 }
