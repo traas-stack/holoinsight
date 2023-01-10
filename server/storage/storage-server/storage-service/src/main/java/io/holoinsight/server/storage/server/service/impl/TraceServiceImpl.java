@@ -6,6 +6,7 @@ package io.holoinsight.server.storage.server.service.impl;
 import io.holoinsight.server.common.springboot.ConditionalOnFeature;
 import io.holoinsight.server.storage.common.model.query.Pagination;
 import io.holoinsight.server.storage.common.model.query.QueryOrder;
+import io.holoinsight.server.storage.common.model.query.StatisticData;
 import io.holoinsight.server.storage.common.model.query.TraceBrief;
 import io.holoinsight.server.storage.common.model.specification.sw.Tag;
 import io.holoinsight.server.storage.common.model.specification.sw.Trace;
@@ -59,5 +60,10 @@ public class TraceServiceImpl implements TraceService {
   @Override
   public void insertSpans(List<SpanEsDO> spans) throws IOException {
     spanEsService.batchInsert(spans);
+  }
+
+  @Override
+  public List<StatisticData> statisticTrace(long startTime, long endTime) throws IOException {
+    return spanEsService.statisticTrace(startTime, endTime);
   }
 }

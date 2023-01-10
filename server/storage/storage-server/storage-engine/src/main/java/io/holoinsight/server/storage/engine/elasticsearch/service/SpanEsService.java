@@ -5,6 +5,7 @@ package io.holoinsight.server.storage.engine.elasticsearch.service;
 
 import io.holoinsight.server.storage.common.model.query.Pagination;
 import io.holoinsight.server.storage.common.model.query.QueryOrder;
+import io.holoinsight.server.storage.common.model.query.StatisticData;
 import io.holoinsight.server.storage.common.model.query.TraceBrief;
 import io.holoinsight.server.storage.common.model.specification.sw.Tag;
 import io.holoinsight.server.storage.common.model.specification.sw.Trace;
@@ -29,4 +30,6 @@ public interface SpanEsService {
   Trace queryTrace(final String traceId) throws IOException;
 
   void batchInsert(final List<SpanEsDO> spans) throws IOException;
+
+  List<StatisticData> statisticTrace(long startTime, long endTime) throws IOException;
 }
