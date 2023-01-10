@@ -18,6 +18,8 @@ import io.holoinsight.server.registry.core.grpc.streambiz.BizTypes;
 import io.holoinsight.server.registry.grpc.internal.BiStreamProxyRequest;
 import io.holoinsight.server.registry.grpc.internal.BiStreamProxyResponse;
 import io.holoinsight.server.registry.grpc.internal.RegistryServiceForInternalGrpc;
+import io.holoinsight.server.registry.grpc.prod.DryRunRequest;
+import io.holoinsight.server.registry.grpc.prod.DryRunResponse;
 import io.holoinsight.server.registry.grpc.prod.InspectResponse;
 import io.holoinsight.server.registry.grpc.prod.ListFilesResponse;
 import io.holoinsight.server.registry.grpc.prod.PreviewFileResponse;
@@ -45,6 +47,7 @@ public class RegistryServiceForInternalImpl
     defaultRespMap.put(BizTypes.INSPECT, InspectResponse.getDefaultInstance());
     defaultRespMap.put(BizTypes.LIST_FILES, ListFilesResponse.getDefaultInstance());
     defaultRespMap.put(BizTypes.PREVIEW_FILE, PreviewFileResponse.getDefaultInstance());
+    defaultRespMap.put(BizTypes.DRY_RUN, DryRunResponse.getDefaultInstance());
   }
 
   // TODO
@@ -80,7 +83,7 @@ public class RegistryServiceForInternalImpl
 
   public void proxy0(BiStreamProxyRequest request, Object defaultResp,
       StreamObserver<BiStreamProxyResponse> o) {
-    biStreamService.proxy0(request, defaultResp, o);
+    biStreamService.handleLocal(request, defaultResp, o);
   }
 
 }

@@ -23,11 +23,7 @@ public final class DryRunRequest extends com.google.protobuf.GeneratedMessageV3 
     super(builder);
   }
 
-  private DryRunRequest() {
-    agentId_ = "";
-    type_ = "";
-    json_ = "";
-  }
+  private DryRunRequest() {}
 
   @java.lang.Override
   @SuppressWarnings({"unused"})
@@ -72,24 +68,22 @@ public final class DryRunRequest extends com.google.protobuf.GeneratedMessageV3 
             break;
           }
           case 18: {
-            java.lang.String s = input.readStringRequireUtf8();
+            io.holoinsight.server.registry.grpc.prod.DryRunRequest.CollectConfig.Builder subBuilder =
+                null;
+            if (config_ != null) {
+              subBuilder = config_.toBuilder();
+            }
+            config_ = input.readMessage(
+                io.holoinsight.server.registry.grpc.prod.DryRunRequest.CollectConfig.parser(),
+                extensionRegistry);
+            if (subBuilder != null) {
+              subBuilder.mergeFrom(config_);
+              config_ = subBuilder.buildPartial();
+            }
 
-            agentId_ = s;
             break;
           }
           case 26: {
-            java.lang.String s = input.readStringRequireUtf8();
-
-            type_ = s;
-            break;
-          }
-          case 34: {
-            java.lang.String s = input.readStringRequireUtf8();
-
-            json_ = s;
-            break;
-          }
-          case 42: {
             io.holoinsight.server.registry.grpc.prod.TargetIdentifier.Builder subBuilder = null;
             if (target_ != null) {
               subBuilder = target_.toBuilder();
@@ -100,6 +94,21 @@ public final class DryRunRequest extends com.google.protobuf.GeneratedMessageV3 
             if (subBuilder != null) {
               subBuilder.mergeFrom(target_);
               target_ = subBuilder.buildPartial();
+            }
+
+            break;
+          }
+          case 34: {
+            io.holoinsight.server.registry.grpc.prod.DryRunRequest.Input.Builder subBuilder = null;
+            if (input_ != null) {
+              subBuilder = input_.toBuilder();
+            }
+            input_ = input.readMessage(
+                io.holoinsight.server.registry.grpc.prod.DryRunRequest.Input.parser(),
+                extensionRegistry);
+            if (subBuilder != null) {
+              subBuilder.mergeFrom(input_);
+              input_ = subBuilder.buildPartial();
             }
 
             break;
@@ -134,71 +143,89 @@ public final class DryRunRequest extends com.google.protobuf.GeneratedMessageV3 
             io.holoinsight.server.registry.grpc.prod.DryRunRequest.Builder.class);
   }
 
-  public interface DryRunInputOrBuilder extends
-      // @@protoc_insertion_point(interface_extends:io.holoinsight.server.registry.grpc.prod.DryRunRequest.DryRunInput)
+  public interface CollectConfigOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:io.holoinsight.server.registry.grpc.prod.DryRunRequest.CollectConfig)
       com.google.protobuf.MessageOrBuilder {
 
     /**
      * <pre>
-     * 如果提供了contents, 则直接使用这些数据进行试跑
-     * 否则使用agent_id对应的本机器上的文件的最后N行进行试跑(这会导致结果不确定)
+     * tableName: 从 db 里读取配置, 根据 tableName 匹配
+     * temp:
      * </pre>
      *
-     * <code>repeated string content = 1;</code>
+     * <code>string type = 1;</code>
      */
-    java.util.List<java.lang.String> getContentList();
+    java.lang.String getType();
 
     /**
      * <pre>
-     * 如果提供了contents, 则直接使用这些数据进行试跑
-     * 否则使用agent_id对应的本机器上的文件的最后N行进行试跑(这会导致结果不确定)
+     * tableName: 从 db 里读取配置, 根据 tableName 匹配
+     * temp:
      * </pre>
      *
-     * <code>repeated string content = 1;</code>
+     * <code>string type = 1;</code>
      */
-    int getContentCount();
+    com.google.protobuf.ByteString getTypeBytes();
+
+    /**
+     * <code>string table_name = 2;</code>
+     */
+    java.lang.String getTableName();
+
+    /**
+     * <code>string table_name = 2;</code>
+     */
+    com.google.protobuf.ByteString getTableNameBytes();
 
     /**
      * <pre>
-     * 如果提供了contents, 则直接使用这些数据进行试跑
-     * 否则使用agent_id对应的本机器上的文件的最后N行进行试跑(这会导致结果不确定)
+     * 字段对应 gaea_collect_config 里的 记录
      * </pre>
      *
-     * <code>repeated string content = 1;</code>
+     * <code>.io.holoinsight.server.registry.grpc.prod.DryRunRequest.CollectConfigTemp temp = 3;</code>
      */
-    java.lang.String getContent(int index);
+    boolean hasTemp();
 
     /**
      * <pre>
-     * 如果提供了contents, 则直接使用这些数据进行试跑
-     * 否则使用agent_id对应的本机器上的文件的最后N行进行试跑(这会导致结果不确定)
+     * 字段对应 gaea_collect_config 里的 记录
      * </pre>
      *
-     * <code>repeated string content = 1;</code>
+     * <code>.io.holoinsight.server.registry.grpc.prod.DryRunRequest.CollectConfigTemp temp = 3;</code>
      */
-    com.google.protobuf.ByteString getContentBytes(int index);
+    io.holoinsight.server.registry.grpc.prod.DryRunRequest.CollectConfigTemp getTemp();
+
+    /**
+     * <pre>
+     * 字段对应 gaea_collect_config 里的 记录
+     * </pre>
+     *
+     * <code>.io.holoinsight.server.registry.grpc.prod.DryRunRequest.CollectConfigTemp temp = 3;</code>
+     */
+    io.holoinsight.server.registry.grpc.prod.DryRunRequest.CollectConfigTempOrBuilder getTempOrBuilder();
   }
   /**
-   * Protobuf type {@code io.holoinsight.server.registry.grpc.prod.DryRunRequest.DryRunInput}
+   * Protobuf type {@code io.holoinsight.server.registry.grpc.prod.DryRunRequest.CollectConfig}
    */
-  public static final class DryRunInput extends com.google.protobuf.GeneratedMessageV3 implements
-      // @@protoc_insertion_point(message_implements:io.holoinsight.server.registry.grpc.prod.DryRunRequest.DryRunInput)
-      DryRunInputOrBuilder {
+  public static final class CollectConfig extends com.google.protobuf.GeneratedMessageV3 implements
+      // @@protoc_insertion_point(message_implements:io.holoinsight.server.registry.grpc.prod.DryRunRequest.CollectConfig)
+      CollectConfigOrBuilder {
     private static final long serialVersionUID = 0L;
 
-    // Use DryRunInput.newBuilder() to construct.
-    private DryRunInput(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+    // Use CollectConfig.newBuilder() to construct.
+    private CollectConfig(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
       super(builder);
     }
 
-    private DryRunInput() {
-      content_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+    private CollectConfig() {
+      type_ = "";
+      tableName_ = "";
     }
 
     @java.lang.Override
     @SuppressWarnings({"unused"})
     protected java.lang.Object newInstance(UnusedPrivateParameter unused) {
-      return new DryRunInput();
+      return new CollectConfig();
     }
 
     @java.lang.Override
@@ -206,14 +233,13 @@ public final class DryRunRequest extends com.google.protobuf.GeneratedMessageV3 
       return this.unknownFields;
     }
 
-    private DryRunInput(com.google.protobuf.CodedInputStream input,
+    private CollectConfig(com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       this();
       if (extensionRegistry == null) {
         throw new java.lang.NullPointerException();
       }
-      int mutable_bitField0_ = 0;
       com.google.protobuf.UnknownFieldSet.Builder unknownFields =
           com.google.protobuf.UnknownFieldSet.newBuilder();
       try {
@@ -226,11 +252,30 @@ public final class DryRunRequest extends com.google.protobuf.GeneratedMessageV3 
               break;
             case 10: {
               java.lang.String s = input.readStringRequireUtf8();
-              if (!((mutable_bitField0_ & 0x00000001) != 0)) {
-                content_ = new com.google.protobuf.LazyStringArrayList();
-                mutable_bitField0_ |= 0x00000001;
+
+              type_ = s;
+              break;
+            }
+            case 18: {
+              java.lang.String s = input.readStringRequireUtf8();
+
+              tableName_ = s;
+              break;
+            }
+            case 26: {
+              io.holoinsight.server.registry.grpc.prod.DryRunRequest.CollectConfigTemp.Builder subBuilder =
+                  null;
+              if (temp_ != null) {
+                subBuilder = temp_.toBuilder();
               }
-              content_.add(s);
+              temp_ = input.readMessage(
+                  io.holoinsight.server.registry.grpc.prod.DryRunRequest.CollectConfigTemp.parser(),
+                  extensionRegistry);
+              if (subBuilder != null) {
+                subBuilder.mergeFrom(temp_);
+                temp_ = subBuilder.buildPartial();
+              }
+
               break;
             }
             default: {
@@ -246,75 +291,136 @@ public final class DryRunRequest extends com.google.protobuf.GeneratedMessageV3 
       } catch (java.io.IOException e) {
         throw new com.google.protobuf.InvalidProtocolBufferException(e).setUnfinishedMessage(this);
       } finally {
-        if (((mutable_bitField0_ & 0x00000001) != 0)) {
-          content_ = content_.getUnmodifiableView();
-        }
         this.unknownFields = unknownFields.build();
         makeExtensionsImmutable();
       }
     }
 
     public static final com.google.protobuf.Descriptors.Descriptor getDescriptor() {
-      return io.holoinsight.server.registry.grpc.prod.RegistryForProdProtos.internal_static_io_holoinsight_server_registry_grpc_prod_DryRunRequest_DryRunInput_descriptor;
+      return io.holoinsight.server.registry.grpc.prod.RegistryForProdProtos.internal_static_io_holoinsight_server_registry_grpc_prod_DryRunRequest_CollectConfig_descriptor;
     }
 
     @java.lang.Override
     protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable internalGetFieldAccessorTable() {
-      return io.holoinsight.server.registry.grpc.prod.RegistryForProdProtos.internal_static_io_holoinsight_server_registry_grpc_prod_DryRunRequest_DryRunInput_fieldAccessorTable
+      return io.holoinsight.server.registry.grpc.prod.RegistryForProdProtos.internal_static_io_holoinsight_server_registry_grpc_prod_DryRunRequest_CollectConfig_fieldAccessorTable
           .ensureFieldAccessorsInitialized(
-              io.holoinsight.server.registry.grpc.prod.DryRunRequest.DryRunInput.class,
-              io.holoinsight.server.registry.grpc.prod.DryRunRequest.DryRunInput.Builder.class);
+              io.holoinsight.server.registry.grpc.prod.DryRunRequest.CollectConfig.class,
+              io.holoinsight.server.registry.grpc.prod.DryRunRequest.CollectConfig.Builder.class);
     }
 
-    public static final int CONTENT_FIELD_NUMBER = 1;
-    private com.google.protobuf.LazyStringList content_;
+    public static final int TYPE_FIELD_NUMBER = 1;
+    private volatile java.lang.Object type_;
 
     /**
      * <pre>
-     * 如果提供了contents, 则直接使用这些数据进行试跑
-     * 否则使用agent_id对应的本机器上的文件的最后N行进行试跑(这会导致结果不确定)
+     * tableName: 从 db 里读取配置, 根据 tableName 匹配
+     * temp:
      * </pre>
      *
-     * <code>repeated string content = 1;</code>
+     * <code>string type = 1;</code>
      */
-    public com.google.protobuf.ProtocolStringList getContentList() {
-      return content_;
-    }
-
-    /**
-     * <pre>
-     * 如果提供了contents, 则直接使用这些数据进行试跑
-     * 否则使用agent_id对应的本机器上的文件的最后N行进行试跑(这会导致结果不确定)
-     * </pre>
-     *
-     * <code>repeated string content = 1;</code>
-     */
-    public int getContentCount() {
-      return content_.size();
+    public java.lang.String getType() {
+      java.lang.Object ref = type_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        type_ = s;
+        return s;
+      }
     }
 
     /**
      * <pre>
-     * 如果提供了contents, 则直接使用这些数据进行试跑
-     * 否则使用agent_id对应的本机器上的文件的最后N行进行试跑(这会导致结果不确定)
+     * tableName: 从 db 里读取配置, 根据 tableName 匹配
+     * temp:
      * </pre>
      *
-     * <code>repeated string content = 1;</code>
+     * <code>string type = 1;</code>
      */
-    public java.lang.String getContent(int index) {
-      return content_.get(index);
+    public com.google.protobuf.ByteString getTypeBytes() {
+      java.lang.Object ref = type_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b =
+            com.google.protobuf.ByteString.copyFromUtf8((java.lang.String) ref);
+        type_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    public static final int TABLE_NAME_FIELD_NUMBER = 2;
+    private volatile java.lang.Object tableName_;
+
+    /**
+     * <code>string table_name = 2;</code>
+     */
+    public java.lang.String getTableName() {
+      java.lang.Object ref = tableName_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        tableName_ = s;
+        return s;
+      }
+    }
+
+    /**
+     * <code>string table_name = 2;</code>
+     */
+    public com.google.protobuf.ByteString getTableNameBytes() {
+      java.lang.Object ref = tableName_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b =
+            com.google.protobuf.ByteString.copyFromUtf8((java.lang.String) ref);
+        tableName_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    public static final int TEMP_FIELD_NUMBER = 3;
+    private io.holoinsight.server.registry.grpc.prod.DryRunRequest.CollectConfigTemp temp_;
+
+    /**
+     * <pre>
+     * 字段对应 gaea_collect_config 里的 记录
+     * </pre>
+     *
+     * <code>.io.holoinsight.server.registry.grpc.prod.DryRunRequest.CollectConfigTemp temp = 3;</code>
+     */
+    public boolean hasTemp() {
+      return temp_ != null;
     }
 
     /**
      * <pre>
-     * 如果提供了contents, 则直接使用这些数据进行试跑
-     * 否则使用agent_id对应的本机器上的文件的最后N行进行试跑(这会导致结果不确定)
+     * 字段对应 gaea_collect_config 里的 记录
      * </pre>
      *
-     * <code>repeated string content = 1;</code>
+     * <code>.io.holoinsight.server.registry.grpc.prod.DryRunRequest.CollectConfigTemp temp = 3;</code>
      */
-    public com.google.protobuf.ByteString getContentBytes(int index) {
-      return content_.getByteString(index);
+    public io.holoinsight.server.registry.grpc.prod.DryRunRequest.CollectConfigTemp getTemp() {
+      return temp_ == null
+          ? io.holoinsight.server.registry.grpc.prod.DryRunRequest.CollectConfigTemp
+              .getDefaultInstance()
+          : temp_;
+    }
+
+    /**
+     * <pre>
+     * 字段对应 gaea_collect_config 里的 记录
+     * </pre>
+     *
+     * <code>.io.holoinsight.server.registry.grpc.prod.DryRunRequest.CollectConfigTemp temp = 3;</code>
+     */
+    public io.holoinsight.server.registry.grpc.prod.DryRunRequest.CollectConfigTempOrBuilder getTempOrBuilder() {
+      return getTemp();
     }
 
     private byte memoizedIsInitialized = -1;
@@ -333,8 +439,14 @@ public final class DryRunRequest extends com.google.protobuf.GeneratedMessageV3 
 
     @java.lang.Override
     public void writeTo(com.google.protobuf.CodedOutputStream output) throws java.io.IOException {
-      for (int i = 0; i < content_.size(); i++) {
-        com.google.protobuf.GeneratedMessageV3.writeString(output, 1, content_.getRaw(i));
+      if (!getTypeBytes().isEmpty()) {
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 1, type_);
+      }
+      if (!getTableNameBytes().isEmpty()) {
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 2, tableName_);
+      }
+      if (temp_ != null) {
+        output.writeMessage(3, getTemp());
       }
       unknownFields.writeTo(output);
     }
@@ -346,13 +458,14 @@ public final class DryRunRequest extends com.google.protobuf.GeneratedMessageV3 
         return size;
 
       size = 0;
-      {
-        int dataSize = 0;
-        for (int i = 0; i < content_.size(); i++) {
-          dataSize += computeStringSizeNoTag(content_.getRaw(i));
-        }
-        size += dataSize;
-        size += 1 * getContentList().size();
+      if (!getTypeBytes().isEmpty()) {
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, type_);
+      }
+      if (!getTableNameBytes().isEmpty()) {
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(2, tableName_);
+      }
+      if (temp_ != null) {
+        size += com.google.protobuf.CodedOutputStream.computeMessageSize(3, getTemp());
       }
       size += unknownFields.getSerializedSize();
       memoizedSize = size;
@@ -364,14 +477,22 @@ public final class DryRunRequest extends com.google.protobuf.GeneratedMessageV3 
       if (obj == this) {
         return true;
       }
-      if (!(obj instanceof io.holoinsight.server.registry.grpc.prod.DryRunRequest.DryRunInput)) {
+      if (!(obj instanceof io.holoinsight.server.registry.grpc.prod.DryRunRequest.CollectConfig)) {
         return super.equals(obj);
       }
-      io.holoinsight.server.registry.grpc.prod.DryRunRequest.DryRunInput other =
-          (io.holoinsight.server.registry.grpc.prod.DryRunRequest.DryRunInput) obj;
+      io.holoinsight.server.registry.grpc.prod.DryRunRequest.CollectConfig other =
+          (io.holoinsight.server.registry.grpc.prod.DryRunRequest.CollectConfig) obj;
 
-      if (!getContentList().equals(other.getContentList()))
+      if (!getType().equals(other.getType()))
         return false;
+      if (!getTableName().equals(other.getTableName()))
+        return false;
+      if (hasTemp() != other.hasTemp())
+        return false;
+      if (hasTemp()) {
+        if (!getTemp().equals(other.getTemp()))
+          return false;
+      }
       if (!unknownFields.equals(other.unknownFields))
         return false;
       return true;
@@ -384,80 +505,84 @@ public final class DryRunRequest extends com.google.protobuf.GeneratedMessageV3 
       }
       int hash = 41;
       hash = (19 * hash) + getDescriptor().hashCode();
-      if (getContentCount() > 0) {
-        hash = (37 * hash) + CONTENT_FIELD_NUMBER;
-        hash = (53 * hash) + getContentList().hashCode();
+      hash = (37 * hash) + TYPE_FIELD_NUMBER;
+      hash = (53 * hash) + getType().hashCode();
+      hash = (37 * hash) + TABLE_NAME_FIELD_NUMBER;
+      hash = (53 * hash) + getTableName().hashCode();
+      if (hasTemp()) {
+        hash = (37 * hash) + TEMP_FIELD_NUMBER;
+        hash = (53 * hash) + getTemp().hashCode();
       }
       hash = (29 * hash) + unknownFields.hashCode();
       memoizedHashCode = hash;
       return hash;
     }
 
-    public static io.holoinsight.server.registry.grpc.prod.DryRunRequest.DryRunInput parseFrom(
+    public static io.holoinsight.server.registry.grpc.prod.DryRunRequest.CollectConfig parseFrom(
         java.nio.ByteBuffer data) throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
 
-    public static io.holoinsight.server.registry.grpc.prod.DryRunRequest.DryRunInput parseFrom(
+    public static io.holoinsight.server.registry.grpc.prod.DryRunRequest.CollectConfig parseFrom(
         java.nio.ByteBuffer data, com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
 
-    public static io.holoinsight.server.registry.grpc.prod.DryRunRequest.DryRunInput parseFrom(
+    public static io.holoinsight.server.registry.grpc.prod.DryRunRequest.CollectConfig parseFrom(
         com.google.protobuf.ByteString data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
 
-    public static io.holoinsight.server.registry.grpc.prod.DryRunRequest.DryRunInput parseFrom(
+    public static io.holoinsight.server.registry.grpc.prod.DryRunRequest.CollectConfig parseFrom(
         com.google.protobuf.ByteString data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
 
-    public static io.holoinsight.server.registry.grpc.prod.DryRunRequest.DryRunInput parseFrom(
+    public static io.holoinsight.server.registry.grpc.prod.DryRunRequest.CollectConfig parseFrom(
         byte[] data) throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
 
-    public static io.holoinsight.server.registry.grpc.prod.DryRunRequest.DryRunInput parseFrom(
+    public static io.holoinsight.server.registry.grpc.prod.DryRunRequest.CollectConfig parseFrom(
         byte[] data, com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
 
-    public static io.holoinsight.server.registry.grpc.prod.DryRunRequest.DryRunInput parseFrom(
+    public static io.holoinsight.server.registry.grpc.prod.DryRunRequest.CollectConfig parseFrom(
         java.io.InputStream input) throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3.parseWithIOException(PARSER, input);
     }
 
-    public static io.holoinsight.server.registry.grpc.prod.DryRunRequest.DryRunInput parseFrom(
+    public static io.holoinsight.server.registry.grpc.prod.DryRunRequest.CollectConfig parseFrom(
         java.io.InputStream input, com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3.parseWithIOException(PARSER, input,
           extensionRegistry);
     }
 
-    public static io.holoinsight.server.registry.grpc.prod.DryRunRequest.DryRunInput parseDelimitedFrom(
+    public static io.holoinsight.server.registry.grpc.prod.DryRunRequest.CollectConfig parseDelimitedFrom(
         java.io.InputStream input) throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3.parseDelimitedWithIOException(PARSER, input);
     }
 
-    public static io.holoinsight.server.registry.grpc.prod.DryRunRequest.DryRunInput parseDelimitedFrom(
+    public static io.holoinsight.server.registry.grpc.prod.DryRunRequest.CollectConfig parseDelimitedFrom(
         java.io.InputStream input, com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3.parseDelimitedWithIOException(PARSER, input,
           extensionRegistry);
     }
 
-    public static io.holoinsight.server.registry.grpc.prod.DryRunRequest.DryRunInput parseFrom(
+    public static io.holoinsight.server.registry.grpc.prod.DryRunRequest.CollectConfig parseFrom(
         com.google.protobuf.CodedInputStream input) throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3.parseWithIOException(PARSER, input);
     }
 
-    public static io.holoinsight.server.registry.grpc.prod.DryRunRequest.DryRunInput parseFrom(
+    public static io.holoinsight.server.registry.grpc.prod.DryRunRequest.CollectConfig parseFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry) throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3.parseWithIOException(PARSER, input,
@@ -474,7 +599,7 @@ public final class DryRunRequest extends com.google.protobuf.GeneratedMessageV3 
     }
 
     public static Builder newBuilder(
-        io.holoinsight.server.registry.grpc.prod.DryRunRequest.DryRunInput prototype) {
+        io.holoinsight.server.registry.grpc.prod.DryRunRequest.CollectConfig prototype) {
       return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
     }
 
@@ -491,26 +616,26 @@ public final class DryRunRequest extends com.google.protobuf.GeneratedMessageV3 
     }
 
     /**
-     * Protobuf type {@code io.holoinsight.server.registry.grpc.prod.DryRunRequest.DryRunInput}
+     * Protobuf type {@code io.holoinsight.server.registry.grpc.prod.DryRunRequest.CollectConfig}
      */
     public static final class Builder
         extends com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
-        // @@protoc_insertion_point(builder_implements:io.holoinsight.server.registry.grpc.prod.DryRunRequest.DryRunInput)
-        io.holoinsight.server.registry.grpc.prod.DryRunRequest.DryRunInputOrBuilder {
+        // @@protoc_insertion_point(builder_implements:io.holoinsight.server.registry.grpc.prod.DryRunRequest.CollectConfig)
+        io.holoinsight.server.registry.grpc.prod.DryRunRequest.CollectConfigOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor getDescriptor() {
-        return io.holoinsight.server.registry.grpc.prod.RegistryForProdProtos.internal_static_io_holoinsight_server_registry_grpc_prod_DryRunRequest_DryRunInput_descriptor;
+        return io.holoinsight.server.registry.grpc.prod.RegistryForProdProtos.internal_static_io_holoinsight_server_registry_grpc_prod_DryRunRequest_CollectConfig_descriptor;
       }
 
       @java.lang.Override
       protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable internalGetFieldAccessorTable() {
-        return io.holoinsight.server.registry.grpc.prod.RegistryForProdProtos.internal_static_io_holoinsight_server_registry_grpc_prod_DryRunRequest_DryRunInput_fieldAccessorTable
+        return io.holoinsight.server.registry.grpc.prod.RegistryForProdProtos.internal_static_io_holoinsight_server_registry_grpc_prod_DryRunRequest_CollectConfig_fieldAccessorTable
             .ensureFieldAccessorsInitialized(
-                io.holoinsight.server.registry.grpc.prod.DryRunRequest.DryRunInput.class,
-                io.holoinsight.server.registry.grpc.prod.DryRunRequest.DryRunInput.Builder.class);
+                io.holoinsight.server.registry.grpc.prod.DryRunRequest.CollectConfig.class,
+                io.holoinsight.server.registry.grpc.prod.DryRunRequest.CollectConfig.Builder.class);
       }
 
       // Construct using
-      // io.holoinsight.server.registry.grpc.prod.DryRunRequest.DryRunInput.newBuilder()
+      // io.holoinsight.server.registry.grpc.prod.DryRunRequest.CollectConfig.newBuilder()
       private Builder() {
         maybeForceBuilderInitialization();
       }
@@ -528,25 +653,34 @@ public final class DryRunRequest extends com.google.protobuf.GeneratedMessageV3 
       @java.lang.Override
       public Builder clear() {
         super.clear();
-        content_ = com.google.protobuf.LazyStringArrayList.EMPTY;
-        bitField0_ = (bitField0_ & ~0x00000001);
+        type_ = "";
+
+        tableName_ = "";
+
+        if (tempBuilder_ == null) {
+          temp_ = null;
+        } else {
+          temp_ = null;
+          tempBuilder_ = null;
+        }
         return this;
       }
 
       @java.lang.Override
       public com.google.protobuf.Descriptors.Descriptor getDescriptorForType() {
-        return io.holoinsight.server.registry.grpc.prod.RegistryForProdProtos.internal_static_io_holoinsight_server_registry_grpc_prod_DryRunRequest_DryRunInput_descriptor;
+        return io.holoinsight.server.registry.grpc.prod.RegistryForProdProtos.internal_static_io_holoinsight_server_registry_grpc_prod_DryRunRequest_CollectConfig_descriptor;
       }
 
       @java.lang.Override
-      public io.holoinsight.server.registry.grpc.prod.DryRunRequest.DryRunInput getDefaultInstanceForType() {
-        return io.holoinsight.server.registry.grpc.prod.DryRunRequest.DryRunInput
+      public io.holoinsight.server.registry.grpc.prod.DryRunRequest.CollectConfig getDefaultInstanceForType() {
+        return io.holoinsight.server.registry.grpc.prod.DryRunRequest.CollectConfig
             .getDefaultInstance();
       }
 
       @java.lang.Override
-      public io.holoinsight.server.registry.grpc.prod.DryRunRequest.DryRunInput build() {
-        io.holoinsight.server.registry.grpc.prod.DryRunRequest.DryRunInput result = buildPartial();
+      public io.holoinsight.server.registry.grpc.prod.DryRunRequest.CollectConfig build() {
+        io.holoinsight.server.registry.grpc.prod.DryRunRequest.CollectConfig result =
+            buildPartial();
         if (!result.isInitialized()) {
           throw newUninitializedMessageException(result);
         }
@@ -554,15 +688,16 @@ public final class DryRunRequest extends com.google.protobuf.GeneratedMessageV3 
       }
 
       @java.lang.Override
-      public io.holoinsight.server.registry.grpc.prod.DryRunRequest.DryRunInput buildPartial() {
-        io.holoinsight.server.registry.grpc.prod.DryRunRequest.DryRunInput result =
-            new io.holoinsight.server.registry.grpc.prod.DryRunRequest.DryRunInput(this);
-        int from_bitField0_ = bitField0_;
-        if (((bitField0_ & 0x00000001) != 0)) {
-          content_ = content_.getUnmodifiableView();
-          bitField0_ = (bitField0_ & ~0x00000001);
+      public io.holoinsight.server.registry.grpc.prod.DryRunRequest.CollectConfig buildPartial() {
+        io.holoinsight.server.registry.grpc.prod.DryRunRequest.CollectConfig result =
+            new io.holoinsight.server.registry.grpc.prod.DryRunRequest.CollectConfig(this);
+        result.type_ = type_;
+        result.tableName_ = tableName_;
+        if (tempBuilder_ == null) {
+          result.temp_ = temp_;
+        } else {
+          result.temp_ = tempBuilder_.build();
         }
-        result.content_ = content_;
         onBuilt();
         return result;
       }
@@ -602,9 +737,9 @@ public final class DryRunRequest extends com.google.protobuf.GeneratedMessageV3 
 
       @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
-        if (other instanceof io.holoinsight.server.registry.grpc.prod.DryRunRequest.DryRunInput) {
+        if (other instanceof io.holoinsight.server.registry.grpc.prod.DryRunRequest.CollectConfig) {
           return mergeFrom(
-              (io.holoinsight.server.registry.grpc.prod.DryRunRequest.DryRunInput) other);
+              (io.holoinsight.server.registry.grpc.prod.DryRunRequest.CollectConfig) other);
         } else {
           super.mergeFrom(other);
           return this;
@@ -612,18 +747,1821 @@ public final class DryRunRequest extends com.google.protobuf.GeneratedMessageV3 
       }
 
       public Builder mergeFrom(
-          io.holoinsight.server.registry.grpc.prod.DryRunRequest.DryRunInput other) {
-        if (other == io.holoinsight.server.registry.grpc.prod.DryRunRequest.DryRunInput
+          io.holoinsight.server.registry.grpc.prod.DryRunRequest.CollectConfig other) {
+        if (other == io.holoinsight.server.registry.grpc.prod.DryRunRequest.CollectConfig
             .getDefaultInstance())
           return this;
-        if (!other.content_.isEmpty()) {
-          if (content_.isEmpty()) {
-            content_ = other.content_;
+        if (!other.getType().isEmpty()) {
+          type_ = other.type_;
+          onChanged();
+        }
+        if (!other.getTableName().isEmpty()) {
+          tableName_ = other.tableName_;
+          onChanged();
+        }
+        if (other.hasTemp()) {
+          mergeTemp(other.getTemp());
+        }
+        this.mergeUnknownFields(other.unknownFields);
+        onChanged();
+        return this;
+      }
+
+      @java.lang.Override
+      public final boolean isInitialized() {
+        return true;
+      }
+
+      @java.lang.Override
+      public Builder mergeFrom(com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry) throws java.io.IOException {
+        io.holoinsight.server.registry.grpc.prod.DryRunRequest.CollectConfig parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (io.holoinsight.server.registry.grpc.prod.DryRunRequest.CollectConfig) e
+              .getUnfinishedMessage();
+          throw e.unwrapIOException();
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
+          }
+        }
+        return this;
+      }
+
+      private java.lang.Object type_ = "";
+
+      /**
+       * <pre>
+       * tableName: 从 db 里读取配置, 根据 tableName 匹配
+       * temp:
+       * </pre>
+       *
+       * <code>string type = 1;</code>
+       */
+      public java.lang.String getType() {
+        java.lang.Object ref = type_;
+        if (!(ref instanceof java.lang.String)) {
+          com.google.protobuf.ByteString bs = (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          type_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+
+      /**
+       * <pre>
+       * tableName: 从 db 里读取配置, 根据 tableName 匹配
+       * temp:
+       * </pre>
+       *
+       * <code>string type = 1;</code>
+       */
+      public com.google.protobuf.ByteString getTypeBytes() {
+        java.lang.Object ref = type_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b =
+              com.google.protobuf.ByteString.copyFromUtf8((java.lang.String) ref);
+          type_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+
+      /**
+       * <pre>
+       * tableName: 从 db 里读取配置, 根据 tableName 匹配
+       * temp:
+       * </pre>
+       *
+       * <code>string type = 1;</code>
+       */
+      public Builder setType(java.lang.String value) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+
+        type_ = value;
+        onChanged();
+        return this;
+      }
+
+      /**
+       * <pre>
+       * tableName: 从 db 里读取配置, 根据 tableName 匹配
+       * temp:
+       * </pre>
+       *
+       * <code>string type = 1;</code>
+       */
+      public Builder clearType() {
+
+        type_ = getDefaultInstance().getType();
+        onChanged();
+        return this;
+      }
+
+      /**
+       * <pre>
+       * tableName: 从 db 里读取配置, 根据 tableName 匹配
+       * temp:
+       * </pre>
+       *
+       * <code>string type = 1;</code>
+       */
+      public Builder setTypeBytes(com.google.protobuf.ByteString value) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        checkByteStringIsUtf8(value);
+
+        type_ = value;
+        onChanged();
+        return this;
+      }
+
+      private java.lang.Object tableName_ = "";
+
+      /**
+       * <code>string table_name = 2;</code>
+       */
+      public java.lang.String getTableName() {
+        java.lang.Object ref = tableName_;
+        if (!(ref instanceof java.lang.String)) {
+          com.google.protobuf.ByteString bs = (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          tableName_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+
+      /**
+       * <code>string table_name = 2;</code>
+       */
+      public com.google.protobuf.ByteString getTableNameBytes() {
+        java.lang.Object ref = tableName_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b =
+              com.google.protobuf.ByteString.copyFromUtf8((java.lang.String) ref);
+          tableName_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+
+      /**
+       * <code>string table_name = 2;</code>
+       */
+      public Builder setTableName(java.lang.String value) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+
+        tableName_ = value;
+        onChanged();
+        return this;
+      }
+
+      /**
+       * <code>string table_name = 2;</code>
+       */
+      public Builder clearTableName() {
+
+        tableName_ = getDefaultInstance().getTableName();
+        onChanged();
+        return this;
+      }
+
+      /**
+       * <code>string table_name = 2;</code>
+       */
+      public Builder setTableNameBytes(com.google.protobuf.ByteString value) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        checkByteStringIsUtf8(value);
+
+        tableName_ = value;
+        onChanged();
+        return this;
+      }
+
+      private io.holoinsight.server.registry.grpc.prod.DryRunRequest.CollectConfigTemp temp_;
+      private com.google.protobuf.SingleFieldBuilderV3<io.holoinsight.server.registry.grpc.prod.DryRunRequest.CollectConfigTemp, io.holoinsight.server.registry.grpc.prod.DryRunRequest.CollectConfigTemp.Builder, io.holoinsight.server.registry.grpc.prod.DryRunRequest.CollectConfigTempOrBuilder> tempBuilder_;
+
+      /**
+       * <pre>
+       * 字段对应 gaea_collect_config 里的 记录
+       * </pre>
+       *
+       * <code>.io.holoinsight.server.registry.grpc.prod.DryRunRequest.CollectConfigTemp temp = 3;</code>
+       */
+      public boolean hasTemp() {
+        return tempBuilder_ != null || temp_ != null;
+      }
+
+      /**
+       * <pre>
+       * 字段对应 gaea_collect_config 里的 记录
+       * </pre>
+       *
+       * <code>.io.holoinsight.server.registry.grpc.prod.DryRunRequest.CollectConfigTemp temp = 3;</code>
+       */
+      public io.holoinsight.server.registry.grpc.prod.DryRunRequest.CollectConfigTemp getTemp() {
+        if (tempBuilder_ == null) {
+          return temp_ == null
+              ? io.holoinsight.server.registry.grpc.prod.DryRunRequest.CollectConfigTemp
+                  .getDefaultInstance()
+              : temp_;
+        } else {
+          return tempBuilder_.getMessage();
+        }
+      }
+
+      /**
+       * <pre>
+       * 字段对应 gaea_collect_config 里的 记录
+       * </pre>
+       *
+       * <code>.io.holoinsight.server.registry.grpc.prod.DryRunRequest.CollectConfigTemp temp = 3;</code>
+       */
+      public Builder setTemp(
+          io.holoinsight.server.registry.grpc.prod.DryRunRequest.CollectConfigTemp value) {
+        if (tempBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          temp_ = value;
+          onChanged();
+        } else {
+          tempBuilder_.setMessage(value);
+        }
+
+        return this;
+      }
+
+      /**
+       * <pre>
+       * 字段对应 gaea_collect_config 里的 记录
+       * </pre>
+       *
+       * <code>.io.holoinsight.server.registry.grpc.prod.DryRunRequest.CollectConfigTemp temp = 3;</code>
+       */
+      public Builder setTemp(
+          io.holoinsight.server.registry.grpc.prod.DryRunRequest.CollectConfigTemp.Builder builderForValue) {
+        if (tempBuilder_ == null) {
+          temp_ = builderForValue.build();
+          onChanged();
+        } else {
+          tempBuilder_.setMessage(builderForValue.build());
+        }
+
+        return this;
+      }
+
+      /**
+       * <pre>
+       * 字段对应 gaea_collect_config 里的 记录
+       * </pre>
+       *
+       * <code>.io.holoinsight.server.registry.grpc.prod.DryRunRequest.CollectConfigTemp temp = 3;</code>
+       */
+      public Builder mergeTemp(
+          io.holoinsight.server.registry.grpc.prod.DryRunRequest.CollectConfigTemp value) {
+        if (tempBuilder_ == null) {
+          if (temp_ != null) {
+            temp_ = io.holoinsight.server.registry.grpc.prod.DryRunRequest.CollectConfigTemp
+                .newBuilder(temp_).mergeFrom(value).buildPartial();
+          } else {
+            temp_ = value;
+          }
+          onChanged();
+        } else {
+          tempBuilder_.mergeFrom(value);
+        }
+
+        return this;
+      }
+
+      /**
+       * <pre>
+       * 字段对应 gaea_collect_config 里的 记录
+       * </pre>
+       *
+       * <code>.io.holoinsight.server.registry.grpc.prod.DryRunRequest.CollectConfigTemp temp = 3;</code>
+       */
+      public Builder clearTemp() {
+        if (tempBuilder_ == null) {
+          temp_ = null;
+          onChanged();
+        } else {
+          temp_ = null;
+          tempBuilder_ = null;
+        }
+
+        return this;
+      }
+
+      /**
+       * <pre>
+       * 字段对应 gaea_collect_config 里的 记录
+       * </pre>
+       *
+       * <code>.io.holoinsight.server.registry.grpc.prod.DryRunRequest.CollectConfigTemp temp = 3;</code>
+       */
+      public io.holoinsight.server.registry.grpc.prod.DryRunRequest.CollectConfigTemp.Builder getTempBuilder() {
+
+        onChanged();
+        return getTempFieldBuilder().getBuilder();
+      }
+
+      /**
+       * <pre>
+       * 字段对应 gaea_collect_config 里的 记录
+       * </pre>
+       *
+       * <code>.io.holoinsight.server.registry.grpc.prod.DryRunRequest.CollectConfigTemp temp = 3;</code>
+       */
+      public io.holoinsight.server.registry.grpc.prod.DryRunRequest.CollectConfigTempOrBuilder getTempOrBuilder() {
+        if (tempBuilder_ != null) {
+          return tempBuilder_.getMessageOrBuilder();
+        } else {
+          return temp_ == null
+              ? io.holoinsight.server.registry.grpc.prod.DryRunRequest.CollectConfigTemp
+                  .getDefaultInstance()
+              : temp_;
+        }
+      }
+
+      /**
+       * <pre>
+       * 字段对应 gaea_collect_config 里的 记录
+       * </pre>
+       *
+       * <code>.io.holoinsight.server.registry.grpc.prod.DryRunRequest.CollectConfigTemp temp = 3;</code>
+       */
+      private com.google.protobuf.SingleFieldBuilderV3<io.holoinsight.server.registry.grpc.prod.DryRunRequest.CollectConfigTemp, io.holoinsight.server.registry.grpc.prod.DryRunRequest.CollectConfigTemp.Builder, io.holoinsight.server.registry.grpc.prod.DryRunRequest.CollectConfigTempOrBuilder> getTempFieldBuilder() {
+        if (tempBuilder_ == null) {
+          tempBuilder_ =
+              new com.google.protobuf.SingleFieldBuilderV3<io.holoinsight.server.registry.grpc.prod.DryRunRequest.CollectConfigTemp, io.holoinsight.server.registry.grpc.prod.DryRunRequest.CollectConfigTemp.Builder, io.holoinsight.server.registry.grpc.prod.DryRunRequest.CollectConfigTempOrBuilder>(
+                  getTemp(), getParentForChildren(), isClean());
+          temp_ = null;
+        }
+        return tempBuilder_;
+      }
+
+      @java.lang.Override
+      public final Builder setUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.setUnknownFields(unknownFields);
+      }
+
+      @java.lang.Override
+      public final Builder mergeUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.mergeUnknownFields(unknownFields);
+      }
+
+
+      // @@protoc_insertion_point(builder_scope:io.holoinsight.server.registry.grpc.prod.DryRunRequest.CollectConfig)
+    }
+
+    // @@protoc_insertion_point(class_scope:io.holoinsight.server.registry.grpc.prod.DryRunRequest.CollectConfig)
+    private static final io.holoinsight.server.registry.grpc.prod.DryRunRequest.CollectConfig DEFAULT_INSTANCE;
+    static {
+      DEFAULT_INSTANCE = new io.holoinsight.server.registry.grpc.prod.DryRunRequest.CollectConfig();
+    }
+
+    public static io.holoinsight.server.registry.grpc.prod.DryRunRequest.CollectConfig getDefaultInstance() {
+      return DEFAULT_INSTANCE;
+    }
+
+    private static final com.google.protobuf.Parser<CollectConfig> PARSER =
+        new com.google.protobuf.AbstractParser<CollectConfig>() {
+          @java.lang.Override
+          public CollectConfig parsePartialFrom(com.google.protobuf.CodedInputStream input,
+              com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+              throws com.google.protobuf.InvalidProtocolBufferException {
+            return new CollectConfig(input, extensionRegistry);
+          }
+        };
+
+    public static com.google.protobuf.Parser<CollectConfig> parser() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<CollectConfig> getParserForType() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public io.holoinsight.server.registry.grpc.prod.DryRunRequest.CollectConfig getDefaultInstanceForType() {
+      return DEFAULT_INSTANCE;
+    }
+
+  }
+
+  public interface InputOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:io.holoinsight.server.registry.grpc.prod.DryRunRequest.Input)
+      com.google.protobuf.MessageOrBuilder {
+
+    /**
+     * <pre>
+     * plain: 从请求里读
+     * read: 从pod里读
+     * </pre>
+     *
+     * <code>string type = 1;</code>
+     */
+    java.lang.String getType();
+
+    /**
+     * <pre>
+     * plain: 从请求里读
+     * read: 从pod里读
+     * </pre>
+     *
+     * <code>string type = 1;</code>
+     */
+    com.google.protobuf.ByteString getTypeBytes();
+
+    /**
+     * <code>.io.holoinsight.server.registry.grpc.prod.DryRunRequest.InputPlain plain = 2;</code>
+     */
+    boolean hasPlain();
+
+    /**
+     * <code>.io.holoinsight.server.registry.grpc.prod.DryRunRequest.InputPlain plain = 2;</code>
+     */
+    io.holoinsight.server.registry.grpc.prod.DryRunRequest.InputPlain getPlain();
+
+    /**
+     * <code>.io.holoinsight.server.registry.grpc.prod.DryRunRequest.InputPlain plain = 2;</code>
+     */
+    io.holoinsight.server.registry.grpc.prod.DryRunRequest.InputPlainOrBuilder getPlainOrBuilder();
+  }
+  /**
+   * Protobuf type {@code io.holoinsight.server.registry.grpc.prod.DryRunRequest.Input}
+   */
+  public static final class Input extends com.google.protobuf.GeneratedMessageV3 implements
+      // @@protoc_insertion_point(message_implements:io.holoinsight.server.registry.grpc.prod.DryRunRequest.Input)
+      InputOrBuilder {
+    private static final long serialVersionUID = 0L;
+
+    // Use Input.newBuilder() to construct.
+    private Input(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+      super(builder);
+    }
+
+    private Input() {
+      type_ = "";
+    }
+
+    @java.lang.Override
+    @SuppressWarnings({"unused"})
+    protected java.lang.Object newInstance(UnusedPrivateParameter unused) {
+      return new Input();
+    }
+
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet getUnknownFields() {
+      return this.unknownFields;
+    }
+
+    private Input(com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      this();
+      if (extensionRegistry == null) {
+        throw new java.lang.NullPointerException();
+      }
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            case 10: {
+              java.lang.String s = input.readStringRequireUtf8();
+
+              type_ = s;
+              break;
+            }
+            case 18: {
+              io.holoinsight.server.registry.grpc.prod.DryRunRequest.InputPlain.Builder subBuilder =
+                  null;
+              if (plain_ != null) {
+                subBuilder = plain_.toBuilder();
+              }
+              plain_ = input.readMessage(
+                  io.holoinsight.server.registry.grpc.prod.DryRunRequest.InputPlain.parser(),
+                  extensionRegistry);
+              if (subBuilder != null) {
+                subBuilder.mergeFrom(plain_);
+                plain_ = subBuilder.buildPartial();
+              }
+
+              break;
+            }
+            default: {
+              if (!parseUnknownField(input, unknownFields, extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(e).setUnfinishedMessage(this);
+      } finally {
+        this.unknownFields = unknownFields.build();
+        makeExtensionsImmutable();
+      }
+    }
+
+    public static final com.google.protobuf.Descriptors.Descriptor getDescriptor() {
+      return io.holoinsight.server.registry.grpc.prod.RegistryForProdProtos.internal_static_io_holoinsight_server_registry_grpc_prod_DryRunRequest_Input_descriptor;
+    }
+
+    @java.lang.Override
+    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable internalGetFieldAccessorTable() {
+      return io.holoinsight.server.registry.grpc.prod.RegistryForProdProtos.internal_static_io_holoinsight_server_registry_grpc_prod_DryRunRequest_Input_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              io.holoinsight.server.registry.grpc.prod.DryRunRequest.Input.class,
+              io.holoinsight.server.registry.grpc.prod.DryRunRequest.Input.Builder.class);
+    }
+
+    public static final int TYPE_FIELD_NUMBER = 1;
+    private volatile java.lang.Object type_;
+
+    /**
+     * <pre>
+     * plain: 从请求里读
+     * read: 从pod里读
+     * </pre>
+     *
+     * <code>string type = 1;</code>
+     */
+    public java.lang.String getType() {
+      java.lang.Object ref = type_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        type_ = s;
+        return s;
+      }
+    }
+
+    /**
+     * <pre>
+     * plain: 从请求里读
+     * read: 从pod里读
+     * </pre>
+     *
+     * <code>string type = 1;</code>
+     */
+    public com.google.protobuf.ByteString getTypeBytes() {
+      java.lang.Object ref = type_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b =
+            com.google.protobuf.ByteString.copyFromUtf8((java.lang.String) ref);
+        type_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    public static final int PLAIN_FIELD_NUMBER = 2;
+    private io.holoinsight.server.registry.grpc.prod.DryRunRequest.InputPlain plain_;
+
+    /**
+     * <code>.io.holoinsight.server.registry.grpc.prod.DryRunRequest.InputPlain plain = 2;</code>
+     */
+    public boolean hasPlain() {
+      return plain_ != null;
+    }
+
+    /**
+     * <code>.io.holoinsight.server.registry.grpc.prod.DryRunRequest.InputPlain plain = 2;</code>
+     */
+    public io.holoinsight.server.registry.grpc.prod.DryRunRequest.InputPlain getPlain() {
+      return plain_ == null
+          ? io.holoinsight.server.registry.grpc.prod.DryRunRequest.InputPlain.getDefaultInstance()
+          : plain_;
+    }
+
+    /**
+     * <code>.io.holoinsight.server.registry.grpc.prod.DryRunRequest.InputPlain plain = 2;</code>
+     */
+    public io.holoinsight.server.registry.grpc.prod.DryRunRequest.InputPlainOrBuilder getPlainOrBuilder() {
+      return getPlain();
+    }
+
+    private byte memoizedIsInitialized = -1;
+
+    @java.lang.Override
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized == 1)
+        return true;
+      if (isInitialized == 0)
+        return false;
+
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    @java.lang.Override
+    public void writeTo(com.google.protobuf.CodedOutputStream output) throws java.io.IOException {
+      if (!getTypeBytes().isEmpty()) {
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 1, type_);
+      }
+      if (plain_ != null) {
+        output.writeMessage(2, getPlain());
+      }
+      unknownFields.writeTo(output);
+    }
+
+    @java.lang.Override
+    public int getSerializedSize() {
+      int size = memoizedSize;
+      if (size != -1)
+        return size;
+
+      size = 0;
+      if (!getTypeBytes().isEmpty()) {
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, type_);
+      }
+      if (plain_ != null) {
+        size += com.google.protobuf.CodedOutputStream.computeMessageSize(2, getPlain());
+      }
+      size += unknownFields.getSerializedSize();
+      memoizedSize = size;
+      return size;
+    }
+
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
+      if (obj == this) {
+        return true;
+      }
+      if (!(obj instanceof io.holoinsight.server.registry.grpc.prod.DryRunRequest.Input)) {
+        return super.equals(obj);
+      }
+      io.holoinsight.server.registry.grpc.prod.DryRunRequest.Input other =
+          (io.holoinsight.server.registry.grpc.prod.DryRunRequest.Input) obj;
+
+      if (!getType().equals(other.getType()))
+        return false;
+      if (hasPlain() != other.hasPlain())
+        return false;
+      if (hasPlain()) {
+        if (!getPlain().equals(other.getPlain()))
+          return false;
+      }
+      if (!unknownFields.equals(other.unknownFields))
+        return false;
+      return true;
+    }
+
+    @java.lang.Override
+    public int hashCode() {
+      if (memoizedHashCode != 0) {
+        return memoizedHashCode;
+      }
+      int hash = 41;
+      hash = (19 * hash) + getDescriptor().hashCode();
+      hash = (37 * hash) + TYPE_FIELD_NUMBER;
+      hash = (53 * hash) + getType().hashCode();
+      if (hasPlain()) {
+        hash = (37 * hash) + PLAIN_FIELD_NUMBER;
+        hash = (53 * hash) + getPlain().hashCode();
+      }
+      hash = (29 * hash) + unknownFields.hashCode();
+      memoizedHashCode = hash;
+      return hash;
+    }
+
+    public static io.holoinsight.server.registry.grpc.prod.DryRunRequest.Input parseFrom(
+        java.nio.ByteBuffer data) throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+
+    public static io.holoinsight.server.registry.grpc.prod.DryRunRequest.Input parseFrom(
+        java.nio.ByteBuffer data, com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+
+    public static io.holoinsight.server.registry.grpc.prod.DryRunRequest.Input parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+
+    public static io.holoinsight.server.registry.grpc.prod.DryRunRequest.Input parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+
+    public static io.holoinsight.server.registry.grpc.prod.DryRunRequest.Input parseFrom(
+        byte[] data) throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+
+    public static io.holoinsight.server.registry.grpc.prod.DryRunRequest.Input parseFrom(
+        byte[] data, com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+
+    public static io.holoinsight.server.registry.grpc.prod.DryRunRequest.Input parseFrom(
+        java.io.InputStream input) throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3.parseWithIOException(PARSER, input);
+    }
+
+    public static io.holoinsight.server.registry.grpc.prod.DryRunRequest.Input parseFrom(
+        java.io.InputStream input, com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3.parseWithIOException(PARSER, input,
+          extensionRegistry);
+    }
+
+    public static io.holoinsight.server.registry.grpc.prod.DryRunRequest.Input parseDelimitedFrom(
+        java.io.InputStream input) throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3.parseDelimitedWithIOException(PARSER, input);
+    }
+
+    public static io.holoinsight.server.registry.grpc.prod.DryRunRequest.Input parseDelimitedFrom(
+        java.io.InputStream input, com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3.parseDelimitedWithIOException(PARSER, input,
+          extensionRegistry);
+    }
+
+    public static io.holoinsight.server.registry.grpc.prod.DryRunRequest.Input parseFrom(
+        com.google.protobuf.CodedInputStream input) throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3.parseWithIOException(PARSER, input);
+    }
+
+    public static io.holoinsight.server.registry.grpc.prod.DryRunRequest.Input parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry) throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3.parseWithIOException(PARSER, input,
+          extensionRegistry);
+    }
+
+    @java.lang.Override
+    public Builder newBuilderForType() {
+      return newBuilder();
+    }
+
+    public static Builder newBuilder() {
+      return DEFAULT_INSTANCE.toBuilder();
+    }
+
+    public static Builder newBuilder(
+        io.holoinsight.server.registry.grpc.prod.DryRunRequest.Input prototype) {
+      return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+    }
+
+    @java.lang.Override
+    public Builder toBuilder() {
+      return this == DEFAULT_INSTANCE ? new Builder() : new Builder().mergeFrom(this);
+    }
+
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+
+    /**
+     * Protobuf type {@code io.holoinsight.server.registry.grpc.prod.DryRunRequest.Input}
+     */
+    public static final class Builder
+        extends com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
+        // @@protoc_insertion_point(builder_implements:io.holoinsight.server.registry.grpc.prod.DryRunRequest.Input)
+        io.holoinsight.server.registry.grpc.prod.DryRunRequest.InputOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor getDescriptor() {
+        return io.holoinsight.server.registry.grpc.prod.RegistryForProdProtos.internal_static_io_holoinsight_server_registry_grpc_prod_DryRunRequest_Input_descriptor;
+      }
+
+      @java.lang.Override
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable internalGetFieldAccessorTable() {
+        return io.holoinsight.server.registry.grpc.prod.RegistryForProdProtos.internal_static_io_holoinsight_server_registry_grpc_prod_DryRunRequest_Input_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                io.holoinsight.server.registry.grpc.prod.DryRunRequest.Input.class,
+                io.holoinsight.server.registry.grpc.prod.DryRunRequest.Input.Builder.class);
+      }
+
+      // Construct using io.holoinsight.server.registry.grpc.prod.DryRunRequest.Input.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+
+      private Builder(com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders) {
+        }
+      }
+
+      @java.lang.Override
+      public Builder clear() {
+        super.clear();
+        type_ = "";
+
+        if (plainBuilder_ == null) {
+          plain_ = null;
+        } else {
+          plain_ = null;
+          plainBuilder_ = null;
+        }
+        return this;
+      }
+
+      @java.lang.Override
+      public com.google.protobuf.Descriptors.Descriptor getDescriptorForType() {
+        return io.holoinsight.server.registry.grpc.prod.RegistryForProdProtos.internal_static_io_holoinsight_server_registry_grpc_prod_DryRunRequest_Input_descriptor;
+      }
+
+      @java.lang.Override
+      public io.holoinsight.server.registry.grpc.prod.DryRunRequest.Input getDefaultInstanceForType() {
+        return io.holoinsight.server.registry.grpc.prod.DryRunRequest.Input.getDefaultInstance();
+      }
+
+      @java.lang.Override
+      public io.holoinsight.server.registry.grpc.prod.DryRunRequest.Input build() {
+        io.holoinsight.server.registry.grpc.prod.DryRunRequest.Input result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      @java.lang.Override
+      public io.holoinsight.server.registry.grpc.prod.DryRunRequest.Input buildPartial() {
+        io.holoinsight.server.registry.grpc.prod.DryRunRequest.Input result =
+            new io.holoinsight.server.registry.grpc.prod.DryRunRequest.Input(this);
+        result.type_ = type_;
+        if (plainBuilder_ == null) {
+          result.plain_ = plain_;
+        } else {
+          result.plain_ = plainBuilder_.build();
+        }
+        onBuilt();
+        return result;
+      }
+
+      @java.lang.Override
+      public Builder clone() {
+        return super.clone();
+      }
+
+      @java.lang.Override
+      public Builder setField(com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.setField(field, value);
+      }
+
+      @java.lang.Override
+      public Builder clearField(com.google.protobuf.Descriptors.FieldDescriptor field) {
+        return super.clearField(field);
+      }
+
+      @java.lang.Override
+      public Builder clearOneof(com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+        return super.clearOneof(oneof);
+      }
+
+      @java.lang.Override
+      public Builder setRepeatedField(com.google.protobuf.Descriptors.FieldDescriptor field,
+          int index, java.lang.Object value) {
+        return super.setRepeatedField(field, index, value);
+      }
+
+      @java.lang.Override
+      public Builder addRepeatedField(com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.addRepeatedField(field, value);
+      }
+
+      @java.lang.Override
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof io.holoinsight.server.registry.grpc.prod.DryRunRequest.Input) {
+          return mergeFrom((io.holoinsight.server.registry.grpc.prod.DryRunRequest.Input) other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(io.holoinsight.server.registry.grpc.prod.DryRunRequest.Input other) {
+        if (other == io.holoinsight.server.registry.grpc.prod.DryRunRequest.Input
+            .getDefaultInstance())
+          return this;
+        if (!other.getType().isEmpty()) {
+          type_ = other.type_;
+          onChanged();
+        }
+        if (other.hasPlain()) {
+          mergePlain(other.getPlain());
+        }
+        this.mergeUnknownFields(other.unknownFields);
+        onChanged();
+        return this;
+      }
+
+      @java.lang.Override
+      public final boolean isInitialized() {
+        return true;
+      }
+
+      @java.lang.Override
+      public Builder mergeFrom(com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry) throws java.io.IOException {
+        io.holoinsight.server.registry.grpc.prod.DryRunRequest.Input parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (io.holoinsight.server.registry.grpc.prod.DryRunRequest.Input) e
+              .getUnfinishedMessage();
+          throw e.unwrapIOException();
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
+          }
+        }
+        return this;
+      }
+
+      private java.lang.Object type_ = "";
+
+      /**
+       * <pre>
+       * plain: 从请求里读
+       * read: 从pod里读
+       * </pre>
+       *
+       * <code>string type = 1;</code>
+       */
+      public java.lang.String getType() {
+        java.lang.Object ref = type_;
+        if (!(ref instanceof java.lang.String)) {
+          com.google.protobuf.ByteString bs = (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          type_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+
+      /**
+       * <pre>
+       * plain: 从请求里读
+       * read: 从pod里读
+       * </pre>
+       *
+       * <code>string type = 1;</code>
+       */
+      public com.google.protobuf.ByteString getTypeBytes() {
+        java.lang.Object ref = type_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b =
+              com.google.protobuf.ByteString.copyFromUtf8((java.lang.String) ref);
+          type_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+
+      /**
+       * <pre>
+       * plain: 从请求里读
+       * read: 从pod里读
+       * </pre>
+       *
+       * <code>string type = 1;</code>
+       */
+      public Builder setType(java.lang.String value) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+
+        type_ = value;
+        onChanged();
+        return this;
+      }
+
+      /**
+       * <pre>
+       * plain: 从请求里读
+       * read: 从pod里读
+       * </pre>
+       *
+       * <code>string type = 1;</code>
+       */
+      public Builder clearType() {
+
+        type_ = getDefaultInstance().getType();
+        onChanged();
+        return this;
+      }
+
+      /**
+       * <pre>
+       * plain: 从请求里读
+       * read: 从pod里读
+       * </pre>
+       *
+       * <code>string type = 1;</code>
+       */
+      public Builder setTypeBytes(com.google.protobuf.ByteString value) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        checkByteStringIsUtf8(value);
+
+        type_ = value;
+        onChanged();
+        return this;
+      }
+
+      private io.holoinsight.server.registry.grpc.prod.DryRunRequest.InputPlain plain_;
+      private com.google.protobuf.SingleFieldBuilderV3<io.holoinsight.server.registry.grpc.prod.DryRunRequest.InputPlain, io.holoinsight.server.registry.grpc.prod.DryRunRequest.InputPlain.Builder, io.holoinsight.server.registry.grpc.prod.DryRunRequest.InputPlainOrBuilder> plainBuilder_;
+
+      /**
+       * <code>.io.holoinsight.server.registry.grpc.prod.DryRunRequest.InputPlain plain = 2;</code>
+       */
+      public boolean hasPlain() {
+        return plainBuilder_ != null || plain_ != null;
+      }
+
+      /**
+       * <code>.io.holoinsight.server.registry.grpc.prod.DryRunRequest.InputPlain plain = 2;</code>
+       */
+      public io.holoinsight.server.registry.grpc.prod.DryRunRequest.InputPlain getPlain() {
+        if (plainBuilder_ == null) {
+          return plain_ == null
+              ? io.holoinsight.server.registry.grpc.prod.DryRunRequest.InputPlain
+                  .getDefaultInstance()
+              : plain_;
+        } else {
+          return plainBuilder_.getMessage();
+        }
+      }
+
+      /**
+       * <code>.io.holoinsight.server.registry.grpc.prod.DryRunRequest.InputPlain plain = 2;</code>
+       */
+      public Builder setPlain(
+          io.holoinsight.server.registry.grpc.prod.DryRunRequest.InputPlain value) {
+        if (plainBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          plain_ = value;
+          onChanged();
+        } else {
+          plainBuilder_.setMessage(value);
+        }
+
+        return this;
+      }
+
+      /**
+       * <code>.io.holoinsight.server.registry.grpc.prod.DryRunRequest.InputPlain plain = 2;</code>
+       */
+      public Builder setPlain(
+          io.holoinsight.server.registry.grpc.prod.DryRunRequest.InputPlain.Builder builderForValue) {
+        if (plainBuilder_ == null) {
+          plain_ = builderForValue.build();
+          onChanged();
+        } else {
+          plainBuilder_.setMessage(builderForValue.build());
+        }
+
+        return this;
+      }
+
+      /**
+       * <code>.io.holoinsight.server.registry.grpc.prod.DryRunRequest.InputPlain plain = 2;</code>
+       */
+      public Builder mergePlain(
+          io.holoinsight.server.registry.grpc.prod.DryRunRequest.InputPlain value) {
+        if (plainBuilder_ == null) {
+          if (plain_ != null) {
+            plain_ = io.holoinsight.server.registry.grpc.prod.DryRunRequest.InputPlain
+                .newBuilder(plain_).mergeFrom(value).buildPartial();
+          } else {
+            plain_ = value;
+          }
+          onChanged();
+        } else {
+          plainBuilder_.mergeFrom(value);
+        }
+
+        return this;
+      }
+
+      /**
+       * <code>.io.holoinsight.server.registry.grpc.prod.DryRunRequest.InputPlain plain = 2;</code>
+       */
+      public Builder clearPlain() {
+        if (plainBuilder_ == null) {
+          plain_ = null;
+          onChanged();
+        } else {
+          plain_ = null;
+          plainBuilder_ = null;
+        }
+
+        return this;
+      }
+
+      /**
+       * <code>.io.holoinsight.server.registry.grpc.prod.DryRunRequest.InputPlain plain = 2;</code>
+       */
+      public io.holoinsight.server.registry.grpc.prod.DryRunRequest.InputPlain.Builder getPlainBuilder() {
+
+        onChanged();
+        return getPlainFieldBuilder().getBuilder();
+      }
+
+      /**
+       * <code>.io.holoinsight.server.registry.grpc.prod.DryRunRequest.InputPlain plain = 2;</code>
+       */
+      public io.holoinsight.server.registry.grpc.prod.DryRunRequest.InputPlainOrBuilder getPlainOrBuilder() {
+        if (plainBuilder_ != null) {
+          return plainBuilder_.getMessageOrBuilder();
+        } else {
+          return plain_ == null
+              ? io.holoinsight.server.registry.grpc.prod.DryRunRequest.InputPlain
+                  .getDefaultInstance()
+              : plain_;
+        }
+      }
+
+      /**
+       * <code>.io.holoinsight.server.registry.grpc.prod.DryRunRequest.InputPlain plain = 2;</code>
+       */
+      private com.google.protobuf.SingleFieldBuilderV3<io.holoinsight.server.registry.grpc.prod.DryRunRequest.InputPlain, io.holoinsight.server.registry.grpc.prod.DryRunRequest.InputPlain.Builder, io.holoinsight.server.registry.grpc.prod.DryRunRequest.InputPlainOrBuilder> getPlainFieldBuilder() {
+        if (plainBuilder_ == null) {
+          plainBuilder_ =
+              new com.google.protobuf.SingleFieldBuilderV3<io.holoinsight.server.registry.grpc.prod.DryRunRequest.InputPlain, io.holoinsight.server.registry.grpc.prod.DryRunRequest.InputPlain.Builder, io.holoinsight.server.registry.grpc.prod.DryRunRequest.InputPlainOrBuilder>(
+                  getPlain(), getParentForChildren(), isClean());
+          plain_ = null;
+        }
+        return plainBuilder_;
+      }
+
+      @java.lang.Override
+      public final Builder setUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.setUnknownFields(unknownFields);
+      }
+
+      @java.lang.Override
+      public final Builder mergeUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.mergeUnknownFields(unknownFields);
+      }
+
+
+      // @@protoc_insertion_point(builder_scope:io.holoinsight.server.registry.grpc.prod.DryRunRequest.Input)
+    }
+
+    // @@protoc_insertion_point(class_scope:io.holoinsight.server.registry.grpc.prod.DryRunRequest.Input)
+    private static final io.holoinsight.server.registry.grpc.prod.DryRunRequest.Input DEFAULT_INSTANCE;
+    static {
+      DEFAULT_INSTANCE = new io.holoinsight.server.registry.grpc.prod.DryRunRequest.Input();
+    }
+
+    public static io.holoinsight.server.registry.grpc.prod.DryRunRequest.Input getDefaultInstance() {
+      return DEFAULT_INSTANCE;
+    }
+
+    private static final com.google.protobuf.Parser<Input> PARSER =
+        new com.google.protobuf.AbstractParser<Input>() {
+          @java.lang.Override
+          public Input parsePartialFrom(com.google.protobuf.CodedInputStream input,
+              com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+              throws com.google.protobuf.InvalidProtocolBufferException {
+            return new Input(input, extensionRegistry);
+          }
+        };
+
+    public static com.google.protobuf.Parser<Input> parser() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<Input> getParserForType() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public io.holoinsight.server.registry.grpc.prod.DryRunRequest.Input getDefaultInstanceForType() {
+      return DEFAULT_INSTANCE;
+    }
+
+  }
+
+  public interface InputPlainOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:io.holoinsight.server.registry.grpc.prod.DryRunRequest.InputPlain)
+      com.google.protobuf.MessageOrBuilder {
+
+    /**
+     * <pre>
+     * 原始日志
+     * </pre>
+     *
+     * <code>repeated string lines = 1;</code>
+     */
+    java.util.List<java.lang.String> getLinesList();
+
+    /**
+     * <pre>
+     * 原始日志
+     * </pre>
+     *
+     * <code>repeated string lines = 1;</code>
+     */
+    int getLinesCount();
+
+    /**
+     * <pre>
+     * 原始日志
+     * </pre>
+     *
+     * <code>repeated string lines = 1;</code>
+     */
+    java.lang.String getLines(int index);
+
+    /**
+     * <pre>
+     * 原始日志
+     * </pre>
+     *
+     * <code>repeated string lines = 1;</code>
+     */
+    com.google.protobuf.ByteString getLinesBytes(int index);
+
+    /**
+     * <pre>
+     * Timezone to use when parsing timestamp of log lines.
+     * Defaults to local timezone of agent.
+     * </pre>
+     *
+     * <code>string timezone = 2;</code>
+     */
+    java.lang.String getTimezone();
+
+    /**
+     * <pre>
+     * Timezone to use when parsing timestamp of log lines.
+     * Defaults to local timezone of agent.
+     * </pre>
+     *
+     * <code>string timezone = 2;</code>
+     */
+    com.google.protobuf.ByteString getTimezoneBytes();
+  }
+  /**
+   * Protobuf type {@code io.holoinsight.server.registry.grpc.prod.DryRunRequest.InputPlain}
+   */
+  public static final class InputPlain extends com.google.protobuf.GeneratedMessageV3 implements
+      // @@protoc_insertion_point(message_implements:io.holoinsight.server.registry.grpc.prod.DryRunRequest.InputPlain)
+      InputPlainOrBuilder {
+    private static final long serialVersionUID = 0L;
+
+    // Use InputPlain.newBuilder() to construct.
+    private InputPlain(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+      super(builder);
+    }
+
+    private InputPlain() {
+      lines_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+      timezone_ = "";
+    }
+
+    @java.lang.Override
+    @SuppressWarnings({"unused"})
+    protected java.lang.Object newInstance(UnusedPrivateParameter unused) {
+      return new InputPlain();
+    }
+
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet getUnknownFields() {
+      return this.unknownFields;
+    }
+
+    private InputPlain(com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      this();
+      if (extensionRegistry == null) {
+        throw new java.lang.NullPointerException();
+      }
+      int mutable_bitField0_ = 0;
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            case 10: {
+              java.lang.String s = input.readStringRequireUtf8();
+              if (!((mutable_bitField0_ & 0x00000001) != 0)) {
+                lines_ = new com.google.protobuf.LazyStringArrayList();
+                mutable_bitField0_ |= 0x00000001;
+              }
+              lines_.add(s);
+              break;
+            }
+            case 18: {
+              java.lang.String s = input.readStringRequireUtf8();
+
+              timezone_ = s;
+              break;
+            }
+            default: {
+              if (!parseUnknownField(input, unknownFields, extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(e).setUnfinishedMessage(this);
+      } finally {
+        if (((mutable_bitField0_ & 0x00000001) != 0)) {
+          lines_ = lines_.getUnmodifiableView();
+        }
+        this.unknownFields = unknownFields.build();
+        makeExtensionsImmutable();
+      }
+    }
+
+    public static final com.google.protobuf.Descriptors.Descriptor getDescriptor() {
+      return io.holoinsight.server.registry.grpc.prod.RegistryForProdProtos.internal_static_io_holoinsight_server_registry_grpc_prod_DryRunRequest_InputPlain_descriptor;
+    }
+
+    @java.lang.Override
+    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable internalGetFieldAccessorTable() {
+      return io.holoinsight.server.registry.grpc.prod.RegistryForProdProtos.internal_static_io_holoinsight_server_registry_grpc_prod_DryRunRequest_InputPlain_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              io.holoinsight.server.registry.grpc.prod.DryRunRequest.InputPlain.class,
+              io.holoinsight.server.registry.grpc.prod.DryRunRequest.InputPlain.Builder.class);
+    }
+
+    public static final int LINES_FIELD_NUMBER = 1;
+    private com.google.protobuf.LazyStringList lines_;
+
+    /**
+     * <pre>
+     * 原始日志
+     * </pre>
+     *
+     * <code>repeated string lines = 1;</code>
+     */
+    public com.google.protobuf.ProtocolStringList getLinesList() {
+      return lines_;
+    }
+
+    /**
+     * <pre>
+     * 原始日志
+     * </pre>
+     *
+     * <code>repeated string lines = 1;</code>
+     */
+    public int getLinesCount() {
+      return lines_.size();
+    }
+
+    /**
+     * <pre>
+     * 原始日志
+     * </pre>
+     *
+     * <code>repeated string lines = 1;</code>
+     */
+    public java.lang.String getLines(int index) {
+      return lines_.get(index);
+    }
+
+    /**
+     * <pre>
+     * 原始日志
+     * </pre>
+     *
+     * <code>repeated string lines = 1;</code>
+     */
+    public com.google.protobuf.ByteString getLinesBytes(int index) {
+      return lines_.getByteString(index);
+    }
+
+    public static final int TIMEZONE_FIELD_NUMBER = 2;
+    private volatile java.lang.Object timezone_;
+
+    /**
+     * <pre>
+     * Timezone to use when parsing timestamp of log lines.
+     * Defaults to local timezone of agent.
+     * </pre>
+     *
+     * <code>string timezone = 2;</code>
+     */
+    public java.lang.String getTimezone() {
+      java.lang.Object ref = timezone_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        timezone_ = s;
+        return s;
+      }
+    }
+
+    /**
+     * <pre>
+     * Timezone to use when parsing timestamp of log lines.
+     * Defaults to local timezone of agent.
+     * </pre>
+     *
+     * <code>string timezone = 2;</code>
+     */
+    public com.google.protobuf.ByteString getTimezoneBytes() {
+      java.lang.Object ref = timezone_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b =
+            com.google.protobuf.ByteString.copyFromUtf8((java.lang.String) ref);
+        timezone_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    private byte memoizedIsInitialized = -1;
+
+    @java.lang.Override
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized == 1)
+        return true;
+      if (isInitialized == 0)
+        return false;
+
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    @java.lang.Override
+    public void writeTo(com.google.protobuf.CodedOutputStream output) throws java.io.IOException {
+      for (int i = 0; i < lines_.size(); i++) {
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 1, lines_.getRaw(i));
+      }
+      if (!getTimezoneBytes().isEmpty()) {
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 2, timezone_);
+      }
+      unknownFields.writeTo(output);
+    }
+
+    @java.lang.Override
+    public int getSerializedSize() {
+      int size = memoizedSize;
+      if (size != -1)
+        return size;
+
+      size = 0;
+      {
+        int dataSize = 0;
+        for (int i = 0; i < lines_.size(); i++) {
+          dataSize += computeStringSizeNoTag(lines_.getRaw(i));
+        }
+        size += dataSize;
+        size += 1 * getLinesList().size();
+      }
+      if (!getTimezoneBytes().isEmpty()) {
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(2, timezone_);
+      }
+      size += unknownFields.getSerializedSize();
+      memoizedSize = size;
+      return size;
+    }
+
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
+      if (obj == this) {
+        return true;
+      }
+      if (!(obj instanceof io.holoinsight.server.registry.grpc.prod.DryRunRequest.InputPlain)) {
+        return super.equals(obj);
+      }
+      io.holoinsight.server.registry.grpc.prod.DryRunRequest.InputPlain other =
+          (io.holoinsight.server.registry.grpc.prod.DryRunRequest.InputPlain) obj;
+
+      if (!getLinesList().equals(other.getLinesList()))
+        return false;
+      if (!getTimezone().equals(other.getTimezone()))
+        return false;
+      if (!unknownFields.equals(other.unknownFields))
+        return false;
+      return true;
+    }
+
+    @java.lang.Override
+    public int hashCode() {
+      if (memoizedHashCode != 0) {
+        return memoizedHashCode;
+      }
+      int hash = 41;
+      hash = (19 * hash) + getDescriptor().hashCode();
+      if (getLinesCount() > 0) {
+        hash = (37 * hash) + LINES_FIELD_NUMBER;
+        hash = (53 * hash) + getLinesList().hashCode();
+      }
+      hash = (37 * hash) + TIMEZONE_FIELD_NUMBER;
+      hash = (53 * hash) + getTimezone().hashCode();
+      hash = (29 * hash) + unknownFields.hashCode();
+      memoizedHashCode = hash;
+      return hash;
+    }
+
+    public static io.holoinsight.server.registry.grpc.prod.DryRunRequest.InputPlain parseFrom(
+        java.nio.ByteBuffer data) throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+
+    public static io.holoinsight.server.registry.grpc.prod.DryRunRequest.InputPlain parseFrom(
+        java.nio.ByteBuffer data, com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+
+    public static io.holoinsight.server.registry.grpc.prod.DryRunRequest.InputPlain parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+
+    public static io.holoinsight.server.registry.grpc.prod.DryRunRequest.InputPlain parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+
+    public static io.holoinsight.server.registry.grpc.prod.DryRunRequest.InputPlain parseFrom(
+        byte[] data) throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+
+    public static io.holoinsight.server.registry.grpc.prod.DryRunRequest.InputPlain parseFrom(
+        byte[] data, com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+
+    public static io.holoinsight.server.registry.grpc.prod.DryRunRequest.InputPlain parseFrom(
+        java.io.InputStream input) throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3.parseWithIOException(PARSER, input);
+    }
+
+    public static io.holoinsight.server.registry.grpc.prod.DryRunRequest.InputPlain parseFrom(
+        java.io.InputStream input, com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3.parseWithIOException(PARSER, input,
+          extensionRegistry);
+    }
+
+    public static io.holoinsight.server.registry.grpc.prod.DryRunRequest.InputPlain parseDelimitedFrom(
+        java.io.InputStream input) throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3.parseDelimitedWithIOException(PARSER, input);
+    }
+
+    public static io.holoinsight.server.registry.grpc.prod.DryRunRequest.InputPlain parseDelimitedFrom(
+        java.io.InputStream input, com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3.parseDelimitedWithIOException(PARSER, input,
+          extensionRegistry);
+    }
+
+    public static io.holoinsight.server.registry.grpc.prod.DryRunRequest.InputPlain parseFrom(
+        com.google.protobuf.CodedInputStream input) throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3.parseWithIOException(PARSER, input);
+    }
+
+    public static io.holoinsight.server.registry.grpc.prod.DryRunRequest.InputPlain parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry) throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3.parseWithIOException(PARSER, input,
+          extensionRegistry);
+    }
+
+    @java.lang.Override
+    public Builder newBuilderForType() {
+      return newBuilder();
+    }
+
+    public static Builder newBuilder() {
+      return DEFAULT_INSTANCE.toBuilder();
+    }
+
+    public static Builder newBuilder(
+        io.holoinsight.server.registry.grpc.prod.DryRunRequest.InputPlain prototype) {
+      return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+    }
+
+    @java.lang.Override
+    public Builder toBuilder() {
+      return this == DEFAULT_INSTANCE ? new Builder() : new Builder().mergeFrom(this);
+    }
+
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+
+    /**
+     * Protobuf type {@code io.holoinsight.server.registry.grpc.prod.DryRunRequest.InputPlain}
+     */
+    public static final class Builder
+        extends com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
+        // @@protoc_insertion_point(builder_implements:io.holoinsight.server.registry.grpc.prod.DryRunRequest.InputPlain)
+        io.holoinsight.server.registry.grpc.prod.DryRunRequest.InputPlainOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor getDescriptor() {
+        return io.holoinsight.server.registry.grpc.prod.RegistryForProdProtos.internal_static_io_holoinsight_server_registry_grpc_prod_DryRunRequest_InputPlain_descriptor;
+      }
+
+      @java.lang.Override
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable internalGetFieldAccessorTable() {
+        return io.holoinsight.server.registry.grpc.prod.RegistryForProdProtos.internal_static_io_holoinsight_server_registry_grpc_prod_DryRunRequest_InputPlain_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                io.holoinsight.server.registry.grpc.prod.DryRunRequest.InputPlain.class,
+                io.holoinsight.server.registry.grpc.prod.DryRunRequest.InputPlain.Builder.class);
+      }
+
+      // Construct using
+      // io.holoinsight.server.registry.grpc.prod.DryRunRequest.InputPlain.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+
+      private Builder(com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders) {
+        }
+      }
+
+      @java.lang.Override
+      public Builder clear() {
+        super.clear();
+        lines_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+        bitField0_ = (bitField0_ & ~0x00000001);
+        timezone_ = "";
+
+        return this;
+      }
+
+      @java.lang.Override
+      public com.google.protobuf.Descriptors.Descriptor getDescriptorForType() {
+        return io.holoinsight.server.registry.grpc.prod.RegistryForProdProtos.internal_static_io_holoinsight_server_registry_grpc_prod_DryRunRequest_InputPlain_descriptor;
+      }
+
+      @java.lang.Override
+      public io.holoinsight.server.registry.grpc.prod.DryRunRequest.InputPlain getDefaultInstanceForType() {
+        return io.holoinsight.server.registry.grpc.prod.DryRunRequest.InputPlain
+            .getDefaultInstance();
+      }
+
+      @java.lang.Override
+      public io.holoinsight.server.registry.grpc.prod.DryRunRequest.InputPlain build() {
+        io.holoinsight.server.registry.grpc.prod.DryRunRequest.InputPlain result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      @java.lang.Override
+      public io.holoinsight.server.registry.grpc.prod.DryRunRequest.InputPlain buildPartial() {
+        io.holoinsight.server.registry.grpc.prod.DryRunRequest.InputPlain result =
+            new io.holoinsight.server.registry.grpc.prod.DryRunRequest.InputPlain(this);
+        int from_bitField0_ = bitField0_;
+        if (((bitField0_ & 0x00000001) != 0)) {
+          lines_ = lines_.getUnmodifiableView();
+          bitField0_ = (bitField0_ & ~0x00000001);
+        }
+        result.lines_ = lines_;
+        result.timezone_ = timezone_;
+        onBuilt();
+        return result;
+      }
+
+      @java.lang.Override
+      public Builder clone() {
+        return super.clone();
+      }
+
+      @java.lang.Override
+      public Builder setField(com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.setField(field, value);
+      }
+
+      @java.lang.Override
+      public Builder clearField(com.google.protobuf.Descriptors.FieldDescriptor field) {
+        return super.clearField(field);
+      }
+
+      @java.lang.Override
+      public Builder clearOneof(com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+        return super.clearOneof(oneof);
+      }
+
+      @java.lang.Override
+      public Builder setRepeatedField(com.google.protobuf.Descriptors.FieldDescriptor field,
+          int index, java.lang.Object value) {
+        return super.setRepeatedField(field, index, value);
+      }
+
+      @java.lang.Override
+      public Builder addRepeatedField(com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.addRepeatedField(field, value);
+      }
+
+      @java.lang.Override
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof io.holoinsight.server.registry.grpc.prod.DryRunRequest.InputPlain) {
+          return mergeFrom(
+              (io.holoinsight.server.registry.grpc.prod.DryRunRequest.InputPlain) other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(
+          io.holoinsight.server.registry.grpc.prod.DryRunRequest.InputPlain other) {
+        if (other == io.holoinsight.server.registry.grpc.prod.DryRunRequest.InputPlain
+            .getDefaultInstance())
+          return this;
+        if (!other.lines_.isEmpty()) {
+          if (lines_.isEmpty()) {
+            lines_ = other.lines_;
             bitField0_ = (bitField0_ & ~0x00000001);
           } else {
-            ensureContentIsMutable();
-            content_.addAll(other.content_);
+            ensureLinesIsMutable();
+            lines_.addAll(other.lines_);
           }
+          onChanged();
+        }
+        if (!other.getTimezone().isEmpty()) {
+          timezone_ = other.timezone_;
           onChanged();
         }
         this.mergeUnknownFields(other.unknownFields);
@@ -639,11 +2577,11 @@ public final class DryRunRequest extends com.google.protobuf.GeneratedMessageV3 
       @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry) throws java.io.IOException {
-        io.holoinsight.server.registry.grpc.prod.DryRunRequest.DryRunInput parsedMessage = null;
+        io.holoinsight.server.registry.grpc.prod.DryRunRequest.InputPlain parsedMessage = null;
         try {
           parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
         } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          parsedMessage = (io.holoinsight.server.registry.grpc.prod.DryRunRequest.DryRunInput) e
+          parsedMessage = (io.holoinsight.server.registry.grpc.prod.DryRunRequest.InputPlain) e
               .getUnfinishedMessage();
           throw e.unwrapIOException();
         } finally {
@@ -656,125 +2594,117 @@ public final class DryRunRequest extends com.google.protobuf.GeneratedMessageV3 
 
       private int bitField0_;
 
-      private com.google.protobuf.LazyStringList content_ =
+      private com.google.protobuf.LazyStringList lines_ =
           com.google.protobuf.LazyStringArrayList.EMPTY;
 
-      private void ensureContentIsMutable() {
+      private void ensureLinesIsMutable() {
         if (!((bitField0_ & 0x00000001) != 0)) {
-          content_ = new com.google.protobuf.LazyStringArrayList(content_);
+          lines_ = new com.google.protobuf.LazyStringArrayList(lines_);
           bitField0_ |= 0x00000001;
         }
       }
 
       /**
        * <pre>
-       * 如果提供了contents, 则直接使用这些数据进行试跑
-       * 否则使用agent_id对应的本机器上的文件的最后N行进行试跑(这会导致结果不确定)
+       * 原始日志
        * </pre>
        *
-       * <code>repeated string content = 1;</code>
+       * <code>repeated string lines = 1;</code>
        */
-      public com.google.protobuf.ProtocolStringList getContentList() {
-        return content_.getUnmodifiableView();
+      public com.google.protobuf.ProtocolStringList getLinesList() {
+        return lines_.getUnmodifiableView();
       }
 
       /**
        * <pre>
-       * 如果提供了contents, 则直接使用这些数据进行试跑
-       * 否则使用agent_id对应的本机器上的文件的最后N行进行试跑(这会导致结果不确定)
+       * 原始日志
        * </pre>
        *
-       * <code>repeated string content = 1;</code>
+       * <code>repeated string lines = 1;</code>
        */
-      public int getContentCount() {
-        return content_.size();
+      public int getLinesCount() {
+        return lines_.size();
       }
 
       /**
        * <pre>
-       * 如果提供了contents, 则直接使用这些数据进行试跑
-       * 否则使用agent_id对应的本机器上的文件的最后N行进行试跑(这会导致结果不确定)
+       * 原始日志
        * </pre>
        *
-       * <code>repeated string content = 1;</code>
+       * <code>repeated string lines = 1;</code>
        */
-      public java.lang.String getContent(int index) {
-        return content_.get(index);
+      public java.lang.String getLines(int index) {
+        return lines_.get(index);
       }
 
       /**
        * <pre>
-       * 如果提供了contents, 则直接使用这些数据进行试跑
-       * 否则使用agent_id对应的本机器上的文件的最后N行进行试跑(这会导致结果不确定)
+       * 原始日志
        * </pre>
        *
-       * <code>repeated string content = 1;</code>
+       * <code>repeated string lines = 1;</code>
        */
-      public com.google.protobuf.ByteString getContentBytes(int index) {
-        return content_.getByteString(index);
+      public com.google.protobuf.ByteString getLinesBytes(int index) {
+        return lines_.getByteString(index);
       }
 
       /**
        * <pre>
-       * 如果提供了contents, 则直接使用这些数据进行试跑
-       * 否则使用agent_id对应的本机器上的文件的最后N行进行试跑(这会导致结果不确定)
+       * 原始日志
        * </pre>
        *
-       * <code>repeated string content = 1;</code>
+       * <code>repeated string lines = 1;</code>
        */
-      public Builder setContent(int index, java.lang.String value) {
+      public Builder setLines(int index, java.lang.String value) {
         if (value == null) {
           throw new NullPointerException();
         }
-        ensureContentIsMutable();
-        content_.set(index, value);
+        ensureLinesIsMutable();
+        lines_.set(index, value);
         onChanged();
         return this;
       }
 
       /**
        * <pre>
-       * 如果提供了contents, 则直接使用这些数据进行试跑
-       * 否则使用agent_id对应的本机器上的文件的最后N行进行试跑(这会导致结果不确定)
+       * 原始日志
        * </pre>
        *
-       * <code>repeated string content = 1;</code>
+       * <code>repeated string lines = 1;</code>
        */
-      public Builder addContent(java.lang.String value) {
+      public Builder addLines(java.lang.String value) {
         if (value == null) {
           throw new NullPointerException();
         }
-        ensureContentIsMutable();
-        content_.add(value);
+        ensureLinesIsMutable();
+        lines_.add(value);
         onChanged();
         return this;
       }
 
       /**
        * <pre>
-       * 如果提供了contents, 则直接使用这些数据进行试跑
-       * 否则使用agent_id对应的本机器上的文件的最后N行进行试跑(这会导致结果不确定)
+       * 原始日志
        * </pre>
        *
-       * <code>repeated string content = 1;</code>
+       * <code>repeated string lines = 1;</code>
        */
-      public Builder addAllContent(java.lang.Iterable<java.lang.String> values) {
-        ensureContentIsMutable();
-        com.google.protobuf.AbstractMessageLite.Builder.addAll(values, content_);
+      public Builder addAllLines(java.lang.Iterable<java.lang.String> values) {
+        ensureLinesIsMutable();
+        com.google.protobuf.AbstractMessageLite.Builder.addAll(values, lines_);
         onChanged();
         return this;
       }
 
       /**
        * <pre>
-       * 如果提供了contents, 则直接使用这些数据进行试跑
-       * 否则使用agent_id对应的本机器上的文件的最后N行进行试跑(这会导致结果不确定)
+       * 原始日志
        * </pre>
        *
-       * <code>repeated string content = 1;</code>
+       * <code>repeated string lines = 1;</code>
        */
-      public Builder clearContent() {
-        content_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+      public Builder clearLines() {
+        lines_ = com.google.protobuf.LazyStringArrayList.EMPTY;
         bitField0_ = (bitField0_ & ~0x00000001);
         onChanged();
         return this;
@@ -782,19 +2712,112 @@ public final class DryRunRequest extends com.google.protobuf.GeneratedMessageV3 
 
       /**
        * <pre>
-       * 如果提供了contents, 则直接使用这些数据进行试跑
-       * 否则使用agent_id对应的本机器上的文件的最后N行进行试跑(这会导致结果不确定)
+       * 原始日志
        * </pre>
        *
-       * <code>repeated string content = 1;</code>
+       * <code>repeated string lines = 1;</code>
        */
-      public Builder addContentBytes(com.google.protobuf.ByteString value) {
+      public Builder addLinesBytes(com.google.protobuf.ByteString value) {
         if (value == null) {
           throw new NullPointerException();
         }
         checkByteStringIsUtf8(value);
-        ensureContentIsMutable();
-        content_.add(value);
+        ensureLinesIsMutable();
+        lines_.add(value);
+        onChanged();
+        return this;
+      }
+
+      private java.lang.Object timezone_ = "";
+
+      /**
+       * <pre>
+       * Timezone to use when parsing timestamp of log lines.
+       * Defaults to local timezone of agent.
+       * </pre>
+       *
+       * <code>string timezone = 2;</code>
+       */
+      public java.lang.String getTimezone() {
+        java.lang.Object ref = timezone_;
+        if (!(ref instanceof java.lang.String)) {
+          com.google.protobuf.ByteString bs = (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          timezone_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+
+      /**
+       * <pre>
+       * Timezone to use when parsing timestamp of log lines.
+       * Defaults to local timezone of agent.
+       * </pre>
+       *
+       * <code>string timezone = 2;</code>
+       */
+      public com.google.protobuf.ByteString getTimezoneBytes() {
+        java.lang.Object ref = timezone_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b =
+              com.google.protobuf.ByteString.copyFromUtf8((java.lang.String) ref);
+          timezone_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+
+      /**
+       * <pre>
+       * Timezone to use when parsing timestamp of log lines.
+       * Defaults to local timezone of agent.
+       * </pre>
+       *
+       * <code>string timezone = 2;</code>
+       */
+      public Builder setTimezone(java.lang.String value) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+
+        timezone_ = value;
+        onChanged();
+        return this;
+      }
+
+      /**
+       * <pre>
+       * Timezone to use when parsing timestamp of log lines.
+       * Defaults to local timezone of agent.
+       * </pre>
+       *
+       * <code>string timezone = 2;</code>
+       */
+      public Builder clearTimezone() {
+
+        timezone_ = getDefaultInstance().getTimezone();
+        onChanged();
+        return this;
+      }
+
+      /**
+       * <pre>
+       * Timezone to use when parsing timestamp of log lines.
+       * Defaults to local timezone of agent.
+       * </pre>
+       *
+       * <code>string timezone = 2;</code>
+       */
+      public Builder setTimezoneBytes(com.google.protobuf.ByteString value) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        checkByteStringIsUtf8(value);
+
+        timezone_ = value;
         onChanged();
         return this;
       }
@@ -812,40 +2835,1066 @@ public final class DryRunRequest extends com.google.protobuf.GeneratedMessageV3 
       }
 
 
-      // @@protoc_insertion_point(builder_scope:io.holoinsight.server.registry.grpc.prod.DryRunRequest.DryRunInput)
+      // @@protoc_insertion_point(builder_scope:io.holoinsight.server.registry.grpc.prod.DryRunRequest.InputPlain)
     }
 
-    // @@protoc_insertion_point(class_scope:io.holoinsight.server.registry.grpc.prod.DryRunRequest.DryRunInput)
-    private static final io.holoinsight.server.registry.grpc.prod.DryRunRequest.DryRunInput DEFAULT_INSTANCE;
+    // @@protoc_insertion_point(class_scope:io.holoinsight.server.registry.grpc.prod.DryRunRequest.InputPlain)
+    private static final io.holoinsight.server.registry.grpc.prod.DryRunRequest.InputPlain DEFAULT_INSTANCE;
     static {
-      DEFAULT_INSTANCE = new io.holoinsight.server.registry.grpc.prod.DryRunRequest.DryRunInput();
+      DEFAULT_INSTANCE = new io.holoinsight.server.registry.grpc.prod.DryRunRequest.InputPlain();
     }
 
-    public static io.holoinsight.server.registry.grpc.prod.DryRunRequest.DryRunInput getDefaultInstance() {
+    public static io.holoinsight.server.registry.grpc.prod.DryRunRequest.InputPlain getDefaultInstance() {
       return DEFAULT_INSTANCE;
     }
 
-    private static final com.google.protobuf.Parser<DryRunInput> PARSER =
-        new com.google.protobuf.AbstractParser<DryRunInput>() {
+    private static final com.google.protobuf.Parser<InputPlain> PARSER =
+        new com.google.protobuf.AbstractParser<InputPlain>() {
           @java.lang.Override
-          public DryRunInput parsePartialFrom(com.google.protobuf.CodedInputStream input,
+          public InputPlain parsePartialFrom(com.google.protobuf.CodedInputStream input,
               com.google.protobuf.ExtensionRegistryLite extensionRegistry)
               throws com.google.protobuf.InvalidProtocolBufferException {
-            return new DryRunInput(input, extensionRegistry);
+            return new InputPlain(input, extensionRegistry);
           }
         };
 
-    public static com.google.protobuf.Parser<DryRunInput> parser() {
+    public static com.google.protobuf.Parser<InputPlain> parser() {
       return PARSER;
     }
 
     @java.lang.Override
-    public com.google.protobuf.Parser<DryRunInput> getParserForType() {
+    public com.google.protobuf.Parser<InputPlain> getParserForType() {
       return PARSER;
     }
 
     @java.lang.Override
-    public io.holoinsight.server.registry.grpc.prod.DryRunRequest.DryRunInput getDefaultInstanceForType() {
+    public io.holoinsight.server.registry.grpc.prod.DryRunRequest.InputPlain getDefaultInstanceForType() {
+      return DEFAULT_INSTANCE;
+    }
+
+  }
+
+  public interface CollectConfigTempOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:io.holoinsight.server.registry.grpc.prod.DryRunRequest.CollectConfigTemp)
+      com.google.protobuf.MessageOrBuilder {
+
+    /**
+     * <pre>
+     * 字段对应 gaea_collect_config 里的 字段
+     * </pre>
+     *
+     * <code>string type = 1;</code>
+     */
+    java.lang.String getType();
+
+    /**
+     * <pre>
+     * 字段对应 gaea_collect_config 里的 字段
+     * </pre>
+     *
+     * <code>string type = 1;</code>
+     */
+    com.google.protobuf.ByteString getTypeBytes();
+
+    /**
+     * <code>string json = 2;</code>
+     */
+    java.lang.String getJson();
+
+    /**
+     * <code>string json = 2;</code>
+     */
+    com.google.protobuf.ByteString getJsonBytes();
+
+    /**
+     * <code>string executor_selector = 3;</code>
+     */
+    java.lang.String getExecutorSelector();
+
+    /**
+     * <code>string executor_selector = 3;</code>
+     */
+    com.google.protobuf.ByteString getExecutorSelectorBytes();
+
+    /**
+     * <code>string collect_range = 4;</code>
+     */
+    java.lang.String getCollectRange();
+
+    /**
+     * <code>string collect_range = 4;</code>
+     */
+    com.google.protobuf.ByteString getCollectRangeBytes();
+  }
+  /**
+   * <pre>
+   * message InputRead {}
+   * </pre>
+   *
+   * Protobuf type {@code io.holoinsight.server.registry.grpc.prod.DryRunRequest.CollectConfigTemp}
+   */
+  public static final class CollectConfigTemp extends com.google.protobuf.GeneratedMessageV3
+      implements
+      // @@protoc_insertion_point(message_implements:io.holoinsight.server.registry.grpc.prod.DryRunRequest.CollectConfigTemp)
+      CollectConfigTempOrBuilder {
+    private static final long serialVersionUID = 0L;
+
+    // Use CollectConfigTemp.newBuilder() to construct.
+    private CollectConfigTemp(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+      super(builder);
+    }
+
+    private CollectConfigTemp() {
+      type_ = "";
+      json_ = "";
+      executorSelector_ = "";
+      collectRange_ = "";
+    }
+
+    @java.lang.Override
+    @SuppressWarnings({"unused"})
+    protected java.lang.Object newInstance(UnusedPrivateParameter unused) {
+      return new CollectConfigTemp();
+    }
+
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet getUnknownFields() {
+      return this.unknownFields;
+    }
+
+    private CollectConfigTemp(com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      this();
+      if (extensionRegistry == null) {
+        throw new java.lang.NullPointerException();
+      }
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            case 10: {
+              java.lang.String s = input.readStringRequireUtf8();
+
+              type_ = s;
+              break;
+            }
+            case 18: {
+              java.lang.String s = input.readStringRequireUtf8();
+
+              json_ = s;
+              break;
+            }
+            case 26: {
+              java.lang.String s = input.readStringRequireUtf8();
+
+              executorSelector_ = s;
+              break;
+            }
+            case 34: {
+              java.lang.String s = input.readStringRequireUtf8();
+
+              collectRange_ = s;
+              break;
+            }
+            default: {
+              if (!parseUnknownField(input, unknownFields, extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(e).setUnfinishedMessage(this);
+      } finally {
+        this.unknownFields = unknownFields.build();
+        makeExtensionsImmutable();
+      }
+    }
+
+    public static final com.google.protobuf.Descriptors.Descriptor getDescriptor() {
+      return io.holoinsight.server.registry.grpc.prod.RegistryForProdProtos.internal_static_io_holoinsight_server_registry_grpc_prod_DryRunRequest_CollectConfigTemp_descriptor;
+    }
+
+    @java.lang.Override
+    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable internalGetFieldAccessorTable() {
+      return io.holoinsight.server.registry.grpc.prod.RegistryForProdProtos.internal_static_io_holoinsight_server_registry_grpc_prod_DryRunRequest_CollectConfigTemp_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              io.holoinsight.server.registry.grpc.prod.DryRunRequest.CollectConfigTemp.class,
+              io.holoinsight.server.registry.grpc.prod.DryRunRequest.CollectConfigTemp.Builder.class);
+    }
+
+    public static final int TYPE_FIELD_NUMBER = 1;
+    private volatile java.lang.Object type_;
+
+    /**
+     * <pre>
+     * 字段对应 gaea_collect_config 里的 字段
+     * </pre>
+     *
+     * <code>string type = 1;</code>
+     */
+    public java.lang.String getType() {
+      java.lang.Object ref = type_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        type_ = s;
+        return s;
+      }
+    }
+
+    /**
+     * <pre>
+     * 字段对应 gaea_collect_config 里的 字段
+     * </pre>
+     *
+     * <code>string type = 1;</code>
+     */
+    public com.google.protobuf.ByteString getTypeBytes() {
+      java.lang.Object ref = type_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b =
+            com.google.protobuf.ByteString.copyFromUtf8((java.lang.String) ref);
+        type_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    public static final int JSON_FIELD_NUMBER = 2;
+    private volatile java.lang.Object json_;
+
+    /**
+     * <code>string json = 2;</code>
+     */
+    public java.lang.String getJson() {
+      java.lang.Object ref = json_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        json_ = s;
+        return s;
+      }
+    }
+
+    /**
+     * <code>string json = 2;</code>
+     */
+    public com.google.protobuf.ByteString getJsonBytes() {
+      java.lang.Object ref = json_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b =
+            com.google.protobuf.ByteString.copyFromUtf8((java.lang.String) ref);
+        json_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    public static final int EXECUTOR_SELECTOR_FIELD_NUMBER = 3;
+    private volatile java.lang.Object executorSelector_;
+
+    /**
+     * <code>string executor_selector = 3;</code>
+     */
+    public java.lang.String getExecutorSelector() {
+      java.lang.Object ref = executorSelector_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        executorSelector_ = s;
+        return s;
+      }
+    }
+
+    /**
+     * <code>string executor_selector = 3;</code>
+     */
+    public com.google.protobuf.ByteString getExecutorSelectorBytes() {
+      java.lang.Object ref = executorSelector_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b =
+            com.google.protobuf.ByteString.copyFromUtf8((java.lang.String) ref);
+        executorSelector_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    public static final int COLLECT_RANGE_FIELD_NUMBER = 4;
+    private volatile java.lang.Object collectRange_;
+
+    /**
+     * <code>string collect_range = 4;</code>
+     */
+    public java.lang.String getCollectRange() {
+      java.lang.Object ref = collectRange_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        collectRange_ = s;
+        return s;
+      }
+    }
+
+    /**
+     * <code>string collect_range = 4;</code>
+     */
+    public com.google.protobuf.ByteString getCollectRangeBytes() {
+      java.lang.Object ref = collectRange_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b =
+            com.google.protobuf.ByteString.copyFromUtf8((java.lang.String) ref);
+        collectRange_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    private byte memoizedIsInitialized = -1;
+
+    @java.lang.Override
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized == 1)
+        return true;
+      if (isInitialized == 0)
+        return false;
+
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    @java.lang.Override
+    public void writeTo(com.google.protobuf.CodedOutputStream output) throws java.io.IOException {
+      if (!getTypeBytes().isEmpty()) {
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 1, type_);
+      }
+      if (!getJsonBytes().isEmpty()) {
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 2, json_);
+      }
+      if (!getExecutorSelectorBytes().isEmpty()) {
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 3, executorSelector_);
+      }
+      if (!getCollectRangeBytes().isEmpty()) {
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 4, collectRange_);
+      }
+      unknownFields.writeTo(output);
+    }
+
+    @java.lang.Override
+    public int getSerializedSize() {
+      int size = memoizedSize;
+      if (size != -1)
+        return size;
+
+      size = 0;
+      if (!getTypeBytes().isEmpty()) {
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, type_);
+      }
+      if (!getJsonBytes().isEmpty()) {
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(2, json_);
+      }
+      if (!getExecutorSelectorBytes().isEmpty()) {
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(3, executorSelector_);
+      }
+      if (!getCollectRangeBytes().isEmpty()) {
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(4, collectRange_);
+      }
+      size += unknownFields.getSerializedSize();
+      memoizedSize = size;
+      return size;
+    }
+
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
+      if (obj == this) {
+        return true;
+      }
+      if (!(obj instanceof io.holoinsight.server.registry.grpc.prod.DryRunRequest.CollectConfigTemp)) {
+        return super.equals(obj);
+      }
+      io.holoinsight.server.registry.grpc.prod.DryRunRequest.CollectConfigTemp other =
+          (io.holoinsight.server.registry.grpc.prod.DryRunRequest.CollectConfigTemp) obj;
+
+      if (!getType().equals(other.getType()))
+        return false;
+      if (!getJson().equals(other.getJson()))
+        return false;
+      if (!getExecutorSelector().equals(other.getExecutorSelector()))
+        return false;
+      if (!getCollectRange().equals(other.getCollectRange()))
+        return false;
+      if (!unknownFields.equals(other.unknownFields))
+        return false;
+      return true;
+    }
+
+    @java.lang.Override
+    public int hashCode() {
+      if (memoizedHashCode != 0) {
+        return memoizedHashCode;
+      }
+      int hash = 41;
+      hash = (19 * hash) + getDescriptor().hashCode();
+      hash = (37 * hash) + TYPE_FIELD_NUMBER;
+      hash = (53 * hash) + getType().hashCode();
+      hash = (37 * hash) + JSON_FIELD_NUMBER;
+      hash = (53 * hash) + getJson().hashCode();
+      hash = (37 * hash) + EXECUTOR_SELECTOR_FIELD_NUMBER;
+      hash = (53 * hash) + getExecutorSelector().hashCode();
+      hash = (37 * hash) + COLLECT_RANGE_FIELD_NUMBER;
+      hash = (53 * hash) + getCollectRange().hashCode();
+      hash = (29 * hash) + unknownFields.hashCode();
+      memoizedHashCode = hash;
+      return hash;
+    }
+
+    public static io.holoinsight.server.registry.grpc.prod.DryRunRequest.CollectConfigTemp parseFrom(
+        java.nio.ByteBuffer data) throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+
+    public static io.holoinsight.server.registry.grpc.prod.DryRunRequest.CollectConfigTemp parseFrom(
+        java.nio.ByteBuffer data, com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+
+    public static io.holoinsight.server.registry.grpc.prod.DryRunRequest.CollectConfigTemp parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+
+    public static io.holoinsight.server.registry.grpc.prod.DryRunRequest.CollectConfigTemp parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+
+    public static io.holoinsight.server.registry.grpc.prod.DryRunRequest.CollectConfigTemp parseFrom(
+        byte[] data) throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+
+    public static io.holoinsight.server.registry.grpc.prod.DryRunRequest.CollectConfigTemp parseFrom(
+        byte[] data, com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+
+    public static io.holoinsight.server.registry.grpc.prod.DryRunRequest.CollectConfigTemp parseFrom(
+        java.io.InputStream input) throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3.parseWithIOException(PARSER, input);
+    }
+
+    public static io.holoinsight.server.registry.grpc.prod.DryRunRequest.CollectConfigTemp parseFrom(
+        java.io.InputStream input, com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3.parseWithIOException(PARSER, input,
+          extensionRegistry);
+    }
+
+    public static io.holoinsight.server.registry.grpc.prod.DryRunRequest.CollectConfigTemp parseDelimitedFrom(
+        java.io.InputStream input) throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3.parseDelimitedWithIOException(PARSER, input);
+    }
+
+    public static io.holoinsight.server.registry.grpc.prod.DryRunRequest.CollectConfigTemp parseDelimitedFrom(
+        java.io.InputStream input, com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3.parseDelimitedWithIOException(PARSER, input,
+          extensionRegistry);
+    }
+
+    public static io.holoinsight.server.registry.grpc.prod.DryRunRequest.CollectConfigTemp parseFrom(
+        com.google.protobuf.CodedInputStream input) throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3.parseWithIOException(PARSER, input);
+    }
+
+    public static io.holoinsight.server.registry.grpc.prod.DryRunRequest.CollectConfigTemp parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry) throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3.parseWithIOException(PARSER, input,
+          extensionRegistry);
+    }
+
+    @java.lang.Override
+    public Builder newBuilderForType() {
+      return newBuilder();
+    }
+
+    public static Builder newBuilder() {
+      return DEFAULT_INSTANCE.toBuilder();
+    }
+
+    public static Builder newBuilder(
+        io.holoinsight.server.registry.grpc.prod.DryRunRequest.CollectConfigTemp prototype) {
+      return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+    }
+
+    @java.lang.Override
+    public Builder toBuilder() {
+      return this == DEFAULT_INSTANCE ? new Builder() : new Builder().mergeFrom(this);
+    }
+
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+
+    /**
+     * <pre>
+     * message InputRead {}
+     * </pre>
+     *
+     * Protobuf type
+     * {@code io.holoinsight.server.registry.grpc.prod.DryRunRequest.CollectConfigTemp}
+     */
+    public static final class Builder
+        extends com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
+        // @@protoc_insertion_point(builder_implements:io.holoinsight.server.registry.grpc.prod.DryRunRequest.CollectConfigTemp)
+        io.holoinsight.server.registry.grpc.prod.DryRunRequest.CollectConfigTempOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor getDescriptor() {
+        return io.holoinsight.server.registry.grpc.prod.RegistryForProdProtos.internal_static_io_holoinsight_server_registry_grpc_prod_DryRunRequest_CollectConfigTemp_descriptor;
+      }
+
+      @java.lang.Override
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable internalGetFieldAccessorTable() {
+        return io.holoinsight.server.registry.grpc.prod.RegistryForProdProtos.internal_static_io_holoinsight_server_registry_grpc_prod_DryRunRequest_CollectConfigTemp_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                io.holoinsight.server.registry.grpc.prod.DryRunRequest.CollectConfigTemp.class,
+                io.holoinsight.server.registry.grpc.prod.DryRunRequest.CollectConfigTemp.Builder.class);
+      }
+
+      // Construct using
+      // io.holoinsight.server.registry.grpc.prod.DryRunRequest.CollectConfigTemp.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+
+      private Builder(com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders) {
+        }
+      }
+
+      @java.lang.Override
+      public Builder clear() {
+        super.clear();
+        type_ = "";
+
+        json_ = "";
+
+        executorSelector_ = "";
+
+        collectRange_ = "";
+
+        return this;
+      }
+
+      @java.lang.Override
+      public com.google.protobuf.Descriptors.Descriptor getDescriptorForType() {
+        return io.holoinsight.server.registry.grpc.prod.RegistryForProdProtos.internal_static_io_holoinsight_server_registry_grpc_prod_DryRunRequest_CollectConfigTemp_descriptor;
+      }
+
+      @java.lang.Override
+      public io.holoinsight.server.registry.grpc.prod.DryRunRequest.CollectConfigTemp getDefaultInstanceForType() {
+        return io.holoinsight.server.registry.grpc.prod.DryRunRequest.CollectConfigTemp
+            .getDefaultInstance();
+      }
+
+      @java.lang.Override
+      public io.holoinsight.server.registry.grpc.prod.DryRunRequest.CollectConfigTemp build() {
+        io.holoinsight.server.registry.grpc.prod.DryRunRequest.CollectConfigTemp result =
+            buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      @java.lang.Override
+      public io.holoinsight.server.registry.grpc.prod.DryRunRequest.CollectConfigTemp buildPartial() {
+        io.holoinsight.server.registry.grpc.prod.DryRunRequest.CollectConfigTemp result =
+            new io.holoinsight.server.registry.grpc.prod.DryRunRequest.CollectConfigTemp(this);
+        result.type_ = type_;
+        result.json_ = json_;
+        result.executorSelector_ = executorSelector_;
+        result.collectRange_ = collectRange_;
+        onBuilt();
+        return result;
+      }
+
+      @java.lang.Override
+      public Builder clone() {
+        return super.clone();
+      }
+
+      @java.lang.Override
+      public Builder setField(com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.setField(field, value);
+      }
+
+      @java.lang.Override
+      public Builder clearField(com.google.protobuf.Descriptors.FieldDescriptor field) {
+        return super.clearField(field);
+      }
+
+      @java.lang.Override
+      public Builder clearOneof(com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+        return super.clearOneof(oneof);
+      }
+
+      @java.lang.Override
+      public Builder setRepeatedField(com.google.protobuf.Descriptors.FieldDescriptor field,
+          int index, java.lang.Object value) {
+        return super.setRepeatedField(field, index, value);
+      }
+
+      @java.lang.Override
+      public Builder addRepeatedField(com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.addRepeatedField(field, value);
+      }
+
+      @java.lang.Override
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof io.holoinsight.server.registry.grpc.prod.DryRunRequest.CollectConfigTemp) {
+          return mergeFrom(
+              (io.holoinsight.server.registry.grpc.prod.DryRunRequest.CollectConfigTemp) other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(
+          io.holoinsight.server.registry.grpc.prod.DryRunRequest.CollectConfigTemp other) {
+        if (other == io.holoinsight.server.registry.grpc.prod.DryRunRequest.CollectConfigTemp
+            .getDefaultInstance())
+          return this;
+        if (!other.getType().isEmpty()) {
+          type_ = other.type_;
+          onChanged();
+        }
+        if (!other.getJson().isEmpty()) {
+          json_ = other.json_;
+          onChanged();
+        }
+        if (!other.getExecutorSelector().isEmpty()) {
+          executorSelector_ = other.executorSelector_;
+          onChanged();
+        }
+        if (!other.getCollectRange().isEmpty()) {
+          collectRange_ = other.collectRange_;
+          onChanged();
+        }
+        this.mergeUnknownFields(other.unknownFields);
+        onChanged();
+        return this;
+      }
+
+      @java.lang.Override
+      public final boolean isInitialized() {
+        return true;
+      }
+
+      @java.lang.Override
+      public Builder mergeFrom(com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry) throws java.io.IOException {
+        io.holoinsight.server.registry.grpc.prod.DryRunRequest.CollectConfigTemp parsedMessage =
+            null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage =
+              (io.holoinsight.server.registry.grpc.prod.DryRunRequest.CollectConfigTemp) e
+                  .getUnfinishedMessage();
+          throw e.unwrapIOException();
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
+          }
+        }
+        return this;
+      }
+
+      private java.lang.Object type_ = "";
+
+      /**
+       * <pre>
+       * 字段对应 gaea_collect_config 里的 字段
+       * </pre>
+       *
+       * <code>string type = 1;</code>
+       */
+      public java.lang.String getType() {
+        java.lang.Object ref = type_;
+        if (!(ref instanceof java.lang.String)) {
+          com.google.protobuf.ByteString bs = (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          type_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+
+      /**
+       * <pre>
+       * 字段对应 gaea_collect_config 里的 字段
+       * </pre>
+       *
+       * <code>string type = 1;</code>
+       */
+      public com.google.protobuf.ByteString getTypeBytes() {
+        java.lang.Object ref = type_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b =
+              com.google.protobuf.ByteString.copyFromUtf8((java.lang.String) ref);
+          type_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+
+      /**
+       * <pre>
+       * 字段对应 gaea_collect_config 里的 字段
+       * </pre>
+       *
+       * <code>string type = 1;</code>
+       */
+      public Builder setType(java.lang.String value) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+
+        type_ = value;
+        onChanged();
+        return this;
+      }
+
+      /**
+       * <pre>
+       * 字段对应 gaea_collect_config 里的 字段
+       * </pre>
+       *
+       * <code>string type = 1;</code>
+       */
+      public Builder clearType() {
+
+        type_ = getDefaultInstance().getType();
+        onChanged();
+        return this;
+      }
+
+      /**
+       * <pre>
+       * 字段对应 gaea_collect_config 里的 字段
+       * </pre>
+       *
+       * <code>string type = 1;</code>
+       */
+      public Builder setTypeBytes(com.google.protobuf.ByteString value) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        checkByteStringIsUtf8(value);
+
+        type_ = value;
+        onChanged();
+        return this;
+      }
+
+      private java.lang.Object json_ = "";
+
+      /**
+       * <code>string json = 2;</code>
+       */
+      public java.lang.String getJson() {
+        java.lang.Object ref = json_;
+        if (!(ref instanceof java.lang.String)) {
+          com.google.protobuf.ByteString bs = (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          json_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+
+      /**
+       * <code>string json = 2;</code>
+       */
+      public com.google.protobuf.ByteString getJsonBytes() {
+        java.lang.Object ref = json_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b =
+              com.google.protobuf.ByteString.copyFromUtf8((java.lang.String) ref);
+          json_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+
+      /**
+       * <code>string json = 2;</code>
+       */
+      public Builder setJson(java.lang.String value) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+
+        json_ = value;
+        onChanged();
+        return this;
+      }
+
+      /**
+       * <code>string json = 2;</code>
+       */
+      public Builder clearJson() {
+
+        json_ = getDefaultInstance().getJson();
+        onChanged();
+        return this;
+      }
+
+      /**
+       * <code>string json = 2;</code>
+       */
+      public Builder setJsonBytes(com.google.protobuf.ByteString value) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        checkByteStringIsUtf8(value);
+
+        json_ = value;
+        onChanged();
+        return this;
+      }
+
+      private java.lang.Object executorSelector_ = "";
+
+      /**
+       * <code>string executor_selector = 3;</code>
+       */
+      public java.lang.String getExecutorSelector() {
+        java.lang.Object ref = executorSelector_;
+        if (!(ref instanceof java.lang.String)) {
+          com.google.protobuf.ByteString bs = (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          executorSelector_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+
+      /**
+       * <code>string executor_selector = 3;</code>
+       */
+      public com.google.protobuf.ByteString getExecutorSelectorBytes() {
+        java.lang.Object ref = executorSelector_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b =
+              com.google.protobuf.ByteString.copyFromUtf8((java.lang.String) ref);
+          executorSelector_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+
+      /**
+       * <code>string executor_selector = 3;</code>
+       */
+      public Builder setExecutorSelector(java.lang.String value) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+
+        executorSelector_ = value;
+        onChanged();
+        return this;
+      }
+
+      /**
+       * <code>string executor_selector = 3;</code>
+       */
+      public Builder clearExecutorSelector() {
+
+        executorSelector_ = getDefaultInstance().getExecutorSelector();
+        onChanged();
+        return this;
+      }
+
+      /**
+       * <code>string executor_selector = 3;</code>
+       */
+      public Builder setExecutorSelectorBytes(com.google.protobuf.ByteString value) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        checkByteStringIsUtf8(value);
+
+        executorSelector_ = value;
+        onChanged();
+        return this;
+      }
+
+      private java.lang.Object collectRange_ = "";
+
+      /**
+       * <code>string collect_range = 4;</code>
+       */
+      public java.lang.String getCollectRange() {
+        java.lang.Object ref = collectRange_;
+        if (!(ref instanceof java.lang.String)) {
+          com.google.protobuf.ByteString bs = (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          collectRange_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+
+      /**
+       * <code>string collect_range = 4;</code>
+       */
+      public com.google.protobuf.ByteString getCollectRangeBytes() {
+        java.lang.Object ref = collectRange_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b =
+              com.google.protobuf.ByteString.copyFromUtf8((java.lang.String) ref);
+          collectRange_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+
+      /**
+       * <code>string collect_range = 4;</code>
+       */
+      public Builder setCollectRange(java.lang.String value) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+
+        collectRange_ = value;
+        onChanged();
+        return this;
+      }
+
+      /**
+       * <code>string collect_range = 4;</code>
+       */
+      public Builder clearCollectRange() {
+
+        collectRange_ = getDefaultInstance().getCollectRange();
+        onChanged();
+        return this;
+      }
+
+      /**
+       * <code>string collect_range = 4;</code>
+       */
+      public Builder setCollectRangeBytes(com.google.protobuf.ByteString value) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        checkByteStringIsUtf8(value);
+
+        collectRange_ = value;
+        onChanged();
+        return this;
+      }
+
+      @java.lang.Override
+      public final Builder setUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.setUnknownFields(unknownFields);
+      }
+
+      @java.lang.Override
+      public final Builder mergeUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.mergeUnknownFields(unknownFields);
+      }
+
+
+      // @@protoc_insertion_point(builder_scope:io.holoinsight.server.registry.grpc.prod.DryRunRequest.CollectConfigTemp)
+    }
+
+    // @@protoc_insertion_point(class_scope:io.holoinsight.server.registry.grpc.prod.DryRunRequest.CollectConfigTemp)
+    private static final io.holoinsight.server.registry.grpc.prod.DryRunRequest.CollectConfigTemp DEFAULT_INSTANCE;
+    static {
+      DEFAULT_INSTANCE =
+          new io.holoinsight.server.registry.grpc.prod.DryRunRequest.CollectConfigTemp();
+    }
+
+    public static io.holoinsight.server.registry.grpc.prod.DryRunRequest.CollectConfigTemp getDefaultInstance() {
+      return DEFAULT_INSTANCE;
+    }
+
+    private static final com.google.protobuf.Parser<CollectConfigTemp> PARSER =
+        new com.google.protobuf.AbstractParser<CollectConfigTemp>() {
+          @java.lang.Override
+          public CollectConfigTemp parsePartialFrom(com.google.protobuf.CodedInputStream input,
+              com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+              throws com.google.protobuf.InvalidProtocolBufferException {
+            return new CollectConfigTemp(input, extensionRegistry);
+          }
+        };
+
+    public static com.google.protobuf.Parser<CollectConfigTemp> parser() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<CollectConfigTemp> getParserForType() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public io.holoinsight.server.registry.grpc.prod.DryRunRequest.CollectConfigTemp getDefaultInstanceForType() {
       return DEFAULT_INSTANCE;
     }
 
@@ -889,141 +3938,64 @@ public final class DryRunRequest extends com.google.protobuf.GeneratedMessageV3 
     return getHeader();
   }
 
-  public static final int AGENT_ID_FIELD_NUMBER = 2;
-  private volatile java.lang.Object agentId_;
+  public static final int CONFIG_FIELD_NUMBER = 2;
+  private io.holoinsight.server.registry.grpc.prod.DryRunRequest.CollectConfig config_;
 
   /**
    * <pre>
-   * agent id
+   * 配置信息
    * </pre>
    *
-   * <code>string agent_id = 2;</code>
+   * <code>.io.holoinsight.server.registry.grpc.prod.DryRunRequest.CollectConfig config = 2;</code>
    */
-  public java.lang.String getAgentId() {
-    java.lang.Object ref = agentId_;
-    if (ref instanceof java.lang.String) {
-      return (java.lang.String) ref;
-    } else {
-      com.google.protobuf.ByteString bs = (com.google.protobuf.ByteString) ref;
-      java.lang.String s = bs.toStringUtf8();
-      agentId_ = s;
-      return s;
-    }
+  public boolean hasConfig() {
+    return config_ != null;
   }
 
   /**
    * <pre>
-   * agent id
+   * 配置信息
    * </pre>
    *
-   * <code>string agent_id = 2;</code>
+   * <code>.io.holoinsight.server.registry.grpc.prod.DryRunRequest.CollectConfig config = 2;</code>
    */
-  public com.google.protobuf.ByteString getAgentIdBytes() {
-    java.lang.Object ref = agentId_;
-    if (ref instanceof java.lang.String) {
-      com.google.protobuf.ByteString b =
-          com.google.protobuf.ByteString.copyFromUtf8((java.lang.String) ref);
-      agentId_ = b;
-      return b;
-    } else {
-      return (com.google.protobuf.ByteString) ref;
-    }
-  }
-
-  public static final int TYPE_FIELD_NUMBER = 3;
-  private volatile java.lang.Object type_;
-
-  /**
-   * <pre>
-   * 配置类型
-   * </pre>
-   *
-   * <code>string type = 3;</code>
-   */
-  public java.lang.String getType() {
-    java.lang.Object ref = type_;
-    if (ref instanceof java.lang.String) {
-      return (java.lang.String) ref;
-    } else {
-      com.google.protobuf.ByteString bs = (com.google.protobuf.ByteString) ref;
-      java.lang.String s = bs.toStringUtf8();
-      type_ = s;
-      return s;
-    }
+  public io.holoinsight.server.registry.grpc.prod.DryRunRequest.CollectConfig getConfig() {
+    return config_ == null
+        ? io.holoinsight.server.registry.grpc.prod.DryRunRequest.CollectConfig.getDefaultInstance()
+        : config_;
   }
 
   /**
    * <pre>
-   * 配置类型
+   * 配置信息
    * </pre>
    *
-   * <code>string type = 3;</code>
+   * <code>.io.holoinsight.server.registry.grpc.prod.DryRunRequest.CollectConfig config = 2;</code>
    */
-  public com.google.protobuf.ByteString getTypeBytes() {
-    java.lang.Object ref = type_;
-    if (ref instanceof java.lang.String) {
-      com.google.protobuf.ByteString b =
-          com.google.protobuf.ByteString.copyFromUtf8((java.lang.String) ref);
-      type_ = b;
-      return b;
-    } else {
-      return (com.google.protobuf.ByteString) ref;
-    }
+  public io.holoinsight.server.registry.grpc.prod.DryRunRequest.CollectConfigOrBuilder getConfigOrBuilder() {
+    return getConfig();
   }
 
-  public static final int JSON_FIELD_NUMBER = 4;
-  private volatile java.lang.Object json_;
-
-  /**
-   * <pre>
-   * 采集配置, 格式和 gaea_collect_config 的 json 字段保持一致
-   * </pre>
-   *
-   * <code>string json = 4;</code>
-   */
-  public java.lang.String getJson() {
-    java.lang.Object ref = json_;
-    if (ref instanceof java.lang.String) {
-      return (java.lang.String) ref;
-    } else {
-      com.google.protobuf.ByteString bs = (com.google.protobuf.ByteString) ref;
-      java.lang.String s = bs.toStringUtf8();
-      json_ = s;
-      return s;
-    }
-  }
-
-  /**
-   * <pre>
-   * 采集配置, 格式和 gaea_collect_config 的 json 字段保持一致
-   * </pre>
-   *
-   * <code>string json = 4;</code>
-   */
-  public com.google.protobuf.ByteString getJsonBytes() {
-    java.lang.Object ref = json_;
-    if (ref instanceof java.lang.String) {
-      com.google.protobuf.ByteString b =
-          com.google.protobuf.ByteString.copyFromUtf8((java.lang.String) ref);
-      json_ = b;
-      return b;
-    } else {
-      return (com.google.protobuf.ByteString) ref;
-    }
-  }
-
-  public static final int TARGET_FIELD_NUMBER = 5;
+  public static final int TARGET_FIELD_NUMBER = 3;
   private io.holoinsight.server.registry.grpc.prod.TargetIdentifier target_;
 
   /**
-   * <code>.io.holoinsight.server.registry.grpc.prod.TargetIdentifier target = 5;</code>
+   * <pre>
+   * 最终运行的目标, 在元数据里必须能找到
+   * </pre>
+   *
+   * <code>.io.holoinsight.server.registry.grpc.prod.TargetIdentifier target = 3;</code>
    */
   public boolean hasTarget() {
     return target_ != null;
   }
 
   /**
-   * <code>.io.holoinsight.server.registry.grpc.prod.TargetIdentifier target = 5;</code>
+   * <pre>
+   * 最终运行的目标, 在元数据里必须能找到
+   * </pre>
+   *
+   * <code>.io.holoinsight.server.registry.grpc.prod.TargetIdentifier target = 3;</code>
    */
   public io.holoinsight.server.registry.grpc.prod.TargetIdentifier getTarget() {
     return target_ == null
@@ -1032,10 +4004,52 @@ public final class DryRunRequest extends com.google.protobuf.GeneratedMessageV3 
   }
 
   /**
-   * <code>.io.holoinsight.server.registry.grpc.prod.TargetIdentifier target = 5;</code>
+   * <pre>
+   * 最终运行的目标, 在元数据里必须能找到
+   * </pre>
+   *
+   * <code>.io.holoinsight.server.registry.grpc.prod.TargetIdentifier target = 3;</code>
    */
   public io.holoinsight.server.registry.grpc.prod.TargetIdentifierOrBuilder getTargetOrBuilder() {
     return getTarget();
+  }
+
+  public static final int INPUT_FIELD_NUMBER = 4;
+  private io.holoinsight.server.registry.grpc.prod.DryRunRequest.Input input_;
+
+  /**
+   * <pre>
+   * 输入信息
+   * </pre>
+   *
+   * <code>.io.holoinsight.server.registry.grpc.prod.DryRunRequest.Input input = 4;</code>
+   */
+  public boolean hasInput() {
+    return input_ != null;
+  }
+
+  /**
+   * <pre>
+   * 输入信息
+   * </pre>
+   *
+   * <code>.io.holoinsight.server.registry.grpc.prod.DryRunRequest.Input input = 4;</code>
+   */
+  public io.holoinsight.server.registry.grpc.prod.DryRunRequest.Input getInput() {
+    return input_ == null
+        ? io.holoinsight.server.registry.grpc.prod.DryRunRequest.Input.getDefaultInstance()
+        : input_;
+  }
+
+  /**
+   * <pre>
+   * 输入信息
+   * </pre>
+   *
+   * <code>.io.holoinsight.server.registry.grpc.prod.DryRunRequest.Input input = 4;</code>
+   */
+  public io.holoinsight.server.registry.grpc.prod.DryRunRequest.InputOrBuilder getInputOrBuilder() {
+    return getInput();
   }
 
   private byte memoizedIsInitialized = -1;
@@ -1057,17 +4071,14 @@ public final class DryRunRequest extends com.google.protobuf.GeneratedMessageV3 
     if (header_ != null) {
       output.writeMessage(1, getHeader());
     }
-    if (!getAgentIdBytes().isEmpty()) {
-      com.google.protobuf.GeneratedMessageV3.writeString(output, 2, agentId_);
-    }
-    if (!getTypeBytes().isEmpty()) {
-      com.google.protobuf.GeneratedMessageV3.writeString(output, 3, type_);
-    }
-    if (!getJsonBytes().isEmpty()) {
-      com.google.protobuf.GeneratedMessageV3.writeString(output, 4, json_);
+    if (config_ != null) {
+      output.writeMessage(2, getConfig());
     }
     if (target_ != null) {
-      output.writeMessage(5, getTarget());
+      output.writeMessage(3, getTarget());
+    }
+    if (input_ != null) {
+      output.writeMessage(4, getInput());
     }
     unknownFields.writeTo(output);
   }
@@ -1082,17 +4093,14 @@ public final class DryRunRequest extends com.google.protobuf.GeneratedMessageV3 
     if (header_ != null) {
       size += com.google.protobuf.CodedOutputStream.computeMessageSize(1, getHeader());
     }
-    if (!getAgentIdBytes().isEmpty()) {
-      size += com.google.protobuf.GeneratedMessageV3.computeStringSize(2, agentId_);
-    }
-    if (!getTypeBytes().isEmpty()) {
-      size += com.google.protobuf.GeneratedMessageV3.computeStringSize(3, type_);
-    }
-    if (!getJsonBytes().isEmpty()) {
-      size += com.google.protobuf.GeneratedMessageV3.computeStringSize(4, json_);
+    if (config_ != null) {
+      size += com.google.protobuf.CodedOutputStream.computeMessageSize(2, getConfig());
     }
     if (target_ != null) {
-      size += com.google.protobuf.CodedOutputStream.computeMessageSize(5, getTarget());
+      size += com.google.protobuf.CodedOutputStream.computeMessageSize(3, getTarget());
+    }
+    if (input_ != null) {
+      size += com.google.protobuf.CodedOutputStream.computeMessageSize(4, getInput());
     }
     size += unknownFields.getSerializedSize();
     memoizedSize = size;
@@ -1116,16 +4124,22 @@ public final class DryRunRequest extends com.google.protobuf.GeneratedMessageV3 
       if (!getHeader().equals(other.getHeader()))
         return false;
     }
-    if (!getAgentId().equals(other.getAgentId()))
+    if (hasConfig() != other.hasConfig())
       return false;
-    if (!getType().equals(other.getType()))
-      return false;
-    if (!getJson().equals(other.getJson()))
-      return false;
+    if (hasConfig()) {
+      if (!getConfig().equals(other.getConfig()))
+        return false;
+    }
     if (hasTarget() != other.hasTarget())
       return false;
     if (hasTarget()) {
       if (!getTarget().equals(other.getTarget()))
+        return false;
+    }
+    if (hasInput() != other.hasInput())
+      return false;
+    if (hasInput()) {
+      if (!getInput().equals(other.getInput()))
         return false;
     }
     if (!unknownFields.equals(other.unknownFields))
@@ -1144,15 +4158,17 @@ public final class DryRunRequest extends com.google.protobuf.GeneratedMessageV3 
       hash = (37 * hash) + HEADER_FIELD_NUMBER;
       hash = (53 * hash) + getHeader().hashCode();
     }
-    hash = (37 * hash) + AGENT_ID_FIELD_NUMBER;
-    hash = (53 * hash) + getAgentId().hashCode();
-    hash = (37 * hash) + TYPE_FIELD_NUMBER;
-    hash = (53 * hash) + getType().hashCode();
-    hash = (37 * hash) + JSON_FIELD_NUMBER;
-    hash = (53 * hash) + getJson().hashCode();
+    if (hasConfig()) {
+      hash = (37 * hash) + CONFIG_FIELD_NUMBER;
+      hash = (53 * hash) + getConfig().hashCode();
+    }
     if (hasTarget()) {
       hash = (37 * hash) + TARGET_FIELD_NUMBER;
       hash = (53 * hash) + getTarget().hashCode();
+    }
+    if (hasInput()) {
+      hash = (37 * hash) + INPUT_FIELD_NUMBER;
+      hash = (53 * hash) + getInput().hashCode();
     }
     hash = (29 * hash) + unknownFields.hashCode();
     memoizedHashCode = hash;
@@ -1302,17 +4318,23 @@ public final class DryRunRequest extends com.google.protobuf.GeneratedMessageV3 
         header_ = null;
         headerBuilder_ = null;
       }
-      agentId_ = "";
-
-      type_ = "";
-
-      json_ = "";
-
+      if (configBuilder_ == null) {
+        config_ = null;
+      } else {
+        config_ = null;
+        configBuilder_ = null;
+      }
       if (targetBuilder_ == null) {
         target_ = null;
       } else {
         target_ = null;
         targetBuilder_ = null;
+      }
+      if (inputBuilder_ == null) {
+        input_ = null;
+      } else {
+        input_ = null;
+        inputBuilder_ = null;
       }
       return this;
     }
@@ -1345,13 +4367,20 @@ public final class DryRunRequest extends com.google.protobuf.GeneratedMessageV3 
       } else {
         result.header_ = headerBuilder_.build();
       }
-      result.agentId_ = agentId_;
-      result.type_ = type_;
-      result.json_ = json_;
+      if (configBuilder_ == null) {
+        result.config_ = config_;
+      } else {
+        result.config_ = configBuilder_.build();
+      }
       if (targetBuilder_ == null) {
         result.target_ = target_;
       } else {
         result.target_ = targetBuilder_.build();
+      }
+      if (inputBuilder_ == null) {
+        result.input_ = input_;
+      } else {
+        result.input_ = inputBuilder_.build();
       }
       onBuilt();
       return result;
@@ -1406,20 +4435,14 @@ public final class DryRunRequest extends com.google.protobuf.GeneratedMessageV3 
       if (other.hasHeader()) {
         mergeHeader(other.getHeader());
       }
-      if (!other.getAgentId().isEmpty()) {
-        agentId_ = other.agentId_;
-        onChanged();
-      }
-      if (!other.getType().isEmpty()) {
-        type_ = other.type_;
-        onChanged();
-      }
-      if (!other.getJson().isEmpty()) {
-        json_ = other.json_;
-        onChanged();
+      if (other.hasConfig()) {
+        mergeConfig(other.getConfig());
       }
       if (other.hasTarget()) {
         mergeTarget(other.getTarget());
+      }
+      if (other.hasInput()) {
+        mergeInput(other.getInput());
       }
       this.mergeUnknownFields(other.unknownFields);
       onChanged();
@@ -1609,285 +4632,190 @@ public final class DryRunRequest extends com.google.protobuf.GeneratedMessageV3 
       return headerBuilder_;
     }
 
-    private java.lang.Object agentId_ = "";
+    private io.holoinsight.server.registry.grpc.prod.DryRunRequest.CollectConfig config_;
+    private com.google.protobuf.SingleFieldBuilderV3<io.holoinsight.server.registry.grpc.prod.DryRunRequest.CollectConfig, io.holoinsight.server.registry.grpc.prod.DryRunRequest.CollectConfig.Builder, io.holoinsight.server.registry.grpc.prod.DryRunRequest.CollectConfigOrBuilder> configBuilder_;
 
     /**
      * <pre>
-     * agent id
+     * 配置信息
      * </pre>
      *
-     * <code>string agent_id = 2;</code>
+     * <code>.io.holoinsight.server.registry.grpc.prod.DryRunRequest.CollectConfig config = 2;</code>
      */
-    public java.lang.String getAgentId() {
-      java.lang.Object ref = agentId_;
-      if (!(ref instanceof java.lang.String)) {
-        com.google.protobuf.ByteString bs = (com.google.protobuf.ByteString) ref;
-        java.lang.String s = bs.toStringUtf8();
-        agentId_ = s;
-        return s;
+    public boolean hasConfig() {
+      return configBuilder_ != null || config_ != null;
+    }
+
+    /**
+     * <pre>
+     * 配置信息
+     * </pre>
+     *
+     * <code>.io.holoinsight.server.registry.grpc.prod.DryRunRequest.CollectConfig config = 2;</code>
+     */
+    public io.holoinsight.server.registry.grpc.prod.DryRunRequest.CollectConfig getConfig() {
+      if (configBuilder_ == null) {
+        return config_ == null
+            ? io.holoinsight.server.registry.grpc.prod.DryRunRequest.CollectConfig
+                .getDefaultInstance()
+            : config_;
       } else {
-        return (java.lang.String) ref;
+        return configBuilder_.getMessage();
       }
     }
 
     /**
      * <pre>
-     * agent id
+     * 配置信息
      * </pre>
      *
-     * <code>string agent_id = 2;</code>
+     * <code>.io.holoinsight.server.registry.grpc.prod.DryRunRequest.CollectConfig config = 2;</code>
      */
-    public com.google.protobuf.ByteString getAgentIdBytes() {
-      java.lang.Object ref = agentId_;
-      if (ref instanceof String) {
-        com.google.protobuf.ByteString b =
-            com.google.protobuf.ByteString.copyFromUtf8((java.lang.String) ref);
-        agentId_ = b;
-        return b;
+    public Builder setConfig(
+        io.holoinsight.server.registry.grpc.prod.DryRunRequest.CollectConfig value) {
+      if (configBuilder_ == null) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        config_ = value;
+        onChanged();
       } else {
-        return (com.google.protobuf.ByteString) ref;
-      }
-    }
-
-    /**
-     * <pre>
-     * agent id
-     * </pre>
-     *
-     * <code>string agent_id = 2;</code>
-     */
-    public Builder setAgentId(java.lang.String value) {
-      if (value == null) {
-        throw new NullPointerException();
+        configBuilder_.setMessage(value);
       }
 
-      agentId_ = value;
-      onChanged();
       return this;
     }
 
     /**
      * <pre>
-     * agent id
+     * 配置信息
      * </pre>
      *
-     * <code>string agent_id = 2;</code>
+     * <code>.io.holoinsight.server.registry.grpc.prod.DryRunRequest.CollectConfig config = 2;</code>
      */
-    public Builder clearAgentId() {
-
-      agentId_ = getDefaultInstance().getAgentId();
-      onChanged();
-      return this;
-    }
-
-    /**
-     * <pre>
-     * agent id
-     * </pre>
-     *
-     * <code>string agent_id = 2;</code>
-     */
-    public Builder setAgentIdBytes(com.google.protobuf.ByteString value) {
-      if (value == null) {
-        throw new NullPointerException();
-      }
-      checkByteStringIsUtf8(value);
-
-      agentId_ = value;
-      onChanged();
-      return this;
-    }
-
-    private java.lang.Object type_ = "";
-
-    /**
-     * <pre>
-     * 配置类型
-     * </pre>
-     *
-     * <code>string type = 3;</code>
-     */
-    public java.lang.String getType() {
-      java.lang.Object ref = type_;
-      if (!(ref instanceof java.lang.String)) {
-        com.google.protobuf.ByteString bs = (com.google.protobuf.ByteString) ref;
-        java.lang.String s = bs.toStringUtf8();
-        type_ = s;
-        return s;
+    public Builder setConfig(
+        io.holoinsight.server.registry.grpc.prod.DryRunRequest.CollectConfig.Builder builderForValue) {
+      if (configBuilder_ == null) {
+        config_ = builderForValue.build();
+        onChanged();
       } else {
-        return (java.lang.String) ref;
+        configBuilder_.setMessage(builderForValue.build());
       }
+
+      return this;
     }
 
     /**
      * <pre>
-     * 配置类型
+     * 配置信息
      * </pre>
      *
-     * <code>string type = 3;</code>
+     * <code>.io.holoinsight.server.registry.grpc.prod.DryRunRequest.CollectConfig config = 2;</code>
      */
-    public com.google.protobuf.ByteString getTypeBytes() {
-      java.lang.Object ref = type_;
-      if (ref instanceof String) {
-        com.google.protobuf.ByteString b =
-            com.google.protobuf.ByteString.copyFromUtf8((java.lang.String) ref);
-        type_ = b;
-        return b;
+    public Builder mergeConfig(
+        io.holoinsight.server.registry.grpc.prod.DryRunRequest.CollectConfig value) {
+      if (configBuilder_ == null) {
+        if (config_ != null) {
+          config_ = io.holoinsight.server.registry.grpc.prod.DryRunRequest.CollectConfig
+              .newBuilder(config_).mergeFrom(value).buildPartial();
+        } else {
+          config_ = value;
+        }
+        onChanged();
       } else {
-        return (com.google.protobuf.ByteString) ref;
-      }
-    }
-
-    /**
-     * <pre>
-     * 配置类型
-     * </pre>
-     *
-     * <code>string type = 3;</code>
-     */
-    public Builder setType(java.lang.String value) {
-      if (value == null) {
-        throw new NullPointerException();
+        configBuilder_.mergeFrom(value);
       }
 
-      type_ = value;
-      onChanged();
       return this;
     }
 
     /**
      * <pre>
-     * 配置类型
+     * 配置信息
      * </pre>
      *
-     * <code>string type = 3;</code>
+     * <code>.io.holoinsight.server.registry.grpc.prod.DryRunRequest.CollectConfig config = 2;</code>
      */
-    public Builder clearType() {
-
-      type_ = getDefaultInstance().getType();
-      onChanged();
-      return this;
-    }
-
-    /**
-     * <pre>
-     * 配置类型
-     * </pre>
-     *
-     * <code>string type = 3;</code>
-     */
-    public Builder setTypeBytes(com.google.protobuf.ByteString value) {
-      if (value == null) {
-        throw new NullPointerException();
-      }
-      checkByteStringIsUtf8(value);
-
-      type_ = value;
-      onChanged();
-      return this;
-    }
-
-    private java.lang.Object json_ = "";
-
-    /**
-     * <pre>
-     * 采集配置, 格式和 gaea_collect_config 的 json 字段保持一致
-     * </pre>
-     *
-     * <code>string json = 4;</code>
-     */
-    public java.lang.String getJson() {
-      java.lang.Object ref = json_;
-      if (!(ref instanceof java.lang.String)) {
-        com.google.protobuf.ByteString bs = (com.google.protobuf.ByteString) ref;
-        java.lang.String s = bs.toStringUtf8();
-        json_ = s;
-        return s;
+    public Builder clearConfig() {
+      if (configBuilder_ == null) {
+        config_ = null;
+        onChanged();
       } else {
-        return (java.lang.String) ref;
+        config_ = null;
+        configBuilder_ = null;
       }
+
+      return this;
     }
 
     /**
      * <pre>
-     * 采集配置, 格式和 gaea_collect_config 的 json 字段保持一致
+     * 配置信息
      * </pre>
      *
-     * <code>string json = 4;</code>
+     * <code>.io.holoinsight.server.registry.grpc.prod.DryRunRequest.CollectConfig config = 2;</code>
      */
-    public com.google.protobuf.ByteString getJsonBytes() {
-      java.lang.Object ref = json_;
-      if (ref instanceof String) {
-        com.google.protobuf.ByteString b =
-            com.google.protobuf.ByteString.copyFromUtf8((java.lang.String) ref);
-        json_ = b;
-        return b;
+    public io.holoinsight.server.registry.grpc.prod.DryRunRequest.CollectConfig.Builder getConfigBuilder() {
+
+      onChanged();
+      return getConfigFieldBuilder().getBuilder();
+    }
+
+    /**
+     * <pre>
+     * 配置信息
+     * </pre>
+     *
+     * <code>.io.holoinsight.server.registry.grpc.prod.DryRunRequest.CollectConfig config = 2;</code>
+     */
+    public io.holoinsight.server.registry.grpc.prod.DryRunRequest.CollectConfigOrBuilder getConfigOrBuilder() {
+      if (configBuilder_ != null) {
+        return configBuilder_.getMessageOrBuilder();
       } else {
-        return (com.google.protobuf.ByteString) ref;
+        return config_ == null
+            ? io.holoinsight.server.registry.grpc.prod.DryRunRequest.CollectConfig
+                .getDefaultInstance()
+            : config_;
       }
     }
 
     /**
      * <pre>
-     * 采集配置, 格式和 gaea_collect_config 的 json 字段保持一致
+     * 配置信息
      * </pre>
      *
-     * <code>string json = 4;</code>
+     * <code>.io.holoinsight.server.registry.grpc.prod.DryRunRequest.CollectConfig config = 2;</code>
      */
-    public Builder setJson(java.lang.String value) {
-      if (value == null) {
-        throw new NullPointerException();
+    private com.google.protobuf.SingleFieldBuilderV3<io.holoinsight.server.registry.grpc.prod.DryRunRequest.CollectConfig, io.holoinsight.server.registry.grpc.prod.DryRunRequest.CollectConfig.Builder, io.holoinsight.server.registry.grpc.prod.DryRunRequest.CollectConfigOrBuilder> getConfigFieldBuilder() {
+      if (configBuilder_ == null) {
+        configBuilder_ =
+            new com.google.protobuf.SingleFieldBuilderV3<io.holoinsight.server.registry.grpc.prod.DryRunRequest.CollectConfig, io.holoinsight.server.registry.grpc.prod.DryRunRequest.CollectConfig.Builder, io.holoinsight.server.registry.grpc.prod.DryRunRequest.CollectConfigOrBuilder>(
+                getConfig(), getParentForChildren(), isClean());
+        config_ = null;
       }
-
-      json_ = value;
-      onChanged();
-      return this;
-    }
-
-    /**
-     * <pre>
-     * 采集配置, 格式和 gaea_collect_config 的 json 字段保持一致
-     * </pre>
-     *
-     * <code>string json = 4;</code>
-     */
-    public Builder clearJson() {
-
-      json_ = getDefaultInstance().getJson();
-      onChanged();
-      return this;
-    }
-
-    /**
-     * <pre>
-     * 采集配置, 格式和 gaea_collect_config 的 json 字段保持一致
-     * </pre>
-     *
-     * <code>string json = 4;</code>
-     */
-    public Builder setJsonBytes(com.google.protobuf.ByteString value) {
-      if (value == null) {
-        throw new NullPointerException();
-      }
-      checkByteStringIsUtf8(value);
-
-      json_ = value;
-      onChanged();
-      return this;
+      return configBuilder_;
     }
 
     private io.holoinsight.server.registry.grpc.prod.TargetIdentifier target_;
     private com.google.protobuf.SingleFieldBuilderV3<io.holoinsight.server.registry.grpc.prod.TargetIdentifier, io.holoinsight.server.registry.grpc.prod.TargetIdentifier.Builder, io.holoinsight.server.registry.grpc.prod.TargetIdentifierOrBuilder> targetBuilder_;
 
     /**
-     * <code>.io.holoinsight.server.registry.grpc.prod.TargetIdentifier target = 5;</code>
+     * <pre>
+     * 最终运行的目标, 在元数据里必须能找到
+     * </pre>
+     *
+     * <code>.io.holoinsight.server.registry.grpc.prod.TargetIdentifier target = 3;</code>
      */
     public boolean hasTarget() {
       return targetBuilder_ != null || target_ != null;
     }
 
     /**
-     * <code>.io.holoinsight.server.registry.grpc.prod.TargetIdentifier target = 5;</code>
+     * <pre>
+     * 最终运行的目标, 在元数据里必须能找到
+     * </pre>
+     *
+     * <code>.io.holoinsight.server.registry.grpc.prod.TargetIdentifier target = 3;</code>
      */
     public io.holoinsight.server.registry.grpc.prod.TargetIdentifier getTarget() {
       if (targetBuilder_ == null) {
@@ -1900,7 +4828,11 @@ public final class DryRunRequest extends com.google.protobuf.GeneratedMessageV3 
     }
 
     /**
-     * <code>.io.holoinsight.server.registry.grpc.prod.TargetIdentifier target = 5;</code>
+     * <pre>
+     * 最终运行的目标, 在元数据里必须能找到
+     * </pre>
+     *
+     * <code>.io.holoinsight.server.registry.grpc.prod.TargetIdentifier target = 3;</code>
      */
     public Builder setTarget(io.holoinsight.server.registry.grpc.prod.TargetIdentifier value) {
       if (targetBuilder_ == null) {
@@ -1917,7 +4849,11 @@ public final class DryRunRequest extends com.google.protobuf.GeneratedMessageV3 
     }
 
     /**
-     * <code>.io.holoinsight.server.registry.grpc.prod.TargetIdentifier target = 5;</code>
+     * <pre>
+     * 最终运行的目标, 在元数据里必须能找到
+     * </pre>
+     *
+     * <code>.io.holoinsight.server.registry.grpc.prod.TargetIdentifier target = 3;</code>
      */
     public Builder setTarget(
         io.holoinsight.server.registry.grpc.prod.TargetIdentifier.Builder builderForValue) {
@@ -1932,7 +4868,11 @@ public final class DryRunRequest extends com.google.protobuf.GeneratedMessageV3 
     }
 
     /**
-     * <code>.io.holoinsight.server.registry.grpc.prod.TargetIdentifier target = 5;</code>
+     * <pre>
+     * 最终运行的目标, 在元数据里必须能找到
+     * </pre>
+     *
+     * <code>.io.holoinsight.server.registry.grpc.prod.TargetIdentifier target = 3;</code>
      */
     public Builder mergeTarget(io.holoinsight.server.registry.grpc.prod.TargetIdentifier value) {
       if (targetBuilder_ == null) {
@@ -1951,7 +4891,11 @@ public final class DryRunRequest extends com.google.protobuf.GeneratedMessageV3 
     }
 
     /**
-     * <code>.io.holoinsight.server.registry.grpc.prod.TargetIdentifier target = 5;</code>
+     * <pre>
+     * 最终运行的目标, 在元数据里必须能找到
+     * </pre>
+     *
+     * <code>.io.holoinsight.server.registry.grpc.prod.TargetIdentifier target = 3;</code>
      */
     public Builder clearTarget() {
       if (targetBuilder_ == null) {
@@ -1966,7 +4910,11 @@ public final class DryRunRequest extends com.google.protobuf.GeneratedMessageV3 
     }
 
     /**
-     * <code>.io.holoinsight.server.registry.grpc.prod.TargetIdentifier target = 5;</code>
+     * <pre>
+     * 最终运行的目标, 在元数据里必须能找到
+     * </pre>
+     *
+     * <code>.io.holoinsight.server.registry.grpc.prod.TargetIdentifier target = 3;</code>
      */
     public io.holoinsight.server.registry.grpc.prod.TargetIdentifier.Builder getTargetBuilder() {
 
@@ -1975,7 +4923,11 @@ public final class DryRunRequest extends com.google.protobuf.GeneratedMessageV3 
     }
 
     /**
-     * <code>.io.holoinsight.server.registry.grpc.prod.TargetIdentifier target = 5;</code>
+     * <pre>
+     * 最终运行的目标, 在元数据里必须能找到
+     * </pre>
+     *
+     * <code>.io.holoinsight.server.registry.grpc.prod.TargetIdentifier target = 3;</code>
      */
     public io.holoinsight.server.registry.grpc.prod.TargetIdentifierOrBuilder getTargetOrBuilder() {
       if (targetBuilder_ != null) {
@@ -1988,7 +4940,11 @@ public final class DryRunRequest extends com.google.protobuf.GeneratedMessageV3 
     }
 
     /**
-     * <code>.io.holoinsight.server.registry.grpc.prod.TargetIdentifier target = 5;</code>
+     * <pre>
+     * 最终运行的目标, 在元数据里必须能找到
+     * </pre>
+     *
+     * <code>.io.holoinsight.server.registry.grpc.prod.TargetIdentifier target = 3;</code>
      */
     private com.google.protobuf.SingleFieldBuilderV3<io.holoinsight.server.registry.grpc.prod.TargetIdentifier, io.holoinsight.server.registry.grpc.prod.TargetIdentifier.Builder, io.holoinsight.server.registry.grpc.prod.TargetIdentifierOrBuilder> getTargetFieldBuilder() {
       if (targetBuilder_ == null) {
@@ -1998,6 +4954,166 @@ public final class DryRunRequest extends com.google.protobuf.GeneratedMessageV3 
         target_ = null;
       }
       return targetBuilder_;
+    }
+
+    private io.holoinsight.server.registry.grpc.prod.DryRunRequest.Input input_;
+    private com.google.protobuf.SingleFieldBuilderV3<io.holoinsight.server.registry.grpc.prod.DryRunRequest.Input, io.holoinsight.server.registry.grpc.prod.DryRunRequest.Input.Builder, io.holoinsight.server.registry.grpc.prod.DryRunRequest.InputOrBuilder> inputBuilder_;
+
+    /**
+     * <pre>
+     * 输入信息
+     * </pre>
+     *
+     * <code>.io.holoinsight.server.registry.grpc.prod.DryRunRequest.Input input = 4;</code>
+     */
+    public boolean hasInput() {
+      return inputBuilder_ != null || input_ != null;
+    }
+
+    /**
+     * <pre>
+     * 输入信息
+     * </pre>
+     *
+     * <code>.io.holoinsight.server.registry.grpc.prod.DryRunRequest.Input input = 4;</code>
+     */
+    public io.holoinsight.server.registry.grpc.prod.DryRunRequest.Input getInput() {
+      if (inputBuilder_ == null) {
+        return input_ == null
+            ? io.holoinsight.server.registry.grpc.prod.DryRunRequest.Input.getDefaultInstance()
+            : input_;
+      } else {
+        return inputBuilder_.getMessage();
+      }
+    }
+
+    /**
+     * <pre>
+     * 输入信息
+     * </pre>
+     *
+     * <code>.io.holoinsight.server.registry.grpc.prod.DryRunRequest.Input input = 4;</code>
+     */
+    public Builder setInput(io.holoinsight.server.registry.grpc.prod.DryRunRequest.Input value) {
+      if (inputBuilder_ == null) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        input_ = value;
+        onChanged();
+      } else {
+        inputBuilder_.setMessage(value);
+      }
+
+      return this;
+    }
+
+    /**
+     * <pre>
+     * 输入信息
+     * </pre>
+     *
+     * <code>.io.holoinsight.server.registry.grpc.prod.DryRunRequest.Input input = 4;</code>
+     */
+    public Builder setInput(
+        io.holoinsight.server.registry.grpc.prod.DryRunRequest.Input.Builder builderForValue) {
+      if (inputBuilder_ == null) {
+        input_ = builderForValue.build();
+        onChanged();
+      } else {
+        inputBuilder_.setMessage(builderForValue.build());
+      }
+
+      return this;
+    }
+
+    /**
+     * <pre>
+     * 输入信息
+     * </pre>
+     *
+     * <code>.io.holoinsight.server.registry.grpc.prod.DryRunRequest.Input input = 4;</code>
+     */
+    public Builder mergeInput(io.holoinsight.server.registry.grpc.prod.DryRunRequest.Input value) {
+      if (inputBuilder_ == null) {
+        if (input_ != null) {
+          input_ = io.holoinsight.server.registry.grpc.prod.DryRunRequest.Input.newBuilder(input_)
+              .mergeFrom(value).buildPartial();
+        } else {
+          input_ = value;
+        }
+        onChanged();
+      } else {
+        inputBuilder_.mergeFrom(value);
+      }
+
+      return this;
+    }
+
+    /**
+     * <pre>
+     * 输入信息
+     * </pre>
+     *
+     * <code>.io.holoinsight.server.registry.grpc.prod.DryRunRequest.Input input = 4;</code>
+     */
+    public Builder clearInput() {
+      if (inputBuilder_ == null) {
+        input_ = null;
+        onChanged();
+      } else {
+        input_ = null;
+        inputBuilder_ = null;
+      }
+
+      return this;
+    }
+
+    /**
+     * <pre>
+     * 输入信息
+     * </pre>
+     *
+     * <code>.io.holoinsight.server.registry.grpc.prod.DryRunRequest.Input input = 4;</code>
+     */
+    public io.holoinsight.server.registry.grpc.prod.DryRunRequest.Input.Builder getInputBuilder() {
+
+      onChanged();
+      return getInputFieldBuilder().getBuilder();
+    }
+
+    /**
+     * <pre>
+     * 输入信息
+     * </pre>
+     *
+     * <code>.io.holoinsight.server.registry.grpc.prod.DryRunRequest.Input input = 4;</code>
+     */
+    public io.holoinsight.server.registry.grpc.prod.DryRunRequest.InputOrBuilder getInputOrBuilder() {
+      if (inputBuilder_ != null) {
+        return inputBuilder_.getMessageOrBuilder();
+      } else {
+        return input_ == null
+            ? io.holoinsight.server.registry.grpc.prod.DryRunRequest.Input.getDefaultInstance()
+            : input_;
+      }
+    }
+
+    /**
+     * <pre>
+     * 输入信息
+     * </pre>
+     *
+     * <code>.io.holoinsight.server.registry.grpc.prod.DryRunRequest.Input input = 4;</code>
+     */
+    private com.google.protobuf.SingleFieldBuilderV3<io.holoinsight.server.registry.grpc.prod.DryRunRequest.Input, io.holoinsight.server.registry.grpc.prod.DryRunRequest.Input.Builder, io.holoinsight.server.registry.grpc.prod.DryRunRequest.InputOrBuilder> getInputFieldBuilder() {
+      if (inputBuilder_ == null) {
+        inputBuilder_ =
+            new com.google.protobuf.SingleFieldBuilderV3<io.holoinsight.server.registry.grpc.prod.DryRunRequest.Input, io.holoinsight.server.registry.grpc.prod.DryRunRequest.Input.Builder, io.holoinsight.server.registry.grpc.prod.DryRunRequest.InputOrBuilder>(
+                getInput(), getParentForChildren(), isClean());
+        input_ = null;
+      }
+      return inputBuilder_;
     }
 
     @java.lang.Override

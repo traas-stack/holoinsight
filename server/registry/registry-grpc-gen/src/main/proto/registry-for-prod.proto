@@ -124,25 +124,65 @@ message MatchFilesResponse {
 message DryRunRequest {
   // common request header
   io.holoinsight.server.common.grpc.CommonRequestHeader header = 1;
-  // agent id
-  string agent_id = 2;
-  // 配置类型
-  string type = 3;
-  // 采集配置, 格式和 gaea_collect_config 的 json 字段保持一致
-  string json = 4;
+  // 配置信息
+  CollectConfig config = 2;
+  // 最终运行的目标, 在元数据里必须能找到
+  TargetIdentifier target = 3;
+  // 输入信息
+  Input input = 4;
 
-  TargetIdentifier target = 5;
-
-  message DryRunInput {
-    // 如果提供了contents, 则直接使用这些数据进行试跑
-    // 否则使用agent_id对应的本机器上的文件的最后N行进行试跑(这会导致结果不确定)
-    repeated string content = 1;
+  message CollectConfig {
+    // tableName: 从 db 里读取配置, 根据 tableName 匹配
+    // temp:
+    string type = 1;
+    string table_name = 2;
+    // 字段对应 gaea_collect_config 里的 记录
+    CollectConfigTemp temp = 3;
+  }
+  message Input {
+    // plain: 从请求里读
+    // read: 从pod里读
+    string type = 1;
+    InputPlain plain = 2;
+  }
+  message InputPlain {
+    // 原始日志
+    repeated string lines = 1;
+    // Timezone to use when parsing timestamp of log lines.
+    // Defaults to local timezone of agent.
+    string timezone = 2 ;
+  }
+  // message InputRead {}
+  message CollectConfigTemp {
+    // 字段对应 gaea_collect_config 里的 字段
+    string type = 1;
+    string json = 2;
+    string executor_selector = 3;
+    string collect_range = 4;
   }
 }
 
 message DryRunResponse {
-  // common response header
   io.holoinsight.server.common.grpc.CommonResponseHeader header = 1;
+  Event event = 2;
+  repeated GroupResult group_results = 3;
+
+  message Event {
+    string title = 1;
+    map<string, string> params = 2;
+    repeated Message message = 3;
+    repeated Event children = 4;
+  }
+  message Message {
+    string level = 1;
+    string content = 2;
+  }
+  message GroupResult {
+    repeated string group_lines = 1;
+    bool success = 2;
+    map<string, double> selected_values = 3;
+    map<string, string> group_by = 4;
+  }
 }
 
 message HttpProxyRequest {
@@ -170,10 +210,6 @@ service RegistryServiceForProd {
   rpc notify_collect_config_update(NotifyCollectConfigUpdatedRequest) returns(NotifyCollectConfigUpdatedResponse) {}
 
   // 查询目录
-  // TODO 禁止list某些目录
-  // / 根目录
-  // 所有 . 开头的目录
-  // /etc 等其他一些敏感目录
   rpc list_files(ListFilesRequest) returns(ListFilesResponse) {}
 
   // 预览文件
@@ -181,4 +217,7 @@ service RegistryServiceForProd {
 
   // 查询agent基本信息
   rpc inspect(InspectRequest) returns(InspectResponse) {}
+
+  // 配置试运行
+  rpc dry_run(DryRunRequest) returns(DryRunResponse) {}
 }

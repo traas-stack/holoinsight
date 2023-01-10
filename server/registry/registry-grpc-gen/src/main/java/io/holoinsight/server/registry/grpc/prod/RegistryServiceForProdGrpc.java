@@ -161,6 +161,35 @@ public final class RegistryServiceForProdGrpc {
     return getInspectMethod;
   }
 
+  private static volatile io.grpc.MethodDescriptor<io.holoinsight.server.registry.grpc.prod.DryRunRequest, io.holoinsight.server.registry.grpc.prod.DryRunResponse> getDryRunMethod;
+
+  @io.grpc.stub.annotations.RpcMethod(fullMethodName = SERVICE_NAME + '/' + "dry_run",
+      requestType = io.holoinsight.server.registry.grpc.prod.DryRunRequest.class,
+      responseType = io.holoinsight.server.registry.grpc.prod.DryRunResponse.class,
+      methodType = io.grpc.MethodDescriptor.MethodType.UNARY)
+  public static io.grpc.MethodDescriptor<io.holoinsight.server.registry.grpc.prod.DryRunRequest, io.holoinsight.server.registry.grpc.prod.DryRunResponse> getDryRunMethod() {
+    io.grpc.MethodDescriptor<io.holoinsight.server.registry.grpc.prod.DryRunRequest, io.holoinsight.server.registry.grpc.prod.DryRunResponse> getDryRunMethod;
+    if ((getDryRunMethod = RegistryServiceForProdGrpc.getDryRunMethod) == null) {
+      synchronized (RegistryServiceForProdGrpc.class) {
+        if ((getDryRunMethod = RegistryServiceForProdGrpc.getDryRunMethod) == null) {
+          RegistryServiceForProdGrpc.getDryRunMethod = getDryRunMethod =
+              io.grpc.MethodDescriptor.<io.holoinsight.server.registry.grpc.prod.DryRunRequest, io.holoinsight.server.registry.grpc.prod.DryRunResponse>newBuilder()
+                  .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
+                  .setFullMethodName(generateFullMethodName(SERVICE_NAME, "dry_run"))
+                  .setSampledToLocalTracing(true)
+                  .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+                      io.holoinsight.server.registry.grpc.prod.DryRunRequest.getDefaultInstance()))
+                  .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+                      io.holoinsight.server.registry.grpc.prod.DryRunResponse.getDefaultInstance()))
+                  .setSchemaDescriptor(
+                      new RegistryServiceForProdMethodDescriptorSupplier("dry_run"))
+                  .build();
+        }
+      }
+    }
+    return getDryRunMethod;
+  }
+
   /**
    * Creates a new async stub that supports all call types for the service
    */
@@ -200,10 +229,6 @@ public final class RegistryServiceForProdGrpc {
     /**
      * <pre>
      * 查询目录
-     * TODO 禁止list某些目录
-     * / 根目录
-     * 所有 . 开头的目录
-     * /etc 等其他一些敏感目录
      * </pre>
      */
     public void listFiles(io.holoinsight.server.registry.grpc.prod.ListFilesRequest request,
@@ -231,6 +256,16 @@ public final class RegistryServiceForProdGrpc {
       asyncUnimplementedUnaryCall(getInspectMethod(), responseObserver);
     }
 
+    /**
+     * <pre>
+     * 配置试运行
+     * </pre>
+     */
+    public void dryRun(io.holoinsight.server.registry.grpc.prod.DryRunRequest request,
+        io.grpc.stub.StreamObserver<io.holoinsight.server.registry.grpc.prod.DryRunResponse> responseObserver) {
+      asyncUnimplementedUnaryCall(getDryRunMethod(), responseObserver);
+    }
+
     @java.lang.Override
     public final io.grpc.ServerServiceDefinition bindService() {
       return io.grpc.ServerServiceDefinition.builder(getServiceDescriptor())
@@ -246,6 +281,9 @@ public final class RegistryServiceForProdGrpc {
           .addMethod(getInspectMethod(), asyncUnaryCall(
               new MethodHandlers<io.holoinsight.server.registry.grpc.prod.InspectRequest, io.holoinsight.server.registry.grpc.prod.InspectResponse>(
                   this, METHODID_INSPECT)))
+          .addMethod(getDryRunMethod(), asyncUnaryCall(
+              new MethodHandlers<io.holoinsight.server.registry.grpc.prod.DryRunRequest, io.holoinsight.server.registry.grpc.prod.DryRunResponse>(
+                  this, METHODID_DRY_RUN)))
           .build();
     }
   }
@@ -283,10 +321,6 @@ public final class RegistryServiceForProdGrpc {
     /**
      * <pre>
      * 查询目录
-     * TODO 禁止list某些目录
-     * / 根目录
-     * 所有 . 开头的目录
-     * /etc 等其他一些敏感目录
      * </pre>
      */
     public void listFiles(io.holoinsight.server.registry.grpc.prod.ListFilesRequest request,
@@ -314,6 +348,17 @@ public final class RegistryServiceForProdGrpc {
     public void inspect(io.holoinsight.server.registry.grpc.prod.InspectRequest request,
         io.grpc.stub.StreamObserver<io.holoinsight.server.registry.grpc.prod.InspectResponse> responseObserver) {
       asyncUnaryCall(getChannel().newCall(getInspectMethod(), getCallOptions()), request,
+          responseObserver);
+    }
+
+    /**
+     * <pre>
+     * 配置试运行
+     * </pre>
+     */
+    public void dryRun(io.holoinsight.server.registry.grpc.prod.DryRunRequest request,
+        io.grpc.stub.StreamObserver<io.holoinsight.server.registry.grpc.prod.DryRunResponse> responseObserver) {
+      asyncUnaryCall(getChannel().newCall(getDryRunMethod(), getCallOptions()), request,
           responseObserver);
     }
   }
@@ -351,10 +396,6 @@ public final class RegistryServiceForProdGrpc {
     /**
      * <pre>
      * 查询目录
-     * TODO 禁止list某些目录
-     * / 根目录
-     * 所有 . 开头的目录
-     * /etc 等其他一些敏感目录
      * </pre>
      */
     public io.holoinsight.server.registry.grpc.prod.ListFilesResponse listFiles(
@@ -380,6 +421,16 @@ public final class RegistryServiceForProdGrpc {
     public io.holoinsight.server.registry.grpc.prod.InspectResponse inspect(
         io.holoinsight.server.registry.grpc.prod.InspectRequest request) {
       return blockingUnaryCall(getChannel(), getInspectMethod(), getCallOptions(), request);
+    }
+
+    /**
+     * <pre>
+     * 配置试运行
+     * </pre>
+     */
+    public io.holoinsight.server.registry.grpc.prod.DryRunResponse dryRun(
+        io.holoinsight.server.registry.grpc.prod.DryRunRequest request) {
+      return blockingUnaryCall(getChannel(), getDryRunMethod(), getCallOptions(), request);
     }
   }
 
@@ -416,10 +467,6 @@ public final class RegistryServiceForProdGrpc {
     /**
      * <pre>
      * 查询目录
-     * TODO 禁止list某些目录
-     * / 根目录
-     * 所有 . 开头的目录
-     * /etc 等其他一些敏感目录
      * </pre>
      */
     public com.google.common.util.concurrent.ListenableFuture<io.holoinsight.server.registry.grpc.prod.ListFilesResponse> listFiles(
@@ -447,12 +494,23 @@ public final class RegistryServiceForProdGrpc {
         io.holoinsight.server.registry.grpc.prod.InspectRequest request) {
       return futureUnaryCall(getChannel().newCall(getInspectMethod(), getCallOptions()), request);
     }
+
+    /**
+     * <pre>
+     * 配置试运行
+     * </pre>
+     */
+    public com.google.common.util.concurrent.ListenableFuture<io.holoinsight.server.registry.grpc.prod.DryRunResponse> dryRun(
+        io.holoinsight.server.registry.grpc.prod.DryRunRequest request) {
+      return futureUnaryCall(getChannel().newCall(getDryRunMethod(), getCallOptions()), request);
+    }
   }
 
   private static final int METHODID_NOTIFY_COLLECT_CONFIG_UPDATE = 0;
   private static final int METHODID_LIST_FILES = 1;
   private static final int METHODID_PREVIEW_FILE = 2;
   private static final int METHODID_INSPECT = 3;
+  private static final int METHODID_DRY_RUN = 4;
 
   private static final class MethodHandlers<Req, Resp>
       implements io.grpc.stub.ServerCalls.UnaryMethod<Req, Resp>,
@@ -488,6 +546,10 @@ public final class RegistryServiceForProdGrpc {
         case METHODID_INSPECT:
           serviceImpl.inspect((io.holoinsight.server.registry.grpc.prod.InspectRequest) request,
               (io.grpc.stub.StreamObserver<io.holoinsight.server.registry.grpc.prod.InspectResponse>) responseObserver);
+          break;
+        case METHODID_DRY_RUN:
+          serviceImpl.dryRun((io.holoinsight.server.registry.grpc.prod.DryRunRequest) request,
+              (io.grpc.stub.StreamObserver<io.holoinsight.server.registry.grpc.prod.DryRunResponse>) responseObserver);
           break;
         default:
           throw new AssertionError();
@@ -552,7 +614,8 @@ public final class RegistryServiceForProdGrpc {
           serviceDescriptor = result = io.grpc.ServiceDescriptor.newBuilder(SERVICE_NAME)
               .setSchemaDescriptor(new RegistryServiceForProdFileDescriptorSupplier())
               .addMethod(getNotifyCollectConfigUpdateMethod()).addMethod(getListFilesMethod())
-              .addMethod(getPreviewFileMethod()).addMethod(getInspectMethod()).build();
+              .addMethod(getPreviewFileMethod()).addMethod(getInspectMethod())
+              .addMethod(getDryRunMethod()).build();
         }
       }
     }

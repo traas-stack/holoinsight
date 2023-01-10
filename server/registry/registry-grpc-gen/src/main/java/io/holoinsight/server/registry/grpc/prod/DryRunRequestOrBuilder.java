@@ -39,70 +39,82 @@ public interface DryRunRequestOrBuilder extends
 
   /**
    * <pre>
-   * agent id
+   * 配置信息
    * </pre>
    *
-   * <code>string agent_id = 2;</code>
+   * <code>.io.holoinsight.server.registry.grpc.prod.DryRunRequest.CollectConfig config = 2;</code>
    */
-  java.lang.String getAgentId();
+  boolean hasConfig();
 
   /**
    * <pre>
-   * agent id
+   * 配置信息
    * </pre>
    *
-   * <code>string agent_id = 2;</code>
+   * <code>.io.holoinsight.server.registry.grpc.prod.DryRunRequest.CollectConfig config = 2;</code>
    */
-  com.google.protobuf.ByteString getAgentIdBytes();
+  io.holoinsight.server.registry.grpc.prod.DryRunRequest.CollectConfig getConfig();
 
   /**
    * <pre>
-   * 配置类型
+   * 配置信息
    * </pre>
    *
-   * <code>string type = 3;</code>
+   * <code>.io.holoinsight.server.registry.grpc.prod.DryRunRequest.CollectConfig config = 2;</code>
    */
-  java.lang.String getType();
+  io.holoinsight.server.registry.grpc.prod.DryRunRequest.CollectConfigOrBuilder getConfigOrBuilder();
 
   /**
    * <pre>
-   * 配置类型
+   * 最终运行的目标, 在元数据里必须能找到
    * </pre>
    *
-   * <code>string type = 3;</code>
-   */
-  com.google.protobuf.ByteString getTypeBytes();
-
-  /**
-   * <pre>
-   * 采集配置, 格式和 gaea_collect_config 的 json 字段保持一致
-   * </pre>
-   *
-   * <code>string json = 4;</code>
-   */
-  java.lang.String getJson();
-
-  /**
-   * <pre>
-   * 采集配置, 格式和 gaea_collect_config 的 json 字段保持一致
-   * </pre>
-   *
-   * <code>string json = 4;</code>
-   */
-  com.google.protobuf.ByteString getJsonBytes();
-
-  /**
-   * <code>.io.holoinsight.server.registry.grpc.prod.TargetIdentifier target = 5;</code>
+   * <code>.io.holoinsight.server.registry.grpc.prod.TargetIdentifier target = 3;</code>
    */
   boolean hasTarget();
 
   /**
-   * <code>.io.holoinsight.server.registry.grpc.prod.TargetIdentifier target = 5;</code>
+   * <pre>
+   * 最终运行的目标, 在元数据里必须能找到
+   * </pre>
+   *
+   * <code>.io.holoinsight.server.registry.grpc.prod.TargetIdentifier target = 3;</code>
    */
   io.holoinsight.server.registry.grpc.prod.TargetIdentifier getTarget();
 
   /**
-   * <code>.io.holoinsight.server.registry.grpc.prod.TargetIdentifier target = 5;</code>
+   * <pre>
+   * 最终运行的目标, 在元数据里必须能找到
+   * </pre>
+   *
+   * <code>.io.holoinsight.server.registry.grpc.prod.TargetIdentifier target = 3;</code>
    */
   io.holoinsight.server.registry.grpc.prod.TargetIdentifierOrBuilder getTargetOrBuilder();
+
+  /**
+   * <pre>
+   * 输入信息
+   * </pre>
+   *
+   * <code>.io.holoinsight.server.registry.grpc.prod.DryRunRequest.Input input = 4;</code>
+   */
+  boolean hasInput();
+
+  /**
+   * <pre>
+   * 输入信息
+   * </pre>
+   *
+   * <code>.io.holoinsight.server.registry.grpc.prod.DryRunRequest.Input input = 4;</code>
+   */
+  io.holoinsight.server.registry.grpc.prod.DryRunRequest.Input getInput();
+
+  /**
+   * <pre>
+   * 输入信息
+   * </pre>
+   *
+   * <code>.io.holoinsight.server.registry.grpc.prod.DryRunRequest.Input input = 4;</code>
+   */
+  io.holoinsight.server.registry.grpc.prod.DryRunRequest.InputOrBuilder getInputOrBuilder();
 }

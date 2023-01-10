@@ -237,28 +237,6 @@ public class BiStreamWebController {
         });
   }
 
-  @GetMapping("/dryRun")
-  public Object dryRun(@RequestParam("agentId") String agentId) { //
-    ServerStream s = m.get(agentId);
-    if (s == null) {
-      return ApiResp.error("not found " + agentId);
-    }
-    DryRunRequest req = DryRunRequest.newBuilder() //
-        .setAgentId(agentId) //
-        .build();
-    return s.rpc(BizTypes.DRY_RUN, req.toByteString()) //
-        .timeout(Duration.ofSeconds(3)) //
-        .map(respCmd -> { //
-          try {
-            DryRunResponse resp = DryRunResponse.parseFrom(respCmd.getData());
-            return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON)
-                .body(JsonFormat.printer().print(resp));
-          } catch (Throwable e) {
-            throw new RuntimeException(e);
-          }
-        });
-  }
-
   @GetMapping("/httpProxy")
   public Object httpProxy(@RequestParam("agentId") String agentId) { //
     ServerStream s = m.get(agentId);

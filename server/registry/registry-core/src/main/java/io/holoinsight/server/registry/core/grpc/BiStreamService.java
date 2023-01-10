@@ -13,6 +13,7 @@ import javax.annotation.PreDestroy;
 import io.grpc.Channel;
 import io.grpc.stub.StreamObserver;
 import io.holoinsight.server.common.JsonUtils;
+import io.holoinsight.server.common.ProtoJsonUtils;
 import io.holoinsight.server.common.grpc.CommonRequestHeader;
 import io.holoinsight.server.common.grpc.CommonResponseHeader;
 import io.holoinsight.server.common.threadpool.CommonThreadPools;
@@ -127,7 +128,7 @@ public class BiStreamService {
     });
   }
 
-  public <RESP extends GeneratedMessageV3> void handleProxy(TargetIdentifier target, int bizType,
+  public <RESP extends GeneratedMessageV3> void proxy(TargetIdentifier target, int bizType,
       GeneratedMessageV3 request, RESP defaultResp, StreamObserver<? super RESP> o) {
 
     String tenant = target.getTenant();
@@ -163,7 +164,7 @@ public class BiStreamService {
     }
 
     request = appendRequestHeader(request, header);
-    LOGGER.info("proxy row={} header={}", row, header);
+    LOGGER.info("proxy row={} header={}", JsonUtils.toJson(row), JsonUtils.toJson(header));
 
     // TODO
     // 1. 获取 Agent 正在和哪台 Registry 建联
@@ -219,7 +220,7 @@ public class BiStreamService {
     });
   }
 
-  public void proxy0(BiStreamProxyRequest request, Object defaultResp,
+  public void handleLocal(BiStreamProxyRequest request, Object defaultResp,
       StreamObserver<BiStreamProxyResponse> o) {
     ServerStream s = streamManager.get(request.getAgentId());
 
@@ -333,9 +334,14 @@ public class BiStreamService {
   }
 
   private static String getTraceId(GeneratedMessageV3 request) {
-    GeneratedMessageV3 header =
-        (GeneratedMessageV3) request.getField(request.getDescriptorForType().getFields().get(0));
-    return (String) header.getField(header.getDescriptorForType().getFields().get(1));
+    try {
+      GeneratedMessageV3 header =
+          (GeneratedMessageV3) request.getField(request.getDescriptorForType().getFields().get(0));
+      return (String) header.getField(header.getDescriptorForType().getFields().get(1));
+    } catch (ClassCastException e) {
+      LOGGER.error("getTraceId error: {}", ProtoJsonUtils.toJson(request), e);
+      throw e;
+    }
   }
 
 }
