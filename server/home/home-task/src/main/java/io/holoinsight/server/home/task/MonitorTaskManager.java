@@ -34,24 +34,26 @@ public class MonitorTaskManager extends ScheduleLoadTask {
   private static AtomicBoolean STARTED = new AtomicBoolean(false);
 
   @Autowired
-  private ClusterTaskService clusterTaskService;
+  private ClusterTaskService   clusterTaskService;
 
   @Autowired
-  private ClusterService clusterService;
+  private ClusterService       clusterService;
 
   @Override
   public void load() throws Exception {
     try {
       // 这里任务周期
       long current = System.currentTimeMillis();
-      long period = current - current % 1000;
+      current = current - current % 1000;
+      //强制执行时间比下发时间延后一秒，避免任务来不及执行
+      long period = current + 1000L;
 
-      List<ClusterDTO> clusters =
-          clusterService.getClusterAliveSortedByRole(CLUSTER_ROLE_CONST.PROD);
+      List<ClusterDTO> clusters = clusterService
+              .getClusterAliveSortedByRole(CLUSTER_ROLE_CONST.PROD);
       ProdLog.info("start work.");
 
       masterWork(clusters, period);
-      slaveWork(period);
+      slaveWork(current);
     } catch (Exception e) {
       ProdLog.error("execute task error", e);
     }
@@ -60,7 +62,7 @@ public class MonitorTaskManager extends ScheduleLoadTask {
   private void masterWork(List<ClusterDTO> metaClusters, long period) {
     if (clusterService.checkBrain(metaClusters)) {
       ProdLog.info(String.format("[master][%s][%s]", AddressUtil.getLocalHostIPV4(),
-          AddressUtil.getLocalHostName()));
+              AddressUtil.getLocalHostName()));
 
       // 开始这个时间戳的工作， 初始化任务元数据
       ProdLog.info("Brain,  begin init Task Meta," + period);
@@ -69,7 +71,7 @@ public class MonitorTaskManager extends ScheduleLoadTask {
       schedule(metaClusters, period);
     } else {
       ProdLog.info(String.format("[slave][%s][%s]", AddressUtil.getLocalHostIPV4(),
-          AddressUtil.getLocalHostName()));
+              AddressUtil.getLocalHostName()));
     }
   }
 
@@ -85,14 +87,14 @@ public class MonitorTaskManager extends ScheduleLoadTask {
 
         if (period % taskPeriod != 0) {
           // 不是我的调度周期，直接跳过
-          Debugger.print("MonitorTaskManager",
-              "period not match task, continue." + taskId + "," + period + "/" + taskPeriod);
+          Debugger.print("MonitorTaskManager", "period not match task, continue." + taskId + "," + period + "/"
+                  + taskPeriod);
           continue;
         }
 
         if (!CollectionUtils.isEmpty(ignoreTasks) && ignoreTasks.contains(taskId)) {
-          Debugger.print("MonitorTaskManager",
-              "ignore task, continue." + taskId + "," + period + "/" + taskPeriod);
+          Debugger
+                  .print("MonitorTaskManager", "ignore task, continue." + taskId + "," + period + "/" + taskPeriod);
           continue;
         }
 
@@ -152,15 +154,16 @@ public class MonitorTaskManager extends ScheduleLoadTask {
         ProdLog.info(task.getTaskId() + "-" + period + ",task begin run");
       } else {
         ProdLog.info(task.getTaskId() + "-" + period + ", jobs-" + task.RUNNING_JOBS.get()
-            + ",task is running, give up");
+                + ",task is running, give up");
         continue; // 不然直接返回
       }
 
       ProdLog.info(task.getTaskId() + "-" + period + ", begin build jobs");
 
       if (task.CORE_JOBS.get() > 0) {
-        // 上一个还在积压
-        ProdLog.info(task.getTaskId() + "-" + period + ", last task is build jobs still, give up");
+        //上一个还在积压
+        ProdLog.info(
+                task.getTaskId() + "-" + period + ", last task is build jobs still, give up");
         continue;
       }
 
@@ -182,7 +185,8 @@ public class MonitorTaskManager extends ScheduleLoadTask {
     }
   }
 
-  public void taskJobBuild(AbstractMonitorTask task, long period, ClusterTask ct) throws Throwable {
+  public void taskJobBuild(AbstractMonitorTask task, long period,
+                           ClusterTask ct) throws Throwable {
     ProdLog.info(task.getTaskId() + "-" + period + ", begin build jobs");
     long s = System.currentTimeMillis();
     List<MonitorTaskJob> jobs = task.buildJobs(period);
@@ -193,8 +197,8 @@ public class MonitorTaskManager extends ScheduleLoadTask {
       ProdLog.info(task.getTaskId() + "-" + period + ", has no job, just return");
       return;
     } else {
-      ProdLog.info(task.getTaskId() + "-" + period + ", has job size: " + jobs.size() + ", cost:"
-          + (System.currentTimeMillis() - s));
+      ProdLog.info(task.getTaskId() + "-" + period + ", has job size: " + jobs.size()
+              + ", cost:" + (System.currentTimeMillis() - s));
     }
     for (MonitorTaskJob job : jobs) {
       try {
@@ -207,20 +211,22 @@ public class MonitorTaskManager extends ScheduleLoadTask {
             try {
               job.run();
               end = System.currentTimeMillis();
-              ProdLog.monitor("TASK_MANAGER", task.getTaskId(), job.id(), "Y", "", true, end - s,
-                  1);
+              ProdLog.monitor("TASK_MANAGER", task.getTaskId(), job.id(), "Y", "",
+                      true, end - s, 1);
               ProdLog.info(task.getTaskId() + "-" + period + "-" + job.id()
-                  + ", work success, cost:" + (end - s));
+                      + ", work success, cost:" + (end - s));
             } catch (Throwable e) {
               end = System.currentTimeMillis();
-              ProdLog.monitor("TASK_MANAGER", task.getTaskId(), job.id(), "N", "", false, end - s,
-                  1);
+              ProdLog.monitor("TASK_MANAGER", task.getTaskId(), job.id(), "N", "",
+                      false, end - s, 1);
               ProdLog.error(task.getTaskId() + "-" + period + "-" + job.id()
-                  + ", work failed, cost:" + (end - s), e);
+                              + ", work failed, cost:" + (end - s),
+                      e);
             } finally {
               // 计数减1,Job
               task.RUNNING_JOBS.decrementAndGet();
-              ProdLog.info(task.getTaskId() + "-" + period + ", close job:" + job.id());
+              ProdLog
+                      .info(task.getTaskId() + "-" + period + ", close job:" + job.id());
             }
           }
         });

@@ -3,6 +3,7 @@
  */
 package io.holoinsight.server.home.biz.service.impl;
 
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import io.holoinsight.server.common.AddressUtil;
 import io.holoinsight.server.common.J;
 import io.holoinsight.server.home.biz.service.ClusterService;
@@ -13,9 +14,7 @@ import io.holoinsight.server.home.dal.converter.CustomConverter;
 import io.holoinsight.server.home.dal.mapper.ClusterMapper;
 import io.holoinsight.server.home.dal.model.Cluster;
 import io.holoinsight.server.home.dal.model.dto.ClusterDTO;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -39,8 +38,7 @@ public class ClusterServiceImpl extends ServiceImpl<ClusterMapper, Cluster>
   @Autowired
   private CustomConverter customConverter;
 
-  @Value("${holoinsight.home.role}")
-  private String role;
+  private String         role = CLUSTER_ROLE_CONST.PROD;
 
   public void upsert(ClusterDTO cluster) {
     long s = System.currentTimeMillis();

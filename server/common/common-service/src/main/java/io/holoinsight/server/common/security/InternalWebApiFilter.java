@@ -4,6 +4,7 @@
 package io.holoinsight.server.common.security;
 
 import java.io.IOException;
+import java.util.Map;
 import java.util.Set;
 
 import javax.servlet.FilterChain;
@@ -12,6 +13,9 @@ import javax.servlet.annotation.WebFilter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import io.holoinsight.server.common.J;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -26,13 +30,15 @@ import com.google.common.collect.Sets;
  */
 @WebFilter(urlPatterns = "/")
 public class InternalWebApiFilter extends OncePerRequestFilter {
-  private static final Set<String> URIS = Sets.newHashSet("/metrics");
+  private static Logger LOGGER = LoggerFactory.getLogger(InternalWebApiFilter.class);
+
+  private static final Set<String>               URIS = Sets.newHashSet("/metrics");
   @Autowired
-  private InternalWebApiInterceptor internalWebApiInterceptor;
+  private              InternalWebApiInterceptor internalWebApiInterceptor;
 
   @Override
-  protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
-      FilterChain filterChain) throws ServletException, IOException {
+  protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+          throws ServletException, IOException {
 
     String uri = request.getRequestURI();
 
@@ -42,7 +48,12 @@ public class InternalWebApiFilter extends OncePerRequestFilter {
         return;
       }
     }
+    try {
+      filterChain.doFilter(request, response);
+    }catch (Exception e){
+      Map<String, String[]> parameterMap =  request.getParameterMap();
+      LOGGER.error("fail to do filter {} for {}, parameter {}", uri, e.getMessage(), J.toJson(parameterMap), e);
+    }
 
-    filterChain.doFilter(request, response);
   }
 }

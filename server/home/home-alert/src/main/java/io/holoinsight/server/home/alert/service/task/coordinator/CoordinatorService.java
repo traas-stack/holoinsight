@@ -5,6 +5,7 @@ package io.holoinsight.server.home.alert.service.task.coordinator;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import io.holoinsight.server.common.J;
+import io.holoinsight.server.home.common.util.CLUSTER_ROLE_CONST;
 import io.holoinsight.server.home.dal.mapper.ClusterMapper;
 import io.holoinsight.server.home.alert.service.task.CacheAlarmTask;
 import io.holoinsight.server.home.alert.service.task.coordinator.server.NettyServer;
@@ -36,6 +37,7 @@ public class CoordinatorService {
   private ClusterMapper clusterMapper;
   @Autowired
   private CacheAlarmTask cacheAlarmTask;
+  private final String         role = CLUSTER_ROLE_CONST.PROD;
 
   private List<String> otherMembers = new ArrayList<>();
   protected static final int PORT = 9527;
@@ -49,7 +51,7 @@ public class CoordinatorService {
   public int getOrder() {
     long minuteBefore = System.currentTimeMillis() - 60_000L;
     QueryWrapper<Cluster> condition = new QueryWrapper<>();
-    condition.eq("role", AlertClusterService.role);
+    condition.eq("role", this.role);
     condition.ge("last_heartbeat_time", minuteBefore);
 
     List<Cluster> clusters = this.clusterMapper.selectList(condition);

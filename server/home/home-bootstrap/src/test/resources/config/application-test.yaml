@@ -1,15 +1,10 @@
 cloudmonitor:
     domain: http://localhost:8080/
-alarm:
-  local:
-    env: dev
+holoinsight:
+
 algorithm:
   url: 127.0.0.1
 
-# tomcat\u914D\u7F6E
-monitor:
-  role: prod
-  env: dev
 
 
 spring:
@@ -31,10 +26,6 @@ grpc:
 crypto:
   client:
     key: 6148847a-2f2c-497c-a3e1-2cb3f12b1232
-registry:
-  domain: 127.0.0.1
-metaservice:
-  domain: 100.83.61.201
 
 # ceresdb \u914D\u7F6E
 ceresdb:
