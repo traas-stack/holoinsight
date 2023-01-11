@@ -2,7 +2,7 @@
 name: Feature request
 about: Thanks for taking the time to fill this!
 title: ''
-labels: ''
+labels: enhancement
 assignees: ''
 
 ---
