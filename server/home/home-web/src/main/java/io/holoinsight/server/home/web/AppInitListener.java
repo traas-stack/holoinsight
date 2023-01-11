@@ -45,7 +45,7 @@ public class AppInitListener implements InitializingBean {
     try {
       ScheduleLoadTask.registerTask(superCacheService, true);
       ScheduleLoadTask.registerTask(localCacheManage, true);
-      ScheduleLoadTask.registerTask(clusterSchedulerTask, true);
+//      ScheduleLoadTask.registerTask(clusterSchedulerTask, true);
       ScheduleLoadTask.registerTask(monitorTaskManager, true);
       ScheduleLoadTask.registerTask(alertClusterService, true);
     } catch (Exception e) {

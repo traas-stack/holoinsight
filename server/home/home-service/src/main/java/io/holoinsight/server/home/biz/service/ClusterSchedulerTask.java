@@ -10,7 +10,6 @@ import io.holoinsight.server.home.common.util.ScheduleLoadTask;
 import io.holoinsight.server.home.common.util.StringUtil;
 import io.holoinsight.server.home.dal.model.dto.ClusterDTO;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -27,14 +26,13 @@ public class ClusterSchedulerTask extends ScheduleLoadTask {
   @Autowired
   private ClusterService clusterService;
 
-  @Value("${holoinsight.home.role}")
-  private String role;
+  private String         role = CLUSTER_ROLE_CONST.PROD;
 
   @Override
   public void load() throws Exception {
     try {
       long s = System.currentTimeMillis();
-      startHeartBeat();
+//            startHeartBeat();
       ProdLog.info("update heart beat success, cost:" + (System.currentTimeMillis() - s));
     } catch (Exception e) {
       ProdLog.error("update heartbeat error", e);

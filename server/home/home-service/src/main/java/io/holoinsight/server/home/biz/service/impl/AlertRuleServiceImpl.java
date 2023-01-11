@@ -110,6 +110,14 @@ public class AlertRuleServiceImpl extends ServiceImpl<AlarmRuleMapper, AlarmRule
       wrapper.eq("env_type", alarmRule.getEnvType());
     }
 
+    if (StringUtils.isNotBlank(alarmRule.getCreator())) {
+      wrapper.eq("creator", alarmRule.getCreator());
+    }
+
+    if (StringUtils.isNotBlank(alarmRule.getModifier())) {
+      wrapper.eq("modifier", alarmRule.getModifier());
+    }
+
     if (StringUtils.isNotBlank(pageRequest.getSortBy())
         && StringUtils.isNotBlank(pageRequest.getSortRule())) {
       if (pageRequest.getSortRule().toLowerCase(Locale.ROOT).equals("desc")) {

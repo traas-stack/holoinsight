@@ -31,7 +31,7 @@ import java.util.Map;
 @Service
 public class RegistryService {
 
-  @Value("${registry.domain}")
+  @Value("${holoinsight.registry.domain}")
   private String registryHost;
 
   private static ManagedChannel channel;
