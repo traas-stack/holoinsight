@@ -33,6 +33,7 @@ repos:
         args:
           - --license-filepath
           - HEADER
+          - --no-extra-eol
           - --comment-style
           - /*| *| */
           #- --remove-header
