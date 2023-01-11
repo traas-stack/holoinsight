@@ -8,4 +8,4 @@ project_root=`realpath $script_dir/..`
 
 cd $project_root
 
-mvn -f server/server-parent/pom.xml -Dquiet=false license:check
+mvn -T 1C -f server/server-parent/pom.xml -Dquiet=false license:check
