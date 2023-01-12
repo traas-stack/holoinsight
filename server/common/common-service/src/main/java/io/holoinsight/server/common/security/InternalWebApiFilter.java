@@ -32,13 +32,13 @@ import com.google.common.collect.Sets;
 public class InternalWebApiFilter extends OncePerRequestFilter {
   private static Logger LOGGER = LoggerFactory.getLogger(InternalWebApiFilter.class);
 
-  private static final Set<String>               URIS = Sets.newHashSet("/metrics");
+  private static final Set<String> URIS = Sets.newHashSet("/metrics");
   @Autowired
-  private              InternalWebApiInterceptor internalWebApiInterceptor;
+  private InternalWebApiInterceptor internalWebApiInterceptor;
 
   @Override
-  protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
-          throws ServletException, IOException {
+  protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
+      FilterChain filterChain) throws ServletException, IOException {
 
     String uri = request.getRequestURI();
 
@@ -50,9 +50,10 @@ public class InternalWebApiFilter extends OncePerRequestFilter {
     }
     try {
       filterChain.doFilter(request, response);
-    }catch (Exception e){
-      Map<String, String[]> parameterMap =  request.getParameterMap();
-      LOGGER.error("fail to do filter {} for {}, parameter {}", uri, e.getMessage(), J.toJson(parameterMap), e);
+    } catch (Exception e) {
+      Map<String, String[]> parameterMap = request.getParameterMap();
+      LOGGER.error("fail to do filter {} for {}, parameter {}", uri, e.getMessage(),
+          J.toJson(parameterMap), e);
     }
 
   }

@@ -8,4 +8,4 @@ project_root=`realpath $script_dir/..`
 
 cd $project_root
 
-mvn -f server/server-parent/pom.xml net.revelc.code.formatter:formatter-maven-plugin:2.11.0:format
+mvn -T 1C -f server/server-parent/pom.xml net.revelc.code.formatter:formatter-maven-plugin:2.11.0:format

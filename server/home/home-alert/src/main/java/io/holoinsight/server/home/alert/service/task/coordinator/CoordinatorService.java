@@ -37,7 +37,7 @@ public class CoordinatorService {
   private ClusterMapper clusterMapper;
   @Autowired
   private CacheAlarmTask cacheAlarmTask;
-  private final String         role = CLUSTER_ROLE_CONST.PROD;
+  private final String role = CLUSTER_ROLE_CONST.PROD;
 
   private List<String> otherMembers = new ArrayList<>();
   protected static final int PORT = 9527;

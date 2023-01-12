@@ -38,7 +38,7 @@ public class ClusterServiceImpl extends ServiceImpl<ClusterMapper, Cluster>
   @Autowired
   private CustomConverter customConverter;
 
-  private String         role = CLUSTER_ROLE_CONST.PROD;
+  private String role = CLUSTER_ROLE_CONST.PROD;
 
   public void upsert(ClusterDTO cluster) {
     long s = System.currentTimeMillis();

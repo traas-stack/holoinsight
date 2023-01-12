@@ -26,13 +26,13 @@ public class ClusterSchedulerTask extends ScheduleLoadTask {
   @Autowired
   private ClusterService clusterService;
 
-  private String         role = CLUSTER_ROLE_CONST.PROD;
+  private String role = CLUSTER_ROLE_CONST.PROD;
 
   @Override
   public void load() throws Exception {
     try {
       long s = System.currentTimeMillis();
-//            startHeartBeat();
+      // startHeartBeat();
       ProdLog.info("update heart beat success, cost:" + (System.currentTimeMillis() - s));
     } catch (Exception e) {
       ProdLog.error("update heartbeat error", e);
