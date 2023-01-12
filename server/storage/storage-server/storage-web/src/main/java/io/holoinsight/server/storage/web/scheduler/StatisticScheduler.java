@@ -21,17 +21,17 @@ public class StatisticScheduler {
   @Autowired
   private TraceService traceService;
 
-  @Scheduled(initialDelay = 1000, fixedRate = 1000 * 60 * 5)
+  @Scheduled(initialDelay = 1000, fixedRate = 1000 * 60)
   private void statisticTrace() {
     try {
       long endTime = System.currentTimeMillis();
-      long startTime = endTime - 1000 * 60 * 60 * 24; // one day ago
+      long startTime = endTime - 1000 * 60 * 10; // 10 minutes
       List<StatisticData> statisticData = traceService.statisticTrace(startTime, endTime);
       for (StatisticData statisticDatum : statisticData) {
         log.info(String.format(
-            "[statisticTrace] Statistic trace data, appId: %s, envId: %s, serviceCount: %s, traceCount: %s",
+            "[statisticTrace] Statistic trace data(10 minutes), appId: %s, envId: %s, serviceCount: %s, traceCount: %s, successRate: %s",
             statisticDatum.getAppId(), statisticDatum.getEnvId(), statisticDatum.getServiceCount(),
-            statisticDatum.getTraceCount()));
+            statisticDatum.getTraceCount(), statisticDatum.getSuccessRate()));
       }
     } catch (Exception e) {
       log.error("[statisticTrace] Statistic trace scheduler error: ", e.getMessage());

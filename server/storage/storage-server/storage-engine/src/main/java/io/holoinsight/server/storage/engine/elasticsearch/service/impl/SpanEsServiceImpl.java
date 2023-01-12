@@ -3,6 +3,7 @@
  */
 package io.holoinsight.server.storage.engine.elasticsearch.service.impl;
 
+import com.google.common.base.Strings;
 import io.holoinsight.server.common.springboot.ConditionalOnFeature;
 import io.holoinsight.server.storage.common.constants.Const;
 import io.holoinsight.server.storage.common.model.query.BasicTrace;
@@ -23,22 +24,28 @@ import io.holoinsight.server.storage.common.model.specification.sw.Span;
 import io.holoinsight.server.storage.common.model.specification.sw.Tag;
 import io.holoinsight.server.storage.common.model.specification.sw.Trace;
 import io.holoinsight.server.storage.common.model.specification.sw.TraceState;
-
 import io.holoinsight.server.storage.common.utils.GsonUtils;
 import io.holoinsight.server.storage.engine.elasticsearch.model.SpanEsDO;
 import io.holoinsight.server.storage.engine.elasticsearch.service.RecordEsService;
 import io.holoinsight.server.storage.engine.elasticsearch.service.SpanEsService;
 import io.holoinsight.server.storage.engine.elasticsearch.utils.EsGsonUtils;
-import com.google.common.base.Strings;
+import io.opentelemetry.proto.trace.v1.Status;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
-import org.elasticsearch.index.query.*;
+import org.elasticsearch.index.query.BoolQueryBuilder;
+import org.elasticsearch.index.query.MatchQueryBuilder;
+import org.elasticsearch.index.query.QueryBuilder;
+import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.index.query.RangeQueryBuilder;
+import org.elasticsearch.index.query.TermQueryBuilder;
+import org.elasticsearch.index.query.TermsQueryBuilder;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
 import org.elasticsearch.search.aggregations.Aggregator;
+import org.elasticsearch.search.aggregations.bucket.filter.Filter;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms;
 import org.elasticsearch.search.aggregations.bucket.terms.TermsAggregationBuilder;
 import org.elasticsearch.search.aggregations.metrics.ParsedCardinality;
@@ -48,7 +55,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 import static java.util.Objects.nonNull;
 
@@ -224,6 +237,11 @@ public class SpanEsServiceImpl extends RecordEsService<SpanEsDO> implements Span
             .subAggregation(AggregationBuilders.cardinality("service_count")
                 .field(SpanEsDO.resource(SpanEsDO.SERVICE_NAME)))
             .subAggregation(AggregationBuilders.cardinality("trace_count").field(SpanEsDO.TRACE_ID))
+            .subAggregation(AggregationBuilders
+                    .filter(SpanEsDO.TRACE_STATUS,
+                            QueryBuilders.termQuery(SpanEsDO.TRACE_STATUS,
+                                    Status.StatusCode.STATUS_CODE_ERROR_VALUE))
+                    .subAggregation(AggregationBuilders.cardinality("error_count").field(SpanEsDO.TRACE_ID)))
             .executionHint("map").collectMode(Aggregator.SubAggCollectionMode.BREADTH_FIRST)
             .size(1000));
 
@@ -249,11 +267,16 @@ public class SpanEsServiceImpl extends RecordEsService<SpanEsDO> implements Span
         ParsedCardinality traceTerm = envBucket.getAggregations().get("trace_count");
         long traceCount = traceTerm.getValue();
 
+        Filter errFilter = envBucket.getAggregations().get(SpanEsDO.TRACE_STATUS);
+        ParsedCardinality errorTerm = errFilter.getAggregations().get("error_count");
+        int errorCount = (int) errorTerm.getValue();
+
         StatisticData statisticData = new StatisticData();
         statisticData.setAppId(appId);
         statisticData.setEnvId(envId);
         statisticData.setServiceCount(serviceCount);
         statisticData.setTraceCount(traceCount);
+        statisticData.setSuccessRate(((double) (traceCount - errorCount) / traceCount) * 100);
 
         result.add(statisticData);
       }
