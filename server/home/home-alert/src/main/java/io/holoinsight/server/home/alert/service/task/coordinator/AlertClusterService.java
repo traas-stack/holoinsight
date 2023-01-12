@@ -29,7 +29,7 @@ public class AlertClusterService extends ScheduleLoadTask {
   public static int HEARTBEAT_PERIOD_SECOND = 10;
   public static int EXPIRE_HEARTBEAT_TIME = 60000;
 
-  private String         role = CLUSTER_ROLE_CONST.PROD;
+  private String role = CLUSTER_ROLE_CONST.PROD;
 
   @Autowired
   private CoordinatorService coordinatorService;
@@ -62,27 +62,27 @@ public class AlertClusterService extends ScheduleLoadTask {
     this.coordinatorService.spread(heartbeat);
   }
 
-//    public void upsert(Cluster cluster) {
-//        long s = System.currentTimeMillis();
-//        QueryWrapper<Cluster> condition = new QueryWrapper<>();
-//        condition.eq("ip", cluster.getIp());
-//        condition.eq("role", cluster.getRole());
-//        List<Cluster> clusters = this.clusterMapper.selectList(condition);
-//        int result;
-//        if (CollectionUtils.isEmpty(clusters)) {
-//            result = this.clusterMapper.insert(cluster);
-//        } else {
-//            Cluster res = clusters.get(0);
-//            res.setLastHeartBeatTime(cluster.getLastHeartBeatTime());
-//            res.setRole(getRole());
-//            res.setHostname(cluster.getHostname());
-//            res.setGmtModified(new Date());
-//            QueryWrapper<Cluster> updateWrapper = new QueryWrapper<>();
-//            updateWrapper.eq("id", res.getId());
-//            result = this.clusterMapper.update(res, updateWrapper);
-//        }
-//        LOGGER.info("HEARTBEAT {} {} {}", true, System.currentTimeMillis() - s, result);
-//    }
+  // public void upsert(Cluster cluster) {
+  // long s = System.currentTimeMillis();
+  // QueryWrapper<Cluster> condition = new QueryWrapper<>();
+  // condition.eq("ip", cluster.getIp());
+  // condition.eq("role", cluster.getRole());
+  // List<Cluster> clusters = this.clusterMapper.selectList(condition);
+  // int result;
+  // if (CollectionUtils.isEmpty(clusters)) {
+  // result = this.clusterMapper.insert(cluster);
+  // } else {
+  // Cluster res = clusters.get(0);
+  // res.setLastHeartBeatTime(cluster.getLastHeartBeatTime());
+  // res.setRole(getRole());
+  // res.setHostname(cluster.getHostname());
+  // res.setGmtModified(new Date());
+  // QueryWrapper<Cluster> updateWrapper = new QueryWrapper<>();
+  // updateWrapper.eq("id", res.getId());
+  // result = this.clusterMapper.update(res, updateWrapper);
+  // }
+  // LOGGER.info("HEARTBEAT {} {} {}", true, System.currentTimeMillis() - s, result);
+  // }
 
   private String getRole() {
     return role;

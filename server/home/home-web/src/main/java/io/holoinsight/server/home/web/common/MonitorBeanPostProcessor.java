@@ -1,6 +1,5 @@
 /*
- * Alipay.com Inc.
- * Copyright (c) 2004-2018 All Rights Reserved.
+ * Copyright 2022 Holoinsight Project Authors. Licensed under Apache-2.0.
  */
 package io.holoinsight.server.home.web.common;
 
@@ -27,59 +26,59 @@ import org.springframework.stereotype.Component;
 @Component
 public class MonitorBeanPostProcessor implements BeanPostProcessor {
 
-    @Autowired
-    private PluginRepository pluginRepository;
+  @Autowired
+  private PluginRepository pluginRepository;
 
-    @Override
-    public Object postProcessBeforeInitialization(Object bean,
-                                                  String beanName) throws BeansException {
-        final Class<?> beanClass = AopProxyUtils.ultimateTargetClass(bean);
-        processTokenUrlScopeAnnotation(bean, beanClass);
-        processEntityBuilderAnnotation(bean, beanClass);
-        processExecutorHandlerAnnotation(bean, beanClass);
-        processPluginModelAnnotation(bean, beanClass);
-        return bean;
+  @Override
+  public Object postProcessBeforeInitialization(Object bean, String beanName)
+      throws BeansException {
+    final Class<?> beanClass = AopProxyUtils.ultimateTargetClass(bean);
+    processTokenUrlScopeAnnotation(bean, beanClass);
+    processEntityBuilderAnnotation(bean, beanClass);
+    processExecutorHandlerAnnotation(bean, beanClass);
+    processPluginModelAnnotation(bean, beanClass);
+    return bean;
+  }
+
+  private void processPluginModelAnnotation(Object bean, Class<?> beanClass) {
+
+
+    PluginModel pluginModel = beanClass.getAnnotation(PluginModel.class);
+    if (pluginModel == null) {
+      return;
+    }
+    if (!(bean instanceof Plugin)) {
+      return;
+    }
+    this.pluginRepository.registry((Plugin) bean, pluginModel.name(), pluginModel.version());
+  }
+
+  private void processTokenUrlScopeAnnotation(Object bean, Class<?> beanClass) {
+
+    TokenUrls tokenScopes = beanClass.getAnnotation(TokenUrls.class);
+    if (null != tokenScopes) {
+      for (String value : tokenScopes.value()) {
+        TokenUrlFactoryHolder.setUrl(value);
+      }
+    }
+  }
+
+  private void processExecutorHandlerAnnotation(Object bean, Class<?> beanClass) {
+
+    TaskHandler taskHandler = beanClass.getAnnotation(TaskHandler.class);
+    if (taskHandler == null) {
+      return;
+    }
+    TaskFactoryHolder.setExecutorTask(taskHandler.value(), (AbstractMonitorTask) bean);
+  }
+
+  private void processEntityBuilderAnnotation(Object bean, Class<?> beanClass) {
+
+    EntityBuilder entityBuilder = beanClass.getAnnotation(EntityBuilder.class);
+    if (entityBuilder == null) {
+      return;
     }
 
-    private void processPluginModelAnnotation(Object bean, Class<?> beanClass) {
-
-
-        PluginModel pluginModel = beanClass.getAnnotation(PluginModel.class);
-        if (pluginModel == null) {
-            return;
-        }
-        if (!(bean instanceof Plugin)){
-            return;
-        }
-        this.pluginRepository.registry((Plugin) bean, pluginModel.name(), pluginModel.version());
-    }
-
-    private void processTokenUrlScopeAnnotation(Object bean, Class<?> beanClass) {
-
-        TokenUrls tokenScopes = beanClass.getAnnotation(TokenUrls.class);
-        if (null != tokenScopes) {
-            for (String value : tokenScopes.value()) {
-                TokenUrlFactoryHolder.setUrl(value);
-            }
-        }
-    }
-
-    private void processExecutorHandlerAnnotation(Object bean, Class<?> beanClass) {
-
-        TaskHandler taskHandler = beanClass.getAnnotation(TaskHandler.class);
-        if (taskHandler == null) {
-            return;
-        }
-        TaskFactoryHolder.setExecutorTask(taskHandler.value(), (AbstractMonitorTask) bean);
-    }
-
-    private void processEntityBuilderAnnotation(Object bean, Class<?> beanClass) {
-
-        EntityBuilder entityBuilder = beanClass.getAnnotation(EntityBuilder.class);
-        if (entityBuilder == null) {
-            return;
-        }
-
-        EntityFactoryHolder.setBuilder(entityBuilder.value(), (StackEntityBuilder) bean);
-    }
+    EntityFactoryHolder.setBuilder(entityBuilder.value(), (StackEntityBuilder) bean);
+  }
 }
