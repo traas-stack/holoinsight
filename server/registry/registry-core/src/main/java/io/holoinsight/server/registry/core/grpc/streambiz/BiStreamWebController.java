@@ -6,12 +6,23 @@ package io.holoinsight.server.registry.core.grpc.streambiz;
 import java.time.Duration;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.google.protobuf.ByteString;
+import com.google.protobuf.InvalidProtocolBufferException;
+import com.google.protobuf.util.JsonFormat;
+
 import io.holoinsight.server.registry.core.grpc.BiStreamService;
 import io.holoinsight.server.registry.core.grpc.stream.ServerStream;
 import io.holoinsight.server.registry.core.grpc.stream.ServerStreamManager;
 import io.holoinsight.server.registry.core.utils.ApiResp;
-import io.holoinsight.server.registry.grpc.prod.DryRunRequest;
-import io.holoinsight.server.registry.grpc.prod.DryRunResponse;
 import io.holoinsight.server.registry.grpc.prod.HttpProxyRequest;
 import io.holoinsight.server.registry.grpc.prod.HttpProxyResponse;
 import io.holoinsight.server.registry.grpc.prod.InspectResponse;
@@ -26,25 +37,13 @@ import io.holoinsight.server.registry.grpc.prod.SplitLogResponse;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
-import com.google.protobuf.ByteString;
-import com.google.protobuf.InvalidProtocolBufferException;
-import com.google.protobuf.util.JsonFormat;
-
 /**
- * 双向流运维接口
+ * BiStream debug api
  * <p>
  * created at 2022/3/10
  *
  * @author zzhb101
+ * @author xzchaoo
  */
 @RestController
 @RequestMapping("/internal/api/registry/bistream")
@@ -59,6 +58,13 @@ public class BiStreamWebController {
     return ApiResp.success(m.getIds());
   }
 
+  /**
+   * Ping agent with a payload message.
+   * 
+   * @param agentId
+   * @param msg
+   * @return
+   */
   @GetMapping("/ping")
   public Object ping(@RequestParam("agentId") String agentId, @RequestParam("msg") String msg) {
     return biStreamService.proxySimple(agentId, BizTypes.ECHO, ByteString.copyFromUtf8(msg)) //
