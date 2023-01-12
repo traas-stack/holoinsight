@@ -238,10 +238,11 @@ public class SpanEsServiceImpl extends RecordEsService<SpanEsDO> implements Span
                 .field(SpanEsDO.resource(SpanEsDO.SERVICE_NAME)))
             .subAggregation(AggregationBuilders.cardinality("trace_count").field(SpanEsDO.TRACE_ID))
             .subAggregation(AggregationBuilders
-                    .filter(SpanEsDO.TRACE_STATUS,
-                            QueryBuilders.termQuery(SpanEsDO.TRACE_STATUS,
-                                    Status.StatusCode.STATUS_CODE_ERROR_VALUE))
-                    .subAggregation(AggregationBuilders.cardinality("error_count").field(SpanEsDO.TRACE_ID)))
+                .filter(SpanEsDO.TRACE_STATUS,
+                    QueryBuilders.termQuery(SpanEsDO.TRACE_STATUS,
+                        Status.StatusCode.STATUS_CODE_ERROR_VALUE))
+                .subAggregation(
+                    AggregationBuilders.cardinality("error_count").field(SpanEsDO.TRACE_ID)))
             .executionHint("map").collectMode(Aggregator.SubAggCollectionMode.BREADTH_FIRST)
             .size(1000));
 
