@@ -12,5 +12,5 @@ public class StatisticData {
   private String tenant;
   private long serviceCount;
   private long traceCount;
-
+  private double successRate;
 }
