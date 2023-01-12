@@ -9,8 +9,11 @@
 name: Merge Gate
 
 on:
+  pull_request:
+    branches: [ "main" ]
   pull_request_target:
     branches: [ "main" ]
+  workflow_dispatch: {}
 
 jobs:
   build:
