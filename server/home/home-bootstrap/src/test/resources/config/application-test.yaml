@@ -1,6 +1,5 @@
 cloudmonitor:
     domain: http://localhost:8080/
-holoinsight:
 
 algorithm:
   url: 127.0.0.1
