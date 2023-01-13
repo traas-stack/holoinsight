@@ -1,3 +1,7 @@
+/*
+ * Copyright 2022 Holoinsight Project Authors. Licensed under Apache-2.0.
+ */
+
 package io.holoinsight.server.gateway.core.prometheus;
 
 import io.holoinsight.server.common.auth.ApikeyAuthService;
@@ -18,6 +22,9 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
+/**
+ * @author sw1136562366
+ */
 @RestController
 @RequestMapping("/api/v1/prometheus")
 public class PrometheusController {
