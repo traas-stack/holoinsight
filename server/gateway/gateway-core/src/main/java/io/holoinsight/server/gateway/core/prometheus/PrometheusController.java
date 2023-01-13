@@ -37,11 +37,11 @@ public class PrometheusController {
   private ApikeyAuthService authService;
 
   /**
-   * prometheus 2.25.0-rc.0 版本及该版本之后 prometheus.yaml remote_write: - headers: apikey: xxxxx url:
-   * http://xxxxxxx:8080/api/v1/prometheus/write
+   * Before prometheus 2.25.0-rc.0, url: http://xxxxxxx:8080/api/v1/prometheus/write?apikey=xxxxx
    *
-   ** prometheus 2.25.0-rc.0 版本之前 * prometheus.yaml * remote_write: * - url:
-   * http://xxxxxxx:8080/api/v1/prometheus/write?apikey=xxxxx
+   * After prometheus 2.25.0-rc.0, headers: apikey: xxxxx,
+   * url:http://xxxxxxx:8080/api/v1/prometheus/write
+   *
    */
   @PostMapping("/write")
   public void write(HttpServletRequest request) throws IOException {
