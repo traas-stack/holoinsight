@@ -86,7 +86,6 @@ public class PrometheusController {
   // @PostMapping("/read")
   @Deprecated
   public void read(HttpServletRequest request) throws IOException {
-    // TODO 计费
     Prometheus.ReadRequest readRequest = Prometheus.ReadRequest.parseFrom(request.getInputStream());
 
     for (Prometheus.Query query : readRequest.getQueriesList()) {
