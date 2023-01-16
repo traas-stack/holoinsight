@@ -7,9 +7,6 @@ import io.holoinsight.server.home.biz.plugin.PluginRepository;
 import io.holoinsight.server.home.biz.plugin.model.Plugin;
 import io.holoinsight.server.home.biz.plugin.model.PluginModel;
 import io.holoinsight.server.home.task.AbstractMonitorTask;
-import io.holoinsight.server.home.task.EntityBuilder;
-import io.holoinsight.server.home.task.EntityFactoryHolder;
-import io.holoinsight.server.home.task.StackEntityBuilder;
 import io.holoinsight.server.home.task.TaskFactoryHolder;
 import io.holoinsight.server.home.task.TaskHandler;
 import org.springframework.aop.framework.AopProxyUtils;
@@ -34,7 +31,6 @@ public class MonitorBeanPostProcessor implements BeanPostProcessor {
       throws BeansException {
     final Class<?> beanClass = AopProxyUtils.ultimateTargetClass(bean);
     processTokenUrlScopeAnnotation(bean, beanClass);
-    processEntityBuilderAnnotation(bean, beanClass);
     processExecutorHandlerAnnotation(bean, beanClass);
     processPluginModelAnnotation(bean, beanClass);
     return bean;
@@ -72,13 +68,4 @@ public class MonitorBeanPostProcessor implements BeanPostProcessor {
     TaskFactoryHolder.setExecutorTask(taskHandler.value(), (AbstractMonitorTask) bean);
   }
 
-  private void processEntityBuilderAnnotation(Object bean, Class<?> beanClass) {
-
-    EntityBuilder entityBuilder = beanClass.getAnnotation(EntityBuilder.class);
-    if (entityBuilder == null) {
-      return;
-    }
-
-    EntityFactoryHolder.setBuilder(entityBuilder.value(), (StackEntityBuilder) bean);
-  }
 }
