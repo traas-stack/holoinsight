@@ -17,42 +17,42 @@ import java.util.Map;
 @Data
 public class AlertNotifyRequest {
 
-    private Map<String/* notify type */, List<String>> userNotifyMap; // 用户信息和通知渠道
+  private Map<String/* notify type */, List<String>> userNotifyMap; // 用户信息和通知渠道
 
-    private List<String> dingdingUrls; // 钉钉群
+  private List<String> dingdingUrls; // 钉钉群
 
-    private List<WebhookInfo> webhookInfos; // 告警相关webhook消息
+  private List<WebhookInfo> webhookInfos; // 告警相关webhook消息
 
-    private String traceId;
+  private String traceId;
 
-    private String tenant;
+  private String tenant;
 
-    private String uniqueId; // 告警规则+id
+  private String uniqueId; // 告警规则+id
 
-    private String ruleId; // 告警id
+  private String ruleId; // 告警id
 
-    private String ruleName; // 告警名称
+  private String ruleName; // 告警名称
 
-    private Long alarmTime; // 告警时间
+  private Long alarmTime; // 告警时间
 
-    private String alarmLevel; // 告警级别
-//
-//    private String metric; // 监控项
-//
-//    private String alarmTags; // 告警对象
-//
-//    private String alarmContent; // 告警内容
-//
-    private String aggregationNum; // 聚合告警数
-//
-//    private String ruleUrl; // 告警url
-//
-//    private String ruleConfig; // 告警配置规则
-//
-//    private String alarmTraceId; //告警唯一id
+  private String alarmLevel; // 告警级别
+  //
+  // private String metric; // 监控项
+  //
+  // private String alarmTags; // 告警对象
+  //
+  // private String alarmContent; // 告警内容
+  //
+  private String aggregationNum; // 聚合告警数
+  //
+  // private String ruleUrl; // 告警url
+  //
+  // private String ruleConfig; // 告警配置规则
+  //
+  // private String alarmTraceId; //告警唯一id
 
-    private List<NotifyDataInfo> notifyDataInfos; //告警计算结果
+  private List<NotifyDataInfo> notifyDataInfos; // 告警计算结果
 
-    private InspectConfig ruleConfig; // 告警规则配置
+  private InspectConfig ruleConfig; // 告警规则配置
 
 }
