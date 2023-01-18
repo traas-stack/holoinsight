@@ -5,6 +5,7 @@
 package io.holoinsight.server.home.alert.model.event;
 
 import io.holoinsight.server.home.alert.model.data.InspectConfig;
+import io.holoinsight.server.home.alert.model.data.PqlRule;
 import lombok.Data;
 
 import java.util.List;

@@ -47,6 +47,7 @@ public class CacheAlarmConfig {
   private MetaDataDictValueMapper metadataDictvalueDOMapper;
 
   public void start() {
+    LOGGER.info("{} aaa", "a");
     LOGGER.info("[AlarmConfig] start alarm config syn!");
 
     getAlarmConfigCache();
