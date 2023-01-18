@@ -11,8 +11,8 @@ import org.apache.logging.log4j.message.ParameterizedMessage;
  */
 public class LogMsgUtil {
 
-    public static String getMsg(String pattern, Object... args){
-        String msg = ParameterizedMessage.format(pattern, args);
-        return msg;
-    }
+  public static String getMsg(String pattern, Object... args) {
+    String msg = ParameterizedMessage.format(pattern, args);
+    return msg;
+  }
 }

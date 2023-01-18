@@ -10,14 +10,13 @@ package io.holoinsight.server.home.alert.exception;
  * @version 2023-01-18 14:54:00
  */
 public class HoloinsightAlertIllegalArgumentException extends RuntimeException {
-    public HoloinsightAlertIllegalArgumentException() {
-    }
+  public HoloinsightAlertIllegalArgumentException() {}
 
-    public HoloinsightAlertIllegalArgumentException(String message) {
-        super(message);
-    }
+  public HoloinsightAlertIllegalArgumentException(String message) {
+    super(message);
+  }
 
-    public HoloinsightAlertIllegalArgumentException(String message, Throwable cause) {
-        super(message, cause);
-    }
+  public HoloinsightAlertIllegalArgumentException(String message, Throwable cause) {
+    super(message, cause);
+  }
 }

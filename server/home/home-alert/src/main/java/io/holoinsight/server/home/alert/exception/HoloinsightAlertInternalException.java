@@ -9,5 +9,5 @@ package io.holoinsight.server.home.alert.exception;
  * @author masaimu
  * @version 2023-01-18 14:53:00
  */
-public class HoloinsightAlertInternalException extends RuntimeException{
+public class HoloinsightAlertInternalException extends RuntimeException {
 }
