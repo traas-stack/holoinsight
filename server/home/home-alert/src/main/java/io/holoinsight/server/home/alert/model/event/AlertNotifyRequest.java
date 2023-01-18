@@ -5,7 +5,6 @@
 package io.holoinsight.server.home.alert.model.event;
 
 import io.holoinsight.server.home.alert.model.data.InspectConfig;
-import io.holoinsight.server.home.alert.model.data.PqlRule;
 import lombok.Data;
 
 import java.util.List;
@@ -38,19 +37,7 @@ public class AlertNotifyRequest {
 
   private String alarmLevel; // 告警级别
   //
-  // private String metric; // 监控项
-  //
-  // private String alarmTags; // 告警对象
-  //
-  // private String alarmContent; // 告警内容
-  //
   private String aggregationNum; // 聚合告警数
-  //
-  // private String ruleUrl; // 告警url
-  //
-  // private String ruleConfig; // 告警配置规则
-  //
-  // private String alarmTraceId; //告警唯一id
 
   private List<NotifyDataInfo> notifyDataInfos; // 告警计算结果
 
