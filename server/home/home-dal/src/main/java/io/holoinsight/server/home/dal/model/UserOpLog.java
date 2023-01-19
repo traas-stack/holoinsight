@@ -7,6 +7,8 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
+
+import javax.persistence.Column;
 import java.util.Date;
 
 /**
@@ -23,7 +25,8 @@ public class UserOpLog {
 
   public String tableName;
 
-  public String tableEntityId;
+  @Column(name = "table_entity_id")
+  public Long tableEntityId;
 
   public String opType;
 

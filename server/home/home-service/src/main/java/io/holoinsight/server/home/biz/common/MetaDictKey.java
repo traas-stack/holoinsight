@@ -17,8 +17,6 @@ public class MetaDictKey {
   public static final String IS_TEST = "is_test";
   public static final String IS_QUERY_TEST = "is_query_test";
 
-  public static final String IS_MICROAPP_CHECK_SKIP = "is_microapp_check_skip";
-
   public static final String AGENT_INSTALL_HOST = "agentInstallHost";
   public static final String AGENT_REGISTRY_HOST = "agentRegistryHost";
   public static final String AGENT_GATEWAY_HOST = "agentGatewayHost";

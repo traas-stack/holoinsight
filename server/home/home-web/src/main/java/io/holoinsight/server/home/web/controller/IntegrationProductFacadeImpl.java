@@ -92,9 +92,9 @@ public class IntegrationProductFacadeImpl extends BaseFacade {
             integrationProductService.updateByRequest(integrationProductDTO);
 
         assert mu != null;
-        userOpLogService.append("integration_product", String.valueOf(update.getId()),
-            OpType.UPDATE, mu.getLoginName(), ms.getTenant(), J.toJson(integrationProductDTO),
-            J.toJson(update), null, "integration_product_update");
+        userOpLogService.append("integration_product", update.getId(), OpType.UPDATE,
+            mu.getLoginName(), ms.getTenant(), J.toJson(integrationProductDTO), J.toJson(update),
+            null, "integration_product_update");
 
       }
     });
@@ -130,7 +130,7 @@ public class IntegrationProductFacadeImpl extends BaseFacade {
         JsonResult.createSuccessResult(result, save);
 
         assert mu != null;
-        userOpLogService.append("integration_product", String.valueOf(save.getId()), OpType.CREATE,
+        userOpLogService.append("integration_product", save.getId(), OpType.CREATE,
             mu.getLoginName(), ms.getTenant(), J.toJson(integrationProductDTO), null, null,
             "integration_product_create");
 

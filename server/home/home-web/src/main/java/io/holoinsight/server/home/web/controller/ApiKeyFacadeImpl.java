@@ -104,9 +104,8 @@ public class ApiKeyFacadeImpl extends BaseFacade {
         apiKeyService.updateById(update);
 
         assert mu != null;
-        userOpLogService.append("apikey", String.valueOf(apiKey.getId()), OpType.UPDATE,
-            mu.getLoginName(), ms.getTenant(), J.toJson(apiKey), J.toJson(update), null,
-            "apikey_update");
+        userOpLogService.append("apikey", apiKey.getId(), OpType.UPDATE, mu.getLoginName(),
+            ms.getTenant(), J.toJson(apiKey), J.toJson(update), null, "apikey_update");
       }
     });
 
@@ -144,8 +143,8 @@ public class ApiKeyFacadeImpl extends BaseFacade {
         JsonResult.createSuccessResult(result, apiKey);
 
         assert mu != null;
-        userOpLogService.append("apikey", String.valueOf(apiKey.getId()), OpType.CREATE,
-            mu.getLoginName(), ms.getTenant(), J.toJson(apiKey), null, null, "apikey_create");
+        userOpLogService.append("apikey", apiKey.getId(), OpType.CREATE, mu.getLoginName(),
+            ms.getTenant(), J.toJson(apiKey), null, null, "apikey_create");
 
       }
     });
@@ -222,7 +221,7 @@ public class ApiKeyFacadeImpl extends BaseFacade {
 
         apiKeyService.removeById(id);
         JsonResult.createSuccessResult(result, null);
-        userOpLogService.append("apikey", String.valueOf(byId.getId()), OpType.DELETE,
+        userOpLogService.append("apikey", byId.getId(), OpType.DELETE,
             RequestContext.getContext().mu.getLoginName(),
             RequestContext.getContext().ms.getTenant(), J.toJson(byId), null, null,
             "apikey_delete");
@@ -256,10 +255,12 @@ public class ApiKeyFacadeImpl extends BaseFacade {
 
         apiKeyService.removeBatchByIds(ids);
         JsonResult.createSuccessResult(result, null);
-        userOpLogService.append("apikey", String.valueOf(ids.toString()), OpType.DELETE,
-            RequestContext.getContext().mu.getLoginName(),
-            RequestContext.getContext().ms.getTenant(), J.toJson(apiKeys), null, null,
-            "apikey_delete");
+        if (!CollectionUtils.isEmpty(ids)) {
+          userOpLogService.append("apikey", ids.get(0), OpType.DELETE,
+              RequestContext.getContext().mu.getLoginName(),
+              RequestContext.getContext().ms.getTenant(), J.toJson(apiKeys), null, null,
+              "apikey_delete");
+        }
       }
     });
     return result;
