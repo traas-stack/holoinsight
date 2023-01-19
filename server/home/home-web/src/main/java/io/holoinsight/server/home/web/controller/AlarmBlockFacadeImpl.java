@@ -70,8 +70,8 @@ public class AlarmBlockFacadeImpl extends BaseFacade {
         alarmBlockDTO.setGmtModified(new Date());
         Long id = alarmBlockService.save(alarmBlockDTO);
 
-        userOpLogService.append("alarm_block", String.valueOf(id), OpType.CREATE, mu.getLoginName(),
-            ms.getTenant(), J.toJson(alarmBlockDTO), null, null, "alarm_block_create");
+        userOpLogService.append("alarm_block", id, OpType.CREATE, mu.getLoginName(), ms.getTenant(),
+            J.toJson(alarmBlockDTO), null, null, "alarm_block_create");
 
         JsonResult.createSuccessResult(result, id);
       }
@@ -113,7 +113,7 @@ public class AlarmBlockFacadeImpl extends BaseFacade {
         }
         alarmBlockDTO.setGmtModified(new Date());
         boolean save = alarmBlockService.updateById(alarmBlockDTO);
-        userOpLogService.append("alarm_block", String.valueOf(item.getId()), OpType.UPDATE,
+        userOpLogService.append("alarm_block", item.getId(), OpType.UPDATE,
             RequestContext.getContext().mu.getLoginName(),
             RequestContext.getContext().ms.getTenant(), J.toJson(item), J.toJson(alarmBlockDTO),
             null, "alarm_block_update");
@@ -167,7 +167,7 @@ public class AlarmBlockFacadeImpl extends BaseFacade {
           rtn = alarmBlockService.removeById(id);
         }
 
-        userOpLogService.append("alarm_block", String.valueOf(id), OpType.DELETE,
+        userOpLogService.append("alarm_block", id, OpType.DELETE,
             RequestContext.getContext().mu.getLoginName(),
             RequestContext.getContext().ms.getTenant(), J.toJson(alarmBlockDTO), null, null,
             "alarm_block_delete");

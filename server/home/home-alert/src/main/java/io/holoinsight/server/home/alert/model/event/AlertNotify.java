@@ -61,9 +61,6 @@ public class AlertNotify {
 
   private String alarmTraceId; // 告警唯一id
 
-  /**
-   * 对于小程序云站点，没有用户信息，需要裸记录订阅信息
-   */
   // 短信渠道
   private List<String> smsPhones;
   // 电话渠道

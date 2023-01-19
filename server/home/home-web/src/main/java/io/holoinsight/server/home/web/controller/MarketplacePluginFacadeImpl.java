@@ -120,7 +120,7 @@ public class MarketplacePluginFacadeImpl extends BaseFacade {
             marketplacePluginService.updateByRequest(marketplacePluginDTO);
 
         assert mu != null;
-        userOpLogService.append("marketplace_plugin", String.valueOf(update.getId()), OpType.UPDATE,
+        userOpLogService.append("marketplace_plugin", update.getId(), OpType.UPDATE,
             mu.getLoginName(), ms.getTenant(), J.toJson(marketplacePluginDTO), J.toJson(update),
             null, "marketplace_plugin_update");
 
@@ -151,7 +151,7 @@ public class MarketplacePluginFacadeImpl extends BaseFacade {
 
         marketplacePluginService.deleteById(id);
         JsonResult.createSuccessResult(result, null);
-        userOpLogService.append("marketplace_plugin", String.valueOf(byId.getId()), OpType.DELETE,
+        userOpLogService.append("marketplace_plugin", byId.getId(), OpType.DELETE,
             RequestContext.getContext().mu.getLoginName(),
             RequestContext.getContext().ms.getTenant(), J.toJson(byId), null, null,
             "marketplace_plugin_delete");
@@ -189,7 +189,7 @@ public class MarketplacePluginFacadeImpl extends BaseFacade {
         }
         JsonResult.createSuccessResult(result, null);
         for (long id : ids) {
-          userOpLogService.append("marketplace_plugin", String.valueOf(id), OpType.DELETE,
+          userOpLogService.append("marketplace_plugin", id, OpType.DELETE,
               RequestContext.getContext().mu.getLoginName(),
               RequestContext.getContext().ms.getTenant(), J.toJson(id), null, null,
               "marketplace_plugin_delete");
@@ -231,7 +231,7 @@ public class MarketplacePluginFacadeImpl extends BaseFacade {
         JsonResult.createSuccessResult(result, save);
 
         assert mu != null;
-        userOpLogService.append("marketplace_plugin", String.valueOf(save.getId()), OpType.CREATE,
+        userOpLogService.append("marketplace_plugin", save.getId(), OpType.CREATE,
             mu.getLoginName(), ms.getTenant(), J.toJson(marketplacePluginDTO), null, null,
             "marketplace_plugin_create");
 
@@ -289,7 +289,7 @@ public class MarketplacePluginFacadeImpl extends BaseFacade {
         marketplacePluginService.deleteById(id);
 
         JsonResult.createSuccessResult(result, true);
-        userOpLogService.append("marketplace_plugin", String.valueOf(byId.getId()), OpType.DELETE,
+        userOpLogService.append("marketplace_plugin", byId.getId(), OpType.DELETE,
             RequestContext.getContext().mu.getLoginName(),
             RequestContext.getContext().ms.getTenant(), J.toJson(byId), null, null,
             "marketplace_plugin_uninstall");
@@ -346,8 +346,8 @@ public class MarketplacePluginFacadeImpl extends BaseFacade {
 
         MarketplacePluginDTO marketplacePluginDTO = marketplacePluginService.create(pluginDTO);
 
-        userOpLogService.append("marketplace_plugin", String.valueOf(marketplacePluginDTO.getId()),
-            OpType.CREATE, RequestContext.getContext().mu.getLoginName(),
+        userOpLogService.append("marketplace_plugin", marketplacePluginDTO.getId(), OpType.CREATE,
+            RequestContext.getContext().mu.getLoginName(),
             RequestContext.getContext().ms.getTenant(), J.toJson(marketplacePluginDTO), null, null,
             "marketplace_plugin_install");
 

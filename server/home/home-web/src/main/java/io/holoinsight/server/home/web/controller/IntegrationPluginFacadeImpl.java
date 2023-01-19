@@ -102,7 +102,7 @@ public class IntegrationPluginFacadeImpl extends BaseFacade {
             integrationPluginService.updateByRequest(integrationPluginDTO);
 
         assert mu != null;
-        userOpLogService.append("integration_plugin", String.valueOf(update.getId()), OpType.UPDATE,
+        userOpLogService.append("integration_plugin", update.getId(), OpType.UPDATE,
             mu.getLoginName(), ms.getTenant(), J.toJson(integrationPluginDTO), J.toJson(update),
             null, "integration_plugin_update");
 
@@ -132,7 +132,7 @@ public class IntegrationPluginFacadeImpl extends BaseFacade {
 
         integrationPluginService.deleteById(id);
         JsonResult.createSuccessResult(result, null);
-        userOpLogService.append("integration_plugin", String.valueOf(byId.getId()), OpType.DELETE,
+        userOpLogService.append("integration_plugin", byId.getId(), OpType.DELETE,
             RequestContext.getContext().mu.getLoginName(),
             RequestContext.getContext().ms.getTenant(), J.toJson(byId), null, null,
             "integration_plugin_delete");
@@ -169,7 +169,7 @@ public class IntegrationPluginFacadeImpl extends BaseFacade {
         }
         JsonResult.createSuccessResult(result, null);
         for (long id : ids) {
-          userOpLogService.append("integration_plugin", String.valueOf(id), OpType.DELETE,
+          userOpLogService.append("integration_plugin", id, OpType.DELETE,
               RequestContext.getContext().mu.getLoginName(),
               RequestContext.getContext().ms.getTenant(), J.toJson(id), null, null,
               "integration_plugin_delete");
@@ -211,7 +211,7 @@ public class IntegrationPluginFacadeImpl extends BaseFacade {
         JsonResult.createSuccessResult(result, save);
 
         assert mu != null;
-        userOpLogService.append("integration_plugin", String.valueOf(save.getId()), OpType.CREATE,
+        userOpLogService.append("integration_plugin", save.getId(), OpType.CREATE,
             mu.getLoginName(), ms.getTenant(), J.toJson(integrationPluginDTO), null, null,
             "integration_plugin_create");
 

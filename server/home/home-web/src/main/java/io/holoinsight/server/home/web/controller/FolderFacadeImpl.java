@@ -112,9 +112,8 @@ public class FolderFacadeImpl extends BaseFacade {
         folderService.updateById(update);
 
         assert mu != null;
-        userOpLogService.append("folder", String.valueOf(folder.getId()), OpType.UPDATE,
-            mu.getLoginName(), ms.getTenant(), J.toJson(folder), J.toJson(update), null,
-            "folder_update");
+        userOpLogService.append("folder", folder.getId(), OpType.UPDATE, mu.getLoginName(),
+            ms.getTenant(), J.toJson(folder), J.toJson(update), null, "folder_update");
       }
     });
 
@@ -151,8 +150,8 @@ public class FolderFacadeImpl extends BaseFacade {
         JsonResult.createSuccessResult(result, folder);
 
         assert mu != null;
-        userOpLogService.append("folder", String.valueOf(folder.getId()), OpType.CREATE,
-            mu.getLoginName(), ms.getTenant(), J.toJson(folder), null, null, "folder_create");
+        userOpLogService.append("folder", folder.getId(), OpType.CREATE, mu.getLoginName(),
+            ms.getTenant(), J.toJson(folder), null, null, "folder_create");
 
       }
     });
@@ -209,7 +208,7 @@ public class FolderFacadeImpl extends BaseFacade {
         Folder byId = folderService.queryById(id, RequestContext.getContext().ms.getTenant());
         folderService.removeById(id);
         JsonResult.createSuccessResult(result, null);
-        userOpLogService.append("folder", String.valueOf(byId.getId()), OpType.DELETE,
+        userOpLogService.append("folder", byId.getId(), OpType.DELETE,
             RequestContext.getContext().mu.getLoginName(),
             RequestContext.getContext().ms.getTenant(), J.toJson(byId), null, null,
             "folder_delete");
@@ -251,9 +250,8 @@ public class FolderFacadeImpl extends BaseFacade {
         folderService.updateById(update);
         JsonResult.createSuccessResult(result, true);
         assert mu != null;
-        userOpLogService.append("folder", String.valueOf(folder.getId()), OpType.UPDATE,
-            mu.getLoginName(), ms.getTenant(), J.toJson(folder), J.toJson(update), null,
-            "folder_update");
+        userOpLogService.append("folder", folder.getId(), OpType.UPDATE, mu.getLoginName(),
+            ms.getTenant(), J.toJson(folder), J.toJson(update), null, "folder_update");
       }
     });
 

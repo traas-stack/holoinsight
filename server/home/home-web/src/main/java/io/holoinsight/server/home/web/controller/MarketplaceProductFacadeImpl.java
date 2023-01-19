@@ -78,9 +78,9 @@ public class MarketplaceProductFacadeImpl extends BaseFacade {
             marketplaceProductService.updateByRequest(marketplaceProductDTO);
 
         assert mu != null;
-        userOpLogService.append("marketplace_product", String.valueOf(update.getId()),
-            OpType.UPDATE, mu.getLoginName(), ms.getTenant(), J.toJson(marketplaceProductDTO),
-            J.toJson(update), null, "marketplace_product_update");
+        userOpLogService.append("marketplace_product", update.getId(), OpType.UPDATE,
+            mu.getLoginName(), ms.getTenant(), J.toJson(marketplaceProductDTO), J.toJson(update),
+            null, "marketplace_product_update");
 
       }
     });
@@ -115,7 +115,7 @@ public class MarketplaceProductFacadeImpl extends BaseFacade {
         JsonResult.createSuccessResult(result, save);
 
         assert mu != null;
-        userOpLogService.append("marketplace_product", String.valueOf(save.getId()), OpType.CREATE,
+        userOpLogService.append("marketplace_product", save.getId(), OpType.CREATE,
             mu.getLoginName(), ms.getTenant(), J.toJson(marketplaceProductDTO), null, null,
             "marketplace_product_create");
 
@@ -229,7 +229,7 @@ public class MarketplaceProductFacadeImpl extends BaseFacade {
 
         marketplaceProductService.deleteById(id);
         JsonResult.createSuccessResult(result, null);
-        userOpLogService.append("marketplace_product", String.valueOf(byId.getId()), OpType.DELETE,
+        userOpLogService.append("marketplace_product", byId.getId(), OpType.DELETE,
             RequestContext.getContext().mu.getLoginName(),
             RequestContext.getContext().ms.getTenant(), J.toJson(byId), null, null,
             "marketplace_product_delete");

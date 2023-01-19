@@ -102,8 +102,8 @@ public class AlarmRuleFacadeImpl extends BaseFacade {
         alarmRuleDTO.setGmtModified(new Date());
         Long id = alarmRuleService.save(alarmRuleDTO);
 
-        userOpLogService.append("alarm_rule", String.valueOf(id), OpType.CREATE, mu.getLoginName(),
-            ms.getTenant(), J.toJson(alarmRuleDTO), null, null, "alarm_rule_create");
+        userOpLogService.append("alarm_rule", id, OpType.CREATE, mu.getLoginName(), ms.getTenant(),
+            J.toJson(alarmRuleDTO), null, null, "alarm_rule_create");
         JsonResult.createSuccessResult(result, id);
       }
     });
@@ -147,7 +147,7 @@ public class AlarmRuleFacadeImpl extends BaseFacade {
         alarmRuleDTO.setGmtModified(new Date());
         boolean save = alarmRuleService.updateById(alarmRuleDTO);
 
-        userOpLogService.append("alarm_rule", String.valueOf(alarmRuleDTO.getId()), OpType.UPDATE,
+        userOpLogService.append("alarm_rule", alarmRuleDTO.getId(), OpType.UPDATE,
             RequestContext.getContext().mu.getLoginName(),
             RequestContext.getContext().ms.getTenant(), J.toJson(item), J.toJson(alarmRuleDTO),
             null, "alarm_rule_update");
@@ -201,7 +201,7 @@ public class AlarmRuleFacadeImpl extends BaseFacade {
           rtn = alarmRuleService.removeById(id);
         }
 
-        userOpLogService.append("alarm_rule", String.valueOf(id), OpType.DELETE,
+        userOpLogService.append("alarm_rule", id, OpType.DELETE,
             RequestContext.getContext().mu.getLoginName(),
             RequestContext.getContext().ms.getTenant(), J.toJson(alarmRule), null, null,
             "alarm_rule_delete");

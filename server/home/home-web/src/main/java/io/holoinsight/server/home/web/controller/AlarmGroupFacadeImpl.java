@@ -97,9 +97,8 @@ public class AlarmGroupFacadeImpl extends BaseFacade {
         alarmGroup.setGmtCreate(new Date());
         alarmGroup.setGmtModified(new Date());
         Long rtn = alarmGroupService.save(alarmGroup);
-        userOpLogService.append("alarm_group", String.valueOf(rtn), OpType.CREATE,
-            mu.getLoginName(), ms.getTenant(), J.toJson(alarmGroup), null, null,
-            "alarm_group_create");
+        userOpLogService.append("alarm_group", rtn, OpType.CREATE, mu.getLoginName(),
+            ms.getTenant(), J.toJson(alarmGroup), null, null, "alarm_group_create");
 
         JsonResult.createSuccessResult(result, rtn);
       }
@@ -142,7 +141,7 @@ public class AlarmGroupFacadeImpl extends BaseFacade {
         alarmGroup.setGmtModified(new Date());
         boolean save = alarmGroupService.updateById(alarmGroup);
 
-        userOpLogService.append("alarm_group", String.valueOf(alarmGroup.getId()), OpType.UPDATE,
+        userOpLogService.append("alarm_group", alarmGroup.getId(), OpType.UPDATE,
             RequestContext.getContext().mu.getLoginName(),
             RequestContext.getContext().ms.getTenant(), J.toJson(item), J.toJson(alarmGroup), null,
             "alarm_group_update");
@@ -196,7 +195,7 @@ public class AlarmGroupFacadeImpl extends BaseFacade {
           rtn = alarmGroupService.removeById(id);
         }
 
-        userOpLogService.append("alarm_group", String.valueOf(id), OpType.DELETE,
+        userOpLogService.append("alarm_group", id, OpType.DELETE,
             RequestContext.getContext().mu.getLoginName(),
             RequestContext.getContext().ms.getTenant(), J.toJson(alarmGroup), null, null,
             "alarm_group_delete");
