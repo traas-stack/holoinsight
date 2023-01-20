@@ -1,7 +1,7 @@
 /*
  * Copyright 2022 Holoinsight Project Authors. Licensed under Apache-2.0.
  */
-package io.holoinsight.server.home.alert.exception;
+package io.holoinsight.server.home.common.exception;
 
 /**
  * alert illegal argument exception
