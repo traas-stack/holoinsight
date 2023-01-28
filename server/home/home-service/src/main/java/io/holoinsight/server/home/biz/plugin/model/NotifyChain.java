@@ -94,11 +94,12 @@ public class NotifyChain extends ChainPlugin implements Runnable {
     try {
       handle();
     } catch (HoloinsightAlertIllegalArgumentException e) {
-      LOGGER.error("[HoloinsightAlertIllegalArgumentException] fail to handle notify chain for {}",
-          e.getMessage(), e);
+      LOGGER.error(
+          "[HoloinsightAlertIllegalArgumentException][1] {} fail to handle notify chain for {}",
+          this.traceId, e.getMessage(), e);
     } catch (Throwable e) {
-      LOGGER.error("[HoloinsightAlertInternalException] fail to handle notify chain for {}",
-          e.getMessage(), e);
+      LOGGER.error("[HoloinsightAlertInternalException][1] {} fail to handle notify chain for {}",
+          this.traceId, e.getMessage(), e);
     }
   }
 

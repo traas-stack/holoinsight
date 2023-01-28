@@ -5,13 +5,11 @@ package io.holoinsight.server.home.alert.service.task;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import io.holoinsight.server.common.config.EnvironmentProperties;
-import io.holoinsight.server.home.alert.common.G;
 import io.holoinsight.server.home.dal.mapper.MetaDataDictValueMapper;
 import io.holoinsight.server.home.dal.model.MetaDataDictValue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -19,7 +17,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -28,12 +25,9 @@ import java.util.stream.Collectors;
  * @date 2022/2/22 4:34 下午
  */
 @Service
-public class CacheAlarmConfig {
+public class CacheAlertConfig {
 
-  private static Logger LOGGER = LoggerFactory.getLogger(CacheAlarmConfig.class);
-
-  private static final ScheduledThreadPoolExecutor EXECUTOR =
-      new ScheduledThreadPoolExecutor(2, r -> new Thread(r, "InspectCtlParamDictSync"));
+  private static Logger LOGGER = LoggerFactory.getLogger(CacheAlertConfig.class);
 
   private static final ScheduledExecutorService syncExecutorService =
       Executors.newSingleThreadScheduledExecutor();

@@ -4,7 +4,7 @@
 package io.holoinsight.server.home.alert.service.data.load;
 
 import io.holoinsight.server.common.J;
-import io.holoinsight.server.home.alert.model.compute.ComputeTask;
+import io.holoinsight.server.home.alert.model.compute.ComputeTaskPackage;
 import io.holoinsight.server.home.alert.model.data.DataResult;
 import io.holoinsight.server.home.alert.model.data.InspectConfig;
 import io.holoinsight.server.home.alert.model.emuns.PeriodType;
@@ -33,7 +33,8 @@ public class PqlAlarmLoadData {
   @Resource
   private QueryClientService queryClientService;
 
-  public List<DataResult> queryDataResult(ComputeTask computeTask, InspectConfig inspectConfig) {
+  public List<DataResult> queryDataResult(ComputeTaskPackage computeTask,
+      InspectConfig inspectConfig) {
     List<DataResult> dataResults = new ArrayList<>();
     QueryProto.PqlRangeRequest pqlRangeRequest = QueryProto.PqlRangeRequest.newBuilder()
         .setTenant(inspectConfig.getTenant()).setStart(computeTask.getTimestamp())
