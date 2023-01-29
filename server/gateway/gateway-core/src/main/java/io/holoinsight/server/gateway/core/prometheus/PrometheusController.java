@@ -4,8 +4,15 @@
 
 package io.holoinsight.server.gateway.core.prometheus;
 
-import io.holoinsight.server.common.auth.ApikeyAuthService;
-import io.holoinsight.server.gateway.core.storage.MetricStorage;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,13 +21,15 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.xerial.snappy.Snappy;
+
+import io.holoinsight.server.common.BoundedSchedulers;
+import io.holoinsight.server.common.auth.ApikeyAuthService;
+import io.holoinsight.server.common.auth.AuthInfo;
+import io.holoinsight.server.extension.MetricStorage;
+import io.holoinsight.server.extension.model.WriteMetricsParam;
 import prometheus.Prometheus;
 import prometheus.PrometheusTypes;
-
-import javax.servlet.http.HttpServletRequest;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import reactor.core.publisher.Mono;
 
 /**
  * @author sw1136562366
@@ -31,7 +40,7 @@ public class PrometheusController {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(PrometheusController.class);
   @Autowired
-  private MetricStorage storage;
+  private MetricStorage metricStorage;
 
   @Autowired
   private ApikeyAuthService authService;
@@ -56,19 +65,13 @@ public class PrometheusController {
         return;
       }
 
-      InputStream is = request.getInputStream();
-      ByteArrayOutputStream buffer = new ByteArrayOutputStream();
-      int nRead;
-      byte[] data = new byte[1024];
-      while ((nRead = is.read(data, 0, data.length)) != -1) {
-        buffer.write(data, 0, nRead);
-      }
-      buffer.flush();
+      byte[] body = IOUtils.toByteArray(request.getInputStream());
       Prometheus.WriteRequest writeRequest =
-          Prometheus.WriteRequest.parseFrom(Snappy.uncompress(buffer.toByteArray()));
+          Prometheus.WriteRequest.parseFrom(Snappy.uncompress(body));
 
       authService.get(apikey, true).flatMap(authInfo -> {
-        return storage.write(authInfo, writeRequest);
+        WriteMetricsParam param = convertToWriteMetricsParam(authInfo, writeRequest);
+        return metricStorage.write(param);
       }).subscribe(null, error -> {
         LOGGER.error("write error", error);
       });
@@ -77,26 +80,45 @@ public class PrometheusController {
     }
   }
 
-  /**
-   *
-   * @param request
-   * @throws IOException
-   * @deprecated There is not read api now.
-   */
-  // @PostMapping("/read")
-  @Deprecated
-  public void read(HttpServletRequest request) throws IOException {
-    Prometheus.ReadRequest readRequest = Prometheus.ReadRequest.parseFrom(request.getInputStream());
+  private WriteMetricsParam convertToWriteMetricsParam(AuthInfo authInfo,
+      Prometheus.WriteRequest writeRequest) {
+    List<WriteMetricsParam.Point> points = new ArrayList<>(writeRequest.getTimeseriesList().size());
 
-    for (Prometheus.Query query : readRequest.getQueriesList()) {
+    for (PrometheusTypes.TimeSeries timeSeries : writeRequest.getTimeseriesList()) {
       String metric = "";
+      Map<String, String> tags = new HashMap<>();
 
-      for (PrometheusTypes.LabelMatcher labelMatcher : query.getMatchersList()) {
-        if (labelMatcher.getName().equals("__name__")) {
-          metric = labelMatcher.getValue();
+      for (PrometheusTypes.Label label : timeSeries.getLabelsList()) {
+        String tagValue = label.getValue();
+        if (label.getName().equals("__name__")) {
+          metric = fixName(tagValue);
+        } else {
+          tags.put(label.getName(), tagValue);
         }
       }
+
+      if (StringUtils.isBlank(metric)) {
+        continue;
+      }
+
+      for (PrometheusTypes.Sample sample : timeSeries.getSamplesList()) {
+        WriteMetricsParam.Point wmpp = new WriteMetricsParam.Point();
+        wmpp.setMetricName(metric);
+        wmpp.setTimeStamp(sample.getTimestamp());
+        wmpp.setValue(sample.getValue());
+        wmpp.setTags(tags);
+        points.add(wmpp);
+      }
     }
+
+    WriteMetricsParam param = new WriteMetricsParam();
+    param.setTenant(authInfo.getTenant());
+    param.setPoints(points);
+    return param;
+  }
+
+  private static String fixName(String name) {
+    return name.replace('.', '_');
   }
 
 }
