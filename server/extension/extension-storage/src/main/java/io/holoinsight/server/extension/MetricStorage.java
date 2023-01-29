@@ -11,6 +11,7 @@ import io.holoinsight.server.extension.model.QueryResult.Result;
 import io.holoinsight.server.extension.model.WriteMetricsParam;
 import io.holoinsight.server.extension.model.PqlParam;
 import io.holoinsight.server.extension.model.QueryParam;
+import reactor.core.publisher.Mono;
 
 /**
  * @author jinyan.ljw
@@ -18,7 +19,7 @@ import io.holoinsight.server.extension.model.QueryParam;
  */
 public interface MetricStorage {
 
-  void write(WriteMetricsParam writeMetricsParam);
+  Mono<Void> write(WriteMetricsParam writeMetricsParam);
 
   List<Result> queryData(QueryParam queryParam);
 

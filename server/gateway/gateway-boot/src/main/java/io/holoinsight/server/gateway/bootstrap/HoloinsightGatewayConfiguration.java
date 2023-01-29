@@ -11,9 +11,9 @@ import io.holoinsight.server.common.security.InternalWebApiSecurityConfiguration
 import io.holoinsight.server.common.springboot.ConditionalOnRole;
 import io.holoinsight.server.common.springboot.HoloinsightProperties;
 import io.holoinsight.server.common.threadpool.ThreadPoolConfiguration;
+import io.holoinsight.server.extension.MetricStorage;
+import io.holoinsight.server.extension.NoopMetricStorage;
 import io.holoinsight.server.gateway.core.grpc.GatewayProperties;
-import io.holoinsight.server.gateway.core.storage.MetricStorage;
-import io.holoinsight.server.gateway.core.storage.NoopMetricStorage;
 
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;

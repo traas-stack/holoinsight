@@ -12,4 +12,10 @@
 
 	<artifactId>extension-storage</artifactId>
 	<description>holoinsight server side storage module</description>
+	<dependencies>
+		<dependency>
+			<groupId>io.projectreactor</groupId>
+			<artifactId>reactor-core</artifactId>
+		</dependency>
+	</dependencies>
 </project>
