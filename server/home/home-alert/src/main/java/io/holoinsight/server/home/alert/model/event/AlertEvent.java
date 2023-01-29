@@ -3,7 +3,6 @@
  */
 package io.holoinsight.server.home.alert.model.event;
 
-import io.holoinsight.server.home.alert.model.emuns.EventTypeEnum;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
@@ -16,8 +15,6 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 public class AlertEvent {
-
-  EventTypeEnum eventTypeEnum;
 
   List<AlertNotify> alarmNotifies;
 }

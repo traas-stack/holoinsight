@@ -3,6 +3,7 @@
  */
 package io.holoinsight.server.home.alert.model.compute;
 
+import io.holoinsight.server.home.alert.model.data.InspectConfig;
 import lombok.Data;
 
 import java.util.List;
@@ -16,6 +17,21 @@ public class ComputeTaskPackage {
 
   private String type = "alarmRule"; // 不同的计算流程（spark、pql）
 
-  private List<ComputeTask> computeTaskList;
+  /**
+   * traceId
+   */
+  private String traceId;
+
+  /**
+   * 检测时间点
+   */
+  private long timestamp;
+
+  /**
+   * 告警配置
+   */
+  public List<InspectConfig> inspectConfigs;
+
+  // 后续可以考虑聚合数据源查询
 
 }

@@ -4,8 +4,6 @@
 package io.holoinsight.server.home.alert.service.task;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import io.holoinsight.server.home.alert.common.G;
-import io.holoinsight.server.home.alert.model.compute.ComputeTask;
 import io.holoinsight.server.home.alert.model.compute.ComputeTaskPackage;
 import io.holoinsight.server.home.alert.model.data.InspectConfig;
 import io.holoinsight.server.home.alert.service.converter.DoConvert;
@@ -20,7 +18,6 @@ import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -35,9 +32,9 @@ import java.util.concurrent.atomic.AtomicInteger;
  * @date 2022/2/22 4:35 下午
  */
 @Service
-public class CacheAlarmTask {
+public class CacheAlertTask {
 
-  private static Logger LOGGER = LoggerFactory.getLogger(CacheAlarmTask.class);
+  private static Logger LOGGER = LoggerFactory.getLogger(CacheAlertTask.class);
 
   private static final ScheduledExecutorService syncExecutorService =
       new ScheduledThreadPoolExecutor(2, r -> new Thread(r, "CacheAlarmTaskScheduled"));
@@ -54,7 +51,7 @@ public class CacheAlarmTask {
   private CacheData cacheData;
 
   @Autowired
-  private CacheAlarmConfig cacheAlarmConfig;
+  private CacheAlertConfig cacheAlertConfig;
 
   public void start() {
     LOGGER.info("[AlarmConfig] start alarm config syn!");
@@ -70,9 +67,8 @@ public class CacheAlarmTask {
       // LOGGER.info("[AlarmRuleDO] alarm rule info {}: {}", alarmRuleDOS.size(),
       // G.get().toJson(alarmRuleDOS));
       // 转换为告警配置(以dsid为维度)
-      ComputeTaskPackage computeTaskPackage = conver(alarmRuleDOS);
-      if (computeTaskPackage.getComputeTaskList() != null
-          && "true".equals(this.cacheAlarmConfig.getConfig("alarm_switch"))) {
+      ComputeTaskPackage computeTaskPackage = convert(alarmRuleDOS);
+      if ("true".equals(this.cacheAlertConfig.getConfig("alarm_switch"))) {
         TaskQueueManager.getInstance().offer(computeTaskPackage);
       }
 
@@ -81,10 +77,9 @@ public class CacheAlarmTask {
     }
   }
 
-  public ComputeTaskPackage conver(List<AlarmRule> alarmRuleDOS) {
+  public ComputeTaskPackage convert(List<AlarmRule> alarmRuleDOS) {
     ComputeTaskPackage computeTaskPackage = new ComputeTaskPackage();
-    ComputeTask computeTask = new ComputeTask();
-    computeTask.setTraceId(UUID.randomUUID().toString());
+    computeTaskPackage.setTraceId(UUID.randomUUID().toString());
     List<InspectConfig> inspectConfigs = new ArrayList<>();
     Map<String, InspectConfig> uniqueIdMap = new HashMap<>();
     try {
@@ -98,8 +93,7 @@ public class CacheAlarmTask {
       });
       cacheData.setUniqueIdMap(uniqueIdMap);
       if (inspectConfigs.size() != 0) {
-        computeTask.setInspectConfigs(inspectConfigs);
-        computeTaskPackage.setComputeTaskList(Arrays.asList(computeTask));
+        computeTaskPackage.setInspectConfigs(inspectConfigs);
       }
     } catch (Exception e) {
       LOGGER.error("fail to convert alarmRules for {}", e.getMessage(), e);

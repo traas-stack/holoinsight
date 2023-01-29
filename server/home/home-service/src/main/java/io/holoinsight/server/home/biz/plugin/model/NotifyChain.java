@@ -4,6 +4,7 @@
 package io.holoinsight.server.home.biz.plugin.model;
 
 import io.holoinsight.server.home.biz.plugin.PluginScheduleQueue;
+import io.holoinsight.server.home.common.exception.HoloinsightAlertIllegalArgumentException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -22,12 +23,6 @@ import java.util.List;
 public class NotifyChain extends ChainPlugin implements Runnable {
   private static final Logger LOGGER = LoggerFactory.getLogger(NotifyChain.class);
 
-  public static final String SMS_NOTIFY = "sms";
-  public static final String EMAIL_NOTIFY = "email";
-  public static final String DD_ROBOT_NOTIFY = "dingding_robot";
-  public static final String PHONE_NOTIFY = "phone";
-  public static final String WEBHOOK_NOTIFY = "webhook";
-
   public List<ChainPlugin> chains;
   // next executable plugin in chains
   public int index;
@@ -40,39 +35,33 @@ public class NotifyChain extends ChainPlugin implements Runnable {
     this.scheduleQueue = queue;
   }
 
-  public void schedule() {
-    try {
-      if (CollectionUtils.isEmpty(chains)) {
-        return;
-      }
-
-      if (index >= this.chains.size()) {
-        return;
-      }
-      int start = index;
-      for (int i = start; i < chains.size(); i++) {
-        try {
-          ChainPlugin plugin = this.chains.get(i);
-          plugin.input(this.input, this.context);
-          if (plugin instanceof WaitPlugin) {
-            // 遇到 wait 插件，放入调度队列，完成本次调度
-            if (this.scheduleQueue == null) {
-              continue;
-            }
-            this.scheduleQueue.addQueue((ScheduleTimeEnum) plugin.output(), this);
-            break;
-          }
-          plugin.handle();
-          this.input = plugin.output();
-        } finally {
-          index++;
-        }
-      }
-    } catch (Exception e) {
-      LOGGER.error("fail to schedule notify chain {} index {} for {}", getTraceId(), index,
-          e.getMessage(), e);
+  public void schedule() throws Exception {
+    if (CollectionUtils.isEmpty(chains)) {
+      return;
     }
 
+    if (index >= this.chains.size()) {
+      return;
+    }
+    int start = index;
+    for (int i = start; i < chains.size(); i++) {
+      try {
+        ChainPlugin plugin = this.chains.get(i);
+        plugin.input(this.input, this.context);
+        if (plugin instanceof WaitPlugin) {
+          // 遇到 wait 插件，放入调度队列，完成本次调度
+          if (this.scheduleQueue == null) {
+            continue;
+          }
+          this.scheduleQueue.addQueue((ScheduleTimeEnum) plugin.output(), this);
+          break;
+        }
+        plugin.handle();
+        this.input = plugin.output();
+      } finally {
+        index++;
+      }
+    }
   }
 
   public String getTraceId() {
@@ -104,8 +93,13 @@ public class NotifyChain extends ChainPlugin implements Runnable {
   public void run() {
     try {
       handle();
-    } catch (Exception e) {
-      LOGGER.error("fail to run schedule chain {} for {}", getTraceId(), e.getMessage(), e);
+    } catch (HoloinsightAlertIllegalArgumentException e) {
+      LOGGER.error(
+          "[HoloinsightAlertIllegalArgumentException][1] {} fail to handle notify chain for {}",
+          this.traceId, e.getMessage(), e);
+    } catch (Throwable e) {
+      LOGGER.error("[HoloinsightAlertInternalException][1] {} fail to handle notify chain for {}",
+          this.traceId, e.getMessage(), e);
     }
   }
 

@@ -35,6 +35,11 @@
         </dependency>
         <dependency>
             <groupId>io.holoinsight.server</groupId>
+            <artifactId>home-common</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.holoinsight.server</groupId>
             <artifactId>common</artifactId>
             <version>${project.version}</version>
         </dependency>

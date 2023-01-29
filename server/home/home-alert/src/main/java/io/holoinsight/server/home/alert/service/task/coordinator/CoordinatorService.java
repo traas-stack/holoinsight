@@ -4,12 +4,12 @@
 package io.holoinsight.server.home.alert.service.task.coordinator;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import io.holoinsight.server.common.AddressUtil;
 import io.holoinsight.server.common.J;
+import io.holoinsight.server.home.alert.service.task.CacheAlertTask;
+import io.holoinsight.server.home.alert.service.task.coordinator.server.NettyServer;
 import io.holoinsight.server.home.common.util.CLUSTER_ROLE_CONST;
 import io.holoinsight.server.home.dal.mapper.ClusterMapper;
-import io.holoinsight.server.home.alert.service.task.CacheAlarmTask;
-import io.holoinsight.server.home.alert.service.task.coordinator.server.NettyServer;
-import io.holoinsight.server.common.AddressUtil;
 import io.holoinsight.server.home.dal.model.Cluster;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,7 +36,7 @@ public class CoordinatorService {
   @Resource
   private ClusterMapper clusterMapper;
   @Autowired
-  private CacheAlarmTask cacheAlarmTask;
+  private CacheAlertTask cacheAlertTask;
   private final String role = CLUSTER_ROLE_CONST.PROD;
 
   private List<String> otherMembers = new ArrayList<>();
@@ -90,14 +90,14 @@ public class CoordinatorService {
       return;
     }
     double realSize = orderMap.getRealSize().doubleValue();
-    double ruleSize = this.cacheAlarmTask.ruleSize().doubleValue();
+    double ruleSize = this.cacheAlertTask.ruleSize().doubleValue();
     // 领取任务，[(order-1)*(ruleSize/realSize), order*(ruleSize/realSize))
     LOGGER.info("gossip order realOrder {}, realSize {}, ruleSize {}", realOrder, realSize,
         ruleSize);
     int pageSize = (int) Math.ceil(ruleSize / realSize);
     int pageNum = pageSize * realOrder;
-    this.cacheAlarmTask.setPageSize(pageSize);
-    this.cacheAlarmTask.setPageNum(pageNum);
+    this.cacheAlertTask.setPageSize(pageSize);
+    this.cacheAlertTask.setPageNum(pageNum);
   }
 
   public void buildCluster() throws Exception {
