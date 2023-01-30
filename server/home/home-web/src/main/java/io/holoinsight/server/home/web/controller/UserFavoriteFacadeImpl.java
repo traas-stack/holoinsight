@@ -6,6 +6,7 @@ package io.holoinsight.server.home.web.controller;
 import io.holoinsight.server.home.biz.service.CustomPluginService;
 import io.holoinsight.server.home.biz.service.DashboardService;
 import io.holoinsight.server.home.biz.service.FolderService;
+import io.holoinsight.server.home.biz.service.IntegrationPluginService;
 import io.holoinsight.server.home.biz.service.UserFavoriteService;
 import io.holoinsight.server.home.biz.service.UserOpLogService;
 import io.holoinsight.server.home.common.util.MonitorException;
@@ -22,6 +23,7 @@ import io.holoinsight.server.home.dal.model.Folder;
 import io.holoinsight.server.home.dal.model.OpType;
 import io.holoinsight.server.home.dal.model.UserFavorite;
 import io.holoinsight.server.home.dal.model.dto.CustomPluginDTO;
+import io.holoinsight.server.home.dal.model.dto.IntegrationPluginDTO;
 import io.holoinsight.server.home.facade.page.MonitorPageRequest;
 import io.holoinsight.server.home.facade.page.MonitorPageResult;
 import io.holoinsight.server.home.web.common.ManageCallback;
@@ -72,6 +74,9 @@ public class UserFavoriteFacadeImpl extends BaseFacade {
   private DashboardService dashboardService;
 
   @Autowired
+  private IntegrationPluginService integrationPluginService;
+
+  @Autowired
   private UserOpLogService userOpLogService;
 
   @PostMapping("/create")
@@ -84,6 +89,34 @@ public class UserFavoriteFacadeImpl extends BaseFacade {
       public void checkParameter() {
         ParaCheckUtil.checkParaNotNull(userFavorite.relateId, "relateId");
         ParaCheckUtil.checkParaNotBlank(userFavorite.type, "type");
+
+        switch (userFavorite.type) {
+          case "folder":
+            Folder folder = folderService.queryById(Long.parseLong(userFavorite.getRelateId()),
+                RequestContext.getContext().ms.tenant);
+            if (null == folder)
+              throw new MonitorException(String.format("can not find record, %s-%s",
+                  userFavorite.type, userFavorite.relateId));
+          case "logmonitor":
+            CustomPluginDTO customPluginDTO = customPluginService.queryById(
+                Long.parseLong(userFavorite.getRelateId()), RequestContext.getContext().ms.tenant);
+            if (null == customPluginDTO)
+              throw new MonitorException(String.format("can not find record, %s-%s",
+                  userFavorite.type, userFavorite.relateId));
+          case "dashboard":
+            Dashboard dashboard = dashboardService.queryById(
+                Long.parseLong(userFavorite.getRelateId()), RequestContext.getContext().ms.tenant);
+            if (null == dashboard)
+              throw new MonitorException(String.format("can not find record, %s-%s",
+                  userFavorite.type, userFavorite.relateId));
+          case "integration":
+            IntegrationPluginDTO integrationPluginDTO = integrationPluginService.queryById(
+                Long.parseLong(userFavorite.getRelateId()), RequestContext.getContext().ms.tenant);
+            if (null == integrationPluginDTO)
+              throw new MonitorException(String.format("can not find record, %s-%s",
+                  userFavorite.type, userFavorite.relateId));
+        }
+
       }
 
       @Override
