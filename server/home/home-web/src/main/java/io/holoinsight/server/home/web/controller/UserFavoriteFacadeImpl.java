@@ -104,9 +104,9 @@ public class UserFavoriteFacadeImpl extends BaseFacade {
         JsonResult.createSuccessResult(result, save);
 
         assert mu != null;
-        userOpLogService.append("user_favorite", String.valueOf(save.getId()), OpType.CREATE,
-            mu.getLoginName(), RequestContext.getContext().ms.getTenant(), J.toJson(save), null,
-            null, "user_favorite_create");
+        userOpLogService.append("user_favorite", save.getId(), OpType.CREATE, mu.getLoginName(),
+            RequestContext.getContext().ms.getTenant(), J.toJson(save), null, null,
+            "user_favorite_create");
       }
     });
 
@@ -349,7 +349,7 @@ public class UserFavoriteFacadeImpl extends BaseFacade {
         }
         userFavoriteService.deleteById(id);
         JsonResult.createSuccessResult(result, true);
-        userOpLogService.append("user_favorite", String.valueOf(byId.getId()), OpType.DELETE,
+        userOpLogService.append("user_favorite", byId.getId(), OpType.DELETE,
             RequestContext.getContext().mu.getLoginName(),
             RequestContext.getContext().ms.getTenant(), J.toJson(byId), null, null,
             "user_favorite_delete");
@@ -383,7 +383,7 @@ public class UserFavoriteFacadeImpl extends BaseFacade {
 
         userFavoriteService.deleteById(byId.get(0).id);
         JsonResult.createSuccessResult(result, true);
-        userOpLogService.append("user_favorite", String.valueOf(byId.get(0).id), OpType.DELETE,
+        userOpLogService.append("user_favorite", byId.get(0).id, OpType.DELETE,
             RequestContext.getContext().mu.getLoginName(),
             RequestContext.getContext().ms.getTenant(), J.toJson(byId), null, null,
             "user_favorite_delete");

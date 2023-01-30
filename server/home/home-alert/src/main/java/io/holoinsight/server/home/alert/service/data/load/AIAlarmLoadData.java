@@ -4,7 +4,7 @@
 package io.holoinsight.server.home.alert.service.data.load;
 
 import io.holoinsight.server.home.alert.common.G;
-import io.holoinsight.server.home.alert.model.compute.ComputeTask;
+import io.holoinsight.server.home.alert.model.compute.ComputeTaskPackage;
 import io.holoinsight.server.home.alert.model.data.DataResult;
 import io.holoinsight.server.home.alert.model.data.DataSource;
 import io.holoinsight.server.home.alert.model.data.Filter;
@@ -36,8 +36,8 @@ public class AIAlarmLoadData implements AlarmLoadData {
   private QueryClientService queryClientService;
 
   @Override
-  public List<DataResult> queryDataResult(ComputeTask computeTask, InspectConfig inspectConfig,
-      Trigger trigger) {
+  public List<DataResult> queryDataResult(ComputeTaskPackage computeTask,
+      InspectConfig inspectConfig, Trigger trigger) {
     List<DataResult> dataResults = new ArrayList<>();
     QueryProto.QueryResponse response = queryDataCount(computeTask, inspectConfig, trigger);
     if (response != null) {
@@ -51,7 +51,7 @@ public class AIAlarmLoadData implements AlarmLoadData {
     return dataResults;
   }
 
-  private QueryProto.QueryResponse queryTags(ComputeTask computeTask, InspectConfig e,
+  private QueryProto.QueryResponse queryTags(ComputeTaskPackage computeTask, InspectConfig e,
       Trigger trigger) {
     QueryProto.QueryResponse response = null;
     QueryProto.QueryRequest request = null;
@@ -93,7 +93,7 @@ public class AIAlarmLoadData implements AlarmLoadData {
     return null;
   }
 
-  private QueryProto.QueryResponse queryDataCount(ComputeTask computeTask, InspectConfig e,
+  private QueryProto.QueryResponse queryDataCount(ComputeTaskPackage computeTask, InspectConfig e,
       Trigger trigger) {
     QueryProto.QueryResponse response = null;
     QueryProto.QueryRequest request = null;

@@ -4,7 +4,7 @@
 package io.holoinsight.server.home.alert.service.data.load;
 
 import io.holoinsight.server.home.alert.common.G;
-import io.holoinsight.server.home.alert.model.compute.ComputeTask;
+import io.holoinsight.server.home.alert.model.compute.ComputeTaskPackage;
 import io.holoinsight.server.home.alert.model.data.DataResult;
 import io.holoinsight.server.home.alert.model.data.DataSource;
 import io.holoinsight.server.home.alert.model.data.Filter;
@@ -38,8 +38,8 @@ public class RuleAlarmLoadData implements AlarmLoadData {
   private QueryClientService queryClientService;
 
   @Override
-  public List<DataResult> queryDataResult(ComputeTask computeTask, InspectConfig inspectConfig,
-      Trigger trigger) {
+  public List<DataResult> queryDataResult(ComputeTaskPackage computeTask,
+      InspectConfig inspectConfig, Trigger trigger) {
     List<DataResult> dataResults = new ArrayList<>();
     QueryProto.QueryResponse response = queryData(computeTask, inspectConfig, trigger);
     if (response != null) {
@@ -58,7 +58,7 @@ public class RuleAlarmLoadData implements AlarmLoadData {
     return dataResults;
   }
 
-  private QueryProto.QueryResponse queryData(ComputeTask computeTask, InspectConfig e,
+  private QueryProto.QueryResponse queryData(ComputeTaskPackage computeTask, InspectConfig e,
       Trigger trigger) {
     QueryProto.QueryResponse response = null;
     QueryProto.QueryRequest request = null;

@@ -21,6 +21,6 @@ public interface UserOpLogService extends IService<UserOpLog> {
 
   MonitorPageResult<UserOpLog> getListByPage(MonitorTimePageRequest<UserOpLog> userOpLogRequest);
 
-  UserOpLog append(String tableName, String tableEntityId, String opType, String user,
-      String tenant, String before, String after, String relate, String name);
+  UserOpLog append(String tableName, Long tableEntityId, String opType, String user, String tenant,
+      String before, String after, String relate, String name);
 }

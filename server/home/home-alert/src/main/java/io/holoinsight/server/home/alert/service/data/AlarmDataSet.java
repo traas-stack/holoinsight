@@ -3,7 +3,6 @@
  */
 package io.holoinsight.server.home.alert.service.data;
 
-import io.holoinsight.server.home.alert.model.compute.ComputeTask;
 import io.holoinsight.server.home.alert.model.compute.ComputeTaskPackage;
 import io.holoinsight.server.home.alert.model.data.DataResult;
 import io.holoinsight.server.home.alert.model.data.PqlRule;
@@ -38,46 +37,46 @@ public class AlarmDataSet {
 
   public void loadData(ComputeTaskPackage computeTaskPackage) {
 
-    if (computeTaskPackage == null || computeTaskPackage.getComputeTaskList() == null) {
+    if (computeTaskPackage == null
+        || CollectionUtils.isEmpty(computeTaskPackage.getInspectConfigs())) {
       return;
     }
-    for (ComputeTask computeTask : computeTaskPackage.getComputeTaskList()) {
-      computeTask.getInspectConfigs().parallelStream().forEach(inspectConfig -> {
-        // 处理pql告警逻辑
-        if (inspectConfig.getIsPql()) {
-          try {
-            PqlRule pqlRule = inspectConfig.getPqlRule();
-            if (pqlRule != null && !StringUtils.isEmpty(pqlRule.getPql())) {
-              List<DataResult> result =
-                  pqlAlarmLoadData.queryDataResult(computeTask, inspectConfig);
-              pqlRule.setDataResult(result);
-              inspectConfig.setPqlRule(pqlRule);
-            }
-          } catch (Exception exception) {
-            LOGGER.error("Pql query Exception", exception);
-          }
-        }
-        // 处理current&ai告警逻辑
-        else {
-          Rule rule = inspectConfig.getRule();
-          if (rule == null || CollectionUtils.isEmpty(rule.getTriggers())) {
-            return;
-          }
-          for (Trigger trigger : rule.getTriggers()) {
-            try {
-              // 接入统一数据源，查询数据信息
-              alarmLoadData = loadDataFactory.getLoadDataService(trigger.getType().getType());
-              List<DataResult> dataResults =
-                  alarmLoadData.queryDataResult(computeTask, inspectConfig, trigger);
-              trigger.setDataResult(dataResults);
-            } catch (Exception exception) {
-              LOGGER.error("AlarmLoadData Exception", exception);
-            }
-          }
-        }
 
-      });
-    }
-    // LOGGER.info("AlarmDataSet SUCCESS {} ", G.get().toJson(computeTaskPackage));
+    computeTaskPackage.getInspectConfigs().parallelStream().forEach(inspectConfig -> {
+      // 处理pql告警逻辑
+      if (inspectConfig.getIsPql()) {
+        try {
+          PqlRule pqlRule = inspectConfig.getPqlRule();
+          if (pqlRule != null && !StringUtils.isEmpty(pqlRule.getPql())) {
+            List<DataResult> result =
+                pqlAlarmLoadData.queryDataResult(computeTaskPackage, inspectConfig);
+            pqlRule.setDataResult(result);
+            inspectConfig.setPqlRule(pqlRule);
+          }
+        } catch (Exception exception) {
+          LOGGER.error("Pql query Exception", exception);
+        }
+      }
+      // 处理current&ai告警逻辑
+      else {
+        Rule rule = inspectConfig.getRule();
+        if (rule == null || CollectionUtils.isEmpty(rule.getTriggers())) {
+          return;
+        }
+        for (Trigger trigger : rule.getTriggers()) {
+          try {
+            // 接入统一数据源，查询数据信息
+            alarmLoadData = loadDataFactory.getLoadDataService(trigger.getType().getType());
+            List<DataResult> dataResults =
+                alarmLoadData.queryDataResult(computeTaskPackage, inspectConfig, trigger);
+            trigger.setDataResult(dataResults);
+          } catch (Exception exception) {
+            LOGGER.error("AlarmLoadData Exception", exception);
+          }
+        }
+      }
+
+    });
+
   }
 }

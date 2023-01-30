@@ -6,7 +6,7 @@ package io.holoinsight.server.home.alert.model.event;
 import com.alibaba.fastjson.JSON;
 import io.holoinsight.server.home.alert.common.AlarmContentGenerator;
 import io.holoinsight.server.home.alert.model.data.DataResult;
-import io.holoinsight.server.home.alert.model.emuns.AlarmLevel;
+import io.holoinsight.server.home.alert.model.emuns.AlertLevel;
 import lombok.Data;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -75,7 +75,7 @@ public class TemplateValue {
     templateValue.setRuleName(alertNotify.getRuleName());
     templateValue.setAlarmTime(sdf.format(day));
     templateValue.setAlarmTimestamp(String.valueOf(alertNotify.getAlarmTime()));
-    templateValue.setAlarmLevel(AlarmLevel.getDesc(alertNotify.getAlarmLevel()));
+    templateValue.setAlarmLevel(AlertLevel.getDesc(alertNotify.getAlarmLevel()));
 
     if (alertNotify.isPqlNotify()) {
       templateValue.setMetric(alertNotify.getPqlRule().getPql());
@@ -133,7 +133,7 @@ public class TemplateValue {
       templateValue.setRuleName(alertNotify.getRuleName());
       templateValue.setAlarmTime(sdf.format(day));
       templateValue.setAlarmTimestamp(String.valueOf(alertNotify.getAlarmTime()));
-      templateValue.setAlarmLevel(AlarmLevel.getDesc(alertNotify.getAlarmLevel()));
+      templateValue.setAlarmLevel(AlertLevel.getDesc(alertNotify.getAlarmLevel()));
       templateValue.setMetric(notifyDataInfo.getMetric());
       templateValue.setAlarmTags(JSON.toJSONString(notifyDataInfo.getTags()));
       templateValue.setAlarmContent(
@@ -155,7 +155,7 @@ public class TemplateValue {
     TemplateValue templateValue = new TemplateValue();
     templateValue.setRuleName(alertNotify.getRuleName());
     templateValue.setAlarmTime(sdf.format(day));
-    templateValue.setAlarmLevel(AlarmLevel.getDesc(alertNotify.getAlarmLevel()));
+    templateValue.setAlarmLevel(AlertLevel.getDesc(alertNotify.getAlarmLevel()));
     templateValues.add(templateValue);
     return templateValues;
   }

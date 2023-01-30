@@ -76,8 +76,8 @@ public class AlarmDingDingRobotFacadeImpl extends BaseFacade {
         alarmDingDingRobotDTO.setGmtModified(new Date());
         Long id = alarmDingDingRobotService.save(alarmDingDingRobotDTO);
 
-        userOpLogService.append("alarm_dingding_robot", String.valueOf(id), OpType.CREATE,
-            mu.getLoginName(), ms.getTenant(), J.toJson(alarmDingDingRobotDTO), null, null,
+        userOpLogService.append("alarm_dingding_robot", id, OpType.CREATE, mu.getLoginName(),
+            ms.getTenant(), J.toJson(alarmDingDingRobotDTO), null, null,
             "alarm_dingding_robot_create");
 
         JsonResult.createSuccessResult(result, id);
@@ -127,7 +127,7 @@ public class AlarmDingDingRobotFacadeImpl extends BaseFacade {
         alarmDingDingRobotDTO.setGmtModified(new Date());
         boolean save = alarmDingDingRobotService.updateById(alarmDingDingRobotDTO);
 
-        userOpLogService.append("alarm_dingding_robot", String.valueOf(item.getId()), OpType.UPDATE,
+        userOpLogService.append("alarm_dingding_robot", item.getId(), OpType.UPDATE,
             RequestContext.getContext().mu.getLoginName(),
             RequestContext.getContext().ms.getTenant(), J.toJson(item),
             J.toJson(alarmDingDingRobotDTO), null, "alarm_dingding_robot_update");
@@ -181,7 +181,7 @@ public class AlarmDingDingRobotFacadeImpl extends BaseFacade {
           rtn = alarmDingDingRobotService.removeById(id);
         }
 
-        userOpLogService.append("alarm_dingding_robot", String.valueOf(id), OpType.DELETE,
+        userOpLogService.append("alarm_dingding_robot", id, OpType.DELETE,
             RequestContext.getContext().mu.getLoginName(),
             RequestContext.getContext().ms.getTenant(), J.toJson(alarmDingDingRobot), null, null,
             "alarm_dingding_robot_delete");

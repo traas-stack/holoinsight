@@ -45,6 +45,8 @@ public class AlertNotify {
 
   private List<UserInfo> userInfos; // 用户信息
 
+  private Map<String/* notify type */, List<String>> userNotifyMap; // 用户信息和通知渠道
+
   private List<String> dingdingUrl; // 钉钉群
 
   private List<WebhookInfo> webhookInfos; // 告警相关webhook消息
@@ -59,9 +61,6 @@ public class AlertNotify {
 
   private String alarmTraceId; // 告警唯一id
 
-  /**
-   * 对于小程序云站点，没有用户信息，需要裸记录订阅信息
-   */
   // 短信渠道
   private List<String> smsPhones;
   // 电话渠道

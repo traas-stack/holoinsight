@@ -135,8 +135,7 @@ public class OpenmetricsScraperFacadeImpl extends BaseFacade {
         openmetricsScraperDTO.setTenant(ms.getTenant());
         openmetricsScraperService.saveByDTO(openmetricsScraperDTO);
 
-        userOpLogService.append("openmetrics_scraper",
-            String.valueOf(openmetricsScraperDTO.getId()), OpType.CREATE,
+        userOpLogService.append("openmetrics_scraper", openmetricsScraperDTO.getId(), OpType.CREATE,
             RequestContext.getContext().mu.getLoginName(),
             RequestContext.getContext().ms.getTenant(), J.toJson(openmetricsScraperDTO), null, null,
             "openmetrics_scraper_create");
@@ -189,8 +188,7 @@ public class OpenmetricsScraperFacadeImpl extends BaseFacade {
         openmetricsScraperDTO.setId(id);
         openmetricsScraperService.saveByDTO(openmetricsScraperDTO);
 
-        userOpLogService.append("openmetrics_scraper",
-            String.valueOf(openmetricsScraperDTO.getId()), OpType.CREATE,
+        userOpLogService.append("openmetrics_scraper", openmetricsScraperDTO.getId(), OpType.CREATE,
             RequestContext.getContext().mu.getLoginName(),
             RequestContext.getContext().ms.getTenant(), J.toJson(item),
             J.toJson(openmetricsScraperDTO), null, "openmetrics_scraper_update");
@@ -227,7 +225,7 @@ public class OpenmetricsScraperFacadeImpl extends BaseFacade {
 
         openmetricsScraperService.removeById(id);
 
-        userOpLogService.append("openmetrics_scraper", String.valueOf(id), OpType.DELETE,
+        userOpLogService.append("openmetrics_scraper", id, OpType.DELETE,
             RequestContext.getContext().mu.getLoginName(),
             RequestContext.getContext().ms.getTenant(), J.toJson(model), null, null,
             "openmetrics_scraper_delete");

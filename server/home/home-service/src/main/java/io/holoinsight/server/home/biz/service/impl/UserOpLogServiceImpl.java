@@ -106,7 +106,7 @@ public class UserOpLogServiceImpl extends ServiceImpl<UserOpLogMapper, UserOpLog
 
   }
 
-  public UserOpLog append(String tableName, String tableEntityId, String opType, String user,
+  public UserOpLog append(String tableName, Long tableEntityId, String opType, String user,
       String tenant, String before, String after, String relate, String name) {
     UserOpLog opLog = new UserOpLog();
     opLog.setTableName(tableName);

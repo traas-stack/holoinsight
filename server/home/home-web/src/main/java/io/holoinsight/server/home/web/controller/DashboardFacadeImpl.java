@@ -117,9 +117,8 @@ public class DashboardFacadeImpl extends BaseFacade {
         JsonResult.createSuccessResult(result, update);
 
         assert mu != null;
-        userOpLogService.append("dashboard", String.valueOf(update.getId()), OpType.UPDATE,
-            mu.getLoginName(), ms.getTenant(), J.toJson(request), J.toJson(update), null,
-            "dashboard_update");
+        userOpLogService.append("dashboard", update.getId(), OpType.UPDATE, mu.getLoginName(),
+            ms.getTenant(), J.toJson(request), J.toJson(update), null, "dashboard_update");
 
       }
     });
@@ -156,8 +155,8 @@ public class DashboardFacadeImpl extends BaseFacade {
         JsonResult.createSuccessResult(result, request);
 
         assert mu != null;
-        userOpLogService.append("dashboard", String.valueOf(request.getId()), OpType.CREATE,
-            mu.getLoginName(), ms.getTenant(), J.toJson(request), null, null, "dashboard_create");
+        userOpLogService.append("dashboard", request.getId(), OpType.CREATE, mu.getLoginName(),
+            ms.getTenant(), J.toJson(request), null, null, "dashboard_create");
       }
     });
 
@@ -274,7 +273,7 @@ public class DashboardFacadeImpl extends BaseFacade {
         }
 
         boolean b = dashboardService.removeById(id);
-        userOpLogService.append("dashobard", String.valueOf(id), OpType.DELETE,
+        userOpLogService.append("dashobard", id, OpType.DELETE,
             RequestContext.getContext().mu.getLoginName(),
             RequestContext.getContext().ms.getTenant(), J.toJson(id), null, null,
             "dashobard_delete");

@@ -105,8 +105,8 @@ public class CustomPluginFacadeImpl extends BaseFacade {
         CustomPluginDTO update = customPluginService.updateByRequest(customPluginDTO);
         JsonResult.createSuccessResult(result, update);
         assert mu != null;
-        userOpLogService.append("custom_plugin", String.valueOf(update.getId()), OpType.UPDATE,
-            mu.getLoginName(), ms.getTenant(), J.toJson(customPluginDTO), J.toJson(update), null,
+        userOpLogService.append("custom_plugin", update.getId(), OpType.UPDATE, mu.getLoginName(),
+            ms.getTenant(), J.toJson(customPluginDTO), J.toJson(update), null,
             "custom_plugin_update");
 
       }
@@ -147,9 +147,8 @@ public class CustomPluginFacadeImpl extends BaseFacade {
         JsonResult.createSuccessResult(result, save);
 
         assert mu != null;
-        userOpLogService.append("custom_plugin", String.valueOf(save.getId()), OpType.CREATE,
-            mu.getLoginName(), ms.getTenant(), J.toJson(customPluginDTO), null, null,
-            "custom_plugin_create");
+        userOpLogService.append("custom_plugin", save.getId(), OpType.CREATE, mu.getLoginName(),
+            ms.getTenant(), J.toJson(customPluginDTO), null, null, "custom_plugin_create");
 
       }
     });
@@ -192,9 +191,8 @@ public class CustomPluginFacadeImpl extends BaseFacade {
         CustomPluginDTO custom = customPluginService.updateByRequest(update);
         JsonResult.createSuccessResult(result, true);
         assert mu != null;
-        userOpLogService.append("custom_plugin", String.valueOf(update.getId()), OpType.UPDATE,
-            mu.getLoginName(), ms.getTenant(), J.toJson(custom), J.toJson(update), null,
-            "custom_plugin_update");
+        userOpLogService.append("custom_plugin", update.getId(), OpType.UPDATE, mu.getLoginName(),
+            ms.getTenant(), J.toJson(custom), J.toJson(update), null, "custom_plugin_update");
 
       }
     });
@@ -245,7 +243,7 @@ public class CustomPluginFacadeImpl extends BaseFacade {
         }
         customPluginService.deleteById(id);
         JsonResult.createSuccessResult(result, null);
-        userOpLogService.append("custom_plugin", String.valueOf(byId.getId()), OpType.DELETE,
+        userOpLogService.append("custom_plugin", byId.getId(), OpType.DELETE,
             RequestContext.getContext().mu.getLoginName(),
             RequestContext.getContext().ms.getTenant(), J.toJson(byId), null, null,
             "custom_plugin_delete");
