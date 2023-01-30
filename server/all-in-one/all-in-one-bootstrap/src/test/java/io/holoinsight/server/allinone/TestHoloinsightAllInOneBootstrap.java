@@ -7,6 +7,7 @@ import io.holoinsight.server.allinone.bootstrap.HoloinsightAllInOneBootstrap;
 import io.holoinsight.server.common.ContextHolder;
 
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.builder.SpringApplicationBuilder;
 
 /**
  * <p>
@@ -16,6 +17,7 @@ import org.springframework.boot.SpringApplication;
  */
 public class TestHoloinsightAllInOneBootstrap {
   public static void main(String[] args) {
-    ContextHolder.ctx = SpringApplication.run(HoloinsightAllInOneBootstrap.class);
+    ContextHolder.ctx = new SpringApplicationBuilder(HoloinsightAllInOneBootstrap.class)
+        .profiles("test").build().run(args);
   }
 }
