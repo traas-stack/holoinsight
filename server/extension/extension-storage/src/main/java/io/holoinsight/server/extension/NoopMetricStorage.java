@@ -32,8 +32,8 @@ public class NoopMetricStorage implements MetricStorage {
   }
 
   @Override
-  public Map<String, String> queryTags(QueryParam queryParam) {
-    return Collections.emptyMap();
+  public List<QueryResult.Result> queryTags(QueryParam queryParam) {
+    return Collections.emptyList();
   }
 
   @Override

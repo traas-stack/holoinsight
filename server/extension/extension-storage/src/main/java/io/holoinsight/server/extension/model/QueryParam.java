@@ -22,10 +22,11 @@ public class QueryParam {
   String downsample;
   SlidingWindow slidingWindow;
   List<String> groupBy;
+  String fillPolicy;
 
   @Data
   public static class SlidingWindow {
-    int windowMs;
+    long windowMs;
     String aggregator;
   }
 

@@ -23,7 +23,7 @@ public interface MetricStorage {
 
   List<Result> queryData(QueryParam queryParam);
 
-  Map<String, String> queryTags(QueryParam queryParam);
+  List<Result> queryTags(QueryParam queryParam);
 
   void deleteKeys(QueryParam queryParam);
 
