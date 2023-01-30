@@ -26,6 +26,7 @@ public class QueryResult {
   public static class Point {
     Long timestamp;
     double value;
+    String strValue;
   }
 
 }

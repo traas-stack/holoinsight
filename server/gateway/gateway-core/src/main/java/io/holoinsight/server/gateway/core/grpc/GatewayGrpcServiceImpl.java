@@ -163,7 +163,12 @@ public class GatewayGrpcServiceImpl extends GatewayServiceGrpc.GatewayServiceImp
       wmpp.setMetricName(p.getMetricName());
       wmpp.setTimeStamp(p.getTimestamp());
       wmpp.setTags(p.getTagsMap());
-      wmpp.setValue(p.getNumberValuesOrThrow("value"));
+
+      if (p.getNumberValuesCount() > 0) {
+        wmpp.setValue(p.getNumberValuesOrThrow("value"));
+      } else if (p.getStringValuesCount() > 0) {
+        wmpp.setStrValue(p.getStringValuesOrThrow("value"));
+      }
       points.add(wmpp);
     }
     param.setPoints(points);
@@ -195,7 +200,14 @@ public class GatewayGrpcServiceImpl extends GatewayServiceGrpc.GatewayServiceImp
         wmpp.setTimeStamp(row.getTimestamp());
         wmpp.setTags(tags);
         for (DataNode dataNode : row.getValueValuesList()) {
-          wmpp.setValue(dataNode.getValue());
+          switch (dataNode.getType()) {
+            case 2:
+              wmpp.setStrValue(dataNode.getBytes().toStringUtf8());
+              break;
+            default:
+              wmpp.setValue(dataNode.getValue());
+              break;
+          }
         }
         points.add(wmpp);
       }

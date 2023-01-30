@@ -24,6 +24,7 @@ public class WriteMetricsParam {
     long timeStamp;
     Map<String, String> tags;
     double value;
+    String strValue;
   }
 
 }
