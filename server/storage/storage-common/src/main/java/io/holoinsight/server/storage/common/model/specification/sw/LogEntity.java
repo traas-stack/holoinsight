@@ -12,7 +12,7 @@ import java.util.List;
 
 /**
  * @author jiwliu
- * @version : LogEntity.java, v 0.1 2022年09月20日 15:34 wanpeng.xwp Exp $
+ * @version : LogEntity.java, v 0.1 2022年09月20日 15:34 xiangwanpeng Exp $
  */
 @Data
 @AllArgsConstructor

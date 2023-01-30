@@ -67,7 +67,7 @@ import static java.util.Objects.nonNull;
 
 /**
  * @author jiwliu
- * @version : SpanEsServiceImpl.java, v 0.1 2022年09月19日 14:21 wanpeng.xwp Exp $
+ * @version : SpanEsServiceImpl.java, v 0.1 2022年09月19日 14:21 xiangwanpeng Exp $
  */
 @ConditionalOnFeature("trace")
 @Service

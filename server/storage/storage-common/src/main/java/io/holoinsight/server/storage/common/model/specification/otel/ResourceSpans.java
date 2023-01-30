@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 
 /**
  * @author jiwliu
- * @version : ResourceSpans.java, v 0.1 2022年11月01日 12:03 wanpeng.xwp Exp $
+ * @version : ResourceSpans.java, v 0.1 2022年11月01日 12:03 xiangwanpeng Exp $
  */
 @Data
 @AllArgsConstructor

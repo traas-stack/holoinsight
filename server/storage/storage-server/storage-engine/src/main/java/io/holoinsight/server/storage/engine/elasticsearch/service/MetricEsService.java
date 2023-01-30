@@ -12,7 +12,7 @@ import java.util.Map;
 
 /**
  * @author jiwliu
- * @version : MetricEsService.java, v 0.1 2022年09月29日 16:58 wanpeng.xwp Exp $
+ * @version : MetricEsService.java, v 0.1 2022年09月29日 16:58 xiangwanpeng Exp $
  */
 public interface MetricEsService {
 

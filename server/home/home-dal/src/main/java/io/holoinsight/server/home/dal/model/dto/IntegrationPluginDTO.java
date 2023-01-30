@@ -13,7 +13,7 @@ import java.util.Map;
 
 /**
  * @author xiangwanpeng
- * @version 1.0: IntegrationInstDTO.java, v 0.1 2022年06月08日 8:04 下午 wanpeng.xwp Exp $
+ * @version 1.0: IntegrationInstDTO.java, v 0.1 2022年06月08日 8:04 下午 xiangwanpeng Exp $
  */
 @Data
 public class IntegrationPluginDTO {

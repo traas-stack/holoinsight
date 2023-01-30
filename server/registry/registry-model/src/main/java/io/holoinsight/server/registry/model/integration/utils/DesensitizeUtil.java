@@ -7,7 +7,7 @@ import org.apache.commons.lang3.StringUtils;
 
 /**
  * @author zzhb101
- * @version : DesensitizeUtil.java, v 0.1 2022年07月26日 16:17 wanpeng.xwp Exp $
+ * @version : DesensitizeUtil.java, v 0.1 2022年07月26日 16:17 xiangwanpeng Exp $
  */
 public class DesensitizeUtil {
   /**

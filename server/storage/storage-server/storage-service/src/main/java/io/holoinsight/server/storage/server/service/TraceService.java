@@ -18,7 +18,7 @@ import java.util.List;
 
 /**
  * @author jiwliu
- * @version : TraceService.java, v 0.1 2022年09月20日 16:46 wanpeng.xwp Exp $
+ * @version : TraceService.java, v 0.1 2022年09月20日 16:46 xiangwanpeng Exp $
  */
 public interface TraceService {
 

@@ -15,7 +15,7 @@ import java.util.Map;
 
 /**
  * @author jiwliu
- * @version : GsonUtils.java, v 0.1 2022年09月30日 14:47 wanpeng.xwp Exp $
+ * @version : GsonUtils.java, v 0.1 2022年09月30日 14:47 xiangwanpeng Exp $
  */
 public class GsonUtils {
   public static ThreadLocal<Gson> gs = new ThreadLocal<Gson>();

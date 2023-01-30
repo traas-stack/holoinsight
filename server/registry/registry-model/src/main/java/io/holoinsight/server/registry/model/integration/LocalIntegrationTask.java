@@ -10,7 +10,7 @@ import java.util.Map;
 
 /**
  * @author zzhb101
- * @version : IntegrationTask.java, v 0.1 2022年06月08日 14:01 wanpeng.xwp Exp $
+ * @version : IntegrationTask.java, v 0.1 2022年06月08日 14:01 xiangwanpeng Exp $
  */
 @Data
 public abstract class LocalIntegrationTask extends IntegrationTask {

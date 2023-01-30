@@ -7,7 +7,7 @@ import io.holoinsight.server.storage.common.model.storage.Model;
 
 /**
  * @author jiwliu
- * @version : ModelInstaller.java, v 0.1 2022年10月12日 20:20 wanpeng.xwp Exp $
+ * @version : ModelInstaller.java, v 0.1 2022年10月12日 20:20 xiangwanpeng Exp $
  */
 public interface ModelInstaller {
 

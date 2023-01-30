@@ -11,7 +11,7 @@ import java.util.List;
 
 /**
  * @author zzhb101
- * @version : MetricNamespaces.java, v 0.1 2022年11月17日 17:10 wanpeng.xwp Exp $
+ * @version : MetricNamespaces.java, v 0.1 2022年11月17日 17:10 xiangwanpeng Exp $
  */
 @Data
 @AllArgsConstructor

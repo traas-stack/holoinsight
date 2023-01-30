@@ -11,7 +11,7 @@ import java.util.Map;
 
 /**
  * @author jiwliu
- * @version : SearchTraceRequest.java, v 0.1 2022年09月19日 16:59 wanpeng.xwp Exp $
+ * @version : SearchTraceRequest.java, v 0.1 2022年09月19日 16:59 xiangwanpeng Exp $
  */
 @Data
 @AllArgsConstructor

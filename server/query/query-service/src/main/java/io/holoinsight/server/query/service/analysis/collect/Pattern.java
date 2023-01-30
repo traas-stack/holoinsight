@@ -1,5 +1,5 @@
-/**
- * Alipay.com Inc. Copyright (c) 2004-2022 All Rights Reserved.
+/*
+ * Copyright 2022 Holoinsight Project Authors. Licensed under Apache-2.0.
  */
 package io.holoinsight.server.query.service.analysis.collect;
 
@@ -8,15 +8,15 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * @author wanpeng.xwp
- * @version : Pattern.java, v 0.1 2022年12月08日 20:11 wanpeng.xwp Exp $
+ * @author xiangwanpeng
+ * @version : Pattern.java, v 0.1 2022年12月08日 20:11 xiangwanpeng Exp $
  */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class Pattern {
 
-    private String name;
-    private int count;
+  private String name;
+  private int count;
 
 }

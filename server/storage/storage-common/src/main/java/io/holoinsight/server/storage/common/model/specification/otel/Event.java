@@ -11,7 +11,7 @@ import java.util.List;
 
 /**
  * @author jiwliu
- * @version : Event.java, v 0.1 2022年10月29日 17:17 wanpeng.xwp Exp $
+ * @version : Event.java, v 0.1 2022年10月29日 17:17 xiangwanpeng Exp $
  */
 @Data
 @AllArgsConstructor

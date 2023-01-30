@@ -22,7 +22,7 @@ import java.util.List;
 
 /**
  * @author jiwliu
- * @version : ModelInstaller.java, v 0.1 2022年10月11日 21:24 wanpeng.xwp Exp $
+ * @version : ModelInstaller.java, v 0.1 2022年10月11日 21:24 xiangwanpeng Exp $
  */
 @Slf4j
 public class ModelInstallManager {

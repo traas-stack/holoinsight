@@ -26,7 +26,8 @@ public interface QueryService {
 
   QueryProto.QueryResponse pqlRangeQuery(QueryProto.PqlRangeRequest request) throws QueryException;
 
-  QueryProto.TraceBrief queryBasicTraces(QueryProto.QueryTraceRequest request) throws QueryException;
+  QueryProto.TraceBrief queryBasicTraces(QueryProto.QueryTraceRequest request)
+      throws QueryException;
 
   QueryProto.Trace queryTrace(QueryProto.QueryTraceRequest request) throws QueryException;
 
@@ -42,7 +43,8 @@ public interface QueryService {
   QueryProto.QueryVirtualComponentResponse queryComponentList(QueryProto.QueryMetaRequest request)
       throws QueryException;
 
-  QueryProto.TraceIds queryComponentTraceIds(QueryProto.QueryMetaRequest request) throws QueryException;
+  QueryProto.TraceIds queryComponentTraceIds(QueryProto.QueryMetaRequest request)
+      throws QueryException;
 
   QueryProto.Topology queryTopology(QueryProto.QueryTopologyRequest request) throws QueryException;
 

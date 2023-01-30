@@ -6,7 +6,7 @@ package io.holoinsight.server.storage.common.model.specification.sw;
 /**
  *
  * @author jiwliu
- * @version : TraceState.java, v 0.1 2022年09月20日 15:36 wanpeng.xwp Exp $
+ * @version : TraceState.java, v 0.1 2022年09月20日 15:36 xiangwanpeng Exp $
  */
 public enum TraceState {
   ALL, SUCCESS, ERROR

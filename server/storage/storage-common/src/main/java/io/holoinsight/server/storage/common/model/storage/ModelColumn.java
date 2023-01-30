@@ -11,7 +11,7 @@ import java.lang.reflect.Type;
 
 /**
  * @author jiwliu
- * @version : Column.java, v 0.1 2022年10月11日 19:15 wanpeng.xwp Exp $
+ * @version : Column.java, v 0.1 2022年10月11日 19:15 xiangwanpeng Exp $
  */
 @AllArgsConstructor
 @NoArgsConstructor

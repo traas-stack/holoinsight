@@ -8,7 +8,7 @@ package io.holoinsight.server.storage.common.model.specification.otel;
  * to a parent/child relationship.
  *
  * @author jiwliu
- * @version : SpanKind.java, v 0.1 2022年10月29日 16:52 wanpeng.xwp Exp $
+ * @version : SpanKind.java, v 0.1 2022年10月29日 16:52 xiangwanpeng Exp $
  */
 public enum SpanKind {
   /**

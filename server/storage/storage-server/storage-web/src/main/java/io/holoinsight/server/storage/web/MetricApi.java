@@ -18,7 +18,7 @@ import java.util.List;
 
 /**
  * @author jiwliu
- * @version : TraceApi.java, v 0.1 2022年09月20日 15:50 wanpeng.xwp Exp $
+ * @version : TraceApi.java, v 0.1 2022年09月20日 15:50 xiangwanpeng Exp $
  */
 @javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen",
     date = "2020-01-21T07:37:08.930Z")

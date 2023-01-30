@@ -29,7 +29,7 @@ import java.util.regex.Pattern;
 
 /**
  * @author xiangwanpeng
- * @version : Step4AccessLogFilter.java, v 0.1 2022年12月06日 13:50 wanpeng.xwp Exp $
+ * @version : Step4AccessLogFilter.java, v 0.1 2022年12月06日 13:50 xiangwanpeng Exp $
  */
 @Configuration
 @Order(6)

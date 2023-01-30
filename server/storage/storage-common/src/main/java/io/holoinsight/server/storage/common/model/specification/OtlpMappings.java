@@ -8,7 +8,7 @@ import com.google.common.collect.HashBiMap;
 
 /**
  * @author jiwliu
- * @version : OtelMappings.java, v 0.1 2022年11月11日 17:26 wanpeng.xwp Exp $
+ * @version : OtelMappings.java, v 0.1 2022年11月11日 17:26 xiangwanpeng Exp $
  */
 public class OtlpMappings {
 

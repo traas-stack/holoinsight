@@ -12,7 +12,7 @@ import java.io.Serializable;
 
 /**
  * @author jiwliu
- * @version : RecordDO.java, v 0.1 2022年10月11日 15:17 wanpeng.xwp Exp $
+ * @version : RecordDO.java, v 0.1 2022年10月11日 15:17 xiangwanpeng Exp $
  */
 @Data
 @AllArgsConstructor

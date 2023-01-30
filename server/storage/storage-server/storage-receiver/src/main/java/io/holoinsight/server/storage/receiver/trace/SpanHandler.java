@@ -48,7 +48,7 @@ import java.util.stream.Collectors;
 
 /**
  * @author jiwliu
- * @version : SpanHandler.java, v 0.1 2022年11月03日 14:12 wanpeng.xwp Exp $
+ * @version : SpanHandler.java, v 0.1 2022年11月03日 14:12 xiangwanpeng Exp $
  */
 @Service
 @ConditionalOnFeature("trace")

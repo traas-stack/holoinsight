@@ -12,7 +12,7 @@ import java.util.List;
 
 /**
  * @author jiwliu
- * @version : Segment.java, v 0.1 2022年09月16日 16:12 wanpeng.xwp Exp $
+ * @version : Segment.java, v 0.1 2022年09月16日 16:12 xiangwanpeng Exp $
  */
 @Data
 @AllArgsConstructor

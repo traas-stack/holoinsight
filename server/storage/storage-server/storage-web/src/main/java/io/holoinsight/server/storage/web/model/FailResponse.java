@@ -11,7 +11,7 @@ import org.springframework.validation.annotation.Validated;
 
 /**
  * @author jiwliu
- * @version : FailResponse.java, v 0.1 2022年09月20日 16:02 wanpeng.xwp Exp $
+ * @version : FailResponse.java, v 0.1 2022年09月20日 16:02 xiangwanpeng Exp $
  */
 @ApiModel(description = "当请求失败时返回的数据结构")
 @Validated

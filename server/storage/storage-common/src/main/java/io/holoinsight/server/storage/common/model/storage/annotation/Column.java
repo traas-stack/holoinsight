@@ -10,7 +10,7 @@ import java.lang.annotation.Target;
 
 /**
  * @author jiwliu
- * @version : Column.java, v 0.1 2022年10月11日 19:18 wanpeng.xwp Exp $
+ * @version : Column.java, v 0.1 2022年10月11日 19:18 xiangwanpeng Exp $
  */
 @Target({ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)

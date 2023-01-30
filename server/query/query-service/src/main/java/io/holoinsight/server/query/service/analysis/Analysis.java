@@ -1,5 +1,5 @@
-/**
- * Alipay.com Inc. Copyright (c) 2004-2022 All Rights Reserved.
+/*
+ * Copyright 2022 Holoinsight Project Authors. Licensed under Apache-2.0.
  */
 package io.holoinsight.server.query.service.analysis;
 
@@ -11,13 +11,13 @@ import lombok.NoArgsConstructor;
 import java.util.List;
 
 /**
- * @author wanpeng.xwp
- * @version : Analysis.java, v 0.1 2022年12月08日 17:22 wanpeng.xwp Exp $
+ * @author xiangwanpeng
+ * @version : Analysis.java, v 0.1 2022年12月08日 17:22 xiangwanpeng Exp $
  */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class Analysis {
-    private int count;
-    private List<AnalyzedLog> analyzedLogs;
+  private int count;
+  private List<AnalyzedLog> analyzedLogs;
 }

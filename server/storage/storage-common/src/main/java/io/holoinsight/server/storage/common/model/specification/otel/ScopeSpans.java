@@ -11,7 +11,7 @@ import java.util.List;
 
 /**
  * @author jiwliu
- * @version : ScopeSpans.java, v 0.1 2022年11月01日 12:02 wanpeng.xwp Exp $
+ * @version : ScopeSpans.java, v 0.1 2022年11月01日 12:02 xiangwanpeng Exp $
  */
 @Data
 @AllArgsConstructor

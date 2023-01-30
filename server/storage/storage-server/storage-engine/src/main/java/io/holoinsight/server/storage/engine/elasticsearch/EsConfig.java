@@ -28,7 +28,7 @@ import java.util.stream.Collectors;
  * Elasticsearch Java 客户端演进历史和选型指南</a>
  * 
  * @author jiwliu
- * @version : RestClientConfig.java, v 0.1 2022年09月18日 15:04 wanpeng.xwp Exp $
+ * @version : RestClientConfig.java, v 0.1 2022年09月18日 15:04 xiangwanpeng Exp $
  */
 @Data
 @Slf4j

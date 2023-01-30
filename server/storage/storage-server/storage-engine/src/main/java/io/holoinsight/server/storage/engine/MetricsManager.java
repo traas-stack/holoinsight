@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
 
 /**
  * @author jiwliu
- * @version : MetricsManager.java, v 0.1 2022年09月29日 17:48 wanpeng.xwp Exp $
+ * @version : MetricsManager.java, v 0.1 2022年09月29日 17:48 xiangwanpeng Exp $
  */
 @Component
 public class MetricsManager {

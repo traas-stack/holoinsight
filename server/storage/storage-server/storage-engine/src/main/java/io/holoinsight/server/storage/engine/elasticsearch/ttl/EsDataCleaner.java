@@ -25,7 +25,7 @@ import java.util.Map;
 
 /**
  * @author jiwliu
- * @version : EsDataCleaner.java, v 0.1 2022年10月12日 20:38 wanpeng.xwp Exp $
+ * @version : EsDataCleaner.java, v 0.1 2022年10月12日 20:38 xiangwanpeng Exp $
  */
 @Slf4j
 public class EsDataCleaner implements DataCleaner {

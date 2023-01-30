@@ -11,7 +11,7 @@ import java.util.List;
 
 /**
  * @author jiwliu
- * @version : Resource.java, v 0.1 2022年11月01日 12:03 wanpeng.xwp Exp $
+ * @version : Resource.java, v 0.1 2022年11月01日 12:03 xiangwanpeng Exp $
  */
 @Data
 @AllArgsConstructor

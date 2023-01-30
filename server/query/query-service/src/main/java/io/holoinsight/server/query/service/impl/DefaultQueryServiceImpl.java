@@ -1,3 +1,6 @@
+/*
+ * Copyright 2022 Holoinsight Project Authors. Licensed under Apache-2.0.
+ */
 package io.holoinsight.server.query.service.impl;
 
 import java.util.ArrayList;
@@ -447,8 +450,7 @@ public class DefaultQueryServiceImpl implements QueryService {
     }
   }
 
-  protected static <T> T wrap(Callable<T> call)
-      throws QueryException {
+  protected static <T> T wrap(Callable<T> call) throws QueryException {
     try {
       return call.call();
     } catch (Exception e) {

@@ -11,7 +11,7 @@ import java.io.Serializable;
 
 /**
  * @author jiwliu
- * @version : Duration.java, v 0.1 2022年09月20日 15:37 wanpeng.xwp Exp $
+ * @version : Duration.java, v 0.1 2022年09月20日 15:37 xiangwanpeng Exp $
  */
 @Data
 @AllArgsConstructor

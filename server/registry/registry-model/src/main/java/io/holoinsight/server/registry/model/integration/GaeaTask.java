@@ -6,7 +6,7 @@ package io.holoinsight.server.registry.model.integration;
 /**
  *
  * @author zzhb101
- * @version : GaeaTask.java, v 0.1 2022年06月14日 14:11 wanpeng.xwp Exp $
+ * @version : GaeaTask.java, v 0.1 2022年06月14日 14:11 xiangwanpeng Exp $
  */
 public class GaeaTask {
 }

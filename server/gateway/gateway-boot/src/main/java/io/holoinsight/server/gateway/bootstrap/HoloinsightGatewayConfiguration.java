@@ -34,7 +34,8 @@ import org.springframework.context.annotation.Import;
 @ComponentScan({"io.holoinsight.server.gateway",})
 @EnableConfigurationProperties({HoloinsightProperties.class, GatewayProperties.class})
 @Import({ConfigConfiguration.class, GroovyConfiguration.class, ThreadPoolConfiguration.class,
-    InternalWebApiSecurityConfiguration.class, ApiKeyAutoConfiguration.class, CommonDaoConfiguration.class})
+    InternalWebApiSecurityConfiguration.class, ApiKeyAutoConfiguration.class,
+    CommonDaoConfiguration.class})
 public class HoloinsightGatewayConfiguration {
   @Bean
   public MetricStorage metricStorage() {

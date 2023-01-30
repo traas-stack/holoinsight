@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 
 /**
  * @author jiwliu
- * @version : StatusCode.java, v 0.1 2022年10月29日 17:22 wanpeng.xwp Exp $
+ * @version : StatusCode.java, v 0.1 2022年10月29日 17:22 xiangwanpeng Exp $
  */
 @AllArgsConstructor
 @NoArgsConstructor

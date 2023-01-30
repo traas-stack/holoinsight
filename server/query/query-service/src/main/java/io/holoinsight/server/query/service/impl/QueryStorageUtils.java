@@ -1,3 +1,6 @@
+/*
+ * Copyright 2022 Holoinsight Project Authors. Licensed under Apache-2.0.
+ */
 package io.holoinsight.server.query.service.impl;
 
 import java.util.stream.Collectors;
@@ -13,11 +16,12 @@ import io.holoinsight.server.query.grpc.QueryProto;
  * <p>
  * created at 2023/1/30
  *
- * @author xiangfeng.xzc
+ * @author xzchaoo
  */
 public class QueryStorageUtils {
 
-  public static QueryMetricsParam convertToQueryMetricsParam(QueryProto.QueryMetricsRequest request) {
+  public static QueryMetricsParam convertToQueryMetricsParam(
+      QueryProto.QueryMetricsRequest request) {
     QueryMetricsParam param = new QueryMetricsParam();
     param.setTenant(request.getTenant());
     param.setName(request.getName());

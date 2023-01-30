@@ -18,7 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * @author jiwliu
- * @version : ModelCenter.java, v 0.1 2022年10月11日 19:31 wanpeng.xwp Exp $
+ * @version : ModelCenter.java, v 0.1 2022年10月11日 19:31 xiangwanpeng Exp $
  */
 @Slf4j
 public class ModelCenter {

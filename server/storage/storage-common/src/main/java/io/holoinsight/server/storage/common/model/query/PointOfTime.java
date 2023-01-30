@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 /**
  *
  * @author jiwliu
- * @version : PointOfTime.java, v 0.1 2022年09月21日 21:09 wanpeng.xwp Exp $
+ * @version : PointOfTime.java, v 0.1 2022年09月21日 21:09 xiangwanpeng Exp $
  */
 @Data
 @AllArgsConstructor
