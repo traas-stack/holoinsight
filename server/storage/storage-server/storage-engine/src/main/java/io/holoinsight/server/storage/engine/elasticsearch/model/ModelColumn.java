@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 
 /**
  * @author jiwliu
- * @version : ModelColumn.java, v 0.1 2022年10月11日 15:30 wanpeng.xwp Exp $
+ * @version : ModelColumn.java, v 0.1 2022年10月11日 15:30 xiangwanpeng Exp $
  */
 @Data
 @AllArgsConstructor

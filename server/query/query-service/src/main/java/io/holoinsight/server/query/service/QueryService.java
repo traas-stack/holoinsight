@@ -26,33 +26,35 @@ public interface QueryService {
 
   QueryProto.QueryResponse pqlRangeQuery(QueryProto.PqlRangeRequest request) throws QueryException;
 
-  QueryProto.TraceBrief queryBasicTraces(QueryProto.QueryTraceRequest request) throws Exception;
+  QueryProto.TraceBrief queryBasicTraces(QueryProto.QueryTraceRequest request)
+      throws QueryException;
 
-  QueryProto.Trace queryTrace(QueryProto.QueryTraceRequest request) throws Exception;
+  QueryProto.Trace queryTrace(QueryProto.QueryTraceRequest request) throws QueryException;
 
   QueryProto.QueryMetaResponse queryServiceList(QueryProto.QueryMetaRequest request)
-      throws Exception;
+      throws QueryException;
 
   QueryProto.QueryMetaResponse queryEndpointList(QueryProto.QueryMetaRequest request)
-      throws Exception;
+      throws QueryException;
 
   QueryProto.QueryMetaResponse queryServiceInstanceList(QueryProto.QueryMetaRequest request)
-      throws Exception;
+      throws QueryException;
 
   QueryProto.QueryVirtualComponentResponse queryComponentList(QueryProto.QueryMetaRequest request)
-      throws Exception;
+      throws QueryException;
 
-  QueryProto.TraceIds queryComponentTraceIds(QueryProto.QueryMetaRequest request) throws Exception;
+  QueryProto.TraceIds queryComponentTraceIds(QueryProto.QueryMetaRequest request)
+      throws QueryException;
 
-  QueryProto.Topology queryTopology(QueryProto.QueryTopologyRequest request) throws Exception;
+  QueryProto.Topology queryTopology(QueryProto.QueryTopologyRequest request) throws QueryException;
 
   QueryProto.BizopsEndpoints queryBizEndpointList(QueryProto.QueryMetaRequest request)
-      throws Exception;
+      throws QueryException;
 
   QueryProto.BizopsEndpoints queryBizErrorCodeList(QueryProto.QueryMetaRequest request)
-      throws Exception;
+      throws QueryException;
 
   QueryProto.QuerySlowSqlResponse querySlowSqlList(QueryProto.QueryMetaRequest request)
-      throws Exception;
+      throws QueryException;
 
 }

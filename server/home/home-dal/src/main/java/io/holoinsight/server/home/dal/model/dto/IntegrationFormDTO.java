@@ -9,7 +9,7 @@ import java.util.List;
 
 /**
  * @author xiangwanpeng
- * @version : IntegrationProductDTO.java, v 0.1 2022年06月08日 16:41 wanpeng.xwp Exp $
+ * @version : IntegrationProductDTO.java, v 0.1 2022年06月08日 16:41 xiangwanpeng Exp $
  */
 @Data
 public class IntegrationFormDTO {

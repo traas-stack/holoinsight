@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 /**
  *
  * @author zzhb101
- * @version : MysqlConf.java, v 0.1 2022年06月16日 10:28 wanpeng.xwp Exp $
+ * @version : MysqlConf.java, v 0.1 2022年06月16日 10:28 xiangwanpeng Exp $
  */
 @Data
 @AllArgsConstructor

@@ -7,7 +7,7 @@ import java.util.Map;
 
 /**
  * @author jiwliu
- * @version : StorageBuilder.java, v 0.1 2022年10月12日 15:34 wanpeng.xwp Exp $
+ * @version : StorageBuilder.java, v 0.1 2022年10月12日 15:34 xiangwanpeng Exp $
  */
 public interface StorageBuilder<T> {
 

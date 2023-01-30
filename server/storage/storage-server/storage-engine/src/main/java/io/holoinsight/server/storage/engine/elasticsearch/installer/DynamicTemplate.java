@@ -12,7 +12,7 @@ import java.util.Map;
 
 /**
  * @author jiwliu
- * @version : Mappings.java, v 0.1 2022年10月12日 10:21 wanpeng.xwp Exp $
+ * @version : Mappings.java, v 0.1 2022年10月12日 10:21 xiangwanpeng Exp $
  */
 @Data
 @Builder

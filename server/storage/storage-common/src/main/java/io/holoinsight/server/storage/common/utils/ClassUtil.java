@@ -17,7 +17,7 @@ import java.util.jar.JarFile;
 
 /**
  * @author jiwliu
- * @version : ClassUtil.java, v 0.1 2022年12月12日 21:52 wanpeng.xwp Exp $
+ * @version : ClassUtil.java, v 0.1 2022年12月12日 21:52 xiangwanpeng Exp $
  */
 public class ClassUtil {
   /**

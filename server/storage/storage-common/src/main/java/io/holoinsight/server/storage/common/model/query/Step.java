@@ -5,7 +5,7 @@ package io.holoinsight.server.storage.common.model.query;
 
 /**
  * @author jiwliu
- * @version : Step.java, v 0.1 2022年09月20日 15:37 wanpeng.xwp Exp $
+ * @version : Step.java, v 0.1 2022年09月20日 15:37 xiangwanpeng Exp $
  */
 public enum Step {
   DAY, HOUR, MINUTE, SECOND

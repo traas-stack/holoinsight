@@ -20,7 +20,7 @@ import java.util.List;
 
 /**
  * @author xiangwanpeng
- * @version 1.0: IntegrationPluginUpdateListener.java, v 0.1 2022年06月08日 8:40 下午 wanpeng.xwp Exp $
+ * @version 1.0: IntegrationPluginUpdateListener.java, v 0.1 2022年06月08日 8:40 下午 xiangwanpeng Exp $
  */
 @Component
 public class IntegrationPluginUpdateListener {

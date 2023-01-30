@@ -5,11 +5,13 @@ package io.holoinsight.server.common.config;
 
 import java.time.Duration;
 
+import io.holoinsight.server.common.dao.CommonDaoConfiguration;
 import io.holoinsight.server.common.dao.mapper.GaeaConfigDOMapper;
 
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 
 import com.xzchaoo.commons.basic.config.Config;
 import com.xzchaoo.commons.basic.config.DefaultManager;
@@ -24,7 +26,7 @@ import com.xzchaoo.commons.basic.config.spring.UpdateConfigTask;
  * @author xzchaoo
  */
 @Configuration
-@MapperScan(basePackageClasses = {GaeaConfigDOMapper.class})
+@Import(CommonDaoConfiguration.class)
 public class ConfigConfiguration {
   @Bean
   public ConfigService configService() {

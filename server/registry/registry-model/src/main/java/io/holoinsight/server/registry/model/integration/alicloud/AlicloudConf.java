@@ -11,7 +11,7 @@ import java.util.List;
 
 /**
  * @author zzhb101
- * @version : AlicloudConf.java, v 0.1 2022年06月16日 10:27 wanpeng.xwp Exp $
+ * @version : AlicloudConf.java, v 0.1 2022年06月16日 10:27 xiangwanpeng Exp $
  */
 @Data
 @AllArgsConstructor

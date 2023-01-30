@@ -25,7 +25,7 @@ import static io.holoinsight.server.storage.engine.elasticsearch.model.SpanEsDO.
 
 /**
  * @author jiwliu
- * @version : SpanEsDO.java, v 0.1 2022年11月01日 20:34 wanpeng.xwp Exp $
+ * @version : SpanEsDO.java, v 0.1 2022年11月01日 20:34 xiangwanpeng Exp $
  */
 @Data
 @AllArgsConstructor

@@ -6,7 +6,7 @@ package io.holoinsight.server.storage.common.model.specification.sw;
 /**
  *
  * @author jiwliu
- * @version : RefType.java, v 0.1 2022年09月20日 15:32 wanpeng.xwp Exp $
+ * @version : RefType.java, v 0.1 2022年09月20日 15:32 xiangwanpeng Exp $
  */
 public enum RefType {
   CROSS_PROCESS, CROSS_THREAD

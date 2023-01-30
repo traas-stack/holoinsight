@@ -7,7 +7,7 @@ import java.lang.reflect.Type;
 
 /**
  * @author jiwliu
- * @version : DataTypeMapping.java, v 0.1 2022年10月11日 22:27 wanpeng.xwp Exp $
+ * @version : DataTypeMapping.java, v 0.1 2022年10月11日 22:27 xiangwanpeng Exp $
  */
 public interface DataTypeMapping {
 

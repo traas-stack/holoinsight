@@ -13,7 +13,7 @@ import java.util.List;
 
 /**
  * @author jiwliu
- * @version : Span.java, v 0.1 2022年09月20日 15:30 wanpeng.xwp Exp $
+ * @version : Span.java, v 0.1 2022年09月20日 15:30 xiangwanpeng Exp $
  */
 @Data
 @AllArgsConstructor

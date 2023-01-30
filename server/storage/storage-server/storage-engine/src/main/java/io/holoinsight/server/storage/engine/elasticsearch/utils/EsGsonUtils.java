@@ -17,7 +17,7 @@ import java.util.*;
 
 /**
  * @author jiwliu
- * @version : GsonUtils.java, v 0.1 2022年09月30日 14:47 wanpeng.xwp Exp $
+ * @version : GsonUtils.java, v 0.1 2022年09月30日 14:47 xiangwanpeng Exp $
  */
 public class EsGsonUtils extends GsonUtils {
   public static ThreadLocal<Gson> esGs = new ThreadLocal<Gson>();

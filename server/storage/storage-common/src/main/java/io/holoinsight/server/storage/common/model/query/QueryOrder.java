@@ -5,7 +5,7 @@ package io.holoinsight.server.storage.common.model.query;
 
 /**
  * @author jiwliu
- * @version : QueryOrder.java, v 0.1 2022年09月20日 15:39 wanpeng.xwp Exp $
+ * @version : QueryOrder.java, v 0.1 2022年09月20日 15:39 xiangwanpeng Exp $
  */
 public enum QueryOrder {
   BY_START_TIME, BY_DURATION

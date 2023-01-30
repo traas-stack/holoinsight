@@ -9,7 +9,7 @@ import lombok.RequiredArgsConstructor;
 
 /**
  * @author jiwliu
- * @version : PaginationUtils.java, v 0.1 2022年09月21日 11:35 wanpeng.xwp Exp $
+ * @version : PaginationUtils.java, v 0.1 2022年09月21日 11:35 xiangwanpeng Exp $
  */
 public class PaginationUtils {
 

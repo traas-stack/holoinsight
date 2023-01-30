@@ -15,7 +15,7 @@ import java.util.List;
 
 /**
  * @author jiwliu
- * @version : ColumnTypeEsMapping.java, v 0.1 2022年10月11日 22:27 wanpeng.xwp Exp $
+ * @version : ColumnTypeEsMapping.java, v 0.1 2022年10月11日 22:27 xiangwanpeng Exp $
  */
 @Component
 public class ColumnTypeEsMapping implements DataTypeMapping {

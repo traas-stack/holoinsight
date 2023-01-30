@@ -42,7 +42,7 @@ import java.util.stream.Collectors;
 
 /**
  * @author jiwliu
- * @version : MetricEsServiceImpl.java, v 0.1 2022年09月29日 16:58 wanpeng.xwp Exp $
+ * @version : MetricEsServiceImpl.java, v 0.1 2022年09月29日 16:58 xiangwanpeng Exp $
  */
 @ConditionalOnFeature("trace")
 @Service("spanMetricEsServiceImpl")

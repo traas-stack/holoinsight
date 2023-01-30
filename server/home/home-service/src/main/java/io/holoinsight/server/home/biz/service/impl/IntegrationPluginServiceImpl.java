@@ -30,7 +30,7 @@ import java.util.Map;
 
 /**
  * @author xiangwanpeng
- * @version 1.0: IntegrationPluginServiceImpl.java, v 0.1 2022年06月08日 7:32 下午 wanpeng.xwp Exp $
+ * @version 1.0: IntegrationPluginServiceImpl.java, v 0.1 2022年06月08日 7:32 下午 xiangwanpeng Exp $
  */
 @Service
 public class IntegrationPluginServiceImpl extends

@@ -7,7 +7,7 @@ import io.holoinsight.server.common.springboot.ConditionalOnRole;
 import io.holoinsight.server.common.threadpool.ThreadPoolConfiguration;
 
 import io.holoinsight.server.query.service.QueryService;
-import io.holoinsight.server.query.service.impl.NoopQueryServiceImpl;
+import io.holoinsight.server.query.service.impl.DefaultQueryServiceImpl;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -29,6 +29,6 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 public class HoloinsightQueryConfiguration {
   @Bean
   public QueryService queryService() {
-    return new NoopQueryServiceImpl();
+    return new DefaultQueryServiceImpl();
   }
 }

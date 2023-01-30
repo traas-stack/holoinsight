@@ -17,7 +17,7 @@ import java.util.List;
 
 /**
  * @author jiwliu
- * @version : SpanEsService.java, v 0.1 2022年09月29日 16:56 wanpeng.xwp Exp $
+ * @version : SpanEsService.java, v 0.1 2022年09月29日 16:56 xiangwanpeng Exp $
  */
 public interface SpanEsService {
 

@@ -16,7 +16,7 @@ import java.util.List;
 
 /**
  * @author jiwliu
- * @version : SegmentEsService.java, v 0.1 2022年09月29日 16:56 wanpeng.xwp Exp $
+ * @version : SegmentEsService.java, v 0.1 2022年09月29日 16:56 xiangwanpeng Exp $
  */
 public interface SegmentEsService {
 

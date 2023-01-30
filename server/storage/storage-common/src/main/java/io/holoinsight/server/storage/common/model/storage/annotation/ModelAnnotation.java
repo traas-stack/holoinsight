@@ -10,7 +10,7 @@ import java.lang.annotation.Target;
 
 /**
  * @author jiwliu
- * @version : ModelDefine.java, v 0.1 2022年10月11日 20:18 wanpeng.xwp Exp $
+ * @version : ModelDefine.java, v 0.1 2022年10月11日 20:18 xiangwanpeng Exp $
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)

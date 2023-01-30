@@ -14,7 +14,7 @@ import java.util.List;
 
 /**
  * @author zzhb101
- * @version : MysqlTask.java, v 0.1 2022年06月08日 14:03 wanpeng.xwp Exp $
+ * @version : MysqlTask.java, v 0.1 2022年06月08日 14:03 xiangwanpeng Exp $
  */
 @Data
 @AllArgsConstructor

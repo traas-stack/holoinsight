@@ -11,7 +11,7 @@ import java.io.IOException;
 
 /**
  * @author xiangwanpeng
- * @version : CountServletResponseWrapper.java, v 0.1 2022年12月06日 13:55 wanpeng.xwp Exp $
+ * @version : CountServletResponseWrapper.java, v 0.1 2022年12月06日 13:55 xiangwanpeng Exp $
  */
 public class CountServletResponseWrapper extends HttpServletResponseWrapper {
   private CountServletOutputStream countOs;

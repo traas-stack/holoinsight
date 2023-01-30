@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 /**
  *
  * @author xiangwanpeng
- * @version 1.0: JsonObjectMapper.java, v 0.1 2022年06月09日 3:32 下午 wanpeng.xwp Exp $
+ * @version 1.0: JsonObjectMapper.java, v 0.1 2022年06月09日 3:32 下午 xiangwanpeng Exp $
  */
 @Component
 public class JsonObjectMapper {

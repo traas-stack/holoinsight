@@ -21,7 +21,7 @@ import static io.holoinsight.server.storage.engine.elasticsearch.model.SegmentEs
 
 /**
  * @author jiwliu
- * @version : SegmentEsDO.java, v 0.1 2022年09月18日 00:45 wanpeng.xwp Exp $
+ * @version : SegmentEsDO.java, v 0.1 2022年09月18日 00:45 xiangwanpeng Exp $
  */
 @Data
 @AllArgsConstructor

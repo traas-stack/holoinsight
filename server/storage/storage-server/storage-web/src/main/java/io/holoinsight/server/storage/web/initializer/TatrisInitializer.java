@@ -11,7 +11,7 @@ import org.springframework.boot.ApplicationRunner;
 
 /**
  * @author jiwliu
- * @version : TatrisInitializer.java, v 0.1 2022年10月12日 19:31 wanpeng.xwp Exp $
+ * @version : TatrisInitializer.java, v 0.1 2022年10月12日 19:31 xiangwanpeng Exp $
  */
 @Slf4j
 public class TatrisInitializer implements ApplicationRunner {

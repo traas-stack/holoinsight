@@ -33,7 +33,7 @@ import java.util.*;
 
 /**
  * @author jiwliu
- * @version : EsModelInstaller.java, v 0.1 2022年10月11日 21:26 wanpeng.xwp Exp $
+ * @version : EsModelInstaller.java, v 0.1 2022年10月11日 21:26 xiangwanpeng Exp $
  */
 @Slf4j
 public class EsModelInstaller implements ModelInstaller {
