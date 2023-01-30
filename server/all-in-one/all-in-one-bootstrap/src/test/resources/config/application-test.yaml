@@ -1,10 +1,59 @@
 spring:
   datasource:
-    url: TODO
-    username: TODO
-    password: TODO
+    url: jdbc:mysql://11.158.167.57:3307/cloudmonitor?useUnicode=true&characterEncoding=UTF-8&autoReconnect=true&rewriteBatchedStatements=true&socketTimeout=15000&connectTimeout=3000&useTimezone=true&serverTimezone=Asia/Shanghai
+    username: root
+    password: TEST
+    driver-class-name: com.mysql.jdbc.Driver
+  data:
+    mongodb:
+      uri: mongodb://admin:123456@11.158.167.57:27017/admin?authSource=admin&keepAlive=true&maxIdleTimeMS=1500000&maxWaitTime=120000&connectTimeout=10000&socketTimeout=10000&socketKeepAlive=true&readPreference=primary&retryWrites=true
 
-prod:
+cloudmonitor:
+  storage:
+    address: http://127.0.0.1:8080
+
+holoinsight:
+  roles:
+    active: meta,registry,gateway,query,home
+  features:
+    active: []
+  storage:
+    elasticsearch:
+      hosts: 11.158.167.57
+  home:
+    domain: http://localhost:8080/
+    environment:
+      env: dev
+      deploymentSite: dev
+    role: prod
+  alert:
+    env: dev
+    algorithm:
+      url: http://127.0.0.1:5005
   meta:
-    domain: TODO
+    domain: 127.0.0.1
+  registry:
+    domain: 127.0.0.1
+  metric:
+    storage:
+      type: ceresdb
 
+grpc:
+  client:
+    traceExporterService:
+      address: static://127.0.0.1:12801
+      negotiationType: PLAINTEXT
+    queryService:
+      #address: static://100.83.61.201:9090
+      address: static://127.0.0.1:9090
+      negotiationType: PLAINTEXT
+
+ceresdb:
+  host: ceresdb-daily.alibaba.net
+  port: 5001
+  accessUser: CeresDBAwesomeAdmin
+  accessToken: CeresDBAwesomeToken$$@@
+
+crypto:
+  client:
+    key: 6148847a-2f2c-497c-a3e1-2cb3f12b1232

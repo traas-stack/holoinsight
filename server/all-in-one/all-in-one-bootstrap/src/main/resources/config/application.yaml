@@ -1,6 +1,13 @@
 spring:
   application:
     name: holoinsight
+  datasource:
+    url: TODO
+    username: TODO
+    password: TODO
+  jackson:
+    time-zone: Asia/Shanghai
+    date-format: yyyy-MM-dd HH:mm:ss
 
 mybatis-plus:
   config-location: classpath:mybatis/mybatis-config.xml
@@ -8,12 +15,59 @@ mybatis-plus:
   - classpath*:sqlmap/*.xml
   - classpath*:sqlmap-ext/*.xml
 
-management:
-  endpoints:
-    enabled-by-default: false
+server:
+  compression:
+    enabled: true
+
+grpc:
   server:
-    port: 8089
+    port: 9091
 
 holoinsight:
   roles:
-    active: registry,gateway
+    active: none
+  storage:
+    elasticsearch:
+      hosts: 127.0.0.1
+    grpcserver:
+      enabled: false
+  home:
+    domain: http://localhost:8080/
+    environment:
+      env: dev
+      deploymentSite: dev
+    role: prod
+  alert:
+    env: dev
+    algorithm:
+      url: http://127.0.0.1:5005
+  query:
+    storage:
+      address: http://127.0.0.1:8080
+  meta:
+    domain: 127.0.0.1
+    db_data_mode: mongodb
+    mongodb_config:
+      key-need-convert: false
+  registry:
+    meta:
+      vip: 127.0.0.1
+    domain: 127.0.0.1
+
+management:
+  # avoid exposing to public
+  server:
+    port: 8089
+    address: 127.0.0.1
+  endpoints:
+    web:
+      base-path: /internal/api/actuator
+      exposure:
+        include: prometheus,health
+  endpoint:
+    health:
+      show-details: always
+
+crypto:
+  client:
+    key: abcdefgh-abcd-abcd-abcd-abcdefghijkl
