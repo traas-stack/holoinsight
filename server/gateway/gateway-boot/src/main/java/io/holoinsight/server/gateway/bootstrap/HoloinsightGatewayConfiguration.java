@@ -5,6 +5,7 @@ package io.holoinsight.server.gateway.bootstrap;
 
 import io.holoinsight.server.common.auth.ApiKeyAutoConfiguration;
 import io.holoinsight.server.common.config.ConfigConfiguration;
+import io.holoinsight.server.common.dao.CommonDaoConfiguration;
 import io.holoinsight.server.common.dao.mapper.AgentConfigurationDOMapper;
 import io.holoinsight.server.common.groovy.GroovyConfiguration;
 import io.holoinsight.server.common.security.InternalWebApiSecurityConfiguration;
@@ -31,10 +32,9 @@ import org.springframework.context.annotation.Import;
 @Configuration
 @ConditionalOnRole("gateway")
 @ComponentScan({"io.holoinsight.server.gateway",})
-@MapperScan(basePackageClasses = {AgentConfigurationDOMapper.class})
 @EnableConfigurationProperties({HoloinsightProperties.class, GatewayProperties.class})
 @Import({ConfigConfiguration.class, GroovyConfiguration.class, ThreadPoolConfiguration.class,
-    InternalWebApiSecurityConfiguration.class, ApiKeyAutoConfiguration.class})
+    InternalWebApiSecurityConfiguration.class, ApiKeyAutoConfiguration.class, CommonDaoConfiguration.class})
 public class HoloinsightGatewayConfiguration {
   @Bean
   public MetricStorage metricStorage() {
