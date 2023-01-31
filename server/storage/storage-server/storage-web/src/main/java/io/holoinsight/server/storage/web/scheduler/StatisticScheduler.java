@@ -28,10 +28,12 @@ public class StatisticScheduler {
       long startTime = endTime - 1000 * 60 * 10; // 10 minutes
       List<StatisticData> statisticData = traceService.statisticTrace(startTime, endTime);
       for (StatisticData statisticDatum : statisticData) {
-        log.info(String.format(
-            "[statisticTrace] Statistic trace data(10 minutes), appId: %s, envId: %s, serviceCount: %s, traceCount: %s, successRate: %s",
+        log.info(
+            "[statisticTrace] Statistic trace data(10 minutes), appId: {}, envId: {}, serviceCount: {},"
+                + " traceCount: {}, successRate: {}, entryCount: {}, avgLatency: {}",
             statisticDatum.getAppId(), statisticDatum.getEnvId(), statisticDatum.getServiceCount(),
-            statisticDatum.getTraceCount(), statisticDatum.getSuccessRate()));
+            statisticDatum.getTraceCount(), statisticDatum.getSuccessRate(),
+            statisticDatum.getEntryCount(), statisticDatum.getAvgLatency());
       }
     } catch (Exception e) {
       log.error("[statisticTrace] Statistic trace scheduler error: ", e.getMessage());

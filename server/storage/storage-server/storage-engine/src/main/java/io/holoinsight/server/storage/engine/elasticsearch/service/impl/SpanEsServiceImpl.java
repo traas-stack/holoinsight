@@ -48,6 +48,7 @@ import org.elasticsearch.search.aggregations.Aggregator;
 import org.elasticsearch.search.aggregations.bucket.filter.Filter;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms;
 import org.elasticsearch.search.aggregations.bucket.terms.TermsAggregationBuilder;
+import org.elasticsearch.search.aggregations.metrics.Avg;
 import org.elasticsearch.search.aggregations.metrics.ParsedCardinality;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.elasticsearch.search.sort.SortOrder;
@@ -241,8 +242,15 @@ public class SpanEsServiceImpl extends RecordEsService<SpanEsDO> implements Span
                 .filter(SpanEsDO.TRACE_STATUS,
                     QueryBuilders.termQuery(SpanEsDO.TRACE_STATUS,
                         Status.StatusCode.STATUS_CODE_ERROR_VALUE))
+                .subAggregation(AggregationBuilders.cardinality("error_count")
+                    .field(SpanEsDO.TRACE_ID)))
+            .subAggregation(AggregationBuilders.filter(SpanEsDO.attributes(Const.ISENTRY),
+                QueryBuilders.boolQuery()
+                    .must(QueryBuilders.termQuery(SpanEsDO.attributes(Const.ISENTRY), "true"))
+                    .mustNot(QueryBuilders.termQuery(SpanEsDO.NAME, "GET:/")))
                 .subAggregation(
-                    AggregationBuilders.cardinality("error_count").field(SpanEsDO.TRACE_ID)))
+                    AggregationBuilders.cardinality("entry_count").field(SpanEsDO.NAME)))
+            .subAggregation(AggregationBuilders.avg("avg_latency").field(SpanEsDO.LATENCY))
             .executionHint("map").collectMode(Aggregator.SubAggCollectionMode.BREADTH_FIRST)
             .size(1000));
 
@@ -272,11 +280,20 @@ public class SpanEsServiceImpl extends RecordEsService<SpanEsDO> implements Span
         ParsedCardinality errorTerm = errFilter.getAggregations().get("error_count");
         int errorCount = (int) errorTerm.getValue();
 
+        Filter entryFilter = envBucket.getAggregations().get(SpanEsDO.attributes(Const.ISENTRY));
+        ParsedCardinality entryTerm = entryFilter.getAggregations().get("entry_count");
+        int entryCount = (int) entryTerm.getValue();
+
+        Avg avgLatency = envBucket.getAggregations().get("avg_latency");
+        double latency = Double.valueOf(avgLatency.getValue());
+
         StatisticData statisticData = new StatisticData();
         statisticData.setAppId(appId);
         statisticData.setEnvId(envId);
         statisticData.setServiceCount(serviceCount);
         statisticData.setTraceCount(traceCount);
+        statisticData.setEntryCount(entryCount);
+        statisticData.setAvgLatency(latency);
         statisticData.setSuccessRate(((double) (traceCount - errorCount) / traceCount) * 100);
 
         result.add(statisticData);
