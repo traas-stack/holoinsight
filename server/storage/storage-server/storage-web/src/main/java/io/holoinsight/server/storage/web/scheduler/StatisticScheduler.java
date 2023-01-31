@@ -29,9 +29,10 @@ public class StatisticScheduler {
       List<StatisticData> statisticData = traceService.statisticTrace(startTime, endTime);
       for (StatisticData statisticDatum : statisticData) {
         log.info(String.format(
-            "[statisticTrace] Statistic trace data(10 minutes), appId: %s, envId: %s, serviceCount: %s, traceCount: %s, successRate: %s",
+            "[statisticTrace] Statistic trace data(10 minutes), appId: %s, envId: %s, serviceCount: %s, traceCount: %s, successRate: %s, entryCount: %s, avgLatency: %s",
             statisticDatum.getAppId(), statisticDatum.getEnvId(), statisticDatum.getServiceCount(),
-            statisticDatum.getTraceCount(), statisticDatum.getSuccessRate()));
+            statisticDatum.getTraceCount(), statisticDatum.getSuccessRate(),
+            statisticDatum.getEntryCount(), statisticDatum.getAvgLatency()));
       }
     } catch (Exception e) {
       log.error("[statisticTrace] Statistic trace scheduler error: ", e.getMessage());

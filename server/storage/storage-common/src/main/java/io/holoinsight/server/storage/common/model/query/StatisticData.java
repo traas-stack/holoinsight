@@ -13,4 +13,6 @@ public class StatisticData {
   private long serviceCount;
   private long traceCount;
   private double successRate;
+  private long entryCount;
+  private double avgLatency;
 }
