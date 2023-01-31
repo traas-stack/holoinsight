@@ -80,6 +80,12 @@ public class AlertTaskCompute implements AlarmTaskExecutor<ComputeTaskPackage> {
       LOGGER.error(
           "[HoloinsightAlertInternalException][AlertTaskCompute][{}] fail to execute alert task compute for {}",
           computeTaskPackage.inspectConfigs.size(), e.getMessage(), e);
+    }finally {
+      int size = 0;
+      if(!CollectionUtils.isEmpty(computeTaskPackage.getInspectConfigs())){
+        size = computeTaskPackage.getInspectConfigs().size();
+      }
+      LOGGER.info("[ALERT_COMPUTE] {} finish to compute alert {}", computeTaskPackage.getTraceId(), size);
     }
   }
 
