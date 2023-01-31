@@ -4,6 +4,7 @@
 package io.holoinsight.server.home.alert.service.calculate;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import io.holoinsight.server.home.alert.common.AlertStat;
 import io.holoinsight.server.home.alert.common.G;
 import io.holoinsight.server.home.alert.model.compute.ComputeContext;
 import io.holoinsight.server.home.alert.model.compute.ComputeTaskPackage;
@@ -26,6 +27,7 @@ import org.springframework.util.CollectionUtils;
 import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -80,12 +82,12 @@ public class AlertTaskCompute implements AlarmTaskExecutor<ComputeTaskPackage> {
       LOGGER.error(
           "[HoloinsightAlertInternalException][AlertTaskCompute][{}] fail to execute alert task compute for {}",
           computeTaskPackage.inspectConfigs.size(), e.getMessage(), e);
-    }finally {
-      int size = 0;
-      if(!CollectionUtils.isEmpty(computeTaskPackage.getInspectConfigs())){
-        size = computeTaskPackage.getInspectConfigs().size();
+    } finally {
+      Map<String, Long> counterMap = AlertStat.statCount(computeTaskPackage);
+      for (Map.Entry<String /* tenant */, Long> entry : counterMap.entrySet()) {
+        LOGGER.info("[ALERT_COMPUTE] {} finish to compute alert {}", entry.getKey(),
+            entry.getValue());
       }
-      LOGGER.info("[ALERT_COMPUTE] {} finish to compute alert {}", computeTaskPackage.getTraceId(), size);
     }
   }
 
