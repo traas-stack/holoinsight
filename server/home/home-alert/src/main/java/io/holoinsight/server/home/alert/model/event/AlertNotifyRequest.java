@@ -36,11 +36,13 @@ public class AlertNotifyRequest {
   private Long alarmTime; // 告警时间
 
   private String alarmLevel; // 告警级别
-  //
+
   private String aggregationNum; // 聚合告警数
 
   private List<NotifyDataInfo> notifyDataInfos; // 告警计算结果
 
   private InspectConfig ruleConfig; // 告警规则配置
+
+  private String envType; // 环境类型
 
 }
