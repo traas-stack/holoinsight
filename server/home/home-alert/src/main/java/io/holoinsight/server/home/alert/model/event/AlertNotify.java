@@ -61,16 +61,7 @@ public class AlertNotify {
 
   private String alarmTraceId; // 告警唯一id
 
-  // 短信渠道
-  private List<String> smsPhones;
-  // 电话渠道
-  private List<String> dyvmsPhones;
-  // 钉钉渠道
-  private List<String> ddWebhooks;
-  // 邮件渠道
-  private List<String> emailAddresses;
-  // 环境类型
-  private String envType;
+  private String envType; // 环境类型
 
   public static AlertNotify eventInfoConver(EventInfo eventInfo, InspectConfig inspectConfig) {
     AlertNotify alertNotify = new AlertNotify();
