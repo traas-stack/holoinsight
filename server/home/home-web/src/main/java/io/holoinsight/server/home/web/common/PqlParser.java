@@ -20,12 +20,12 @@ import java.util.List;
 @Service
 public class PqlParser {
 
-    public List<String> parseList(String pql) throws PqlException {
-        if (StringUtils.isEmpty(pql)) {
-            return Collections.emptyList();
-        }
-        Parser p = new Parser();
-        Expr e = p.parse(pql);
-        return e.explainToList();
+  public List<String> parseList(String pql) throws PqlException {
+    if (StringUtils.isEmpty(pql)) {
+      return Collections.emptyList();
     }
+    Parser p = new Parser();
+    Expr e = p.parse(pql);
+    return e.explainToList();
+  }
 }
