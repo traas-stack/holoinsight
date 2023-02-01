@@ -23,7 +23,9 @@ import io.holoinsight.server.home.common.util.scope.RequestContext;
 import io.holoinsight.server.home.dal.model.AgentConfiguration;
 import io.holoinsight.server.home.web.common.ManageCallback;
 import io.holoinsight.server.home.web.common.ParaCheckUtil;
+import io.holoinsight.server.home.web.common.PqlParser;
 import io.holoinsight.server.home.web.common.TokenUrls;
+import io.holoinsight.server.home.web.common.pql.PqlException;
 import io.holoinsight.server.home.web.controller.model.DataQueryRequest;
 import io.holoinsight.server.home.web.controller.model.PqlInstanceRequest;
 import io.holoinsight.server.home.web.controller.model.PqlParseRequest;
@@ -67,6 +69,9 @@ public class QueryFacadeImpl extends BaseFacade {
 
   @Autowired
   private AgentConfigurationService agentConfigurationService;
+
+  @Autowired
+  private PqlParser pqlParser;
 
   @PostMapping
   public JsonResult<QueryResponse> query(@RequestBody DataQueryRequest request) {
@@ -690,8 +695,21 @@ public class QueryFacadeImpl extends BaseFacade {
   }
 
   @PostMapping(value = "/pql/parse")
-  public JsonResult<PqlParseResult> querySlowSqlList(@RequestBody PqlParseRequest request) {
+  public JsonResult<PqlParseResult> pqlParse(@RequestBody PqlParseRequest request) {
     final JsonResult<PqlParseResult> result = new JsonResult<>();
+    PqlParseResult pqlParseResult = new PqlParseResult();
+    pqlParseResult.setRawPql(request.getPql());
+    try {
+      List<String> exprs = pqlParser.parseList(request.getPql());
+      if (exprs != null && !exprs.isEmpty()) {
+        pqlParseResult.setExprs(exprs);
+        JsonResult.createSuccessResult(result, pqlParseResult);
+      } else {
+        JsonResult.createFailResult(result, "parse failed or pql is empty");
+      }
+    } catch (PqlException e) {
+      JsonResult.createFailResult(result, e.getMessage());
+    }
     return result;
   }
 }

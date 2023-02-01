@@ -130,4 +130,9 @@ public class AlarmRuleDTO {
    * 环境类型
    */
   private String envType;
+
+  /**
+   * pql
+   */
+  private String pql;
 }
