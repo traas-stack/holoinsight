@@ -45,6 +45,7 @@ public class DefaultQueryServiceImpl implements QueryService {
   @Autowired
   protected MetricStorage metricStorage;
 
+
   @Override
   public QueryProto.QueryResponse queryData(QueryProto.QueryRequest request) throws QueryException {
     return wrap(() -> {
@@ -220,7 +221,7 @@ public class DefaultQueryServiceImpl implements QueryService {
     List<String> queryExprs = Lists.newArrayList(StringUtils.split(query, ","));
     Map<String, QueryProto.Datasource> dsMap = datasources.stream()
         .collect(Collectors.toMap(QueryProto.Datasource::getName, Function.identity()));
-    QueryProto.QueryResponse.Builder responseBuilder = QueryProto.QueryResponse.newBuilder();
+    QueryProto.QueryResponse.Builder rspBuilder = QueryProto.QueryResponse.newBuilder();
     List<QueryProto.Result> results = new ArrayList<>();
     List<String> singleQueryExprs = queryExprs.stream()
         .filter(qe -> new RpnResolver().expr2Infix(qe).size() == 1).collect(Collectors.toList());
@@ -277,15 +278,14 @@ public class DefaultQueryServiceImpl implements QueryService {
         QueryProto.Result result = resultBuilder.build();
         results.add(result);
       });
-
-      if (CollectionUtils.isNotEmpty(datasources) && StringUtils.isNotEmpty(downsample)
-          && StringUtils.isNotEmpty(fillPolicy)) {
-        QueryProto.Datasource ds = datasources.get(0);
-        fillData(responseBuilder, ds.getStart(), ds.getEnd(), downsample, fillPolicy);
-      }
     }
-    responseBuilder.addAllResults(results);
-    return responseBuilder.build();
+    rspBuilder.addAllResults(results);
+    if (CollectionUtils.isNotEmpty(datasources) && StringUtils.isNotEmpty(downsample)
+            && StringUtils.isNotEmpty(fillPolicy)) {
+      QueryProto.Datasource ds = datasources.get(0);
+      fillData(rspBuilder, ds.getStart(), ds.getEnd(), downsample, fillPolicy);
+    }
+    return rspBuilder.build();
   }
 
   protected QueryProto.QueryResponse.Builder queryDs(String tenant,
