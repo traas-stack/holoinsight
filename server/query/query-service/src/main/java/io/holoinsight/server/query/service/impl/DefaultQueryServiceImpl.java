@@ -45,6 +45,7 @@ public class DefaultQueryServiceImpl implements QueryService {
   @Autowired
   protected MetricStorage metricStorage;
 
+
   @Override
   public QueryProto.QueryResponse queryData(QueryProto.QueryRequest request) throws QueryException {
     return wrap(() -> {
