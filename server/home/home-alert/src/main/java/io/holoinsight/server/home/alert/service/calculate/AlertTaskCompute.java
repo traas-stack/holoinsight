@@ -83,10 +83,13 @@ public class AlertTaskCompute implements AlarmTaskExecutor<ComputeTaskPackage> {
           "[HoloinsightAlertInternalException][AlertTaskCompute][{}] fail to execute alert task compute for {}",
           computeTaskPackage.inspectConfigs.size(), e.getMessage(), e);
     } finally {
-      Map<String, Long> counterMap = AlertStat.statCount(computeTaskPackage);
-      for (Map.Entry<String /* tenant */, Long> entry : counterMap.entrySet()) {
-        LOGGER.info("[ALERT_COMPUTE] {} finish to compute alert {}", entry.getKey(),
-            entry.getValue());
+      Map<String, Map<String, Long>> counterMap = AlertStat.statRuleTypeCount(computeTaskPackage);
+      for (Map.Entry<String /* tenant */, Map<String /* ruleType */, Long>> entry : counterMap
+          .entrySet()) {
+        for (Map.Entry<String, Long> item : entry.getValue().entrySet()) {
+          LOGGER.info("[ALERT_COMPUTE][{}][{}] finish to compute alert {}", entry.getKey(),
+              item.getKey(), item.getValue());
+        }
       }
     }
   }

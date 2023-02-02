@@ -62,13 +62,10 @@ public class CacheAlertTask {
 
   private void getAlarmTaskCache() {
     try {
-      // 获取数据库配置
-      List<AlarmRule> alarmRuleDOS = getAlarmRuleListByPage();
-      // LOGGER.info("[AlarmRuleDO] alarm rule info {}: {}", alarmRuleDOS.size(),
-      // G.get().toJson(alarmRuleDOS));
-      // 转换为告警配置(以dsid为维度)
-      ComputeTaskPackage computeTaskPackage = convert(alarmRuleDOS);
       if ("true".equals(this.cacheAlertConfig.getConfig("alarm_switch"))) {
+        // 获取数据库配置
+        List<AlarmRule> alarmRuleDOS = getAlarmRuleListByPage();
+        ComputeTaskPackage computeTaskPackage = convert(alarmRuleDOS);
         TaskQueueManager.getInstance().offer(computeTaskPackage);
       }
 

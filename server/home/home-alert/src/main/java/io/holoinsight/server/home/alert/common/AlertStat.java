@@ -23,11 +23,47 @@ public class AlertStat {
     }
 
     for (InspectConfig inspectConfig : computeTaskPackage.getInspectConfigs()) {
+      if (!inspectConfig.getStatus()) {
+        continue;
+      }
       map.compute(inspectConfig.getTenant(), (k, v) -> {
         if (v == null) {
           return 1L;
         } else {
           return v + 1;
+        }
+      });
+    }
+    return map;
+  }
+
+  public static Map<String, Map<String, Long>> statRuleTypeCount(
+      ComputeTaskPackage computeTaskPackage) {
+    Map<String, Map<String, Long>> map = new HashMap<>();
+
+    if (CollectionUtils.isEmpty(computeTaskPackage.getInspectConfigs())) {
+      return map;
+    }
+
+    for (InspectConfig inspectConfig : computeTaskPackage.getInspectConfigs()) {
+      if (!inspectConfig.getStatus()) {
+        continue;
+      }
+      map.compute(inspectConfig.getTenant(), (k, v) -> {
+        String ruleType = inspectConfig.getRuleType();
+        if (v == null) {
+          Map<String, Long> typeMap = new HashMap();
+          typeMap.put(ruleType, 1L);
+          return typeMap;
+        } else {
+          v.compute(ruleType, (kk, vv) -> {
+            if (vv == null) {
+              return 1L;
+            } else {
+              return vv + 1;
+            }
+          });
+          return v;
         }
       });
     }
