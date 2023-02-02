@@ -13,7 +13,7 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * @author zanghaibo
+ * @author zzhb101
  * @time 2022-12-21 12:04 上午
  */
 
@@ -25,6 +25,7 @@ public class PqlParser {
       return Collections.emptyList();
     }
     Parser p = new Parser();
+    p.initLexer(pql);
     Expr e = p.parse(pql);
     return e.explainToList();
   }
