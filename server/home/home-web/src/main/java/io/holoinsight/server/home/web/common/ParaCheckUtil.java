@@ -225,7 +225,7 @@ public class ParaCheckUtil {
   //
   /// **
   // * 检查主机名是否为长域名
-  // * 例如：trade-60-10.zue.alipay.com
+  // * 例如：foo-60-10.foo.foo.com
   // *
   // * @param hostname
   // * @return 如果返回值为null，则说明服务器主机名验证无误，反之则有误，且返回值即错误信息
@@ -245,7 +245,7 @@ public class ParaCheckUtil {
   // }
   // if (sb != null) {
   // String checkMessage = sb.substring(0, sb.length() - 1)
-  // + "]不符合长域名规范，格式如：monitorweb-60-10.zue.alipay.com";
+  // + "]不符合长域名规范，格式如：foo-60-10.foo.foo.com";
   // throw new MonitorException(ResultCodeEnum.PARAMETER_ILLEGAL, checkMessage);
   // }
   // }

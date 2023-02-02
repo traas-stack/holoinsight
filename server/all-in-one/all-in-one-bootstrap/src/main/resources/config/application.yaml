@@ -26,6 +26,13 @@ server:
 grpc:
   server:
     port: 9091
+  client:
+    traceExporterService:
+      address: static://127.0.0.1:12801
+      negotiationType: PLAINTEXT
+    queryService:
+      address: static://127.0.0.1:9090
+      negotiationType: PLAINTEXT
 
 holoinsight:
   roles:
