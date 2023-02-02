@@ -280,7 +280,7 @@ public class DefaultQueryServiceImpl implements QueryService {
     }
     rspBuilder.addAllResults(results);
     if (CollectionUtils.isNotEmpty(datasources) && StringUtils.isNotEmpty(downsample)
-            && StringUtils.isNotEmpty(fillPolicy)) {
+        && StringUtils.isNotEmpty(fillPolicy)) {
       QueryProto.Datasource ds = datasources.get(0);
       fillData(rspBuilder, ds.getStart(), ds.getEnd(), downsample, fillPolicy);
     }

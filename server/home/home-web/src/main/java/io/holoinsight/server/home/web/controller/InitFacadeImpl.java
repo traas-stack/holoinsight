@@ -58,7 +58,7 @@ import java.util.UUID;
 @Slf4j
 public class InitFacadeImpl extends BaseFacade {
 
-  private static List<String> metricList = Arrays.asList();
+  private static String DEFAULT_STORAGE_TENANT = "default";
 
   @Autowired
   private MetaTableService metaTableService;
@@ -144,19 +144,13 @@ public class InitFacadeImpl extends BaseFacade {
     facadeTemplate.manage(result, new ManageCallback() {
       @Override
       public void checkParameter() {
-        // String tenant = RequestContext.getContext().ms.getTenant();
-        // Map<String, Object> colMap = new HashMap<>();
-        // colMap.put("tenant", tenant);
-        // List<TenantOps> tenantOps = tenantOpsService.listByMap(colMap);
-        // if (!CollectionUtils.isEmpty(tenantOps)) {
-        // throw new MonitorException("tenant is existed in tenant_ops, " + tenant);
-        // }
+
       }
 
       @Override
       public void doManage() {
         // step1 存储默认创建租户空间
-        CreateTenantResponse ceresDBTenant = createCeresDBTenant();
+        CreateTenantResponse ceresDBTenant = createCeresDBTenant(DEFAULT_STORAGE_TENANT);
         log.info("init tenant, create creresdb tenant: " + J.toJson(ceresDBTenant));
 
         // step2 存储空间配置 保存到 tenant_ops 表中
@@ -182,13 +176,12 @@ public class InitFacadeImpl extends BaseFacade {
 
   }
 
-  private CreateTenantResponse createCeresDBTenant() {
+  private CreateTenantResponse createCeresDBTenant(String tenant) {
 
-    MonitorScope ms = RequestContext.getContext().ms;
-    String token = ms.getTenant() + "token";
+    String token = tenant + "token";
 
     // 默认保存7天
-    return ceresDBService.createOrUpdateTenant(ms.getTenant(), token, 7 * 24);
+    return ceresDBService.createOrUpdateTenant(tenant, token, 7 * 24);
 
   }
 
@@ -262,24 +255,13 @@ public class InitFacadeImpl extends BaseFacade {
     metaTable.setStatus(TableStatus.ONLINE);
 
     List<MetaTableCol> tableSchema = new ArrayList<>();
-    // MetaTableCol ipCol = new MetaTableCol();
-    // ipCol.setName("ip");
-    // ipCol.setColType("String");
-    // ipCol.setDesc("IP");
-    // tableSchema.add(ipCol);
-    //
-    // MetaTableCol hostNameCol = new MetaTableCol();
-    // hostNameCol.setName("hostname");
-    // hostNameCol.setColType("String");
-    // hostNameCol.setDesc("HostName");
-    // tableSchema.add(hostNameCol);
 
     metaTable.setTableSchema(tableSchema);
 
     MetaTableConfig metaTableConfig = new MetaTableConfig();
     metaTableConfig.setSource("input");
     metaTableConfig.setRateSec(60);
-    metaTableConfig.setMetricList(metricList);
+    metaTableConfig.setMetricList(new ArrayList<>());
 
     Map<String, List<String>> ukMaps = new HashMap<>();
     ukMaps.put("vm", Collections.singletonList("ip"));
