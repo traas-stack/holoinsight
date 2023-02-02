@@ -6,12 +6,15 @@ package io.holoinsight.server.home.bootstrap;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import io.holoinsight.server.common.config.EnvironmentProperties;
 import io.holoinsight.server.common.springboot.ConditionalOnRole;
+import io.holoinsight.server.home.biz.service.TenantInitService;
+import io.holoinsight.server.home.biz.service.impl.DefaultTenantInitServiceImpl;
 
 /**
  * @author masaimu
@@ -25,4 +28,8 @@ import io.holoinsight.server.common.springboot.ConditionalOnRole;
 @ConditionalOnRole("home")
 @EnableConfigurationProperties({EnvironmentProperties.class})
 public class HoloinsightHomeConfiguration {
+  @Bean
+  public TenantInitService tenantInitService() {
+    return new DefaultTenantInitServiceImpl();
+  }
 }
