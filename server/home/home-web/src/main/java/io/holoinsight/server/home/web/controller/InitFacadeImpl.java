@@ -58,7 +58,7 @@ import java.util.UUID;
 @Slf4j
 public class InitFacadeImpl extends BaseFacade {
 
-  private static String defaultStorageTenant = "default";
+  private static String DEFAULT_STORAGE_TENANT = "default";
 
   @Autowired
   private MetaTableService metaTableService;
@@ -150,7 +150,7 @@ public class InitFacadeImpl extends BaseFacade {
       @Override
       public void doManage() {
         // step1 存储默认创建租户空间
-        CreateTenantResponse ceresDBTenant = createCeresDBTenant(defaultStorageTenant);
+        CreateTenantResponse ceresDBTenant = createCeresDBTenant(DEFAULT_STORAGE_TENANT);
         log.info("init tenant, create creresdb tenant: " + J.toJson(ceresDBTenant));
 
         // step2 存储空间配置 保存到 tenant_ops 表中
