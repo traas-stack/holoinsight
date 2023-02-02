@@ -277,14 +277,13 @@ public class DefaultQueryServiceImpl implements QueryService {
         QueryProto.Result result = resultBuilder.build();
         results.add(result);
       });
-
-      if (CollectionUtils.isNotEmpty(datasources) && StringUtils.isNotEmpty(downsample)
-          && StringUtils.isNotEmpty(fillPolicy)) {
-        QueryProto.Datasource ds = datasources.get(0);
-        fillData(responseBuilder, ds.getStart(), ds.getEnd(), downsample, fillPolicy);
-      }
     }
     responseBuilder.addAllResults(results);
+    if (CollectionUtils.isNotEmpty(datasources) && StringUtils.isNotEmpty(downsample)
+            && StringUtils.isNotEmpty(fillPolicy)) {
+      QueryProto.Datasource ds = datasources.get(0);
+      fillData(responseBuilder, ds.getStart(), ds.getEnd(), downsample, fillPolicy);
+    }
     return responseBuilder.build();
   }
 
