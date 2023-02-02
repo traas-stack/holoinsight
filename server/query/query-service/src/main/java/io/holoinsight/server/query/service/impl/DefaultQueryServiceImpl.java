@@ -241,8 +241,7 @@ public class DefaultQueryServiceImpl implements QueryService {
       Map<Map, Map<Long, Map<String, Double>>> detailMap = new HashMap<>();
       for (QueryProto.Datasource datasource : datasources) {
         String dsName = datasource.getName();
-        QueryProto.QueryResponse.Builder rspBuilder = queryDs(tenant, datasource);
-        List<QueryProto.Result> rspResults = rspBuilder.getResultsList();
+        List<QueryProto.Result> rspResults = queryDs(tenant, datasource).getResultsList();
         for (QueryProto.Result result : rspResults) {
           Map<String, String> tags = result.getTagsMap();
           List<QueryProto.Point> points = result.getPointsList();
