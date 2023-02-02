@@ -2,9 +2,13 @@ spring:
   application:
     name: holoinsight
   datasource:
-    url: TODO
-    username: TODO
-    password: TODO
+    url: jdbc:mysql://127.0.0.1:3306/holoinsight?useUnicode=true&characterEncoding=UTF-8&autoReconnect=true&rewriteBatchedStatements=true&socketTimeout=15000&connectTimeout=3000&useTimezone=true&serverTimezone=Asia/Shanghai
+    username: holoinsight
+    password: holoinsight
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  data:
+    mongodb:
+      uri: mongodb://holoinsight:holoinsight@127.0.0.1:27017/holoinsight?keepAlive=true&maxIdleTimeMS=1500000&maxWaitTime=120000&connectTimeout=10000&socketTimeout=10000&socketKeepAlive=true&retryWrites=true
   jackson:
     time-zone: Asia/Shanghai
     date-format: yyyy-MM-dd HH:mm:ss
@@ -25,7 +29,7 @@ grpc:
 
 holoinsight:
   roles:
-    active: none
+    active: gateway,registry,query,meta,home
   storage:
     elasticsearch:
       hosts: 127.0.0.1
@@ -71,3 +75,9 @@ management:
 crypto:
   client:
     key: abcdefgh-abcd-abcd-abcd-abcdefghijkl
+
+ceresdb:
+  host: foo
+  port: 5001
+  accessUser: foo
+  accessToken: foo

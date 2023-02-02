@@ -3,15 +3,15 @@
  */
 package io.holoinsight.server.home.bootstrap;
 
-import io.holoinsight.server.common.config.EnvironmentProperties;
-import io.holoinsight.server.common.springboot.ConditionalOnRole;
-
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
+
+import io.holoinsight.server.common.config.EnvironmentProperties;
+import io.holoinsight.server.common.springboot.ConditionalOnRole;
 
 /**
  * @author masaimu
