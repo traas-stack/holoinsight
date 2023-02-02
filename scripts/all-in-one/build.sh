@@ -8,8 +8,27 @@ project_root=`realpath $script_dir/../..`
 
 module=all-in-one
 
+flag_quick=
+
+while getopts 'q' OPT; do
+  case "$OPT" in
+  q)
+    flag_quick=1
+    ;;
+  *)
+    echo unsupported option $OPT
+    exit 1
+    ;;
+  esac
+done
+
+mvn_goals="clean package"
+if [ -n "$flag_quick" ]; then
+  mvn_goals="package"
+fi
+
 mvn -f $project_root/server/server-parent/pom.xml \
-  clean package \
+  $mvn_goals \
   -DskipTests \
   -Dmaven.test.skip=true \
   -T 1C  \

@@ -36,9 +36,9 @@ crypto:
 
 # ceresdb \u914D\u7F6E
 ceresdb:
-  host: ceresdb-daily.alibaba.net
+  host: foo
   port: 5001
-  accessUser: CeresDBAwesomeAdmin
-  accessToken: CeresDBAwesomeToken$$@@
+  accessUser: foo
+  accessToken: foo
 
 
