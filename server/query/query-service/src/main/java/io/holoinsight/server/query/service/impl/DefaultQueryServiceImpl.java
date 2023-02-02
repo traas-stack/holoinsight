@@ -55,7 +55,7 @@ public class DefaultQueryServiceImpl implements QueryService {
       String downsample = request.getDownsample();
       String fillPolicy = request.getFillPolicy();
       if (StringUtils.isBlank(query)
-              || datasources.stream().anyMatch(ds -> query.equals(ds.getName()))) {
+          || datasources.stream().anyMatch(ds -> query.equals(ds.getName()))) {
         return simpleQuery(tenant, datasources);
       } else {
         return complexQuery(tenant, query, downsample, fillPolicy, datasources);
@@ -78,7 +78,7 @@ public class DefaultQueryServiceImpl implements QueryService {
 
   @Override
   public QueryProto.QueryResponse deleteKeys(QueryProto.QueryRequest request)
-          throws QueryException {
+      throws QueryException {
     return wrap(() -> {
       Assert.notEmpty(request.getDatasourcesList(), "datasources empty!");
       for (QueryProto.Datasource datasource : request.getDatasourcesList()) {
@@ -91,7 +91,7 @@ public class DefaultQueryServiceImpl implements QueryService {
 
   @Override
   public QueryProto.QuerySchemaResponse querySchema(QueryProto.QueryRequest request)
-          throws QueryException {
+      throws QueryException {
     return wrap(() -> {
       QueryProto.QuerySchemaResponse.Builder builder = QueryProto.QuerySchemaResponse.newBuilder();
       String tenant = request.getTenant();
@@ -100,17 +100,17 @@ public class DefaultQueryServiceImpl implements QueryService {
       for (QueryProto.Datasource ds : datasources) {
         List<QueryProto.Result> results = searchTags(tenant, ds);
         results.forEach(r -> keys.computeIfAbsent(r.getMetric(), __ -> new HashSet<>())
-                .addAll(r.getTagsMap().keySet()));
+            .addAll(r.getTagsMap().keySet()));
       }
       keys.forEach((m, ks) -> builder
-              .addResults(QueryProto.KeysResult.newBuilder().setMetric(m).addAllKeys(ks)).build());
+          .addResults(QueryProto.KeysResult.newBuilder().setMetric(m).addAllKeys(ks)).build());
       return builder.build();
     }, "querySchema", request);
   }
 
   @Override
   public QueryProto.QueryMetricsResponse queryMetrics(QueryProto.QueryMetricsRequest request)
-          throws QueryException {
+      throws QueryException {
     return wrap(() -> {
       QueryMetricsParam param = QueryStorageUtils.convertToQueryMetricsParam(request);
       List<String> suggestRsp = metricStorage.queryMetrics(param);
@@ -128,19 +128,19 @@ public class DefaultQueryServiceImpl implements QueryService {
 
   @Override
   public QueryProto.QueryResponse pqlInstantQuery(QueryProto.PqlInstantRequest request)
-          throws QueryException {
+      throws QueryException {
     throw new UnsupportedOperationException();
   }
 
   @Override
   public QueryProto.QueryResponse pqlRangeQuery(QueryProto.PqlRangeRequest request)
-          throws QueryException {
+      throws QueryException {
     throw new UnsupportedOperationException();
   }
 
   @Override
   public QueryProto.TraceBrief queryBasicTraces(QueryProto.QueryTraceRequest request)
-          throws QueryException {
+      throws QueryException {
     return QueryProto.TraceBrief.getDefaultInstance();
   }
 
@@ -151,79 +151,79 @@ public class DefaultQueryServiceImpl implements QueryService {
 
   @Override
   public QueryProto.QueryMetaResponse queryServiceList(QueryProto.QueryMetaRequest request)
-          throws QueryException {
+      throws QueryException {
     return QueryProto.QueryMetaResponse.getDefaultInstance();
   }
 
   @Override
   public QueryProto.QueryMetaResponse queryEndpointList(QueryProto.QueryMetaRequest request)
-          throws QueryException {
+      throws QueryException {
     return QueryProto.QueryMetaResponse.getDefaultInstance();
   }
 
   @Override
   public QueryProto.QueryMetaResponse queryServiceInstanceList(QueryProto.QueryMetaRequest request)
-          throws QueryException {
+      throws QueryException {
     return QueryProto.QueryMetaResponse.getDefaultInstance();
   }
 
   @Override
   public QueryProto.QueryVirtualComponentResponse queryComponentList(
-          QueryProto.QueryMetaRequest request) throws QueryException {
+      QueryProto.QueryMetaRequest request) throws QueryException {
     return QueryProto.QueryVirtualComponentResponse.getDefaultInstance();
   }
 
   @Override
   public QueryProto.TraceIds queryComponentTraceIds(QueryProto.QueryMetaRequest request)
-          throws QueryException {
+      throws QueryException {
     return QueryProto.TraceIds.getDefaultInstance();
   }
 
   @Override
   public QueryProto.Topology queryTopology(QueryProto.QueryTopologyRequest request)
-          throws QueryException {
+      throws QueryException {
     return QueryProto.Topology.getDefaultInstance();
   }
 
   @Override
   public QueryProto.BizopsEndpoints queryBizEndpointList(QueryProto.QueryMetaRequest request)
-          throws QueryException {
+      throws QueryException {
     return QueryProto.BizopsEndpoints.getDefaultInstance();
   }
 
   @Override
   public QueryProto.BizopsEndpoints queryBizErrorCodeList(QueryProto.QueryMetaRequest request)
-          throws QueryException {
+      throws QueryException {
     return QueryProto.BizopsEndpoints.getDefaultInstance();
   }
 
   @Override
   public QueryProto.QuerySlowSqlResponse querySlowSqlList(QueryProto.QueryMetaRequest request)
-          throws QueryException {
+      throws QueryException {
     return QueryProto.QuerySlowSqlResponse.getDefaultInstance();
   }
 
   private QueryProto.QueryResponse simpleQuery(String tenant,
-                                               List<QueryProto.Datasource> datasources) throws QueryException {
+      List<QueryProto.Datasource> datasources) throws QueryException {
     List<QueryProto.QueryResponse> rsps = new ArrayList<>(datasources.size());
     for (QueryProto.Datasource datasource : datasources) {
       QueryProto.QueryResponse.Builder queryResponseBuilder = queryDs(tenant, datasource);
       rsps.add(queryResponseBuilder.build());
     }
     List<QueryProto.Result> results =
-            rsps.stream().flatMap(rsp -> rsp.getResultsList().stream()).collect(Collectors.toList());
+        rsps.stream().flatMap(rsp -> rsp.getResultsList().stream()).collect(Collectors.toList());
     return QueryProto.QueryResponse.newBuilder().addAllResults(results).build();
   }
 
   private QueryProto.QueryResponse complexQuery(String tenant, String query, String downsample,
-                                                String fillPolicy, List<QueryProto.Datasource> datasources) throws QueryException {
+      String fillPolicy, List<QueryProto.Datasource> datasources) throws QueryException {
     List<String> queryExprs = Lists.newArrayList(StringUtils.split(query, ","));
     Map<String, QueryProto.Datasource> dsMap = datasources.stream()
-            .collect(Collectors.toMap(QueryProto.Datasource::getName, Function.identity()));
+        .collect(Collectors.toMap(QueryProto.Datasource::getName, Function.identity()));
     QueryProto.QueryResponse.Builder responseBuilder = QueryProto.QueryResponse.newBuilder();
     List<QueryProto.Result> results = new ArrayList<>();
     List<String> singleQueryExprs = queryExprs.stream()
-            .filter(qe -> new RpnResolver().expr2Infix(qe).size() == 1).collect(Collectors.toList());
+        .filter(qe -> new RpnResolver().expr2Infix(qe).size() == 1).collect(Collectors.toList());
     for (String singleQueryExpr : singleQueryExprs) {
       queryExprs.remove(singleQueryExpr);
       QueryProto.Datasource ds = dsMap.get(singleQueryExpr);
@@ -236,7 +236,7 @@ public class DefaultQueryServiceImpl implements QueryService {
       List<String> queryExprArgs = rpnResolver.expr2Infix(queryExpr);
 
       List<String> dsNames =
-              datasources.stream().map(QueryProto.Datasource::getName).collect(Collectors.toList());
+          datasources.stream().map(QueryProto.Datasource::getName).collect(Collectors.toList());
       Map<Map, Map<Long, Map<String, Double>>> detailMap = new HashMap<>();
       for (QueryProto.Datasource datasource : datasources) {
         String dsName = datasource.getName();
@@ -249,7 +249,7 @@ public class DefaultQueryServiceImpl implements QueryService {
             Long timestamp = point.getTimestamp();
             Double value = point.getValue();
             detailMap.computeIfAbsent(tags, _0 -> new TreeMap<>())
-                    .computeIfAbsent(timestamp, _1 -> new HashMap<>()).put(dsName, value);
+                .computeIfAbsent(timestamp, _1 -> new HashMap<>()).put(dsName, value);
           }
         }
       }
@@ -279,7 +279,7 @@ public class DefaultQueryServiceImpl implements QueryService {
       });
 
       if (CollectionUtils.isNotEmpty(datasources) && StringUtils.isNotEmpty(downsample)
-              && StringUtils.isNotEmpty(fillPolicy)) {
+          && StringUtils.isNotEmpty(fillPolicy)) {
         QueryProto.Datasource ds = datasources.get(0);
         fillData(responseBuilder, ds.getStart(), ds.getEnd(), downsample, fillPolicy);
       }
@@ -289,7 +289,7 @@ public class DefaultQueryServiceImpl implements QueryService {
   }
 
   protected QueryProto.QueryResponse.Builder queryDs(String tenant,
-                                                     QueryProto.Datasource datasource) throws QueryException {
+      QueryProto.Datasource datasource) throws QueryException {
     if (AnalysisCenter.isAnalysis(datasource.getAggregator())) {
       return analysis(tenant, datasource);
     } else {
@@ -299,21 +299,21 @@ public class DefaultQueryServiceImpl implements QueryService {
 
 
   private QueryProto.QueryResponse.Builder queryMetricStore(String tenant,
-                                                            QueryProto.Datasource datasource) {
+      QueryProto.Datasource datasource) {
 
     QueryParam param = QueryStorageUtils.convertToQueryParam(tenant, datasource);
     List<io.holoinsight.server.extension.model.QueryResult.Result> results =
-            metricStorage.queryData(param);
+        metricStorage.queryData(param);
 
     QueryProto.QueryResponse.Builder builder = QueryProto.QueryResponse.newBuilder();
     for (io.holoinsight.server.extension.model.QueryResult.Result result : results) {
       QueryProto.Result.Builder resultBuilder = QueryProto.Result.newBuilder();
       resultBuilder.setMetric(
-                      StringUtils.isNotEmpty(datasource.getName()) ? datasource.getName() : result.getMetric())
-              .putAllTags(result.getTags());
+          StringUtils.isNotEmpty(datasource.getName()) ? datasource.getName() : result.getMetric())
+          .putAllTags(result.getTags());
       for (io.holoinsight.server.extension.model.QueryResult.Point point : result.getPoints()) {
         QueryProto.Point.Builder pointBuilder =
-                QueryProto.Point.newBuilder().setTimestamp(point.getTimestamp());
+            QueryProto.Point.newBuilder().setTimestamp(point.getTimestamp());
 
         if (point.getStrValue() != null) {
           pointBuilder.setStrValue(String.valueOf(point.getStrValue()));
@@ -327,19 +327,19 @@ public class DefaultQueryServiceImpl implements QueryService {
     }
     String fillPolicy = datasource.getFillPolicy();
     if (StringUtils.isNotEmpty(fillPolicy) && !StringUtils.equalsIgnoreCase(fillPolicy, "none")
-            && StringUtils.isNotEmpty(datasource.getDownsample())) {
+        && StringUtils.isNotEmpty(datasource.getDownsample())) {
       fillData(builder, datasource.getStart(), datasource.getEnd(), datasource.getDownsample(),
-              fillPolicy);
+          fillPolicy);
     }
     return builder;
   }
 
   private QueryProto.QueryResponse.Builder analysis(String tenant,
-                                                    QueryProto.Datasource datasource) {
+      QueryProto.Datasource datasource) {
 
     QueryParam queryParam = QueryStorageUtils.convertToQueryParam(tenant, datasource);
     List<io.holoinsight.server.extension.model.QueryResult.Result> results =
-            metricStorage.queryData(queryParam);
+        metricStorage.queryData(queryParam);
 
     QueryProto.QueryResponse.Builder builder = QueryProto.QueryResponse.newBuilder();
 
@@ -356,29 +356,29 @@ public class DefaultQueryServiceImpl implements QueryService {
         Mergable mergable = AnalysisCenter.parseAnalysis(tags, value, aggregator);
         if (mergable != null) {
           detailMap.computeIfAbsent(timestamp, _0 -> new ArrayList<>())
-                  .add(Pair.of(tags, mergable));
+              .add(Pair.of(tags, mergable));
         }
       }
     }
 
     detailMap.forEach((timestamp, pairs) -> {
       Map<Map<String, String>, Optional<Pair<Map<String, String>, Mergable>>> reducedByTags =
-              pairs.stream().collect(Collectors.groupingBy(pair -> {
-                Map resultTags = new HashMap();
-                if (CollectionUtils.isNotEmpty(queryParam.getGroupBy())) {
-                  queryParam.getGroupBy().forEach(gb -> resultTags.put(gb, pair.getLeft().get(gb)));
-                }
-                return resultTags;
-              }, Collectors.reducing((pair1, pair2) -> {
-                pair1.getValue().merge(pair2.getValue());
-                return pair1;
-              })));
+          pairs.stream().collect(Collectors.groupingBy(pair -> {
+            Map resultTags = new HashMap();
+            if (CollectionUtils.isNotEmpty(queryParam.getGroupBy())) {
+              queryParam.getGroupBy().forEach(gb -> resultTags.put(gb, pair.getLeft().get(gb)));
+            }
+            return resultTags;
+          }, Collectors.reducing((pair1, pair2) -> {
+            pair1.getValue().merge(pair2.getValue());
+            return pair1;
+          })));
       reducedByTags.forEach((tags, vals) -> {
         QueryProto.Result.Builder resultBuilder = QueryProto.Result.newBuilder();
         resultBuilder.setMetric(StringUtils.isNotEmpty(datasource.getName()) ? datasource.getName()
-                : datasource.getMetric()).putAllTags(tags);
+            : datasource.getMetric()).putAllTags(tags);
         QueryProto.Point.Builder pointBuilder = QueryProto.Point.newBuilder()
-                .setTimestamp(timestamp).setStrValue(GsonUtils.toJson(vals.get().getRight()));
+            .setTimestamp(timestamp).setStrValue(GsonUtils.toJson(vals.get().getRight()));
         resultBuilder.addPoints(pointBuilder);
         builder.addResults(resultBuilder);
       });
@@ -388,15 +388,15 @@ public class DefaultQueryServiceImpl implements QueryService {
   }
 
   private void fillData(QueryProto.QueryResponse.Builder rspBuilder, long start, long end,
-                        String downsample, String fillPolicy) {
+      String downsample, String fillPolicy) {
     rspBuilder.getResultsBuilderList().forEach(resultBuilder -> {
       List<QueryProto.Point.Builder> pointBuilders = resultBuilder.getPointsBuilderList();
       Map<Long, QueryProto.Point.Builder> timePointMap = new TreeMap<>(pointBuilders.stream()
-              .collect(Collectors.toMap(QueryProto.Point.Builder::getTimestamp, Function.identity())));
+          .collect(Collectors.toMap(QueryProto.Point.Builder::getTimestamp, Function.identity())));
       long sample = QueryStorageUtils.convertDownSample(downsample);
       for (long period =
-           start % sample == 0 ? start : start / sample * sample + sample; period <= end; period +=
-                   sample) {
+          start % sample == 0 ? start : start / sample * sample + sample; period <= end; period +=
+              sample) {
         if (!timePointMap.containsKey(period)) {
           QueryProto.Point.Builder builder = QueryProto.Point.newBuilder().setTimestamp(period);
           Object filledVal = QueryStorageUtils.convertFillPolocy(fillPolicy);
@@ -405,7 +405,7 @@ public class DefaultQueryServiceImpl implements QueryService {
           } else {
             builder.setStrValue(String.valueOf(filledVal));
           }
-          timePointMap.put(period,builder);
+          timePointMap.put(period, builder);
         }
       }
       resultBuilder.clearPoints();
@@ -414,12 +414,12 @@ public class DefaultQueryServiceImpl implements QueryService {
   }
 
   protected List<QueryProto.Result> searchTags(String tenant, QueryProto.Datasource datasource)
-          throws QueryException {
+      throws QueryException {
     try {
       List<QueryProto.Result> pbResults = new ArrayList<>();
       QueryParam param = QueryStorageUtils.convertToQueryParam(tenant, datasource);
       List<io.holoinsight.server.extension.model.QueryResult.Result> results =
-              metricStorage.queryTags(param);
+          metricStorage.queryTags(param);
       for (io.holoinsight.server.extension.model.QueryResult.Result result : results) {
         pbResults.add(QueryStorageUtils.convertToPb(result));
       }
@@ -440,7 +440,7 @@ public class DefaultQueryServiceImpl implements QueryService {
    * @throws QueryException
    */
   protected static <T> T wrap(Callable<T> call, String mark, MessageOrBuilder request)
-          throws QueryException {
+      throws QueryException {
     try {
       return call.call();
     } catch (Exception e) {
