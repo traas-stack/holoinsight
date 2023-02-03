@@ -13,6 +13,12 @@
 	<artifactId>extension-storage-ceresdbx</artifactId>
 	<description>holoinsight server side common module</description>
 	<dependencies>
+
+		<dependency>
+			<groupId>com.xzchaoo.commons</groupId>
+			<artifactId>commons-stat</artifactId>
+		</dependency>
+
 		<dependency>
 			<groupId>io.holoinsight.server</groupId>
 			<artifactId>extension-storage</artifactId>
@@ -68,5 +74,10 @@
 			<artifactId>protobuf-java-util</artifactId>
 			<scope>provided</scope>
 		</dependency>
-	</dependencies>
+        <dependency>
+            <groupId>io.holoinsight.server</groupId>
+            <artifactId>common-dao</artifactId>
+			<version>${project.version}</version>
+        </dependency>
+    </dependencies>
 </project>
