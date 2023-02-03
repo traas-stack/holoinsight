@@ -3,7 +3,10 @@
  */
 package io.holoinsight.server.extension.ceresdbx;
 
+import io.holoinsight.server.common.dao.mapper.TenantOpsMapper;
+import io.holoinsight.server.extension.MetricStorage;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /**
@@ -13,5 +16,15 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 @ConditionalOnProperty(value = "holoinsight.metric.storage.type", havingValue = "ceresdbx")
 public class HoloinsightCeresdbxConfiguration {
+
+  @Bean
+  public CeresdbxClientManager ceresdbxClientManager(TenantOpsMapper tenantOpsMapper) {
+    return new CeresdbxClientManager(tenantOpsMapper);
+  }
+
+  @Bean
+  public MetricStorage ceresdbxMetricStorage(CeresdbxClientManager ceresdbxClientManager) {
+    return new CeresdbxMetricStorage(ceresdbxClientManager);
+  }
 
 }

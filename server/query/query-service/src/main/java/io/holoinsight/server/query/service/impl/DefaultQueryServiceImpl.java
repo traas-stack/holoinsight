@@ -15,6 +15,7 @@ import java.util.concurrent.Callable;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import io.holoinsight.server.extension.model.QueryResult.Result;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
@@ -95,13 +96,15 @@ public class DefaultQueryServiceImpl implements QueryService {
       throws QueryException {
     return wrap(() -> {
       QueryProto.QuerySchemaResponse.Builder builder = QueryProto.QuerySchemaResponse.newBuilder();
-      String tenant = request.getTenant();
       Map<String, Set<String>> keys = new HashMap<>();
       List<QueryProto.Datasource> datasources = request.getDatasourcesList();
       for (QueryProto.Datasource ds : datasources) {
-        List<QueryProto.Result> results = searchTags(tenant, ds);
-        results.forEach(r -> keys.computeIfAbsent(r.getMetric(), __ -> new HashSet<>())
-            .addAll(r.getTagsMap().keySet()));
+        QueryParam queryParam = new QueryParam();
+        queryParam.setMetric(ds.getMetric());
+        queryParam.setTenant(request.getTenant());
+        Result result = metricStorage.querySchema(queryParam);
+        Map<String, String> tags = result.getTags();
+        keys.put(ds.getMetric(), tags.keySet());
       }
       keys.forEach((m, ks) -> builder
           .addResults(QueryProto.KeysResult.newBuilder().setMetric(m).addAllKeys(ks)).build());
