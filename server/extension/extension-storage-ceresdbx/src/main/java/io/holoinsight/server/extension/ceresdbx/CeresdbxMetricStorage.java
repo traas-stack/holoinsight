@@ -35,7 +35,6 @@ import io.ceresdb.models.WriteOk;
 import io.grpc.Context;
 import io.holoinsight.server.extension.MetricStorage;
 import io.holoinsight.server.extension.ceresdbx.utils.StatUtils;
-import io.holoinsight.server.extension.ceresdbx.utils.StorageMonitor;
 import io.holoinsight.server.extension.model.QueryMetricsParam;
 import io.holoinsight.server.extension.model.QueryParam.SlidingWindow;
 import io.holoinsight.server.extension.model.QueryResult;
