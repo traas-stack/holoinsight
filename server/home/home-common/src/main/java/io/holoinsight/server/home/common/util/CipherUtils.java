@@ -3,14 +3,14 @@
  */
 package io.holoinsight.server.home.common.util;
 
-import io.holoinsight.server.home.common.service.PropertiesListenerConfig;
-import lombok.extern.slf4j.Slf4j;
+import java.security.SecureRandom;
 
 import javax.crypto.Cipher;
 import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
-import java.security.SecureRandom;
+
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * 线程安全的编解码工具类
@@ -23,10 +23,13 @@ public class CipherUtils {
 
   private static final String SHA1PRNG = "SHA1PRNG";
   private static final String AES = "AES";
-  private static final String seed = PropertiesListenerConfig.getProperty("crypto.client.key");
-
   public static ThreadLocal<Cipher> enc = new ThreadLocal<Cipher>();
   public static ThreadLocal<Cipher> dec = new ThreadLocal<Cipher>();
+  private static String seed;
+
+  public static void setSeed(String str) {
+    seed = str;
+  }
 
   public static Cipher getEnc() {
     Cipher cipher = enc.get();
