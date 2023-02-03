@@ -1,0 +1,1 @@
+curl localhost:8089/internal/api/actuator/health

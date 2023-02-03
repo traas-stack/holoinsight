@@ -1,0 +1,4 @@
+curl -G \
+  --data-urlencode "key=$1" \
+  --data-urlencode "value=$2" \
+  localhost:8080/internal/api/config/pset
