@@ -3,12 +3,10 @@
  */
 package io.holoinsight.server.allinone;
 
+import org.springframework.boot.builder.SpringApplicationBuilder;
+
 import io.holoinsight.server.allinone.bootstrap.HoloinsightAllInOneBootstrap;
 import io.holoinsight.server.common.ContextHolder;
-import io.holoinsight.server.meta.core.common.PropertiesListener;
-
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.builder.SpringApplicationBuilder;
 
 /**
  * <p>
@@ -18,8 +16,9 @@ import org.springframework.boot.builder.SpringApplicationBuilder;
  */
 public class TestHoloinsightAllInOneBootstrap {
   public static void main(String[] args) {
-    ContextHolder.ctx = new SpringApplicationBuilder(HoloinsightAllInOneBootstrap.class)
-        .listeners(new PropertiesListener()) //
-        .profiles("test").build().run(args);
+    ContextHolder.ctx = new SpringApplicationBuilder(HoloinsightAllInOneBootstrap.class) //
+        .profiles("test") //
+        .build() //
+        .run(args); //
   }
 }

@@ -3,12 +3,11 @@
  */
 package io.holoinsight.server.allinone.bootstrap;
 
-import io.holoinsight.server.common.ContextHolder;
-import io.holoinsight.server.meta.core.common.PropertiesListener;
-
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
+
+import io.holoinsight.server.common.ContextHolder;
 
 /**
  * 'all-in-one' module uses Spring Boot AutoConfiguration to discover sub-modules, such as
@@ -23,9 +22,8 @@ import org.springframework.boot.builder.SpringApplicationBuilder;
 public class HoloinsightAllInOneBootstrap {
   public static void main(String[] args) {
     try {
-      SpringApplication app = new SpringApplicationBuilder(HoloinsightAllInOneBootstrap.class)
-          .listeners(new PropertiesListener()) //
-          .build();
+      SpringApplication app =
+          new SpringApplicationBuilder(HoloinsightAllInOneBootstrap.class).build();
       ContextHolder.ctx = app.run(args);
     } catch (Throwable e) {
       e.printStackTrace();
