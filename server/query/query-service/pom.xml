@@ -49,11 +49,6 @@
 			<artifactId>extension-storage</artifactId>
 			<version>${project.version}</version>
 		</dependency>
-		<dependency>
-			<groupId>io.holoinsight.server</groupId>
-			<artifactId>common-dao</artifactId>
-			<version>1.0.0-SNAPSHOT</version>
-		</dependency>
 	</dependencies>
 
 
