@@ -51,7 +51,7 @@ import org.springframework.util.CollectionUtils;
 import reactor.core.publisher.Mono;
 
 /**
- * @author jinyan.ljw
+ * @author jiwliu
  * @date 2023/1/13
  */
 public class CeresdbxMetricStorage implements MetricStorage {
