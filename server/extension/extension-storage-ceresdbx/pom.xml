@@ -13,6 +13,12 @@
 	<artifactId>extension-storage-ceresdbx</artifactId>
 	<description>holoinsight server side common module</description>
 	<dependencies>
+
+		<dependency>
+			<groupId>com.xzchaoo.commons</groupId>
+			<artifactId>commons-stat</artifactId>
+		</dependency>
+
 		<dependency>
 			<groupId>io.holoinsight.server</groupId>
 			<artifactId>extension-storage</artifactId>
@@ -22,6 +28,22 @@
 			<groupId>io.ceresdb</groupId>
 			<artifactId>ceresdb-all</artifactId>
 			<version>0.1.0-RC</version>
+			<exclusions>
+				<exclusion>
+					<artifactId>grpc-all</artifactId>
+					<groupId>io.grpc</groupId>
+				</exclusion>
+
+				<exclusion>
+					<artifactId>protobuf-java</artifactId>
+					<groupId>com.google.protobuf</groupId>
+				</exclusion>
+
+				<exclusion>
+					<artifactId>commons-compress</artifactId>
+					<groupId>org.apache.commons</groupId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>
@@ -68,5 +90,10 @@
 			<artifactId>protobuf-java-util</artifactId>
 			<scope>provided</scope>
 		</dependency>
-	</dependencies>
+        <dependency>
+            <groupId>io.holoinsight.server</groupId>
+            <artifactId>common-dao</artifactId>
+            <version>1.0.0-SNAPSHOT</version>
+        </dependency>
+    </dependencies>
 </project>
