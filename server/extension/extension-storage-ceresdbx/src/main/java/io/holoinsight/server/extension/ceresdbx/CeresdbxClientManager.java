@@ -1,3 +1,6 @@
+/*
+ * Copyright 2022 Holoinsight Project Authors. Licensed under Apache-2.0.
+ */
 package io.holoinsight.server.extension.ceresdbx;
 
 import java.util.List;
@@ -75,9 +78,9 @@ class CeresdbxClientManager {
           RpcOptions rpcOptions = new RpcOptions();
           rpcOptions.setLimitKind(LimitKind.None);
           CeresDBOptions opts = CeresDBOptions.newBuilder(address, port)
-              .managementAddress(address, managePort != 0 ? managePort : DEFAULT_MANAGEMENT_PORT).tenant(accessUser, "", accessKey)
-              .maxInFlightWriteRows(10000).rpcOptions(rpcOptions).writeMaxRetries(2)
-              .readMaxRetries(2).maxWriteSize(512).build();
+              .managementAddress(address, managePort != 0 ? managePort : DEFAULT_MANAGEMENT_PORT)
+              .tenant(accessUser, "", accessKey).maxInFlightWriteRows(10000).rpcOptions(rpcOptions)
+              .writeMaxRetries(2).readMaxRetries(2).maxWriteSize(512).build();
           CeresDBClient client = new CeresDBClient();
           try {
             final boolean ret = client.init(opts);
