@@ -31,7 +31,7 @@ import org.springframework.util.Assert;
  * <p>
  * created at 2023/1/13
  *
- * @author jinyan.ljw
+ * @author jiwliu
  */
 class CeresdbxClientManager {
 
