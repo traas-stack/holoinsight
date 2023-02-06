@@ -14,9 +14,11 @@ import io.holoinsight.server.common.springboot.HoloinsightProperties;
 import io.holoinsight.server.common.threadpool.ThreadPoolConfiguration;
 import io.holoinsight.server.extension.MetricStorage;
 import io.holoinsight.server.extension.NoopMetricStorage;
+import io.holoinsight.server.extension.ceresdbx.HoloinsightCeresdbxConfiguration;
 import io.holoinsight.server.gateway.core.grpc.GatewayProperties;
 
 import org.mybatis.spring.annotation.MapperScan;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -35,9 +37,10 @@ import org.springframework.context.annotation.Import;
 @EnableConfigurationProperties({HoloinsightProperties.class, GatewayProperties.class})
 @Import({ConfigConfiguration.class, GroovyConfiguration.class, ThreadPoolConfiguration.class,
     InternalWebApiSecurityConfiguration.class, ApiKeyAutoConfiguration.class,
-    CommonDaoConfiguration.class})
+    CommonDaoConfiguration.class, HoloinsightCeresdbxConfiguration.class})
 public class HoloinsightGatewayConfiguration {
   @Bean
+  @ConditionalOnMissingBean
   public MetricStorage metricStorage() {
     return new NoopMetricStorage();
   }

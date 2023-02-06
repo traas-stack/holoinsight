@@ -58,10 +58,11 @@ WORKDIR /home/admin
 
 EXPOSE 80
 
+COPY scripts/api /home/admin/api
+COPY scripts/docker/nginx.conf /etc/nginx/nginx.conf
+
 COPY scripts/docker/dist.zip /home/admin/dist.zip
 RUN unzip -d /home/admin/holoinsight-server-static/ /home/admin/dist.zip
-
-COPY scripts/docker/nginx.conf /etc/nginx/nginx.conf
 
 COPY --chown=admin:admin server/all-in-one/all-in-one-bootstrap/target/holoinsight-server.jar /home/admin/app.jar
 

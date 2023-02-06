@@ -13,6 +13,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Executors;
@@ -35,7 +37,7 @@ public class CacheAlertConfig {
   @Autowired
   private EnvironmentProperties environmentProperties;
 
-  private Map<String, Object> configMap;
+  private Map<String, Object> configMap = new HashMap<>();
 
   @Resource
   private MetaDataDictValueMapper metadataDictvalueDOMapper;

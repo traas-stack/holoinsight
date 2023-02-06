@@ -1,0 +1,4 @@
+curl -sG \
+  --data-urlencode "t=$1" \
+  --data-urlencode "d=$2" \
+  localhost:8080/internal/api/registry/target/get

@@ -22,6 +22,8 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.PostConstruct;
+
 /**
  *
  * @author jsy1001de
@@ -37,6 +39,7 @@ public class RegistryService {
   private static ManagedChannel channel;
   private static RegistryServiceForProdGrpc.RegistryServiceForProdBlockingStub c;
 
+  @PostConstruct
   public void init() {
     channel = ManagedChannelBuilder.forAddress(registryHost, 7201).usePlaintext().build();
     c = RegistryServiceForProdGrpc.newBlockingStub(channel);

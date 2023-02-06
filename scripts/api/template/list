@@ -1,0 +1,2 @@
+curl -sG \
+  localhost:8080/internal/api/registry/template/list

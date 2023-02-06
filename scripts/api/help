@@ -1,0 +1,19 @@
+echo 'Basic:'
+echo check git version: 'sh ../api/basic/git'
+echo
+
+echo 'Agent:'
+echo Get agent by Id: 'sh ../api/agent/get <agentId>'
+echo List all agents: 'sh ../api/agent/list <tenant>'
+echo
+
+echo 'Bistream:'
+echo List all stream ids which are connecting to current instance: sh ../api/bistream/ids
+echo Ping an agent which is connecting to current instance: sh ../api/bistream/ping [<payload>]
+
+echo 'Template:'
+echo List all templates: 'sh ../api/template/list'
+echo
+
+echo 'Target:'
+echo

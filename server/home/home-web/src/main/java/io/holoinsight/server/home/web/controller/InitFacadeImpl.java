@@ -3,13 +3,36 @@
  */
 package io.holoinsight.server.home.web.controller;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+
+import javax.servlet.http.HttpServletResponse;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
+
+import io.holoinsight.server.common.J;
+import io.holoinsight.server.common.JsonResult;
 import io.holoinsight.server.common.dao.entity.TenantOps;
 import io.holoinsight.server.common.dao.entity.dto.TenantOpsDTO;
+import io.holoinsight.server.common.dao.entity.dto.TenantOpsStorage;
+import io.holoinsight.server.common.dao.entity.dto.TenantOpsStorage.StorageMetric;
 import io.holoinsight.server.home.biz.service.ApiKeyService;
 import io.holoinsight.server.home.biz.service.MetaTableService;
+import io.holoinsight.server.home.biz.service.TenantInitService;
 import io.holoinsight.server.home.biz.service.TenantOpsService;
-import io.holoinsight.server.home.common.service.ceresdb.CeresDBService;
-import io.holoinsight.server.home.common.service.ceresdb.CreateTenantResponse;
 import io.holoinsight.server.home.common.util.Debugger;
 import io.holoinsight.server.home.common.util.TenantMetaUtil;
 import io.holoinsight.server.home.common.util.scope.MonitorCookieUtil;
@@ -19,34 +42,10 @@ import io.holoinsight.server.home.common.util.scope.RequestContext;
 import io.holoinsight.server.home.dal.model.ApiKey;
 import io.holoinsight.server.home.dal.model.dto.MetaTableDTO;
 import io.holoinsight.server.home.dal.model.dto.MetaTableDTO.TableStatus;
-import io.holoinsight.server.common.dao.entity.dto.TenantOpsStorage;
-import io.holoinsight.server.common.dao.entity.dto.TenantOpsStorage.StorageCeresDB;
-import io.holoinsight.server.common.dao.entity.dto.TenantOpsStorage.StorageMetric;
 import io.holoinsight.server.home.dal.model.dto.meta.MetaTableCol;
 import io.holoinsight.server.home.dal.model.dto.meta.MetaTableConfig;
 import io.holoinsight.server.home.web.common.ManageCallback;
-import io.holoinsight.server.common.J;
-import io.holoinsight.server.common.JsonResult;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.util.CollectionUtils;
-import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
-
-import javax.servlet.http.HttpServletResponse;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
 
 /**
  *
@@ -58,13 +57,12 @@ import java.util.UUID;
 @Slf4j
 public class InitFacadeImpl extends BaseFacade {
 
-  private static String default_storage_tenant = "default";
+
+  private static String DEFAULT_STORAGE_TENANT = "default";
 
   @Autowired
   private MetaTableService metaTableService;
 
-  @Autowired
-  private CeresDBService ceresDBService;
 
   @Autowired
   private ApiKeyService apiKeyService;
@@ -72,11 +70,9 @@ public class InitFacadeImpl extends BaseFacade {
   @Autowired
   private TenantOpsService tenantOpsService;
 
-  @Value("${ceresdb.host}")
-  private String ceresdbHost;
 
-  @Value("${ceresdb.port}")
-  private String ceresdbPort;
+  @Autowired
+  private TenantInitService tenantInitService;
 
   @ResponseBody
   @GetMapping(value = "/tenantCheck")
@@ -149,26 +145,23 @@ public class InitFacadeImpl extends BaseFacade {
 
       @Override
       public void doManage() {
-        // step1 存储默认创建租户空间
-        CreateTenantResponse ceresDBTenant = createCeresDBTenant(default_storage_tenant);
-        log.info("init tenant, create creresdb tenant: " + J.toJson(ceresDBTenant));
 
-        // step2 存储空间配置 保存到 tenant_ops 表中
-        TenantOpsDTO tenantOpsTable = createTenantOpsTable(ceresDBTenant);
+        // step1 存储空间配置 保存到 tenant_ops 表中
+        TenantOpsDTO tenantOpsTable = createTenantOpsTable(DEFAULT_STORAGE_TENANT);
         log.info("init tenant, create tenant ops: " + J.toJson(tenantOpsTable));
 
-        // step3 元数据默认创建schema
+        // step2 元数据默认创建schema
         MetaTableDTO table = createTable();
         log.info("init tenant, create table: " + J.toJson(table));
 
-        // step4 新创建一个租户对应的API KEY
+        // step3 新创建一个租户对应的API KEY
         ApiKey apiKey = createApiKey();
         log.info("init apikey : " + J.toJson(apiKey));
 
         // step
         // 创建元数据索引
 
-        // step5
+        // step4
         JsonResult.createSuccessResult(result, true);
       }
     });
@@ -176,14 +169,6 @@ public class InitFacadeImpl extends BaseFacade {
 
   }
 
-  private CreateTenantResponse createCeresDBTenant(String tenant) {
-
-    String token = tenant + "token";
-
-    // 默认保存7天
-    return ceresDBService.createOrUpdateTenant(tenant, token, 7 * 24);
-
-  }
 
   private ApiKey createApiKey() {
 
@@ -216,20 +201,12 @@ public class InitFacadeImpl extends BaseFacade {
     return apiKeys.get(0);
   }
 
-  private TenantOpsDTO createTenantOpsTable(CreateTenantResponse ceresDBTenant) {
+  private TenantOpsDTO createTenantOpsTable(String storageTenant) {
+    String originalTenant = RequestContext.getContext().ms.getTenant();
+    StorageMetric storageMetric = tenantInitService.createStorageMetric(storageTenant);
 
     TenantOpsDTO tenantOpsDTO = new TenantOpsDTO();
-    tenantOpsDTO.setTenant(ceresDBTenant.getName());
-
-    StorageCeresDB ceresDB = new StorageCeresDB();
-    ceresDB.setAccessUser(ceresDBTenant.name);
-    ceresDB.setAccessKey(ceresDBTenant.tenant.token);
-    ceresDB.setAddress(ceresdbHost);
-    ceresDB.setPort("5000");
-
-    StorageMetric storageMetric = new StorageMetric();
-    storageMetric.setType("ceresdb");
-    storageMetric.setCeresdb(ceresDB);
+    tenantOpsDTO.setTenant(originalTenant);
 
     TenantOpsStorage tenantOpsStorage = new TenantOpsStorage();
     tenantOpsStorage.setMetric(storageMetric);
