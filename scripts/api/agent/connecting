@@ -1,0 +1,3 @@
+curl -XGET -s \
+  --data-urlencode "tenant=$1" \
+  localhost:8080/internal/api/registry/agent/listConnecting

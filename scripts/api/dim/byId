@@ -1,0 +1,4 @@
+curl -sG \
+  --data-urlencode "tableName=$1" \
+  --data-urlencode "id=$2" \
+  localhost:8080/internal/api/registry/dim/queryById

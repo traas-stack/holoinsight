@@ -15,6 +15,7 @@ import java.util.concurrent.Callable;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import io.holoinsight.server.extension.model.QueryResult.Result;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
@@ -95,13 +96,15 @@ public class DefaultQueryServiceImpl implements QueryService {
       throws QueryException {
     return wrap(() -> {
       QueryProto.QuerySchemaResponse.Builder builder = QueryProto.QuerySchemaResponse.newBuilder();
-      String tenant = request.getTenant();
       Map<String, Set<String>> keys = new HashMap<>();
       List<QueryProto.Datasource> datasources = request.getDatasourcesList();
       for (QueryProto.Datasource ds : datasources) {
-        List<QueryProto.Result> results = searchTags(tenant, ds);
-        results.forEach(r -> keys.computeIfAbsent(r.getMetric(), __ -> new HashSet<>())
-            .addAll(r.getTagsMap().keySet()));
+        QueryParam queryParam = new QueryParam();
+        queryParam.setMetric(ds.getMetric());
+        queryParam.setTenant(request.getTenant());
+        Result result = metricStorage.querySchema(queryParam);
+        Map<String, String> tags = result.getTags();
+        keys.put(ds.getMetric(), tags.keySet());
       }
       keys.forEach((m, ks) -> builder
           .addResults(QueryProto.KeysResult.newBuilder().setMetric(m).addAllKeys(ks)).build());
@@ -241,8 +244,7 @@ public class DefaultQueryServiceImpl implements QueryService {
       Map<Map, Map<Long, Map<String, Double>>> detailMap = new HashMap<>();
       for (QueryProto.Datasource datasource : datasources) {
         String dsName = datasource.getName();
-        QueryProto.QueryResponse.Builder rspBuilder = queryDs(tenant, datasource);
-        List<QueryProto.Result> rspResults = rspBuilder.getResultsList();
+        List<QueryProto.Result> rspResults = queryDs(tenant, datasource).getResultsList();
         for (QueryProto.Result result : rspResults) {
           Map<String, String> tags = result.getTagsMap();
           List<QueryProto.Point> points = result.getPointsList();
@@ -281,7 +283,7 @@ public class DefaultQueryServiceImpl implements QueryService {
     }
     rspBuilder.addAllResults(results);
     if (CollectionUtils.isNotEmpty(datasources) && StringUtils.isNotEmpty(downsample)
-            && StringUtils.isNotEmpty(fillPolicy)) {
+        && StringUtils.isNotEmpty(fillPolicy)) {
       QueryProto.Datasource ds = datasources.get(0);
       fillData(rspBuilder, ds.getStart(), ds.getEnd(), downsample, fillPolicy);
     }

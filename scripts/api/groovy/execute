@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+
+# usage: 执行该脚本, 然后在标准输入里粘贴脚本内容, 最后结束标准输入即可
+echo "input groovy script:"
+
+text=$( cat )
+file=$( mktemp )
+echo "$text" > $file
+
+curl -L -X POST 'http://localhost:8080/internal/api/groovy/execute' \
+-H 'token: default_long_long_token' \
+-H 'Content-Type: text/plain' \
+--data-binary "@$file"
+
+rm $file

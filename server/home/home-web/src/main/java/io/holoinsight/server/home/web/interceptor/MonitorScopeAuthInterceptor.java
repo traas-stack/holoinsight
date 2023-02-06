@@ -3,6 +3,17 @@
  */
 package io.holoinsight.server.home.web.interceptor;
 
+import java.lang.reflect.Method;
+import java.util.Set;
+
+import org.aopalliance.intercept.MethodInterceptor;
+import org.aopalliance.intercept.MethodInvocation;
+import org.springframework.aop.support.AopUtils;
+import org.springframework.core.annotation.AnnotationUtils;
+import org.springframework.stereotype.Service;
+
+import io.holoinsight.server.common.J;
+import io.holoinsight.server.common.JsonResult;
 import io.holoinsight.server.home.common.util.ResultCodeEnum;
 import io.holoinsight.server.home.common.util.scope.AuthTarget;
 import io.holoinsight.server.home.common.util.scope.AuthTargetType;
@@ -13,17 +24,7 @@ import io.holoinsight.server.home.common.util.scope.MonitorUser;
 import io.holoinsight.server.home.common.util.scope.PowerConstants;
 import io.holoinsight.server.home.common.util.scope.RequestContext;
 import io.holoinsight.server.home.common.util.scope.RequestContext.Context;
-import io.holoinsight.server.common.J;
-import io.holoinsight.server.common.JsonResult;
 import lombok.extern.slf4j.Slf4j;
-import org.aopalliance.intercept.MethodInterceptor;
-import org.aopalliance.intercept.MethodInvocation;
-import org.springframework.aop.support.AopUtils;
-import org.springframework.core.annotation.AnnotationUtils;
-import org.springframework.stereotype.Service;
-
-import java.lang.reflect.Method;
-import java.util.Set;
 
 /**
  *
@@ -79,11 +80,12 @@ public class MonitorScopeAuthInterceptor implements MethodInterceptor {
         resp.setResultCode(ResultCodeEnum.NO_AUTH.name());
         return resp;
       }
-      return methodInvocation.proceed();
     } catch (Exception e) {
       log.error("auth failed", e);
       throw e;
     }
+
+    return methodInvocation.proceed();
   }
 
   private AuthTargetType getRealAuthType(AuthTargetType authType, MonitorScope ms) {

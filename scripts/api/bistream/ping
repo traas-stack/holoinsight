@@ -1,0 +1,11 @@
+agentId=$1
+msg=$2
+
+if [ -z "$msg" ]; then
+  msg="hello"
+fi
+
+curl -G \
+  --data-urlencode "agentId=$agentId" \
+  --data-urlencode "msg=$msg" \
+  'localhost:8080/internal/api/registry/bistream/ping'
