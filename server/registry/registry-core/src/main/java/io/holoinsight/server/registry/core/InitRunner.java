@@ -68,12 +68,12 @@ public class InitRunner implements ApplicationRunner {
 
   @Override
   public void run(ApplicationArguments args) throws Exception {
+    long begin = System.currentTimeMillis();
     warmUpDataClientService(dataClientService);
 
     // TODO 分成2个阶段
     // 1. 初始化独立加载元数据 dims,templates
 
-    long begin = System.currentTimeMillis();
     Mono<Void> agentMono = agentSyncer.initLoad();
     Mono<Void> templateMono = collectConfigSyncer.initLoadTemplates();
 
@@ -97,9 +97,9 @@ public class InitRunner implements ApplicationRunner {
     for (int i = 0; i < 10; i++) {
       try {
         // TODO 不知道为什么前几次很容易失败, 因此这里预热一下, 最终要让prod去修
-        dataClientService.queryAll("dev_server");
+        dataClientService.queryAll("anything");
         break;
-      } catch (Throwable e) {
+      } catch (Throwable ignored) {
       }
     }
   }

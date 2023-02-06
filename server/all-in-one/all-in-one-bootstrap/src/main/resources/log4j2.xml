@@ -142,6 +142,28 @@
 			</Policies>
 		</RollingFile>
 
+		<RollingFile name="HOME" fileName="${LOG_PATH}/home.log"
+		             filePattern="${LOG_PATH}/home.log.%d{yyyy-MM-dd}.%i" immediateFlush="true">
+			<!--打印INFO和WARN-->
+			<DefaultRolloverStrategy max="7">
+				<Delete basePath="${LOG_PATH}" maxDepth="1">
+					<IfAny>
+						<IfAccumulatedFileCount exceeds="10"/>
+						<IfAccumulatedFileSize exceeds="10GB"/>
+						<IfLastModified age="2d"/>
+					</IfAny>
+					<IfFileName glob="bistream.log.*"/>
+				</Delete>
+			</DefaultRolloverStrategy>
+			<PatternLayout charset="utf-8">
+				<pattern>%d %p [%t] %c{1.} - %m%n</pattern>
+			</PatternLayout>
+			<Policies>
+				<SizeBasedTriggeringPolicy size="2GB"/>
+				<TimeBasedTriggeringPolicy modulate="true"/>
+			</Policies>
+		</RollingFile>
+
 		<RollingFile name="DIM" fileName="${LOG_PATH}/dim.log"
 		             filePattern="${LOG_PATH}/dim.log.%d{yyyy-MM-dd}.%i" immediateFlush="true">
 			<!--打印INFO和WARN-->
@@ -242,6 +264,9 @@
 		</Logger>
 		<Logger name="STAT1S" additivity="false" level="INFO">
 			<Appender-Ref ref="STAT1S"/>
+		</Logger>
+		<Logger name="io.holoinsight.server.home.common.util.ProdLog" additivity="false" level="INFO">
+			<Appender-Ref ref="HOME"/>
 		</Logger>
 		<Root level="INFO">
 			<Appender-Ref level="INFO" ref="ROOT-APPENDER"/>
