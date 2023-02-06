@@ -57,6 +57,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class InitFacadeImpl extends BaseFacade {
 
+
   private static String DEFAULT_STORAGE_TENANT = "default";
 
   @Autowired
@@ -144,6 +145,7 @@ public class InitFacadeImpl extends BaseFacade {
 
       @Override
       public void doManage() {
+
         // step1 存储空间配置 保存到 tenant_ops 表中
         TenantOpsDTO tenantOpsTable = createTenantOpsTable(DEFAULT_STORAGE_TENANT);
         log.info("init tenant, create tenant ops: " + J.toJson(tenantOpsTable));
@@ -166,6 +168,7 @@ public class InitFacadeImpl extends BaseFacade {
     return result;
 
   }
+
 
   private ApiKey createApiKey() {
 
