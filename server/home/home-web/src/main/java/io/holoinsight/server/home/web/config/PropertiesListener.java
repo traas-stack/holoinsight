@@ -3,7 +3,6 @@
  */
 package io.holoinsight.server.home.web.config;
 
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.core.Ordered;
@@ -11,7 +10,6 @@ import org.springframework.core.annotation.Order;
 import org.springframework.core.env.ConfigurableEnvironment;
 
 import io.holoinsight.server.home.common.util.CipherUtils;
-import io.holoinsight.server.home.common.util.scope.MonitorEnv;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -29,10 +27,5 @@ public class PropertiesListener
 
     ConfigurableEnvironment environment = e.getEnvironment();
     CipherUtils.setSeed(environment.getRequiredProperty("crypto.client.key"));
-
-    String str = environment.getProperty("monitor.env");
-    if (StringUtils.isNotEmpty(str)) {
-      MonitorEnv.setCurrentEnv(str);
-    }
   }
 }
