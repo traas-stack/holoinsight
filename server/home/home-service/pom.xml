@@ -63,16 +63,6 @@
             <artifactId>common-dao</artifactId>
             <version>${project.version}</version>
         </dependency>
-<!--        <dependency>-->
-<!--            <groupId>com.alipay.cloudmonitor.alarm</groupId>-->
-<!--            <artifactId>alarm-grpc</artifactId>-->
-<!--            <version>1.0.1-SNAPSHOT</version>-->
-<!--        </dependency>-->
-<!--        <dependency>-->
-<!--            <groupId>com.alipay.cloudmonitor</groupId>-->
-<!--            <artifactId>cloudmonitor-sdk</artifactId>-->
-<!--            <version>1.0.3</version>-->
-<!--        </dependency>-->
 
         <dependency>
             <groupId>io.holoinsight.server</groupId>

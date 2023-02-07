@@ -29,7 +29,7 @@ public class PVLogAspect {
   private static ThreadLocal<WebRequestContext> threadLocalContext =
       new ThreadLocal<WebRequestContext>();
 
-  @Pointcut("execution(public * com.alipay.cloudmonitor.prod.web.controller..*.*(..))")
+  @Pointcut("execution(public * io.holoinsight.server.home.web.controller..*.*(..))")
   public void pvLog() {}
 
   @Before("pvLog()")
