@@ -22,6 +22,8 @@ public class LogParse implements Serializable {
   public LogSeparator separator;
   public LogRegexp regexp;
 
+  public TimeConfig timeConfig;
+
   public Integer maxKeySize = -1;
 
   /**

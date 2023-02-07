@@ -44,4 +44,8 @@ public class TimeParse {
    * 可选, 不填则为agent所在的本地时间
    */
   private String timezone;
+  /**
+   * golang风格的layout, 此时layout字段生效
+   */
+  private String layout;
 }

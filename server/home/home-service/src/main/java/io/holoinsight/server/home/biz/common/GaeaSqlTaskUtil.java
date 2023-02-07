@@ -4,17 +4,9 @@
 package io.holoinsight.server.home.biz.common;
 
 import io.holoinsight.server.home.common.util.StringUtil;
-import io.holoinsight.server.home.dal.model.dto.conf.CollectMetric;
+import io.holoinsight.server.home.dal.model.dto.conf.*;
 import io.holoinsight.server.home.dal.model.dto.conf.CollectMetric.Metric;
-import io.holoinsight.server.home.dal.model.dto.conf.ColumnCalExpr;
-import io.holoinsight.server.home.dal.model.dto.conf.CustomPluginConf;
 import io.holoinsight.server.home.dal.model.dto.conf.CustomPluginConf.SplitCol;
-import io.holoinsight.server.home.dal.model.dto.conf.Filter;
-import io.holoinsight.server.home.dal.model.dto.conf.LogParse;
-import io.holoinsight.server.home.dal.model.dto.conf.LogPath;
-import io.holoinsight.server.home.dal.model.dto.conf.MultiLine;
-import io.holoinsight.server.home.dal.model.dto.conf.Rule;
-import io.holoinsight.server.home.dal.model.dto.conf.Translate;
 import io.holoinsight.server.registry.model.Elect;
 import io.holoinsight.server.registry.model.Elect.RefIndex;
 import io.holoinsight.server.registry.model.Elect.RefName;
@@ -210,11 +202,6 @@ public class GaeaSqlTaskUtil {
 
       parse.setWhere(buildFrontFilterWhere(whiteFilters, blackFilters, logParse.splitType));
 
-      TimeParse timeParse = new TimeParse();
-      timeParse.setType("auto");
-
-      fromLog.setTime(timeParse);
-
       List<Log.LogPath> pathList = new ArrayList<>();
       logPaths.forEach(logPath -> {
         Log.LogPath path = new Log.LogPath();
@@ -245,6 +232,18 @@ public class GaeaSqlTaskUtil {
         logMultiLine.setMatch(match);
         fromLog.setMultiline(logMultiLine);
       }
+
+      TimeParse timeParse = new TimeParse();
+      timeParse.setType("auto");
+      TimeConfig timeConfig = logParse.getTimeConfig();
+      if (timeConfig != null && timeConfig.getElect() != null) {
+        timeParse.setElect(timeConfig.getElect());
+        timeParse.setFormat(timeConfig.getFormat());
+        timeParse.setType(timeConfig.getType());
+        timeParse.setLayout(timeConfig.getLayout());
+        timeParse.setTimezone(timeConfig.getTimezone());
+      }
+      fromLog.setTime(timeParse);
 
     }
 
