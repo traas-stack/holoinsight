@@ -19,9 +19,7 @@ import io.holoinsight.server.common.ContextHolder;
  *
  * @author xzchaoo
  */
-@SpringBootApplication(exclude = {
-    ElasticsearchRestClientAutoConfiguration.class
-})
+@SpringBootApplication(exclude = {ElasticsearchRestClientAutoConfiguration.class})
 public class HoloinsightAllInOneBootstrap {
   public static void main(String[] args) {
     try {
