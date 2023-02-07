@@ -24,6 +24,8 @@ public class LogParse implements Serializable {
 
   public Integer maxKeySize = -1;
 
+  public TimeConfig timeConfig;
+
   /**
    * 指定行头/行尾
    */
