@@ -8,4 +8,4 @@ cd $project_root
 
 sh ./scripts/all-in-one/build.sh
 
-docker build --network host -t holoinsight/server:temp -f ./scripts/docker/Dockerfile .
+docker build --network host -t holoinsight/server:latest -f ./scripts/docker/Dockerfile .

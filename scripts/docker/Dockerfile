@@ -39,7 +39,8 @@ RUN echo 'export LANG=zh_CN.UTF-8' >> /etc/profile && \
   echo 'admin ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers.d/admin && \
   mkdir -p /home/admin/logs && \
   mkdir /home/admin/bin && \
-  echo '[ -e "/home/admin/bin/init_bashrc.sh" ] && source /home/admin/bin/init_bashrc.sh' >> /home/admin/.bashrc
+  echo '[ -e "/home/admin/bin/init_bashrc.sh" ] && source /home/admin/bin/init_bashrc.sh' >> /home/admin/.bashrc && \
+  echo `date` > /home/admin/build-time
 
 VOLUME /home/admin/logs
 
