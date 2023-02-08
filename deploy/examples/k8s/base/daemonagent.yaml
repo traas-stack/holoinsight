@@ -1,0 +1,156 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: holoinsight-agent-cm
+  namespace: holoinsight-example
+data:
+  apikey: "example"
+  workspace: "default"
+  cluster: "default"
+  serverRegistryAddr: "registry.holoinsight-example:7202"
+  serverGatewayAddr: "gateway.holoinsight-example:19610"
+  serverGrpcSecure: "false"
+
+  daemonagent_agent.yaml: |
+
+---
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: daemonagent
+  namespace: holoinsight-example
+spec:
+  selector:
+    matchLabels:
+      app: daemonagent
+  updateStrategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+  template:
+    metadata:
+      labels:
+        app: daemonagent
+        hi_common_version: '3'
+    spec:
+      restartPolicy: Always
+      volumes:
+      - name: data
+        hostPath:
+          path: /usr/local/holoinsight-example/agent/data
+      - name: logs
+        hostPath:
+          path: /usr/local/holoinsight-example/agent/logs
+      - name: hostfs
+        hostPath:
+          path: /
+      - name: holoinsight-agent-cm
+        configMap:
+          name: holoinsight-agent-cm
+          defaultMode: 0644
+      hostPID: true
+      hostNetwork: false
+      containers:
+      - name: daemonagent
+        image: holoinsight/agent:latest
+        # use 'imagePullPolicy: Always' only for demo
+        imagePullPolicy: Always
+        securityContext:
+          privileged: true
+          procMount: Default
+        env:
+        - name: HI_APP
+          value: daemonagent
+        - name: HI_AGENT_MODE
+          value: "daemonset"
+        - name: HOSTFS
+          value: "/hostfs"
+        - name: HI_APIKEY
+          valueFrom:
+            configMapKeyRef:
+              key: apikey
+              name: holoinsight-agent-cm
+        - name: HI_REGISTRY_ADDR
+          valueFrom:
+            configMapKeyRef:
+              key: serverRegistryAddr
+              name: holoinsight-agent-cm
+        - name: HI_GATEWAY_ADDR
+          valueFrom:
+            configMapKeyRef:
+              key: serverGatewayAddr
+              name: holoinsight-agent-cm
+        - name: HI_REGISTRY_SECURE
+          valueFrom:
+            configMapKeyRef:
+              key: serverGrpcSecure
+              name: holoinsight-agent-cm
+        - name: HI_GATEWAY_SECURE
+          valueFrom:
+            configMapKeyRef:
+              key: serverGrpcSecure
+              name: holoinsight-agent-cm
+        - name: HI_WORKSPACE
+          valueFrom:
+            configMapKeyRef:
+              key: workspace
+              name: holoinsight-agent-cm
+        - name: HI_CLUSTER
+          valueFrom:
+            configMapKeyRef:
+              key: cluster
+              name: holoinsight-agent-cm
+        - name: USESUPERVISOR
+          value: "false"
+        - name: POD_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        - name: POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: POD_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.podIP
+        - name: HOST_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.hostIP
+        - name: NODE_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.hostIP
+        - name: NODE_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.nodeName
+        - name: K8S_RESOURCES_LIMIT_CPU
+          valueFrom:
+            resourceFieldRef:
+              resource: limits.cpu
+        - name: K8S_RESOURCES_LIMIT_MEMORY
+          valueFrom:
+            resourceFieldRef:
+              resource: limits.memory
+        volumeMounts:
+        - mountPath: /hostfs
+          name: hostfs
+          mountPropagation: HostToContainer
+        - mountPath: /usr/local/holoinsight/agent/data
+          name: data
+        - mountPath: /usr/local/holoinsight/agent/logs
+          name: logs
+        - mountPath: /usr/local/holoinsight/agent/agent.yaml
+          name: holoinsight-agent-cm
+          subPath: daemonagent_agent.yaml
+
+        resources:
+          requests:
+            cpu: "0"
+            memory: "0"
+          limits:
+            cpu: "0.25"
+            memory: "256Mi"

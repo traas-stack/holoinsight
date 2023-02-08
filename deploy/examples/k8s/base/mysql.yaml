@@ -1,0 +1,83 @@
+# kubectl -n holoinsight-example exec -it mysql-0 -- mysql -uholoinsight -pholoinsight -Dholoinsight
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: mysql
+  namespace: holoinsight-example
+spec:
+  serviceName: mysql
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mysql
+  template:
+    metadata:
+      labels:
+        app: mysql
+    spec:
+      restartPolicy: Always
+      volumes:
+        - name: cm
+          configMap:
+            name: mysql-cm
+      containers:
+      - name: mysql
+        image: mysql:8
+        env:
+        - name: MYSQL_ROOT_PASSWORD
+          value: holoinsight
+        - name: MYSQL_USER
+          value: holoinsight
+        - name: MYSQL_PASSWORD
+          value: holoinsight
+        - name: MYSQL_DATABASE
+          value: holoinsight
+        volumeMounts:
+          - mountPath: /etc/mysql/conf.d/my.cnf
+            name: cm
+            subPath: my.cnf
+        readinessProbe:
+          tcpSocket:
+            port: 3306
+          initialDelaySeconds: 5
+          successThreshold: 1
+          failureThreshold: 3
+          periodSeconds: 3
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mysql-cm
+  namespace: holoinsight-example
+data:
+  my.cnf: |
+    [mysqld]
+    character_set_server=utf8
+    [mysql]
+    default-character-set = utf8
+    [mysql.server]
+    default-character-set = utf8
+    [mysqld_safe]
+    default-character-set = utf8
+    [client]
+    default-character-set = utf8
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mysql
+  namespace: holoinsight-example
+  labels:
+    name: mysql
+spec:
+  clusterIP: None
+  ports:
+  - name: mysql
+    protocol: TCP
+    port: 3306
+    targetPort: 3306
+  selector:
+    app: mysql

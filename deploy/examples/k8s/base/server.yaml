@@ -1,0 +1,99 @@
+# kubectl -n holoinsight-example exec -it mysql-0 -- mysql -uholoinsight -pholoinsight -Dholoinsight
+
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: holoinsight-server-example
+  namespace: holoinsight-example
+spec:
+  serviceName: holoinsight-server-example
+  replicas: 1
+  selector:
+    matchLabels:
+      app: holoinsight-server-example
+  template:
+    metadata:
+      name: holoinsight-server-example
+      labels:
+        app: holoinsight-server-example
+    spec:
+      restartPolicy: Always
+      volumes:
+      - name: cm
+        configMap:
+          name: server-cm
+      containers:
+      - name: app
+        image: holoinsight/server:latest
+        imagePullPolicy: Always
+        readinessProbe:
+          exec:
+            command:
+            - sh
+            - /home/admin/bin/health.sh
+          initialDelaySeconds: 15
+          successThreshold: 1
+          failureThreshold: 3
+          periodSeconds: 5
+          timeoutSeconds: 5
+        volumeMounts:
+        - mountPath: /home/admin/application.yaml
+          name: cm
+          subPath: application.yaml
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: server-cm
+  namespace: holoinsight-example
+data:
+  application.yaml: |
+    spring:
+      datasource:
+        url: jdbc:mysql://mysql:3306/holoinsight?useUnicode=true&characterEncoding=UTF-8&autoReconnect=true&rewriteBatchedStatements=true&socketTimeout=15000&connectTimeout=3000&useTimezone=true&serverTimezone=Asia/Shanghai
+        username: holoinsight
+        password: holoinsight
+        driver-class-name: com.mysql.cj.jdbc.Driver
+      data:
+        mongodb:
+          uri: mongodb://holoinsight:holoinsight@mongo:27017/holoinsight?keepAlive=true&maxIdleTimeMS=1500000&maxWaitTime=120000&connectTimeout=10000&socketTimeout=10000&socketKeepAlive=true&retryWrites=true
+    holoinsight:
+      metric:
+        storage:
+          type: ceresdbx
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: registry
+  namespace: holoinsight-example
+  labels:
+    name: registry
+spec:
+  ports:
+  - name: grpc-for-agent
+    protocol: TCP
+    port: 7202
+    targetPort: 7202
+  selector:
+    app: holoinsight-server-example
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: gateway
+  namespace: holoinsight-example
+  labels:
+    name: gateway
+spec:
+  ports:
+  - name: grpc-for-agent
+    protocol: TCP
+    port: 19610
+    targetPort: 19610
+  selector:
+    app: holoinsight-server-example

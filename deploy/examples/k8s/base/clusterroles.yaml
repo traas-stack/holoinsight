@@ -1,0 +1,17 @@
+apiVersion: "rbac.authorization.k8s.io/v1"
+kind: ClusterRole
+metadata:
+  labels: { }
+  name: holoinsight-agent-example-clusterrole
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - namespaces
+  - nodes
+  - pods
+  - services
+  verbs:
+  - get
+  - list
+  - watch

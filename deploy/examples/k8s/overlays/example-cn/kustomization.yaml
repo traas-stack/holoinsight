@@ -1,0 +1,18 @@
+namespace: holoinsight-example
+
+resources:
+- ../../base
+
+images:
+- name: mongo
+  newName: registry.cn-hangzhou.aliyuncs.com/holoinsight-examples/mongo
+- name: mysql
+  newName: registry.cn-hangzhou.aliyuncs.com/holoinsight-examples/mysql
+- name: ceresdb/ceresdb-server
+  newName: registry.cn-hangzhou.aliyuncs.com/holoinsight-examples/ceresdb
+- name: gcr.io/cadvisor/cadvisor
+  newName: registry-vpc.cn-shanghai.aliyuncs.com/holoinsight/cadvisor
+- name: holoinsight/agent
+  newName: registry.cn-hangzhou.aliyuncs.com/holoinsight-examples/agent
+- name: holoinsight/server
+  newName: registry.cn-hangzhou.aliyuncs.com/holoinsight-examples/server

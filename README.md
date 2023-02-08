@@ -41,7 +41,10 @@ git clone https://github.com/traas-stack/holoinsight.git --depth 1
 
 2. deploy k8s resources
 ```bash
-kubectl apply -k ./deploy/examples/k8s/overlays/example 
+sh ./deploy/examples/k8s/overlays/example/apply.sh
+
+# Users in China can use the following script for better network access.
+# sh ./deploy/examples/k8s/overlays/example-cn/apply.sh 
 ```
 > Notice: Your k8s user must has the permission to create ClusterRole.
 

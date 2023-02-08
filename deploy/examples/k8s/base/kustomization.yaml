@@ -1,0 +1,11 @@
+resources:
+- namespace.yaml
+- clusterroles.yaml
+- clusterrolebindings.yaml
+- mysql.yaml
+- mongo.yaml
+- ceresdb.yaml
+- server.yaml
+- cadvisor.yaml
+- daemonagent.yaml
+- clusteragent.yaml
