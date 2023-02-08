@@ -19,4 +19,8 @@ public class HoloinsightAlertInternalException extends RuntimeException {
   public HoloinsightAlertInternalException(String message, Throwable cause) {
     super(message, cause);
   }
+
+  public HoloinsightAlertInternalException(Throwable cause) {
+    super(cause);
+  }
 }

@@ -47,7 +47,7 @@ public class AlertNotify {
 
   private Map<String/* notify type */, List<String>> userNotifyMap; // 用户信息和通知渠道
 
-  private List<String> dingdingUrl; // 钉钉群
+  private List<WebhookInfo> dingdingUrl; // 钉钉群
 
   private List<WebhookInfo> webhookInfos; // 告警相关webhook消息
 

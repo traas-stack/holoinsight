@@ -7,7 +7,18 @@ import io.holoinsight.server.home.alert.model.compute.ComputeTaskPackage;
 import io.holoinsight.server.home.alert.model.data.InspectConfig;
 import io.holoinsight.server.home.alert.model.emuns.PeriodType;
 import io.holoinsight.server.home.alert.service.calculate.AlertTaskCompute;
+import io.holoinsight.server.home.common.exception.HoloinsightAlertInternalException;
 import org.apache.commons.lang3.concurrent.BasicThreadFactory;
+import org.quartz.CronScheduleBuilder;
+import org.quartz.CronTrigger;
+import org.quartz.Job;
+import org.quartz.JobBuilder;
+import org.quartz.JobDetail;
+import org.quartz.JobExecutionContext;
+import org.quartz.JobExecutionException;
+import org.quartz.Scheduler;
+import org.quartz.TriggerBuilder;
+import org.quartz.impl.StdSchedulerFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -15,9 +26,8 @@ import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
 import java.util.List;
+import java.util.Properties;
 import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -35,44 +45,49 @@ public class AlertTaskScheduler {
       new ThreadPoolExecutor(5, 5, 0, TimeUnit.SECONDS, new ArrayBlockingQueue<>(100),
           new BasicThreadFactory.Builder().namingPattern("alert-handler").daemon(true).build());
 
-  private static final ScheduledExecutorService syncExecutorService =
-      new ScheduledThreadPoolExecutor(1, r -> new Thread(r, "AlertTaskSubmitScheduler"));
-
   @Resource
   private AlertTaskCompute alertTaskCompute;
 
   public void start() {
-    logger.info("[startTaskConsumer] start! ");
+    try {
+      StdSchedulerFactory stdSchedulerFactory = new StdSchedulerFactory(getScheduleProperties());
+      Scheduler scheduler = stdSchedulerFactory.getScheduler();
 
-    startTaskConsumer();
-    // 定时任务
-    syncExecutorService.scheduleAtFixedRate(this::startTaskConsumer, 5, 60, TimeUnit.SECONDS);
-    logger.info("[startTaskConsumer] start finish! ");
+      // 创建需要执行的任务
+      String jobName = "alert-consume-job";
+      JobDetail jobDetail = JobBuilder.newJob(CronProcessJob.class).withIdentity(jobName).build();
+      jobDetail.getJobDataMap().put("alertTaskCompute", alertTaskCompute);
+      // 创建触发器，指定任务执行时间
+      CronTrigger cronTrigger = TriggerBuilder.newTrigger().withIdentity("PerMinTrigger")
+          .withSchedule(CronScheduleBuilder.cronSchedule("1 0/1 * * * ?")).build();
+
+      scheduler.scheduleJob(jobDetail, cronTrigger);
+      scheduler.start();
+      logger.info("[startTaskConsumer] start! ");
+
+    } catch (Exception e) {
+      logger.error(
+          "[HoloinsightAlertInternalException][AlertTaskScheduler] fail to schedule alert task for {}",
+          e.getMessage());
+      throw new HoloinsightAlertInternalException(e);
+    }
   }
 
-  protected void startTaskConsumer() {
-    Thread graphThread = new Thread(() -> {
-      while (true) {
-        try {
-          final ComputeTaskPackage computeTaskPackage = TaskQueueManager.getInstance().poll();
-          if (computeTaskPackage != null) {
-            graphProcess(computeTaskPackage);
-          } else {
-            break;
-          }
-        } catch (Throwable e) {
-          logger.error("fail to consume compute task for {}", e.getMessage(), e);
-        }
-      }
-    });
-    graphThread.setName("AlarmTaskScheduler-Thread");
-    graphThread.start();
+  private Properties getScheduleProperties() {
+    Properties properties = new Properties();
+    properties.setProperty("org.quartz.scheduler.instanceName", "AlertTaskScheduler");
+    properties.setProperty("org.quartz.threadPool.threadCount", "1");
+    properties.setProperty("org.quartz.jobStore.class", "org.quartz.simpl.RAMJobStore");
+    properties.setProperty("org.quartz.threadPool.class", "org.quartz.simpl.SimpleThreadPool");
+    properties.setProperty("org.quartz.threadPool.threadPriority", "5");
+    return properties;
   }
 
   /**
    * 生成的告警Graph
    */
-  public void graphProcess(ComputeTaskPackage computeTaskPackage) {
+  public static void graphProcess(ComputeTaskPackage computeTaskPackage,
+      AlertTaskCompute alertTaskCompute) {
     executorService.execute(() -> {
       // 可根据computeTask区分executor
       generateComputeTask(computeTaskPackage);
@@ -82,7 +97,7 @@ public class AlertTaskScheduler {
     });
   }
 
-  private void generateComputeTask(ComputeTaskPackage computeTaskPackage) {
+  private static void generateComputeTask(ComputeTaskPackage computeTaskPackage) {
     long current = System.currentTimeMillis();
     long timestamp = PeriodType.MINUTE.rounding(current) - PeriodType.MINUTE.intervalMillis() * 2L;
     if (CollectionUtils.isEmpty(computeTaskPackage.getInspectConfigs())) {
@@ -95,6 +110,28 @@ public class AlertTaskScheduler {
 
     computeTaskPackage.setTimestamp(timestamp);
     computeTaskPackage.setInspectConfigs(inspectConfigs);
+  }
+
+  public static class CronProcessJob implements Job {
+
+    @Override
+    public void execute(JobExecutionContext context) throws JobExecutionException {
+      logger.info("startTaskConsumer execute once.");
+      AlertTaskCompute alertTaskCompute =
+          (AlertTaskCompute) context.getJobDetail().getJobDataMap().get("alertTaskCompute");
+      while (true) {
+        try {
+          final ComputeTaskPackage computeTaskPackage = TaskQueueManager.getInstance().poll();
+          if (computeTaskPackage != null) {
+            graphProcess(computeTaskPackage, alertTaskCompute);
+          } else {
+            break;
+          }
+        } catch (Throwable e) {
+          logger.error("fail to consume compute task for {}", e.getMessage(), e);
+        }
+      }
+    }
   }
 
 

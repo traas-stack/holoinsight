@@ -41,16 +41,12 @@
             <artifactId>home-service</artifactId>
             <version>${project.version}</version>
         </dependency>
-<!--        <dependency>-->
-<!--            <groupId>io.holoinsight.server</groupId>-->
-<!--            <artifactId>home-grpc</artifactId>-->
-<!--            <version>${project.version}</version>-->
-<!--        </dependency>-->
-<!--        <dependency>-->
-<!--            <groupId>net.devh</groupId>-->
-<!--            <artifactId>grpc-server-spring-boot-starter</artifactId>-->
-<!--            <version>2.13.1.RELEASE</version>-->
-<!--        </dependency>-->
+
+        <!-- schedule -->
+        <dependency>
+            <groupId>org.quartz-scheduler</groupId>
+            <artifactId>quartz</artifactId>
+        </dependency>
 
 
         <!-- COMMON -->
