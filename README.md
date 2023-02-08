@@ -18,15 +18,12 @@ git clone https://github.com/traas-stack/holoinsight.git --depth 1
 
 2. run deploy script
 ```bash
-sh ./deploy/examples/docker-compose/up.sh 
+sh ./deploy/examples/docker-compose/up.sh
+ 
+# Users in China can use the following script for better network access.
+# sh ./deploy/examples/docker-compose/up.sh cn
 ``` 
 This script will also install an agent inside holoinsight-server container. This usage is only for demonstration and is not applicable to production environment.
-
-Users in China can use the following script for better network access.
-```bash
-sh ./deploy/examples/docker-compose/up.sh cn
-```
-
 
 3. visit holoinsight  
 visit http://YOUR_HOST_IP:8080
