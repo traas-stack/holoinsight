@@ -48,6 +48,11 @@ sh ./deploy/examples/k8s/overlays/example/apply.sh
 ```
 > Notice: Your k8s user must has the permission to create ClusterRole.
 
+Use following script to uninstall holoinsight from k8s cluster.
+```bash
+# sh ./deploy/examples/k8s/overlays/example/delete.sh
+```
+
 3. visit holoinsight  
    visit http://YOUR_HOST_IP:8080
 
