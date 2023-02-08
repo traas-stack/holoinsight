@@ -106,7 +106,7 @@ public class CeresdbxMetricStorage implements MetricStorage {
     long begin = System.currentTimeMillis();
     try {
       CompletableFuture<io.ceresdb.models.Result<QueryOk, Err>> qf = Context.ROOT
-      .call(() -> ceresdbxClientManager.getClient(queryParam.getTenant()).query(request));
+          .call(() -> ceresdbxClientManager.getClient(queryParam.getTenant()).query(request));
       final io.ceresdb.models.Result<QueryOk, Err> qr = qf.get();
       if (!qr.isOk()) {
         LOGGER.error("[CERESDBX_QUERY] failed to exec sql:{}, qr:{}, error:{}", sql, qr,
