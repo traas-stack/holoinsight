@@ -39,8 +39,7 @@ RUN echo 'export LANG=zh_CN.UTF-8' >> /etc/profile && \
   echo 'admin ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers.d/admin && \
   mkdir -p /home/admin/logs && \
   mkdir /home/admin/bin && \
-  echo '[ -e "/home/admin/bin/init_bashrc.sh" ] && source /home/admin/bin/init_bashrc.sh' >> /home/admin/.bashrc && \
-  echo `date` > /home/admin/build-time
+  echo '[ -e "/home/admin/bin/init_bashrc.sh" ] && source /home/admin/bin/init_bashrc.sh' >> /home/admin/.bashrc
 
 VOLUME /home/admin/logs
 
@@ -66,6 +65,6 @@ COPY scripts/docker/dist.zip /home/admin/dist.zip
 RUN unzip -d /home/admin/holoinsight-server-static/ /home/admin/dist.zip
 
 COPY --chown=admin:admin server/all-in-one/all-in-one-bootstrap/target/holoinsight-server.jar /home/admin/app.jar
-
+RUN echo `date` > /home/admin/build-time
 
 ENTRYPOINT ["/entrypoint.sh"]

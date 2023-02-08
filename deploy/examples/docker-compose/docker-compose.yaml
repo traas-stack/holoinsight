@@ -1,0 +1,88 @@
+name: "example"
+
+services:
+  mysql:
+    image: ${mysql_image}
+    environment:
+      MYSQL_ROOT_PASSWORD: holoinsight
+      MYSQL_USER: holoinsight
+      MYSQL_PASSWORD: holoinsight
+      MYSQL_DATABASE: holoinsight
+    volumes:
+    - ./my.cnf:/etc/mysql/conf.d/my.cnf
+    ports:
+    - 3305:3306
+    restart: always
+    healthcheck:
+      test: mysql -uholoinsight -pholoinsight -Dholoinsight
+      interval: 1s
+      retries: 300
+  mongo:
+    image: ${mongo_image}
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: holoinsight
+      MONGO_INITDB_ROOT_PASSWORD: holoinsight
+      MONGO_INITDB_DATABASE: holoinsight
+    volumes:
+    - ./init.js:/docker-entrypoint-initdb.d/init.js
+    restart: always
+    healthcheck:
+      test: mongosh
+      interval: 1s
+      retries: 300
+  ceresdb:
+    image: ${ceresdb_image}
+    volumes:
+    - ./ceresdb_entrypoint.sh:/entrypoint.sh
+    restart: always
+    healthcheck:
+      test: curl localhost:5440
+      interval: 1s
+      retries: 300
+  mysql-data-init:
+    image: mysql:8
+    links:
+    - mysql
+    depends_on:
+      mysql:
+        condition: service_healthy
+    volumes:
+    - ./my.cnf:/etc/mysql/conf.d/my.cnf
+    - ./ddl.sql:/ddl.sql
+    - ./data.sql:/data.sql
+    - ./init-db.sh:/init-db.sh
+    working_dir: /
+    entrypoint:
+    - /init-db.sh
+  server:
+    hostname: holoinsight-server-example
+    image: ${server_image}
+    pull_policy: always
+    healthcheck:
+      test: sh /home/admin/bin/health.sh
+      interval: 1s
+      retries: 300
+    depends_on:
+      mysql-data-init:
+        condition: service_completed_successfully
+      mongo:
+        condition: service_healthy
+      ceresdb:
+        condition: service_healthy
+    volumes:
+    - ./application.yaml:/home/admin/application.yaml
+    ports:
+    - 8080:80
+  agent-image:
+    image: ${agent_image}
+    pull_policy: always
+    entrypoint: ["true"]
+  finish:
+    image: ${server_image}
+    pull_policy: always
+    depends_on:
+      agent-image:
+        condition: service_started
+      server:
+        condition: service_healthy
+    entrypoint: [ "bash","-c", "echo 'holoinsight started successfully, visit http://YOUR_HOST_IP:8080'" ]
