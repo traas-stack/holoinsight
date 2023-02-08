@@ -10,25 +10,10 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
-
-import io.holoinsight.server.common.JsonUtils;
-import io.holoinsight.server.common.NetUtils;
-import io.holoinsight.server.common.auth.AuthInfo;
-import io.holoinsight.server.common.dao.entity.GaeaAgentDO;
-import io.holoinsight.server.common.dao.entity.GaeaAgentDOExample;
-import io.holoinsight.server.common.dao.mapper.GaeaAgentDOMapper;
-import io.holoinsight.server.common.threadpool.CommonThreadPools;
-import io.holoinsight.server.meta.common.model.QueryExample;
-import io.holoinsight.server.meta.facade.model.MetaType;
-import io.holoinsight.server.meta.facade.service.AgentHeartBeatService;
-import io.holoinsight.server.meta.facade.service.DataClientService;
-import io.holoinsight.server.registry.core.utils.EventBusHolder;
-import io.holoinsight.server.registry.core.utils.MetricsUtils;
-import io.holoinsight.server.registry.grpc.agent.AgentK8sInfo;
-import io.holoinsight.server.registry.grpc.agent.RegisterAgentRequest;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -46,6 +31,22 @@ import com.xzchaoo.commons.batchprocessor.DrainLoopBatchProcessor;
 import com.xzchaoo.commons.batchprocessor.Flusher;
 import com.xzchaoo.commons.stat.StatAccumulator;
 import com.xzchaoo.commons.stat.StringsKey;
+
+import io.holoinsight.server.common.JsonUtils;
+import io.holoinsight.server.common.NetUtils;
+import io.holoinsight.server.common.auth.AuthInfo;
+import io.holoinsight.server.common.dao.entity.GaeaAgentDO;
+import io.holoinsight.server.common.dao.entity.GaeaAgentDOExample;
+import io.holoinsight.server.common.dao.mapper.GaeaAgentDOMapper;
+import io.holoinsight.server.common.threadpool.CommonThreadPools;
+import io.holoinsight.server.meta.common.model.QueryExample;
+import io.holoinsight.server.meta.facade.model.MetaType;
+import io.holoinsight.server.meta.facade.service.AgentHeartBeatService;
+import io.holoinsight.server.meta.facade.service.DataClientService;
+import io.holoinsight.server.registry.core.utils.EventBusHolder;
+import io.holoinsight.server.registry.core.utils.MetricsUtils;
+import io.holoinsight.server.registry.grpc.agent.AgentK8sInfo;
+import io.holoinsight.server.registry.grpc.agent.RegisterAgentRequest;
 
 /**
  * <p>
@@ -415,10 +416,21 @@ public class AgentService {
    * @param agentId
    */
   public void notifyBiStream(String agentId) {
+    notifyBiStream(agentId, 0);
+  }
+
+  private void notifyBiStream(String agentId, int retry) {
     Agent agent = agentStorage.get(agentId);
     if (agent == null) {
-      LOGGER.error("update BiStream but agent not in storage, agent=[{}]", agentId);
-      // ?
+      // maybe retry will success
+      if (retry >= 10) {
+        LOGGER.error("update BiStream but agent not in storage, agent=[{}]", agentId);
+        return;
+      }
+      LOGGER.warn("update BiStream but agent not in storage, will retry, agent=[{}]", agentId);
+      commonThreadPools.getScheduler().schedule(() -> {
+        notifyBiStream(agentId, retry + 1);
+      }, 6, TimeUnit.SECONDS);
       return;
     }
     ConnectionInfo ci = agent.getJson().getConnectionInfo();
