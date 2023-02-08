@@ -16,10 +16,16 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.util.CollectionUtils;
+
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.xzchaoo.commons.stat.StringsKey;
+
 import io.ceresdb.CeresDBClient;
 import io.ceresdb.models.Err;
 import io.ceresdb.models.FieldValue;
@@ -35,19 +41,15 @@ import io.ceresdb.models.WriteOk;
 import io.grpc.Context;
 import io.holoinsight.server.extension.MetricStorage;
 import io.holoinsight.server.extension.ceresdbx.utils.StatUtils;
+import io.holoinsight.server.extension.model.PqlParam;
 import io.holoinsight.server.extension.model.QueryMetricsParam;
+import io.holoinsight.server.extension.model.QueryParam;
+import io.holoinsight.server.extension.model.QueryParam.QueryFilter;
 import io.holoinsight.server.extension.model.QueryParam.SlidingWindow;
 import io.holoinsight.server.extension.model.QueryResult;
 import io.holoinsight.server.extension.model.QueryResult.Result;
 import io.holoinsight.server.extension.model.WriteMetricsParam;
 import io.holoinsight.server.extension.model.WriteMetricsParam.Point;
-import io.holoinsight.server.extension.model.PqlParam;
-import io.holoinsight.server.extension.model.QueryParam;
-import io.holoinsight.server.extension.model.QueryParam.QueryFilter;
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.util.CollectionUtils;
 import reactor.core.publisher.Mono;
 
 /**
@@ -56,14 +58,13 @@ import reactor.core.publisher.Mono;
  */
 public class CeresdbxMetricStorage implements MetricStorage {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(CeresdbxMetricStorage.class);
-
-  CeresdbxClientManager ceresdbxClientManager;
-  private static final List<String> SUPPORT_SMH_UNIT = Lists.newArrayList("s", "m", "h");
-  private static final List<String> SUPPORT_DMY_UNIT = Lists.newArrayList("d", "M", "y");
   public static final int DEFAULT_BATCH_RECORDS = 200;
   public static final int DEFAULT_BATCH_POINTS = 512;
   public static final int DEFAULT_METRIC_LIMIT = 100;
+  private static final Logger LOGGER = LoggerFactory.getLogger(CeresdbxMetricStorage.class);
+  private static final List<String> SUPPORT_SMH_UNIT = Lists.newArrayList("s", "m", "h");
+  private static final List<String> SUPPORT_DMY_UNIT = Lists.newArrayList("d", "M", "y");
+  CeresdbxClientManager ceresdbxClientManager;
 
   public CeresdbxMetricStorage(CeresdbxClientManager ceresdbxClientManager) {
     this.ceresdbxClientManager = ceresdbxClientManager;
@@ -92,6 +93,88 @@ public class CeresdbxMetricStorage implements MetricStorage {
       }
     }
     return Mono.empty();
+  }
+
+  @Override
+  public List<Result> queryData(QueryParam queryParam) {
+    String whereStatement = parseWhere(queryParam);
+    String fromStatement = parseFrom(queryParam);
+    String sql = genSqlWithGroupBy(queryParam, fromStatement, whereStatement);
+    LOGGER.info("queryData queryparam:{}, sql:{}", queryParam, sql);
+    QueryRequest request =
+        QueryRequest.newBuilder().forMetrics(fixName(queryParam.getMetric())).ql(sql).build();
+    long begin = System.currentTimeMillis();
+    try {
+      CompletableFuture<io.ceresdb.models.Result<QueryOk, Err>> qf = Context.ROOT
+      .call(() -> ceresdbxClientManager.getClient(queryParam.getTenant()).query(request));
+      final io.ceresdb.models.Result<QueryOk, Err> qr = qf.get();
+      if (!qr.isOk()) {
+        LOGGER.error("[CERESDBX_QUERY] failed to exec sql:{}, qr:{}, error:{}", sql, qr,
+            qr.getErr().getError());
+        throw new RuntimeException(qr.getErr().getError());
+      }
+      final List<Record> records = qr.getOk().mapToRecord().collect(Collectors.toList());
+      if (CollectionUtils.isEmpty(records)) {
+        return Lists.newArrayList();
+      }
+      String[] header = getHeader(records.get(0));
+      return transToResults(queryParam, header, records);
+    } catch (Exception e) {
+      LOGGER.error("[CERESDBX_QUERY] failed to exec sql:{}, cost:{}, error:{}", sql,
+          System.currentTimeMillis() - begin, e.getMessage());
+      return Lists.newArrayList();
+    }
+  }
+
+  @Override
+  public List<Result> queryTags(QueryParam queryParam) {
+    List<Result> results = queryData(queryParam);
+    return results;
+  }
+
+  @Override
+  public void deleteKeys(QueryParam queryParam) {}
+
+  @Override
+  public Result querySchema(QueryParam queryParam) {
+    String metric = fixName(queryParam.getMetric());
+    SqlResult sqlResult = execSQL(queryParam.getTenant(), "DESCRIBE " + metric);
+    Result result = new Result();
+    result.setMetric(metric);
+    Map<String, String> tags = Maps.newHashMap();
+    List<Map<String, Object>> rows = sqlResult.getRows();
+    if (CollectionUtils.isEmpty(rows)) {
+      result.setTags(Maps.newHashMap());
+      return result;
+    }
+    rows.stream().filter(row -> (boolean) row.get("is_tag"))
+        .forEach(map -> tags.put(map.get("name").toString(), "-"));
+    result.setTags(tags);
+    return result;
+  }
+
+  @Override
+  public List<String> queryMetrics(QueryMetricsParam queryParam) {
+    SqlResult sqlResult =
+        execSQL(queryParam.getTenant(), "show tables like '" + queryParam.getName() + "%%'");
+    List<Map<String, Object>> rows = sqlResult.getRows();
+    List<String> result = Lists.newArrayList();
+    if (CollectionUtils.isEmpty(rows)) {
+      return result;
+    }
+    int limit = queryParam.getLimit() > 0 ? queryParam.getLimit() : DEFAULT_METRIC_LIMIT;
+    rows.stream().limit(limit).forEach(map -> result.add(map.get("Tables").toString()));
+    return result;
+  }
+
+  @Override
+  public List<Result> pqlInstantQuery(PqlParam pqlParam) {
+    return null;
+  }
+
+  @Override
+  public List<Result> pqlRangeQuery(PqlParam pqlParam) {
+    return null;
   }
 
   private void doBatchInsert(Set<String> metrics, String tenant, List<Rows> oneBatch) {
@@ -130,35 +213,6 @@ public class CeresdbxMetricStorage implements MetricStorage {
     return tags.size();
   }
 
-  @Override
-  public List<Result> queryData(QueryParam queryParam) {
-    String whereStatement = parseWhere(queryParam);
-    String fromStatement = parseFrom(queryParam);
-    String sql = genSqlWithGroupBy(queryParam, fromStatement, whereStatement);
-    LOGGER.info("queryData queryparam:{}, sql:{}", queryParam, sql);
-    QueryRequest request =
-        QueryRequest.newBuilder().forMetrics(fixName(queryParam.getMetric())).ql(sql).build();
-    CompletableFuture<io.ceresdb.models.Result<QueryOk, Err>> qf =
-        ceresdbxClientManager.getClient(queryParam.getTenant()).query(request);
-    try {
-      final io.ceresdb.models.Result<QueryOk, Err> qr = qf.get();
-      if (!qr.isOk()) {
-        LOGGER.error("[CERESDBX_QUERY] failed to exec sql:{}, qr:{}, error:{}", sql, qr,
-            qr.getErr().getError());
-        throw new RuntimeException(qr.getErr().getError());
-      }
-      final List<Record> records = qr.getOk().mapToRecord().collect(Collectors.toList());
-      if (CollectionUtils.isEmpty(records)) {
-        return Lists.newArrayList();
-      }
-      String[] header = getHeader(records.get(0));
-      return transToResults(queryParam, header, records);
-    } catch (Exception e) {
-      LOGGER.error("[CERESDBX_QUERY] failed to exec sql:{}, error:{}", sql, e.getMessage());
-      return Lists.newArrayList();
-    }
-  }
-
   private List<Result> transToResults(QueryParam queryParam, String[] header,
       List<Record> records) {
     Map<Map<String, String>, Result> tagsWithResults =
@@ -166,7 +220,7 @@ public class CeresdbxMetricStorage implements MetricStorage {
     SlidingWindow slidingWindow = queryParam.getSlidingWindow();
     if (Objects.nonNull(slidingWindow) && slidingWindow.getWindowMs() > 0
         && !StringUtils.equalsIgnoreCase("none", slidingWindow.getAggregator())) {
-      return SlidingWindowResult(queryParam.getStart(), queryParam.getEnd(), slidingWindow,
+      return slidingWindowResult(queryParam.getStart(), queryParam.getEnd(), slidingWindow,
           tagsWithResults);
     }
     return Lists.newArrayList(tagsWithResults.values());
@@ -220,7 +274,7 @@ public class CeresdbxMetricStorage implements MetricStorage {
     return headers;
   }
 
-  private List<Result> SlidingWindowResult(long start, long end, SlidingWindow slidingWindow,
+  private List<Result> slidingWindowResult(long start, long end, SlidingWindow slidingWindow,
       Map<Map<String, String>, Result> tagsWithResults) {
     String aggregator = slidingWindow.getAggregator();
     long windowMs = slidingWindow.getWindowMs();
@@ -380,57 +434,6 @@ public class CeresdbxMetricStorage implements MetricStorage {
     } else if (SUPPORT_DMY_UNIT.contains(lastChar)) {
       return "P" + str.toUpperCase();
     }
-    return null;
-  }
-
-  @Override
-  public List<Result> queryTags(QueryParam queryParam) {
-    List<Result> results = queryData(queryParam);
-    return results;
-  }
-
-  @Override
-  public void deleteKeys(QueryParam queryParam) {}
-
-  @Override
-  public Result querySchema(QueryParam queryParam) {
-    String metric = fixName(queryParam.getMetric());
-    SqlResult sqlResult = execSQL(queryParam.getTenant(), "DESCRIBE " + metric);
-    Result result = new Result();
-    result.setMetric(metric);
-    Map<String, String> tags = Maps.newHashMap();
-    List<Map<String, Object>> rows = sqlResult.getRows();
-    if (CollectionUtils.isEmpty(rows)) {
-      result.setTags(Maps.newHashMap());
-      return result;
-    }
-    rows.stream().filter(row -> (boolean) row.get("is_tag"))
-        .forEach(map -> tags.put(map.get("name").toString(), "-"));
-    result.setTags(tags);
-    return result;
-  }
-
-  @Override
-  public List<String> queryMetrics(QueryMetricsParam queryParam) {
-    SqlResult sqlResult =
-        execSQL(queryParam.getTenant(), "show tables like '" + queryParam.getName() + "%%'");
-    List<Map<String, Object>> rows = sqlResult.getRows();
-    List<String> result = Lists.newArrayList();
-    if (CollectionUtils.isEmpty(rows)) {
-      return result;
-    }
-    int limit = queryParam.getLimit() > 0 ? queryParam.getLimit() : DEFAULT_METRIC_LIMIT;
-    rows.stream().limit(limit).forEach(map -> result.add(map.get("Tables").toString()));
-    return result;
-  }
-
-  @Override
-  public List<Result> pqlInstantQuery(PqlParam pqlParam) {
-    return null;
-  }
-
-  @Override
-  public List<Result> pqlRangeQuery(PqlParam pqlParam) {
     return null;
   }
 
