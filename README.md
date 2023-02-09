@@ -1,4 +1,14 @@
-# holoinsight
+# Holoinsight
+![License](https://img.shields.io/badge/license-Apache--2.0-green.svg)
+[![Github stars](https://img.shields.io/github/stars/traas-stack/holoinsight?style=flat-square])](https://github.com/traas-stack/holoinsight)
+[![OpenIssue](https://img.shields.io/github/issues/traas-stack/holoinsight)](https://github.com/traas-stack/holoinsight/issues)
+
+[中文](./README-CN.md)
+
+Get deep insights into your cloud-native apps with HoloInsight's low-cost and high-performance monitoring services.
+
+# Documentation
+[Holoinsight Documentation](https://github.com/traas-stack/holoinsight-docs)
 
 # Quick Start
 
@@ -71,4 +81,4 @@ docker run --name holoinsight-tools -d registry.cn-hangzhou.aliyuncs.com/holoins
 ```
 
 # Licensing
-Holoinsight is under Apache License 2.0.
+Holoinsight is under [Apache License 2.0](https://github.com/traas-stack/holoinsight/blob/main/LICENSE).
