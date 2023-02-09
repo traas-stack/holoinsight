@@ -3,7 +3,8 @@
 [![Github stars](https://img.shields.io/github/stars/traas-stack/holoinsight?style=flat-square])](https://github.com/traas-stack/holoinsight)
 [![OpenIssue](https://img.shields.io/github/issues/traas-stack/holoinsight)](https://github.com/traas-stack/holoinsight/issues)
 
-[English](./README.md)
+[English](./README.md)  
+
 HoloInsight 集数据采集、洞察分析、智能运维和一站式技术风险解决方案为一体，帮您清晰观测分布式系统中的应用表现，高效应对云原生时代的技术挑战。
 
 
@@ -17,9 +18,7 @@ HoloInsight 集数据采集、洞察分析、智能运维和一站式技术风�
 1. 已安装 [docker](https://docs.docker.com/engine/install/) & [docker-compose](https://docs.docker.com/compose/install/other/)
 2. 有 Linux 或 Mac 环境
 
-
-Follow the [guide](#install-docker-compose) in [appendix](#appendix) to install docker-compose quickly.
-
+> 可以参考附录里的 [安装-docker-compose](#安装-docker-compose).  
 
 1. 克隆仓库
 ```bash
@@ -42,7 +41,7 @@ sh ./deploy/examples/docker-compose/up.sh
 先决条件:
 1. 有 k8 集群
 2. 有 Linux 或 Mac 环境
-
+<br/>
 
 1. 克隆仓库
 ```bash
