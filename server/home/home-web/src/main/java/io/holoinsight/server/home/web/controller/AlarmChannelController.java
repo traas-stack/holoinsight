@@ -26,10 +26,4 @@ public class AlarmChannelController {
   public void sendMessage(@RequestParam String type) {
     throw new UnsupportedOperationException("can not send alert message by facade.");
   }
-
-  @GetMapping("/atsSendMessage")
-  @ResponseBody
-  public void atsSendMessage(@RequestParam String type) {
-    throw new UnsupportedOperationException("can not send alert message by facade.");
-  }
 }
