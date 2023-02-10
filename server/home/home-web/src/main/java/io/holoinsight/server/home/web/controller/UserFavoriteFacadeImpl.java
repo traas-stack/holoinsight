@@ -93,28 +93,36 @@ public class UserFavoriteFacadeImpl extends BaseFacade {
         switch (userFavorite.type) {
           case "folder":
             Folder folder = folderService.queryById(Long.parseLong(userFavorite.getRelateId()),
-                RequestContext.getContext().ms.tenant);
-            if (null == folder)
+                    RequestContext.getContext().ms.tenant);
+            if (null == folder) {
               throw new MonitorException(String.format("can not find record, %s-%s",
-                  userFavorite.type, userFavorite.relateId));
+                      userFavorite.type, userFavorite.relateId));
+            }
+            break;
           case "logmonitor":
             CustomPluginDTO customPluginDTO = customPluginService.queryById(
-                Long.parseLong(userFavorite.getRelateId()), RequestContext.getContext().ms.tenant);
-            if (null == customPluginDTO)
+                    Long.parseLong(userFavorite.getRelateId()), RequestContext.getContext().ms.tenant);
+            if (null == customPluginDTO) {
               throw new MonitorException(String.format("can not find record, %s-%s",
-                  userFavorite.type, userFavorite.relateId));
+                      userFavorite.type, userFavorite.relateId));
+            }
+            break;
           case "dashboard":
             Dashboard dashboard = dashboardService.queryById(
-                Long.parseLong(userFavorite.getRelateId()), RequestContext.getContext().ms.tenant);
-            if (null == dashboard)
+                    Long.parseLong(userFavorite.getRelateId()), RequestContext.getContext().ms.tenant);
+            if (null == dashboard) {
               throw new MonitorException(String.format("can not find record, %s-%s",
-                  userFavorite.type, userFavorite.relateId));
+                      userFavorite.type, userFavorite.relateId));
+            }
+            break;
           case "integration":
-            IntegrationPluginDTO integrationPluginDTO = integrationPluginService.queryById(
-                Long.parseLong(userFavorite.getRelateId()), RequestContext.getContext().ms.tenant);
-            if (null == integrationPluginDTO)
+            IntegrationPluginDTO integrationPluginDTO = integrationPluginService.queryByName(
+                    userFavorite.getRelateId(), RequestContext.getContext().ms.tenant);
+            if (null == integrationPluginDTO) {
               throw new MonitorException(String.format("can not find record, %s-%s",
-                  userFavorite.type, userFavorite.relateId));
+                      userFavorite.type, userFavorite.relateId));
+            }
+            break;
         }
 
       }

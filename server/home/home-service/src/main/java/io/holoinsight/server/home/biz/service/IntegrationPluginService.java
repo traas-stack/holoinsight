@@ -16,6 +16,8 @@ public interface IntegrationPluginService extends IService<IntegrationPlugin> {
 
   IntegrationPluginDTO queryById(Long id, String tenant);
 
+  IntegrationPluginDTO queryByName(String name, String tenant);
+
   List<IntegrationPluginDTO> queryByTenant(String tenant);
 
   List<IntegrationPluginDTO> findByMap(Map<String, Object> columnMap);
