@@ -58,6 +58,20 @@ public class IntegrationPluginServiceImpl extends
   }
 
   @Override
+  public IntegrationPluginDTO queryByName(String name, String tenant) {
+    QueryWrapper<IntegrationPlugin> wrapper = new QueryWrapper<>();
+    wrapper.eq("tenant", tenant);
+    wrapper.eq("product", name);
+    wrapper.last("LIMIT 1");
+
+    IntegrationPlugin model = this.getOne(wrapper);
+    if (model == null) {
+      return null;
+    }
+    return integrationPluginConverter.doToDTO(model);
+  }
+
+  @Override
   public List<IntegrationPluginDTO> queryByTenant(String tenant) {
     Map<String, Object> columnMap = new HashMap<>();
     columnMap.put("tenant", tenant);

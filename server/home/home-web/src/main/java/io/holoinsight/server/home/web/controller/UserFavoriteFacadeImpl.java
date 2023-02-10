@@ -94,27 +94,35 @@ public class UserFavoriteFacadeImpl extends BaseFacade {
           case "folder":
             Folder folder = folderService.queryById(Long.parseLong(userFavorite.getRelateId()),
                 RequestContext.getContext().ms.tenant);
-            if (null == folder)
+            if (null == folder) {
               throw new MonitorException(String.format("can not find record, %s-%s",
                   userFavorite.type, userFavorite.relateId));
+            }
+            break;
           case "logmonitor":
             CustomPluginDTO customPluginDTO = customPluginService.queryById(
                 Long.parseLong(userFavorite.getRelateId()), RequestContext.getContext().ms.tenant);
-            if (null == customPluginDTO)
+            if (null == customPluginDTO) {
               throw new MonitorException(String.format("can not find record, %s-%s",
                   userFavorite.type, userFavorite.relateId));
+            }
+            break;
           case "dashboard":
             Dashboard dashboard = dashboardService.queryById(
                 Long.parseLong(userFavorite.getRelateId()), RequestContext.getContext().ms.tenant);
-            if (null == dashboard)
+            if (null == dashboard) {
               throw new MonitorException(String.format("can not find record, %s-%s",
                   userFavorite.type, userFavorite.relateId));
+            }
+            break;
           case "integration":
-            IntegrationPluginDTO integrationPluginDTO = integrationPluginService.queryById(
-                Long.parseLong(userFavorite.getRelateId()), RequestContext.getContext().ms.tenant);
-            if (null == integrationPluginDTO)
+            IntegrationPluginDTO integrationPluginDTO = integrationPluginService
+                .queryByName(userFavorite.getRelateId(), RequestContext.getContext().ms.tenant);
+            if (null == integrationPluginDTO) {
               throw new MonitorException(String.format("can not find record, %s-%s",
                   userFavorite.type, userFavorite.relateId));
+            }
+            break;
         }
 
       }
