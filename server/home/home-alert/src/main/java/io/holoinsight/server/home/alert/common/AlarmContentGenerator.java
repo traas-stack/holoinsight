@@ -16,7 +16,7 @@ import java.util.List;
 public class AlarmContentGenerator {
 
   public static String genPqlAlarmContent(String pql, List<DataResult> dataResult) {
-    return J.toJson(Arrays.asList(pql + "," + "当前告警点为:" + J.toJson(dataResult)));
+    return J.toJson(dataResult);
   }
 
 }
