@@ -129,11 +129,32 @@ public class AlertManagerBuildMsgHandler implements AlertHandlerExecutor {
 
     StringBuffer sb = new StringBuffer();
     while (matcher.find()) {
-      matcher.appendReplacement(sb, paramsMap.get(matcher.group(1)));
+      matcher.appendReplacement(sb, escapeWord(paramsMap.get(matcher.group(1))));
     }
     matcher.appendTail(sb);
 
     return sb.toString();
+  }
+
+  /**
+   * 转义特殊字符 ($()*+.[]?\^{},|)
+   *
+   * @param keyword
+   * @return
+   */
+
+  public static String escapeWord(String keyword) {
+    if (StringUtils.isNotBlank(keyword)) {
+      String[] fbsArr = {"\\", "\"", "\\/"};
+      for (String key : fbsArr) {
+        if (keyword.contains(key)) {
+          keyword = keyword.replace(key, "\\" + key);
+        }
+      }
+    }
+    keyword = keyword.replaceAll("\\\\", "\\\\\\\\");
+    return keyword;
+
   }
 
 }
