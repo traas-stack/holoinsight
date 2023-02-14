@@ -7,3 +7,8 @@ spring:
 cloudmonitor:
   storage:
     address: http://11.158.167.57:8082
+
+holoinsight:
+  metric:
+    storage:
+      type: "ceresdbx"
