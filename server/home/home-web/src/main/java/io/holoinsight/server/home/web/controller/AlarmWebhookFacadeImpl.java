@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import io.holoinsight.server.common.J;
 import io.holoinsight.server.common.JsonResult;
-import io.holoinsight.server.home.alert.service.AlarmService;
+import io.holoinsight.server.home.alert.service.AlertService;
 import io.holoinsight.server.home.biz.service.AlertWebhookService;
 import io.holoinsight.server.home.biz.service.UserOpLogService;
 import io.holoinsight.server.home.common.service.query.WebhookResponse;
@@ -58,7 +58,7 @@ public class AlarmWebhookFacadeImpl extends BaseFacade {
   private AlertWebhookService alarmWebhookService;
 
   @Autowired
-  private AlarmService alarmService;
+  private AlertService alertService;
 
   @Autowired
   private UserOpLogService userOpLogService;
@@ -301,7 +301,7 @@ public class AlarmWebhookFacadeImpl extends BaseFacade {
 
         try {
           SSRFUtils.hookStart();
-          WebhookResponse response = alarmService.webhookTest(alarmWebhookDTO);
+          WebhookResponse response = alertService.webhookTest(alarmWebhookDTO);
           if (response.getCode() == 200) {
             JsonResult.createSuccessResult(result, response);
           } else {
