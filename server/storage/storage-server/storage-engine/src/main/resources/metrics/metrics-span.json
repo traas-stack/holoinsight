@@ -273,7 +273,7 @@
   },
   {
     "name": "apm_component_cpm",
-    "index": "service_relation",
+    "index": "holoinsight-service_relation",
     "field": "trace_id",
     "function": "cardinality",
     "groups": [],
@@ -283,7 +283,7 @@
   },
   {
     "name": "apm_component_cpm_fail",
-    "index": "service_relation",
+    "index": "holoinsight-service_relation",
     "field": "trace_id",
     "function": "cardinality",
     "groups": [],
@@ -294,7 +294,7 @@
   },
   {
     "name": "apm_component_resp_time",
-    "index": "service_relation",
+    "index": "holoinsight-service_relation",
     "field": "latency",
     "function": "avg",
     "groups": [],
@@ -304,7 +304,7 @@
   },
   {
     "name": "apm_component_percentile",
-    "index": "service_relation",
+    "index": "holoinsight-service_relation",
     "field": "latency",
     "function": "percentiles",
     "groups": [],
