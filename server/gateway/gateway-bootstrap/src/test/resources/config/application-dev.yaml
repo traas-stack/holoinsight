@@ -1,5 +1,0 @@
-spring:
-  datasource:
-    url: jdbc:mysql://11.158.167.57:3307/cloudmonitor?useUnicode=true&characterEncoding=UTF-8&autoReconnect=true&rewriteBatchedStatements=true&socketTimeout=15000&connectTimeout=3000&useTimezone=true&serverTimezone=Asia/Shanghai
-    username: root
-    password: TEST

@@ -42,8 +42,8 @@
 		</commentGenerator>
 
 		<jdbcConnection driverClass="com.mysql.jdbc.Driver"
-		                connectionURL="jdbc:mysql://11.158.167.57:3307/cloudmonitor?useUnicode=true&amp;zeroDateTimeBehavior=convertToNull&amp;characterEncoding=utf8&amp;socketTimeout=15000&amp;connectTimeout=3000"
-		                userId="root" password="TEST">
+		                connectionURL="jdbc:mysql://TODO:TODO/TODO?useUnicode=true&amp;zeroDateTimeBehavior=convertToNull&amp;characterEncoding=utf8&amp;socketTimeout=15000&amp;connectTimeout=3000"
+		                userId="TODO" password="TODO">
 		</jdbcConnection>
 		<javaTypeResolver>
 			<property name="forceBigDecimals" value="false"/>

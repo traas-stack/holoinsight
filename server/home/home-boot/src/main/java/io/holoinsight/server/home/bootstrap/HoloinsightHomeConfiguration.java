@@ -8,10 +8,12 @@ import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Import;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import io.holoinsight.server.common.config.EnvironmentProperties;
+import io.holoinsight.server.common.dao.CommonDaoConfiguration;
 import io.holoinsight.server.common.springboot.ConditionalOnRole;
 import io.holoinsight.server.home.biz.service.TenantInitService;
 import io.holoinsight.server.home.biz.service.impl.DefaultTenantInitServiceImpl;
@@ -27,6 +29,7 @@ import io.holoinsight.server.home.biz.service.impl.DefaultTenantInitServiceImpl;
 @MapperScan("io.holoinsight.server.home.dal.mapper")
 @ConditionalOnRole("home")
 @EnableConfigurationProperties({EnvironmentProperties.class})
+@Import(CommonDaoConfiguration.class)
 public class HoloinsightHomeConfiguration {
   @Bean
   public TenantInitService tenantInitService() {
