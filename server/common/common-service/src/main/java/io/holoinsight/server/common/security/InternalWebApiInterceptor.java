@@ -29,7 +29,8 @@ import com.google.common.collect.Sets;
  */
 public class InternalWebApiInterceptor implements HandlerInterceptor {
   static final Set<String> LOCALHOST = Sets.newHashSet("localhost", "127.0.0.1", "0:0:0:0:0:0:0:1");
-  private static final Set<String> INTERNAL_WHITE_HOSTS = Sets.newHashSet("gateway.holoinsight-gateway", "gateway.holoinsight-server");
+  private static final Set<String> INTERNAL_WHITE_HOSTS =
+      Sets.newHashSet("gateway.holoinsight-gateway", "gateway.holoinsight-server");
 
   @Autowired
   private HoloinsightSecurityProperties properties;
