@@ -19,6 +19,7 @@ import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
 
 import com.google.common.collect.Sets;
+import org.springframework.web.util.UrlPathHelper;
 
 /**
  * 该 interceptor 用于拦截通过 spring mvc 定义的处理器
@@ -56,7 +57,8 @@ public class InternalWebApiInterceptor implements HandlerInterceptor {
   }
 
   boolean isInternal(HttpServletRequest request) {
-    return request.getRequestURI().startsWith("/internal/");
+    String uri = new UrlPathHelper().getLookupPathForRequest(request);
+    return uri.startsWith("/internal/");
   }
 
   boolean isSafeAccess(HttpServletRequest request) {
