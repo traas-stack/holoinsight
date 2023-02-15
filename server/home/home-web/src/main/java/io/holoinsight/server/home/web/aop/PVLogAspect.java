@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
+import org.springframework.web.util.UrlPathHelper;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -38,7 +39,7 @@ public class PVLogAspect {
         (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
     HttpServletRequest request = attributes.getRequest();
     WebRequestContext ctx = new WebRequestContext();
-    ctx.URI = request.getRequestURI();
+    ctx.URI = new UrlPathHelper().getLookupPathForRequest(request);
     ctx.method = request.getMethod();
     ctx.remoteIP = request.getRemoteAddr();
     ctx.start = System.currentTimeMillis();

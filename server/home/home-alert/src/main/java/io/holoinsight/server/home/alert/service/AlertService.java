@@ -18,7 +18,7 @@ import io.holoinsight.server.home.dal.model.dto.AlarmWebhookTestDTO;
 import lombok.Data;
 
 @Service
-public class AlarmService {
+public class AlertService {
 
   public WebhookResponse webhookTest(AlarmWebhookTestDTO alarmWebhookDTO) {
     WebhookTestRequest request = new WebhookTestRequest();

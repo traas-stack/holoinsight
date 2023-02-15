@@ -20,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import com.google.common.collect.Sets;
+import org.springframework.web.util.UrlPathHelper;
 
 /**
  * 该 filter 用于拦截那些直接通过 servlet 定义的处理器
@@ -40,7 +41,7 @@ public class InternalWebApiFilter extends OncePerRequestFilter {
   protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
       FilterChain filterChain) throws ServletException, IOException {
 
-    String uri = request.getRequestURI();
+    String uri = new UrlPathHelper().getLookupPathForRequest(request);
 
     if (internalWebApiInterceptor.isInternal(request) || URIS.contains(uri)) {
       if (!internalWebApiInterceptor.isSafeAccess(request)) {
