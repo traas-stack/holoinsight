@@ -47,7 +47,10 @@ public class NotifyChain extends ChainPlugin implements Runnable {
     for (int i = start; i < chains.size(); i++) {
       try {
         ChainPlugin plugin = this.chains.get(i);
-        plugin.input(this.input, this.context);
+        boolean success = plugin.input(this.input, this.context);
+        if (!success) {
+          break;
+        }
         if (plugin instanceof WaitPlugin) {
           // 遇到 wait 插件，放入调度队列，完成本次调度
           if (this.scheduleQueue == null) {
