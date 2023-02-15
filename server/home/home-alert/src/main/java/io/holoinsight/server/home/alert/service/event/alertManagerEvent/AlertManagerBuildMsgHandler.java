@@ -137,7 +137,7 @@ public class AlertManagerBuildMsgHandler implements AlertHandlerExecutor {
   }
 
   /**
-   * 转义特殊字符 ($()*+.[]?\^{},|)
+   * escape ($()*+.[]?\^{},|)
    *
    * @param keyword
    * @return

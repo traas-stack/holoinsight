@@ -1,9 +1,0 @@
-server:
-  port: 8082
-
-holoinsight:
-  roles:
-    active: storage
-  storage:
-    elasticsearch:
-      hosts: 11.158.167.57

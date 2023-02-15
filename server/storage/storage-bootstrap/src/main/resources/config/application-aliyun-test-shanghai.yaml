@@ -1,6 +1,0 @@
-holoinsight:
-  roles:
-    active: storage
-  storage:
-    elasticsearch:
-      hosts: es-cluster.cloudmonitor-elasticsearch
