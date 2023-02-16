@@ -8,6 +8,7 @@ import io.holoinsight.server.common.JsonResult;
 import com.google.protobuf.InvalidProtocolBufferException;
 import com.google.protobuf.Message;
 import com.google.protobuf.util.JsonFormat;
+import io.holoinsight.server.home.biz.common.MetaDictUtil;
 import io.holoinsight.server.home.biz.service.AgentConfigurationService;
 import io.holoinsight.server.home.common.service.QueryClientService;
 import io.holoinsight.server.home.common.service.query.KeyResult;
@@ -44,6 +45,7 @@ import io.holoinsight.server.storage.common.model.query.Topology;
 import io.holoinsight.server.storage.common.model.query.TraceBrief;
 import io.holoinsight.server.storage.common.model.query.VirtualComponent;
 import io.holoinsight.server.storage.common.model.specification.sw.Trace;
+import io.holoinsight.server.storage.grpc.trace.ID;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -679,6 +681,7 @@ public class QueryFacadeImpl extends BaseFacade {
     request.datasources.forEach(d -> {
       QueryProto.Datasource.Builder datasourceBuilder = QueryProto.Datasource.newBuilder();
       toProtoBean(datasourceBuilder, d);
+      datasourceBuilder.setApmMetricPostCal(MetaDictUtil.isApmPostCal());
       builder.addDatasources(datasourceBuilder);
     });
 
