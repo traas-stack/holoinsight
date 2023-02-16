@@ -4,7 +4,6 @@
 package io.holoinsight.server.home.biz.common;
 
 /**
- *
  * @author jsy1001de
  * @version 1.0: MetaDictKey.java, v 0.1 2022年03月21日 8:35 下午 jinsong.yjs Exp $
  */
@@ -16,6 +15,8 @@ public class MetaDictKey {
 
   public static final String IS_TEST = "is_test";
   public static final String IS_QUERY_TEST = "is_query_test";
+
+  public static final String IS_APM_POST_CAL = "is_apm_post_cal";
 
   public static final String AGENT_INSTALL_HOST = "agentInstallHost";
   public static final String AGENT_REGISTRY_HOST = "agentRegistryHost";

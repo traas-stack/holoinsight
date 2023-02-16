@@ -113,6 +113,16 @@ public class MetaDictUtil {
     return value;
   }
 
+  public static Boolean isApmPostCal() {
+
+    Boolean value = MetaDictUtil.getValue(MetaDictType.GLOBAL_CONFIG, MetaDictKey.IS_APM_POST_CAL,
+        new TypeToken<Boolean>() {});
+    if (null == value) {
+      return false;
+    }
+    return value;
+  }
+
   public static List<String /* 任务名 */> getIgnoreTasks() {
     return MetaDictUtil.getValue(MetaDictType.MANAGE_TASK, MetaDictKey.IGNORE_TASK_LIST,
         new TypeToken<List<String>>() {});

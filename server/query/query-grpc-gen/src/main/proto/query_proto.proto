@@ -46,6 +46,8 @@ message Datasource {
   repeated string groupBy = 9;
   // 缺省数据填充策略
   optional string fillPolicy = 10;
+  // Whether the APM metrics are obtained through post-calculation
+  bool apmMetricPostCal = 11;
 }
 
 message SlidingWindow{
