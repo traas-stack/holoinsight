@@ -116,7 +116,7 @@ public class MetaDictUtil {
   public static Boolean isApmPostCal() {
 
     Boolean value = MetaDictUtil.getValue(MetaDictType.GLOBAL_CONFIG, MetaDictKey.IS_APM_POST_CAL,
-            new TypeToken<Boolean>() {});
+        new TypeToken<Boolean>() {});
     if (null == value) {
       return false;
     }
