@@ -184,7 +184,6 @@ public class GaeaSqlTaskUtil {
       timeParse.setType("auto");
       for (CustomPluginConf.SplitCol splitCol : splitCols) {
         if ("TIME".equals(splitCol.colType)) {
-          // name: 时间(yyyy-MM-dd HH:mm:ss##默认)
           if (!StringUtils.isEmpty(splitCol.name)) {
             String timeAndZone = splitCol.name.substring(3, splitCol.name.length() - 1);
             String[] cols = timeAndZone.split("##");
