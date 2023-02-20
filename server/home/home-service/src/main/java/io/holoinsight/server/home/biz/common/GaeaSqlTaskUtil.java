@@ -192,7 +192,7 @@ public class GaeaSqlTaskUtil {
             }
             if (timeZones.contains(cols[1])) {
               timeParse.setTimezone(cols[1]);
-            } else if (!"默认".equals(cols[1])) {
+            } else if (!Constants.DEFAULT_CH.equals(cols[1])) {
               continue;
             }
             String layout = convertTimeLayout(cols[0]);
