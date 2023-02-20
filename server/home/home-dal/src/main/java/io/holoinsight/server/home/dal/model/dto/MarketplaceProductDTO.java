@@ -32,6 +32,8 @@ public class MarketplaceProductDTO {
 
   public String type;
 
+  public String version;
+
   public String creator;
 
   public String modifier;

@@ -17,6 +17,7 @@ import io.holoinsight.server.home.facade.page.MonitorPageRequest;
 import io.holoinsight.server.home.facade.page.MonitorPageResult;
 import io.holoinsight.server.home.web.common.ManageCallback;
 import io.holoinsight.server.home.web.common.ParaCheckUtil;
+import io.holoinsight.server.home.web.common.TokenUrls;
 import io.holoinsight.server.home.web.interceptor.MonitorScopeAuth;
 import io.holoinsight.server.common.J;
 import io.holoinsight.server.common.JsonResult;
@@ -40,6 +41,7 @@ import java.util.Date;
  */
 @RestController
 @RequestMapping("/webapi/alarmGroup")
+@TokenUrls("/webapi/alarmGroup/query")
 public class AlarmGroupFacadeImpl extends BaseFacade {
 
   @Autowired

@@ -3,6 +3,7 @@
  */
 package io.holoinsight.server.home.web.controller;
 
+import io.holoinsight.server.home.biz.plugin.MarketplaceProductHandler;
 import io.holoinsight.server.home.biz.service.AlertWebhookService;
 import io.holoinsight.server.home.biz.service.ApiKeyService;
 import io.holoinsight.server.home.biz.service.MarketplacePluginService;
@@ -72,6 +73,9 @@ public class MarketplacePluginFacadeImpl extends BaseFacade {
 
   @Autowired
   private UserOpLogService userOpLogService;
+
+  @Autowired
+  private MarketplaceProductHandler marketplaceProductHandler;
 
   @PostMapping("/update")
   @ResponseBody
@@ -284,9 +288,7 @@ public class MarketplacePluginFacadeImpl extends BaseFacade {
           throw new MonitorException(ResultCodeEnum.CANNOT_FIND_RECORD,
               "can not find record: " + id);
         }
-        uninstallConf(byId);
-
-        marketplacePluginService.deleteById(id);
+        marketplaceProductHandler.uninstall(byId);
 
         JsonResult.createSuccessResult(result, true);
         userOpLogService.append("marketplace_plugin", byId.getId(), OpType.DELETE,
@@ -317,34 +319,7 @@ public class MarketplacePluginFacadeImpl extends BaseFacade {
           throw new MonitorException(ResultCodeEnum.CANNOT_FIND_RECORD,
               "can not find record: " + id);
         }
-
-        if (null == byId.getConfiguration()) {
-          throw new MonitorException(ResultCodeEnum.OBJECT_CONVERT_ERROR, "configuration is null");
-        }
-
-        Map<String, Object> params = new HashMap<>();
-        params.put("tenant", MonitorCookieUtil.getTenantOrException());
-        params.put("name", byId.getName() + "_" + RequestContext.getContext().ms.getTenant());
-        List<MarketplacePluginDTO> marketplacePluginDTOs =
-            marketplacePluginService.findByMap(params);
-        if (!CollectionUtils.isEmpty(marketplacePluginDTOs)) {
-          throw new MonitorException(ResultCodeEnum.PARAMETER_ILLEGAL,
-              "this product has installed");
-        }
-
-        MarketplacePluginDTO pluginDTO = new MarketplacePluginDTO();
-        {
-          pluginDTO.setStatus(true);
-          pluginDTO.setTenant(RequestContext.getContext().ms.getTenant());
-          pluginDTO.setCreator(RequestContext.getContext().mu.getLoginName());
-          pluginDTO.setModifier(RequestContext.getContext().mu.getLoginName());
-          pluginDTO.setProduct(byId.getName());
-          pluginDTO.setType(byId.getType());
-          pluginDTO.setName(byId.getName() + "_" + RequestContext.getContext().ms.getTenant());
-          pluginDTO.setJson(installByConf(byId));
-        }
-
-        MarketplacePluginDTO marketplacePluginDTO = marketplacePluginService.create(pluginDTO);
+        MarketplacePluginDTO marketplacePluginDTO = marketplaceProductHandler.install(byId);
 
         userOpLogService.append("marketplace_plugin", marketplacePluginDTO.getId(), OpType.CREATE,
             RequestContext.getContext().mu.getLoginName(),
@@ -357,78 +332,7 @@ public class MarketplacePluginFacadeImpl extends BaseFacade {
     return result;
   }
 
-  private String installByConf(MarketplaceProductDTO productDTO) {
-    String configuration = productDTO.getConfiguration();
 
-    List<Map<String, Object>> strings = J.toMapList(configuration);
-
-    List<Map<String, Object>> configList = new ArrayList<>();
-    for (Map<String, Object> map : strings) {
-      Map<String, Object> configMap = new HashMap<>();
-
-      if (map.get("type").equals("webhook")) {
-        Map<String, Object> webhookMap = (Map<String, Object>) map.get("webhook");
-        webhookMap.put("webhookName", productDTO.getName());
-        webhookMap.put("tenant", RequestContext.getContext().ms.getTenant());
-        webhookMap.put("gmtCreate", new Date());
-        webhookMap.put("gmtModified", new Date());
-        webhookMap.put("creator", RequestContext.getContext().mu.getLoginName());
-        webhookMap.put("modifier", RequestContext.getContext().mu.getLoginName());
-        webhookMap.put("role", "marketplace");
-
-        AlarmWebhookDTO o =
-            J.fromJson(J.toJson(webhookMap), (new TypeToken<AlarmWebhookDTO>() {}).getType());
-        o.setStatus((byte) 1);
-        AlarmWebhookDTO save = alarmWebhookService.save(o);
-
-        configMap.put("type", "webhook");
-        configMap.put("webhook", save);
-        configList.add(configMap);
-      }
-
-      if (map.get("type").equals("dataQuery")) {
-
-        ApiKey apiKey = new ApiKey();
-        apiKey.setName(productDTO.getName());
-        apiKey.setApiKey(UUID.randomUUID().toString());
-        apiKey.setTenant(RequestContext.getContext().ms.getTenant());
-        apiKey.setRole("marketplace");
-        apiKey.setGmtCreate(new Date());
-        apiKey.setGmtModified(new Date());
-        apiKey.setCreator(RequestContext.getContext().mu.getLoginName());
-        apiKey.setModifier(RequestContext.getContext().mu.getLoginName());
-        apiKeyService.save(apiKey);
-        configMap.put("type", "dataQuery");
-        configMap.put("dataQuery", apiKey);
-        configList.add(configMap);
-      }
-    }
-
-    return J.toJson(configList);
-  }
-
-  private void uninstallConf(MarketplacePluginDTO pluginDTO) {
-    String configuration = pluginDTO.getJson();
-
-    List<Map<String, Object>> strings = J.toMapList(configuration);
-
-    for (Map<String, Object> map : strings) {
-
-      if (map.get("type").equals("webhook")) {
-
-        AlarmWebhookDTO o = J.fromJson(J.toJson(map.get("webhook")),
-            (new TypeToken<AlarmWebhookDTO>() {}).getType());
-        alarmWebhookService.removeById(o.getId());
-      }
-
-      if (map.get("type").equals("dataQuery")) {
-
-        ApiKey o =
-            J.fromJson(J.toJson(map.get("dataQuery")), (new TypeToken<ApiKey>() {}).getType());
-        apiKeyService.removeById(o.getId());
-      }
-    }
-  }
 
   private void updateConf(MarketplacePluginDTO pluginDTO) {
     String configuration = pluginDTO.getJson();

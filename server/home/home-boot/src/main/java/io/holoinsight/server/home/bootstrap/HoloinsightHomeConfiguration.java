@@ -3,6 +3,8 @@
  */
 package io.holoinsight.server.home.bootstrap;
 
+import io.holoinsight.server.home.biz.plugin.DefaultMarketplaceProductHandler;
+import io.holoinsight.server.home.biz.plugin.MarketplaceProductHandler;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -34,5 +36,10 @@ public class HoloinsightHomeConfiguration {
   @Bean
   public TenantInitService tenantInitService() {
     return new DefaultTenantInitServiceImpl();
+  }
+
+  @Bean
+  public MarketplaceProductHandler marketplaceProductHandler() {
+    return new DefaultMarketplaceProductHandler();
   }
 }
