@@ -558,6 +558,8 @@ public class GaeaSqlTaskUtil {
     switch (time) {
       case "yyyy-MM-dd HH:mm:ss":
         return "2006-01-02 15:04:05";
+      case "yyyy-MM-ddTHH:mm:ss":
+        return "2006-01-02T15:04:05";
       default:
         return StringUtils.EMPTY;
     }
