@@ -212,41 +212,41 @@ public class DefaultQueryServiceImpl implements QueryService {
   private QueryProto.QueryResponse complexQuery(String tenant, String query, String downsample,
       String fillPolicy, List<QueryProto.Datasource> datasources) throws QueryException {
     List<String> queryExprs = Lists.newArrayList(StringUtils.split(query, ","));
-    Map<String, QueryProto.Datasource> dsMap = datasources.stream()
-        .collect(Collectors.toMap(QueryProto.Datasource::getName, Function.identity()));
     QueryProto.QueryResponse.Builder rspBuilder = QueryProto.QueryResponse.newBuilder();
     List<QueryProto.Result> results = new ArrayList<>();
+
+    List<String> dsNames =
+        datasources.stream().map(QueryProto.Datasource::getName).collect(Collectors.toList());
+    Map<Map, Map<Long, Map<String, Double>>> detailMap = new HashMap<>();
+    Map<String, List<QueryProto.Result>> resultMap = new HashMap<>();
+    for (QueryProto.Datasource datasource : datasources) {
+      String dsName = datasource.getName();
+      List<QueryProto.Result> rspResults = queryDs(tenant, datasource).getResultsList();
+      resultMap.put(dsName, rspResults);
+      for (QueryProto.Result result : rspResults) {
+        Map<String, String> tags = result.getTagsMap();
+        List<QueryProto.Point> points = result.getPointsList();
+        for (QueryProto.Point point : points) {
+          Long timestamp = point.getTimestamp();
+          Double value = point.getValue();
+          detailMap.computeIfAbsent(tags, _0 -> new TreeMap<>())
+              .computeIfAbsent(timestamp, _1 -> new HashMap<>()).put(dsName, value);
+        }
+      }
+    }
+
     List<String> singleQueryExprs = queryExprs.stream()
         .filter(qe -> new RpnResolver().expr2Infix(qe).size() == 1).collect(Collectors.toList());
     for (String singleQueryExpr : singleQueryExprs) {
       queryExprs.remove(singleQueryExpr);
-      QueryProto.Datasource ds = dsMap.get(singleQueryExpr);
-      QueryProto.QueryResponse.Builder builder = queryDs(tenant, ds);
-      results.addAll(builder.getResultsList());
+      List<QueryProto.Result> resultList = resultMap.get(singleQueryExpr);
+      results.addAll(resultList);
     }
     // simpleQuery(tenant, datasources);
+
     for (String queryExpr : queryExprs) {
       RpnResolver rpnResolver = new RpnResolver();
       List<String> queryExprArgs = rpnResolver.expr2Infix(queryExpr);
-
-      List<String> dsNames =
-          datasources.stream().map(QueryProto.Datasource::getName).collect(Collectors.toList());
-      Map<Map, Map<Long, Map<String, Double>>> detailMap = new HashMap<>();
-      for (QueryProto.Datasource datasource : datasources) {
-        String dsName = datasource.getName();
-        List<QueryProto.Result> rspResults = queryDs(tenant, datasource).getResultsList();
-        for (QueryProto.Result result : rspResults) {
-          Map<String, String> tags = result.getTagsMap();
-          List<QueryProto.Point> points = result.getPointsList();
-          for (QueryProto.Point point : points) {
-            Long timestamp = point.getTimestamp();
-            Double value = point.getValue();
-            detailMap.computeIfAbsent(tags, _0 -> new TreeMap<>())
-                .computeIfAbsent(timestamp, _1 -> new HashMap<>()).put(dsName, value);
-          }
-        }
-      }
-
       detailMap.forEach((tags, map0) -> {
         QueryProto.Result.Builder resultBuilder = QueryProto.Result.newBuilder();
         resultBuilder.setMetric(queryExpr).putAllTags(tags);
