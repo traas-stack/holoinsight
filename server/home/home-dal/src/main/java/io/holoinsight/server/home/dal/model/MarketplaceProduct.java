@@ -34,6 +34,8 @@ public class MarketplaceProduct {
 
   private String type;
 
+  private String version;
+
   public boolean status;
 
   public String creator;

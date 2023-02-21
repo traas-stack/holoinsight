@@ -18,11 +18,15 @@ public class MarketplacePluginDTO {
 
   public String tenant;
 
+  public String workspace;
+
   public String name;
 
   public String product;
 
   public String type;
+
+  public String version;
 
   /**
    * 数据范围

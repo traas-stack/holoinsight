@@ -6,6 +6,7 @@ package io.holoinsight.server.home.alert.model.date;
 import io.holoinsight.server.home.alert.model.emuns.TimeFilterEnum;
 import lombok.Data;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.util.CollectionUtils;
 
 import java.io.Serializable;
 import java.text.DateFormat;
@@ -69,7 +70,7 @@ public class TimeFilter implements Serializable {
   }
 
   private boolean weekInMe(long term, String timeZone) {
-    if (this.getWeeks() == null || this.getWeeks().size() == 0) {
+    if (CollectionUtils.isEmpty(this.getWeeks())) {
       return true;
     }
     Calendar instance = Calendar.getInstance();

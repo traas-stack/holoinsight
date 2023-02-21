@@ -22,11 +22,15 @@ public class MarketplacePlugin {
 
   public String tenant;
 
+  public String workspace;
+
   public String name;
 
   public String product;
 
   public String type;
+
+  public String version;
 
   public boolean status;
 
