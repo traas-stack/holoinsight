@@ -3,33 +3,13 @@
  */
 package io.holoinsight.server.query.service.impl;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import java.util.TreeMap;
-import java.util.concurrent.Callable;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-
-import io.holoinsight.server.extension.model.QueryResult.Result;
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.math.NumberUtils;
-import org.apache.commons.lang3.tuple.Pair;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.util.Assert;
-
 import com.google.common.collect.Lists;
 import com.google.protobuf.MessageOrBuilder;
-
 import io.holoinsight.server.common.ProtoJsonUtils;
 import io.holoinsight.server.extension.MetricStorage;
 import io.holoinsight.server.extension.model.QueryMetricsParam;
 import io.holoinsight.server.extension.model.QueryParam;
+import io.holoinsight.server.extension.model.QueryResult.Result;
 import io.holoinsight.server.query.common.RpnResolver;
 import io.holoinsight.server.query.grpc.QueryProto;
 import io.holoinsight.server.query.service.QueryException;
@@ -37,15 +17,25 @@ import io.holoinsight.server.query.service.QueryService;
 import io.holoinsight.server.query.service.analysis.AnalysisCenter;
 import io.holoinsight.server.query.service.analysis.Mergable;
 import io.holoinsight.server.storage.common.utils.GsonUtils;
-import lombok.val;
 import lombok.extern.slf4j.Slf4j;
+import lombok.val;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.math.NumberUtils;
+import org.apache.commons.lang3.tuple.Pair;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.Assert;
+
+import java.util.*;
+import java.util.concurrent.Callable;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Slf4j
 public class DefaultQueryServiceImpl implements QueryService {
 
   @Autowired
   protected MetricStorage metricStorage;
-
 
   @Override
   public QueryProto.QueryResponse queryData(QueryProto.QueryRequest request) throws QueryException {
@@ -271,11 +261,15 @@ public class DefaultQueryServiceImpl implements QueryService {
               return expr;
             }
           }).collect(Collectors.toList());
-          Double rpnResult = rpnResolver.calByInfix(rpnArgs);
-          QueryProto.Point.Builder pointBuilder = QueryProto.Point.newBuilder();
-          pointBuilder.setTimestamp(timestamp).setValue(rpnResult);
-          QueryProto.Point point = pointBuilder.build();
-          resultBuilder.addPoints(point);
+          try {
+            Double rpnResult = rpnResolver.calByInfix(rpnArgs);
+            QueryProto.Point.Builder pointBuilder = QueryProto.Point.newBuilder();
+            pointBuilder.setTimestamp(timestamp).setValue(rpnResult);
+            QueryProto.Point point = pointBuilder.build();
+            resultBuilder.addPoints(point);
+          } catch (Exception e) {
+            // disable this point and expect data to be filled from the outer layer
+          }
         });
         QueryProto.Result result = resultBuilder.build();
         results.add(result);
@@ -298,7 +292,6 @@ public class DefaultQueryServiceImpl implements QueryService {
       return queryMetricStore(tenant, datasource);
     }
   }
-
 
   private QueryProto.QueryResponse.Builder queryMetricStore(String tenant,
       QueryProto.Datasource datasource) {
@@ -437,8 +430,8 @@ public class DefaultQueryServiceImpl implements QueryService {
    * @param call
    * @param mark
    * @param request
-   * @return
    * @param <T>
+   * @return
    * @throws QueryException
    */
   protected static <T> T wrap(Callable<T> call, String mark, MessageOrBuilder request)

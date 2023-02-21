@@ -31,7 +31,6 @@ public class RpnResolver {
     return exprs;
   }
 
-
   public Double getv(String op, Double f1, Double f2) {
     if ("+".equals(op)) {
       return f2 + f1;
@@ -139,17 +138,13 @@ public class RpnResolver {
    * @param args
    * @return
    */
-  public double calByInfix(List args) {
+  public double calByInfix(List args) throws Exception {
     double result = 0d;
-    try {
-      result = calrp(getrp(args));
-    } catch (Exception e) {
-      // log.error("invalid expr so return 0 : {}", args);
-    }
+    result = calrp(getrp(args));
     return result;
   }
 
-  public static void main(String[] args) {
+  public static void main(String[] args) throws Exception {
     RpnResolver rpnResolver = new RpnResolver();
     String expr = "((a1+2.22)*3.58+b2)/(c3*99)";
     List<String> exprArgs = rpnResolver.expr2Infix(expr);

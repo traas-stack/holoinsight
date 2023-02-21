@@ -5,37 +5,21 @@ package io.holoinsight.server.storage.receiver.trace;
 
 import io.holoinsight.server.common.springboot.ConditionalOnFeature;
 import io.holoinsight.server.storage.common.constants.Const;
-import io.holoinsight.server.storage.common.model.specification.otel.Event;
-import io.holoinsight.server.storage.common.model.specification.otel.KeyValue;
-import io.holoinsight.server.storage.common.model.specification.otel.Link;
-import io.holoinsight.server.storage.common.model.specification.otel.Resource;
-import io.holoinsight.server.storage.common.model.specification.otel.Span;
-import io.holoinsight.server.storage.common.model.specification.otel.SpanKind;
-import io.holoinsight.server.storage.common.model.specification.otel.Status;
-import io.holoinsight.server.storage.common.model.specification.otel.StatusCode;
+import io.holoinsight.server.storage.common.model.specification.otel.*;
 import io.holoinsight.server.storage.common.model.specification.sw.EndpointRelation;
 import io.holoinsight.server.storage.common.model.specification.sw.ServiceInstanceRelation;
 import io.holoinsight.server.storage.common.model.specification.sw.ServiceRelation;
-import io.holoinsight.server.storage.engine.elasticsearch.model.EndpointRelationEsDO;
-import io.holoinsight.server.storage.engine.elasticsearch.model.NetworkAddressMappingEsDO;
-import io.holoinsight.server.storage.engine.elasticsearch.model.ServiceInstanceRelationEsDO;
-import io.holoinsight.server.storage.engine.elasticsearch.model.ServiceRelationEsDO;
-import io.holoinsight.server.storage.engine.elasticsearch.model.SlowSqlEsDO;
-import io.holoinsight.server.storage.engine.elasticsearch.model.SpanEsDO;
+import io.holoinsight.server.storage.engine.elasticsearch.model.*;
 import io.holoinsight.server.storage.receiver.analysis.RelationAnalysis;
-import io.holoinsight.server.storage.receiver.common.TransformAttr;
 import io.holoinsight.server.storage.receiver.builder.RelationBuilder;
-import io.holoinsight.server.storage.server.service.EndpointRelationService;
-import io.holoinsight.server.storage.server.service.NetworkAddressMappingService;
-import io.holoinsight.server.storage.server.service.ServiceInstanceRelationService;
-import io.holoinsight.server.storage.server.service.ServiceRelationService;
-import io.holoinsight.server.storage.server.service.SlowSqlService;
-import io.holoinsight.server.storage.server.service.TraceService;
+import io.holoinsight.server.storage.receiver.common.TransformAttr;
+import io.holoinsight.server.storage.server.service.*;
 import io.opentelemetry.proto.common.v1.AnyValue;
 import io.opentelemetry.proto.trace.v1.ScopeSpans;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.time.StopWatch;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -73,15 +57,16 @@ public class SpanHandler {
 
   public void handleResourceSpans(
       List<io.opentelemetry.proto.trace.v1.ResourceSpans> resourceSpansList) {
+    StopWatch stopWatch = StopWatch.createStarted();
+    List<SpanEsDO> spanEsDOList = new ArrayList<>();
+    List<NetworkAddressMappingEsDO> networkAddressMappingList = new ArrayList<>();
+    List<RelationBuilder> relationBuilders = new ArrayList<>();
+    List<SlowSqlEsDO> slowSqlEsDOList = new ArrayList<>();
+    boolean success = true;
     try {
       if (CollectionUtils.isEmpty(resourceSpansList)) {
         return;
       }
-      List<SpanEsDO> spanEsDOList = new ArrayList<>();
-      List<NetworkAddressMappingEsDO> networkAddressMappingList = new ArrayList<>();
-      List<RelationBuilder> relationBuilders = new ArrayList<>();
-      List<SlowSqlEsDO> slowSqlEsDOList = new ArrayList<>();
-
       resourceSpansList.forEach(resourceSpans -> {
         io.opentelemetry.proto.resource.v1.Resource resource = resourceSpans.getResource();
         Resource otelResource = new Resource();
@@ -132,14 +117,18 @@ public class SpanHandler {
           });
         }
       });
-
       storageSpan(spanEsDOList);
       storageNetworkMapping(networkAddressMappingList);
       storageSlowSql(slowSqlEsDOList);
       buildRelation(relationBuilders);
     } catch (Exception e) {
-      log.error("Handler span error: ", e);
+      success = false;
+      log.error("[apm] handle span error", e);
     }
+    log.info(
+        "[apm] handle span finish, result={}, spans={}, networks={}, slowSqls={}, relations={}, cost={}",
+        success, spanEsDOList.size(), networkAddressMappingList.size(), slowSqlEsDOList.size(),
+        relationBuilders.size(), stopWatch.getTime());
   }
 
   private String anyValueToString(AnyValue anyValue) {
@@ -216,7 +205,7 @@ public class SpanHandler {
 
   /**
    * for client span endpoint topology
-   * 
+   *
    * @return Map<SpanId, endpointName>
    */
   private Map<String, String> generateSpanIdEndpointMap(List<ScopeSpans> scopeSpans) {
