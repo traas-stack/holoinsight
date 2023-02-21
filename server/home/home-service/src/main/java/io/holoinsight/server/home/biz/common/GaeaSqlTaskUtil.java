@@ -25,6 +25,7 @@ import io.holoinsight.server.registry.model.Select;
 import io.holoinsight.server.registry.model.Select.SelectItem;
 import io.holoinsight.server.registry.model.TimeParse;
 import io.holoinsight.server.registry.model.Where;
+import io.holoinsight.server.registry.model.Where.Contains;
 import io.holoinsight.server.registry.model.Where.ContainsAny;
 import io.holoinsight.server.registry.model.Where.NotIn;
 import io.holoinsight.server.registry.model.Where.Regexp;
@@ -182,32 +183,34 @@ public class GaeaSqlTaskUtil {
 
       TimeParse timeParse = new TimeParse();
       timeParse.setType("auto");
-      for (CustomPluginConf.SplitCol splitCol : splitCols) {
-        if ("TIME".equals(splitCol.colType)) {
-          if (!StringUtils.isEmpty(splitCol.name)) {
-            String timeAndZone = splitCol.name.substring(3, splitCol.name.length() - 1);
-            String[] cols = timeAndZone.split("##");
-            if (cols.length != 2) {
-              continue;
+      if (!CollectionUtils.isEmpty(splitCols)) {
+        for (CustomPluginConf.SplitCol splitCol : splitCols) {
+          if ("TIME".equals(splitCol.colType)) {
+            if (!StringUtils.isEmpty(splitCol.name)) {
+              String timeAndZone = splitCol.name.substring(3, splitCol.name.length() - 1);
+              String[] cols = timeAndZone.split("##");
+              if (cols.length != 2) {
+                continue;
+              }
+              if (timeZones.contains(cols[1])) {
+                timeParse.setTimezone(cols[1]);
+              } else if (!Constants.DEFAULT_CH.equals(cols[1])) {
+                continue;
+              }
+              String layout = convertTimeLayout(cols[0]);
+              if (StringUtils.isEmpty(layout)) {
+                continue;
+              }
+              timeParse.setLayout(layout);
             }
-            if (timeZones.contains(cols[1])) {
-              timeParse.setTimezone(cols[1]);
-            } else if (!Constants.DEFAULT_CH.equals(cols[1])) {
-              continue;
-            }
-            String layout = convertTimeLayout(cols[0]);
-            if (StringUtils.isEmpty(layout)) {
-              continue;
-            }
-            timeParse.setLayout(layout);
+            timeParse.setElect(buildElect(splitCol.rule, logParse.splitType));
+            timeParse.setType("elect");
+            timeParse.setFormat("golangLayout");
+            fromLog.setTime(timeParse);
           }
-          timeParse.setElect(buildElect(splitCol.rule, logParse.splitType));
-          timeParse.setType("elect");
-          timeParse.setFormat("golangLayout");
-          fromLog.setTime(timeParse);
         }
+        fromLog.setTime(timeParse);
       }
-      fromLog.setTime(timeParse);
     }
 
     From from = new From();
@@ -308,7 +311,7 @@ public class GaeaSqlTaskUtil {
     // List<String> tags = collectMetric.tags;
     //
     Where where = new Where();
-    // List<Where> ands = new ArrayList<>();
+    List<Where> ands = new ArrayList<>();
     // tags.forEach(t -> {
     //
     // SplitCol dim = splitColMap.get(dimColType).get(t);
@@ -374,17 +377,18 @@ public class GaeaSqlTaskUtil {
     // ands.add(and);
     // });
     //
-    // if (collectMetric.metricType.equalsIgnoreCase("contains")) {
-    // Where and = new Where();
-    // Elect elect = new Elect();
-    // Contains contains = new Contains();
-    // elect.setType("line");
-    // contains.setElect(elect);
-    // contains.setValue(collectMetric.containValue);
-    // and.setContains(contains);
-    // }
-    //
-    // where.setAnd(ands);
+    if (StringUtils.isNotBlank(collectMetric.metricType)
+        && collectMetric.metricType.equalsIgnoreCase("contains")) {
+      Where and = new Where();
+      Elect elect = new Elect();
+      Contains contains = new Contains();
+      elect.setType("line");
+      contains.setElect(elect);
+      contains.setValue(collectMetric.containValue);
+      and.setContains(contains);
+      ands.add(and);
+    }
+    where.setAnd(ands);
     return where;
   }
 
