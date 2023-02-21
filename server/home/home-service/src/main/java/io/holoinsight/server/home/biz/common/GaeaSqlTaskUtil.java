@@ -32,10 +32,7 @@ import io.holoinsight.server.registry.model.Window;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.util.CollectionUtils;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  *
@@ -50,6 +47,9 @@ public class GaeaSqlTaskUtil {
   private static final String regexp = "REGEXP";
   private static final String dimColType = "DIM";
   private static final String valColType = "VALUE";
+
+  private static List<String> timeZones =
+      Arrays.asList("UTC", "Asia/Shanghai", "America/Los_Angeles");
 
   public static Map<String, Map<String, SplitCol>> convertSplitColMap(List<SplitCol> splitCols) {
     Map<String, Map<String, SplitCol>> splitColMap = new HashMap<>();
@@ -88,60 +88,7 @@ public class GaeaSqlTaskUtil {
         Rule rule = value.rule;
 
         if (null != rule) {
-          Elect elect = new Elect();
-          switch (logParse.splitType) {
-            case leftRight:
-              Elect.LeftRight leftRight = new Elect.LeftRight();
-              leftRight.setLeft(rule.left);
-              leftRight.setLeftIndex(rule.leftIndex);
-              leftRight.setRight(rule.right);
-
-              elect.setType("leftRight");
-              elect.setLeftRight(leftRight);
-              break;
-
-            case separator:
-              elect.setType("refIndex");
-              elect.setRefIndex(new RefIndex());
-              elect.getRefIndex().setIndex(rule.pos);
-              break;
-            case regexp:
-              if (StringUtils.isNotEmpty(rule.regexpName)) {
-                elect.setType("refName");
-                elect.setRefName(new RefName());
-                elect.getRefName().setName(rule.regexpName);
-              } else if (rule.pos != null) {
-                elect.setType("refIndex");
-                elect.setRefIndex(new RefIndex());
-                elect.getRefIndex().setIndex(rule.pos);
-              }
-              break;
-            default:
-              break;
-          }
-
-          if (null != rule.translate) {
-            Translate translate = rule.translate;
-            List<ColumnCalExpr> exprs = translate.exprs;
-
-            Transform transform = new Transform();
-            List<TransformItem> transformItems = new ArrayList<>();
-            if (!CollectionUtils.isEmpty(exprs)) {
-              exprs.forEach(expr -> {
-                TransformItem transformItem = new TransformItem();
-                transformItem.setArg(expr.getParams());
-                transformItem.setFunc(expr.getFunc());
-                transformItems.add(transformItem);
-              });
-            }
-
-            transform.setTransforms(transformItems);
-            elect.setTransform(transform);
-          }
-
-          if (StringUtils.isNotEmpty(rule.defaultValue)) {
-            elect.setDefaultValue(rule.defaultValue);
-          }
+          Elect elect = buildElect(rule, logParse.splitType);
           selectItem.setElect(elect);
         }
       }
@@ -156,7 +103,7 @@ public class GaeaSqlTaskUtil {
   }
 
   public static From buildFrom(List<LogPath> logPaths, LogParse logParse, List<Filter> whiteFilters,
-      List<Filter> blackFilters) {
+      List<Filter> blackFilters, List<SplitCol> splitCols) {
 
     Log fromLog = new Log();
     {
@@ -235,13 +182,30 @@ public class GaeaSqlTaskUtil {
 
       TimeParse timeParse = new TimeParse();
       timeParse.setType("auto");
-      TimeConfig timeConfig = logParse.getTimeConfig();
-      if (timeConfig != null && timeConfig.getElect() != null) {
-        timeParse.setElect(timeConfig.getElect());
-        timeParse.setFormat(timeConfig.getFormat());
-        timeParse.setType(timeConfig.getType());
-        timeParse.setLayout(timeConfig.getLayout());
-        timeParse.setTimezone(timeConfig.getTimezone());
+      for (CustomPluginConf.SplitCol splitCol : splitCols) {
+        if ("TIME".equals(splitCol.colType)) {
+          if (!StringUtils.isEmpty(splitCol.name)) {
+            String timeAndZone = splitCol.name.substring(3, splitCol.name.length() - 1);
+            String[] cols = timeAndZone.split("##");
+            if (cols.length != 2) {
+              continue;
+            }
+            if (timeZones.contains(cols[1])) {
+              timeParse.setTimezone(cols[1]);
+            } else if (!Constants.DEFAULT_CH.equals(cols[1])) {
+              continue;
+            }
+            String layout = convertTimeLayout(cols[0]);
+            if (StringUtils.isEmpty(layout)) {
+              continue;
+            }
+            timeParse.setLayout(layout);
+          }
+          timeParse.setElect(buildElect(splitCol.rule, logParse.splitType));
+          timeParse.setType("elect");
+          timeParse.setFormat("golangLayout");
+          fromLog.setTime(timeParse);
+        }
       }
       fromLog.setTime(timeParse);
     }
@@ -537,4 +501,66 @@ public class GaeaSqlTaskUtil {
 
     return executorSelector;
   }
+
+  public static Elect buildElect(Rule rule, String splitType) {
+    Elect elect = new Elect();
+    switch (splitType) {
+      case leftRight:
+        Elect.LeftRight leftRight = new Elect.LeftRight();
+        leftRight.setLeft(rule.left);
+        leftRight.setLeftIndex(rule.leftIndex);
+        leftRight.setRight(rule.right);
+        elect.setType("leftRight");
+        elect.setLeftRight(leftRight);
+        break;
+      case separator:
+        elect.setType("refIndex");
+        elect.setRefIndex(new RefIndex());
+        elect.getRefIndex().setIndex(rule.pos);
+        break;
+      case regexp:
+        if (StringUtils.isNotEmpty(rule.regexpName)) {
+          elect.setType("refName");
+          elect.setRefName(new RefName());
+          elect.getRefName().setName(rule.regexpName);
+        } else if (rule.pos != null) {
+          elect.setType("refIndex");
+          elect.setRefIndex(new RefIndex());
+          elect.getRefIndex().setIndex(rule.pos);
+        }
+        break;
+      default:
+        break;
+    }
+    if (null != rule.translate) {
+      Translate translate = rule.translate;
+      List<ColumnCalExpr> exprs = translate.exprs;
+      Transform transform = new Transform();
+      List<TransformItem> transformItems = new ArrayList<>();
+      if (!CollectionUtils.isEmpty(exprs)) {
+        exprs.forEach(expr -> {
+          TransformItem transformItem = new TransformItem();
+          transformItem.setArg(expr.getParams());
+          transformItem.setFunc(expr.getFunc());
+          transformItems.add(transformItem);
+        });
+      }
+      transform.setTransforms(transformItems);
+      elect.setTransform(transform);
+    }
+    if (StringUtils.isNotEmpty(rule.defaultValue)) {
+      elect.setDefaultValue(rule.defaultValue);
+    }
+    return elect;
+  }
+
+  public static String convertTimeLayout(String time) {
+    switch (time) {
+      case "yyyy-MM-dd HH:mm:ss":
+        return "2006-01-02 15:04:05";
+      default:
+        return StringUtils.EMPTY;
+    }
+  }
+
 }

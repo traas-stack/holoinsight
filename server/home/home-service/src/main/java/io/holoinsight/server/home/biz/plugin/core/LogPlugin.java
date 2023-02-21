@@ -79,7 +79,8 @@ public class LogPlugin extends AbstractLocalIntegrationPlugin<LogPlugin> {
     Map<String, Map<String, CustomPluginConf.SplitCol>> splitColMap =
         GaeaSqlTaskUtil.convertSplitColMap(splitCols);
     Select select = GaeaSqlTaskUtil.buildSelect(logParse, splitColMap, collectMetric);
-    From from = GaeaSqlTaskUtil.buildFrom(logPaths, logParse, whiteFilters, blackFilters);
+    From from =
+        GaeaSqlTaskUtil.buildFrom(logPaths, logParse, whiteFilters, blackFilters, splitCols);
     Where where = GaeaSqlTaskUtil.buildWhere(logParse, splitColMap, collectMetric);
     GroupBy groupBy = GaeaSqlTaskUtil.buildGroupBy(logParse, splitColMap, collectMetric);
     Window window = GaeaSqlTaskUtil.buildWindow(periodType.getDataUnitMs());
