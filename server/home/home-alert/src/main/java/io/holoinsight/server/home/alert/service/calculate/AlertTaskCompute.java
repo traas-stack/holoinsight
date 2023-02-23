@@ -8,8 +8,6 @@ import io.holoinsight.server.home.alert.common.AlertStat;
 import io.holoinsight.server.home.alert.common.G;
 import io.holoinsight.server.home.alert.model.compute.ComputeContext;
 import io.holoinsight.server.home.alert.model.compute.ComputeTaskPackage;
-import io.holoinsight.server.home.alert.model.data.InspectConfig;
-import io.holoinsight.server.home.alert.model.event.AlertEvent;
 import io.holoinsight.server.home.alert.model.event.AlertNotify;
 import io.holoinsight.server.home.alert.model.event.EventInfo;
 import io.holoinsight.server.home.alert.service.data.AlarmDataSet;
@@ -19,6 +17,7 @@ import io.holoinsight.server.home.alert.service.task.AlarmTaskExecutor;
 import io.holoinsight.server.home.common.exception.HoloinsightAlertIllegalArgumentException;
 import io.holoinsight.server.home.dal.mapper.AlarmHistoryMapper;
 import io.holoinsight.server.home.dal.model.AlarmHistory;
+import io.holoinsight.server.home.facade.InspectConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -27,7 +26,6 @@ import org.springframework.util.CollectionUtils;
 import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -72,7 +70,7 @@ public class AlertTaskCompute implements AlarmTaskExecutor<ComputeTaskPackage> {
         List<AlertNotify> alarmNotifies = eventLists.stream()
             .map(e -> AlertNotify.eventInfoConver(e, inspectConfigMap.get(e.getUniqueId())))
             .collect(Collectors.toList());
-        alertEventService.handleEvent(new AlertEvent(alarmNotifies));
+        alertEventService.handleEvent(alarmNotifies);
       }
     } catch (HoloinsightAlertIllegalArgumentException e) {
       LOGGER.error(

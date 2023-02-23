@@ -4,11 +4,11 @@
 package io.holoinsight.server.home.alert.service.data;
 
 import io.holoinsight.server.home.alert.model.compute.ComputeTaskPackage;
-import io.holoinsight.server.home.alert.model.data.DataResult;
-import io.holoinsight.server.home.alert.model.data.PqlRule;
-import io.holoinsight.server.home.alert.model.data.Rule;
-import io.holoinsight.server.home.alert.model.trigger.Trigger;
 import io.holoinsight.server.home.alert.service.data.load.PqlAlarmLoadData;
+import io.holoinsight.server.home.facade.DataResult;
+import io.holoinsight.server.home.facade.PqlRule;
+import io.holoinsight.server.home.facade.Rule;
+import io.holoinsight.server.home.facade.trigger.Trigger;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

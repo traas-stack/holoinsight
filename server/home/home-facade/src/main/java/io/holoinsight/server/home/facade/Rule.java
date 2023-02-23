@@ -1,10 +1,10 @@
 /*
  * Copyright 2022 Holoinsight Project Authors. Licensed under Apache-2.0.
  */
-package io.holoinsight.server.home.alert.model.data;
+package io.holoinsight.server.home.facade;
 
-import io.holoinsight.server.home.alert.model.emuns.BoolOperationEnum;
-import io.holoinsight.server.home.alert.model.trigger.Trigger;
+import io.holoinsight.server.home.facade.emuns.BoolOperationEnum;
+import io.holoinsight.server.home.facade.trigger.Trigger;
 import lombok.Data;
 
 import java.util.List;

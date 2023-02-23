@@ -5,6 +5,7 @@ package io.holoinsight.server.home.biz.listener;
 
 import io.holoinsight.server.home.biz.plugin.PluginRepository;
 import io.holoinsight.server.home.biz.plugin.core.AbstractIntegrationPlugin;
+import io.holoinsight.server.home.biz.plugin.model.HostingPlugin;
 import io.holoinsight.server.home.biz.service.GaeaCollectConfigService;
 import io.holoinsight.server.home.common.util.EventBusHolder;
 import io.holoinsight.server.home.dal.model.dto.GaeaCollectConfigDTO;
@@ -17,6 +18,9 @@ import org.springframework.stereotype.Component;
 import javax.annotation.PostConstruct;
 import java.util.ArrayList;
 import java.util.List;
+
+import static io.holoinsight.server.home.biz.service.impl.IntegrationPluginServiceImpl.checkActionType;
+import static io.holoinsight.server.home.biz.service.impl.IntegrationPluginServiceImpl.isClassicPlugin;
 
 /**
  * @author xiangwanpeng
@@ -38,11 +42,24 @@ public class IntegrationPluginUpdateListener {
   @Subscribe
   @AllowConcurrentEvents
   public void onEvent(IntegrationPluginDTO integrationPluginDTO) {
-    List<Long> upsert = upsert(integrationPluginDTO);
-    notify(upsert);
+    boolean needUpsertGaea = isClassicPlugin(integrationPluginDTO.getProduct())
+        || checkActionType(integrationPluginDTO, null, this.pluginRepository);
+    if (needUpsertGaea) {
+      List<Long> upsert = upsertGaea(integrationPluginDTO);
+      notify(upsert);
+    } else if (this.pluginRepository.isHostingPlugin(integrationPluginDTO.type)) {
+      HostingPlugin hostingPlugin = (HostingPlugin) this.pluginRepository
+          .getTemplate(integrationPluginDTO.type, integrationPluginDTO.version);
+      if (integrationPluginDTO.status) {
+        hostingPlugin.apply(integrationPluginDTO);
+      } else {
+        hostingPlugin.disable(integrationPluginDTO);
+      }
+
+    }
   }
 
-  private List<Long> upsert(IntegrationPluginDTO integrationPluginDTO) {
+  private List<Long> upsertGaea(IntegrationPluginDTO integrationPluginDTO) {
     GaeaCollectConfigDTO gaeaCollectConfigDTO = new GaeaCollectConfigDTO();
     gaeaCollectConfigDTO.tenant = integrationPluginDTO.tenant;
     gaeaCollectConfigDTO.deleted = false;

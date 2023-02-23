@@ -4,6 +4,7 @@
 package io.holoinsight.server.home.biz.plugin.core;
 
 import io.holoinsight.server.home.biz.plugin.model.PluginModel;
+import io.holoinsight.server.home.dal.model.dto.GaeaCollectConfigDTO.GaeaCollectRange;
 import io.holoinsight.server.home.dal.model.dto.IntegrationPluginDTO;
 import io.holoinsight.server.registry.model.integration.jvm.JvmTask;
 import io.holoinsight.server.common.J;
@@ -43,7 +44,9 @@ public class JvmPlugin extends AbstractLocalIntegrationPlugin<JvmPlugin> {
       jvmTask.setType(JvmTask.class.getName());
       jvmPlugin.jvmTask = jvmTask;
       jvmPlugin.gaeaTableName = integrationPluginDTO.name;
-      jvmPlugin.collectRange = integrationPluginDTO.collectRange.cloudmonitor;
+      GaeaCollectRange gaeaCollectRange =
+          J.fromJson(J.toJson(integrationPluginDTO.collectRange), GaeaCollectRange.class);;
+      jvmPlugin.collectRange = gaeaCollectRange.cloudmonitor;
       jvmPlugin.collectPlugin = JvmTask.class.getName();
     }
 

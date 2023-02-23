@@ -25,7 +25,9 @@ public enum TaskEnum {
 
   TENANT_OB_SERVER_SYNC("TENANT_OB_SERVER_SYNC", "租户OB元数据列表同步"),
 
-  CLEAN_ALERT_HISTORY("CLEAN_ALERT_HISTORY", "清理告警历史数据"),;
+  CLEAN_ALERT_HISTORY("CLEAN_ALERT_HISTORY", "清理告警历史数据"),
+
+  HOSTING_ALERT("HOSTING_ALERT", "托管告警生成"),;
 
   /**
    * 枚举值

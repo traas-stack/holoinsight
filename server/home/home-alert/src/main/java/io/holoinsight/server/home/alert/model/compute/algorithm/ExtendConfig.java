@@ -3,10 +3,10 @@
  */
 package io.holoinsight.server.home.alert.model.compute.algorithm;
 
-import io.holoinsight.server.home.alert.model.data.DataResult;
-import io.holoinsight.server.home.alert.model.data.DataSource;
-import io.holoinsight.server.home.alert.model.data.Filter;
 import io.holoinsight.server.home.alert.model.function.FunctionConfigAIParam;
+import io.holoinsight.server.home.facade.DataResult;
+import io.holoinsight.server.home.facade.trigger.DataSource;
+import io.holoinsight.server.home.facade.trigger.Filter;
 import lombok.Data;
 
 import java.util.ArrayList;

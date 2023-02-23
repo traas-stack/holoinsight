@@ -106,19 +106,18 @@ public class IntegrationPluginServiceImpl extends
     integrationPluginDTO.setGmtCreate(new Date());
     integrationPluginDTO.setGmtModified(new Date());
 
-    boolean needUpsertGaea = isClassicPlugin(integrationPluginDTO.getProduct())
-        || checkActionType(integrationPluginDTO, null);
+
     IntegrationPlugin model = integrationPluginConverter.dtoToDO(integrationPluginDTO);
     save(model);
     IntegrationPluginDTO integrationPlugin = integrationPluginConverter.doToDTO(model);
-    if (needUpsertGaea) {
-      EventBusHolder.post(integrationPlugin);
-    }
+
+    EventBusHolder.post(integrationPlugin);
+
 
     return integrationPlugin;
   }
 
-  private boolean isClassicPlugin(String product) {
+  public static boolean isClassicPlugin(String product) {
     if (StringUtils.isEmpty(product)) {
       return false;
     }
@@ -129,15 +128,15 @@ public class IntegrationPluginServiceImpl extends
   /**
    * 1. 如果是数据源插件，要检查修改是不是要同步修改采集配置 1.1 如果是创建，要插入 gaea 配置表 1.2 如果是版本升级，要对比修改后的 json (不包含)有没有变化 1.3
    * 如果是采集范围变化变化，要插入 gaea 配置表
-   *
+   * 
    * @param newIntegrationPlugin
    * @param originalRecord
+   * @param pluginRepository
    */
-  private boolean checkActionType(IntegrationPluginDTO newIntegrationPlugin,
-      IntegrationPluginDTO originalRecord) {
+  public static boolean checkActionType(IntegrationPluginDTO newIntegrationPlugin,
+      IntegrationPluginDTO originalRecord, PluginRepository pluginRepository) {
     // 是否数据源插件
-    boolean isDataSourcePlugin =
-        this.pluginRepository.isDataSourcePlugin(newIntegrationPlugin.type);
+    boolean isDataSourcePlugin = pluginRepository.isDataSourcePlugin(newIntegrationPlugin.type);
     boolean isCreate = originalRecord == null;
     // List<Plugin> pluginList = null;
     boolean needUpsertGaea = false;
@@ -214,7 +213,7 @@ public class IntegrationPluginServiceImpl extends
         queryById(integrationPluginDTO.getId(), RequestContext.getContext().ms.getTenant());
 
     boolean needUpsertGaea = isClassicPlugin(integrationPluginDTO.getProduct())
-        || checkActionType(integrationPluginDTO, originalRecord);
+        || checkActionType(integrationPluginDTO, originalRecord, this.pluginRepository);
     IntegrationPlugin model = integrationPluginConverter.dtoToDO(integrationPluginDTO);
     saveOrUpdate(model);
     IntegrationPluginDTO integrationPlugin = integrationPluginConverter.doToDTO(model);

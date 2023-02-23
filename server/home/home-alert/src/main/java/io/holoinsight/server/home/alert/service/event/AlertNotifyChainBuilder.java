@@ -3,7 +3,7 @@
  */
 package io.holoinsight.server.home.alert.service.event;
 
-import io.holoinsight.server.home.biz.plugin.model.NotifyChain;
+import io.holoinsight.server.home.alert.plugin.NotifyChain;
 import io.holoinsight.server.home.dal.model.dto.IntegrationPluginDTO;
 
 import java.util.List;

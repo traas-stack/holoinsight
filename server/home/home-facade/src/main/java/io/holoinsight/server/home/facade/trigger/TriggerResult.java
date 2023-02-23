@@ -1,7 +1,7 @@
 /*
  * Copyright 2022 Holoinsight Project Authors. Licensed under Apache-2.0.
  */
-package io.holoinsight.server.home.alert.model.trigger;
+package io.holoinsight.server.home.facade.trigger;
 
 import lombok.Data;
 
@@ -32,6 +32,8 @@ public class TriggerResult implements Serializable {
   private Map<String, String> tags;
 
   private Double currentValue;
+
+  private String triggerLevel;
 
   public static TriggerResult create() {
     TriggerResult result = new TriggerResult();

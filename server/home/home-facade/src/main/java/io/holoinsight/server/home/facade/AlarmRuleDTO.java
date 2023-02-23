@@ -4,6 +4,8 @@
 package io.holoinsight.server.home.facade;
 
 import lombok.Data;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.util.CollectionUtils;
 
 import java.util.Date;
 import java.util.List;
@@ -124,7 +126,7 @@ public class AlarmRuleDTO {
   /**
    * 额外信息
    */
-  private Map<String, Object> extra;
+  private AlertRuleExtra extra;
 
   /**
    * 环境类型
@@ -135,4 +137,78 @@ public class AlarmRuleDTO {
    * pql
    */
   private String pql;
+
+  public void tryParseLink(String domain,
+      Map<String /* metric */, Map<String /* type */, String /* page */>> systemMetrics) {
+    if (isCreate()) {
+      if (StringUtils.isNotEmpty(this.sourceType)) {
+        if (extra == null) {
+          extra = new AlertRuleExtra();
+        }
+        switch (this.sourceType) {
+          case "log":
+            extra.sourceLink = domain + "/log/metric/" + this.sourceId;
+            break;
+          case "dashboard":
+            extra.sourceLink = domain + "/m/dashboard/preview/" + this.sourceId;
+            break;
+          default:
+            if (this.sourceType.startsWith("apm_")) {
+              extra.sourceLink = getApmLink(domain, systemMetrics);
+            }
+        }
+      }
+    }
+  }
+
+  private boolean isCreate() {
+    return id == null;
+  }
+
+  private String getApmLink(String domain,
+      Map<String /* metric */, Map<String /* type */, String /* page */>> systemMetrics) {
+    String app = this.sourceType.split("_")[1];
+    String metric = getMetric();
+    boolean isServer = checkIsServer();
+    if (StringUtils.isEmpty(metric) || CollectionUtils.isEmpty(systemMetrics)) {
+      return StringUtils.EMPTY;
+    }
+    Map<String /* type */, String /* page */> pages = systemMetrics.get(metric);
+    String type = isServer ? "server" : "app";
+    String page = pages.get(type);
+    return domain + page + "&app=" + app;
+  }
+
+  private boolean checkIsServer() {
+    if (CollectionUtils.isEmpty(this.rule)) {
+      return false;
+    }
+    List<Map<String, Object>> triggers = (List<Map<String, Object>>) this.rule.get("triggers");
+    Map<String, Object> trigger = triggers.get(0);
+    List<Map<String, Object>> datasources = (List<Map<String, Object>>) trigger.get("datasources");
+    if (CollectionUtils.isEmpty(datasources)) {
+      return false;
+    }
+    Map<String, Object> datasource = datasources.get(0);
+    List<String> groupBy = (List<String>) datasource.get("groupBy");
+    return CollectionUtils.isEmpty(groupBy) || groupBy.contains("hostname")
+        || groupBy.contains("pod") || groupBy.contains("ip");
+  }
+
+  private String getMetric() {
+    if (CollectionUtils.isEmpty(this.rule)) {
+      return StringUtils.EMPTY;
+    }
+    List<Map<String, Object>> triggers = (List<Map<String, Object>>) this.rule.get("triggers");
+    if (CollectionUtils.isEmpty(triggers)) {
+      return StringUtils.EMPTY;
+    }
+    Map<String, Object> trigger = triggers.get(0);
+    List<Map<String, Object>> datasources = (List<Map<String, Object>>) trigger.get("datasources");
+    if (CollectionUtils.isEmpty(datasources)) {
+      return StringUtils.EMPTY;
+    }
+    Map<String, Object> datasource = datasources.get(0);
+    return (String) datasource.get("metric");
+  }
 }

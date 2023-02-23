@@ -4,9 +4,8 @@
 package io.holoinsight.server.home.alert.common;
 
 import io.holoinsight.server.common.J;
-import io.holoinsight.server.home.alert.model.data.DataResult;
+import io.holoinsight.server.home.facade.DataResult;
 
-import java.util.Arrays;
 import java.util.List;
 
 /**

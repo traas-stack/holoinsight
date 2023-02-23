@@ -6,21 +6,24 @@ package io.holoinsight.server.home.alert.service.calculate;
 import io.holoinsight.server.home.alert.common.G;
 import io.holoinsight.server.home.alert.model.compute.ComputeContext;
 import io.holoinsight.server.home.alert.model.compute.ComputeInfo;
-import io.holoinsight.server.home.alert.model.data.DataResult;
-import io.holoinsight.server.home.alert.model.data.InspectConfig;
-import io.holoinsight.server.home.alert.model.data.Rule;
-import io.holoinsight.server.home.alert.model.emuns.BoolOperationEnum;
 import io.holoinsight.server.home.alert.model.event.EventInfo;
 import io.holoinsight.server.home.alert.model.function.FunctionConfigAIParam;
 import io.holoinsight.server.home.alert.model.function.FunctionConfigParam;
 import io.holoinsight.server.home.alert.model.function.FunctionLogic;
-import io.holoinsight.server.home.alert.model.trigger.Trigger;
-import io.holoinsight.server.home.alert.model.trigger.TriggerResult;
+import io.holoinsight.server.home.facade.DataResult;
+import io.holoinsight.server.home.facade.InspectConfig;
+import io.holoinsight.server.home.facade.Rule;
+import io.holoinsight.server.home.facade.emuns.BoolOperationEnum;
+import io.holoinsight.server.home.facade.trigger.CompareConfig;
+import io.holoinsight.server.home.facade.trigger.Trigger;
+import io.holoinsight.server.home.facade.trigger.TriggerResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -84,9 +87,11 @@ public class AbstractUniformInspectRunningRule {
       List<TriggerResult> triggerResults = new Vector<>();
       dataResultList.parallelStream().forEach(dataResult -> {
         // 单个tags判断，增加异步处理，收集所有tags结果
-        TriggerResult ruleResult = apply(dataResult, computeInfo, trigger);
-        if (ruleResult.isHit()) {
-          triggerResults.add(ruleResult);
+        List<TriggerResult> ruleResults = apply(dataResult, computeInfo, trigger);
+        for (TriggerResult ruleResult : ruleResults) {
+          if (ruleResult.isHit()) {
+            triggerResults.add(ruleResult);
+          }
         }
       });
       if (triggerResults.size() != 0) {
@@ -117,25 +122,34 @@ public class AbstractUniformInspectRunningRule {
    * @param trigger 触发
    * @return {@link TriggerResult}
    */
-  public static TriggerResult apply(DataResult dataResult, ComputeInfo computeInfo,
+  public static List<TriggerResult> apply(DataResult dataResult, ComputeInfo computeInfo,
       Trigger trigger) {
     FunctionLogic inspectFunction = FunctionManager.functionMap.get(trigger.getType());
     // 增加智能告警算法执行
     if (inspectFunction == null) {
-      return TriggerResult.create();
+      return Collections.singletonList(TriggerResult.create());
     }
-    FunctionConfigParam functionConfigParam = buildFunctionConfigParam(computeInfo, trigger);
-    TriggerResult ruleResult = inspectFunction.invoke(dataResult, functionConfigParam);
-    ruleResult.setMetric(dataResult.getMetric());
-    ruleResult.setTags(dataResult.getTags());
-    ruleResult.setCompareParam(functionConfigParam.getCmp());
-    ruleResult.setTriggerContent(trigger.getTriggerContent());
-    return ruleResult;
+    List<TriggerResult> triggerResults = new ArrayList<>();
+    List<FunctionConfigParam> functionConfigParams = buildFunctionConfigParam(computeInfo, trigger);
+    for (FunctionConfigParam functionConfigParam : functionConfigParams) {
+      TriggerResult ruleResult = inspectFunction.invoke(dataResult, functionConfigParam);
+      ruleResult.setMetric(dataResult.getMetric());
+      ruleResult.setTags(dataResult.getTags());
+      ruleResult.setCompareParam(functionConfigParam.getCmp());
+      ruleResult.setTriggerContent(trigger.getTriggerContent());
+      ruleResult.setTriggerLevel(functionConfigParam.getTriggerLevel());
+      triggerResults.add(ruleResult);
+      if (ruleResult.isHit()) {
+        break;
+      }
+    }
+
+    return triggerResults;
   }
 
-  private static FunctionConfigParam buildFunctionConfigParam(ComputeInfo computeInfo,
+  private static List<FunctionConfigParam> buildFunctionConfigParam(ComputeInfo computeInfo,
       Trigger trigger) {
-    FunctionConfigParam functionConfigParam = new FunctionConfigParam();
+    List<FunctionConfigParam> list = new ArrayList<>();
     if ("AI".equals(trigger.getType().getType())) {
       // 参数组装
       FunctionConfigAIParam functionConfigAIParam = new FunctionConfigAIParam();
@@ -146,15 +160,31 @@ public class AbstractUniformInspectRunningRule {
       functionConfigAIParam.setTraceId(computeInfo.getTraceId());
       functionConfigAIParam.setTenant(computeInfo.getTenant());
       functionConfigAIParam.setTrigger(trigger);
-      functionConfigParam = functionConfigAIParam;
+      list.add(functionConfigAIParam);
     } else {
-      functionConfigParam.setCmp(trigger.getCompareParam());
-      functionConfigParam.setPeriod(computeInfo.getPeriod());
-      functionConfigParam.setDuration(trigger.getStepNum());
-      functionConfigParam.setStepTime(trigger.getDownsample());
-      functionConfigParam.setTraceId(computeInfo.getTraceId());
+      if (!CollectionUtils.isEmpty(trigger.getCompareConfigs())) {
+        for (CompareConfig compareConfig : trigger.getCompareConfigs()) {
+          FunctionConfigParam functionConfigParam = new FunctionConfigParam();
+          functionConfigParam.setCmp(compareConfig.getCompareParam());
+          functionConfigParam.setTriggerLevel(compareConfig.getTriggerLevel());
+          functionConfigParam.setPeriod(computeInfo.getPeriod());
+          functionConfigParam.setDuration(trigger.getStepNum());
+          functionConfigParam.setStepTime(trigger.getDownsample());
+          functionConfigParam.setTraceId(computeInfo.getTraceId());
+          list.add(functionConfigParam);
+        }
+      } else {
+        FunctionConfigParam functionConfigParam = new FunctionConfigParam();
+        functionConfigParam.setCmp(trigger.getCompareParam());
+        functionConfigParam.setPeriod(computeInfo.getPeriod());
+        functionConfigParam.setDuration(trigger.getStepNum());
+        functionConfigParam.setStepTime(trigger.getDownsample());
+        functionConfigParam.setTraceId(computeInfo.getTraceId());
+        list.add(functionConfigParam);
+      }
+
     }
-    return functionConfigParam;
+    return list;
   }
 
 }

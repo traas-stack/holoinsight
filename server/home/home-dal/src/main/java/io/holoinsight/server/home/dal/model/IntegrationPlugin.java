@@ -17,6 +17,8 @@ public class IntegrationPlugin {
 
   public String tenant;
 
+  public String workspace;
+
   public String name;
 
   public String product;

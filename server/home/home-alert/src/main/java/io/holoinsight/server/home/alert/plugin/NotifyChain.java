@@ -1,9 +1,14 @@
 /*
  * Copyright 2022 Holoinsight Project Authors. Licensed under Apache-2.0.
  */
-package io.holoinsight.server.home.biz.plugin.model;
+package io.holoinsight.server.home.alert.plugin;
 
-import io.holoinsight.server.home.biz.plugin.PluginScheduleQueue;
+import io.holoinsight.server.home.biz.plugin.model.ChainPlugin;
+import io.holoinsight.server.home.biz.plugin.model.PluginContext;
+import io.holoinsight.server.home.biz.plugin.model.PluginModel;
+import io.holoinsight.server.home.biz.plugin.model.PluginType;
+import io.holoinsight.server.home.biz.plugin.model.ScheduleTimeEnum;
+import io.holoinsight.server.home.biz.plugin.model.WaitPlugin;
 import io.holoinsight.server.home.common.exception.HoloinsightAlertIllegalArgumentException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

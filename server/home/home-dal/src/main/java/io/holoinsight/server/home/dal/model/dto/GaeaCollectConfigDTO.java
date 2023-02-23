@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -44,8 +45,7 @@ public class GaeaCollectConfigDTO {
   @Data
   @NoArgsConstructor
   @AllArgsConstructor
-  public static class GaeaCollectRange implements Serializable {
-    private static final long serialVersionUID = -2140563386879600142L;
+  public static class GaeaCollectRange extends CollectRange {
     public String type;
     public CloudMonitorRange cloudmonitor;
 
@@ -57,6 +57,11 @@ public class GaeaCollectConfigDTO {
       }
       return this.cloudmonitor.isEqual(originalRecord.cloudmonitor);
     }
+  }
+
+  public static abstract class CollectRange implements Serializable {
+    private static final long serialVersionUID = -2140563386879600142L;
+
   }
 
 }

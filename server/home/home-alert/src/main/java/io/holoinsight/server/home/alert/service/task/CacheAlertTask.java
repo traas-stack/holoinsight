@@ -5,11 +5,11 @@ package io.holoinsight.server.home.alert.service.task;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import io.holoinsight.server.home.alert.model.compute.ComputeTaskPackage;
-import io.holoinsight.server.home.alert.model.data.InspectConfig;
 import io.holoinsight.server.home.alert.service.converter.DoConvert;
 import io.holoinsight.server.home.alert.service.data.CacheData;
 import io.holoinsight.server.home.dal.mapper.AlarmRuleMapper;
 import io.holoinsight.server.home.dal.model.AlarmRule;
+import io.holoinsight.server.home.facade.InspectConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

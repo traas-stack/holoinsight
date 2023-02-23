@@ -8,12 +8,12 @@ package io.holoinsight.server.home.alert.service.calculate;
  * @date 2022/11/25 9:55 AM
  */
 
-import io.holoinsight.server.home.alert.model.data.DataResult;
-import io.holoinsight.server.home.alert.model.emuns.FunctionEnum;
 import io.holoinsight.server.home.alert.model.function.FunctionConfigParam;
 import io.holoinsight.server.home.alert.model.function.FunctionLogic;
-import io.holoinsight.server.home.alert.model.trigger.CompareParam;
-import io.holoinsight.server.home.alert.model.trigger.TriggerResult;
+import io.holoinsight.server.home.facade.DataResult;
+import io.holoinsight.server.home.facade.emuns.FunctionEnum;
+import io.holoinsight.server.home.facade.trigger.CompareParam;
+import io.holoinsight.server.home.facade.trigger.TriggerResult;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;

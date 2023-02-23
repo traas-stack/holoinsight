@@ -1,9 +1,9 @@
 /*
  * Copyright 2022 Holoinsight Project Authors. Licensed under Apache-2.0.
  */
-package io.holoinsight.server.home.alert.model.date;
+package io.holoinsight.server.home.facade;
 
-import io.holoinsight.server.home.alert.model.emuns.TimeFilterEnum;
+import io.holoinsight.server.home.facade.emuns.TimeFilterEnum;
 import lombok.Data;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.util.CollectionUtils;

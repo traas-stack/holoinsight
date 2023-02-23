@@ -3,6 +3,7 @@
  */
 package io.holoinsight.server.home.alert.model.data;
 
+import io.holoinsight.server.home.facade.trigger.DataSource;
 import lombok.Data;
 
 import java.io.Serializable;

@@ -3,10 +3,10 @@
  */
 package io.holoinsight.server.home.alert.model.event;
 
-import io.holoinsight.server.home.alert.model.data.PqlRule;
-import io.holoinsight.server.home.alert.model.emuns.BoolOperationEnum;
-import io.holoinsight.server.home.alert.model.trigger.Trigger;
-import io.holoinsight.server.home.alert.model.trigger.TriggerResult;
+import io.holoinsight.server.home.facade.PqlRule;
+import io.holoinsight.server.home.facade.emuns.BoolOperationEnum;
+import io.holoinsight.server.home.facade.trigger.Trigger;
+import io.holoinsight.server.home.facade.trigger.TriggerResult;
 import lombok.Data;
 
 import java.util.HashMap;

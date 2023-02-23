@@ -3,15 +3,16 @@
  */
 package io.holoinsight.server.home.alert.service.event.alertManagerEvent;
 
+import io.holoinsight.server.common.J;
 import io.holoinsight.server.home.alert.common.AlarmConstant;
 import io.holoinsight.server.home.alert.common.AlarmRegexUtil;
 import io.holoinsight.server.home.alert.common.G;
 import io.holoinsight.server.home.alert.common.ObjectToMapUtil;
 import io.holoinsight.server.home.alert.model.event.AlertNotify;
 import io.holoinsight.server.home.alert.model.event.ElementSpiEnum;
-import io.holoinsight.server.home.alert.model.event.TemplateValue;
 import io.holoinsight.server.home.alert.service.event.AlertHandlerExecutor;
 import io.holoinsight.server.home.alert.service.event.element.ElementSpiServiceFactory;
+import io.holoinsight.server.home.facade.TemplateValue;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,7 +52,7 @@ public class AlertManagerBuildMsgHandler implements AlertHandlerExecutor {
     try {
       alarmNotifies.parallelStream().forEach(alarmNotify -> {
         // 后续增加自定义模板
-        List<TemplateValue> templateValues = TemplateValue.convertAlertNotify(alarmNotify);
+        List<TemplateValue> templateValues = AlertNotify.convertAlertNotify(alarmNotify);
         String markDownTemplate = generateTemplate();
         templateValues.forEach(e -> {
           String markDownMsg = buildMsgWithTemplate(markDownTemplate, e);
@@ -129,7 +130,14 @@ public class AlertManagerBuildMsgHandler implements AlertHandlerExecutor {
 
     StringBuffer sb = new StringBuffer();
     while (matcher.find()) {
-      matcher.appendReplacement(sb, escapeWord(paramsMap.get(matcher.group(1))));
+      String key = matcher.group(1);
+      String value = paramsMap.get(key);
+      String replacement = escapeWord(value);
+      if (replacement == null) {
+        LOGGER.warn("invalid {} for {}", key, J.toJson(paramsMap));
+        continue;
+      }
+      matcher.appendReplacement(sb, replacement);
     }
     matcher.appendTail(sb);
 
@@ -151,8 +159,8 @@ public class AlertManagerBuildMsgHandler implements AlertHandlerExecutor {
           keyword = keyword.replace(key, "\\" + key);
         }
       }
+      keyword = keyword.replaceAll("\\\\", "\\\\\\\\");
     }
-    keyword = keyword.replaceAll("\\\\", "\\\\\\\\");
     return keyword;
 
   }
