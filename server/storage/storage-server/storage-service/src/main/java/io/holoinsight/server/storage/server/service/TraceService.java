@@ -26,13 +26,13 @@ public interface TraceService {
       final String serviceInstanceName, final String endpointName, final List<String> traceIds,
       final int minTraceDuration, int maxTraceDuration, final TraceState traceState,
       final QueryOrder queryOrder, final Pagination paging, final long start, final long end,
-      final List<Tag> tags) throws IOException;
+      final List<Tag> tags) throws Exception;
 
-  Trace queryTrace(final String traceId) throws IOException;
+  Trace queryTrace(final String traceId) throws Exception;
 
-  void insert(final List<SegmentEsDO> segments) throws IOException;
+  void insert(final List<SegmentEsDO> segments) throws Exception;
 
-  void insertSpans(final List<SpanEsDO> spans) throws IOException;
+  void insertSpans(final List<SpanEsDO> spans) throws Exception;
 
-  List<StatisticData> statisticTrace(long startTime, long endTime) throws IOException;
+  List<StatisticData> statisticTrace(long startTime, long endTime) throws Exception;
 }

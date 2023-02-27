@@ -36,7 +36,7 @@ public interface TraceApi {
   @RequestMapping(value = "/query/basic", produces = {"application/json"},
       consumes = {"application/json"}, method = RequestMethod.POST)
   ResponseEntity<TraceBrief> queryBasicTraces(@ApiParam(value = "trace查询条件。",
-      required = true) @Valid @RequestBody QueryTraceRequest request) throws IOException;
+      required = true) @Valid @RequestBody QueryTraceRequest request) throws Exception;
 
 
   @ApiOperation(value = "query trace", nickname = "queryTrace", notes = "根据查询条件查询一批trace的基本信息。",
@@ -48,5 +48,5 @@ public interface TraceApi {
   @RequestMapping(value = "/query", produces = {"application/json"},
       consumes = {"application/json"}, method = RequestMethod.POST)
   ResponseEntity<Trace> queryTrace(@ApiParam(value = "trace查询条件。",
-      required = false) @Valid @RequestBody QueryTraceRequest request) throws IOException;
+      required = false) @Valid @RequestBody QueryTraceRequest request) throws Exception;
 }

@@ -177,7 +177,7 @@ public class SpanHandler {
     storageEndpointRelation(endpointRelationList);
   }
 
-  private void storageSpan(List<SpanEsDO> spans) throws IOException {
+  private void storageSpan(List<SpanEsDO> spans) throws Exception {
     traceService.insertSpans(spans);
   }
 

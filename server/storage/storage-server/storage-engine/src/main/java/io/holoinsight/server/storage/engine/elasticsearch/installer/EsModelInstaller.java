@@ -27,7 +27,9 @@ import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.xcontent.XContentType;
 import org.elasticsearch.rest.RestStatus;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 
+import javax.annotation.Resource;
 import java.io.IOException;
 import java.util.*;
 
@@ -41,7 +43,8 @@ public class EsModelInstaller implements ModelInstaller {
   @Autowired
   private RestHighLevelClient esClient;
 
-  @Autowired
+  @Resource
+  @Qualifier("columnTypeEsMapping")
   DataTypeMapping dataTypeMapping;
 
   private IndexStructures structures = new IndexStructures();

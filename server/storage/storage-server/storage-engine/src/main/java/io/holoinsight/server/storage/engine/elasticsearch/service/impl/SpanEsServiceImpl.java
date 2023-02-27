@@ -71,7 +71,7 @@ import static java.util.Objects.nonNull;
  * @version : SpanEsServiceImpl.java, v 0.1 2022年09月19日 14:21 xiangwanpeng Exp $
  */
 @ConditionalOnFeature("trace")
-@Service
+@Service("spanEsServiceImpl")
 public class SpanEsServiceImpl extends RecordEsService<SpanEsDO> implements SpanEsService {
 
   private static final int SPAN_QUERY_MAX_SIZE = 2000;

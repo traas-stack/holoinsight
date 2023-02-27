@@ -26,7 +26,7 @@ import static io.holoinsight.server.storage.engine.elasticsearch.model.SegmentEs
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@ModelAnnotation(name = INDEX_NAME)
+// @ModelAnnotation(name = INDEX_NAME)
 public class SegmentEsDO extends RecordEsDO {
 
   private static final long serialVersionUID = 6774160380930019988L;

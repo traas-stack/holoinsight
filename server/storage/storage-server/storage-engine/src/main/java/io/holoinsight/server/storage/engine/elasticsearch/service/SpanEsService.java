@@ -25,11 +25,11 @@ public interface SpanEsService {
       final String serviceInstanceName, final String endpointName, final List<String> traceIds,
       final int minTraceDuration, int maxTraceDuration, final TraceState traceState,
       final QueryOrder queryOrder, final Pagination paging, final long start, final long end,
-      final List<Tag> tags) throws IOException;
+      final List<Tag> tags) throws Exception;
 
-  Trace queryTrace(final String traceId) throws IOException;
+  Trace queryTrace(final String traceId) throws Exception;
 
-  void batchInsert(final List<SpanEsDO> spans) throws IOException;
+  void batchInsert(final List<SpanEsDO> spans) throws Exception;
 
-  List<StatisticData> statisticTrace(long startTime, long endTime) throws IOException;
+  List<StatisticData> statisticTrace(long startTime, long endTime) throws Exception;
 }

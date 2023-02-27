@@ -33,7 +33,7 @@ public class TraceApiController implements TraceApi {
   private TraceService traceService;
 
   @Override
-  public ResponseEntity<TraceBrief> queryBasicTraces(QueryTraceRequest request) throws IOException {
+  public ResponseEntity<TraceBrief> queryBasicTraces(QueryTraceRequest request) throws Exception {
     long start = 0;
     long end = 0;
     List<String> traceIds = Collections.EMPTY_LIST;
@@ -62,7 +62,7 @@ public class TraceApiController implements TraceApi {
   }
 
   @Override
-  public ResponseEntity<Trace> queryTrace(QueryTraceRequest request) throws IOException {
+  public ResponseEntity<Trace> queryTrace(QueryTraceRequest request) throws Exception {
     Trace trace = traceService.queryTrace(request.getTraceIds().get(0));
     return ResponseEntity.ok(trace);
   }
