@@ -30,7 +30,7 @@ public class AlgorithmHttp {
             algorithmUrl, requestBody, respose.code, respose.getStringResponse());
         return null;
       } else {
-        LOGGER.info("[InvokeAlgorithmError],AlgorithmUrl={},requestBody={},response={},content={}",
+        LOGGER.info("[InvokeAlgorithmInfo],AlgorithmUrl={},requestBody={},response={},content={}",
             algorithmUrl, requestBody, respose.code, respose.getStringResponse());
       }
     } catch (Exception e) {

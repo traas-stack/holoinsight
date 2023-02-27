@@ -1,13 +1,12 @@
 /*
  * Copyright 2022 Holoinsight Project Authors. Licensed under Apache-2.0.
  */
-package io.holoinsight.server.home.dal.model;
+package io.holoinsight.server.common.dao.entity;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
-import javax.persistence.Id;
 import java.util.Date;
 
 /**
@@ -19,7 +18,6 @@ import java.util.Date;
 @TableName("metadata_dictvalue")
 public class MetaDataDictValue {
 
-  @Id
   @TableId(type = IdType.AUTO)
   public Long id;
 

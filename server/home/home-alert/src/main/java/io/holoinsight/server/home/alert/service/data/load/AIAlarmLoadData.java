@@ -109,10 +109,10 @@ public class AIAlarmLoadData implements AlarmLoadData {
         long start = computeTask.getTimestamp() - PeriodType.MINUTE.intervalMillis();
         long end = computeTask.getTimestamp();
 
-        QueryProto.Datasource.Builder builder =
-            QueryProto.Datasource.newBuilder().setName(dataSource.getName()).setStart(start)
-                .setEnd(end).setMetric(dataSource.getMetric())
-                .addAllFilters(filterConvert(dataSource.getFilters())).setAggregator("count");
+        QueryProto.Datasource.Builder builder = QueryProto.Datasource.newBuilder()
+            .setName(dataSource.getName()).setStart(start).setEnd(end)
+            .setMetric(dataSource.getMetric()).addAllFilters(filterConvert(dataSource.getFilters()))
+            .setAggregator(dataSource.getAggregator());
 
         if (dataSource.getGroupBy() != null) {
           builder.addAllGroupBy(dataSource.getGroupBy());
