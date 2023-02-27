@@ -4,7 +4,7 @@
 package io.holoinsight.server.home.biz.common;
 
 
-import io.holoinsight.server.home.dal.model.MetaDataDictValue;
+import io.holoinsight.server.common.dao.entity.MetaDataDictValue;
 
 import java.util.Map;
 

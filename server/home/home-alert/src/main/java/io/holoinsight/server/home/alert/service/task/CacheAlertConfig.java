@@ -5,8 +5,8 @@ package io.holoinsight.server.home.alert.service.task;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import io.holoinsight.server.common.config.EnvironmentProperties;
-import io.holoinsight.server.home.dal.mapper.MetaDataDictValueMapper;
-import io.holoinsight.server.home.dal.model.MetaDataDictValue;
+import io.holoinsight.server.common.dao.mapper.MetaDataDictValueMapper;
+import io.holoinsight.server.common.dao.entity.MetaDataDictValue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

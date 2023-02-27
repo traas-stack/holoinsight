@@ -3,6 +3,7 @@
  */
 package io.holoinsight.server.home.bootstrap;
 
+import io.holoinsight.server.common.service.CommonServiceAutoConfiguration;
 import io.holoinsight.server.home.biz.plugin.DefaultMarketplaceProductHandler;
 import io.holoinsight.server.home.biz.plugin.MarketplaceProductHandler;
 import org.mybatis.spring.annotation.MapperScan;
@@ -31,7 +32,7 @@ import io.holoinsight.server.home.biz.service.impl.DefaultTenantInitServiceImpl;
 @MapperScan("io.holoinsight.server.home.dal.mapper")
 @ConditionalOnRole("home")
 @EnableConfigurationProperties({EnvironmentProperties.class})
-@Import(CommonDaoConfiguration.class)
+@Import({CommonDaoConfiguration.class, CommonServiceAutoConfiguration.class})
 public class HoloinsightHomeConfiguration {
   @Bean
   public TenantInitService tenantInitService() {

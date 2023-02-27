@@ -3,7 +3,7 @@
  */
 package io.holoinsight.server.home.biz.common;
 
-import io.holoinsight.server.home.biz.service.MetaDictValueService;
+import io.holoinsight.server.common.service.MetaDictValueService;
 import io.holoinsight.server.home.common.util.ProdLog;
 import io.holoinsight.server.home.common.util.ScheduleLoadTask;
 import lombok.extern.slf4j.Slf4j;

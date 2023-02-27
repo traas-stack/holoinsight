@@ -7,7 +7,7 @@ import com.google.gson.reflect.TypeToken;
 import io.holoinsight.server.common.J;
 import io.holoinsight.server.home.common.service.SpringContext;
 import io.holoinsight.server.home.common.util.scope.IdentityType;
-import io.holoinsight.server.home.dal.model.MetaDataDictValue;
+import io.holoinsight.server.common.dao.entity.MetaDataDictValue;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
@@ -50,6 +50,20 @@ public class MetaDictUtil {
     }
     return convertValue(meta.getDictValue(), resultClass);
   }
+
+  public static MetaDataDictValue getMetaData(String type, String k) {
+
+    SuperCacheService superCacheService = SpringContext.getBean(SuperCacheService.class);
+    Map<String, Map<String, MetaDataDictValue>> metaDataDictValueMap =
+        superCacheService.getSc().metaDataDictValueMap;
+    Map<String, MetaDataDictValue> kMap = metaDataDictValueMap.get(type);
+
+    if (null == kMap) {
+      return null;
+    }
+    return kMap.get(k);
+  }
+
 
   public static String getStringValue(String type, String k) {
 

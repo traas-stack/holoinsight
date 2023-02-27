@@ -1,13 +1,12 @@
 /*
  * Copyright 2022 Holoinsight Project Authors. Licensed under Apache-2.0.
  */
-package io.holoinsight.server.home.biz.service;
+package io.holoinsight.server.common.service;
 
 import com.google.common.collect.Maps;
-import io.holoinsight.server.home.dal.model.MetaDataDictValue;
-import org.springframework.stereotype.Service;
+import io.holoinsight.server.common.dao.entity.MetaDataDictValue;
+import org.springframework.beans.factory.annotation.Autowired;
 
-import javax.annotation.Resource;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -17,9 +16,8 @@ import java.util.Map;
  * @author jsy1001de
  * @version 1.0: MetaDictValueService.java, v 0.1 2022年03月21日 8:20 下午 jinsong.yjs Exp $
  */
-@Service
 public class MetaDictValueService {
-  @Resource
+  @Autowired
   private MetaDataDictValueService metaDataDictValueService;
 
   public Map<String /* type */, Map<String /* k */, MetaDataDictValue>> getMetaDictValue() {
