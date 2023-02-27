@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://github.com/archerny/holoinsight/blob/docs/readme/docs/logo/logo-flat.png" alt="HoloInsight">
+  <img height="300" src="https://github.com/traas-stack/holoinsight/blob/main/docs/logo/logo-flat.png" alt="HoloInsight">
 </p>
 
 ![License](https://img.shields.io/badge/license-Apache--2.0-green.svg)
@@ -12,7 +12,7 @@ Get deep insights into your cloud-native apps with HoloInsight's low-cost and hi
 
 # Documentation
 HoloInsight is a cloud-native observability platform with a special focus on real-time log analysis and AI integration. You can check the following documentation for more information.
-[Holoinsight Documentation](https://github.com/traas-stack/holoinsight-docs)
+* [Holoinsight Documentation](https://github.com/traas-stack/holoinsight-docs)
 
 # Quick Start
 

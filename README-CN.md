@@ -1,5 +1,5 @@
 <p align="center">
-  <img height="100" src="https://github.com/traas-stack/holoinsight/blob/main/docs/logo/logo.png" alt="HoloInsight">
+  <img height="300" src="https://github.com/traas-stack/holoinsight/blob/main/docs/logo/logo-flat.png" alt="HoloInsight">
 </p>
 ![License](https://img.shields.io/badge/license-Apache--2.0-green.svg)
 [![Github stars](https://img.shields.io/github/stars/traas-stack/holoinsight?style=flat-square])](https://github.com/traas-stack/holoinsight)
@@ -12,7 +12,7 @@ HoloInsight 集数据采集、洞察分析、智能运维和一站式技术风�
 
 # 文档
 HoloInsight 是一个云原生可观察性平台，特别专注于实时日志分析和 AI 集成。您可以查看以下文档以获取更多信息。
-[Holoinsight 文档](https://github.com/traas-stack/holoinsight-docs)
+* [Holoinsight 文档](https://github.com/traas-stack/holoinsight-docs)
 
 # 快速入门
 
