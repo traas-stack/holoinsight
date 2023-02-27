@@ -3,12 +3,14 @@
  */
 package io.holoinsight.server.home.biz.plugin;
 
+import io.holoinsight.server.home.biz.plugin.model.HostingPlugin;
 import io.holoinsight.server.home.biz.plugin.model.Plugin;
 import io.holoinsight.server.home.biz.plugin.model.PluginType;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -27,6 +29,7 @@ public class PluginRepository {
   private Map<String/* plugin name */, Map<String/* version */, Plugin>> pluginTemplates =
       new HashMap<>();
   private Set<String/* plugin name */> datasourcePluginSet = new HashSet<>();
+  private Set<String/* plugin name */> hostingPluginSet = new HashSet<>();
 
   public void registry(Plugin plugin, String pluginName, String version) {
     if (StringUtils.isEmpty(pluginName) || StringUtils.isEmpty(version)) {
@@ -39,6 +42,8 @@ public class PluginRepository {
     pluginMap.put(version, plugin);
     if (plugin.getPluginType() == PluginType.datasource) {
       datasourcePluginSet.add(pluginName);
+    } else if (plugin.getPluginType() == PluginType.hosting) {
+      hostingPluginSet.add(pluginName);
     }
   }
 
@@ -62,11 +67,37 @@ public class PluginRepository {
     return this.datasourcePluginSet.contains(type);
   }
 
+  public boolean isHostingPlugin(String type) {
+    return this.hostingPluginSet.contains(type);
+  }
+
   public Plugin getTemplate(String pluginName, String version) {
     Map<String/* version */, Plugin> pluginMap = this.pluginTemplates.get(pluginName);
     if (CollectionUtils.isEmpty(pluginMap)) {
       return null;
     }
     return pluginMap.get(version);
+  }
+
+  public Map<String/* plugin name */, Map<String/* version */, HostingPlugin>> getHostingPlugins() {
+    if (CollectionUtils.isEmpty(this.hostingPluginSet)) {
+      return Collections.emptyMap();
+    }
+    Map<String/* plugin name */, Map<String/* version */, HostingPlugin>> result = new HashMap<>();
+    for (String pluginName : this.hostingPluginSet) {
+      Map<String/* version */, Plugin> versionPlugins = this.pluginTemplates.get(pluginName);
+      if (CollectionUtils.isEmpty(versionPlugins)) {
+        continue;
+      }
+      Map<String/* version */, HostingPlugin> values = new HashMap<>();
+      for (Map.Entry<String/* version */, Plugin> entry : versionPlugins.entrySet()) {
+        Plugin plugin = entry.getValue();
+        if (plugin instanceof HostingPlugin) {
+          values.put(entry.getKey(), (HostingPlugin) plugin);
+        }
+      }
+      result.put(pluginName, values);
+    }
+    return result;
   }
 }

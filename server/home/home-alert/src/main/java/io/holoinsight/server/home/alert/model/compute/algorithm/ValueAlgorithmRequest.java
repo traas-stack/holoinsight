@@ -3,6 +3,7 @@
  */
 package io.holoinsight.server.home.alert.model.compute.algorithm;
 
+import io.holoinsight.server.home.facade.trigger.RuleConfig;
 import lombok.Data;
 
 /**
@@ -21,4 +22,6 @@ public class ValueAlgorithmRequest {
   private ExtendConfig extendConfig;
 
   private String taskId;
+
+  private RuleConfig ruleConfig;
 }

@@ -10,14 +10,15 @@ import io.holoinsight.server.home.alert.model.compute.algorithm.DatasourceConfig
 import io.holoinsight.server.home.alert.model.compute.algorithm.ExtendConfig;
 import io.holoinsight.server.home.alert.model.compute.algorithm.ValueAlgorithmRequest;
 import io.holoinsight.server.home.alert.model.compute.algorithm.ValueAlgorithmResponse;
-import io.holoinsight.server.home.alert.model.data.DataResult;
-import io.holoinsight.server.home.alert.model.emuns.FunctionEnum;
-import io.holoinsight.server.home.alert.model.emuns.PeriodType;
 import io.holoinsight.server.home.alert.model.function.FunctionConfigAIParam;
 import io.holoinsight.server.home.alert.model.function.FunctionConfigParam;
 import io.holoinsight.server.home.alert.model.function.FunctionLogic;
-import io.holoinsight.server.home.alert.model.trigger.TriggerAIResult;
-import io.holoinsight.server.home.alert.model.trigger.TriggerResult;
+import io.holoinsight.server.home.facade.DataResult;
+import io.holoinsight.server.home.facade.emuns.FunctionEnum;
+import io.holoinsight.server.home.facade.emuns.PeriodType;
+import io.holoinsight.server.home.facade.trigger.RuleConfig;
+import io.holoinsight.server.home.facade.trigger.TriggerAIResult;
+import io.holoinsight.server.home.facade.trigger.TriggerResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -64,6 +65,11 @@ public class ValueUpAbnormalDetect implements FunctionLogic {
     valueAlgorithmRequest.setAlgorithmConfig(algorithmConfig);
     valueAlgorithmRequest
         .setExtendConfig(ExtendConfig.triggerConverter(dataResult, functionConfigAIParam));
+    RuleConfig ruleConfig = functionConfigAIParam.getTrigger().getRuleConfig();
+    if (ruleConfig == null) {
+      ruleConfig = RuleConfig.defaultUpConfig();
+    }
+    valueAlgorithmRequest.setRuleConfig(ruleConfig);
     // 设置算法接口名称
     String algoUrl = url + "/serving";
     // 调用算法接口

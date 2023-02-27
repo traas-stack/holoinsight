@@ -3,12 +3,14 @@
  */
 package io.holoinsight.server.home.dal.model.dto;
 
-import io.holoinsight.server.home.dal.model.dto.GaeaCollectConfigDTO.GaeaCollectRange;
 import io.holoinsight.server.common.MD5Hash;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -21,6 +23,8 @@ public class IntegrationPluginDTO {
 
   public String tenant;
 
+  public String workspace;
+
   public String name;
 
   public String product;
@@ -30,7 +34,7 @@ public class IntegrationPluginDTO {
   /**
    * 采集范围
    */
-  public GaeaCollectRange collectRange;
+  public Map<String, Object> collectRange;
 
   public Map<String, Object> template;
 
@@ -60,16 +64,31 @@ public class IntegrationPluginDTO {
     return !MD5Hash.getMD5(this.json).equalsIgnoreCase(MD5Hash.getMD5(originalRecord.json));
   }
 
-  public boolean checkCollectRange(IntegrationPluginDTO originalRecord) {
-    if ((originalRecord == null)
-        || (this.collectRange == null && originalRecord.collectRange != null)
-        || (this.collectRange != null && originalRecord.collectRange == null)) {
-      return true;
+  @Data
+  @NoArgsConstructor
+  @AllArgsConstructor
+  public static class DataRange extends GaeaCollectConfigDTO.CollectRange {
+    Map<String, String> valuesMap = new HashMap<>();
+
+    public String getTenant(boolean isCloudRun) {
+      String key = "tenant";
+      if (isCloudRun) {
+        key = "appId";
+      }
+      return get(key);
     }
-    return !this.collectRange.isEqual(originalRecord.collectRange);
+
+    public String getWorkspace(boolean isCloudRun) {
+      String key = "workspace";
+      if (isCloudRun) {
+        key = "envId";
+      }
+      return get(key);
+    }
+
+    public String get(String key) {
+      return valuesMap.get(key);
+    }
   }
 
-  public boolean checkCollectConfig(IntegrationPluginDTO originalRecord) {
-    return false;
-  }
 }

@@ -3,8 +3,12 @@
  */
 package io.holoinsight.server.home.web.controller;
 
-import io.holoinsight.server.home.biz.service.AlertGroupService;
+import com.google.gson.reflect.TypeToken;
+import io.holoinsight.server.common.J;
+import io.holoinsight.server.common.JsonResult;
+import io.holoinsight.server.home.biz.common.MetaDictUtil;
 import io.holoinsight.server.home.biz.service.AlarmHistoryService;
+import io.holoinsight.server.home.biz.service.AlertGroupService;
 import io.holoinsight.server.home.biz.service.AlertRuleService;
 import io.holoinsight.server.home.biz.service.AlertSubscribeService;
 import io.holoinsight.server.home.biz.service.UserOpLogService;
@@ -26,10 +30,9 @@ import io.holoinsight.server.home.web.common.ManageCallback;
 import io.holoinsight.server.home.web.common.ParaCheckUtil;
 import io.holoinsight.server.home.web.common.TokenUrls;
 import io.holoinsight.server.home.web.interceptor.MonitorScopeAuth;
-import io.holoinsight.server.common.J;
-import io.holoinsight.server.common.JsonResult;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -71,6 +74,9 @@ public class AlarmRuleFacadeImpl extends BaseFacade {
   @Autowired
   private UserOpLogService userOpLogService;
 
+  @Value("${holoinsight.home.domain}")
+  private String domain;
+
   @PostMapping("/create")
   @ResponseBody
   @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.EDIT)
@@ -100,6 +106,12 @@ public class AlarmRuleFacadeImpl extends BaseFacade {
         }
         alarmRuleDTO.setGmtCreate(new Date());
         alarmRuleDTO.setGmtModified(new Date());
+        Map<String /* metric */, Map<String /* type */, String /* page */>> systemMetrics =
+            getMetricPage();
+        alarmRuleDTO.tryParseLink(domain, systemMetrics);
+        if (StringUtils.isBlank(alarmRuleDTO.getSourceType())) {
+          alarmRuleDTO.setSourceType("custom");
+        }
         Long id = alarmRuleService.save(alarmRuleDTO);
 
         userOpLogService.append("alarm_rule", id, OpType.CREATE, mu.getLoginName(), ms.getTenant(),
@@ -109,6 +121,11 @@ public class AlarmRuleFacadeImpl extends BaseFacade {
     });
 
     return result;
+  }
+
+  private Map<String, Map<String, String>> getMetricPage() {
+    return MetaDictUtil.getValue("notification_config", "metric_page",
+        new TypeToken<Map<String, Map<String, String>>>() {});
   }
 
   @PostMapping("/update")
@@ -145,6 +162,9 @@ public class AlarmRuleFacadeImpl extends BaseFacade {
           alarmRuleDTO.setModifier(mu.getLoginName());
         }
         alarmRuleDTO.setGmtModified(new Date());
+        Map<String /* metric */, Map<String /* type */, String /* page */>> systemMetrics =
+            getMetricPage();
+        alarmRuleDTO.tryParseLink(domain, systemMetrics);
         boolean save = alarmRuleService.updateById(alarmRuleDTO);
 
         userOpLogService.append("alarm_rule", alarmRuleDTO.getId(), OpType.UPDATE,

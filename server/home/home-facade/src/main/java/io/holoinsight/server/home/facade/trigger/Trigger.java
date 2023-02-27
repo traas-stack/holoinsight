@@ -1,11 +1,10 @@
 /*
  * Copyright 2022 Holoinsight Project Authors. Licensed under Apache-2.0.
  */
-package io.holoinsight.server.home.alert.model.trigger;
+package io.holoinsight.server.home.facade.trigger;
 
-import io.holoinsight.server.home.alert.model.data.DataResult;
-import io.holoinsight.server.home.alert.model.data.DataSource;
-import io.holoinsight.server.home.alert.model.emuns.FunctionEnum;
+import io.holoinsight.server.home.facade.DataResult;
+import io.holoinsight.server.home.facade.emuns.FunctionEnum;
 import lombok.Data;
 
 import java.util.List;
@@ -36,4 +35,13 @@ public class Trigger {
   private List<CompareParam> compareParam; // 触发条件
 
   private FunctionEnum type;
+
+  private String triggerTitle; // 触发条件的 title
+
+  private List<CompareConfig> compareConfigs; // 根据触发条件分级
+
+  private String triggerId; // 触发条件 id
+
+  private RuleConfig ruleConfig; // 智能告警配置
+
 }

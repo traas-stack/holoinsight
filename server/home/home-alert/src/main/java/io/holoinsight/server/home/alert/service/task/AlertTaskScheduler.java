@@ -4,10 +4,10 @@
 package io.holoinsight.server.home.alert.service.task;
 
 import io.holoinsight.server.home.alert.model.compute.ComputeTaskPackage;
-import io.holoinsight.server.home.alert.model.data.InspectConfig;
-import io.holoinsight.server.home.alert.model.emuns.PeriodType;
 import io.holoinsight.server.home.alert.service.calculate.AlertTaskCompute;
 import io.holoinsight.server.home.common.exception.HoloinsightAlertInternalException;
+import io.holoinsight.server.home.facade.InspectConfig;
+import io.holoinsight.server.home.facade.emuns.PeriodType;
 import org.apache.commons.lang3.concurrent.BasicThreadFactory;
 import org.quartz.CronScheduleBuilder;
 import org.quartz.CronTrigger;

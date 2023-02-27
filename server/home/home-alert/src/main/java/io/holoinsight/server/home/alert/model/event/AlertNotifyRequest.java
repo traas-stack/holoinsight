@@ -4,7 +4,9 @@
 
 package io.holoinsight.server.home.alert.model.event;
 
-import io.holoinsight.server.home.alert.model.data.InspectConfig;
+import io.holoinsight.server.home.facade.AlertRuleExtra;
+import io.holoinsight.server.home.facade.InspectConfig;
+import io.holoinsight.server.home.facade.trigger.Trigger;
 import lombok.Data;
 
 import java.util.List;
@@ -27,6 +29,8 @@ public class AlertNotifyRequest {
 
   private String tenant;
 
+  private String workspace;
+
   private String uniqueId; // 告警规则+id
 
   private String ruleId; // 告警id
@@ -39,10 +43,22 @@ public class AlertNotifyRequest {
 
   private String aggregationNum; // 聚合告警数
 
-  private List<NotifyDataInfo> notifyDataInfos; // 告警计算结果
+  private Map<Trigger, List<NotifyDataInfo>> notifyDataInfos; // 告警计算结果
 
   private InspectConfig ruleConfig; // 告警规则配置
 
   private String envType; // 环境类型
+
+  private AlertRuleExtra alertRuleExtra; // 告警附加信息
+
+  public Long alarmHistoryId; // 告警历史 id
+
+  public Long alarmHistoryDetailId; // 告警历史明细 id
+
+  public String sourceType; // 来源类型
+
+  private Long duration; // 持续时间
+
+  private String alertServer; // 告警机器
 
 }

@@ -112,6 +112,12 @@ public class AlarmRule {
   private String tenant;
 
   /**
+   * workspace
+   */
+  @Column(name = "workspace")
+  private String workspace;
+
+  /**
    * 告警规则
    */
   private String rule;

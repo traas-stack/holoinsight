@@ -3,16 +3,17 @@
  */
 package io.holoinsight.server.home.biz.plugin.core;
 
+import com.google.gson.reflect.TypeToken;
+import io.holoinsight.server.common.J;
 import io.holoinsight.server.home.biz.common.MetaDictUtil;
 import io.holoinsight.server.home.biz.plugin.model.PluginModel;
 import io.holoinsight.server.home.dal.model.dto.CloudMonitorRange;
+import io.holoinsight.server.home.dal.model.dto.GaeaCollectConfigDTO.GaeaCollectRange;
 import io.holoinsight.server.home.dal.model.dto.IntegrationPluginDTO;
 import io.holoinsight.server.registry.model.integration.alicloud.AliCloudTask;
 import io.holoinsight.server.registry.model.integration.alicloud.AlicloudConf;
 import io.holoinsight.server.registry.model.integration.alicloud.NameMetrics;
 import io.holoinsight.server.registry.model.integration.alicloud.Range;
-import io.holoinsight.server.common.J;
-import com.google.gson.reflect.TypeToken;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
@@ -52,16 +53,16 @@ public class AlibabaCloudPlugin extends AbstractCentralIntegrationPlugin<Alibaba
 
       alibabaCloudPlugin.aliCloudTask = aliCloudTask;
       alibabaCloudPlugin.gaeaTableName = integrationPluginDTO.name;
+      GaeaCollectRange gaeaCollectRange =
+          J.fromJson(J.toJson(integrationPluginDTO.collectRange), GaeaCollectRange.class);
       alibabaCloudPlugin.collectRange =
-          integrationPluginDTO.collectRange == null ? new CloudMonitorRange()
-              : integrationPluginDTO.collectRange.cloudmonitor;
+          CollectionUtils.isEmpty(integrationPluginDTO.collectRange) ? new CloudMonitorRange()
+              : gaeaCollectRange.cloudmonitor;
       alibabaCloudPlugin.collectPlugin = AliCloudTask.class.getName();
     }
 
     alibabaCloudPlugins.add(alibabaCloudPlugin);
-
     return alibabaCloudPlugins;
-
   }
 
   private void fillAlicloudRange(AliCloudTask aliCloudTask) {

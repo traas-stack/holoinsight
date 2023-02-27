@@ -5,10 +5,10 @@ package io.holoinsight.server.home.alert.service.data.load;
 
 import io.holoinsight.server.common.J;
 import io.holoinsight.server.home.alert.model.compute.ComputeTaskPackage;
-import io.holoinsight.server.home.alert.model.data.DataResult;
-import io.holoinsight.server.home.alert.model.data.InspectConfig;
-import io.holoinsight.server.home.alert.model.emuns.PeriodType;
 import io.holoinsight.server.home.common.service.QueryClientService;
+import io.holoinsight.server.home.facade.DataResult;
+import io.holoinsight.server.home.facade.InspectConfig;
+import io.holoinsight.server.home.facade.emuns.PeriodType;
 import io.holoinsight.server.query.grpc.QueryProto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

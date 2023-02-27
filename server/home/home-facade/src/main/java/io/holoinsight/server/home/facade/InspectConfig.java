@@ -1,9 +1,8 @@
 /*
  * Copyright 2022 Holoinsight Project Authors. Licensed under Apache-2.0.
  */
-package io.holoinsight.server.home.alert.model.data;
+package io.holoinsight.server.home.facade;
 
-import io.holoinsight.server.home.alert.model.date.TimeFilter;
 import lombok.Data;
 
 
@@ -19,6 +18,8 @@ public class InspectConfig {
   private String uniqueId;
 
   private String tenant;
+
+  private String workspace;
 
   private String ruleName;
 
@@ -46,5 +47,7 @@ public class InspectConfig {
 
   private String noticeType; // 枚举，通知方式
 
-  private String envType; // 环境类型(for 小程序云)
+  private String envType; // 环境类型
+
+  private String sourceType; // 来源类型
 }

@@ -4,6 +4,7 @@
 package io.holoinsight.server.home.biz.plugin.core;
 
 import io.holoinsight.server.home.biz.plugin.model.PluginModel;
+import io.holoinsight.server.home.dal.model.dto.GaeaCollectConfigDTO.GaeaCollectRange;
 import io.holoinsight.server.home.dal.model.dto.IntegrationPluginDTO;
 import io.holoinsight.server.registry.model.integration.springboot.SpringBootTask;
 import io.holoinsight.server.common.J;
@@ -44,7 +45,9 @@ public class SpringBootPlugin extends AbstractLocalIntegrationPlugin<SpringBootP
 
       springBootPlugin.springBootTask = springBootTask;
       springBootPlugin.gaeaTableName = integrationPluginDTO.name;
-      springBootPlugin.collectRange = integrationPluginDTO.collectRange.cloudmonitor;
+      GaeaCollectRange gaeaCollectRange =
+          J.fromJson(J.toJson(integrationPluginDTO.collectRange), GaeaCollectRange.class);
+      springBootPlugin.collectRange = gaeaCollectRange.cloudmonitor;
       springBootPlugin.collectPlugin = SpringBootTask.class.getName();
     }
 

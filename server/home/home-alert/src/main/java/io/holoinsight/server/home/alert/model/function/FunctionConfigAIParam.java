@@ -3,7 +3,7 @@
  */
 package io.holoinsight.server.home.alert.model.function;
 
-import io.holoinsight.server.home.alert.model.trigger.Trigger;
+import io.holoinsight.server.home.facade.trigger.Trigger;
 import lombok.Data;
 
 /**

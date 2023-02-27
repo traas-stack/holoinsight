@@ -3,9 +3,9 @@
  */
 package io.holoinsight.server.home.alert.model.function;
 
-import io.holoinsight.server.home.alert.model.data.DataResult;
-import io.holoinsight.server.home.alert.model.emuns.FunctionEnum;
-import io.holoinsight.server.home.alert.model.trigger.TriggerResult;
+import io.holoinsight.server.home.facade.DataResult;
+import io.holoinsight.server.home.facade.emuns.FunctionEnum;
+import io.holoinsight.server.home.facade.trigger.TriggerResult;
 
 import java.io.Serializable;
 

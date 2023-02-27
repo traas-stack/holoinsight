@@ -4,9 +4,9 @@
 package io.holoinsight.server.home.alert.service.data;
 
 import io.holoinsight.server.home.alert.model.compute.ComputeTaskPackage;
-import io.holoinsight.server.home.alert.model.data.DataResult;
-import io.holoinsight.server.home.alert.model.data.InspectConfig;
-import io.holoinsight.server.home.alert.model.trigger.Trigger;
+import io.holoinsight.server.home.facade.DataResult;
+import io.holoinsight.server.home.facade.InspectConfig;
+import io.holoinsight.server.home.facade.trigger.Trigger;
 
 import java.util.List;
 

@@ -3,7 +3,7 @@
  */
 package io.holoinsight.server.home.alert.model.function;
 
-import io.holoinsight.server.home.alert.model.trigger.CompareParam;
+import io.holoinsight.server.home.facade.trigger.CompareParam;
 import lombok.Data;
 
 import java.util.List;
@@ -39,5 +39,7 @@ public class FunctionConfigParam {
    * 跟踪id
    */
   private String traceId;
+
+  private String triggerLevel;
 
 }

@@ -4,7 +4,7 @@
 package io.holoinsight.server.home.alert.common;
 
 import io.holoinsight.server.home.alert.model.compute.ComputeTaskPackage;
-import io.holoinsight.server.home.alert.model.data.InspectConfig;
+import io.holoinsight.server.home.facade.InspectConfig;
 import org.springframework.util.CollectionUtils;
 
 import java.util.HashMap;

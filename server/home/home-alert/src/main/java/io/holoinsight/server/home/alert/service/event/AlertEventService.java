@@ -3,7 +3,7 @@
  */
 package io.holoinsight.server.home.alert.service.event;
 
-import io.holoinsight.server.home.alert.model.event.AlertEvent;
+import io.holoinsight.server.home.alert.model.event.AlertNotify;
 import org.apache.commons.lang3.concurrent.BasicThreadFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,7 +21,7 @@ import java.util.concurrent.TimeUnit;
  * @date 2022/3/28 8:58 下午
  */
 @Service
-public class AlertEventService implements AlertEventExecutor<AlertEvent> {
+public class AlertEventService {
 
   private static final ThreadPoolExecutor executorService = new ThreadPoolExecutor(20, 20, 3,
       TimeUnit.SECONDS, new ArrayBlockingQueue<>(100),
@@ -35,7 +35,7 @@ public class AlertEventService implements AlertEventExecutor<AlertEvent> {
   /**
    * 生成的告警Graph
    */
-  public void handleEvent(AlertEvent alertEvent) {
+  public void handleEvent(List<AlertNotify> alarmNotifies) {
     executorService.execute(() -> {
       // 获取数据处理管道
       List<? extends AlertHandlerExecutor> pipeline =
@@ -47,7 +47,7 @@ public class AlertEventService implements AlertEventExecutor<AlertEvent> {
       }
       for (AlertHandlerExecutor handler : pipeline) {
         // 当前处理器处理数据，并返回是否继续向下处理
-        handler.handle(alertEvent.getAlarmNotifies());
+        handler.handle(alarmNotifies);
       }
     });
   }
