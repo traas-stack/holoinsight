@@ -17,7 +17,7 @@ import java.util.List;
  * @author jiwliu
  * @version : ColumnTypeEsMapping.java, v 0.1 2022年10月11日 22:27 xiangwanpeng Exp $
  */
- @Component("columnTypeEsMapping")
+@Component("columnTypeEsMapping")
 public class ColumnTypeEsMapping implements DataTypeMapping {
 
   @Override
