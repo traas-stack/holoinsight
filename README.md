@@ -1,4 +1,7 @@
-# Holoinsight
+<p align="center">
+  <img height="300" src="https://github.com/traas-stack/holoinsight/blob/main/docs/logo/logo-flat.png" alt="HoloInsight">
+</p>
+
 ![License](https://img.shields.io/badge/license-Apache--2.0-green.svg)
 [![Github stars](https://img.shields.io/github/stars/traas-stack/holoinsight?style=flat-square])](https://github.com/traas-stack/holoinsight)
 [![OpenIssue](https://img.shields.io/github/issues/traas-stack/holoinsight)](https://github.com/traas-stack/holoinsight/issues)
@@ -8,7 +11,8 @@
 Get deep insights into your cloud-native apps with HoloInsight's low-cost and high-performance monitoring services.
 
 # Documentation
-[Holoinsight Documentation](https://github.com/traas-stack/holoinsight-docs)
+HoloInsight is a cloud-native observability platform with a special focus on real-time log analysis and AI integration. You can check the following documentation for more information.
+* [Holoinsight Documentation](https://github.com/traas-stack/holoinsight-docs)
 
 # Quick Start
 
@@ -82,3 +86,8 @@ docker run --name holoinsight-tools -d registry.cn-hangzhou.aliyuncs.com/holoins
 
 # Licensing
 Holoinsight is under [Apache License 2.0](https://github.com/traas-stack/holoinsight/blob/main/LICENSE).
+
+# Community and support
+- Contact us via Email: traas_stack@antgroup.com
+- WeChat group [QR code](https://github.com/traas-stack/community/blob/main/holoinsight/groups/wechat-qrcode.jpg)
+- DingTalk group [QR code](https://github.com/traas-stack/community/blob/main/holoinsight/groups/dingtalk-qrcode.jpg)
