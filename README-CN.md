@@ -85,3 +85,7 @@ docker run --name holoinsight-tools -d registry.cn-hangzhou.aliyuncs.com/holoins
 # 开源许可
 Holoinsight 基于 [Apache License 2.0](https://github.com/traas-stack/holoinsight/blob/main/LICENSE) 协议。
 
+# 社区与支持
+- 邮箱地址: traas_stack@antgroup.com
+- 微信群 [二维码](https://github.com/traas-stack/community/blob/main/holoinsight/groups/wechat-qrcode.jpg)
+- 钉钉群 [二维码](https://github.com/traas-stack/community/blob/main/holoinsight/groups/dingtalk-qrcode.jpg)
