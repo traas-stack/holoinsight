@@ -16,12 +16,17 @@ import io.holoinsight.server.storage.engine.elasticsearch.model.SpanEsDO;
 import io.holoinsight.server.storage.engine.elasticsearch.service.SegmentEsService;
 import io.holoinsight.server.storage.engine.elasticsearch.service.SpanEsService;
 import io.holoinsight.server.storage.server.service.TraceService;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.concurrent.BasicThreadFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.List;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author jiwliu
@@ -29,14 +34,11 @@ import java.util.List;
  */
 @Service
 @ConditionalOnFeature("trace")
+@Slf4j
 public class TraceServiceImpl implements TraceService {
 
   @Autowired
   private SegmentEsService segmentEsService;
-
-
-  @Autowired
-  private List<SpanEsService> spanEsServices;
 
   @Resource
   @Qualifier("spanEsServiceImpl")
@@ -45,6 +47,10 @@ public class TraceServiceImpl implements TraceService {
   @Resource
   @Qualifier("spanTatrisServiceImpl")
   private SpanEsService spanTatrisService;
+
+  private static final ThreadPoolExecutor EXECUTOR =
+      new ThreadPoolExecutor(4, 4, 60, TimeUnit.SECONDS, new LinkedBlockingQueue<>(),
+          new BasicThreadFactory.Builder().namingPattern("tatris-%d").build());
 
   @Override
   public TraceBrief queryBasicTraces(String tenant, String serviceName, String serviceInstanceName,
@@ -69,13 +75,14 @@ public class TraceServiceImpl implements TraceService {
   @Override
   public void insertSpans(List<SpanEsDO> spans) throws Exception {
     // temporarily double-write to compare performance between tatris and es
-    spanEsServices.parallelStream().forEach(spanEsService -> {
+    EXECUTOR.submit(() -> {
       try {
-        spanEsService.batchInsert(spans);
+        spanTatrisService.batchInsert(spans);
       } catch (Exception e) {
-        throw new RuntimeException(e);
+        log.error("[apm] tatris batch-insert failed, msg={}", e.getMessage(), e);
       }
     });
+    spanEsService.batchInsert(spans);
   }
 
   @Override
