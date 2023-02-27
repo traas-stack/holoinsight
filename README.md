@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://github.com/archerny/holoinsight/blob/main/docs/logo/logo-flat.png" alt="HoloInsight">
+  <img src="https://github.com/archerny/holoinsight/blob/docs/readme/docs/logo/logo-flat.png" alt="HoloInsight">
 </p>
 
 ![License](https://img.shields.io/badge/license-Apache--2.0-green.svg)
