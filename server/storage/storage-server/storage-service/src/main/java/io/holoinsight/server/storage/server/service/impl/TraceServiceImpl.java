@@ -34,6 +34,10 @@ public class TraceServiceImpl implements TraceService {
   @Autowired
   private SegmentEsService segmentEsService;
 
+
+  @Autowired
+  private List<SpanEsService> spanEsServices;
+
   @Resource
   @Qualifier("spanEsServiceImpl")
   private SpanEsService spanEsService;
@@ -64,7 +68,14 @@ public class TraceServiceImpl implements TraceService {
 
   @Override
   public void insertSpans(List<SpanEsDO> spans) throws Exception {
-    spanTatrisService.batchInsert(spans);
+    // temporarily double-write to compare performance between tatris and es
+    spanEsServices.parallelStream().forEach(spanEsService -> {
+      try {
+        spanEsService.batchInsert(spans);
+      } catch (Exception e) {
+        throw new RuntimeException(e);
+      }
+    });
   }
 
   @Override

@@ -7,8 +7,11 @@ import io.holoinsight.server.common.springboot.ConditionalOnFeature;
 import io.holoinsight.server.storage.common.constants.Const;
 import io.holoinsight.server.storage.engine.elasticsearch.model.RecordEsDO;
 import io.holoinsight.server.storage.engine.elasticsearch.utils.EsGsonUtils;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.time.StopWatch;
 import org.elasticsearch.action.bulk.BulkRequest;
+import org.elasticsearch.action.bulk.BulkResponse;
 import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
@@ -25,12 +28,14 @@ import java.util.List;
  */
 @ConditionalOnFeature("trace")
 @Service
+@Slf4j
 public class RecordEsService<T extends RecordEsDO> {
 
   @Autowired
   private RestHighLevelClient esClient;
 
   public void batchInsert(List<T> entities) throws IOException {
+    StopWatch stopWatch = StopWatch.createStarted();
     if (CollectionUtils.isNotEmpty(entities)) {
       BulkRequest bulkRequest = new BulkRequest();
       entities.forEach(entity -> {
@@ -38,8 +43,10 @@ public class RecordEsService<T extends RecordEsDO> {
         bulkRequest.add(new IndexRequest(writeIndexName).source(EsGsonUtils.esGson().toJson(entity),
             XContentType.JSON));
       });
-      esClient.bulk(bulkRequest, RequestOptions.DEFAULT);
+      BulkResponse bulkItemRsp = esClient.bulk(bulkRequest, RequestOptions.DEFAULT);
     }
+    log.info("[apm] batch-insert finish, size={}, cost={}", CollectionUtils.size(entities),
+        stopWatch.getTime());
   }
 
   private static String writeIndexName(String indexName, long timeBucket) {
