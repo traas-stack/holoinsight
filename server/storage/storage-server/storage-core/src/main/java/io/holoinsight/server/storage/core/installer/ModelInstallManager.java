@@ -37,8 +37,6 @@ public class ModelInstallManager {
   private ModelCenter modelManager;
 
   /**
-   * TODO 这个需要重复执行吗?
-   * 
    * @throws IOException
    */
   //@Scheduled(initialDelay = 60000, fixedRate = 60000)
