@@ -54,6 +54,7 @@ import org.elasticsearch.search.aggregations.metrics.ParsedCardinality;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.elasticsearch.search.sort.SortOrder;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -73,6 +74,7 @@ import static java.util.Objects.nonNull;
  */
 @ConditionalOnFeature("trace")
 @Service("spanEsStorage")
+@Primary
 @Slf4j
 public class SpanEsStorage extends RecordEsStorage<SpanDO> implements SpanStorage {
 

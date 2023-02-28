@@ -8,24 +8,20 @@ import io.holoinsight.server.storage.common.model.query.ServiceInstance;
 import io.holoinsight.server.storage.engine.storage.ServiceInstanceStorage;
 import io.holoinsight.server.storage.server.service.ServiceInstanceService;
 
-import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.Resource;
 import java.io.IOException;
 import java.util.List;
 
-@Service
-@ConditionalOnFeature("trace")
 public class ServiceInstanceServiceImpl implements ServiceInstanceService {
 
-  @Resource
-  @Qualifier("serviceInstanceEsStorage")
-  private ServiceInstanceStorage serviceInstanceEsService;
+  @Autowired
+  protected ServiceInstanceStorage serviceInstanceStorage;
 
   @Override
   public List<ServiceInstance> getServiceInstanceList(String tenant, String service, long startTime,
       long endTime) throws IOException {
-    return serviceInstanceEsService.getServiceInstanceList(tenant, service, startTime, endTime);
+    return serviceInstanceStorage.getServiceInstanceList(tenant, service, startTime, endTime);
   }
 }

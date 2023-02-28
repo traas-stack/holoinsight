@@ -28,7 +28,6 @@ import java.util.List;
  * @version : RecordEsService.java, v 0.1 2022年10月12日 11:52 xiangwanpeng Exp $
  */
 @ConditionalOnFeature("trace")
-@Service
 @Slf4j
 public class RecordEsStorage<T extends RecordDO> implements RecordStorage<T> {
 

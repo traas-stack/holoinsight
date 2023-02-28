@@ -19,7 +19,7 @@
 		<module>storage-engine</module>
 		<module>storage-exporter</module>
 		<module>storage-service</module>
-		<module>storage-web</module>
+		<module>storage-entrance</module>
 		<module>storage-receiver</module>
 	</modules>
 

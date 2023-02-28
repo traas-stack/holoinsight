@@ -17,6 +17,7 @@ import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -25,6 +26,7 @@ import java.util.List;
 
 @ConditionalOnFeature("trace")
 @Service("serviceInstanceEsStorage")
+@Primary
 public class ServiceInstanceEsStorage implements ServiceInstanceStorage {
 
   @Autowired

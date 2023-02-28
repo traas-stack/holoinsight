@@ -32,6 +32,7 @@ import org.elasticsearch.search.aggregations.metrics.ParsedPercentiles;
 import org.elasticsearch.search.aggregations.metrics.Percentile;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
@@ -46,6 +47,7 @@ import java.util.stream.Collectors;
  */
 @ConditionalOnFeature("trace")
 @Service("spanMetricEsStorage")
+@Primary
 public class SpanMetricEsStorage implements MetricStorage {
 
   private static final int AGG_TERM_MAX_SIZE = 100;

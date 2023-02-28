@@ -22,6 +22,7 @@ import org.elasticsearch.search.aggregations.bucket.terms.Terms;
 import org.elasticsearch.search.aggregations.bucket.terms.TermsAggregationBuilder;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -30,6 +31,7 @@ import java.util.List;
 
 @ConditionalOnFeature("trace")
 @Service("virtualComponentEsStorage")
+@Primary
 public class VirtualComponentEsStorage implements VirtualComponentStorage {
 
   @Autowired

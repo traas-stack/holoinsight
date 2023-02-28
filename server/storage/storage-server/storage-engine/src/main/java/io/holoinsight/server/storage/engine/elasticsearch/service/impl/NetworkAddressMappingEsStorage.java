@@ -4,9 +4,9 @@
 package io.holoinsight.server.storage.engine.elasticsearch.service.impl;
 
 import io.holoinsight.server.common.springboot.ConditionalOnFeature;
+import io.holoinsight.server.storage.engine.elasticsearch.utils.EsGsonUtils;
 import io.holoinsight.server.storage.engine.model.NetworkAddressMappingDO;
 import io.holoinsight.server.storage.engine.storage.NetworkAddressMappingStorage;
-import io.holoinsight.server.storage.engine.elasticsearch.utils.EsGsonUtils;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.RequestOptions;
@@ -15,6 +15,7 @@ import org.elasticsearch.index.query.RangeQueryBuilder;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -23,6 +24,7 @@ import java.util.List;
 
 @ConditionalOnFeature("trace")
 @Service("networkAddressMappingEsStorage")
+@Primary
 public class NetworkAddressMappingEsStorage extends RecordEsStorage<NetworkAddressMappingDO>
     implements NetworkAddressMappingStorage {
 
