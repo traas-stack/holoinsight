@@ -38,11 +38,11 @@ public class VirtualComponentEsStorage implements VirtualComponentStorage {
   @Override
   public List<VirtualComponent> getComponentList(String tenant, String service, long startTime,
       long endTime, RequestType type, String sourceOrDest) throws IOException {
-    BoolQueryBuilder queryBuilder = QueryBuilders.boolQuery()
-        .must(QueryBuilders.termQuery(ServiceRelationDO.TENANT, tenant))
-        .must(QueryBuilders.termQuery(sourceOrDest + "_service_name", service))
-        .must(QueryBuilders.termQuery(ServiceRelationDO.TYPE, type.name()))
-        .must(QueryBuilders.rangeQuery(ServiceRelationDO.START_TIME).gte(startTime).lte(endTime));
+    BoolQueryBuilder queryBuilder =
+        QueryBuilders.boolQuery().must(QueryBuilders.termQuery(ServiceRelationDO.TENANT, tenant))
+            .must(QueryBuilders.termQuery(sourceOrDest + "_service_name", service))
+            .must(QueryBuilders.termQuery(ServiceRelationDO.TYPE, type.name())).must(
+                QueryBuilders.rangeQuery(ServiceRelationDO.START_TIME).gte(startTime).lte(endTime));
 
     SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
     sourceBuilder.size(1000);
@@ -60,13 +60,13 @@ public class VirtualComponentEsStorage implements VirtualComponentStorage {
   public List<String> getTraceIds(String tenant, String service, String address, long startTime,
       long endTime) throws IOException {
     TermsAggregationBuilder aggregationBuilder = AggregationBuilders
-        .terms(ServiceRelationDO.TRACE_ID).field(ServiceRelationDO.TRACE_ID)
-        .executionHint("map").collectMode(Aggregator.SubAggCollectionMode.BREADTH_FIRST).size(1000);
+        .terms(ServiceRelationDO.TRACE_ID).field(ServiceRelationDO.TRACE_ID).executionHint("map")
+        .collectMode(Aggregator.SubAggCollectionMode.BREADTH_FIRST).size(1000);
 
-    BoolQueryBuilder queryBuilder = QueryBuilders.boolQuery()
-        .must(QueryBuilders.termQuery(ServiceRelationDO.TENANT, tenant))
-        .must(QueryBuilders.termQuery(ServiceRelationDO.DEST_SERVICE_NAME, address))
-        .must(QueryBuilders.rangeQuery(ServiceRelationDO.START_TIME).gte(startTime).lte(endTime));
+    BoolQueryBuilder queryBuilder =
+        QueryBuilders.boolQuery().must(QueryBuilders.termQuery(ServiceRelationDO.TENANT, tenant))
+            .must(QueryBuilders.termQuery(ServiceRelationDO.DEST_SERVICE_NAME, address)).must(
+                QueryBuilders.rangeQuery(ServiceRelationDO.START_TIME).gte(startTime).lte(endTime));
     if (!StringUtils.isEmpty(service)) {
       queryBuilder.must(QueryBuilders.termQuery(ServiceRelationDO.SOURCE_SERVICE_NAME, service));
     }

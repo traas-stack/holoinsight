@@ -15,16 +15,30 @@ import javax.annotation.Resource;
 import java.io.IOException;
 import java.util.List;
 
+import static io.holoinsight.server.storage.server.Executors.EXECUTOR;
+
 @Service
 @ConditionalOnFeature("trace")
 public class EndpointRelationServiceImpl implements EndpointRelationService {
 
   @Resource
   @Qualifier("endpointRelationEsStorage")
-  private EndpointRelationStorage endpointRelationEsService;
+  private EndpointRelationStorage endpointRelationEsStorage;
+
+  @Resource
+  @Qualifier("endpointRelationTatrisStorage")
+  private EndpointRelationStorage endpointRelationTatrisStorage;
 
   @Override
   public void insert(List<EndpointRelationDO> relationList) throws IOException {
-    endpointRelationEsService.batchInsert(relationList);
+    if (endpointRelationTatrisStorage != null) {
+      EXECUTOR.submit(() -> {
+        try {
+          endpointRelationTatrisStorage.batchInsert(relationList);
+        } catch (Exception ignored) {
+        }
+      });
+    }
+    endpointRelationEsStorage.batchInsert(relationList);
   }
 }

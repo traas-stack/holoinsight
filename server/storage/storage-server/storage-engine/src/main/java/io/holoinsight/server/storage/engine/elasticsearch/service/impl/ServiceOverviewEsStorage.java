@@ -35,12 +35,13 @@ public class ServiceOverviewEsStorage implements ServiceOverviewStorage {
       String tenant, long startTime, long endTime) throws IOException {
     List<io.holoinsight.server.storage.common.model.query.Service> result = new ArrayList<>();
 
-    BoolQueryBuilder queryBuilder = QueryBuilders.boolQuery()
-        .must(QueryBuilders.termQuery(SpanDO.resource(SpanDO.TENANT), tenant))
-        .must(QueryBuilders.boolQuery()
-            .should(QueryBuilders.termQuery(SpanDO.KIND, SpanKind.SERVER))
-            .should(QueryBuilders.termQuery(SpanDO.KIND, SpanKind.CONSUMER)))
-        .must(QueryBuilders.rangeQuery(SpanDO.START_TIME).gte(startTime).lte(endTime));
+    BoolQueryBuilder queryBuilder =
+        QueryBuilders.boolQuery()
+            .must(QueryBuilders.termQuery(SpanDO.resource(SpanDO.TENANT), tenant))
+            .must(QueryBuilders.boolQuery()
+                .should(QueryBuilders.termQuery(SpanDO.KIND, SpanKind.SERVER))
+                .should(QueryBuilders.termQuery(SpanDO.KIND, SpanKind.CONSUMER)))
+            .must(QueryBuilders.rangeQuery(SpanDO.START_TIME).gte(startTime).lte(endTime));
 
     SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
     sourceBuilder.size(1000);

@@ -35,13 +35,14 @@ public class ServiceInstanceEsStorage implements ServiceInstanceStorage {
       long endTime) throws IOException {
     List<ServiceInstance> result = new ArrayList<>();
 
-    BoolQueryBuilder queryBuilder = QueryBuilders.boolQuery()
-        .must(QueryBuilders.termQuery(SpanDO.resource(SpanDO.TENANT), tenant))
-        .must(QueryBuilders.boolQuery()
-            .should(QueryBuilders.termQuery(SpanDO.KIND, SpanKind.SERVER))
-            .should(QueryBuilders.termQuery(SpanDO.KIND, SpanKind.CONSUMER)))
-        .must(QueryBuilders.termQuery(SpanDO.resource(SpanDO.SERVICE_NAME), service))
-        .must(QueryBuilders.rangeQuery(SpanDO.START_TIME).gte(startTime).lte(endTime));
+    BoolQueryBuilder queryBuilder =
+        QueryBuilders.boolQuery()
+            .must(QueryBuilders.termQuery(SpanDO.resource(SpanDO.TENANT), tenant))
+            .must(QueryBuilders.boolQuery()
+                .should(QueryBuilders.termQuery(SpanDO.KIND, SpanKind.SERVER))
+                .should(QueryBuilders.termQuery(SpanDO.KIND, SpanKind.CONSUMER)))
+            .must(QueryBuilders.termQuery(SpanDO.resource(SpanDO.SERVICE_NAME), service))
+            .must(QueryBuilders.rangeQuery(SpanDO.START_TIME).gte(startTime).lte(endTime));
 
     SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
     sourceBuilder.size(1000);

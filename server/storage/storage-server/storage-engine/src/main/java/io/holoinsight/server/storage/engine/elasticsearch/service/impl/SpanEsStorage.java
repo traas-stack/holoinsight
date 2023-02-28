@@ -114,8 +114,8 @@ public class SpanEsStorage extends RecordEsStorage<SpanDO> implements SpanStorag
           .must(new TermQueryBuilder(SpanDO.resource(SpanDO.SERVICE_NAME), serviceName));
     }
     if (StringUtils.isNotEmpty(serviceInstanceName)) {
-      boolQueryBuilder.must(new TermQueryBuilder(SpanDO.resource(SpanDO.SERVICE_INSTANCE_NAME),
-          serviceInstanceName));
+      boolQueryBuilder.must(
+          new TermQueryBuilder(SpanDO.resource(SpanDO.SERVICE_INSTANCE_NAME), serviceInstanceName));
     }
     if (!Strings.isNullOrEmpty(endpointName)) {
       boolQueryBuilder.must(new TermQueryBuilder(SpanDO.NAME, endpointName));
@@ -129,8 +129,7 @@ public class SpanEsStorage extends RecordEsStorage<SpanDO> implements SpanStorag
             .must(new MatchQueryBuilder(SpanDO.TRACE_STATUS, StatusCode.ERROR.getCode()));
         break;
       case SUCCESS:
-        boolQueryBuilder
-            .must(new MatchQueryBuilder(SpanDO.TRACE_STATUS, StatusCode.OK.getCode()));
+        boolQueryBuilder.must(new MatchQueryBuilder(SpanDO.TRACE_STATUS, StatusCode.OK.getCode()));
         break;
     }
 
@@ -235,28 +234,34 @@ public class SpanEsStorage extends RecordEsStorage<SpanDO> implements SpanStorag
     BoolQueryBuilder queryBuilder = QueryBuilders.boolQuery()
         .must(QueryBuilders.rangeQuery(SpanDO.START_TIME).gte(startTime).lte(endTime));
 
-    TermsAggregationBuilder aggregationBuilder = AggregationBuilders
-        .terms(SpanDO.attributes(Const.APPID)).field(SpanDO.attributes(Const.APPID))
-        .subAggregation(AggregationBuilders.terms(SpanDO.attributes(Const.ENVID))
-            .field(SpanDO.attributes(Const.ENVID))
-            .subAggregation(AggregationBuilders.cardinality("service_count")
-                .field(SpanDO.resource(SpanDO.SERVICE_NAME)))
-            .subAggregation(AggregationBuilders.cardinality("trace_count").field(SpanDO.TRACE_ID))
-            .subAggregation(AggregationBuilders
-                .filter(SpanDO.TRACE_STATUS,
-                    QueryBuilders.termQuery(SpanDO.TRACE_STATUS,
-                        Status.StatusCode.STATUS_CODE_ERROR_VALUE))
-                .subAggregation(AggregationBuilders.cardinality("error_count")
-                    .field(SpanDO.TRACE_ID)))
-            .subAggregation(AggregationBuilders.filter(SpanDO.attributes(Const.ISENTRY),
-                QueryBuilders.boolQuery()
-                    .must(QueryBuilders.termQuery(SpanDO.attributes(Const.ISENTRY), "true"))
-                    .mustNot(QueryBuilders.termQuery(SpanDO.NAME, "GET:/")))
-                .subAggregation(
-                    AggregationBuilders.cardinality("entry_count").field(SpanDO.NAME)))
-            .subAggregation(AggregationBuilders.avg("avg_latency").field(SpanDO.LATENCY))
-            .executionHint("map").collectMode(Aggregator.SubAggCollectionMode.BREADTH_FIRST)
-            .size(1000));
+    TermsAggregationBuilder aggregationBuilder =
+        AggregationBuilders.terms(SpanDO.attributes(Const.APPID))
+            .field(SpanDO
+                .attributes(Const.APPID))
+            .subAggregation(
+                AggregationBuilders.terms(SpanDO.attributes(Const.ENVID))
+                    .field(SpanDO.attributes(Const.ENVID))
+                    .subAggregation(AggregationBuilders.cardinality("service_count")
+                        .field(SpanDO.resource(SpanDO.SERVICE_NAME)))
+                    .subAggregation(
+                        AggregationBuilders.cardinality("trace_count").field(SpanDO.TRACE_ID))
+                    .subAggregation(AggregationBuilders
+                        .filter(SpanDO.TRACE_STATUS,
+                            QueryBuilders.termQuery(SpanDO.TRACE_STATUS,
+                                Status.StatusCode.STATUS_CODE_ERROR_VALUE))
+                        .subAggregation(
+                            AggregationBuilders.cardinality("error_count").field(SpanDO.TRACE_ID)))
+                    .subAggregation(AggregationBuilders
+                        .filter(SpanDO.attributes(Const.ISENTRY),
+                            QueryBuilders.boolQuery()
+                                .must(QueryBuilders.termQuery(SpanDO.attributes(Const.ISENTRY),
+                                    "true"))
+                                .mustNot(QueryBuilders.termQuery(SpanDO.NAME, "GET:/")))
+                        .subAggregation(
+                            AggregationBuilders.cardinality("entry_count").field(SpanDO.NAME)))
+                    .subAggregation(AggregationBuilders.avg("avg_latency").field(SpanDO.LATENCY))
+                    .executionHint("map").collectMode(Aggregator.SubAggCollectionMode.BREADTH_FIRST)
+                    .size(1000));
 
     SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
     sourceBuilder.size(1000);

@@ -58,8 +58,7 @@ public class CommonBuilder {
             .field(ServiceRelationDO.LATENCY).percentiles(95.0))
         .subAggregation(AggregationBuilders.percentiles("p99_latency")
             .field(ServiceRelationDO.LATENCY).percentiles(99.0))
-        .subAggregation(
-            AggregationBuilders.count("total_count").field(ServiceRelationDO.TRACE_ID))
+        .subAggregation(AggregationBuilders.count("total_count").field(ServiceRelationDO.TRACE_ID))
         .subAggregation(AggregationBuilders
             .filter(ServiceRelationDO.TRACE_STATUS,
                 QueryBuilders.termQuery(ServiceRelationDO.TRACE_STATUS,

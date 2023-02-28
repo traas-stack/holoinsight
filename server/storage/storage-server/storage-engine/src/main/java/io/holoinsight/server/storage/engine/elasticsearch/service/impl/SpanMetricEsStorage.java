@@ -94,9 +94,8 @@ public class SpanMetricEsStorage implements MetricStorage {
     MetricValues metricValues = new MetricValues(values);
     SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
     BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder();
-    boolQueryBuilder.filter(new TermQueryBuilder(SpanDO.resource(SpanDO.TENANT), tenant))
-        .filter(new RangeQueryBuilder(SpanDO.START_TIME).gte(duration.getStart())
-            .lte(duration.getEnd()));
+    boolQueryBuilder.filter(new TermQueryBuilder(SpanDO.resource(SpanDO.TENANT), tenant)).filter(
+        new RangeQueryBuilder(SpanDO.START_TIME).gte(duration.getStart()).lte(duration.getEnd()));
 
     if (conditions != null) {
       conditions.forEach((conditionKey, conditionVal) -> {

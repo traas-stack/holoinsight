@@ -46,8 +46,7 @@ public class EsGsonUtils extends GsonUtils {
     }
   }
 
-  private static class SpanTypeAdapter
-      implements JsonSerializer<SpanDO>, JsonDeserializer<SpanDO> {
+  private static class SpanTypeAdapter implements JsonSerializer<SpanDO>, JsonDeserializer<SpanDO> {
 
     private List<Field> allFields;
 

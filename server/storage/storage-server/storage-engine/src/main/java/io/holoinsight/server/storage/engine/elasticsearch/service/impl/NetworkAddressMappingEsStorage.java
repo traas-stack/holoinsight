@@ -35,8 +35,8 @@ public class NetworkAddressMappingEsStorage extends RecordEsStorage<NetworkAddre
 
     SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
     searchSourceBuilder.size(1000);
-    searchSourceBuilder.query(
-        new RangeQueryBuilder(NetworkAddressMappingDO.TIME_BUCKET).gte(timeBucketInMinute));
+    searchSourceBuilder
+        .query(new RangeQueryBuilder(NetworkAddressMappingDO.TIME_BUCKET).gte(timeBucketInMinute));
     SearchRequest searchRequest =
         new SearchRequest(new String[] {NetworkAddressMappingDO.INDEX_NAME}, searchSourceBuilder);
 

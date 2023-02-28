@@ -15,17 +15,31 @@ import javax.annotation.Resource;
 import java.io.IOException;
 import java.util.List;
 
+import static io.holoinsight.server.storage.server.Executors.EXECUTOR;
+
 @Service
 @ConditionalOnFeature("trace")
 public class ServiceRelationServiceImpl implements ServiceRelationService {
 
   @Resource
   @Qualifier("serviceRelationEsStorage")
-  private ServiceRelationStorage serviceRelationEsService;
+  private ServiceRelationStorage serviceRelationEsStorage;
+
+  @Resource
+  @Qualifier("serviceRelationTatrisStorage")
+  private ServiceRelationStorage serviceRelationTatrisStorage;
 
   @Override
   public void insert(List<ServiceRelationDO> relationList) throws IOException {
-    serviceRelationEsService.batchInsert(relationList);
+    if (serviceRelationTatrisStorage != null) {
+      EXECUTOR.submit(() -> {
+        try {
+          serviceRelationTatrisStorage.batchInsert(relationList);
+        } catch (Exception ignored) {
+        }
+      });
+    }
+    serviceRelationEsStorage.batchInsert(relationList);
   }
 
 }

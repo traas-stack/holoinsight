@@ -154,7 +154,7 @@ public class RelationAnalysis {
 
 
   public List<SlowSqlDO> analysisClientSpan(Span span, Map<String, AnyValue> spanAttrMap,
-                                            Map<String, AnyValue> resourceAttrMap) {
+      Map<String, AnyValue> resourceAttrMap) {
     List<SlowSqlDO> result = new ArrayList<>(10);
 
     String serviceName =
@@ -251,7 +251,7 @@ public class RelationAnalysis {
    * @return
    */
   public List<NetworkAddressMappingDO> generateNetworkAddressMapping(Span span,
-                                                                     Map<String, AnyValue> spanAttrMap, Map<String, AnyValue> resourceAttrMap) {
+      Map<String, AnyValue> spanAttrMap, Map<String, AnyValue> resourceAttrMap) {
     List<NetworkAddressMappingDO> networkAddressMappings = new ArrayList<>(10);
 
     for (Span.Link link : span.getLinksList()) {

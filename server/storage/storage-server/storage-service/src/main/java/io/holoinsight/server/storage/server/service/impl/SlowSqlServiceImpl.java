@@ -15,23 +15,37 @@ import javax.annotation.Resource;
 import java.io.IOException;
 import java.util.List;
 
+import static io.holoinsight.server.storage.server.Executors.EXECUTOR;
+
 @Service
 @ConditionalOnFeature("trace")
 public class SlowSqlServiceImpl implements SlowSqlService {
 
   @Resource
   @Qualifier("slowSqlEsStorage")
-  private SlowSqlStorage slowSqlEsService;
+  private SlowSqlStorage slowSqlEsStorage;
+
+  @Resource
+  @Qualifier("slowSqlTatrisStorage")
+  private SlowSqlStorage slowSqlTatrisStorage;
 
   @Override
   public void insert(List<SlowSqlDO> slowSqlEsDOList) throws IOException {
-    slowSqlEsService.batchInsert(slowSqlEsDOList);
+    if (slowSqlTatrisStorage != null) {
+      EXECUTOR.submit(() -> {
+        try {
+          slowSqlTatrisStorage.batchInsert(slowSqlEsDOList);
+        } catch (Exception ignored) {
+        }
+      });
+    }
+    slowSqlEsStorage.batchInsert(slowSqlEsDOList);
   }
 
   @Override
   public List<SlowSql> getSlowSqlList(String tenant, String serviceName, String dbAddress,
       long startTime, long endTime) throws IOException {
-    return slowSqlEsService.getSlowSqlList(tenant, serviceName, dbAddress, startTime, endTime);
+    return slowSqlEsStorage.getSlowSqlList(tenant, serviceName, dbAddress, startTime, endTime);
   }
 
 }

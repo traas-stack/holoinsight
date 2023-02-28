@@ -25,6 +25,8 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
+import static io.holoinsight.server.storage.server.Executors.EXECUTOR;
+
 /**
  * @author jiwliu
  * @version : TraceServiceImpl.java, v 0.1 2022年09月20日 16:48 xiangwanpeng Exp $
@@ -42,9 +44,6 @@ public class TraceServiceImpl implements TraceService {
   @Qualifier("spanTatrisStorage")
   private SpanStorage spanTatrisStorage;
 
-  private static final ThreadPoolExecutor EXECUTOR =
-      new ThreadPoolExecutor(4, 4, 60, TimeUnit.SECONDS, new LinkedBlockingQueue<>(),
-          new BasicThreadFactory.Builder().namingPattern("tatris-%d").build());
 
   @Override
   public TraceBrief queryBasicTraces(String tenant, String serviceName, String serviceInstanceName,
@@ -90,8 +89,7 @@ public class TraceServiceImpl implements TraceService {
       EXECUTOR.submit(() -> {
         try {
           spanTatrisStorage.batchInsert(spans);
-        } catch (Exception e) {
-          log.error("[apm] tatris batch_insert failed, msg={}", e.getMessage(), e);
+        } catch (Exception ignored) {
         }
       });
     }

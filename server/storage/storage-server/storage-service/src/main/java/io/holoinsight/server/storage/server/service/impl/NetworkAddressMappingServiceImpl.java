@@ -15,21 +15,35 @@ import javax.annotation.Resource;
 import java.io.IOException;
 import java.util.List;
 
+import static io.holoinsight.server.storage.server.Executors.EXECUTOR;
+
 @Service
 @ConditionalOnFeature("trace")
 public class NetworkAddressMappingServiceImpl implements NetworkAddressMappingService {
 
   @Resource
   @Qualifier("networkAddressMappingEsStorage")
-  private NetworkAddressMappingStorage networkAddressMappingEsService;
+  private NetworkAddressMappingStorage networkAddressMappingEsStorage;
+
+  @Resource
+  @Qualifier("networkAddressMappingTatrisStorage")
+  private NetworkAddressMappingStorage networkAddressMappingTatrisStorage;
 
   @Override
   public void insert(List<NetworkAddressMappingDO> addressMappingList) throws IOException {
-    networkAddressMappingEsService.batchInsert(addressMappingList);
+    if (networkAddressMappingTatrisStorage != null) {
+      EXECUTOR.submit(() -> {
+        try {
+          networkAddressMappingTatrisStorage.batchInsert(addressMappingList);
+        } catch (Exception ignored) {
+        }
+      });
+    }
+    networkAddressMappingEsStorage.batchInsert(addressMappingList);
   }
 
   @Override
   public List<NetworkAddressMappingDO> loadByTime(long timeBucketInMinute) throws IOException {
-    return networkAddressMappingEsService.loadByTime(timeBucketInMinute);
+    return networkAddressMappingEsStorage.loadByTime(timeBucketInMinute);
   }
 }

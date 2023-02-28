@@ -36,8 +36,8 @@ public class EndpointEsStorage implements EndpointStorage {
 
     BoolQueryBuilder queryBuilder = QueryBuilders.boolQuery()
         .must(QueryBuilders.termQuery(EndpointRelationDO.TENANT, tenant))
-        .must(QueryBuilders.termQuery(EndpointRelationDO.DEST_SERVICE_NAME, service)).must(
-            QueryBuilders.rangeQuery(EndpointRelationDO.START_TIME).gte(startTime).lte(endTime));
+        .must(QueryBuilders.termQuery(EndpointRelationDO.DEST_SERVICE_NAME, service))
+        .must(QueryBuilders.rangeQuery(EndpointRelationDO.START_TIME).gte(startTime).lte(endTime));
 
     SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
     sourceBuilder.size(1000);
