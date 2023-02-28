@@ -49,7 +49,7 @@ public class RetrofitProxy<T> implements InvocationHandler {
 
       // 其他都是异常处理, 可以根据不同错误码单独处理
       String body = J.toJson(response.body());
-      log.error("Response of [" + call.request().url().uri().toString() + "], error: ", body);
+      log.error("Response of {}, error: {}", call.request().url().uri().toString(), body);
       throw new RuntimeException("call failed, " + response.code() + ", " + body);
     } else {
       return ret;
@@ -73,10 +73,8 @@ public class RetrofitProxy<T> implements InvocationHandler {
 
   protected void printAfter(long start, String url, Method method, Response response) {
 
-    String invokeInfo = "Invoke INFO: method=[" + method.getName() + "], url=[" + url + "], cost=["
-        + (System.currentTimeMillis() - start) + "], " + "result=[" + response.isSuccessful()
-        + "], code=[" + response.code() + "]";
-    log.warn(invokeInfo);
+    log.warn("Invoke INFO: method={}, url={}, cost={}, " + "result={}, code={}", method.getName(),
+        url, (System.currentTimeMillis() - start), response.isSuccessful(), response.code());
   }
 
 }
