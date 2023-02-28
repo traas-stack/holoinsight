@@ -5,7 +5,7 @@ package io.holoinsight.server.storage.server.service.impl;
 
 import io.holoinsight.server.common.springboot.ConditionalOnFeature;
 import io.holoinsight.server.storage.engine.elasticsearch.model.NetworkAddressMappingEsDO;
-import io.holoinsight.server.storage.engine.elasticsearch.service.NetworkAddressMappingEsService;
+import io.holoinsight.server.storage.engine.NetworkAddressMappingStorage;
 import io.holoinsight.server.storage.server.service.NetworkAddressMappingService;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +19,7 @@ import java.util.List;
 public class NetworkAddressMappingServiceImpl implements NetworkAddressMappingService {
 
   @Autowired
-  private NetworkAddressMappingEsService networkAddressMappingEsService;
+  private NetworkAddressMappingStorage networkAddressMappingEsService;
 
   @Override
   public void insert(List<NetworkAddressMappingEsDO> addressMappingList) throws IOException {

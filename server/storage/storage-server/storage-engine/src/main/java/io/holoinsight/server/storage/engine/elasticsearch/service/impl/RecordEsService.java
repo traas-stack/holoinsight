@@ -1,11 +1,12 @@
 /*
  * Copyright 2022 Holoinsight Project Authors. Licensed under Apache-2.0.
  */
-package io.holoinsight.server.storage.engine.elasticsearch.service;
+package io.holoinsight.server.storage.engine.elasticsearch.service.impl;
 
 import io.holoinsight.server.common.springboot.ConditionalOnFeature;
 import io.holoinsight.server.storage.common.constants.Const;
 import io.holoinsight.server.storage.engine.elasticsearch.model.RecordEsDO;
+import io.holoinsight.server.storage.engine.RecordStorage;
 import io.holoinsight.server.storage.engine.elasticsearch.utils.EsGsonUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
@@ -29,7 +30,7 @@ import java.util.List;
 @ConditionalOnFeature("trace")
 @Service
 @Slf4j
-public class RecordEsService<T extends RecordEsDO> {
+public class RecordEsService<T extends RecordEsDO> implements RecordStorage<T> {
 
   @Autowired
   private RestHighLevelClient esClient;

@@ -6,8 +6,7 @@ package io.holoinsight.server.storage.engine.elasticsearch.service.impl;
 import io.holoinsight.server.common.springboot.ConditionalOnFeature;
 import io.holoinsight.server.storage.common.model.query.SlowSql;
 import io.holoinsight.server.storage.engine.elasticsearch.model.SlowSqlEsDO;
-import io.holoinsight.server.storage.engine.elasticsearch.service.RecordEsService;
-import io.holoinsight.server.storage.engine.elasticsearch.service.SlowSqlEsService;
+import io.holoinsight.server.storage.engine.SlowSqlStorage;
 import io.holoinsight.server.storage.engine.elasticsearch.utils.EsGsonUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.elasticsearch.action.search.SearchRequest;
@@ -27,7 +26,7 @@ import java.util.List;
 
 @ConditionalOnFeature("trace")
 @Service
-public class SlowSqlEsServiceImpl extends RecordEsService<SlowSqlEsDO> implements SlowSqlEsService {
+public class SlowSqlEsServiceImpl extends RecordEsService<SlowSqlEsDO> implements SlowSqlStorage {
 
   @Autowired
   private RestHighLevelClient client;

@@ -11,10 +11,9 @@ import io.holoinsight.server.storage.common.model.query.TraceBrief;
 import io.holoinsight.server.storage.common.model.specification.sw.Tag;
 import io.holoinsight.server.storage.common.model.specification.sw.Trace;
 import io.holoinsight.server.storage.common.model.specification.sw.TraceState;
-import io.holoinsight.server.storage.engine.elasticsearch.model.SegmentEsDO;
 import io.holoinsight.server.storage.engine.elasticsearch.model.SpanEsDO;
-import io.holoinsight.server.storage.engine.elasticsearch.service.SegmentEsService;
-import io.holoinsight.server.storage.engine.elasticsearch.service.SpanEsService;
+import io.holoinsight.server.storage.engine.SegmentStorage;
+import io.holoinsight.server.storage.engine.SpanStorage;
 import io.holoinsight.server.storage.server.service.TraceService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.concurrent.BasicThreadFactory;
@@ -38,15 +37,15 @@ import java.util.concurrent.TimeUnit;
 public class TraceServiceImpl implements TraceService {
 
   @Autowired
-  private SegmentEsService segmentEsService;
+  private SegmentStorage segmentEsService;
 
   @Resource
   @Qualifier("spanEsServiceImpl")
-  private SpanEsService spanEsService;
+  private SpanStorage spanEsService;
 
   @Resource
   @Qualifier("spanTatrisServiceImpl")
-  private SpanEsService spanTatrisService;
+  private SpanStorage spanTatrisService;
 
   private static final ThreadPoolExecutor EXECUTOR =
       new ThreadPoolExecutor(4, 4, 60, TimeUnit.SECONDS, new LinkedBlockingQueue<>(),
@@ -69,9 +68,9 @@ public class TraceServiceImpl implements TraceService {
         }
       });
     }
-    return spanTatrisService.queryBasicTraces(tenant, serviceName, serviceInstanceName,
-        endpointName, traceIds, minTraceDuration, maxTraceDuration, traceState, queryOrder, paging,
-        start, end, tags);
+    return spanEsService.queryBasicTraces(tenant, serviceName, serviceInstanceName, endpointName,
+        traceIds, minTraceDuration, maxTraceDuration, traceState, queryOrder, paging, start, end,
+        tags);
   }
 
   @Override
@@ -86,12 +85,7 @@ public class TraceServiceImpl implements TraceService {
         }
       });
     }
-    return spanTatrisService.queryTrace(traceId);
-  }
-
-  @Override
-  public void insert(List<SegmentEsDO> segments) throws Exception {
-    segmentEsService.batchInsert(segments);
+    return spanEsService.queryTrace(traceId);
   }
 
   @Override

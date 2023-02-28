@@ -5,7 +5,7 @@ package io.holoinsight.server.storage.server.service.impl;
 
 import io.holoinsight.server.common.springboot.ConditionalOnFeature;
 import io.holoinsight.server.storage.engine.elasticsearch.model.ServiceRelationEsDO;
-import io.holoinsight.server.storage.engine.elasticsearch.service.ServiceRelationEsService;
+import io.holoinsight.server.storage.engine.ServiceRelationStorage;
 import io.holoinsight.server.storage.server.service.ServiceRelationService;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +19,7 @@ import java.util.List;
 public class ServiceRelationServiceImpl implements ServiceRelationService {
 
   @Autowired
-  private ServiceRelationEsService serviceRelationEsService;
+  private ServiceRelationStorage serviceRelationEsService;
 
   @Override
   public void insert(List<ServiceRelationEsDO> relationList) throws IOException {

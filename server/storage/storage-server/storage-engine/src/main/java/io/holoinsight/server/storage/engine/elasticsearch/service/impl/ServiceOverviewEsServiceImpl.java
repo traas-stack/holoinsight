@@ -5,7 +5,7 @@ package io.holoinsight.server.storage.engine.elasticsearch.service.impl;
 
 import io.holoinsight.server.common.springboot.ConditionalOnFeature;
 import io.holoinsight.server.storage.common.model.specification.otel.SpanKind;
-import io.holoinsight.server.storage.engine.elasticsearch.service.ServiceOverviewEsService;
+import io.holoinsight.server.storage.engine.ServiceOverviewStorage;
 import io.holoinsight.server.storage.engine.elasticsearch.model.SpanEsDO;
 
 import org.elasticsearch.action.search.SearchRequest;
@@ -25,7 +25,7 @@ import java.util.List;
 
 @ConditionalOnFeature("trace")
 @Service
-public class ServiceOverviewEsServiceImpl implements ServiceOverviewEsService {
+public class ServiceOverviewEsServiceImpl implements ServiceOverviewStorage {
 
   @Autowired
   private RestHighLevelClient client;

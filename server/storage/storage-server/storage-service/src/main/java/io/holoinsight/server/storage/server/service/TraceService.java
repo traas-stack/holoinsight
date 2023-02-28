@@ -30,8 +30,6 @@ public interface TraceService {
 
   Trace queryTrace(final String traceId) throws Exception;
 
-  void insert(final List<SegmentEsDO> segments) throws Exception;
-
   void insertSpans(final List<SpanEsDO> spans) throws Exception;
 
   List<StatisticData> statisticTrace(long startTime, long endTime) throws Exception;

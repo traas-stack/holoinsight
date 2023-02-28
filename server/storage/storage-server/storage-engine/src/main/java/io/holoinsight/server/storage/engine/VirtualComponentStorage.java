@@ -1,7 +1,7 @@
 /*
  * Copyright 2022 Holoinsight Project Authors. Licensed under Apache-2.0.
  */
-package io.holoinsight.server.storage.engine.elasticsearch.service;
+package io.holoinsight.server.storage.engine;
 
 import io.holoinsight.server.storage.common.model.query.VirtualComponent;
 import io.holoinsight.server.storage.common.model.specification.sw.RequestType;
@@ -9,7 +9,7 @@ import io.holoinsight.server.storage.common.model.specification.sw.RequestType;
 import java.io.IOException;
 import java.util.List;
 
-public interface VirtualComponentEsService {
+public interface VirtualComponentStorage {
 
   List<VirtualComponent> getComponentList(String tenant, String service, long startTime,
       long endTime, RequestType type, String sourceOrDest) throws IOException;

@@ -8,7 +8,7 @@ import io.holoinsight.server.storage.common.model.query.VirtualComponent;
 import io.holoinsight.server.storage.common.model.specification.sw.RequestType;
 import io.holoinsight.server.storage.engine.elasticsearch.model.EndpointRelationEsDO;
 import io.holoinsight.server.storage.engine.elasticsearch.model.ServiceRelationEsDO;
-import io.holoinsight.server.storage.engine.elasticsearch.service.VirtualComponentEsService;
+import io.holoinsight.server.storage.engine.VirtualComponentStorage;
 import org.apache.commons.lang3.StringUtils;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
@@ -30,7 +30,7 @@ import java.util.List;
 
 @ConditionalOnFeature("trace")
 @Service
-public class VirtualComponentEsServiceImpl implements VirtualComponentEsService {
+public class VirtualComponentEsServiceImpl implements VirtualComponentStorage {
 
   @Autowired
   private RestHighLevelClient client;

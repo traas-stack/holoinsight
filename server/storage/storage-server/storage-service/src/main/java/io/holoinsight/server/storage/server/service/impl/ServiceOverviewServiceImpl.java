@@ -4,7 +4,7 @@
 package io.holoinsight.server.storage.server.service.impl;
 
 import io.holoinsight.server.common.springboot.ConditionalOnFeature;
-import io.holoinsight.server.storage.engine.elasticsearch.service.ServiceOverviewEsService;
+import io.holoinsight.server.storage.engine.ServiceOverviewStorage;
 import io.holoinsight.server.storage.server.service.ServiceOverviewService;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +18,7 @@ import java.util.List;
 public class ServiceOverviewServiceImpl implements ServiceOverviewService {
 
   @Autowired
-  private ServiceOverviewEsService serviceOverviewEsService;
+  private ServiceOverviewStorage serviceOverviewEsService;
 
   @Override
   public List<io.holoinsight.server.storage.common.model.query.Service> getServiceList(

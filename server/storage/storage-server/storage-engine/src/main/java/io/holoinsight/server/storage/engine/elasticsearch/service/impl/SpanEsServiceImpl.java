@@ -26,8 +26,7 @@ import io.holoinsight.server.storage.common.model.specification.sw.Trace;
 import io.holoinsight.server.storage.common.model.specification.sw.TraceState;
 import io.holoinsight.server.storage.common.utils.GsonUtils;
 import io.holoinsight.server.storage.engine.elasticsearch.model.SpanEsDO;
-import io.holoinsight.server.storage.engine.elasticsearch.service.RecordEsService;
-import io.holoinsight.server.storage.engine.elasticsearch.service.SpanEsService;
+import io.holoinsight.server.storage.engine.SpanStorage;
 import io.holoinsight.server.storage.engine.elasticsearch.utils.EsGsonUtils;
 import io.opentelemetry.proto.trace.v1.Status;
 import lombok.extern.slf4j.Slf4j;
@@ -75,7 +74,7 @@ import static java.util.Objects.nonNull;
 @ConditionalOnFeature("trace")
 @Service("spanEsServiceImpl")
 @Slf4j
-public class SpanEsServiceImpl extends RecordEsService<SpanEsDO> implements SpanEsService {
+public class SpanEsServiceImpl extends RecordEsService<SpanEsDO> implements SpanStorage {
 
   private static final int SPAN_QUERY_MAX_SIZE = 2000;
 

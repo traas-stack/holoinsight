@@ -7,7 +7,7 @@ import io.holoinsight.server.common.springboot.ConditionalOnFeature;
 import io.holoinsight.server.storage.common.constants.Const;
 import io.holoinsight.server.storage.common.model.query.VirtualComponent;
 import io.holoinsight.server.storage.common.model.specification.sw.RequestType;
-import io.holoinsight.server.storage.engine.elasticsearch.service.VirtualComponentEsService;
+import io.holoinsight.server.storage.engine.VirtualComponentStorage;
 import io.holoinsight.server.storage.server.service.VirtualComponentService;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +22,7 @@ import java.util.List;
 public class VirtualComponentServiceImpl implements VirtualComponentService {
 
   @Autowired
-  private VirtualComponentEsService virtualComponentEsService;
+  private VirtualComponentStorage virtualComponentEsService;
 
   @Override
   public List<VirtualComponent> getDbList(String tenant, String service, long startTime,

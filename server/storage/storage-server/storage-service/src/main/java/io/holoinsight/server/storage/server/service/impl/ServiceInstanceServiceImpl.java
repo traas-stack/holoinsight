@@ -5,7 +5,7 @@ package io.holoinsight.server.storage.server.service.impl;
 
 import io.holoinsight.server.common.springboot.ConditionalOnFeature;
 import io.holoinsight.server.storage.common.model.query.ServiceInstance;
-import io.holoinsight.server.storage.engine.elasticsearch.service.ServiceInstanceEsService;
+import io.holoinsight.server.storage.engine.ServiceInstanceStorage;
 import io.holoinsight.server.storage.server.service.ServiceInstanceService;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +19,7 @@ import java.util.List;
 public class ServiceInstanceServiceImpl implements ServiceInstanceService {
 
   @Autowired
-  private ServiceInstanceEsService serviceInstanceEsService;
+  private ServiceInstanceStorage serviceInstanceEsService;
 
   @Override
   public List<ServiceInstance> getServiceInstanceList(String tenant, String service, long startTime,

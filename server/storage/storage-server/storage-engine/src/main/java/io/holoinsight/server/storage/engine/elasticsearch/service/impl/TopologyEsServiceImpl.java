@@ -7,7 +7,7 @@ import io.holoinsight.server.common.springboot.ConditionalOnFeature;
 import io.holoinsight.server.storage.common.model.query.Call;
 import io.holoinsight.server.storage.common.model.query.ResponseMetric;
 import io.holoinsight.server.storage.common.model.specification.otel.SpanKind;
-import io.holoinsight.server.storage.engine.elasticsearch.service.TopologyEsService;
+import io.holoinsight.server.storage.engine.TopologyStorage;
 import io.holoinsight.server.storage.engine.elasticsearch.model.EndpointRelationEsDO;
 import io.holoinsight.server.storage.engine.elasticsearch.model.ServiceInstanceRelationEsDO;
 import io.holoinsight.server.storage.engine.elasticsearch.model.ServiceRelationEsDO;
@@ -32,7 +32,7 @@ import java.util.Map;
 
 @ConditionalOnFeature("trace")
 @Service
-public class TopologyEsServiceImpl implements TopologyEsService {
+public class TopologyEsServiceImpl implements TopologyStorage {
 
   @Autowired
   private RestHighLevelClient client;

@@ -20,8 +20,7 @@ import io.holoinsight.server.storage.common.model.specification.sw.TraceState;
 
 import io.holoinsight.server.storage.common.utils.BooleanUtils;
 import io.holoinsight.server.storage.engine.elasticsearch.model.SegmentEsDO;
-import io.holoinsight.server.storage.engine.elasticsearch.service.RecordEsService;
-import io.holoinsight.server.storage.engine.elasticsearch.service.SegmentEsService;
+import io.holoinsight.server.storage.engine.SegmentStorage;
 import io.holoinsight.server.storage.engine.elasticsearch.utils.EsGsonUtils;
 import io.holoinsight.server.storage.grpc.trace.SegmentObject;
 
@@ -52,7 +51,7 @@ import static java.util.Objects.nonNull;
  */
 @ConditionalOnFeature("trace")
 @Service
-public class SegmentEsServiceImpl extends RecordEsService<SegmentEsDO> implements SegmentEsService {
+public class SegmentEsServiceImpl extends RecordEsService<SegmentEsDO> implements SegmentStorage {
 
   private static final int SEGMENT_QUERY_MAX_SIZE = 200;
 

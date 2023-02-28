@@ -6,7 +6,7 @@ package io.holoinsight.server.storage.server.service.impl;
 import io.holoinsight.server.common.springboot.ConditionalOnFeature;
 import io.holoinsight.server.storage.common.model.query.SlowSql;
 import io.holoinsight.server.storage.engine.elasticsearch.model.SlowSqlEsDO;
-import io.holoinsight.server.storage.engine.elasticsearch.service.SlowSqlEsService;
+import io.holoinsight.server.storage.engine.SlowSqlStorage;
 import io.holoinsight.server.storage.server.service.SlowSqlService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -19,7 +19,7 @@ import java.util.List;
 public class SlowSqlServiceImpl implements SlowSqlService {
 
   @Autowired
-  private SlowSqlEsService slowSqlEsService;
+  private SlowSqlStorage slowSqlEsService;
 
   @Override
   public void insert(List<SlowSqlEsDO> slowSqlEsDOList) throws IOException {

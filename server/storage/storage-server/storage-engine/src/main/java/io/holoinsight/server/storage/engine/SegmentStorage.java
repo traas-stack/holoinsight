@@ -1,7 +1,7 @@
 /*
  * Copyright 2022 Holoinsight Project Authors. Licensed under Apache-2.0.
  */
-package io.holoinsight.server.storage.engine.elasticsearch.service;
+package io.holoinsight.server.storage.engine;
 
 import io.holoinsight.server.storage.common.model.query.Pagination;
 import io.holoinsight.server.storage.common.model.query.QueryOrder;
@@ -18,7 +18,7 @@ import java.util.List;
  * @author jiwliu
  * @version : SegmentEsService.java, v 0.1 2022年09月29日 16:56 xiangwanpeng Exp $
  */
-public interface SegmentEsService {
+public interface SegmentStorage {
 
   TraceBrief queryBasicTraces(final String tenant, final String serviceName,
       final String serviceInstanceName, final String endpointName, final List<String> traceIds,

@@ -5,7 +5,7 @@ package io.holoinsight.server.storage.server.service.impl;
 
 import io.holoinsight.server.common.springboot.ConditionalOnFeature;
 import io.holoinsight.server.storage.common.model.query.Endpoint;
-import io.holoinsight.server.storage.engine.elasticsearch.service.EndpointEsService;
+import io.holoinsight.server.storage.engine.EndpointStorage;
 import io.holoinsight.server.storage.server.service.EndpointService;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +19,7 @@ import java.util.List;
 public class EndpointServiceImpl implements EndpointService {
 
   @Autowired
-  private EndpointEsService endpointEsService;
+  private EndpointStorage endpointEsService;
 
   @Override
   public List<Endpoint> getEndpointList(String tenant, String service, long startTime, long endTime)

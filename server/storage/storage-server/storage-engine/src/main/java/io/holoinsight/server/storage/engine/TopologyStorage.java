@@ -1,7 +1,7 @@
 /*
  * Copyright 2022 Holoinsight Project Authors. Licensed under Apache-2.0.
  */
-package io.holoinsight.server.storage.engine.elasticsearch.service;
+package io.holoinsight.server.storage.engine;
 
 import io.holoinsight.server.storage.common.model.query.Call;
 import io.holoinsight.server.storage.common.model.query.ResponseMetric;
@@ -10,7 +10,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
-public interface TopologyEsService {
+public interface TopologyStorage {
   List<Call> getTenantCalls(String tenant, long startTime, long endTime,
       Map<String, String> termParams) throws IOException;
 

@@ -11,7 +11,7 @@ import io.holoinsight.server.storage.common.model.specification.OtlpMappings;
 import io.holoinsight.server.storage.engine.MetricDefine;
 import io.holoinsight.server.storage.engine.MetricsManager;
 import io.holoinsight.server.storage.engine.elasticsearch.model.SpanEsDO;
-import io.holoinsight.server.storage.engine.elasticsearch.service.MetricEsService;
+import io.holoinsight.server.storage.engine.MetricStorage;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.RequestOptions;
@@ -46,7 +46,7 @@ import java.util.stream.Collectors;
  */
 @ConditionalOnFeature("trace")
 @Service("spanMetricEsServiceImpl")
-public class SpanMetricEsServiceImpl implements MetricEsService {
+public class SpanMetricEsServiceImpl implements MetricStorage {
 
   private static final int AGG_TERM_MAX_SIZE = 100;
 

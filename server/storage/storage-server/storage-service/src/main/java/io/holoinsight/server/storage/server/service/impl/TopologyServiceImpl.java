@@ -13,7 +13,7 @@ import io.holoinsight.server.storage.common.utils.IDManager;
 import io.holoinsight.server.storage.server.cache.NetworkAddressMappingCache;
 import io.holoinsight.server.storage.engine.elasticsearch.model.NetworkAddressMappingEsDO;
 import io.holoinsight.server.storage.engine.elasticsearch.model.SpanEsDO;
-import io.holoinsight.server.storage.engine.elasticsearch.service.TopologyEsService;
+import io.holoinsight.server.storage.engine.TopologyStorage;
 import io.holoinsight.server.storage.server.service.TopologyService;
 
 import org.apache.commons.lang3.StringUtils;
@@ -35,7 +35,7 @@ import java.util.stream.Collectors;
 public class TopologyServiceImpl implements TopologyService {
 
   @Autowired
-  private TopologyEsService topologyEsService;
+  private TopologyStorage topologyEsService;
 
   @Autowired
   private NetworkAddressMappingCache networkAddressMappingCache;
