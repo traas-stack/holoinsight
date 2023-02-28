@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.scheduling.annotation.Scheduled;
 
+import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -40,7 +41,8 @@ public class ModelInstallManager {
    * 
    * @throws IOException
    */
-  @Scheduled(initialDelay = 60000, fixedRate = 60000)
+  //@Scheduled(initialDelay = 60000, fixedRate = 60000)
+  @PostConstruct
   public void start() throws IOException {
     List<Model> models = scanModels();
     for (Model model : models) {
