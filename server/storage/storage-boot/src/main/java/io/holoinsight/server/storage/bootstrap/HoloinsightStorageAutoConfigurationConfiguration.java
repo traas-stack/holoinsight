@@ -53,7 +53,7 @@ public class HoloinsightStorageAutoConfigurationConfiguration {
       return new TraceOtelServiceImpl();
     }
 
-    @Bean
+    @Bean("esModelInstaller")
     public EsModelInstaller esModelInstaller() {
       return new EsModelInstaller();
     }
@@ -73,7 +73,7 @@ public class HoloinsightStorageAutoConfigurationConfiguration {
       return new ModelInstallManager();
     }
 
-    @Bean
+    @Bean("esDataCleaner")
     public EsDataCleaner esDataCleaner() {
       return new EsDataCleaner();
     }

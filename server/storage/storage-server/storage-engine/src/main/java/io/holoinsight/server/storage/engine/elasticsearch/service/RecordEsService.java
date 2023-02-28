@@ -45,8 +45,8 @@ public class RecordEsService<T extends RecordEsDO> {
       });
       BulkResponse bulkItemRsp = esClient.bulk(bulkRequest, RequestOptions.DEFAULT);
     }
-    log.info("[apm] batch-insert finish, size={}, cost={}", CollectionUtils.size(entities),
-        stopWatch.getTime());
+    log.info("[apm] batch-insert finish, engine=elasticsearch, size={}, cost={}",
+        CollectionUtils.size(entities), stopWatch.getTime());
   }
 
   private static String writeIndexName(String indexName, long timeBucket) {
