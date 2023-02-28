@@ -9,8 +9,8 @@ import io.holoinsight.server.storage.engine.ServiceRelationStorage;
 import org.springframework.stereotype.Service;
 
 @ConditionalOnFeature("trace")
-@Service("serviceRelationEsServiceImpl")
-public class ServiceRelationEsServiceImpl extends RecordEsService<ServiceRelationEsDO>
+@Service("serviceRelationEsStorage")
+public class ServiceRelationEsStorage extends RecordEsStorage<ServiceRelationEsDO>
     implements ServiceRelationStorage {
 
 }

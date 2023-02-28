@@ -21,7 +21,7 @@ import java.util.List;
 public class SlowSqlServiceImpl implements SlowSqlService {
 
   @Resource
-  @Qualifier("slowSqlEsServiceImpl")
+  @Qualifier("slowSqlEsStorage")
   private SlowSqlStorage slowSqlEsService;
 
   @Override

@@ -24,7 +24,7 @@ import java.util.List;
 public class VirtualComponentServiceImpl implements VirtualComponentService {
 
   @Resource
-  @Qualifier("virtualComponentEsServiceImpl")
+  @Qualifier("virtualComponentEsStorage")
   private VirtualComponentStorage virtualComponentEsService;
 
   @Override

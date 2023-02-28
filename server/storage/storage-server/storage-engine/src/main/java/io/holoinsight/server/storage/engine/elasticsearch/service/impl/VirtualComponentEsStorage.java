@@ -29,8 +29,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 @ConditionalOnFeature("trace")
-@Service("virtualComponentEsServiceImpl")
-public class VirtualComponentEsServiceImpl implements VirtualComponentStorage {
+@Service("virtualComponentEsStorage")
+public class VirtualComponentEsStorage implements VirtualComponentStorage {
 
   @Autowired
   private RestHighLevelClient client;

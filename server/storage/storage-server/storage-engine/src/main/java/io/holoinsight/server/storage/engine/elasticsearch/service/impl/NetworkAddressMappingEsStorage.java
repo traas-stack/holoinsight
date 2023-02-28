@@ -22,8 +22,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 @ConditionalOnFeature("trace")
-@Service("networkAddressMappingEsServiceImpl")
-public class NetworkAddressMappingEsServiceImpl extends RecordEsService<NetworkAddressMappingEsDO>
+@Service("networkAddressMappingEsStorage")
+public class NetworkAddressMappingEsStorage extends RecordEsStorage<NetworkAddressMappingEsDO>
     implements NetworkAddressMappingStorage {
 
   @Autowired

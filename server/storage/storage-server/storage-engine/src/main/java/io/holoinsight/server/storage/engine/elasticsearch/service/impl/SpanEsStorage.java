@@ -69,12 +69,12 @@ import static java.util.Objects.nonNull;
 
 /**
  * @author jiwliu
- * @version : SpanEsServiceImpl.java, v 0.1 2022年09月19日 14:21 xiangwanpeng Exp $
+ * @version : spanEsStorage.java, v 0.1 2022年09月19日 14:21 xiangwanpeng Exp $
  */
 @ConditionalOnFeature("trace")
-@Service("spanEsServiceImpl")
+@Service("spanEsStorage")
 @Slf4j
-public class SpanEsServiceImpl extends RecordEsService<SpanEsDO> implements SpanStorage {
+public class SpanEsStorage extends RecordEsStorage<SpanEsDO> implements SpanStorage {
 
   private static final int SPAN_QUERY_MAX_SIZE = 2000;
 

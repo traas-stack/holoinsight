@@ -26,7 +26,7 @@ import java.util.Map;
 public class MetricServiceImpl implements MetricService {
 
   @Autowired
-  @Qualifier("spanMetricEsServiceImpl")
+  @Qualifier("spanMetricEsStorage")
   private MetricStorage metricEsService;
 
   @Override

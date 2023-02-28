@@ -35,7 +35,7 @@ import java.util.concurrent.TimeUnit;
 public class TraceServiceImpl implements TraceService {
 
   @Resource
-  @Qualifier("spanEsServiceImpl")
+  @Qualifier("spanEsStorage")
   private SpanStorage spanEsService;
 
   @Resource

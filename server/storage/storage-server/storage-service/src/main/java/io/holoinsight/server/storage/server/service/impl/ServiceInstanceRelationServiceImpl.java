@@ -21,7 +21,7 @@ import java.util.List;
 public class ServiceInstanceRelationServiceImpl implements ServiceInstanceRelationService {
 
   @Resource
-  @Qualifier("serviceInstanceRelationEsServiceImpl")
+  @Qualifier("serviceInstanceRelationEsStorage")
   private ServiceInstanceRelationStorage serviceInstanceRelationEsService;
 
   @Override

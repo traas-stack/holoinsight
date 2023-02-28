@@ -25,8 +25,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 @ConditionalOnFeature("trace")
-@Service("slowSqlEsServiceImpl")
-public class SlowSqlEsServiceImpl extends RecordEsService<SlowSqlEsDO> implements SlowSqlStorage {
+@Service("slowSqlEsStorage")
+public class SlowSqlEsStorage extends RecordEsStorage<SlowSqlEsDO> implements SlowSqlStorage {
 
   @Autowired
   private RestHighLevelClient client;

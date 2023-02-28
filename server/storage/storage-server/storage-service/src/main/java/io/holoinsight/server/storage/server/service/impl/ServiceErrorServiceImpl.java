@@ -17,7 +17,7 @@ import java.util.List;
 public class ServiceErrorServiceImpl implements ServiceErrorService {
 
   @Resource
-  @Qualifier("serviceErrorEsServiceImpl")
+  @Qualifier("serviceErrorEsStorage")
   private ServiceErrorStorage serviceErrorEsService;
 
   @Override

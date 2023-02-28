@@ -21,7 +21,7 @@ import java.util.List;
 public class EndpointRelationServiceImpl implements EndpointRelationService {
 
   @Resource
-  @Qualifier("endpointRelationEsServiceImpl")
+  @Qualifier("endpointRelationEsStorage")
   private EndpointRelationStorage endpointRelationEsService;
 
   @Override

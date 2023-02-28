@@ -37,7 +37,7 @@ import java.util.stream.Collectors;
 public class TopologyServiceImpl implements TopologyService {
 
   @Resource
-  @Qualifier("topologyEsServiceImpl")
+  @Qualifier("topologyEsStorage")
   private TopologyStorage topologyEsService;
 
   @Autowired

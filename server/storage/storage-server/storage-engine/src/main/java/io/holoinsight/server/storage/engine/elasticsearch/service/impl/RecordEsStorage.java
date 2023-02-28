@@ -30,7 +30,7 @@ import java.util.List;
 @ConditionalOnFeature("trace")
 @Service
 @Slf4j
-public class RecordEsService<T extends RecordEsDO> implements RecordStorage<T> {
+public class RecordEsStorage<T extends RecordEsDO> implements RecordStorage<T> {
 
   @Autowired
   private RestHighLevelClient esClient;

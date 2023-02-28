@@ -21,7 +21,7 @@ import java.util.List;
 public class NetworkAddressMappingServiceImpl implements NetworkAddressMappingService {
 
   @Resource
-  @Qualifier("networkAddressMappingEsServiceImpl")
+  @Qualifier("networkAddressMappingEsStorage")
   private NetworkAddressMappingStorage networkAddressMappingEsService;
 
   @Override

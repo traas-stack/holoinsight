@@ -20,7 +20,7 @@ import java.util.List;
 public class ServiceOverviewServiceImpl implements ServiceOverviewService {
 
   @Resource
-  @Qualifier("serviceOverviewEsServiceImpl")
+  @Qualifier("serviceOverviewEsStorage")
   private ServiceOverviewStorage serviceOverviewEsService;
 
   @Override

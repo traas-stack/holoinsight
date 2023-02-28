@@ -24,8 +24,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 @ConditionalOnFeature("trace")
-@Service("serviceOverviewEsServiceImpl")
-public class ServiceOverviewEsServiceImpl implements ServiceOverviewStorage {
+@Service("serviceOverviewEsStorage")
+public class ServiceOverviewEsStorage implements ServiceOverviewStorage {
 
   @Autowired
   private RestHighLevelClient client;

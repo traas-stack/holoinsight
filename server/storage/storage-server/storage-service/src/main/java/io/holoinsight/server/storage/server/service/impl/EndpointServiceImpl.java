@@ -19,7 +19,7 @@ import java.util.List;
 public class EndpointServiceImpl implements EndpointService {
 
   @Resource
-  @Qualifier("endpointEsServiceImpl")
+  @Qualifier("endpointEsStorage")
   private EndpointStorage endpointEsService;
 
   @Override

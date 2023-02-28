@@ -23,8 +23,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 @ConditionalOnFeature("trace")
-@Service("endpointEsServiceImpl")
-public class EndpointEsServiceImpl implements EndpointStorage {
+@Service("endpointEsStorage")
+public class EndpointEsStorage implements EndpointStorage {
 
   @Autowired
   private RestHighLevelClient client;
