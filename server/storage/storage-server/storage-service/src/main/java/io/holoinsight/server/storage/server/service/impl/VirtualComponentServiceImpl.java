@@ -7,10 +7,9 @@ import io.holoinsight.server.common.springboot.ConditionalOnFeature;
 import io.holoinsight.server.storage.common.constants.Const;
 import io.holoinsight.server.storage.common.model.query.VirtualComponent;
 import io.holoinsight.server.storage.common.model.specification.sw.RequestType;
-import io.holoinsight.server.storage.engine.VirtualComponentStorage;
+import io.holoinsight.server.storage.engine.storage.VirtualComponentStorage;
 import io.holoinsight.server.storage.server.service.VirtualComponentService;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 

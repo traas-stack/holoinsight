@@ -11,9 +11,9 @@ import io.holoinsight.server.storage.common.model.query.ResponseMetric;
 import io.holoinsight.server.storage.common.model.query.Topology;
 import io.holoinsight.server.storage.common.utils.IDManager;
 import io.holoinsight.server.storage.server.cache.NetworkAddressMappingCache;
-import io.holoinsight.server.storage.engine.elasticsearch.model.NetworkAddressMappingEsDO;
-import io.holoinsight.server.storage.engine.elasticsearch.model.SpanEsDO;
-import io.holoinsight.server.storage.engine.TopologyStorage;
+import io.holoinsight.server.storage.engine.model.NetworkAddressMappingDO;
+import io.holoinsight.server.storage.engine.model.SpanDO;
+import io.holoinsight.server.storage.engine.storage.TopologyStorage;
 import io.holoinsight.server.storage.server.service.TopologyService;
 
 import org.apache.commons.lang3.StringUtils;
@@ -207,11 +207,11 @@ public class TopologyServiceImpl implements TopologyService {
     List<String> realNode =
         nodes.stream().filter(Node::isReal).map(Node::getName).collect(Collectors.toList());
 
-    String aggField = SpanEsDO.resource(SpanEsDO.SERVICE_NAME);
+    String aggField = SpanDO.resource(SpanDO.SERVICE_NAME);
     if (nodes.get(0) instanceof Node.EndpointNode) {
-      aggField = SpanEsDO.NAME;
+      aggField = SpanDO.NAME;
     } else if (nodes.get(0) instanceof Node.ServiceInstanceNode) {
-      aggField = SpanEsDO.resource(SpanEsDO.SERVICE_INSTANCE_NAME);
+      aggField = SpanDO.resource(SpanDO.SERVICE_INSTANCE_NAME);
     }
 
     Map<String, ResponseMetric> nodeMetric = topologyEsService.getServiceAggMetric(tenant, realNode,
@@ -240,7 +240,7 @@ public class TopologyServiceImpl implements TopologyService {
         /*
          * If alias exists, mean this network address is representing a real service.
          */
-        NetworkAddressMappingEsDO networkAddressAlias =
+        NetworkAddressMappingDO networkAddressAlias =
             networkAddressMappingCache.get(call.getDestName());
 
         String serviceId = IDManager.ServiceID.buildId(networkAddressAlias.getServiceName(), true);
@@ -284,7 +284,7 @@ public class TopologyServiceImpl implements TopologyService {
         /*
          * If alias exists, mean this network address is representing a real service.
          */
-        NetworkAddressMappingEsDO networkAddressAlias =
+        NetworkAddressMappingDO networkAddressAlias =
             networkAddressMappingCache.get(call.getDestName());
 
         String serviceId = IDManager.ServiceID.buildId(networkAddressAlias.getServiceName(), true);

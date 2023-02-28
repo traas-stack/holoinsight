@@ -1,7 +1,7 @@
 /*
  * Copyright 2022 Holoinsight Project Authors. Licensed under Apache-2.0.
  */
-package io.holoinsight.server.storage.engine;
+package io.holoinsight.server.storage.engine.storage;
 
 import io.holoinsight.server.storage.common.model.query.Pagination;
 import io.holoinsight.server.storage.common.model.query.QueryOrder;
@@ -10,7 +10,7 @@ import io.holoinsight.server.storage.common.model.query.TraceBrief;
 import io.holoinsight.server.storage.common.model.specification.sw.Tag;
 import io.holoinsight.server.storage.common.model.specification.sw.Trace;
 import io.holoinsight.server.storage.common.model.specification.sw.TraceState;
-import io.holoinsight.server.storage.engine.elasticsearch.model.SpanEsDO;
+import io.holoinsight.server.storage.engine.model.SpanDO;
 
 import java.util.List;
 
@@ -28,7 +28,7 @@ public interface SpanStorage {
 
   Trace queryTrace(final String traceId) throws Exception;
 
-  void batchInsert(final List<SpanEsDO> spans) throws Exception;
+  void batchInsert(final List<SpanDO> spans) throws Exception;
 
   List<StatisticData> statisticTrace(long startTime, long endTime) throws Exception;
 }

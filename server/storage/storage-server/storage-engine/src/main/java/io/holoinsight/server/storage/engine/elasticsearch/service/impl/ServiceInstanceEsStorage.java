@@ -6,8 +6,8 @@ package io.holoinsight.server.storage.engine.elasticsearch.service.impl;
 import io.holoinsight.server.common.springboot.ConditionalOnFeature;
 import io.holoinsight.server.storage.common.model.query.ServiceInstance;
 import io.holoinsight.server.storage.common.model.specification.otel.SpanKind;
-import io.holoinsight.server.storage.engine.elasticsearch.model.SpanEsDO;
-import io.holoinsight.server.storage.engine.ServiceInstanceStorage;
+import io.holoinsight.server.storage.engine.model.SpanDO;
+import io.holoinsight.server.storage.engine.storage.ServiceInstanceStorage;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.RequestOptions;
@@ -36,24 +36,24 @@ public class ServiceInstanceEsStorage implements ServiceInstanceStorage {
     List<ServiceInstance> result = new ArrayList<>();
 
     BoolQueryBuilder queryBuilder = QueryBuilders.boolQuery()
-        .must(QueryBuilders.termQuery(SpanEsDO.resource(SpanEsDO.TENANT), tenant))
+        .must(QueryBuilders.termQuery(SpanDO.resource(SpanDO.TENANT), tenant))
         .must(QueryBuilders.boolQuery()
-            .should(QueryBuilders.termQuery(SpanEsDO.KIND, SpanKind.SERVER))
-            .should(QueryBuilders.termQuery(SpanEsDO.KIND, SpanKind.CONSUMER)))
-        .must(QueryBuilders.termQuery(SpanEsDO.resource(SpanEsDO.SERVICE_NAME), service))
-        .must(QueryBuilders.rangeQuery(SpanEsDO.START_TIME).gte(startTime).lte(endTime));
+            .should(QueryBuilders.termQuery(SpanDO.KIND, SpanKind.SERVER))
+            .should(QueryBuilders.termQuery(SpanDO.KIND, SpanKind.CONSUMER)))
+        .must(QueryBuilders.termQuery(SpanDO.resource(SpanDO.SERVICE_NAME), service))
+        .must(QueryBuilders.rangeQuery(SpanDO.START_TIME).gte(startTime).lte(endTime));
 
     SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
     sourceBuilder.size(1000);
     sourceBuilder.query(queryBuilder);
     sourceBuilder
-        .aggregation(CommonBuilder.buildAgg(SpanEsDO.resource(SpanEsDO.SERVICE_INSTANCE_NAME)));
+        .aggregation(CommonBuilder.buildAgg(SpanDO.resource(SpanDO.SERVICE_INSTANCE_NAME)));
 
-    SearchRequest searchRequest = new SearchRequest(SpanEsDO.INDEX_NAME);
+    SearchRequest searchRequest = new SearchRequest(SpanDO.INDEX_NAME);
     searchRequest.source(sourceBuilder);
     SearchResponse response = client.search(searchRequest, RequestOptions.DEFAULT);
 
-    Terms terms = response.getAggregations().get(SpanEsDO.resource(SpanEsDO.SERVICE_INSTANCE_NAME));
+    Terms terms = response.getAggregations().get(SpanDO.resource(SpanDO.SERVICE_INSTANCE_NAME));
     for (Terms.Bucket bucket : terms.getBuckets()) {
       String serviceInstanceName = bucket.getKey().toString();
 

@@ -10,10 +10,10 @@ import io.holoinsight.server.storage.common.model.specification.sw.Layer;
 import io.holoinsight.server.storage.common.model.specification.sw.NetworkAddressMapping;
 import io.holoinsight.server.storage.common.utils.TimeBucket;
 import io.holoinsight.server.storage.common.utils.TimeUtils;
-import io.holoinsight.server.storage.engine.elasticsearch.model.SlowSqlEsDO;
+import io.holoinsight.server.storage.engine.model.SlowSqlDO;
 import io.holoinsight.server.storage.grpc.trace.RefType;
 import io.holoinsight.server.storage.server.cache.NetworkAddressMappingCache;
-import io.holoinsight.server.storage.engine.elasticsearch.model.NetworkAddressMappingEsDO;
+import io.holoinsight.server.storage.engine.model.NetworkAddressMappingDO;
 import io.holoinsight.server.storage.receiver.common.PublicAttr;
 import io.holoinsight.server.storage.receiver.common.TransformAttr;
 import io.holoinsight.server.storage.receiver.builder.RelationBuilder;
@@ -134,7 +134,7 @@ public class RelationAnalysis {
     sourceBuilder.setSourceEndpointName(
         endpointMap.getOrDefault(Hex.encodeHexString(span.getParentSpanId().toByteArray()), ""));
 
-    final NetworkAddressMappingEsDO networkAddressMapping =
+    final NetworkAddressMappingDO networkAddressMapping =
         networkAddressMappingCache.get(networkAddress);
     if (networkAddressMapping == null) {
       sourceBuilder.setDestServiceName(networkAddress);
@@ -153,9 +153,9 @@ public class RelationAnalysis {
   }
 
 
-  public List<SlowSqlEsDO> analysisClientSpan(Span span, Map<String, AnyValue> spanAttrMap,
-      Map<String, AnyValue> resourceAttrMap) {
-    List<SlowSqlEsDO> result = new ArrayList<>(10);
+  public List<SlowSqlDO> analysisClientSpan(Span span, Map<String, AnyValue> spanAttrMap,
+                                            Map<String, AnyValue> resourceAttrMap) {
+    List<SlowSqlDO> result = new ArrayList<>(10);
 
     String serviceName =
         resourceAttrMap.get(ResourceAttributes.SERVICE_NAME.getKey()).getStringValue();
@@ -172,7 +172,7 @@ public class RelationAnalysis {
 
     String dbAddress = peerPort == null ? peerName.getStringValue()
         : peerName.getStringValue() + ":" + peerPort.getStringValue();
-    SlowSqlEsDO slowSqlEsDO = new SlowSqlEsDO();
+    SlowSqlDO slowSqlEsDO = new SlowSqlDO();
     slowSqlEsDO.setTenant(resourceAttrMap.get(Const.TENANT).getStringValue());
     slowSqlEsDO.setServiceName(serviceName);
     slowSqlEsDO.setAddress(dbAddress);
@@ -250,9 +250,9 @@ public class RelationAnalysis {
    * @param span
    * @return
    */
-  public List<NetworkAddressMappingEsDO> generateNetworkAddressMapping(Span span,
-      Map<String, AnyValue> spanAttrMap, Map<String, AnyValue> resourceAttrMap) {
-    List<NetworkAddressMappingEsDO> networkAddressMappings = new ArrayList<>(10);
+  public List<NetworkAddressMappingDO> generateNetworkAddressMapping(Span span,
+                                                                     Map<String, AnyValue> spanAttrMap, Map<String, AnyValue> resourceAttrMap) {
+    List<NetworkAddressMappingDO> networkAddressMappings = new ArrayList<>(10);
 
     for (Span.Link link : span.getLinksList()) {
       Map<String, AnyValue> linkAttrMap = TransformAttr.attList2Map(link.getAttributesList());
@@ -278,13 +278,13 @@ public class RelationAnalysis {
       networkAddressMapping.prepare();
 
       // address mapping has existed
-      NetworkAddressMappingEsDO old = networkAddressMappingCache.get(networkAddressUsedAtPeer);
+      NetworkAddressMappingDO old = networkAddressMappingCache.get(networkAddressUsedAtPeer);
       if (old != null && networkAddressMapping.getServiceName().equals(old.getServiceName())) {
         continue;
       }
 
       networkAddressMappings
-          .add(NetworkAddressMappingEsDO.fromNetworkAddressMapping(networkAddressMapping));
+          .add(NetworkAddressMappingDO.fromNetworkAddressMapping(networkAddressMapping));
     }
 
     return networkAddressMappings;

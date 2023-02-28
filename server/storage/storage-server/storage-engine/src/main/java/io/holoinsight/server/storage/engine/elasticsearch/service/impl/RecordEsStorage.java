@@ -5,8 +5,8 @@ package io.holoinsight.server.storage.engine.elasticsearch.service.impl;
 
 import io.holoinsight.server.common.springboot.ConditionalOnFeature;
 import io.holoinsight.server.storage.common.constants.Const;
-import io.holoinsight.server.storage.engine.elasticsearch.model.RecordEsDO;
-import io.holoinsight.server.storage.engine.RecordStorage;
+import io.holoinsight.server.storage.engine.model.RecordDO;
+import io.holoinsight.server.storage.engine.storage.RecordStorage;
 import io.holoinsight.server.storage.engine.elasticsearch.utils.EsGsonUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
@@ -30,7 +30,7 @@ import java.util.List;
 @ConditionalOnFeature("trace")
 @Service
 @Slf4j
-public class RecordEsStorage<T extends RecordEsDO> implements RecordStorage<T> {
+public class RecordEsStorage<T extends RecordDO> implements RecordStorage<T> {
 
   @Autowired
   private RestHighLevelClient esClient;

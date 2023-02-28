@@ -7,11 +7,11 @@ import io.holoinsight.server.common.springboot.ConditionalOnFeature;
 import io.holoinsight.server.storage.common.model.query.Call;
 import io.holoinsight.server.storage.common.model.query.ResponseMetric;
 import io.holoinsight.server.storage.common.model.specification.otel.SpanKind;
-import io.holoinsight.server.storage.engine.TopologyStorage;
-import io.holoinsight.server.storage.engine.elasticsearch.model.EndpointRelationEsDO;
-import io.holoinsight.server.storage.engine.elasticsearch.model.ServiceInstanceRelationEsDO;
-import io.holoinsight.server.storage.engine.elasticsearch.model.ServiceRelationEsDO;
-import io.holoinsight.server.storage.engine.elasticsearch.model.SpanEsDO;
+import io.holoinsight.server.storage.engine.storage.TopologyStorage;
+import io.holoinsight.server.storage.engine.model.EndpointRelationDO;
+import io.holoinsight.server.storage.engine.model.ServiceInstanceRelationDO;
+import io.holoinsight.server.storage.engine.model.ServiceRelationDO;
+import io.holoinsight.server.storage.engine.model.SpanDO;
 
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
@@ -42,18 +42,18 @@ public class TopologyEsStorage implements TopologyStorage {
       long startTime, long endTime, String sourceOrDest, Map<String, String> termParams)
       throws IOException {
     BoolQueryBuilder queryBuilder = QueryBuilders.boolQuery()
-        .must(QueryBuilders.termQuery(EndpointRelationEsDO.TENANT, tenant))
+        .must(QueryBuilders.termQuery(EndpointRelationDO.TENANT, tenant))
         .must(QueryBuilders.termQuery(sourceOrDest + "_service_name", service))
         .must(QueryBuilders.termQuery(sourceOrDest + "_endpoint_name", endpoint)).must(
-            QueryBuilders.rangeQuery(EndpointRelationEsDO.START_TIME).gte(startTime).lte(endTime));
+            QueryBuilders.rangeQuery(EndpointRelationDO.START_TIME).gte(startTime).lte(endTime));
 
     CommonBuilder.addTermParams(queryBuilder, termParams);
     SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
     sourceBuilder.size(1000);
     sourceBuilder.query(queryBuilder);
-    sourceBuilder.aggregation(CommonBuilder.buildAgg(EndpointRelationEsDO.ENTITY_ID));
+    sourceBuilder.aggregation(CommonBuilder.buildAgg(EndpointRelationDO.ENTITY_ID));
 
-    SearchRequest searchRequest = new SearchRequest(EndpointRelationEsDO.INDEX_NAME);
+    SearchRequest searchRequest = new SearchRequest(EndpointRelationDO.INDEX_NAME);
     searchRequest.source(sourceBuilder);
     SearchResponse response = client.search(searchRequest, RequestOptions.DEFAULT);
 
@@ -64,17 +64,17 @@ public class TopologyEsStorage implements TopologyStorage {
   public List<Call> getComponentCalls(String tenant, String address, long startTime, long endTime,
       String sourceOrDest, Map<String, String> termParams) throws IOException {
     BoolQueryBuilder queryBuilder = QueryBuilders.boolQuery()
-        .must(QueryBuilders.termQuery(EndpointRelationEsDO.TENANT, tenant))
+        .must(QueryBuilders.termQuery(EndpointRelationDO.TENANT, tenant))
         .must(QueryBuilders.termQuery(sourceOrDest + "_service_name", address))
-        .must(QueryBuilders.rangeQuery(ServiceRelationEsDO.START_TIME).gte(startTime).lte(endTime));
+        .must(QueryBuilders.rangeQuery(ServiceRelationDO.START_TIME).gte(startTime).lte(endTime));
 
     CommonBuilder.addTermParams(queryBuilder, termParams);
     SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
     sourceBuilder.size(1000);
     sourceBuilder.query(queryBuilder);
-    sourceBuilder.aggregation(CommonBuilder.buildAgg(EndpointRelationEsDO.ENTITY_ID));
+    sourceBuilder.aggregation(CommonBuilder.buildAgg(EndpointRelationDO.ENTITY_ID));
 
-    SearchRequest searchRequest = new SearchRequest(ServiceRelationEsDO.INDEX_NAME);
+    SearchRequest searchRequest = new SearchRequest(ServiceRelationDO.INDEX_NAME);
     searchRequest.source(sourceBuilder);
     SearchResponse response = client.search(searchRequest, RequestOptions.DEFAULT);
 
@@ -87,13 +87,13 @@ public class TopologyEsStorage implements TopologyStorage {
       throws IOException {
     BoolQueryBuilder queryBuilder =
         QueryBuilders.boolQuery().must(QueryBuilders.termsQuery(aggField, fieldValueList))
-            .must(QueryBuilders.termQuery(SpanEsDO.resource(SpanEsDO.TENANT), tenant))
-            .must(QueryBuilders.rangeQuery(SpanEsDO.START_TIME).gte(startTime).lte(endTime));
+            .must(QueryBuilders.termQuery(SpanDO.resource(SpanDO.TENANT), tenant))
+            .must(QueryBuilders.rangeQuery(SpanDO.START_TIME).gte(startTime).lte(endTime));
 
-    if (!SpanEsDO.NAME.equals(aggField)) {
+    if (!SpanDO.NAME.equals(aggField)) {
       queryBuilder.must(
-          QueryBuilders.boolQuery().should(QueryBuilders.termQuery(SpanEsDO.KIND, SpanKind.SERVER))
-              .should(QueryBuilders.termQuery(SpanEsDO.KIND, SpanKind.CONSUMER)));
+          QueryBuilders.boolQuery().should(QueryBuilders.termQuery(SpanDO.KIND, SpanKind.SERVER))
+              .should(QueryBuilders.termQuery(SpanDO.KIND, SpanKind.CONSUMER)));
     }
 
     CommonBuilder.addTermParamsWithAttr(queryBuilder, termParams);
@@ -102,7 +102,7 @@ public class TopologyEsStorage implements TopologyStorage {
     sourceBuilder.query(queryBuilder);
     sourceBuilder.aggregation(CommonBuilder.buildAgg(aggField));
 
-    SearchRequest searchRequest = new SearchRequest(SpanEsDO.INDEX_NAME);
+    SearchRequest searchRequest = new SearchRequest(SpanDO.INDEX_NAME);
     searchRequest.source(sourceBuilder);
     SearchResponse response = client.search(searchRequest, RequestOptions.DEFAULT);
 
@@ -114,19 +114,19 @@ public class TopologyEsStorage implements TopologyStorage {
       String serviceInstance, long startTime, long endTime, String sourceOrDest,
       Map<String, String> termParams) throws IOException {
     BoolQueryBuilder queryBuilder = QueryBuilders.boolQuery()
-        .must(QueryBuilders.termQuery(ServiceInstanceRelationEsDO.TENANT, tenant))
+        .must(QueryBuilders.termQuery(ServiceInstanceRelationDO.TENANT, tenant))
         .must(QueryBuilders.termQuery(sourceOrDest + "_service_name", service))
         .must(QueryBuilders.termQuery(sourceOrDest + "_service_instance_name", serviceInstance))
-        .must(QueryBuilders.rangeQuery(ServiceInstanceRelationEsDO.START_TIME).gte(startTime)
+        .must(QueryBuilders.rangeQuery(ServiceInstanceRelationDO.START_TIME).gte(startTime)
             .lte(endTime));
 
     CommonBuilder.addTermParams(queryBuilder, termParams);
     SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
     sourceBuilder.size(1000);
     sourceBuilder.query(queryBuilder);
-    sourceBuilder.aggregation(CommonBuilder.buildAgg(ServiceInstanceRelationEsDO.ENTITY_ID));
+    sourceBuilder.aggregation(CommonBuilder.buildAgg(ServiceInstanceRelationDO.ENTITY_ID));
 
-    SearchRequest searchRequest = new SearchRequest(ServiceInstanceRelationEsDO.INDEX_NAME);
+    SearchRequest searchRequest = new SearchRequest(ServiceInstanceRelationDO.INDEX_NAME);
     searchRequest.source(sourceBuilder);
     SearchResponse response = client.search(searchRequest, RequestOptions.DEFAULT);
 
@@ -137,16 +137,16 @@ public class TopologyEsStorage implements TopologyStorage {
   public List<Call> getTenantCalls(String tenant, long startTime, long endTime,
       Map<String, String> termParams) throws IOException {
     BoolQueryBuilder queryBuilder = QueryBuilders.boolQuery()
-        .must(QueryBuilders.termQuery(ServiceRelationEsDO.TENANT, tenant))
-        .must(QueryBuilders.rangeQuery(ServiceRelationEsDO.START_TIME).gte(startTime).lte(endTime));
+        .must(QueryBuilders.termQuery(ServiceRelationDO.TENANT, tenant))
+        .must(QueryBuilders.rangeQuery(ServiceRelationDO.START_TIME).gte(startTime).lte(endTime));
 
     CommonBuilder.addTermParams(queryBuilder, termParams);
     SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
     sourceBuilder.size(1000);
     sourceBuilder.query(queryBuilder);
-    sourceBuilder.aggregation(CommonBuilder.buildAgg(ServiceRelationEsDO.ENTITY_ID));
+    sourceBuilder.aggregation(CommonBuilder.buildAgg(ServiceRelationDO.ENTITY_ID));
 
-    SearchRequest searchRequest = new SearchRequest(ServiceRelationEsDO.INDEX_NAME);
+    SearchRequest searchRequest = new SearchRequest(ServiceRelationDO.INDEX_NAME);
     searchRequest.source(sourceBuilder);
     SearchResponse response = client.search(searchRequest, RequestOptions.DEFAULT);
 
@@ -166,10 +166,10 @@ public class TopologyEsStorage implements TopologyStorage {
 
   private List<Call> buildCalls(SearchResponse response) {
     List<Call> calls = new ArrayList<>();
-    Terms terms = response.getAggregations().get(ServiceRelationEsDO.ENTITY_ID);
+    Terms terms = response.getAggregations().get(ServiceRelationDO.ENTITY_ID);
     for (Terms.Bucket bucket : terms.getBuckets()) {
       String entityId = bucket.getKey().toString();
-      Terms componentTerm = bucket.getAggregations().get(ServiceRelationEsDO.COMPONENT);
+      Terms componentTerm = bucket.getAggregations().get(ServiceRelationDO.COMPONENT);
       String component = componentTerm.getBuckets().get(0).getKey().toString();
 
       Call call = new Call();
@@ -184,10 +184,10 @@ public class TopologyEsStorage implements TopologyStorage {
 
   private List<Call.DeepCall> buildServiceInstanceCalls(SearchResponse response) {
     List<Call.DeepCall> calls = new ArrayList<>();
-    Terms terms = response.getAggregations().get(EndpointRelationEsDO.ENTITY_ID);
+    Terms terms = response.getAggregations().get(EndpointRelationDO.ENTITY_ID);
     for (Terms.Bucket bucket : terms.getBuckets()) {
       String entityId = bucket.getKey().toString();
-      Terms componentTerm = bucket.getAggregations().get(ServiceRelationEsDO.COMPONENT);
+      Terms componentTerm = bucket.getAggregations().get(ServiceRelationDO.COMPONENT);
       String component = componentTerm.getBuckets().get(0).getKey().toString();
 
       Call.DeepCall call = new Call.DeepCall();
@@ -202,7 +202,7 @@ public class TopologyEsStorage implements TopologyStorage {
 
   private List<Call.DeepCall> buildEndpointCalls(SearchResponse response) {
     List<Call.DeepCall> calls = new ArrayList<>();
-    Terms terms = response.getAggregations().get(EndpointRelationEsDO.ENTITY_ID);
+    Terms terms = response.getAggregations().get(EndpointRelationDO.ENTITY_ID);
     for (Terms.Bucket bucket : terms.getBuckets()) {
       String entityId = bucket.getKey().toString();
 

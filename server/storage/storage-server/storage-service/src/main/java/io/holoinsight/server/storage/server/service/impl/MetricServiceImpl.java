@@ -6,7 +6,7 @@ package io.holoinsight.server.storage.server.service.impl;
 import io.holoinsight.server.common.springboot.ConditionalOnFeature;
 import io.holoinsight.server.storage.common.model.query.Duration;
 import io.holoinsight.server.storage.common.model.query.MetricValues;
-import io.holoinsight.server.storage.engine.MetricStorage;
+import io.holoinsight.server.storage.engine.storage.MetricStorage;
 import io.holoinsight.server.storage.server.service.MetricService;
 
 import org.springframework.beans.factory.annotation.Autowired;

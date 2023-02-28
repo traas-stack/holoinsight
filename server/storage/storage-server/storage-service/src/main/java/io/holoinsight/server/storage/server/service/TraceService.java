@@ -10,9 +10,8 @@ import io.holoinsight.server.storage.common.model.query.TraceBrief;
 import io.holoinsight.server.storage.common.model.specification.sw.Tag;
 import io.holoinsight.server.storage.common.model.specification.sw.Trace;
 import io.holoinsight.server.storage.common.model.specification.sw.TraceState;
-import io.holoinsight.server.storage.engine.elasticsearch.model.SpanEsDO;
+import io.holoinsight.server.storage.engine.model.SpanDO;
 
-import java.io.IOException;
 import java.util.List;
 
 /**
@@ -29,7 +28,7 @@ public interface TraceService {
 
   Trace queryTrace(final String traceId) throws Exception;
 
-  void insertSpans(final List<SpanEsDO> spans) throws Exception;
+  void insertSpans(final List<SpanDO> spans) throws Exception;
 
   List<StatisticData> statisticTrace(long startTime, long endTime) throws Exception;
 }

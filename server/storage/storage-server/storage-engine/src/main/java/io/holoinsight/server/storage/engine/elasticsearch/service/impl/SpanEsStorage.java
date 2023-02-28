@@ -25,8 +25,8 @@ import io.holoinsight.server.storage.common.model.specification.sw.Tag;
 import io.holoinsight.server.storage.common.model.specification.sw.Trace;
 import io.holoinsight.server.storage.common.model.specification.sw.TraceState;
 import io.holoinsight.server.storage.common.utils.GsonUtils;
-import io.holoinsight.server.storage.engine.elasticsearch.model.SpanEsDO;
-import io.holoinsight.server.storage.engine.SpanStorage;
+import io.holoinsight.server.storage.engine.model.SpanDO;
+import io.holoinsight.server.storage.engine.storage.SpanStorage;
 import io.holoinsight.server.storage.engine.elasticsearch.utils.EsGsonUtils;
 import io.opentelemetry.proto.trace.v1.Status;
 import lombok.extern.slf4j.Slf4j;
@@ -74,7 +74,7 @@ import static java.util.Objects.nonNull;
 @ConditionalOnFeature("trace")
 @Service("spanEsStorage")
 @Slf4j
-public class SpanEsStorage extends RecordEsStorage<SpanEsDO> implements SpanStorage {
+public class SpanEsStorage extends RecordEsStorage<SpanDO> implements SpanStorage {
 
   private static final int SPAN_QUERY_MAX_SIZE = 2000;
 
@@ -93,14 +93,14 @@ public class SpanEsStorage extends RecordEsStorage<SpanEsDO> implements SpanStor
     searchSourceBuilder.query(boolQueryBuilder);
 
     if (StringUtils.isNotEmpty(tenant)) {
-      boolQueryBuilder.must(new TermQueryBuilder(SpanEsDO.resource(SpanEsDO.TENANT), tenant));
+      boolQueryBuilder.must(new TermQueryBuilder(SpanDO.resource(SpanDO.TENANT), tenant));
     }
     if (start != 0 && end != 0) {
-      boolQueryBuilder.must(new RangeQueryBuilder(SpanEsDO.START_TIME).gte(start).lte(end));
+      boolQueryBuilder.must(new RangeQueryBuilder(SpanDO.START_TIME).gte(start).lte(end));
     }
 
     if (minTraceDuration != 0 || maxTraceDuration != 0) {
-      RangeQueryBuilder rangeQueryBuilder = new RangeQueryBuilder(SpanEsDO.LATENCY);
+      RangeQueryBuilder rangeQueryBuilder = new RangeQueryBuilder(SpanDO.LATENCY);
       if (minTraceDuration != 0) {
         rangeQueryBuilder.gte(minTraceDuration);
       }
@@ -111,35 +111,35 @@ public class SpanEsStorage extends RecordEsStorage<SpanEsDO> implements SpanStor
     }
     if (StringUtils.isNotEmpty(serviceName)) {
       boolQueryBuilder
-          .must(new TermQueryBuilder(SpanEsDO.resource(SpanEsDO.SERVICE_NAME), serviceName));
+          .must(new TermQueryBuilder(SpanDO.resource(SpanDO.SERVICE_NAME), serviceName));
     }
     if (StringUtils.isNotEmpty(serviceInstanceName)) {
-      boolQueryBuilder.must(new TermQueryBuilder(SpanEsDO.resource(SpanEsDO.SERVICE_INSTANCE_NAME),
+      boolQueryBuilder.must(new TermQueryBuilder(SpanDO.resource(SpanDO.SERVICE_INSTANCE_NAME),
           serviceInstanceName));
     }
     if (!Strings.isNullOrEmpty(endpointName)) {
-      boolQueryBuilder.must(new TermQueryBuilder(SpanEsDO.NAME, endpointName));
+      boolQueryBuilder.must(new TermQueryBuilder(SpanDO.NAME, endpointName));
     }
     if (CollectionUtils.isNotEmpty(traceIds)) {
-      boolQueryBuilder.must(new TermsQueryBuilder(SpanEsDO.TRACE_ID, traceIds));
+      boolQueryBuilder.must(new TermsQueryBuilder(SpanDO.TRACE_ID, traceIds));
     }
     switch (traceState) {
       case ERROR:
         boolQueryBuilder
-            .must(new MatchQueryBuilder(SpanEsDO.TRACE_STATUS, StatusCode.ERROR.getCode()));
+            .must(new MatchQueryBuilder(SpanDO.TRACE_STATUS, StatusCode.ERROR.getCode()));
         break;
       case SUCCESS:
         boolQueryBuilder
-            .must(new MatchQueryBuilder(SpanEsDO.TRACE_STATUS, StatusCode.OK.getCode()));
+            .must(new MatchQueryBuilder(SpanDO.TRACE_STATUS, StatusCode.OK.getCode()));
         break;
     }
 
     switch (queryOrder) {
       case BY_START_TIME:
-        searchSourceBuilder.sort(SpanEsDO.START_TIME, SortOrder.DESC);
+        searchSourceBuilder.sort(SpanDO.START_TIME, SortOrder.DESC);
         break;
       case BY_DURATION:
-        searchSourceBuilder.sort(SpanEsDO.LATENCY, SortOrder.DESC);
+        searchSourceBuilder.sort(SpanDO.LATENCY, SortOrder.DESC);
         break;
     }
     if (CollectionUtils.isNotEmpty(tags)) {
@@ -154,20 +154,20 @@ public class SpanEsStorage extends RecordEsStorage<SpanEsDO> implements SpanStor
     searchSourceBuilder.from(from).size(limit);
 
     SearchRequest searchRequest =
-        new SearchRequest(new String[] {SpanEsDO.INDEX_NAME}, searchSourceBuilder);
+        new SearchRequest(new String[] {SpanDO.INDEX_NAME}, searchSourceBuilder);
 
     SearchResponse searchResponse = esClient.search(searchRequest, RequestOptions.DEFAULT);
     final TraceBrief traceBrief = new TraceBrief();
     for (org.elasticsearch.search.SearchHit hit : searchResponse.getHits().getHits()) {
       String hitJson = hit.getSourceAsString();
-      SpanEsDO spanEsDO = EsGsonUtils.esGson().fromJson(hitJson, SpanEsDO.class);
+      SpanDO spanEsDO = EsGsonUtils.esGson().fromJson(hitJson, SpanDO.class);
       BasicTrace basicTrace = new BasicTrace();
-      basicTrace.setSegmentId(spanEsDO.getTags().get(SpanEsDO.attributes(SpanEsDO.SW8_SEGMENT_ID)));
+      basicTrace.setSegmentId(spanEsDO.getTags().get(SpanDO.attributes(SpanDO.SW8_SEGMENT_ID)));
       basicTrace.setStart(spanEsDO.getStartTime());
       basicTrace.getServiceNames()
-          .add(spanEsDO.getTags().get(SpanEsDO.resource(SpanEsDO.SERVICE_NAME)));
+          .add(spanEsDO.getTags().get(SpanDO.resource(SpanDO.SERVICE_NAME)));
       basicTrace.getServiceInstanceNames()
-          .add(spanEsDO.getTags().get(SpanEsDO.resource(SpanEsDO.SERVICE_INSTANCE_NAME)));
+          .add(spanEsDO.getTags().get(SpanDO.resource(SpanDO.SERVICE_INSTANCE_NAME)));
       basicTrace.getEndpointNames().add(spanEsDO.getName());
       basicTrace.setDuration(spanEsDO.getLatency());
       basicTrace.setError(spanEsDO.getTraceStatus() == StatusCode.ERROR.getCode());
@@ -182,22 +182,22 @@ public class SpanEsStorage extends RecordEsStorage<SpanEsDO> implements SpanStor
   public Trace queryTrace(String traceId) throws IOException {
     StopWatch stopWatch = StopWatch.createStarted();
     Trace trace = new Trace();
-    QueryBuilder queryBuilder = new TermQueryBuilder(SpanEsDO.TRACE_ID, traceId);
+    QueryBuilder queryBuilder = new TermQueryBuilder(SpanDO.TRACE_ID, traceId);
     SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
     searchSourceBuilder.query(queryBuilder);
     searchSourceBuilder.size(SPAN_QUERY_MAX_SIZE);
     SearchRequest searchRequest =
-        new SearchRequest(new String[] {SpanEsDO.INDEX_NAME}, searchSourceBuilder);
+        new SearchRequest(new String[] {SpanDO.INDEX_NAME}, searchSourceBuilder);
     SearchResponse searchResponse = esClient.search(searchRequest, RequestOptions.DEFAULT);
-    List<SpanEsDO> spanRecords = new ArrayList<>();
+    List<SpanDO> spanRecords = new ArrayList<>();
     for (org.elasticsearch.search.SearchHit hit : searchResponse.getHits().getHits()) {
       String hitJson = hit.getSourceAsString();
-      SpanEsDO spanEsDO = EsGsonUtils.esGson().fromJson(hitJson, SpanEsDO.class);
+      SpanDO spanEsDO = EsGsonUtils.esGson().fromJson(hitJson, SpanDO.class);
       spanRecords.add(spanEsDO);
     }
 
     if (!spanRecords.isEmpty()) {
-      for (SpanEsDO spanEsDO : spanRecords) {
+      for (SpanDO spanEsDO : spanRecords) {
         if (nonNull(spanEsDO)) {
           trace.getSpans().add(buildSpan(spanEsDO));
         }
@@ -233,28 +233,28 @@ public class SpanEsStorage extends RecordEsStorage<SpanEsDO> implements SpanStor
     List<StatisticData> result = new ArrayList<>();
 
     BoolQueryBuilder queryBuilder = QueryBuilders.boolQuery()
-        .must(QueryBuilders.rangeQuery(SpanEsDO.START_TIME).gte(startTime).lte(endTime));
+        .must(QueryBuilders.rangeQuery(SpanDO.START_TIME).gte(startTime).lte(endTime));
 
     TermsAggregationBuilder aggregationBuilder = AggregationBuilders
-        .terms(SpanEsDO.attributes(Const.APPID)).field(SpanEsDO.attributes(Const.APPID))
-        .subAggregation(AggregationBuilders.terms(SpanEsDO.attributes(Const.ENVID))
-            .field(SpanEsDO.attributes(Const.ENVID))
+        .terms(SpanDO.attributes(Const.APPID)).field(SpanDO.attributes(Const.APPID))
+        .subAggregation(AggregationBuilders.terms(SpanDO.attributes(Const.ENVID))
+            .field(SpanDO.attributes(Const.ENVID))
             .subAggregation(AggregationBuilders.cardinality("service_count")
-                .field(SpanEsDO.resource(SpanEsDO.SERVICE_NAME)))
-            .subAggregation(AggregationBuilders.cardinality("trace_count").field(SpanEsDO.TRACE_ID))
+                .field(SpanDO.resource(SpanDO.SERVICE_NAME)))
+            .subAggregation(AggregationBuilders.cardinality("trace_count").field(SpanDO.TRACE_ID))
             .subAggregation(AggregationBuilders
-                .filter(SpanEsDO.TRACE_STATUS,
-                    QueryBuilders.termQuery(SpanEsDO.TRACE_STATUS,
+                .filter(SpanDO.TRACE_STATUS,
+                    QueryBuilders.termQuery(SpanDO.TRACE_STATUS,
                         Status.StatusCode.STATUS_CODE_ERROR_VALUE))
                 .subAggregation(AggregationBuilders.cardinality("error_count")
-                    .field(SpanEsDO.TRACE_ID)))
-            .subAggregation(AggregationBuilders.filter(SpanEsDO.attributes(Const.ISENTRY),
+                    .field(SpanDO.TRACE_ID)))
+            .subAggregation(AggregationBuilders.filter(SpanDO.attributes(Const.ISENTRY),
                 QueryBuilders.boolQuery()
-                    .must(QueryBuilders.termQuery(SpanEsDO.attributes(Const.ISENTRY), "true"))
-                    .mustNot(QueryBuilders.termQuery(SpanEsDO.NAME, "GET:/")))
+                    .must(QueryBuilders.termQuery(SpanDO.attributes(Const.ISENTRY), "true"))
+                    .mustNot(QueryBuilders.termQuery(SpanDO.NAME, "GET:/")))
                 .subAggregation(
-                    AggregationBuilders.cardinality("entry_count").field(SpanEsDO.NAME)))
-            .subAggregation(AggregationBuilders.avg("avg_latency").field(SpanEsDO.LATENCY))
+                    AggregationBuilders.cardinality("entry_count").field(SpanDO.NAME)))
+            .subAggregation(AggregationBuilders.avg("avg_latency").field(SpanDO.LATENCY))
             .executionHint("map").collectMode(Aggregator.SubAggCollectionMode.BREADTH_FIRST)
             .size(1000));
 
@@ -263,14 +263,14 @@ public class SpanEsStorage extends RecordEsStorage<SpanEsDO> implements SpanStor
     sourceBuilder.query(queryBuilder);
     sourceBuilder.aggregation(aggregationBuilder);
 
-    SearchRequest searchRequest = new SearchRequest(SpanEsDO.INDEX_NAME);
+    SearchRequest searchRequest = new SearchRequest(SpanDO.INDEX_NAME);
     searchRequest.source(sourceBuilder);
     SearchResponse response = esClient.search(searchRequest, RequestOptions.DEFAULT);
 
-    Terms terms = response.getAggregations().get(SpanEsDO.attributes(Const.APPID));
+    Terms terms = response.getAggregations().get(SpanDO.attributes(Const.APPID));
     for (Terms.Bucket bucket : terms.getBuckets()) {
       String appId = bucket.getKey().toString();
-      Terms envTerms = bucket.getAggregations().get(SpanEsDO.attributes(Const.ENVID));
+      Terms envTerms = bucket.getAggregations().get(SpanDO.attributes(Const.ENVID));
       for (Terms.Bucket envBucket : envTerms.getBuckets()) {
         String envId = envBucket.getKey().toString();
 
@@ -280,11 +280,11 @@ public class SpanEsStorage extends RecordEsStorage<SpanEsDO> implements SpanStor
         ParsedCardinality traceTerm = envBucket.getAggregations().get("trace_count");
         long traceCount = traceTerm.getValue();
 
-        Filter errFilter = envBucket.getAggregations().get(SpanEsDO.TRACE_STATUS);
+        Filter errFilter = envBucket.getAggregations().get(SpanDO.TRACE_STATUS);
         ParsedCardinality errorTerm = errFilter.getAggregations().get("error_count");
         int errorCount = (int) errorTerm.getValue();
 
-        Filter entryFilter = envBucket.getAggregations().get(SpanEsDO.attributes(Const.ISENTRY));
+        Filter entryFilter = envBucket.getAggregations().get(SpanDO.attributes(Const.ISENTRY));
         ParsedCardinality entryTerm = entryFilter.getAggregations().get("entry_count");
         int entryCount = (int) entryTerm.getValue();
 
@@ -307,16 +307,16 @@ public class SpanEsStorage extends RecordEsStorage<SpanEsDO> implements SpanStor
   }
 
 
-  private Span buildSpan(SpanEsDO spanEsDO) {
+  private Span buildSpan(SpanDO spanEsDO) {
     Span span = new Span();
-    span.setSegmentId(spanEsDO.getTags().get(SpanEsDO.attributes(SpanEsDO.SW8_SEGMENT_ID)));
+    span.setSegmentId(spanEsDO.getTags().get(SpanDO.attributes(SpanDO.SW8_SEGMENT_ID)));
     span.setTraceId(spanEsDO.getTraceId());
     span.setSpanId(spanEsDO.getSpanId());
     span.setParentSpanId(spanEsDO.getParentSpanId());
     span.setStartTime(spanEsDO.getStartTime());
     span.setEndTime(spanEsDO.getEndTime());
     span.setError(spanEsDO.getTraceStatus() == StatusCode.ERROR.getCode());
-    span.setLayer(spanEsDO.getTags().get(SpanEsDO.attributes(SpanEsDO.SPANLAYER)));
+    span.setLayer(spanEsDO.getTags().get(SpanDO.attributes(SpanDO.SPANLAYER)));
     String kind = spanEsDO.getKind();
     if (StringUtils.equals(kind, SpanKind.SERVER.name())
         || StringUtils.equals(kind, SpanKind.CONSUMER.name())) {
@@ -328,13 +328,13 @@ public class SpanEsStorage extends RecordEsStorage<SpanEsDO> implements SpanStor
       span.setType("Local");
     }
 
-    span.setPeer(spanEsDO.getTags().get(SpanEsDO.attributes(SpanEsDO.NET_PEER_NAME)));
+    span.setPeer(spanEsDO.getTags().get(SpanDO.attributes(SpanDO.NET_PEER_NAME)));
 
     span.setEndpointName(spanEsDO.getName());
 
-    span.setServiceCode(spanEsDO.getTags().get(SpanEsDO.resource(SpanEsDO.SERVICE_NAME)));
+    span.setServiceCode(spanEsDO.getTags().get(SpanDO.resource(SpanDO.SERVICE_NAME)));
     span.setServiceInstanceName(
-        spanEsDO.getTags().get(SpanEsDO.resource(SpanEsDO.SERVICE_INSTANCE_NAME)));
+        spanEsDO.getTags().get(SpanDO.resource(SpanDO.SERVICE_INSTANCE_NAME)));
 
     // TODO: 2022/9/20
     // span.setComponent(getComponentLibraryCatalogService().getComponentName(spanObject.getComponentId()));
@@ -350,7 +350,7 @@ public class SpanEsStorage extends RecordEsStorage<SpanEsDO> implements SpanStor
           linkAttributes.forEach(linkAttribute -> linkAttributeMap.put(linkAttribute.getKey(),
               String.valueOf(linkAttribute.getValue())));
         }
-        switch (linkAttributeMap.get(SpanEsDO.REF_TYPE)) {
+        switch (linkAttributeMap.get(SpanDO.REF_TYPE)) {
           case "CrossThread":
             ref.setType(RefType.CROSS_THREAD);
             break;

@@ -5,8 +5,8 @@ package io.holoinsight.server.storage.engine.elasticsearch.service.impl;
 
 import io.holoinsight.server.common.springboot.ConditionalOnFeature;
 import io.holoinsight.server.storage.common.model.query.Endpoint;
-import io.holoinsight.server.storage.engine.elasticsearch.model.EndpointRelationEsDO;
-import io.holoinsight.server.storage.engine.EndpointStorage;
+import io.holoinsight.server.storage.engine.model.EndpointRelationDO;
+import io.holoinsight.server.storage.engine.storage.EndpointStorage;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.RequestOptions;
@@ -35,20 +35,20 @@ public class EndpointEsStorage implements EndpointStorage {
     List<Endpoint> result = new ArrayList<>();
 
     BoolQueryBuilder queryBuilder = QueryBuilders.boolQuery()
-        .must(QueryBuilders.termQuery(EndpointRelationEsDO.TENANT, tenant))
-        .must(QueryBuilders.termQuery(EndpointRelationEsDO.DEST_SERVICE_NAME, service)).must(
-            QueryBuilders.rangeQuery(EndpointRelationEsDO.START_TIME).gte(startTime).lte(endTime));
+        .must(QueryBuilders.termQuery(EndpointRelationDO.TENANT, tenant))
+        .must(QueryBuilders.termQuery(EndpointRelationDO.DEST_SERVICE_NAME, service)).must(
+            QueryBuilders.rangeQuery(EndpointRelationDO.START_TIME).gte(startTime).lte(endTime));
 
     SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
     sourceBuilder.size(1000);
     sourceBuilder.query(queryBuilder);
-    sourceBuilder.aggregation(CommonBuilder.buildAgg(EndpointRelationEsDO.DEST_ENDPOINT_NAME));
+    sourceBuilder.aggregation(CommonBuilder.buildAgg(EndpointRelationDO.DEST_ENDPOINT_NAME));
 
-    SearchRequest searchRequest = new SearchRequest(EndpointRelationEsDO.INDEX_NAME);
+    SearchRequest searchRequest = new SearchRequest(EndpointRelationDO.INDEX_NAME);
     searchRequest.source(sourceBuilder);
     SearchResponse response = client.search(searchRequest, RequestOptions.DEFAULT);
 
-    Terms terms = response.getAggregations().get(EndpointRelationEsDO.DEST_ENDPOINT_NAME);
+    Terms terms = response.getAggregations().get(EndpointRelationDO.DEST_ENDPOINT_NAME);
     for (Terms.Bucket bucket : terms.getBuckets()) {
       String endpointName = bucket.getKey().toString();
 

@@ -1,7 +1,7 @@
 /*
  * Copyright 2022 Holoinsight Project Authors. Licensed under Apache-2.0.
  */
-package io.holoinsight.server.storage.engine.elasticsearch.model;
+package io.holoinsight.server.storage.engine.model;
 
 import io.holoinsight.server.storage.common.model.specification.sw.SlowSql;
 import io.holoinsight.server.storage.common.model.storage.annotation.Column;
@@ -12,14 +12,14 @@ import lombok.NoArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.annotation.Id;
 
-import static io.holoinsight.server.storage.engine.elasticsearch.model.SlowSqlEsDO.INDEX_NAME;
+import static io.holoinsight.server.storage.engine.model.SlowSqlDO.INDEX_NAME;
 
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @ModelAnnotation(name = INDEX_NAME)
-public class SlowSqlEsDO extends RecordEsDO {
+public class SlowSqlDO extends RecordDO {
 
   public static final String INDEX_NAME = "holoinsight-slow-sql";
   public static final String ADDRESS = "address";
@@ -52,8 +52,8 @@ public class SlowSqlEsDO extends RecordEsDO {
     return INDEX_NAME;
   }
 
-  public static SlowSqlEsDO fromSlowSql(SlowSql slowSql) {
-    SlowSqlEsDO slowSqlEsDO = new SlowSqlEsDO();
+  public static SlowSqlDO fromSlowSql(SlowSql slowSql) {
+    SlowSqlDO slowSqlEsDO = new SlowSqlDO();
     BeanUtils.copyProperties(slowSql, slowSqlEsDO);
     return slowSqlEsDO;
   }

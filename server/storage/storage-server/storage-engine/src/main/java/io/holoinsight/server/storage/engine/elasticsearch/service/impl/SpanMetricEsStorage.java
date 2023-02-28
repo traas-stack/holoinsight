@@ -10,8 +10,8 @@ import io.holoinsight.server.storage.common.model.query.MetricValues;
 import io.holoinsight.server.storage.common.model.specification.OtlpMappings;
 import io.holoinsight.server.storage.engine.MetricDefine;
 import io.holoinsight.server.storage.engine.MetricsManager;
-import io.holoinsight.server.storage.engine.elasticsearch.model.SpanEsDO;
-import io.holoinsight.server.storage.engine.MetricStorage;
+import io.holoinsight.server.storage.engine.model.SpanDO;
+import io.holoinsight.server.storage.engine.storage.MetricStorage;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.RequestOptions;
@@ -94,8 +94,8 @@ public class SpanMetricEsStorage implements MetricStorage {
     MetricValues metricValues = new MetricValues(values);
     SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
     BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder();
-    boolQueryBuilder.filter(new TermQueryBuilder(SpanEsDO.resource(SpanEsDO.TENANT), tenant))
-        .filter(new RangeQueryBuilder(SpanEsDO.START_TIME).gte(duration.getStart())
+    boolQueryBuilder.filter(new TermQueryBuilder(SpanDO.resource(SpanDO.TENANT), tenant))
+        .filter(new RangeQueryBuilder(SpanDO.START_TIME).gte(duration.getStart())
             .lte(duration.getEnd()));
 
     if (conditions != null) {
@@ -109,7 +109,7 @@ public class SpanMetricEsStorage implements MetricStorage {
     }
 
     DateHistogramAggregationBuilder dateHistogramAggregationBuilder =
-        AggregationBuilders.dateHistogram(SpanEsDO.START_TIME).field(SpanEsDO.START_TIME)
+        AggregationBuilders.dateHistogram(SpanDO.START_TIME).field(SpanDO.START_TIME)
             .fixedInterval(new DateHistogramInterval(duration.getStep())).minDocCount(1)
             .extendedBounds(new ExtendedBounds(duration.getStart(), duration.getEnd()));
     AggregationBuilder parentAggregationBuilder = dateHistogramAggregationBuilder;
@@ -129,7 +129,7 @@ public class SpanMetricEsStorage implements MetricStorage {
     SearchResponse searchResponse =
         restHighLevelClient.search(searchRequest, RequestOptions.DEFAULT);
     Aggregations aggregations = searchResponse.getAggregations();
-    Aggregation aggregation = aggregations.get(SpanEsDO.START_TIME);
+    Aggregation aggregation = aggregations.get(SpanDO.START_TIME);
     ParsedDateHistogram dateHistogram = (ParsedDateHistogram) aggregation;
     List<? extends Histogram.Bucket> timeBuckets = dateHistogram.getBuckets();
     Map<Map<String, String>, Map<Long, Double>> valuesMap = new HashMap<>();

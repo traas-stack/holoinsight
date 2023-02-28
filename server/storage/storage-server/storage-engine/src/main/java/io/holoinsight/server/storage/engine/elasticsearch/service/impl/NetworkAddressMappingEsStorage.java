@@ -4,8 +4,8 @@
 package io.holoinsight.server.storage.engine.elasticsearch.service.impl;
 
 import io.holoinsight.server.common.springboot.ConditionalOnFeature;
-import io.holoinsight.server.storage.engine.elasticsearch.model.NetworkAddressMappingEsDO;
-import io.holoinsight.server.storage.engine.NetworkAddressMappingStorage;
+import io.holoinsight.server.storage.engine.model.NetworkAddressMappingDO;
+import io.holoinsight.server.storage.engine.storage.NetworkAddressMappingStorage;
 import io.holoinsight.server.storage.engine.elasticsearch.utils.EsGsonUtils;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
@@ -23,29 +23,29 @@ import java.util.List;
 
 @ConditionalOnFeature("trace")
 @Service("networkAddressMappingEsStorage")
-public class NetworkAddressMappingEsStorage extends RecordEsStorage<NetworkAddressMappingEsDO>
+public class NetworkAddressMappingEsStorage extends RecordEsStorage<NetworkAddressMappingDO>
     implements NetworkAddressMappingStorage {
 
   @Autowired
   private RestHighLevelClient esClient;
 
   @Override
-  public List<NetworkAddressMappingEsDO> loadByTime(long timeBucketInMinute) throws IOException {
-    List<NetworkAddressMappingEsDO> networkAddressMapping = new ArrayList<>();
+  public List<NetworkAddressMappingDO> loadByTime(long timeBucketInMinute) throws IOException {
+    List<NetworkAddressMappingDO> networkAddressMapping = new ArrayList<>();
 
     SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
     searchSourceBuilder.size(1000);
     searchSourceBuilder.query(
-        new RangeQueryBuilder(NetworkAddressMappingEsDO.TIME_BUCKET).gte(timeBucketInMinute));
+        new RangeQueryBuilder(NetworkAddressMappingDO.TIME_BUCKET).gte(timeBucketInMinute));
     SearchRequest searchRequest =
-        new SearchRequest(new String[] {NetworkAddressMappingEsDO.INDEX_NAME}, searchSourceBuilder);
+        new SearchRequest(new String[] {NetworkAddressMappingDO.INDEX_NAME}, searchSourceBuilder);
 
     SearchResponse searchResponse = esClient.search(searchRequest, RequestOptions.DEFAULT);
 
     for (SearchHit searchHit : searchResponse.getHits().getHits()) {
       String hitJson = searchHit.getSourceAsString();
-      NetworkAddressMappingEsDO networkAddressMappingEsDO =
-          EsGsonUtils.esGson().fromJson(hitJson, NetworkAddressMappingEsDO.class);
+      NetworkAddressMappingDO networkAddressMappingEsDO =
+          EsGsonUtils.esGson().fromJson(hitJson, NetworkAddressMappingDO.class);
       networkAddressMapping.add(networkAddressMappingEsDO);
     }
 

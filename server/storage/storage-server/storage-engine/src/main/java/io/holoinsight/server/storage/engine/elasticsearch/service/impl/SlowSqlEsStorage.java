@@ -5,8 +5,8 @@ package io.holoinsight.server.storage.engine.elasticsearch.service.impl;
 
 import io.holoinsight.server.common.springboot.ConditionalOnFeature;
 import io.holoinsight.server.storage.common.model.query.SlowSql;
-import io.holoinsight.server.storage.engine.elasticsearch.model.SlowSqlEsDO;
-import io.holoinsight.server.storage.engine.SlowSqlStorage;
+import io.holoinsight.server.storage.engine.model.SlowSqlDO;
+import io.holoinsight.server.storage.engine.storage.SlowSqlStorage;
 import io.holoinsight.server.storage.engine.elasticsearch.utils.EsGsonUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.elasticsearch.action.search.SearchRequest;
@@ -26,7 +26,7 @@ import java.util.List;
 
 @ConditionalOnFeature("trace")
 @Service("slowSqlEsStorage")
-public class SlowSqlEsStorage extends RecordEsStorage<SlowSqlEsDO> implements SlowSqlStorage {
+public class SlowSqlEsStorage extends RecordEsStorage<SlowSqlDO> implements SlowSqlStorage {
 
   @Autowired
   private RestHighLevelClient client;
@@ -36,21 +36,21 @@ public class SlowSqlEsStorage extends RecordEsStorage<SlowSqlEsDO> implements Sl
   public List<SlowSql> getSlowSqlList(String tenant, String serviceName, String dbAddress,
       long startTime, long endTime) throws IOException {
     BoolQueryBuilder queryBuilder =
-        QueryBuilders.boolQuery().must(QueryBuilders.termQuery(SlowSqlEsDO.TENANT, tenant))
-            .must(QueryBuilders.rangeQuery(SlowSqlEsDO.START_TIME).gte(startTime).lte(endTime));
+        QueryBuilders.boolQuery().must(QueryBuilders.termQuery(SlowSqlDO.TENANT, tenant))
+            .must(QueryBuilders.rangeQuery(SlowSqlDO.START_TIME).gte(startTime).lte(endTime));
 
     if (!StringUtils.isEmpty(serviceName)) {
-      queryBuilder.must(QueryBuilders.termQuery(SlowSqlEsDO.SERVICE_NAME, serviceName));
+      queryBuilder.must(QueryBuilders.termQuery(SlowSqlDO.SERVICE_NAME, serviceName));
     }
     if (!StringUtils.isEmpty(dbAddress)) {
-      queryBuilder.must(QueryBuilders.termQuery(SlowSqlEsDO.ADDRESS, dbAddress));
+      queryBuilder.must(QueryBuilders.termQuery(SlowSqlDO.ADDRESS, dbAddress));
     }
 
     SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
     sourceBuilder.size(1000);
     sourceBuilder.query(queryBuilder);
 
-    SearchRequest searchRequest = new SearchRequest(SlowSqlEsDO.INDEX_NAME);
+    SearchRequest searchRequest = new SearchRequest(SlowSqlDO.INDEX_NAME);
     searchRequest.source(sourceBuilder);
     SearchResponse response = client.search(searchRequest, RequestOptions.DEFAULT);
 

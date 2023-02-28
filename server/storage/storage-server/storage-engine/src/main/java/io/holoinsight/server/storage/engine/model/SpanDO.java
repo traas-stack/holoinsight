@@ -1,7 +1,7 @@
 /*
  * Copyright 2022 Holoinsight Project Authors. Licensed under Apache-2.0.
  */
-package io.holoinsight.server.storage.engine.elasticsearch.model;
+package io.holoinsight.server.storage.engine.model;
 
 import io.holoinsight.server.storage.common.model.specification.otel.KeyValue;
 import io.holoinsight.server.storage.common.model.specification.otel.Resource;
@@ -21,7 +21,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static io.holoinsight.server.storage.engine.elasticsearch.model.SpanEsDO.INDEX_NAME;
+import static io.holoinsight.server.storage.engine.model.SpanDO.INDEX_NAME;
 
 /**
  * @author jiwliu
@@ -31,7 +31,7 @@ import static io.holoinsight.server.storage.engine.elasticsearch.model.SpanEsDO.
 @AllArgsConstructor
 @NoArgsConstructor
 @ModelAnnotation(name = INDEX_NAME)
-public class SpanEsDO extends RecordEsDO {
+public class SpanDO extends RecordDO {
 
   private static final long serialVersionUID = -1058433983320362682L;
 
@@ -99,8 +99,8 @@ public class SpanEsDO extends RecordEsDO {
     return INDEX_NAME;
   }
 
-  public static SpanEsDO fromSpan(Span span, Resource resource) {
-    SpanEsDO spanEsDO = new SpanEsDO();
+  public static SpanDO fromSpan(Span span, Resource resource) {
+    SpanDO spanEsDO = new SpanDO();
     spanEsDO.setTimeBucket(
         TimeBucket.getTimeBucket(span.getStartTimeUnixNano() / 1000000, DownSampling.Second));
     spanEsDO.setStartTime(span.getStartTimeUnixNano() / 1000000);
@@ -120,12 +120,12 @@ public class SpanEsDO extends RecordEsDO {
     List<KeyValue> spanAttrKvs = span.getAttributes();
     if (CollectionUtils.isNotEmpty(spanAttrKvs)) {
       for (KeyValue kv : spanAttrKvs) {
-        tags.put(SpanEsDO.attributes(kv.getKey()), String.valueOf(kv.getValue()));
+        tags.put(SpanDO.attributes(kv.getKey()), String.valueOf(kv.getValue()));
       }
     }
     if (resource != null && CollectionUtils.isNotEmpty(resource.getAttributes())) {
       for (KeyValue kv : resource.getAttributes()) {
-        tags.put(SpanEsDO.resource(kv.getKey()), String.valueOf(kv.getValue()));
+        tags.put(SpanDO.resource(kv.getKey()), String.valueOf(kv.getValue()));
       }
     }
     return spanEsDO;

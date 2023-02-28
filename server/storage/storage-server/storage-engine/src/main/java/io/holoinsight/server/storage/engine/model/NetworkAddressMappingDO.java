@@ -1,7 +1,7 @@
 /*
  * Copyright 2022 Holoinsight Project Authors. Licensed under Apache-2.0.
  */
-package io.holoinsight.server.storage.engine.elasticsearch.model;
+package io.holoinsight.server.storage.engine.model;
 
 import io.holoinsight.server.storage.common.model.specification.sw.NetworkAddressMapping;
 import io.holoinsight.server.storage.common.model.storage.annotation.Column;
@@ -12,13 +12,13 @@ import lombok.NoArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.annotation.Id;
 
-import static io.holoinsight.server.storage.engine.elasticsearch.model.NetworkAddressMappingEsDO.INDEX_NAME;
+import static io.holoinsight.server.storage.engine.model.NetworkAddressMappingDO.INDEX_NAME;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @ModelAnnotation(name = INDEX_NAME)
-public class NetworkAddressMappingEsDO extends RecordEsDO {
+public class NetworkAddressMappingDO extends RecordDO {
 
   public static final String INDEX_NAME = "holoinsight-network_address_mapping";
   public static final String ADDRESS = "address";
@@ -39,9 +39,9 @@ public class NetworkAddressMappingEsDO extends RecordEsDO {
     return INDEX_NAME;
   }
 
-  public static NetworkAddressMappingEsDO fromNetworkAddressMapping(
+  public static NetworkAddressMappingDO fromNetworkAddressMapping(
       NetworkAddressMapping networkAddressMapping) {
-    NetworkAddressMappingEsDO networkAddressMappingEsDO = new NetworkAddressMappingEsDO();
+    NetworkAddressMappingDO networkAddressMappingEsDO = new NetworkAddressMappingDO();
     BeanUtils.copyProperties(networkAddressMapping, networkAddressMappingEsDO);
     return networkAddressMappingEsDO;
   }

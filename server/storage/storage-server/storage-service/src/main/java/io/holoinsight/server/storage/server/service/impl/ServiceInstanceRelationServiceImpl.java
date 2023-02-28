@@ -4,11 +4,10 @@
 package io.holoinsight.server.storage.server.service.impl;
 
 import io.holoinsight.server.common.springboot.ConditionalOnFeature;
-import io.holoinsight.server.storage.engine.elasticsearch.model.ServiceInstanceRelationEsDO;
-import io.holoinsight.server.storage.engine.ServiceInstanceRelationStorage;
+import io.holoinsight.server.storage.engine.model.ServiceInstanceRelationDO;
+import io.holoinsight.server.storage.engine.storage.ServiceInstanceRelationStorage;
 import io.holoinsight.server.storage.server.service.ServiceInstanceRelationService;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
@@ -25,7 +24,7 @@ public class ServiceInstanceRelationServiceImpl implements ServiceInstanceRelati
   private ServiceInstanceRelationStorage serviceInstanceRelationEsService;
 
   @Override
-  public void insert(List<ServiceInstanceRelationEsDO> relationList) throws IOException {
+  public void insert(List<ServiceInstanceRelationDO> relationList) throws IOException {
     serviceInstanceRelationEsService.batchInsert(relationList);
   }
 }

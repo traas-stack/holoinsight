@@ -1,7 +1,7 @@
 /*
  * Copyright 2022 Holoinsight Project Authors. Licensed under Apache-2.0.
  */
-package io.holoinsight.server.storage.engine.elasticsearch.model;
+package io.holoinsight.server.storage.engine.model;
 
 import io.holoinsight.server.storage.common.model.storage.annotation.Column;
 import lombok.AllArgsConstructor;
@@ -17,7 +17,7 @@ import java.io.Serializable;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public abstract class RecordEsDO implements Serializable {
+public abstract class RecordDO implements Serializable {
 
   private static final long serialVersionUID = -2175475836786269673L;
 

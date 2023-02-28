@@ -11,8 +11,8 @@ import io.holoinsight.server.storage.common.model.query.TraceBrief;
 import io.holoinsight.server.storage.common.model.specification.sw.Tag;
 import io.holoinsight.server.storage.common.model.specification.sw.Trace;
 import io.holoinsight.server.storage.common.model.specification.sw.TraceState;
-import io.holoinsight.server.storage.engine.SpanStorage;
-import io.holoinsight.server.storage.engine.elasticsearch.model.SpanEsDO;
+import io.holoinsight.server.storage.engine.storage.SpanStorage;
+import io.holoinsight.server.storage.engine.model.SpanDO;
 import io.holoinsight.server.storage.server.service.TraceService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.concurrent.BasicThreadFactory;
@@ -84,7 +84,7 @@ public class TraceServiceImpl implements TraceService {
   }
 
   @Override
-  public void insertSpans(List<SpanEsDO> spans) throws Exception {
+  public void insertSpans(List<SpanDO> spans) throws Exception {
     // temporarily double-write to compare performance between tatris and es
     if (spanTatrisService != null) {
       EXECUTOR.submit(() -> {

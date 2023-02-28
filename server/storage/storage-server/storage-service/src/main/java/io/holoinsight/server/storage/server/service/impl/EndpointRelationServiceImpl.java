@@ -4,11 +4,10 @@
 package io.holoinsight.server.storage.server.service.impl;
 
 import io.holoinsight.server.common.springboot.ConditionalOnFeature;
-import io.holoinsight.server.storage.engine.elasticsearch.model.EndpointRelationEsDO;
-import io.holoinsight.server.storage.engine.EndpointRelationStorage;
+import io.holoinsight.server.storage.engine.model.EndpointRelationDO;
+import io.holoinsight.server.storage.engine.storage.EndpointRelationStorage;
 import io.holoinsight.server.storage.server.service.EndpointRelationService;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
@@ -25,7 +24,7 @@ public class EndpointRelationServiceImpl implements EndpointRelationService {
   private EndpointRelationStorage endpointRelationEsService;
 
   @Override
-  public void insert(List<EndpointRelationEsDO> relationList) throws IOException {
+  public void insert(List<EndpointRelationDO> relationList) throws IOException {
     endpointRelationEsService.batchInsert(relationList);
   }
 }

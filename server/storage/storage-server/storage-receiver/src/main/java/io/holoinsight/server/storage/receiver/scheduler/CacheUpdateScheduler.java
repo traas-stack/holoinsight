@@ -5,7 +5,7 @@ package io.holoinsight.server.storage.receiver.scheduler;
 
 import io.holoinsight.server.storage.common.utils.TimeBucket;
 import io.holoinsight.server.storage.server.cache.NetworkAddressMappingCache;
-import io.holoinsight.server.storage.engine.elasticsearch.model.NetworkAddressMappingEsDO;
+import io.holoinsight.server.storage.engine.model.NetworkAddressMappingDO;
 import io.holoinsight.server.storage.server.service.NetworkAddressMappingService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -62,7 +62,7 @@ public class CacheUpdateScheduler {
                                                                                                  // 10
                                                                                                  // minute
     }
-    List<NetworkAddressMappingEsDO> addressInventories =
+    List<NetworkAddressMappingDO> addressInventories =
         networkAddressMappingService.loadByTime(loadStartTime);
 
     networkAddressMappingCache.load(addressInventories);

@@ -4,11 +4,10 @@
 package io.holoinsight.server.storage.server.service.impl;
 
 import io.holoinsight.server.common.springboot.ConditionalOnFeature;
-import io.holoinsight.server.storage.engine.elasticsearch.model.NetworkAddressMappingEsDO;
-import io.holoinsight.server.storage.engine.NetworkAddressMappingStorage;
+import io.holoinsight.server.storage.engine.model.NetworkAddressMappingDO;
+import io.holoinsight.server.storage.engine.storage.NetworkAddressMappingStorage;
 import io.holoinsight.server.storage.server.service.NetworkAddressMappingService;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
@@ -25,12 +24,12 @@ public class NetworkAddressMappingServiceImpl implements NetworkAddressMappingSe
   private NetworkAddressMappingStorage networkAddressMappingEsService;
 
   @Override
-  public void insert(List<NetworkAddressMappingEsDO> addressMappingList) throws IOException {
+  public void insert(List<NetworkAddressMappingDO> addressMappingList) throws IOException {
     networkAddressMappingEsService.batchInsert(addressMappingList);
   }
 
   @Override
-  public List<NetworkAddressMappingEsDO> loadByTime(long timeBucketInMinute) throws IOException {
+  public List<NetworkAddressMappingDO> loadByTime(long timeBucketInMinute) throws IOException {
     return networkAddressMappingEsService.loadByTime(timeBucketInMinute);
   }
 }

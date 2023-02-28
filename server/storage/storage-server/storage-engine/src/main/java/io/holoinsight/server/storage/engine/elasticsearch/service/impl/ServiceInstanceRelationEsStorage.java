@@ -4,13 +4,13 @@
 package io.holoinsight.server.storage.engine.elasticsearch.service.impl;
 
 import io.holoinsight.server.common.springboot.ConditionalOnFeature;
-import io.holoinsight.server.storage.engine.elasticsearch.model.ServiceInstanceRelationEsDO;
-import io.holoinsight.server.storage.engine.ServiceInstanceRelationStorage;
+import io.holoinsight.server.storage.engine.model.ServiceInstanceRelationDO;
+import io.holoinsight.server.storage.engine.storage.ServiceInstanceRelationStorage;
 import org.springframework.stereotype.Service;
 
 @ConditionalOnFeature("trace")
 @Service("serviceInstanceRelationEsStorage")
-public class ServiceInstanceRelationEsStorage extends RecordEsStorage<ServiceInstanceRelationEsDO>
+public class ServiceInstanceRelationEsStorage extends RecordEsStorage<ServiceInstanceRelationDO>
     implements ServiceInstanceRelationStorage {
 
 }

@@ -5,7 +5,7 @@ package io.holoinsight.server.storage.server.service.impl;
 
 import io.holoinsight.server.common.springboot.ConditionalOnFeature;
 import io.holoinsight.server.storage.common.model.query.Endpoint;
-import io.holoinsight.server.storage.engine.EndpointStorage;
+import io.holoinsight.server.storage.engine.storage.EndpointStorage;
 import io.holoinsight.server.storage.server.service.EndpointService;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;

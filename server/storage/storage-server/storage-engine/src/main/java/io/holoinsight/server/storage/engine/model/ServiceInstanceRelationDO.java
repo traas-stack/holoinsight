@@ -1,7 +1,7 @@
 /*
  * Copyright 2022 Holoinsight Project Authors. Licensed under Apache-2.0.
  */
-package io.holoinsight.server.storage.engine.elasticsearch.model;
+package io.holoinsight.server.storage.engine.model;
 
 import io.holoinsight.server.storage.common.model.specification.sw.ServiceInstanceRelation;
 import io.holoinsight.server.storage.common.model.storage.annotation.Column;
@@ -12,13 +12,13 @@ import lombok.NoArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.annotation.Id;
 
-import static io.holoinsight.server.storage.engine.elasticsearch.model.ServiceInstanceRelationEsDO.INDEX_NAME;
+import static io.holoinsight.server.storage.engine.model.ServiceInstanceRelationDO.INDEX_NAME;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @ModelAnnotation(name = INDEX_NAME)
-public class ServiceInstanceRelationEsDO extends RecordEsDO {
+public class ServiceInstanceRelationDO extends RecordDO {
 
   public static final String INDEX_NAME = "holoinsight-service_instance_relation";
   public static final String TENANT = "tenant";
@@ -78,9 +78,9 @@ public class ServiceInstanceRelationEsDO extends RecordEsDO {
     return INDEX_NAME;
   }
 
-  public static ServiceInstanceRelationEsDO fromServiceInstanceRelation(
+  public static ServiceInstanceRelationDO fromServiceInstanceRelation(
       ServiceInstanceRelation serviceInstanceRelation) {
-    ServiceInstanceRelationEsDO serviceInstanceRelationEsDO = new ServiceInstanceRelationEsDO();
+    ServiceInstanceRelationDO serviceInstanceRelationEsDO = new ServiceInstanceRelationDO();
     BeanUtils.copyProperties(serviceInstanceRelation, serviceInstanceRelationEsDO);
     return serviceInstanceRelationEsDO;
   }

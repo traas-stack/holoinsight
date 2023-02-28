@@ -1,7 +1,7 @@
 /*
  * Copyright 2022 Holoinsight Project Authors. Licensed under Apache-2.0.
  */
-package io.holoinsight.server.storage.engine.elasticsearch.model;
+package io.holoinsight.server.storage.engine.model;
 
 import io.holoinsight.server.storage.common.model.specification.sw.ErrorInfo;
 import io.holoinsight.server.storage.common.model.storage.annotation.Column;
@@ -15,7 +15,7 @@ import org.springframework.data.annotation.Id;
 @AllArgsConstructor
 @NoArgsConstructor
 // @ModelAnnotation(name = INDEX_NAME)
-public class ServiceErrorEsDO extends RecordEsDO {
+public class ServiceErrorDO extends RecordDO {
 
   public static final String INDEX_NAME = "holoinsight-service_error";
 
@@ -50,8 +50,8 @@ public class ServiceErrorEsDO extends RecordEsDO {
     return INDEX_NAME;
   }
 
-  public static ServiceErrorEsDO fromErrorInfo(ErrorInfo errorInfo) {
-    ServiceErrorEsDO serviceErrorEsDO = new ServiceErrorEsDO();
+  public static ServiceErrorDO fromErrorInfo(ErrorInfo errorInfo) {
+    ServiceErrorDO serviceErrorEsDO = new ServiceErrorDO();
     BeanUtils.copyProperties(errorInfo, serviceErrorEsDO);
     return serviceErrorEsDO;
   }

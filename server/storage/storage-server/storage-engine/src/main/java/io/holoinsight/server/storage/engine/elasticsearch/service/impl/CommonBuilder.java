@@ -5,9 +5,9 @@ package io.holoinsight.server.storage.engine.elasticsearch.service.impl;
 
 import io.holoinsight.server.storage.common.constants.Const;
 import io.holoinsight.server.storage.common.model.query.ResponseMetric;
-import io.holoinsight.server.storage.engine.elasticsearch.model.EndpointRelationEsDO;
-import io.holoinsight.server.storage.engine.elasticsearch.model.ServiceRelationEsDO;
-import io.holoinsight.server.storage.engine.elasticsearch.model.SpanEsDO;
+import io.holoinsight.server.storage.engine.model.EndpointRelationDO;
+import io.holoinsight.server.storage.engine.model.ServiceRelationDO;
+import io.holoinsight.server.storage.engine.model.SpanDO;
 import io.opentelemetry.proto.trace.v1.Status;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
@@ -38,31 +38,31 @@ public class CommonBuilder {
     if (termParams != null && termParams.size() > 0) {
       termParams.keySet().forEach(k -> {
         String value = termParams.get(k);
-        if (k.equals(EndpointRelationEsDO.APPP_ID)) {
+        if (k.equals(EndpointRelationDO.APPP_ID)) {
           k = Const.APPID;
-        } else if (k.equals(EndpointRelationEsDO.ENV_ID)) {
+        } else if (k.equals(EndpointRelationDO.ENV_ID)) {
           k = Const.ENVID;
         }
-        queryBuilder.must(QueryBuilders.termQuery(SpanEsDO.attributes(k), value));
+        queryBuilder.must(QueryBuilders.termQuery(SpanDO.attributes(k), value));
       });
     }
   }
 
   public static TermsAggregationBuilder buildAgg(String aggField) {
     TermsAggregationBuilder aggregationBuilder = AggregationBuilders.terms(aggField).field(aggField)
-        .subAggregation(AggregationBuilders.terms(ServiceRelationEsDO.COMPONENT)
-            .field(ServiceRelationEsDO.COMPONENT).executionHint("map")
+        .subAggregation(AggregationBuilders.terms(ServiceRelationDO.COMPONENT)
+            .field(ServiceRelationDO.COMPONENT).executionHint("map")
             .collectMode(Aggregator.SubAggCollectionMode.BREADTH_FIRST))
-        .subAggregation(AggregationBuilders.avg("avg_latency").field(ServiceRelationEsDO.LATENCY))
+        .subAggregation(AggregationBuilders.avg("avg_latency").field(ServiceRelationDO.LATENCY))
         .subAggregation(AggregationBuilders.percentiles("p95_latency")
-            .field(ServiceRelationEsDO.LATENCY).percentiles(95.0))
+            .field(ServiceRelationDO.LATENCY).percentiles(95.0))
         .subAggregation(AggregationBuilders.percentiles("p99_latency")
-            .field(ServiceRelationEsDO.LATENCY).percentiles(99.0))
+            .field(ServiceRelationDO.LATENCY).percentiles(99.0))
         .subAggregation(
-            AggregationBuilders.count("total_count").field(ServiceRelationEsDO.TRACE_ID))
+            AggregationBuilders.count("total_count").field(ServiceRelationDO.TRACE_ID))
         .subAggregation(AggregationBuilders
-            .filter(ServiceRelationEsDO.TRACE_STATUS,
-                QueryBuilders.termQuery(ServiceRelationEsDO.TRACE_STATUS,
+            .filter(ServiceRelationDO.TRACE_STATUS,
+                QueryBuilders.termQuery(ServiceRelationDO.TRACE_STATUS,
                     Status.StatusCode.STATUS_CODE_ERROR_VALUE))
             .subAggregation(AggregationBuilders.count("error_count").field(aggField)))
         .executionHint("map").collectMode(Aggregator.SubAggCollectionMode.BREADTH_FIRST).size(1000);
@@ -83,7 +83,7 @@ public class CommonBuilder {
     ValueCount totalTerm = bucket.getAggregations().get("total_count");
     int totalCount = (int) totalTerm.getValue();
 
-    Filter errFilter = bucket.getAggregations().get(ServiceRelationEsDO.TRACE_STATUS);
+    Filter errFilter = bucket.getAggregations().get(ServiceRelationDO.TRACE_STATUS);
     ValueCount errorTerm = errFilter.getAggregations().get("error_count");
     int errorCount = (int) errorTerm.getValue();
 
@@ -106,7 +106,7 @@ public class CommonBuilder {
     ParsedCardinality totalTerm = bucket.getAggregations().get("total_count");
     int totalCount = (int) totalTerm.getValue();
 
-    Filter errFilter = bucket.getAggregations().get(ServiceRelationEsDO.TRACE_STATUS);
+    Filter errFilter = bucket.getAggregations().get(ServiceRelationDO.TRACE_STATUS);
     ParsedCardinality errorTerm = errFilter.getAggregations().get("error_count");
     int errorCount = (int) errorTerm.getValue();
 

@@ -4,10 +4,9 @@
 package io.holoinsight.server.storage.server.service.impl;
 
 import io.holoinsight.server.common.springboot.ConditionalOnFeature;
-import io.holoinsight.server.storage.engine.ServiceOverviewStorage;
+import io.holoinsight.server.storage.engine.storage.ServiceOverviewStorage;
 import io.holoinsight.server.storage.server.service.ServiceOverviewService;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
