@@ -7,10 +7,10 @@ import io.holoinsight.server.common.springboot.ConditionalOnFeature;
 import io.holoinsight.server.storage.common.model.query.Endpoint;
 import io.holoinsight.server.storage.engine.EndpointStorage;
 import io.holoinsight.server.storage.server.service.EndpointService;
-
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
 import java.io.IOException;
 import java.util.List;
 
@@ -18,7 +18,8 @@ import java.util.List;
 @ConditionalOnFeature("trace")
 public class EndpointServiceImpl implements EndpointService {
 
-  @Autowired
+  @Resource
+  @Qualifier("endpointEsServiceImpl")
   private EndpointStorage endpointEsService;
 
   @Override
@@ -26,5 +27,4 @@ public class EndpointServiceImpl implements EndpointService {
       throws IOException {
     return endpointEsService.getEndpointList(tenant, service, startTime, endTime);
   }
-
 }

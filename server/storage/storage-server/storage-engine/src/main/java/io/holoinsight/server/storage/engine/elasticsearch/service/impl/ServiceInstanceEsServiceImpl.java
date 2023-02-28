@@ -24,7 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @ConditionalOnFeature("trace")
-@Service
+@Service("serviceInstanceEsServiceImpl")
 public class ServiceInstanceEsServiceImpl implements ServiceInstanceStorage {
 
   @Autowired

@@ -22,7 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @ConditionalOnFeature("trace")
-@Service
+@Service("networkAddressMappingEsServiceImpl")
 public class NetworkAddressMappingEsServiceImpl extends RecordEsService<NetworkAddressMappingEsDO>
     implements NetworkAddressMappingStorage {
 

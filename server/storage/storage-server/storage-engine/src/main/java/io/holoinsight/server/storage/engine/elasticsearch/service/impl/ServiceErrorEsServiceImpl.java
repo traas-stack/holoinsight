@@ -9,7 +9,7 @@ import io.holoinsight.server.storage.engine.ServiceErrorStorage;
 import org.springframework.stereotype.Service;
 
 @ConditionalOnFeature("trace")
-@Service
+@Service("serviceErrorEsServiceImpl")
 public class ServiceErrorEsServiceImpl extends RecordEsService<ServiceErrorEsDO>
     implements ServiceErrorStorage {
 

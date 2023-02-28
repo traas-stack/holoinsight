@@ -9,8 +9,10 @@ import io.holoinsight.server.storage.engine.ServiceInstanceStorage;
 import io.holoinsight.server.storage.server.service.ServiceInstanceService;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
 import java.io.IOException;
 import java.util.List;
 
@@ -18,7 +20,8 @@ import java.util.List;
 @ConditionalOnFeature("trace")
 public class ServiceInstanceServiceImpl implements ServiceInstanceService {
 
-  @Autowired
+  @Resource
+  @Qualifier("serviceInstanceEsServiceImpl")
   private ServiceInstanceStorage serviceInstanceEsService;
 
   @Override

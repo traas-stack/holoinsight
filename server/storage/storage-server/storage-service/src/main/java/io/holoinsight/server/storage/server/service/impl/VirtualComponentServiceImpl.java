@@ -11,8 +11,10 @@ import io.holoinsight.server.storage.engine.VirtualComponentStorage;
 import io.holoinsight.server.storage.server.service.VirtualComponentService;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -21,7 +23,8 @@ import java.util.List;
 @ConditionalOnFeature("trace")
 public class VirtualComponentServiceImpl implements VirtualComponentService {
 
-  @Autowired
+  @Resource
+  @Qualifier("virtualComponentEsServiceImpl")
   private VirtualComponentStorage virtualComponentEsService;
 
   @Override

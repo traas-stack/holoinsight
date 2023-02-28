@@ -31,7 +31,7 @@ import java.util.List;
 import java.util.Map;
 
 @ConditionalOnFeature("trace")
-@Service
+@Service("topologyEsServiceImpl")
 public class TopologyEsServiceImpl implements TopologyStorage {
 
   @Autowired

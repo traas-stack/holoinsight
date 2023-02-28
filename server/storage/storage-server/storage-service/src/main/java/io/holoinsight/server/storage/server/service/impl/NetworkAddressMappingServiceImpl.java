@@ -9,8 +9,10 @@ import io.holoinsight.server.storage.engine.NetworkAddressMappingStorage;
 import io.holoinsight.server.storage.server.service.NetworkAddressMappingService;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
 import java.io.IOException;
 import java.util.List;
 
@@ -18,7 +20,8 @@ import java.util.List;
 @ConditionalOnFeature("trace")
 public class NetworkAddressMappingServiceImpl implements NetworkAddressMappingService {
 
-  @Autowired
+  @Resource
+  @Qualifier("networkAddressMappingEsServiceImpl")
   private NetworkAddressMappingStorage networkAddressMappingEsService;
 
   @Override

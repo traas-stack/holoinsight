@@ -8,13 +8,16 @@ import io.holoinsight.server.storage.engine.ServiceErrorStorage;
 import io.holoinsight.server.storage.server.service.ServiceErrorService;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 
+import javax.annotation.Resource;
 import java.io.IOException;
 import java.util.List;
 
 public class ServiceErrorServiceImpl implements ServiceErrorService {
 
-  @Autowired
+  @Resource
+  @Qualifier("serviceErrorEsServiceImpl")
   private ServiceErrorStorage serviceErrorEsService;
 
   @Override

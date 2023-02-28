@@ -18,8 +18,10 @@ import io.holoinsight.server.storage.server.service.TopologyService;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -34,7 +36,8 @@ import java.util.stream.Collectors;
 @ConditionalOnFeature("trace")
 public class TopologyServiceImpl implements TopologyService {
 
-  @Autowired
+  @Resource
+  @Qualifier("topologyEsServiceImpl")
   private TopologyStorage topologyEsService;
 
   @Autowired

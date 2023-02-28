@@ -11,13 +11,11 @@ import io.holoinsight.server.storage.common.model.query.TraceBrief;
 import io.holoinsight.server.storage.common.model.specification.sw.Tag;
 import io.holoinsight.server.storage.common.model.specification.sw.Trace;
 import io.holoinsight.server.storage.common.model.specification.sw.TraceState;
-import io.holoinsight.server.storage.engine.elasticsearch.model.SpanEsDO;
-import io.holoinsight.server.storage.engine.SegmentStorage;
 import io.holoinsight.server.storage.engine.SpanStorage;
+import io.holoinsight.server.storage.engine.elasticsearch.model.SpanEsDO;
 import io.holoinsight.server.storage.server.service.TraceService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.concurrent.BasicThreadFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
@@ -35,9 +33,6 @@ import java.util.concurrent.TimeUnit;
 @ConditionalOnFeature("trace")
 @Slf4j
 public class TraceServiceImpl implements TraceService {
-
-  @Autowired
-  private SegmentStorage segmentEsService;
 
   @Resource
   @Qualifier("spanEsServiceImpl")

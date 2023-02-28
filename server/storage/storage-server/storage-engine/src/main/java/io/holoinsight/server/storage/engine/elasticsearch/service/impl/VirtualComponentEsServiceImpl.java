@@ -29,7 +29,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @ConditionalOnFeature("trace")
-@Service
+@Service("virtualComponentEsServiceImpl")
 public class VirtualComponentEsServiceImpl implements VirtualComponentStorage {
 
   @Autowired
