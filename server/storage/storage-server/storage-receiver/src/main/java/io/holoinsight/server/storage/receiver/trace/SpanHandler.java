@@ -9,7 +9,6 @@ import io.holoinsight.server.storage.common.model.specification.otel.*;
 import io.holoinsight.server.storage.common.model.specification.sw.EndpointRelation;
 import io.holoinsight.server.storage.common.model.specification.sw.ServiceInstanceRelation;
 import io.holoinsight.server.storage.common.model.specification.sw.ServiceRelation;
-import io.holoinsight.server.storage.engine.elasticsearch.model.*;
 import io.holoinsight.server.storage.engine.model.*;
 import io.holoinsight.server.storage.receiver.analysis.RelationAnalysis;
 import io.holoinsight.server.storage.receiver.builder.RelationBuilder;
