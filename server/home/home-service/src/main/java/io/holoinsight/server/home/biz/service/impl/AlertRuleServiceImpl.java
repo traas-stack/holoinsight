@@ -95,7 +95,7 @@ public class AlertRuleServiceImpl extends ServiceImpl<AlarmRuleMapper, AlarmRule
     }
 
     if (StringUtils.isNotBlank(alarmRule.getSourceType())) {
-      wrapper.eq("source_type", alarmRule.getSourceType().trim());
+      wrapper.likeRight("source_type", alarmRule.getSourceType().trim());
     }
 
     if (null != alarmRule.getSourceId()) {
