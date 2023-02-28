@@ -59,9 +59,9 @@ public class Step3AuthFilter implements Filter {
         filterChain.doFilter(servletRequest, servletResponse);
       }
     } catch (Throwable e) {
-      resp.sendError(HttpServletResponse.SC_UNAUTHORIZED, "auth check error");
-      log.info("auth info: " + J.toJson(J.toJson(RequestContext.getContext())));
-      log.error("auth check error", e);
+      resp.sendError(HttpServletResponse.SC_UNAUTHORIZED, "auth check error, " + e.getMessage());
+      log.error(RequestContext.getTrace() + " auth check error, auth info: "
+          + J.toJson(J.toJson(RequestContext.getContext())), e);
     } finally {
       Debugger.print("Step3AuthFilter", "CTX: " + J.toJson(J.toJson(RequestContext.getContext())));
     }
@@ -79,7 +79,7 @@ public class Step3AuthFilter implements Filter {
       String token = req.getHeader("apiToken");
       // 接口权限判定
       if (!ulaFacade.authFunc(req) && StringUtil.isBlank(token)) {
-        log.error("no function authed");
+        log.warn("authFunc check failed");
         resp.sendError(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
         return false;
       }

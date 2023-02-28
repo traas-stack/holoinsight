@@ -3,6 +3,7 @@
  */
 package io.holoinsight.server.home.web.filter;
 
+import io.holoinsight.server.home.common.util.scope.RequestContext;
 import io.holoinsight.server.home.web.wrapper.CountServletResponseWrapper;
 import io.holoinsight.server.common.J;
 import io.holoinsight.server.common.JsonResult;
@@ -65,6 +66,11 @@ public class Step4AccessLogFilter implements Filter {
       logger.error(e.getMessage(), e);
     }
     StringBuilder builder = new StringBuilder();
+    builder.append("tenant=").append(
+        null == RequestContext.getContext().ms.tenant ? "-" : RequestContext.getContext().ms.tenant)
+        .append(",");
+    builder.append("accessKey=").append(null == RequestContext.getContext().ms.accessKey ? "-"
+        : RequestContext.getContext().ms.accessKey).append(",");
     builder.append("client=").append(client == null ? "-" : client).append(",");
     builder.append("path=").append(path == null ? "-" : urlFormat(path)).append(",");
     builder.append("method=").append(method == null ? "-" : method).append(",");
