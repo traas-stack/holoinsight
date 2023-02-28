@@ -10,7 +10,6 @@ import io.holoinsight.server.storage.common.model.query.TraceBrief;
 import io.holoinsight.server.storage.common.model.specification.sw.Tag;
 import io.holoinsight.server.storage.common.model.specification.sw.Trace;
 import io.holoinsight.server.storage.common.model.specification.sw.TraceState;
-import io.holoinsight.server.storage.engine.elasticsearch.model.SegmentEsDO;
 import io.holoinsight.server.storage.engine.elasticsearch.model.SpanEsDO;
 
 import java.io.IOException;
