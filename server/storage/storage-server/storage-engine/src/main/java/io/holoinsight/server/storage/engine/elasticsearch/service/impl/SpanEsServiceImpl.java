@@ -30,8 +30,10 @@ import io.holoinsight.server.storage.engine.elasticsearch.service.RecordEsServic
 import io.holoinsight.server.storage.engine.elasticsearch.service.SpanEsService;
 import io.holoinsight.server.storage.engine.elasticsearch.utils.EsGsonUtils;
 import io.opentelemetry.proto.trace.v1.Status;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.time.StopWatch;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.RequestOptions;
@@ -72,6 +74,7 @@ import static java.util.Objects.nonNull;
  */
 @ConditionalOnFeature("trace")
 @Service("spanEsServiceImpl")
+@Slf4j
 public class SpanEsServiceImpl extends RecordEsService<SpanEsDO> implements SpanEsService {
 
   private static final int SPAN_QUERY_MAX_SIZE = 2000;
@@ -84,7 +87,7 @@ public class SpanEsServiceImpl extends RecordEsService<SpanEsDO> implements Span
       String serviceInstanceName, String endpointName, List<String> traceIds, int minTraceDuration,
       int maxTraceDuration, TraceState traceState, QueryOrder queryOrder, Pagination paging,
       long start, long end, List<Tag> tags) throws IOException {
-
+    StopWatch stopWatch = StopWatch.createStarted();
     SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
 
     BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder();
@@ -172,12 +175,13 @@ public class SpanEsServiceImpl extends RecordEsService<SpanEsDO> implements Span
       basicTrace.getTraceIds().add(spanEsDO.getTraceId());
       traceBrief.getTraces().add(basicTrace);
     }
-
+    log.info("[apm] query_basic_traces finish, engine=elasticsearch, cost={}", stopWatch.getTime());
     return traceBrief;
   }
 
   @Override
   public Trace queryTrace(String traceId) throws IOException {
+    StopWatch stopWatch = StopWatch.createStarted();
     Trace trace = new Trace();
     QueryBuilder queryBuilder = new TermQueryBuilder(SpanEsDO.TRACE_ID, traceId);
     SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
@@ -221,6 +225,7 @@ public class SpanEsServiceImpl extends RecordEsService<SpanEsDO> implements Span
       }
     });
     trace.getSpans().addAll(sortedSpans);
+    log.info("[apm] query_trace finish, engine=elasticsearch, cost={}", stopWatch.getTime());
     return trace;
   }
 

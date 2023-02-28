@@ -57,6 +57,18 @@ public class TraceServiceImpl implements TraceService {
       String endpointName, List<String> traceIds, int minTraceDuration, int maxTraceDuration,
       TraceState traceState, QueryOrder queryOrder, Pagination paging, long start, long end,
       List<Tag> tags) throws Exception {
+    // temporarily double-query to compare performance between tatris and es
+    if (spanTatrisService != null) {
+      EXECUTOR.submit(() -> {
+        try {
+          spanTatrisService.queryBasicTraces(tenant, serviceName, serviceInstanceName, endpointName,
+              traceIds, minTraceDuration, maxTraceDuration, traceState, queryOrder, paging, start,
+              end, tags);
+        } catch (Exception e) {
+          log.error("[apm] tatris query_basic_traces failed, msg={}", e.getMessage(), e);
+        }
+      });
+    }
     return spanTatrisService.queryBasicTraces(tenant, serviceName, serviceInstanceName,
         endpointName, traceIds, minTraceDuration, maxTraceDuration, traceState, queryOrder, paging,
         start, end, tags);
@@ -64,6 +76,16 @@ public class TraceServiceImpl implements TraceService {
 
   @Override
   public Trace queryTrace(String traceId) throws Exception {
+    // temporarily double-query to compare performance between tatris and es
+    if (spanTatrisService != null) {
+      EXECUTOR.submit(() -> {
+        try {
+          spanTatrisService.queryTrace(traceId);
+        } catch (Exception e) {
+          log.error("[apm] tatris query_trace failed, msg={}", e.getMessage(), e);
+        }
+      });
+    }
     return spanTatrisService.queryTrace(traceId);
   }
 
@@ -75,13 +97,15 @@ public class TraceServiceImpl implements TraceService {
   @Override
   public void insertSpans(List<SpanEsDO> spans) throws Exception {
     // temporarily double-write to compare performance between tatris and es
-    EXECUTOR.submit(() -> {
-      try {
-        spanTatrisService.batchInsert(spans);
-      } catch (Exception e) {
-        log.error("[apm] tatris batch-insert failed, msg={}", e.getMessage(), e);
-      }
-    });
+    if (spanTatrisService != null) {
+      EXECUTOR.submit(() -> {
+        try {
+          spanTatrisService.batchInsert(spans);
+        } catch (Exception e) {
+          log.error("[apm] tatris batch_insert failed, msg={}", e.getMessage(), e);
+        }
+      });
+    }
     spanEsService.batchInsert(spans);
   }
 
