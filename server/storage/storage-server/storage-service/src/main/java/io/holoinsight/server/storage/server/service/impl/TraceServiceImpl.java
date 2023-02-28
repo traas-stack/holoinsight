@@ -36,11 +36,11 @@ public class TraceServiceImpl implements TraceService {
 
   @Resource
   @Qualifier("spanEsStorage")
-  private SpanStorage spanEsService;
+  private SpanStorage spanEsStorage;
 
   @Resource
-  @Qualifier("spanTatrisServiceImpl")
-  private SpanStorage spanTatrisService;
+  @Qualifier("spanTatrisStorage")
+  private SpanStorage spanTatrisStorage;
 
   private static final ThreadPoolExecutor EXECUTOR =
       new ThreadPoolExecutor(4, 4, 60, TimeUnit.SECONDS, new LinkedBlockingQueue<>(),
@@ -52,10 +52,10 @@ public class TraceServiceImpl implements TraceService {
       TraceState traceState, QueryOrder queryOrder, Pagination paging, long start, long end,
       List<Tag> tags) throws Exception {
     // temporarily double-query to compare performance between tatris and es
-    if (spanTatrisService != null) {
+    if (spanTatrisStorage != null) {
       EXECUTOR.submit(() -> {
         try {
-          spanTatrisService.queryBasicTraces(tenant, serviceName, serviceInstanceName, endpointName,
+          spanTatrisStorage.queryBasicTraces(tenant, serviceName, serviceInstanceName, endpointName,
               traceIds, minTraceDuration, maxTraceDuration, traceState, queryOrder, paging, start,
               end, tags);
         } catch (Exception e) {
@@ -63,7 +63,7 @@ public class TraceServiceImpl implements TraceService {
         }
       });
     }
-    return spanEsService.queryBasicTraces(tenant, serviceName, serviceInstanceName, endpointName,
+    return spanEsStorage.queryBasicTraces(tenant, serviceName, serviceInstanceName, endpointName,
         traceIds, minTraceDuration, maxTraceDuration, traceState, queryOrder, paging, start, end,
         tags);
   }
@@ -71,35 +71,35 @@ public class TraceServiceImpl implements TraceService {
   @Override
   public Trace queryTrace(String traceId) throws Exception {
     // temporarily double-query to compare performance between tatris and es
-    if (spanTatrisService != null) {
+    if (spanTatrisStorage != null) {
       EXECUTOR.submit(() -> {
         try {
-          spanTatrisService.queryTrace(traceId);
+          spanTatrisStorage.queryTrace(traceId);
         } catch (Exception e) {
           log.error("[apm] tatris query_trace failed, msg={}", e.getMessage(), e);
         }
       });
     }
-    return spanEsService.queryTrace(traceId);
+    return spanEsStorage.queryTrace(traceId);
   }
 
   @Override
   public void insertSpans(List<SpanDO> spans) throws Exception {
     // temporarily double-write to compare performance between tatris and es
-    if (spanTatrisService != null) {
+    if (spanTatrisStorage != null) {
       EXECUTOR.submit(() -> {
         try {
-          spanTatrisService.batchInsert(spans);
+          spanTatrisStorage.batchInsert(spans);
         } catch (Exception e) {
           log.error("[apm] tatris batch_insert failed, msg={}", e.getMessage(), e);
         }
       });
     }
-    spanEsService.batchInsert(spans);
+    spanEsStorage.batchInsert(spans);
   }
 
   @Override
   public List<StatisticData> statisticTrace(long startTime, long endTime) throws Exception {
-    return spanTatrisService.statisticTrace(startTime, endTime);
+    return spanTatrisStorage.statisticTrace(startTime, endTime);
   }
 }
