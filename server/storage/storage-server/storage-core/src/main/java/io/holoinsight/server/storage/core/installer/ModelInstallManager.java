@@ -39,6 +39,7 @@ public class ModelInstallManager {
   /**
    * @throws IOException
    */
+  @Scheduled(initialDelay = 60000, fixedRate = 60000)
   public void start() throws IOException {
     List<Model> models = scanModels();
     for (Model model : models) {
