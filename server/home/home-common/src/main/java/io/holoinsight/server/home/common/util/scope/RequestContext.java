@@ -22,6 +22,25 @@ public class RequestContext {
     return gs.get();
   }
 
+  public static String getTrace() {
+    if (null == gs.get())
+      return "-";
+
+    Context context = gs.get();
+    StringBuilder builder = new StringBuilder();
+    builder.append("trace").append(",");
+
+    if (null != context.ms) {
+      builder.append("tenant=").append(null == RequestContext.getContext().ms.tenant ? "-"
+          : RequestContext.getContext().ms.tenant).append(",");
+
+      builder.append("accessKey=").append(null == RequestContext.getContext().ms.accessKey ? "-"
+          : RequestContext.getContext().ms.accessKey).append(",");
+    }
+
+    return builder.toString();
+  }
+
   public static void setMonitorParams(MonitorParams mp) {
     gs.get().mp = mp;
   }

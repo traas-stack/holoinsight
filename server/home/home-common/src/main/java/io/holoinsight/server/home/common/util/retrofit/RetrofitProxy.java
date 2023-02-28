@@ -4,6 +4,7 @@
 package io.holoinsight.server.home.common.util.retrofit;
 
 import io.holoinsight.server.common.J;
+import lombok.extern.slf4j.Slf4j;
 import retrofit2.Call;
 import retrofit2.Response;
 
@@ -16,8 +17,8 @@ import java.lang.reflect.Method;
  * @author jsy1001de
  * @version 1.0: RetrofitProxy.java, v 0.1 2022年02月23日 3:05 下午 jinsong.yjs Exp $
  */
+@Slf4j
 public class RetrofitProxy<T> implements InvocationHandler {
-  // private Logger logger = LoggerFactory.getLogger(RetrofitProxy.class);
   private T retrofitService;
 
   public RetrofitProxy(T retrofitService) {
@@ -48,8 +49,7 @@ public class RetrofitProxy<T> implements InvocationHandler {
 
       // 其他都是异常处理, 可以根据不同错误码单独处理
       String body = J.toJson(response.body());
-      // logger.error("Response of [" + call.request().url().uri().toString() + "], error: ",
-      // body);
+      log.error("Response of {}, error: {}", call.request().url().uri().toString(), body);
       throw new RuntimeException("call failed, " + response.code() + ", " + body);
     } else {
       return ret;
@@ -68,15 +68,13 @@ public class RetrofitProxy<T> implements InvocationHandler {
     } else {
       invokeInfo.append("Invoke with 0 params.");
     }
-    // logger.warn(invokeInfo.toString());
+    log.warn(invokeInfo.toString());
   }
 
   protected void printAfter(long start, String url, Method method, Response response) {
 
-    String invokeInfo = "Invoke INFO: method=[" + method.getName() + "], url=[" + url + "], cost=["
-        + (System.currentTimeMillis() - start) + "], " + "result=[" + response.isSuccessful()
-        + "], code=[" + response.code() + "]";
-    // logger.warn(invokeInfo);
+    log.warn("Invoke INFO: method={}, url={}, cost={}, " + "result={}, code={}", method.getName(),
+        url, (System.currentTimeMillis() - start), response.isSuccessful(), response.code());
   }
 
 }

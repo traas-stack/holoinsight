@@ -4,6 +4,7 @@
 package io.holoinsight.server.home.web.filter;
 
 import io.holoinsight.server.home.biz.ula.ULAFacade;
+import io.holoinsight.server.home.common.util.scope.RequestContext;
 import io.holoinsight.server.home.web.config.RestAuthUtil;
 import io.holoinsight.server.home.biz.access.MonitorAccessService;
 import io.holoinsight.server.home.common.util.StringUtil;
@@ -55,8 +56,9 @@ public class Step2IdentityFilter implements Filter {
         filterChain.doFilter(servletRequest, servletResponse);
       }
     } catch (Throwable e) {
-      resp.sendError(HttpServletResponse.SC_UNAUTHORIZED, "identity error");
-      log.error("identity error", e);
+      resp.sendError(HttpServletResponse.SC_UNAUTHORIZED,
+          RequestContext.getTrace() + " identity error, " + e.getMessage());
+      log.error("{} identity error", RequestContext.getTrace(), e);
     }
   }
 
@@ -108,11 +110,9 @@ public class Step2IdentityFilter implements Filter {
           return true;
         }
       }
-      // user = ulaFacade.checkLogin(req, resp);
       if (user != null) {
         // 用户是登陆好，设置好，然后返回
         MonitorCookieUtil.addUserCookie(user, resp);
-        // MonitorCookieUtil.addTenantCookie(user.getLoginTenant(), resp);
         req.setAttribute(MonitorUser.MONITOR_USER, user);
         return true;
       }

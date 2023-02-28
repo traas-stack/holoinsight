@@ -44,11 +44,12 @@ public class NotificationTemplate {
     template.fieldMap = new LinkedHashMap<>();
     template.fieldMap.put("告警规则名称", AlertTemplateField.ruleName);
     template.fieldMap.put("告警严重度", AlertTemplateField.ALERT_PRIORITY);
-    template.fieldMap.put("告警标题", AlertTemplateField.ALERT_TITLE);
+    // template.fieldMap.put("告警标题", AlertTemplateField.ALERT_TITLE);
     template.fieldMap.put("告警内容", AlertTemplateField.EVENT_MSG);
+    template.fieldMap.put("告警对象", AlertTemplateField.ALERT_SCOPE);
     template.fieldMap.put("告警首次触发时间", AlertTemplateField.ALERT_START_TIME);
     template.fieldMap.put("此次评估触发时间", AlertTemplateField.alarmTime);
-    template.fieldMap.put("告警触发条件", AlertTemplateField.ALERT_TRIGGER_CONDITION);
+    // template.fieldMap.put("告警触发条件", AlertTemplateField.ALERT_TRIGGER_CONDITION);
     template.fieldMap.put("告警触发数值", AlertTemplateField.ALERT_VALUE);
     template.fieldMap.put("[详情]", AlertTemplateField.LINK);
     template.fieldMap.put("[设置]", AlertTemplateField.ruleUrl);
