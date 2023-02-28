@@ -58,7 +58,7 @@ public class Step2IdentityFilter implements Filter {
     } catch (Throwable e) {
       resp.sendError(HttpServletResponse.SC_UNAUTHORIZED,
           RequestContext.getTrace() + " identity error, " + e.getMessage());
-      log.error(RequestContext.getTrace() + " identity error", e);
+      log.error("{} identity error", RequestContext.getTrace(), e);
     }
   }
 
