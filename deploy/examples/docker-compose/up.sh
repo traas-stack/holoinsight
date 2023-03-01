@@ -27,5 +27,5 @@ docker-compose --env-file $env_file up -d
 
 echo holoinsight bootstrap successfully, please visit http://localhost:8080
 echo
-
+docker ps -a
 sh $script_dir/install-agent.sh
