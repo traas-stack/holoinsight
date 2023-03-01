@@ -1,6 +1,7 @@
 <p align="center">
   <img height="300" src="https://github.com/traas-stack/holoinsight/blob/main/docs/logo/logo-flat.png" alt="HoloInsight">
 </p>
+
 ![License](https://img.shields.io/badge/license-Apache--2.0-green.svg)
 [![Github stars](https://img.shields.io/github/stars/traas-stack/holoinsight?style=flat-square])](https://github.com/traas-stack/holoinsight)
 [![OpenIssue](https://img.shields.io/github/issues/traas-stack/holoinsight)](https://github.com/traas-stack/holoinsight/issues)
