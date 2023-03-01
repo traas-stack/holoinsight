@@ -5,7 +5,7 @@ package io.holoinsight.server.common;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import sun.net.util.IPAddressUtil;
+import org.apache.commons.validator.routines.InetAddressValidator;
 
 import java.net.InetAddress;
 import java.net.NetworkInterface;
@@ -58,8 +58,8 @@ public class AddressUtil {
           InetAddress nextElement = addresss.nextElement();
           String hostAddress = nextElement.getHostAddress();
           boolean isLoopAddress = nextElement.isLoopbackAddress();
-          boolean isIPV4 = IPAddressUtil.isIPv4LiteralAddress(hostAddress);
-          boolean isIPV6 = IPAddressUtil.isIPv6LiteralAddress(hostAddress);
+          boolean isIPV4 = InetAddressValidator.getInstance().isValidInet4Address(hostAddress);
+          boolean isIPV6 = InetAddressValidator.getInstance().isValidInet6Address(hostAddress);
 
           if (isIPV4 && !isIPV6) {
             localHostIPV4Lists.add(hostAddress);
