@@ -11,8 +11,8 @@ import java.util.concurrent.TimeUnit;
 
 /**
  *
- * @author wanpeng.xwp
- * @version : Executors.java, v 0.1 2023年02月28日 18:45 wanpeng.xwp Exp $
+ * @author xiangwanpeng
+ * @version : Executors.java, v 0.1 2023年02月28日 18:45 xiangwanpeng Exp $
  */
 public class Executors {
 

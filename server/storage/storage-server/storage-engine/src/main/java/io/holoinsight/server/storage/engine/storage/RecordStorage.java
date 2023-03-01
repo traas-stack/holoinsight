@@ -10,8 +10,8 @@ import java.util.List;
 
 /**
  *
- * @author wanpeng.xwp
- * @version : RecordStorage.java, v 0.1 2023年02月28日 16:20 wanpeng.xwp Exp $
+ * @author xiangwanpeng
+ * @version : RecordStorage.java, v 0.1 2023年02月28日 16:20 xiangwanpeng Exp $
  */
 public interface RecordStorage<T extends RecordDO> {
   void batchInsert(List<T> entities) throws IOException;
