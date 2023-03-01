@@ -77,8 +77,10 @@ public class NotificationTemplate {
     for (Map.Entry<String, AlertTemplateField> entry : this.fieldMap.entrySet()) {
       AlertTemplateField field = entry.getValue();
       if (field == AlertTemplateField.LINK || field == AlertTemplateField.ruleUrl) {
-        msg.append(
-            String.format("[%s](${%s})  \n\n  ", entry.getKey(), entry.getValue().getFieldName()));
+        continue;
+      } else if (field == AlertTemplateField.ALERT_SCOPE || field == AlertTemplateField.alarmTags) {
+        msg.append(String.format("- **%s**:  \n\n  ", entry.getKey()));
+        msg.append(String.format("${%s}", entry.getValue().getFieldName()));
       } else {
         msg.append(String.format("- **%s**: ${%s}  \n\n  ", entry.getKey(),
             entry.getValue().getFieldName()));
@@ -87,14 +89,14 @@ public class NotificationTemplate {
     return msg.toString();
   }
 
-  public Map<String, String> getTemplateMap(TemplateValue templateValue) {
+  public Map<String, String> getTemplateMap(TemplateValue templateValue, boolean tagMarkdown) {
     if (CollectionUtils.isEmpty(fieldMap)) {
       return Collections.emptyMap();
     }
     Map<String, String> result = new HashMap<>();
     for (Map.Entry<String, AlertTemplateField> entry : this.fieldMap.entrySet()) {
       AlertTemplateField field = entry.getValue();
-      String value = getValue(templateValue, field);
+      String value = getValue(templateValue, field, tagMarkdown);
       if (value == null) {
         value = StringUtils.EMPTY;
       }
@@ -103,7 +105,8 @@ public class NotificationTemplate {
     return result;
   }
 
-  private String getValue(TemplateValue templateValue, AlertTemplateField field) {
+  private String getValue(TemplateValue templateValue, AlertTemplateField field,
+      boolean tagMarkdown) {
     switch (field) {
       case ALERT_TRACE_ID:
         return templateValue.alarmTraceId;
@@ -123,13 +126,13 @@ public class NotificationTemplate {
         return templateValue.alertQuery;
       case ALERT_SCOPE:
       case alarmTags:
-        return templateValue.alarmTags;
+        return buildTagValue(templateValue.alarmTags, tagMarkdown);
       case ALERT_STATUS:
         return buildSummary();
       case ALERT_DURATION:
         return String.valueOf(templateValue.duration);
       case ALERT_VALUE:
-        return String.valueOf(templateValue.alertValue);
+        return getAlertValue(templateValue.alertValue);
       case ALERT_TITLE:
         return buildAlertTitle(templateValue.ruleConfig);
       case ruleName:
@@ -169,6 +172,26 @@ public class NotificationTemplate {
         return templateValue.triggerCondition;
     }
     return StringUtils.EMPTY;
+  }
+
+  private String buildTagValue(String alarmTags, boolean tagMarkdown) {
+    if (tagMarkdown) {
+      if (alarmTags.startsWith("[")) {
+        return alarmTags;
+      }
+      Map<String, Object> tags = J.toMap(alarmTags);
+      StringBuilder msg = new StringBuilder();
+      for (Map.Entry<String, Object> entry : tags.entrySet()) {
+        msg.append(String.format("    - %s: %s  \n\n  ", entry.getKey(), entry.getValue()));
+      }
+      return msg.toString();
+    } else {
+      return alarmTags;
+    }
+  }
+
+  public static String getAlertValue(Double alertValue) {
+    return String.format("%.4f", alertValue);
   }
 
   private String buildSummary() {
