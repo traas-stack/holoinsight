@@ -1,7 +1,7 @@
 /*
  * Copyright 2022 Holoinsight Project Authors. Licensed under Apache-2.0.
  */
-package io.holoinsight.server.storage.engine.elasticsearch.service.impl;
+package io.holoinsight.server.storage.engine.elasticsearch.storage.impl;
 
 import com.google.common.base.Strings;
 import io.holoinsight.server.common.springboot.ConditionalOnFeature;
