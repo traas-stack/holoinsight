@@ -23,14 +23,16 @@ public class RequestContext {
   }
 
   public static String getTrace() {
-    if (null == gs.get())
-      return "-";
-
-    Context context = gs.get();
     StringBuilder builder = new StringBuilder();
     builder.append("trace").append(",");
+    if (null == gs.get()) {
+      builder.append("-").append(",");
+      return builder.toString();
+    }
 
-    if (null != context.ms) {
+    Context context = gs.get();
+
+    if (null != context && null != context.ms) {
       builder.append("tenant=").append(null == RequestContext.getContext().ms.tenant ? "-"
           : RequestContext.getContext().ms.tenant).append(",");
 

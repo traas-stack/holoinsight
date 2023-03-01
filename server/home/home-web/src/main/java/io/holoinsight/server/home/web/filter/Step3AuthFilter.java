@@ -118,13 +118,14 @@ public class Step3AuthFilter implements Filter {
       if (null == ma || CollectionUtils.isEmpty(ma.powerConstants)
           || CollectionUtils.isEmpty(ma.getTenantViewPowerList())) {
         log.error("check tenant auth failed, " + J.toJson(ma));
-        resp.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+        resp.sendError(HttpServletResponse.SC_UNAUTHORIZED, "check tenant auth failed");
         return false;
       }
 
       if (!ma.getTenantViewPowerList().containsKey(ms.getTenant())) {
         log.error("check tenant " + ms.getTenant() + " is not auth, " + J.toJson(ma));
-        resp.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+        resp.sendError(HttpServletResponse.SC_UNAUTHORIZED,
+            "check tenant " + ms.getTenant() + " is not auth");
         return false;
       }
 
