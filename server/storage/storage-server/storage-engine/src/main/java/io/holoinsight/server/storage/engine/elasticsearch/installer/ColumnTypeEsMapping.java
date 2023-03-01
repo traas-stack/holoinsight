@@ -3,11 +3,10 @@
  */
 package io.holoinsight.server.storage.engine.elasticsearch.installer;
 
+import com.google.gson.JsonObject;
 import io.holoinsight.server.storage.common.model.specification.sw.Layer;
 import io.holoinsight.server.storage.common.model.specification.sw.RequestType;
 import io.holoinsight.server.storage.core.installer.DataTypeMapping;
-import com.google.gson.JsonObject;
-import org.springframework.stereotype.Component;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -17,7 +16,6 @@ import java.util.List;
  * @author jiwliu
  * @version : ColumnTypeEsMapping.java, v 0.1 2022年10月11日 22:27 xiangwanpeng Exp $
  */
-@Component("columnTypeEsMapping")
 public class ColumnTypeEsMapping implements DataTypeMapping {
 
   @Override
