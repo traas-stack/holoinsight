@@ -9,8 +9,6 @@ import io.holoinsight.server.common.threadpool.ThreadPoolConfiguration;
 import io.holoinsight.server.storage.core.ModelCenter;
 import io.holoinsight.server.storage.core.installer.ModelInstallManager;
 import io.holoinsight.server.storage.core.ttl.ModelTtlManager;
-import io.holoinsight.server.storage.engine.elasticsearch.installer.EsModelInstaller;
-import io.holoinsight.server.storage.engine.elasticsearch.ttl.EsDataCleaner;
 import io.holoinsight.server.storage.receiver.trace.TraceOtelServiceImpl;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
@@ -50,16 +48,6 @@ public class HoloinsightStorageConfiguration {
     @Bean
     public TraceOtelServiceImpl storage_traceOtelServiceImpl() {
       return new TraceOtelServiceImpl();
-    }
-
-    @Bean("esModelInstaller")
-    public EsModelInstaller esModelInstaller() {
-      return new EsModelInstaller();
-    }
-
-    @Bean("esDataCleaner")
-    public EsDataCleaner esDataCleaner() {
-      return new EsDataCleaner();
     }
 
     @Bean
