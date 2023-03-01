@@ -40,7 +40,8 @@ sh ./deploy/examples/docker-compose/up.sh
 This script will also install an agent inside holoinsight-server container. This usage is only for demonstration and is not applicable to production environment.
 
 3. visit holoinsight  
-visit http://localhost:8080
+visit http://localhost:8080  
+Check [product documentation](https://github.com/traas-stack/holoinsight-docs/blob/main/docs/src/en/quickstart/quick-start.md)
 
 ### Deploy using k8s
 Requirements:
@@ -68,7 +69,8 @@ Use following script to uninstall holoinsight from k8s cluster.
 ```
 
 3. visit holoinsight  
-   visit http://localhost:8080
+   visit http://localhost:8080  
+   Check [product documentation](https://github.com/traas-stack/holoinsight-docs/blob/main/docs/src/en/quickstart/quick-start.md)
 
 ### Appendix
 #### Install docker-compose
