@@ -3,10 +3,9 @@
  */
 package io.holoinsight.server.home.web.filter;
 
-import io.holoinsight.server.home.web.config.RestAuthUtil;
 import io.holoinsight.server.common.J;
-import io.holoinsight.server.home.biz.ula.ULAFacade;
 import io.holoinsight.server.home.biz.common.MetaDictUtil;
+import io.holoinsight.server.home.biz.ula.ULAFacade;
 import io.holoinsight.server.home.common.util.CookieUtils;
 import io.holoinsight.server.home.common.util.Debugger;
 import io.holoinsight.server.home.common.util.StringUtil;
@@ -18,6 +17,8 @@ import io.holoinsight.server.home.common.util.scope.MonitorUser;
 import io.holoinsight.server.home.common.util.scope.PowerConstants;
 import io.holoinsight.server.home.common.util.scope.RequestContext;
 import io.holoinsight.server.home.common.util.scope.RequestContext.Context;
+import io.holoinsight.server.home.web.config.RestAuthUtil;
+import io.holoinsight.server.home.web.measure.HoloInsightRequestException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
@@ -59,7 +60,12 @@ public class Step3AuthFilter implements Filter {
         filterChain.doFilter(servletRequest, servletResponse);
       }
     } catch (Throwable e) {
-      resp.sendError(HttpServletResponse.SC_UNAUTHORIZED, "auth check error, " + e.getMessage());
+      if (e instanceof HoloInsightRequestException) {
+        HoloInsightRequestException exception = (HoloInsightRequestException) e;
+        resp.sendError(exception.sc, exception.getMessage());
+      } else {
+        resp.sendError(HttpServletResponse.SC_UNAUTHORIZED, "auth check error, " + e.getMessage());
+      }
       log.error("{} auth check error, auth info: {}", RequestContext.getTrace(),
           J.toJson(J.toJson(RequestContext.getContext())), e);
     } finally {

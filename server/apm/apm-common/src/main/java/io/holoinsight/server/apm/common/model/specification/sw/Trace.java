@@ -3,9 +3,11 @@
  */
 package io.holoinsight.server.apm.common.model.specification.sw;
 
+import io.holoinsight.server.common.service.Measurable;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.util.CollectionUtils;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -18,7 +20,7 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class Trace implements Serializable {
+public class Trace implements Serializable, Measurable {
 
   private static final long serialVersionUID = 3436393920339302223L;
 
@@ -26,4 +28,12 @@ public class Trace implements Serializable {
    * span 列表
    */
   private List<Span> spans = new ArrayList<>();
+
+  @Override
+  public long measure() {
+    if (CollectionUtils.isEmpty(spans)) {
+      return 0;
+    }
+    return this.spans.size();
+  }
 }

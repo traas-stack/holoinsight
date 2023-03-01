@@ -35,6 +35,9 @@ import io.holoinsight.server.home.web.common.ManageCallback;
 import io.holoinsight.server.home.web.common.ParaCheckUtil;
 import io.holoinsight.server.home.web.common.TokenUrls;
 import io.holoinsight.server.home.web.interceptor.MonitorScopeAuth;
+import io.holoinsight.server.home.web.measure.ActionType;
+import io.holoinsight.server.home.web.measure.MeasureStatistician;
+import io.holoinsight.server.home.web.measure.ResourceType;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -134,6 +137,16 @@ public class AlarmRuleFacadeImpl extends BaseFacade {
             J.toJson(alarmRuleDTO), null, null, "alarm_rule_create");
         JsonResult.createSuccessResult(result, id);
       }
+
+      @Override
+      public ResourceType getResourceType() {
+        return ResourceType.alert_config;
+      }
+
+      @Override
+      public ActionType getActionType() {
+        return ActionType.create;
+      }
     });
 
     return result;
@@ -198,6 +211,16 @@ public class AlarmRuleFacadeImpl extends BaseFacade {
 
         JsonResult.createSuccessResult(result, save);
       }
+
+      @Override
+      public ResourceType getResourceType() {
+        return ResourceType.alert_config;
+      }
+
+      @Override
+      public ActionType getActionType() {
+        return ActionType.update;
+      }
     });
 
     return result;
@@ -220,6 +243,16 @@ public class AlarmRuleFacadeImpl extends BaseFacade {
         AlarmRuleDTO save =
             alarmRuleService.queryById(id, RequestContext.getContext().ms.getTenant());
         JsonResult.createSuccessResult(result, save);
+      }
+
+      @Override
+      public ResourceType getResourceType() {
+        return ResourceType.alert_config;
+      }
+
+      @Override
+      public ActionType getActionType() {
+        return ActionType.select;
       }
     });
 
@@ -252,6 +285,16 @@ public class AlarmRuleFacadeImpl extends BaseFacade {
 
         JsonResult.createSuccessResult(result, rtn);
       }
+
+      @Override
+      public ResourceType getResourceType() {
+        return ResourceType.alert_config;
+      }
+
+      @Override
+      public ActionType getActionType() {
+        return ActionType.delete;
+      }
     });
     return result;
   }
@@ -275,6 +318,16 @@ public class AlarmRuleFacadeImpl extends BaseFacade {
           pageRequest.getTarget().setTenant(ms.tenant);
         }
         JsonResult.createSuccessResult(result, alarmRuleService.getListByPage(pageRequest));
+      }
+
+      @Override
+      public ResourceType getResourceType() {
+        return ResourceType.alert_config;
+      }
+
+      @Override
+      public ActionType getActionType() {
+        return ActionType.select;
       }
     });
 
@@ -307,6 +360,16 @@ public class AlarmRuleFacadeImpl extends BaseFacade {
 
         JsonResult.createSuccessResult(result, alarmRuleDTOS);
 
+      }
+
+      @Override
+      public ResourceType getResourceType() {
+        return ResourceType.alert_config;
+      }
+
+      @Override
+      public ActionType getActionType() {
+        return ActionType.select;
       }
     });
     return result;
@@ -357,6 +420,16 @@ public class AlarmRuleFacadeImpl extends BaseFacade {
         JsonResult.createSuccessResult(result,
             alarmHistoryService.getListByPage(pageRequest, uniqueIds));
 
+      }
+
+      @Override
+      public ResourceType getResourceType() {
+        return ResourceType.alert_config;
+      }
+
+      @Override
+      public ActionType getActionType() {
+        return ActionType.select;
       }
     });
     return result;

@@ -13,7 +13,7 @@ import java.util.Set;
 /**
  *
  * @author jsy1001de
- * @version 1.0: MonitorAccessConfig.java, v 0.1 2022年06月10日 3:56 下午 jinsong.yjs Exp $
+ * @version 1.0: MonitorAccessConfig.java, v 0.1 2022-06-10 15:56 jinsong.yjs Exp $
  */
 @Data
 public class MonitorAccessConfig {
@@ -30,30 +30,35 @@ public class MonitorAccessConfig {
   private Boolean online;
 
   /**
-   * 是否允许访问所有指标
+   * allow all metric access permission
    */
   private boolean accessAll = false;
   /**
-   * 允许访问的指标列表
+   * allow metric list
    */
   private Set<String> accessRange = new HashSet<>();
   /**
-   * 单机QPS， -1代表不限，0代表黑名单， 其他代表正常限流
+   * server QPS， -1: no limit，0: in black list， other: normal flow limie policy
    */
   private long metricQps = -1L;
   private long metaQps = -1L;
   /**
-   * 用户限流信息
+   * flow limit configuration
    */
   private Map<String, Long> userRate = new HashMap<>();
 
   /**
-   * 一次查询指标中最多数据点
+   * metric query upper limit
    */
   private long dpsLimit = GatewayConstants.WEB_QUERY_DEFAULT_DPS_LIMIT;
   /**
-   * 一次查询维度中最多的Tags
+   * tags query upper limit
    */
   private long tagsLimit = GatewayConstants.QUERY_DEFAULT_TAGS_LIMIT;
+
+  /**
+   * market plugin id
+   */
+  private Long marketPluginId;;
 
 }
