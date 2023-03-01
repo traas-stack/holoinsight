@@ -51,8 +51,8 @@ public class NotificationTemplate {
     template.fieldMap.put("此次评估触发时间", AlertTemplateField.alarmTime);
     // template.fieldMap.put("告警触发条件", AlertTemplateField.ALERT_TRIGGER_CONDITION);
     template.fieldMap.put("告警触发数值", AlertTemplateField.ALERT_VALUE);
-    template.fieldMap.put("[详情]", AlertTemplateField.LINK);
-    template.fieldMap.put("[设置]", AlertTemplateField.ruleUrl);
+    // template.fieldMap.put("[详情]", AlertTemplateField.LINK);
+    // template.fieldMap.put("[设置]", AlertTemplateField.ruleUrl);
 
     return template;
   }
@@ -87,14 +87,14 @@ public class NotificationTemplate {
     return msg.toString();
   }
 
-  public Map<String, String> getTemplateMap(TemplateValue templateValue, String link) {
+  public Map<String, String> getTemplateMap(TemplateValue templateValue) {
     if (CollectionUtils.isEmpty(fieldMap)) {
       return Collections.emptyMap();
     }
     Map<String, String> result = new HashMap<>();
     for (Map.Entry<String, AlertTemplateField> entry : this.fieldMap.entrySet()) {
       AlertTemplateField field = entry.getValue();
-      String value = getValue(templateValue, field, link);
+      String value = getValue(templateValue, field);
       if (value == null) {
         value = StringUtils.EMPTY;
       }
@@ -103,7 +103,7 @@ public class NotificationTemplate {
     return result;
   }
 
-  private String getValue(TemplateValue templateValue, AlertTemplateField field, String link) {
+  private String getValue(TemplateValue templateValue, AlertTemplateField field) {
     switch (field) {
       case ALERT_TRACE_ID:
         return templateValue.alarmTraceId;
@@ -118,7 +118,7 @@ public class NotificationTemplate {
         return templateValue.metric;
       case ALERT_PRIORITY:
       case alarmLevel:
-        return templateValue.alarmLevel;
+        return templateValue.alarmLevel.getDesc();
       case ALERT_QUERY:
         return templateValue.alertQuery;
       case ALERT_SCOPE:
@@ -154,10 +154,10 @@ public class NotificationTemplate {
         return templateValue.alertServer;
       case ALERT_ATTACHMENTS:
         return buildAttachments();
-      case LINK:
-        return link;
-      case ruleUrl:
-        return templateValue.ruleUrl;
+      // case LINK:
+      // return link;
+      // case ruleUrl:
+      // return templateValue.ruleUrl;
       case TENANT:
       case tenant:
         return templateValue.tenant;

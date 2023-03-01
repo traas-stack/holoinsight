@@ -152,7 +152,7 @@ public class AlertNotify {
     TemplateValue templateValue = new TemplateValue();
     templateValue.setRuleName(alertNotify.getRuleName());
     templateValue.setAlarmTime(sdf.format(day));
-    templateValue.setAlarmLevel(AlertLevel.getDesc(alertNotify.getAlarmLevel()));
+    templateValue.setAlarmLevel(AlertLevel.getByCode(alertNotify.getAlarmLevel()));
     templateValues.add(templateValue);
     return templateValues;
   }
