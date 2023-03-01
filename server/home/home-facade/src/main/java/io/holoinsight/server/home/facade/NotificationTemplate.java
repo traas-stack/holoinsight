@@ -51,8 +51,8 @@ public class NotificationTemplate {
     template.fieldMap.put("此次评估触发时间", AlertTemplateField.alarmTime);
     // template.fieldMap.put("告警触发条件", AlertTemplateField.ALERT_TRIGGER_CONDITION);
     template.fieldMap.put("告警触发数值", AlertTemplateField.ALERT_VALUE);
-//    template.fieldMap.put("[详情]", AlertTemplateField.LINK);
-//    template.fieldMap.put("[设置]", AlertTemplateField.ruleUrl);
+    // template.fieldMap.put("[详情]", AlertTemplateField.LINK);
+    // template.fieldMap.put("[设置]", AlertTemplateField.ruleUrl);
 
     return template;
   }
@@ -154,10 +154,10 @@ public class NotificationTemplate {
         return templateValue.alertServer;
       case ALERT_ATTACHMENTS:
         return buildAttachments();
-//      case LINK:
-//        return link;
-//      case ruleUrl:
-//        return templateValue.ruleUrl;
+      // case LINK:
+      // return link;
+      // case ruleUrl:
+      // return templateValue.ruleUrl;
       case TENANT:
       case tenant:
         return templateValue.tenant;
