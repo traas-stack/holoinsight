@@ -3,7 +3,6 @@
  */
 package io.holoinsight.server.storage.engine.elasticsearch.storage.impl;
 
-import io.holoinsight.server.common.springboot.ConditionalOnFeature;
 import io.holoinsight.server.storage.common.model.query.Duration;
 import io.holoinsight.server.storage.common.model.query.MetricValue;
 import io.holoinsight.server.storage.common.model.query.MetricValues;
@@ -32,8 +31,6 @@ import org.elasticsearch.search.aggregations.metrics.ParsedPercentiles;
 import org.elasticsearch.search.aggregations.metrics.Percentile;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Primary;
-import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
 import java.io.IOException;
@@ -45,9 +42,6 @@ import java.util.stream.Collectors;
  * @author jiwliu
  * @version : MetricEsServiceImpl.java, v 0.1 2022年09月29日 16:58 xiangwanpeng Exp $
  */
-@ConditionalOnFeature("trace")
-@Service("spanMetricEsStorage")
-@Primary
 public class SpanMetricEsStorage implements MetricStorage {
 
   private static final int AGG_TERM_MAX_SIZE = 100;

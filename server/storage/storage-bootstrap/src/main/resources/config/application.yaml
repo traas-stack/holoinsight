@@ -20,4 +20,5 @@ holoinsight:
     active: storage
   storage:
     elasticsearch:
+      enable: true
       hosts: 127.0.0.1

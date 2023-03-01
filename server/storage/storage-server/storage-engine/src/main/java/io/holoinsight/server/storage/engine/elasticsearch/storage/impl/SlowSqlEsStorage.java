@@ -3,7 +3,6 @@
  */
 package io.holoinsight.server.storage.engine.elasticsearch.storage.impl;
 
-import io.holoinsight.server.common.springboot.ConditionalOnFeature;
 import io.holoinsight.server.storage.common.model.query.SlowSql;
 import io.holoinsight.server.storage.engine.elasticsearch.utils.EsGsonUtils;
 import io.holoinsight.server.storage.engine.model.SlowSqlDO;
@@ -18,16 +17,11 @@ import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Primary;
-import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-@ConditionalOnFeature("trace")
-@Service("slowSqlEsStorage")
-@Primary
 public class SlowSqlEsStorage extends RecordEsStorage<SlowSqlDO> implements SlowSqlStorage {
 
   @Autowired

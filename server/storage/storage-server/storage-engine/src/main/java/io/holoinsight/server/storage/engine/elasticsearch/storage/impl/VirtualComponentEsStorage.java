@@ -3,7 +3,6 @@
  */
 package io.holoinsight.server.storage.engine.elasticsearch.storage.impl;
 
-import io.holoinsight.server.common.springboot.ConditionalOnFeature;
 import io.holoinsight.server.storage.common.model.query.VirtualComponent;
 import io.holoinsight.server.storage.common.model.specification.sw.RequestType;
 import io.holoinsight.server.storage.engine.model.EndpointRelationDO;
@@ -22,16 +21,11 @@ import org.elasticsearch.search.aggregations.bucket.terms.Terms;
 import org.elasticsearch.search.aggregations.bucket.terms.TermsAggregationBuilder;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Primary;
-import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-@ConditionalOnFeature("trace")
-@Service("virtualComponentEsStorage")
-@Primary
 public class VirtualComponentEsStorage implements VirtualComponentStorage {
 
   @Autowired
@@ -110,5 +104,4 @@ public class VirtualComponentEsStorage implements VirtualComponentStorage {
 
     return result;
   }
-
 }

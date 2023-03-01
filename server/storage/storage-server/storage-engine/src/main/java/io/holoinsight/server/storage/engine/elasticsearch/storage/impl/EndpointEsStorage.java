@@ -3,7 +3,6 @@
  */
 package io.holoinsight.server.storage.engine.elasticsearch.storage.impl;
 
-import io.holoinsight.server.common.springboot.ConditionalOnFeature;
 import io.holoinsight.server.storage.common.model.query.Endpoint;
 import io.holoinsight.server.storage.engine.model.EndpointRelationDO;
 import io.holoinsight.server.storage.engine.storage.EndpointStorage;
@@ -16,16 +15,11 @@ import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Primary;
-import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-@ConditionalOnFeature("trace")
-@Service("endpointEsStorage")
-@Primary
 public class EndpointEsStorage implements EndpointStorage {
 
   @Autowired

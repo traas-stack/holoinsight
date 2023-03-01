@@ -35,8 +35,8 @@ public class RecordEsStorage<T extends RecordDO> implements RecordStorage<T> {
   private RestHighLevelClient esClient;
 
   public void batchInsert(List<T> entities) throws IOException {
-    StopWatch stopWatch = StopWatch.createStarted();
     if (CollectionUtils.isNotEmpty(entities)) {
+      StopWatch stopWatch = StopWatch.createStarted();
       BulkRequest bulkRequest = new BulkRequest();
       entities.forEach(entity -> {
         String writeIndexName = writeIndexName(entity.indexName(), entity.getTimeBucket());
@@ -44,9 +44,9 @@ public class RecordEsStorage<T extends RecordDO> implements RecordStorage<T> {
             XContentType.JSON));
       });
       BulkResponse bulkItemRsp = esClient.bulk(bulkRequest, RequestOptions.DEFAULT);
+      log.info("[apm] batch_insert finish, engine=elasticsearch, size={}, cost={}",
+          CollectionUtils.size(entities), stopWatch.getTime());
     }
-    log.info("[apm] batch_insert finish, engine=elasticsearch, size={}, cost={}",
-        CollectionUtils.size(entities), stopWatch.getTime());
   }
 
   private static String writeIndexName(String indexName, long timeBucket) {

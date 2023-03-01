@@ -3,16 +3,14 @@
  */
 package io.holoinsight.server.storage.engine.elasticsearch.storage.impl;
 
-import io.holoinsight.server.common.springboot.ConditionalOnFeature;
 import io.holoinsight.server.storage.common.model.query.Call;
 import io.holoinsight.server.storage.common.model.query.ResponseMetric;
 import io.holoinsight.server.storage.common.model.specification.otel.SpanKind;
-import io.holoinsight.server.storage.engine.storage.TopologyStorage;
 import io.holoinsight.server.storage.engine.model.EndpointRelationDO;
 import io.holoinsight.server.storage.engine.model.ServiceInstanceRelationDO;
 import io.holoinsight.server.storage.engine.model.ServiceRelationDO;
 import io.holoinsight.server.storage.engine.model.SpanDO;
-
+import io.holoinsight.server.storage.engine.storage.TopologyStorage;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.RequestOptions;
@@ -22,8 +20,6 @@ import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Primary;
-import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -31,9 +27,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@ConditionalOnFeature("trace")
-@Service("topologyEsStorage")
-@Primary
 public class TopologyEsStorage implements TopologyStorage {
 
   @Autowired

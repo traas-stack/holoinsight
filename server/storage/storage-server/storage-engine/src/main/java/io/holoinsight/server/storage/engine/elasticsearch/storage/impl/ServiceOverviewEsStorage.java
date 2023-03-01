@@ -3,7 +3,6 @@
  */
 package io.holoinsight.server.storage.engine.elasticsearch.storage.impl;
 
-import io.holoinsight.server.common.springboot.ConditionalOnFeature;
 import io.holoinsight.server.storage.common.model.specification.otel.SpanKind;
 import io.holoinsight.server.storage.engine.model.SpanDO;
 import io.holoinsight.server.storage.engine.storage.ServiceOverviewStorage;
@@ -16,16 +15,11 @@ import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Primary;
-import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-@ConditionalOnFeature("trace")
-@Service("serviceOverviewEsStorage")
-@Primary
 public class ServiceOverviewEsStorage implements ServiceOverviewStorage {
 
   @Autowired

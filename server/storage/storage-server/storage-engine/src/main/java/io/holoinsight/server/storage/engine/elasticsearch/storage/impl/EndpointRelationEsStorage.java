@@ -3,15 +3,9 @@
  */
 package io.holoinsight.server.storage.engine.elasticsearch.storage.impl;
 
-import io.holoinsight.server.common.springboot.ConditionalOnFeature;
 import io.holoinsight.server.storage.engine.model.EndpointRelationDO;
 import io.holoinsight.server.storage.engine.storage.EndpointRelationStorage;
-import org.springframework.context.annotation.Primary;
-import org.springframework.stereotype.Service;
 
-@ConditionalOnFeature("trace")
-@Service("endpointRelationEsStorage")
-@Primary
 public class EndpointRelationEsStorage extends RecordEsStorage<EndpointRelationDO>
     implements EndpointRelationStorage {
 }
