@@ -28,6 +28,15 @@ public enum AlertLevel {
     return null;
   }
 
+  public static AlertLevel getByCode(String code) {
+    for (AlertLevel a : AlertLevel.values()) {
+      if (a.getCode().equals(code)) {
+        return a;
+      }
+    }
+    return null;
+  }
+
   public String getDesc() {
     return desc;
   }
