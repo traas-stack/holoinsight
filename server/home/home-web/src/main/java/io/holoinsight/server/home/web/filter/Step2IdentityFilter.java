@@ -63,7 +63,6 @@ public class Step2IdentityFilter implements Filter {
   }
 
   public boolean identity(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-
     // token 降级
     String token = req.getHeader("apiToken");
     if (StringUtil.isNotBlank(token)) {
@@ -116,17 +115,17 @@ public class Step2IdentityFilter implements Filter {
         req.setAttribute(MonitorUser.MONITOR_USER, user);
         return true;
       }
-      if (!resp.isCommitted())
+      if (!resp.isCommitted()) {
         resp.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+      }
     } catch (Throwable e) {
       try {
         log.error("login failed", e);
-        resp.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+        resp.sendError(HttpServletResponse.SC_UNAUTHORIZED, "login failed");
       } catch (Throwable e1) {
         log.error("login failed and senderror fail", e);
       }
     }
-
     return false;
 
   }
