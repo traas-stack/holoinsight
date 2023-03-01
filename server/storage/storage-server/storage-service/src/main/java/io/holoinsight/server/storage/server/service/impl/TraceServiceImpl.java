@@ -3,7 +3,6 @@
  */
 package io.holoinsight.server.storage.server.service.impl;
 
-import io.holoinsight.server.common.springboot.ConditionalOnFeature;
 import io.holoinsight.server.storage.common.model.query.Pagination;
 import io.holoinsight.server.storage.common.model.query.QueryOrder;
 import io.holoinsight.server.storage.common.model.query.StatisticData;
@@ -16,7 +15,6 @@ import io.holoinsight.server.storage.engine.model.SpanDO;
 import io.holoinsight.server.storage.server.service.TraceService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 import java.util.List;
 
