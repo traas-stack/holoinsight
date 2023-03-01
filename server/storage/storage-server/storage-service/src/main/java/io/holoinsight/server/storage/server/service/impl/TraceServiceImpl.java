@@ -18,8 +18,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 
-import static io.holoinsight.server.storage.server.Executors.EXECUTOR;
-
 /**
  * @author jiwliu
  * @version : TraceServiceImpl.java, v 0.1 2022年09月20日 16:48 xiangwanpeng Exp $
