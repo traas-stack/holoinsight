@@ -39,7 +39,8 @@ sh ./deploy/examples/docker-compose/up.sh
 这个脚本会顺便部署一个 holoinsight-agent 到 holoinsight-server 容器中，这种用法仅仅用于演示，不适用于生产环境。
 
 3. 访问 Holoinsight  
-   访问 http://localhost:8080
+   访问 http://localhost:8080  
+   产品的使用方法可以参考[这个文档](https://github.com/traas-stack/holoinsight-docs/blob/main/docs/src/cn/product/quick-start.md)。
 
 ### 使用 k8s 部署
 先决条件:
@@ -67,8 +68,9 @@ sh ./deploy/examples/k8s/overlays/example/apply.sh
 ```
 
 3. 访问 Holoinsight  
-   访问 http://localhost:8080
-
+   访问 http://localhost:8080  
+   产品的使用方法可以参考[这个文档](https://github.com/traas-stack/holoinsight-docs/blob/main/docs/src/cn/product/quick-start.md)。
+   
 ### 附录
 #### 安装 docker-compose
 快速安装 docker-compose:
