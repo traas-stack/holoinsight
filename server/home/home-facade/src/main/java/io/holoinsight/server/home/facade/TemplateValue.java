@@ -4,6 +4,7 @@
 package io.holoinsight.server.home.facade;
 
 import io.holoinsight.server.common.J;
+import io.holoinsight.server.home.facade.emuns.AlertLevel;
 import io.holoinsight.server.home.facade.trigger.DataSource;
 import io.holoinsight.server.home.facade.trigger.Trigger;
 import lombok.Data;
@@ -37,7 +38,7 @@ public class TemplateValue {
 
   String metric; // 监控项
 
-  String alarmLevel; // 告警级别
+  AlertLevel alarmLevel; // 告警级别
 
   String alarmTags; // 告警对象
 
