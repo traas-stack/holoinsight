@@ -25,6 +25,7 @@ import io.holoinsight.server.registry.model.Select;
 import io.holoinsight.server.registry.model.SqlTask;
 import io.holoinsight.server.registry.model.Where;
 import io.holoinsight.server.registry.model.Window;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -43,6 +44,7 @@ import java.util.Map;
  * @version 1.0: CustomPluginUpdateListener.java, v 0.1 2022年03月15日 8:40 下午 jinsong.yjs Exp $
  */
 @Component
+@Slf4j
 public class CustomPluginUpdateListener {
 
   @Autowired
@@ -59,34 +61,38 @@ public class CustomPluginUpdateListener {
     // 1. 转换模型
     // 2. 落库
     // 3. 通知registry
+    try {
+      // 转成采集模型
+      CustomPluginConf conf = customPluginDTO.getConf();
 
-    // 转成采集模型
-    CustomPluginConf conf = customPluginDTO.getConf();
+      List<LogPath> logPaths = conf.logPaths;
 
-    List<LogPath> logPaths = conf.logPaths;
+      List<CollectMetric> collectMetrics = conf.getCollectMetrics();
 
-    List<CollectMetric> collectMetrics = conf.getCollectMetrics();
+      Map<String, SqlTask> sqlTaskMaps = new HashMap<>();
+      for (CollectMetric collectMetric : collectMetrics) {
+        SqlTask sqlTask = buildSqlTask(logPaths, collectMetric, customPluginDTO);
 
-    Map<String, SqlTask> sqlTaskMaps = new HashMap<>();
-    for (CollectMetric collectMetric : collectMetrics) {
-      SqlTask sqlTask = buildSqlTask(logPaths, collectMetric, customPluginDTO);
-
-      String name = collectMetric.name;
-      if (StringUtil.isNotBlank(collectMetric.tableName)) {
-        name = collectMetric.tableName;
+        String name = collectMetric.name;
+        if (StringUtil.isNotBlank(collectMetric.tableName)) {
+          name = collectMetric.tableName;
+        }
+        String tableName = String.format("%s_%s", name, customPluginDTO.id);
+        sqlTaskMaps.put(tableName, sqlTask);
       }
-      String tableName = String.format("%s_%s", name, customPluginDTO.id);
-      sqlTaskMaps.put(tableName, sqlTask);
+
+      if (CollectionUtils.isEmpty(sqlTaskMaps))
+        return;
+
+      // 更新
+      List<Long> upsert = upsert(sqlTaskMaps, customPluginDTO);
+
+      // 通知registry
+      notify(upsert);
+    } catch (Exception e) {
+      log.error("fail to convert customPlugin to gaeaCollectConfig id {} for {}",
+          customPluginDTO.id, e.getMessage(), e);
     }
-
-    if (CollectionUtils.isEmpty(sqlTaskMaps))
-      return;
-
-    // 更新
-    List<Long> upsert = upsert(sqlTaskMaps, customPluginDTO);
-
-    // 通知registry
-    notify(upsert);
   }
 
   private List<Long> upsert(Map<String, SqlTask> sqlTasks, CustomPluginDTO customPluginDTO) {

@@ -26,8 +26,13 @@ import org.springframework.util.CollectionUtils;
 import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 /**
@@ -38,6 +43,9 @@ import java.util.stream.Collectors;
 public class AlertTaskCompute implements AlarmTaskExecutor<ComputeTaskPackage> {
 
   private static Logger LOGGER = LoggerFactory.getLogger(AlertTaskCompute.class);
+
+  ThreadPoolExecutor calculator = new ThreadPoolExecutor(20, 20, 10, TimeUnit.SECONDS,
+      new ArrayBlockingQueue<>(1000), r -> new Thread(r, "Calculator"));
 
   @Resource
   private AlarmDataSet alarmDataSet;
@@ -104,29 +112,33 @@ public class AlertTaskCompute implements AlarmTaskExecutor<ComputeTaskPackage> {
       condition.isNull("recover_time");
       // 获取未恢复的告警
       List<AlarmHistory> alarmHistoryDOS = alarmHistoryDOMapper.selectList(condition);
-      List<String> uniqueIds =
-          alarmHistoryDOS.stream().map(AlarmHistory::getUniqueId).collect(Collectors.toList());
+      Set<String> uniqueIds = new HashSet<>();
+      for (AlarmHistory alarmHistory : alarmHistoryDOS) {
+        uniqueIds.add(alarmHistory.getUniqueId());
+      }
 
       // 进行计算,生成告警事件
       for (InspectConfig inspectConfig : computeTaskPackage.getInspectConfigs()) {
-
-        ComputeContext context = new ComputeContext();
-        context.setTimestamp(computeTaskPackage.getTimestamp());
-        context.setInspectConfig(inspectConfig);
-        EventInfo eventList = abstractUniformInspectRunningRule.eval(context);
-        if (eventList != null) {
-          eventLists.add(eventList);
-        } else if (uniqueIds.contains(inspectConfig.getUniqueId())) {
-          eventList = new EventInfo();
-          eventList.setAlarmTime(computeTaskPackage.getTimestamp());
-          eventList.setUniqueId(inspectConfig.getUniqueId());
-          eventList.setIsRecover(true);
-          eventLists.add(eventList);
-          eventList.setEnvType(inspectConfig.getEnvType());
-        }
-        LOGGER.info("{} {} {} calculate package {} ,eventList: {}", computeTaskPackage.getTraceId(),
-            inspectConfig.getTraceId(), inspectConfig.getUniqueId(), G.get().toJson(inspectConfig),
-            G.get().toJson(eventList));
+        calculator.execute(() -> {
+          ComputeContext context = new ComputeContext();
+          context.setTimestamp(computeTaskPackage.getTimestamp());
+          context.setInspectConfig(inspectConfig);
+          EventInfo eventList = abstractUniformInspectRunningRule.eval(context);
+          if (eventList != null) {
+            eventLists.add(eventList);
+          } else if (uniqueIds.contains(inspectConfig.getUniqueId())) {
+            eventList = new EventInfo();
+            eventList.setAlarmTime(computeTaskPackage.getTimestamp());
+            eventList.setUniqueId(inspectConfig.getUniqueId());
+            eventList.setIsRecover(true);
+            eventLists.add(eventList);
+            eventList.setEnvType(inspectConfig.getEnvType());
+          }
+          LOGGER.info("{} {} {} calculate package {} ,eventList: {}",
+              computeTaskPackage.getTraceId(), inspectConfig.getTraceId(),
+              inspectConfig.getUniqueId(), G.get().toJson(inspectConfig),
+              G.get().toJson(eventList));
+        });
       }
     } catch (Exception e) {
       LOGGER.error("AlarmTaskCompute Exception for {}", e.getMessage(), e);

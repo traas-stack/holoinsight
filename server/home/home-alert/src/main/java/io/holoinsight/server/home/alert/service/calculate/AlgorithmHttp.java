@@ -3,18 +3,14 @@
  */
 package io.holoinsight.server.home.alert.service.calculate;
 
+import io.holoinsight.server.home.alert.common.http.HttpProxy;
+import io.holoinsight.server.home.alert.common.http.XHttpRequest;
+import io.holoinsight.server.home.alert.common.http.XHttpResponse;
 import org.apache.http.client.config.RequestConfig;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.ContentType;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -40,38 +36,25 @@ public class AlgorithmHttp {
   }
 
   public static String post(String algorithmUrl, String requestBody, Map<String, String> headers) {
-    CloseableHttpClient httpClient = HttpClients.createDefault();
-    CloseableHttpResponse response = null;
+    XHttpResponse response = null;
     String resultString = null;
     try {
       long start = System.currentTimeMillis();
-      HttpPost httpPost = new HttpPost(algorithmUrl);
-      if (headers != null) {
-        for (String key : headers.keySet()) {
-          httpPost.addHeader(key, headers.get(key));
-        }
-      }
-      httpPost.setConfig(requestConfig);
-      if (requestBody != null) {
-        StringEntity entity = new StringEntity(requestBody,
-            ContentType.create(ContentType.APPLICATION_JSON.getMimeType(), "utf-8"));
-        httpPost.setEntity(entity);
-      }
-      response = httpClient.execute(httpPost);
+      XHttpRequest req = XHttpRequest.post(algorithmUrl, Collections.emptyMap(), "utf-8", 5000,
+          requestBody.getBytes(), "application/json; charset=utf-8");
+      response = HttpProxy.request(req);
       long cost = System.currentTimeMillis() - start;
       if (response != null) {
-        resultString = EntityUtils.toString(response.getEntity(), "UTF-8");
-        if (response.getStatusLine().getStatusCode() != 200) {
+        resultString = response.getStringResponse();
+        if (response.code != 200) {
           LOGGER.error(
               "[InvokeAlgorithmError],AlgorithmUrl={},requestBody={},response={},content={},cost={}",
-              algorithmUrl, requestBody, response.getStatusLine().getStatusCode(), resultString,
-              cost);
+              algorithmUrl, requestBody, response.code, resultString, cost);
           return null;
         } else {
           LOGGER.info(
               "[InvokeAlgorithmInfo],AlgorithmUrl={},requestBody={},response={},content={},cost={}",
-              algorithmUrl, requestBody, response.getStatusLine().getStatusCode(), resultString,
-              cost);
+              algorithmUrl, requestBody, response.code, resultString, cost);
         }
       } else {
         LOGGER.error("[InvokeAlgorithmError],AlgorithmUrl={}, response is null,cost={}",
@@ -80,15 +63,6 @@ public class AlgorithmHttp {
 
     } catch (Exception e) {
       LOGGER.error("[InvokeAlgorithmException] Sync Exception for {}", algorithmUrl, e);
-    } finally {
-      try {
-        if (response != null) {
-          response.close();
-        }
-        httpClient.close();
-      } catch (IOException e) {
-        LOGGER.error("[InvokeAlgorithmException] Http close fail for {}", algorithmUrl, e);
-      }
     }
     return resultString;
   }

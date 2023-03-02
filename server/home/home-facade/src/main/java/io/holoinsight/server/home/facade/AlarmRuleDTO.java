@@ -139,7 +139,8 @@ public class AlarmRuleDTO {
   private String pql;
 
   public static void tryParseLink(AlarmRuleDTO alarmRuleDTO, String domain,
-      Map<String /* metric */, Map<String /* type */, String /* page */>> systemMetrics) {
+      Map<String /* metric */, Map<String /* type */, String /* page */>> systemMetrics,
+      String parentId) {
     if (alarmRuleDTO.isCreate()) {
       if (StringUtils.isNotEmpty(alarmRuleDTO.sourceType)) {
         if (alarmRuleDTO.extra == null) {
@@ -147,7 +148,12 @@ public class AlarmRuleDTO {
         }
         switch (alarmRuleDTO.sourceType) {
           case "log":
-            alarmRuleDTO.extra.sourceLink = domain + "log/metric/" + alarmRuleDTO.sourceId;
+            alarmRuleDTO.extra.sourceLink =
+                domain + "log/metric/" + alarmRuleDTO.sourceId + "?tenant=" + alarmRuleDTO.tenant;
+            if (StringUtils.isNotEmpty(parentId)) {
+              alarmRuleDTO.extra.sourceLink =
+                  alarmRuleDTO.extra.sourceLink + "&parentId=" + parentId;
+            }
             break;
           case "dashboard":
             alarmRuleDTO.extra.sourceLink = domain + "m/dashboard/preview/" + alarmRuleDTO.sourceId;

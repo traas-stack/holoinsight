@@ -70,6 +70,10 @@ public class IntegrationPluginDTO {
   public static class DataRange extends GaeaCollectConfigDTO.CollectRange {
     Map<String, String> valuesMap = new HashMap<>();
 
+    public static DataRange emptyRange() {
+      return new DataRange();
+    }
+
     public String getTenant(boolean isCloudRun) {
       String key = "tenant";
       if (isCloudRun) {
@@ -88,6 +92,13 @@ public class IntegrationPluginDTO {
 
     public String get(String key) {
       return valuesMap.get(key);
+    }
+
+    public boolean isAll() {
+      String tenant = valuesMap.get("tenant");
+      String workspace = valuesMap.get("workspace");
+      return StringUtils.equals(tenant, "ALL_TENANT")
+          && StringUtils.equals(workspace, "ALL_WORKSPACE");
     }
   }
 
