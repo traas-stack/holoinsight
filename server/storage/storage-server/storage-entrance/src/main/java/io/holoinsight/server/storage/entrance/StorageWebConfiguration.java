@@ -12,7 +12,7 @@ import io.holoinsight.server.storage.entrance.impl.SlowSqlApiController;
 import io.holoinsight.server.storage.entrance.impl.TopologyApiController;
 import io.holoinsight.server.storage.entrance.impl.TraceApiController;
 import io.holoinsight.server.storage.entrance.impl.VirtualComponentApiController;
-import io.holoinsight.server.storage.entrance.initializer.TatrisInitializer;
+import io.holoinsight.server.storage.entrance.initializer.ApmInitializer;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -27,8 +27,8 @@ import org.springframework.context.annotation.Configuration;
 @ConditionalOnFeature("trace")
 public class StorageWebConfiguration {
   @Bean
-  public TatrisInitializer tatrisInitializer() {
-    return new TatrisInitializer();
+  public ApmInitializer apmInitializer() {
+    return new ApmInitializer();
   }
 
   @Bean
