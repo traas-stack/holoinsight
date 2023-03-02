@@ -12,6 +12,7 @@ import org.apache.commons.lang3.StringUtils;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * @author xiangwanpeng
@@ -70,36 +71,26 @@ public class IntegrationPluginDTO {
   public static class DataRange extends GaeaCollectConfigDTO.CollectRange {
     Map<String, String> valuesMap = new HashMap<>();
 
-    public static DataRange emptyRange() {
-      return new DataRange();
-    }
-
-    public String getTenant(boolean isCloudRun) {
-      String key = "tenant";
-      if (isCloudRun) {
-        key = "appId";
-      }
-      return get(key);
-    }
-
-    public String getWorkspace(boolean isCloudRun) {
-      String key = "workspace";
-      if (isCloudRun) {
-        key = "envId";
-      }
-      return get(key);
-    }
-
     public String get(String key) {
       return valuesMap.get(key);
     }
 
-    public boolean isAll() {
-      String tenant = valuesMap.get("tenant");
-      String workspace = valuesMap.get("workspace");
-      return StringUtils.equals(tenant, "ALL_TENANT")
-          && StringUtils.equals(workspace, "ALL_WORKSPACE");
+    @Override
+    public boolean equals(Object o) {
+      if (this == o)
+        return true;
+      if (o == null || getClass() != o.getClass())
+        return false;
+      DataRange dataRange = (DataRange) o;
+      return Objects.equals(valuesMap, dataRange.valuesMap);
+    }
+
+    @Override
+    public int hashCode() {
+      return Objects.hash(valuesMap);
     }
   }
+
+
 
 }

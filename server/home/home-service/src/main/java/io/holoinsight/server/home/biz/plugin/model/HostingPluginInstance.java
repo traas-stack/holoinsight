@@ -19,7 +19,8 @@ public class HostingPluginInstance {
   public String version;
   public DataRange dataRange;
   public String status;
-  public boolean isCloudRun;
+  public String tenant;
+  public String workspace;
 
   public boolean apply() {
     try {
@@ -44,14 +45,16 @@ public class HostingPluginInstance {
     integrationPluginDTO.setVersion(hostingPlugin.version);
     integrationPluginDTO.setCollectRange(J.toMap(J.toJson(dataRange)));
     integrationPluginDTO.setCreator("holoinsight_hosting");
-    if (isCloudRun) {
-      integrationPluginDTO.setTenant("cloudrun");
-    } else {
-      integrationPluginDTO.setTenant(dataRange.getTenant(isCloudRun));
-    }
-    integrationPluginDTO.setWorkspace(dataRange.getWorkspace(isCloudRun));
-    integrationPluginDTO.setJson(dataRange.get("envId") + "_" + dataRange.get("appId"));
+    integrationPluginDTO.setTenant(tenant);
+    integrationPluginDTO.setWorkspace(workspace);
+    integrationPluginDTO.setJson(buildEnvType(dataRange));
     return integrationPluginDTO;
+  }
+
+  private String buildEnvType(DataRange dataRange) {
+    String appId = dataRange.get("appId");
+    String envId = dataRange.get("envId");
+    return envId + "_" + appId;
   }
 
   public boolean needApply() {

@@ -3,6 +3,7 @@
  */
 package io.holoinsight.server.home.alert.service.calculate;
 
+import io.holoinsight.server.common.J;
 import io.holoinsight.server.home.alert.common.G;
 import io.holoinsight.server.home.alert.model.compute.ComputeContext;
 import io.holoinsight.server.home.alert.model.compute.ComputeInfo;
@@ -29,6 +30,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
@@ -80,7 +82,7 @@ public class AbstractUniformInspectRunningRule {
     return null;
   }
 
-  public EventInfo runRule(InspectConfig inspectConfig, long period) {
+  public EventInfo runRule(InspectConfig inspectConfig, long period) throws InterruptedException {
 
     Map<Trigger, List<TriggerResult>> triggerMap = new HashMap<>();// 告警
     for (Trigger trigger : inspectConfig.getRule().getTriggers()) {
@@ -89,19 +91,30 @@ public class AbstractUniformInspectRunningRule {
       if (CollectionUtils.isEmpty(dataResultList)) {
         continue;
       }
+      int parallelSize = dataResultList.size();
       ComputeInfo computeInfo = ComputeInfo.getComputeInfo(inspectConfig, period);
       List<TriggerResult> triggerResults = new CopyOnWriteArrayList<>();
+      CountDownLatch latch = new CountDownLatch(parallelSize);
       for (DataResult dataResult : dataResultList) {
         ruleRunner.execute(() -> {
-          // 单个tags判断，增加异步处理，收集所有tags结果
-          List<TriggerResult> ruleResults = apply(dataResult, computeInfo, trigger);
-          for (TriggerResult ruleResult : ruleResults) {
-            if (ruleResult.isHit()) {
-              triggerResults.add(ruleResult);
+          try{
+            // 单个tags判断，增加异步处理，收集所有tags结果
+            logger.info("{} dataResult {}", inspectConfig.getUniqueId(), J.toJson(dataResult));
+            List<TriggerResult> ruleResults = apply(dataResult, computeInfo, trigger);
+            logger.info("{} ruleResults {}", inspectConfig.getUniqueId(), J.toJson(ruleResults));
+            for (TriggerResult ruleResult : ruleResults) {
+              if (ruleResult.isHit()) {
+                triggerResults.add(ruleResult);
+              }
             }
+            logger.info("{} triggerResults {}", inspectConfig.getUniqueId(), J.toJson(triggerResults));
+          }finally {
+            latch.countDown();
           }
         });
       }
+      latch.await();
+      logger.info("{} final triggerResults {}", inspectConfig.getUniqueId(), J.toJson(triggerResults));
       if (triggerResults.size() != 0) {
         triggerMap.put(trigger, triggerResults);
       }
