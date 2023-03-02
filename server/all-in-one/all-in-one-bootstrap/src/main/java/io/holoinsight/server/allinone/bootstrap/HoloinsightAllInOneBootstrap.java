@@ -11,7 +11,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 
-import io.holoinsight.server.common.ContextHolder;
 import org.springframework.context.annotation.Import;
 
 /**
