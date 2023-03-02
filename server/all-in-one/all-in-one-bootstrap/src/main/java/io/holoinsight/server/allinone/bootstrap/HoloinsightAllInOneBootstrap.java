@@ -23,7 +23,8 @@ import org.springframework.context.annotation.Import;
  *
  * @author xzchaoo
  */
-@SpringBootApplication(exclude = {ElasticsearchRestClientAutoConfiguration.class,FlywayAutoConfiguration.class})
+@SpringBootApplication(
+    exclude = {ElasticsearchRestClientAutoConfiguration.class, FlywayAutoConfiguration.class})
 @Import({FlywaydbConfiguration.class})
 public class HoloinsightAllInOneBootstrap {
   public static void main(String[] args) {
