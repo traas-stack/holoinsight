@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="io.holoinsight.server.common.dao.mapper.FlywaySchemaHistoryDOMapper">
+  <resultMap id="BaseResultMap" type="io.holoinsight.server.common.dao.entity.FlywaySchemaHistoryDO">
+    <id column="installed_rank" jdbcType="INTEGER" property="installedRank" />
+    <result column="version" jdbcType="VARCHAR" property="version" />
+    <result column="description" jdbcType="VARCHAR" property="description" />
+    <result column="type" jdbcType="VARCHAR" property="type" />
+    <result column="script" jdbcType="VARCHAR" property="script" />
+    <result column="checksum" jdbcType="INTEGER" property="checksum" />
+    <result column="installed_by" jdbcType="VARCHAR" property="installedBy" />
+    <result column="installed_on" jdbcType="TIMESTAMP" property="installedOn" />
+    <result column="execution_time" jdbcType="INTEGER" property="executionTime" />
+    <result column="success" jdbcType="BIT" property="success" />
+  </resultMap>
+
+  <sql id="Base_Column_List">
+    installed_rank, version, description, `type`, script, `checksum`, installed_by, installed_on, 
+    execution_time, success
+  </sql>
+
+  <update id="skipAll" >
+    update flyway_schema_history SET success = 1
+  </update>
+
+  <update id="skipLatest">
+    update flyway_schema_history SET success = 1 order by version desc limit 1
+  </update>
+
+  <select id="selectAll"  resultMap="BaseResultMap"
+          resultType="io.holoinsight.server.common.dao.entity.FlywaySchemaHistoryDO">
+    select
+    <include refid="Base_Column_List" />
+    from flyway_schema_history order by version desc
+  </select>
+
+</mapper>
