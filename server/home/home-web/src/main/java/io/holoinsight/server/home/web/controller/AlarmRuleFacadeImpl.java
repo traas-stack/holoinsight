@@ -50,6 +50,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import static io.holoinsight.server.home.facade.AlarmRuleDTO.tryParseLink;
+
 /**
  * @author wangsiyuan
  * @date 2022/4/1 10:27 上午
@@ -108,7 +110,7 @@ public class AlarmRuleFacadeImpl extends BaseFacade {
         alarmRuleDTO.setGmtModified(new Date());
         Map<String /* metric */, Map<String /* type */, String /* page */>> systemMetrics =
             getMetricPage();
-        alarmRuleDTO.tryParseLink(domain, systemMetrics);
+        tryParseLink(alarmRuleDTO, domain, systemMetrics);
         if (StringUtils.isBlank(alarmRuleDTO.getSourceType())) {
           alarmRuleDTO.setSourceType("custom");
         }
@@ -123,7 +125,7 @@ public class AlarmRuleFacadeImpl extends BaseFacade {
     return result;
   }
 
-  private Map<String, Map<String, String>> getMetricPage() {
+  public static Map<String, Map<String, String>> getMetricPage() {
     return MetaDictUtil.getValue("notification_config", "metric_page",
         new TypeToken<Map<String, Map<String, String>>>() {});
   }
@@ -164,7 +166,7 @@ public class AlarmRuleFacadeImpl extends BaseFacade {
         alarmRuleDTO.setGmtModified(new Date());
         Map<String /* metric */, Map<String /* type */, String /* page */>> systemMetrics =
             getMetricPage();
-        alarmRuleDTO.tryParseLink(domain, systemMetrics);
+        tryParseLink(alarmRuleDTO, domain, systemMetrics);
         boolean save = alarmRuleService.updateById(alarmRuleDTO);
 
         userOpLogService.append("alarm_rule", alarmRuleDTO.getId(), OpType.UPDATE,
