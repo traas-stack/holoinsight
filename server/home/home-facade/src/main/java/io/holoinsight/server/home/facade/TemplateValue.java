@@ -103,18 +103,4 @@ public class TemplateValue {
   public void setTriggerCondition(Trigger trigger) {
     this.triggerCondition = J.toJson(trigger.getCompareConfigs());
   }
-
-  public void setMetric(Trigger trigger) {
-    List<String> metrics = new ArrayList<>();
-    if (!CollectionUtils.isEmpty(trigger.getDatasources())) {
-      for (DataSource dataSource : trigger.getDatasources()) {
-        metrics.add(dataSource.getMetric());
-      }
-    }
-    this.metric = String.join(",", metrics);
-  }
-
-  public void setMetric(String pql) {
-    this.metric = pql;
-  }
 }
