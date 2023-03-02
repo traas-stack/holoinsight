@@ -1,9 +1,10 @@
-FROM openjdk:8 as openjdk
+FROM azul/zulu-openjdk:8 as jdk
+# azul/zulu-openjdk is active and supports amd64 and arm64v8
 
 FROM centos:7
 
 # install jdk8
-COPY --from=openjdk /usr/local/openjdk-8 /opt/java8
+COPY --from=jdk /usr/lib/jvm/zulu8 /opt/java8
 
 # add admin user
 RUN groupadd --gid 500 admin && \
