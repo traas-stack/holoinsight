@@ -8,6 +8,7 @@ import io.holoinsight.server.common.ContextHolder;
 import io.holoinsight.server.common.service.flyway.FlywaydbConfiguration;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.elasticsearch.ElasticsearchRestClientAutoConfiguration;
 import org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 
@@ -22,7 +23,7 @@ import org.springframework.context.annotation.Import;
  *
  * @author xzchaoo
  */
-@SpringBootApplication(exclude = {FlywayAutoConfiguration.class})
+@SpringBootApplication(exclude = {ElasticsearchRestClientAutoConfiguration.class,FlywayAutoConfiguration.class})
 @Import({FlywaydbConfiguration.class})
 public class HoloinsightAllInOneBootstrap {
   public static void main(String[] args) {
