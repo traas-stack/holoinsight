@@ -3,7 +3,7 @@
  */
 package io.holoinsight.server.home.common.util.cache.local;
 
-import io.holoinsight.server.home.common.util.ScheduleLoadTask;
+import io.holoinsight.server.common.config.ScheduleLoadTask;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;

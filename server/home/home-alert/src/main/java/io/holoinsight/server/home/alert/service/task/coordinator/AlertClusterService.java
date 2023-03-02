@@ -6,7 +6,7 @@ package io.holoinsight.server.home.alert.service.task.coordinator;
 import io.holoinsight.server.common.AddressUtil;
 import io.holoinsight.server.home.biz.service.ClusterService;
 import io.holoinsight.server.home.common.util.CLUSTER_ROLE_CONST;
-import io.holoinsight.server.home.common.util.ScheduleLoadTask;
+import io.holoinsight.server.common.config.ScheduleLoadTask;
 import io.holoinsight.server.home.dal.model.dto.ClusterDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

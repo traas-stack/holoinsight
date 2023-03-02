@@ -5,6 +5,7 @@ package io.holoinsight.server.home.biz.common;
 
 import com.google.gson.reflect.TypeToken;
 import io.holoinsight.server.common.J;
+import io.holoinsight.server.common.service.SuperCacheService;
 import io.holoinsight.server.home.common.service.SpringContext;
 import io.holoinsight.server.home.common.util.scope.IdentityType;
 import io.holoinsight.server.common.dao.entity.MetaDataDictValue;
@@ -97,9 +98,6 @@ public class MetaDictUtil {
     return MetaDictUtil.getStringValue(MetaDictType.GLOBAL_CONFIG, MetaDictKey.ULA_HOST);
   }
 
-  public static String getIamHost() {
-    return MetaDictUtil.getStringValue(MetaDictType.GLOBAL_CONFIG, MetaDictKey.ULA_IAM_HOST);
-  }
 
   public static String getJiGuangHost() {
     return MetaDictUtil.getStringValue(MetaDictType.MARKETPLACE_CONFIG,
@@ -117,15 +115,6 @@ public class MetaDictUtil {
     return value;
   }
 
-  public static Boolean isTest() {
-
-    Boolean value = MetaDictUtil.getValue(MetaDictType.GLOBAL_CONFIG, MetaDictKey.IS_TEST,
-        new TypeToken<Boolean>() {});
-    if (null == value) {
-      return false;
-    }
-    return value;
-  }
 
   public static Boolean isApmPostCal() {
 

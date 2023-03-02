@@ -210,7 +210,7 @@
         <Logger name="com.zaxxer.hikari" level="info"/>
         <Logger name="org.quartz" level="info"/>
         <Logger name="com.andya.demo" level="debug"/>
-        <AsyncLogger name="io.holoinsight.server.home.common.util.ProdLog" additivity="false" level="info">
+        <AsyncLogger name="io.holoinsight.server.common.config.ProdLog" additivity="false" level="info">
             <AppenderRef ref="APP-PROD-APPENDER"/>
         </AsyncLogger>
         <AsyncLogger name="io.holoinsight.server.home.web.aop.PVLogAspect" additivity="false" level="info">
