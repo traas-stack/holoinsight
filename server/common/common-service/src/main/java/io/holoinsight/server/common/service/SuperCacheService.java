@@ -1,14 +1,12 @@
 /*
  * Copyright 2022 Holoinsight Project Authors. Licensed under Apache-2.0.
  */
-package io.holoinsight.server.home.biz.common;
+package io.holoinsight.server.common.service;
 
-import io.holoinsight.server.common.service.MetaDictValueService;
-import io.holoinsight.server.home.common.util.ProdLog;
-import io.holoinsight.server.home.common.util.ScheduleLoadTask;
+import io.holoinsight.server.common.config.ProdLog;
+import io.holoinsight.server.common.config.ScheduleLoadTask;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 /**
  *
@@ -16,7 +14,6 @@ import org.springframework.stereotype.Service;
  * @version 1.0: SuperCacheService.java, v 0.1 2022年03月21日 8:24 下午 jinsong.yjs Exp $
  */
 @Slf4j
-@Service
 public class SuperCacheService extends ScheduleLoadTask {
   private SuperCache sc;
 

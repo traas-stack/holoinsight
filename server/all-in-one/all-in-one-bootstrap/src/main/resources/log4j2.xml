@@ -265,7 +265,7 @@
 		<Logger name="STAT1S" additivity="false" level="INFO">
 			<Appender-Ref ref="STAT1S"/>
 		</Logger>
-		<Logger name="io.holoinsight.server.home.common.util.ProdLog" additivity="false" level="INFO">
+		<Logger name="io.holoinsight.server.common.config.ProdLog" additivity="false" level="INFO">
 			<Appender-Ref ref="HOME"/>
 		</Logger>
 		<Root level="INFO">

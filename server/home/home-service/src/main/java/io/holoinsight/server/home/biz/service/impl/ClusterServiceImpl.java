@@ -8,7 +8,7 @@ import io.holoinsight.server.common.AddressUtil;
 import io.holoinsight.server.common.J;
 import io.holoinsight.server.home.biz.service.ClusterService;
 import io.holoinsight.server.home.common.util.CLUSTER_ROLE_CONST;
-import io.holoinsight.server.home.common.util.ProdLog;
+import io.holoinsight.server.common.config.ProdLog;
 import io.holoinsight.server.home.common.util.StringUtil;
 import io.holoinsight.server.home.dal.converter.CustomConverter;
 import io.holoinsight.server.home.dal.mapper.ClusterMapper;

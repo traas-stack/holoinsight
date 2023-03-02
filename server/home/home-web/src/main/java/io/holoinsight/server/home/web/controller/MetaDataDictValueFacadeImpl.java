@@ -7,7 +7,6 @@ import io.holoinsight.server.common.JsonResult;
 import io.holoinsight.server.common.dao.entity.MetaDataDictValue;
 import io.holoinsight.server.common.service.MetaDictValueService;
 import io.holoinsight.server.home.biz.common.MetaDictUtil;
-import io.holoinsight.server.home.biz.common.SuperCacheService;
 import io.holoinsight.server.home.common.util.MonitorException;
 import io.holoinsight.server.home.common.util.ResultCodeEnum;
 import io.holoinsight.server.home.common.util.scope.AuthTargetType;
@@ -31,9 +30,6 @@ import org.springframework.web.bind.annotation.RestController;
 public class MetaDataDictValueFacadeImpl extends BaseFacade {
   @Autowired
   private MetaDictValueService metaDictValueService;
-
-  @Autowired
-  private SuperCacheService superCacheService;
 
   @GetMapping(value = "/query/{id}")
   @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.VIEW)

@@ -25,4 +25,10 @@ public class CommonServiceAutoConfiguration {
   public MetaDataDictValueService metaDataDictValueService() {
     return new MetaDataDictValueServiceImpl();
   }
+
+  @Bean
+  @ConditionalOnMissingBean
+  public SuperCacheService superCacheService() {
+    return new SuperCacheService();
+  }
 }
