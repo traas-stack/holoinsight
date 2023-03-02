@@ -15,48 +15,47 @@ public class ProdLog {
 
 
   public static void info(String who, String what, String how) {
-    log.info("[" + who + "],[" + what + "],[" + how + "]");
+    log.info("{},{},{}", who, what, how);
   }
 
   public static void info(String what) {
-    log.info("[" + what + "]");
+    log.info("{}", what);
   }
 
   public static void info(String who, String what) {
-    log.info("[" + who + "],[" + what + "]");
+    log.info("{},{}", who, what);
   }
 
   public static void debug(String who, String what, String how) {
-    log.info("[" + who + "],[" + what + "],[" + how + "]");
+    log.info("{},{},{}", who, what, how);
   }
 
   public static void debug(String who, String what) {
-    log.info("[" + who + "],[" + what + "]");
+    log.info("{},{}", who, what);
   }
 
   public static void warn(String who, String what, Exception e) {
-    String sb = "[" + who + "],[" + what + "],[" + e.getMessage() + "]";
-    log.warn(sb);
+    log.warn("{},{},{}", who, what, e.getMessage());
   }
 
   public static void warn(String who, String what, String how) {
-    log.warn("[" + who + "],[" + what + "],[" + how + "]");
+    log.warn("{},{},{}", who, what, how);
   }
 
   public static void warn(String who, String what) {
-    log.warn("[" + who + "],[" + what + "]");
+    log.warn("{},{}", who, what);
   }
 
   public static void error(Object who) {
-    log.error("[" + who + "]");
+    log.warn("{}", who);
   }
 
   public static void error(Object who, String why, Exception e) {
-    log.error("[" + who + "],[" + why + "]", e);
+    log.error("{},{}", who, why, e);
   }
 
   public static void error(Object who, Throwable e) {
-    log.error("[" + who + "],[--]", e);
+    log.error("{}", who, e);
   }
 
   /**
@@ -70,15 +69,7 @@ public class ProdLog {
    */
   public static void monitor(String module, String who, String target, String type, String subType,
       boolean success, long cost, long count) {
-    StringBuilder sb = new StringBuilder();
-    sb.append("[").append(module).append("],[");
-    sb.append(who).append("],[");
-    sb.append(target).append("],[");
-    sb.append(type).append("],[");
-    sb.append(subType).append("],[");
-    sb.append(success).append("],[");
-    sb.append(count).append("],[");
-    sb.append(cost).append("ms]");
-    log.info(sb.toString());
+    log.info("[{}],[{}],[{}],[{}],[{}],[{}],[{}],[{}ms]", module, who, target, type, subType,
+        success, cost, count);
   }
 }
