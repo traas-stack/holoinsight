@@ -17,8 +17,8 @@ RUN ln -s /opt/java8 /usr/local/java
 
 # install common used softwares
 RUN ln -snf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime && \
-  yum -y install epel-release && yum install -y sudo net-tools iproute dstat which supervisor stress unzip jq screen nginx wget telnet cronolog less lsof gettext && \
-  yum -y clean all && \
+  yum -y -q install epel-release && yum install -y -q sudo net-tools iproute dstat which supervisor stress unzip jq screen nginx wget telnet cronolog less lsof gettext && \
+  yum -y -q clean all && \
   rm -rf /var/cache/yum
 
 # install arthas
