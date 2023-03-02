@@ -15,7 +15,7 @@
 	<dependencies>
 		<dependency>
 			<groupId>io.holoinsight.server</groupId>
-			<artifactId>storage-entrance</artifactId>
+			<artifactId>storage-web</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
