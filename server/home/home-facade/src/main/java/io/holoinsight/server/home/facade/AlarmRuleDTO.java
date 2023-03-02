@@ -138,23 +138,23 @@ public class AlarmRuleDTO {
    */
   private String pql;
 
-  public void tryParseLink(String domain,
+  public static void tryParseLink(AlarmRuleDTO alarmRuleDTO, String domain,
       Map<String /* metric */, Map<String /* type */, String /* page */>> systemMetrics) {
-    if (isCreate()) {
-      if (StringUtils.isNotEmpty(this.sourceType)) {
-        if (extra == null) {
-          extra = new AlertRuleExtra();
+    if (alarmRuleDTO.isCreate()) {
+      if (StringUtils.isNotEmpty(alarmRuleDTO.sourceType)) {
+        if (alarmRuleDTO.extra == null) {
+          alarmRuleDTO.extra = new AlertRuleExtra();
         }
-        switch (this.sourceType) {
+        switch (alarmRuleDTO.sourceType) {
           case "log":
-            extra.sourceLink = domain + "/log/metric/" + this.sourceId;
+            alarmRuleDTO.extra.sourceLink = domain + "log/metric/" + alarmRuleDTO.sourceId;
             break;
           case "dashboard":
-            extra.sourceLink = domain + "/m/dashboard/preview/" + this.sourceId;
+            alarmRuleDTO.extra.sourceLink = domain + "m/dashboard/preview/" + alarmRuleDTO.sourceId;
             break;
           default:
-            if (this.sourceType.startsWith("apm_")) {
-              extra.sourceLink = getApmLink(domain, systemMetrics);
+            if (alarmRuleDTO.sourceType.startsWith("apm_")) {
+              alarmRuleDTO.extra.sourceLink = getApmLink(alarmRuleDTO, domain, systemMetrics);
             }
         }
       }
@@ -165,11 +165,11 @@ public class AlarmRuleDTO {
     return id == null;
   }
 
-  private String getApmLink(String domain,
+  private static String getApmLink(AlarmRuleDTO alarmRuleDTO, String domain,
       Map<String /* metric */, Map<String /* type */, String /* page */>> systemMetrics) {
-    String app = this.sourceType.split("_")[1];
-    String metric = getMetric();
-    boolean isServer = checkIsServer();
+    String app = alarmRuleDTO.sourceType.split("_")[1];
+    String metric = alarmRuleDTO.getMetric();
+    boolean isServer = alarmRuleDTO.checkIsServer();
     if (StringUtils.isEmpty(metric) || CollectionUtils.isEmpty(systemMetrics)) {
       return StringUtils.EMPTY;
     }
