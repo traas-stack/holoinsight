@@ -4,11 +4,10 @@ set -e
 script_dir=`dirname $0 | xargs realpath`
 cd $script_dir
 
-env_file="$script_dir/.env"
+env_file=".env"
 if [ "$mirror" = "cn" ]; then
   echo use cn mirror
+  env_file=".env-cn"
 fi
-
-echo use env file $env_file
 
 docker-compose --env-file $env_file down
