@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 set -e
 
-script_dir=`dirname $0 | xargs realpath`
-cd $script_dir
+cd `dirname $0`
+script_dir=`pwd`
 
 env_file="$script_dir/.env"
 if [ "$1" = "cn" ]; then
