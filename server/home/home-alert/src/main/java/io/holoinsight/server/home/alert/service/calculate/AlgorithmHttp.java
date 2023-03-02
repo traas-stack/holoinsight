@@ -85,6 +85,7 @@ public class AlgorithmHttp {
         if (response != null) {
           response.close();
         }
+        httpClient.close();
       } catch (IOException e) {
         LOGGER.error("[InvokeAlgorithmException] Http close fail for {}", algorithmUrl, e);
       }
