@@ -3,8 +3,8 @@
  */
 package io.holoinsight.server.storage.server.service.impl;
 
-import io.holoinsight.server.storage.engine.elasticsearch.model.ServiceErrorEsDO;
-import io.holoinsight.server.storage.engine.elasticsearch.service.ServiceErrorEsService;
+import io.holoinsight.server.storage.engine.model.ServiceErrorDO;
+import io.holoinsight.server.storage.engine.storage.ServiceErrorStorage;
 import io.holoinsight.server.storage.server.service.ServiceErrorService;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,11 +15,11 @@ import java.util.List;
 public class ServiceErrorServiceImpl implements ServiceErrorService {
 
   @Autowired
-  private ServiceErrorEsService serviceErrorEsService;
+  protected ServiceErrorStorage serviceErrorStorage;
 
   @Override
-  public void insert(List<ServiceErrorEsDO> serviceErrorEsDOList) throws IOException {
-    serviceErrorEsService.batchInsert(serviceErrorEsDOList);
+  public void insert(List<ServiceErrorDO> serviceErrorEsDOList) throws IOException {
+    serviceErrorStorage.batchInsert(serviceErrorEsDOList);
   }
 
 }

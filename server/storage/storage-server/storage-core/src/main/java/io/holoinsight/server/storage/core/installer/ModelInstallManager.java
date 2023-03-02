@@ -12,7 +12,6 @@ import io.holoinsight.server.storage.core.ModelCenter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
-import org.springframework.scheduling.annotation.Scheduled;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
@@ -36,11 +35,8 @@ public class ModelInstallManager {
   private ModelCenter modelManager;
 
   /**
-   * TODO 这个需要重复执行吗?
-   * 
    * @throws IOException
    */
-  @Scheduled(initialDelay = 60000, fixedRate = 60000)
   public void start() throws IOException {
     List<Model> models = scanModels();
     for (Model model : models) {

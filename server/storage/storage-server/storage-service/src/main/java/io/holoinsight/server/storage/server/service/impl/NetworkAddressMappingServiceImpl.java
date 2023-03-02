@@ -4,8 +4,8 @@
 package io.holoinsight.server.storage.server.service.impl;
 
 import io.holoinsight.server.common.springboot.ConditionalOnFeature;
-import io.holoinsight.server.storage.engine.elasticsearch.model.NetworkAddressMappingEsDO;
-import io.holoinsight.server.storage.engine.elasticsearch.service.NetworkAddressMappingEsService;
+import io.holoinsight.server.storage.engine.model.NetworkAddressMappingDO;
+import io.holoinsight.server.storage.engine.storage.NetworkAddressMappingStorage;
 import io.holoinsight.server.storage.server.service.NetworkAddressMappingService;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,20 +14,18 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.util.List;
 
-@Service
-@ConditionalOnFeature("trace")
 public class NetworkAddressMappingServiceImpl implements NetworkAddressMappingService {
 
   @Autowired
-  private NetworkAddressMappingEsService networkAddressMappingEsService;
+  protected NetworkAddressMappingStorage networkAddressMappingStorage;
 
   @Override
-  public void insert(List<NetworkAddressMappingEsDO> addressMappingList) throws IOException {
-    networkAddressMappingEsService.batchInsert(addressMappingList);
+  public void insert(List<NetworkAddressMappingDO> addressMappingList) throws IOException {
+    networkAddressMappingStorage.batchInsert(addressMappingList);
   }
 
   @Override
-  public List<NetworkAddressMappingEsDO> loadByTime(long timeBucketInMinute) throws IOException {
-    return networkAddressMappingEsService.loadByTime(timeBucketInMinute);
+  public List<NetworkAddressMappingDO> loadByTime(long timeBucketInMinute) throws IOException {
+    return networkAddressMappingStorage.loadByTime(timeBucketInMinute);
   }
 }

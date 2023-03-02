@@ -3,7 +3,7 @@
  */
 package io.holoinsight.server.storage.server.service;
 
-import io.holoinsight.server.storage.engine.elasticsearch.model.NetworkAddressMappingEsDO;
+import io.holoinsight.server.storage.engine.model.NetworkAddressMappingDO;
 
 import java.io.IOException;
 import java.util.List;
@@ -11,7 +11,7 @@ import java.util.List;
 
 public interface NetworkAddressMappingService {
 
-  void insert(final List<NetworkAddressMappingEsDO> addressMappingList) throws IOException;
+  void insert(final List<NetworkAddressMappingDO> addressMappingList) throws IOException;
 
-  List<NetworkAddressMappingEsDO> loadByTime(long timeBucketInMinute) throws IOException;
+  List<NetworkAddressMappingDO> loadByTime(long timeBucketInMinute) throws IOException;
 }

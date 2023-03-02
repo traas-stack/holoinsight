@@ -3,7 +3,7 @@
  */
 package io.holoinsight.server.storage.server.service;
 
-import io.holoinsight.server.storage.engine.elasticsearch.model.ServiceInstanceRelationEsDO;
+import io.holoinsight.server.storage.engine.model.ServiceInstanceRelationDO;
 
 import java.io.IOException;
 import java.util.List;
@@ -11,6 +11,6 @@ import java.util.List;
 
 public interface ServiceInstanceRelationService {
 
-  void insert(final List<ServiceInstanceRelationEsDO> relationList) throws IOException;
+  void insert(final List<ServiceInstanceRelationDO> relationList) throws IOException;
 
 }

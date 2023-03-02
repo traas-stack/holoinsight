@@ -3,7 +3,7 @@
  */
 package io.holoinsight.server.storage.server.cache;
 
-import io.holoinsight.server.storage.engine.elasticsearch.model.NetworkAddressMappingEsDO;
+import io.holoinsight.server.storage.engine.model.NetworkAddressMappingDO;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import org.springframework.stereotype.Service;
@@ -18,7 +18,7 @@ import java.util.List;
  */
 @Service
 public class NetworkAddressMappingCache {
-  private Cache<String, NetworkAddressMappingEsDO> networkAddressMappingCache;
+  private Cache<String, NetworkAddressMappingDO> networkAddressMappingCache;
 
   @PostConstruct
   public void init() {
@@ -29,11 +29,11 @@ public class NetworkAddressMappingCache {
   /**
    * @return NULL if alias doesn't exist or has been loaded in the cache.
    */
-  public NetworkAddressMappingEsDO get(String address) {
+  public NetworkAddressMappingDO get(String address) {
     return networkAddressMappingCache.getIfPresent(address);
   }
 
-  public void load(List<NetworkAddressMappingEsDO> NetworkAddressMappingList) {
+  public void load(List<NetworkAddressMappingDO> NetworkAddressMappingList) {
     NetworkAddressMappingList.forEach(networkAddressMappingEsDO -> {
       networkAddressMappingCache.put(networkAddressMappingEsDO.getAddress(),
           networkAddressMappingEsDO);

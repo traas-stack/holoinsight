@@ -9,7 +9,7 @@ import io.holoinsight.server.storage.common.model.specification.otel.*;
 import io.holoinsight.server.storage.common.model.specification.sw.EndpointRelation;
 import io.holoinsight.server.storage.common.model.specification.sw.ServiceInstanceRelation;
 import io.holoinsight.server.storage.common.model.specification.sw.ServiceRelation;
-import io.holoinsight.server.storage.engine.elasticsearch.model.*;
+import io.holoinsight.server.storage.engine.model.*;
 import io.holoinsight.server.storage.receiver.analysis.RelationAnalysis;
 import io.holoinsight.server.storage.receiver.builder.RelationBuilder;
 import io.holoinsight.server.storage.receiver.common.TransformAttr;
@@ -58,10 +58,10 @@ public class SpanHandler {
   public void handleResourceSpans(
       List<io.opentelemetry.proto.trace.v1.ResourceSpans> resourceSpansList) {
     StopWatch stopWatch = StopWatch.createStarted();
-    List<SpanEsDO> spanEsDOList = new ArrayList<>();
-    List<NetworkAddressMappingEsDO> networkAddressMappingList = new ArrayList<>();
+    List<SpanDO> spanEsDOList = new ArrayList<>();
+    List<NetworkAddressMappingDO> networkAddressMappingList = new ArrayList<>();
     List<RelationBuilder> relationBuilders = new ArrayList<>();
-    List<SlowSqlEsDO> slowSqlEsDOList = new ArrayList<>();
+    List<SlowSqlDO> slowSqlEsDOList = new ArrayList<>();
     boolean success = true;
     try {
       if (CollectionUtils.isEmpty(resourceSpansList)) {
@@ -111,7 +111,7 @@ public class SpanHandler {
                       relationAnalysis.analysisInternalSpan(span, spanAttrMap, resourceAttrMap));
                 }
 
-                spanEsDOList.add(SpanEsDO.fromSpan(transformSpan(span), otelResource));
+                spanEsDOList.add(SpanDO.fromSpan(transformSpan(span), otelResource));
               });
             }
           });
@@ -153,22 +153,22 @@ public class SpanHandler {
   }
 
   public void buildRelation(List<RelationBuilder> relationBuilders) throws IOException {
-    List<ServiceRelationEsDO> serverRelationList = new ArrayList<>(relationBuilders.size());
-    List<ServiceInstanceRelationEsDO> serverInstanceRelationList =
+    List<ServiceRelationDO> serverRelationList = new ArrayList<>(relationBuilders.size());
+    List<ServiceInstanceRelationDO> serverInstanceRelationList =
         new ArrayList<>(relationBuilders.size());
-    List<EndpointRelationEsDO> endpointRelationList = new ArrayList<>(relationBuilders.size());
+    List<EndpointRelationDO> endpointRelationList = new ArrayList<>(relationBuilders.size());
 
     relationBuilders.forEach(callingIn -> {
       ServiceRelation serviceRelation = callingIn.toServiceRelation();
-      serverRelationList.add(ServiceRelationEsDO.fromServiceRelation(serviceRelation));
+      serverRelationList.add(ServiceRelationDO.fromServiceRelation(serviceRelation));
 
       ServiceInstanceRelation serviceInstanceRelation = callingIn.toServiceInstanceRelation();
       serverInstanceRelationList
-          .add(ServiceInstanceRelationEsDO.fromServiceInstanceRelation(serviceInstanceRelation));
+          .add(ServiceInstanceRelationDO.fromServiceInstanceRelation(serviceInstanceRelation));
 
       EndpointRelation endpointRelation = callingIn.toEndpointRelation();
       if (endpointRelation != null) {
-        endpointRelationList.add(EndpointRelationEsDO.fromEndpointRelation(endpointRelation));
+        endpointRelationList.add(EndpointRelationDO.fromEndpointRelation(endpointRelation));
       }
     });
 
@@ -177,29 +177,29 @@ public class SpanHandler {
     storageEndpointRelation(endpointRelationList);
   }
 
-  private void storageSpan(List<SpanEsDO> spans) throws IOException {
+  private void storageSpan(List<SpanDO> spans) throws Exception {
     traceService.insertSpans(spans);
   }
 
-  public void storageNetworkMapping(List<NetworkAddressMappingEsDO> networkAddressMappingList)
+  public void storageNetworkMapping(List<NetworkAddressMappingDO> networkAddressMappingList)
       throws IOException {
     networkAddressMappingService.insert(networkAddressMappingList);
   }
 
-  public void storageServiceRelation(List<ServiceRelationEsDO> relationList) throws IOException {
+  public void storageServiceRelation(List<ServiceRelationDO> relationList) throws IOException {
     serviceRelationService.insert(relationList);
   }
 
-  public void storageServiceInstanceRelation(List<ServiceInstanceRelationEsDO> relationList)
+  public void storageServiceInstanceRelation(List<ServiceInstanceRelationDO> relationList)
       throws IOException {
     serviceInstanceRelationService.insert(relationList);
   }
 
-  public void storageEndpointRelation(List<EndpointRelationEsDO> relationList) throws IOException {
+  public void storageEndpointRelation(List<EndpointRelationDO> relationList) throws IOException {
     endpointRelationService.insert(relationList);
   }
 
-  public void storageSlowSql(List<SlowSqlEsDO> slowSqlEsDOList) throws IOException {
+  public void storageSlowSql(List<SlowSqlDO> slowSqlEsDOList) throws IOException {
     slowSqlService.insert(slowSqlEsDOList);
   }
 

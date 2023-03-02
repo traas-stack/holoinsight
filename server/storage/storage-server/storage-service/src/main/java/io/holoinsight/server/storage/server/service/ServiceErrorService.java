@@ -3,7 +3,7 @@
  */
 package io.holoinsight.server.storage.server.service;
 
-import io.holoinsight.server.storage.engine.elasticsearch.model.ServiceErrorEsDO;
+import io.holoinsight.server.storage.engine.model.ServiceErrorDO;
 
 import java.io.IOException;
 import java.util.List;
@@ -11,6 +11,6 @@ import java.util.List;
 
 public interface ServiceErrorService {
 
-  void insert(List<ServiceErrorEsDO> serviceErrorEsDOList) throws IOException;
+  void insert(List<ServiceErrorDO> serviceErrorEsDOList) throws IOException;
 
 }

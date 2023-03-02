@@ -3,7 +3,6 @@
  */
 package io.holoinsight.server.storage.server.service.impl;
 
-import io.holoinsight.server.common.springboot.ConditionalOnFeature;
 import io.holoinsight.server.storage.common.model.query.Pagination;
 import io.holoinsight.server.storage.common.model.query.QueryOrder;
 import io.holoinsight.server.storage.common.model.query.StatisticData;
@@ -11,59 +10,48 @@ import io.holoinsight.server.storage.common.model.query.TraceBrief;
 import io.holoinsight.server.storage.common.model.specification.sw.Tag;
 import io.holoinsight.server.storage.common.model.specification.sw.Trace;
 import io.holoinsight.server.storage.common.model.specification.sw.TraceState;
-import io.holoinsight.server.storage.engine.elasticsearch.model.SegmentEsDO;
-import io.holoinsight.server.storage.engine.elasticsearch.model.SpanEsDO;
-import io.holoinsight.server.storage.engine.elasticsearch.service.SegmentEsService;
-import io.holoinsight.server.storage.engine.elasticsearch.service.SpanEsService;
+import io.holoinsight.server.storage.engine.storage.SpanStorage;
+import io.holoinsight.server.storage.engine.model.SpanDO;
 import io.holoinsight.server.storage.server.service.TraceService;
-
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
-import java.io.IOException;
 import java.util.List;
 
 /**
  * @author jiwliu
  * @version : TraceServiceImpl.java, v 0.1 2022年09月20日 16:48 xiangwanpeng Exp $
  */
-@Service
-@ConditionalOnFeature("trace")
+
+@Slf4j
 public class TraceServiceImpl implements TraceService {
 
   @Autowired
-  private SegmentEsService segmentEsService;
+  protected SpanStorage spanStorage;
 
-  @Autowired
-  private SpanEsService spanEsService;
 
   @Override
   public TraceBrief queryBasicTraces(String tenant, String serviceName, String serviceInstanceName,
       String endpointName, List<String> traceIds, int minTraceDuration, int maxTraceDuration,
       TraceState traceState, QueryOrder queryOrder, Pagination paging, long start, long end,
-      List<Tag> tags) throws IOException {
-    return spanEsService.queryBasicTraces(tenant, serviceName, serviceInstanceName, endpointName,
+      List<Tag> tags) throws Exception {
+    return spanStorage.queryBasicTraces(tenant, serviceName, serviceInstanceName, endpointName,
         traceIds, minTraceDuration, maxTraceDuration, traceState, queryOrder, paging, start, end,
         tags);
   }
 
   @Override
-  public Trace queryTrace(String traceId) throws IOException {
-    return spanEsService.queryTrace(traceId);
+  public Trace queryTrace(String traceId) throws Exception {
+    return spanStorage.queryTrace(traceId);
   }
 
   @Override
-  public void insert(List<SegmentEsDO> segments) throws IOException {
-    segmentEsService.batchInsert(segments);
+  public void insertSpans(List<SpanDO> spans) throws Exception {
+    spanStorage.batchInsert(spans);
   }
 
   @Override
-  public void insertSpans(List<SpanEsDO> spans) throws IOException {
-    spanEsService.batchInsert(spans);
-  }
-
-  @Override
-  public List<StatisticData> statisticTrace(long startTime, long endTime) throws IOException {
-    return spanEsService.statisticTrace(startTime, endTime);
+  public List<StatisticData> statisticTrace(long startTime, long endTime) throws Exception {
+    return spanStorage.statisticTrace(startTime, endTime);
   }
 }

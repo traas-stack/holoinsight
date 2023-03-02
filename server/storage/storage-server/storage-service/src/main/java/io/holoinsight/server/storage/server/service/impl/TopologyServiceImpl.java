@@ -11,9 +11,9 @@ import io.holoinsight.server.storage.common.model.query.ResponseMetric;
 import io.holoinsight.server.storage.common.model.query.Topology;
 import io.holoinsight.server.storage.common.utils.IDManager;
 import io.holoinsight.server.storage.server.cache.NetworkAddressMappingCache;
-import io.holoinsight.server.storage.engine.elasticsearch.model.NetworkAddressMappingEsDO;
-import io.holoinsight.server.storage.engine.elasticsearch.model.SpanEsDO;
-import io.holoinsight.server.storage.engine.elasticsearch.service.TopologyEsService;
+import io.holoinsight.server.storage.engine.model.NetworkAddressMappingDO;
+import io.holoinsight.server.storage.engine.model.SpanDO;
+import io.holoinsight.server.storage.engine.storage.TopologyStorage;
 import io.holoinsight.server.storage.server.service.TopologyService;
 
 import org.apache.commons.lang3.StringUtils;
@@ -30,22 +30,20 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-@Service
-@ConditionalOnFeature("trace")
 public class TopologyServiceImpl implements TopologyService {
 
   @Autowired
-  private TopologyEsService topologyEsService;
+  private TopologyStorage topologyStorage;
 
   @Autowired
-  private NetworkAddressMappingCache networkAddressMappingCache;
+  protected NetworkAddressMappingCache networkAddressMappingCache;
 
   private static final String USERID = IDManager.ServiceID.buildId(Const.USER_SERVICE_NAME, false);
 
   @Override
   public Topology getTenantTopology(String tenant, long startTime, long endTime,
       Map<String, String> termParams) throws IOException {
-    List<Call> calls = topologyEsService.getTenantCalls(tenant, startTime, endTime, termParams);
+    List<Call> calls = topologyStorage.getTenantCalls(tenant, startTime, endTime, termParams);
 
     Topology topology = buildServiceTopo(calls);
     setNodeMetric(tenant, topology.getNodes(), startTime, endTime, termParams);
@@ -55,7 +53,7 @@ public class TopologyServiceImpl implements TopologyService {
   @Override
   public Topology getServiceTopology(String tenant, String service, long startTime, long endTime,
       int depth, Map<String, String> termParams) throws IOException {
-    List<Call> allCalls = topologyEsService.getTenantCalls(tenant, startTime, endTime, termParams);
+    List<Call> allCalls = topologyStorage.getTenantCalls(tenant, startTime, endTime, termParams);
     List<Call> result = filterDepend(allCalls, service, depth);
 
     Topology topology = buildServiceTopo(result);
@@ -83,7 +81,7 @@ public class TopologyServiceImpl implements TopologyService {
       List<Call.DeepCall> newSourceEndpointList = new ArrayList<>();
       for (Call.DeepCall item : sourceEndpointList) {
         newSourceEndpointList
-            .addAll(topologyEsService.getServiceInstanceCalls(tenant, item.getSourceServiceName(),
+            .addAll(topologyStorage.getServiceInstanceCalls(tenant, item.getSourceServiceName(),
                 item.getSourceName(), startTime, endTime, Const.DEST, termParams));
       }
       sourceEndpointList.clear();
@@ -92,7 +90,7 @@ public class TopologyServiceImpl implements TopologyService {
       List<Call.DeepCall> newDestEndpointList = new ArrayList<>();
       for (Call.DeepCall item : destEndpointList) {
         newDestEndpointList
-            .addAll(topologyEsService.getServiceInstanceCalls(tenant, item.getDestServiceName(),
+            .addAll(topologyStorage.getServiceInstanceCalls(tenant, item.getDestServiceName(),
                 item.getDestName(), startTime, endTime, Const.SOURCE, termParams));
       }
       destEndpointList.clear();
@@ -127,7 +125,7 @@ public class TopologyServiceImpl implements TopologyService {
       List<Call.DeepCall> newSourceEndpointList = new ArrayList<>();
       for (Call.DeepCall item : sourceEndpointList) {
         newSourceEndpointList
-            .addAll(topologyEsService.getEndpointCalls(tenant, item.getSourceServiceName(),
+            .addAll(topologyStorage.getEndpointCalls(tenant, item.getSourceServiceName(),
                 item.getSourceName(), startTime, endTime, Const.DEST, termParams));
       }
       sourceEndpointList.clear();
@@ -136,7 +134,7 @@ public class TopologyServiceImpl implements TopologyService {
       List<Call.DeepCall> newDestEndpointList = new ArrayList<>();
       for (Call.DeepCall item : destEndpointList) {
         newDestEndpointList
-            .addAll(topologyEsService.getEndpointCalls(tenant, item.getDestServiceName(),
+            .addAll(topologyStorage.getEndpointCalls(tenant, item.getDestServiceName(),
                 item.getDestName(), startTime, endTime, Const.SOURCE, termParams));
       }
       destEndpointList.clear();
@@ -154,7 +152,7 @@ public class TopologyServiceImpl implements TopologyService {
   @Override
   public Topology getDbTopology(String tenant, String address, long startTime, long endTime,
       Map<String, String> termParams) throws IOException {
-    List<Call> dbCalls = topologyEsService.getComponentCalls(tenant, address, startTime, endTime,
+    List<Call> dbCalls = topologyStorage.getComponentCalls(tenant, address, startTime, endTime,
         Const.DEST, termParams);
 
     Topology topology = buildServiceTopo(dbCalls);
@@ -166,10 +164,10 @@ public class TopologyServiceImpl implements TopologyService {
   public Topology getMQTopology(String tenant, String address, long startTime, long endTime,
       Map<String, String> termParams) throws IOException {
     List<Call> calls = new ArrayList<>();
-    calls.addAll(topologyEsService.getComponentCalls(tenant, address, startTime, endTime,
+    calls.addAll(topologyStorage.getComponentCalls(tenant, address, startTime, endTime,
         Const.SOURCE, termParams));
-    calls.addAll(topologyEsService.getComponentCalls(tenant, address, startTime, endTime,
-        Const.DEST, termParams));
+    calls.addAll(topologyStorage.getComponentCalls(tenant, address, startTime, endTime, Const.DEST,
+        termParams));
 
     Topology topology = buildServiceTopo(calls);
     setNodeMetric(tenant, topology.getNodes(), startTime, endTime, termParams);
@@ -204,14 +202,14 @@ public class TopologyServiceImpl implements TopologyService {
     List<String> realNode =
         nodes.stream().filter(Node::isReal).map(Node::getName).collect(Collectors.toList());
 
-    String aggField = SpanEsDO.resource(SpanEsDO.SERVICE_NAME);
+    String aggField = SpanDO.resource(SpanDO.SERVICE_NAME);
     if (nodes.get(0) instanceof Node.EndpointNode) {
-      aggField = SpanEsDO.NAME;
+      aggField = SpanDO.NAME;
     } else if (nodes.get(0) instanceof Node.ServiceInstanceNode) {
-      aggField = SpanEsDO.resource(SpanEsDO.SERVICE_INSTANCE_NAME);
+      aggField = SpanDO.resource(SpanDO.SERVICE_INSTANCE_NAME);
     }
 
-    Map<String, ResponseMetric> nodeMetric = topologyEsService.getServiceAggMetric(tenant, realNode,
+    Map<String, ResponseMetric> nodeMetric = topologyStorage.getServiceAggMetric(tenant, realNode,
         startTime, endTime, aggField, termParams);
 
     nodes.forEach(node -> {
@@ -237,7 +235,7 @@ public class TopologyServiceImpl implements TopologyService {
         /*
          * If alias exists, mean this network address is representing a real service.
          */
-        NetworkAddressMappingEsDO networkAddressAlias =
+        NetworkAddressMappingDO networkAddressAlias =
             networkAddressMappingCache.get(call.getDestName());
 
         String serviceId = IDManager.ServiceID.buildId(networkAddressAlias.getServiceName(), true);
@@ -281,7 +279,7 @@ public class TopologyServiceImpl implements TopologyService {
         /*
          * If alias exists, mean this network address is representing a real service.
          */
-        NetworkAddressMappingEsDO networkAddressAlias =
+        NetworkAddressMappingDO networkAddressAlias =
             networkAddressMappingCache.get(call.getDestName());
 
         String serviceId = IDManager.ServiceID.buildId(networkAddressAlias.getServiceName(), true);

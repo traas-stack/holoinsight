@@ -39,6 +39,7 @@ holoinsight:
     active: gateway,registry,query,meta,home
   storage:
     elasticsearch:
+      enable: true
       hosts: 127.0.0.1
     grpcserver:
       enabled: false

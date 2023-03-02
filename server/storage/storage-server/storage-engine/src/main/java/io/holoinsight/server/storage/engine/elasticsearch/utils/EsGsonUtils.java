@@ -6,7 +6,7 @@ package io.holoinsight.server.storage.engine.elasticsearch.utils;
 import io.holoinsight.server.storage.common.model.storage.annotation.Column;
 import io.holoinsight.server.storage.common.model.storage.annotation.FlatColumn;
 import io.holoinsight.server.storage.common.utils.GsonUtils;
-import io.holoinsight.server.storage.engine.elasticsearch.model.SpanEsDO;
+import io.holoinsight.server.storage.engine.model.SpanDO;
 
 import com.google.common.collect.Lists;
 import com.google.gson.*;
@@ -28,7 +28,7 @@ public class EsGsonUtils extends GsonUtils {
       gson = new GsonBuilder().disableHtmlEscaping()
           .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
           .registerTypeHierarchyAdapter(byte[].class, new ByteArrayToBase64TypeAdapter())
-          .registerTypeHierarchyAdapter(SpanEsDO.class, new SpanTypeAdapter()).create();
+          .registerTypeHierarchyAdapter(SpanDO.class, new SpanTypeAdapter()).create();
       esGs.set(gson);
     }
     return gson;
@@ -46,8 +46,7 @@ public class EsGsonUtils extends GsonUtils {
     }
   }
 
-  private static class SpanTypeAdapter
-      implements JsonSerializer<SpanEsDO>, JsonDeserializer<SpanEsDO> {
+  private static class SpanTypeAdapter implements JsonSerializer<SpanDO>, JsonDeserializer<SpanDO> {
 
     private List<Field> allFields;
 
@@ -57,7 +56,7 @@ public class EsGsonUtils extends GsonUtils {
 
     private List<Field> scanAllFields() {
       Map<String, Field> fieldMap = new HashMap<>();
-      Class cls = SpanEsDO.class;
+      Class cls = SpanDO.class;
       while (cls != Object.class) {
         Field[] fields = cls.getDeclaredFields();
         if (fields.length > 0) {
@@ -70,13 +69,13 @@ public class EsGsonUtils extends GsonUtils {
       return Lists.newArrayList(fieldMap.values());
     }
 
-    public SpanEsDO deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context)
+    public SpanDO deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context)
         throws JsonParseException {
 
       if (json == null) {
         return null;
       }
-      SpanEsDO spanEsDO = new SpanEsDO();
+      SpanDO spanEsDO = new SpanDO();
       try {
         JsonObject jsonObject = json.getAsJsonObject();
         Field flatField = null;
@@ -128,7 +127,7 @@ public class EsGsonUtils extends GsonUtils {
       return spanEsDO;
     }
 
-    public JsonElement serialize(SpanEsDO src, Type typeOfSrc, JsonSerializationContext context) {
+    public JsonElement serialize(SpanDO src, Type typeOfSrc, JsonSerializationContext context) {
       if (src == null) {
         return null;
       }
