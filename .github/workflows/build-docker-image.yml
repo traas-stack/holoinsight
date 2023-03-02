@@ -24,7 +24,13 @@ jobs:
         java-version: '8'
         distribution: 'temurin'
         cache: maven
-    - name: Init docker buildx
+    - name: Set up docker buildx
       run: docker run --privileged --rm tonistiigi/binfmt --install all
-    - name: Init docker buildx
-      run: sh ./scripts/docker/buildx.sh
+    - name: Build app
+      run: bash ./scripts/all-in-one/build.sh
+    - name: Build amd64 image
+      shell: bash
+      run: ./scripts/docker/buildx-one.sh linux/amd64 temp-amd64-linux
+    - name: Build arm64v8 image
+      shell: bash
+      run: ./scripts/docker/buildx-one.sh linux/arm64/v8 temp-arm64v8-linux
