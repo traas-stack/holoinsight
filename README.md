@@ -16,13 +16,21 @@ HoloInsight is a cloud-native observability platform with a special focus on rea
 
 # Quick Start
 
-### Deploy using docker-compose V2
+### Deploy using docker-compose
 Requirements:
-1. [docker](https://docs.docker.com/engine/install/) & [docker-compose V2](https://docs.docker.com/compose/install/other/) installed
+1. [docker](https://docs.docker.com/engine/install/) & [docker-compose](https://docs.docker.com/compose/install/other/)(**>=v1.29 || >=v2**) installed
 2. Linux or Mac environment 
 
+To verify whether docker compose is already installed:
+```bash
+# V1
+docker-compose version
 
-Follow the [guide](#install-docker-compose) in [appendix](#appendix) to install docker-compose quickly.
+# V2
+docker compose version
+```
+
+> Follow the [guide](#install-docker-compose) in [appendix](#appendix) to install docker-compose quickly.
 
 
 1. clone the repo
