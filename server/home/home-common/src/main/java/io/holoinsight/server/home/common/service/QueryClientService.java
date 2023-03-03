@@ -10,19 +10,19 @@ import io.holoinsight.server.home.common.service.query.QuerySchemaResponse;
 import io.holoinsight.server.home.common.service.query.Result;
 import io.holoinsight.server.home.common.service.query.ValueResult;
 import io.holoinsight.server.home.common.util.Debugger;
-import io.holoinsight.server.query.common.convertor.StorageConvertor;
+import io.holoinsight.server.query.common.convertor.ApmConvertor;
 import io.holoinsight.server.query.grpc.QueryProto;
 import io.holoinsight.server.query.grpc.QueryProto.Datasource;
 import io.holoinsight.server.query.grpc.QueryServiceGrpc;
-import io.holoinsight.server.storage.common.model.query.BizopsEndpoint;
-import io.holoinsight.server.storage.common.model.query.Endpoint;
-import io.holoinsight.server.storage.common.model.query.QueryTraceRequest;
-import io.holoinsight.server.storage.common.model.query.ServiceInstance;
-import io.holoinsight.server.storage.common.model.query.SlowSql;
-import io.holoinsight.server.storage.common.model.query.Topology;
-import io.holoinsight.server.storage.common.model.query.TraceBrief;
-import io.holoinsight.server.storage.common.model.query.VirtualComponent;
-import io.holoinsight.server.storage.common.model.specification.sw.Trace;
+import io.holoinsight.server.apm.common.model.query.BizopsEndpoint;
+import io.holoinsight.server.apm.common.model.query.Endpoint;
+import io.holoinsight.server.apm.common.model.query.QueryTraceRequest;
+import io.holoinsight.server.apm.common.model.query.ServiceInstance;
+import io.holoinsight.server.apm.common.model.query.SlowSql;
+import io.holoinsight.server.apm.common.model.query.Topology;
+import io.holoinsight.server.apm.common.model.query.TraceBrief;
+import io.holoinsight.server.apm.common.model.query.VirtualComponent;
+import io.holoinsight.server.apm.common.model.specification.sw.Trace;
 import net.devh.boot.grpc.client.inject.GrpcClient;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -207,22 +207,22 @@ public class QueryClientService {
   public TraceBrief queryBasicTraces(QueryTraceRequest request) {
     QueryProto.TraceBrief traceBrief =
         queryServiceBlockingStub.queryBasicTraces(convertRequest(request));
-    return StorageConvertor.convertTraceBrief(traceBrief);
+    return ApmConvertor.convertTraceBrief(traceBrief);
   }
 
   public Trace queryTrace(QueryTraceRequest request) {
     QueryProto.Trace trace = queryServiceBlockingStub.queryTrace(convertRequest(request));
-    return StorageConvertor.convertTrace(trace);
+    return ApmConvertor.convertTrace(trace);
   }
 
-  public List<io.holoinsight.server.storage.common.model.query.Service> queryServiceList(
+  public List<io.holoinsight.server.apm.common.model.query.Service> queryServiceList(
       QueryProto.QueryMetaRequest request) {
     QueryProto.QueryMetaResponse queryMetaResponse =
         queryServiceBlockingStub.queryServiceList(request);
-    List<io.holoinsight.server.storage.common.model.query.Service> result =
+    List<io.holoinsight.server.apm.common.model.query.Service> result =
         new ArrayList<>(queryMetaResponse.getMataList().size());
     queryMetaResponse.getMataList().forEach(meta -> {
-      result.add(StorageConvertor.deConvertService(meta));
+      result.add(ApmConvertor.deConvertService(meta));
     });
     return result;
   }
@@ -232,7 +232,7 @@ public class QueryClientService {
         queryServiceBlockingStub.queryEndpointList(request);
     List<Endpoint> result = new ArrayList<>(queryMetaResponse.getMataList().size());
     queryMetaResponse.getMataList().forEach(meta -> {
-      result.add(StorageConvertor.deConvertEndpoint(meta));
+      result.add(ApmConvertor.deConvertEndpoint(meta));
     });
     return result;
   }
@@ -242,7 +242,7 @@ public class QueryClientService {
         queryServiceBlockingStub.queryServiceInstanceList(request);
     List<ServiceInstance> result = new ArrayList<>(queryMetaResponse.getMataList().size());
     queryMetaResponse.getMataList().forEach(meta -> {
-      result.add(StorageConvertor.deConvertServiceInstance(meta));
+      result.add(ApmConvertor.deConvertServiceInstance(meta));
     });
     return result;
   }
@@ -252,7 +252,7 @@ public class QueryClientService {
         queryServiceBlockingStub.queryComponentList(request);
     List<VirtualComponent> result = new ArrayList<>(queryDbList.getComponentList().size());
     queryDbList.getComponentList().forEach(db -> {
-      result.add(StorageConvertor.deConvertDb(db));
+      result.add(ApmConvertor.deConvertDb(db));
     });
     return result;
   }
@@ -264,7 +264,7 @@ public class QueryClientService {
 
   public Topology queryTopology(QueryProto.QueryTopologyRequest request) {
     QueryProto.Topology topology = queryServiceBlockingStub.queryTopology(request);
-    return StorageConvertor.deConvertTopology(topology);
+    return ApmConvertor.deConvertTopology(topology);
   }
 
   public List<SlowSql> querySlowSqlList(QueryProto.QueryMetaRequest request) {
@@ -272,7 +272,7 @@ public class QueryClientService {
         queryServiceBlockingStub.querySlowSqlList(request);
     List<SlowSql> result = new ArrayList<>(querySlowSqlList.getSlowSqlCount());
     querySlowSqlList.getSlowSqlList().forEach(sql -> {
-      result.add(StorageConvertor.deConvertSlowSql(sql));
+      result.add(ApmConvertor.deConvertSlowSql(sql));
     });
     return result;
   }
@@ -282,7 +282,7 @@ public class QueryClientService {
         queryServiceBlockingStub.queryBizEndpointList(request);
     List<BizopsEndpoint> result = new ArrayList<>(bizopsEndpoints.getEndpointsCount());
     bizopsEndpoints.getEndpointsList().forEach(endpoint -> {
-      result.add(StorageConvertor.deConvertBizEndpoint(endpoint));
+      result.add(ApmConvertor.deConvertBizEndpoint(endpoint));
     });
     return result;
   }
@@ -292,7 +292,7 @@ public class QueryClientService {
         queryServiceBlockingStub.queryBizErrorCodeList(request);
     List<BizopsEndpoint> result = new ArrayList<>(bizopsEndpoints.getEndpointsCount());
     bizopsEndpoints.getEndpointsList().forEach(endpoint -> {
-      result.add(StorageConvertor.deConvertBizEndpoint(endpoint));
+      result.add(ApmConvertor.deConvertBizEndpoint(endpoint));
     });
     return result;
   }

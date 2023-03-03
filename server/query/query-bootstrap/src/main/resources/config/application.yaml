@@ -9,7 +9,7 @@ grpc:
     port: 9090
 
 cloudmonitor:
-  storage:
+  apm:
     address: TODO
     
 management:

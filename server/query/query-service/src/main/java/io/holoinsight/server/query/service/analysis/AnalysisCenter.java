@@ -7,7 +7,7 @@ import io.holoinsight.server.query.service.analysis.collect.AnalyzedLog;
 import io.holoinsight.server.query.service.analysis.collect.MergeData;
 import io.holoinsight.server.query.service.analysis.known.KnownValue;
 import io.holoinsight.server.query.service.analysis.unknown.UnknownValue;
-import io.holoinsight.server.storage.common.utils.GsonUtils;
+import io.holoinsight.server.apm.common.utils.GsonUtils;
 import org.apache.commons.collections.CollectionUtils;
 
 import java.util.HashMap;

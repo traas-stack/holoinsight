@@ -54,7 +54,7 @@ holoinsight:
     algorithm:
       url: http://127.0.0.1:5005
   query:
-    storage:
+    apm:
       address: http://127.0.0.1:8080
   meta:
     domain: 127.0.0.1

@@ -1,0 +1,24 @@
+spring:
+  application:
+    name: holoinsight-apm
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: prometheus
+      base-path: /
+      path-mapping:
+        prometheus: metrics
+    enable-by-default: false
+  endpoint:
+    prometheus:
+      enabled: true
+
+holoinsight:
+  roles:
+    active: apm
+  storage:
+    elasticsearch:
+      enable: true
+      hosts: 127.0.0.1
