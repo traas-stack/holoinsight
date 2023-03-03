@@ -23,48 +23,47 @@ import org.springframework.scheduling.annotation.EnableScheduling;
  *
  * @author jiwliu
  */
+@Configuration
 @ConditionalOnRole("apm")
+@ConditionalOnFeature("trace")
 @ComponentScan(basePackages = {"io.holoinsight.server.apm"})
 @EnableScheduling
 @Import(ThreadPoolConfiguration.class)
-public class HoloinsightStorageConfiguration {
+public class ApmConfiguration {
 
-  @Configuration
-  @ConditionalOnFeature("trace")
-  public static class ApmTraceConfiguration {
-
-    /**
-     * 当 storage 和 gateway 一起部署时, storage 的 grpc-server 就没用了, 直接走本地调用
-     *
-     * @return
-     */
-    @Bean
-    @ConditionalOnProperty(value = "holoinsight.storage.grpcserver.enabled", havingValue = "true",
-        matchIfMissing = true)
-    public ApmGrpcServer storageGrpcServer() {
-      return new ApmGrpcServer();
-    }
-
-    @Bean
-    public TraceOtelServiceImpl storage_traceOtelServiceImpl() {
-      return new TraceOtelServiceImpl();
-    }
-
-    @Bean
-    public ModelCenter modelCenter() {
-      return new ModelCenter();
-    }
-
-    @Bean
-    public ModelTtlManager modelTtlManager() {
-      return new ModelTtlManager();
-    }
-
-    @Bean
-    public ModelInstallManager modelInstallManager() {
-      return new ModelInstallManager();
-    }
-
-
+  /**
+   *
+   * when storage and gateway are deployed together, report directly through local calls instead of
+   * through grpc-server
+   *
+   * @return
+   */
+  @Bean
+  @ConditionalOnProperty(value = "holoinsight.storage.grpcserver.enabled", havingValue = "true",
+      matchIfMissing = true)
+  public ApmGrpcServer storageGrpcServer() {
+    return new ApmGrpcServer();
   }
+
+  @Bean
+  public TraceOtelServiceImpl storage_traceOtelServiceImpl() {
+    return new TraceOtelServiceImpl();
+  }
+
+  @Bean
+  public ModelCenter modelCenter() {
+    return new ModelCenter();
+  }
+
+  @Bean
+  public ModelTtlManager modelTtlManager() {
+    return new ModelTtlManager();
+  }
+
+  @Bean
+  public ModelInstallManager modelInstallManager() {
+    return new ModelInstallManager();
+  }
+
+
 }

@@ -1,1 +1,1 @@
-org.springframework.boot.autoconfigure.EnableAutoConfiguration=io.holoinsight.server.apm.web.HoloinsightStorageConfiguration
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=io.holoinsight.server.apm.web.ApmConfiguration
