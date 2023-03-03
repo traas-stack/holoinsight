@@ -17,9 +17,9 @@ HoloInsight 是一个云原生可观察性平台，特别专注于实时日志�
 
 # 快速入门
 
-### 使用 docker-compose 部署
+### 使用 docker-compose V2 部署
 先决条件:
-1. 已安装 [docker](https://docs.docker.com/engine/install/) & [docker-compose](https://docs.docker.com/compose/install/other/)
+1. 已安装 [docker](https://docs.docker.com/engine/install/) & [docker-compose V2](https://docs.docker.com/compose/install/other/)
 2. 有 Linux 或 Mac 环境
 
 > 可以参考附录里的 [安装-docker-compose](#安装-docker-compose).  
@@ -73,7 +73,7 @@ sh ./deploy/examples/k8s/overlays/example/apply.sh
    
 ### 附录
 #### 安装 docker-compose
-快速安装 docker-compose:
+快速安装 docker-compose V2:
 ```bash
 sudo curl -SL https://github.com/docker/compose/releases/download/v2.15.1/docker-compose-linux-x86_64 -o /usr/local/bin/docker-compose && sudo chmod a+x /usr/local/bin/docker-compose
 ```
