@@ -46,7 +46,7 @@ public class AlibabaCloudPlugin extends AbstractCentralIntegrationPlugin<Alibaba
     AlibabaCloudPlugin alibabaCloudPlugin = new AlibabaCloudPlugin();
     {
       AliCloudTask aliCloudTask =
-          J.fromJson(integrationPluginDTO.json, new TypeToken<AliCloudTask>() {}.getType());
+              J.fromJson(integrationPluginDTO.json, new TypeToken<AliCloudTask>() {}.getType());
 
       aliCloudTask.setExecuteRule(getExecuteRule());
       fillAlicloudRange(aliCloudTask);
@@ -54,10 +54,10 @@ public class AlibabaCloudPlugin extends AbstractCentralIntegrationPlugin<Alibaba
       alibabaCloudPlugin.aliCloudTask = aliCloudTask;
       alibabaCloudPlugin.gaeaTableName = integrationPluginDTO.name;
       GaeaCollectRange gaeaCollectRange =
-          J.fromJson(J.toJson(integrationPluginDTO.collectRange), GaeaCollectRange.class);
+              J.fromJson(J.toJson(integrationPluginDTO.collectRange), GaeaCollectRange.class);
       alibabaCloudPlugin.collectRange =
-          CollectionUtils.isEmpty(integrationPluginDTO.collectRange) ? new CloudMonitorRange()
-              : gaeaCollectRange.cloudmonitor;
+              CollectionUtils.isEmpty(integrationPluginDTO.collectRange) ? new CloudMonitorRange()
+                      : gaeaCollectRange.cloudmonitor;
       alibabaCloudPlugin.collectPlugin = AliCloudTask.class.getName();
     }
 
@@ -68,10 +68,10 @@ public class AlibabaCloudPlugin extends AbstractCentralIntegrationPlugin<Alibaba
   private void fillAlicloudRange(AliCloudTask aliCloudTask) {
     String fullRangeJson = MetaDictUtil.getStringValue("global_config", "alicloud_metrics");
     List<NameMetrics> fullRange =
-        J.get().fromJson(fullRangeJson, (new TypeToken<List<NameMetrics>>() {}).getType());
+            J.get().fromJson(fullRangeJson, (new TypeToken<List<NameMetrics>>() {}).getType());
     if (fullRange != null) {
       Map<String, NameMetrics> fullRangeMap =
-          fullRange.stream().collect(Collectors.toMap(NameMetrics::getName, Function.identity()));
+              fullRange.stream().collect(Collectors.toMap(NameMetrics::getName, Function.identity()));
       List<AlicloudConf> confs = aliCloudTask.getConfs();
       if (confs != null) {
         confs.forEach(conf -> {
@@ -79,10 +79,10 @@ public class AlibabaCloudPlugin extends AbstractCentralIntegrationPlugin<Alibaba
           conf.setRange(range);
           if (CollectionUtils.isEmpty(conf.getRangeNames())) {
             List<String> names =
-                Arrays.asList("elastic-compute-service", "redis-standard-1", "redis-standard-2",
-                    "object-apm-service-1", "log-service", "application-load-balancer",
-                    "server-load-balancer-1", "elasticsearch", "apsaradb-for-redis-3",
-                    "object-apm-service-1", "rocketmq", "waf-1", "polardb-for-mysql");
+                    Arrays.asList("elastic-compute-service", "redis-standard-1", "redis-standard-2",
+                            "object-storage-service-1", "log-service", "application-load-balancer",
+                            "server-load-balancer-1", "elasticsearch", "apsaradb-for-redis-3",
+                            "object-storage-service-1", "rocketmq", "waf-1", "polardb-for-mysql");
             range.setNames(names);
           } else {
             range.setNames(conf.getRangeNames());
