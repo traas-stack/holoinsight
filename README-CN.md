@@ -90,12 +90,12 @@ sudo curl -SL https://github.com/docker/compose/releases/download/v2.15.1/docker
 中国的用户可以使用如下的脚本获得更好的网络访问。
 ```bash
 docker run --name holoinsight-tools -d registry.cn-hangzhou.aliyuncs.com/holoinsight-examples/tools:latest && \
-  docker cp holoinsight-tools:/docker-compose . &&
+  docker cp holoinsight-tools:/docker-compose . && \
   docker rm -f holoinsight-tools
 ```
 
 # 开源许可
-Holoinsight 基于 [Apache License 2.0](https://github.com/traas-stack/holoinsight/blob/main/LICENSE) 协议。
+HoloInsight 基于 [Apache License 2.0](https://github.com/traas-stack/holoinsight/blob/main/LICENSE) 协议。
 
 # 社区与支持
 - 邮箱地址: traas_stack@antgroup.com
