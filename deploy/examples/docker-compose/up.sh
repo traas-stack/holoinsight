@@ -23,9 +23,9 @@ if [ `uname` = "Darwin" ] && [ `uname -m` = "arm64" ]; then
   fi
 fi
 
-docker-compose --env-file $env_file up -d
+$script_dir/docker-compose.sh --env-file $env_file up -d
 
 echo holoinsight bootstrap successfully, please visit http://localhost:8080
 echo
-docker ps -a
+
 sh $script_dir/install-agent.sh

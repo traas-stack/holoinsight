@@ -10,8 +10,6 @@ services:
       MYSQL_DATABASE: holoinsight
     volumes:
     - ./my.cnf:/etc/mysql/conf.d/my.cnf
-    ports:
-    - 3305:3306
     restart: always
     healthcheck:
       test: mysql -uholoinsight -pholoinsight -Dholoinsight

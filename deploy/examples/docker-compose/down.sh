@@ -10,4 +10,4 @@ if [ "$mirror" = "cn" ]; then
   env_file=".env-cn"
 fi
 
-docker-compose --env-file $env_file down
+$script_dir/docker-compose.sh --env-file $env_file down
