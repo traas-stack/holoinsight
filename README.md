@@ -16,9 +16,9 @@ HoloInsight is a cloud-native observability platform with a special focus on rea
 
 # Quick Start
 
-### Deploy using docker-compose
+### Deploy using docker-compose V2
 Requirements:
-1. [docker](https://docs.docker.com/engine/install/) & [docker-compose](https://docs.docker.com/compose/install/other/) installed
+1. [docker](https://docs.docker.com/engine/install/) & [docker-compose V2](https://docs.docker.com/compose/install/other/) installed
 2. Linux or Mac environment 
 
 
@@ -74,7 +74,7 @@ Use following script to uninstall holoinsight from k8s cluster.
 
 ### Appendix
 #### Install docker-compose
-quick install docker-compose:
+quick install docker-compose V2:
 ```bash
 sudo curl -SL https://github.com/docker/compose/releases/download/v2.15.1/docker-compose-linux-x86_64 -o /usr/local/bin/docker-compose && sudo chmod a+x /usr/local/bin/docker-compose
 ```
