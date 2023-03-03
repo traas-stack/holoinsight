@@ -45,11 +45,10 @@
 		<module>../query/query-boot</module>
 		<module>../query/query-grpc-gen</module>
 
-		<module>../storage/storage-client</module>
-		<module>../storage/storage-common</module>
-		<module>../storage/storage-server</module>
-		<module>../storage/storage-bootstrap</module>
-		<module>../storage/storage-boot</module>
+		<module>../apm/apm-common</module>
+		<module>../apm/apm-server</module>
+		<module>../apm/apm-bootstrap</module>
+		<module>../apm/apm-boot</module>
 
 		<module>../common/common-service</module>
 		<module>../holoinsight-dependencies</module>

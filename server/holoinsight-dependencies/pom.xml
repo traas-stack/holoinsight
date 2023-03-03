@@ -181,11 +181,6 @@
 				<version>1.4.1.Final</version>
 			</dependency>
 			<dependency>
-				<groupId>io.holoinsight.server</groupId>
-				<artifactId>storage-client</artifactId>
-				<version>${project.version}</version>
-			</dependency>
-			<dependency>
 				<groupId>net.devh</groupId>
 				<artifactId>grpc-client-spring-boot-starter</artifactId>
 				<version>2.13.1.RELEASE</version>

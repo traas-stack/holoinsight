@@ -16,7 +16,7 @@ import io.holoinsight.server.query.service.QueryException;
 import io.holoinsight.server.query.service.QueryService;
 import io.holoinsight.server.query.service.analysis.AnalysisCenter;
 import io.holoinsight.server.query.service.analysis.Mergable;
-import io.holoinsight.server.storage.common.utils.GsonUtils;
+import io.holoinsight.server.apm.common.utils.GsonUtils;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.apache.commons.collections.CollectionUtils;

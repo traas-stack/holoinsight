@@ -80,9 +80,9 @@ public class AlibabaCloudPlugin extends AbstractCentralIntegrationPlugin<Alibaba
           if (CollectionUtils.isEmpty(conf.getRangeNames())) {
             List<String> names =
                 Arrays.asList("elastic-compute-service", "redis-standard-1", "redis-standard-2",
-                    "object-storage-service-1", "log-service", "application-load-balancer",
+                    "object-apm-service-1", "log-service", "application-load-balancer",
                     "server-load-balancer-1", "elasticsearch", "apsaradb-for-redis-3",
-                    "object-storage-service-1", "rocketmq", "waf-1", "polardb-for-mysql");
+                    "object-apm-service-1", "rocketmq", "waf-1", "polardb-for-mysql");
             range.setNames(names);
           } else {
             range.setNames(conf.getRangeNames());
