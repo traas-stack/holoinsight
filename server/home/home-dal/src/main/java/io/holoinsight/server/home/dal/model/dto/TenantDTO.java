@@ -21,6 +21,7 @@ public class TenantDTO {
   public String json;
   public String desc;
   public String md5;
+  public String product;
 
   public Date gmtCreate;
   public Date gmtModified;

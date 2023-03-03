@@ -14,7 +14,7 @@ import java.util.Date;
 /**
  *
  * @author jsy1001de
- * @version 1.0: User.java, v 0.1 2022年02月21日 8:37 下午 jinsong.yjs Exp $
+ * @version 1.0: Tenant.java, v 0.1 2022年02月21日 8:37 下午 jinsong.yjs Exp $
  */
 @Data
 @TableName("tenant")
@@ -29,6 +29,8 @@ public class Tenant {
   public String desc;
 
   public String md5;
+
+  public String product;
 
   @TableField(value = "`gmt_create`")
   public Date gmtCreate;
