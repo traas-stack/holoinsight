@@ -27,8 +27,8 @@ public class ServiceOverviewEsStorage implements ServiceOverviewStorage {
   private RestHighLevelClient client;
 
   @Override
-  public List<Service> getServiceList(
-      String tenant, long startTime, long endTime) throws IOException {
+  public List<Service> getServiceList(String tenant, long startTime, long endTime)
+      throws IOException {
     List<Service> result = new ArrayList<>();
 
     BoolQueryBuilder queryBuilder =
@@ -52,8 +52,7 @@ public class ServiceOverviewEsStorage implements ServiceOverviewStorage {
     for (Terms.Bucket bucket : terms.getBuckets()) {
       String serviceName = bucket.getKey().toString();
 
-      Service service =
-          new Service();
+      Service service = new Service();
       service.setName(serviceName);
       service.setMetric(CommonBuilder.buildMetric(bucket));
 

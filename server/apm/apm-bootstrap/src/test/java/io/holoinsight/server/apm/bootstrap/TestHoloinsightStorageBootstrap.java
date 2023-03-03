@@ -15,7 +15,7 @@ import org.springframework.boot.builder.SpringApplicationBuilder;
  */
 public class TestHoloinsightStorageBootstrap {
   public static void main(String[] args) {
-    ContextHolder.ctx = new SpringApplicationBuilder(HoloinsightApmBootstrap.class)
-        .profiles("dev").build().run(args);
+    ContextHolder.ctx = new SpringApplicationBuilder(HoloinsightApmBootstrap.class).profiles("dev")
+        .build().run(args);
   }
 }

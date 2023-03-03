@@ -9,42 +9,41 @@ import static io.grpc.MethodDescriptor.generateFullMethodName;
  * central collector.
  * </pre>
  */
-@javax.annotation.Generated(
-    value = "by gRPC proto compiler (version 1.42.2)",
+@javax.annotation.Generated(value = "by gRPC proto compiler (version 1.42.2)",
     comments = "Source: opentelemetry/proto/collector/metrics/v1/metrics_service.proto")
 @io.grpc.stub.annotations.GrpcGenerated
 public final class MetricsServiceGrpc {
 
   private MetricsServiceGrpc() {}
 
-  public static final String SERVICE_NAME = "opentelemetry.proto.collector.metrics.v1.MetricsService";
+  public static final String SERVICE_NAME =
+      "opentelemetry.proto.collector.metrics.v1.MetricsService";
 
   // Static method descriptors that strictly reflect the proto.
-  private static volatile io.grpc.MethodDescriptor<io.opentelemetry.proto.collector.metrics.v1.ExportMetricsServiceRequest,
-      io.opentelemetry.proto.collector.metrics.v1.ExportMetricsServiceResponse> getExportMethod;
+  private static volatile io.grpc.MethodDescriptor<io.opentelemetry.proto.collector.metrics.v1.ExportMetricsServiceRequest, io.opentelemetry.proto.collector.metrics.v1.ExportMetricsServiceResponse> getExportMethod;
 
-  @io.grpc.stub.annotations.RpcMethod(
-      fullMethodName = SERVICE_NAME + '/' + "Export",
+  @io.grpc.stub.annotations.RpcMethod(fullMethodName = SERVICE_NAME + '/' + "Export",
       requestType = io.opentelemetry.proto.collector.metrics.v1.ExportMetricsServiceRequest.class,
       responseType = io.opentelemetry.proto.collector.metrics.v1.ExportMetricsServiceResponse.class,
       methodType = io.grpc.MethodDescriptor.MethodType.UNARY)
-  public static io.grpc.MethodDescriptor<io.opentelemetry.proto.collector.metrics.v1.ExportMetricsServiceRequest,
-      io.opentelemetry.proto.collector.metrics.v1.ExportMetricsServiceResponse> getExportMethod() {
+  public static io.grpc.MethodDescriptor<io.opentelemetry.proto.collector.metrics.v1.ExportMetricsServiceRequest, io.opentelemetry.proto.collector.metrics.v1.ExportMetricsServiceResponse> getExportMethod() {
     io.grpc.MethodDescriptor<io.opentelemetry.proto.collector.metrics.v1.ExportMetricsServiceRequest, io.opentelemetry.proto.collector.metrics.v1.ExportMetricsServiceResponse> getExportMethod;
     if ((getExportMethod = MetricsServiceGrpc.getExportMethod) == null) {
       synchronized (MetricsServiceGrpc.class) {
         if ((getExportMethod = MetricsServiceGrpc.getExportMethod) == null) {
           MetricsServiceGrpc.getExportMethod = getExportMethod =
               io.grpc.MethodDescriptor.<io.opentelemetry.proto.collector.metrics.v1.ExportMetricsServiceRequest, io.opentelemetry.proto.collector.metrics.v1.ExportMetricsServiceResponse>newBuilder()
-              .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
-              .setFullMethodName(generateFullMethodName(SERVICE_NAME, "Export"))
-              .setSampledToLocalTracing(true)
-              .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
-                  io.opentelemetry.proto.collector.metrics.v1.ExportMetricsServiceRequest.getDefaultInstance()))
-              .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
-                  io.opentelemetry.proto.collector.metrics.v1.ExportMetricsServiceResponse.getDefaultInstance()))
-              .setSchemaDescriptor(new MetricsServiceMethodDescriptorSupplier("Export"))
-              .build();
+                  .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
+                  .setFullMethodName(generateFullMethodName(SERVICE_NAME, "Export"))
+                  .setSampledToLocalTracing(true)
+                  .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+                      io.opentelemetry.proto.collector.metrics.v1.ExportMetricsServiceRequest
+                          .getDefaultInstance()))
+                  .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+                      io.opentelemetry.proto.collector.metrics.v1.ExportMetricsServiceResponse
+                          .getDefaultInstance()))
+                  .setSchemaDescriptor(new MetricsServiceMethodDescriptorSupplier("Export"))
+                  .build();
         }
       }
     }
@@ -56,42 +55,43 @@ public final class MetricsServiceGrpc {
    */
   public static MetricsServiceStub newStub(io.grpc.Channel channel) {
     io.grpc.stub.AbstractStub.StubFactory<MetricsServiceStub> factory =
-      new io.grpc.stub.AbstractStub.StubFactory<MetricsServiceStub>() {
-        @java.lang.Override
-        public MetricsServiceStub newStub(io.grpc.Channel channel, io.grpc.CallOptions callOptions) {
-          return new MetricsServiceStub(channel, callOptions);
-        }
-      };
+        new io.grpc.stub.AbstractStub.StubFactory<MetricsServiceStub>() {
+          @java.lang.Override
+          public MetricsServiceStub newStub(io.grpc.Channel channel,
+              io.grpc.CallOptions callOptions) {
+            return new MetricsServiceStub(channel, callOptions);
+          }
+        };
     return MetricsServiceStub.newStub(factory, channel);
   }
 
   /**
    * Creates a new blocking-style stub that supports unary and streaming output calls on the service
    */
-  public static MetricsServiceBlockingStub newBlockingStub(
-      io.grpc.Channel channel) {
+  public static MetricsServiceBlockingStub newBlockingStub(io.grpc.Channel channel) {
     io.grpc.stub.AbstractStub.StubFactory<MetricsServiceBlockingStub> factory =
-      new io.grpc.stub.AbstractStub.StubFactory<MetricsServiceBlockingStub>() {
-        @java.lang.Override
-        public MetricsServiceBlockingStub newStub(io.grpc.Channel channel, io.grpc.CallOptions callOptions) {
-          return new MetricsServiceBlockingStub(channel, callOptions);
-        }
-      };
+        new io.grpc.stub.AbstractStub.StubFactory<MetricsServiceBlockingStub>() {
+          @java.lang.Override
+          public MetricsServiceBlockingStub newStub(io.grpc.Channel channel,
+              io.grpc.CallOptions callOptions) {
+            return new MetricsServiceBlockingStub(channel, callOptions);
+          }
+        };
     return MetricsServiceBlockingStub.newStub(factory, channel);
   }
 
   /**
    * Creates a new ListenableFuture-style stub that supports unary calls on the service
    */
-  public static MetricsServiceFutureStub newFutureStub(
-      io.grpc.Channel channel) {
+  public static MetricsServiceFutureStub newFutureStub(io.grpc.Channel channel) {
     io.grpc.stub.AbstractStub.StubFactory<MetricsServiceFutureStub> factory =
-      new io.grpc.stub.AbstractStub.StubFactory<MetricsServiceFutureStub>() {
-        @java.lang.Override
-        public MetricsServiceFutureStub newStub(io.grpc.Channel channel, io.grpc.CallOptions callOptions) {
-          return new MetricsServiceFutureStub(channel, callOptions);
-        }
-      };
+        new io.grpc.stub.AbstractStub.StubFactory<MetricsServiceFutureStub>() {
+          @java.lang.Override
+          public MetricsServiceFutureStub newStub(io.grpc.Channel channel,
+              io.grpc.CallOptions callOptions) {
+            return new MetricsServiceFutureStub(channel, callOptions);
+          }
+        };
     return MetricsServiceFutureStub.newStub(factory, channel);
   }
 
@@ -110,19 +110,17 @@ public final class MetricsServiceGrpc {
      * alive for the entire life of the application.
      * </pre>
      */
-    public void export(io.opentelemetry.proto.collector.metrics.v1.ExportMetricsServiceRequest request,
+    public void export(
+        io.opentelemetry.proto.collector.metrics.v1.ExportMetricsServiceRequest request,
         io.grpc.stub.StreamObserver<io.opentelemetry.proto.collector.metrics.v1.ExportMetricsServiceResponse> responseObserver) {
       io.grpc.stub.ServerCalls.asyncUnimplementedUnaryCall(getExportMethod(), responseObserver);
     }
 
-    @java.lang.Override public final io.grpc.ServerServiceDefinition bindService() {
+    @java.lang.Override
+    public final io.grpc.ServerServiceDefinition bindService() {
       return io.grpc.ServerServiceDefinition.builder(getServiceDescriptor())
-          .addMethod(
-            getExportMethod(),
-            io.grpc.stub.ServerCalls.asyncUnaryCall(
-              new MethodHandlers<
-                io.opentelemetry.proto.collector.metrics.v1.ExportMetricsServiceRequest,
-                io.opentelemetry.proto.collector.metrics.v1.ExportMetricsServiceResponse>(
+          .addMethod(getExportMethod(), io.grpc.stub.ServerCalls.asyncUnaryCall(
+              new MethodHandlers<io.opentelemetry.proto.collector.metrics.v1.ExportMetricsServiceRequest, io.opentelemetry.proto.collector.metrics.v1.ExportMetricsServiceResponse>(
                   this, METHODID_EXPORT)))
           .build();
     }
@@ -135,15 +133,14 @@ public final class MetricsServiceGrpc {
    * central collector.
    * </pre>
    */
-  public static final class MetricsServiceStub extends io.grpc.stub.AbstractAsyncStub<MetricsServiceStub> {
-    private MetricsServiceStub(
-        io.grpc.Channel channel, io.grpc.CallOptions callOptions) {
+  public static final class MetricsServiceStub
+      extends io.grpc.stub.AbstractAsyncStub<MetricsServiceStub> {
+    private MetricsServiceStub(io.grpc.Channel channel, io.grpc.CallOptions callOptions) {
       super(channel, callOptions);
     }
 
     @java.lang.Override
-    protected MetricsServiceStub build(
-        io.grpc.Channel channel, io.grpc.CallOptions callOptions) {
+    protected MetricsServiceStub build(io.grpc.Channel channel, io.grpc.CallOptions callOptions) {
       return new MetricsServiceStub(channel, callOptions);
     }
 
@@ -153,7 +150,8 @@ public final class MetricsServiceGrpc {
      * alive for the entire life of the application.
      * </pre>
      */
-    public void export(io.opentelemetry.proto.collector.metrics.v1.ExportMetricsServiceRequest request,
+    public void export(
+        io.opentelemetry.proto.collector.metrics.v1.ExportMetricsServiceRequest request,
         io.grpc.stub.StreamObserver<io.opentelemetry.proto.collector.metrics.v1.ExportMetricsServiceResponse> responseObserver) {
       io.grpc.stub.ClientCalls.asyncUnaryCall(
           getChannel().newCall(getExportMethod(), getCallOptions()), request, responseObserver);
@@ -167,15 +165,15 @@ public final class MetricsServiceGrpc {
    * central collector.
    * </pre>
    */
-  public static final class MetricsServiceBlockingStub extends io.grpc.stub.AbstractBlockingStub<MetricsServiceBlockingStub> {
-    private MetricsServiceBlockingStub(
-        io.grpc.Channel channel, io.grpc.CallOptions callOptions) {
+  public static final class MetricsServiceBlockingStub
+      extends io.grpc.stub.AbstractBlockingStub<MetricsServiceBlockingStub> {
+    private MetricsServiceBlockingStub(io.grpc.Channel channel, io.grpc.CallOptions callOptions) {
       super(channel, callOptions);
     }
 
     @java.lang.Override
-    protected MetricsServiceBlockingStub build(
-        io.grpc.Channel channel, io.grpc.CallOptions callOptions) {
+    protected MetricsServiceBlockingStub build(io.grpc.Channel channel,
+        io.grpc.CallOptions callOptions) {
       return new MetricsServiceBlockingStub(channel, callOptions);
     }
 
@@ -185,9 +183,10 @@ public final class MetricsServiceGrpc {
      * alive for the entire life of the application.
      * </pre>
      */
-    public io.opentelemetry.proto.collector.metrics.v1.ExportMetricsServiceResponse export(io.opentelemetry.proto.collector.metrics.v1.ExportMetricsServiceRequest request) {
-      return io.grpc.stub.ClientCalls.blockingUnaryCall(
-          getChannel(), getExportMethod(), getCallOptions(), request);
+    public io.opentelemetry.proto.collector.metrics.v1.ExportMetricsServiceResponse export(
+        io.opentelemetry.proto.collector.metrics.v1.ExportMetricsServiceRequest request) {
+      return io.grpc.stub.ClientCalls.blockingUnaryCall(getChannel(), getExportMethod(),
+          getCallOptions(), request);
     }
   }
 
@@ -198,15 +197,15 @@ public final class MetricsServiceGrpc {
    * central collector.
    * </pre>
    */
-  public static final class MetricsServiceFutureStub extends io.grpc.stub.AbstractFutureStub<MetricsServiceFutureStub> {
-    private MetricsServiceFutureStub(
-        io.grpc.Channel channel, io.grpc.CallOptions callOptions) {
+  public static final class MetricsServiceFutureStub
+      extends io.grpc.stub.AbstractFutureStub<MetricsServiceFutureStub> {
+    private MetricsServiceFutureStub(io.grpc.Channel channel, io.grpc.CallOptions callOptions) {
       super(channel, callOptions);
     }
 
     @java.lang.Override
-    protected MetricsServiceFutureStub build(
-        io.grpc.Channel channel, io.grpc.CallOptions callOptions) {
+    protected MetricsServiceFutureStub build(io.grpc.Channel channel,
+        io.grpc.CallOptions callOptions) {
       return new MetricsServiceFutureStub(channel, callOptions);
     }
 
@@ -218,15 +217,15 @@ public final class MetricsServiceGrpc {
      */
     public com.google.common.util.concurrent.ListenableFuture<io.opentelemetry.proto.collector.metrics.v1.ExportMetricsServiceResponse> export(
         io.opentelemetry.proto.collector.metrics.v1.ExportMetricsServiceRequest request) {
-      return io.grpc.stub.ClientCalls.futureUnaryCall(
-          getChannel().newCall(getExportMethod(), getCallOptions()), request);
+      return io.grpc.stub.ClientCalls
+          .futureUnaryCall(getChannel().newCall(getExportMethod(), getCallOptions()), request);
     }
   }
 
   private static final int METHODID_EXPORT = 0;
 
-  private static final class MethodHandlers<Req, Resp> implements
-      io.grpc.stub.ServerCalls.UnaryMethod<Req, Resp>,
+  private static final class MethodHandlers<Req, Resp>
+      implements io.grpc.stub.ServerCalls.UnaryMethod<Req, Resp>,
       io.grpc.stub.ServerCalls.ServerStreamingMethod<Req, Resp>,
       io.grpc.stub.ServerCalls.ClientStreamingMethod<Req, Resp>,
       io.grpc.stub.ServerCalls.BidiStreamingMethod<Req, Resp> {
@@ -243,7 +242,8 @@ public final class MetricsServiceGrpc {
     public void invoke(Req request, io.grpc.stub.StreamObserver<Resp> responseObserver) {
       switch (methodId) {
         case METHODID_EXPORT:
-          serviceImpl.export((io.opentelemetry.proto.collector.metrics.v1.ExportMetricsServiceRequest) request,
+          serviceImpl.export(
+              (io.opentelemetry.proto.collector.metrics.v1.ExportMetricsServiceRequest) request,
               (io.grpc.stub.StreamObserver<io.opentelemetry.proto.collector.metrics.v1.ExportMetricsServiceResponse>) responseObserver);
           break;
         default:
@@ -263,7 +263,8 @@ public final class MetricsServiceGrpc {
   }
 
   private static abstract class MetricsServiceBaseDescriptorSupplier
-      implements io.grpc.protobuf.ProtoFileDescriptorSupplier, io.grpc.protobuf.ProtoServiceDescriptorSupplier {
+      implements io.grpc.protobuf.ProtoFileDescriptorSupplier,
+      io.grpc.protobuf.ProtoServiceDescriptorSupplier {
     MetricsServiceBaseDescriptorSupplier() {}
 
     @java.lang.Override
@@ -307,8 +308,7 @@ public final class MetricsServiceGrpc {
         if (result == null) {
           serviceDescriptor = result = io.grpc.ServiceDescriptor.newBuilder(SERVICE_NAME)
               .setSchemaDescriptor(new MetricsServiceFileDescriptorSupplier())
-              .addMethod(getExportMethod())
-              .build();
+              .addMethod(getExportMethod()).build();
         }
       }
     }

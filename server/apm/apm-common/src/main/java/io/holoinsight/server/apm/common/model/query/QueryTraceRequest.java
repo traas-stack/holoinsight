@@ -50,7 +50,7 @@ public class QueryTraceRequest {
   /**
    * 最大持续时间
    */
-  private int        maxTraceDuration;
+  private int maxTraceDuration;
   /**
    * trace 状态
    */
@@ -66,5 +66,5 @@ public class QueryTraceRequest {
   /**
    * 查询条件
    */
-  private List<Tag>  tags;
+  private List<Tag> tags;
 }

@@ -158,8 +158,7 @@ public class ApmConvertor {
     }
     Span span = new Span(spanProto.getTraceId(), spanProto.getSegmentId(), spanProto.getSpanId(),
         spanProto.getParentSpanId(),
-        spanProto.getRefsList().stream().map(ApmConvertor::convertRef)
-            .collect(Collectors.toList()),
+        spanProto.getRefsList().stream().map(ApmConvertor::convertRef).collect(Collectors.toList()),
         spanProto.getServiceCode(), spanProto.getServiceInstanceName(), spanProto.getStartTime(),
         spanProto.getEndTime(), spanProto.getEndpointName(), spanProto.getType(),
         spanProto.getPeer(), spanProto.getComponent(), spanProto.getIsError(), spanProto.getLayer(),

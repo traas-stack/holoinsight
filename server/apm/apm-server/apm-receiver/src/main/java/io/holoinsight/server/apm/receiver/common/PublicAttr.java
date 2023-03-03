@@ -18,7 +18,7 @@ import java.util.Map;
 public class PublicAttr {
 
   public static void setPublicAttrs(RelationBuilder sourceBuilder, Span span,
-                                    Map<String, AnyValue> spanAttrMap, Map<String, AnyValue> resourceAttrMap) {
+      Map<String, AnyValue> spanAttrMap, Map<String, AnyValue> resourceAttrMap) {
     sourceBuilder.setTenant(resourceAttrMap.get(Const.TENANT).getStringValue());
     long latency = TimeUtils.unixNano2MS(span.getEndTimeUnixNano())
         - TimeUtils.unixNano2MS(span.getStartTimeUnixNano());

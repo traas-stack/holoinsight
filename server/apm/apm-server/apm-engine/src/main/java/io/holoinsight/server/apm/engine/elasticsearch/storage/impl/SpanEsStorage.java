@@ -55,9 +55,9 @@ public class SpanEsStorage extends RecordEsStorage<SpanDO> implements SpanStorag
 
   @Override
   public TraceBrief queryBasicTraces(final String tenant, String serviceName,
-                                     String serviceInstanceName, String endpointName, List<String> traceIds, int minTraceDuration,
-                                     int maxTraceDuration, TraceState traceState, QueryOrder queryOrder, Pagination paging,
-                                     long start, long end, List<Tag> tags) throws IOException {
+      String serviceInstanceName, String endpointName, List<String> traceIds, int minTraceDuration,
+      int maxTraceDuration, TraceState traceState, QueryOrder queryOrder, Pagination paging,
+      long start, long end, List<Tag> tags) throws IOException {
     StopWatch stopWatch = StopWatch.createStarted();
     SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
 

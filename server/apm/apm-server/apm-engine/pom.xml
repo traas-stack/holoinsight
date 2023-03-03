@@ -16,12 +16,6 @@
 
 		<dependency>
 			<groupId>io.holoinsight.server</groupId>
-			<artifactId>apm-dal</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-
-		<dependency>
-			<groupId>io.holoinsight.server</groupId>
 			<artifactId>apm-core</artifactId>
 			<version>${project.version}</version>
 		</dependency>

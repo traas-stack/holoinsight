@@ -40,15 +40,15 @@ import java.util.stream.Collectors;
 public class SpanHandler {
 
   @Autowired
-  private TraceService                   traceService;
+  private TraceService traceService;
   @Autowired
-  private ServiceRelationService         serviceRelationService;
+  private ServiceRelationService serviceRelationService;
   @Autowired
-  private EndpointRelationService        endpointRelationService;
+  private EndpointRelationService endpointRelationService;
   @Autowired
-  private NetworkAddressMappingService   networkAddressMappingService;
+  private NetworkAddressMappingService networkAddressMappingService;
   @Autowired
-  private RelationAnalysis               relationAnalysis;
+  private RelationAnalysis relationAnalysis;
   @Autowired
   private ServiceInstanceRelationService serviceInstanceRelationService;
 

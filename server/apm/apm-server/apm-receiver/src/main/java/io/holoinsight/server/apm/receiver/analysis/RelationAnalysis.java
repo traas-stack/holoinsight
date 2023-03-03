@@ -39,7 +39,7 @@ public class RelationAnalysis {
   private NetworkAddressMappingCache networkAddressMappingCache;
 
   public List<RelationBuilder> analysisServerSpan(Span span, Map<String, AnyValue> spanAttrMap,
-                                                  Map<String, AnyValue> resourceAttrMap) {
+      Map<String, AnyValue> resourceAttrMap) {
     List<RelationBuilder> callingInTraffic = new ArrayList<>(10);
 
     String serviceName =

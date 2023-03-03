@@ -15,7 +15,6 @@
 
 	<modules>
 		<module>apm-core</module>
-		<module>apm-dal</module>
 		<module>apm-engine</module>
 		<module>apm-exporter</module>
 		<module>apm-service</module>
