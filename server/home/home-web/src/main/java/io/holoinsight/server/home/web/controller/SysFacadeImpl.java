@@ -11,6 +11,7 @@ import io.holoinsight.server.home.common.util.GlobalFlag;
 import io.holoinsight.server.home.common.util.scope.AuthTargetType;
 import io.holoinsight.server.home.common.util.scope.PowerConstants;
 import io.holoinsight.server.home.dal.model.dto.TenantDTO;
+import io.holoinsight.server.home.web.common.TokenUrls;
 import io.holoinsight.server.home.web.interceptor.MonitorScopeAuth;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -32,6 +33,7 @@ import java.util.Set;
  */
 @RestController
 @RequestMapping("/webapi/sys")
+@TokenUrls("/webapi/sys/debug")
 public class SysFacadeImpl extends BaseFacade {
 
   @Autowired
