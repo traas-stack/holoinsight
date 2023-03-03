@@ -21,11 +21,6 @@ public class FlywayProperties {
   private boolean enabled = false;
 
   /**
-   * Whether to schema&data inited.
-   */
-  private boolean inited = false;
-
-  /**
    * Whether to disable clean.
    */
   private boolean cleanDisabled = true;
@@ -57,14 +52,6 @@ public class FlywayProperties {
 
   public void setEnabled(boolean enabled) {
     this.enabled = enabled;
-  }
-
-  public boolean isInited() {
-    return inited;
-  }
-
-  public void setInited(boolean inited) {
-    this.inited = inited;
   }
 
   public boolean isCleanDisabled() {
