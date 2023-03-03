@@ -1,3 +1,6 @@
+/*
+ * Copyright 2022 Holoinsight Project Authors. Licensed under Apache-2.0.
+ */
 package io.opentelemetry.proto.collector.trace.v1;
 
 import static io.grpc.MethodDescriptor.generateFullMethodName;
