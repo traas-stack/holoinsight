@@ -4,6 +4,7 @@
 package io.holoinsight.server.common.dao.entity;
 
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import lombok.Data;
 
@@ -23,6 +24,7 @@ public class Workspace {
 
   public String name;
 
+  @TableField(value = "`desc`")
   public String desc;
 
   public String config;
