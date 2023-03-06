@@ -75,11 +75,11 @@ public class SpanMetricEsStorage implements MetricStorage {
       groups.forEach(group -> mergedGroups.add(OtlpMappings.sw2Otlp(group)));
     }
     if (metricDefine.getGroups() != null) {
-      groups.addAll(metricDefine.getGroups());
+      mergedGroups.addAll(metricDefine.getGroups());
     }
 
     return queryFromEs(tenant, metricDefine.getIndex(), duration, mergedConditions,
-        metricDefine.getField(), metricDefine.getFunction(), groups);
+        metricDefine.getField(), metricDefine.getFunction(), mergedGroups);
   }
 
   @Override
@@ -92,7 +92,7 @@ public class SpanMetricEsStorage implements MetricStorage {
   }
 
   private MetricValues queryFromEs(String tenant, String index, Duration duration,
-      Map<String, Object> conditions, String field, String function, List<String> groups)
+      Map<String, Object> conditions, String field, String function, Set<String> groups)
       throws IOException {
     List<MetricValue> values = new ArrayList<>();
     MetricValues metricValues = new MetricValues(values);
