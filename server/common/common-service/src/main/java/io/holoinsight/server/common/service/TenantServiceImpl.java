@@ -1,14 +1,13 @@
 /*
  * Copyright 2022 Holoinsight Project Authors. Licensed under Apache-2.0.
  */
-package io.holoinsight.server.home.biz.service.impl;
+package io.holoinsight.server.common.service;
 
-import io.holoinsight.server.home.biz.service.TenantService;
-import io.holoinsight.server.home.dal.converter.TenantConverter;
-import io.holoinsight.server.home.dal.mapper.TenantMapper;
-import io.holoinsight.server.home.dal.model.Tenant;
-import io.holoinsight.server.home.dal.model.dto.TenantDTO;
+import io.holoinsight.server.common.dao.entity.dto.TenantDTO;
+import io.holoinsight.server.common.dao.mapper.TenantMapper;
+import io.holoinsight.server.common.dao.entity.Tenant;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import io.holoinsight.server.common.dao.converter.TenantConverter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;

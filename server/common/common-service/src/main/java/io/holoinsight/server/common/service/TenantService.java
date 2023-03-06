@@ -1,11 +1,11 @@
 /*
  * Copyright 2022 Holoinsight Project Authors. Licensed under Apache-2.0.
  */
-package io.holoinsight.server.home.biz.service;
+package io.holoinsight.server.common.service;
 
-import io.holoinsight.server.home.dal.model.Tenant;
-import io.holoinsight.server.home.dal.model.dto.TenantDTO;
+import io.holoinsight.server.common.dao.entity.Tenant;
 import com.baomidou.mybatisplus.extension.service.IService;
+import io.holoinsight.server.common.dao.entity.dto.TenantDTO;
 
 import java.util.List;
 

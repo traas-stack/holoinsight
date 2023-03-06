@@ -19,7 +19,6 @@ import lombok.extern.slf4j.Slf4j;
 // This listener depends on EnvironmentPostProcessorApplicationListener
 @Order(EnvironmentPostProcessorApplicationListener.DEFAULT_ORDER + 10)
 @Slf4j
-@Deprecated
 public class PropertiesListener
     implements ApplicationListener<ApplicationEnvironmentPreparedEvent> {
 

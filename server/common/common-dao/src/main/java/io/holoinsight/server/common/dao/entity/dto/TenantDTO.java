@@ -1,7 +1,7 @@
 /*
  * Copyright 2022 Holoinsight Project Authors. Licensed under Apache-2.0.
  */
-package io.holoinsight.server.home.dal.model.dto;
+package io.holoinsight.server.common.dao.entity.dto;
 
 import lombok.Data;
 
@@ -21,6 +21,7 @@ public class TenantDTO {
   public String json;
   public String desc;
   public String md5;
+  public String product;
 
   public Date gmtCreate;
   public Date gmtModified;

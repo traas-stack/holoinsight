@@ -802,4 +802,20 @@ CREATE TABLE `user_oplog` (
   UNIQUE KEY `id_UNIQUE` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+-- ----------------------------
+-- Table structure for workspace
+-- ----------------------------
+DROP TABLE IF EXISTS `workspace`;
+CREATE TABLE `workspace` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `tenant` varchar(100) NOT NULL,
+  `name` varchar(100) NOT NULL,
+  `desc` varchar(100) DEFAULT NULL,
+  `config` mediumtext DEFAULT NULL,
+  `gmt_create` datetime NOT NULL,
+  `gmt_modified` varchar(45) NOT NULL,
+  PRIMARY KEY(`id`),
+  UNIQUE KEY `id_UNIQUE`(`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 SET FOREIGN_KEY_CHECKS = 1;

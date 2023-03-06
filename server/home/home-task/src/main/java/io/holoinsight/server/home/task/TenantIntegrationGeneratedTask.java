@@ -18,14 +18,14 @@ import io.holoinsight.server.home.biz.plugin.PluginRepository;
 import io.holoinsight.server.home.biz.plugin.core.AbstractIntegrationPlugin;
 import io.holoinsight.server.home.biz.service.IntegrationGeneratedService;
 import io.holoinsight.server.home.biz.service.IntegrationPluginService;
-import io.holoinsight.server.home.biz.service.TenantService;
+import io.holoinsight.server.common.service.TenantService;
 import io.holoinsight.server.home.common.util.cache.local.CommonLocalCache;
 import io.holoinsight.server.home.dal.model.IntegrationGenerated;
 import io.holoinsight.server.home.dal.model.dto.CloudMonitorRange;
 import io.holoinsight.server.home.dal.model.dto.GaeaCollectConfigDTO.GaeaCollectRange;
 import io.holoinsight.server.home.dal.model.dto.IntegrationGeneratedDTO;
 import io.holoinsight.server.home.dal.model.dto.IntegrationPluginDTO;
-import io.holoinsight.server.home.dal.model.dto.TenantDTO;
+import io.holoinsight.server.common.dao.entity.dto.TenantDTO;
 import io.holoinsight.server.meta.common.model.QueryExample;
 import lombok.extern.slf4j.Slf4j;
 
