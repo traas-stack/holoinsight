@@ -27,7 +27,10 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Vector;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author wangsiyuan
@@ -38,6 +41,9 @@ public class AbstractUniformInspectRunningRule {
 
   private static final Logger logger =
       LoggerFactory.getLogger(AbstractUniformInspectRunningRule.class);
+
+  ThreadPoolExecutor ruleRunner = new ThreadPoolExecutor(20, 100, 10, TimeUnit.SECONDS,
+      new ArrayBlockingQueue<>(1000), r -> new Thread(r, "RuleRunner"));
 
   public EventInfo eval(ComputeContext context) {
     long period = context.getTimestamp();
@@ -84,16 +90,18 @@ public class AbstractUniformInspectRunningRule {
         continue;
       }
       ComputeInfo computeInfo = ComputeInfo.getComputeInfo(inspectConfig, period);
-      List<TriggerResult> triggerResults = new Vector<>();
-      dataResultList.parallelStream().forEach(dataResult -> {
-        // 单个tags判断，增加异步处理，收集所有tags结果
-        List<TriggerResult> ruleResults = apply(dataResult, computeInfo, trigger);
-        for (TriggerResult ruleResult : ruleResults) {
-          if (ruleResult.isHit()) {
-            triggerResults.add(ruleResult);
+      List<TriggerResult> triggerResults = new CopyOnWriteArrayList<>();
+      for (DataResult dataResult : dataResultList) {
+        ruleRunner.execute(() -> {
+          // 单个tags判断，增加异步处理，收集所有tags结果
+          List<TriggerResult> ruleResults = apply(dataResult, computeInfo, trigger);
+          for (TriggerResult ruleResult : ruleResults) {
+            if (ruleResult.isHit()) {
+              triggerResults.add(ruleResult);
+            }
           }
-        }
-      });
+        });
+      }
       if (triggerResults.size() != 0) {
         triggerMap.put(trigger, triggerResults);
       }

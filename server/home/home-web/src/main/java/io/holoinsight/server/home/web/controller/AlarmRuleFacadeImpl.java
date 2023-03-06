@@ -19,6 +19,8 @@ import io.holoinsight.server.home.common.util.scope.MonitorScope;
 import io.holoinsight.server.home.common.util.scope.MonitorUser;
 import io.holoinsight.server.home.common.util.scope.PowerConstants;
 import io.holoinsight.server.home.common.util.scope.RequestContext;
+import io.holoinsight.server.home.dal.mapper.CustomPluginMapper;
+import io.holoinsight.server.home.dal.model.CustomPlugin;
 import io.holoinsight.server.home.dal.model.OpType;
 import io.holoinsight.server.home.dal.model.dto.AlarmGroupDTO;
 import io.holoinsight.server.home.dal.model.dto.AlarmSubscribeInfo;
@@ -43,6 +45,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -75,6 +78,9 @@ public class AlarmRuleFacadeImpl extends BaseFacade {
 
   @Autowired
   private UserOpLogService userOpLogService;
+
+  @Resource
+  private CustomPluginMapper customPluginMapper;
 
   @Value("${holoinsight.home.domain}")
   private String domain;
@@ -110,7 +116,8 @@ public class AlarmRuleFacadeImpl extends BaseFacade {
         alarmRuleDTO.setGmtModified(new Date());
         Map<String /* metric */, Map<String /* type */, String /* page */>> systemMetrics =
             getMetricPage();
-        tryParseLink(alarmRuleDTO, domain, systemMetrics);
+        String parentId = tryGetParentId(alarmRuleDTO);
+        tryParseLink(alarmRuleDTO, domain, systemMetrics, parentId);
         if (StringUtils.isBlank(alarmRuleDTO.getSourceType())) {
           alarmRuleDTO.setSourceType("custom");
         }
@@ -123,6 +130,14 @@ public class AlarmRuleFacadeImpl extends BaseFacade {
     });
 
     return result;
+  }
+
+  private String tryGetParentId(AlarmRuleDTO alarmRuleDTO) {
+    if (!StringUtils.equals(alarmRuleDTO.getSourceType(), "log") || alarmRuleDTO.getId() == null) {
+      return null;
+    }
+    CustomPlugin customPlugin = this.customPluginMapper.selectById(alarmRuleDTO.getId());
+    return String.valueOf(customPlugin.parentFolderId);
   }
 
   public static Map<String, Map<String, String>> getMetricPage() {
@@ -166,7 +181,6 @@ public class AlarmRuleFacadeImpl extends BaseFacade {
         alarmRuleDTO.setGmtModified(new Date());
         Map<String /* metric */, Map<String /* type */, String /* page */>> systemMetrics =
             getMetricPage();
-        tryParseLink(alarmRuleDTO, domain, systemMetrics);
         boolean save = alarmRuleService.updateById(alarmRuleDTO);
 
         userOpLogService.append("alarm_rule", alarmRuleDTO.getId(), OpType.UPDATE,
