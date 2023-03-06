@@ -1,10 +1,10 @@
 /*
  * Copyright 2022 Holoinsight Project Authors. Licensed under Apache-2.0.
  */
-package io.holoinsight.server.home.dal.converter;
+package io.holoinsight.server.common.dao.converter;
 
-import io.holoinsight.server.home.dal.model.Tenant;
-import io.holoinsight.server.home.dal.model.dto.TenantDTO;
+import io.holoinsight.server.common.dao.entity.Tenant;
+import io.holoinsight.server.common.dao.entity.dto.TenantDTO;
 import org.mapstruct.Mapper;
 
 import java.util.List;

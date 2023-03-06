@@ -4,7 +4,7 @@
 package io.holoinsight.server.home.biz.ula;
 
 import io.holoinsight.server.home.biz.common.MetaDictUtil;
-import io.holoinsight.server.home.biz.service.TenantService;
+import io.holoinsight.server.common.service.TenantService;
 import io.holoinsight.server.home.common.util.scope.AuthTarget;
 import io.holoinsight.server.home.common.util.scope.AuthTargetType;
 import io.holoinsight.server.home.common.util.scope.IdentityType;
@@ -14,7 +14,7 @@ import io.holoinsight.server.home.common.util.scope.MonitorScope;
 import io.holoinsight.server.home.common.util.scope.MonitorTenant;
 import io.holoinsight.server.home.common.util.scope.MonitorUser;
 import io.holoinsight.server.home.common.util.scope.PowerConstants;
-import io.holoinsight.server.home.dal.model.dto.TenantDTO;
+import io.holoinsight.server.common.dao.entity.dto.TenantDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;

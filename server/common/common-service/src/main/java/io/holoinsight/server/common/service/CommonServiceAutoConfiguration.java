@@ -31,4 +31,17 @@ public class CommonServiceAutoConfiguration {
   public SuperCacheService superCacheService() {
     return new SuperCacheService();
   }
+
+
+  @Bean
+  @ConditionalOnMissingBean
+  public TenantService tenantService() {
+    return new TenantServiceImpl();
+  }
+
+  @Bean
+  @ConditionalOnMissingBean
+  public WorkspaceService workspaceService() {
+    return new WorkspaceServiceImpl();
+  }
 }
