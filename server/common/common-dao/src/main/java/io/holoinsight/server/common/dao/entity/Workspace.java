@@ -23,7 +23,7 @@ public class Workspace {
 
   public String name;
 
-  public String name_zh;
+  public String desc;
 
   public String config;
 
