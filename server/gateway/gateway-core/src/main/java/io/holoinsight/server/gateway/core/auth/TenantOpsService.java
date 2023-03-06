@@ -28,8 +28,8 @@ import com.google.common.collect.Maps;
  * @author sw1136562366
  */
 @Service
-public class TenantService {
-  private static final Logger LOGGER = LoggerFactory.getLogger(TenantService.class);
+public class TenantOpsService {
+  private static final Logger LOGGER = LoggerFactory.getLogger(TenantOpsService.class);
 
   @Autowired
   private TenantOpsDOMapper mapper;
