@@ -58,7 +58,7 @@ public class SpanMetricEsStorage implements MetricStorage {
 
   @Override
   public MetricValues queryMetric(String tenant, String metric, Duration duration,
-      Map<String, Object> conditions) throws IOException {
+      Map<String, Object> conditions, List<String> groups) throws IOException {
     Assert.notNull(duration, "duration can not be null!");
     MetricDefine metricDefine = metricsManager.getMetric(metric);
     Assert.notNull(metricDefine, String.format("metric not found: %s", metric));
@@ -70,8 +70,16 @@ public class SpanMetricEsStorage implements MetricStorage {
       mergedConditions.putAll(metricDefine.getConditions());
     }
 
+    Set<String> mergedGroups = new HashSet<>();
+    if (groups != null) {
+      groups.forEach(group -> mergedGroups.add(OtlpMappings.sw2Otlp(group)));
+    }
+    if (metricDefine.getGroups() != null) {
+      groups.addAll(metricDefine.getGroups());
+    }
+
     return queryFromEs(tenant, metricDefine.getIndex(), duration, mergedConditions,
-        metricDefine.getField(), metricDefine.getFunction(), metricDefine.getGroups());
+        metricDefine.getField(), metricDefine.getFunction(), groups);
   }
 
   @Override

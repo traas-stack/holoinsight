@@ -31,7 +31,7 @@ public class MetricServiceImpl implements MetricService {
   @Override
   public MetricValues queryMetric(String tenant, String metric, Duration duration,
       Map<String, Object> conditions) throws IOException {
-    return metricStorage.queryMetric(tenant, metric, duration, conditions);
+    return metricStorage.queryMetric(tenant, metric, duration, conditions, null);
   }
 
   @Override
