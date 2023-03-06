@@ -90,12 +90,12 @@ sudo curl -SL https://github.com/docker/compose/releases/download/v2.15.1/docker
 Users in China can use the following script for better network access.
 ```bash
 docker run --name holoinsight-tools -d registry.cn-hangzhou.aliyuncs.com/holoinsight-examples/tools:latest && \
-  docker cp holoinsight-tools:/docker-compose . &&
+  docker cp holoinsight-tools:/docker-compose . && \
   docker rm -f holoinsight-tools
 ```
 
 # Licensing
-Holoinsight is under [Apache License 2.0](https://github.com/traas-stack/holoinsight/blob/main/LICENSE).
+HoloInsight is under [Apache License 2.0](https://github.com/traas-stack/holoinsight/blob/main/LICENSE).
 
 # Community and support
 - Contact us via Email: traas_stack@antgroup.com
