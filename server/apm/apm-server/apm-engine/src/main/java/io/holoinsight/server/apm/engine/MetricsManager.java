@@ -28,6 +28,7 @@ import java.util.stream.Collectors;
  * @version : MetricsManager.java, v 0.1 2022年09月29日 17:48 xiangwanpeng Exp $
  */
 @Slf4j
+@Component
 public class MetricsManager {
 
   @Value("classpath:metrics/metrics.json")
