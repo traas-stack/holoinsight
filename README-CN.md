@@ -99,5 +99,5 @@ HoloInsight 基于 [Apache License 2.0](https://github.com/traas-stack/holoinsig
 
 # 社区与支持
 - 邮箱地址: traas_stack@antgroup.com
-- 微信群 [二维码](https://github.com/traas-stack/community/blob/main/holoinsight/groups/wechat-qrcode.jpg)
-- 钉钉群 [二维码](https://github.com/traas-stack/community/blob/main/holoinsight/groups/dingtalk-qrcode.jpg)
+- 官方微信公众号 [二维码](https://github.com/traas-stack/community/blob/main/holoinsight/contact-us/wechat-qrcode.jpg)
+- 钉钉群 [二维码](https://github.com/traas-stack/community/blob/main/holoinsight/contact-us/dingtalk-qrcode.jpg)
