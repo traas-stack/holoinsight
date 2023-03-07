@@ -16,7 +16,7 @@ public class MetaDictKey {
   public static final String IS_TEST = "is_test";
   public static final String IS_QUERY_TEST = "is_query_test";
 
-  public static final String IS_APM_POST_CAL = "is_apm_post_cal";
+  public static final String IS_APM_MATERIALIZED = "is_apm_materialized";
 
   public static final String AGENT_INSTALL_HOST = "agentInstallHost";
   public static final String AGENT_REGISTRY_HOST = "agentRegistryHost";

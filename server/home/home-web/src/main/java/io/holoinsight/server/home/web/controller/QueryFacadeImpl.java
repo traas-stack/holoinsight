@@ -679,7 +679,8 @@ public class QueryFacadeImpl extends BaseFacade {
     request.datasources.forEach(d -> {
       QueryProto.Datasource.Builder datasourceBuilder = QueryProto.Datasource.newBuilder();
       toProtoBean(datasourceBuilder, d);
-      datasourceBuilder.setApmMetricPostCal(MetaDictUtil.isApmPostCal());
+      datasourceBuilder
+          .setApmMaterialized(d.isApmMaterialized() || MetaDictUtil.isApmMaterialized());
       builder.addDatasources(datasourceBuilder);
     });
 

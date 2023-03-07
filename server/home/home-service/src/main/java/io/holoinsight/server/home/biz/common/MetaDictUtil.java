@@ -116,10 +116,10 @@ public class MetaDictUtil {
   }
 
 
-  public static Boolean isApmPostCal() {
+  public static Boolean isApmMaterialized() {
 
-    Boolean value = MetaDictUtil.getValue(MetaDictType.GLOBAL_CONFIG, MetaDictKey.IS_APM_POST_CAL,
-        new TypeToken<Boolean>() {});
+    Boolean value = MetaDictUtil.getValue(MetaDictType.GLOBAL_CONFIG,
+        MetaDictKey.IS_APM_MATERIALIZED, new TypeToken<Boolean>() {});
     if (null == value) {
       return false;
     }

@@ -6,6 +6,7 @@ package io.holoinsight.server.apm.engine;
 import io.holoinsight.server.apm.common.utils.GsonUtils;
 import com.google.gson.reflect.TypeToken;
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
@@ -19,16 +20,18 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 /**
  * @author jiwliu
  * @version : MetricsManager.java, v 0.1 2022年09月29日 17:48 xiangwanpeng Exp $
  */
+@Slf4j
 @Component
 public class MetricsManager {
 
-  @Value("classpath:metrics/metrics-span.json")
+  @Value("classpath:metrics/metrics.json")
   private Resource resource;
 
   @Getter
@@ -43,6 +46,7 @@ public class MetricsManager {
       this.metricDefines = metricDefineList.stream()
           .collect(Collectors.toMap(MetricDefine::getName, Function.identity()));
     }
+    log.info("[apm] load metric definitions: {}", this.metricDefines);
   }
 
   public List<String> listMetrics() {

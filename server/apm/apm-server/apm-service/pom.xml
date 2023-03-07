@@ -17,6 +17,12 @@
 			<artifactId>apm-engine</artifactId>
 			<version>${project.version}</version>
 		</dependency>
+
+		<dependency>
+			<groupId>io.holoinsight.server</groupId>
+			<artifactId>extension-storage</artifactId>
+			<version>${project.version}</version>
+		</dependency>
 	</dependencies>
 
 </project>

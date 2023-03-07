@@ -3134,14 +3134,14 @@ public final class QueryProto {
 
     /**
      * <pre>
-     * Whether the APM metrics are obtained through post-calculation
+     * whether the APM metrics is obtained by materializing them to the metric storage in advance instead of post-calculation
      * </pre>
      *
-     * <code>bool apmMetricPostCal = 11;</code>
+     * <code>bool apmMaterialized = 11;</code>
      * 
-     * @return The apmMetricPostCal.
+     * @return The apmMaterialized.
      */
-    boolean getApmMetricPostCal();
+    boolean getApmMaterialized();
   }
   /**
    * Protobuf type {@code io.holoinsight.server.query.grpc.Datasource}
@@ -3272,7 +3272,7 @@ public final class QueryProto {
             }
             case 88: {
 
-              apmMetricPostCal_ = input.readBool();
+              apmMaterialized_ = input.readBool();
               break;
             }
             default: {
@@ -3789,21 +3789,21 @@ public final class QueryProto {
       }
     }
 
-    public static final int APMMETRICPOSTCAL_FIELD_NUMBER = 11;
-    private boolean apmMetricPostCal_;
+    public static final int APMMATERIALIZED_FIELD_NUMBER = 11;
+    private boolean apmMaterialized_;
 
     /**
      * <pre>
-     * Whether the APM metrics are obtained through post-calculation
+     * whether the APM metrics is obtained by materializing them to the metric storage in advance instead of post-calculation
      * </pre>
      *
-     * <code>bool apmMetricPostCal = 11;</code>
+     * <code>bool apmMaterialized = 11;</code>
      * 
-     * @return The apmMetricPostCal.
+     * @return The apmMaterialized.
      */
     @java.lang.Override
-    public boolean getApmMetricPostCal() {
-      return apmMetricPostCal_;
+    public boolean getApmMaterialized() {
+      return apmMaterialized_;
     }
 
     private byte memoizedIsInitialized = -1;
@@ -3852,8 +3852,8 @@ public final class QueryProto {
       if (((bitField0_ & 0x00000004) != 0)) {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 10, fillPolicy_);
       }
-      if (apmMetricPostCal_ != false) {
-        output.writeBool(11, apmMetricPostCal_);
+      if (apmMaterialized_ != false) {
+        output.writeBool(11, apmMaterialized_);
       }
       unknownFields.writeTo(output);
     }
@@ -3900,8 +3900,8 @@ public final class QueryProto {
       if (((bitField0_ & 0x00000004) != 0)) {
         size += com.google.protobuf.GeneratedMessageV3.computeStringSize(10, fillPolicy_);
       }
-      if (apmMetricPostCal_ != false) {
-        size += com.google.protobuf.CodedOutputStream.computeBoolSize(11, apmMetricPostCal_);
+      if (apmMaterialized_ != false) {
+        size += com.google.protobuf.CodedOutputStream.computeBoolSize(11, apmMaterialized_);
       }
       size += unknownFields.getSerializedSize();
       memoizedSize = size;
@@ -3955,7 +3955,7 @@ public final class QueryProto {
         if (!getFillPolicy().equals(other.getFillPolicy()))
           return false;
       }
-      if (getApmMetricPostCal() != other.getApmMetricPostCal())
+      if (getApmMaterialized() != other.getApmMaterialized())
         return false;
       if (!unknownFields.equals(other.unknownFields))
         return false;
@@ -4001,8 +4001,8 @@ public final class QueryProto {
         hash = (37 * hash) + FILLPOLICY_FIELD_NUMBER;
         hash = (53 * hash) + getFillPolicy().hashCode();
       }
-      hash = (37 * hash) + APMMETRICPOSTCAL_FIELD_NUMBER;
-      hash = (53 * hash) + com.google.protobuf.Internal.hashBoolean(getApmMetricPostCal());
+      hash = (37 * hash) + APMMATERIALIZED_FIELD_NUMBER;
+      hash = (53 * hash) + com.google.protobuf.Internal.hashBoolean(getApmMaterialized());
       hash = (29 * hash) + unknownFields.hashCode();
       memoizedHashCode = hash;
       return hash;
@@ -4171,7 +4171,7 @@ public final class QueryProto {
         bitField0_ = (bitField0_ & ~0x00000008);
         fillPolicy_ = "";
         bitField0_ = (bitField0_ & ~0x00000010);
-        apmMetricPostCal_ = false;
+        apmMaterialized_ = false;
 
         return this;
       }
@@ -4236,7 +4236,7 @@ public final class QueryProto {
           to_bitField0_ |= 0x00000004;
         }
         result.fillPolicy_ = fillPolicy_;
-        result.apmMetricPostCal_ = apmMetricPostCal_;
+        result.apmMaterialized_ = apmMaterialized_;
         result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
@@ -4356,8 +4356,8 @@ public final class QueryProto {
           fillPolicy_ = other.fillPolicy_;
           onChanged();
         }
-        if (other.getApmMetricPostCal() != false) {
-          setApmMetricPostCal(other.getApmMetricPostCal());
+        if (other.getApmMaterialized() != false) {
+          setApmMaterialized(other.getApmMaterialized());
         }
         this.mergeUnknownFields(other.unknownFields);
         onChanged();
@@ -5681,51 +5681,51 @@ public final class QueryProto {
         return this;
       }
 
-      private boolean apmMetricPostCal_;
+      private boolean apmMaterialized_;
 
       /**
        * <pre>
-       * Whether the APM metrics are obtained through post-calculation
+       * whether the APM metrics is obtained by materializing them to the metric storage in advance instead of post-calculation
        * </pre>
        *
-       * <code>bool apmMetricPostCal = 11;</code>
+       * <code>bool apmMaterialized = 11;</code>
        * 
-       * @return The apmMetricPostCal.
+       * @return The apmMaterialized.
        */
       @java.lang.Override
-      public boolean getApmMetricPostCal() {
-        return apmMetricPostCal_;
+      public boolean getApmMaterialized() {
+        return apmMaterialized_;
       }
 
       /**
        * <pre>
-       * Whether the APM metrics are obtained through post-calculation
+       * whether the APM metrics is obtained by materializing them to the metric storage in advance instead of post-calculation
        * </pre>
        *
-       * <code>bool apmMetricPostCal = 11;</code>
+       * <code>bool apmMaterialized = 11;</code>
        * 
-       * @param value The apmMetricPostCal to set.
+       * @param value The apmMaterialized to set.
        * @return This builder for chaining.
        */
-      public Builder setApmMetricPostCal(boolean value) {
+      public Builder setApmMaterialized(boolean value) {
 
-        apmMetricPostCal_ = value;
+        apmMaterialized_ = value;
         onChanged();
         return this;
       }
 
       /**
        * <pre>
-       * Whether the APM metrics are obtained through post-calculation
+       * whether the APM metrics is obtained by materializing them to the metric storage in advance instead of post-calculation
        * </pre>
        *
-       * <code>bool apmMetricPostCal = 11;</code>
+       * <code>bool apmMaterialized = 11;</code>
        * 
        * @return This builder for chaining.
        */
-      public Builder clearApmMetricPostCal() {
+      public Builder clearApmMaterialized() {
 
-        apmMetricPostCal_ = false;
+        apmMaterialized_ = false;
         onChanged();
         return this;
       }
@@ -47113,7 +47113,7 @@ public final class QueryProto {
         + "\n\nfillPolicy\030\005 \001(\tH\002\210\001\001B\010\n\006_queryB\r\n\013_do"
         + "wnsampleB\r\n\013_fillPolicy\"T\n\023QueryMetricsR"
         + "equest\022\016\n\006tenant\030\001 \001(\t\022\014\n\004name\030\002 \001(\t\022\020\n\010"
-        + "explicit\030\003 \001(\010\022\r\n\005limit\030\004 \001(\005\"\353\002\n\nDataso"
+        + "explicit\030\003 \001(\010\022\r\n\005limit\030\004 \001(\005\"\352\002\n\nDataso"
         + "urce\022\021\n\004name\030\001 \001(\tH\000\210\001\001\022\r\n\005start\030\002 \001(\003\022\013"
         + "\n\003end\030\003 \001(\003\022\016\n\006metric\030\004 \001(\t\022>\n\007filters\030\005"
         + " \003(\0132-.io.holoinsight.server.query.grpc."
@@ -47121,180 +47121,179 @@ public final class QueryProto {
         + "ample\030\007 \001(\tH\001\210\001\001\022F\n\rslidingWindow\030\010 \001(\0132"
         + "/.io.holoinsight.server.query.grpc.Slidi"
         + "ngWindow\022\017\n\007groupBy\030\t \003(\t\022\027\n\nfillPolicy\030"
-        + "\n \001(\tH\002\210\001\001\022\030\n\020apmMetricPostCal\030\013 \001(\010B\007\n\005"
-        + "_nameB\r\n\013_downsampleB\r\n\013_fillPolicy\"5\n\rS"
-        + "lidingWindow\022\020\n\010windowMs\030\001 \001(\003\022\022\n\naggreg"
-        + "ator\030\002 \001(\t\"8\n\013QueryFilter\022\014\n\004type\030\001 \001(\t\022"
-        + "\014\n\004name\030\002 \001(\t\022\r\n\005value\030\003 \001(\t\"J\n\rQueryRes"
-        + "ponse\0229\n\007results\030\001 \003(\0132(.io.holoinsight."
-        + "server.query.grpc.Result\"\300\001\n\006Result\022\016\n\006m"
-        + "etric\030\001 \001(\t\022@\n\004tags\030\002 \003(\01322.io.holoinsig"
-        + "ht.server.query.grpc.Result.TagsEntry\0227\n"
-        + "\006points\030\003 \003(\0132\'.io.holoinsight.server.qu"
-        + "ery.grpc.Point\032+\n\tTagsEntry\022\013\n\003key\030\001 \001(\t"
-        + "\022\r\n\005value\030\002 \001(\t:\0028\001\";\n\005Point\022\021\n\ttimestam"
-        + "p\030\001 \001(\003\022\r\n\005value\030\002 \001(\001\022\020\n\010strValue\030\003 \001(\t"
-        + "\"T\n\023QuerySchemaResponse\022=\n\007results\030\001 \003(\013"
-        + "2,.io.holoinsight.server.query.grpc.Keys"
-        + "Result\"*\n\nKeysResult\022\016\n\006metric\030\001 \001(\t\022\014\n\004"
-        + "keys\030\002 \003(\t\"W\n\024QueryMetricsResponse\022?\n\007re"
-        + "sults\030\001 \003(\0132..io.holoinsight.server.quer"
-        + "y.grpc.MetricResult\"\034\n\014MetricResult\022\014\n\004n"
-        + "ame\030\001 \001(\t\"`\n\021PqlInstantRequest\022\016\n\006tenant"
-        + "\030\001 \001(\t\022\r\n\005query\030\002 \001(\t\022\014\n\004time\030\003 \001(\003\022\017\n\007t"
-        + "imeout\030\004 \001(\t\022\r\n\005delta\030\005 \001(\t\"\214\001\n\017PqlRange"
-        + "Request\022\016\n\006tenant\030\001 \001(\t\022\r\n\005query\030\002 \001(\t\022\r"
-        + "\n\005start\030\003 \001(\003\022\013\n\003end\030\004 \001(\003\022\014\n\004step\030\005 \001(\003"
-        + "\022\017\n\007timeout\030\006 \001(\t\022\r\n\005delta\030\007 \001(\t\022\020\n\010fill"
-        + "Zero\030\010 \001(\010\"\365\004\n\021QueryTraceRequest\022\016\n\006tena"
-        + "nt\030\001 \001(\t\022\030\n\013serviceName\030\002 \001(\tH\000\210\001\001\022 \n\023se"
-        + "rviceInstanceName\030\003 \001(\tH\001\210\001\001\022\020\n\010traceIds"
-        + "\030\004 \003(\t\022\031\n\014endpointName\030\005 \001(\tH\002\210\001\001\022\022\n\005sta"
-        + "rt\030\006 \001(\003H\003\210\001\001\022\020\n\003end\030\007 \001(\003H\004\210\001\001\022\035\n\020minTr"
-        + "aceDuration\030\010 \001(\005H\005\210\001\001\022\035\n\020maxTraceDurati"
-        + "on\030\t \001(\005H\006\210\001\001\022\027\n\ntraceState\030\n \001(\tH\007\210\001\001\022\027"
-        + "\n\nqueryOrder\030\013 \001(\tH\010\210\001\001\022\024\n\007pageNum\030\014 \001(\005"
-        + "H\t\210\001\001\022\025\n\010pageSize\030\r \001(\005H\n\210\001\001\022K\n\004tags\030\016 \003"
-        + "(\0132=.io.holoinsight.server.query.grpc.Qu"
-        + "eryTraceRequest.TagsEntry\032+\n\tTagsEntry\022\013"
-        + "\n\003key\030\001 \001(\t\022\r\n\005value\030\002 \001(\t:\0028\001B\016\n\014_servi"
-        + "ceNameB\026\n\024_serviceInstanceNameB\017\n\r_endpo"
-        + "intNameB\010\n\006_startB\006\n\004_endB\023\n\021_minTraceDu"
-        + "rationB\023\n\021_maxTraceDurationB\r\n\013_traceSta"
-        + "teB\r\n\013_queryOrderB\n\n\010_pageNumB\013\n\t_pageSi"
-        + "ze\"J\n\nTraceBrief\022<\n\006traces\030\001 \003(\0132,.io.ho"
-        + "loinsight.server.query.grpc.BasicTrace\"\256"
-        + "\001\n\nBasicTrace\022\021\n\tsegmentId\030\001 \001(\t\022\024\n\014serv"
-        + "iceNames\030\002 \003(\t\022\034\n\024serviceInstanceNames\030\003"
-        + " \003(\t\022\025\n\rendpointNames\030\004 \003(\t\022\020\n\010duration\030"
-        + "\005 \001(\005\022\r\n\005start\030\006 \001(\003\022\017\n\007isError\030\007 \001(\010\022\020\n"
-        + "\010traceIds\030\010 \003(\t\">\n\005Trace\0225\n\005spans\030\001 \003(\0132"
-        + "&.io.holoinsight.server.query.grpc.Span\""
-        + "\371\003\n\004Span\022\017\n\007traceId\030\001 \001(\t\022\021\n\tsegmentId\030\002"
-        + " \001(\t\022\016\n\006spanId\030\003 \001(\t\022\024\n\014parentSpanId\030\004 \001"
-        + "(\t\0223\n\004refs\030\005 \003(\0132%.io.holoinsight.server"
-        + ".query.grpc.Ref\022\023\n\013serviceCode\030\006 \001(\t\022\033\n\023"
-        + "serviceInstanceName\030\007 \001(\t\022\021\n\tstartTime\030\010"
-        + " \001(\003\022\017\n\007endTime\030\t \001(\003\022\024\n\014endpointName\030\n "
-        + "\001(\t\022\014\n\004type\030\013 \001(\t\022\014\n\004peer\030\014 \001(\t\022\021\n\tcompo"
-        + "nent\030\r \001(\t\022\017\n\007isError\030\016 \001(\010\022\r\n\005layer\030\017 \001"
-        + "(\t\0228\n\004tags\030\020 \003(\0132*.io.holoinsight.server"
-        + ".query.grpc.KeyValue\0229\n\004logs\030\021 \003(\0132+.io."
-        + "holoinsight.server.query.grpc.LogEntity\022"
-        + "\016\n\006isRoot\030\022 \001(\010\022\025\n\rsegmentSpanId\030\023 \001(\t\022\033"
-        + "\n\023segmentParentSpanId\030\024 \001(\t\"&\n\010KeyValue\022"
-        + "\013\n\003key\030\001 \001(\t\022\r\n\005value\030\002 \001(\t\"S\n\tLogEntity"
-        + "\022\014\n\004time\030\001 \001(\003\0228\n\004data\030\002 \003(\0132*.io.holoin"
-        + "sight.server.query.grpc.KeyValue\"S\n\003Ref\022"
-        + "\017\n\007traceId\030\001 \001(\t\022\027\n\017parentSegmentId\030\002 \001("
-        + "\t\022\024\n\014parentSpanId\030\003 \001(\t\022\014\n\004type\030\004 \001(\t\"\377\001"
-        + "\n\020QueryMetaRequest\022\016\n\006tenant\030\001 \001(\t\022\030\n\013se"
-        + "rviceName\030\002 \001(\tH\000\210\001\001\022\031\n\014endpointName\030\003 \001"
-        + "(\tH\001\210\001\001\022\024\n\007address\030\004 \001(\tH\002\210\001\001\022\r\n\005start\030\005"
-        + " \001(\003\022\013\n\003end\030\006 \001(\003\022\024\n\007isEntry\030\007 \001(\010H\003\210\001\001\022"
-        + "\023\n\013traceIdSize\030\010 \001(\003\022\020\n\010category\030\t \001(\tB\016"
-        + "\n\014_serviceNameB\017\n\r_endpointNameB\n\n\010_addr"
-        + "essB\n\n\010_isEntry\"\263\003\n\024QueryTopologyRequest"
-        + "\022\016\n\006tenant\030\001 \001(\t\022\r\n\005start\030\002 \001(\003\022\013\n\003end\030\003"
-        + " \001(\003\022\030\n\013serviceName\030\004 \001(\tH\000\210\001\001\022 \n\023servic"
-        + "eInstanceName\030\005 \001(\tH\001\210\001\001\022\031\n\014endpointName"
-        + "\030\006 \001(\tH\002\210\001\001\022\024\n\007address\030\007 \001(\tH\003\210\001\001\022\022\n\005dep"
-        + "th\030\010 \001(\005H\004\210\001\001\022\020\n\010category\030\t \001(\t\022Z\n\ntermP"
-        + "arams\030\n \003(\0132F.io.holoinsight.server.quer"
-        + "y.grpc.QueryTopologyRequest.TermParamsEn"
-        + "try\0321\n\017TermParamsEntry\022\013\n\003key\030\001 \001(\t\022\r\n\005v"
-        + "alue\030\002 \001(\t:\0028\001B\016\n\014_serviceNameB\026\n\024_servi"
-        + "ceInstanceNameB\017\n\r_endpointNameB\n\n\010_addr"
-        + "essB\010\n\006_depth\"\211\001\n\016ResponseMetric\022\022\n\navgL"
-        + "atency\030\001 \001(\001\022\022\n\np95Latency\030\002 \001(\001\022\022\n\np99L"
-        + "atency\030\003 \001(\001\022\022\n\ntotalCount\030\004 \001(\005\022\022\n\nerro"
-        + "rCount\030\005 \001(\005\022\023\n\013successRate\030\006 \001(\001\"V\n\004Met"
-        + "a\022\014\n\004name\030\001 \001(\t\022@\n\006metric\030\002 \001(\01320.io.hol"
-        + "oinsight.server.query.grpc.ResponseMetri"
-        + "c\"I\n\021QueryMetaResponse\0224\n\004mata\030\001 \003(\0132&.i"
-        + "o.holoinsight.server.query.grpc.Meta\"s\n\020"
-        + "VirtualComponent\022\017\n\007address\030\001 \001(\t\022\014\n\004typ"
-        + "e\030\002 \001(\t\022@\n\006metric\030\003 \001(\01320.io.holoinsight"
-        + ".server.query.grpc.ResponseMetric\"f\n\035Que"
-        + "ryVirtualComponentResponse\022E\n\tcomponent\030"
-        + "\001 \003(\01322.io.holoinsight.server.query.grpc"
-        + ".VirtualComponent\"w\n\007SlowSql\022\017\n\007address\030"
-        + "\001 \001(\t\022\023\n\013serviceName\030\002 \001(\t\022\021\n\tstatement\030"
-        + "\003 \001(\t\022\017\n\007latency\030\004 \001(\005\022\021\n\tstartTime\030\005 \001("
-        + "\003\022\017\n\007traceId\030\006 \001(\t\"R\n\024QuerySlowSqlRespon"
-        + "se\022:\n\007slowSql\030\001 \003(\0132).io.holoinsight.ser"
-        + "ver.query.grpc.SlowSql\"\225\001\n\004Node\022\n\n\002id\030\001 "
-        + "\001(\t\022\014\n\004name\030\002 \001(\t\022\014\n\004type\030\003 \001(\t\022\016\n\006isRea"
-        + "l\030\004 \001(\010\022\023\n\013serviceName\030\005 \001(\t\022@\n\006metric\030\006"
-        + " \001(\01320.io.holoinsight.server.query.grpc."
-        + "ResponseMetric\"\320\001\n\004Call\022\n\n\002id\030\001 \001(\t\022\020\n\010s"
-        + "ourceId\030\002 \001(\t\022\022\n\nsourceName\030\003 \001(\t\022\016\n\006des"
-        + "tId\030\004 \001(\t\022\020\n\010destName\030\005 \001(\t\022\031\n\021sourceSer"
-        + "viceName\030\006 \001(\t\022\027\n\017destServiceName\030\007 \001(\t\022"
-        + "@\n\006metric\030\010 \001(\01320.io.holoinsight.server."
-        + "query.grpc.ResponseMetric\"v\n\010Topology\0224\n"
-        + "\004node\030\001 \003(\0132&.io.holoinsight.server.quer"
-        + "y.grpc.Node\0224\n\004call\030\002 \003(\0132&.io.holoinsig"
-        + "ht.server.query.grpc.Call\"\033\n\010TraceIds\022\017\n"
-        + "\007traceId\030\001 \003(\t\"\323\001\n\016BizopsEndpoint\022\017\n\007ser"
-        + "vice\030\001 \001(\t\022\020\n\010endpoint\030\002 \001(\t\022\r\n\005stamp\030\003 "
-        + "\001(\t\022\021\n\tspanLayer\030\004 \001(\t\022\021\n\terrorCode\030\005 \001("
-        + "\t\022\025\n\rrootErrorCode\030\006 \001(\t\022\020\n\010traceIds\030\007 \003"
-        + "(\t\022@\n\006metric\030\010 \001(\01320.io.holoinsight.serv"
-        + "er.query.grpc.ResponseMetric\"V\n\017BizopsEn"
-        + "dpoints\022C\n\tendpoints\030\001 \003(\01320.io.holoinsi"
-        + "ght.server.query.grpc.BizopsEndpoint2\232\021\n"
-        + "\014QueryService\022l\n\tQueryData\022..io.holoinsi"
-        + "ght.server.query.grpc.QueryRequest\032/.io." + "holoinsight.server.query.grpc.QueryRespo"
-        + "nse\022l\n\tQueryTags\022..io.holoinsight.server"
-        + ".query.grpc.QueryRequest\032/.io.holoinsigh"
-        + "t.server.query.grpc.QueryResponse\022t\n\013Que"
-        + "rySchema\022..io.holoinsight.server.query.g"
-        + "rpc.QueryRequest\0325.io.holoinsight.server"
-        + ".query.grpc.QuerySchemaResponse\022}\n\014Query"
-        + "Metrics\0225.io.holoinsight.server.query.gr"
-        + "pc.QueryMetricsRequest\0326.io.holoinsight."
-        + "server.query.grpc.QueryMetricsResponse\022m"
-        + "\n\nDeleteKeys\022..io.holoinsight.server.que"
-        + "ry.grpc.QueryRequest\032/.io.holoinsight.se"
-        + "rver.query.grpc.QueryResponse\022w\n\017pqlInst"
-        + "antQuery\0223.io.holoinsight.server.query.g"
-        + "rpc.PqlInstantRequest\032/.io.holoinsight.s"
-        + "erver.query.grpc.QueryResponse\022s\n\rpqlRan"
-        + "geQuery\0221.io.holoinsight.server.query.gr"
-        + "pc.PqlRangeRequest\032/.io.holoinsight.serv"
-        + "er.query.grpc.QueryResponse\022u\n\020QueryBasi"
-        + "cTraces\0223.io.holoinsight.server.query.gr"
-        + "pc.QueryTraceRequest\032,.io.holoinsight.se"
-        + "rver.query.grpc.TraceBrief\022j\n\nQueryTrace"
-        + "\0223.io.holoinsight.server.query.grpc.Quer"
-        + "yTraceRequest\032\'.io.holoinsight.server.qu"
-        + "ery.grpc.Trace\022{\n\020QueryServiceList\0222.io."
-        + "holoinsight.server.query.grpc.QueryMetaR" + "equest\0323.io.holoinsight.server.query.grp"
-        + "c.QueryMetaResponse\022|\n\021QueryEndpointList"
-        + "\0222.io.holoinsight.server.query.grpc.Quer"
-        + "yMetaRequest\0323.io.holoinsight.server.que"
-        + "ry.grpc.QueryMetaResponse\022\203\001\n\030QueryServi"
-        + "ceInstanceList\0222.io.holoinsight.server.q"
-        + "uery.grpc.QueryMetaRequest\0323.io.holoinsi"
-        + "ght.server.query.grpc.QueryMetaResponse\022"
-        + "\211\001\n\022QueryComponentList\0222.io.holoinsight."
-        + "server.query.grpc.QueryMetaRequest\032?.io." + "holoinsight.server.query.grpc.QueryVirtu"
-        + "alComponentResponse\022x\n\026QueryComponentTra"
-        + "ceIds\0222.io.holoinsight.server.query.grpc"
-        + ".QueryMetaRequest\032*.io.holoinsight.serve"
-        + "r.query.grpc.TraceIds\022s\n\rQueryTopology\0226"
-        + ".io.holoinsight.server.query.grpc.QueryT" + "opologyRequest\032*.io.holoinsight.server.q"
-        + "uery.grpc.Topology\022}\n\024QueryBizEndpointLi"
-        + "st\0222.io.holoinsight.server.query.grpc.Qu"
-        + "eryMetaRequest\0321.io.holoinsight.server.q"
-        + "uery.grpc.BizopsEndpoints\022~\n\025QueryBizErr"
-        + "orCodeList\0222.io.holoinsight.server.query"
-        + ".grpc.QueryMetaRequest\0321.io.holoinsight."
-        + "server.query.grpc.BizopsEndpoints\022~\n\020Que"
-        + "rySlowSqlList\0222.io.holoinsight.server.qu"
-        + "ery.grpc.QueryMetaRequest\0326.io.holoinsig" + "ht.server.query.grpc.QuerySlowSqlRespons"
-        + "eB\"\n io.holoinsight.server.query.grpcb\006p" + "roto3"};
+        + "\n \001(\tH\002\210\001\001\022\027\n\017apmMaterialized\030\013 \001(\010B\007\n\005_"
+        + "nameB\r\n\013_downsampleB\r\n\013_fillPolicy\"5\n\rSl"
+        + "idingWindow\022\020\n\010windowMs\030\001 \001(\003\022\022\n\naggrega"
+        + "tor\030\002 \001(\t\"8\n\013QueryFilter\022\014\n\004type\030\001 \001(\t\022\014"
+        + "\n\004name\030\002 \001(\t\022\r\n\005value\030\003 \001(\t\"J\n\rQueryResp"
+        + "onse\0229\n\007results\030\001 \003(\0132(.io.holoinsight.s"
+        + "erver.query.grpc.Result\"\300\001\n\006Result\022\016\n\006me"
+        + "tric\030\001 \001(\t\022@\n\004tags\030\002 \003(\01322.io.holoinsigh"
+        + "t.server.query.grpc.Result.TagsEntry\0227\n\006"
+        + "points\030\003 \003(\0132\'.io.holoinsight.server.que"
+        + "ry.grpc.Point\032+\n\tTagsEntry\022\013\n\003key\030\001 \001(\t\022"
+        + "\r\n\005value\030\002 \001(\t:\0028\001\";\n\005Point\022\021\n\ttimestamp"
+        + "\030\001 \001(\003\022\r\n\005value\030\002 \001(\001\022\020\n\010strValue\030\003 \001(\t\""
+        + "T\n\023QuerySchemaResponse\022=\n\007results\030\001 \003(\0132"
+        + ",.io.holoinsight.server.query.grpc.KeysR"
+        + "esult\"*\n\nKeysResult\022\016\n\006metric\030\001 \001(\t\022\014\n\004k"
+        + "eys\030\002 \003(\t\"W\n\024QueryMetricsResponse\022?\n\007res"
+        + "ults\030\001 \003(\0132..io.holoinsight.server.query"
+        + ".grpc.MetricResult\"\034\n\014MetricResult\022\014\n\004na"
+        + "me\030\001 \001(\t\"`\n\021PqlInstantRequest\022\016\n\006tenant\030"
+        + "\001 \001(\t\022\r\n\005query\030\002 \001(\t\022\014\n\004time\030\003 \001(\003\022\017\n\007ti"
+        + "meout\030\004 \001(\t\022\r\n\005delta\030\005 \001(\t\"\214\001\n\017PqlRangeR"
+        + "equest\022\016\n\006tenant\030\001 \001(\t\022\r\n\005query\030\002 \001(\t\022\r\n"
+        + "\005start\030\003 \001(\003\022\013\n\003end\030\004 \001(\003\022\014\n\004step\030\005 \001(\003\022"
+        + "\017\n\007timeout\030\006 \001(\t\022\r\n\005delta\030\007 \001(\t\022\020\n\010fillZ"
+        + "ero\030\010 \001(\010\"\365\004\n\021QueryTraceRequest\022\016\n\006tenan"
+        + "t\030\001 \001(\t\022\030\n\013serviceName\030\002 \001(\tH\000\210\001\001\022 \n\023ser"
+        + "viceInstanceName\030\003 \001(\tH\001\210\001\001\022\020\n\010traceIds\030"
+        + "\004 \003(\t\022\031\n\014endpointName\030\005 \001(\tH\002\210\001\001\022\022\n\005star"
+        + "t\030\006 \001(\003H\003\210\001\001\022\020\n\003end\030\007 \001(\003H\004\210\001\001\022\035\n\020minTra"
+        + "ceDuration\030\010 \001(\005H\005\210\001\001\022\035\n\020maxTraceDuratio"
+        + "n\030\t \001(\005H\006\210\001\001\022\027\n\ntraceState\030\n \001(\tH\007\210\001\001\022\027\n"
+        + "\nqueryOrder\030\013 \001(\tH\010\210\001\001\022\024\n\007pageNum\030\014 \001(\005H"
+        + "\t\210\001\001\022\025\n\010pageSize\030\r \001(\005H\n\210\001\001\022K\n\004tags\030\016 \003("
+        + "\0132=.io.holoinsight.server.query.grpc.Que"
+        + "ryTraceRequest.TagsEntry\032+\n\tTagsEntry\022\013\n"
+        + "\003key\030\001 \001(\t\022\r\n\005value\030\002 \001(\t:\0028\001B\016\n\014_servic"
+        + "eNameB\026\n\024_serviceInstanceNameB\017\n\r_endpoi"
+        + "ntNameB\010\n\006_startB\006\n\004_endB\023\n\021_minTraceDur"
+        + "ationB\023\n\021_maxTraceDurationB\r\n\013_traceStat"
+        + "eB\r\n\013_queryOrderB\n\n\010_pageNumB\013\n\t_pageSiz"
+        + "e\"J\n\nTraceBrief\022<\n\006traces\030\001 \003(\0132,.io.hol"
+        + "oinsight.server.query.grpc.BasicTrace\"\256\001"
+        + "\n\nBasicTrace\022\021\n\tsegmentId\030\001 \001(\t\022\024\n\014servi"
+        + "ceNames\030\002 \003(\t\022\034\n\024serviceInstanceNames\030\003 "
+        + "\003(\t\022\025\n\rendpointNames\030\004 \003(\t\022\020\n\010duration\030\005"
+        + " \001(\005\022\r\n\005start\030\006 \001(\003\022\017\n\007isError\030\007 \001(\010\022\020\n\010"
+        + "traceIds\030\010 \003(\t\">\n\005Trace\0225\n\005spans\030\001 \003(\0132&"
+        + ".io.holoinsight.server.query.grpc.Span\"\371"
+        + "\003\n\004Span\022\017\n\007traceId\030\001 \001(\t\022\021\n\tsegmentId\030\002 "
+        + "\001(\t\022\016\n\006spanId\030\003 \001(\t\022\024\n\014parentSpanId\030\004 \001("
+        + "\t\0223\n\004refs\030\005 \003(\0132%.io.holoinsight.server."
+        + "query.grpc.Ref\022\023\n\013serviceCode\030\006 \001(\t\022\033\n\023s"
+        + "erviceInstanceName\030\007 \001(\t\022\021\n\tstartTime\030\010 "
+        + "\001(\003\022\017\n\007endTime\030\t \001(\003\022\024\n\014endpointName\030\n \001"
+        + "(\t\022\014\n\004type\030\013 \001(\t\022\014\n\004peer\030\014 \001(\t\022\021\n\tcompon"
+        + "ent\030\r \001(\t\022\017\n\007isError\030\016 \001(\010\022\r\n\005layer\030\017 \001("
+        + "\t\0228\n\004tags\030\020 \003(\0132*.io.holoinsight.server."
+        + "query.grpc.KeyValue\0229\n\004logs\030\021 \003(\0132+.io.h"
+        + "oloinsight.server.query.grpc.LogEntity\022\016"
+        + "\n\006isRoot\030\022 \001(\010\022\025\n\rsegmentSpanId\030\023 \001(\t\022\033\n"
+        + "\023segmentParentSpanId\030\024 \001(\t\"&\n\010KeyValue\022\013"
+        + "\n\003key\030\001 \001(\t\022\r\n\005value\030\002 \001(\t\"S\n\tLogEntity\022"
+        + "\014\n\004time\030\001 \001(\003\0228\n\004data\030\002 \003(\0132*.io.holoins"
+        + "ight.server.query.grpc.KeyValue\"S\n\003Ref\022\017"
+        + "\n\007traceId\030\001 \001(\t\022\027\n\017parentSegmentId\030\002 \001(\t"
+        + "\022\024\n\014parentSpanId\030\003 \001(\t\022\014\n\004type\030\004 \001(\t\"\377\001\n"
+        + "\020QueryMetaRequest\022\016\n\006tenant\030\001 \001(\t\022\030\n\013ser"
+        + "viceName\030\002 \001(\tH\000\210\001\001\022\031\n\014endpointName\030\003 \001("
+        + "\tH\001\210\001\001\022\024\n\007address\030\004 \001(\tH\002\210\001\001\022\r\n\005start\030\005 "
+        + "\001(\003\022\013\n\003end\030\006 \001(\003\022\024\n\007isEntry\030\007 \001(\010H\003\210\001\001\022\023"
+        + "\n\013traceIdSize\030\010 \001(\003\022\020\n\010category\030\t \001(\tB\016\n"
+        + "\014_serviceNameB\017\n\r_endpointNameB\n\n\010_addre"
+        + "ssB\n\n\010_isEntry\"\263\003\n\024QueryTopologyRequest\022"
+        + "\016\n\006tenant\030\001 \001(\t\022\r\n\005start\030\002 \001(\003\022\013\n\003end\030\003 "
+        + "\001(\003\022\030\n\013serviceName\030\004 \001(\tH\000\210\001\001\022 \n\023service"
+        + "InstanceName\030\005 \001(\tH\001\210\001\001\022\031\n\014endpointName\030"
+        + "\006 \001(\tH\002\210\001\001\022\024\n\007address\030\007 \001(\tH\003\210\001\001\022\022\n\005dept"
+        + "h\030\010 \001(\005H\004\210\001\001\022\020\n\010category\030\t \001(\t\022Z\n\ntermPa"
+        + "rams\030\n \003(\0132F.io.holoinsight.server.query"
+        + ".grpc.QueryTopologyRequest.TermParamsEnt"
+        + "ry\0321\n\017TermParamsEntry\022\013\n\003key\030\001 \001(\t\022\r\n\005va"
+        + "lue\030\002 \001(\t:\0028\001B\016\n\014_serviceNameB\026\n\024_servic"
+        + "eInstanceNameB\017\n\r_endpointNameB\n\n\010_addre"
+        + "ssB\010\n\006_depth\"\211\001\n\016ResponseMetric\022\022\n\navgLa"
+        + "tency\030\001 \001(\001\022\022\n\np95Latency\030\002 \001(\001\022\022\n\np99La"
+        + "tency\030\003 \001(\001\022\022\n\ntotalCount\030\004 \001(\005\022\022\n\nerror"
+        + "Count\030\005 \001(\005\022\023\n\013successRate\030\006 \001(\001\"V\n\004Meta"
+        + "\022\014\n\004name\030\001 \001(\t\022@\n\006metric\030\002 \001(\01320.io.holo"
+        + "insight.server.query.grpc.ResponseMetric"
+        + "\"I\n\021QueryMetaResponse\0224\n\004mata\030\001 \003(\0132&.io"
+        + ".holoinsight.server.query.grpc.Meta\"s\n\020V"
+        + "irtualComponent\022\017\n\007address\030\001 \001(\t\022\014\n\004type"
+        + "\030\002 \001(\t\022@\n\006metric\030\003 \001(\01320.io.holoinsight."
+        + "server.query.grpc.ResponseMetric\"f\n\035Quer"
+        + "yVirtualComponentResponse\022E\n\tcomponent\030\001"
+        + " \003(\01322.io.holoinsight.server.query.grpc."
+        + "VirtualComponent\"w\n\007SlowSql\022\017\n\007address\030\001"
+        + " \001(\t\022\023\n\013serviceName\030\002 \001(\t\022\021\n\tstatement\030\003"
+        + " \001(\t\022\017\n\007latency\030\004 \001(\005\022\021\n\tstartTime\030\005 \001(\003"
+        + "\022\017\n\007traceId\030\006 \001(\t\"R\n\024QuerySlowSqlRespons"
+        + "e\022:\n\007slowSql\030\001 \003(\0132).io.holoinsight.serv"
+        + "er.query.grpc.SlowSql\"\225\001\n\004Node\022\n\n\002id\030\001 \001"
+        + "(\t\022\014\n\004name\030\002 \001(\t\022\014\n\004type\030\003 \001(\t\022\016\n\006isReal"
+        + "\030\004 \001(\010\022\023\n\013serviceName\030\005 \001(\t\022@\n\006metric\030\006 "
+        + "\001(\01320.io.holoinsight.server.query.grpc.R"
+        + "esponseMetric\"\320\001\n\004Call\022\n\n\002id\030\001 \001(\t\022\020\n\010so"
+        + "urceId\030\002 \001(\t\022\022\n\nsourceName\030\003 \001(\t\022\016\n\006dest"
+        + "Id\030\004 \001(\t\022\020\n\010destName\030\005 \001(\t\022\031\n\021sourceServ"
+        + "iceName\030\006 \001(\t\022\027\n\017destServiceName\030\007 \001(\t\022@"
+        + "\n\006metric\030\010 \001(\01320.io.holoinsight.server.q"
+        + "uery.grpc.ResponseMetric\"v\n\010Topology\0224\n\004"
+        + "node\030\001 \003(\0132&.io.holoinsight.server.query"
+        + ".grpc.Node\0224\n\004call\030\002 \003(\0132&.io.holoinsigh"
+        + "t.server.query.grpc.Call\"\033\n\010TraceIds\022\017\n\007"
+        + "traceId\030\001 \003(\t\"\323\001\n\016BizopsEndpoint\022\017\n\007serv"
+        + "ice\030\001 \001(\t\022\020\n\010endpoint\030\002 \001(\t\022\r\n\005stamp\030\003 \001"
+        + "(\t\022\021\n\tspanLayer\030\004 \001(\t\022\021\n\terrorCode\030\005 \001(\t"
+        + "\022\025\n\rrootErrorCode\030\006 \001(\t\022\020\n\010traceIds\030\007 \003("
+        + "\t\022@\n\006metric\030\010 \001(\01320.io.holoinsight.serve"
+        + "r.query.grpc.ResponseMetric\"V\n\017BizopsEnd"
+        + "points\022C\n\tendpoints\030\001 \003(\01320.io.holoinsig"
+        + "ht.server.query.grpc.BizopsEndpoint2\232\021\n\014"
+        + "QueryService\022l\n\tQueryData\022..io.holoinsig"
+        + "ht.server.query.grpc.QueryRequest\032/.io.h" + "oloinsight.server.query.grpc.QueryRespon"
+        + "se\022l\n\tQueryTags\022..io.holoinsight.server."
+        + "query.grpc.QueryRequest\032/.io.holoinsight"
+        + ".server.query.grpc.QueryResponse\022t\n\013Quer"
+        + "ySchema\022..io.holoinsight.server.query.gr"
+        + "pc.QueryRequest\0325.io.holoinsight.server."
+        + "query.grpc.QuerySchemaResponse\022}\n\014QueryM"
+        + "etrics\0225.io.holoinsight.server.query.grp"
+        + "c.QueryMetricsRequest\0326.io.holoinsight.s"
+        + "erver.query.grpc.QueryMetricsResponse\022m\n"
+        + "\nDeleteKeys\022..io.holoinsight.server.quer"
+        + "y.grpc.QueryRequest\032/.io.holoinsight.ser"
+        + "ver.query.grpc.QueryResponse\022w\n\017pqlInsta"
+        + "ntQuery\0223.io.holoinsight.server.query.gr"
+        + "pc.PqlInstantRequest\032/.io.holoinsight.se"
+        + "rver.query.grpc.QueryResponse\022s\n\rpqlRang"
+        + "eQuery\0221.io.holoinsight.server.query.grp"
+        + "c.PqlRangeRequest\032/.io.holoinsight.serve"
+        + "r.query.grpc.QueryResponse\022u\n\020QueryBasic"
+        + "Traces\0223.io.holoinsight.server.query.grp"
+        + "c.QueryTraceRequest\032,.io.holoinsight.ser"
+        + "ver.query.grpc.TraceBrief\022j\n\nQueryTrace\022"
+        + "3.io.holoinsight.server.query.grpc.Query"
+        + "TraceRequest\032\'.io.holoinsight.server.que"
+        + "ry.grpc.Trace\022{\n\020QueryServiceList\0222.io.h"
+        + "oloinsight.server.query.grpc.QueryMetaRe" + "quest\0323.io.holoinsight.server.query.grpc"
+        + ".QueryMetaResponse\022|\n\021QueryEndpointList\022"
+        + "2.io.holoinsight.server.query.grpc.Query" + "MetaRequest\0323.io.holoinsight.server.quer"
+        + "y.grpc.QueryMetaResponse\022\203\001\n\030QueryServic"
+        + "eInstanceList\0222.io.holoinsight.server.qu"
+        + "ery.grpc.QueryMetaRequest\0323.io.holoinsig"
+        + "ht.server.query.grpc.QueryMetaResponse\022\211"
+        + "\001\n\022QueryComponentList\0222.io.holoinsight.s"
+        + "erver.query.grpc.QueryMetaRequest\032?.io.h" + "oloinsight.server.query.grpc.QueryVirtua"
+        + "lComponentResponse\022x\n\026QueryComponentTrac"
+        + "eIds\0222.io.holoinsight.server.query.grpc."
+        + "QueryMetaRequest\032*.io.holoinsight.server"
+        + ".query.grpc.TraceIds\022s\n\rQueryTopology\0226."
+        + "io.holoinsight.server.query.grpc.QueryTo" + "pologyRequest\032*.io.holoinsight.server.qu"
+        + "ery.grpc.Topology\022}\n\024QueryBizEndpointLis"
+        + "t\0222.io.holoinsight.server.query.grpc.Que"
+        + "ryMetaRequest\0321.io.holoinsight.server.qu"
+        + "ery.grpc.BizopsEndpoints\022~\n\025QueryBizErro"
+        + "rCodeList\0222.io.holoinsight.server.query."
+        + "grpc.QueryMetaRequest\0321.io.holoinsight.s"
+        + "erver.query.grpc.BizopsEndpoints\022~\n\020Quer"
+        + "ySlowSqlList\0222.io.holoinsight.server.que"
+        + "ry.grpc.QueryMetaRequest\0326.io.holoinsigh" + "t.server.query.grpc.QuerySlowSqlResponse"
+        + "B\"\n io.holoinsight.server.query.grpcb\006pr" + "oto3"};
     descriptor = com.google.protobuf.Descriptors.FileDescriptor.internalBuildGeneratedFileFrom(
         descriptorData, new com.google.protobuf.Descriptors.FileDescriptor[] {});
     internal_static_io_holoinsight_server_query_grpc_QueryRequest_descriptor =
@@ -47316,7 +47315,7 @@ public final class QueryProto {
         new com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
             internal_static_io_holoinsight_server_query_grpc_Datasource_descriptor,
             new java.lang.String[] {"Name", "Start", "End", "Metric", "Filters", "Aggregator",
-                "Downsample", "SlidingWindow", "GroupBy", "FillPolicy", "ApmMetricPostCal", "Name",
+                "Downsample", "SlidingWindow", "GroupBy", "FillPolicy", "ApmMaterialized", "Name",
                 "Downsample", "FillPolicy",});
     internal_static_io_holoinsight_server_query_grpc_SlidingWindow_descriptor =
         getDescriptor().getMessageTypes().get(3);
