@@ -46,8 +46,8 @@ message Datasource {
   repeated string groupBy = 9;
   // 缺省数据填充策略
   optional string fillPolicy = 10;
-  // Whether the APM metrics are obtained through post-calculation
-  bool apmMetricPostCal = 11;
+  // whether the APM metrics is obtained by materializing them to the metric storage in advance instead of post-calculation
+  bool apmMetricMaterialized = 11;
 }
 
 message SlidingWindow{

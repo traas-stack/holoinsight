@@ -47,6 +47,9 @@ public class DataQueryRequest {
     public String downsample;
     // 聚合分组
     public List<String> groupBy;
+    // whether the APM metrics is obtained by materializing them to the metric storage in advance
+    // instead of post-calculation
+    public boolean apmMaterialized;
   }
 
   @Data
