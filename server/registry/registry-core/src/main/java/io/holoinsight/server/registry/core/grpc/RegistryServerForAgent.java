@@ -13,6 +13,13 @@ import java.util.concurrent.TimeUnit;
 
 import javax.annotation.PreDestroy;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
+
 import io.grpc.Attributes;
 import io.grpc.BindableService;
 import io.grpc.Server;
@@ -22,15 +29,10 @@ import io.grpc.ServerTransportFilter;
 import io.holoinsight.server.common.hook.CommonHooksManager;
 import io.holoinsight.server.registry.core.RegistryProperties;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
-import com.google.common.util.concurrent.ThreadFactoryBuilder;
-
 /**
  * <p>
+ * Registry server for agent.
+ * 
  * created at 2022/2/28
  *
  * @author zzhb101
@@ -39,15 +41,17 @@ import com.google.common.util.concurrent.ThreadFactoryBuilder;
 @Component
 public class RegistryServerForAgent {
   private static final Logger LOGGER = LoggerFactory.getLogger(RegistryServerForAgent.class);
+  /**
+   * Default 'maxInboundMessageSize' of registry grpc server. Set to 64MB.
+   */
+  private static final int DEFAULT_MAX_INBOUND_MESSAGE_SIZE = 64 * 1024 * 1024;
 
   @Autowired
   private RegistryProperties registryProperties;
   private Server server;
-
   @Autowired(required = false)
   @RegistryGrpcForAgent
   private List<ServerServiceDefinition> services1 = new ArrayList<>();
-
   @Autowired(required = false)
   @RegistryGrpcForAgent
   private List<BindableService> services2 = new ArrayList<>();
@@ -58,7 +62,8 @@ public class RegistryServerForAgent {
   public void start() throws IOException {
     RegistryProperties.ForAgent forAgent = registryProperties.getServer().getForAgent();
 
-    ServerBuilder<?> b = ServerBuilder.forPort(forAgent.getPort());
+    ServerBuilder<?> b = ServerBuilder.forPort(forAgent.getPort())
+        .maxInboundMessageSize(DEFAULT_MAX_INBOUND_MESSAGE_SIZE);
     // b.intercept(new CompetibleServerInterceptor());
 
     if (forAgent.isSslEnabled()) {
