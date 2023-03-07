@@ -31,6 +31,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -116,30 +117,36 @@ public class AlertTaskCompute implements AlarmTaskExecutor<ComputeTaskPackage> {
       for (AlarmHistory alarmHistory : alarmHistoryDOS) {
         uniqueIds.add(alarmHistory.getUniqueId());
       }
-
+      int parallelSize = computeTaskPackage.getInspectConfigs().size();
+      CountDownLatch latch = new CountDownLatch(parallelSize);
       // 进行计算,生成告警事件
       for (InspectConfig inspectConfig : computeTaskPackage.getInspectConfigs()) {
         calculator.execute(() -> {
-          ComputeContext context = new ComputeContext();
-          context.setTimestamp(computeTaskPackage.getTimestamp());
-          context.setInspectConfig(inspectConfig);
-          EventInfo eventList = abstractUniformInspectRunningRule.eval(context);
-          if (eventList != null) {
-            eventLists.add(eventList);
-          } else if (uniqueIds.contains(inspectConfig.getUniqueId())) {
-            eventList = new EventInfo();
-            eventList.setAlarmTime(computeTaskPackage.getTimestamp());
-            eventList.setUniqueId(inspectConfig.getUniqueId());
-            eventList.setIsRecover(true);
-            eventLists.add(eventList);
-            eventList.setEnvType(inspectConfig.getEnvType());
+          try {
+            ComputeContext context = new ComputeContext();
+            context.setTimestamp(computeTaskPackage.getTimestamp());
+            context.setInspectConfig(inspectConfig);
+            EventInfo eventList = abstractUniformInspectRunningRule.eval(context);
+            if (eventList != null) {
+              eventLists.add(eventList);
+            } else if (uniqueIds.contains(inspectConfig.getUniqueId())) {
+              eventList = new EventInfo();
+              eventList.setAlarmTime(computeTaskPackage.getTimestamp());
+              eventList.setUniqueId(inspectConfig.getUniqueId());
+              eventList.setIsRecover(true);
+              eventLists.add(eventList);
+              eventList.setEnvType(inspectConfig.getEnvType());
+            }
+            LOGGER.info("{} {} {} calculate package {} ,eventList: {}",
+                computeTaskPackage.getTraceId(), inspectConfig.getTraceId(),
+                inspectConfig.getUniqueId(), G.get().toJson(inspectConfig),
+                G.get().toJson(eventList));
+          } finally {
+            latch.countDown();
           }
-          LOGGER.info("{} {} {} calculate package {} ,eventList: {}",
-              computeTaskPackage.getTraceId(), inspectConfig.getTraceId(),
-              inspectConfig.getUniqueId(), G.get().toJson(inspectConfig),
-              G.get().toJson(eventList));
         });
       }
+      latch.await();
     } catch (Exception e) {
       LOGGER.error("AlarmTaskCompute Exception for {}", e.getMessage(), e);
     }
