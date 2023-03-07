@@ -130,13 +130,11 @@ public class ApmMetricMaterializer {
                       tenant, metricName, start, end, STEP, pointCnt.get());
                 }, error -> {
                   log.error(
-                      "[apm] materialize metric failed, tenant={}, metric={}, start={}, end={}, step={}, points={}, "
-                          + "msg={}",
-                      tenant, metricName, start, end, STEP, pointCnt.get(), error.getMessage(),
-                      error);
+                      "[apm] materialize metric failed, tenant={}, metric={}, start={}, end={}, step={}, points={}",
+                      tenant, metricName, start, end, STEP, pointCnt.get(), error);
                 });
               } catch (Exception e) {
-                log.error("[apm] materialize failed, msg={}", e.getMessage(), e);
+                log.error("[apm] materialize failed", e);
               }
             });
           });
