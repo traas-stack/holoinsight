@@ -97,24 +97,19 @@ public class AbstractUniformInspectRunningRule {
       CountDownLatch latch = new CountDownLatch(parallelSize);
       for (DataResult dataResult : dataResultList) {
         ruleRunner.execute(() -> {
-          try{
-            // 单个tags判断，增加异步处理，收集所有tags结果
-            logger.info("{} dataResult {}", inspectConfig.getUniqueId(), J.toJson(dataResult));
+          try {
             List<TriggerResult> ruleResults = apply(dataResult, computeInfo, trigger);
-            logger.info("{} ruleResults {}", inspectConfig.getUniqueId(), J.toJson(ruleResults));
             for (TriggerResult ruleResult : ruleResults) {
               if (ruleResult.isHit()) {
                 triggerResults.add(ruleResult);
               }
             }
-            logger.info("{} triggerResults {}", inspectConfig.getUniqueId(), J.toJson(triggerResults));
-          }finally {
+          } finally {
             latch.countDown();
           }
         });
       }
       latch.await();
-      logger.info("{} final triggerResults {}", inspectConfig.getUniqueId(), J.toJson(triggerResults));
       if (triggerResults.size() != 0) {
         triggerMap.put(trigger, triggerResults);
       }
