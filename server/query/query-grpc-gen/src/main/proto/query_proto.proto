@@ -47,7 +47,7 @@ message Datasource {
   // 缺省数据填充策略
   optional string fillPolicy = 10;
   // whether the APM metrics is obtained by materializing them to the metric storage in advance instead of post-calculation
-  bool apmMetricMaterialized = 11;
+  bool apmMaterialized = 11;
 }
 
 message SlidingWindow{

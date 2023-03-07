@@ -680,7 +680,7 @@ public class QueryFacadeImpl extends BaseFacade {
       QueryProto.Datasource.Builder datasourceBuilder = QueryProto.Datasource.newBuilder();
       toProtoBean(datasourceBuilder, d);
       datasourceBuilder
-          .setApmMetricMaterialized(d.isApmMaterialized() || MetaDictUtil.isApmMaterialized());
+          .setApmMaterialized(d.isApmMaterialized() || MetaDictUtil.isApmMaterialized());
       builder.addDatasources(datasourceBuilder);
     });
 
