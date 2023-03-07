@@ -31,8 +31,9 @@ import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- * @author xiangwanpeng
- * @version : ApmMetricMaterializer.java, v 0.1 2023年02月13日 17:59 xiangwanpeng Exp $
+ * ApmMetricMaterializer is used to periodically query aggregated metrics from text storage engines
+ * such as elasticsearch, and then write them to time-series metrics storage engines such as CeresDB
+ * to optimize query performance in some high-frequency request scenarios.
  */
 
 @Component
