@@ -99,5 +99,5 @@ HoloInsight is under [Apache License 2.0](https://github.com/traas-stack/holoins
 
 # Community and support
 - Contact us via Email: traas_stack@antgroup.com
-- WeChat group [QR code](https://github.com/traas-stack/community/blob/main/holoinsight/groups/wechat-qrcode.jpg)
-- DingTalk group [QR code](https://github.com/traas-stack/community/blob/main/holoinsight/groups/dingtalk-qrcode.jpg)
+- WeChat Official Account [QR code](https://github.com/traas-stack/community/blob/main/holoinsight/contact-us/wechat-qrcode.jpg)
+- DingTalk group [QR code](https://github.com/traas-stack/community/blob/main/holoinsight/contact-us/dingtalk-qrcode.jpg)
