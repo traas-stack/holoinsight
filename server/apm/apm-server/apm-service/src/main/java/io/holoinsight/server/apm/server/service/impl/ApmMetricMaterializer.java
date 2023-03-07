@@ -124,17 +124,14 @@ public class ApmMetricMaterializer {
                     });
                   });
                 }
-                metricStorage.write(param).subscribe(unused -> {
-                  log.info(
-                      "[apm] materialize metric success, tenant={}, metric={}, start={}, end={}, step={}, points={}",
-                      tenant, metricName, start, end, STEP, pointCnt.get());
-                }, error -> {
-                  log.error(
-                      "[apm] materialize metric failed, tenant={}, metric={}, start={}, end={}, step={}, points={}",
-                      tenant, metricName, start, end, STEP, pointCnt.get(), error);
-                });
+                metricStorage.write(param).block();
+                log.info(
+                    "[apm] materialize metric success, tenant={}, metric={}, start={}, end={}, step={}, points={}",
+                    tenant, metricName, start, end, STEP, pointCnt.get());
               } catch (Exception e) {
-                log.error("[apm] materialize failed", e);
+                log.error(
+                    "[apm] materialize metric failed, tenant={}, metric={}, start={}, end={}, step={}",
+                    tenant, metricName, start, end, STEP, e);
               }
             });
           });
