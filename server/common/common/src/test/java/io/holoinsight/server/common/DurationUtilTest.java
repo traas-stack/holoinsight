@@ -36,13 +36,13 @@ public class DurationUtilTest {
       Long actual = DurationUtil.parse(format).toMillis();
       Assert.assertEquals(millis, actual);
     });
-    Set<String> inValidFormats = new HashSet<>();
-    inValidFormats.add("5");
-    inValidFormats.add("d");
-    inValidFormats.add("0s");
-    inValidFormats.add("1mm");
-    inValidFormats.add("1h1");
-    inValidFormats.forEach(format -> {
+    Set<String> invalidFormats = new HashSet<>();
+    invalidFormats.add("5");
+    invalidFormats.add("d");
+    invalidFormats.add("0s");
+    invalidFormats.add("1mm");
+    invalidFormats.add("1h1");
+    invalidFormats.forEach(format -> {
       Assert.assertThrows(IllegalArgumentException.class, () -> DurationUtil.parse(format));
     });
 
