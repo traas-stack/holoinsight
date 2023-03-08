@@ -87,54 +87,6 @@ public class QueryStorageUtils {
     return param;
   }
 
-
-  public static long convertDownSample(String downsample) {
-
-    long sample = 1000;
-    switch (downsample) {
-      case "1s":
-        sample = 1000;
-        break;
-      case "5s":
-        sample = 5000;
-        break;
-      case "10s":
-        sample = 10000;
-        break;
-      case "30s":
-        sample = 30000;
-        break;
-      case "1min":
-      case "1m":
-        sample = 60000;
-        break;
-      case "5min":
-      case "5m":
-        sample = 60000 * 5;
-        break;
-      case "10min":
-      case "10m":
-        sample = 60000 * 10;
-        break;
-      case "30min":
-      case "30m":
-        sample = 60000 * 30;
-        break;
-      case "1hour":
-      case "1h":
-        sample = 60000 * 60;
-        break;
-      case "1day":
-      case "1d":
-        sample = 60000 * 60 * 24;
-        break;
-      default:
-        throw new IllegalArgumentException("unknown downsample: " + downsample);
-    }
-
-    return sample;
-  }
-
   public static Object convertFillPolocy(String fillPolicy) {
     Object fill = null;
     switch (fillPolicy) {

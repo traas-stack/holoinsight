@@ -5,6 +5,7 @@ package io.holoinsight.server.query.service.impl;
 
 import com.google.common.collect.Lists;
 import com.google.protobuf.MessageOrBuilder;
+import io.holoinsight.server.common.DurationUtil;
 import io.holoinsight.server.common.ProtoJsonUtils;
 import io.holoinsight.server.extension.MetricStorage;
 import io.holoinsight.server.extension.model.QueryMetricsParam;
@@ -388,7 +389,7 @@ public class DefaultQueryServiceImpl implements QueryService {
       List<QueryProto.Point.Builder> pointBuilders = resultBuilder.getPointsBuilderList();
       Map<Long, QueryProto.Point.Builder> timePointMap = new TreeMap<>(pointBuilders.stream()
           .collect(Collectors.toMap(QueryProto.Point.Builder::getTimestamp, Function.identity())));
-      long sample = QueryStorageUtils.convertDownSample(downsample);
+      long sample = DurationUtil.parse(downsample).toMillis();
       for (long period =
           start % sample == 0 ? start : start / sample * sample + sample; period <= end; period +=
               sample) {
