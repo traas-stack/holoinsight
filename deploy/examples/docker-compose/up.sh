@@ -15,8 +15,8 @@ if [ `uname` = "Darwin" ] && [ `uname -m` = "arm64" ]; then
   if [ "$1" = "cn" ]; then
     export server_image=registry.cn-hangzhou.aliyuncs.com/holoinsight-examples/server:latest-arm64v8
     export agent_image=registry.cn-hangzhou.aliyuncs.com/holoinsight-examples/agent:latest-arm64v8
-    export mysql_image=registry.cn-hangzhou.aliyuncs.com/holoinsight-examples/mysql:8-arm64v8
-    export mongo_image=registry.cn-hangzhou.aliyuncs.com/holoinsight-examples/mongo:5-arm64v8
+    export mysql_image=registry.cn-hangzhou.aliyuncs.com/holoinsight-examples/mysql:8
+    export mongo_image=registry.cn-hangzhou.aliyuncs.com/holoinsight-examples/mongo:4.4.18
   else
     export server_image=holoinsight/server:latest-arm64v8
     export agent_image=holoinsight/agent:latest-arm64v8
