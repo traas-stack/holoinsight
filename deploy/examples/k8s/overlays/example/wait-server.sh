@@ -10,4 +10,4 @@ echo
 kubectl -n $ns get pods -o wide
 
 echo [server] deploy successfully, visit holoinsight at http://localhost:8080
-kubectl -n $ns port-forward pod/holoinsight-server-example-0 8080:80
+kubectl -n $ns port-forward pod/holoinsight-server-example-0 --address 0.0.0.0 8080:80

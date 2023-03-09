@@ -13,8 +13,9 @@ services:
     restart: always
     healthcheck:
       test: mysql -uholoinsight -pholoinsight -Dholoinsight
-      interval: 1s
+      interval: 5s
       retries: 300
+      timeout: 10s
   mongo:
     container_name: example-mongo-1
     image: ${mongo_image}
@@ -26,9 +27,10 @@ services:
     - ./init.js:/docker-entrypoint-initdb.d/init.js
     restart: always
     healthcheck:
-      test: mongosh
-      interval: 1s
+      test: ["CMD", "timeout", "1", "bash", "-c", "cat < /dev/null > /dev/tcp/127.0.0.1/27017"]
+      interval: 5s
       retries: 300
+      timeout: 10s
   ceresdb:
     container_name: example-ceresdb-1
     image: ${ceresdb_image}
@@ -36,9 +38,10 @@ services:
     - ./ceresdb_entrypoint.sh:/entrypoint.sh
     restart: always
     healthcheck:
-      test: curl localhost:5440
-      interval: 1s
+      test: ["CMD", "timeout", "1", "bash", "-c", "cat < /dev/null > /dev/tcp/127.0.0.1/5440"]
+      interval: 5s
       retries: 300
+      timeout: 10s
   mysql-data-init:
     container_name: example-mysql-data-init-1
     image: ${mysql_image}
@@ -61,7 +64,7 @@ services:
     image: ${server_image}
     pull_policy: always
     healthcheck:
-      test: sh /home/admin/bin/health.sh
+      test: ["CMD", "bash", "/home/admin/bin/health.sh"]
       interval: 1s
       retries: 300
     depends_on:
