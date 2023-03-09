@@ -3,6 +3,7 @@
  */
 package io.holoinsight.server.home.web.controller;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.google.gson.reflect.TypeToken;
 import io.holoinsight.server.common.J;
 import io.holoinsight.server.common.JsonResult;
@@ -19,7 +20,9 @@ import io.holoinsight.server.home.common.util.scope.MonitorScope;
 import io.holoinsight.server.home.common.util.scope.MonitorUser;
 import io.holoinsight.server.home.common.util.scope.PowerConstants;
 import io.holoinsight.server.home.common.util.scope.RequestContext;
+import io.holoinsight.server.home.dal.converter.AlarmRuleConverter;
 import io.holoinsight.server.home.dal.mapper.CustomPluginMapper;
+import io.holoinsight.server.home.dal.model.AlarmRule;
 import io.holoinsight.server.home.dal.model.CustomPlugin;
 import io.holoinsight.server.home.dal.model.OpType;
 import io.holoinsight.server.home.dal.model.dto.AlarmGroupDTO;
@@ -42,6 +45,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -81,6 +85,9 @@ public class AlarmRuleFacadeImpl extends BaseFacade {
 
   @Resource
   private CustomPluginMapper customPluginMapper;
+
+  @Resource
+  private AlarmRuleConverter alarmRuleConverter;
 
   @Value("${holoinsight.home.domain}")
   private String domain;
@@ -133,10 +140,11 @@ public class AlarmRuleFacadeImpl extends BaseFacade {
   }
 
   private String tryGetParentId(AlarmRuleDTO alarmRuleDTO) {
-    if (!StringUtils.equals(alarmRuleDTO.getSourceType(), "log") || alarmRuleDTO.getId() == null) {
+    if (!StringUtils.equals(alarmRuleDTO.getSourceType(), "log")
+        || alarmRuleDTO.getSourceId() == null) {
       return null;
     }
-    CustomPlugin customPlugin = this.customPluginMapper.selectById(alarmRuleDTO.getId());
+    CustomPlugin customPlugin = this.customPluginMapper.selectById(alarmRuleDTO.getSourceId());
     return String.valueOf(customPlugin.parentFolderId);
   }
 
@@ -275,7 +283,8 @@ public class AlarmRuleFacadeImpl extends BaseFacade {
 
   @GetMapping(value = "/querySubscribeList")
   @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.VIEW)
-  public JsonResult<List<AlarmRuleDTO>> querySubscribeList() {
+  public JsonResult<List<AlarmRuleDTO>> querySubscribeList(
+      @RequestParam(value = "myself", required = false) String req) {
     final JsonResult<List<AlarmRuleDTO>> result = new JsonResult<>();
     facadeTemplate.manage(result, new ManageCallback() {
       @Override
@@ -283,14 +292,15 @@ public class AlarmRuleFacadeImpl extends BaseFacade {
 
       @Override
       public void doManage() {
+        boolean myself = StringUtils.equals(req, "true");
         List<AlarmRuleDTO> alarmRuleDTOS = new ArrayList<>();
 
-        List<AlarmRuleDTO> byIds = getRuleListBySubscribe();
+        List<AlarmRuleDTO> byIds = getRuleListBySubscribe(myself);
         if (!CollectionUtils.isEmpty(byIds)) {
           alarmRuleDTOS.addAll(byIds);
         }
 
-        List<AlarmRuleDTO> byGroups = getRuleListByGroup();
+        List<AlarmRuleDTO> byGroups = getRuleListByGroup(myself);
         if (!CollectionUtils.isEmpty(byGroups)) {
           alarmRuleDTOS.addAll(byGroups);
         }
@@ -306,6 +316,7 @@ public class AlarmRuleFacadeImpl extends BaseFacade {
   @ResponseBody
   @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.VIEW)
   public JsonResult<MonitorPageResult<AlarmHistoryDTO>> querySubAlarmHistory(
+      @RequestParam(value = "myself", required = false) String req,
       @RequestBody MonitorPageRequest<AlarmHistoryDTO> pageRequest) {
     final JsonResult<MonitorPageResult<AlarmHistoryDTO>> result = new JsonResult<>();
     facadeTemplate.manage(result, new ManageCallback() {
@@ -316,14 +327,15 @@ public class AlarmRuleFacadeImpl extends BaseFacade {
 
       @Override
       public void doManage() {
+        boolean myself = StringUtils.equals(req, "true");
         List<AlarmRuleDTO> alarmRuleDTOS = new ArrayList<>();
 
-        List<AlarmRuleDTO> byIds = getRuleListBySubscribe();
+        List<AlarmRuleDTO> byIds = getRuleListBySubscribe(myself);
         if (!CollectionUtils.isEmpty(byIds)) {
           alarmRuleDTOS.addAll(byIds);
         }
 
-        List<AlarmRuleDTO> byGroups = getRuleListByGroup();
+        List<AlarmRuleDTO> byGroups = getRuleListByGroup(myself);
         if (!CollectionUtils.isEmpty(byGroups)) {
           alarmRuleDTOS.addAll(byGroups);
         }
@@ -350,9 +362,10 @@ public class AlarmRuleFacadeImpl extends BaseFacade {
     return result;
   }
 
-  private List<AlarmRuleDTO> getRuleListByGroup() {
-    List<AlarmGroupDTO> listByUserLike = alarmGroupService.getListByUserLike(
-        RequestContext.getContext().mu.getUserId(), MonitorCookieUtil.getTenantOrException());
+  private List<AlarmRuleDTO> getRuleListByGroup(boolean myself) {
+    String userId = RequestContext.getContext().mu.getUserId();
+    List<AlarmGroupDTO> listByUserLike =
+        alarmGroupService.getListByUserLike(userId, MonitorCookieUtil.getTenantOrException());
 
     if (CollectionUtils.isEmpty(listByUserLike))
       return null;
@@ -379,7 +392,13 @@ public class AlarmRuleFacadeImpl extends BaseFacade {
         ruleIds.add(array[1]);
       }
 
-      List<AlarmRuleDTO> byIds = alarmRuleService.findByIds(ruleIds);
+      QueryWrapper<AlarmRule> queryWrapper = new QueryWrapper<>();
+      queryWrapper.in("id", ruleIds);
+      if (myself) {
+        queryWrapper.and(wrapper -> wrapper.eq("creator", userId).or().eq("modifier", userId));
+      }
+      List<AlarmRule> alarmRules = alarmRuleService.list(queryWrapper);
+      List<AlarmRuleDTO> byIds = this.alarmRuleConverter.dosToDTOs(alarmRules);
       if (CollectionUtils.isEmpty(byIds)) {
         continue;
       }
@@ -390,9 +409,10 @@ public class AlarmRuleFacadeImpl extends BaseFacade {
 
   }
 
-  private List<AlarmRuleDTO> getRuleListBySubscribe() {
+  private List<AlarmRuleDTO> getRuleListBySubscribe(boolean myself) {
+    String userId = RequestContext.getContext().mu.getUserId();
     Map<String, Object> conditions = new HashMap<>();
-    conditions.put("subscriber", RequestContext.getContext().mu.getUserId());
+    conditions.put("subscriber", userId);
     conditions.put("tenant", MonitorCookieUtil.getTenantOrException());
 
     List<AlarmSubscribeInfo> alarmSubscribeInfos = alarmSubscribeService.queryByMap(conditions);
@@ -410,8 +430,13 @@ public class AlarmRuleFacadeImpl extends BaseFacade {
 
       ruleIds.add(array[1]);
     }
-
-    return alarmRuleService.findByIds(ruleIds);
+    QueryWrapper<AlarmRule> queryWrapper = new QueryWrapper<>();
+    queryWrapper.in("id", ruleIds);
+    if (myself) {
+      queryWrapper.and(wrapper -> wrapper.eq("creator", userId).or().eq("modifier", userId));
+    }
+    List<AlarmRule> alarmRules = alarmRuleService.list(queryWrapper);
+    return this.alarmRuleConverter.dosToDTOs(alarmRules);
   }
 
 }
