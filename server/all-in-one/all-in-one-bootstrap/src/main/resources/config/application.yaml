@@ -65,6 +65,8 @@ holoinsight:
     meta:
       vip: 127.0.0.1
     domain: 127.0.0.1
+  flyway:
+    enabled: true
 
 management:
   # avoid exposing to public
