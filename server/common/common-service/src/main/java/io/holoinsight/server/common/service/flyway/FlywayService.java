@@ -64,14 +64,14 @@ public class FlywayService implements BeanPostProcessor {
       return flyway.repair();
     } else if (MIGRATE.equalsIgnoreCase(action)) {
       return flyway.migrate();
-    } else if (SKIP_ALL.equalsIgnoreCase(action)) {
+    } else if (SKIP_LATEST.equalsIgnoreCase(action)) {
       FlywaySchemaHistory flywaySchemaHistory = new FlywaySchemaHistory();
       flywaySchemaHistory.setSuccess(true);
       UpdateWrapper<FlywaySchemaHistory> updateWrapper = new UpdateWrapper<>();
       updateWrapper.orderByDesc("version");
       updateWrapper.last("limit 1");
       return flywaySchemaHistoryMapper.update(flywaySchemaHistory, updateWrapper);
-    } else if (SKIP_LATEST.equalsIgnoreCase(action)) {
+    } else if (SKIP_ALL.equalsIgnoreCase(action)) {
       FlywaySchemaHistory flywaySchemaHistory = new FlywaySchemaHistory();
       flywaySchemaHistory.setSuccess(true);
       UpdateWrapper<FlywaySchemaHistory> updateWrapper = new UpdateWrapper<>();
