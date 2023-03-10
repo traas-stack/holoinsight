@@ -19,6 +19,10 @@ import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.util.CollectionUtils;
 
 /**
+ * The execution of FlywayService needs to create beans first after datasource initialization and
+ * execute the initialization method to realize the management of sql scripts, so it is realized by
+ * implementing BeanPostProcessor;
+ * 
  * @author jiwliu
  * @date 2023/3/1
  */
@@ -59,6 +63,15 @@ public class FlywayService implements BeanPostProcessor {
     config.cleanDisabled(properties.isCleanDisabled());
   }
 
+  /**
+   * Manage sql version execution information migrate : Re-trigger the execution of the SQL file;
+   * repair : Try to repair the history table and the latest migrate; list : List the execution
+   * history of the SQL version; skipLatest : Skip the latest failed SQL version; skipAll : Skip all
+   * SQL versions that fail to execute.
+   * 
+   * @param action
+   * @return
+   */
   public Object doAction(String action) {
     if (REPAIR.equalsIgnoreCase(action)) {
       return flyway.repair();
