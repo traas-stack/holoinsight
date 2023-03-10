@@ -21,6 +21,11 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
+            <groupId>io.holoinsight.server</groupId>
+            <artifactId>home-common</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
             <groupId>io.netty</groupId>
             <artifactId>netty</artifactId>
             <version>3.6.0.Final</version>

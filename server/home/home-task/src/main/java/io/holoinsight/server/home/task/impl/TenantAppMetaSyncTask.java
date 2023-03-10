@@ -20,7 +20,7 @@ import io.holoinsight.server.home.common.util.StringUtil;
 import io.holoinsight.server.home.dal.model.dto.MetaTableDTO;
 import io.holoinsight.server.home.task.AbstractMonitorTask;
 import io.holoinsight.server.home.task.MonitorTaskJob;
-import io.holoinsight.server.home.task.TaskEnum;
+import io.holoinsight.server.home.common.model.TaskEnum;
 import io.holoinsight.server.home.task.TaskHandler;
 import io.holoinsight.server.meta.facade.service.DataClientService;
 import lombok.extern.slf4j.Slf4j;
