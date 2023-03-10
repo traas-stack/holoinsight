@@ -11,7 +11,7 @@ images:
 - name: ceresdb/ceresdb-server
   newName: registry.cn-hangzhou.aliyuncs.com/holoinsight-examples/ceresdb
 - name: gcr.io/cadvisor/cadvisor
-  newName: registry-vpc.cn-shanghai.aliyuncs.com/holoinsight/cadvisor
+  newName: registry.cn-hangzhou.aliyuncs.com/holoinsight-examples/cadvisor
 - name: holoinsight/agent
   newName: registry.cn-hangzhou.aliyuncs.com/holoinsight-examples/agent
 - name: holoinsight/server
