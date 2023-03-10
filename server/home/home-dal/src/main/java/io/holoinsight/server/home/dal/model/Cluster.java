@@ -30,5 +30,7 @@ public class Cluster {
 
   public Date gmtModified;
 
+  public Date gmtCreate;
+
   public Integer manualClose;
 }
