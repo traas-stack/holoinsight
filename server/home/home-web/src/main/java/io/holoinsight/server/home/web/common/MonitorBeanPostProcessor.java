@@ -6,6 +6,7 @@ package io.holoinsight.server.home.web.common;
 import io.holoinsight.server.home.biz.plugin.PluginRepository;
 import io.holoinsight.server.home.biz.plugin.model.Plugin;
 import io.holoinsight.server.home.biz.plugin.model.PluginModel;
+import io.holoinsight.server.home.biz.service.EnvironmentService;
 import io.holoinsight.server.home.task.AbstractMonitorTask;
 import io.holoinsight.server.home.task.TaskFactoryHolder;
 import io.holoinsight.server.home.task.TaskHandler;
@@ -25,6 +26,9 @@ public class MonitorBeanPostProcessor implements BeanPostProcessor {
 
   @Autowired
   private PluginRepository pluginRepository;
+
+  @Autowired
+  private EnvironmentService environmentService;
 
   @Override
   public Object postProcessBeforeInitialization(Object bean, String beanName)
@@ -65,7 +69,10 @@ public class MonitorBeanPostProcessor implements BeanPostProcessor {
     if (taskHandler == null) {
       return;
     }
-    TaskFactoryHolder.setExecutorTask(taskHandler.value(), (AbstractMonitorTask) bean);
+
+    if (environmentService.runTaskAction(taskHandler.value())) {
+      TaskFactoryHolder.setExecutorTask(taskHandler.value(), (AbstractMonitorTask) bean);
+    }
   }
 
 }

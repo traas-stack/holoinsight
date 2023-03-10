@@ -19,6 +19,7 @@ import io.holoinsight.server.home.biz.plugin.core.AbstractIntegrationPlugin;
 import io.holoinsight.server.home.biz.service.IntegrationGeneratedService;
 import io.holoinsight.server.home.biz.service.IntegrationPluginService;
 import io.holoinsight.server.common.service.TenantService;
+import io.holoinsight.server.home.common.model.TaskEnum;
 import io.holoinsight.server.home.common.util.cache.local.CommonLocalCache;
 import io.holoinsight.server.home.dal.model.IntegrationGenerated;
 import io.holoinsight.server.home.dal.model.dto.CloudMonitorRange;

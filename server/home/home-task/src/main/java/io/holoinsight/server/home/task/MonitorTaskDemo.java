@@ -3,6 +3,7 @@
  */
 package io.holoinsight.server.home.task;
 
+import io.holoinsight.server.home.common.model.TaskEnum;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

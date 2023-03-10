@@ -4,6 +4,7 @@
 package io.holoinsight.server.home.task;
 
 import com.google.common.collect.Maps;
+import io.holoinsight.server.home.common.model.TaskEnum;
 
 import java.util.Map;
 

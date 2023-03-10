@@ -6,6 +6,8 @@ package io.holoinsight.server.home.bootstrap;
 import io.holoinsight.server.common.service.CommonServiceAutoConfiguration;
 import io.holoinsight.server.home.biz.plugin.DefaultMarketplaceProductHandler;
 import io.holoinsight.server.home.biz.plugin.MarketplaceProductHandler;
+import io.holoinsight.server.home.biz.service.EnvironmentService;
+import io.holoinsight.server.home.biz.service.impl.DefaultEnvironmentServiceImpl;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -42,5 +44,10 @@ public class HoloinsightHomeConfiguration {
   @Bean
   public MarketplaceProductHandler marketplaceProductHandler() {
     return new DefaultMarketplaceProductHandler();
+  }
+
+  @Bean
+  public EnvironmentService environmentService() {
+    return new DefaultEnvironmentServiceImpl();
   }
 }
