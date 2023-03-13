@@ -112,8 +112,13 @@ public class AgentFacadeImpl extends BaseFacade {
 
       @Override
       public void doManage() {
-        JsonResult.createSuccessResult(result, agentLogTailService
-            .listFiles(agentParamRequest, MonitorCookieUtil.getTenantOrException()).getDatas());
+        try {
+          JsonResult.createSuccessResult(result, agentLogTailService
+              .listFiles(agentParamRequest, MonitorCookieUtil.getTenantOrException()).getDatas());
+        } catch (Exception e) {
+          result.setMessage(e.getMessage());
+          JsonResult.createSuccessResult(result, new HashMap<>());
+        }
       }
     });
 
@@ -133,8 +138,13 @@ public class AgentFacadeImpl extends BaseFacade {
 
       @Override
       public void doManage() {
-        JsonResult.createSuccessResult(result, agentLogTailService
-            .previewFile(agentParamRequest, MonitorCookieUtil.getTenantOrException()).getDatas());
+        try {
+          JsonResult.createSuccessResult(result, agentLogTailService
+              .previewFile(agentParamRequest, MonitorCookieUtil.getTenantOrException()).getDatas());
+        } catch (Exception e) {
+          result.setMessage(e.getMessage());
+          JsonResult.createSuccessResult(result, new HashMap<>());
+        }
       }
     });
 
@@ -153,8 +163,14 @@ public class AgentFacadeImpl extends BaseFacade {
 
       @Override
       public void doManage() {
-        JsonResult.createSuccessResult(result, agentLogTailService
-            .inspect(agentParamRequest, MonitorCookieUtil.getTenantOrException()).getDatas());
+        try {
+          JsonResult.createSuccessResult(result, agentLogTailService
+              .inspect(agentParamRequest, MonitorCookieUtil.getTenantOrException()).getDatas());
+
+        } catch (Exception e) {
+          result.setMessage(e.getMessage());
+          JsonResult.createSuccessResult(result, new HashMap<>());
+        }
       }
     });
 
