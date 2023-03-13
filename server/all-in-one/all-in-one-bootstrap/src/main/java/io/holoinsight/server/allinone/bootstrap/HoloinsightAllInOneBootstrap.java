@@ -3,7 +3,6 @@
  */
 package io.holoinsight.server.allinone.bootstrap;
 
-import io.holoinsight.server.common.service.flyway.FlywayConfiguration;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.elasticsearch.ElasticsearchRestClientAutoConfiguration;
@@ -11,7 +10,6 @@ import org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 
 import io.holoinsight.server.common.ContextHolder;
-import org.springframework.context.annotation.Import;
 
 /**
  * 'all-in-one' module uses Spring Boot AutoConfiguration to discover sub-modules, such as
@@ -24,7 +22,6 @@ import org.springframework.context.annotation.Import;
  */
 @SpringBootApplication(
     exclude = {ElasticsearchRestClientAutoConfiguration.class, FlywayAutoConfiguration.class})
-@Import({FlywayConfiguration.class})
 public class HoloinsightAllInOneBootstrap {
   public static void main(String[] args) {
     try {

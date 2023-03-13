@@ -14,10 +14,6 @@
 
 	<dependencies>
 		<dependency>
-			<groupId>org.flywaydb</groupId>
-			<artifactId>flyway-core</artifactId>
-		</dependency>
-		<dependency>
 			<groupId>io.holoinsight.server</groupId>
 			<artifactId>common</artifactId>
 			<version>${project.version}</version>
