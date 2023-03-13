@@ -19,6 +19,7 @@ import io.holoinsight.server.home.biz.plugin.core.AbstractIntegrationPlugin;
 import io.holoinsight.server.home.biz.service.IntegrationGeneratedService;
 import io.holoinsight.server.home.biz.service.IntegrationPluginService;
 import io.holoinsight.server.common.service.TenantService;
+import io.holoinsight.server.home.common.model.TaskEnum;
 import io.holoinsight.server.home.common.util.cache.local.CommonLocalCache;
 import io.holoinsight.server.home.dal.model.IntegrationGenerated;
 import io.holoinsight.server.home.dal.model.dto.CloudMonitorRange;
@@ -169,14 +170,18 @@ public class TenantIntegrationGeneratedTask extends AbstractMonitorTask {
       for (Map.Entry<String, String> entry : dbAppMaps.entrySet()) {
 
         if (entry.getValue().equalsIgnoreCase("VM")) {
-          generateds.add(generated(tenantDTO.getCode(), entry.getKey(), "vmsystem", "System"));
+          generateds.add(generated(tenantDTO.getCode(), entry.getKey(), "vmsystem", "System",
+              new HashMap<>()));
         } else {
-          generateds.add(generated(tenantDTO.getCode(), entry.getKey(), "podsystem", "System"));
+          generateds.add(generated(tenantDTO.getCode(), entry.getKey(), "podsystem", "System",
+              new HashMap<>()));
         }
 
-        generateds.add(generated(tenantDTO.getCode(), entry.getKey(), "logpattern", "LogPattern"));
+        generateds.add(generated(tenantDTO.getCode(), entry.getKey(), "logpattern", "LogPattern",
+            new HashMap<>()));
 
-        generateds.add(generated(tenantDTO.getCode(), entry.getKey(), "portcheck", "PortCheck"));
+        generateds.add(generated(tenantDTO.getCode(), entry.getKey(), "portcheck", "PortCheck",
+            new HashMap<>()));
       }
 
       List<IntegrationPluginDTO> integrationPluginDTOS =
@@ -196,7 +201,7 @@ public class TenantIntegrationGeneratedTask extends AbstractMonitorTask {
         if (CollectionUtils.isEmpty(abstractIntegrationPlugins))
           continue;
 
-        Set<String> appSets = new HashSet<>();
+        Set<String> appItemSets = new HashSet<>();
         for (AbstractIntegrationPlugin integrationPlugin : abstractIntegrationPlugins) {
           GaeaCollectRange gaeaCollectRange = integrationPlugin.getGaeaCollectRange();
 
@@ -210,14 +215,20 @@ public class TenantIntegrationGeneratedTask extends AbstractMonitorTask {
           if (CollectionUtils.isEmpty(collectApps))
             continue;
 
-          appSets.addAll(collectApps);
-        }
+          // appSets.addAll(collectApps);
+          for (String app : collectApps) {
+            if (StringUtils.isBlank(integrationPlugin.name))
+              continue;
+            String uk = app + "#" + integrationPlugin.name;
+            if (appItemSets.contains(uk))
+              continue;
 
-        for (String app : appSets) {
-          generateds.add(generated(tenantDTO.getCode(), app,
-              integrationPluginDTO.getProduct().toLowerCase(), integrationPluginDTO.getProduct()));
-        }
+            generateds.add(generated(tenantDTO.getCode(), app, integrationPlugin.name,
+                integrationPluginDTO.getProduct(), new HashMap<>()));
 
+            appItemSets.add(uk);
+          }
+        }
       }
     }
 
@@ -228,15 +239,15 @@ public class TenantIntegrationGeneratedTask extends AbstractMonitorTask {
     return dtoMap;
   }
 
-  private IntegrationGeneratedDTO generated(String tenant, String name, String item,
-      String product) {
+  private IntegrationGeneratedDTO generated(String tenant, String name, String item, String product,
+      Map<String, Object> config) {
     IntegrationGeneratedDTO integrationGenerated = new IntegrationGeneratedDTO();
     {
       integrationGenerated.setTenant(tenant);
       integrationGenerated.setName(name);
       integrationGenerated.setProduct(product);
       integrationGenerated.setItem(item);
-      integrationGenerated.setConfig(new HashMap<>());
+      integrationGenerated.setConfig(config);
 
       integrationGenerated.setDeleted(false);
       integrationGenerated.setCustom(false);

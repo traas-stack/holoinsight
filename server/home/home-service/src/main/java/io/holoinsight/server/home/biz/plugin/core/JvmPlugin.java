@@ -43,6 +43,7 @@ public class JvmPlugin extends AbstractLocalIntegrationPlugin<JvmPlugin> {
       jvmTask.setRefMetas(getRefMeta());
       jvmTask.setType(JvmTask.class.getName());
       jvmPlugin.jvmTask = jvmTask;
+      jvmPlugin.name = integrationPluginDTO.product.toLowerCase();
       jvmPlugin.gaeaTableName = integrationPluginDTO.name;
       GaeaCollectRange gaeaCollectRange =
           J.fromJson(J.toJson(integrationPluginDTO.collectRange), GaeaCollectRange.class);;

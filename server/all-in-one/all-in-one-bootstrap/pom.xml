@@ -16,6 +16,11 @@
 	<dependencies>
 		<dependency>
 			<groupId>io.holoinsight.server</groupId>
+			<artifactId>extension-common-flyway</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>io.holoinsight.server</groupId>
 			<artifactId>meta-boot</artifactId>
 			<version>${project.version}</version>
 		</dependency>

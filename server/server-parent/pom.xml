@@ -67,6 +67,7 @@
 		<module>../home/home-web</module>
 
 		<module>../extension/extension-storage</module>
+		<module>../extension/extension-common-flyway</module>
 		<module>../extension/extension-storage-ceresdbx</module>
 	</modules>
 

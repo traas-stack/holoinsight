@@ -43,4 +43,6 @@ public class UserOpLog {
   public String creator;
 
   public Date gmtCreate;
+
+  public Date gmtModified;
 }

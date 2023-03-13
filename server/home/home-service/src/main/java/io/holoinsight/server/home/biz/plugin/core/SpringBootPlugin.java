@@ -44,6 +44,7 @@ public class SpringBootPlugin extends AbstractLocalIntegrationPlugin<SpringBootP
       springBootTask.setRefMetas(getRefMeta());
 
       springBootPlugin.springBootTask = springBootTask;
+      springBootPlugin.name = integrationPluginDTO.product.toLowerCase();
       springBootPlugin.gaeaTableName = integrationPluginDTO.name;
       GaeaCollectRange gaeaCollectRange =
           J.fromJson(J.toJson(integrationPluginDTO.collectRange), GaeaCollectRange.class);

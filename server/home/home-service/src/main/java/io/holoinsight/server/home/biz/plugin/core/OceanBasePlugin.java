@@ -59,8 +59,8 @@ public class OceanBasePlugin extends AbstractCentralIntegrationPlugin<OceanBaseP
 
       {
         oceanBasePlugin.tenant = integrationPluginDTO.tenant;
-        oceanBasePlugin.metricName = String.join("_", ANTGROUP_METRIC_PREFIX,
-            integrationPluginDTO.product.toLowerCase(), config.name);
+        oceanBasePlugin.metricName =
+            String.join("_", integrationPluginDTO.product.toLowerCase(), config.name);
 
         oceanBasePlugin.collectRange = GaeaConvertUtil.convertCloudMonitorRange("ob_node_tenant",
             MetaLabel.allApp, new ArrayList<>());
