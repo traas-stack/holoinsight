@@ -72,9 +72,9 @@ public class PortCheckPlugin extends AbstractLocalIntegrationPlugin<PortCheckPlu
 
       {
         portCheckPlugin.tenant = integrationPluginDTO.tenant;
-
-        portCheckPlugin.metricName = String.join("_", ANTGROUP_METRIC_PREFIX,
-            integrationPluginDTO.product.toLowerCase(), "tcp_ping");
+        portCheckPlugin.name = integrationPluginDTO.product.toLowerCase();
+        portCheckPlugin.metricName =
+            String.join("_", integrationPluginDTO.product.toLowerCase(), "tcp_ping");
         portCheckPlugin.gaeaTableName = integrationPluginDTO.name + "_" + config.port;
 
         portCheckPlugin.collectRange = GaeaConvertUtil.convertCloudMonitorRange(

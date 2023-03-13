@@ -27,8 +27,6 @@ public abstract class AbstractIntegrationPlugin<T> extends Plugin {
   @Autowired
   public IntegrationProductService integrationProductService;
 
-  public static final String ANTGROUP_METRIC_PREFIX = "antgroup";
-
   public String tenant;
 
   /**

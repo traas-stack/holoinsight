@@ -3,13 +3,10 @@
  */
 package io.holoinsight.server.home.biz.plugin.core;
 
-import io.holoinsight.server.home.biz.common.GaeaConvertUtil;
 import io.holoinsight.server.home.biz.common.GaeaSqlTaskUtil;
 import io.holoinsight.server.home.biz.plugin.config.LogPluginConfig;
 import io.holoinsight.server.home.dal.model.dto.CustomPluginPeriodType;
-import io.holoinsight.server.home.dal.model.dto.IntegrationConfig;
 import io.holoinsight.server.home.dal.model.dto.IntegrationPluginDTO;
-import io.holoinsight.server.home.dal.model.dto.IntegrationProductDTO;
 import io.holoinsight.server.home.dal.model.dto.conf.CollectMetric;
 import io.holoinsight.server.home.dal.model.dto.conf.CustomPluginConf;
 import io.holoinsight.server.home.dal.model.dto.conf.Filter;
@@ -27,7 +24,6 @@ import io.holoinsight.server.registry.model.Window;
 import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -103,12 +99,12 @@ public class LogPlugin extends AbstractLocalIntegrationPlugin<LogPlugin> {
   public List<LogPlugin> genPluginList(IntegrationPluginDTO integrationPluginDTO) {
     List<LogPlugin> logPlugins = new ArrayList<>();
 
-    Map<String, Object> columnMap = new HashMap<>();
-    columnMap.put("version", integrationPluginDTO.version);
-    columnMap.put("name", integrationPluginDTO.product);
-    List<IntegrationProductDTO> byMap = integrationProductService.findByMap(columnMap);
-    if (CollectionUtils.isEmpty(byMap))
-      return logPlugins;
+    // Map<String, Object> columnMap = new HashMap<>();
+    // columnMap.put("version", integrationPluginDTO.version);
+    // columnMap.put("name", integrationPluginDTO.product);
+    // List<IntegrationProductDTO> byMap = integrationProductService.findByMap(columnMap);
+    // if (CollectionUtils.isEmpty(byMap))
+    // return logPlugins;
 
     String json = integrationPluginDTO.json;
 
@@ -116,19 +112,23 @@ public class LogPlugin extends AbstractLocalIntegrationPlugin<LogPlugin> {
     if (!map.containsKey("confs"))
       return logPlugins;
 
-    List<LogPluginConfig> logPluginConfigs =
+    // List<LogPluginConfig> logPluginConfigs =
+    // J.fromJson(J.toJson(map.get("confs")), new TypeToken<List<LogPluginConfig>>() {}.getType());
+
+    List<LogPluginConfig> multiLogPluginConfigs =
         J.fromJson(J.toJson(map.get("confs")), new TypeToken<List<LogPluginConfig>>() {}.getType());
 
-    Map<String, LogPluginConfig> logPluginConfigMap = new HashMap<>();
-    for (LogPluginConfig config : logPluginConfigs) {
-      logPluginConfigMap.put(config.getName(), config);
-    }
 
-    IntegrationProductDTO productDTO = byMap.get(0);
+    // Map<String, LogPluginConfig> logPluginConfigMap = new HashMap<>();
+    // for (LogPluginConfig config : logPluginConfigs) {
+    // logPluginConfigMap.put(config.getName(), config);
+    // }
 
-    List<IntegrationConfig> configList = productDTO.getForm().getConfigList();
+    // IntegrationProductDTO productDTO = byMap.get(0);
 
-    for (IntegrationConfig config : configList) {
+    // List<IntegrationConfig> configList = productDTO.getForm().getConfigList();
+
+    for (LogPluginConfig config : multiLogPluginConfigs) {
       CustomPluginConf customPluginConf =
           J.fromJson(J.toJson(config.conf), new TypeToken<CustomPluginConf>() {}.getType());
 
@@ -136,10 +136,10 @@ public class LogPlugin extends AbstractLocalIntegrationPlugin<LogPlugin> {
         continue;
 
       for (CollectMetric collectMetric : customPluginConf.getCollectMetrics()) {
-        LogPluginConfig logPluginConfig = logPluginConfigMap.get(config.getName());
+        // LogPluginConfig logPluginConfig = logPluginConfigMap.get(config.getName());
 
-        if (null == logPluginConfig)
-          continue;
+        // if (null == logPluginConfig)
+        // continue;
 
         LogPlugin logPlugin = new LogPlugin();
 
@@ -151,16 +151,15 @@ public class LogPlugin extends AbstractLocalIntegrationPlugin<LogPlugin> {
         logPlugin.splitCols = customPluginConf.splitCols;
         logPlugin.collectMetric = collectMetric;
         logPlugin.periodType = config.periodType;
+        logPlugin.name = config.name;
         logPlugin.metricName =
-            String.join("_", ANTGROUP_METRIC_PREFIX, integrationPluginDTO.product.toLowerCase(),
+            String.join("_", "logmonitor", integrationPluginDTO.product.toLowerCase(),
                 config.getName(), collectMetric.targetTable);
 
         logPlugin.gaeaTableName =
             integrationPluginDTO.name + "_" + config.name + "_" + collectMetric.targetTable;
 
-        logPlugin.collectRange =
-            GaeaConvertUtil.convertCloudMonitorRange(integrationPluginDTO.getTenant() + "_server",
-                logPluginConfig.getMetaLabel(), logPluginConfig.range);
+        logPlugin.collectRange = customPluginConf.collectRanges;
         logPlugin.collectPlugin = SqlTask.class.getName();
 
         logPlugins.add(logPlugin);
