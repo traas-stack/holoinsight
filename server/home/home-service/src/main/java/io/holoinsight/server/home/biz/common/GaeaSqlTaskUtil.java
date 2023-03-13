@@ -27,7 +27,6 @@ import io.holoinsight.server.registry.model.TimeParse;
 import io.holoinsight.server.registry.model.Where;
 import io.holoinsight.server.registry.model.Where.Contains;
 import io.holoinsight.server.registry.model.Where.ContainsAny;
-import io.holoinsight.server.registry.model.Where.NotIn;
 import io.holoinsight.server.registry.model.Where.Regexp;
 import io.holoinsight.server.registry.model.Window;
 import org.apache.commons.lang3.StringUtils;
@@ -266,6 +265,7 @@ public class GaeaSqlTaskUtil {
     if (!CollectionUtils.isEmpty(blackFilters)) {
       blackFilters.forEach(w -> {
         Where and = new Where();
+        Where not = new Where();
 
         Elect elect = new Elect();
         switch (splitType) {
@@ -276,11 +276,12 @@ public class GaeaSqlTaskUtil {
             leftRight.setRight(w.rule.right);
             elect.setType("leftRight");
             elect.setLeftRight(leftRight);
-            NotIn notIn = new NotIn();
-            notIn.setValues(w.values);
-            notIn.setElect(elect);
+            Where.In in = new Where.In();
+            in.setValues(w.values);
+            in.setElect(elect);
 
-            and.setNotIn(notIn);
+            not.setIn(in);
+            and.setNot(not);
             break;
           case contains:
             ContainsAny contains = new ContainsAny();
@@ -288,9 +289,7 @@ public class GaeaSqlTaskUtil {
             contains.setElect(elect);
             contains.setValues(w.values);
 
-            Where not = new Where();
             not.setContainsAny(contains);
-
             and.setNot(not);
             break;
           default:
