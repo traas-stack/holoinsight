@@ -8,8 +8,7 @@ import org.springframework.stereotype.Component;
 
 /**
  *
- * @author jinsong.yjs
- * @version 1.0: MultiLogPlugin.java, v 0.1 2023年03月07日 下午3:35 jinsong.yjs Exp $
+ * @author jsy1001de Date: 2023-03-13 Time: 13:16
  */
 @Component
 @PluginModel(name = "io.holoinsight.server.plugin.MultiLogPlugin", version = "1")

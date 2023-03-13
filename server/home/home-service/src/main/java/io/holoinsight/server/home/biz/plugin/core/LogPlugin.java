@@ -99,34 +99,14 @@ public class LogPlugin extends AbstractLocalIntegrationPlugin<LogPlugin> {
   public List<LogPlugin> genPluginList(IntegrationPluginDTO integrationPluginDTO) {
     List<LogPlugin> logPlugins = new ArrayList<>();
 
-    // Map<String, Object> columnMap = new HashMap<>();
-    // columnMap.put("version", integrationPluginDTO.version);
-    // columnMap.put("name", integrationPluginDTO.product);
-    // List<IntegrationProductDTO> byMap = integrationProductService.findByMap(columnMap);
-    // if (CollectionUtils.isEmpty(byMap))
-    // return logPlugins;
-
     String json = integrationPluginDTO.json;
 
     Map<String, Object> map = J.toMap(json);
     if (!map.containsKey("confs"))
       return logPlugins;
 
-    // List<LogPluginConfig> logPluginConfigs =
-    // J.fromJson(J.toJson(map.get("confs")), new TypeToken<List<LogPluginConfig>>() {}.getType());
-
     List<LogPluginConfig> multiLogPluginConfigs =
         J.fromJson(J.toJson(map.get("confs")), new TypeToken<List<LogPluginConfig>>() {}.getType());
-
-
-    // Map<String, LogPluginConfig> logPluginConfigMap = new HashMap<>();
-    // for (LogPluginConfig config : logPluginConfigs) {
-    // logPluginConfigMap.put(config.getName(), config);
-    // }
-
-    // IntegrationProductDTO productDTO = byMap.get(0);
-
-    // List<IntegrationConfig> configList = productDTO.getForm().getConfigList();
 
     for (LogPluginConfig config : multiLogPluginConfigs) {
       CustomPluginConf customPluginConf =
@@ -136,11 +116,6 @@ public class LogPlugin extends AbstractLocalIntegrationPlugin<LogPlugin> {
         continue;
 
       for (CollectMetric collectMetric : customPluginConf.getCollectMetrics()) {
-        // LogPluginConfig logPluginConfig = logPluginConfigMap.get(config.getName());
-
-        // if (null == logPluginConfig)
-        // continue;
-
         LogPlugin logPlugin = new LogPlugin();
 
         logPlugin.tenant = integrationPluginDTO.tenant;
