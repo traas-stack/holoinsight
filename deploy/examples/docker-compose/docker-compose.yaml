@@ -52,9 +52,11 @@ services:
         condition: service_healthy
     volumes:
     - ./my.cnf:/etc/mysql/conf.d/my.cnf
-    - ./ddl.sql:/ddl.sql
-    - ./data.sql:/data.sql
+    - ../../../server/extension/extension-common-flyway/src/main/resources/db/migration/V1__230301_INIT_DDL.sql:/sql/V1__230301_INIT_DDL.sql
+    - ../../../server/extension/extension-common-flyway/src/main/resources/db/migration/V2__230301_Uniform_COLUMN.sql:/sql/V2__230301_Uniform_COLUMN.sql
+    - ./data.sql:/sql/V999999__data.sql
     - ./init-db.sh:/init-db.sh
+    - ./exec-sql-script.sh:/exec-sql-script.sh
     working_dir: /
     entrypoint:
     - /init-db.sh
