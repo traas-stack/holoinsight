@@ -1,7 +1,6 @@
 
 services:
   mysql:
-    container_name: example-mysql-1
     image: ${mysql_image}
     environment:
       MYSQL_ROOT_PASSWORD: holoinsight
@@ -17,7 +16,6 @@ services:
       retries: 300
       timeout: 10s
   mongo:
-    container_name: example-mongo-1
     image: ${mongo_image}
     environment:
       MONGO_INITDB_ROOT_USERNAME: holoinsight
@@ -32,7 +30,6 @@ services:
       retries: 300
       timeout: 10s
   ceresdb:
-    container_name: example-ceresdb-1
     image: ${ceresdb_image}
     volumes:
     - ./ceresdb_entrypoint.sh:/entrypoint.sh
@@ -43,7 +40,6 @@ services:
       retries: 300
       timeout: 10s
   mysql-data-init:
-    container_name: example-mysql-data-init-1
     image: ${mysql_image}
     links:
     - mysql
@@ -61,7 +57,6 @@ services:
     entrypoint:
     - /init-db.sh
   server:
-    container_name: example-server-1
     hostname: holoinsight-server-example
     image: ${server_image}
     pull_policy: always
@@ -81,12 +76,10 @@ services:
     ports:
     - 8080:80
   agent-image:
-    container_name: example-agent-image-1
     image: ${agent_image}
     pull_policy: always
     entrypoint: ["true"]
   finish:
-    container_name: example-finish-1
     image: ${server_image}
     pull_policy: always
     depends_on:
