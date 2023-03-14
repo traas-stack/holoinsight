@@ -411,6 +411,7 @@ DELIMITER ;
   CALL Uniform_Holoinsight_Column("integration_plugin","id","bigint NOT NULL AUTO_INCREMENT COMMENT 'Data id'",1);
   CALL Uniform_Holoinsight_Column("integration_plugin","tenant","varchar(255) NOT NULL COMMENT 'Relate tenant code'",1);
   CALL Uniform_Holoinsight_Column("integration_plugin","name","varchar(100) NOT NULL COMMENT 'Plugin name'",1);
+  CALL Uniform_Holoinsight_Column("integration_plugin","workspace","varchar(100) NOT NULL COMMENT 'Plugin workspace'",1);
   CALL Uniform_Holoinsight_Column("integration_plugin","product","varchar(100) NOT NULL COMMENT 'Integration product name'",1);
   CALL Uniform_Holoinsight_Column("integration_plugin","type","varchar(200) NOT NULL COMMENT 'Plugin type'",1);
   CALL Uniform_Holoinsight_Column("integration_plugin","status","tinyint NOT NULL COMMENT 'Status'",1);
@@ -487,7 +488,7 @@ DELIMITER ;
   CALL Uniform_Holoinsight_Column("meta_data","_basic","mediumtext COMMENT 'Basic info meta'",1);
   CALL Uniform_Holoinsight_Column("meta_data","_labels","longtext COMMENT 'Label meta'",1);
   CALL Uniform_Holoinsight_Column("meta_data","_annotations","longtext COMMENT 'Annotations'",1);
-  CALL Uniform_Holoinsight_Column("meta_data","_modified","timestamp DEFAULT NULL COMMENT 'Modified time'",1);
+  CALL Uniform_Holoinsight_Column("meta_data","_modified","timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'Modified time'",1);
   CALL Uniform_Holoinsight_Column("meta_data","_modifier","varchar(100) DEFAULT NULL COMMENT 'Modifier user'",1);
 
 -- ----------------------------
