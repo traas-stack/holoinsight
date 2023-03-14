@@ -69,13 +69,13 @@ import static io.holoinsight.server.home.facade.AlarmRuleDTO.tryParseLink;
 public class AlarmRuleFacadeImpl extends BaseFacade {
 
   @Autowired
-  private AlertRuleService alarmRuleService;
+  protected AlertRuleService alarmRuleService;
 
   @Autowired
-  private AlertSubscribeService alarmSubscribeService;
+  protected AlertSubscribeService alarmSubscribeService;
 
   @Autowired
-  private AlertGroupService alarmGroupService;
+  protected AlertGroupService alarmGroupService;
 
   @Autowired
   private AlarmHistoryService alarmHistoryService;
@@ -87,7 +87,7 @@ public class AlarmRuleFacadeImpl extends BaseFacade {
   private CustomPluginMapper customPluginMapper;
 
   @Resource
-  private AlarmRuleConverter alarmRuleConverter;
+  protected AlarmRuleConverter alarmRuleConverter;
 
   @Value("${holoinsight.home.domain}")
   private String domain;
@@ -362,7 +362,7 @@ public class AlarmRuleFacadeImpl extends BaseFacade {
     return result;
   }
 
-  private List<AlarmRuleDTO> getRuleListByGroup(boolean myself) {
+  protected List<AlarmRuleDTO> getRuleListByGroup(boolean myself) {
     String userId = RequestContext.getContext().mu.getUserId();
     List<AlarmGroupDTO> listByUserLike =
         alarmGroupService.getListByUserLike(userId, MonitorCookieUtil.getTenantOrException());
@@ -395,7 +395,9 @@ public class AlarmRuleFacadeImpl extends BaseFacade {
       QueryWrapper<AlarmRule> queryWrapper = new QueryWrapper<>();
       queryWrapper.in("id", ruleIds);
       if (myself) {
-        queryWrapper.and(wrapper -> wrapper.eq("creator", userId).or().eq("modifier", userId));
+        String loginName = RequestContext.getContext().mu.getLoginName();
+        queryWrapper
+            .and(wrapper -> wrapper.eq("creator", loginName).or().eq("modifier", loginName));
       }
       List<AlarmRule> alarmRules = alarmRuleService.list(queryWrapper);
       List<AlarmRuleDTO> byIds = this.alarmRuleConverter.dosToDTOs(alarmRules);
@@ -409,7 +411,7 @@ public class AlarmRuleFacadeImpl extends BaseFacade {
 
   }
 
-  private List<AlarmRuleDTO> getRuleListBySubscribe(boolean myself) {
+  protected List<AlarmRuleDTO> getRuleListBySubscribe(boolean myself) {
     String userId = RequestContext.getContext().mu.getUserId();
     Map<String, Object> conditions = new HashMap<>();
     conditions.put("subscriber", userId);
@@ -433,7 +435,8 @@ public class AlarmRuleFacadeImpl extends BaseFacade {
     QueryWrapper<AlarmRule> queryWrapper = new QueryWrapper<>();
     queryWrapper.in("id", ruleIds);
     if (myself) {
-      queryWrapper.and(wrapper -> wrapper.eq("creator", userId).or().eq("modifier", userId));
+      String loginName = RequestContext.getContext().mu.getLoginName();
+      queryWrapper.and(wrapper -> wrapper.eq("creator", loginName).or().eq("modifier", loginName));
     }
     List<AlarmRule> alarmRules = alarmRuleService.list(queryWrapper);
     return this.alarmRuleConverter.dosToDTOs(alarmRules);
