@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 set -e
 
+# docs: Build server docker image for multi arch.
+
 cd `dirname $0`/../..
 project_root=`pwd`
 

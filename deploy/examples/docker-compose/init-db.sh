@@ -1,10 +1,6 @@
 #!/usr/bin/env bash
 set -e
 
-host=mysql
+cd `dirname $0`
 
-echo [database] initialize table structures
-mysql -h $host -uholoinsight -pholoinsight -Dholoinsight < /ddl.sql
-
-echo [database] populate example data
-mysql -h $host -uholoinsight -pholoinsight -Dholoinsight < /data.sql
+find /sql -name "*.sql" | sort | xargs -I {} /exec-sql-script.sh {}
