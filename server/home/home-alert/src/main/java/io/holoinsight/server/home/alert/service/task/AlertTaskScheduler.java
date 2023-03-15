@@ -3,6 +3,7 @@
  */
 package io.holoinsight.server.home.alert.service.task;
 
+import io.holoinsight.server.common.service.FuseProtector;
 import io.holoinsight.server.home.alert.model.compute.ComputeTaskPackage;
 import io.holoinsight.server.home.alert.service.calculate.AlertTaskCompute;
 import io.holoinsight.server.home.common.exception.HoloinsightAlertInternalException;
@@ -21,6 +22,7 @@ import org.quartz.TriggerBuilder;
 import org.quartz.impl.StdSchedulerFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
@@ -31,6 +33,9 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
+
+import static io.holoinsight.server.common.service.FuseProtector.CRITICAL_AlertTaskCompute;
+import static io.holoinsight.server.common.service.FuseProtector.CRITICAL_AlertTaskScheduler;
 
 /**
  * @author wangsiyuan
@@ -69,7 +74,10 @@ public class AlertTaskScheduler {
       logger.error(
           "[HoloinsightAlertInternalException][AlertTaskScheduler] fail to schedule alert task for {}",
           e.getMessage());
+      FuseProtector.voteCriticalError(CRITICAL_AlertTaskScheduler, e.getMessage());
       throw new HoloinsightAlertInternalException(e);
+    } finally {
+      FuseProtector.voteComplete(CRITICAL_AlertTaskScheduler);
     }
   }
 

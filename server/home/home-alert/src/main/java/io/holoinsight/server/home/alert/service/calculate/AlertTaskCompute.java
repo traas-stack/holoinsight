@@ -4,6 +4,7 @@
 package io.holoinsight.server.home.alert.service.calculate;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import io.holoinsight.server.common.service.FuseProtector;
 import io.holoinsight.server.home.alert.common.AlertStat;
 import io.holoinsight.server.home.alert.common.G;
 import io.holoinsight.server.home.alert.model.compute.ComputeContext;
@@ -35,6 +36,8 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
+
+import static io.holoinsight.server.common.service.FuseProtector.CRITICAL_AlertTaskCompute;
 
 /**
  * @author wangsiyuan
@@ -89,7 +92,9 @@ public class AlertTaskCompute implements AlarmTaskExecutor<ComputeTaskPackage> {
       LOGGER.error(
           "[HoloinsightAlertInternalException][AlertTaskCompute][{}] fail to execute alert task compute for {}",
           computeTaskPackage.inspectConfigs.size(), e.getMessage(), e);
+      FuseProtector.voteCriticalError(CRITICAL_AlertTaskCompute, e.getMessage());
     } finally {
+      FuseProtector.voteComplete(CRITICAL_AlertTaskCompute);
       Map<String, Map<String, Long>> counterMap = AlertStat.statRuleTypeCount(computeTaskPackage);
       for (Map.Entry<String /* tenant */, Map<String /* ruleType */, Long>> entry : counterMap
           .entrySet()) {
