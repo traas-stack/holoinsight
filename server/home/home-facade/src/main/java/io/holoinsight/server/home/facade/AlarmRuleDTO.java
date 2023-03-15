@@ -171,7 +171,7 @@ public class AlarmRuleDTO {
     return id == null;
   }
 
-  private static String getApmLink(AlarmRuleDTO alarmRuleDTO, String domain,
+  protected static String getApmLink(AlarmRuleDTO alarmRuleDTO, String domain,
       Map<String /* metric */, Map<String /* type */, String /* page */>> systemMetrics) {
     String app = alarmRuleDTO.sourceType.split("_")[1];
     String metric = alarmRuleDTO.getMetric();
@@ -180,6 +180,9 @@ public class AlarmRuleDTO {
       return StringUtils.EMPTY;
     }
     Map<String /* type */, String /* page */> pages = systemMetrics.get(metric);
+    if (CollectionUtils.isEmpty(pages)) {
+      return StringUtils.EMPTY;
+    }
     String type = isServer ? "server" : "app";
     String page = pages.get(type);
     return domain + page + "&app=" + app;
