@@ -23,10 +23,6 @@ import retrofit2.converter.jackson.JacksonConverterFactory;
 import javax.annotation.Resource;
 import java.util.concurrent.TimeUnit;
 
-/**
- * @author xiangwanpeng
- * @version : StorageClient.java, v 0.1 2022年10月03日 17:39 xiangwanpeng Exp $
- */
 @Configuration
 @ConfigurationProperties(prefix = "holoinsight.query.apm")
 @Component
