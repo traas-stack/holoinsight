@@ -3,8 +3,15 @@
  */
 package io.holoinsight.server.query.service.impl;
 
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
 import com.google.common.collect.Lists;
 import com.google.protobuf.MessageOrBuilder;
+import io.holoinsight.server.apm.common.model.query.*;
+import io.holoinsight.server.apm.common.model.specification.sw.Trace;
+import io.holoinsight.server.apm.common.model.specification.sw.TraceState;
+import io.holoinsight.server.apm.common.utils.GsonUtils;
 import io.holoinsight.server.common.DurationUtil;
 import io.holoinsight.server.common.ProtoJsonUtils;
 import io.holoinsight.server.extension.MetricStorage;
@@ -12,12 +19,14 @@ import io.holoinsight.server.extension.model.QueryMetricsParam;
 import io.holoinsight.server.extension.model.QueryParam;
 import io.holoinsight.server.extension.model.QueryResult.Result;
 import io.holoinsight.server.query.common.RpnResolver;
+import io.holoinsight.server.query.common.convertor.ApmConvertor;
 import io.holoinsight.server.query.grpc.QueryProto;
 import io.holoinsight.server.query.service.QueryException;
 import io.holoinsight.server.query.service.QueryService;
 import io.holoinsight.server.query.service.analysis.AnalysisCenter;
 import io.holoinsight.server.query.service.analysis.Mergable;
-import io.holoinsight.server.apm.common.utils.GsonUtils;
+import io.holoinsight.server.query.service.apm.ApmAPI;
+import io.holoinsight.server.query.service.apm.ApmClient;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.apache.commons.collections.CollectionUtils;
@@ -26,9 +35,12 @@ import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.Assert;
+import retrofit2.Call;
+import retrofit2.Response;
 
 import java.util.*;
 import java.util.concurrent.Callable;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -37,6 +49,17 @@ public class DefaultQueryServiceImpl implements QueryService {
 
   @Autowired
   protected MetricStorage metricStorage;
+
+  @Autowired
+  private ApmClient apmClient;
+
+  private LoadingCache<String, Set<String>> apmMetrics = CacheBuilder.newBuilder()
+      .expireAfterWrite(60, TimeUnit.SECONDS).build(new CacheLoader<String, Set<String>>() {
+        @Override
+        public Set<String> load(String tenantName) throws Exception {
+          return new HashSet<>(listApmMetrics(tenantName));
+        }
+      });
 
   @Override
   public QueryProto.QueryResponse queryData(QueryProto.QueryRequest request) throws QueryException {
@@ -136,66 +159,366 @@ public class DefaultQueryServiceImpl implements QueryService {
   @Override
   public QueryProto.TraceBrief queryBasicTraces(QueryProto.QueryTraceRequest request)
       throws QueryException {
-    return QueryProto.TraceBrief.getDefaultInstance();
+    return wrap(() -> {
+      Assert.isTrue(
+          !request.getTraceIdsList().isEmpty()
+              || (request.getStart() != 0 && request.getEnd() != 0),
+          "traceId or timeRange should be set!");
+
+      ApmAPI apmAPI = apmClient.getClient(request.getTenant());
+      QueryTraceRequest queryTraceRequest = new QueryTraceRequest();
+      queryTraceRequest.setTenant(request.getTenant());
+      queryTraceRequest.setServiceName(request.getServiceName());
+      queryTraceRequest.setServiceInstanceName(request.getServiceInstanceName());
+      queryTraceRequest.setTraceIds(request.getTraceIdsList());
+      queryTraceRequest.setEndpointName(request.getEndpointName());
+      queryTraceRequest.setDuration(new Duration(request.getStart(), request.getEnd(), null));
+
+      queryTraceRequest.setMinTraceDuration(request.getMinTraceDuration());
+      queryTraceRequest.setMaxTraceDuration(request.getMaxTraceDuration());
+      if (StringUtils.isEmpty(request.getTraceState())) {
+        queryTraceRequest.setTraceState(TraceState.ALL);
+      } else {
+        queryTraceRequest.setTraceState(TraceState.valueOf(request.getTraceState()));
+      }
+      if (StringUtils.isEmpty(request.getQueryOrder())) {
+        queryTraceRequest.setQueryOrder(QueryOrder.BY_DURATION);
+      } else {
+        queryTraceRequest.setQueryOrder(QueryOrder.valueOf(request.getQueryOrder()));
+      }
+      Assert.isTrue(request.getPageSize() > 0, "page size should be set!");
+      queryTraceRequest.setPaging(new Pagination(request.getPageNum(), request.getPageSize()));
+      queryTraceRequest.setTags(ApmConvertor.convertTagsMap(request.getTagsMap()));
+      Call<TraceBrief> call = apmAPI.queryBasicTraces(queryTraceRequest);
+      Response<TraceBrief> traceBriefRsp = call.execute();
+      if (!traceBriefRsp.isSuccessful()) {
+        throw new QueryException(traceBriefRsp.errorBody().string());
+      }
+      return ApmConvertor.convertTraceBrief(traceBriefRsp.body());
+    }, "queryBasicTraces", request);
   }
 
   @Override
   public QueryProto.Trace queryTrace(QueryProto.QueryTraceRequest request) throws QueryException {
-    return QueryProto.Trace.getDefaultInstance();
+    return wrap(() -> {
+      Assert.isTrue(!request.getTraceIdsList().isEmpty(), "trace id should be set!");
+      ApmAPI apmAPI = apmClient.getClient(request.getTenant());
+      QueryTraceRequest queryTraceRequest = new QueryTraceRequest();
+      queryTraceRequest.setTenant(request.getTenant());
+      queryTraceRequest.setTraceIds(request.getTraceIdsList());
+      Call<Trace> call = apmAPI.queryTrace(queryTraceRequest);
+      Response<Trace> traceRsp = call.execute();
+      if (!traceRsp.isSuccessful()) {
+        throw new QueryException(traceRsp.errorBody().string());
+      }
+      return ApmConvertor.convertTrace(traceRsp.body());
+    }, "queryTrace", request);
   }
 
   @Override
   public QueryProto.QueryMetaResponse queryServiceList(QueryProto.QueryMetaRequest request)
       throws QueryException {
-    return QueryProto.QueryMetaResponse.getDefaultInstance();
+    return wrap(() -> {
+      ApmAPI apmAPI = apmClient.getClient(request.getTenant());
+
+      QueryServiceRequest queryServiceRequest = new QueryServiceRequest();
+      queryServiceRequest.setTenant(request.getTenant());
+      queryServiceRequest.setStartTime(request.getStart());
+      queryServiceRequest.setEndTime(request.getEnd());
+
+      Call<List<Service>> serviceList = apmAPI.queryServiceList(queryServiceRequest);
+      Response<List<Service>> listResponse = serviceList.execute();
+      if (!listResponse.isSuccessful()) {
+        throw new QueryException(listResponse.errorBody().string());
+      }
+
+      QueryProto.QueryMetaResponse.Builder builder = QueryProto.QueryMetaResponse.newBuilder();
+      listResponse.body().forEach(service -> {
+        builder.addMata((ApmConvertor.convertService(service)));
+      });
+
+      return builder.build();
+    }, "queryServiceList", request);
   }
 
   @Override
   public QueryProto.QueryMetaResponse queryEndpointList(QueryProto.QueryMetaRequest request)
       throws QueryException {
-    return QueryProto.QueryMetaResponse.getDefaultInstance();
+    return wrap(() -> {
+      Assert.notNull(request.getServiceName(), "serviceName is null!");
+      ApmAPI apmAPI = apmClient.getClient(request.getTenant());
+
+      QueryEndpointRequest queryEndpointRequest = new QueryEndpointRequest();
+      queryEndpointRequest.setTenant(request.getTenant());
+      queryEndpointRequest.setServiceName(request.getServiceName());
+      queryEndpointRequest.setStartTime(request.getStart());
+      queryEndpointRequest.setEndTime(request.getEnd());
+
+      Call<List<Endpoint>> listCall = apmAPI.queryEndpointList(queryEndpointRequest);
+      Response<List<Endpoint>> listResponse = listCall.execute();
+      if (!listResponse.isSuccessful()) {
+        throw new QueryException(listResponse.errorBody().string());
+      }
+
+      QueryProto.QueryMetaResponse.Builder builder = QueryProto.QueryMetaResponse.newBuilder();
+      listResponse.body().forEach(endpoint -> {
+        builder.addMata((ApmConvertor.convertEndpoint(endpoint)));
+      });
+
+      return builder.build();
+    }, "queryEndpointList", request);
   }
 
   @Override
   public QueryProto.QueryMetaResponse queryServiceInstanceList(QueryProto.QueryMetaRequest request)
       throws QueryException {
-    return QueryProto.QueryMetaResponse.getDefaultInstance();
+    return wrap(() -> {
+      Assert.notNull(request.getServiceName(), "serviceName is null!");
+      ApmAPI apmAPI = apmClient.getClient(request.getTenant());
+
+      QueryServiceInstanceRequest queryServiceRequest = new QueryServiceInstanceRequest();
+      queryServiceRequest.setTenant(request.getTenant());
+      queryServiceRequest.setServiceName(request.getServiceName());
+      queryServiceRequest.setStartTime(request.getStart());
+      queryServiceRequest.setEndTime(request.getEnd());
+
+      Call<List<ServiceInstance>> listCall = apmAPI.queryServiceInstanceList(queryServiceRequest);
+      Response<List<ServiceInstance>> listResponse = listCall.execute();
+      if (!listResponse.isSuccessful()) {
+        throw new QueryException(listResponse.errorBody().string());
+      }
+
+      QueryProto.QueryMetaResponse.Builder builder = QueryProto.QueryMetaResponse.newBuilder();
+      listResponse.body().forEach(service -> {
+        builder.addMata(ApmConvertor.convertServiceInstance(service));
+      });
+
+      return builder.build();
+    }, "queryServiceInstanceList", request);
   }
 
   @Override
   public QueryProto.QueryVirtualComponentResponse queryComponentList(
       QueryProto.QueryMetaRequest request) throws QueryException {
-    return QueryProto.QueryVirtualComponentResponse.getDefaultInstance();
+    return wrap(() -> {
+      Assert.notNull(request.getServiceName(), "serviceName is null!");
+      ApmAPI apmAPI = apmClient.getClient(request.getTenant());
+
+      QueryComponentRequest queryComponentRequest = new QueryComponentRequest();
+      queryComponentRequest.setTenant(request.getTenant());
+      queryComponentRequest.setServiceName(request.getServiceName());
+      queryComponentRequest.setStartTime(request.getStart());
+      queryComponentRequest.setEndTime(request.getEnd());
+      Call<List<VirtualComponent>> listCall = null;
+
+      switch (request.getCategory().toUpperCase()) {
+        case "DB":
+          listCall = apmAPI.queryDbList(queryComponentRequest);
+          break;
+        case "CACHE":
+          listCall = apmAPI.queryCacheList(queryComponentRequest);
+          break;
+        case "MQ":
+          listCall = apmAPI.queryMQList(queryComponentRequest);
+          break;
+        default:
+          log.warn("[queryComponentList] category not support!");
+      }
+
+      Response<List<VirtualComponent>> listResponse = listCall.execute();
+      if (!listResponse.isSuccessful()) {
+        throw new QueryException(listResponse.errorBody().string());
+      }
+
+      QueryProto.QueryVirtualComponentResponse.Builder builder =
+          QueryProto.QueryVirtualComponentResponse.newBuilder();
+      listResponse.body().forEach(db -> {
+        builder.addComponent(ApmConvertor.convertDb(db));
+      });
+
+      return builder.build();
+    }, "queryComponentList", request);
   }
 
   @Override
   public QueryProto.TraceIds queryComponentTraceIds(QueryProto.QueryMetaRequest request)
       throws QueryException {
-    return QueryProto.TraceIds.getDefaultInstance();
+    return wrap(() -> {
+      Assert.notNull(request.getServiceName(), "serviceName is null!");
+      Assert.notNull(request.getAddress(), "address is null!");
+      ApmAPI apmAPI = apmClient.getClient(request.getTenant());
+
+      QueryComponentRequest queryComponentRequest = new QueryComponentRequest();
+      queryComponentRequest.setTenant(request.getTenant());
+      queryComponentRequest.setServiceName(request.getServiceName());
+      queryComponentRequest.setAddress(request.getAddress());
+      queryComponentRequest.setStartTime(request.getStart());
+      queryComponentRequest.setEndTime(request.getEnd());
+
+      Call<List<String>> listCall = apmAPI.queryComponentTraceIds(queryComponentRequest);
+      Response<List<String>> listResponse = listCall.execute();
+      if (!listResponse.isSuccessful()) {
+        throw new QueryException(listResponse.errorBody().string());
+      }
+
+      QueryProto.TraceIds.Builder builder = QueryProto.TraceIds.newBuilder();
+      builder.addAllTraceId(listResponse.body());
+
+      return builder.build();
+    }, "queryComponentTraceIds", request);
   }
 
   @Override
   public QueryProto.Topology queryTopology(QueryProto.QueryTopologyRequest request)
       throws QueryException {
-    return QueryProto.Topology.getDefaultInstance();
+    return wrap(() -> {
+      ApmAPI apmAPI = apmClient.getClient(request.getTenant());
+
+      QueryTopologyRequest queryTopologyRequest = new QueryTopologyRequest();
+      queryTopologyRequest.setTenant(request.getTenant());
+      queryTopologyRequest.setStartTime(request.getStart());
+      queryTopologyRequest.setEndTime(request.getEnd());
+      if (request.hasAddress()) {
+        queryTopologyRequest.setAddress(request.getAddress());
+      }
+      if (request.hasServiceName()) {
+        queryTopologyRequest.setServiceName(request.getServiceName());
+      }
+      if (request.hasServiceInstanceName()) {
+        queryTopologyRequest.setServiceInstanceName(request.getServiceInstanceName());
+      }
+      if (request.hasEndpointName()) {
+        queryTopologyRequest.setEndpointName(request.getEndpointName());
+      }
+      if (request.hasDepth()) {
+        queryTopologyRequest.setDepth(request.getDepth());
+      }
+      if (request.getTermParamsMap() != null) {
+        queryTopologyRequest.setTermParams(request.getTermParamsMap());
+      }
+
+      Call<Topology> topologyCall = null;
+      switch (request.getCategory().toUpperCase()) {
+        case "TENANT":
+          topologyCall = apmAPI.queryTenantTopology(queryTopologyRequest);
+          break;
+        case "SERVICE":
+          topologyCall = apmAPI.queryServiceTopology(queryTopologyRequest);
+          break;
+        case "SERVICE_INSTANCE":
+          topologyCall = apmAPI.queryServiceInstanceTopology(queryTopologyRequest);
+          break;
+        case "ENDPOINT":
+          topologyCall = apmAPI.queryEndpointTopology(queryTopologyRequest);
+          break;
+        case "DB":
+        case "CACHE":
+          topologyCall = apmAPI.queryDbTopology(queryTopologyRequest);
+          break;
+        case "MQ":
+          topologyCall = apmAPI.queryMQTopology(queryTopologyRequest);
+          break;
+        default:
+          log.warn("[queryTopology] category not support!");
+      }
+
+      Response<Topology> topologyResponse = topologyCall.execute();
+      if (!topologyResponse.isSuccessful()) {
+        throw new QueryException(topologyResponse.errorBody().string());
+      }
+      QueryProto.Topology topology = ApmConvertor.convertTopology(topologyResponse.body());
+
+      return topology;
+    }, "queryTopology", request);
   }
 
   @Override
   public QueryProto.BizopsEndpoints queryBizEndpointList(QueryProto.QueryMetaRequest request)
       throws QueryException {
-    return QueryProto.BizopsEndpoints.getDefaultInstance();
+    return wrap(() -> {
+      ApmAPI apmAPI = apmClient.getClient(request.getTenant());
+
+      QueryEndpointRequest queryEndpointRequest = new QueryEndpointRequest();
+      queryEndpointRequest.setTenant(request.getTenant());
+      queryEndpointRequest.setStartTime(request.getStart());
+      queryEndpointRequest.setEndTime(request.getEnd());
+
+      Call<List<BizopsEndpoint>> listCall = apmAPI.queryBizEndpointList(queryEndpointRequest);
+      Response<List<BizopsEndpoint>> listResponse = listCall.execute();
+      if (!listResponse.isSuccessful()) {
+        throw new QueryException(listResponse.errorBody().string());
+      }
+
+      QueryProto.BizopsEndpoints.Builder builder = QueryProto.BizopsEndpoints.newBuilder();
+      listResponse.body().forEach(endpoint -> {
+        builder.addEndpoints((ApmConvertor.convertBizEndpoint(endpoint)));
+      });
+
+      return builder.build();
+    }, "queryBizEndpointList", request);
   }
 
   @Override
   public QueryProto.BizopsEndpoints queryBizErrorCodeList(QueryProto.QueryMetaRequest request)
       throws QueryException {
-    return QueryProto.BizopsEndpoints.getDefaultInstance();
+    return wrap(() -> {
+      Assert.notNull(request.getServiceName(), "service is null!");
+      Assert.notNull(request.getEndpointName(), "endpoint is null!");
+      ApmAPI apmAPI = apmClient.getClient(request.getTenant());
+
+      QueryEndpointRequest queryEndpointRequest = new QueryEndpointRequest();
+      queryEndpointRequest.setTenant(request.getTenant());
+      queryEndpointRequest.setServiceName(request.getServiceName());
+      queryEndpointRequest.setEndpointName(request.getEndpointName());
+      queryEndpointRequest.setStartTime(request.getStart());
+      queryEndpointRequest.setEndTime(request.getEnd());
+      queryEndpointRequest.setTraceIdSize((int) request.getTraceIdSize());
+      if (request.hasIsEntry()) {
+        queryEndpointRequest.setEntry(request.getIsEntry());
+      }
+
+      Call<List<BizopsEndpoint>> listCall = apmAPI.queryBizErrorCodeList(queryEndpointRequest);
+      Response<List<BizopsEndpoint>> listResponse = listCall.execute();
+      if (!listResponse.isSuccessful()) {
+        throw new QueryException(listResponse.errorBody().string());
+      }
+
+      QueryProto.BizopsEndpoints.Builder builder = QueryProto.BizopsEndpoints.newBuilder();
+      listResponse.body().forEach(endpoint -> {
+        builder.addEndpoints((ApmConvertor.convertBizEndpoint(endpoint)));
+      });
+
+      return builder.build();
+    }, "queryBizErrorCodeList", request);
   }
 
   @Override
   public QueryProto.QuerySlowSqlResponse querySlowSqlList(QueryProto.QueryMetaRequest request)
       throws QueryException {
-    return QueryProto.QuerySlowSqlResponse.getDefaultInstance();
+    return wrap(() -> {
+      ApmAPI apmAPI = apmClient.getClient(request.getTenant());
+
+      QueryComponentRequest queryComponentRequest = new QueryComponentRequest();
+      queryComponentRequest.setTenant(request.getTenant());
+      queryComponentRequest.setServiceName(request.getServiceName());
+      queryComponentRequest.setAddress(request.getAddress());
+      queryComponentRequest.setStartTime(request.getStart());
+      queryComponentRequest.setEndTime(request.getEnd());
+
+      Call<List<SlowSql>> listCall = apmAPI.querySlowSqlList(queryComponentRequest);
+      Response<List<SlowSql>> listResponse = listCall.execute();
+      if (!listResponse.isSuccessful()) {
+        throw new QueryException(listResponse.errorBody().string());
+      }
+
+      QueryProto.QuerySlowSqlResponse.Builder builder =
+          QueryProto.QuerySlowSqlResponse.newBuilder();
+      listResponse.body().forEach(slowSql -> {
+        builder.addSlowSql(ApmConvertor.convertSlowSql(slowSql));
+      });
+
+      return builder.build();
+    }, "querySlowSqlList", request);
   }
 
   private QueryProto.QueryResponse simpleQuery(String tenant,
@@ -287,10 +610,85 @@ public class DefaultQueryServiceImpl implements QueryService {
 
   protected QueryProto.QueryResponse.Builder queryDs(String tenant,
       QueryProto.Datasource datasource) throws QueryException {
-    if (AnalysisCenter.isAnalysis(datasource.getAggregator())) {
+    Set<String> apmMetrics = this.apmMetrics.getUnchecked(tenant);
+    if (CollectionUtils.isNotEmpty(apmMetrics) && apmMetrics.contains(datasource.getMetric())
+        && !datasource.getApmMaterialized()) {
+      return postQueryApm(tenant, datasource);
+    } else if (AnalysisCenter.isAnalysis(datasource.getAggregator())) {
       return analysis(tenant, datasource);
     } else {
       return queryMetricStore(tenant, datasource);
+    }
+  }
+
+  private QueryProto.QueryResponse.Builder postQueryApm(String tenant,
+      QueryProto.Datasource datasource) throws QueryException {
+    return wrap(() -> {
+      String metric = datasource.getMetric();
+      long start = datasource.getStart();
+      long end = datasource.getEnd();
+      String step =
+          StringUtils.isEmpty(datasource.getDownsample()) ? "1m" : datasource.getDownsample();
+      List<QueryProto.QueryFilter> filters = datasource.getFiltersList();
+      Map<String, Object> conditions = new HashMap<>();
+      filters.forEach(filter -> {
+        if ("literal".equals(filter.getType())) {
+          conditions.put(filter.getName(), filter.getValue());
+        } else if ("literal_or".equals(filter.getType())) {
+          conditions.put(filter.getName(),
+              Arrays.asList(StringUtils.split(filter.getValue(), "|")));
+        }
+      });
+      ApmAPI apmAPI = apmClient.getClient(tenant);
+      QueryMetricRequest request =
+          new QueryMetricRequest(tenant, metric, new Duration(start, end, step), conditions);
+      Call<MetricValues> call = apmAPI.queryMetricData(request);
+      Response<MetricValues> metricValuesRsp = call.execute();
+      if (!metricValuesRsp.isSuccessful()) {
+        throw new QueryException(metricValuesRsp.errorBody().string());
+      }
+      MetricValues metricValues = metricValuesRsp.body();
+      QueryProto.QueryResponse.Builder builder = QueryProto.QueryResponse.newBuilder();
+      if (metricValues != null && CollectionUtils.isNotEmpty(metricValues.getValues())) {
+        List<MetricValue> values = metricValues.getValues();
+        for (MetricValue value : values) {
+          QueryProto.Result.Builder resultBuilder = QueryProto.Result.newBuilder();
+          resultBuilder.setMetric(
+              StringUtils.isNotEmpty(datasource.getName()) ? datasource.getName() : metric);
+          resultBuilder.putAllTags(value.getTags());
+          if (value.getValues() != null) {
+            Map<Long, Double> sorted = new TreeMap<>(value.getValues());
+            sorted.forEach((t, v) -> resultBuilder
+                .addPoints(QueryProto.Point.newBuilder().setTimestamp(t).setValue(v).build()));
+          }
+          builder.addResults(resultBuilder);
+        }
+      }
+      String fillPolicy = datasource.getFillPolicy();
+      if (StringUtils.isNotEmpty(fillPolicy) && !StringUtils.equalsIgnoreCase(fillPolicy, "none")
+          && StringUtils.isNotEmpty(datasource.getDownsample())) {
+        fillData(builder, datasource.getStart(), datasource.getEnd(), datasource.getDownsample(),
+            fillPolicy);
+      }
+      return builder;
+    });
+  }
+
+  private List<String> listApmMetrics(String tenant) {
+    try {
+      ApmAPI apmAPI = apmClient.getClient(tenant);
+      if (apmAPI == null) {
+        return Lists.newArrayList();
+      }
+      Call<List<String>> call = apmAPI.listMetrics();
+      Response<List<String>> metricsRsp = call.execute();
+      if (!metricsRsp.isSuccessful()) {
+        throw new QueryException(metricsRsp.errorBody().string());
+      }
+      return metricsRsp.body();
+    } catch (Exception e) {
+      log.error("[apm] list metrics failed, tenant={}", tenant, e);
+      return Lists.newArrayList();
     }
   }
 
