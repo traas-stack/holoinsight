@@ -147,7 +147,7 @@ public class GaeaSqlTaskUtil {
 
       }
 
-      parse.setWhere(buildFrontFilterWhere(whiteFilters, blackFilters, logParse.splitType));
+      parse.setWhere(buildFrontFilterWhere(whiteFilters, blackFilters));
 
       List<Log.LogPath> pathList = new ArrayList<>();
       logPaths.forEach(logPath -> {
@@ -219,8 +219,7 @@ public class GaeaSqlTaskUtil {
   }
 
   // 前置过滤
-  public static Where buildFrontFilterWhere(List<Filter> whiteFilters, List<Filter> blackFilters,
-      String splitType) {
+  public static Where buildFrontFilterWhere(List<Filter> whiteFilters, List<Filter> blackFilters) {
 
 
     Where where = new Where();
@@ -268,7 +267,7 @@ public class GaeaSqlTaskUtil {
         Where not = new Where();
 
         Elect elect = new Elect();
-        switch (splitType) {
+        switch (w.getType()) {
           case leftRight:
             Elect.LeftRight leftRight = new Elect.LeftRight();
             leftRight.setLeft(w.rule.left);
