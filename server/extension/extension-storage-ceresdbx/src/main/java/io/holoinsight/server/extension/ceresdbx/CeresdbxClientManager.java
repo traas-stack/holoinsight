@@ -94,9 +94,6 @@ class CeresdbxClientManager {
         }
       }
     }
-    if (instances.size() == 0) {
-      throw new RuntimeException("CeresDBx conf not found");
-    }
   }
 
   public CeresDBClient getClient(String tenant) {
