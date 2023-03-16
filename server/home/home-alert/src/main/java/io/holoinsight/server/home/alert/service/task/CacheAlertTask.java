@@ -41,11 +41,15 @@ public class CacheAlertTask {
 
   private static final Integer LIMIT = 5000;
   // 如果有多个 alarm 节点处理任务，则每个节点只取对应页的规则处理
-  private AtomicInteger pageSize = new AtomicInteger();
-  private AtomicInteger pageNum = new AtomicInteger();
+  protected final AtomicInteger rulePageSize = new AtomicInteger();
+  protected final AtomicInteger rulePageNum = new AtomicInteger();
+  protected final AtomicInteger aiPageSize = new AtomicInteger();
+  protected final AtomicInteger aiPageNum = new AtomicInteger();
+  protected final AtomicInteger pqlPageSize = new AtomicInteger();
+  protected final AtomicInteger pqlPageNum = new AtomicInteger();
 
   @Resource
-  private AlarmRuleMapper alarmRuleDOMapper;
+  protected AlarmRuleMapper alarmRuleDOMapper;
 
   @Resource
   private CacheData cacheData;
@@ -103,41 +107,41 @@ public class CacheAlertTask {
     return status != null && status;
   }
 
-  private List<AlarmRule> getAlarmRuleList() {
-    List<AlarmRule> alarmRuleDOS = new ArrayList<>();
-    boolean batch = true;
-    long id = 0L;
-    while (batch) {
-      QueryWrapper<AlarmRule> condition = new QueryWrapper<>();
-      condition.gt("id", id);
-      condition.orderByDesc("id");
-      condition.last("LIMIT " + LIMIT);
+  public Integer ruleSize(String ruleType) {
+    QueryWrapper<AlarmRule> queryWrapper = new QueryWrapper<>();
+    queryWrapper.eq("rule_type", ruleType);
+    return this.alarmRuleDOMapper.selectCount(queryWrapper).intValue();
+  }
 
-      List<AlarmRule> alarmRuleDo = alarmRuleDOMapper.selectList(condition);
-      if (alarmRuleDo.size() < LIMIT) {
-        batch = false;
-      } else {
-        id = alarmRuleDo.get(0).getId();
-      }
-      alarmRuleDOS.addAll(alarmRuleDo);
+  protected List<AlarmRule> getAlarmRuleListByPage() {
+    List<AlarmRule> alarmRules = new ArrayList<>();
+    List<AlarmRule> ruleAlerts =
+        getAlertRule("rule", this.rulePageNum.get(), this.rulePageSize.get());
+    List<AlarmRule> aiAlerts = getAlertRule("ai", this.aiPageNum.get(), this.aiPageSize.get());
+    List<AlarmRule> pqlAlerts = getAlertRule("pql", this.pqlPageNum.get(), this.pqlPageSize.get());
+    if (!CollectionUtils.isEmpty(ruleAlerts)) {
+      alarmRules.addAll(ruleAlerts);
     }
-    return alarmRuleDOS;
+    if (!CollectionUtils.isEmpty(aiAlerts)) {
+      alarmRules.addAll(aiAlerts);
+    }
+    if (!CollectionUtils.isEmpty(pqlAlerts)) {
+      alarmRules.addAll(pqlAlerts);
+    }
+    return alarmRules;
   }
 
-  public Integer ruleSize() {
-    return this.alarmRuleDOMapper.selectCount(new QueryWrapper<>()).intValue();
-  }
-
-  private List<AlarmRule> getAlarmRuleListByPage() {
+  private List<AlarmRule> getAlertRule(String ruleType, int pageNum, int pageSize) {
     List<AlarmRule> alarmRuleDOS = new ArrayList<>();
     int limit = LIMIT;
     int offset = 0;
-    if (this.pageSize.get() > 0) {
-      limit = this.pageSize.get();
-      offset = this.pageNum.get();
+    if (pageSize > 0) {
+      limit = pageSize;
+      offset = pageNum;
     }
-    QueryWrapper<AlarmRule> condition = new QueryWrapper();
+    QueryWrapper<AlarmRule> condition = new QueryWrapper<>();
     condition.orderByDesc("id");
+    condition.eq("rule_type", ruleType);
     condition.last("limit " + limit + " offset " + offset);
     List<AlarmRule> alarmRuleDo = alarmRuleDOMapper.selectList(condition);
     if (!CollectionUtils.isEmpty(alarmRuleDo)) {
@@ -146,11 +150,27 @@ public class CacheAlertTask {
     return alarmRuleDOS;
   }
 
-  public void setPageSize(int size) {
-    this.pageSize.set(size);
+  public void setRulePageSize(int size) {
+    this.rulePageSize.set(size);
   }
 
-  public void setPageNum(int num) {
-    this.pageNum.set(num);
+  public void setRulePageNum(int num) {
+    this.rulePageNum.set(num);
+  }
+
+  public void setAiPageSize(int size) {
+    this.aiPageSize.set(size);
+  }
+
+  public void setAiPageNum(int num) {
+    this.aiPageNum.set(num);
+  }
+
+  public void setPqlPageSize(int size) {
+    this.pqlPageSize.set(size);
+  }
+
+  public void setPqlPageNum(int num) {
+    this.pqlPageNum.set(num);
   }
 }
