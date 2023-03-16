@@ -59,7 +59,7 @@ services:
   server:
     hostname: holoinsight-server-example
     image: ${server_image}
-    pull_policy: always
+    pull_policy: "${server_image_pull_policy:-always}"
     healthcheck:
       test: ["CMD", "bash", "/home/admin/bin/health.sh"]
       interval: 1s
@@ -77,11 +77,11 @@ services:
     - 8080:80
   agent-image:
     image: ${agent_image}
-    pull_policy: always
+    pull_policy: "${image_pull_policy:-always}"
     entrypoint: ["true"]
   finish:
     image: ${server_image}
-    pull_policy: always
+    pull_policy: "${server_image_pull_policy:-always}"
     depends_on:
       agent-image:
         condition: service_started

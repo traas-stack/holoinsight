@@ -1,27 +1,19 @@
 #!/usr/bin/env bash
 set -e
 
+# doc: Run this script to deploy HoloInsight quick start demo using docker-compose
+# usage: up.sh
+# usage: build=1 up.sh
+
 cd `dirname $0`
 script_dir=`pwd`
 
-env_file="$script_dir/.env"
-if [ "$1" = "cn" ]; then
-  echo use cn mirror
-  env_file="$script_dir/.env-cn"
+if [ "$build"x = "1"x ]; then
+  $script_dir/../../../scripts/docker/build.sh
+  export server_image_pull_policy=never
 fi
 
-# For M1 mac
-if [ `uname` = "Darwin" ] && [ `uname -m` = "arm64" ]; then
-  if [ "$1" = "cn" ]; then
-    export server_image=registry.cn-hangzhou.aliyuncs.com/holoinsight-examples/server:latest-arm64v8
-    export agent_image=registry.cn-hangzhou.aliyuncs.com/holoinsight-examples/agent:latest-arm64v8
-    export mysql_image=registry.cn-hangzhou.aliyuncs.com/holoinsight-examples/mysql:8
-    export mongo_image=registry.cn-hangzhou.aliyuncs.com/holoinsight-examples/mongo:4.4.18
-  else
-    export server_image=holoinsight/server:latest-arm64v8
-    export agent_image=holoinsight/agent:latest-arm64v8
-  fi
-fi
+env_file="$script_dir/.env"
 
 $script_dir/docker-compose.sh --env-file $env_file up -d
 
