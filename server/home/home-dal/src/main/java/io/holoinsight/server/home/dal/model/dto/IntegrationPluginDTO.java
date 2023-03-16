@@ -70,9 +70,14 @@ public class IntegrationPluginDTO {
   @AllArgsConstructor
   public static class DataRange extends GaeaCollectConfigDTO.CollectRange {
     Map<String, String> valuesMap = new HashMap<>();
+    Map<String, String> extraMap = new HashMap<>();
 
     public String get(String key) {
       return valuesMap.get(key);
+    }
+
+    public String getExtra(String key) {
+      return extraMap.get(key);
     }
 
     @Override
@@ -90,7 +95,4 @@ public class IntegrationPluginDTO {
       return Objects.hash(valuesMap);
     }
   }
-
-
-
 }
