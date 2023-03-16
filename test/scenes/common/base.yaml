@@ -1,0 +1,54 @@
+# base services configs for extends
+
+services:
+  mysql:
+    image: ${mysql_image:-mysql:8}
+    environment:
+      MYSQL_ROOT_PASSWORD: holoinsight
+      MYSQL_USER: holoinsight
+      MYSQL_PASSWORD: holoinsight
+      MYSQL_DATABASE: holoinsight
+    volumes:
+    - ./my.cnf:/etc/mysql/conf.d/my.cnf
+    restart: always
+    healthcheck:
+      test: mysql -uholoinsight -pholoinsight -Dholoinsight
+      interval: 3s
+      retries: 300
+      timeout: 10s
+  mongo:
+    image: ${mongo_image:-mongo:4.4.18}
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: holoinsight
+      MONGO_INITDB_ROOT_PASSWORD: holoinsight
+      MONGO_INITDB_DATABASE: holoinsight
+    volumes:
+    - ./init.js:/docker-entrypoint-initdb.d/init.js
+    restart: always
+    healthcheck:
+      test: [ "CMD", "timeout", "1", "bash", "-c", "cat < /dev/null > /dev/tcp/127.0.0.1/27017" ]
+      interval: 3s
+      retries: 300
+      timeout: 10s
+  ceresdb:
+    image: ${ceresdb_image:-ceresdb/ceresdb-server:v0.3.1}
+    volumes:
+    - ./ceresdb_entrypoint.sh:/entrypoint.sh
+    restart: always
+    healthcheck:
+      test: [ "CMD", "timeout", "1", "bash", "-c", "cat < /dev/null > /dev/tcp/127.0.0.1/5440" ]
+      interval: 3s
+      retries: 300
+      timeout: 10s
+  server:
+    image: ${server_image:-holoinsight/server:latest}
+    healthcheck:
+      test: [ "CMD", "bash", "/home/admin/bin/health.sh" ]
+      interval: 3s
+      retries: 300
+      timeout: 10s
+    ports:
+    - 80
+  agent-image:
+    image: ${server_image:-holoinsight/agent:latest}
+    entrypoint: ["true"]

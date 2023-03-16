@@ -46,11 +46,11 @@ services:
     depends_on:
       mysql:
         condition: service_healthy
+    restart: "no"
     volumes:
     - ./my.cnf:/etc/mysql/conf.d/my.cnf
-    - ../../../server/extension/extension-common-flyway/src/main/resources/db/migration/V1__230301_INIT_DDL.sql:/sql/V1__230301_INIT_DDL.sql
-    - ../../../server/extension/extension-common-flyway/src/main/resources/db/migration/V2__230301_Uniform_COLUMN.sql:/sql/V2__230301_Uniform_COLUMN.sql
-    - ./data.sql:/sql/V999999__data.sql
+    - ../../../server/extension/extension-common-flyway/src/main/resources/db/migration:/sql/0migration
+    - ./data.sql:/sql/1data/V999999__data.sql
     - ./init-db.sh:/init-db.sh
     - ./exec-sql-script.sh:/exec-sql-script.sh
     working_dir: /
@@ -74,7 +74,7 @@ services:
     volumes:
     - ./application.yaml:/home/admin/application.yaml
     ports:
-    - 8080:80
+    - ${server_port:-8080}:80
   agent-image:
     image: ${agent_image}
     pull_policy: "${image_pull_policy:-always}"
@@ -87,4 +87,4 @@ services:
         condition: service_started
       server:
         condition: service_healthy
-    entrypoint: [ "bash","-c", "echo 'holoinsight started successfully, visit http://YOUR_HOST_IP:8080'" ]
+    entrypoint: [ "bash","-c", "echo 'holoinsight started successfully, visit http://YOUR_HOST_IP:${server_port:-8080}'" ]

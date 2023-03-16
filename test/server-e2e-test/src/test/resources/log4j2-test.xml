@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration debug="true" status="INFO">
+
+	<Appenders>
+		<Console name="STDOUT">
+			<PatternLayout charset="utf-8">
+				<pattern>%d %-5p [%t] %c{1.} - %m%n</pattern>
+			</PatternLayout>
+		</Console>
+
+	</Appenders>
+
+	<Loggers>
+		<Root level="INFO">
+			<Appender-Ref level="INFO" ref="STDOUT"/>
+		</Root>
+	</Loggers>
+
+
+</Configuration>

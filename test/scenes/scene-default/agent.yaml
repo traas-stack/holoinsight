@@ -1,0 +1,11 @@
+app: holoinsight-server-example
+apikey: example
+workspace: default
+mode: sidecar
+
+registry:
+  addr: server:7202
+  secure: false
+gateway:
+  addr: server:19610
+  secure: false
