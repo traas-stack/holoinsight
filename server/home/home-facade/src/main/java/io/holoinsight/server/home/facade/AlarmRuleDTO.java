@@ -39,7 +39,7 @@ public class AlarmRuleDTO {
   private String ruleName;
 
   /**
-   * 规则类型（AI、RULE）
+   * 规则类型（ai、rule、pql）
    */
   private String ruleType;
 

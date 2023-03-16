@@ -36,7 +36,7 @@ public class CoordinatorService {
   @Resource
   private ClusterMapper clusterMapper;
   @Autowired
-  private CacheAlertTask cacheAlertTask;
+  protected CacheAlertTask cacheAlertTask;
   private final String role = CLUSTER_ROLE_CONST.PROD;
 
   private List<String> otherMembers = new ArrayList<>();
@@ -89,48 +89,34 @@ public class CoordinatorService {
     if (realOrder < 0) {
       return;
     }
+    calculateSelectRange(realOrder);
+  }
+
+  protected void calculateSelectRange(int realOrder) {
     double realSize = orderMap.getRealSize().doubleValue();
-    double ruleSize = this.cacheAlertTask.ruleSize().doubleValue();
+    double ruleSize = this.cacheAlertTask.ruleSize("rule").doubleValue();
+    double aiSize = this.cacheAlertTask.ruleSize("ai").doubleValue();
+    double pqlSize = this.cacheAlertTask.ruleSize("pql").doubleValue();
     // 领取任务，[(order-1)*(ruleSize/realSize), order*(ruleSize/realSize))
-    LOGGER.info("gossip order realOrder {}, realSize {}, ruleSize {}", realOrder, realSize,
-        ruleSize);
-    int pageSize = (int) Math.ceil(ruleSize / realSize);
-    int pageNum = pageSize * realOrder;
-    this.cacheAlertTask.setPageSize(pageSize);
-    this.cacheAlertTask.setPageNum(pageNum);
+    LOGGER.info("gossip order realOrder {}, realSize {}, ruleSize {}, aiSize {}, pqlSize {}",
+        realOrder, realSize, ruleSize, aiSize, pqlSize);
+    int rulePageSize = (int) Math.ceil(ruleSize / realSize);
+    int rulePageNum = rulePageSize * realOrder;
+    this.cacheAlertTask.setRulePageSize(rulePageSize);
+    this.cacheAlertTask.setRulePageNum(rulePageNum);
+
+    int aiPageSize = (int) Math.ceil(aiSize / realSize);
+    int aiPageNum = aiPageSize * realOrder;
+    this.cacheAlertTask.setAiPageSize(aiPageSize);
+    this.cacheAlertTask.setAiPageNum(aiPageNum);
+
+    int pqlPageSize = (int) Math.ceil(pqlSize / realSize);
+    int pqlPageNum = pqlPageSize * realOrder;
+    this.cacheAlertTask.setPqlPageSize(pqlPageSize);
+    this.cacheAlertTask.setPqlPageNum(pqlPageNum);
   }
 
   public void buildCluster() throws Exception {
-    // List<Address> addresses = otherMembers.stream()
-    // .map(host -> Address.create(host, PORT))
-    // .collect(Collectors.toList());
-
-    // ClusterConfig clusterConfig =
-    // new ClusterConfig()
-    // .memberAlias(ip)
-    // .membership(opts -> opts.seedMembers(addresses))
-    // .transport(opts -> opts.port(PORT));
-    // CoordinatorService coordinatorService = this;
-    // endpoint =
-    // new ClusterImpl(clusterConfig)
-    // .transportFactory(TcpTransportFactory::new)
-    // .handler(
-    // cluster -> {
-    // return new ClusterMessageHandler() {
-    // @Override
-    // public void onGossip(Message gossip) {
-    // // 处理1：报数的 msg，如果是本周期的，存下来，如果是过期的，丢弃
-    // // 处理2：处理完毕后的广播 ack,
-    // CoordinatorReceiver.parseMsg(coordinatorService, gossip.data());
-    // }
-    //
-    // @Override
-    // public void onMessage(Message message) {
-    // LOGGER.info("receive message {} {}", message.data(), message.sender());
-    // }
-    // };
-    // })
-    // .startAwait();
     new NettyServer(this).startup(PORT);
   }
 
