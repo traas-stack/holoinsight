@@ -161,7 +161,7 @@ public class AlertTaskCompute implements AlarmTaskExecutor<ComputeTaskPackage> {
       }
       latch.await();
     } catch (Exception e) {
-      LOGGER.error("AlertTaskCompute Exception for {}", e.getMessage(), e);
+      LOGGER.error("AlertTaskCompute Exception", e);
     }
     return eventLists;
   }
