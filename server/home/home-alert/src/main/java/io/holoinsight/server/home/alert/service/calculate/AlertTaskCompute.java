@@ -19,6 +19,7 @@ import io.holoinsight.server.home.common.exception.HoloinsightAlertIllegalArgume
 import io.holoinsight.server.home.dal.mapper.AlarmHistoryMapper;
 import io.holoinsight.server.home.dal.model.AlarmHistory;
 import io.holoinsight.server.home.facade.InspectConfig;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -35,13 +36,12 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 
 import static io.holoinsight.server.common.service.FuseProtector.CRITICAL_AlertTaskCompute;
 
 /**
  * @author wangsiyuan
- * @date 2022/2/24 4:29 下午
+ * @date 2022/2/24 16:29
  */
 @Service
 public class AlertTaskCompute implements AlarmTaskExecutor<ComputeTaskPackage> {
@@ -61,7 +61,7 @@ public class AlertTaskCompute implements AlarmTaskExecutor<ComputeTaskPackage> {
   private AlertEventService alertEventService;
 
   @Resource
-  private AlarmHistoryMapper alarmHistoryDOMapper;
+  private AlarmHistoryMapper alertHistoryDOMapper;
 
   @Resource
   private CacheData cacheData;
@@ -69,19 +69,27 @@ public class AlertTaskCompute implements AlarmTaskExecutor<ComputeTaskPackage> {
   @Override
   public void process(ComputeTaskPackage computeTaskPackage) {
     try {
-      // 获取数据
+      // get metric data
       alarmDataSet.loadData(computeTaskPackage);
 
-      // 进行计算
+      // alert detection
       List<EventInfo> eventLists = calculate(computeTaskPackage);
 
-      // 发送网关处理
+      // alert notification
       if (!CollectionUtils.isEmpty(eventLists)) {
         // 数据转换
         Map<String, InspectConfig> inspectConfigMap = cacheData.getUniqueIdMap();
-        List<AlertNotify> alarmNotifies = eventLists.stream()
-            .map(e -> AlertNotify.eventInfoConver(e, inspectConfigMap.get(e.getUniqueId())))
-            .collect(Collectors.toList());
+        List<AlertNotify> alarmNotifies = new ArrayList<>();
+        for (EventInfo eventInfo : eventLists) {
+          if (StringUtils.isEmpty(eventInfo.getUniqueId())) {
+            continue;
+          }
+          InspectConfig inspectConfig = inspectConfigMap.get(eventInfo.getUniqueId());
+          if (inspectConfig == null) {
+            continue;
+          }
+          alarmNotifies.add(AlertNotify.eventInfoConver(eventInfo, inspectConfig));
+        }
         alertEventService.handleEvent(alarmNotifies);
       }
     } catch (HoloinsightAlertIllegalArgumentException e) {
@@ -116,15 +124,15 @@ public class AlertTaskCompute implements AlarmTaskExecutor<ComputeTaskPackage> {
     try {
       QueryWrapper<AlarmHistory> condition = new QueryWrapper<>();
       condition.isNull("recover_time");
-      // 获取未恢复的告警
-      List<AlarmHistory> alarmHistoryDOS = alarmHistoryDOMapper.selectList(condition);
+      // get unrecovered alert history
+      List<AlarmHistory> alarmHistoryDOS = alertHistoryDOMapper.selectList(condition);
       Set<String> uniqueIds = new HashSet<>();
       for (AlarmHistory alarmHistory : alarmHistoryDOS) {
         uniqueIds.add(alarmHistory.getUniqueId());
       }
       int parallelSize = computeTaskPackage.getInspectConfigs().size();
       CountDownLatch latch = new CountDownLatch(parallelSize);
-      // 进行计算,生成告警事件
+      // detection, generate alert event
       for (InspectConfig inspectConfig : computeTaskPackage.getInspectConfigs()) {
         calculator.execute(() -> {
           try {
@@ -153,7 +161,7 @@ public class AlertTaskCompute implements AlarmTaskExecutor<ComputeTaskPackage> {
       }
       latch.await();
     } catch (Exception e) {
-      LOGGER.error("AlarmTaskCompute Exception for {}", e.getMessage(), e);
+      LOGGER.error("AlertTaskCompute Exception for {}", e.getMessage(), e);
     }
     return eventLists;
   }
