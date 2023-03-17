@@ -14,7 +14,7 @@ on:
   # https://docs.github.com/zh/actions/using-workflows/workflow-syntax-for-github-actions#onschedule
   # Automatically run tests every day at UTC 00:30 test before going to work(CST 08:30).
   schedule:
-  - cron: "0 30 * * *"
+  - cron: "30 0 * * *"
   workflow_dispatch: {}
 
 # Executing tests concurrently is a resource-intensive thing. When we start a new Github Action, it always aborts the previous one.
