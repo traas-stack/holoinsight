@@ -12,5 +12,10 @@ if [ -z "$NO_BUILD_APP" ]; then
   ./scripts/all-in-one/build.sh
 fi
 
+tag=$holoinsight_server_tag
+if [ -z "$tag" ]; then
+  tag="latest"
+fi
+
 # build with current arch
-docker buildx build --load -t holoinsight/server -f ./scripts/docker/Dockerfile .
+docker buildx build --load -t holoinsight/server:$tag -f ./scripts/docker/Dockerfile .
