@@ -11,37 +11,45 @@ import java.util.List;
 
 /**
  * @author wangsiyuan
- * @date 2022/3/14 11:47 上午
+ * @date 2022/3/14 11:47
  */
 @Data
 public class Trigger {
 
-  private List<DataSource> datasources; // 数据源
+  private List<DataSource> datasources;
 
-  private String query; // 表达式
+  private String query;
 
-  private String aggregator; // 周期聚合函数
+  private String aggregator;
 
-  private Long downsample; // 周期时间
+  private Long downsample;
 
-  private int stepNum;// 周期个数
+  private int stepNum;
 
-  private int triggerStepNum; // 触发周期个数
+  private int triggerStepNum;
 
-  private String triggerContent; // 触发详情简述
+  // trigger summary
+  private String triggerContent;
 
-  private List<DataResult> dataResult; // 数据
+  // detected date
+  private List<DataResult> dataResult;
 
-  private List<CompareParam> compareParam; // 触发条件
+  private List<CompareParam> compareParam;
 
+  // detection mode
   private FunctionEnum type;
 
-  private String triggerTitle; // 触发条件的 title
+  private String triggerTitle;
 
-  private List<CompareConfig> compareConfigs; // 根据触发条件分级
+  // compare config list
+  private List<CompareConfig> compareConfigs;
 
-  private String triggerId; // 触发条件 id
+  private String triggerId;
 
-  private RuleConfig ruleConfig; // 智能告警配置
+  // ai alert config
+  private RuleConfig ruleConfig;
+
+  // zero fill
+  private boolean zeroFill;
 
 }

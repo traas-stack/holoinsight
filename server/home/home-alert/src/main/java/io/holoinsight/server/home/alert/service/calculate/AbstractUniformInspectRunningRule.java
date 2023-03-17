@@ -187,6 +187,7 @@ public class AbstractUniformInspectRunningRule {
           functionConfigParam.setDuration(trigger.getStepNum());
           functionConfigParam.setStepTime(trigger.getDownsample());
           functionConfigParam.setTraceId(computeInfo.getTraceId());
+          functionConfigParam.setZeroFill(trigger.isZeroFill());
           list.add(functionConfigParam);
         }
       } else {
@@ -196,6 +197,7 @@ public class AbstractUniformInspectRunningRule {
         functionConfigParam.setDuration(trigger.getStepNum());
         functionConfigParam.setStepTime(trigger.getDownsample());
         functionConfigParam.setTraceId(computeInfo.getTraceId());
+        functionConfigParam.setZeroFill(trigger.isZeroFill());
         list.add(functionConfigParam);
       }
 

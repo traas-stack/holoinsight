@@ -16,30 +16,28 @@ import java.util.List;
 public class FunctionConfigParam {
 
   /**
-   * 执行时间点
+   * detection time point
    */
   private Long period;
 
   /**
-   * 数据周期
+   * data period
    */
   private Long stepTime;
 
   /**
-   * 持续时间
+   * alert duration
    */
   private int duration;
 
-  /**
-   * 比较类型,算法：up/down
-   */
   private List<CompareParam> cmp;
 
-  /**
-   * 跟踪id
-   */
+  // trace id
   private String traceId;
 
   private String triggerLevel;
+
+  // zero fill to time series
+  private boolean zeroFill;
 
 }

@@ -27,7 +27,7 @@ import java.util.Map;
 
 /**
  * @author wangsiyuan
- * @date 2022/10/11 6:59 下午
+ * @date 2022/10/11 18:59
  */
 @Service
 public class RuleAlarmLoadData implements AlarmLoadData {
@@ -64,8 +64,6 @@ public class RuleAlarmLoadData implements AlarmLoadData {
     QueryProto.QueryRequest request = null;
     try {
       request = buildRequest(computeTask.getTimestamp(), e.getTenant(), trigger);
-      // String reqJson = JsonFormat.printer().print(request);
-      // LOGGER.info("uniqueId {}, req {}", e.getUniqueId(), reqJson);
       response = queryClientService.queryData(request);
       return response;
     } catch (Exception exception) {
@@ -80,12 +78,13 @@ public class RuleAlarmLoadData implements AlarmLoadData {
     List<QueryProto.Datasource> datasources = new ArrayList<>();
     for (DataSource dataSource : trigger.getDatasources()) {
       long time = 1L;
-      // 可能是 1m，也可能是 1m-avg 这种样式
+      // Compatible format: 1m or 1m-avg
       String downsample = dataSource.getDownsample();
       if (StringUtils.isNotBlank(downsample)) {
         time = parseTime(downsample);
       }
-      // 前端传 aggregator，后端判断其非 none 就把 downsample 设置为 1m，后侧置空
+      // If aggregator is not none, which means it is a valid aggregation, then downsample cannot be
+      // null, and the default value 1m can be set.
       String aggregator = dataSource.getAggregator();
       if (StringUtils.isNotEmpty(aggregator) && StringUtils.isBlank(downsample)
           && !aggregator.equals("none")) {
@@ -97,7 +96,7 @@ public class RuleAlarmLoadData implements AlarmLoadData {
       long end = timestamp + time * PeriodType.MINUTE.intervalMillis();
       QueryProto.SlidingWindow slidingWindow =
           QueryProto.SlidingWindow.newBuilder().setAggregator(trigger.getAggregator())
-              .setWindowMs(trigger.getDownsample() * 60 * 1000).build();
+              .setWindowMs(trigger.getDownsample() * 60_000L).build();
 
       QueryProto.Datasource.Builder builder = QueryProto.Datasource.newBuilder()
           .setName(dataSource.getName()).setStart(start).setEnd(end)
