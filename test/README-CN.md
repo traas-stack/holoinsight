@@ -7,7 +7,7 @@
 我们预先准备了一个名为 `scene-default` 的 `docker-compose` 部署场景，它配有 mysql:8 + mongo:4.4.18 + cersedb:v0.3.1 + server + agent（跑在 server 里）。
 
 基于 `docker-compose` 启动该部署场景，它会将 `holoinsight-server` 的 80 端口映射到本地某个随机端口，这样场景就部署好了。然后再执行集成测试用例，它会访问刚部署的 server 的 webapi，并且对结果做断言。
-> 我们在测试用例的 `beforeAll` 方法里设置 `rest-assured` 默认访问的 baseURL 为 `http://localhost:${随机生成的端口}`，这样可以在后续的 webapi 访问种免去指定 host 部分。  
+> 我们在测试用例的 `beforeAll` 方法里设置 `rest-assured` 默认访问的 baseURL 为 `http://localhost:${随机生成的端口}`，这样可以在后续的 webapi 访问中免去指定 host 部分。  
 > 详情见 `io.holoinsight.server.test.it.BaseIT.setupBaseURI`
 
 
