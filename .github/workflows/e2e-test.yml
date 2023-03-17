@@ -141,3 +141,10 @@ jobs:
       env:
         IT_CLASS: "${{ matrix.it.test }}"
         IT_SCENE: "${{ matrix.it.scene }}"
+
+  e2e-test-merge-gate:
+    runs-on: ubuntu-latest
+    needs: [ e2e-test ]
+    steps:
+    - name: nothing
+      run: true
