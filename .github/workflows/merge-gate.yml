@@ -13,7 +13,7 @@ on:
     branches: [ "main" ]
 
 jobs:
-  merge_gate:
+  merge-gate:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
