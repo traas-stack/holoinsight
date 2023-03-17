@@ -127,12 +127,11 @@ public class LogPlugin extends AbstractLocalIntegrationPlugin<LogPlugin> {
         logPlugin.collectMetric = collectMetric;
         logPlugin.periodType = config.periodType;
         logPlugin.name = config.name;
-        logPlugin.metricName =
-            String.join("_", "logmonitor", integrationPluginDTO.product.toLowerCase(),
-                config.getName(), collectMetric.targetTable);
+        logPlugin.metricName = String.join("_", integrationPluginDTO.product.toLowerCase(),
+            config.getName(), collectMetric.tableName);
 
         logPlugin.gaeaTableName =
-            integrationPluginDTO.name + "_" + config.name + "_" + collectMetric.targetTable;
+            integrationPluginDTO.name + "_" + config.name + "_" + collectMetric.tableName;
 
         logPlugin.collectRange = customPluginConf.collectRanges;
         logPlugin.collectPlugin = SqlTask.class.getName();

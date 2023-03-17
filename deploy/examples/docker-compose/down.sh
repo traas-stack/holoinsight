@@ -1,13 +1,11 @@
 #!/usr/bin/env bash
 set -e
 
+# doc: Run this script to shutdown HoloInsight quick start demo
+
 cd `dirname $0`
 script_dir=`pwd`
 
 env_file=".env"
-if [ "$mirror" = "cn" ]; then
-  echo use cn mirror
-  env_file=".env-cn"
-fi
 
-$script_dir/docker-compose.sh --env-file $env_file down
+$script_dir/docker-compose.sh --env-file $env_file down -v --remove-orphans
