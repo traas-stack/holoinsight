@@ -1,0 +1,56 @@
+services:
+  mysql:
+    extends:
+      file: ../common/base.yaml
+      service: mysql
+  mongo:
+    extends:
+      file: ../common/base.yaml
+      service: mongo
+  ceresdb:
+    extends:
+      file: ../common/base.yaml
+      service: ceresdb
+  mysql-data-init:
+    image: ${mysql_image:-mysql:8}
+    depends_on:
+      mysql:
+        condition: service_healthy
+    restart: "no"
+    links:
+    - mysql
+    volumes:
+    - ../common/my.cnf:/etc/mysql/conf.d/my.cnf
+    - ../../../server/extension/extension-common-flyway/src/main/resources/db/migration:/sql/0migration
+    - ./data.sql:/sql/1data/V999999__data.sql
+    - ./init-db.sh:/init-db.sh
+    - ./exec-sql-script.sh:/exec-sql-script.sh
+    working_dir: /
+    entrypoint:
+    - /init-db.sh
+  server:
+    extends:
+      file: ../common/base.yaml
+      service: server
+    depends_on:
+      mysql-data-init:
+        condition: service_completed_successfully
+      mongo:
+        condition: service_healthy
+      ceresdb:
+        condition: service_healthy
+    environment:
+      JAVA_APP_OPTS: "-Xmx3G -Xms3g -Xmn2g"
+    volumes:
+    - ./application.yaml:/home/admin/application.yaml
+  agent-image:
+    image: ${agent_image:-holoinsight/agent:latest}
+    entrypoint: [ "true" ]
+  finish:
+    image: ${server_image:-holoinsight/server:latest}
+    depends_on:
+      server:
+        condition: service_healthy
+      agent-image:
+        condition: service_completed_successfully
+    entrypoint: [ "bash","-c", "echo 'holoinsight started successfully, visit http://YOUR_HOST_IP:8080'" ]

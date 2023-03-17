@@ -1,3 +1,8 @@
+# Requirements
+1. JDK 8
+2. Maven
+3. [Docker buildx](https://docs.docker.com/build/install-buildx/)
+
 # Build Docker Image
 ```bash
 sh ./scripts/docker/build.sh

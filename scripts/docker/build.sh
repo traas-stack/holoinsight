@@ -8,6 +8,9 @@ project_root=`realpath $script_dir/../..`
 
 cd $project_root
 
-sh ./scripts/all-in-one/build.sh
+if [ -z "$NO_BUILD_APP" ]; then
+  ./scripts/all-in-one/build.sh
+fi
 
+# build with current arch
 docker buildx build --load -t holoinsight/server -f ./scripts/docker/Dockerfile .
