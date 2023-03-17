@@ -35,8 +35,12 @@ public class Current implements FunctionLogic {
       // 循环条件(增加枚举)
       long time = functionConfigParam.getPeriod() - i * 60000L;
       Double value = points.get(time);
+      if (value == null && functionConfigParam.isZeroFill()) {
+        value = 0d;
+      }
       for (CompareParam cmp : functionConfigParam.getCmp()) {
-        if (!TriggerLogicNew.compareValue(cmp, value)) {
+        boolean isHit = TriggerLogicNew.compareValue(cmp, value);
+        if (!isHit) {
           return result;
         }
       }
