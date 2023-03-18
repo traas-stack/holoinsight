@@ -79,13 +79,13 @@ public class CustomPluginServiceImpl extends ServiceImpl<CustomPluginMapper, Cus
 
   @Override
   public void deleteById(Long id) {
-    CustomPlugin customPluginDTO = getById(id);
-    if (null == customPluginDTO) {
+    CustomPlugin customPlugin = getById(id);
+    if (null == customPlugin) {
       return;
     }
     removeById(id);
-    customPluginDTO.setStatus("OFFLINE");
-    EventBusHolder.post(customPluginDTO);
+    customPlugin.setStatus("OFFLINE");
+    EventBusHolder.post(doToDTO(customPlugin));
   }
 
   @Override
