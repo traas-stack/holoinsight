@@ -40,7 +40,7 @@ services:
       ceresdb:
         condition: service_healthy
     environment:
-      JAVA_APP_OPTS: "-Xmx3G -Xms3g -Xmn2g"
+      JAVA_APP_OPTS: "-Xmx1024m -Xms1024m -Xmn512m"
     volumes:
     - ./application.yaml:/home/admin/application.yaml
   agent-image:

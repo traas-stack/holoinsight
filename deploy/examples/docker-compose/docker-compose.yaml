@@ -10,6 +10,8 @@ services:
     volumes:
     - ./my.cnf:/etc/mysql/conf.d/my.cnf
     restart: always
+    ports:
+    - 3306
     healthcheck:
       test: mysql -uholoinsight -pholoinsight -Dholoinsight
       interval: 5s
