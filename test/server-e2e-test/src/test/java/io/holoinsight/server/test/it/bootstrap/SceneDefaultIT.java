@@ -16,6 +16,7 @@ import io.holoinsight.server.test.it.AgentVMIT;
 import io.holoinsight.server.test.it.AppMonitoringIT;
 import io.holoinsight.server.test.it.AuthIT;
 import io.holoinsight.server.test.it.LogMonitoringFolderIT;
+import io.holoinsight.server.test.it.LogMonitoringIT;
 import io.holoinsight.server.test.it.MetaVMIT;
 
 /**
@@ -24,32 +25,17 @@ import io.holoinsight.server.test.it.MetaVMIT;
  * <p>
  * created at 2023/3/10
  *
- * @author xiangfeng.xzc
+ * @author xzchaoo
  */
 @Tag("e2e-all")
-public class AllIntegrationBootstrapIT {
-
-  /**
-   * Select some basic ITs.
-   * 
-   * @return
-   */
-  private LauncherDiscoveryRequest basicITs() {
-    return LauncherDiscoveryRequestBuilder.request() //
-        .selectors(selectClass(AuthIT.class)) //
-        .selectors(selectClass(LogMonitoringFolderIT.class)) //
-        .selectors(selectClass(MetaVMIT.class)) //
-        .selectors(selectClass(AppMonitoringIT.class)) //
-        .selectors(selectClass(AgentVMIT.class)) //
-        .build(); //
-  }
+public class SceneDefaultIT extends ITSets {
 
   /**
    * This is a normal junit5 test method. It will call other ITs using junit5 launcher API.
    */
   @Test
   public void basic() {
-    run0(() -> prepareScene("scene-default"), basicITs());
+    run0(() -> prepareScene("scene-default"), allITs());
   }
 
 }

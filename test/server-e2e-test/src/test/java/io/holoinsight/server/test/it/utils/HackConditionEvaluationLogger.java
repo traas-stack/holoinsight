@@ -1,7 +1,7 @@
 /*
  * Copyright 2022 Holoinsight Project Authors. Licensed under Apache-2.0.
  */
-package io.holoinsight.server.test.it;
+package io.holoinsight.server.test.it.utils;
 
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static java.util.concurrent.TimeUnit.SECONDS;
@@ -23,9 +23,9 @@ import org.awaitility.core.TimeoutEvent;
  * <p>
  * created at 2023/3/11
  *
- * @author xiangfeng.xzc
+ * @author xzchaoo
  */
-class HackConditionEvaluationLogger implements ConditionEvaluationListener<Object> {
+public class HackConditionEvaluationLogger implements ConditionEvaluationListener<Object> {
   private static final int MAX_IGNORE_COUNT = 12;
   private final Consumer<String> logPrinter;
   private final TimeUnit unit;

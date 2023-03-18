@@ -20,7 +20,7 @@ The name format of integration test is `{prefix}IT`. You can refer to the `Agent
 If you want to include the test in Github Action. Add your test to `e2e-test` step in `.github/workflows/e2e-test.yml`.      
 If your test class name is `io.holoinsight.server.test.it.foo.BarTest` then use test name `foo.BarTest` in e2e-test.yml.
 
-If you want to include the test when 'running all E2E integration tests locally'. Add your test to `io.holoinsight.server.test.it.bootstrap.AllIntegrationBootstrapIT` class.
+If you want to include the test when 'running all E2E integration tests locally'. Add your test to `io.holoinsight.server.test.it.bootstrap.SceneDefaultIT` class.
 
 # How to run E2E integration tests
 

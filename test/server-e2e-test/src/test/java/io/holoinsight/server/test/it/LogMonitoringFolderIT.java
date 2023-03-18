@@ -18,7 +18,7 @@ import io.restassured.response.Response;
  * <p>
  * created at 2023/3/9
  *
- * @author xiangfeng.xzc
+ * @author xzchaoo
  */
 public class LogMonitoringFolderIT extends BaseIT {
   String name;

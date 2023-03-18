@@ -44,7 +44,7 @@ import lombok.extern.slf4j.Slf4j;
  * <p>
  * created at 2023/3/10
  *
- * @author xiangfeng.xzc
+ * @author xzchaoo
  */
 @Slf4j
 public class IntegrationBootstrapHelper {
@@ -87,7 +87,7 @@ public class IntegrationBootstrapHelper {
       if (!testPlan.containsTests()) {
         throw new IllegalStateException("IT not found");
       }
-      Env env = envProvider.get();
+      Env<?> env = envProvider.get();
       try {
         env.start();
         DockerHolder.DCC = env.getCompose();

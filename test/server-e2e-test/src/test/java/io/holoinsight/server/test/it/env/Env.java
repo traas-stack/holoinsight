@@ -9,7 +9,7 @@ import org.testcontainers.containers.DockerComposeContainer;
  * <p>
  * created at 2023/3/11
  *
- * @author xiangfeng.xzc
+ * @author xzchaoo
  */
 public interface Env<E extends Env> {
   String name();
