@@ -5,6 +5,7 @@ package io.holoinsight.server.test.it;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.InputStream;
 import java.time.Duration;
 import java.util.List;
 import java.util.Properties;
@@ -17,6 +18,7 @@ import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.json.JSONTokener;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.TestInstance;
@@ -137,5 +139,13 @@ public abstract class BaseIT extends Matchers {
 
   protected static long now() {
     return System.currentTimeMillis();
+  }
+
+  protected static InputStream getResourceAsStream(String name) {
+    return BaseIT.class.getClassLoader().getResourceAsStream(name);
+  }
+
+  protected static JSONObject getJsonFromClasspath(String name) {
+    return new JSONObject(new JSONTokener(getResourceAsStream(name)));
   }
 }
