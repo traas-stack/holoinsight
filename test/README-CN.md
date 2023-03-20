@@ -17,7 +17,7 @@
 # 如何编写 E2E 集成测试
 命名格式是 `{Prefix}IT`，可以参考现有的例子（比如 `AgentVMIT`），将 Java 文件放在包 `io.holoinsight.server.test.it` 或其子包下。  
 为了让执行流程识别新的类，需要打开 `.github/workflows/e2e-test.yml`，找到 test-e2e step，编辑 matrix，往 it 数组后追加一项你的类名称，如果你是放在子包（比如 foo 下），那么格式是 `foo.YourIT` 这样的名称。
-如果你想在本地执行所有 E2E 测试，你还需要在 `io.holoinsight.server.test.it.bootstrap.AllIntegrationBootstrapIT` 里引用你的类。
+如果你想在本地执行所有 E2E 测试，你还需要在 `io.holoinsight.server.test.it.bootstrap.SceneDefaultIT` 里引用你的类。
 
 # 如何运行 E2E 集成测试
 

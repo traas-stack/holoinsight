@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test;
  * <p>
  * created at 2023/3/10
  *
- * @author xiangfeng.xzc
+ * @author xzchaoo
  */
 public class AuthIT extends BaseIT {
 

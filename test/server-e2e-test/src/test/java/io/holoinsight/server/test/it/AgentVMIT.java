@@ -16,7 +16,7 @@ import io.restassured.response.ValidatableResponse;
  * <p>
  * created at 2023/3/12
  *
- * @author xiangfeng.xzc
+ * @author xzchaoo
  */
 public class AgentVMIT extends BaseIT {
   String app = "holoinsight-server-example";

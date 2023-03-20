@@ -15,7 +15,7 @@ import org.junit.jupiter.api.Test;
  * <p>
  * created at 2023/3/11
  *
- * @author xiangfeng.xzc
+ * @author xzchaoo
  */
 public class AppMonitoringIT extends BaseIT {
   String tenant = "default";

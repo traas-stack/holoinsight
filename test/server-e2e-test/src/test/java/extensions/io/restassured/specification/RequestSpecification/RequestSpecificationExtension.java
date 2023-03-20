@@ -15,7 +15,7 @@ import manifold.ext.rt.api.This;
  * <p>
  * created at 2023/3/11
  *
- * @author xiangfeng.xzc
+ * @author xzchaoo
  */
 @Extension
 public class RequestSpecificationExtension {

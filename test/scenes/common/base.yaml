@@ -11,6 +11,8 @@ services:
     volumes:
     - ./my.cnf:/etc/mysql/conf.d/my.cnf
     restart: always
+    ports:
+    - 3306
     healthcheck:
       test: mysql -uholoinsight -pholoinsight -Dholoinsight
       interval: 3s
@@ -25,6 +27,8 @@ services:
     volumes:
     - ./init.js:/docker-entrypoint-initdb.d/init.js
     restart: always
+    ports:
+    - 27017
     healthcheck:
       test: [ "CMD", "timeout", "1", "bash", "-c", "cat < /dev/null > /dev/tcp/127.0.0.1/27017" ]
       interval: 3s
@@ -49,6 +53,7 @@ services:
       timeout: 10s
     ports:
     - 80
+    - 8080
   agent-image:
     image: ${server_image:-holoinsight/agent:latest}
     entrypoint: ["true"]

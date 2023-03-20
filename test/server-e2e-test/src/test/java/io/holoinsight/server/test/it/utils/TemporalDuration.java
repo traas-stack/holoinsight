@@ -1,7 +1,7 @@
 /*
  * Copyright 2022 Holoinsight Project Authors. Licensed under Apache-2.0.
  */
-package io.holoinsight.server.test.it;
+package io.holoinsight.server.test.it.utils;
 
 import static java.time.temporal.ChronoField.DAY_OF_MONTH;
 import static java.time.temporal.ChronoField.HOUR_OF_DAY;

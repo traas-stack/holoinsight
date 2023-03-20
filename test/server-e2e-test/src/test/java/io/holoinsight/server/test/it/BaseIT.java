@@ -17,7 +17,6 @@ import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.TestInstance;
@@ -26,6 +25,7 @@ import org.testcontainers.containers.DockerComposeContainer;
 
 import io.holoinsight.server.test.it.utils.DockerHolder;
 import io.holoinsight.server.test.it.utils.DockerUtils;
+import io.holoinsight.server.test.it.utils.HackConditionEvaluationLogger;
 import io.restassured.RestAssured;
 import io.restassured.specification.Argument;
 import io.restassured.specification.RequestSpecification;
@@ -38,12 +38,13 @@ import lombok.SneakyThrows;
  * <p>
  * created at 2023/3/10
  *
- * @author xiangfeng.xzc
+ * @author xzchaoo
  */
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public abstract class BaseIT extends Matchers {
   protected static final Matcher<?> IS_TRUE = is(true);
+  protected static final Matcher<?> IS_FALSE = is(false);
   protected static final Matcher<?> IS_NULL = nullValue();
   protected static final Matcher<?> NOT_NULL = notNullValue();
 
@@ -53,11 +54,6 @@ public abstract class BaseIT extends Matchers {
   @BeforeAll
   public static void baseETBeforeAll() {
     setupBaseURI();
-  }
-
-  @AfterAll
-  public static void baseITAfterAll() {
-    RestAssured.reset();
   }
 
   protected static RequestSpecification given() {
@@ -100,6 +96,10 @@ public abstract class BaseIT extends Matchers {
     return new JSONObject();
   }
 
+  protected static JSONObject json(String key, Object value) {
+    return new JSONObject().put(key, value);
+  }
+
   protected static JSONArray jarray() {
     return new JSONArray();
   }
@@ -128,7 +128,7 @@ public abstract class BaseIT extends Matchers {
   }
 
   protected static ConditionFactory await() {
-    return Awaitility.await().conditionEvaluationListener(new HackConditionEvaluationLogger());
+    return await(null);
   }
 
   protected static List<Argument> withArgs(Object firstArgument, Object... additionalArguments) {

@@ -10,7 +10,6 @@ import org.json.JSONObject;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 
-import io.restassured.RestAssured;
 import lombok.val;
 
 /**
@@ -19,7 +18,7 @@ import lombok.val;
  * <p>
  * created at 2023/3/10
  *
- * @author xiangfeng.xzc
+ * @author xzchaoo
  */
 public class MetaVMIT extends BaseIT {
   private static final BaseMatcher<String> STRING_NUMBER_GTE_0 = new BaseMatcher<String>() {
@@ -43,7 +42,7 @@ public class MetaVMIT extends BaseIT {
   public void test_has_VM_metadata() {
     await("Has VM metadata") //
         .untilAsserted(() -> {
-          val extract = RestAssured.given() //
+          val extract = given() //
               .pathParam("tenant", tenant) //
               .body(json().put("_type", "VM")) //
               .post("/webapi/meta/{tenant}_server/queryByCondition") //
