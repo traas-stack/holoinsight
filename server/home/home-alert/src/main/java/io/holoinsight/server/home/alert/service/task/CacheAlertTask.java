@@ -40,7 +40,6 @@ public class CacheAlertTask {
       new ScheduledThreadPoolExecutor(2, r -> new Thread(r, "CacheAlarmTaskScheduled"));
 
   private static final Integer LIMIT = 5000;
-  // 如果有多个 alarm 节点处理任务，则每个节点只取对应页的规则处理
   protected final AtomicInteger rulePageSize = new AtomicInteger();
   protected final AtomicInteger rulePageNum = new AtomicInteger();
   protected final AtomicInteger aiPageSize = new AtomicInteger();
@@ -66,8 +65,8 @@ public class CacheAlertTask {
 
   private void getAlarmTaskCache() {
     try {
-      if ("true".equals(this.cacheAlertConfig.getConfig("alarm_switch"))) {
-        // 获取数据库配置
+      if (!"false".equals(this.cacheAlertConfig.getConfig("alarm_switch"))) {
+        // Get alert detection tasks
         List<AlarmRule> alarmRuleDOS = getAlarmRuleListByPage();
         ComputeTaskPackage computeTaskPackage = convert(alarmRuleDOS);
         TaskQueueManager.getInstance().offer(computeTaskPackage);
@@ -87,7 +86,7 @@ public class CacheAlertTask {
       alarmRuleDOS.forEach(alarmRuleDO -> {
         InspectConfig inspectConfig = DoConvert.alarmRuleConverter(alarmRuleDO);
         if (isFillter(inspectConfig)) {
-          // 放入缓存
+          // cache
           uniqueIdMap.put(inspectConfig.getUniqueId(), inspectConfig);
           inspectConfigs.add(inspectConfig);
         }

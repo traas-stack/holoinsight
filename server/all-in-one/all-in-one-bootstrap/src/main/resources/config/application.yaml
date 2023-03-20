@@ -67,6 +67,7 @@ holoinsight:
     domain: 127.0.0.1
   flyway:
     enabled: true
+  env: default
 
 management:
   # avoid exposing to public

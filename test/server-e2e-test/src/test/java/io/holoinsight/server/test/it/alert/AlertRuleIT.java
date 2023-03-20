@@ -1,0 +1,289 @@
+/*
+ * Alipay.com Inc. Copyright (c) 2004-2018 All Rights Reserved.
+ */
+package io.holoinsight.server.test.it.alert;
+
+import io.holoinsight.server.common.J;
+import io.holoinsight.server.home.facade.AlarmHistoryDTO;
+import io.holoinsight.server.home.facade.AlarmRuleDTO;
+import io.holoinsight.server.home.facade.Rule;
+import io.holoinsight.server.home.facade.TimeFilter;
+import io.holoinsight.server.home.facade.emuns.BoolOperationEnum;
+import io.holoinsight.server.home.facade.emuns.CompareOperationEnum;
+import io.holoinsight.server.home.facade.emuns.FunctionEnum;
+import io.holoinsight.server.home.facade.emuns.TimeFilterEnum;
+import io.holoinsight.server.home.facade.page.MonitorPageRequest;
+import io.holoinsight.server.home.facade.trigger.CompareConfig;
+import io.holoinsight.server.home.facade.trigger.CompareParam;
+import io.holoinsight.server.home.facade.trigger.DataSource;
+import io.holoinsight.server.home.facade.trigger.Filter;
+import io.holoinsight.server.home.facade.trigger.Trigger;
+import io.holoinsight.server.test.it.BaseIT;
+import io.holoinsight.server.test.it.utils.WebapiUtils;
+import io.restassured.response.Response;
+import org.apache.commons.lang3.RandomStringUtils;
+import org.hamcrest.CustomMatcher;
+import org.hamcrest.Matchers;
+import org.hamcrest.core.Every;
+import org.json.JSONObject;
+import org.junit.jupiter.api.Order;
+import org.junit.jupiter.api.Test;
+
+import java.time.Duration;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Map;
+import java.util.Stack;
+import java.util.function.Supplier;
+
+/**
+ * Alert rule lifecycle integration test.
+ *
+ * @author masaimu
+ * @version 2023-03-17 16:55:00
+ */
+public class AlertRuleIT extends BaseIT {
+  String name;
+  Integer id;
+  String tenant;
+
+  Supplier<Response> queryAlertRule = () -> given() //
+      .pathParam("ruleId", id) //
+      .when() //
+      .get("/webapi/alarmRule/query/{ruleId}"); //
+
+  @Order(1)
+  @Test
+  public void test_rule_create() {
+    name = RandomStringUtils.randomAlphabetic(10) + "告警规则测试";
+    AlarmRuleDTO alarmRuleDTO = new AlarmRuleDTO();
+    alarmRuleDTO.setRuleName(name);
+    alarmRuleDTO.setSourceType("apm_holoinsight");
+    alarmRuleDTO.setAlarmLevel("5");
+    alarmRuleDTO.setRuleDescribe("测试告警规则");
+    alarmRuleDTO.setStatus((byte) 1);
+    alarmRuleDTO.setIsMerge((byte) 0);
+    alarmRuleDTO.setRecover((byte) 0);
+    alarmRuleDTO.setRuleType("rule");
+    alarmRuleDTO.setTimeFilter(buildTimeFilter());
+    alarmRuleDTO.setRule(buildRule());
+
+    // Create folder
+    id = given() //
+        .body(new JSONObject(J.toMap(J.toJson(alarmRuleDTO)))) //
+        .when() //
+        .post("/webapi/alarmRule/create") //
+        .then() //
+        .body("success", IS_TRUE) //
+        .body("data", Matchers.any(Number.class)) //
+        .extract() //
+        .path("data"); //
+    System.out.println(id);
+    Response response = queryAlertRule.get();
+    System.out.println(response.body().print());
+    tenant = response //
+        .then() //
+        .body("success", IS_TRUE) //
+        .root("data").body("ruleName", eq(name)) //
+        .extract() //
+        .path("data.tenant");
+    System.out.println(tenant);
+  }
+
+  @Order(1)
+  @Test
+  public void test_rule_update() {
+    name = name + "_v2";
+    AlarmRuleDTO alarmRuleDTO = new AlarmRuleDTO();
+    alarmRuleDTO.setRuleName(name);
+    alarmRuleDTO.setId(id.longValue());
+    alarmRuleDTO.setTenant(tenant);
+    given() //
+        .body(new JSONObject(J.toMap(J.toJson(alarmRuleDTO)))) //
+        .when() //
+        .post("/webapi/alarmRule/update") //
+        .then() //
+        .body("success", IS_TRUE) //
+        .body("data", IS_TRUE);
+    Response response = queryAlertRule.get();
+    System.out.println(response.body().print());
+    response //
+        .then() //
+        .body("success", IS_TRUE) //
+        .root("data").body("ruleName", eq(name));
+  }
+
+  @Order(2)
+  @Test
+  public void test_rule_delete() {
+    given() //
+        .pathParam("id", id) //
+        .when() //
+        .delete("/webapi/alarmRule/delete/{id}"); //
+    Response response = queryAlertRule.get();
+    System.out.println(response.body().print());
+    response //
+        .then() //
+        .body("success", IS_TRUE) //
+        .body("data", IS_NULL);
+  }
+
+  @Order(3)
+  @Test
+  public void test_rule_pageQuery() {
+    Stack<Integer> ids = new Stack<>();
+    for (int i = 0; i < 10; i++) {
+      Integer id = given() //
+          .body(new JSONObject(J.toMap(J.toJson(buildAlarmRule("hit_rule_" + i))))) //
+          .when() //
+          .post("/webapi/alarmRule/create") //
+          .then() //
+          .body("success", IS_TRUE) //
+          .extract() //
+          .path("data"); //
+      ids.push(id);
+    }
+    for (int i = 0; i < 10; i++) {
+      given() //
+          .body(new JSONObject(J.toMap(J.toJson(buildAlarmRule("miss_rule_" + i))))) //
+          .when() //
+          .post("/webapi/alarmRule/create") //
+          .then() //
+          .body("success", IS_TRUE);
+    }
+    AlarmRuleDTO condition = new AlarmRuleDTO();
+    condition.setRuleName("hit_rule");
+    MonitorPageRequest<AlarmRuleDTO> pageRequest = new MonitorPageRequest<>();
+    pageRequest.setTarget(condition);
+    pageRequest.setPageNum(0);
+    pageRequest.setPageSize(3);
+    pageRequest.setSortRule("desc");
+    pageRequest.setSortBy("id");
+    given() //
+        .body(new JSONObject(J.toMap(J.toJson(pageRequest)))) //
+        .when() //
+        .post("/webapi/alarmRule/pageQuery") //
+        .then() //
+        .body("success", IS_TRUE) //
+        .root("data")
+        .body("items", new Every<>(new CustomMatcher<AlarmRuleDTO>("page query id equal") {
+          @Override
+          public boolean matches(Object o) {
+            Map<String, Object> item = (Map<String, Object>) o;
+            Long queryId = ((Number) item.get("id")).longValue();
+            Long id = ids.pop().longValue();
+            return queryId == id;
+          }
+        }));
+  }
+
+  @Order(4)
+  @Test
+  public void test_alert_calculate() {
+    Integer ruleId = given() //
+        .body(new JSONObject(J.toMap(J.toJson(buildAlarmRule("notification"))))) //
+        .when() //
+        .post("/webapi/alarmRule/create") //
+        .then() //
+        .body("success", IS_TRUE) //
+        .body("data", Matchers.any(Number.class)) //
+        .extract() //
+        .path("data"); //
+    String uniqueId = "rule_" + ruleId;
+    System.out.println(uniqueId);
+    await("Test alert history generation") //
+        .atMost(Duration.ofMinutes(10)) //
+        .untilAsserted(() -> {
+          AlarmHistoryDTO condition = new AlarmHistoryDTO();
+          condition.setUniqueId(uniqueId);
+          MonitorPageRequest<AlarmHistoryDTO> pageRequest = new MonitorPageRequest<>();
+          pageRequest.setTarget(condition);
+          pageRequest.setPageNum(0);
+          pageRequest.setPageSize(3);
+          given() //
+              .body(new JSONObject(J.toMap(J.toJson(pageRequest)))) //
+              .when() //
+              .post("/webapi/alarmHistory/pageQuery") //
+              .then() //
+              .body("success", IS_TRUE) //
+              .body("data.items.size()", gt(0));
+        });
+  }
+
+  private AlarmRuleDTO buildAlarmRule(String ruleName) {
+    AlarmRuleDTO alarmRuleDTO = new AlarmRuleDTO();
+    alarmRuleDTO.setRuleName(ruleName);
+    alarmRuleDTO.setSourceType("apm_holoinsight");
+    alarmRuleDTO.setAlarmLevel("5");
+    alarmRuleDTO.setRuleDescribe("测试告警规则");
+    alarmRuleDTO.setStatus((byte) 1);
+    alarmRuleDTO.setIsMerge((byte) 0);
+    alarmRuleDTO.setRecover((byte) 0);
+    alarmRuleDTO.setRuleType("rule");
+    alarmRuleDTO.setTimeFilter(buildTimeFilter());
+    alarmRuleDTO.setRule(buildRule());
+    return alarmRuleDTO;
+  }
+
+  private Map<String, Object> buildRule() {
+    Rule rule = new Rule();
+    rule.setBoolOperation(BoolOperationEnum.AND);
+    rule.setTriggers(Collections.singletonList(buildTrigger()));
+    return J.toMap(J.toJson(rule));
+  }
+
+  private Trigger buildTrigger() {
+    Trigger trigger = new Trigger();
+    trigger.setZeroFill(true);
+    trigger.setQuery("a");
+    trigger.setType(FunctionEnum.Current);
+    trigger.setStepNum(1);
+    trigger.setAggregator("avg");
+    trigger.setDownsample(2L);
+    trigger.setTriggerTitle("触发条件 title");
+    trigger.setCompareConfigs(Collections.singletonList(buildCompareConfig()));
+    trigger.setTriggerContent("test trigger content");
+    trigger.setDatasources(Collections.singletonList(buildDataSource()));
+    return trigger;
+  }
+
+  private DataSource buildDataSource() {
+    Filter filter = new Filter();
+    filter.setName("app");
+    filter.setType("literal_or");
+    filter.setValue("holoinsight-server-example");
+    DataSource dataSource = new DataSource();
+    dataSource.setMetricType("app");
+    dataSource.setMetric("system_cpu_util");
+    dataSource.setName("a");
+    dataSource.setAggregator("avg");
+    dataSource.setDownsample("1m-avg");
+    dataSource.setGroupBy(Arrays.asList("hostname"));
+    dataSource.setFilters(Collections.singletonList(filter));
+    return dataSource;
+  }
+
+  private CompareConfig buildCompareConfig() {
+    CompareConfig compareConfig = new CompareConfig();
+    compareConfig.setTriggerLevel("4");
+    compareConfig.setCompareParam(Collections.singletonList(buildCompareParam()));
+    return compareConfig;
+  }
+
+  private CompareParam buildCompareParam() {
+    CompareParam param = new CompareParam();
+    param.setCmp(CompareOperationEnum.GTE);
+    param.setCmpValue(0d);
+    return param;
+  }
+
+  private Map<String, Object> buildTimeFilter() {
+    TimeFilter timeFilter = new TimeFilter();
+    timeFilter.setModel(TimeFilterEnum.DAY.getDesc());
+    timeFilter.setFrom("00:00:00");
+    timeFilter.setTo("23:59:59");
+    timeFilter.setWeeks(Collections.emptyList());
+    return J.toMap(J.toJson(timeFilter));
+  }
+
+}

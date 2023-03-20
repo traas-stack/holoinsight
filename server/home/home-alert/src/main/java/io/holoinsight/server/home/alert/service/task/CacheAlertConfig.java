@@ -11,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
 
@@ -57,19 +58,10 @@ public class CacheAlertConfig {
 
       List<MetaDataDictValue> metadataDictvalueDOS =
           metadataDictvalueDOMapper.selectList(condition);
-      if (metadataDictvalueDOS == null || metadataDictvalueDOS.size() == 0) {
-        LOGGER.warn("[AlarmGlobalConfigManager],emptyConfigs! env: {}}",
-            this.environmentProperties.getDeploymentSite());
-        return;
+      if (!CollectionUtils.isEmpty(metadataDictvalueDOS)) {
+        configMap = generateConfigMap(metadataDictvalueDOS);
       }
-
-      Map<String, Object> map = generateConfigMap(metadataDictvalueDOS);
-
-      configMap = map;
-
       LOGGER.info("AlarmGlobalConfig Sync SUCCESS");
-      // LOGGER.info("AlarmGlobalConfig Sync SUCCESS {} ", G.get().toJson(metadataDictvalueDOS));
-
     } catch (Exception e) {
       LOGGER.error("InspectCtlParam Sync Exception", e);
     }
