@@ -23,6 +23,8 @@ public class ExtendConfig {
 
   private Map<String, Object> dataInfo;
 
+  private Map<String, Map<Long, Double>> trendData;
+
   public static ExtendConfig triggerConverter(DataResult dataResult,
       FunctionConfigAIParam functionConfigAIParam) {
     ExtendConfig extendConfig = new ExtendConfig();
@@ -30,6 +32,7 @@ public class ExtendConfig {
       // 组装算法查询数据入参
       Map<String, Object> dataInfo = new HashMap<>();
       Map<String, Object> datasource = new HashMap<>();
+      Map<String, Map<Long, Double>> trendData = new HashMap<>();
       List<DataSource> triggetDataSources = functionConfigAIParam.getTrigger().getDatasources();
       // 目前算法只有单数据源
       DataSource triggetDataSource = triggetDataSources.get(0);
@@ -56,6 +59,9 @@ public class ExtendConfig {
       dataInfo.put("tenant", functionConfigAIParam.getTenant());
       dataInfo.put("datasources", datasources);
       extendConfig.setDataInfo(dataInfo);
+
+      trendData.put(triggetDataSource.getMetric(), dataResult.getPoints());
+      extendConfig.setTrendData(trendData);
     }
     return extendConfig;
   }

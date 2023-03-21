@@ -3,28 +3,32 @@
  */
 package io.holoinsight.server.home.facade.trigger;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * @author masaimu
  * @version 2023-02-23 20:05:00
  */
-public class RuleConfig {
-  public Success success;
+public class RuleConfig extends HashMap<String, RuleConfig.Success> {
 
-  public static RuleConfig defaultUpConfig() {
+  public static RuleConfig defaultUpConfig(String fieldName) {
     RuleConfig config = new RuleConfig();
-    config.success = new Success();
-    config.success.customAmplitude = 0.8;
-    config.success.customDuration = 2;
-    config.success.customChangeRate = 0.2;
+    Success success = new Success();
+    success.customAmplitude = 0.8;
+    success.customDuration = 2;
+    success.customChangeRate = 0.2;
+    config.put(fieldName, success);
     return config;
   }
 
-  public static RuleConfig defaultDownConfig() {
+  public static RuleConfig defaultDownConfig(String fieldName) {
     RuleConfig config = new RuleConfig();
-    config.success = new Success();
-    config.success.customAmplitude = 0.05;
-    config.success.customDuration = 2;
-    config.success.customChangeRate = 0.5;
+    Success success = new Success();
+    success.customAmplitude = 0.05;
+    success.customDuration = 2;
+    success.customChangeRate = 0.5;
+    config.put(fieldName, success);
     return config;
   }
 
