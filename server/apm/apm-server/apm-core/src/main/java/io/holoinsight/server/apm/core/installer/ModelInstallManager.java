@@ -12,6 +12,7 @@ import io.holoinsight.server.apm.core.ModelCenter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.scheduling.annotation.Scheduled;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
@@ -47,7 +48,7 @@ public class ModelInstallManager {
   private List<Model> scanModels() throws IOException {
     List<Model> models = new ArrayList<>();
     Collection<Class<?>> modelPathClasses = ClassUtil.getClasses(MODEL_PATH);
-    log.info("[storage] load {} models, path={}",
+    log.info("[apm] load {} models, path={}",
         modelPathClasses == null ? 0 : modelPathClasses.size(), MODEL_PATH);
     for (Class<?> cls : modelPathClasses) {
       if (cls.isAnnotationPresent(ModelAnnotation.class)) {
@@ -72,8 +73,10 @@ public class ModelInstallManager {
   private void installModel(Model model) {
     for (ModelInstaller installer : installers) {
       installer.install(model);
-      modelManager.register(model);
+      log.info("[apm] model installed, model={}, installer={}", model.getName(),
+          installer.getClass().getSimpleName());
     }
+    modelManager.register(model);
   }
 
 }

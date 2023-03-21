@@ -169,6 +169,9 @@ public class MetaFacadeImpl extends BaseFacade {
           if (entry.getKey().equalsIgnoreCase("_type")) {
             queryExample.getParams().put("_type", entry.getValue());
             continue;
+          } else if (entry.getKey().equalsIgnoreCase("_workspace")) {
+            queryExample.getParams().put("_workspace", entry.getValue());
+            continue;
           }
           Pattern pattern = Pattern.compile(String.format("^.*%s.*$", entry.getValue()),
               Pattern.CASE_INSENSITIVE);

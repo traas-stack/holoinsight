@@ -43,6 +43,11 @@ public class CollectMetric implements Serializable {
 
   public List<Metric> metrics;
 
+  /**
+   * after filters
+   */
+  public List<AfterFilter> afterFilters;
+
   @Data
   public static class Metric implements Serializable {
 
@@ -55,5 +60,15 @@ public class CollectMetric implements Serializable {
      */
     public String func;
 
+  }
+
+  @Data
+  public static class AfterFilter implements Serializable {
+    private static final long serialVersionUID = 6526193106427818978L;
+
+    public String name;
+    public FilterType filterType;
+
+    public List<String> values;
   }
 }
