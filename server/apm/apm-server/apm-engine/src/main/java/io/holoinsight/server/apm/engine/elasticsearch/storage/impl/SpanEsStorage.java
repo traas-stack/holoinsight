@@ -50,9 +50,6 @@ public class SpanEsStorage extends RecordEsStorage<SpanDO> implements SpanStorag
 
   private static final int SPAN_QUERY_MAX_SIZE = 2000;
 
-  @Autowired
-  private RestHighLevelClient esClient;
-
   @Override
   public TraceBrief queryBasicTraces(final String tenant, String serviceName,
       String serviceInstanceName, String endpointName, List<String> traceIds, int minTraceDuration,
@@ -127,7 +124,7 @@ public class SpanEsStorage extends RecordEsStorage<SpanDO> implements SpanStorag
     SearchRequest searchRequest =
         new SearchRequest(new String[] {SpanDO.INDEX_NAME}, searchSourceBuilder);
 
-    SearchResponse searchResponse = esClient.search(searchRequest, RequestOptions.DEFAULT);
+    SearchResponse searchResponse = esClient().search(searchRequest, RequestOptions.DEFAULT);
     final TraceBrief traceBrief = new TraceBrief();
     for (org.elasticsearch.search.SearchHit hit : searchResponse.getHits().getHits()) {
       String hitJson = hit.getSourceAsString();
@@ -145,7 +142,8 @@ public class SpanEsStorage extends RecordEsStorage<SpanDO> implements SpanStorag
       basicTrace.getTraceIds().add(spanEsDO.getTraceId());
       traceBrief.getTraces().add(basicTrace);
     }
-    log.info("[apm] query_basic_traces finish, engine=elasticsearch, cost={}", stopWatch.getTime());
+    log.info("[apm] query_basic_traces finish, engine={}, cost={}", this.getClass().getSimpleName(),
+        stopWatch.getTime());
     return traceBrief;
   }
 
@@ -159,7 +157,7 @@ public class SpanEsStorage extends RecordEsStorage<SpanDO> implements SpanStorag
     searchSourceBuilder.size(SPAN_QUERY_MAX_SIZE);
     SearchRequest searchRequest =
         new SearchRequest(new String[] {SpanDO.INDEX_NAME}, searchSourceBuilder);
-    SearchResponse searchResponse = esClient.search(searchRequest, RequestOptions.DEFAULT);
+    SearchResponse searchResponse = esClient().search(searchRequest, RequestOptions.DEFAULT);
     List<SpanDO> spanRecords = new ArrayList<>();
     for (org.elasticsearch.search.SearchHit hit : searchResponse.getHits().getHits()) {
       String hitJson = hit.getSourceAsString();
@@ -195,7 +193,8 @@ public class SpanEsStorage extends RecordEsStorage<SpanDO> implements SpanStorag
       }
     });
     trace.getSpans().addAll(sortedSpans);
-    log.info("[apm] query_trace finish, engine=elasticsearch, cost={}", stopWatch.getTime());
+    log.info("[apm] query_trace finish, engine={}, cost={}", this.getClass().getSimpleName(),
+        stopWatch.getTime());
     return trace;
   }
 
@@ -242,7 +241,7 @@ public class SpanEsStorage extends RecordEsStorage<SpanDO> implements SpanStorag
 
     SearchRequest searchRequest = new SearchRequest(SpanDO.INDEX_NAME);
     searchRequest.source(sourceBuilder);
-    SearchResponse response = esClient.search(searchRequest, RequestOptions.DEFAULT);
+    SearchResponse response = esClient().search(searchRequest, RequestOptions.DEFAULT);
 
     Terms terms = response.getAggregations().get(SpanDO.attributes(Const.APPID));
     for (Terms.Bucket bucket : terms.getBuckets()) {
