@@ -26,7 +26,6 @@ public class ApmInitializer implements ApplicationRunner {
       log.info("[apm] init finish");
     } catch (Exception e) {
       log.error("[apm] init fail, msg={}", e.getMessage(), e);
-      throw new RuntimeException(e);
     }
   }
 }

@@ -11,6 +11,7 @@ import io.holoinsight.server.apm.engine.storage.RecordStorage;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.time.StopWatch;
+import org.elasticsearch.action.DocWriteRequest;
 import org.elasticsearch.action.bulk.BulkRequest;
 import org.elasticsearch.action.bulk.BulkResponse;
 import org.elasticsearch.action.index.IndexRequest;
@@ -33,18 +34,22 @@ public class RecordEsStorage<T extends RecordDO> implements RecordStorage<T> {
   @Autowired
   private RestHighLevelClient esClient;
 
+  protected RestHighLevelClient esClient() {
+    return esClient;
+  }
+
   public void batchInsert(List<T> entities) throws IOException {
     if (CollectionUtils.isNotEmpty(entities)) {
       StopWatch stopWatch = StopWatch.createStarted();
       BulkRequest bulkRequest = new BulkRequest();
       entities.forEach(entity -> {
         String writeIndexName = writeIndexName(entity.indexName(), entity.getTimeBucket());
-        bulkRequest.add(new IndexRequest(writeIndexName).source(EsGsonUtils.esGson().toJson(entity),
-            XContentType.JSON));
+        bulkRequest.add(new IndexRequest(writeIndexName).opType(DocWriteRequest.OpType.CREATE)
+            .source(EsGsonUtils.esGson().toJson(entity), XContentType.JSON));
       });
-      BulkResponse bulkItemRsp = esClient.bulk(bulkRequest, RequestOptions.DEFAULT);
-      log.info("[apm] batch_insert finish, engine=elasticsearch, size={}, cost={}",
-          CollectionUtils.size(entities), stopWatch.getTime());
+      BulkResponse bulkItemRsp = esClient().bulk(bulkRequest, RequestOptions.DEFAULT);
+      log.info("[apm] batch_insert finish, engine={}, size={}, cost={}",
+          this.getClass().getSimpleName(), CollectionUtils.size(entities), stopWatch.getTime());
     }
   }
 

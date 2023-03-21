@@ -49,23 +49,30 @@ public class EsModelInstaller implements ModelInstaller {
 
   private IndexStructures structures = new IndexStructures();
 
+  protected RestHighLevelClient esClient() {
+    return esClient;
+  }
+
   @Override
   public boolean isExists(Model model) {
     String tableName = model.getName();
-    IndicesClient indicesClient = esClient.indices();
+    IndicesClient indicesClient = esClient().indices();
     try {
       boolean isExists = indicesClient.existsIndexTemplate(
           new ComposableIndexTemplateExistRequest(tableName), RequestOptions.DEFAULT);
-      GetComposableIndexTemplatesResponse indexTemplatesResponse = indicesClient.getIndexTemplate(
-          new GetComposableIndexTemplateRequest(tableName), RequestOptions.DEFAULT);
-      if (isExists && indexTemplatesResponse != null
-          && indexTemplatesResponse.getIndexTemplates().containsKey(tableName)) {
-        ComposableIndexTemplate composableIndexTemplate =
-            indexTemplatesResponse.getIndexTemplates().get(tableName);
-        Template template = composableIndexTemplate.template();
-        Mappings mappings = GsonUtils.get().fromJson(template.mappings().string(), Mappings.class);
-        structures.putStructure(tableName, mappings);
-        isExists = structures.containsStructure(tableName, createMapping(model));
+      if (isExists) {
+        GetComposableIndexTemplatesResponse indexTemplatesResponse = indicesClient.getIndexTemplate(
+            new GetComposableIndexTemplateRequest(tableName), RequestOptions.DEFAULT);
+        if (indexTemplatesResponse != null
+            && indexTemplatesResponse.getIndexTemplates().containsKey(tableName)) {
+          ComposableIndexTemplate composableIndexTemplate =
+              indexTemplatesResponse.getIndexTemplates().get(tableName);
+          Template template = composableIndexTemplate.template();
+          Mappings mappings =
+              GsonUtils.get().fromJson(template.mappings().string(), Mappings.class);
+          structures.putStructure(tableName, mappings);
+          isExists = structures.containsStructure(tableName, createMapping(model));
+        }
       }
       return isExists;
     } catch (ElasticsearchStatusException e) {
@@ -90,12 +97,13 @@ public class EsModelInstaller implements ModelInstaller {
 
   private void createTimeSeriesTable(Model model) {
     String tableName = model.getName();
-    IndicesClient indicesClient = esClient.indices();
+    IndicesClient indicesClient = esClient().indices();
     try {
       Mappings mappings = createMapping(model);
       boolean shouldUpdateTemplate = !isExists(model);
       shouldUpdateTemplate =
           shouldUpdateTemplate || !structures.containsStructure(tableName, mappings);
+      log.info("[apm] model={}, shouldUpdateTemplate={}", model.getName(), shouldUpdateTemplate);
       if (shouldUpdateTemplate) {
         structures.putStructure(tableName, mappings);
         Settings settings = createSettings(model);
@@ -142,8 +150,10 @@ public class EsModelInstaller implements ModelInstaller {
   }
 
   protected Settings createSettings(Model model) {
-    Settings settings = Settings.builder().put("index.number_of_replicas", 1)
-        .put("index.number_of_shards", 5).put("index.refresh_interval", "10s").build();
+    Settings settings =
+        Settings.builder().put("index.number_of_replicas", 1).put("index.number_of_shards", 5)
+            .put("index.refresh_interval", "10s").put("number_of_replicas", 1)
+            .put("number_of_shards", 5).put("refresh_interval", "10s").build();
     return settings;
   }
 

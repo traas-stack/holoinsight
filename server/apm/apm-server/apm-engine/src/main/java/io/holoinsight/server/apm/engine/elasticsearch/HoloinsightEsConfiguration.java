@@ -49,7 +49,8 @@ public class HoloinsightEsConfiguration {
   private String user;
   private String password;
 
-  @Bean
+  @Bean("elasticsearchClient")
+  @Primary
   public RestHighLevelClient elasticsearchClient() {
     log.info("init es config, hosts={}, port={}", hosts, port);
     List<HttpHost> httpHosts =
