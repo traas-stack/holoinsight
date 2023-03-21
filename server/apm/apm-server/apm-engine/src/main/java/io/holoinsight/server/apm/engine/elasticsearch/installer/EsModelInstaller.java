@@ -150,10 +150,10 @@ public class EsModelInstaller implements ModelInstaller {
   }
 
   protected Settings createSettings(Model model) {
-    Settings settings =
-        Settings.builder().put("index.number_of_replicas", 1).put("index.number_of_shards", 5)
-            .put("index.refresh_interval", "10s").put("number_of_replicas", 1)
-            .put("number_of_shards", 5).put("refresh_interval", "10s").build();
+    // for different versions of elasticsearch
+    Settings settings = Settings.builder().put("index.number_of_replicas", 1)
+        .put("number_of_replicas", 1).put("index.number_of_shards", 5).put("number_of_shards", 5)
+        .put("index.refresh_interval", "10s").put("refresh_interval", "10s").build();
     return settings;
   }
 
