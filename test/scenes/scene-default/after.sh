@@ -22,3 +22,7 @@ docker cp ./agent.yaml $server_container_name:/usr/local/holoinsight/agent/
 docker cp ./agent.ini $server_container_name:/etc/supervisord.d/agent.ini
 
 docker exec $server_container_name bash -c 'sc reread && sleep 1 && sc add agent'
+
+echo copy log-generator.py to $server_container_name
+docker cp ./log-generator.py $server_container_name:/home/admin/logs/holoinsight-server/log-generator.py
+docker exec -w /home/admin/logs/holoinsight-server $server_container_name bash -c ' python log-generator.py & '
