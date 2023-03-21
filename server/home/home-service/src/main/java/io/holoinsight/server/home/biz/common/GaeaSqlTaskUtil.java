@@ -5,6 +5,7 @@ package io.holoinsight.server.home.biz.common;
 
 import io.holoinsight.server.home.common.util.StringUtil;
 import io.holoinsight.server.home.dal.model.dto.conf.*;
+import io.holoinsight.server.home.dal.model.dto.conf.CollectMetric.AfterFilter;
 import io.holoinsight.server.home.dal.model.dto.conf.CollectMetric.Metric;
 import io.holoinsight.server.home.dal.model.dto.conf.CustomPluginConf.SplitCol;
 import io.holoinsight.server.registry.model.Elect;
@@ -27,6 +28,7 @@ import io.holoinsight.server.registry.model.TimeParse;
 import io.holoinsight.server.registry.model.Where;
 import io.holoinsight.server.registry.model.Where.Contains;
 import io.holoinsight.server.registry.model.Where.ContainsAny;
+import io.holoinsight.server.registry.model.Where.In;
 import io.holoinsight.server.registry.model.Where.Regexp;
 import io.holoinsight.server.registry.model.Window;
 import org.apache.commons.lang3.StringUtils;
@@ -306,75 +308,74 @@ public class GaeaSqlTaskUtil {
   public static Where buildWhere(LogParse logParse, Map<String, Map<String, SplitCol>> splitColMap,
       CollectMetric collectMetric) {
 
-    // List<String> tags = collectMetric.tags;
-    //
     Where where = new Where();
     List<Where> ands = new ArrayList<>();
-    // tags.forEach(t -> {
-    //
-    // SplitCol dim = splitColMap.get(dimColType).get(t);
-    // if (null == dim) {
-    // return;
-    // }
-    // Rule rule = dim.rule;
-    // Where and = new Where();
-    // Elect elect = new Elect();
-    // switch (logParse.splitType) {
-    // case leftRight:
-    // Elect.LeftRight leftRight = new Elect.LeftRight();
-    // leftRight.setLeft(rule.left);
-    // leftRight.setLeftIndex(rule.leftIndex);
-    // leftRight.setRight(rule.right);
-    //
-    // elect.setType("leftRight");
-    // elect.setLeftRight(leftRight);
-    // break;
-    //
-    // case separator:
-    // elect.setType("refIndex");
-    // elect.setRefIndex(new RefIndex());
-    // elect.getRefIndex().setIndex(rule.pos);
-    // break;
-    // case regexp:
-    // elect.setType("refName");
-    // elect.setRefName(new RefName());
-    // elect.getRefName().setName(rule.regexpName);
-    // break;
-    // default:
-    // break;
-    // }
-    //
-    // if (null != rule.translate) {
-    // Translate translate = rule.translate;
-    // List<ColumnCalExpr> exprs = translate.exprs;
-    //
-    // Transform transform = new Transform();
-    // List<Elect.TransformItem> transformItems = new ArrayList<>();
-    // if (!CollectionUtils.isEmpty(exprs)) {
-    // exprs.forEach(expr -> {
-    // Elect.TransformItem transformItem = new TransformItem();
-    // transformItem.setArg(expr.getParams());
-    // transformItem.setFunc(expr.getFunc());
-    // transformItems.add(transformItem);
-    // });
-    // }
-    //
-    // transform.setTransforms(transformItems);
-    // elect.setTransform(transform);
-    // }
-    //
-    // if (!StringUtils.isEmpty(rule.defaultValue)) {
-    // elect.setDefaultValue(rule.defaultValue);
-    // }
-    //
-    // Where.In in = new Where.In();
-    // in.setValues(t.values);
-    // in.setElect(elect);
-    // and.setIn(in);
-    //
-    // ands.add(and);
-    // });
-    //
+
+    Map<String, SplitCol> dimColMap = splitColMap.get(dimColType);
+    if (!CollectionUtils.isEmpty(collectMetric.afterFilters)
+        && !CollectionUtils.isEmpty(dimColMap)) {
+      for (AfterFilter afterFilter : collectMetric.afterFilters) {
+        if (!dimColMap.containsKey(afterFilter.getName()))
+          continue;
+        SplitCol dim = dimColMap.get(afterFilter.getName());
+
+        Rule rule = dim.rule;
+        Elect elect = new Elect();
+
+        switch (logParse.splitType) {
+          case leftRight:
+            Elect.LeftRight leftRight = new Elect.LeftRight();
+            leftRight.setLeft(rule.left);
+            leftRight.setLeftIndex(rule.leftIndex);
+            leftRight.setRight(rule.right);
+
+            elect.setType("leftRight");
+            elect.setLeftRight(leftRight);
+            break;
+
+          case separator:
+            elect.setType("refIndex");
+            elect.setRefIndex(new RefIndex());
+            elect.getRefIndex().setIndex(rule.pos);
+            break;
+          case regexp:
+            if (StringUtils.isNotEmpty(rule.regexpName)) {
+              elect.setType("refName");
+              elect.setRefName(new RefName());
+              elect.getRefName().setName(rule.regexpName);
+            } else if (rule.pos != null) {
+              elect.setType("refIndex");
+              elect.setRefIndex(new RefIndex());
+              elect.getRefIndex().setIndex(rule.pos);
+            }
+            break;
+          default:
+            break;
+        }
+
+        Where and = new Where();
+        Where.In in = new In();
+
+        switch (afterFilter.filterType) {
+          case IN:
+            in.setElect(elect);
+            in.setValues(afterFilter.getValues());
+            and.setIn(in);
+            break;
+          case NOT_IN:
+            Where not = new Where();
+            in.setValues(afterFilter.getValues());
+            in.setElect(elect);
+            not.setIn(in);
+            and.setNot(not);
+            break;
+          default:
+            break;
+        }
+        ands.add(and);
+      }
+    }
+
     if (StringUtils.isNotBlank(collectMetric.metricType)
         && collectMetric.metricType.equalsIgnoreCase("contains")) {
       Where and = new Where();
