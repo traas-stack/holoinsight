@@ -26,3 +26,6 @@ docker exec $server_container_name bash -c 'sc reread && sleep 1 && sc add agent
 echo copy log-generator.py to $server_container_name
 docker cp ./log-generator.py $server_container_name:/home/admin/logs/holoinsight-server/log-generator.py
 docker exec -w /home/admin/logs/holoinsight-server $server_container_name bash -c ' python log-generator.py & '
+
+docker cp ./log-alert-generator.py $server_container_name:/home/admin/logs/holoinsight-server/log-alert-generator.py
+docker exec -w /home/admin/logs/holoinsight-server $server_container_name bash -c ' python log-alert-generator.py & '

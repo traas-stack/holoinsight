@@ -4,9 +4,15 @@
 package io.holoinsight.server.home.facade;
 
 import lombok.Data;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.util.CollectionUtils;
 
 import java.io.Serializable;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Objects;
+import java.util.TreeMap;
 
 /**
  * @author wangsiyuan
@@ -21,4 +27,20 @@ public class DataResult implements Serializable {
 
   private Map<Long, Double> points;
 
+  public String getKey() {
+    if (StringUtils.isEmpty(metric)) {
+      return StringUtils.EMPTY;
+    }
+    StringBuilder key = new StringBuilder(metric);
+    if (!CollectionUtils.isEmpty(tags)) {
+      TreeMap<String, String> sortedMap = new TreeMap<>(tags);
+      for (Map.Entry<String, String> entry : sortedMap.entrySet()) {
+        key.append(entry.getKey()) //
+            .append(":") //
+            .append(entry.getValue()) //
+            .append(",");
+      }
+    }
+    return key.toString();
+  }
 }

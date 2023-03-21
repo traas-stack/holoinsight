@@ -15,15 +15,21 @@ import io.holoinsight.server.home.facade.trigger.Filter;
 import io.holoinsight.server.home.facade.trigger.Trigger;
 import io.holoinsight.server.query.grpc.QueryProto;
 import org.apache.commons.lang3.StringUtils;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * @author wangsiyuan
@@ -41,36 +47,60 @@ public class RuleAlarmLoadData implements AlarmLoadData {
   public List<DataResult> queryDataResult(ComputeTaskPackage computeTask,
       InspectConfig inspectConfig, Trigger trigger) {
     List<DataResult> dataResults = new ArrayList<>();
-    QueryProto.QueryResponse response = queryData(computeTask, inspectConfig, trigger);
-    if (response != null) {
-      for (QueryProto.Result result : response.getResultsList()) {
-        DataResult dataResult = new DataResult();
-        dataResult.setMetric(result.getMetric());
-        dataResult.setTags(result.getTagsMap());
-        Map<Long, Double> points = new HashMap<>();
-        for (QueryProto.Point point : result.getPointsList()) {
-          points.put(point.getTimestamp(), point.getValue());
-        }
-        dataResult.setPoints(points);
-        dataResults.add(dataResult);
+    QueryProto.QueryResponse response = null;
+    QueryProto.QueryRequest request = null;
+    QueryProto.QueryRequest deltaRequest = null;
+    QueryProto.QueryResponse deltaResponse = null;
+    try {
+      request = buildRequest(computeTask.getTimestamp(), inspectConfig.getTenant(), trigger);
+      response = queryClientService.queryData(request);
+      dataResults = merge(dataResults, response);
+      long deltaTimestamp = getDeltaTimestamp(trigger.getPeriodType());
+      if (deltaTimestamp > 0) {
+        deltaRequest = buildRequest(computeTask.getTimestamp() - deltaTimestamp,
+            inspectConfig.getTenant(), trigger);
+        deltaResponse = queryClientService.queryData(deltaRequest);
+        dataResults = merge(dataResults, deltaResponse);
       }
+    } catch (Exception exception) {
+      LOGGER.error("QueryData Exception Request:{} Response:{} DeltaRequest:{} DeltaResponse: {}",
+          G.get().toJson(request), G.get().toJson(response), G.get().toJson(deltaRequest),
+          G.get().toJson(deltaResponse), exception);
     }
     return dataResults;
   }
 
-  private QueryProto.QueryResponse queryData(ComputeTaskPackage computeTask, InspectConfig e,
-      Trigger trigger) {
-    QueryProto.QueryResponse response = null;
-    QueryProto.QueryRequest request = null;
-    try {
-      request = buildRequest(computeTask.getTimestamp(), e.getTenant(), trigger);
-      response = queryClientService.queryData(request);
-      return response;
-    } catch (Exception exception) {
-      LOGGER.error("QueryData Exception Request:{} Response:{}", G.get().toJson(request),
-          G.get().toJson(response), exception);
+  private long getDeltaTimestamp(PeriodType periodType) {
+    if (periodType == null) {
+      return 0;
+    } else {
+      return periodType.intervalMillis();
     }
-    return null;
+  }
+
+  protected List<DataResult> merge(List<DataResult> dataResults,
+      QueryProto.QueryResponse response) {
+    Map<String /* data result key */, DataResult> map = new HashMap<>();
+    if (!CollectionUtils.isEmpty(dataResults)) {
+      for (DataResult dataResult : dataResults) {
+        map.put(dataResult.getKey(), dataResult);
+      }
+    }
+    if (response != null && !CollectionUtils.isEmpty(response.getResultsList())) {
+      for (QueryProto.Result result : response.getResultsList()) {
+        DataResult key = new DataResult();
+        key.setMetric(result.getMetric());
+        key.setTags(result.getTagsMap());
+        DataResult dataResult = map.computeIfAbsent(key.getKey(), k -> key);
+        if (dataResult.getPoints() == null) {
+          dataResult.setPoints(new HashMap<>());
+        }
+        for (QueryProto.Point point : result.getPointsList()) {
+          dataResult.getPoints().put(point.getTimestamp(), point.getValue());
+        }
+      }
+    }
+    return new ArrayList<>(map.values());
   }
 
   protected QueryProto.QueryRequest buildRequest(long timestamp, String tenant, Trigger trigger) {

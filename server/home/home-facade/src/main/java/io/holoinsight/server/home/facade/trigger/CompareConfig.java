@@ -16,4 +16,7 @@ public class CompareConfig {
 
   private List<CompareParam> compareParam; // 触发条件
   private String triggerLevel;
+
+  // trigger summary
+  private String triggerContent;
 }

@@ -1,0 +1,104 @@
+{
+  "name": "告警算子测试用日志监控",
+  "parentFolderId": "-1",
+  "pluginType": "custom",
+  "status": "ONLINE",
+  "periodType": "FIVE_SECOND",
+  "sampleLog": "2023-03-23 18:31:35 level=INFO biz=[biz1] cost=348ms",
+  "conf":
+  {
+    "collectRanges":
+    {
+      "table": "default_server",
+      "condition":
+      [
+        {
+          "app":
+          [
+            "holoinsight-server-example"
+          ]
+        }
+      ]
+    },
+    "logPaths":
+    [
+      {
+        "path": "/home/admin/logs/holoinsight-server/increase_value.log",
+        "type": "path",
+        "charset": "utf-8",
+        "agentLimitKB": -1
+      }
+    ],
+    "logParse":
+    {
+      "splitType": "LR",
+      "separator": null,
+      "regexp": null,
+      "multiLine":
+      {
+        "multi": false
+      }
+    },
+    "whiteFilters":
+    [],
+    "blackFilters":
+    [],
+    "splitCols":
+    [
+      {
+        "name": "cost",
+        "colType": "VALUE",
+        "rule":
+        {
+          "left": "cost=",
+          "right": "ms",
+          "leftIndex": 0,
+          "nullable": false,
+          "defaultValue": "",
+          "translate":
+          {
+            "exprs":
+            [],
+            "defaultValue": ""
+          }
+        }
+      },
+      {
+        "name": "biz_name",
+        "colType": "DIM",
+        "rule":
+        {
+          "left": "[",
+          "right": "]",
+          "leftIndex": 0,
+          "nullable": true,
+          "defaultValue": "",
+          "translate":
+          {
+            "exprs":
+            [],
+            "defaultValue": ""
+          }
+        }
+      }
+    ],
+    "collectMetrics":
+    [
+      {
+        "metricType": "select",
+        "tags":
+        [
+          "biz_name"
+        ],
+        "metrics":
+        [
+          {
+            "name": "cost",
+            "func": "sum"
+          }
+        ],
+        "tableName": "cost"
+      }
+    ]
+  }
+}

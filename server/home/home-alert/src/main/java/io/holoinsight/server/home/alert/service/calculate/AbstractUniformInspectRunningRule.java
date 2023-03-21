@@ -3,7 +3,6 @@
  */
 package io.holoinsight.server.home.alert.service.calculate;
 
-import io.holoinsight.server.common.J;
 import io.holoinsight.server.home.alert.common.G;
 import io.holoinsight.server.home.alert.model.compute.ComputeContext;
 import io.holoinsight.server.home.alert.model.compute.ComputeInfo;
@@ -152,7 +151,7 @@ public class AbstractUniformInspectRunningRule {
       ruleResult.setMetric(dataResult.getMetric());
       ruleResult.setTags(dataResult.getTags());
       ruleResult.setCompareParam(functionConfigParam.getCmp());
-      ruleResult.setTriggerContent(trigger.getTriggerContent());
+      ruleResult.setTriggerContent(functionConfigParam.getTriggerContent());
       ruleResult.setTriggerLevel(functionConfigParam.getTriggerLevel());
       triggerResults.add(ruleResult);
       if (ruleResult.isHit()) {
@@ -175,6 +174,7 @@ public class AbstractUniformInspectRunningRule {
       functionConfigAIParam.setStepTime(trigger.getDownsample());
       functionConfigAIParam.setTraceId(computeInfo.getTraceId());
       functionConfigAIParam.setTenant(computeInfo.getTenant());
+      functionConfigAIParam.setTriggerContent(trigger.getTriggerContent());
       functionConfigAIParam.setTrigger(trigger);
       list.add(functionConfigAIParam);
     } else {
@@ -188,6 +188,8 @@ public class AbstractUniformInspectRunningRule {
           functionConfigParam.setStepTime(trigger.getDownsample());
           functionConfigParam.setTraceId(computeInfo.getTraceId());
           functionConfigParam.setZeroFill(trigger.isZeroFill());
+          functionConfigParam.setPeriodType(trigger.getPeriodType());
+          functionConfigParam.setTriggerContent(compareConfig.getTriggerContent());
           list.add(functionConfigParam);
         }
       } else {
@@ -198,6 +200,8 @@ public class AbstractUniformInspectRunningRule {
         functionConfigParam.setStepTime(trigger.getDownsample());
         functionConfigParam.setTraceId(computeInfo.getTraceId());
         functionConfigParam.setZeroFill(trigger.isZeroFill());
+        functionConfigParam.setPeriodType(trigger.getPeriodType());
+        functionConfigParam.setTriggerContent(trigger.getTriggerContent());
         list.add(functionConfigParam);
       }
 

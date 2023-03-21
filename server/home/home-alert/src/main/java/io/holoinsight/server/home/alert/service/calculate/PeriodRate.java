@@ -14,14 +14,14 @@ import org.springframework.stereotype.Service;
 import java.util.Map;
 
 /**
- * @author wangsiyuan
- * @date 2022/11/25 9:54 AM
+ * @author masaimu
+ * @version 2023-03-21 14:37:00
  */
 @Service
-public class Current extends BaseFunction {
+public class PeriodRate extends BaseFunction {
   @Override
   public FunctionEnum getFunc() {
-    return FunctionEnum.Current;
+    return FunctionEnum.PeriodRate;
   }
 
   @Override
@@ -31,11 +31,16 @@ public class Current extends BaseFunction {
 
   @Override
   protected double getValue(CompareParam cmp) {
-    return cmp.getCmpValue() == null ? 0d : cmp.getCmpValue();
+    double value = cmp.getCmpValue() == null ? 0d : cmp.getCmpValue();
+    value = value / 100;
+    return value;
   }
 
   @Override
   protected Double getComparedValue(Double current, Double past) {
-    return current;
+    if (current == null || past == null) {
+      return null;
+    }
+    return rate(current, past);
   }
 }
