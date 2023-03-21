@@ -6,7 +6,7 @@ package io.holoinsight.server.home.dal.model.dto.conf;
 
 /**
  * <p>
- *     collect log filter type
+ * collect log filter type
  * </p>
  * <p>
  * Date: 2023-03-21 Time: 10:50
