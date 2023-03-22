@@ -101,15 +101,12 @@ public class AlarmHistoryServiceImpl extends ServiceImpl<AlarmHistoryMapper, Ala
       wrapper.le("gmt_create", new Date(pageRequest.getTo()));
     }
 
-    // 区分报警中、已恢复
-    if (alarmHistory.getDuration() != null) {
-      if (alarmHistory.getDuration() == 0) {
-        Map<String, String> params = new HashMap<>();
-        params.put("duration", null);
-        wrapper.allEq(params);
-      } else {
-        wrapper.ge("duration", 0);
+    if (alarmHistory.getRecoverTime() == null) {
+      if (alarmHistory.getDuration() != null && alarmHistory.getDuration() == 0) {
+        wrapper.isNull("recover_time");
       }
+    } else if (alarmHistory.getDuration() != null && alarmHistory.getDuration() == 1) {
+      wrapper.isNotNull("recover_time");
     }
 
     if (StringUtil.isNotBlank(pageRequest.getSortBy())
