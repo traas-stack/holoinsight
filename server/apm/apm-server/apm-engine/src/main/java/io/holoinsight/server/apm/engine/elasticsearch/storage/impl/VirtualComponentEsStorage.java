@@ -34,6 +34,10 @@ public class VirtualComponentEsStorage implements VirtualComponentStorage {
   @Autowired
   private RestHighLevelClient client;
 
+  protected RestHighLevelClient esClient() {
+    return client;
+  }
+
   @Override
   public List<VirtualComponent> getComponentList(String tenant, String service, long startTime,
       long endTime, RequestType type, String sourceOrDest) throws IOException {
@@ -51,9 +55,10 @@ public class VirtualComponentEsStorage implements VirtualComponentStorage {
 
     SearchRequest searchRequest = new SearchRequest(ServiceRelationDO.INDEX_NAME);
     searchRequest.source(sourceBuilder);
-    SearchResponse response = client.search(searchRequest, RequestOptions.DEFAULT);
+    SearchResponse response = esClient().search(searchRequest, RequestOptions.DEFAULT);
 
-    log.info("[apm] get_component_list finish, engine=es, cost={}", stopWatch.getTime());
+    log.info("[apm] get_component_list finish, engine={}, cost={}", this.getClass().getSimpleName(),
+        stopWatch.getTime());
     return buildComponentList(response, sourceOrDest);
   }
 
@@ -79,7 +84,7 @@ public class VirtualComponentEsStorage implements VirtualComponentStorage {
 
     SearchRequest searchRequest = new SearchRequest(ServiceRelationDO.INDEX_NAME);
     searchRequest.source(sourceBuilder);
-    SearchResponse response = client.search(searchRequest, RequestOptions.DEFAULT);
+    SearchResponse response = esClient().search(searchRequest, RequestOptions.DEFAULT);
 
     List<String> traceIds = new ArrayList<>();
     Terms terms = response.getAggregations().get(ServiceRelationDO.TRACE_ID);

@@ -29,6 +29,10 @@ public class ServiceInstanceEsStorage implements ServiceInstanceStorage {
   @Autowired
   private RestHighLevelClient client;
 
+  protected RestHighLevelClient esClient() {
+    return client;
+  }
+
   @Override
   public List<ServiceInstance> getServiceInstanceList(String tenant, String service, long startTime,
       long endTime) throws IOException {
@@ -52,7 +56,7 @@ public class ServiceInstanceEsStorage implements ServiceInstanceStorage {
 
     SearchRequest searchRequest = new SearchRequest(SpanDO.INDEX_NAME);
     searchRequest.source(sourceBuilder);
-    SearchResponse response = client.search(searchRequest, RequestOptions.DEFAULT);
+    SearchResponse response = esClient().search(searchRequest, RequestOptions.DEFAULT);
 
     Terms terms = response.getAggregations().get(SpanDO.resource(SpanDO.SERVICE_INSTANCE_NAME));
     for (Terms.Bucket bucket : terms.getBuckets()) {
@@ -65,7 +69,8 @@ public class ServiceInstanceEsStorage implements ServiceInstanceStorage {
       result.add(serviceInstance);
     }
 
-    log.info("[apm] get_serviceInstance_list finish, engine=es, cost={}", stopWatch.getTime());
+    log.info("[apm] get_serviceInstance_list finish, engine={}, cost={}",
+        this.getClass().getSimpleName(), stopWatch.getTime());
     return result;
   }
 }

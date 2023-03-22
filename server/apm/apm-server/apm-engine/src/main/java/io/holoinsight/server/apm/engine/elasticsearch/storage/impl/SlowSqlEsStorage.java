@@ -7,7 +7,9 @@ import io.holoinsight.server.apm.common.model.query.SlowSql;
 import io.holoinsight.server.apm.engine.elasticsearch.utils.EsGsonUtils;
 import io.holoinsight.server.apm.engine.model.SlowSqlDO;
 import io.holoinsight.server.apm.engine.storage.SlowSqlStorage;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.time.StopWatch;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.RequestOptions;
@@ -22,14 +24,21 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+@Slf4j
 public class SlowSqlEsStorage extends RecordEsStorage<SlowSqlDO> implements SlowSqlStorage {
 
   @Autowired
   private RestHighLevelClient client;
 
+  protected RestHighLevelClient esClient() {
+    return client;
+  }
+
   @Override
   public List<SlowSql> getSlowSqlList(String tenant, String serviceName, String dbAddress,
       long startTime, long endTime) throws IOException {
+    StopWatch stopWatch = StopWatch.createStarted();
+
     BoolQueryBuilder queryBuilder =
         QueryBuilders.boolQuery().must(QueryBuilders.termQuery(SlowSqlDO.TENANT, tenant))
             .must(QueryBuilders.rangeQuery(SlowSqlDO.START_TIME).gte(startTime).lte(endTime));
@@ -47,7 +56,7 @@ public class SlowSqlEsStorage extends RecordEsStorage<SlowSqlDO> implements Slow
 
     SearchRequest searchRequest = new SearchRequest(SlowSqlDO.INDEX_NAME);
     searchRequest.source(sourceBuilder);
-    SearchResponse response = client.search(searchRequest, RequestOptions.DEFAULT);
+    SearchResponse response = esClient().search(searchRequest, RequestOptions.DEFAULT);
 
     List<SlowSql> result = new ArrayList<>();
     for (SearchHit searchHit : response.getHits().getHits()) {
@@ -56,6 +65,8 @@ public class SlowSqlEsStorage extends RecordEsStorage<SlowSqlDO> implements Slow
       result.add(slowSql);
     }
 
+    log.info("[apm] get_slow_sql finish, engine={}, cost={}", this.getClass().getSimpleName(),
+        stopWatch.getTime());
     return result;
   }
 }

@@ -28,6 +28,10 @@ public class EndpointEsStorage implements EndpointStorage {
   @Autowired
   private RestHighLevelClient client;
 
+  protected RestHighLevelClient esClient() {
+    return client;
+  }
+
   @Override
   public List<Endpoint> getEndpointList(String tenant, String service, long startTime, long endTime)
       throws IOException {
@@ -46,7 +50,7 @@ public class EndpointEsStorage implements EndpointStorage {
 
     SearchRequest searchRequest = new SearchRequest(EndpointRelationDO.INDEX_NAME);
     searchRequest.source(sourceBuilder);
-    SearchResponse response = client.search(searchRequest, RequestOptions.DEFAULT);
+    SearchResponse response = esClient().search(searchRequest, RequestOptions.DEFAULT);
 
     Terms terms = response.getAggregations().get(EndpointRelationDO.DEST_ENDPOINT_NAME);
     for (Terms.Bucket bucket : terms.getBuckets()) {
@@ -59,7 +63,8 @@ public class EndpointEsStorage implements EndpointStorage {
       result.add(endpoint);
     }
 
-    log.info("[apm] get_endpoint_list finish, engine=es, cost={}", stopWatch.getTime());
+    log.info("[apm] get_endpoint_list finish, engine={}, cost={}", this.getClass().getSimpleName(),
+        stopWatch.getTime());
     return result;
   }
 }

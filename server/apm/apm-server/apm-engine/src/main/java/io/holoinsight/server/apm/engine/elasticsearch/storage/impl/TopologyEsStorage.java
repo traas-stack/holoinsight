@@ -35,6 +35,10 @@ public class TopologyEsStorage implements TopologyStorage {
   @Autowired
   private RestHighLevelClient client;
 
+  protected RestHighLevelClient esClient() {
+    return client;
+  }
+
   @Override
   public List<Call.DeepCall> getEndpointCalls(String tenant, String service, String endpoint,
       long startTime, long endTime, String sourceOrDest, Map<String, String> termParams)
@@ -54,9 +58,10 @@ public class TopologyEsStorage implements TopologyStorage {
 
     SearchRequest searchRequest = new SearchRequest(EndpointRelationDO.INDEX_NAME);
     searchRequest.source(sourceBuilder);
-    SearchResponse response = client.search(searchRequest, RequestOptions.DEFAULT);
+    SearchResponse response = esClient().search(searchRequest, RequestOptions.DEFAULT);
 
-    log.info("[apm] get_endpoint_calls finish, engine=es, cost={}", stopWatch.getTime());
+    log.info("[apm] get_endpoint_calls finish, engine={}, cost={}", this.getClass().getSimpleName(),
+        stopWatch.getTime());
     return buildEndpointCalls(response);
   }
 
@@ -76,7 +81,7 @@ public class TopologyEsStorage implements TopologyStorage {
 
     SearchRequest searchRequest = new SearchRequest(ServiceRelationDO.INDEX_NAME);
     searchRequest.source(sourceBuilder);
-    SearchResponse response = client.search(searchRequest, RequestOptions.DEFAULT);
+    SearchResponse response = esClient().search(searchRequest, RequestOptions.DEFAULT);
 
     return buildCalls(response);
   }
@@ -105,9 +110,10 @@ public class TopologyEsStorage implements TopologyStorage {
 
     SearchRequest searchRequest = new SearchRequest(SpanDO.INDEX_NAME);
     searchRequest.source(sourceBuilder);
-    SearchResponse response = client.search(searchRequest, RequestOptions.DEFAULT);
+    SearchResponse response = esClient().search(searchRequest, RequestOptions.DEFAULT);
 
-    log.info("[apm] get_service_metric finish, engine=es, cost={}", stopWatch.getTime());
+    log.info("[apm] get_service_metric finish, engine={}, cost={}", this.getClass().getSimpleName(),
+        stopWatch.getTime());
     return buildServiceMetric(response, aggField);
   }
 
@@ -130,7 +136,7 @@ public class TopologyEsStorage implements TopologyStorage {
 
     SearchRequest searchRequest = new SearchRequest(ServiceInstanceRelationDO.INDEX_NAME);
     searchRequest.source(sourceBuilder);
-    SearchResponse response = client.search(searchRequest, RequestOptions.DEFAULT);
+    SearchResponse response = esClient().search(searchRequest, RequestOptions.DEFAULT);
 
     return buildServiceInstanceCalls(response);
   }
@@ -151,9 +157,10 @@ public class TopologyEsStorage implements TopologyStorage {
 
     SearchRequest searchRequest = new SearchRequest(ServiceRelationDO.INDEX_NAME);
     searchRequest.source(sourceBuilder);
-    SearchResponse response = client.search(searchRequest, RequestOptions.DEFAULT);
+    SearchResponse response = esClient().search(searchRequest, RequestOptions.DEFAULT);
 
-    log.info("[apm] get_tenant_calls finish, engine=es, cost={}", stopWatch.getTime());
+    log.info("[apm] get_tenant_calls finish, engine={}, cost={}", this.getClass().getSimpleName(),
+        stopWatch.getTime());
     return buildCalls(response);
   }
 
