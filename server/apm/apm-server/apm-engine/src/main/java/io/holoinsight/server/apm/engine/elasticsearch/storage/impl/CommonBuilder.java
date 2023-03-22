@@ -8,7 +8,6 @@ import io.holoinsight.server.apm.common.model.query.ResponseMetric;
 import io.holoinsight.server.apm.engine.model.EndpointRelationDO;
 import io.holoinsight.server.apm.engine.model.ServiceRelationDO;
 import io.holoinsight.server.apm.engine.model.SpanDO;
-import io.opentelemetry.proto.trace.v1.Status;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
@@ -61,9 +60,8 @@ public class CommonBuilder {
         .subAggregation(AggregationBuilders.count("total_count").field(ServiceRelationDO.TRACE_ID))
         .subAggregation(AggregationBuilders
             .filter(ServiceRelationDO.TRACE_STATUS,
-                QueryBuilders.termQuery(ServiceRelationDO.TRACE_STATUS,
-                    Status.StatusCode.STATUS_CODE_ERROR_VALUE))
-            .subAggregation(AggregationBuilders.count("error_count").field(aggField)))
+                QueryBuilders.rangeQuery(ServiceRelationDO.TRACE_STATUS).gte(2).lte(3))
+            .subAggregation(AggregationBuilders.cardinality("error_count").field("trace_id")))
         .executionHint("map").collectMode(Aggregator.SubAggCollectionMode.BREADTH_FIRST).size(1000);
 
     return aggregationBuilder;
@@ -83,7 +81,7 @@ public class CommonBuilder {
     int totalCount = (int) totalTerm.getValue();
 
     Filter errFilter = bucket.getAggregations().get(ServiceRelationDO.TRACE_STATUS);
-    ValueCount errorTerm = errFilter.getAggregations().get("error_count");
+    ParsedCardinality errorTerm = errFilter.getAggregations().get("error_count");
     int errorCount = (int) errorTerm.getValue();
 
     ResponseMetric metric =
@@ -115,3 +113,4 @@ public class CommonBuilder {
     return metric;
   }
 }
+

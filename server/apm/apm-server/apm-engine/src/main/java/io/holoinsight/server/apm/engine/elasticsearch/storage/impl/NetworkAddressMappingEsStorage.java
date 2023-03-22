@@ -23,7 +23,11 @@ public class NetworkAddressMappingEsStorage extends RecordEsStorage<NetworkAddre
     implements NetworkAddressMappingStorage {
 
   @Autowired
-  private RestHighLevelClient esClient;
+  private RestHighLevelClient client;
+
+  protected RestHighLevelClient esClient() {
+    return client;
+  }
 
   @Override
   public List<NetworkAddressMappingDO> loadByTime(long timeBucketInMinute) throws IOException {
@@ -36,7 +40,7 @@ public class NetworkAddressMappingEsStorage extends RecordEsStorage<NetworkAddre
     SearchRequest searchRequest =
         new SearchRequest(new String[] {NetworkAddressMappingDO.INDEX_NAME}, searchSourceBuilder);
 
-    SearchResponse searchResponse = esClient.search(searchRequest, RequestOptions.DEFAULT);
+    SearchResponse searchResponse = esClient().search(searchRequest, RequestOptions.DEFAULT);
 
     for (SearchHit searchHit : searchResponse.getHits().getHits()) {
       String hitJson = searchHit.getSourceAsString();

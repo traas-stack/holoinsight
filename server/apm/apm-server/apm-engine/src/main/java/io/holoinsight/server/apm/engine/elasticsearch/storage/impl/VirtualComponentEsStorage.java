@@ -8,7 +8,9 @@ import io.holoinsight.server.apm.common.model.specification.sw.RequestType;
 import io.holoinsight.server.apm.engine.model.EndpointRelationDO;
 import io.holoinsight.server.apm.engine.model.ServiceRelationDO;
 import io.holoinsight.server.apm.engine.storage.VirtualComponentStorage;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.time.StopWatch;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.RequestOptions;
@@ -26,14 +28,20 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+@Slf4j
 public class VirtualComponentEsStorage implements VirtualComponentStorage {
 
   @Autowired
   private RestHighLevelClient client;
 
+  protected RestHighLevelClient esClient() {
+    return client;
+  }
+
   @Override
   public List<VirtualComponent> getComponentList(String tenant, String service, long startTime,
       long endTime, RequestType type, String sourceOrDest) throws IOException {
+    StopWatch stopWatch = StopWatch.createStarted();
     BoolQueryBuilder queryBuilder =
         QueryBuilders.boolQuery().must(QueryBuilders.termQuery(ServiceRelationDO.TENANT, tenant))
             .must(QueryBuilders.termQuery(sourceOrDest + "_service_name", service))
@@ -47,8 +55,10 @@ public class VirtualComponentEsStorage implements VirtualComponentStorage {
 
     SearchRequest searchRequest = new SearchRequest(ServiceRelationDO.INDEX_NAME);
     searchRequest.source(sourceBuilder);
-    SearchResponse response = client.search(searchRequest, RequestOptions.DEFAULT);
+    SearchResponse response = esClient().search(searchRequest, RequestOptions.DEFAULT);
 
+    log.info("[apm] get_component_list finish, engine={}, cost={}", this.getClass().getSimpleName(),
+        stopWatch.getTime());
     return buildComponentList(response, sourceOrDest);
   }
 
@@ -74,7 +84,7 @@ public class VirtualComponentEsStorage implements VirtualComponentStorage {
 
     SearchRequest searchRequest = new SearchRequest(ServiceRelationDO.INDEX_NAME);
     searchRequest.source(sourceBuilder);
-    SearchResponse response = client.search(searchRequest, RequestOptions.DEFAULT);
+    SearchResponse response = esClient().search(searchRequest, RequestOptions.DEFAULT);
 
     List<String> traceIds = new ArrayList<>();
     Terms terms = response.getAggregations().get(ServiceRelationDO.TRACE_ID);

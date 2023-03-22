@@ -7,6 +7,8 @@ import io.holoinsight.server.apm.common.model.query.ServiceInstance;
 import io.holoinsight.server.apm.common.model.specification.otel.SpanKind;
 import io.holoinsight.server.apm.engine.model.SpanDO;
 import io.holoinsight.server.apm.engine.storage.ServiceInstanceStorage;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.time.StopWatch;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.RequestOptions;
@@ -21,14 +23,20 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+@Slf4j
 public class ServiceInstanceEsStorage implements ServiceInstanceStorage {
 
   @Autowired
   private RestHighLevelClient client;
 
+  protected RestHighLevelClient esClient() {
+    return client;
+  }
+
   @Override
   public List<ServiceInstance> getServiceInstanceList(String tenant, String service, long startTime,
       long endTime) throws IOException {
+    StopWatch stopWatch = StopWatch.createStarted();
     List<ServiceInstance> result = new ArrayList<>();
 
     BoolQueryBuilder queryBuilder =
@@ -48,7 +56,7 @@ public class ServiceInstanceEsStorage implements ServiceInstanceStorage {
 
     SearchRequest searchRequest = new SearchRequest(SpanDO.INDEX_NAME);
     searchRequest.source(sourceBuilder);
-    SearchResponse response = client.search(searchRequest, RequestOptions.DEFAULT);
+    SearchResponse response = esClient().search(searchRequest, RequestOptions.DEFAULT);
 
     Terms terms = response.getAggregations().get(SpanDO.resource(SpanDO.SERVICE_INSTANCE_NAME));
     for (Terms.Bucket bucket : terms.getBuckets()) {
@@ -61,6 +69,8 @@ public class ServiceInstanceEsStorage implements ServiceInstanceStorage {
       result.add(serviceInstance);
     }
 
+    log.info("[apm] get_serviceInstance_list finish, engine={}, cost={}",
+        this.getClass().getSimpleName(), stopWatch.getTime());
     return result;
   }
 }
