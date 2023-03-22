@@ -86,7 +86,7 @@ public class AlertRuleServiceImpl extends ServiceImpl<AlarmRuleMapper, AlarmRule
     }
 
     if (StringUtils.isNotBlank(alarmRule.getWorkspace())) {
-      wrapper.eq("workspace", alarmRule.getTenant());
+      wrapper.eq("workspace", alarmRule.getWorkspace());
     }
 
     if (null != alarmRule.getStatus()) {
