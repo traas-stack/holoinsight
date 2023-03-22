@@ -8,7 +8,9 @@ import io.holoinsight.server.apm.common.model.specification.sw.RequestType;
 import io.holoinsight.server.apm.engine.model.EndpointRelationDO;
 import io.holoinsight.server.apm.engine.model.ServiceRelationDO;
 import io.holoinsight.server.apm.engine.storage.VirtualComponentStorage;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.time.StopWatch;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.RequestOptions;
@@ -26,6 +28,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+@Slf4j
 public class VirtualComponentEsStorage implements VirtualComponentStorage {
 
   @Autowired
@@ -34,6 +37,7 @@ public class VirtualComponentEsStorage implements VirtualComponentStorage {
   @Override
   public List<VirtualComponent> getComponentList(String tenant, String service, long startTime,
       long endTime, RequestType type, String sourceOrDest) throws IOException {
+    StopWatch stopWatch = StopWatch.createStarted();
     BoolQueryBuilder queryBuilder =
         QueryBuilders.boolQuery().must(QueryBuilders.termQuery(ServiceRelationDO.TENANT, tenant))
             .must(QueryBuilders.termQuery(sourceOrDest + "_service_name", service))
@@ -49,6 +53,7 @@ public class VirtualComponentEsStorage implements VirtualComponentStorage {
     searchRequest.source(sourceBuilder);
     SearchResponse response = client.search(searchRequest, RequestOptions.DEFAULT);
 
+    log.info("[apm] get_component_list finish, engine=es, cost={}", stopWatch.getTime());
     return buildComponentList(response, sourceOrDest);
   }
 

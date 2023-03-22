@@ -7,6 +7,8 @@ import io.holoinsight.server.apm.common.model.query.Service;
 import io.holoinsight.server.apm.common.model.specification.otel.SpanKind;
 import io.holoinsight.server.apm.engine.model.SpanDO;
 import io.holoinsight.server.apm.engine.storage.ServiceOverviewStorage;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.time.StopWatch;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.RequestOptions;
@@ -21,6 +23,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+@Slf4j
 public class ServiceOverviewEsStorage implements ServiceOverviewStorage {
 
   @Autowired
@@ -29,6 +32,7 @@ public class ServiceOverviewEsStorage implements ServiceOverviewStorage {
   @Override
   public List<Service> getServiceList(String tenant, long startTime, long endTime)
       throws IOException {
+    StopWatch stopWatch = StopWatch.createStarted();
     List<Service> result = new ArrayList<>();
 
     BoolQueryBuilder queryBuilder =
@@ -58,7 +62,7 @@ public class ServiceOverviewEsStorage implements ServiceOverviewStorage {
 
       result.add(service);
     }
-
+    log.info("[apm] get_service_list finish, engine=es, cost={}", stopWatch.getTime());
     return result;
   }
 }
