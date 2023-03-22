@@ -18,5 +18,9 @@ public interface IntegrationGeneratedService extends IService<IntegrationGenerat
 
   void insert(IntegrationGeneratedDTO integrationGeneratedDTO);
 
+  void update(IntegrationGeneratedDTO integrationGeneratedDTO);
+
   List<IntegrationGenerated> queryByTenant(String tenant);
+
+  List<IntegrationGenerated> queryByTenant(String tenant, String workspace);
 }

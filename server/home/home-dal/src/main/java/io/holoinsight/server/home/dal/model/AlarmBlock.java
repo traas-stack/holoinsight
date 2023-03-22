@@ -77,6 +77,11 @@ public class AlarmBlock {
   private String tenant;
 
   /**
+   * workspace
+   */
+  private String workspace;
+
+  /**
    * 屏蔽维度
    */
   private String tags;

@@ -55,6 +55,9 @@ public class AlarmHistoryDetailFacadeImpl extends BaseFacade {
         if (null != ms && !StringUtils.isEmpty(ms.tenant)) {
           pageRequest.getTarget().setTenant(ms.tenant);
         }
+        if (null != ms && !StringUtils.isEmpty(ms.workspace)) {
+          pageRequest.getTarget().setWorkspace(ms.workspace);
+        }
         JsonResult.createSuccessResult(result,
             alarmHistoryDetailService.getListByPage(pageRequest));
       }

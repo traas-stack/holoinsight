@@ -13,7 +13,6 @@ import io.holoinsight.server.home.common.util.MonitorException;
 import io.holoinsight.server.home.common.util.ResultCodeEnum;
 import io.holoinsight.server.home.common.util.StringUtil;
 import io.holoinsight.server.home.common.util.scope.AuthTargetType;
-import io.holoinsight.server.home.common.util.scope.MonitorCookieUtil;
 import io.holoinsight.server.home.common.util.scope.MonitorScope;
 import io.holoinsight.server.home.common.util.scope.MonitorUser;
 import io.holoinsight.server.home.common.util.scope.PowerConstants;
@@ -35,7 +34,6 @@ import io.holoinsight.server.common.JsonResult;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -89,27 +87,27 @@ public class UserFavoriteFacadeImpl extends BaseFacade {
       public void checkParameter() {
         ParaCheckUtil.checkParaNotNull(userFavorite.relateId, "relateId");
         ParaCheckUtil.checkParaNotBlank(userFavorite.type, "type");
-
+        MonitorScope ms = RequestContext.getContext().ms;
         switch (userFavorite.type) {
           case "folder":
             Folder folder = folderService.queryById(Long.parseLong(userFavorite.getRelateId()),
-                RequestContext.getContext().ms.tenant);
+                ms.tenant, ms.workspace);
             if (null == folder) {
               throw new MonitorException(String.format("can not find record, %s-%s",
                   userFavorite.type, userFavorite.relateId));
             }
             break;
           case "logmonitor":
-            CustomPluginDTO customPluginDTO = customPluginService.queryById(
-                Long.parseLong(userFavorite.getRelateId()), RequestContext.getContext().ms.tenant);
+            CustomPluginDTO customPluginDTO = customPluginService
+                .queryById(Long.parseLong(userFavorite.getRelateId()), ms.tenant, ms.workspace);
             if (null == customPluginDTO) {
               throw new MonitorException(String.format("can not find record, %s-%s",
                   userFavorite.type, userFavorite.relateId));
             }
             break;
           case "dashboard":
-            Dashboard dashboard = dashboardService.queryById(
-                Long.parseLong(userFavorite.getRelateId()), RequestContext.getContext().ms.tenant);
+            Dashboard dashboard = dashboardService
+                .queryById(Long.parseLong(userFavorite.getRelateId()), ms.tenant, ms.workspace);
             if (null == dashboard) {
               throw new MonitorException(String.format("can not find record, %s-%s",
                   userFavorite.type, userFavorite.relateId));
@@ -117,7 +115,7 @@ public class UserFavoriteFacadeImpl extends BaseFacade {
             break;
           case "integration":
             IntegrationPluginDTO integrationPluginDTO = integrationPluginService
-                .queryByName(userFavorite.getRelateId(), RequestContext.getContext().ms.tenant);
+                .queryByName(userFavorite.getRelateId(), ms.tenant, ms.workspace);
             if (null == integrationPluginDTO) {
               throw new MonitorException(String.format("can not find record, %s-%s",
                   userFavorite.type, userFavorite.relateId));
@@ -134,20 +132,21 @@ public class UserFavoriteFacadeImpl extends BaseFacade {
         if (null != mu) {
           userFavorite.setUserLoginName(mu.getLoginName());
         }
-        if (null != ms && !StringUtils.isEmpty(ms.tenant)) {
+        if (null != ms && !StringUtil.isBlank(ms.tenant)) {
           userFavorite.setTenant(ms.tenant);
+        }
+        if (null != ms && !StringUtil.isBlank(ms.workspace)) {
+          userFavorite.setWorkspace(ms.workspace);
         }
         userFavorite.setGmtCreate(new Date());
         userFavorite.setGmtModified(new Date());
 
-        userFavorite.setTenant(MonitorCookieUtil.getTenantOrException());
         UserFavorite save = userFavoriteService.create(userFavorite);
         JsonResult.createSuccessResult(result, save);
 
         assert mu != null;
         userOpLogService.append("user_favorite", save.getId(), OpType.CREATE, mu.getLoginName(),
-            RequestContext.getContext().ms.getTenant(), J.toJson(save), null, null,
-            "user_favorite_create");
+            ms.getTenant(), ms.getWorkspace(), J.toJson(save), null, null, "user_favorite_create");
       }
     });
 
@@ -166,8 +165,9 @@ public class UserFavoriteFacadeImpl extends BaseFacade {
 
       @Override
       public void doManage() {
+        MonitorScope ms = RequestContext.getContext().ms;
         UserFavorite userFavorite =
-            userFavoriteService.queryById(id, RequestContext.getContext().ms.getTenant());
+            userFavoriteService.queryById(id, ms.getTenant(), ms.getWorkspace());
 
         if (null == userFavorite) {
           throw new MonitorException(ResultCodeEnum.CANNOT_FIND_RECORD, "can not find record");
@@ -194,8 +194,8 @@ public class UserFavoriteFacadeImpl extends BaseFacade {
         MonitorScope ms = RequestContext.getContext().ms;
         MonitorUser mu = RequestContext.getContext().mu;
         List<UserFavorite> byUserAndTenantAndRelateId =
-            userFavoriteService.getByUserAndTenantAndRelateId(mu.getLoginName(),
-                ms.getTenantIdOrException(), id, type);
+            userFavoriteService.getByUserAndTenantAndRelateId(mu.getLoginName(), ms.getTenant(),
+                ms.getWorkspace(), id, type);
 
         if (CollectionUtils.isEmpty(byUserAndTenantAndRelateId)) {
           JsonResult.createSuccessResult(result, null);
@@ -231,9 +231,9 @@ public class UserFavoriteFacadeImpl extends BaseFacade {
 
         List<UserFavorite> userFavorites = new ArrayList<>();
         favRequest.getFavRequestCmds().forEach(favRequestCmd -> {
-          List<UserFavorite> favorites = userFavoriteService.getByUserAndTenantAndRelateIds(
-              mu.getLoginName(), ms.getTenantIdOrException(), favRequestCmd.getRelateIds(),
-              favRequestCmd.getType());
+          List<UserFavorite> favorites =
+              userFavoriteService.getByUserAndTenantAndRelateIds(mu.getLoginName(), ms.getTenant(),
+                  ms.getWorkspace(), favRequestCmd.getRelateIds(), favRequestCmd.getType());
 
           if (!CollectionUtils.isEmpty(favorites)) {
             userFavorites.addAll(favorites);
@@ -261,8 +261,11 @@ public class UserFavoriteFacadeImpl extends BaseFacade {
       @Override
       public void doManage() {
         MonitorScope ms = RequestContext.getContext().ms;
-        if (null != ms && !StringUtils.isEmpty(ms.tenant)) {
+        if (null != ms && !StringUtil.isBlank(ms.tenant)) {
           userFavoriteRequest.getTarget().setTenant(ms.tenant);
+        }
+        if (null != ms && !StringUtil.isBlank(ms.workspace)) {
+          userFavoriteRequest.getTarget().setWorkspace(ms.workspace);
         }
         JsonResult.createSuccessResult(result,
             userFavoriteService.getListByPage(userFavoriteRequest));
@@ -286,8 +289,8 @@ public class UserFavoriteFacadeImpl extends BaseFacade {
         MonitorUser mu = RequestContext.getContext().mu;
         MonitorScope ms = RequestContext.getContext().ms;
 
-        List<UserFavorite> byUserAndTenant =
-            userFavoriteService.getByUserAndTenant(mu.getLoginName(), ms.getTenantIdOrException());
+        List<UserFavorite> byUserAndTenant = userFavoriteService
+            .getByUserAndTenant(mu.getLoginName(), ms.getTenant(), ms.getWorkspace());
 
         if (CollectionUtils.isEmpty(byUserAndTenant)) {
           JsonResult.createSuccessResult(result, byUserAndTenant);
@@ -382,8 +385,8 @@ public class UserFavoriteFacadeImpl extends BaseFacade {
 
       @Override
       public void doManage() {
-        UserFavorite byId =
-            userFavoriteService.queryById(id, RequestContext.getContext().ms.getTenant());
+        MonitorScope ms = RequestContext.getContext().ms;
+        UserFavorite byId = userFavoriteService.queryById(id, ms.getTenant(), ms.getWorkspace());
         if (null == byId) {
           throw new MonitorException(ResultCodeEnum.CANNOT_FIND_RECORD,
               "can not find record:" + id);
@@ -391,9 +394,8 @@ public class UserFavoriteFacadeImpl extends BaseFacade {
         userFavoriteService.deleteById(id);
         JsonResult.createSuccessResult(result, true);
         userOpLogService.append("user_favorite", byId.getId(), OpType.DELETE,
-            RequestContext.getContext().mu.getLoginName(),
-            RequestContext.getContext().ms.getTenant(), J.toJson(byId), null, null,
-            "user_favorite_delete");
+            RequestContext.getContext().mu.getLoginName(), ms.getTenant(), ms.getWorkspace(),
+            J.toJson(byId), null, null, "user_favorite_delete");
 
       }
     });
@@ -416,7 +418,7 @@ public class UserFavoriteFacadeImpl extends BaseFacade {
         MonitorUser mu = RequestContext.getContext().mu;
         MonitorScope ms = RequestContext.getContext().ms;
         List<UserFavorite> byId = userFavoriteService.getByUserAndTenantAndRelateId(
-            mu.getLoginName(), ms.getTenantIdOrException(), relateId, type);
+            mu.getLoginName(), ms.getTenant(), ms.getWorkspace(), relateId, type);
 
         if (CollectionUtils.isEmpty(byId)) {
           return;
@@ -425,9 +427,8 @@ public class UserFavoriteFacadeImpl extends BaseFacade {
         userFavoriteService.deleteById(byId.get(0).id);
         JsonResult.createSuccessResult(result, true);
         userOpLogService.append("user_favorite", byId.get(0).id, OpType.DELETE,
-            RequestContext.getContext().mu.getLoginName(),
-            RequestContext.getContext().ms.getTenant(), J.toJson(byId), null, null,
-            "user_favorite_delete");
+            RequestContext.getContext().mu.getLoginName(), ms.getTenant(), ms.getWorkspace(),
+            J.toJson(byId), null, null, "user_favorite_delete");
 
       }
     });

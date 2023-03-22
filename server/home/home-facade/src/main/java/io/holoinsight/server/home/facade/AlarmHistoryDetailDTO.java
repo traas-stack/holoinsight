@@ -39,6 +39,11 @@ public class AlarmHistoryDetailDTO {
   private String tenant;
 
   /**
+   * workspace
+   */
+  private String workspace;
+
+  /**
    * 触发方式简述
    */
   private String alarmContent;

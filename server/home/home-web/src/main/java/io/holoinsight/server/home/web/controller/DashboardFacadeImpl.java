@@ -9,6 +9,7 @@ import io.holoinsight.server.home.biz.service.DashboardService;
 import io.holoinsight.server.home.biz.service.UserOpLogService;
 import io.holoinsight.server.home.common.util.MonitorException;
 import io.holoinsight.server.home.common.util.ResultCodeEnum;
+import io.holoinsight.server.home.common.util.StringUtil;
 import io.holoinsight.server.home.common.util.scope.AuthTargetType;
 import io.holoinsight.server.home.common.util.scope.MonitorScope;
 import io.holoinsight.server.home.common.util.scope.MonitorUser;
@@ -24,7 +25,6 @@ import io.holoinsight.server.home.web.common.ParaCheckUtil;
 import io.holoinsight.server.home.web.interceptor.MonitorScopeAuth;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -63,6 +63,7 @@ public class DashboardFacadeImpl extends BaseFacade {
       @Override
       public void doManage() {
         request.getTarget().setTenant(RequestContext.getContext().ms.getTenant());
+        request.getTarget().setWorkspace(RequestContext.getContext().ms.getWorkspace());
         JsonResult.createSuccessResult(result, dashboardService.getListByPage(request));
       }
     });
@@ -78,15 +79,14 @@ public class DashboardFacadeImpl extends BaseFacade {
     facadeTemplate.manage(result, new ManageCallback() {
       @Override
       public void checkParameter() {
-
+        MonitorScope ms = RequestContext.getContext().ms;
         ParaCheckUtil.checkParaNotNull(request.getTenant(), "tenant");
-        ParaCheckUtil.checkEquals(request.getTenant(), RequestContext.getContext().ms.getTenant(),
-            "tenant is illegal");
+        ParaCheckUtil.checkEquals(request.getTenant(), ms.getTenant(), "tenant is illegal");
 
         ParaCheckUtil.checkParaNotNull(request.getId(), "id");
 
         Dashboard item =
-            dashboardService.queryById(request.getId(), RequestContext.getContext().ms.getTenant());
+            dashboardService.queryById(request.getId(), ms.getTenant(), ms.getWorkspace());
 
         if (null == item) {
           throw new MonitorException("cannot find record: " + request.getId());
@@ -109,16 +109,19 @@ public class DashboardFacadeImpl extends BaseFacade {
         if (null != mu) {
           update.setModifier(mu.getLoginName());
         }
-        if (null != ms && !StringUtils.isEmpty(ms.tenant)) {
+        if (null != ms && !StringUtil.isBlank(ms.tenant)) {
           update.setTenant(ms.tenant);
         }
-
+        if (null != ms && !StringUtil.isBlank(ms.workspace)) {
+          update.setWorkspace(ms.workspace);
+        }
         dashboardService.updateById(update);
         JsonResult.createSuccessResult(result, update);
 
         assert mu != null;
         userOpLogService.append("dashboard", update.getId(), OpType.UPDATE, mu.getLoginName(),
-            ms.getTenant(), J.toJson(request), J.toJson(update), null, "dashboard_update");
+            ms.getTenant(), ms.getWorkspace(), J.toJson(request), J.toJson(update), null,
+            "dashboard_update");
 
       }
     });
@@ -145,8 +148,11 @@ public class DashboardFacadeImpl extends BaseFacade {
           request.setCreator(mu.getLoginName());
           request.setModifier(mu.getLoginName());
         }
-        if (null != ms && !StringUtils.isEmpty(ms.tenant)) {
+        if (null != ms && !StringUtil.isBlank(ms.tenant)) {
           request.setTenant(ms.tenant);
+        }
+        if (null != ms && !StringUtil.isBlank(ms.workspace)) {
+          request.setWorkspace(ms.workspace);
         }
         request.setGmtModified(new Date());
         request.setGmtCreate(new Date());
@@ -156,7 +162,7 @@ public class DashboardFacadeImpl extends BaseFacade {
 
         assert mu != null;
         userOpLogService.append("dashboard", request.getId(), OpType.CREATE, mu.getLoginName(),
-            ms.getTenant(), J.toJson(request), null, null, "dashboard_create");
+            ms.getTenant(), ms.getWorkspace(), J.toJson(request), null, null, "dashboard_create");
       }
     });
 
@@ -175,8 +181,9 @@ public class DashboardFacadeImpl extends BaseFacade {
 
       @Override
       public void doManage() {
+        MonitorScope ms = RequestContext.getContext().ms;
         Dashboard customPluginDTO =
-            dashboardService.queryById(id, RequestContext.getContext().ms.getTenant());
+            dashboardService.queryById(id, ms.getTenant(), ms.getWorkspace());
 
         if (null == customPluginDTO) {
           throw new MonitorException(ResultCodeEnum.CANNOT_FIND_RECORD, "can not find record");
@@ -186,73 +193,6 @@ public class DashboardFacadeImpl extends BaseFacade {
     });
     return result;
   }
-
-  // @GetMapping
-  // public JsonResult<List<Dashboard>> list() {
-  //
-  // final JsonResult<List<Dashboard>> result = new JsonResult<>();
-  // facadeTemplate.manage(result, new ManageCallback() {
-  //
-  // @Override
-  // public void checkParameter() {
-  //
-  // }
-  //
-  // @Override
-  // public void doManage() {
-  // JsonResult.createSuccessResult(result, dashboardService.list());
-  // }
-  // });
-  //
-  // return result;
-  // }
-
-  // @PostMapping
-  // public JsonResult<DashboardDTO> save(@RequestBody DashboardDTO request) {
-  //
-  // final JsonResult<DashboardDTO> result = new JsonResult<>();
-  // facadeTemplate.manage(result, new ManageCallback() {
-  //
-  // @Override
-  // public void checkParameter() {
-  // ParaCheckUtil.checkParaNotNull(request.getTenant(), "tenant");
-  // ParaCheckUtil.checkEquals(request.getTenant(),
-  // RequestContext.getContext().ms.getTenant(), "tenant is illegal");
-  //
-  // if (null != request.getDashboard().get("id")) {
-  //
-  // Long id = Long.valueOf((Integer) request.getDashboard().get("id"));
-  // Dashboard item = dashboardService.queryById(id,
-  // RequestContext.getContext().ms.getTenant());
-  //
-  // if (null == item) {
-  // throw new MonitorException("cannot find record: " + id);
-  // }
-  // if (!item.getTenant().equalsIgnoreCase(request.getTenant())) {
-  // throw new MonitorException("the tenant parameter is invalid");
-  // }
-  // }
-  // }
-  //
-  // @Override
-  // public void doManage() {
-  //
-  // MonitorScope ms = RequestContext.getContext().ms;
-  // MonitorUser mu = RequestContext.getContext().mu;
-  // if (null != mu) {
-  // request.setModifier(mu.getLoginName());
-  // }
-  // if (null != ms && !StringUtils.isEmpty(ms.tenant)) {
-  // request.setTenant(ms.tenant);
-  // }
-  //
-  // DashboardDTO save = dashboardService.save(request);
-  // JsonResult.createSuccessResult(result, save);
-  // }
-  // });
-  //
-  // return result;
-  // }
 
   @DeleteMapping("/{id}")
   public JsonResult<Boolean> deleteById(@PathVariable Long id) {
@@ -266,17 +206,16 @@ public class DashboardFacadeImpl extends BaseFacade {
 
       @Override
       public void doManage() {
-        Dashboard dashboard =
-            dashboardService.queryById(id, RequestContext.getContext().ms.getTenant());
+        MonitorScope ms = RequestContext.getContext().ms;
+        Dashboard dashboard = dashboardService.queryById(id, ms.getTenant(), ms.getWorkspace());
         if (null == dashboard) {
           return;
         }
 
         boolean b = dashboardService.removeById(id);
         userOpLogService.append("dashobard", id, OpType.DELETE,
-            RequestContext.getContext().mu.getLoginName(),
-            RequestContext.getContext().ms.getTenant(), J.toJson(id), null, null,
-            "dashobard_delete");
+            RequestContext.getContext().mu.getLoginName(), ms.getTenant(), ms.getWorkspace(),
+            J.toJson(id), null, null, "dashobard_delete");
 
         JsonResult.createSuccessResult(result, b);
       }
@@ -297,8 +236,8 @@ public class DashboardFacadeImpl extends BaseFacade {
 
       @Override
       public void doManage() {
-        Dashboard dashboard =
-            dashboardService.queryById(id, RequestContext.getContext().ms.getTenant());
+        MonitorScope ms = RequestContext.getContext().ms;
+        Dashboard dashboard = dashboardService.queryById(id, ms.getTenant(), ms.getWorkspace());
 
         if (dashboard == null) {
           JsonResult.createSuccessResult(result, null);

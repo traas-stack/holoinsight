@@ -12,6 +12,7 @@ import io.holoinsight.server.home.facade.page.MonitorPageResult;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -30,10 +31,13 @@ public class UserFavoriteServiceImpl extends ServiceImpl<UserFavoriteMapper, Use
     implements UserFavoriteService {
 
   @Override
-  public UserFavorite queryById(Long id, String tenant) {
+  public UserFavorite queryById(Long id, String tenant, String workspace) {
     QueryWrapper<UserFavorite> wrapper = new QueryWrapper<>();
     wrapper.eq("tenant", tenant);
     wrapper.eq("id", id);
+    if (StringUtils.isNotBlank(workspace)) {
+      wrapper.eq("workspace", workspace);
+    }
     wrapper.last("LIMIT 1");
 
     return this.getOne(wrapper);
@@ -46,32 +50,41 @@ public class UserFavoriteServiceImpl extends ServiceImpl<UserFavoriteMapper, Use
     return listByMap(columnMap);
   }
 
-  public List<UserFavorite> getByUserAndTenant(String userLoginName, String tenant) {
+  public List<UserFavorite> getByUserAndTenant(String userLoginName, String tenant,
+      String workspace) {
     Map<String, Object> columnMap = new HashMap<>();
     columnMap.put("user_login_name", userLoginName);
     columnMap.put("tenant", tenant);
+    if (StringUtils.isNotBlank(workspace)) {
+      columnMap.put("workspace", workspace);
+    }
     return listByMap(columnMap);
   }
 
   public List<UserFavorite> getByUserAndTenantAndRelateId(String userLoginName, String tenant,
-      String relateId, String type) {
+      String workspace, String relateId, String type) {
     Map<String, Object> columnMap = new HashMap<>();
     columnMap.put("user_login_name", userLoginName);
     columnMap.put("tenant", tenant);
     columnMap.put("type", type);
     columnMap.put("relate_id", relateId);
+    if (StringUtils.isNotBlank(workspace)) {
+      columnMap.put("workspace", workspace);
+    }
     return listByMap(columnMap);
   }
 
   public List<UserFavorite> getByUserAndTenantAndRelateIds(String userLoginName, String tenant,
-      List<String> relateIds, String type) {
+      String workspace, List<String> relateIds, String type) {
 
     QueryWrapper<UserFavorite> wrapper = new QueryWrapper<>();
     wrapper.eq("user_login_name", userLoginName);
     wrapper.eq("tenant", tenant);
     wrapper.eq("type", type);
     wrapper.select().in("relate_id", relateIds);
-
+    if (StringUtils.isNotBlank(workspace)) {
+      wrapper.eq("workspace", workspace);
+    }
     return baseMapper.selectList(wrapper);
   }
 
@@ -132,6 +145,10 @@ public class UserFavoriteServiceImpl extends ServiceImpl<UserFavoriteMapper, Use
 
     if (null != userFavorite.getTenant()) {
       wrapper.eq("tenant", userFavorite.getTenant());
+    }
+
+    if (null != userFavorite.getWorkspace()) {
+      wrapper.eq("workspace", userFavorite.getWorkspace());
     }
 
     if (StringUtil.isNotBlank(userFavoriteRequest.getSortBy())

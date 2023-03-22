@@ -51,7 +51,7 @@ public class MetaTableService {
 
     if (tableName.endsWith("_app")) {
       Map<String, List<String>> appParam = new HashMap<>();
-      appParam.put("app", Collections.singletonList("app"));
+      appParam.put("app", Arrays.asList("app", "_workspace"));
       return appParam;
     }
 

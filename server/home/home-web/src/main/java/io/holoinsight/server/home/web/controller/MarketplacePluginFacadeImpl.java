@@ -5,7 +5,6 @@ package io.holoinsight.server.home.web.controller;
 
 import io.holoinsight.server.home.biz.plugin.MarketplaceProductHandler;
 import io.holoinsight.server.home.biz.service.AlertWebhookService;
-import io.holoinsight.server.home.biz.service.ApiKeyService;
 import io.holoinsight.server.home.biz.service.MarketplacePluginService;
 import io.holoinsight.server.home.biz.service.MarketplaceProductService;
 import io.holoinsight.server.home.biz.service.UserOpLogService;
@@ -17,7 +16,6 @@ import io.holoinsight.server.home.common.util.scope.MonitorScope;
 import io.holoinsight.server.home.common.util.scope.MonitorUser;
 import io.holoinsight.server.home.common.util.scope.PowerConstants;
 import io.holoinsight.server.home.common.util.scope.RequestContext;
-import io.holoinsight.server.home.dal.model.ApiKey;
 import io.holoinsight.server.home.dal.model.OpType;
 import io.holoinsight.server.home.dal.model.dto.AlarmWebhookDTO;
 import io.holoinsight.server.home.dal.model.dto.MarketplacePluginDTO;
@@ -30,9 +28,9 @@ import io.holoinsight.server.home.web.interceptor.MonitorScopeAuth;
 import io.holoinsight.server.common.J;
 import io.holoinsight.server.common.JsonResult;
 import com.google.gson.reflect.TypeToken;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -42,13 +40,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 /**
@@ -69,9 +64,6 @@ public class MarketplacePluginFacadeImpl extends BaseFacade {
   private AlertWebhookService alarmWebhookService;
 
   @Autowired
-  private ApiKeyService apiKeyService;
-
-  @Autowired
   private UserOpLogService userOpLogService;
 
   @Autowired
@@ -90,7 +82,6 @@ public class MarketplacePluginFacadeImpl extends BaseFacade {
         ParaCheckUtil.checkParaNotBlank(marketplacePluginDTO.name, "name");
         ParaCheckUtil.checkParaNotNull(marketplacePluginDTO.type, "type");
         ParaCheckUtil.checkParaNotBlank(marketplacePluginDTO.json, "json");
-        // ParaCheckUtil.checkParaNotNull(marketplacePluginDTO.status);
 
         ParaCheckUtil.checkParaNotNull(marketplacePluginDTO.getTenant(), "tenant");
         ParaCheckUtil.checkEquals(marketplacePluginDTO.getTenant(),
@@ -100,9 +91,9 @@ public class MarketplacePluginFacadeImpl extends BaseFacade {
 
       @Override
       public void doManage() {
-
+        MonitorScope ms = RequestContext.getContext().ms;
         MarketplacePluginDTO item = marketplacePluginService.queryById(marketplacePluginDTO.getId(),
-            RequestContext.getContext().ms.getTenant());
+            ms.getTenant(), ms.getWorkspace());
 
         if (null == item) {
           throw new MonitorException("cannot find record: " + marketplacePluginDTO.getId());
@@ -110,9 +101,12 @@ public class MarketplacePluginFacadeImpl extends BaseFacade {
         if (!item.getTenant().equalsIgnoreCase(marketplacePluginDTO.getTenant())) {
           throw new MonitorException("the tenant parameter is invalid");
         }
+        if (StringUtils.isNotBlank(ms.getWorkspace())) {
+          marketplacePluginDTO.setWorkspace(ms.getWorkspace());
+        }
+
         updateConf(marketplacePluginDTO);
 
-        MonitorScope ms = RequestContext.getContext().ms;
         MonitorUser mu = RequestContext.getContext().mu;
         if (null != mu) {
           marketplacePluginDTO.setModifier(mu.getLoginName());
@@ -125,8 +119,8 @@ public class MarketplacePluginFacadeImpl extends BaseFacade {
 
         assert mu != null;
         userOpLogService.append("marketplace_plugin", update.getId(), OpType.UPDATE,
-            mu.getLoginName(), ms.getTenant(), J.toJson(marketplacePluginDTO), J.toJson(update),
-            null, "marketplace_plugin_update");
+            mu.getLoginName(), ms.getTenant(), ms.getWorkspace(), J.toJson(marketplacePluginDTO),
+            J.toJson(update), null, "marketplace_plugin_update");
 
       }
     });
@@ -146,8 +140,9 @@ public class MarketplacePluginFacadeImpl extends BaseFacade {
 
       @Override
       public void doManage() {
+        MonitorScope ms = RequestContext.getContext().ms;
         MarketplacePluginDTO byId =
-            marketplacePluginService.queryById(id, RequestContext.getContext().ms.getTenant());
+            marketplacePluginService.queryById(id, ms.getTenant(), ms.getWorkspace());
         if (null == byId) {
           throw new MonitorException(ResultCodeEnum.CANNOT_FIND_RECORD,
               "can not find record: " + id);
@@ -156,9 +151,8 @@ public class MarketplacePluginFacadeImpl extends BaseFacade {
         marketplacePluginService.deleteById(id);
         JsonResult.createSuccessResult(result, null);
         userOpLogService.append("marketplace_plugin", byId.getId(), OpType.DELETE,
-            RequestContext.getContext().mu.getLoginName(),
-            RequestContext.getContext().ms.getTenant(), J.toJson(byId), null, null,
-            "marketplace_plugin_delete");
+            RequestContext.getContext().mu.getLoginName(), ms.getTenant(), ms.getWorkspace(),
+            J.toJson(byId), null, null, "marketplace_plugin_delete");
 
       }
     });
@@ -177,8 +171,13 @@ public class MarketplacePluginFacadeImpl extends BaseFacade {
 
       @Override
       public void doManage() {
+        MonitorScope ms = RequestContext.getContext().ms;
         Map<String, Object> params = new HashMap<>();
-        params.put("tenant", MonitorCookieUtil.getTenantOrException());
+        params.put("tenant", ms.getTenant());
+
+        if (StringUtils.isNotBlank(ms.getWorkspace())) {
+          params.put("workspace", ms.getWorkspace());
+        }
         params.put("type", type);
         List<MarketplacePluginDTO> byTypes = marketplacePluginService.findByMap(params);
         if (CollectionUtils.isEmpty(byTypes)) {
@@ -194,9 +193,8 @@ public class MarketplacePluginFacadeImpl extends BaseFacade {
         JsonResult.createSuccessResult(result, null);
         for (long id : ids) {
           userOpLogService.append("marketplace_plugin", id, OpType.DELETE,
-              RequestContext.getContext().mu.getLoginName(),
-              RequestContext.getContext().ms.getTenant(), J.toJson(id), null, null,
-              "marketplace_plugin_delete");
+              RequestContext.getContext().mu.getLoginName(), ms.getTenant(), ms.getWorkspace(),
+              J.toJson(id), null, null, "marketplace_plugin_delete");
         }
       }
     });
@@ -230,14 +228,18 @@ public class MarketplacePluginFacadeImpl extends BaseFacade {
           marketplacePluginDTO.setCreator(mu.getLoginName());
           marketplacePluginDTO.setModifier(mu.getLoginName());
         }
+
+        if (StringUtils.isNotBlank(ms.getWorkspace())) {
+          marketplacePluginDTO.setWorkspace(ms.getWorkspace());
+        }
         marketplacePluginDTO.setStatus(true);
         MarketplacePluginDTO save = marketplacePluginService.create(marketplacePluginDTO);
         JsonResult.createSuccessResult(result, save);
 
         assert mu != null;
         userOpLogService.append("marketplace_plugin", save.getId(), OpType.CREATE,
-            mu.getLoginName(), ms.getTenant(), J.toJson(marketplacePluginDTO), null, null,
-            "marketplace_plugin_create");
+            mu.getLoginName(), ms.getTenant(), ms.getWorkspace(), J.toJson(marketplacePluginDTO),
+            null, null, "marketplace_plugin_create");
 
       }
     });
@@ -257,8 +259,9 @@ public class MarketplacePluginFacadeImpl extends BaseFacade {
 
       @Override
       public void doManage() {
+        MonitorScope ms = RequestContext.getContext().ms;
         MarketplacePluginDTO marketplacePluginDTO =
-            marketplacePluginService.queryById(id, RequestContext.getContext().ms.getTenant());
+            marketplacePluginService.queryById(id, ms.getTenant(), ms.getWorkspace());
 
         if (null == marketplacePluginDTO) {
           throw new MonitorException(ResultCodeEnum.CANNOT_FIND_RECORD,
@@ -282,8 +285,9 @@ public class MarketplacePluginFacadeImpl extends BaseFacade {
 
       @Override
       public void doManage() {
+        MonitorScope ms = RequestContext.getContext().ms;
         MarketplacePluginDTO byId =
-            marketplacePluginService.queryById(id, RequestContext.getContext().ms.getTenant());
+            marketplacePluginService.queryById(id, ms.getTenant(), ms.getWorkspace());
         if (null == byId) {
           throw new MonitorException(ResultCodeEnum.CANNOT_FIND_RECORD,
               "can not find record: " + id);
@@ -292,9 +296,8 @@ public class MarketplacePluginFacadeImpl extends BaseFacade {
 
         JsonResult.createSuccessResult(result, true);
         userOpLogService.append("marketplace_plugin", byId.getId(), OpType.DELETE,
-            RequestContext.getContext().mu.getLoginName(),
-            RequestContext.getContext().ms.getTenant(), J.toJson(byId), null, null,
-            "marketplace_plugin_uninstall");
+            RequestContext.getContext().mu.getLoginName(), ms.getTenant(), ms.getWorkspace(),
+            J.toJson(byId), null, null, "marketplace_plugin_uninstall");
 
       }
     });
@@ -321,10 +324,10 @@ public class MarketplacePluginFacadeImpl extends BaseFacade {
         }
         MarketplacePluginDTO marketplacePluginDTO = marketplaceProductHandler.install(byId);
 
+        MonitorScope ms = RequestContext.getContext().ms;
         userOpLogService.append("marketplace_plugin", marketplacePluginDTO.getId(), OpType.CREATE,
-            RequestContext.getContext().mu.getLoginName(),
-            RequestContext.getContext().ms.getTenant(), J.toJson(marketplacePluginDTO), null, null,
-            "marketplace_plugin_install");
+            RequestContext.getContext().mu.getLoginName(), ms.getTenant(), ms.getWorkspace(),
+            J.toJson(marketplacePluginDTO), null, null, "marketplace_plugin_install");
 
         JsonResult.createSuccessResult(result, marketplacePluginDTO);
       }
@@ -369,9 +372,13 @@ public class MarketplacePluginFacadeImpl extends BaseFacade {
 
       @Override
       public void doManage() {
+        MonitorScope ms = RequestContext.getContext().ms;
         Map<String, Object> params = new HashMap<>();
-        params.put("tenant", MonitorCookieUtil.getTenantOrException());
+        params.put("tenant", ms.getTenant());
         params.put("name", name);
+        if (StringUtils.isNotBlank(ms.getWorkspace())) {
+          params.put("workspace", ms.getWorkspace());
+        }
         List<MarketplacePluginDTO> marketplacePluginDTOs =
             marketplacePluginService.findByMap(params);
         JsonResult.createSuccessResult(result, marketplacePluginDTOs);
@@ -390,8 +397,15 @@ public class MarketplacePluginFacadeImpl extends BaseFacade {
 
       @Override
       public void doManage() {
-        List<MarketplacePluginDTO> marketplacePluginDTOs = marketplacePluginService.findByMap(
-            Collections.singletonMap("tenant", MonitorCookieUtil.getTenantOrException()));
+        MonitorScope ms = RequestContext.getContext().ms;
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("tenant", ms.getTenant());
+        if (StringUtils.isNotBlank(ms.getWorkspace())) {
+          params.put("workspace", ms.getWorkspace());
+        }
+        List<MarketplacePluginDTO> marketplacePluginDTOs =
+            marketplacePluginService.findByMap(params);
 
         JsonResult.createSuccessResult(result, marketplacePluginDTOs);
       }
@@ -409,8 +423,15 @@ public class MarketplacePluginFacadeImpl extends BaseFacade {
 
       @Override
       public void doManage() {
-        List<MarketplacePluginDTO> marketplacePluginDTOs = marketplacePluginService.findByMap(
-            Collections.singletonMap("tenant", MonitorCookieUtil.getTenantOrException()));
+        MonitorScope ms = RequestContext.getContext().ms;
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("tenant", ms.getTenant());
+        if (StringUtils.isNotBlank(ms.getWorkspace())) {
+          params.put("workspace", ms.getWorkspace());
+        }
+        List<MarketplacePluginDTO> marketplacePluginDTOs =
+            marketplacePluginService.findByMap(params);
         JsonResult.createSuccessResult(result, marketplacePluginDTOs);
       }
     });
@@ -427,9 +448,14 @@ public class MarketplacePluginFacadeImpl extends BaseFacade {
 
       @Override
       public void doManage() {
+        MonitorScope ms = RequestContext.getContext().ms;
+
         Map<String, Object> params = new HashMap<>();
         params.put("tenant", MonitorCookieUtil.getTenantOrException());
         params.put("type", type);
+        if (StringUtils.isNotBlank(ms.getWorkspace())) {
+          params.put("workspace", ms.getWorkspace());
+        }
         List<MarketplacePluginDTO> marketplacePluginDTOs =
             marketplacePluginService.findByMap(params);
         JsonResult.createSuccessResult(result, marketplacePluginDTOs);
@@ -448,8 +474,15 @@ public class MarketplacePluginFacadeImpl extends BaseFacade {
 
       @Override
       public void doManage() {
-        List<MarketplacePluginDTO> marketplacePluginDTOs = marketplacePluginService.findByMap(
-            Collections.singletonMap("tenant", MonitorCookieUtil.getTenantOrException()));
+        MonitorScope ms = RequestContext.getContext().ms;
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("tenant", MonitorCookieUtil.getTenantOrException());
+        if (StringUtils.isNotBlank(ms.getWorkspace())) {
+          params.put("workspace", ms.getWorkspace());
+        }
+        List<MarketplacePluginDTO> marketplacePluginDTOs =
+            marketplacePluginService.findByMap(params);
         List<String> names = marketplacePluginDTOs == null ? null
             : marketplacePluginDTOs.stream().map(MarketplacePluginDTO::getName)
                 .collect(Collectors.toList());
@@ -469,8 +502,15 @@ public class MarketplacePluginFacadeImpl extends BaseFacade {
 
       @Override
       public void doManage() {
-        List<MarketplacePluginDTO> marketplacePluginDTOs = marketplacePluginService.findByMap(
-            Collections.singletonMap("tenant", MonitorCookieUtil.getTenantOrException()));
+        MonitorScope ms = RequestContext.getContext().ms;
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("tenant", MonitorCookieUtil.getTenantOrException());
+        if (StringUtils.isNotBlank(ms.getWorkspace())) {
+          params.put("workspace", ms.getWorkspace());
+        }
+        List<MarketplacePluginDTO> marketplacePluginDTOs =
+            marketplacePluginService.findByMap(params);
         List<String> names = marketplacePluginDTOs == null ? null
             : marketplacePluginDTOs.stream().map(MarketplacePluginDTO::getName)
                 .collect(Collectors.toList());
@@ -490,9 +530,15 @@ public class MarketplacePluginFacadeImpl extends BaseFacade {
 
       @Override
       public void doManage() {
+        MonitorScope ms = RequestContext.getContext().ms;
+
         Map<String, Object> params = new HashMap<>();
         params.put("tenant", MonitorCookieUtil.getTenantOrException());
         params.put("type", type);
+
+        if (StringUtils.isNotBlank(ms.getWorkspace())) {
+          params.put("workspace", ms.getWorkspace());
+        }
         List<MarketplacePluginDTO> marketplacePluginDTOs =
             marketplacePluginService.findByMap(params);
         List<String> names = marketplacePluginDTOs == null ? null
@@ -521,6 +567,9 @@ public class MarketplacePluginFacadeImpl extends BaseFacade {
         MonitorScope ms = RequestContext.getContext().ms;
         if (null != ms && !StringUtils.isEmpty(ms.tenant)) {
           customPluginRequest.getTarget().setTenant(ms.tenant);
+        }
+        if (null != ms && !StringUtils.isEmpty(ms.getWorkspace())) {
+          customPluginRequest.getTarget().setWorkspace(ms.getWorkspace());
         }
         JsonResult.createSuccessResult(result,
             marketplacePluginService.getListByPage(customPluginRequest));

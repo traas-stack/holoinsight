@@ -94,8 +94,8 @@ public class IntegrationProductFacadeImpl extends BaseFacade {
 
         assert mu != null;
         userOpLogService.append("integration_product", update.getId(), OpType.UPDATE,
-            mu.getLoginName(), ms.getTenant(), J.toJson(integrationProductDTO), J.toJson(update),
-            null, "integration_product_update");
+            mu.getLoginName(), ms.getTenant(), ms.getWorkspace(), J.toJson(integrationProductDTO),
+            J.toJson(update), null, "integration_product_update");
 
       }
     });
@@ -132,8 +132,8 @@ public class IntegrationProductFacadeImpl extends BaseFacade {
 
         assert mu != null;
         userOpLogService.append("integration_product", save.getId(), OpType.CREATE,
-            mu.getLoginName(), ms.getTenant(), J.toJson(integrationProductDTO), null, null,
-            "integration_product_create");
+            mu.getLoginName(), ms.getTenant(), ms.getWorkspace(), J.toJson(integrationProductDTO),
+            null, null, "integration_product_create");
 
       }
     });
@@ -249,6 +249,11 @@ public class IntegrationProductFacadeImpl extends BaseFacade {
           if (!CollectionUtils.isEmpty(integrationProductDTOs)) {
             IntegrationProductDTO integrationProductDTO = integrationProductDTOs.get(0);
             IntegrationMetricsDTO metrics = integrationProductDTO.getMetrics();
+            if (CollectionUtils.isEmpty(metrics.getSubMetrics())
+                || CollectionUtils.isEmpty(metrics.getSubMetrics().values())) {
+              nameResults.put(productName, true);
+              return;
+            }
             List<String> metricNames =
                 metrics.getSubMetrics().values().stream().flatMap(v -> v.stream())
                     .map(IntegrationMetricDTO::getName).collect(Collectors.toList());;

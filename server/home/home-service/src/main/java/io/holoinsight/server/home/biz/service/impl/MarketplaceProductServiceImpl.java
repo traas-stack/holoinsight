@@ -4,7 +4,6 @@
 package io.holoinsight.server.home.biz.service.impl;
 
 import io.holoinsight.server.home.biz.service.MarketplaceProductService;
-import io.holoinsight.server.home.common.util.EventBusHolder;
 import io.holoinsight.server.home.common.util.StringUtil;
 import io.holoinsight.server.home.dal.converter.MarketplaceProductConverter;
 import io.holoinsight.server.home.dal.mapper.MarketplaceProductMapper;
@@ -57,9 +56,7 @@ public class MarketplaceProductServiceImpl extends
     MarketplaceProductDTO.setGmtModified(new Date());
     MarketplaceProduct model = marketplaceProductConverter.dtoToDO(MarketplaceProductDTO);
     save(model);
-    MarketplaceProductDTO customPluginDTOId = marketplaceProductConverter.doToDTO(model);
-    EventBusHolder.post(customPluginDTOId);
-    return customPluginDTOId;
+    return marketplaceProductConverter.doToDTO(model);
   }
 
   @Override
@@ -69,7 +66,6 @@ public class MarketplaceProductServiceImpl extends
       return;
     }
     removeById(id);
-    EventBusHolder.post(MarketplaceProduct);
   }
 
   @Override
@@ -77,9 +73,7 @@ public class MarketplaceProductServiceImpl extends
     MarketplaceProductDTO.setGmtModified(new Date());
     MarketplaceProduct model = marketplaceProductConverter.dtoToDO(MarketplaceProductDTO);
     saveOrUpdate(model);
-    MarketplaceProductDTO save = marketplaceProductConverter.doToDTO(model);
-    EventBusHolder.post(save);
-    return save;
+    return marketplaceProductConverter.doToDTO(model);
   }
 
   @Override

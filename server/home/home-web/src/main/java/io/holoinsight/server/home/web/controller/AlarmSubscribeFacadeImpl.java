@@ -59,9 +59,13 @@ public class AlarmSubscribeFacadeImpl extends BaseFacade {
 
       @Override
       public void doManage() {
+        MonitorScope ms = RequestContext.getContext().ms;
         Map<String, Object> conditions = new HashMap<>();
         conditions.put("unique_id", uniqueId);
         conditions.put("tenant", MonitorCookieUtil.getTenantOrException());
+        if (StringUtils.isNotBlank(ms.getWorkspace())) {
+          conditions.put("workspace", ms.getWorkspace());
+        }
         JsonResult.createSuccessResult(result, alarmSubscribeService.queryByUniqueId(conditions));
       }
     });
@@ -91,7 +95,8 @@ public class AlarmSubscribeFacadeImpl extends BaseFacade {
         if (null != ms && !StringUtils.isEmpty(ms.tenant)) {
           tenant = ms.tenant;
         }
-        boolean rtn = alarmSubscribeService.saveDataBatch(alarmSubscribeDTO, creator, tenant);
+        boolean rtn =
+            alarmSubscribeService.saveDataBatch(alarmSubscribeDTO, creator, tenant, ms.workspace);
         JsonResult.createSuccessResult(result, rtn);
       }
     });
@@ -111,10 +116,13 @@ public class AlarmSubscribeFacadeImpl extends BaseFacade {
 
       @Override
       public void doManage() {
+        MonitorScope ms = RequestContext.getContext().ms;
         Map<String, Object> conditions = new HashMap<>();
         conditions.put("unique_id", uniqueId);
         conditions.put("tenant", MonitorCookieUtil.getTenantOrException());
-
+        if (StringUtils.isNotBlank(ms.getWorkspace())) {
+          conditions.put("workspace", ms.getWorkspace());
+        }
         AlarmSubscribeDTO alarmSubscribeDTO = alarmSubscribeService.queryByUniqueId(conditions);
 
         if (null == alarmSubscribeDTO

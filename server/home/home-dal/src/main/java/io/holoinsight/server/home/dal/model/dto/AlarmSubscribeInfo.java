@@ -45,4 +45,9 @@ public class AlarmSubscribeInfo {
    * 租户id
    */
   private String tenant;
+
+  /**
+   * workspace
+   */
+  private String workspace;
 }

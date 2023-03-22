@@ -40,6 +40,8 @@ public class UserOpLog {
 
   public String tenant;
 
+  public String workspace;
+
   public String creator;
 
   public Date gmtCreate;

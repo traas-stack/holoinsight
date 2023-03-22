@@ -66,12 +66,16 @@ public class AlarmBlockFacadeImpl extends BaseFacade {
         if (null != ms && !StringUtils.isEmpty(ms.tenant)) {
           alarmBlockDTO.setTenant(ms.tenant);
         }
+
+        if (null != ms && !StringUtils.isEmpty(ms.workspace)) {
+          alarmBlockDTO.setWorkspace(ms.workspace);
+        }
         alarmBlockDTO.setGmtCreate(new Date());
         alarmBlockDTO.setGmtModified(new Date());
         Long id = alarmBlockService.save(alarmBlockDTO);
 
         userOpLogService.append("alarm_block", id, OpType.CREATE, mu.getLoginName(), ms.getTenant(),
-            J.toJson(alarmBlockDTO), null, null, "alarm_block_create");
+            ms.getWorkspace(), J.toJson(alarmBlockDTO), null, null, "alarm_block_create");
 
         JsonResult.createSuccessResult(result, id);
       }
@@ -97,9 +101,9 @@ public class AlarmBlockFacadeImpl extends BaseFacade {
 
       @Override
       public void doManage() {
-
-        AlarmBlockDTO item = alarmBlockService.queryById(alarmBlockDTO.getId(),
-            RequestContext.getContext().ms.getTenant());
+        MonitorScope ms = RequestContext.getContext().ms;
+        AlarmBlockDTO item =
+            alarmBlockService.queryById(alarmBlockDTO.getId(), ms.getTenant(), ms.getWorkspace());
         if (null == item) {
           throw new MonitorException("cannot find record: " + alarmBlockDTO.getId());
         }
@@ -111,12 +115,15 @@ public class AlarmBlockFacadeImpl extends BaseFacade {
         if (null != mu) {
           alarmBlockDTO.setModifier(mu.getLoginName());
         }
+
+        if (StringUtils.isNotBlank(ms.getWorkspace())) {
+          alarmBlockDTO.setWorkspace(ms.getWorkspace());
+        }
         alarmBlockDTO.setGmtModified(new Date());
         boolean save = alarmBlockService.updateById(alarmBlockDTO);
         userOpLogService.append("alarm_block", item.getId(), OpType.UPDATE,
-            RequestContext.getContext().mu.getLoginName(),
-            RequestContext.getContext().ms.getTenant(), J.toJson(item), J.toJson(alarmBlockDTO),
-            null, "alarm_block_update");
+            RequestContext.getContext().mu.getLoginName(), ms.getTenant(), ms.getWorkspace(),
+            J.toJson(item), J.toJson(alarmBlockDTO), null, "alarm_block_update");
 
         JsonResult.createSuccessResult(result, save);
       }
@@ -138,9 +145,8 @@ public class AlarmBlockFacadeImpl extends BaseFacade {
 
       @Override
       public void doManage() {
-
-        AlarmBlockDTO save =
-            alarmBlockService.queryById(id, RequestContext.getContext().ms.getTenant());
+        MonitorScope ms = RequestContext.getContext().ms;
+        AlarmBlockDTO save = alarmBlockService.queryById(id, ms.getTenant(), ms.getWorkspace());
         JsonResult.createSuccessResult(result, save);
       }
     });
@@ -161,16 +167,16 @@ public class AlarmBlockFacadeImpl extends BaseFacade {
       @Override
       public void doManage() {
         boolean rtn = false;
+        MonitorScope ms = RequestContext.getContext().ms;
         AlarmBlockDTO alarmBlockDTO =
-            alarmBlockService.queryById(id, RequestContext.getContext().ms.getTenant());
+            alarmBlockService.queryById(id, ms.getTenant(), ms.getWorkspace());
         if (alarmBlockDTO != null) {
           rtn = alarmBlockService.removeById(id);
         }
 
         userOpLogService.append("alarm_block", id, OpType.DELETE,
-            RequestContext.getContext().mu.getLoginName(),
-            RequestContext.getContext().ms.getTenant(), J.toJson(alarmBlockDTO), null, null,
-            "alarm_block_delete");
+            RequestContext.getContext().mu.getLoginName(), ms.getTenant(), ms.getWorkspace(),
+            J.toJson(alarmBlockDTO), null, null, "alarm_block_delete");
 
         JsonResult.createSuccessResult(result, rtn);
       }
@@ -195,6 +201,9 @@ public class AlarmBlockFacadeImpl extends BaseFacade {
         MonitorScope ms = RequestContext.getContext().ms;
         if (null != ms && !StringUtils.isEmpty(ms.tenant)) {
           pageRequest.getTarget().setTenant(ms.tenant);
+        }
+        if (null != ms && !StringUtils.isEmpty(ms.workspace)) {
+          pageRequest.getTarget().setWorkspace(ms.workspace);
         }
         JsonResult.createSuccessResult(result, alarmBlockService.getListByPage(pageRequest));
       }

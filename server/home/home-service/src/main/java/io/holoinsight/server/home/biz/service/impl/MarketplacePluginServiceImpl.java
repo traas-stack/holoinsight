@@ -4,7 +4,6 @@
 package io.holoinsight.server.home.biz.service.impl;
 
 import io.holoinsight.server.home.biz.service.MarketplacePluginService;
-import io.holoinsight.server.home.common.util.EventBusHolder;
 import io.holoinsight.server.home.common.util.StringUtil;
 import io.holoinsight.server.home.dal.converter.MarketplacePluginConverter;
 import io.holoinsight.server.home.dal.mapper.MarketplacePluginMapper;
@@ -15,6 +14,7 @@ import io.holoinsight.server.home.facade.page.MonitorPageResult;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -35,12 +35,14 @@ public class MarketplacePluginServiceImpl extends
   private MarketplacePluginConverter marketplacePluginConverter;
 
   @Override
-  public MarketplacePluginDTO queryById(Long id, String tenant) {
+  public MarketplacePluginDTO queryById(Long id, String tenant, String workspace) {
     QueryWrapper<MarketplacePlugin> wrapper = new QueryWrapper<>();
     wrapper.eq("tenant", tenant);
     wrapper.eq("id", id);
     wrapper.last("LIMIT 1");
-
+    if (StringUtils.isNotBlank(workspace)) {
+      wrapper.eq("workspace", workspace);
+    }
     MarketplacePlugin model = this.getOne(wrapper);
     if (model == null) {
       return null;
@@ -50,9 +52,12 @@ public class MarketplacePluginServiceImpl extends
   }
 
   @Override
-  public List<MarketplacePluginDTO> queryByTenant(String tenant) {
+  public List<MarketplacePluginDTO> queryByTenant(String tenant, String workspace) {
     QueryWrapper<MarketplacePlugin> queryWrapper = new QueryWrapper<>();
     queryWrapper.select("name", "product", "json").eq("tenant", tenant);
+    if (StringUtils.isNotBlank(workspace)) {
+      queryWrapper.eq("workspace", workspace);
+    }
     List<MarketplacePlugin> models = baseMapper.selectList(queryWrapper);
     return marketplacePluginConverter.dosToDTOs(models);
   }
@@ -70,9 +75,7 @@ public class MarketplacePluginServiceImpl extends
     MarketplacePluginDTO.setGmtModified(new Date());
     MarketplacePlugin model = marketplacePluginConverter.dtoToDO(MarketplacePluginDTO);
     save(model);
-    MarketplacePluginDTO customPluginDTOId = marketplacePluginConverter.doToDTO(model);
-    EventBusHolder.post(customPluginDTOId);
-    return customPluginDTOId;
+    return marketplacePluginConverter.doToDTO(model);
   }
 
   @Override
@@ -82,7 +85,6 @@ public class MarketplacePluginServiceImpl extends
       return;
     }
     removeById(id);
-    EventBusHolder.post(MarketplacePlugin);
   }
 
   @Override
@@ -90,66 +92,68 @@ public class MarketplacePluginServiceImpl extends
     MarketplacePluginDTO.setGmtModified(new Date());
     MarketplacePlugin model = marketplacePluginConverter.dtoToDO(MarketplacePluginDTO);
     saveOrUpdate(model);
-    MarketplacePluginDTO save = marketplacePluginConverter.doToDTO(model);
-    EventBusHolder.post(save);
-    return save;
+    return marketplacePluginConverter.doToDTO(model);
   }
 
   @Override
   public MonitorPageResult<MarketplacePluginDTO> getListByPage(
-      MonitorPageRequest<MarketplacePluginDTO> MarketplacePluginDTORequest) {
-    if (MarketplacePluginDTORequest.getTarget() == null) {
+      MonitorPageRequest<MarketplacePluginDTO> marketplacePluginDTORequest) {
+    if (marketplacePluginDTORequest.getTarget() == null) {
       return null;
     }
 
     QueryWrapper<MarketplacePlugin> wrapper = new QueryWrapper<>();
 
-    MarketplacePluginDTO MarketplacePluginDTO = MarketplacePluginDTORequest.getTarget();
+    MarketplacePluginDTO marketplacePluginDTO = marketplacePluginDTORequest.getTarget();
 
-    if (null != MarketplacePluginDTO.getGmtCreate()) {
-      wrapper.ge("gmt_create", MarketplacePluginDTO.getGmtCreate());
+    if (null != marketplacePluginDTO.getGmtCreate()) {
+      wrapper.ge("gmt_create", marketplacePluginDTO.getGmtCreate());
     }
-    if (null != MarketplacePluginDTO.getGmtModified()) {
-      wrapper.le("gmt_modified", MarketplacePluginDTO.getGmtCreate());
-    }
-
-    if (StringUtil.isNotBlank(MarketplacePluginDTO.getCreator())) {
-      wrapper.eq("creator", MarketplacePluginDTO.getCreator().trim());
+    if (null != marketplacePluginDTO.getGmtModified()) {
+      wrapper.le("gmt_modified", marketplacePluginDTO.getGmtCreate());
     }
 
-    if (StringUtil.isNotBlank(MarketplacePluginDTO.getModifier())) {
-      wrapper.eq("modifier", MarketplacePluginDTO.getModifier().trim());
+    if (StringUtil.isNotBlank(marketplacePluginDTO.getCreator())) {
+      wrapper.eq("creator", marketplacePluginDTO.getCreator().trim());
     }
 
-    if (null != MarketplacePluginDTO.getId()) {
-      wrapper.eq("id", MarketplacePluginDTO.getId());
+    if (StringUtil.isNotBlank(marketplacePluginDTO.getModifier())) {
+      wrapper.eq("modifier", marketplacePluginDTO.getModifier().trim());
     }
 
-    if (StringUtil.isNotBlank(MarketplacePluginDTO.getName())) {
-      wrapper.like("name", MarketplacePluginDTO.getName().trim());
+    if (null != marketplacePluginDTO.getId()) {
+      wrapper.eq("id", marketplacePluginDTO.getId());
+    }
+
+    if (StringUtil.isNotBlank(marketplacePluginDTO.getName())) {
+      wrapper.like("name", marketplacePluginDTO.getName().trim());
     }
 
 
-    if (null != MarketplacePluginDTO.getStatus()) {
-      wrapper.eq("status", MarketplacePluginDTO.getStatus());
+    if (null != marketplacePluginDTO.getStatus()) {
+      wrapper.eq("status", marketplacePluginDTO.getStatus());
     }
 
-    if (null != MarketplacePluginDTO.getTenant()) {
-      wrapper.eq("tenant", MarketplacePluginDTO.getTenant());
+    if (null != marketplacePluginDTO.getTenant()) {
+      wrapper.eq("tenant", marketplacePluginDTO.getTenant());
+    }
+
+    if (StringUtils.isNotBlank(marketplacePluginDTO.getWorkspace())) {
+      wrapper.eq("workspace", marketplacePluginDTO.getWorkspace());
     }
     wrapper.select(MarketplacePlugin.class,
         info -> !info.getColumn().equals("creator") && !info.getColumn().equals("modifier"));
 
-    Page<MarketplacePlugin> page = new Page<>(MarketplacePluginDTORequest.getPageNum(),
-        MarketplacePluginDTORequest.getPageSize());
+    Page<MarketplacePlugin> page = new Page<>(marketplacePluginDTORequest.getPageNum(),
+        marketplacePluginDTORequest.getPageSize());
 
     page = page(page, wrapper);
 
     MonitorPageResult<MarketplacePluginDTO> customPluginDTOs = new MonitorPageResult<>();
 
     customPluginDTOs.setItems(marketplacePluginConverter.dosToDTOs(page.getRecords()));
-    customPluginDTOs.setPageNum(MarketplacePluginDTORequest.getPageNum());
-    customPluginDTOs.setPageSize(MarketplacePluginDTORequest.getPageSize());
+    customPluginDTOs.setPageNum(marketplacePluginDTORequest.getPageNum());
+    customPluginDTOs.setPageSize(marketplacePluginDTORequest.getPageSize());
     customPluginDTOs.setTotalCount(page.getTotal());
     customPluginDTOs.setTotalPage(page.getPages());
 
@@ -157,10 +161,14 @@ public class MarketplacePluginServiceImpl extends
   }
 
   @Override
-  public List<MarketplacePluginDTO> getListByKeyword(String keyword, String tenant) {
+  public List<MarketplacePluginDTO> getListByKeyword(String keyword, String tenant,
+      String workspace) {
     QueryWrapper<MarketplacePlugin> wrapper = new QueryWrapper<>();
     if (StringUtil.isNotBlank(tenant)) {
       wrapper.eq("tenant", tenant);
+    }
+    if (StringUtils.isNotBlank(workspace)) {
+      wrapper.eq("workspace", workspace);
     }
     wrapper.like("id", keyword).or().like("name", keyword);
     Page<MarketplacePlugin> page = new Page<>(1, 20);
@@ -170,9 +178,16 @@ public class MarketplacePluginServiceImpl extends
   }
 
   @Override
-  public List<MarketplacePluginDTO> getListByNameLike(String name, String tenant) {
+  public List<MarketplacePluginDTO> getListByNameLike(String name, String tenant,
+      String workspace) {
     QueryWrapper<MarketplacePlugin> wrapper = new QueryWrapper<>();
     wrapper.select().like("name", name);
+    if (StringUtil.isNotBlank(tenant)) {
+      wrapper.eq("tenant", tenant);
+    }
+    if (StringUtils.isNotBlank(workspace)) {
+      wrapper.eq("workspace", workspace);
+    }
     List<MarketplacePlugin> customPlugins = baseMapper.selectList(wrapper);
     return marketplacePluginConverter.dosToDTOs(customPlugins);
   }

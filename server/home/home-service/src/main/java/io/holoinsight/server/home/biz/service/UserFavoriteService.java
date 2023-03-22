@@ -17,17 +17,17 @@ import java.util.List;
  */
 public interface UserFavoriteService extends IService<UserFavorite> {
 
-  UserFavorite queryById(Long id, String tenant);
+  UserFavorite queryById(Long id, String tenant, String workspace);
 
   List<UserFavorite> getByUser(String userLoginName);
 
-  List<UserFavorite> getByUserAndTenant(String userLoginName, String tenant);
+  List<UserFavorite> getByUserAndTenant(String userLoginName, String tenant, String workspace);
 
   List<UserFavorite> getByUserAndTenantAndRelateId(String userLoginName, String tenant,
-      String relateId, String type);
+      String workspace, String relateId, String type);
 
   List<UserFavorite> getByUserAndTenantAndRelateIds(String userLoginName, String tenant,
-      List<String> relateIds, String type);
+      String workspace, List<String> relateIds, String type);
 
   UserFavorite create(UserFavorite userFavorite);
 

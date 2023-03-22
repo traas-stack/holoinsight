@@ -21,11 +21,11 @@ public interface AlertRuleService extends IService<AlarmRule> {
 
   Boolean updateById(AlarmRuleDTO alarmRuleDTO);
 
-  AlarmRuleDTO queryById(Long id, String tenant);
+  AlarmRuleDTO queryById(Long id, String tenant, String workspace);
 
   MonitorPageResult<AlarmRuleDTO> getListByPage(MonitorPageRequest<AlarmRuleDTO> pageRequest);
 
-  List<AlarmRuleDTO> getListByKeyword(String keyword, String tenant);
+  List<AlarmRuleDTO> getListByKeyword(String keyword, String tenant, String workspace);
 
   List<AlarmRuleDTO> findByIds(List<String> ids);
 }

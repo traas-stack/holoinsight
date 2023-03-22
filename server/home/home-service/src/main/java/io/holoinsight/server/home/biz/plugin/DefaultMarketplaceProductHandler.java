@@ -8,15 +8,16 @@ import io.holoinsight.server.common.J;
 import io.holoinsight.server.home.biz.service.AlertWebhookService;
 import io.holoinsight.server.home.biz.service.ApiKeyService;
 import io.holoinsight.server.home.biz.service.MarketplacePluginService;
-import io.holoinsight.server.home.biz.service.MarketplaceProductService;
 import io.holoinsight.server.home.common.util.MonitorException;
 import io.holoinsight.server.home.common.util.ResultCodeEnum;
 import io.holoinsight.server.home.common.util.scope.MonitorCookieUtil;
 import io.holoinsight.server.home.common.util.scope.RequestContext;
+import io.holoinsight.server.home.dal.model.AlarmWebhook;
 import io.holoinsight.server.home.dal.model.ApiKey;
 import io.holoinsight.server.home.dal.model.dto.AlarmWebhookDTO;
 import io.holoinsight.server.home.dal.model.dto.MarketplacePluginDTO;
 import io.holoinsight.server.home.dal.model.dto.MarketplaceProductDTO;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
 
@@ -37,9 +38,6 @@ public class DefaultMarketplaceProductHandler implements MarketplaceProductHandl
   private MarketplacePluginService marketplacePluginService;
 
   @Autowired
-  private MarketplaceProductService marketplaceProductService;
-
-  @Autowired
   private AlertWebhookService alarmWebhookService;
 
   @Autowired
@@ -54,6 +52,9 @@ public class DefaultMarketplaceProductHandler implements MarketplaceProductHandl
 
     Map<String, Object> params = new HashMap<>();
     params.put("tenant", MonitorCookieUtil.getTenantOrException());
+    if (StringUtils.isNotBlank(RequestContext.getContext().ms.getWorkspace())) {
+      params.put("workspace", RequestContext.getContext().ms.getWorkspace());
+    }
     params.put("name", byId.getName() + "_" + RequestContext.getContext().ms.getTenant());
     List<MarketplacePluginDTO> marketplacePluginDTOs = marketplacePluginService.findByMap(params);
     if (!CollectionUtils.isEmpty(marketplacePluginDTOs)) {
@@ -64,6 +65,7 @@ public class DefaultMarketplaceProductHandler implements MarketplaceProductHandl
     {
       pluginDTO.setStatus(true);
       pluginDTO.setTenant(RequestContext.getContext().ms.getTenant());
+      pluginDTO.setWorkspace(RequestContext.getContext().ms.getWorkspace());
       pluginDTO.setCreator(RequestContext.getContext().mu.getLoginName());
       pluginDTO.setModifier(RequestContext.getContext().mu.getLoginName());
       pluginDTO.setProduct(byId.getName());
@@ -86,39 +88,55 @@ public class DefaultMarketplaceProductHandler implements MarketplaceProductHandl
       Map<String, Object> configMap = new HashMap<>();
 
       if (map.get("type").equals("webhook")) {
-        Map<String, Object> webhookMap = (Map<String, Object>) map.get("webhook");
-        webhookMap.put("webhookName", productDTO.getName());
-        webhookMap.put("tenant", RequestContext.getContext().ms.getTenant());
-        webhookMap.put("gmtCreate", new Date());
-        webhookMap.put("gmtModified", new Date());
-        webhookMap.put("creator", RequestContext.getContext().mu.getLoginName());
-        webhookMap.put("modifier", RequestContext.getContext().mu.getLoginName());
-        webhookMap.put("role", "marketplace");
+        Map<String, Object> params = new HashMap<>();
+        params.put("tenant", MonitorCookieUtil.getTenantOrException());
+        params.put("webhook_name", productDTO.getName());
+        List<AlarmWebhook> alarmWebhooks = alarmWebhookService.listByMap(params);
+        if (!CollectionUtils.isEmpty(alarmWebhooks)) {
+          configMap.put("webhook", alarmWebhooks.get(0));
+        } else {
+          Map<String, Object> webhookMap = (Map<String, Object>) map.get("webhook");
+          webhookMap.put("webhookName", productDTO.getName());
+          webhookMap.put("tenant", RequestContext.getContext().ms.getTenant());
+          webhookMap.put("gmtCreate", new Date());
+          webhookMap.put("gmtModified", new Date());
+          webhookMap.put("creator", RequestContext.getContext().mu.getLoginName());
+          webhookMap.put("modifier", RequestContext.getContext().mu.getLoginName());
+          webhookMap.put("role", "marketplace");
 
-        AlarmWebhookDTO o =
-            J.fromJson(J.toJson(webhookMap), (new TypeToken<AlarmWebhookDTO>() {}).getType());
-        o.setStatus((byte) 1);
-        AlarmWebhookDTO save = alarmWebhookService.save(o);
+          AlarmWebhookDTO o =
+              J.fromJson(J.toJson(webhookMap), (new TypeToken<AlarmWebhookDTO>() {}).getType());
+          o.setStatus((byte) 1);
+          AlarmWebhookDTO save = alarmWebhookService.save(o);
+          configMap.put("webhook", save);
+        }
 
         configMap.put("type", "webhook");
-        configMap.put("webhook", save);
+
         configList.add(configMap);
       }
 
       if (map.get("type").equals("dataQuery")) {
-
-        ApiKey apiKey = new ApiKey();
-        apiKey.setName(productDTO.getName());
-        apiKey.setApiKey(UUID.randomUUID().toString());
-        apiKey.setTenant(RequestContext.getContext().ms.getTenant());
-        apiKey.setRole("marketplace");
-        apiKey.setGmtCreate(new Date());
-        apiKey.setGmtModified(new Date());
-        apiKey.setCreator(RequestContext.getContext().mu.getLoginName());
-        apiKey.setModifier(RequestContext.getContext().mu.getLoginName());
-        apiKeyService.save(apiKey);
+        Map<String, Object> params = new HashMap<>();
+        params.put("tenant", MonitorCookieUtil.getTenantOrException());
+        params.put("name", productDTO.getName());
+        List<ApiKey> apiKeys = apiKeyService.listByMap(params);
+        if (!CollectionUtils.isEmpty(apiKeys)) {
+          configMap.put("dataQuery", apiKeys.get(0));
+        } else {
+          ApiKey apiKey = new ApiKey();
+          apiKey.setName(productDTO.getName());
+          apiKey.setApiKey(UUID.randomUUID().toString());
+          apiKey.setTenant(RequestContext.getContext().ms.getTenant());
+          apiKey.setRole("marketplace");
+          apiKey.setGmtCreate(new Date());
+          apiKey.setGmtModified(new Date());
+          apiKey.setCreator(RequestContext.getContext().mu.getLoginName());
+          apiKey.setModifier(RequestContext.getContext().mu.getLoginName());
+          apiKeyService.save(apiKey);
+          configMap.put("dataQuery", apiKey);
+        }
         configMap.put("type", "dataQuery");
-        configMap.put("dataQuery", apiKey);
         configList.add(configMap);
       }
     }

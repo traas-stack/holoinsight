@@ -16,11 +16,23 @@ public class MonitorScope {
   public static final String defaultTenantId = "-1";
 
   public String tenant;
+  public String workspace;
   public String accessId;
   public String accessKey;
 
+  public String getWorkspace() {
+    if (StringUtil.isBlank(workspace)) {
+      return null;
+    }
+    return workspace;
+  }
+
+  public void setWorkspace(String workspace) {
+    this.workspace = workspace;
+  }
+
   public String getTenant() {
-    if (StringUtils.isEmpty(tenant)) {
+    if (StringUtil.isBlank(tenant)) {
       return null;
     }
     return tenant;

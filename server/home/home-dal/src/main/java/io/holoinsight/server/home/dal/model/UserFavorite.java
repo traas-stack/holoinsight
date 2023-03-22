@@ -35,6 +35,8 @@ public class UserFavorite {
 
   public String tenant;
 
+  public String workspace;
+
   public Date gmtCreate;
 
   public Date gmtModified;

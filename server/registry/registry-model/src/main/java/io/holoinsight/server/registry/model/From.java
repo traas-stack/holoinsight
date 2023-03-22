@@ -152,6 +152,10 @@ public class From {
     public static class Multiline {
       @Nullable
       private Where match;
+
+      @Nullable
+      private boolean enabled;
+
       /**
        * 'previous' 'next'
        */

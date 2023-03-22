@@ -8,8 +8,8 @@ import io.holoinsight.server.home.biz.service.FolderService;
 import io.holoinsight.server.home.biz.service.UserOpLogService;
 import io.holoinsight.server.home.common.util.MonitorException;
 import io.holoinsight.server.home.common.util.ResultCodeEnum;
+import io.holoinsight.server.home.common.util.StringUtil;
 import io.holoinsight.server.home.common.util.scope.AuthTargetType;
-import io.holoinsight.server.home.common.util.scope.MonitorCookieUtil;
 import io.holoinsight.server.home.common.util.scope.MonitorScope;
 import io.holoinsight.server.home.common.util.scope.MonitorUser;
 import io.holoinsight.server.home.common.util.scope.PowerConstants;
@@ -31,7 +31,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -74,15 +73,14 @@ public class FolderFacadeImpl extends BaseFacade {
     facadeTemplate.manage(result, new ManageCallback() {
       @Override
       public void checkParameter() {
+        MonitorScope ms = RequestContext.getContext().ms;
         ParaCheckUtil.checkParaNotNull(folder.id, "id");
         ParaCheckUtil.checkParaNotNull(folder.parentFolderId, "parentFolderId");
         ParaCheckUtil.checkParaNotBlank(folder.name, "name");
         ParaCheckUtil.checkParaNotNull(folder.getTenant(), "tenant");
-        ParaCheckUtil.checkEquals(folder.getTenant(), RequestContext.getContext().ms.getTenant(),
-            "tenant is illegal");
+        ParaCheckUtil.checkEquals(folder.getTenant(), ms.getTenant(), "tenant is illegal");
 
-        Folder item =
-            folderService.queryById(folder.getId(), RequestContext.getContext().ms.getTenant());
+        Folder item = folderService.queryById(folder.getId(), ms.getTenant(), ms.getWorkspace());
 
         if (null == item) {
           throw new MonitorException("cannot find record: " + folder.getId());
@@ -105,15 +103,19 @@ public class FolderFacadeImpl extends BaseFacade {
         if (null != mu) {
           update.setModifier(mu.getLoginName());
         }
-        if (null != ms && !StringUtils.isEmpty(ms.tenant)) {
+        if (null != ms && !StringUtil.isBlank(ms.tenant)) {
           update.setTenant(ms.tenant);
+        }
+        if (null != ms && !StringUtil.isBlank(ms.workspace)) {
+          update.setWorkspace(ms.workspace);
         }
         update.setGmtModified(new Date());
         folderService.updateById(update);
 
         assert mu != null;
         userOpLogService.append("folder", folder.getId(), OpType.UPDATE, mu.getLoginName(),
-            ms.getTenant(), J.toJson(folder), J.toJson(update), null, "folder_update");
+            ms.getTenant(), ms.getWorkspace(), J.toJson(folder), J.toJson(update), null,
+            "folder_update");
       }
     });
 
@@ -140,10 +142,13 @@ public class FolderFacadeImpl extends BaseFacade {
           folder.setCreator(mu.getLoginName());
           folder.setModifier(mu.getLoginName());
         }
-        if (null != ms && !StringUtils.isEmpty(ms.tenant)) {
+        if (null != ms && !StringUtil.isBlank(ms.tenant)) {
           folder.setTenant(ms.tenant);
         }
-        folder.setTenant(MonitorCookieUtil.getTenantOrException());
+
+        if (null != ms && !StringUtil.isBlank(ms.workspace)) {
+          folder.setWorkspace(ms.workspace);
+        }
         folder.setGmtCreate(new Date());
         folder.setGmtModified(new Date());
         folderService.save(folder);
@@ -151,7 +156,7 @@ public class FolderFacadeImpl extends BaseFacade {
 
         assert mu != null;
         userOpLogService.append("folder", folder.getId(), OpType.CREATE, mu.getLoginName(),
-            ms.getTenant(), J.toJson(folder), null, null, "folder_create");
+            ms.getTenant(), ms.getWorkspace(), J.toJson(folder), null, null, "folder_create");
 
       }
     });
@@ -171,7 +176,8 @@ public class FolderFacadeImpl extends BaseFacade {
 
       @Override
       public void doManage() {
-        Folder folder = folderService.queryById(id, RequestContext.getContext().ms.getTenant());
+        MonitorScope ms = RequestContext.getContext().ms;
+        Folder folder = folderService.queryById(id, ms.getTenant(), ms.getWorkspace());
 
         if (null == folder) {
           throw new MonitorException(ResultCodeEnum.CANNOT_FIND_RECORD, "can not find record");
@@ -194,10 +200,11 @@ public class FolderFacadeImpl extends BaseFacade {
 
       @Override
       public void doManage() {
-
+        MonitorScope ms = RequestContext.getContext().ms;
         Map<String, Object> columnMap = new HashMap<>();
         columnMap.put("parent_folder_id", id);
-        columnMap.put("tenant", RequestContext.getContext().ms.getTenant());
+        columnMap.put("tenant", ms.getTenant());
+        columnMap.put("workspace", ms.getTenant());
         List<CustomPluginDTO> byMap = customPluginService.findByMap(columnMap);
         if (!CollectionUtils.isEmpty(byMap)) {
           JsonResult
@@ -205,13 +212,12 @@ public class FolderFacadeImpl extends BaseFacade {
           return;
         }
 
-        Folder byId = folderService.queryById(id, RequestContext.getContext().ms.getTenant());
+        Folder byId = folderService.queryById(id, ms.getTenant(), ms.getWorkspace());
         folderService.removeById(id);
         JsonResult.createSuccessResult(result, null);
         userOpLogService.append("folder", byId.getId(), OpType.DELETE,
-            RequestContext.getContext().mu.getLoginName(),
-            RequestContext.getContext().ms.getTenant(), J.toJson(byId), null, null,
-            "folder_delete");
+            RequestContext.getContext().mu.getLoginName(), ms.getTenant(), ms.getWorkspace(),
+            J.toJson(byId), null, null, "folder_delete");
 
       }
     });
@@ -236,8 +242,7 @@ public class FolderFacadeImpl extends BaseFacade {
         MonitorScope ms = RequestContext.getContext().ms;
         MonitorUser mu = RequestContext.getContext().mu;
 
-        Folder update =
-            folderService.queryById(folder.id, RequestContext.getContext().ms.getTenant());
+        Folder update = folderService.queryById(folder.id, ms.getTenant(), ms.getWorkspace());
         if (null == update) {
           throw new MonitorException(ResultCodeEnum.CANNOT_FIND_RECORD, "can not find record");
         }
@@ -251,7 +256,8 @@ public class FolderFacadeImpl extends BaseFacade {
         JsonResult.createSuccessResult(result, true);
         assert mu != null;
         userOpLogService.append("folder", folder.getId(), OpType.UPDATE, mu.getLoginName(),
-            ms.getTenant(), J.toJson(folder), J.toJson(update), null, "folder_update");
+            ms.getTenant(), ms.getWorkspace(), J.toJson(folder), J.toJson(update), null,
+            "folder_update");
       }
     });
 
@@ -271,9 +277,11 @@ public class FolderFacadeImpl extends BaseFacade {
 
       @Override
       public void doManage() {
+        MonitorScope ms = RequestContext.getContext().ms;
         Map<String, Object> conditions = new HashMap<>();
         conditions.put("parent_folder_id", parentFolderId);
-        conditions.put("tenant", MonitorCookieUtil.getTenantOrException());
+        conditions.put("tenant", ms.getTenant());
+        conditions.put("workspace", ms.getWorkspace());
         JsonResult.createSuccessResult(result, folderService.listByMap(conditions));
       }
     });
@@ -295,10 +303,11 @@ public class FolderFacadeImpl extends BaseFacade {
       @Override
       public void doManage() {
 
+        MonitorScope ms = RequestContext.getContext().ms;
         if (folderReqs.requests != null && folderReqs.requests.size() > 0) {
           List<FolderPaths> list = new ArrayList<FolderPaths>();
           for (FolderRequestCmd folderReq : folderReqs.requests) {
-            list.add(doOne(folderReq, RequestContext.getContext().ms.getTenant()));
+            list.add(doOne(folderReq, ms.getTenant(), ms.getWorkspace()));
           }
           JsonResult.createSuccessResult(result, list);
         }
@@ -308,7 +317,8 @@ public class FolderFacadeImpl extends BaseFacade {
     return result;
   }
 
-  private FolderPaths doOne(FolderRequestCmd folderReq, String tenant) throws Exception {
+  private FolderPaths doOne(FolderRequestCmd folderReq, String tenant, String workspace)
+      throws Exception {
     Long pfId;
     FolderPath filePath = null;
     if (folderReq.customPluginId != null) {
@@ -316,7 +326,8 @@ public class FolderFacadeImpl extends BaseFacade {
         // 非法的直接返回
         return new FolderPaths();
       }
-      CustomPluginDTO cp = customPluginService.queryById(folderReq.customPluginId, tenant);
+      CustomPluginDTO cp =
+          customPluginService.queryById(folderReq.customPluginId, tenant, workspace);
       if (cp == null) {
         return new FolderPaths();
       }
@@ -327,7 +338,7 @@ public class FolderFacadeImpl extends BaseFacade {
         // 非法的直接返回
         return new FolderPaths();
       }
-      Folder folder = folderService.queryById(folderReq.folderId, tenant);
+      Folder folder = folderService.queryById(folderReq.folderId, tenant, workspace);
       if (folder == null) {
         // 不存在了，直接返回
         return new FolderPaths();

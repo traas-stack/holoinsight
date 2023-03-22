@@ -91,16 +91,7 @@ public class Step3AuthFilter implements Filter {
     }
 
     // 获取一个用户的权限包
-    MonitorScope ms = MonitorCookieUtil.getScope(req);
-
-    String loginTenant = CookieUtils.getCookie(req, "loginTenant");
-    if (StringUtil.isNotBlank(loginTenant)) {
-      ms.tenant = loginTenant;
-      mu.setLoginTenant(loginTenant);
-    } else if (StringUtil.isNotBlank(mu.getLoginTenant())) {
-      ms.tenant = mu.getLoginTenant();
-    }
-
+    MonitorScope ms = MonitorCookieUtil.getScope(req, mu);
     MonitorAuth ma = null;
 
     try {

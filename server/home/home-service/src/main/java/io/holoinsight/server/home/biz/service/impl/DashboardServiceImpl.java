@@ -13,6 +13,7 @@ import io.holoinsight.server.home.facade.page.MonitorPageResult;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -24,9 +25,12 @@ public class DashboardServiceImpl extends ServiceImpl<DashboardMapper, Dashboard
     implements DashboardService {
 
   @Override
-  public Dashboard queryById(Long id, String tenant) {
+  public Dashboard queryById(Long id, String tenant, String workspace) {
     QueryWrapper<Dashboard> wrapper = new QueryWrapper<>();
     wrapper.eq("tenant", tenant);
+    if (StringUtils.isNotBlank(workspace)) {
+      wrapper.eq("workspace", workspace);
+    }
     wrapper.eq("id", id);
     wrapper.last("LIMIT 1");
 
@@ -49,6 +53,7 @@ public class DashboardServiceImpl extends ServiceImpl<DashboardMapper, Dashboard
       dashboard.setGmtCreate(new Date());
       dashboard.setGmtModified(new Date());
       dashboard.setTenant(dashboardDTO.tenant);
+      dashboard.setWorkspace(dashboardDTO.workspace);
       dashboard.setCreator(dashboardDTO.modifier);
       dashboard.setModifier(dashboardDTO.modifier);
       this.save(dashboard);
@@ -67,6 +72,7 @@ public class DashboardServiceImpl extends ServiceImpl<DashboardMapper, Dashboard
     dashboard.setGmtModified(new Date());
     dashboard.setModifier(dashboardDTO.modifier);
     dashboard.setTenant(dashboardDTO.tenant);
+    dashboard.setWorkspace(dashboardDTO.workspace);
     dashboard.setTitle(title);
     dashboard.setConf(dashboardDTO.getDashboard());
     this.updateById(dashboard);
@@ -84,10 +90,13 @@ public class DashboardServiceImpl extends ServiceImpl<DashboardMapper, Dashboard
   }
 
   @Override
-  public List<Dashboard> getListByKeyword(String keyword, String tenant) {
+  public List<Dashboard> getListByKeyword(String keyword, String tenant, String workspace) {
     QueryWrapper<Dashboard> wrapper = new QueryWrapper<>();
     if (StringUtil.isNotBlank(tenant)) {
       wrapper.eq("tenant", tenant);
+    }
+    if (StringUtil.isNotBlank(workspace)) {
+      wrapper.eq("workspace", workspace);
     }
     wrapper.like("id", keyword).or().like("title", keyword);
     Page<Dashboard> page = new Page<>(1, 20);
@@ -131,6 +140,10 @@ public class DashboardServiceImpl extends ServiceImpl<DashboardMapper, Dashboard
 
     if (StringUtil.isNotBlank(dashboard.getTenant())) {
       wrapper.eq("tenant", dashboard.getTenant().trim());
+    }
+
+    if (StringUtil.isNotBlank(dashboard.getWorkspace())) {
+      wrapper.eq("workspace", dashboard.getWorkspace().trim());
     }
 
     if (StringUtil.isNotBlank(dashboard.getTitle())) {

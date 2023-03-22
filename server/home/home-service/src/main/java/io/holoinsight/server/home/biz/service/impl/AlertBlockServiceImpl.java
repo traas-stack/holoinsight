@@ -51,12 +51,15 @@ public class AlertBlockServiceImpl extends ServiceImpl<AlarmBlockMapper, AlarmBl
   }
 
   @Override
-  public AlarmBlockDTO queryById(Long id, String tenant) {
+  public AlarmBlockDTO queryById(Long id, String tenant, String workspace) {
 
     QueryWrapper<AlarmBlock> wrapper = new QueryWrapper<>();
     wrapper.eq("tenant", tenant);
     wrapper.eq("id", id);
     wrapper.last("LIMIT 1");
+    if (StringUtils.isNotBlank(workspace)) {
+      wrapper.eq("workspace", workspace);
+    }
     AlarmBlock alarmBlock = this.getOne(wrapper);
     return alarmBlockConverter.doToDTO(alarmBlock);
   }
@@ -78,6 +81,10 @@ public class AlertBlockServiceImpl extends ServiceImpl<AlarmBlockMapper, AlarmBl
 
     if (StringUtils.isNotBlank(alarmBlock.getTenant())) {
       wrapper.eq("tenant", alarmBlock.getTenant().trim());
+    }
+
+    if (StringUtils.isNotBlank(alarmBlock.getWorkspace())) {
+      wrapper.eq("workspace", alarmBlock.getWorkspace());
     }
 
 
@@ -112,10 +119,13 @@ public class AlertBlockServiceImpl extends ServiceImpl<AlarmBlockMapper, AlarmBl
   }
 
   @Override
-  public List<AlarmBlockDTO> getListByKeyword(String keyword, String tenant) {
+  public List<AlarmBlockDTO> getListByKeyword(String keyword, String tenant, String workspace) {
     QueryWrapper<AlarmBlock> wrapper = new QueryWrapper<>();
     if (StringUtils.isNotBlank(tenant)) {
       wrapper.eq("tenant", tenant);
+    }
+    if (StringUtils.isNotBlank(workspace)) {
+      wrapper.eq("workspace", workspace);
     }
     wrapper.like("id", keyword).or().like("rule_name", keyword);
     Page<AlarmBlock> page = new Page<>(1, 20);

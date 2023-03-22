@@ -11,11 +11,7 @@ public class MetaDictKey {
   public static final String ULA = "ula";
   public static final String ULA_CLOSE = "ula_close";
   public static final String ULA_HOST = "ula_host";
-  public static final String ULA_IAM_HOST = "ula_iam_host";
-
-  public static final String IS_TEST = "is_test";
   public static final String IS_QUERY_TEST = "is_query_test";
-
   public static final String IS_APM_MATERIALIZED = "is_apm_materialized";
 
   public static final String AGENT_INSTALL_HOST = "agentInstallHost";
@@ -24,8 +20,6 @@ public class MetaDictKey {
   public static final String AGENT_INSTALL_PACKAGE = "agentInstallPackage";
   public static final String VM_AGENT_INSTALL_DOCUMENT = "vmInstallDocument";
   public static final String K8S_AGENT_INSTALL_DOCUMENT = "k8sInstallDocument";
-
-  // public static final String TENANT_AUTH_LIST = "tenantAuthList";
 
   public static final String COLLECTOR_HOST = "collectorHost";
 
@@ -42,4 +36,5 @@ public class MetaDictKey {
   public static final String MNP_ANTLOG_URL = "mnp_antlog_url";
 
   public static final String MARKETPLACE_JIGUANG_HOST = "jiguang_host";
+  public static final String SYSTEM_NOTICE = "system_notice";
 }

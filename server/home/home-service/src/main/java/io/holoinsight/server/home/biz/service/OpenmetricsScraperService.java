@@ -11,7 +11,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 
 public interface OpenmetricsScraperService extends IService<OpenmetricsScraper> {
 
-  OpenmetricsScraperDTO queryById(Long id, String tenant);
+  OpenmetricsScraperDTO queryById(Long id, String tenant, String workspace);
 
   void saveByDTO(OpenmetricsScraperDTO openmetricsScraperDTO);
 

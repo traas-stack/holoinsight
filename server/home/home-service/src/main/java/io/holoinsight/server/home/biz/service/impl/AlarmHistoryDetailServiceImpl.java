@@ -13,6 +13,7 @@ import io.holoinsight.server.home.facade.page.MonitorPageResult;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -47,6 +48,10 @@ public class AlarmHistoryDetailServiceImpl extends
 
     if (null != alarmHistoryDetail.getTenant()) {
       wrapper.eq("tenant", alarmHistoryDetail.getTenant());
+    }
+
+    if (StringUtils.isNotBlank(alarmHistoryDetail.getWorkspace())) {
+      wrapper.eq("workspace", alarmHistoryDetail.getWorkspace());
     }
 
     if (null != pageRequest.getFrom()) {

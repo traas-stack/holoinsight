@@ -166,7 +166,8 @@ public class QueryFacadeImpl extends BaseFacade {
       public void doManage() {
         MonitorScope ms = RequestContext.getContext().ms;
         QueryProto.Datasource datasource = QueryProto.Datasource.newBuilder().setMetric(metric)
-            .setStart(System.currentTimeMillis()).setEnd(System.currentTimeMillis()).build();
+            .setStart(System.currentTimeMillis() - 60000 * 60 * 5)
+            .setEnd(System.currentTimeMillis() - 60000 * 5).build();
         QueryProto.QueryRequest.Builder builder = QueryProto.QueryRequest.newBuilder();
         if (null != ms) {
           builder.setTenant(ms.getTenant());

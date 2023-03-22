@@ -39,9 +39,6 @@ public class OpenmetricsScraperFacadeImpl extends BaseFacade {
   private UserOpLogService userOpLogService;
 
 
-  // @Autowired
-  // private OpenmetricsScraperConverter openmetricsScraperConverter;
-
   @PostMapping("/pageQuery")
   @ResponseBody
   @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.VIEW)
@@ -57,6 +54,7 @@ public class OpenmetricsScraperFacadeImpl extends BaseFacade {
       @Override
       public void doManage() {
         request.getTarget().setTenant(RequestContext.getContext().ms.getTenant());
+        request.getTarget().setWorkspace(RequestContext.getContext().ms.getWorkspace());
         JsonResult.createSuccessResult(result, openmetricsScraperService.getListByPage(request));
       }
     });
@@ -64,48 +62,12 @@ public class OpenmetricsScraperFacadeImpl extends BaseFacade {
     return result;
   }
 
-  // @GetMapping
-  // public JsonResult<Object> index(@RequestParam(value = "pageNum", defaultValue = "1") Integer
-  // pageNum,
-  // @RequestParam(value = "pageSize", defaultValue = "10") Integer pageSize) {
-  //
-  // final JsonResult<Object> result = new JsonResult<>();
-  // facadeTemplate.manage(result, new ManageCallback() {
-  // @Override
-  // public void checkParameter() {
-  // }
-  //
-  // @Override
-  // public void doManage() {
-  //
-  // MonitorScope ms = RequestContext.getContext().ms;
-  //
-  // Page<OpenmetricsScraper> page = new Page<>(pageNum, pageSize);
-  // QueryWrapper<OpenmetricsScraper> wrapper = new QueryWrapper<>();
-  // wrapper.eq("tenant", ms.getTenant());
-  // openmetricsScraperService.page(page, wrapper);
-  //
-  // MonitorPageResult<OpenmetricsScraperDTO> pageResult = new MonitorPageResult<>();
-  //
-  // pageResult.setItems(openmetricsScraperConverter.dosToDTOs(page.getRecords()));
-  // pageResult.setPageNum(pageNum);
-  // pageResult.setPageSize(pageSize);
-  // pageResult.setTotalCount(page.getTotal());
-  // pageResult.setTotalPage(page.getPages());
-  //
-  // JsonResult.createSuccessResult(result, pageResult);
-  // }
-  // });
-  //
-  // return result;
-  //
-  // }
-
   @GetMapping("/{id}")
   public JsonResult<Object> get(@PathVariable("id") Long id) {
     MonitorScope ms = RequestContext.getContext().ms;
 
-    OpenmetricsScraperDTO model = openmetricsScraperService.queryById(id, ms.getTenant());
+    OpenmetricsScraperDTO model =
+        openmetricsScraperService.queryById(id, ms.getTenant(), ms.getWorkspace());
     if (model == null || !model.getTenant().equals(ms.getTenant())) {
       return JsonResult.createFailResult("can not find the record");
     }
@@ -133,12 +95,12 @@ public class OpenmetricsScraperFacadeImpl extends BaseFacade {
         MonitorScope ms = RequestContext.getContext().ms;
 
         openmetricsScraperDTO.setTenant(ms.getTenant());
+        openmetricsScraperDTO.setWorkspace(ms.getWorkspace());
         openmetricsScraperService.saveByDTO(openmetricsScraperDTO);
 
         userOpLogService.append("openmetrics_scraper", openmetricsScraperDTO.getId(), OpType.CREATE,
-            RequestContext.getContext().mu.getLoginName(),
-            RequestContext.getContext().ms.getTenant(), J.toJson(openmetricsScraperDTO), null, null,
-            "openmetrics_scraper_create");
+            RequestContext.getContext().mu.getLoginName(), ms.getTenant(), ms.getWorkspace(),
+            J.toJson(openmetricsScraperDTO), null, null, "openmetrics_scraper_create");
 
         JsonResult.createSuccessResult(result, openmetricsScraperDTO);
       }
@@ -173,8 +135,9 @@ public class OpenmetricsScraperFacadeImpl extends BaseFacade {
       @Override
       public void doManage() {
 
+        MonitorScope ms = RequestContext.getContext().ms;
         OpenmetricsScraperDTO item =
-            openmetricsScraperService.queryById(id, RequestContext.getContext().ms.getTenant());
+            openmetricsScraperService.queryById(id, ms.getTenant(), ms.getWorkspace());
 
         if (null == item) {
           throw new MonitorException("cannot find record: " + id);
@@ -183,15 +146,14 @@ public class OpenmetricsScraperFacadeImpl extends BaseFacade {
           throw new MonitorException("the tenant parameter is invalid");
         }
 
-        MonitorScope ms = RequestContext.getContext().ms;
         openmetricsScraperDTO.setTenant(ms.getTenant());
+        openmetricsScraperDTO.setWorkspace(ms.getWorkspace());
         openmetricsScraperDTO.setId(id);
         openmetricsScraperService.saveByDTO(openmetricsScraperDTO);
 
         userOpLogService.append("openmetrics_scraper", openmetricsScraperDTO.getId(), OpType.CREATE,
-            RequestContext.getContext().mu.getLoginName(),
-            RequestContext.getContext().ms.getTenant(), J.toJson(item),
-            J.toJson(openmetricsScraperDTO), null, "openmetrics_scraper_update");
+            RequestContext.getContext().mu.getLoginName(), ms.getTenant(), ms.getWorkspace(),
+            J.toJson(item), J.toJson(openmetricsScraperDTO), null, "openmetrics_scraper_update");
 
         JsonResult.createSuccessResult(result, openmetricsScraperDTO);
       }
@@ -217,7 +179,7 @@ public class OpenmetricsScraperFacadeImpl extends BaseFacade {
         MonitorScope ms = RequestContext.getContext().ms;
 
         OpenmetricsScraperDTO model =
-            openmetricsScraperService.queryById(id, RequestContext.getContext().ms.getTenant());
+            openmetricsScraperService.queryById(id, ms.getTenant(), ms.getWorkspace());
         if (model == null || !model.getTenant().equals(ms.getTenant())) {
           JsonResult.createFailResult(result, "can not find the record");
           return;
@@ -226,9 +188,8 @@ public class OpenmetricsScraperFacadeImpl extends BaseFacade {
         openmetricsScraperService.removeById(id);
 
         userOpLogService.append("openmetrics_scraper", id, OpType.DELETE,
-            RequestContext.getContext().mu.getLoginName(),
-            RequestContext.getContext().ms.getTenant(), J.toJson(model), null, null,
-            "openmetrics_scraper_delete");
+            RequestContext.getContext().mu.getLoginName(), ms.getTenant(), ms.getWorkspace(),
+            J.toJson(model), null, null, "openmetrics_scraper_delete");
 
         JsonResult.createSuccessResult(result, model);
       }

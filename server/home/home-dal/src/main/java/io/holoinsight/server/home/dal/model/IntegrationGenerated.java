@@ -21,6 +21,8 @@ public class IntegrationGenerated {
 
   public String tenant;
 
+  public String workspace;
+
   public String name;
 
   public String product;

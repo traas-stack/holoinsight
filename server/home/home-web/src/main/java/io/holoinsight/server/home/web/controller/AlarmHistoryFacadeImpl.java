@@ -53,9 +53,8 @@ public class AlarmHistoryFacadeImpl extends BaseFacade {
 
       @Override
       public void doManage() {
-
-        AlarmHistoryDTO save =
-            alarmHistoryService.queryById(id, RequestContext.getContext().ms.getTenant());
+        MonitorScope ms = RequestContext.getContext().ms;
+        AlarmHistoryDTO save = alarmHistoryService.queryById(id, ms.getTenant(), ms.getWorkspace());
         JsonResult.createSuccessResult(result, save);
       }
     });
@@ -80,6 +79,10 @@ public class AlarmHistoryFacadeImpl extends BaseFacade {
         MonitorScope ms = RequestContext.getContext().ms;
         if (null != ms && !StringUtils.isEmpty(ms.tenant)) {
           pageRequest.getTarget().setTenant(ms.tenant);
+        }
+
+        if (null != ms && !StringUtils.isEmpty(ms.workspace)) {
+          pageRequest.getTarget().setWorkspace(ms.workspace);
         }
         JsonResult.createSuccessResult(result,
             alarmHistoryService.getListByPage(pageRequest, null));

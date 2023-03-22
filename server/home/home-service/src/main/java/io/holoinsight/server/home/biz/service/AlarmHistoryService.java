@@ -18,7 +18,7 @@ import java.util.List;
  */
 public interface AlarmHistoryService extends IService<AlarmHistory> {
 
-  AlarmHistoryDTO queryById(Long id, String tenant);
+  AlarmHistoryDTO queryById(Long id, String tenant, String workspace);
 
   MonitorPageResult<AlarmHistoryDTO> getListByPage(MonitorPageRequest<AlarmHistoryDTO> pageRequest,
       List<String> uniqueIds);

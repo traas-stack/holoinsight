@@ -24,6 +24,8 @@ public class GaeaCollectConfig {
 
   public String tenant;
 
+  public String workspace;
+
   public String refId;
 
   public String tableName;

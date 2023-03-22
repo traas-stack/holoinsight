@@ -14,6 +14,7 @@ import io.holoinsight.server.home.facade.page.MonitorPageResult;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
@@ -32,10 +33,13 @@ public class AlarmHistoryServiceImpl extends ServiceImpl<AlarmHistoryMapper, Ala
   private AlarmHistoryConverter alarmHistoryConverter;
 
   @Override
-  public AlarmHistoryDTO queryById(Long id, String tenant) {
+  public AlarmHistoryDTO queryById(Long id, String tenant, String workspace) {
 
     QueryWrapper<AlarmHistory> wrapper = new QueryWrapper<>();
     wrapper.eq("tenant", tenant);
+    if (StringUtils.isNotBlank(workspace)) {
+      wrapper.eq("workspace", workspace);
+    }
     wrapper.eq("id", id);
     wrapper.last("LIMIT 1");
     AlarmHistory alarmHistory = this.getOne(wrapper);
@@ -59,6 +63,10 @@ public class AlarmHistoryServiceImpl extends ServiceImpl<AlarmHistoryMapper, Ala
 
     if (StringUtil.isNotBlank(alarmHistory.getTenant())) {
       wrapper.eq("tenant", alarmHistory.getTenant().trim());
+    }
+
+    if (StringUtils.isNotBlank(alarmHistory.getWorkspace())) {
+      wrapper.eq("workspace", alarmHistory.getWorkspace());
     }
 
     if (null != alarmHistory.getUniqueId()) {

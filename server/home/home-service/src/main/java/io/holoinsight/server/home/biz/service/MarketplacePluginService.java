@@ -19,9 +19,9 @@ import java.util.Map;
  */
 public interface MarketplacePluginService extends IService<MarketplacePlugin> {
 
-  MarketplacePluginDTO queryById(Long id, String tenant);
+  MarketplacePluginDTO queryById(Long id, String tenant, String workspace);
 
-  List<MarketplacePluginDTO> queryByTenant(String tenant);
+  List<MarketplacePluginDTO> queryByTenant(String tenant, String workspace);
 
   List<MarketplacePluginDTO> findByMap(Map<String, Object> columnMap);
 
@@ -34,8 +34,8 @@ public interface MarketplacePluginService extends IService<MarketplacePlugin> {
   MonitorPageResult<MarketplacePluginDTO> getListByPage(
       MonitorPageRequest<MarketplacePluginDTO> integrationPluginDTORequest);
 
-  List<MarketplacePluginDTO> getListByKeyword(String keyword, String tenant);
+  List<MarketplacePluginDTO> getListByKeyword(String keyword, String tenant, String workspace);
 
-  List<MarketplacePluginDTO> getListByNameLike(String name, String tenant);
+  List<MarketplacePluginDTO> getListByNameLike(String name, String tenant, String workspace);
 
 }

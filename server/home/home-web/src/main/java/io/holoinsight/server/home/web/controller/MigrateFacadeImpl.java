@@ -73,7 +73,8 @@ public class MigrateFacadeImpl extends BaseFacade {
       public void doManage() {
         CustomPluginDTO customPluginDTO = migrateService.migrateCustomPlugin(
             migrateCustomPluginRequest.getPluginId(), migrateCustomPluginRequest.getSourceTenant(),
-            migrateCustomPluginRequest.getTargetTenant());
+            migrateCustomPluginRequest.getTargetTenant(),
+            migrateCustomPluginRequest.getTargetWorkspace());
         if (customPluginDTO != null) {
           JsonResult.createSuccessResult(result, customPluginDTO);
         }
@@ -110,7 +111,8 @@ public class MigrateFacadeImpl extends BaseFacade {
       public void doManage() {
         Dashboard dashboard = migrateService.migrateDashboard(
             migrateDashBoardRequest.getDashboardId(), migrateDashBoardRequest.getSourceTenant(),
-            migrateDashBoardRequest.getTargetTenant());
+            migrateDashBoardRequest.getTargetTenant(),
+            migrateDashBoardRequest.getTargetWorkspace());
         JsonResult.createSuccessResult(result, dashboard);
       }
     });
@@ -142,9 +144,9 @@ public class MigrateFacadeImpl extends BaseFacade {
 
       @Override
       public void doManage() {
-        AlarmRuleDTO alarmRuleDTO =
-            migrateService.migrateAlarmRule(migrateAlarmRequest.getAlarmRuleId(),
-                migrateAlarmRequest.getSourceTenant(), migrateAlarmRequest.getTargetTenant());
+        AlarmRuleDTO alarmRuleDTO = migrateService.migrateAlarmRule(
+            migrateAlarmRequest.getAlarmRuleId(), migrateAlarmRequest.getSourceTenant(),
+            migrateAlarmRequest.getTargetTenant(), migrateAlarmRequest.getTargetWorkspace());
         if (alarmRuleDTO != null) {
           JsonResult.createSuccessResult(result, alarmRuleDTO);
         }

@@ -24,10 +24,13 @@ import java.util.List;
 public class FolderServiceImpl extends ServiceImpl<FolderMapper, Folder> implements FolderService {
 
   @Override
-  public List<Folder> getListByKeyword(String keyword, String tenant) {
+  public List<Folder> getListByKeyword(String keyword, String tenant, String workspace) {
     QueryWrapper<Folder> wrapper = new QueryWrapper<>();
     if (StringUtil.isNotBlank(tenant)) {
       wrapper.eq("tenant", tenant);
+    }
+    if (StringUtil.isNotBlank(workspace)) {
+      wrapper.eq("workspace", workspace);
     }
     wrapper.like("id", keyword).or().like("name", keyword);
     Page<Folder> pluginPage = new Page<>(1, 20);
@@ -37,9 +40,12 @@ public class FolderServiceImpl extends ServiceImpl<FolderMapper, Folder> impleme
   }
 
   @Override
-  public List<Folder> getListByNameLike(String name, String tenant) {
+  public List<Folder> getListByNameLike(String name, String tenant, String workspace) {
     QueryWrapper<Folder> wrapper = new QueryWrapper<>();
     wrapper.eq("tenant", tenant);
+    if (StringUtil.isNotBlank(workspace)) {
+      wrapper.eq("workspace", workspace);
+    }
     wrapper.select().like("name", name);
     return baseMapper.selectList(wrapper);
   }
@@ -52,9 +58,12 @@ public class FolderServiceImpl extends ServiceImpl<FolderMapper, Folder> impleme
   }
 
   @Override
-  public Folder queryById(Long id, String tenant) {
+  public Folder queryById(Long id, String tenant, String workspace) {
     QueryWrapper<Folder> wrapper = new QueryWrapper<>();
     wrapper.eq("tenant", tenant);
+    if (StringUtil.isNotBlank(workspace)) {
+      wrapper.eq("workspace", workspace);
+    }
     wrapper.eq("id", id);
     wrapper.last("LIMIT 1");
 

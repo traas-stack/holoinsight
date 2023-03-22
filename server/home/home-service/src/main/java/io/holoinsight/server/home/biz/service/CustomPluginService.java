@@ -14,7 +14,7 @@ import java.util.Map;
 
 public interface CustomPluginService extends IService<CustomPlugin> {
 
-  CustomPluginDTO queryById(Long id, String tenant);
+  CustomPluginDTO queryById(Long id, String tenant, String workspace);
 
   List<CustomPluginDTO> findByMap(Map<String, Object> columnMap);
 
@@ -29,9 +29,9 @@ public interface CustomPluginService extends IService<CustomPlugin> {
   MonitorPageResult<CustomPluginDTO> getListByPage(
       MonitorPageRequest<CustomPluginDTO> customPluginDTORequest);
 
-  List<CustomPluginDTO> getListByKeyword(String keyword, String tenant);
+  List<CustomPluginDTO> getListByKeyword(String keyword, String tenant, String workspace);
 
-  List<CustomPluginDTO> getListByNameLike(String name, String tenant);
+  List<CustomPluginDTO> getListByNameLike(String name, String tenant, String workspace);
 
   Boolean updateById(CustomPluginDTO customPluginDTO);
 

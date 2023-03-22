@@ -68,6 +68,7 @@ public class SysFacadeImpl extends BaseFacade {
     sysMap.put("ula", ulaFacade.getCurrentULA().name());
     sysMap.put("authApplyUrl", ulaFacade.getCurrentULA().authApplyUrl());
     sysMap.put("jiguanghost", MetaDictUtil.getJiGuangHost());
+    sysMap.put("systemNotice", MetaDictUtil.getSystemNotice());
     return JsonResult.createSuccessResult(sysMap);
   }
 

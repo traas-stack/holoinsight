@@ -15,6 +15,7 @@ import io.holoinsight.server.home.facade.page.MonitorPageResult;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -37,12 +38,14 @@ public class CustomPluginServiceImpl extends ServiceImpl<CustomPluginMapper, Cus
   private CustomPluginConverter customPluginConverter;
 
   @Override
-  public CustomPluginDTO queryById(Long id, String tenant) {
+  public CustomPluginDTO queryById(Long id, String tenant, String workspace) {
     QueryWrapper<CustomPlugin> wrapper = new QueryWrapper<>();
     wrapper.eq("tenant", tenant);
     wrapper.eq("id", id);
     wrapper.last("LIMIT 1");
-
+    if (StringUtils.isNotBlank(workspace)) {
+      wrapper.eq("workspace", workspace);
+    }
     CustomPlugin model = this.getOne(wrapper);
     if (model == null) {
       return null;
@@ -132,6 +135,10 @@ public class CustomPluginServiceImpl extends ServiceImpl<CustomPluginMapper, Cus
       wrapper.eq("tenant", customPluginDTO.getTenant().trim());
     }
 
+    if (StringUtils.isNotBlank(customPluginDTO.getWorkspace())) {
+      wrapper.eq("workspace", customPluginDTO.getWorkspace());
+    }
+
     if (StringUtil.isNotBlank(customPluginDTO.getName())) {
       wrapper.like("name", customPluginDTO.getName().trim());
     }
@@ -179,10 +186,14 @@ public class CustomPluginServiceImpl extends ServiceImpl<CustomPluginMapper, Cus
   }
 
   @Override
-  public List<CustomPluginDTO> getListByKeyword(String keyword, String tenant) {
+  public List<CustomPluginDTO> getListByKeyword(String keyword, String tenant, String workspace) {
     QueryWrapper<CustomPlugin> wrapper = new QueryWrapper<>();
     if (StringUtil.isNotBlank(tenant)) {
       wrapper.eq("tenant", tenant);
+    }
+
+    if (StringUtils.isNotBlank(workspace)) {
+      wrapper.eq("workspace", workspace);
     }
     wrapper.like("id", keyword).or().like("name", keyword);
     Page<CustomPlugin> page = new Page<>(1, 20);
@@ -192,9 +203,14 @@ public class CustomPluginServiceImpl extends ServiceImpl<CustomPluginMapper, Cus
   }
 
   @Override
-  public List<CustomPluginDTO> getListByNameLike(String name, String tenant) {
+  public List<CustomPluginDTO> getListByNameLike(String name, String tenant, String workspace) {
     QueryWrapper<CustomPlugin> wrapper = new QueryWrapper<>();
     wrapper.eq("tenant", tenant);
+
+    if (StringUtils.isNotBlank(workspace)) {
+      wrapper.eq("workspace", workspace);
+    }
+
     wrapper.select().like("name", name);
     List<CustomPlugin> customPlugins = baseMapper.selectList(wrapper);
     return dosToDTOs(customPlugins);

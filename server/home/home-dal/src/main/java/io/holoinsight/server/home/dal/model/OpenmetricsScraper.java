@@ -21,6 +21,9 @@ public class OpenmetricsScraper {
   private Long id;
   private String name;
   private String tenant;
+
+  public String workspace;
+
   @TableField(value = "`conf`", typeHandler = GsonTypeHandler.class)
   private Map<String, String> conf;
 

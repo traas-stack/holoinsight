@@ -119,6 +119,9 @@ public class AlarmRuleFacadeImpl extends BaseFacade {
         if (null != ms && !StringUtils.isEmpty(ms.tenant)) {
           alarmRuleDTO.setTenant(ms.tenant);
         }
+        if (null != ms && !StringUtils.isEmpty(ms.workspace)) {
+          alarmRuleDTO.setWorkspace(ms.workspace);
+        }
         alarmRuleDTO.setGmtCreate(new Date());
         alarmRuleDTO.setGmtModified(new Date());
         Map<String /* metric */, Map<String /* type */, String /* page */>> systemMetrics =
@@ -131,7 +134,7 @@ public class AlarmRuleFacadeImpl extends BaseFacade {
         Long id = alarmRuleService.save(alarmRuleDTO);
 
         userOpLogService.append("alarm_rule", id, OpType.CREATE, mu.getLoginName(), ms.getTenant(),
-            J.toJson(alarmRuleDTO), null, null, "alarm_rule_create");
+            ms.getWorkspace(), J.toJson(alarmRuleDTO), null, null, "alarm_rule_create");
         JsonResult.createSuccessResult(result, id);
       }
     });
@@ -171,9 +174,9 @@ public class AlarmRuleFacadeImpl extends BaseFacade {
 
       @Override
       public void doManage() {
-
-        AlarmRuleDTO item = alarmRuleService.queryById(alarmRuleDTO.getId(),
-            RequestContext.getContext().ms.getTenant());
+        MonitorScope ms = RequestContext.getContext().ms;
+        AlarmRuleDTO item =
+            alarmRuleService.queryById(alarmRuleDTO.getId(), ms.getTenant(), ms.getWorkspace());
 
         if (null == item) {
           throw new MonitorException("cannot find record: " + alarmRuleDTO.getId());
@@ -192,9 +195,8 @@ public class AlarmRuleFacadeImpl extends BaseFacade {
         boolean save = alarmRuleService.updateById(alarmRuleDTO);
 
         userOpLogService.append("alarm_rule", alarmRuleDTO.getId(), OpType.UPDATE,
-            RequestContext.getContext().mu.getLoginName(),
-            RequestContext.getContext().ms.getTenant(), J.toJson(item), J.toJson(alarmRuleDTO),
-            null, "alarm_rule_update");
+            RequestContext.getContext().mu.getLoginName(), ms.getTenant(), ms.getWorkspace(),
+            J.toJson(item), J.toJson(alarmRuleDTO), null, "alarm_rule_update");
 
         JsonResult.createSuccessResult(result, save);
       }
@@ -216,9 +218,8 @@ public class AlarmRuleFacadeImpl extends BaseFacade {
 
       @Override
       public void doManage() {
-
-        AlarmRuleDTO save =
-            alarmRuleService.queryById(id, RequestContext.getContext().ms.getTenant());
+        MonitorScope ms = RequestContext.getContext().ms;
+        AlarmRuleDTO save = alarmRuleService.queryById(id, ms.getTenant(), ms.getWorkspace());
         JsonResult.createSuccessResult(result, save);
       }
     });
@@ -238,17 +239,16 @@ public class AlarmRuleFacadeImpl extends BaseFacade {
 
       @Override
       public void doManage() {
+        MonitorScope ms = RequestContext.getContext().ms;
         boolean rtn = false;
-        AlarmRuleDTO alarmRule =
-            alarmRuleService.queryById(id, RequestContext.getContext().ms.getTenant());
+        AlarmRuleDTO alarmRule = alarmRuleService.queryById(id, ms.getTenant(), ms.getWorkspace());
         if (alarmRule != null) {
           rtn = alarmRuleService.removeById(id);
         }
 
         userOpLogService.append("alarm_rule", id, OpType.DELETE,
-            RequestContext.getContext().mu.getLoginName(),
-            RequestContext.getContext().ms.getTenant(), J.toJson(alarmRule), null, null,
-            "alarm_rule_delete");
+            RequestContext.getContext().mu.getLoginName(), ms.getTenant(), ms.getWorkspace(),
+            J.toJson(alarmRule), null, null, "alarm_rule_delete");
 
         JsonResult.createSuccessResult(result, rtn);
       }
@@ -273,6 +273,9 @@ public class AlarmRuleFacadeImpl extends BaseFacade {
         MonitorScope ms = RequestContext.getContext().ms;
         if (null != ms && !StringUtils.isEmpty(ms.tenant)) {
           pageRequest.getTarget().setTenant(ms.tenant);
+        }
+        if (null != ms && !StringUtils.isEmpty(ms.workspace)) {
+          pageRequest.getTarget().setWorkspace(ms.workspace);
         }
         JsonResult.createSuccessResult(result, alarmRuleService.getListByPage(pageRequest));
       }
@@ -348,6 +351,10 @@ public class AlarmRuleFacadeImpl extends BaseFacade {
           pageRequest.getTarget().setTenant(ms.tenant);
         }
 
+        if (null != ms && !StringUtils.isEmpty(ms.workspace)) {
+          pageRequest.getTarget().setWorkspace(ms.workspace);
+        }
+
         List<String> uniqueIds = alarmRuleDTOS.stream()
             .map(alarmRuleDTO -> alarmRuleDTO.getRuleType() + "_" + alarmRuleDTO.getId())
             .collect(Collectors.toList());
@@ -362,7 +369,8 @@ public class AlarmRuleFacadeImpl extends BaseFacade {
     return result;
   }
 
-  protected List<AlarmRuleDTO> getRuleListByGroup(boolean myself) {
+  private List<AlarmRuleDTO> getRuleListByGroup(boolean myself) {
+    MonitorScope ms = RequestContext.getContext().ms;
     String userId = RequestContext.getContext().mu.getUserId();
     List<AlarmGroupDTO> listByUserLike =
         alarmGroupService.getListByUserLike(userId, MonitorCookieUtil.getTenantOrException());
@@ -375,7 +383,9 @@ public class AlarmRuleFacadeImpl extends BaseFacade {
       Map<String, Object> conditions = new HashMap<>();
       conditions.put("group_id", alarmGroupDTO.getId());
       conditions.put("tenant", MonitorCookieUtil.getTenantOrException());
-
+      if (null != ms && !StringUtils.isEmpty(ms.workspace)) {
+        conditions.put("workspace", ms.getWorkspace());
+      }
       List<AlarmSubscribeInfo> alarmSubscribeInfos = alarmSubscribeService.queryByMap(conditions);
 
       if (CollectionUtils.isEmpty(alarmSubscribeInfos))
@@ -411,12 +421,15 @@ public class AlarmRuleFacadeImpl extends BaseFacade {
 
   }
 
-  protected List<AlarmRuleDTO> getRuleListBySubscribe(boolean myself) {
+  private List<AlarmRuleDTO> getRuleListBySubscribe(boolean myself) {
+    MonitorScope ms = RequestContext.getContext().ms;
     String userId = RequestContext.getContext().mu.getUserId();
     Map<String, Object> conditions = new HashMap<>();
     conditions.put("subscriber", userId);
     conditions.put("tenant", MonitorCookieUtil.getTenantOrException());
-
+    if (null != ms && !StringUtils.isEmpty(ms.workspace)) {
+      conditions.put("workspace", ms.getWorkspace());
+    }
     List<AlarmSubscribeInfo> alarmSubscribeInfos = alarmSubscribeService.queryByMap(conditions);
 
     if (CollectionUtils.isEmpty(alarmSubscribeInfos))

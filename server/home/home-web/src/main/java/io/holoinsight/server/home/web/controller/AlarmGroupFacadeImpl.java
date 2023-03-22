@@ -100,7 +100,8 @@ public class AlarmGroupFacadeImpl extends BaseFacade {
         alarmGroup.setGmtModified(new Date());
         Long rtn = alarmGroupService.save(alarmGroup);
         userOpLogService.append("alarm_group", rtn, OpType.CREATE, mu.getLoginName(),
-            ms.getTenant(), J.toJson(alarmGroup), null, null, "alarm_group_create");
+            ms.getTenant(), ms.getWorkspace(), J.toJson(alarmGroup), null, null,
+            "alarm_group_create");
 
         JsonResult.createSuccessResult(result, rtn);
       }
@@ -137,6 +138,7 @@ public class AlarmGroupFacadeImpl extends BaseFacade {
         }
 
         MonitorUser mu = RequestContext.getContext().mu;
+        MonitorScope ms = RequestContext.getContext().ms;
         if (null != mu) {
           alarmGroup.setModifier(mu.getLoginName());
         }
@@ -144,9 +146,8 @@ public class AlarmGroupFacadeImpl extends BaseFacade {
         boolean save = alarmGroupService.updateById(alarmGroup);
 
         userOpLogService.append("alarm_group", alarmGroup.getId(), OpType.UPDATE,
-            RequestContext.getContext().mu.getLoginName(),
-            RequestContext.getContext().ms.getTenant(), J.toJson(item), J.toJson(alarmGroup), null,
-            "alarm_group_update");
+            RequestContext.getContext().mu.getLoginName(), ms.getTenant(), ms.getWorkspace(),
+            J.toJson(item), J.toJson(alarmGroup), null, "alarm_group_update");
 
         JsonResult.createSuccessResult(result, save);
       }
@@ -190,17 +191,16 @@ public class AlarmGroupFacadeImpl extends BaseFacade {
 
       @Override
       public void doManage() {
+        MonitorScope ms = RequestContext.getContext().ms;
         boolean rtn = false;
-        AlarmGroupDTO alarmGroup =
-            alarmGroupService.queryById(id, RequestContext.getContext().ms.getTenant());
+        AlarmGroupDTO alarmGroup = alarmGroupService.queryById(id, ms.getTenant());
         if (alarmGroup != null) {
           rtn = alarmGroupService.removeById(id);
         }
 
         userOpLogService.append("alarm_group", id, OpType.DELETE,
-            RequestContext.getContext().mu.getLoginName(),
-            RequestContext.getContext().ms.getTenant(), J.toJson(alarmGroup), null, null,
-            "alarm_group_delete");
+            RequestContext.getContext().mu.getLoginName(), ms.getTenant(), ms.getWorkspace(),
+            J.toJson(alarmGroup), null, null, "alarm_group_delete");
 
         JsonResult.createSuccessResult(result, rtn);
       }

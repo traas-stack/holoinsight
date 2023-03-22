@@ -22,6 +22,7 @@ public class MigrateDashBoardRequest {
    * target tenant
    */
   private String targetTenant;
+  private String targetWorkspace;
 
   /**
    * source tenant

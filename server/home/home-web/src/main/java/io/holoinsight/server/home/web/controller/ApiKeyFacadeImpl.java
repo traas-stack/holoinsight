@@ -105,7 +105,8 @@ public class ApiKeyFacadeImpl extends BaseFacade {
 
         assert mu != null;
         userOpLogService.append("apikey", apiKey.getId(), OpType.UPDATE, mu.getLoginName(),
-            ms.getTenant(), J.toJson(apiKey), J.toJson(update), null, "apikey_update");
+            ms.getTenant(), ms.getWorkspace(), J.toJson(apiKey), J.toJson(update), null,
+            "apikey_update");
       }
     });
 
@@ -144,7 +145,7 @@ public class ApiKeyFacadeImpl extends BaseFacade {
 
         assert mu != null;
         userOpLogService.append("apikey", apiKey.getId(), OpType.CREATE, mu.getLoginName(),
-            ms.getTenant(), J.toJson(apiKey), null, null, "apikey_create");
+            ms.getTenant(), ms.getWorkspace(), J.toJson(apiKey), null, null, "apikey_create");
 
       }
     });
@@ -214,7 +215,8 @@ public class ApiKeyFacadeImpl extends BaseFacade {
 
       @Override
       public void doManage() {
-        ApiKey byId = apiKeyService.queryById(id, RequestContext.getContext().ms.getTenant());
+        MonitorScope ms = RequestContext.getContext().ms;
+        ApiKey byId = apiKeyService.queryById(id, ms.getTenant());
         if (byId == null) {
           return;
         }
@@ -222,9 +224,8 @@ public class ApiKeyFacadeImpl extends BaseFacade {
         apiKeyService.removeById(id);
         JsonResult.createSuccessResult(result, null);
         userOpLogService.append("apikey", byId.getId(), OpType.DELETE,
-            RequestContext.getContext().mu.getLoginName(),
-            RequestContext.getContext().ms.getTenant(), J.toJson(byId), null, null,
-            "apikey_delete");
+            RequestContext.getContext().mu.getLoginName(), ms.getTenant(), ms.getWorkspace(),
+            J.toJson(byId), null, null, "apikey_delete");
 
       }
     });
@@ -243,9 +244,10 @@ public class ApiKeyFacadeImpl extends BaseFacade {
 
       @Override
       public void doManage() {
+        MonitorScope ms = RequestContext.getContext().ms;
         Map<String, Object> columnMap = new HashMap<>();
         columnMap.put("name", name);
-        columnMap.put("tenant", RequestContext.getContext().ms.getTenant());
+        columnMap.put("tenant", ms.getTenant());
         List<ApiKey> apiKeys = apiKeyService.listByMap(columnMap);
         if (CollectionUtils.isEmpty(apiKeys)) {
           return;
@@ -257,9 +259,8 @@ public class ApiKeyFacadeImpl extends BaseFacade {
         JsonResult.createSuccessResult(result, null);
         if (!CollectionUtils.isEmpty(ids)) {
           userOpLogService.append("apikey", ids.get(0), OpType.DELETE,
-              RequestContext.getContext().mu.getLoginName(),
-              RequestContext.getContext().ms.getTenant(), J.toJson(apiKeys), null, null,
-              "apikey_delete");
+              RequestContext.getContext().mu.getLoginName(), ms.getTenant(), ms.getWorkspace(),
+              J.toJson(apiKeys), null, null, "apikey_delete");
         }
       }
     });

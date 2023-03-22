@@ -13,6 +13,7 @@ import io.holoinsight.server.home.facade.page.MonitorPageResult;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -27,9 +28,12 @@ public class UserOpLogServiceImpl extends ServiceImpl<UserOpLogMapper, UserOpLog
     implements UserOpLogService {
 
   @Override
-  public UserOpLog queryById(Long id, String tenant) {
+  public UserOpLog queryById(Long id, String tenant, String workspace) {
     QueryWrapper<UserOpLog> wrapper = new QueryWrapper<>();
     wrapper.eq("tenant", tenant);
+    if (StringUtils.isNotBlank(workspace)) {
+      wrapper.eq("workspace", workspace);
+    }
     wrapper.eq("id", id);
     wrapper.last("LIMIT 1");
 
@@ -77,6 +81,10 @@ public class UserOpLogServiceImpl extends ServiceImpl<UserOpLogMapper, UserOpLog
       wrapper.eq("tenant", userOpLog.getTenant());
     }
 
+    if (StringUtils.isNotBlank(userOpLog.getWorkspace())) {
+      wrapper.eq("workspace", userOpLog.getWorkspace());
+    }
+
     if (null != userOpLog.getOpType()) {
       wrapper.eq("op_type", userOpLog.getOpType());
     }
@@ -107,7 +115,7 @@ public class UserOpLogServiceImpl extends ServiceImpl<UserOpLogMapper, UserOpLog
   }
 
   public UserOpLog append(String tableName, Long tableEntityId, String opType, String user,
-      String tenant, String before, String after, String relate, String name) {
+      String tenant, String workspace, String before, String after, String relate, String name) {
     UserOpLog opLog = new UserOpLog();
     opLog.setTableName(tableName);
     opLog.setTableEntityId(tableEntityId);

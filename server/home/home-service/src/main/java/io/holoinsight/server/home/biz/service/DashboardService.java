@@ -13,13 +13,13 @@ import java.util.List;
 
 public interface DashboardService extends IService<Dashboard> {
 
-  Dashboard queryById(Long id, String tenant);
+  Dashboard queryById(Long id, String tenant, String workspace);
 
   DashboardDTO save(DashboardDTO dashboardDTO);
 
   List<Dashboard> findByIds(List<String> ids);
 
-  List<Dashboard> getListByKeyword(String keyword, String tenant);
+  List<Dashboard> getListByKeyword(String keyword, String tenant, String workspace);
 
   MonitorPageResult<Dashboard> getListByPage(MonitorPageRequest<Dashboard> request);
 

@@ -35,7 +35,6 @@ import java.util.Map;
 @Service
 public class IntegrationPluginServiceImpl extends
     ServiceImpl<IntegrationPluginMapper, IntegrationPlugin> implements IntegrationPluginService {
-  private static final Logger LOGGER = LoggerFactory.getLogger(IntegrationPluginServiceImpl.class);
 
   @Resource
   private IntegrationPluginConverter integrationPluginConverter;
@@ -43,13 +42,15 @@ public class IntegrationPluginServiceImpl extends
   private PluginRepository pluginRepository;
 
   @Override
-  public IntegrationPluginDTO queryById(Long id, String tenant) {
+  public IntegrationPluginDTO queryById(Long id, String tenant, String workspace) {
 
     QueryWrapper<IntegrationPlugin> wrapper = new QueryWrapper<>();
     wrapper.eq("tenant", tenant);
     wrapper.eq("id", id);
     wrapper.last("LIMIT 1");
-
+    if (StringUtils.isNotBlank(workspace)) {
+      wrapper.eq("workspace", workspace);
+    }
     IntegrationPlugin model = this.getOne(wrapper);
     if (model == null) {
       return null;
@@ -58,12 +59,14 @@ public class IntegrationPluginServiceImpl extends
   }
 
   @Override
-  public IntegrationPluginDTO queryByName(String name, String tenant) {
+  public IntegrationPluginDTO queryByName(String name, String tenant, String workspace) {
     QueryWrapper<IntegrationPlugin> wrapper = new QueryWrapper<>();
     wrapper.eq("tenant", tenant);
     wrapper.eq("product", name);
     wrapper.last("LIMIT 1");
-
+    if (StringUtils.isNotBlank(workspace)) {
+      wrapper.eq("workspace", workspace);
+    }
     IntegrationPlugin model = this.getOne(wrapper);
     if (model == null) {
       return null;
@@ -75,29 +78,24 @@ public class IntegrationPluginServiceImpl extends
   public List<IntegrationPluginDTO> queryByTenant(String tenant) {
     Map<String, Object> columnMap = new HashMap<>();
     columnMap.put("tenant", tenant);
-    // QueryWrapper<IntegrationPlugin> queryWrapper = new QueryWrapper<>();
-    // queryWrapper.select("name", "product", "type", "version", "collect_range").eq("tenant",
-    // tenant);
-    // List<IntegrationPlugin> models = baseMapper.selectList(queryWrapper);
+
+    return integrationPluginConverter.dosToDTOs(listByMap(columnMap));
+  }
+
+  @Override
+  public List<IntegrationPluginDTO> queryByTenant(String tenant, String workspace) {
+    Map<String, Object> columnMap = new HashMap<>();
+    columnMap.put("tenant", tenant);
+    if (StringUtils.isNotBlank(workspace)) {
+      columnMap.put("workspace", workspace);
+    }
+
     return integrationPluginConverter.dosToDTOs(listByMap(columnMap));
   }
 
   @Override
   public List<IntegrationPluginDTO> findByMap(Map<String, Object> columnMap) {
     List<IntegrationPlugin> models = listByMap(columnMap);
-    // models.forEach(plugin->{
-    // String type = plugin.getType();
-    // String json = plugin.getJson();
-    // Class cls;
-    // try {
-    // cls = Class.forName(type);
-    // } catch (ClassNotFoundException e) {
-    // throw new RuntimeException(e);
-    // }
-    // GaeaTask gaeaTask = J.fromJson(json, cls);
-    // IntegrationTask integrationTask = (IntegrationTask) gaeaTask;
-    // plugin.setJson(J.toJson(integrationTask.desensitize()));
-    // });
     return integrationPluginConverter.dosToDTOs(models);
   }
 
@@ -138,11 +136,9 @@ public class IntegrationPluginServiceImpl extends
     // 是否数据源插件
     boolean isDataSourcePlugin = pluginRepository.isDataSourcePlugin(newIntegrationPlugin.type);
     boolean isCreate = originalRecord == null;
-    // List<Plugin> pluginList = null;
     boolean needUpsertGaea = false;
     if (isDataSourcePlugin) {
       if (isCreate) {
-        // pluginList = buildNewPlugins(newIntegrationPlugin);
         needUpsertGaea = true;
       } else {
         // 是否插件升级
@@ -150,49 +146,14 @@ public class IntegrationPluginServiceImpl extends
         // 是否变更了采集配置
         boolean shouldChangeJson = newIntegrationPlugin.checkJsonChange(originalRecord);
         if (shouldUpgrade || shouldChangeJson) {
-          // pluginList = buildNewPlugins(newIntegrationPlugin);
           needUpsertGaea = true;
         }
       }
       newIntegrationPlugin.name = newIntegrationPlugin.tenant + '_' + newIntegrationPlugin.type;
     }
 
-    // if (!CollectionUtils.isEmpty(pluginList)) {
-    // newIntegrationPlugin.json = J.toJson(pluginList);
-    // }
     return needUpsertGaea;
   }
-
-  // private List<Plugin> buildNewPlugins(IntegrationPluginDTO newIntegrationPlugin) {
-  // String tenant = RequestContext.getContext().ms.getTenant();
-  // Plugin templatePlugin = this.pluginRepository.getTemplate(newIntegrationPlugin.type,
-  // newIntegrationPlugin.version);
-  // if(templatePlugin == null){
-  // LOGGER.warn("can not find plugin by type {}, version {}", newIntegrationPlugin.type,
-  // newIntegrationPlugin.version);
-  // return Collections.emptyList();
-  // }
-  // //对于数据源 plugin 才会做生成默认插件动作
-  // if((templatePlugin.getPluginType() != PluginType.logdatasource)
-  // || !(templatePlugin instanceof LogPlugin)){
-  // return Collections.emptyList();
-  // }
-  //
-  // List<Plugin> pluginList = J.fromJson(newIntegrationPlugin.json, new TypeToken<List<Plugin>>() {
-  // }.getType());
-  //
-  // if (CollectionUtils.isEmpty(pluginList)) {
-  // GaeaCollectConfigDTO.GaeaCollectRange collectRange = newIntegrationPlugin.getCollectRange();
-  // if (collectRange != null) {
-  // CloudMonitorRange cloudMonitorRange = collectRange.getCloudmonitor();
-  // if (cloudMonitorRange != null) {
-  // List<Map<String, List<String>>> condition = cloudMonitorRange.condition;
-  // //pluginList = ((LogPlugin)templatePlugin).buildDefaultPlugins(tenant, condition);
-  // }
-  // }
-  // }
-  // return pluginList;
-  // }
 
   @Override
   public void deleteById(Long id) {
@@ -209,8 +170,8 @@ public class IntegrationPluginServiceImpl extends
   @Override
   public IntegrationPluginDTO updateByRequest(IntegrationPluginDTO integrationPluginDTO) {
     integrationPluginDTO.setGmtModified(new Date());
-    IntegrationPluginDTO originalRecord =
-        queryById(integrationPluginDTO.getId(), RequestContext.getContext().ms.getTenant());
+    IntegrationPluginDTO originalRecord = queryById(integrationPluginDTO.getId(),
+        integrationPluginDTO.getTenant(), integrationPluginDTO.getWorkspace());
 
     boolean needUpsertGaea = isClassicPlugin(integrationPluginDTO.getProduct())
         || checkActionType(integrationPluginDTO, originalRecord, this.pluginRepository);
@@ -258,6 +219,10 @@ public class IntegrationPluginServiceImpl extends
       wrapper.eq("tenant", integrationPluginDTO.getTenant().trim());
     }
 
+    if (StringUtils.isNotBlank(integrationPluginDTO.getWorkspace())) {
+      wrapper.eq("workspace", integrationPluginDTO.getWorkspace().trim());
+    }
+
     if (StringUtils.isNotBlank(integrationPluginDTO.getName())) {
       wrapper.like("name", integrationPluginDTO.getName().trim());
     }
@@ -289,10 +254,15 @@ public class IntegrationPluginServiceImpl extends
   }
 
   @Override
-  public List<IntegrationPluginDTO> getListByKeyword(String keyword, String tenant) {
+  public List<IntegrationPluginDTO> getListByKeyword(String keyword, String tenant,
+      String workspace) {
     QueryWrapper<IntegrationPlugin> wrapper = new QueryWrapper<>();
     if (StringUtils.isNotBlank(tenant)) {
       wrapper.eq("tenant", tenant);
+    }
+
+    if (StringUtils.isNotBlank(workspace)) {
+      wrapper.eq("workspace", workspace);
     }
     wrapper.like("id", keyword).or().like("name", keyword);
     Page<IntegrationPlugin> page = new Page<>(1, 20);
@@ -302,9 +272,17 @@ public class IntegrationPluginServiceImpl extends
   }
 
   @Override
-  public List<IntegrationPluginDTO> getListByNameLike(String name, String tenant) {
+  public List<IntegrationPluginDTO> getListByNameLike(String name, String tenant,
+      String workspace) {
     QueryWrapper<IntegrationPlugin> wrapper = new QueryWrapper<>();
     wrapper.select().like("name", name);
+    if (StringUtils.isNotBlank(tenant)) {
+      wrapper.eq("tenant", tenant);
+    }
+
+    if (StringUtils.isNotBlank(workspace)) {
+      wrapper.eq("workspace", workspace);
+    }
     List<IntegrationPlugin> customPlugins = baseMapper.selectList(wrapper);
     return integrationPluginConverter.dosToDTOs(customPlugins);
   }

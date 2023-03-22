@@ -73,7 +73,7 @@ public class MetaTableFacadeImpl extends BaseFacade {
 
         assert mu != null;
         userOpLogService.append("meta_table", save.getId(), OpType.CREATE, mu.getLoginName(),
-            RequestContext.getContext().ms.getTenant(), J.toJson(save), null, null,
+            RequestContext.getContext().ms.getTenant(), null, J.toJson(save), null, null,
             "meta_table_update");
       }
     });
@@ -120,8 +120,8 @@ public class MetaTableFacadeImpl extends BaseFacade {
 
         assert mu != null;
         userOpLogService.append("meta_table", update.getId(), OpType.UPDATE, mu.getLoginName(),
-            RequestContext.getContext().ms.getTenant(), J.toJson(metaTable), J.toJson(update), null,
-            "meta_table_update");
+            RequestContext.getContext().ms.getTenant(), null, J.toJson(metaTable), J.toJson(update),
+            null, "meta_table_update");
 
       }
     });

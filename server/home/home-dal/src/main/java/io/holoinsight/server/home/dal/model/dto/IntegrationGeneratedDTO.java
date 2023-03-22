@@ -18,6 +18,7 @@ public class IntegrationGeneratedDTO {
   public Long id;
 
   public String tenant;
+  public String workspace;
 
   // appName or other
   public String name;

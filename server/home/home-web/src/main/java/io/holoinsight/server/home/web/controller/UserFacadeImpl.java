@@ -79,7 +79,8 @@ public class UserFacadeImpl extends BaseFacade {
         resultObj.put("tenants", ulaFacade.getCurrentULA().getUserTenants(mu));
         resultObj.put("loginUrl", ulaFacade.getCurrentULA().getLoginUrl());
 
-        resultObj.put("marketplaces", marketplacePluginService.queryByTenant(ms.getTenant()));
+        resultObj.put("marketplaces",
+            marketplacePluginService.queryByTenant(ms.tenant, ms.workspace));
 
         Debugger.print("UserFacadeImpl", "getCurrentUser: " + J.toJson(resultObj));
         JsonResult.createSuccessResult(result, resultObj);

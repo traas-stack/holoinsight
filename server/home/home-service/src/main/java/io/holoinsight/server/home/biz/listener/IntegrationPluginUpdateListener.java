@@ -62,6 +62,7 @@ public class IntegrationPluginUpdateListener {
   private List<Long> upsertGaea(IntegrationPluginDTO integrationPluginDTO) {
     GaeaCollectConfigDTO gaeaCollectConfigDTO = new GaeaCollectConfigDTO();
     gaeaCollectConfigDTO.tenant = integrationPluginDTO.tenant;
+    gaeaCollectConfigDTO.workspace = integrationPluginDTO.workspace;
     gaeaCollectConfigDTO.deleted = false;
     if (!integrationPluginDTO.status) {
       gaeaCollectConfigDTO.deleted = true;

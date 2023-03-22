@@ -18,6 +18,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.google.gson.reflect.TypeToken;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -34,12 +35,14 @@ public class OpenmetricsScraperServiceImpl extends
   private OpenmetricsScraperConverter openmetricsScraperConverter;
 
   @Override
-  public OpenmetricsScraperDTO queryById(Long id, String tenant) {
+  public OpenmetricsScraperDTO queryById(Long id, String tenant, String workspace) {
     QueryWrapper<OpenmetricsScraper> wrapper = new QueryWrapper<>();
     wrapper.eq("tenant", tenant);
     wrapper.eq("id", id);
     wrapper.last("LIMIT 1");
-
+    if (StringUtils.isNotBlank(workspace)) {
+      wrapper.eq("workspace", workspace);
+    }
     OpenmetricsScraper model = this.getOne(wrapper);
     if (model == null) {
       return null;
@@ -136,6 +139,9 @@ public class OpenmetricsScraperServiceImpl extends
       wrapper.like("title", scraperDTO.getName().trim());
     }
 
+    if (StringUtils.isNotBlank(scraperDTO.getWorkspace())) {
+      wrapper.eq("workspace", scraperDTO.getWorkspace());
+    }
     if (StringUtil.isNotBlank(request.getSortBy())
         && StringUtil.isNotBlank(request.getSortRule())) {
       if (request.getSortBy().equals("gmtModified")) {
