@@ -112,6 +112,11 @@
 			<version>${spring.boot.version}</version>
 			<scope>test</scope>
 		</dependency>
+		<dependency>
+			<groupId>io.holoinsight.server</groupId>
+			<artifactId>home-alert</artifactId>
+			<version>${project.version}</version>
+		</dependency>
 	</dependencies>
 
 

@@ -4,6 +4,12 @@
 package io.holoinsight.server.home.bootstrap;
 
 import io.holoinsight.server.common.service.CommonServiceAutoConfiguration;
+import io.holoinsight.server.home.alert.plugin.AlertNotifyHandler;
+import io.holoinsight.server.home.alert.plugin.DefaultAlertNotifyHandler;
+import io.holoinsight.server.home.alert.plugin.DefaultGatewayService;
+import io.holoinsight.server.home.alert.plugin.GatewayService;
+import io.holoinsight.server.home.alert.service.event.AlertNotifyChainBuilder;
+import io.holoinsight.server.home.alert.service.event.DefaultAlertNotifyChainBuilder;
 import io.holoinsight.server.home.biz.plugin.DefaultMarketplaceProductHandler;
 import io.holoinsight.server.home.biz.plugin.MarketplaceProductHandler;
 import io.holoinsight.server.home.biz.service.EnvironmentService;
@@ -49,5 +55,20 @@ public class HoloinsightHomeConfiguration {
   @Bean
   public EnvironmentService environmentService() {
     return new DefaultEnvironmentServiceImpl();
+  }
+
+  @Bean
+  public AlertNotifyHandler alertNotifyHandler() {
+    return new DefaultAlertNotifyHandler();
+  }
+
+  @Bean
+  public GatewayService gatewayService() {
+    return new DefaultGatewayService();
+  }
+
+  @Bean
+  public AlertNotifyChainBuilder alertNotifyChainBuilder() {
+    return new DefaultAlertNotifyChainBuilder();
   }
 }

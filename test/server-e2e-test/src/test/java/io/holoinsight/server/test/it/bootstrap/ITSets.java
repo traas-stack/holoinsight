@@ -5,6 +5,7 @@ package io.holoinsight.server.test.it.bootstrap;
 
 import static org.junit.platform.engine.discovery.DiscoverySelectors.selectClass;
 
+import io.holoinsight.server.test.it.AlertRuleIT;
 import org.junit.platform.launcher.LauncherDiscoveryRequest;
 import org.junit.platform.launcher.core.LauncherDiscoveryRequestBuilder;
 
@@ -35,6 +36,7 @@ public class ITSets {
         .selectors(selectClass(AppMonitoringIT.class)) //
         .selectors(selectClass(AgentVMIT.class)) //
         .selectors(selectClass(LogMonitoringIT.class)) //
+        .selectors(selectClass(AlertRuleIT.class)) //
         .build(); //
   }
 }
