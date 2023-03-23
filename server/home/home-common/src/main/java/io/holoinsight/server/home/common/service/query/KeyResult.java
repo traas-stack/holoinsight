@@ -3,7 +3,9 @@
  */
 package io.holoinsight.server.home.common.service.query;
 
+import io.holoinsight.server.common.service.Measurable;
 import lombok.Data;
+import org.springframework.util.CollectionUtils;
 
 import java.util.List;
 
@@ -12,8 +14,16 @@ import java.util.List;
  * @date 2022/4/29 11:23 上午
  */
 @Data
-public class KeyResult {
+public class KeyResult implements Measurable {
 
   private String metric;
   private List<String> tags;
+
+  @Override
+  public long measure() {
+    if (CollectionUtils.isEmpty(tags)) {
+      return 0;
+    }
+    return tags.size();
+  }
 }

@@ -55,7 +55,8 @@ public class AlertTaskScheduler {
 
   public void start() {
     try {
-      StdSchedulerFactory stdSchedulerFactory = new StdSchedulerFactory(getScheduleProperties());
+      StdSchedulerFactory stdSchedulerFactory =
+          new StdSchedulerFactory(getScheduleProperties("AlertTaskScheduler"));
       Scheduler scheduler = stdSchedulerFactory.getScheduler();
 
       // 创建需要执行的任务
@@ -81,9 +82,9 @@ public class AlertTaskScheduler {
     }
   }
 
-  private Properties getScheduleProperties() {
+  public static Properties getScheduleProperties(String instanceName) {
     Properties properties = new Properties();
-    properties.setProperty("org.quartz.scheduler.instanceName", "AlertTaskScheduler");
+    properties.setProperty("org.quartz.scheduler.instanceName", instanceName);
     properties.setProperty("org.quartz.threadPool.threadCount", "1");
     properties.setProperty("org.quartz.jobStore.class", "org.quartz.simpl.RAMJobStore");
     properties.setProperty("org.quartz.threadPool.class", "org.quartz.simpl.SimpleThreadPool");

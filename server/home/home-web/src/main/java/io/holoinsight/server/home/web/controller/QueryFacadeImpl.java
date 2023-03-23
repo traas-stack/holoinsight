@@ -35,6 +35,8 @@ import io.holoinsight.server.home.web.controller.model.PqlRangeQueryRequest;
 import io.holoinsight.server.home.web.controller.model.TagQueryRequest;
 import io.holoinsight.server.home.web.controller.model.open.GrafanaJsonResult;
 import io.holoinsight.server.home.web.interceptor.MonitorScopeAuth;
+import io.holoinsight.server.home.web.measure.ActionType;
+import io.holoinsight.server.home.web.measure.ResourceType;
 import io.holoinsight.server.query.grpc.QueryProto;
 import io.holoinsight.server.apm.common.model.query.Endpoint;
 import io.holoinsight.server.apm.common.model.query.QueryTraceRequest;
@@ -94,13 +96,23 @@ public class QueryFacadeImpl extends BaseFacade {
         QueryResponse response = queryClientService.query(converRequest(request));
         JsonResult.createSuccessResult(result, response);
       }
+
+      @Override
+      public ResourceType getResourceType() {
+        return ResourceType.metric;
+      }
+
+      @Override
+      public ActionType getActionType() {
+        return ActionType.select;
+      }
     });
 
     return result;
   }
 
   @PostMapping("/tags")
-  public JsonResult<?> queryTags(@RequestBody DataQueryRequest request) {
+  public JsonResult<QueryResponse> queryTags(@RequestBody DataQueryRequest request) {
 
     final JsonResult<QueryResponse> result = new JsonResult<>();
 
@@ -121,13 +133,23 @@ public class QueryFacadeImpl extends BaseFacade {
 
         JsonResult.createSuccessResult(result, response);
       }
+
+      @Override
+      public ResourceType getResourceType() {
+        return ResourceType.metric_tag;
+      }
+
+      @Override
+      public ActionType getActionType() {
+        return ActionType.select;
+      }
     });
 
     return result;
   }
 
   @PostMapping("/deltags")
-  public JsonResult<?> deltags(@RequestBody DataQueryRequest request) {
+  public JsonResult<Boolean> deltags(@RequestBody DataQueryRequest request) {
 
     final JsonResult<Boolean> result = new JsonResult<>();
 
@@ -147,6 +169,16 @@ public class QueryFacadeImpl extends BaseFacade {
         queryClientService.delTags(converRequest(request));
 
         JsonResult.createSuccessResult(result, true);
+      }
+
+      @Override
+      public ResourceType getResourceType() {
+        return ResourceType.metric_tag;
+      }
+
+      @Override
+      public ActionType getActionType() {
+        return ActionType.delete;
       }
     });
 
@@ -182,6 +214,16 @@ public class QueryFacadeImpl extends BaseFacade {
         }
         JsonResult.createSuccessResult(result, keyResult);
       }
+
+      @Override
+      public ResourceType getResourceType() {
+        return ResourceType.metric_tag;
+      }
+
+      @Override
+      public ActionType getActionType() {
+        return ActionType.select;
+      }
     });
 
     return result;
@@ -215,6 +257,16 @@ public class QueryFacadeImpl extends BaseFacade {
         QueryProto.QueryMetricsRequest queryMetricsRequest = builder.build();
         List<String> list = queryClientService.queryMetrics(queryMetricsRequest);
         JsonResult.createSuccessResult(result, list);
+      }
+
+      @Override
+      public ResourceType getResourceType() {
+        return ResourceType.metric;
+      }
+
+      @Override
+      public ActionType getActionType() {
+        return ActionType.select;
       }
     });
 
@@ -257,6 +309,16 @@ public class QueryFacadeImpl extends BaseFacade {
             queryClientService.queryTagValues(builder.build(), tagQueryRequest.getKey());
         JsonResult.createSuccessResult(result, response);
       }
+
+      @Override
+      public ResourceType getResourceType() {
+        return ResourceType.metric_tag;
+      }
+
+      @Override
+      public ActionType getActionType() {
+        return ActionType.select;
+      }
     });
 
     return result;
@@ -287,6 +349,16 @@ public class QueryFacadeImpl extends BaseFacade {
         QueryResponse response = queryClientService.pqlRangeQuery(rangeRequest);
         GrafanaJsonResult.createSuccessResult(result, response.getResults());
       }
+
+      @Override
+      public ResourceType getResourceType() {
+        return ResourceType.metric;
+      }
+
+      @Override
+      public ActionType getActionType() {
+        return ActionType.select;
+      }
     });
 
     return result;
@@ -316,6 +388,16 @@ public class QueryFacadeImpl extends BaseFacade {
         QueryResponse response = queryClientService.pqlInstantQuery(instantRequest);
         GrafanaJsonResult.createSuccessResult(result, response.getResults());
       }
+
+      @Override
+      public ResourceType getResourceType() {
+        return ResourceType.metric;
+      }
+
+      @Override
+      public ActionType getActionType() {
+        return ActionType.select;
+      }
     });
 
     return result;
@@ -341,6 +423,16 @@ public class QueryFacadeImpl extends BaseFacade {
         TraceBrief traceBrief = queryClientService.queryBasicTraces(request);
         JsonResult.createSuccessResult(result, traceBrief);
       }
+
+      @Override
+      public ResourceType getResourceType() {
+        return ResourceType.trace;
+      }
+
+      @Override
+      public ActionType getActionType() {
+        return ActionType.select;
+      }
     });
 
     return result;
@@ -365,6 +457,16 @@ public class QueryFacadeImpl extends BaseFacade {
         request.setTenant(RequestContext.getContext().ms.getTenant());
         Trace trace = queryClientService.queryTrace(request);
         JsonResult.createSuccessResult(result, trace);
+      }
+
+      @Override
+      public ResourceType getResourceType() {
+        return ResourceType.trace;
+      }
+
+      @Override
+      public ActionType getActionType() {
+        return ActionType.select;
       }
     });
 
@@ -402,6 +504,16 @@ public class QueryFacadeImpl extends BaseFacade {
         }
         JsonResult.createSuccessResult(result, services);
       }
+
+      @Override
+      public ResourceType getResourceType() {
+        return ResourceType.trace;
+      }
+
+      @Override
+      public ActionType getActionType() {
+        return ActionType.select;
+      }
     });
 
     return result;
@@ -427,6 +539,16 @@ public class QueryFacadeImpl extends BaseFacade {
       public void doManage() {
         List<Endpoint> endpoints = queryClientService.queryEndpointList(request);
         JsonResult.createSuccessResult(result, endpoints);
+      }
+
+      @Override
+      public ResourceType getResourceType() {
+        return ResourceType.trace;
+      }
+
+      @Override
+      public ActionType getActionType() {
+        return ActionType.select;
       }
     });
 
@@ -454,6 +576,16 @@ public class QueryFacadeImpl extends BaseFacade {
         List<ServiceInstance> serviceInstances =
             queryClientService.queryServiceInstanceList(request);
         JsonResult.createSuccessResult(result, serviceInstances);
+      }
+
+      @Override
+      public ResourceType getResourceType() {
+        return ResourceType.trace;
+      }
+
+      @Override
+      public ActionType getActionType() {
+        return ActionType.select;
       }
     });
 
@@ -488,6 +620,16 @@ public class QueryFacadeImpl extends BaseFacade {
         List<VirtualComponent> VirtualComponents = queryClientService.queryComponentList(request);
         JsonResult.createSuccessResult(result, VirtualComponents);
       }
+
+      @Override
+      public ResourceType getResourceType() {
+        return ResourceType.trace;
+      }
+
+      @Override
+      public ActionType getActionType() {
+        return ActionType.select;
+      }
     });
 
     return result;
@@ -514,6 +656,16 @@ public class QueryFacadeImpl extends BaseFacade {
       public void doManage() {
         List<String> traceIds = queryClientService.queryComponentTraceIds(request);
         JsonResult.createSuccessResult(result, traceIds);
+      }
+
+      @Override
+      public ResourceType getResourceType() {
+        return ResourceType.trace;
+      }
+
+      @Override
+      public ActionType getActionType() {
+        return ActionType.select;
       }
     });
 
@@ -546,6 +698,16 @@ public class QueryFacadeImpl extends BaseFacade {
       public void doManage() {
         Topology topology = queryClientService.queryTopology(request);
         JsonResult.createSuccessResult(result, topology);
+      }
+
+      @Override
+      public ResourceType getResourceType() {
+        return ResourceType.trace;
+      }
+
+      @Override
+      public ActionType getActionType() {
+        return ActionType.select;
       }
     });
 
@@ -588,6 +750,16 @@ public class QueryFacadeImpl extends BaseFacade {
           JsonResult.createFailResult(result, "Create agent configuration failed!");
         }
       }
+
+      @Override
+      public ResourceType getResourceType() {
+        return ResourceType.trace;
+      }
+
+      @Override
+      public ActionType getActionType() {
+        return ActionType.create;
+      }
     });
 
     return result;
@@ -625,6 +797,16 @@ public class QueryFacadeImpl extends BaseFacade {
         AgentConfiguration configuration = agentConfigurationService.get(agentConfiguration);
         JsonResult.createSuccessResult(result, configuration);
       }
+
+      @Override
+      public ResourceType getResourceType() {
+        return ResourceType.agent_config;
+      }
+
+      @Override
+      public ActionType getActionType() {
+        return ActionType.select;
+      }
     });
 
     return result;
@@ -656,6 +838,16 @@ public class QueryFacadeImpl extends BaseFacade {
       public void doManage() {
         List<SlowSql> slowSqlList = queryClientService.querySlowSqlList(request);
         JsonResult.createSuccessResult(result, slowSqlList);
+      }
+
+      @Override
+      public ResourceType getResourceType() {
+        return ResourceType.trace;
+      }
+
+      @Override
+      public ActionType getActionType() {
+        return ActionType.select;
       }
     });
 

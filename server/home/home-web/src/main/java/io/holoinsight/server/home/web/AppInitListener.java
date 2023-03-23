@@ -9,6 +9,7 @@ import io.holoinsight.server.common.service.SuperCacheService;
 import io.holoinsight.server.home.biz.service.ClusterSchedulerTask;
 import io.holoinsight.server.home.common.util.cache.local.LocalCacheManage;
 import io.holoinsight.server.home.task.MonitorTaskManager;
+import io.holoinsight.server.home.web.measure.MeasureStatistician;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -37,12 +38,13 @@ public class AppInitListener implements InitializingBean {
   @Autowired
   private AlertClusterService alertClusterService;
 
-  // @Autowired
-  // private SampleEventWriteTask sampleEventWriteTask;
+  @Autowired
+  private MeasureStatistician measureStatistician;
 
   @Override
   public void afterPropertiesSet() {
     try {
+      measureStatistician.start();
       ScheduleLoadTask.registerTask(superCacheService, true);
       ScheduleLoadTask.registerTask(localCacheManage, true);
       // ScheduleLoadTask.registerTask(clusterSchedulerTask, true);
