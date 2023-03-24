@@ -10,8 +10,12 @@ public enum PeriodType {
   SECOND(1000, "1s"), //
   FIVE_SECOND(5000, "5s"), //
   MINUTE(60000, "1min"), //
+  FIVE_MINUTE(5 * 60000, "5min"), //
+  QUARTER_HOUR(15 * 60000, "15min"), //
+  HALF_HOUR(30 * 60000, "30min"), //
   HOUR(60 * 60 * 1000, "1hour"), //
-  DAY(24 * 60 * 60 * 1000, "1day"), WEEK(7 * 24 * 60 * 60 * 1000, "1week");
+  DAY(24 * 60 * 60 * 1000, "1day"), //
+  WEEK(7 * 24 * 60 * 60 * 1000, "1week");
 
   private final int intervalMillis;
   private final String desc;

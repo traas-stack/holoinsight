@@ -3,6 +3,7 @@
  */
 package io.holoinsight.server.home.alert.model.function;
 
+import io.holoinsight.server.home.facade.emuns.PeriodType;
 import io.holoinsight.server.home.facade.trigger.CompareParam;
 import lombok.Data;
 
@@ -39,5 +40,9 @@ public class FunctionConfigParam {
 
   // zero fill to time series
   private boolean zeroFill;
+  // period type is used to compare past and present values or rate
+  private PeriodType periodType;
+  // trigger summary
+  private String triggerContent;
 
 }

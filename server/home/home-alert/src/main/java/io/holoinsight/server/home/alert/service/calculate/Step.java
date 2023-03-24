@@ -38,7 +38,7 @@ public class Step implements FunctionLogic {
       // 循环条件
       boolean isTrigger = true;
       for (CompareParam cmp : functionConfigParam.getCmp()) {
-        if (!TriggerLogicNew.compareValue(cmp, m.getValue())) {
+        if (!TriggerLogicNew.compareValue(cmp.getCmp(), cmp.getCmpValue(), m.getValue())) {
           isTrigger = false;
         }
       }

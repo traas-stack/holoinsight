@@ -9,8 +9,13 @@ package io.holoinsight.server.home.facade.emuns;
  */
 public enum FunctionEnum {
 
-  Current("Current", "当前时间值", "RULE"), Step("Step", "周期时间比较", "RULE"), ValueUp("ValueUp", "值上涨",
-      "AI"), ValueDown("ValueDown", "值下跌", "AI");
+  Current("Current", "当前时间值", "RULE"), //
+  PeriodRate("PeriodRate", "同环比比例", "RULE"), //
+  PeriodValue("PeriodValue", "同环比差值", "RULE"), //
+  PeriodAbs("PeriodAbv", "同环比绝对值", "RULE"), //
+  Step("Step", "周期时间比较", "RULE"), //
+  ValueUp("ValueUp", "值上涨", "AI"), //
+  ValueDown("ValueDown", "值下跌", "AI");
 
   private final String code;
 

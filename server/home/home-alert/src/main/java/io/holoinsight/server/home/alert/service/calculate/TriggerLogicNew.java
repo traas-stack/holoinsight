@@ -14,9 +14,7 @@ import java.io.Serializable;
  */
 public class TriggerLogicNew implements Serializable {
 
-  public static boolean compareValue(CompareParam compareParam, Double value) {
-    CompareOperationEnum cmp = compareParam.getCmp();
-    Double cmpValue = compareParam.getCmpValue();
+  public static boolean compareValue(CompareOperationEnum cmp, Double cmpValue, Double value) {
     if (cmp == CompareOperationEnum.GT) {
       return value != null && value > cmpValue;
     } else if (cmp == CompareOperationEnum.GTE) {

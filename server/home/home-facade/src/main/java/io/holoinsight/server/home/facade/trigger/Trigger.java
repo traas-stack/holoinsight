@@ -5,6 +5,7 @@ package io.holoinsight.server.home.facade.trigger;
 
 import io.holoinsight.server.home.facade.DataResult;
 import io.holoinsight.server.home.facade.emuns.FunctionEnum;
+import io.holoinsight.server.home.facade.emuns.PeriodType;
 import lombok.Data;
 
 import java.util.List;
@@ -51,5 +52,7 @@ public class Trigger {
 
   // zero fill
   private boolean zeroFill;
+  // period type
+  private PeriodType periodType;
 
 }

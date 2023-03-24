@@ -7,6 +7,7 @@ package io.holoinsight.server.home.alert.service.calculate;
 import io.holoinsight.server.home.alert.model.function.FunctionLogic;
 import io.holoinsight.server.home.facade.emuns.FunctionEnum;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -26,6 +27,15 @@ public class FunctionManager implements InitializingBean {
   private Current current;
 
   @Resource
+  private PeriodAbs periodAbs;
+
+  @Resource
+  private PeriodValue periodValue;
+
+  @Resource
+  private PeriodRate periodRate;
+
+  @Resource
   private Step step;
 
   @Resource
@@ -41,6 +51,9 @@ public class FunctionManager implements InitializingBean {
   @Override
   public void afterPropertiesSet() {
     register(current);
+    register(periodRate);
+    register(periodValue);
+    register(periodAbs);
     register(step);
     register(valueUpAbnormalDetect);
     register(valueDownAbnormalDetect);
