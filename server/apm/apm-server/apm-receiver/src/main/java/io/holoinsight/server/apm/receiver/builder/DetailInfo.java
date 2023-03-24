@@ -34,7 +34,7 @@ public class DetailInfo {
   protected String destEndpointName;
   protected int latency;
   protected int traceStatus;
-  protected int httpResponseStatusCode;
+  protected String httpResponseStatusCode;
   protected String rpcStatusCode;
   protected String type;
   protected DetectPoint detectPoint;

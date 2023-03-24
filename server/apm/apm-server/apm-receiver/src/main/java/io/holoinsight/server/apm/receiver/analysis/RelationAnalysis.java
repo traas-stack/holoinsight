@@ -10,13 +10,13 @@ import io.holoinsight.server.apm.common.model.specification.sw.Layer;
 import io.holoinsight.server.apm.common.model.specification.sw.NetworkAddressMapping;
 import io.holoinsight.server.apm.common.utils.TimeBucket;
 import io.holoinsight.server.apm.common.utils.TimeUtils;
+import io.holoinsight.server.apm.engine.model.NetworkAddressMappingDO;
 import io.holoinsight.server.apm.engine.model.SlowSqlDO;
 import io.holoinsight.server.apm.grpc.trace.RefType;
 import io.holoinsight.server.apm.receiver.builder.RelationBuilder;
-import io.holoinsight.server.apm.server.cache.NetworkAddressMappingCache;
-import io.holoinsight.server.apm.engine.model.NetworkAddressMappingDO;
 import io.holoinsight.server.apm.receiver.common.PublicAttr;
 import io.holoinsight.server.apm.receiver.common.TransformAttr;
+import io.holoinsight.server.apm.server.cache.NetworkAddressMappingCache;
 import io.opentelemetry.proto.common.v1.AnyValue;
 import io.opentelemetry.proto.common.v1.KeyValue;
 import io.opentelemetry.proto.trace.v1.Span;
@@ -120,7 +120,10 @@ public class RelationAnalysis {
       return callingOutTraffic;
     }
 
-    String spanLayer = spanAttrMap.get(Const.OTLP_SPANLAYER).getStringValue();
+    String spanLayer = "Unknown";
+    if (spanAttrMap.get(Const.OTLP_SPANLAYER) != null) {
+      spanLayer = spanAttrMap.get(Const.OTLP_SPANLAYER).getStringValue();
+    }
     String serviceName =
         resourceAttrMap.get(ResourceAttributes.SERVICE_NAME.getKey()).getStringValue();
     String instanceName =

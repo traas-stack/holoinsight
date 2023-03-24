@@ -181,7 +181,10 @@ public class TopologyEsStorage implements TopologyStorage {
     for (Terms.Bucket bucket : terms.getBuckets()) {
       String entityId = bucket.getKey().toString();
       Terms componentTerm = bucket.getAggregations().get(ServiceRelationDO.COMPONENT);
-      String component = componentTerm.getBuckets().get(0).getKey().toString();
+      String component = "";
+      if (componentTerm != null && !componentTerm.getBuckets().isEmpty()) {
+        component = componentTerm.getBuckets().get(0).getKey().toString();
+      }
 
       Call call = new Call();
       call.buildFromServiceRelation(entityId, component);
@@ -199,8 +202,10 @@ public class TopologyEsStorage implements TopologyStorage {
     for (Terms.Bucket bucket : terms.getBuckets()) {
       String entityId = bucket.getKey().toString();
       Terms componentTerm = bucket.getAggregations().get(ServiceRelationDO.COMPONENT);
-      String component = componentTerm.getBuckets().get(0).getKey().toString();
-
+      String component = "";
+      if (componentTerm != null && !componentTerm.getBuckets().isEmpty()) {
+        component = componentTerm.getBuckets().get(0).getKey().toString();
+      }
       Call.DeepCall call = new Call.DeepCall();
       call.buildFromInstanceRelation(entityId, component);
       call.setMetric(CommonBuilder.buildMetric(bucket));

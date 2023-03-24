@@ -153,14 +153,13 @@ message TraceBrief {
 }
 
 message BasicTrace {
-  string segmentId = 1;
-  repeated string serviceNames = 2;
-  repeated string serviceInstanceNames = 3;
-  repeated string endpointNames = 4;
-  int32 duration = 5;
-  int64 start = 6;
-  bool  isError = 7;
-  repeated string traceIds = 8;
+  repeated string serviceNames = 1;
+  repeated string serviceInstanceNames = 2;
+  repeated string endpointNames = 3;
+  int32 duration = 4;
+  int64 start = 5;
+  bool  isError = 6;
+  repeated string traceIds = 7;
 }
 
 message Trace{
@@ -170,25 +169,22 @@ message Trace{
 
 message Span {
   string traceId = 1;
-  string segmentId = 2;
-  string  spanId = 3;
-  string parentSpanId = 4;
-  repeated  Ref refs = 5;
-  string serviceCode = 6;
-  string serviceInstanceName = 7;
-  int64  startTime = 8;
-  int64  endTime = 9;
-  string  endpointName = 10;
-  string type = 11;
-  string peer = 12;
-  string component = 13;
-  bool  isError = 14;
-  string layer = 15;
-  repeated  KeyValue tags = 16;
-  repeated  LogEntity logs = 17;
-  bool  isRoot = 18;
-  string  segmentSpanId = 19;
-  string  segmentParentSpanId = 20;
+  string  spanId = 2;
+  string parentSpanId = 3;
+  repeated  Ref refs = 4;
+  string serviceCode = 5;
+  string serviceInstanceName = 6;
+  int64  startTime = 7;
+  int64  endTime = 8;
+  string  endpointName = 9;
+  string type = 10;
+  string peer = 11;
+  string component = 12;
+  bool  isError = 13;
+  string layer = 14;
+  repeated  KeyValue tags = 15;
+  repeated  LogEntity logs = 16;
+  bool  isRoot = 17;
 }
 
 message KeyValue{
@@ -203,8 +199,7 @@ message LogEntity{
 
 message  Ref{
   string traceId = 1;
-  string parentSegmentId = 2;
-  string  parentSpanId = 3;
+  string  parentSpanId = 2;
   string type = 4;
 }
 

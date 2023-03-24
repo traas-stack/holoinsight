@@ -86,7 +86,7 @@ public class ApmConvertor {
   }
 
   public static QueryProto.BasicTrace convertBasicTrace(BasicTrace basicTrace) {
-    return QueryProto.BasicTrace.newBuilder().setSegmentId(basicTrace.getSegmentId())
+    return QueryProto.BasicTrace.newBuilder()
         .addAllServiceNames(basicTrace.getServiceNames())
         .addAllServiceInstanceNames(basicTrace.getServiceInstanceNames())
         .addAllEndpointNames(basicTrace.getEndpointNames()).setDuration(basicTrace.getDuration())
@@ -95,7 +95,7 @@ public class ApmConvertor {
   }
 
   public static BasicTrace convertBasicTrace(QueryProto.BasicTrace basicTraceProto) {
-    return new BasicTrace(basicTraceProto.getSegmentId(), basicTraceProto.getServiceNamesList(),
+    return new BasicTrace(basicTraceProto.getServiceNamesList(),
         basicTraceProto.getServiceInstanceNamesList(), basicTraceProto.getEndpointNamesList(),
         basicTraceProto.getDuration(), basicTraceProto.getStart(), basicTraceProto.getIsError(),
         basicTraceProto.getTraceIdsList());
@@ -103,7 +103,7 @@ public class ApmConvertor {
 
   public static QueryProto.Span convertSpan(Span span) {
     QueryProto.Span.Builder spanBuilder =
-        QueryProto.Span.newBuilder().setTraceId(span.getTraceId()).setSegmentId(span.getSegmentId())
+        QueryProto.Span.newBuilder().setTraceId(span.getTraceId())
             .setSpanId(span.getSpanId()).setParentSpanId(span.getParentSpanId());
     List<Ref> refs = span.getRefs();
     if (CollectionUtils.isNotEmpty(refs)) {
@@ -143,12 +143,6 @@ public class ApmConvertor {
       spanBuilder.addAllLogs(Iterables.transform(logs, ApmConvertor::convertLogEntity));
     }
     spanBuilder.setIsRoot(span.isRoot());
-    if (span.getSegmentSpanId() != null) {
-      spanBuilder.setSegmentSpanId(span.getSegmentSpanId());
-    }
-    if (span.getSegmentParentSpanId() != null) {
-      spanBuilder.setSegmentParentSpanId(span.getSegmentParentSpanId());
-    }
     return spanBuilder.build();
   }
 
@@ -156,7 +150,7 @@ public class ApmConvertor {
     if (spanProto == null) {
       return null;
     }
-    Span span = new Span(spanProto.getTraceId(), spanProto.getSegmentId(), spanProto.getSpanId(),
+    Span span = new Span(spanProto.getTraceId(), spanProto.getSpanId(),
         spanProto.getParentSpanId(),
         spanProto.getRefsList().stream().map(ApmConvertor::convertRef).collect(Collectors.toList()),
         spanProto.getServiceCode(), spanProto.getServiceInstanceName(), spanProto.getStartTime(),
@@ -166,7 +160,7 @@ public class ApmConvertor {
             .collect(Collectors.toList()),
         spanProto.getLogsList().stream().map(ApmConvertor::convertLogEntity)
             .collect(Collectors.toList()),
-        spanProto.getIsRoot(), spanProto.getSegmentSpanId(), spanProto.getSegmentParentSpanId());
+        spanProto.getIsRoot());
     return span;
   }
 
@@ -174,9 +168,6 @@ public class ApmConvertor {
     QueryProto.Ref.Builder refBuilder = QueryProto.Ref.newBuilder();
     if (ref.getTraceId() != null) {
       refBuilder.setTraceId(ref.getTraceId());
-    }
-    if (ref.getParentSegmentId() != null) {
-      refBuilder.setParentSegmentId(ref.getParentSegmentId());
     }
     refBuilder.setParentSpanId(ref.getParentSpanId());
     if (ref.getType() != null) {
@@ -189,8 +180,9 @@ public class ApmConvertor {
     if (refProto == null) {
       return null;
     }
-    Ref ref = new Ref(refProto.getTraceId(), refProto.getParentSegmentId(),
-        refProto.getParentSpanId(), RefType.valueOf(refProto.getType()));
+    Ref ref = new Ref(refProto.getTraceId(),
+              refProto.getParentSpanId(),
+            RefType.valueOf(refProto.getType()));
     return ref;
   }
 

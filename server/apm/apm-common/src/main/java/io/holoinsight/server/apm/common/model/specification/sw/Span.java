@@ -24,8 +24,6 @@ public class Span implements Serializable {
 
   private String traceId;
 
-  private String segmentId;
-
   private String spanId;
 
   private String parentSpanId;
@@ -55,8 +53,4 @@ public class Span implements Serializable {
   private List<LogEntity> logs = new ArrayList<>();
 
   private boolean isRoot;
-
-  private String segmentSpanId;
-
-  private String segmentParentSpanId;
 }

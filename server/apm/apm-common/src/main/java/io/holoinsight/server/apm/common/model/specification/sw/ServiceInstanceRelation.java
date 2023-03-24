@@ -66,7 +66,7 @@ public class ServiceInstanceRelation extends Source {
   private int responseCode;
   @Getter
   @Setter
-  private int httpResponseStatusCode;
+  private String httpResponseStatusCode;
   @Getter
   @Setter
   private String rpcStatusCode;
