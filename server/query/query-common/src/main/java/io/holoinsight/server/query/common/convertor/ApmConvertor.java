@@ -86,8 +86,7 @@ public class ApmConvertor {
   }
 
   public static QueryProto.BasicTrace convertBasicTrace(BasicTrace basicTrace) {
-    return QueryProto.BasicTrace.newBuilder()
-        .addAllServiceNames(basicTrace.getServiceNames())
+    return QueryProto.BasicTrace.newBuilder().addAllServiceNames(basicTrace.getServiceNames())
         .addAllServiceInstanceNames(basicTrace.getServiceInstanceNames())
         .addAllEndpointNames(basicTrace.getEndpointNames()).setDuration(basicTrace.getDuration())
         .setStart(basicTrace.getStart()).setIsError(basicTrace.isError())
@@ -102,9 +101,8 @@ public class ApmConvertor {
   }
 
   public static QueryProto.Span convertSpan(Span span) {
-    QueryProto.Span.Builder spanBuilder =
-        QueryProto.Span.newBuilder().setTraceId(span.getTraceId())
-            .setSpanId(span.getSpanId()).setParentSpanId(span.getParentSpanId());
+    QueryProto.Span.Builder spanBuilder = QueryProto.Span.newBuilder().setTraceId(span.getTraceId())
+        .setSpanId(span.getSpanId()).setParentSpanId(span.getParentSpanId());
     List<Ref> refs = span.getRefs();
     if (CollectionUtils.isNotEmpty(refs)) {
       spanBuilder.addAllRefs(Iterables.transform(refs, ApmConvertor::convertRef));
@@ -150,8 +148,7 @@ public class ApmConvertor {
     if (spanProto == null) {
       return null;
     }
-    Span span = new Span(spanProto.getTraceId(), spanProto.getSpanId(),
-        spanProto.getParentSpanId(),
+    Span span = new Span(spanProto.getTraceId(), spanProto.getSpanId(), spanProto.getParentSpanId(),
         spanProto.getRefsList().stream().map(ApmConvertor::convertRef).collect(Collectors.toList()),
         spanProto.getServiceCode(), spanProto.getServiceInstanceName(), spanProto.getStartTime(),
         spanProto.getEndTime(), spanProto.getEndpointName(), spanProto.getType(),
@@ -180,9 +177,8 @@ public class ApmConvertor {
     if (refProto == null) {
       return null;
     }
-    Ref ref = new Ref(refProto.getTraceId(),
-              refProto.getParentSpanId(),
-            RefType.valueOf(refProto.getType()));
+    Ref ref = new Ref(refProto.getTraceId(), refProto.getParentSpanId(),
+        RefType.valueOf(refProto.getType()));
     return ref;
   }
 
