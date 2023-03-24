@@ -109,6 +109,8 @@ jobs:
           scene: scene-default
         - test: AlertCalculateIT
           scene: scene-default
+        - test: IntegrationPluginIT
+          scene: scene-default
     steps:
     - uses: actions/checkout@v3
       with:
