@@ -5,12 +5,24 @@ package io.holoinsight.server.apm.engine.elasticsearch.storage.impl;
 
 import com.google.common.base.Strings;
 import io.holoinsight.server.apm.common.constants.Const;
-import io.holoinsight.server.apm.common.model.query.*;
-import io.holoinsight.server.apm.common.model.specification.otel.*;
-import io.holoinsight.server.apm.common.model.specification.otel.KeyValue;
-import io.holoinsight.server.apm.common.model.specification.sw.*;
-import io.holoinsight.server.apm.common.model.specification.sw.Span;
+import io.holoinsight.server.apm.common.model.query.BasicTrace;
+import io.holoinsight.server.apm.common.model.query.Pagination;
+import io.holoinsight.server.apm.common.model.query.QueryOrder;
+import io.holoinsight.server.apm.common.model.query.StatisticData;
+import io.holoinsight.server.apm.common.model.query.TraceBrief;
 import io.holoinsight.server.apm.common.model.specification.OtlpMappings;
+import io.holoinsight.server.apm.common.model.specification.otel.Event;
+import io.holoinsight.server.apm.common.model.specification.otel.KeyValue;
+import io.holoinsight.server.apm.common.model.specification.otel.Link;
+import io.holoinsight.server.apm.common.model.specification.otel.SpanKind;
+import io.holoinsight.server.apm.common.model.specification.otel.StatusCode;
+import io.holoinsight.server.apm.common.model.specification.sw.LogEntity;
+import io.holoinsight.server.apm.common.model.specification.sw.Ref;
+import io.holoinsight.server.apm.common.model.specification.sw.RefType;
+import io.holoinsight.server.apm.common.model.specification.sw.Span;
+import io.holoinsight.server.apm.common.model.specification.sw.Tag;
+import io.holoinsight.server.apm.common.model.specification.sw.Trace;
+import io.holoinsight.server.apm.common.model.specification.sw.TraceState;
 import io.holoinsight.server.apm.common.utils.GsonUtils;
 import io.holoinsight.server.apm.engine.elasticsearch.utils.EsGsonUtils;
 import io.holoinsight.server.apm.engine.model.SpanDO;
@@ -23,8 +35,13 @@ import org.apache.commons.lang3.time.StopWatch;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.RequestOptions;
-import org.elasticsearch.client.RestHighLevelClient;
-import org.elasticsearch.index.query.*;
+import org.elasticsearch.index.query.BoolQueryBuilder;
+import org.elasticsearch.index.query.MatchQueryBuilder;
+import org.elasticsearch.index.query.QueryBuilder;
+import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.index.query.RangeQueryBuilder;
+import org.elasticsearch.index.query.TermQueryBuilder;
+import org.elasticsearch.index.query.TermsQueryBuilder;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
 import org.elasticsearch.search.aggregations.Aggregator;
 import org.elasticsearch.search.aggregations.bucket.filter.Filter;
@@ -34,10 +51,15 @@ import org.elasticsearch.search.aggregations.metrics.Avg;
 import org.elasticsearch.search.aggregations.metrics.ParsedCardinality;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.elasticsearch.search.sort.SortOrder;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 import static java.util.Objects.nonNull;
 
@@ -130,7 +152,6 @@ public class SpanEsStorage extends RecordEsStorage<SpanDO> implements SpanStorag
       String hitJson = hit.getSourceAsString();
       SpanDO spanEsDO = EsGsonUtils.esGson().fromJson(hitJson, SpanDO.class);
       BasicTrace basicTrace = new BasicTrace();
-      basicTrace.setSegmentId(spanEsDO.getTags().get(SpanDO.attributes(SpanDO.SW8_SEGMENT_ID)));
       basicTrace.setStart(spanEsDO.getStartTime());
       basicTrace.getServiceNames()
           .add(spanEsDO.getTags().get(SpanDO.resource(SpanDO.SERVICE_NAME)));
@@ -285,7 +306,6 @@ public class SpanEsStorage extends RecordEsStorage<SpanDO> implements SpanStorag
 
   private Span buildSpan(SpanDO spanEsDO) {
     Span span = new Span();
-    span.setSegmentId(spanEsDO.getTags().get(SpanDO.attributes(SpanDO.SW8_SEGMENT_ID)));
     span.setTraceId(spanEsDO.getTraceId());
     span.setSpanId(spanEsDO.getSpanId());
     span.setParentSpanId(spanEsDO.getParentSpanId());

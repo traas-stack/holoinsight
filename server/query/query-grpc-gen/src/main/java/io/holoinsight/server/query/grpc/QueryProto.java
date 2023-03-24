@@ -19948,35 +19948,21 @@ public final class QueryProto {
       com.google.protobuf.MessageOrBuilder {
 
     /**
-     * <code>string segmentId = 1;</code>
-     * 
-     * @return The segmentId.
-     */
-    java.lang.String getSegmentId();
-
-    /**
-     * <code>string segmentId = 1;</code>
-     * 
-     * @return The bytes for segmentId.
-     */
-    com.google.protobuf.ByteString getSegmentIdBytes();
-
-    /**
-     * <code>repeated string serviceNames = 2;</code>
+     * <code>repeated string serviceNames = 1;</code>
      * 
      * @return A list containing the serviceNames.
      */
     java.util.List<java.lang.String> getServiceNamesList();
 
     /**
-     * <code>repeated string serviceNames = 2;</code>
+     * <code>repeated string serviceNames = 1;</code>
      * 
      * @return The count of serviceNames.
      */
     int getServiceNamesCount();
 
     /**
-     * <code>repeated string serviceNames = 2;</code>
+     * <code>repeated string serviceNames = 1;</code>
      * 
      * @param index The index of the element to return.
      * @return The serviceNames at the given index.
@@ -19984,7 +19970,7 @@ public final class QueryProto {
     java.lang.String getServiceNames(int index);
 
     /**
-     * <code>repeated string serviceNames = 2;</code>
+     * <code>repeated string serviceNames = 1;</code>
      * 
      * @param index The index of the value to return.
      * @return The bytes of the serviceNames at the given index.
@@ -19992,21 +19978,21 @@ public final class QueryProto {
     com.google.protobuf.ByteString getServiceNamesBytes(int index);
 
     /**
-     * <code>repeated string serviceInstanceNames = 3;</code>
+     * <code>repeated string serviceInstanceNames = 2;</code>
      * 
      * @return A list containing the serviceInstanceNames.
      */
     java.util.List<java.lang.String> getServiceInstanceNamesList();
 
     /**
-     * <code>repeated string serviceInstanceNames = 3;</code>
+     * <code>repeated string serviceInstanceNames = 2;</code>
      * 
      * @return The count of serviceInstanceNames.
      */
     int getServiceInstanceNamesCount();
 
     /**
-     * <code>repeated string serviceInstanceNames = 3;</code>
+     * <code>repeated string serviceInstanceNames = 2;</code>
      * 
      * @param index The index of the element to return.
      * @return The serviceInstanceNames at the given index.
@@ -20014,7 +20000,7 @@ public final class QueryProto {
     java.lang.String getServiceInstanceNames(int index);
 
     /**
-     * <code>repeated string serviceInstanceNames = 3;</code>
+     * <code>repeated string serviceInstanceNames = 2;</code>
      * 
      * @param index The index of the value to return.
      * @return The bytes of the serviceInstanceNames at the given index.
@@ -20022,21 +20008,21 @@ public final class QueryProto {
     com.google.protobuf.ByteString getServiceInstanceNamesBytes(int index);
 
     /**
-     * <code>repeated string endpointNames = 4;</code>
+     * <code>repeated string endpointNames = 3;</code>
      * 
      * @return A list containing the endpointNames.
      */
     java.util.List<java.lang.String> getEndpointNamesList();
 
     /**
-     * <code>repeated string endpointNames = 4;</code>
+     * <code>repeated string endpointNames = 3;</code>
      * 
      * @return The count of endpointNames.
      */
     int getEndpointNamesCount();
 
     /**
-     * <code>repeated string endpointNames = 4;</code>
+     * <code>repeated string endpointNames = 3;</code>
      * 
      * @param index The index of the element to return.
      * @return The endpointNames at the given index.
@@ -20044,7 +20030,7 @@ public final class QueryProto {
     java.lang.String getEndpointNames(int index);
 
     /**
-     * <code>repeated string endpointNames = 4;</code>
+     * <code>repeated string endpointNames = 3;</code>
      * 
      * @param index The index of the value to return.
      * @return The bytes of the endpointNames at the given index.
@@ -20052,42 +20038,42 @@ public final class QueryProto {
     com.google.protobuf.ByteString getEndpointNamesBytes(int index);
 
     /**
-     * <code>int32 duration = 5;</code>
+     * <code>int32 duration = 4;</code>
      * 
      * @return The duration.
      */
     int getDuration();
 
     /**
-     * <code>int64 start = 6;</code>
+     * <code>int64 start = 5;</code>
      * 
      * @return The start.
      */
     long getStart();
 
     /**
-     * <code>bool isError = 7;</code>
+     * <code>bool isError = 6;</code>
      * 
      * @return The isError.
      */
     boolean getIsError();
 
     /**
-     * <code>repeated string traceIds = 8;</code>
+     * <code>repeated string traceIds = 7;</code>
      * 
      * @return A list containing the traceIds.
      */
     java.util.List<java.lang.String> getTraceIdsList();
 
     /**
-     * <code>repeated string traceIds = 8;</code>
+     * <code>repeated string traceIds = 7;</code>
      * 
      * @return The count of traceIds.
      */
     int getTraceIdsCount();
 
     /**
-     * <code>repeated string traceIds = 8;</code>
+     * <code>repeated string traceIds = 7;</code>
      * 
      * @param index The index of the element to return.
      * @return The traceIds at the given index.
@@ -20095,7 +20081,7 @@ public final class QueryProto {
     java.lang.String getTraceIds(int index);
 
     /**
-     * <code>repeated string traceIds = 8;</code>
+     * <code>repeated string traceIds = 7;</code>
      * 
      * @param index The index of the value to return.
      * @return The bytes of the traceIds at the given index.
@@ -20116,7 +20102,6 @@ public final class QueryProto {
     }
 
     private BasicTrace() {
-      segmentId_ = "";
       serviceNames_ = com.google.protobuf.LazyStringArrayList.EMPTY;
       serviceInstanceNames_ = com.google.protobuf.LazyStringArrayList.EMPTY;
       endpointNames_ = com.google.protobuf.LazyStringArrayList.EMPTY;
@@ -20154,12 +20139,6 @@ public final class QueryProto {
               break;
             case 10: {
               java.lang.String s = input.readStringRequireUtf8();
-
-              segmentId_ = s;
-              break;
-            }
-            case 18: {
-              java.lang.String s = input.readStringRequireUtf8();
               if (!((mutable_bitField0_ & 0x00000001) != 0)) {
                 serviceNames_ = new com.google.protobuf.LazyStringArrayList();
                 mutable_bitField0_ |= 0x00000001;
@@ -20167,7 +20146,7 @@ public final class QueryProto {
               serviceNames_.add(s);
               break;
             }
-            case 26: {
+            case 18: {
               java.lang.String s = input.readStringRequireUtf8();
               if (!((mutable_bitField0_ & 0x00000002) != 0)) {
                 serviceInstanceNames_ = new com.google.protobuf.LazyStringArrayList();
@@ -20176,7 +20155,7 @@ public final class QueryProto {
               serviceInstanceNames_.add(s);
               break;
             }
-            case 34: {
+            case 26: {
               java.lang.String s = input.readStringRequireUtf8();
               if (!((mutable_bitField0_ & 0x00000004) != 0)) {
                 endpointNames_ = new com.google.protobuf.LazyStringArrayList();
@@ -20185,22 +20164,22 @@ public final class QueryProto {
               endpointNames_.add(s);
               break;
             }
-            case 40: {
+            case 32: {
 
               duration_ = input.readInt32();
               break;
             }
-            case 48: {
+            case 40: {
 
               start_ = input.readInt64();
               break;
             }
-            case 56: {
+            case 48: {
 
               isError_ = input.readBool();
               break;
             }
-            case 66: {
+            case 58: {
               java.lang.String s = input.readStringRequireUtf8();
               if (!((mutable_bitField0_ & 0x00000008) != 0)) {
                 traceIds_ = new com.google.protobuf.LazyStringArrayList();
@@ -20251,50 +20230,11 @@ public final class QueryProto {
               io.holoinsight.server.query.grpc.QueryProto.BasicTrace.Builder.class);
     }
 
-    public static final int SEGMENTID_FIELD_NUMBER = 1;
-    private volatile java.lang.Object segmentId_;
-
-    /**
-     * <code>string segmentId = 1;</code>
-     * 
-     * @return The segmentId.
-     */
-    @java.lang.Override
-    public java.lang.String getSegmentId() {
-      java.lang.Object ref = segmentId_;
-      if (ref instanceof java.lang.String) {
-        return (java.lang.String) ref;
-      } else {
-        com.google.protobuf.ByteString bs = (com.google.protobuf.ByteString) ref;
-        java.lang.String s = bs.toStringUtf8();
-        segmentId_ = s;
-        return s;
-      }
-    }
-
-    /**
-     * <code>string segmentId = 1;</code>
-     * 
-     * @return The bytes for segmentId.
-     */
-    @java.lang.Override
-    public com.google.protobuf.ByteString getSegmentIdBytes() {
-      java.lang.Object ref = segmentId_;
-      if (ref instanceof java.lang.String) {
-        com.google.protobuf.ByteString b =
-            com.google.protobuf.ByteString.copyFromUtf8((java.lang.String) ref);
-        segmentId_ = b;
-        return b;
-      } else {
-        return (com.google.protobuf.ByteString) ref;
-      }
-    }
-
-    public static final int SERVICENAMES_FIELD_NUMBER = 2;
+    public static final int SERVICENAMES_FIELD_NUMBER = 1;
     private com.google.protobuf.LazyStringList serviceNames_;
 
     /**
-     * <code>repeated string serviceNames = 2;</code>
+     * <code>repeated string serviceNames = 1;</code>
      * 
      * @return A list containing the serviceNames.
      */
@@ -20303,7 +20243,7 @@ public final class QueryProto {
     }
 
     /**
-     * <code>repeated string serviceNames = 2;</code>
+     * <code>repeated string serviceNames = 1;</code>
      * 
      * @return The count of serviceNames.
      */
@@ -20312,7 +20252,7 @@ public final class QueryProto {
     }
 
     /**
-     * <code>repeated string serviceNames = 2;</code>
+     * <code>repeated string serviceNames = 1;</code>
      * 
      * @param index The index of the element to return.
      * @return The serviceNames at the given index.
@@ -20322,7 +20262,7 @@ public final class QueryProto {
     }
 
     /**
-     * <code>repeated string serviceNames = 2;</code>
+     * <code>repeated string serviceNames = 1;</code>
      * 
      * @param index The index of the value to return.
      * @return The bytes of the serviceNames at the given index.
@@ -20331,11 +20271,11 @@ public final class QueryProto {
       return serviceNames_.getByteString(index);
     }
 
-    public static final int SERVICEINSTANCENAMES_FIELD_NUMBER = 3;
+    public static final int SERVICEINSTANCENAMES_FIELD_NUMBER = 2;
     private com.google.protobuf.LazyStringList serviceInstanceNames_;
 
     /**
-     * <code>repeated string serviceInstanceNames = 3;</code>
+     * <code>repeated string serviceInstanceNames = 2;</code>
      * 
      * @return A list containing the serviceInstanceNames.
      */
@@ -20344,7 +20284,7 @@ public final class QueryProto {
     }
 
     /**
-     * <code>repeated string serviceInstanceNames = 3;</code>
+     * <code>repeated string serviceInstanceNames = 2;</code>
      * 
      * @return The count of serviceInstanceNames.
      */
@@ -20353,7 +20293,7 @@ public final class QueryProto {
     }
 
     /**
-     * <code>repeated string serviceInstanceNames = 3;</code>
+     * <code>repeated string serviceInstanceNames = 2;</code>
      * 
      * @param index The index of the element to return.
      * @return The serviceInstanceNames at the given index.
@@ -20363,7 +20303,7 @@ public final class QueryProto {
     }
 
     /**
-     * <code>repeated string serviceInstanceNames = 3;</code>
+     * <code>repeated string serviceInstanceNames = 2;</code>
      * 
      * @param index The index of the value to return.
      * @return The bytes of the serviceInstanceNames at the given index.
@@ -20372,11 +20312,11 @@ public final class QueryProto {
       return serviceInstanceNames_.getByteString(index);
     }
 
-    public static final int ENDPOINTNAMES_FIELD_NUMBER = 4;
+    public static final int ENDPOINTNAMES_FIELD_NUMBER = 3;
     private com.google.protobuf.LazyStringList endpointNames_;
 
     /**
-     * <code>repeated string endpointNames = 4;</code>
+     * <code>repeated string endpointNames = 3;</code>
      * 
      * @return A list containing the endpointNames.
      */
@@ -20385,7 +20325,7 @@ public final class QueryProto {
     }
 
     /**
-     * <code>repeated string endpointNames = 4;</code>
+     * <code>repeated string endpointNames = 3;</code>
      * 
      * @return The count of endpointNames.
      */
@@ -20394,7 +20334,7 @@ public final class QueryProto {
     }
 
     /**
-     * <code>repeated string endpointNames = 4;</code>
+     * <code>repeated string endpointNames = 3;</code>
      * 
      * @param index The index of the element to return.
      * @return The endpointNames at the given index.
@@ -20404,7 +20344,7 @@ public final class QueryProto {
     }
 
     /**
-     * <code>repeated string endpointNames = 4;</code>
+     * <code>repeated string endpointNames = 3;</code>
      * 
      * @param index The index of the value to return.
      * @return The bytes of the endpointNames at the given index.
@@ -20413,11 +20353,11 @@ public final class QueryProto {
       return endpointNames_.getByteString(index);
     }
 
-    public static final int DURATION_FIELD_NUMBER = 5;
+    public static final int DURATION_FIELD_NUMBER = 4;
     private int duration_;
 
     /**
-     * <code>int32 duration = 5;</code>
+     * <code>int32 duration = 4;</code>
      * 
      * @return The duration.
      */
@@ -20426,11 +20366,11 @@ public final class QueryProto {
       return duration_;
     }
 
-    public static final int START_FIELD_NUMBER = 6;
+    public static final int START_FIELD_NUMBER = 5;
     private long start_;
 
     /**
-     * <code>int64 start = 6;</code>
+     * <code>int64 start = 5;</code>
      * 
      * @return The start.
      */
@@ -20439,11 +20379,11 @@ public final class QueryProto {
       return start_;
     }
 
-    public static final int ISERROR_FIELD_NUMBER = 7;
+    public static final int ISERROR_FIELD_NUMBER = 6;
     private boolean isError_;
 
     /**
-     * <code>bool isError = 7;</code>
+     * <code>bool isError = 6;</code>
      * 
      * @return The isError.
      */
@@ -20452,11 +20392,11 @@ public final class QueryProto {
       return isError_;
     }
 
-    public static final int TRACEIDS_FIELD_NUMBER = 8;
+    public static final int TRACEIDS_FIELD_NUMBER = 7;
     private com.google.protobuf.LazyStringList traceIds_;
 
     /**
-     * <code>repeated string traceIds = 8;</code>
+     * <code>repeated string traceIds = 7;</code>
      * 
      * @return A list containing the traceIds.
      */
@@ -20465,7 +20405,7 @@ public final class QueryProto {
     }
 
     /**
-     * <code>repeated string traceIds = 8;</code>
+     * <code>repeated string traceIds = 7;</code>
      * 
      * @return The count of traceIds.
      */
@@ -20474,7 +20414,7 @@ public final class QueryProto {
     }
 
     /**
-     * <code>repeated string traceIds = 8;</code>
+     * <code>repeated string traceIds = 7;</code>
      * 
      * @param index The index of the element to return.
      * @return The traceIds at the given index.
@@ -20484,7 +20424,7 @@ public final class QueryProto {
     }
 
     /**
-     * <code>repeated string traceIds = 8;</code>
+     * <code>repeated string traceIds = 7;</code>
      * 
      * @param index The index of the value to return.
      * @return The bytes of the traceIds at the given index.
@@ -20509,30 +20449,27 @@ public final class QueryProto {
 
     @java.lang.Override
     public void writeTo(com.google.protobuf.CodedOutputStream output) throws java.io.IOException {
-      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(segmentId_)) {
-        com.google.protobuf.GeneratedMessageV3.writeString(output, 1, segmentId_);
-      }
       for (int i = 0; i < serviceNames_.size(); i++) {
-        com.google.protobuf.GeneratedMessageV3.writeString(output, 2, serviceNames_.getRaw(i));
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 1, serviceNames_.getRaw(i));
       }
       for (int i = 0; i < serviceInstanceNames_.size(); i++) {
-        com.google.protobuf.GeneratedMessageV3.writeString(output, 3,
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 2,
             serviceInstanceNames_.getRaw(i));
       }
       for (int i = 0; i < endpointNames_.size(); i++) {
-        com.google.protobuf.GeneratedMessageV3.writeString(output, 4, endpointNames_.getRaw(i));
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 3, endpointNames_.getRaw(i));
       }
       if (duration_ != 0) {
-        output.writeInt32(5, duration_);
+        output.writeInt32(4, duration_);
       }
       if (start_ != 0L) {
-        output.writeInt64(6, start_);
+        output.writeInt64(5, start_);
       }
       if (isError_ != false) {
-        output.writeBool(7, isError_);
+        output.writeBool(6, isError_);
       }
       for (int i = 0; i < traceIds_.size(); i++) {
-        com.google.protobuf.GeneratedMessageV3.writeString(output, 8, traceIds_.getRaw(i));
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 7, traceIds_.getRaw(i));
       }
       unknownFields.writeTo(output);
     }
@@ -20544,9 +20481,6 @@ public final class QueryProto {
         return size;
 
       size = 0;
-      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(segmentId_)) {
-        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, segmentId_);
-      }
       {
         int dataSize = 0;
         for (int i = 0; i < serviceNames_.size(); i++) {
@@ -20572,13 +20506,13 @@ public final class QueryProto {
         size += 1 * getEndpointNamesList().size();
       }
       if (duration_ != 0) {
-        size += com.google.protobuf.CodedOutputStream.computeInt32Size(5, duration_);
+        size += com.google.protobuf.CodedOutputStream.computeInt32Size(4, duration_);
       }
       if (start_ != 0L) {
-        size += com.google.protobuf.CodedOutputStream.computeInt64Size(6, start_);
+        size += com.google.protobuf.CodedOutputStream.computeInt64Size(5, start_);
       }
       if (isError_ != false) {
-        size += com.google.protobuf.CodedOutputStream.computeBoolSize(7, isError_);
+        size += com.google.protobuf.CodedOutputStream.computeBoolSize(6, isError_);
       }
       {
         int dataSize = 0;
@@ -20604,8 +20538,6 @@ public final class QueryProto {
       io.holoinsight.server.query.grpc.QueryProto.BasicTrace other =
           (io.holoinsight.server.query.grpc.QueryProto.BasicTrace) obj;
 
-      if (!getSegmentId().equals(other.getSegmentId()))
-        return false;
       if (!getServiceNamesList().equals(other.getServiceNamesList()))
         return false;
       if (!getServiceInstanceNamesList().equals(other.getServiceInstanceNamesList()))
@@ -20632,8 +20564,6 @@ public final class QueryProto {
       }
       int hash = 41;
       hash = (19 * hash) + getDescriptor().hashCode();
-      hash = (37 * hash) + SEGMENTID_FIELD_NUMBER;
-      hash = (53 * hash) + getSegmentId().hashCode();
       if (getServiceNamesCount() > 0) {
         hash = (37 * hash) + SERVICENAMES_FIELD_NUMBER;
         hash = (53 * hash) + getServiceNamesList().hashCode();
@@ -20795,8 +20725,6 @@ public final class QueryProto {
       @java.lang.Override
       public Builder clear() {
         super.clear();
-        segmentId_ = "";
-
         serviceNames_ = com.google.protobuf.LazyStringArrayList.EMPTY;
         bitField0_ = (bitField0_ & ~0x00000001);
         serviceInstanceNames_ = com.google.protobuf.LazyStringArrayList.EMPTY;
@@ -20838,7 +20766,6 @@ public final class QueryProto {
         io.holoinsight.server.query.grpc.QueryProto.BasicTrace result =
             new io.holoinsight.server.query.grpc.QueryProto.BasicTrace(this);
         int from_bitField0_ = bitField0_;
-        result.segmentId_ = segmentId_;
         if (((bitField0_ & 0x00000001) != 0)) {
           serviceNames_ = serviceNames_.getUnmodifiableView();
           bitField0_ = (bitField0_ & ~0x00000001);
@@ -20912,10 +20839,6 @@ public final class QueryProto {
       public Builder mergeFrom(io.holoinsight.server.query.grpc.QueryProto.BasicTrace other) {
         if (other == io.holoinsight.server.query.grpc.QueryProto.BasicTrace.getDefaultInstance())
           return this;
-        if (!other.getSegmentId().isEmpty()) {
-          segmentId_ = other.segmentId_;
-          onChanged();
-        }
         if (!other.serviceNames_.isEmpty()) {
           if (serviceNames_.isEmpty()) {
             serviceNames_ = other.serviceNames_;
@@ -20995,87 +20918,6 @@ public final class QueryProto {
 
       private int bitField0_;
 
-      private java.lang.Object segmentId_ = "";
-
-      /**
-       * <code>string segmentId = 1;</code>
-       * 
-       * @return The segmentId.
-       */
-      public java.lang.String getSegmentId() {
-        java.lang.Object ref = segmentId_;
-        if (!(ref instanceof java.lang.String)) {
-          com.google.protobuf.ByteString bs = (com.google.protobuf.ByteString) ref;
-          java.lang.String s = bs.toStringUtf8();
-          segmentId_ = s;
-          return s;
-        } else {
-          return (java.lang.String) ref;
-        }
-      }
-
-      /**
-       * <code>string segmentId = 1;</code>
-       * 
-       * @return The bytes for segmentId.
-       */
-      public com.google.protobuf.ByteString getSegmentIdBytes() {
-        java.lang.Object ref = segmentId_;
-        if (ref instanceof String) {
-          com.google.protobuf.ByteString b =
-              com.google.protobuf.ByteString.copyFromUtf8((java.lang.String) ref);
-          segmentId_ = b;
-          return b;
-        } else {
-          return (com.google.protobuf.ByteString) ref;
-        }
-      }
-
-      /**
-       * <code>string segmentId = 1;</code>
-       * 
-       * @param value The segmentId to set.
-       * @return This builder for chaining.
-       */
-      public Builder setSegmentId(java.lang.String value) {
-        if (value == null) {
-          throw new NullPointerException();
-        }
-
-        segmentId_ = value;
-        onChanged();
-        return this;
-      }
-
-      /**
-       * <code>string segmentId = 1;</code>
-       * 
-       * @return This builder for chaining.
-       */
-      public Builder clearSegmentId() {
-
-        segmentId_ = getDefaultInstance().getSegmentId();
-        onChanged();
-        return this;
-      }
-
-      /**
-       * <code>string segmentId = 1;</code>
-       * 
-       * @param value The bytes for segmentId to set.
-       * @return This builder for chaining.
-       */
-      public Builder setSegmentIdBytes(com.google.protobuf.ByteString value) {
-        if (value == null) {
-          throw new NullPointerException();
-        }
-        checkByteStringIsUtf8(value);
-
-        segmentId_ = value;
-        onChanged();
-        return this;
-      }
-
       private com.google.protobuf.LazyStringList serviceNames_ =
           com.google.protobuf.LazyStringArrayList.EMPTY;
 
@@ -21087,7 +20929,7 @@ public final class QueryProto {
       }
 
       /**
-       * <code>repeated string serviceNames = 2;</code>
+       * <code>repeated string serviceNames = 1;</code>
        * 
        * @return A list containing the serviceNames.
        */
@@ -21096,7 +20938,7 @@ public final class QueryProto {
       }
 
       /**
-       * <code>repeated string serviceNames = 2;</code>
+       * <code>repeated string serviceNames = 1;</code>
        * 
        * @return The count of serviceNames.
        */
@@ -21105,7 +20947,7 @@ public final class QueryProto {
       }
 
       /**
-       * <code>repeated string serviceNames = 2;</code>
+       * <code>repeated string serviceNames = 1;</code>
        * 
        * @param index The index of the element to return.
        * @return The serviceNames at the given index.
@@ -21115,7 +20957,7 @@ public final class QueryProto {
       }
 
       /**
-       * <code>repeated string serviceNames = 2;</code>
+       * <code>repeated string serviceNames = 1;</code>
        * 
        * @param index The index of the value to return.
        * @return The bytes of the serviceNames at the given index.
@@ -21125,7 +20967,7 @@ public final class QueryProto {
       }
 
       /**
-       * <code>repeated string serviceNames = 2;</code>
+       * <code>repeated string serviceNames = 1;</code>
        * 
        * @param index The index to set the value at.
        * @param value The serviceNames to set.
@@ -21142,7 +20984,7 @@ public final class QueryProto {
       }
 
       /**
-       * <code>repeated string serviceNames = 2;</code>
+       * <code>repeated string serviceNames = 1;</code>
        * 
        * @param value The serviceNames to add.
        * @return This builder for chaining.
@@ -21158,7 +21000,7 @@ public final class QueryProto {
       }
 
       /**
-       * <code>repeated string serviceNames = 2;</code>
+       * <code>repeated string serviceNames = 1;</code>
        * 
        * @param values The serviceNames to add.
        * @return This builder for chaining.
@@ -21171,7 +21013,7 @@ public final class QueryProto {
       }
 
       /**
-       * <code>repeated string serviceNames = 2;</code>
+       * <code>repeated string serviceNames = 1;</code>
        * 
        * @return This builder for chaining.
        */
@@ -21183,7 +21025,7 @@ public final class QueryProto {
       }
 
       /**
-       * <code>repeated string serviceNames = 2;</code>
+       * <code>repeated string serviceNames = 1;</code>
        * 
        * @param value The bytes of the serviceNames to add.
        * @return This builder for chaining.
@@ -21211,7 +21053,7 @@ public final class QueryProto {
       }
 
       /**
-       * <code>repeated string serviceInstanceNames = 3;</code>
+       * <code>repeated string serviceInstanceNames = 2;</code>
        * 
        * @return A list containing the serviceInstanceNames.
        */
@@ -21220,7 +21062,7 @@ public final class QueryProto {
       }
 
       /**
-       * <code>repeated string serviceInstanceNames = 3;</code>
+       * <code>repeated string serviceInstanceNames = 2;</code>
        * 
        * @return The count of serviceInstanceNames.
        */
@@ -21229,7 +21071,7 @@ public final class QueryProto {
       }
 
       /**
-       * <code>repeated string serviceInstanceNames = 3;</code>
+       * <code>repeated string serviceInstanceNames = 2;</code>
        * 
        * @param index The index of the element to return.
        * @return The serviceInstanceNames at the given index.
@@ -21239,7 +21081,7 @@ public final class QueryProto {
       }
 
       /**
-       * <code>repeated string serviceInstanceNames = 3;</code>
+       * <code>repeated string serviceInstanceNames = 2;</code>
        * 
        * @param index The index of the value to return.
        * @return The bytes of the serviceInstanceNames at the given index.
@@ -21249,7 +21091,7 @@ public final class QueryProto {
       }
 
       /**
-       * <code>repeated string serviceInstanceNames = 3;</code>
+       * <code>repeated string serviceInstanceNames = 2;</code>
        * 
        * @param index The index to set the value at.
        * @param value The serviceInstanceNames to set.
@@ -21266,7 +21108,7 @@ public final class QueryProto {
       }
 
       /**
-       * <code>repeated string serviceInstanceNames = 3;</code>
+       * <code>repeated string serviceInstanceNames = 2;</code>
        * 
        * @param value The serviceInstanceNames to add.
        * @return This builder for chaining.
@@ -21282,7 +21124,7 @@ public final class QueryProto {
       }
 
       /**
-       * <code>repeated string serviceInstanceNames = 3;</code>
+       * <code>repeated string serviceInstanceNames = 2;</code>
        * 
        * @param values The serviceInstanceNames to add.
        * @return This builder for chaining.
@@ -21295,7 +21137,7 @@ public final class QueryProto {
       }
 
       /**
-       * <code>repeated string serviceInstanceNames = 3;</code>
+       * <code>repeated string serviceInstanceNames = 2;</code>
        * 
        * @return This builder for chaining.
        */
@@ -21307,7 +21149,7 @@ public final class QueryProto {
       }
 
       /**
-       * <code>repeated string serviceInstanceNames = 3;</code>
+       * <code>repeated string serviceInstanceNames = 2;</code>
        * 
        * @param value The bytes of the serviceInstanceNames to add.
        * @return This builder for chaining.
@@ -21334,7 +21176,7 @@ public final class QueryProto {
       }
 
       /**
-       * <code>repeated string endpointNames = 4;</code>
+       * <code>repeated string endpointNames = 3;</code>
        * 
        * @return A list containing the endpointNames.
        */
@@ -21343,7 +21185,7 @@ public final class QueryProto {
       }
 
       /**
-       * <code>repeated string endpointNames = 4;</code>
+       * <code>repeated string endpointNames = 3;</code>
        * 
        * @return The count of endpointNames.
        */
@@ -21352,7 +21194,7 @@ public final class QueryProto {
       }
 
       /**
-       * <code>repeated string endpointNames = 4;</code>
+       * <code>repeated string endpointNames = 3;</code>
        * 
        * @param index The index of the element to return.
        * @return The endpointNames at the given index.
@@ -21362,7 +21204,7 @@ public final class QueryProto {
       }
 
       /**
-       * <code>repeated string endpointNames = 4;</code>
+       * <code>repeated string endpointNames = 3;</code>
        * 
        * @param index The index of the value to return.
        * @return The bytes of the endpointNames at the given index.
@@ -21372,7 +21214,7 @@ public final class QueryProto {
       }
 
       /**
-       * <code>repeated string endpointNames = 4;</code>
+       * <code>repeated string endpointNames = 3;</code>
        * 
        * @param index The index to set the value at.
        * @param value The endpointNames to set.
@@ -21389,7 +21231,7 @@ public final class QueryProto {
       }
 
       /**
-       * <code>repeated string endpointNames = 4;</code>
+       * <code>repeated string endpointNames = 3;</code>
        * 
        * @param value The endpointNames to add.
        * @return This builder for chaining.
@@ -21405,7 +21247,7 @@ public final class QueryProto {
       }
 
       /**
-       * <code>repeated string endpointNames = 4;</code>
+       * <code>repeated string endpointNames = 3;</code>
        * 
        * @param values The endpointNames to add.
        * @return This builder for chaining.
@@ -21418,7 +21260,7 @@ public final class QueryProto {
       }
 
       /**
-       * <code>repeated string endpointNames = 4;</code>
+       * <code>repeated string endpointNames = 3;</code>
        * 
        * @return This builder for chaining.
        */
@@ -21430,7 +21272,7 @@ public final class QueryProto {
       }
 
       /**
-       * <code>repeated string endpointNames = 4;</code>
+       * <code>repeated string endpointNames = 3;</code>
        * 
        * @param value The bytes of the endpointNames to add.
        * @return This builder for chaining.
@@ -21449,7 +21291,7 @@ public final class QueryProto {
       private int duration_;
 
       /**
-       * <code>int32 duration = 5;</code>
+       * <code>int32 duration = 4;</code>
        * 
        * @return The duration.
        */
@@ -21459,7 +21301,7 @@ public final class QueryProto {
       }
 
       /**
-       * <code>int32 duration = 5;</code>
+       * <code>int32 duration = 4;</code>
        * 
        * @param value The duration to set.
        * @return This builder for chaining.
@@ -21472,7 +21314,7 @@ public final class QueryProto {
       }
 
       /**
-       * <code>int32 duration = 5;</code>
+       * <code>int32 duration = 4;</code>
        * 
        * @return This builder for chaining.
        */
@@ -21486,7 +21328,7 @@ public final class QueryProto {
       private long start_;
 
       /**
-       * <code>int64 start = 6;</code>
+       * <code>int64 start = 5;</code>
        * 
        * @return The start.
        */
@@ -21496,7 +21338,7 @@ public final class QueryProto {
       }
 
       /**
-       * <code>int64 start = 6;</code>
+       * <code>int64 start = 5;</code>
        * 
        * @param value The start to set.
        * @return This builder for chaining.
@@ -21509,7 +21351,7 @@ public final class QueryProto {
       }
 
       /**
-       * <code>int64 start = 6;</code>
+       * <code>int64 start = 5;</code>
        * 
        * @return This builder for chaining.
        */
@@ -21523,7 +21365,7 @@ public final class QueryProto {
       private boolean isError_;
 
       /**
-       * <code>bool isError = 7;</code>
+       * <code>bool isError = 6;</code>
        * 
        * @return The isError.
        */
@@ -21533,7 +21375,7 @@ public final class QueryProto {
       }
 
       /**
-       * <code>bool isError = 7;</code>
+       * <code>bool isError = 6;</code>
        * 
        * @param value The isError to set.
        * @return This builder for chaining.
@@ -21546,7 +21388,7 @@ public final class QueryProto {
       }
 
       /**
-       * <code>bool isError = 7;</code>
+       * <code>bool isError = 6;</code>
        * 
        * @return This builder for chaining.
        */
@@ -21568,7 +21410,7 @@ public final class QueryProto {
       }
 
       /**
-       * <code>repeated string traceIds = 8;</code>
+       * <code>repeated string traceIds = 7;</code>
        * 
        * @return A list containing the traceIds.
        */
@@ -21577,7 +21419,7 @@ public final class QueryProto {
       }
 
       /**
-       * <code>repeated string traceIds = 8;</code>
+       * <code>repeated string traceIds = 7;</code>
        * 
        * @return The count of traceIds.
        */
@@ -21586,7 +21428,7 @@ public final class QueryProto {
       }
 
       /**
-       * <code>repeated string traceIds = 8;</code>
+       * <code>repeated string traceIds = 7;</code>
        * 
        * @param index The index of the element to return.
        * @return The traceIds at the given index.
@@ -21596,7 +21438,7 @@ public final class QueryProto {
       }
 
       /**
-       * <code>repeated string traceIds = 8;</code>
+       * <code>repeated string traceIds = 7;</code>
        * 
        * @param index The index of the value to return.
        * @return The bytes of the traceIds at the given index.
@@ -21606,7 +21448,7 @@ public final class QueryProto {
       }
 
       /**
-       * <code>repeated string traceIds = 8;</code>
+       * <code>repeated string traceIds = 7;</code>
        * 
        * @param index The index to set the value at.
        * @param value The traceIds to set.
@@ -21623,7 +21465,7 @@ public final class QueryProto {
       }
 
       /**
-       * <code>repeated string traceIds = 8;</code>
+       * <code>repeated string traceIds = 7;</code>
        * 
        * @param value The traceIds to add.
        * @return This builder for chaining.
@@ -21639,7 +21481,7 @@ public final class QueryProto {
       }
 
       /**
-       * <code>repeated string traceIds = 8;</code>
+       * <code>repeated string traceIds = 7;</code>
        * 
        * @param values The traceIds to add.
        * @return This builder for chaining.
@@ -21652,7 +21494,7 @@ public final class QueryProto {
       }
 
       /**
-       * <code>repeated string traceIds = 8;</code>
+       * <code>repeated string traceIds = 7;</code>
        * 
        * @return This builder for chaining.
        */
@@ -21664,7 +21506,7 @@ public final class QueryProto {
       }
 
       /**
-       * <code>repeated string traceIds = 8;</code>
+       * <code>repeated string traceIds = 7;</code>
        * 
        * @param value The bytes of the traceIds to add.
        * @return This builder for chaining.
@@ -22564,275 +22406,233 @@ public final class QueryProto {
     com.google.protobuf.ByteString getTraceIdBytes();
 
     /**
-     * <code>string segmentId = 2;</code>
-     * 
-     * @return The segmentId.
-     */
-    java.lang.String getSegmentId();
-
-    /**
-     * <code>string segmentId = 2;</code>
-     * 
-     * @return The bytes for segmentId.
-     */
-    com.google.protobuf.ByteString getSegmentIdBytes();
-
-    /**
-     * <code>string spanId = 3;</code>
+     * <code>string spanId = 2;</code>
      * 
      * @return The spanId.
      */
     java.lang.String getSpanId();
 
     /**
-     * <code>string spanId = 3;</code>
+     * <code>string spanId = 2;</code>
      * 
      * @return The bytes for spanId.
      */
     com.google.protobuf.ByteString getSpanIdBytes();
 
     /**
-     * <code>string parentSpanId = 4;</code>
+     * <code>string parentSpanId = 3;</code>
      * 
      * @return The parentSpanId.
      */
     java.lang.String getParentSpanId();
 
     /**
-     * <code>string parentSpanId = 4;</code>
+     * <code>string parentSpanId = 3;</code>
      * 
      * @return The bytes for parentSpanId.
      */
     com.google.protobuf.ByteString getParentSpanIdBytes();
 
     /**
-     * <code>repeated .io.holoinsight.server.query.grpc.Ref refs = 5;</code>
+     * <code>repeated .io.holoinsight.server.query.grpc.Ref refs = 4;</code>
      */
     java.util.List<io.holoinsight.server.query.grpc.QueryProto.Ref> getRefsList();
 
     /**
-     * <code>repeated .io.holoinsight.server.query.grpc.Ref refs = 5;</code>
+     * <code>repeated .io.holoinsight.server.query.grpc.Ref refs = 4;</code>
      */
     io.holoinsight.server.query.grpc.QueryProto.Ref getRefs(int index);
 
     /**
-     * <code>repeated .io.holoinsight.server.query.grpc.Ref refs = 5;</code>
+     * <code>repeated .io.holoinsight.server.query.grpc.Ref refs = 4;</code>
      */
     int getRefsCount();
 
     /**
-     * <code>repeated .io.holoinsight.server.query.grpc.Ref refs = 5;</code>
+     * <code>repeated .io.holoinsight.server.query.grpc.Ref refs = 4;</code>
      */
     java.util.List<? extends io.holoinsight.server.query.grpc.QueryProto.RefOrBuilder> getRefsOrBuilderList();
 
     /**
-     * <code>repeated .io.holoinsight.server.query.grpc.Ref refs = 5;</code>
+     * <code>repeated .io.holoinsight.server.query.grpc.Ref refs = 4;</code>
      */
     io.holoinsight.server.query.grpc.QueryProto.RefOrBuilder getRefsOrBuilder(int index);
 
     /**
-     * <code>string serviceCode = 6;</code>
+     * <code>string serviceCode = 5;</code>
      * 
      * @return The serviceCode.
      */
     java.lang.String getServiceCode();
 
     /**
-     * <code>string serviceCode = 6;</code>
+     * <code>string serviceCode = 5;</code>
      * 
      * @return The bytes for serviceCode.
      */
     com.google.protobuf.ByteString getServiceCodeBytes();
 
     /**
-     * <code>string serviceInstanceName = 7;</code>
+     * <code>string serviceInstanceName = 6;</code>
      * 
      * @return The serviceInstanceName.
      */
     java.lang.String getServiceInstanceName();
 
     /**
-     * <code>string serviceInstanceName = 7;</code>
+     * <code>string serviceInstanceName = 6;</code>
      * 
      * @return The bytes for serviceInstanceName.
      */
     com.google.protobuf.ByteString getServiceInstanceNameBytes();
 
     /**
-     * <code>int64 startTime = 8;</code>
+     * <code>int64 startTime = 7;</code>
      * 
      * @return The startTime.
      */
     long getStartTime();
 
     /**
-     * <code>int64 endTime = 9;</code>
+     * <code>int64 endTime = 8;</code>
      * 
      * @return The endTime.
      */
     long getEndTime();
 
     /**
-     * <code>string endpointName = 10;</code>
+     * <code>string endpointName = 9;</code>
      * 
      * @return The endpointName.
      */
     java.lang.String getEndpointName();
 
     /**
-     * <code>string endpointName = 10;</code>
+     * <code>string endpointName = 9;</code>
      * 
      * @return The bytes for endpointName.
      */
     com.google.protobuf.ByteString getEndpointNameBytes();
 
     /**
-     * <code>string type = 11;</code>
+     * <code>string type = 10;</code>
      * 
      * @return The type.
      */
     java.lang.String getType();
 
     /**
-     * <code>string type = 11;</code>
+     * <code>string type = 10;</code>
      * 
      * @return The bytes for type.
      */
     com.google.protobuf.ByteString getTypeBytes();
 
     /**
-     * <code>string peer = 12;</code>
+     * <code>string peer = 11;</code>
      * 
      * @return The peer.
      */
     java.lang.String getPeer();
 
     /**
-     * <code>string peer = 12;</code>
+     * <code>string peer = 11;</code>
      * 
      * @return The bytes for peer.
      */
     com.google.protobuf.ByteString getPeerBytes();
 
     /**
-     * <code>string component = 13;</code>
+     * <code>string component = 12;</code>
      * 
      * @return The component.
      */
     java.lang.String getComponent();
 
     /**
-     * <code>string component = 13;</code>
+     * <code>string component = 12;</code>
      * 
      * @return The bytes for component.
      */
     com.google.protobuf.ByteString getComponentBytes();
 
     /**
-     * <code>bool isError = 14;</code>
+     * <code>bool isError = 13;</code>
      * 
      * @return The isError.
      */
     boolean getIsError();
 
     /**
-     * <code>string layer = 15;</code>
+     * <code>string layer = 14;</code>
      * 
      * @return The layer.
      */
     java.lang.String getLayer();
 
     /**
-     * <code>string layer = 15;</code>
+     * <code>string layer = 14;</code>
      * 
      * @return The bytes for layer.
      */
     com.google.protobuf.ByteString getLayerBytes();
 
     /**
-     * <code>repeated .io.holoinsight.server.query.grpc.KeyValue tags = 16;</code>
+     * <code>repeated .io.holoinsight.server.query.grpc.KeyValue tags = 15;</code>
      */
     java.util.List<io.holoinsight.server.query.grpc.QueryProto.KeyValue> getTagsList();
 
     /**
-     * <code>repeated .io.holoinsight.server.query.grpc.KeyValue tags = 16;</code>
+     * <code>repeated .io.holoinsight.server.query.grpc.KeyValue tags = 15;</code>
      */
     io.holoinsight.server.query.grpc.QueryProto.KeyValue getTags(int index);
 
     /**
-     * <code>repeated .io.holoinsight.server.query.grpc.KeyValue tags = 16;</code>
+     * <code>repeated .io.holoinsight.server.query.grpc.KeyValue tags = 15;</code>
      */
     int getTagsCount();
 
     /**
-     * <code>repeated .io.holoinsight.server.query.grpc.KeyValue tags = 16;</code>
+     * <code>repeated .io.holoinsight.server.query.grpc.KeyValue tags = 15;</code>
      */
     java.util.List<? extends io.holoinsight.server.query.grpc.QueryProto.KeyValueOrBuilder> getTagsOrBuilderList();
 
     /**
-     * <code>repeated .io.holoinsight.server.query.grpc.KeyValue tags = 16;</code>
+     * <code>repeated .io.holoinsight.server.query.grpc.KeyValue tags = 15;</code>
      */
     io.holoinsight.server.query.grpc.QueryProto.KeyValueOrBuilder getTagsOrBuilder(int index);
 
     /**
-     * <code>repeated .io.holoinsight.server.query.grpc.LogEntity logs = 17;</code>
+     * <code>repeated .io.holoinsight.server.query.grpc.LogEntity logs = 16;</code>
      */
     java.util.List<io.holoinsight.server.query.grpc.QueryProto.LogEntity> getLogsList();
 
     /**
-     * <code>repeated .io.holoinsight.server.query.grpc.LogEntity logs = 17;</code>
+     * <code>repeated .io.holoinsight.server.query.grpc.LogEntity logs = 16;</code>
      */
     io.holoinsight.server.query.grpc.QueryProto.LogEntity getLogs(int index);
 
     /**
-     * <code>repeated .io.holoinsight.server.query.grpc.LogEntity logs = 17;</code>
+     * <code>repeated .io.holoinsight.server.query.grpc.LogEntity logs = 16;</code>
      */
     int getLogsCount();
 
     /**
-     * <code>repeated .io.holoinsight.server.query.grpc.LogEntity logs = 17;</code>
+     * <code>repeated .io.holoinsight.server.query.grpc.LogEntity logs = 16;</code>
      */
     java.util.List<? extends io.holoinsight.server.query.grpc.QueryProto.LogEntityOrBuilder> getLogsOrBuilderList();
 
     /**
-     * <code>repeated .io.holoinsight.server.query.grpc.LogEntity logs = 17;</code>
+     * <code>repeated .io.holoinsight.server.query.grpc.LogEntity logs = 16;</code>
      */
     io.holoinsight.server.query.grpc.QueryProto.LogEntityOrBuilder getLogsOrBuilder(int index);
 
     /**
-     * <code>bool isRoot = 18;</code>
+     * <code>bool isRoot = 17;</code>
      * 
      * @return The isRoot.
      */
     boolean getIsRoot();
-
-    /**
-     * <code>string segmentSpanId = 19;</code>
-     * 
-     * @return The segmentSpanId.
-     */
-    java.lang.String getSegmentSpanId();
-
-    /**
-     * <code>string segmentSpanId = 19;</code>
-     * 
-     * @return The bytes for segmentSpanId.
-     */
-    com.google.protobuf.ByteString getSegmentSpanIdBytes();
-
-    /**
-     * <code>string segmentParentSpanId = 20;</code>
-     * 
-     * @return The segmentParentSpanId.
-     */
-    java.lang.String getSegmentParentSpanId();
-
-    /**
-     * <code>string segmentParentSpanId = 20;</code>
-     * 
-     * @return The bytes for segmentParentSpanId.
-     */
-    com.google.protobuf.ByteString getSegmentParentSpanIdBytes();
   }
   /**
    * Protobuf type {@code io.holoinsight.server.query.grpc.Span}
@@ -22849,7 +22649,6 @@ public final class QueryProto {
 
     private Span() {
       traceId_ = "";
-      segmentId_ = "";
       spanId_ = "";
       parentSpanId_ = "";
       refs_ = java.util.Collections.emptyList();
@@ -22862,8 +22661,6 @@ public final class QueryProto {
       layer_ = "";
       tags_ = java.util.Collections.emptyList();
       logs_ = java.util.Collections.emptyList();
-      segmentSpanId_ = "";
-      segmentParentSpanId_ = "";
     }
 
     @java.lang.Override
@@ -22904,22 +22701,16 @@ public final class QueryProto {
             case 18: {
               java.lang.String s = input.readStringRequireUtf8();
 
-              segmentId_ = s;
+              spanId_ = s;
               break;
             }
             case 26: {
               java.lang.String s = input.readStringRequireUtf8();
 
-              spanId_ = s;
-              break;
-            }
-            case 34: {
-              java.lang.String s = input.readStringRequireUtf8();
-
               parentSpanId_ = s;
               break;
             }
-            case 42: {
+            case 34: {
               if (!((mutable_bitField0_ & 0x00000001) != 0)) {
                 refs_ = new java.util.ArrayList<io.holoinsight.server.query.grpc.QueryProto.Ref>();
                 mutable_bitField0_ |= 0x00000001;
@@ -22928,64 +22719,64 @@ public final class QueryProto {
                   extensionRegistry));
               break;
             }
-            case 50: {
+            case 42: {
               java.lang.String s = input.readStringRequireUtf8();
 
               serviceCode_ = s;
               break;
             }
-            case 58: {
+            case 50: {
               java.lang.String s = input.readStringRequireUtf8();
 
               serviceInstanceName_ = s;
               break;
             }
-            case 64: {
+            case 56: {
 
               startTime_ = input.readInt64();
               break;
             }
-            case 72: {
+            case 64: {
 
               endTime_ = input.readInt64();
               break;
             }
-            case 82: {
+            case 74: {
               java.lang.String s = input.readStringRequireUtf8();
 
               endpointName_ = s;
               break;
             }
-            case 90: {
+            case 82: {
               java.lang.String s = input.readStringRequireUtf8();
 
               type_ = s;
               break;
             }
-            case 98: {
+            case 90: {
               java.lang.String s = input.readStringRequireUtf8();
 
               peer_ = s;
               break;
             }
-            case 106: {
+            case 98: {
               java.lang.String s = input.readStringRequireUtf8();
 
               component_ = s;
               break;
             }
-            case 112: {
+            case 104: {
 
               isError_ = input.readBool();
               break;
             }
-            case 122: {
+            case 114: {
               java.lang.String s = input.readStringRequireUtf8();
 
               layer_ = s;
               break;
             }
-            case 130: {
+            case 122: {
               if (!((mutable_bitField0_ & 0x00000002) != 0)) {
                 tags_ =
                     new java.util.ArrayList<io.holoinsight.server.query.grpc.QueryProto.KeyValue>();
@@ -22996,7 +22787,7 @@ public final class QueryProto {
                       extensionRegistry));
               break;
             }
-            case 138: {
+            case 130: {
               if (!((mutable_bitField0_ & 0x00000004) != 0)) {
                 logs_ =
                     new java.util.ArrayList<io.holoinsight.server.query.grpc.QueryProto.LogEntity>();
@@ -23007,21 +22798,9 @@ public final class QueryProto {
                       extensionRegistry));
               break;
             }
-            case 144: {
+            case 136: {
 
               isRoot_ = input.readBool();
-              break;
-            }
-            case 154: {
-              java.lang.String s = input.readStringRequireUtf8();
-
-              segmentSpanId_ = s;
-              break;
-            }
-            case 162: {
-              java.lang.String s = input.readStringRequireUtf8();
-
-              segmentParentSpanId_ = s;
               break;
             }
             default: {
@@ -23101,50 +22880,11 @@ public final class QueryProto {
       }
     }
 
-    public static final int SEGMENTID_FIELD_NUMBER = 2;
-    private volatile java.lang.Object segmentId_;
-
-    /**
-     * <code>string segmentId = 2;</code>
-     * 
-     * @return The segmentId.
-     */
-    @java.lang.Override
-    public java.lang.String getSegmentId() {
-      java.lang.Object ref = segmentId_;
-      if (ref instanceof java.lang.String) {
-        return (java.lang.String) ref;
-      } else {
-        com.google.protobuf.ByteString bs = (com.google.protobuf.ByteString) ref;
-        java.lang.String s = bs.toStringUtf8();
-        segmentId_ = s;
-        return s;
-      }
-    }
-
-    /**
-     * <code>string segmentId = 2;</code>
-     * 
-     * @return The bytes for segmentId.
-     */
-    @java.lang.Override
-    public com.google.protobuf.ByteString getSegmentIdBytes() {
-      java.lang.Object ref = segmentId_;
-      if (ref instanceof java.lang.String) {
-        com.google.protobuf.ByteString b =
-            com.google.protobuf.ByteString.copyFromUtf8((java.lang.String) ref);
-        segmentId_ = b;
-        return b;
-      } else {
-        return (com.google.protobuf.ByteString) ref;
-      }
-    }
-
-    public static final int SPANID_FIELD_NUMBER = 3;
+    public static final int SPANID_FIELD_NUMBER = 2;
     private volatile java.lang.Object spanId_;
 
     /**
-     * <code>string spanId = 3;</code>
+     * <code>string spanId = 2;</code>
      * 
      * @return The spanId.
      */
@@ -23162,7 +22902,7 @@ public final class QueryProto {
     }
 
     /**
-     * <code>string spanId = 3;</code>
+     * <code>string spanId = 2;</code>
      * 
      * @return The bytes for spanId.
      */
@@ -23179,11 +22919,11 @@ public final class QueryProto {
       }
     }
 
-    public static final int PARENTSPANID_FIELD_NUMBER = 4;
+    public static final int PARENTSPANID_FIELD_NUMBER = 3;
     private volatile java.lang.Object parentSpanId_;
 
     /**
-     * <code>string parentSpanId = 4;</code>
+     * <code>string parentSpanId = 3;</code>
      * 
      * @return The parentSpanId.
      */
@@ -23201,7 +22941,7 @@ public final class QueryProto {
     }
 
     /**
-     * <code>string parentSpanId = 4;</code>
+     * <code>string parentSpanId = 3;</code>
      * 
      * @return The bytes for parentSpanId.
      */
@@ -23218,11 +22958,11 @@ public final class QueryProto {
       }
     }
 
-    public static final int REFS_FIELD_NUMBER = 5;
+    public static final int REFS_FIELD_NUMBER = 4;
     private java.util.List<io.holoinsight.server.query.grpc.QueryProto.Ref> refs_;
 
     /**
-     * <code>repeated .io.holoinsight.server.query.grpc.Ref refs = 5;</code>
+     * <code>repeated .io.holoinsight.server.query.grpc.Ref refs = 4;</code>
      */
     @java.lang.Override
     public java.util.List<io.holoinsight.server.query.grpc.QueryProto.Ref> getRefsList() {
@@ -23230,7 +22970,7 @@ public final class QueryProto {
     }
 
     /**
-     * <code>repeated .io.holoinsight.server.query.grpc.Ref refs = 5;</code>
+     * <code>repeated .io.holoinsight.server.query.grpc.Ref refs = 4;</code>
      */
     @java.lang.Override
     public java.util.List<? extends io.holoinsight.server.query.grpc.QueryProto.RefOrBuilder> getRefsOrBuilderList() {
@@ -23238,7 +22978,7 @@ public final class QueryProto {
     }
 
     /**
-     * <code>repeated .io.holoinsight.server.query.grpc.Ref refs = 5;</code>
+     * <code>repeated .io.holoinsight.server.query.grpc.Ref refs = 4;</code>
      */
     @java.lang.Override
     public int getRefsCount() {
@@ -23246,7 +22986,7 @@ public final class QueryProto {
     }
 
     /**
-     * <code>repeated .io.holoinsight.server.query.grpc.Ref refs = 5;</code>
+     * <code>repeated .io.holoinsight.server.query.grpc.Ref refs = 4;</code>
      */
     @java.lang.Override
     public io.holoinsight.server.query.grpc.QueryProto.Ref getRefs(int index) {
@@ -23254,18 +22994,18 @@ public final class QueryProto {
     }
 
     /**
-     * <code>repeated .io.holoinsight.server.query.grpc.Ref refs = 5;</code>
+     * <code>repeated .io.holoinsight.server.query.grpc.Ref refs = 4;</code>
      */
     @java.lang.Override
     public io.holoinsight.server.query.grpc.QueryProto.RefOrBuilder getRefsOrBuilder(int index) {
       return refs_.get(index);
     }
 
-    public static final int SERVICECODE_FIELD_NUMBER = 6;
+    public static final int SERVICECODE_FIELD_NUMBER = 5;
     private volatile java.lang.Object serviceCode_;
 
     /**
-     * <code>string serviceCode = 6;</code>
+     * <code>string serviceCode = 5;</code>
      * 
      * @return The serviceCode.
      */
@@ -23283,7 +23023,7 @@ public final class QueryProto {
     }
 
     /**
-     * <code>string serviceCode = 6;</code>
+     * <code>string serviceCode = 5;</code>
      * 
      * @return The bytes for serviceCode.
      */
@@ -23300,11 +23040,11 @@ public final class QueryProto {
       }
     }
 
-    public static final int SERVICEINSTANCENAME_FIELD_NUMBER = 7;
+    public static final int SERVICEINSTANCENAME_FIELD_NUMBER = 6;
     private volatile java.lang.Object serviceInstanceName_;
 
     /**
-     * <code>string serviceInstanceName = 7;</code>
+     * <code>string serviceInstanceName = 6;</code>
      * 
      * @return The serviceInstanceName.
      */
@@ -23322,7 +23062,7 @@ public final class QueryProto {
     }
 
     /**
-     * <code>string serviceInstanceName = 7;</code>
+     * <code>string serviceInstanceName = 6;</code>
      * 
      * @return The bytes for serviceInstanceName.
      */
@@ -23339,11 +23079,11 @@ public final class QueryProto {
       }
     }
 
-    public static final int STARTTIME_FIELD_NUMBER = 8;
+    public static final int STARTTIME_FIELD_NUMBER = 7;
     private long startTime_;
 
     /**
-     * <code>int64 startTime = 8;</code>
+     * <code>int64 startTime = 7;</code>
      * 
      * @return The startTime.
      */
@@ -23352,11 +23092,11 @@ public final class QueryProto {
       return startTime_;
     }
 
-    public static final int ENDTIME_FIELD_NUMBER = 9;
+    public static final int ENDTIME_FIELD_NUMBER = 8;
     private long endTime_;
 
     /**
-     * <code>int64 endTime = 9;</code>
+     * <code>int64 endTime = 8;</code>
      * 
      * @return The endTime.
      */
@@ -23365,11 +23105,11 @@ public final class QueryProto {
       return endTime_;
     }
 
-    public static final int ENDPOINTNAME_FIELD_NUMBER = 10;
+    public static final int ENDPOINTNAME_FIELD_NUMBER = 9;
     private volatile java.lang.Object endpointName_;
 
     /**
-     * <code>string endpointName = 10;</code>
+     * <code>string endpointName = 9;</code>
      * 
      * @return The endpointName.
      */
@@ -23387,7 +23127,7 @@ public final class QueryProto {
     }
 
     /**
-     * <code>string endpointName = 10;</code>
+     * <code>string endpointName = 9;</code>
      * 
      * @return The bytes for endpointName.
      */
@@ -23404,11 +23144,11 @@ public final class QueryProto {
       }
     }
 
-    public static final int TYPE_FIELD_NUMBER = 11;
+    public static final int TYPE_FIELD_NUMBER = 10;
     private volatile java.lang.Object type_;
 
     /**
-     * <code>string type = 11;</code>
+     * <code>string type = 10;</code>
      * 
      * @return The type.
      */
@@ -23426,7 +23166,7 @@ public final class QueryProto {
     }
 
     /**
-     * <code>string type = 11;</code>
+     * <code>string type = 10;</code>
      * 
      * @return The bytes for type.
      */
@@ -23443,11 +23183,11 @@ public final class QueryProto {
       }
     }
 
-    public static final int PEER_FIELD_NUMBER = 12;
+    public static final int PEER_FIELD_NUMBER = 11;
     private volatile java.lang.Object peer_;
 
     /**
-     * <code>string peer = 12;</code>
+     * <code>string peer = 11;</code>
      * 
      * @return The peer.
      */
@@ -23465,7 +23205,7 @@ public final class QueryProto {
     }
 
     /**
-     * <code>string peer = 12;</code>
+     * <code>string peer = 11;</code>
      * 
      * @return The bytes for peer.
      */
@@ -23482,11 +23222,11 @@ public final class QueryProto {
       }
     }
 
-    public static final int COMPONENT_FIELD_NUMBER = 13;
+    public static final int COMPONENT_FIELD_NUMBER = 12;
     private volatile java.lang.Object component_;
 
     /**
-     * <code>string component = 13;</code>
+     * <code>string component = 12;</code>
      * 
      * @return The component.
      */
@@ -23504,7 +23244,7 @@ public final class QueryProto {
     }
 
     /**
-     * <code>string component = 13;</code>
+     * <code>string component = 12;</code>
      * 
      * @return The bytes for component.
      */
@@ -23521,11 +23261,11 @@ public final class QueryProto {
       }
     }
 
-    public static final int ISERROR_FIELD_NUMBER = 14;
+    public static final int ISERROR_FIELD_NUMBER = 13;
     private boolean isError_;
 
     /**
-     * <code>bool isError = 14;</code>
+     * <code>bool isError = 13;</code>
      * 
      * @return The isError.
      */
@@ -23534,11 +23274,11 @@ public final class QueryProto {
       return isError_;
     }
 
-    public static final int LAYER_FIELD_NUMBER = 15;
+    public static final int LAYER_FIELD_NUMBER = 14;
     private volatile java.lang.Object layer_;
 
     /**
-     * <code>string layer = 15;</code>
+     * <code>string layer = 14;</code>
      * 
      * @return The layer.
      */
@@ -23556,7 +23296,7 @@ public final class QueryProto {
     }
 
     /**
-     * <code>string layer = 15;</code>
+     * <code>string layer = 14;</code>
      * 
      * @return The bytes for layer.
      */
@@ -23573,11 +23313,11 @@ public final class QueryProto {
       }
     }
 
-    public static final int TAGS_FIELD_NUMBER = 16;
+    public static final int TAGS_FIELD_NUMBER = 15;
     private java.util.List<io.holoinsight.server.query.grpc.QueryProto.KeyValue> tags_;
 
     /**
-     * <code>repeated .io.holoinsight.server.query.grpc.KeyValue tags = 16;</code>
+     * <code>repeated .io.holoinsight.server.query.grpc.KeyValue tags = 15;</code>
      */
     @java.lang.Override
     public java.util.List<io.holoinsight.server.query.grpc.QueryProto.KeyValue> getTagsList() {
@@ -23585,7 +23325,7 @@ public final class QueryProto {
     }
 
     /**
-     * <code>repeated .io.holoinsight.server.query.grpc.KeyValue tags = 16;</code>
+     * <code>repeated .io.holoinsight.server.query.grpc.KeyValue tags = 15;</code>
      */
     @java.lang.Override
     public java.util.List<? extends io.holoinsight.server.query.grpc.QueryProto.KeyValueOrBuilder> getTagsOrBuilderList() {
@@ -23593,7 +23333,7 @@ public final class QueryProto {
     }
 
     /**
-     * <code>repeated .io.holoinsight.server.query.grpc.KeyValue tags = 16;</code>
+     * <code>repeated .io.holoinsight.server.query.grpc.KeyValue tags = 15;</code>
      */
     @java.lang.Override
     public int getTagsCount() {
@@ -23601,7 +23341,7 @@ public final class QueryProto {
     }
 
     /**
-     * <code>repeated .io.holoinsight.server.query.grpc.KeyValue tags = 16;</code>
+     * <code>repeated .io.holoinsight.server.query.grpc.KeyValue tags = 15;</code>
      */
     @java.lang.Override
     public io.holoinsight.server.query.grpc.QueryProto.KeyValue getTags(int index) {
@@ -23609,7 +23349,7 @@ public final class QueryProto {
     }
 
     /**
-     * <code>repeated .io.holoinsight.server.query.grpc.KeyValue tags = 16;</code>
+     * <code>repeated .io.holoinsight.server.query.grpc.KeyValue tags = 15;</code>
      */
     @java.lang.Override
     public io.holoinsight.server.query.grpc.QueryProto.KeyValueOrBuilder getTagsOrBuilder(
@@ -23617,11 +23357,11 @@ public final class QueryProto {
       return tags_.get(index);
     }
 
-    public static final int LOGS_FIELD_NUMBER = 17;
+    public static final int LOGS_FIELD_NUMBER = 16;
     private java.util.List<io.holoinsight.server.query.grpc.QueryProto.LogEntity> logs_;
 
     /**
-     * <code>repeated .io.holoinsight.server.query.grpc.LogEntity logs = 17;</code>
+     * <code>repeated .io.holoinsight.server.query.grpc.LogEntity logs = 16;</code>
      */
     @java.lang.Override
     public java.util.List<io.holoinsight.server.query.grpc.QueryProto.LogEntity> getLogsList() {
@@ -23629,7 +23369,7 @@ public final class QueryProto {
     }
 
     /**
-     * <code>repeated .io.holoinsight.server.query.grpc.LogEntity logs = 17;</code>
+     * <code>repeated .io.holoinsight.server.query.grpc.LogEntity logs = 16;</code>
      */
     @java.lang.Override
     public java.util.List<? extends io.holoinsight.server.query.grpc.QueryProto.LogEntityOrBuilder> getLogsOrBuilderList() {
@@ -23637,7 +23377,7 @@ public final class QueryProto {
     }
 
     /**
-     * <code>repeated .io.holoinsight.server.query.grpc.LogEntity logs = 17;</code>
+     * <code>repeated .io.holoinsight.server.query.grpc.LogEntity logs = 16;</code>
      */
     @java.lang.Override
     public int getLogsCount() {
@@ -23645,7 +23385,7 @@ public final class QueryProto {
     }
 
     /**
-     * <code>repeated .io.holoinsight.server.query.grpc.LogEntity logs = 17;</code>
+     * <code>repeated .io.holoinsight.server.query.grpc.LogEntity logs = 16;</code>
      */
     @java.lang.Override
     public io.holoinsight.server.query.grpc.QueryProto.LogEntity getLogs(int index) {
@@ -23653,7 +23393,7 @@ public final class QueryProto {
     }
 
     /**
-     * <code>repeated .io.holoinsight.server.query.grpc.LogEntity logs = 17;</code>
+     * <code>repeated .io.holoinsight.server.query.grpc.LogEntity logs = 16;</code>
      */
     @java.lang.Override
     public io.holoinsight.server.query.grpc.QueryProto.LogEntityOrBuilder getLogsOrBuilder(
@@ -23661,95 +23401,17 @@ public final class QueryProto {
       return logs_.get(index);
     }
 
-    public static final int ISROOT_FIELD_NUMBER = 18;
+    public static final int ISROOT_FIELD_NUMBER = 17;
     private boolean isRoot_;
 
     /**
-     * <code>bool isRoot = 18;</code>
+     * <code>bool isRoot = 17;</code>
      * 
      * @return The isRoot.
      */
     @java.lang.Override
     public boolean getIsRoot() {
       return isRoot_;
-    }
-
-    public static final int SEGMENTSPANID_FIELD_NUMBER = 19;
-    private volatile java.lang.Object segmentSpanId_;
-
-    /**
-     * <code>string segmentSpanId = 19;</code>
-     * 
-     * @return The segmentSpanId.
-     */
-    @java.lang.Override
-    public java.lang.String getSegmentSpanId() {
-      java.lang.Object ref = segmentSpanId_;
-      if (ref instanceof java.lang.String) {
-        return (java.lang.String) ref;
-      } else {
-        com.google.protobuf.ByteString bs = (com.google.protobuf.ByteString) ref;
-        java.lang.String s = bs.toStringUtf8();
-        segmentSpanId_ = s;
-        return s;
-      }
-    }
-
-    /**
-     * <code>string segmentSpanId = 19;</code>
-     * 
-     * @return The bytes for segmentSpanId.
-     */
-    @java.lang.Override
-    public com.google.protobuf.ByteString getSegmentSpanIdBytes() {
-      java.lang.Object ref = segmentSpanId_;
-      if (ref instanceof java.lang.String) {
-        com.google.protobuf.ByteString b =
-            com.google.protobuf.ByteString.copyFromUtf8((java.lang.String) ref);
-        segmentSpanId_ = b;
-        return b;
-      } else {
-        return (com.google.protobuf.ByteString) ref;
-      }
-    }
-
-    public static final int SEGMENTPARENTSPANID_FIELD_NUMBER = 20;
-    private volatile java.lang.Object segmentParentSpanId_;
-
-    /**
-     * <code>string segmentParentSpanId = 20;</code>
-     * 
-     * @return The segmentParentSpanId.
-     */
-    @java.lang.Override
-    public java.lang.String getSegmentParentSpanId() {
-      java.lang.Object ref = segmentParentSpanId_;
-      if (ref instanceof java.lang.String) {
-        return (java.lang.String) ref;
-      } else {
-        com.google.protobuf.ByteString bs = (com.google.protobuf.ByteString) ref;
-        java.lang.String s = bs.toStringUtf8();
-        segmentParentSpanId_ = s;
-        return s;
-      }
-    }
-
-    /**
-     * <code>string segmentParentSpanId = 20;</code>
-     * 
-     * @return The bytes for segmentParentSpanId.
-     */
-    @java.lang.Override
-    public com.google.protobuf.ByteString getSegmentParentSpanIdBytes() {
-      java.lang.Object ref = segmentParentSpanId_;
-      if (ref instanceof java.lang.String) {
-        com.google.protobuf.ByteString b =
-            com.google.protobuf.ByteString.copyFromUtf8((java.lang.String) ref);
-        segmentParentSpanId_ = b;
-        return b;
-      } else {
-        return (com.google.protobuf.ByteString) ref;
-      }
     }
 
     private byte memoizedIsInitialized = -1;
@@ -23771,62 +23433,53 @@ public final class QueryProto {
       if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(traceId_)) {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 1, traceId_);
       }
-      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(segmentId_)) {
-        com.google.protobuf.GeneratedMessageV3.writeString(output, 2, segmentId_);
-      }
       if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(spanId_)) {
-        com.google.protobuf.GeneratedMessageV3.writeString(output, 3, spanId_);
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 2, spanId_);
       }
       if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(parentSpanId_)) {
-        com.google.protobuf.GeneratedMessageV3.writeString(output, 4, parentSpanId_);
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 3, parentSpanId_);
       }
       for (int i = 0; i < refs_.size(); i++) {
-        output.writeMessage(5, refs_.get(i));
+        output.writeMessage(4, refs_.get(i));
       }
       if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(serviceCode_)) {
-        com.google.protobuf.GeneratedMessageV3.writeString(output, 6, serviceCode_);
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 5, serviceCode_);
       }
       if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(serviceInstanceName_)) {
-        com.google.protobuf.GeneratedMessageV3.writeString(output, 7, serviceInstanceName_);
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 6, serviceInstanceName_);
       }
       if (startTime_ != 0L) {
-        output.writeInt64(8, startTime_);
+        output.writeInt64(7, startTime_);
       }
       if (endTime_ != 0L) {
-        output.writeInt64(9, endTime_);
+        output.writeInt64(8, endTime_);
       }
       if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(endpointName_)) {
-        com.google.protobuf.GeneratedMessageV3.writeString(output, 10, endpointName_);
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 9, endpointName_);
       }
       if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(type_)) {
-        com.google.protobuf.GeneratedMessageV3.writeString(output, 11, type_);
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 10, type_);
       }
       if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(peer_)) {
-        com.google.protobuf.GeneratedMessageV3.writeString(output, 12, peer_);
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 11, peer_);
       }
       if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(component_)) {
-        com.google.protobuf.GeneratedMessageV3.writeString(output, 13, component_);
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 12, component_);
       }
       if (isError_ != false) {
-        output.writeBool(14, isError_);
+        output.writeBool(13, isError_);
       }
       if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(layer_)) {
-        com.google.protobuf.GeneratedMessageV3.writeString(output, 15, layer_);
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 14, layer_);
       }
       for (int i = 0; i < tags_.size(); i++) {
-        output.writeMessage(16, tags_.get(i));
+        output.writeMessage(15, tags_.get(i));
       }
       for (int i = 0; i < logs_.size(); i++) {
-        output.writeMessage(17, logs_.get(i));
+        output.writeMessage(16, logs_.get(i));
       }
       if (isRoot_ != false) {
-        output.writeBool(18, isRoot_);
-      }
-      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(segmentSpanId_)) {
-        com.google.protobuf.GeneratedMessageV3.writeString(output, 19, segmentSpanId_);
-      }
-      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(segmentParentSpanId_)) {
-        com.google.protobuf.GeneratedMessageV3.writeString(output, 20, segmentParentSpanId_);
+        output.writeBool(17, isRoot_);
       }
       unknownFields.writeTo(output);
     }
@@ -23841,62 +23494,53 @@ public final class QueryProto {
       if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(traceId_)) {
         size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, traceId_);
       }
-      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(segmentId_)) {
-        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(2, segmentId_);
-      }
       if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(spanId_)) {
-        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(3, spanId_);
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(2, spanId_);
       }
       if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(parentSpanId_)) {
-        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(4, parentSpanId_);
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(3, parentSpanId_);
       }
       for (int i = 0; i < refs_.size(); i++) {
-        size += com.google.protobuf.CodedOutputStream.computeMessageSize(5, refs_.get(i));
+        size += com.google.protobuf.CodedOutputStream.computeMessageSize(4, refs_.get(i));
       }
       if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(serviceCode_)) {
-        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(6, serviceCode_);
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(5, serviceCode_);
       }
       if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(serviceInstanceName_)) {
-        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(7, serviceInstanceName_);
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(6, serviceInstanceName_);
       }
       if (startTime_ != 0L) {
-        size += com.google.protobuf.CodedOutputStream.computeInt64Size(8, startTime_);
+        size += com.google.protobuf.CodedOutputStream.computeInt64Size(7, startTime_);
       }
       if (endTime_ != 0L) {
-        size += com.google.protobuf.CodedOutputStream.computeInt64Size(9, endTime_);
+        size += com.google.protobuf.CodedOutputStream.computeInt64Size(8, endTime_);
       }
       if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(endpointName_)) {
-        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(10, endpointName_);
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(9, endpointName_);
       }
       if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(type_)) {
-        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(11, type_);
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(10, type_);
       }
       if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(peer_)) {
-        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(12, peer_);
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(11, peer_);
       }
       if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(component_)) {
-        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(13, component_);
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(12, component_);
       }
       if (isError_ != false) {
-        size += com.google.protobuf.CodedOutputStream.computeBoolSize(14, isError_);
+        size += com.google.protobuf.CodedOutputStream.computeBoolSize(13, isError_);
       }
       if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(layer_)) {
-        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(15, layer_);
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(14, layer_);
       }
       for (int i = 0; i < tags_.size(); i++) {
-        size += com.google.protobuf.CodedOutputStream.computeMessageSize(16, tags_.get(i));
+        size += com.google.protobuf.CodedOutputStream.computeMessageSize(15, tags_.get(i));
       }
       for (int i = 0; i < logs_.size(); i++) {
-        size += com.google.protobuf.CodedOutputStream.computeMessageSize(17, logs_.get(i));
+        size += com.google.protobuf.CodedOutputStream.computeMessageSize(16, logs_.get(i));
       }
       if (isRoot_ != false) {
-        size += com.google.protobuf.CodedOutputStream.computeBoolSize(18, isRoot_);
-      }
-      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(segmentSpanId_)) {
-        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(19, segmentSpanId_);
-      }
-      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(segmentParentSpanId_)) {
-        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(20, segmentParentSpanId_);
+        size += com.google.protobuf.CodedOutputStream.computeBoolSize(17, isRoot_);
       }
       size += unknownFields.getSerializedSize();
       memoizedSize = size;
@@ -23915,8 +23559,6 @@ public final class QueryProto {
           (io.holoinsight.server.query.grpc.QueryProto.Span) obj;
 
       if (!getTraceId().equals(other.getTraceId()))
-        return false;
-      if (!getSegmentId().equals(other.getSegmentId()))
         return false;
       if (!getSpanId().equals(other.getSpanId()))
         return false;
@@ -23950,10 +23592,6 @@ public final class QueryProto {
         return false;
       if (getIsRoot() != other.getIsRoot())
         return false;
-      if (!getSegmentSpanId().equals(other.getSegmentSpanId()))
-        return false;
-      if (!getSegmentParentSpanId().equals(other.getSegmentParentSpanId()))
-        return false;
       if (!unknownFields.equals(other.unknownFields))
         return false;
       return true;
@@ -23968,8 +23606,6 @@ public final class QueryProto {
       hash = (19 * hash) + getDescriptor().hashCode();
       hash = (37 * hash) + TRACEID_FIELD_NUMBER;
       hash = (53 * hash) + getTraceId().hashCode();
-      hash = (37 * hash) + SEGMENTID_FIELD_NUMBER;
-      hash = (53 * hash) + getSegmentId().hashCode();
       hash = (37 * hash) + SPANID_FIELD_NUMBER;
       hash = (53 * hash) + getSpanId().hashCode();
       hash = (37 * hash) + PARENTSPANID_FIELD_NUMBER;
@@ -24008,10 +23644,6 @@ public final class QueryProto {
       }
       hash = (37 * hash) + ISROOT_FIELD_NUMBER;
       hash = (53 * hash) + com.google.protobuf.Internal.hashBoolean(getIsRoot());
-      hash = (37 * hash) + SEGMENTSPANID_FIELD_NUMBER;
-      hash = (53 * hash) + getSegmentSpanId().hashCode();
-      hash = (37 * hash) + SEGMENTPARENTSPANID_FIELD_NUMBER;
-      hash = (53 * hash) + getSegmentParentSpanId().hashCode();
       hash = (29 * hash) + unknownFields.hashCode();
       memoizedHashCode = hash;
       return hash;
@@ -24154,8 +23786,6 @@ public final class QueryProto {
         super.clear();
         traceId_ = "";
 
-        segmentId_ = "";
-
         spanId_ = "";
 
         parentSpanId_ = "";
@@ -24200,10 +23830,6 @@ public final class QueryProto {
         }
         isRoot_ = false;
 
-        segmentSpanId_ = "";
-
-        segmentParentSpanId_ = "";
-
         return this;
       }
 
@@ -24232,7 +23858,6 @@ public final class QueryProto {
             new io.holoinsight.server.query.grpc.QueryProto.Span(this);
         int from_bitField0_ = bitField0_;
         result.traceId_ = traceId_;
-        result.segmentId_ = segmentId_;
         result.spanId_ = spanId_;
         result.parentSpanId_ = parentSpanId_;
         if (refsBuilder_ == null) {
@@ -24273,8 +23898,6 @@ public final class QueryProto {
           result.logs_ = logsBuilder_.build();
         }
         result.isRoot_ = isRoot_;
-        result.segmentSpanId_ = segmentSpanId_;
-        result.segmentParentSpanId_ = segmentParentSpanId_;
         onBuilt();
         return result;
       }
@@ -24327,10 +23950,6 @@ public final class QueryProto {
           return this;
         if (!other.getTraceId().isEmpty()) {
           traceId_ = other.traceId_;
-          onChanged();
-        }
-        if (!other.getSegmentId().isEmpty()) {
-          segmentId_ = other.segmentId_;
           onChanged();
         }
         if (!other.getSpanId().isEmpty()) {
@@ -24459,14 +24078,6 @@ public final class QueryProto {
         if (other.getIsRoot() != false) {
           setIsRoot(other.getIsRoot());
         }
-        if (!other.getSegmentSpanId().isEmpty()) {
-          segmentSpanId_ = other.segmentSpanId_;
-          onChanged();
-        }
-        if (!other.getSegmentParentSpanId().isEmpty()) {
-          segmentParentSpanId_ = other.segmentParentSpanId_;
-          onChanged();
-        }
         this.mergeUnknownFields(other.unknownFields);
         onChanged();
         return this;
@@ -24578,91 +24189,10 @@ public final class QueryProto {
         return this;
       }
 
-      private java.lang.Object segmentId_ = "";
-
-      /**
-       * <code>string segmentId = 2;</code>
-       * 
-       * @return The segmentId.
-       */
-      public java.lang.String getSegmentId() {
-        java.lang.Object ref = segmentId_;
-        if (!(ref instanceof java.lang.String)) {
-          com.google.protobuf.ByteString bs = (com.google.protobuf.ByteString) ref;
-          java.lang.String s = bs.toStringUtf8();
-          segmentId_ = s;
-          return s;
-        } else {
-          return (java.lang.String) ref;
-        }
-      }
-
-      /**
-       * <code>string segmentId = 2;</code>
-       * 
-       * @return The bytes for segmentId.
-       */
-      public com.google.protobuf.ByteString getSegmentIdBytes() {
-        java.lang.Object ref = segmentId_;
-        if (ref instanceof String) {
-          com.google.protobuf.ByteString b =
-              com.google.protobuf.ByteString.copyFromUtf8((java.lang.String) ref);
-          segmentId_ = b;
-          return b;
-        } else {
-          return (com.google.protobuf.ByteString) ref;
-        }
-      }
-
-      /**
-       * <code>string segmentId = 2;</code>
-       * 
-       * @param value The segmentId to set.
-       * @return This builder for chaining.
-       */
-      public Builder setSegmentId(java.lang.String value) {
-        if (value == null) {
-          throw new NullPointerException();
-        }
-
-        segmentId_ = value;
-        onChanged();
-        return this;
-      }
-
-      /**
-       * <code>string segmentId = 2;</code>
-       * 
-       * @return This builder for chaining.
-       */
-      public Builder clearSegmentId() {
-
-        segmentId_ = getDefaultInstance().getSegmentId();
-        onChanged();
-        return this;
-      }
-
-      /**
-       * <code>string segmentId = 2;</code>
-       * 
-       * @param value The bytes for segmentId to set.
-       * @return This builder for chaining.
-       */
-      public Builder setSegmentIdBytes(com.google.protobuf.ByteString value) {
-        if (value == null) {
-          throw new NullPointerException();
-        }
-        checkByteStringIsUtf8(value);
-
-        segmentId_ = value;
-        onChanged();
-        return this;
-      }
-
       private java.lang.Object spanId_ = "";
 
       /**
-       * <code>string spanId = 3;</code>
+       * <code>string spanId = 2;</code>
        * 
        * @return The spanId.
        */
@@ -24679,7 +24209,7 @@ public final class QueryProto {
       }
 
       /**
-       * <code>string spanId = 3;</code>
+       * <code>string spanId = 2;</code>
        * 
        * @return The bytes for spanId.
        */
@@ -24696,7 +24226,7 @@ public final class QueryProto {
       }
 
       /**
-       * <code>string spanId = 3;</code>
+       * <code>string spanId = 2;</code>
        * 
        * @param value The spanId to set.
        * @return This builder for chaining.
@@ -24712,7 +24242,7 @@ public final class QueryProto {
       }
 
       /**
-       * <code>string spanId = 3;</code>
+       * <code>string spanId = 2;</code>
        * 
        * @return This builder for chaining.
        */
@@ -24724,7 +24254,7 @@ public final class QueryProto {
       }
 
       /**
-       * <code>string spanId = 3;</code>
+       * <code>string spanId = 2;</code>
        * 
        * @param value The bytes for spanId to set.
        * @return This builder for chaining.
@@ -24743,7 +24273,7 @@ public final class QueryProto {
       private java.lang.Object parentSpanId_ = "";
 
       /**
-       * <code>string parentSpanId = 4;</code>
+       * <code>string parentSpanId = 3;</code>
        * 
        * @return The parentSpanId.
        */
@@ -24760,7 +24290,7 @@ public final class QueryProto {
       }
 
       /**
-       * <code>string parentSpanId = 4;</code>
+       * <code>string parentSpanId = 3;</code>
        * 
        * @return The bytes for parentSpanId.
        */
@@ -24777,7 +24307,7 @@ public final class QueryProto {
       }
 
       /**
-       * <code>string parentSpanId = 4;</code>
+       * <code>string parentSpanId = 3;</code>
        * 
        * @param value The parentSpanId to set.
        * @return This builder for chaining.
@@ -24793,7 +24323,7 @@ public final class QueryProto {
       }
 
       /**
-       * <code>string parentSpanId = 4;</code>
+       * <code>string parentSpanId = 3;</code>
        * 
        * @return This builder for chaining.
        */
@@ -24805,7 +24335,7 @@ public final class QueryProto {
       }
 
       /**
-       * <code>string parentSpanId = 4;</code>
+       * <code>string parentSpanId = 3;</code>
        * 
        * @param value The bytes for parentSpanId to set.
        * @return This builder for chaining.
@@ -24834,7 +24364,7 @@ public final class QueryProto {
       private com.google.protobuf.RepeatedFieldBuilderV3<io.holoinsight.server.query.grpc.QueryProto.Ref, io.holoinsight.server.query.grpc.QueryProto.Ref.Builder, io.holoinsight.server.query.grpc.QueryProto.RefOrBuilder> refsBuilder_;
 
       /**
-       * <code>repeated .io.holoinsight.server.query.grpc.Ref refs = 5;</code>
+       * <code>repeated .io.holoinsight.server.query.grpc.Ref refs = 4;</code>
        */
       public java.util.List<io.holoinsight.server.query.grpc.QueryProto.Ref> getRefsList() {
         if (refsBuilder_ == null) {
@@ -24845,7 +24375,7 @@ public final class QueryProto {
       }
 
       /**
-       * <code>repeated .io.holoinsight.server.query.grpc.Ref refs = 5;</code>
+       * <code>repeated .io.holoinsight.server.query.grpc.Ref refs = 4;</code>
        */
       public int getRefsCount() {
         if (refsBuilder_ == null) {
@@ -24856,7 +24386,7 @@ public final class QueryProto {
       }
 
       /**
-       * <code>repeated .io.holoinsight.server.query.grpc.Ref refs = 5;</code>
+       * <code>repeated .io.holoinsight.server.query.grpc.Ref refs = 4;</code>
        */
       public io.holoinsight.server.query.grpc.QueryProto.Ref getRefs(int index) {
         if (refsBuilder_ == null) {
@@ -24867,7 +24397,7 @@ public final class QueryProto {
       }
 
       /**
-       * <code>repeated .io.holoinsight.server.query.grpc.Ref refs = 5;</code>
+       * <code>repeated .io.holoinsight.server.query.grpc.Ref refs = 4;</code>
        */
       public Builder setRefs(int index, io.holoinsight.server.query.grpc.QueryProto.Ref value) {
         if (refsBuilder_ == null) {
@@ -24884,7 +24414,7 @@ public final class QueryProto {
       }
 
       /**
-       * <code>repeated .io.holoinsight.server.query.grpc.Ref refs = 5;</code>
+       * <code>repeated .io.holoinsight.server.query.grpc.Ref refs = 4;</code>
        */
       public Builder setRefs(int index,
           io.holoinsight.server.query.grpc.QueryProto.Ref.Builder builderForValue) {
@@ -24899,7 +24429,7 @@ public final class QueryProto {
       }
 
       /**
-       * <code>repeated .io.holoinsight.server.query.grpc.Ref refs = 5;</code>
+       * <code>repeated .io.holoinsight.server.query.grpc.Ref refs = 4;</code>
        */
       public Builder addRefs(io.holoinsight.server.query.grpc.QueryProto.Ref value) {
         if (refsBuilder_ == null) {
@@ -24916,7 +24446,7 @@ public final class QueryProto {
       }
 
       /**
-       * <code>repeated .io.holoinsight.server.query.grpc.Ref refs = 5;</code>
+       * <code>repeated .io.holoinsight.server.query.grpc.Ref refs = 4;</code>
        */
       public Builder addRefs(int index, io.holoinsight.server.query.grpc.QueryProto.Ref value) {
         if (refsBuilder_ == null) {
@@ -24933,7 +24463,7 @@ public final class QueryProto {
       }
 
       /**
-       * <code>repeated .io.holoinsight.server.query.grpc.Ref refs = 5;</code>
+       * <code>repeated .io.holoinsight.server.query.grpc.Ref refs = 4;</code>
        */
       public Builder addRefs(
           io.holoinsight.server.query.grpc.QueryProto.Ref.Builder builderForValue) {
@@ -24948,7 +24478,7 @@ public final class QueryProto {
       }
 
       /**
-       * <code>repeated .io.holoinsight.server.query.grpc.Ref refs = 5;</code>
+       * <code>repeated .io.holoinsight.server.query.grpc.Ref refs = 4;</code>
        */
       public Builder addRefs(int index,
           io.holoinsight.server.query.grpc.QueryProto.Ref.Builder builderForValue) {
@@ -24963,7 +24493,7 @@ public final class QueryProto {
       }
 
       /**
-       * <code>repeated .io.holoinsight.server.query.grpc.Ref refs = 5;</code>
+       * <code>repeated .io.holoinsight.server.query.grpc.Ref refs = 4;</code>
        */
       public Builder addAllRefs(
           java.lang.Iterable<? extends io.holoinsight.server.query.grpc.QueryProto.Ref> values) {
@@ -24978,7 +24508,7 @@ public final class QueryProto {
       }
 
       /**
-       * <code>repeated .io.holoinsight.server.query.grpc.Ref refs = 5;</code>
+       * <code>repeated .io.holoinsight.server.query.grpc.Ref refs = 4;</code>
        */
       public Builder clearRefs() {
         if (refsBuilder_ == null) {
@@ -24992,7 +24522,7 @@ public final class QueryProto {
       }
 
       /**
-       * <code>repeated .io.holoinsight.server.query.grpc.Ref refs = 5;</code>
+       * <code>repeated .io.holoinsight.server.query.grpc.Ref refs = 4;</code>
        */
       public Builder removeRefs(int index) {
         if (refsBuilder_ == null) {
@@ -25006,14 +24536,14 @@ public final class QueryProto {
       }
 
       /**
-       * <code>repeated .io.holoinsight.server.query.grpc.Ref refs = 5;</code>
+       * <code>repeated .io.holoinsight.server.query.grpc.Ref refs = 4;</code>
        */
       public io.holoinsight.server.query.grpc.QueryProto.Ref.Builder getRefsBuilder(int index) {
         return getRefsFieldBuilder().getBuilder(index);
       }
 
       /**
-       * <code>repeated .io.holoinsight.server.query.grpc.Ref refs = 5;</code>
+       * <code>repeated .io.holoinsight.server.query.grpc.Ref refs = 4;</code>
        */
       public io.holoinsight.server.query.grpc.QueryProto.RefOrBuilder getRefsOrBuilder(int index) {
         if (refsBuilder_ == null) {
@@ -25024,7 +24554,7 @@ public final class QueryProto {
       }
 
       /**
-       * <code>repeated .io.holoinsight.server.query.grpc.Ref refs = 5;</code>
+       * <code>repeated .io.holoinsight.server.query.grpc.Ref refs = 4;</code>
        */
       public java.util.List<? extends io.holoinsight.server.query.grpc.QueryProto.RefOrBuilder> getRefsOrBuilderList() {
         if (refsBuilder_ != null) {
@@ -25035,7 +24565,7 @@ public final class QueryProto {
       }
 
       /**
-       * <code>repeated .io.holoinsight.server.query.grpc.Ref refs = 5;</code>
+       * <code>repeated .io.holoinsight.server.query.grpc.Ref refs = 4;</code>
        */
       public io.holoinsight.server.query.grpc.QueryProto.Ref.Builder addRefsBuilder() {
         return getRefsFieldBuilder()
@@ -25043,7 +24573,7 @@ public final class QueryProto {
       }
 
       /**
-       * <code>repeated .io.holoinsight.server.query.grpc.Ref refs = 5;</code>
+       * <code>repeated .io.holoinsight.server.query.grpc.Ref refs = 4;</code>
        */
       public io.holoinsight.server.query.grpc.QueryProto.Ref.Builder addRefsBuilder(int index) {
         return getRefsFieldBuilder().addBuilder(index,
@@ -25051,7 +24581,7 @@ public final class QueryProto {
       }
 
       /**
-       * <code>repeated .io.holoinsight.server.query.grpc.Ref refs = 5;</code>
+       * <code>repeated .io.holoinsight.server.query.grpc.Ref refs = 4;</code>
        */
       public java.util.List<io.holoinsight.server.query.grpc.QueryProto.Ref.Builder> getRefsBuilderList() {
         return getRefsFieldBuilder().getBuilderList();
@@ -25070,7 +24600,7 @@ public final class QueryProto {
       private java.lang.Object serviceCode_ = "";
 
       /**
-       * <code>string serviceCode = 6;</code>
+       * <code>string serviceCode = 5;</code>
        * 
        * @return The serviceCode.
        */
@@ -25087,7 +24617,7 @@ public final class QueryProto {
       }
 
       /**
-       * <code>string serviceCode = 6;</code>
+       * <code>string serviceCode = 5;</code>
        * 
        * @return The bytes for serviceCode.
        */
@@ -25104,7 +24634,7 @@ public final class QueryProto {
       }
 
       /**
-       * <code>string serviceCode = 6;</code>
+       * <code>string serviceCode = 5;</code>
        * 
        * @param value The serviceCode to set.
        * @return This builder for chaining.
@@ -25120,7 +24650,7 @@ public final class QueryProto {
       }
 
       /**
-       * <code>string serviceCode = 6;</code>
+       * <code>string serviceCode = 5;</code>
        * 
        * @return This builder for chaining.
        */
@@ -25132,7 +24662,7 @@ public final class QueryProto {
       }
 
       /**
-       * <code>string serviceCode = 6;</code>
+       * <code>string serviceCode = 5;</code>
        * 
        * @param value The bytes for serviceCode to set.
        * @return This builder for chaining.
@@ -25151,7 +24681,7 @@ public final class QueryProto {
       private java.lang.Object serviceInstanceName_ = "";
 
       /**
-       * <code>string serviceInstanceName = 7;</code>
+       * <code>string serviceInstanceName = 6;</code>
        * 
        * @return The serviceInstanceName.
        */
@@ -25168,7 +24698,7 @@ public final class QueryProto {
       }
 
       /**
-       * <code>string serviceInstanceName = 7;</code>
+       * <code>string serviceInstanceName = 6;</code>
        * 
        * @return The bytes for serviceInstanceName.
        */
@@ -25185,7 +24715,7 @@ public final class QueryProto {
       }
 
       /**
-       * <code>string serviceInstanceName = 7;</code>
+       * <code>string serviceInstanceName = 6;</code>
        * 
        * @param value The serviceInstanceName to set.
        * @return This builder for chaining.
@@ -25201,7 +24731,7 @@ public final class QueryProto {
       }
 
       /**
-       * <code>string serviceInstanceName = 7;</code>
+       * <code>string serviceInstanceName = 6;</code>
        * 
        * @return This builder for chaining.
        */
@@ -25213,7 +24743,7 @@ public final class QueryProto {
       }
 
       /**
-       * <code>string serviceInstanceName = 7;</code>
+       * <code>string serviceInstanceName = 6;</code>
        * 
        * @param value The bytes for serviceInstanceName to set.
        * @return This builder for chaining.
@@ -25232,7 +24762,7 @@ public final class QueryProto {
       private long startTime_;
 
       /**
-       * <code>int64 startTime = 8;</code>
+       * <code>int64 startTime = 7;</code>
        * 
        * @return The startTime.
        */
@@ -25242,7 +24772,7 @@ public final class QueryProto {
       }
 
       /**
-       * <code>int64 startTime = 8;</code>
+       * <code>int64 startTime = 7;</code>
        * 
        * @param value The startTime to set.
        * @return This builder for chaining.
@@ -25255,7 +24785,7 @@ public final class QueryProto {
       }
 
       /**
-       * <code>int64 startTime = 8;</code>
+       * <code>int64 startTime = 7;</code>
        * 
        * @return This builder for chaining.
        */
@@ -25269,7 +24799,7 @@ public final class QueryProto {
       private long endTime_;
 
       /**
-       * <code>int64 endTime = 9;</code>
+       * <code>int64 endTime = 8;</code>
        * 
        * @return The endTime.
        */
@@ -25279,7 +24809,7 @@ public final class QueryProto {
       }
 
       /**
-       * <code>int64 endTime = 9;</code>
+       * <code>int64 endTime = 8;</code>
        * 
        * @param value The endTime to set.
        * @return This builder for chaining.
@@ -25292,7 +24822,7 @@ public final class QueryProto {
       }
 
       /**
-       * <code>int64 endTime = 9;</code>
+       * <code>int64 endTime = 8;</code>
        * 
        * @return This builder for chaining.
        */
@@ -25306,7 +24836,7 @@ public final class QueryProto {
       private java.lang.Object endpointName_ = "";
 
       /**
-       * <code>string endpointName = 10;</code>
+       * <code>string endpointName = 9;</code>
        * 
        * @return The endpointName.
        */
@@ -25323,7 +24853,7 @@ public final class QueryProto {
       }
 
       /**
-       * <code>string endpointName = 10;</code>
+       * <code>string endpointName = 9;</code>
        * 
        * @return The bytes for endpointName.
        */
@@ -25340,7 +24870,7 @@ public final class QueryProto {
       }
 
       /**
-       * <code>string endpointName = 10;</code>
+       * <code>string endpointName = 9;</code>
        * 
        * @param value The endpointName to set.
        * @return This builder for chaining.
@@ -25356,7 +24886,7 @@ public final class QueryProto {
       }
 
       /**
-       * <code>string endpointName = 10;</code>
+       * <code>string endpointName = 9;</code>
        * 
        * @return This builder for chaining.
        */
@@ -25368,7 +24898,7 @@ public final class QueryProto {
       }
 
       /**
-       * <code>string endpointName = 10;</code>
+       * <code>string endpointName = 9;</code>
        * 
        * @param value The bytes for endpointName to set.
        * @return This builder for chaining.
@@ -25387,7 +24917,7 @@ public final class QueryProto {
       private java.lang.Object type_ = "";
 
       /**
-       * <code>string type = 11;</code>
+       * <code>string type = 10;</code>
        * 
        * @return The type.
        */
@@ -25404,7 +24934,7 @@ public final class QueryProto {
       }
 
       /**
-       * <code>string type = 11;</code>
+       * <code>string type = 10;</code>
        * 
        * @return The bytes for type.
        */
@@ -25421,7 +24951,7 @@ public final class QueryProto {
       }
 
       /**
-       * <code>string type = 11;</code>
+       * <code>string type = 10;</code>
        * 
        * @param value The type to set.
        * @return This builder for chaining.
@@ -25437,7 +24967,7 @@ public final class QueryProto {
       }
 
       /**
-       * <code>string type = 11;</code>
+       * <code>string type = 10;</code>
        * 
        * @return This builder for chaining.
        */
@@ -25449,7 +24979,7 @@ public final class QueryProto {
       }
 
       /**
-       * <code>string type = 11;</code>
+       * <code>string type = 10;</code>
        * 
        * @param value The bytes for type to set.
        * @return This builder for chaining.
@@ -25468,7 +24998,7 @@ public final class QueryProto {
       private java.lang.Object peer_ = "";
 
       /**
-       * <code>string peer = 12;</code>
+       * <code>string peer = 11;</code>
        * 
        * @return The peer.
        */
@@ -25485,7 +25015,7 @@ public final class QueryProto {
       }
 
       /**
-       * <code>string peer = 12;</code>
+       * <code>string peer = 11;</code>
        * 
        * @return The bytes for peer.
        */
@@ -25502,7 +25032,7 @@ public final class QueryProto {
       }
 
       /**
-       * <code>string peer = 12;</code>
+       * <code>string peer = 11;</code>
        * 
        * @param value The peer to set.
        * @return This builder for chaining.
@@ -25518,7 +25048,7 @@ public final class QueryProto {
       }
 
       /**
-       * <code>string peer = 12;</code>
+       * <code>string peer = 11;</code>
        * 
        * @return This builder for chaining.
        */
@@ -25530,7 +25060,7 @@ public final class QueryProto {
       }
 
       /**
-       * <code>string peer = 12;</code>
+       * <code>string peer = 11;</code>
        * 
        * @param value The bytes for peer to set.
        * @return This builder for chaining.
@@ -25549,7 +25079,7 @@ public final class QueryProto {
       private java.lang.Object component_ = "";
 
       /**
-       * <code>string component = 13;</code>
+       * <code>string component = 12;</code>
        * 
        * @return The component.
        */
@@ -25566,7 +25096,7 @@ public final class QueryProto {
       }
 
       /**
-       * <code>string component = 13;</code>
+       * <code>string component = 12;</code>
        * 
        * @return The bytes for component.
        */
@@ -25583,7 +25113,7 @@ public final class QueryProto {
       }
 
       /**
-       * <code>string component = 13;</code>
+       * <code>string component = 12;</code>
        * 
        * @param value The component to set.
        * @return This builder for chaining.
@@ -25599,7 +25129,7 @@ public final class QueryProto {
       }
 
       /**
-       * <code>string component = 13;</code>
+       * <code>string component = 12;</code>
        * 
        * @return This builder for chaining.
        */
@@ -25611,7 +25141,7 @@ public final class QueryProto {
       }
 
       /**
-       * <code>string component = 13;</code>
+       * <code>string component = 12;</code>
        * 
        * @param value The bytes for component to set.
        * @return This builder for chaining.
@@ -25630,7 +25160,7 @@ public final class QueryProto {
       private boolean isError_;
 
       /**
-       * <code>bool isError = 14;</code>
+       * <code>bool isError = 13;</code>
        * 
        * @return The isError.
        */
@@ -25640,7 +25170,7 @@ public final class QueryProto {
       }
 
       /**
-       * <code>bool isError = 14;</code>
+       * <code>bool isError = 13;</code>
        * 
        * @param value The isError to set.
        * @return This builder for chaining.
@@ -25653,7 +25183,7 @@ public final class QueryProto {
       }
 
       /**
-       * <code>bool isError = 14;</code>
+       * <code>bool isError = 13;</code>
        * 
        * @return This builder for chaining.
        */
@@ -25667,7 +25197,7 @@ public final class QueryProto {
       private java.lang.Object layer_ = "";
 
       /**
-       * <code>string layer = 15;</code>
+       * <code>string layer = 14;</code>
        * 
        * @return The layer.
        */
@@ -25684,7 +25214,7 @@ public final class QueryProto {
       }
 
       /**
-       * <code>string layer = 15;</code>
+       * <code>string layer = 14;</code>
        * 
        * @return The bytes for layer.
        */
@@ -25701,7 +25231,7 @@ public final class QueryProto {
       }
 
       /**
-       * <code>string layer = 15;</code>
+       * <code>string layer = 14;</code>
        * 
        * @param value The layer to set.
        * @return This builder for chaining.
@@ -25717,7 +25247,7 @@ public final class QueryProto {
       }
 
       /**
-       * <code>string layer = 15;</code>
+       * <code>string layer = 14;</code>
        * 
        * @return This builder for chaining.
        */
@@ -25729,7 +25259,7 @@ public final class QueryProto {
       }
 
       /**
-       * <code>string layer = 15;</code>
+       * <code>string layer = 14;</code>
        * 
        * @param value The bytes for layer to set.
        * @return This builder for chaining.
@@ -25759,7 +25289,7 @@ public final class QueryProto {
       private com.google.protobuf.RepeatedFieldBuilderV3<io.holoinsight.server.query.grpc.QueryProto.KeyValue, io.holoinsight.server.query.grpc.QueryProto.KeyValue.Builder, io.holoinsight.server.query.grpc.QueryProto.KeyValueOrBuilder> tagsBuilder_;
 
       /**
-       * <code>repeated .io.holoinsight.server.query.grpc.KeyValue tags = 16;</code>
+       * <code>repeated .io.holoinsight.server.query.grpc.KeyValue tags = 15;</code>
        */
       public java.util.List<io.holoinsight.server.query.grpc.QueryProto.KeyValue> getTagsList() {
         if (tagsBuilder_ == null) {
@@ -25770,7 +25300,7 @@ public final class QueryProto {
       }
 
       /**
-       * <code>repeated .io.holoinsight.server.query.grpc.KeyValue tags = 16;</code>
+       * <code>repeated .io.holoinsight.server.query.grpc.KeyValue tags = 15;</code>
        */
       public int getTagsCount() {
         if (tagsBuilder_ == null) {
@@ -25781,7 +25311,7 @@ public final class QueryProto {
       }
 
       /**
-       * <code>repeated .io.holoinsight.server.query.grpc.KeyValue tags = 16;</code>
+       * <code>repeated .io.holoinsight.server.query.grpc.KeyValue tags = 15;</code>
        */
       public io.holoinsight.server.query.grpc.QueryProto.KeyValue getTags(int index) {
         if (tagsBuilder_ == null) {
@@ -25792,7 +25322,7 @@ public final class QueryProto {
       }
 
       /**
-       * <code>repeated .io.holoinsight.server.query.grpc.KeyValue tags = 16;</code>
+       * <code>repeated .io.holoinsight.server.query.grpc.KeyValue tags = 15;</code>
        */
       public Builder setTags(int index,
           io.holoinsight.server.query.grpc.QueryProto.KeyValue value) {
@@ -25810,7 +25340,7 @@ public final class QueryProto {
       }
 
       /**
-       * <code>repeated .io.holoinsight.server.query.grpc.KeyValue tags = 16;</code>
+       * <code>repeated .io.holoinsight.server.query.grpc.KeyValue tags = 15;</code>
        */
       public Builder setTags(int index,
           io.holoinsight.server.query.grpc.QueryProto.KeyValue.Builder builderForValue) {
@@ -25825,7 +25355,7 @@ public final class QueryProto {
       }
 
       /**
-       * <code>repeated .io.holoinsight.server.query.grpc.KeyValue tags = 16;</code>
+       * <code>repeated .io.holoinsight.server.query.grpc.KeyValue tags = 15;</code>
        */
       public Builder addTags(io.holoinsight.server.query.grpc.QueryProto.KeyValue value) {
         if (tagsBuilder_ == null) {
@@ -25842,7 +25372,7 @@ public final class QueryProto {
       }
 
       /**
-       * <code>repeated .io.holoinsight.server.query.grpc.KeyValue tags = 16;</code>
+       * <code>repeated .io.holoinsight.server.query.grpc.KeyValue tags = 15;</code>
        */
       public Builder addTags(int index,
           io.holoinsight.server.query.grpc.QueryProto.KeyValue value) {
@@ -25860,7 +25390,7 @@ public final class QueryProto {
       }
 
       /**
-       * <code>repeated .io.holoinsight.server.query.grpc.KeyValue tags = 16;</code>
+       * <code>repeated .io.holoinsight.server.query.grpc.KeyValue tags = 15;</code>
        */
       public Builder addTags(
           io.holoinsight.server.query.grpc.QueryProto.KeyValue.Builder builderForValue) {
@@ -25875,7 +25405,7 @@ public final class QueryProto {
       }
 
       /**
-       * <code>repeated .io.holoinsight.server.query.grpc.KeyValue tags = 16;</code>
+       * <code>repeated .io.holoinsight.server.query.grpc.KeyValue tags = 15;</code>
        */
       public Builder addTags(int index,
           io.holoinsight.server.query.grpc.QueryProto.KeyValue.Builder builderForValue) {
@@ -25890,7 +25420,7 @@ public final class QueryProto {
       }
 
       /**
-       * <code>repeated .io.holoinsight.server.query.grpc.KeyValue tags = 16;</code>
+       * <code>repeated .io.holoinsight.server.query.grpc.KeyValue tags = 15;</code>
        */
       public Builder addAllTags(
           java.lang.Iterable<? extends io.holoinsight.server.query.grpc.QueryProto.KeyValue> values) {
@@ -25905,7 +25435,7 @@ public final class QueryProto {
       }
 
       /**
-       * <code>repeated .io.holoinsight.server.query.grpc.KeyValue tags = 16;</code>
+       * <code>repeated .io.holoinsight.server.query.grpc.KeyValue tags = 15;</code>
        */
       public Builder clearTags() {
         if (tagsBuilder_ == null) {
@@ -25919,7 +25449,7 @@ public final class QueryProto {
       }
 
       /**
-       * <code>repeated .io.holoinsight.server.query.grpc.KeyValue tags = 16;</code>
+       * <code>repeated .io.holoinsight.server.query.grpc.KeyValue tags = 15;</code>
        */
       public Builder removeTags(int index) {
         if (tagsBuilder_ == null) {
@@ -25933,7 +25463,7 @@ public final class QueryProto {
       }
 
       /**
-       * <code>repeated .io.holoinsight.server.query.grpc.KeyValue tags = 16;</code>
+       * <code>repeated .io.holoinsight.server.query.grpc.KeyValue tags = 15;</code>
        */
       public io.holoinsight.server.query.grpc.QueryProto.KeyValue.Builder getTagsBuilder(
           int index) {
@@ -25941,7 +25471,7 @@ public final class QueryProto {
       }
 
       /**
-       * <code>repeated .io.holoinsight.server.query.grpc.KeyValue tags = 16;</code>
+       * <code>repeated .io.holoinsight.server.query.grpc.KeyValue tags = 15;</code>
        */
       public io.holoinsight.server.query.grpc.QueryProto.KeyValueOrBuilder getTagsOrBuilder(
           int index) {
@@ -25953,7 +25483,7 @@ public final class QueryProto {
       }
 
       /**
-       * <code>repeated .io.holoinsight.server.query.grpc.KeyValue tags = 16;</code>
+       * <code>repeated .io.holoinsight.server.query.grpc.KeyValue tags = 15;</code>
        */
       public java.util.List<? extends io.holoinsight.server.query.grpc.QueryProto.KeyValueOrBuilder> getTagsOrBuilderList() {
         if (tagsBuilder_ != null) {
@@ -25964,7 +25494,7 @@ public final class QueryProto {
       }
 
       /**
-       * <code>repeated .io.holoinsight.server.query.grpc.KeyValue tags = 16;</code>
+       * <code>repeated .io.holoinsight.server.query.grpc.KeyValue tags = 15;</code>
        */
       public io.holoinsight.server.query.grpc.QueryProto.KeyValue.Builder addTagsBuilder() {
         return getTagsFieldBuilder()
@@ -25972,7 +25502,7 @@ public final class QueryProto {
       }
 
       /**
-       * <code>repeated .io.holoinsight.server.query.grpc.KeyValue tags = 16;</code>
+       * <code>repeated .io.holoinsight.server.query.grpc.KeyValue tags = 15;</code>
        */
       public io.holoinsight.server.query.grpc.QueryProto.KeyValue.Builder addTagsBuilder(
           int index) {
@@ -25981,7 +25511,7 @@ public final class QueryProto {
       }
 
       /**
-       * <code>repeated .io.holoinsight.server.query.grpc.KeyValue tags = 16;</code>
+       * <code>repeated .io.holoinsight.server.query.grpc.KeyValue tags = 15;</code>
        */
       public java.util.List<io.holoinsight.server.query.grpc.QueryProto.KeyValue.Builder> getTagsBuilderList() {
         return getTagsFieldBuilder().getBuilderList();
@@ -26011,7 +25541,7 @@ public final class QueryProto {
       private com.google.protobuf.RepeatedFieldBuilderV3<io.holoinsight.server.query.grpc.QueryProto.LogEntity, io.holoinsight.server.query.grpc.QueryProto.LogEntity.Builder, io.holoinsight.server.query.grpc.QueryProto.LogEntityOrBuilder> logsBuilder_;
 
       /**
-       * <code>repeated .io.holoinsight.server.query.grpc.LogEntity logs = 17;</code>
+       * <code>repeated .io.holoinsight.server.query.grpc.LogEntity logs = 16;</code>
        */
       public java.util.List<io.holoinsight.server.query.grpc.QueryProto.LogEntity> getLogsList() {
         if (logsBuilder_ == null) {
@@ -26022,7 +25552,7 @@ public final class QueryProto {
       }
 
       /**
-       * <code>repeated .io.holoinsight.server.query.grpc.LogEntity logs = 17;</code>
+       * <code>repeated .io.holoinsight.server.query.grpc.LogEntity logs = 16;</code>
        */
       public int getLogsCount() {
         if (logsBuilder_ == null) {
@@ -26033,7 +25563,7 @@ public final class QueryProto {
       }
 
       /**
-       * <code>repeated .io.holoinsight.server.query.grpc.LogEntity logs = 17;</code>
+       * <code>repeated .io.holoinsight.server.query.grpc.LogEntity logs = 16;</code>
        */
       public io.holoinsight.server.query.grpc.QueryProto.LogEntity getLogs(int index) {
         if (logsBuilder_ == null) {
@@ -26044,7 +25574,7 @@ public final class QueryProto {
       }
 
       /**
-       * <code>repeated .io.holoinsight.server.query.grpc.LogEntity logs = 17;</code>
+       * <code>repeated .io.holoinsight.server.query.grpc.LogEntity logs = 16;</code>
        */
       public Builder setLogs(int index,
           io.holoinsight.server.query.grpc.QueryProto.LogEntity value) {
@@ -26062,7 +25592,7 @@ public final class QueryProto {
       }
 
       /**
-       * <code>repeated .io.holoinsight.server.query.grpc.LogEntity logs = 17;</code>
+       * <code>repeated .io.holoinsight.server.query.grpc.LogEntity logs = 16;</code>
        */
       public Builder setLogs(int index,
           io.holoinsight.server.query.grpc.QueryProto.LogEntity.Builder builderForValue) {
@@ -26077,7 +25607,7 @@ public final class QueryProto {
       }
 
       /**
-       * <code>repeated .io.holoinsight.server.query.grpc.LogEntity logs = 17;</code>
+       * <code>repeated .io.holoinsight.server.query.grpc.LogEntity logs = 16;</code>
        */
       public Builder addLogs(io.holoinsight.server.query.grpc.QueryProto.LogEntity value) {
         if (logsBuilder_ == null) {
@@ -26094,7 +25624,7 @@ public final class QueryProto {
       }
 
       /**
-       * <code>repeated .io.holoinsight.server.query.grpc.LogEntity logs = 17;</code>
+       * <code>repeated .io.holoinsight.server.query.grpc.LogEntity logs = 16;</code>
        */
       public Builder addLogs(int index,
           io.holoinsight.server.query.grpc.QueryProto.LogEntity value) {
@@ -26112,7 +25642,7 @@ public final class QueryProto {
       }
 
       /**
-       * <code>repeated .io.holoinsight.server.query.grpc.LogEntity logs = 17;</code>
+       * <code>repeated .io.holoinsight.server.query.grpc.LogEntity logs = 16;</code>
        */
       public Builder addLogs(
           io.holoinsight.server.query.grpc.QueryProto.LogEntity.Builder builderForValue) {
@@ -26127,7 +25657,7 @@ public final class QueryProto {
       }
 
       /**
-       * <code>repeated .io.holoinsight.server.query.grpc.LogEntity logs = 17;</code>
+       * <code>repeated .io.holoinsight.server.query.grpc.LogEntity logs = 16;</code>
        */
       public Builder addLogs(int index,
           io.holoinsight.server.query.grpc.QueryProto.LogEntity.Builder builderForValue) {
@@ -26142,7 +25672,7 @@ public final class QueryProto {
       }
 
       /**
-       * <code>repeated .io.holoinsight.server.query.grpc.LogEntity logs = 17;</code>
+       * <code>repeated .io.holoinsight.server.query.grpc.LogEntity logs = 16;</code>
        */
       public Builder addAllLogs(
           java.lang.Iterable<? extends io.holoinsight.server.query.grpc.QueryProto.LogEntity> values) {
@@ -26157,7 +25687,7 @@ public final class QueryProto {
       }
 
       /**
-       * <code>repeated .io.holoinsight.server.query.grpc.LogEntity logs = 17;</code>
+       * <code>repeated .io.holoinsight.server.query.grpc.LogEntity logs = 16;</code>
        */
       public Builder clearLogs() {
         if (logsBuilder_ == null) {
@@ -26171,7 +25701,7 @@ public final class QueryProto {
       }
 
       /**
-       * <code>repeated .io.holoinsight.server.query.grpc.LogEntity logs = 17;</code>
+       * <code>repeated .io.holoinsight.server.query.grpc.LogEntity logs = 16;</code>
        */
       public Builder removeLogs(int index) {
         if (logsBuilder_ == null) {
@@ -26185,7 +25715,7 @@ public final class QueryProto {
       }
 
       /**
-       * <code>repeated .io.holoinsight.server.query.grpc.LogEntity logs = 17;</code>
+       * <code>repeated .io.holoinsight.server.query.grpc.LogEntity logs = 16;</code>
        */
       public io.holoinsight.server.query.grpc.QueryProto.LogEntity.Builder getLogsBuilder(
           int index) {
@@ -26193,7 +25723,7 @@ public final class QueryProto {
       }
 
       /**
-       * <code>repeated .io.holoinsight.server.query.grpc.LogEntity logs = 17;</code>
+       * <code>repeated .io.holoinsight.server.query.grpc.LogEntity logs = 16;</code>
        */
       public io.holoinsight.server.query.grpc.QueryProto.LogEntityOrBuilder getLogsOrBuilder(
           int index) {
@@ -26205,7 +25735,7 @@ public final class QueryProto {
       }
 
       /**
-       * <code>repeated .io.holoinsight.server.query.grpc.LogEntity logs = 17;</code>
+       * <code>repeated .io.holoinsight.server.query.grpc.LogEntity logs = 16;</code>
        */
       public java.util.List<? extends io.holoinsight.server.query.grpc.QueryProto.LogEntityOrBuilder> getLogsOrBuilderList() {
         if (logsBuilder_ != null) {
@@ -26216,7 +25746,7 @@ public final class QueryProto {
       }
 
       /**
-       * <code>repeated .io.holoinsight.server.query.grpc.LogEntity logs = 17;</code>
+       * <code>repeated .io.holoinsight.server.query.grpc.LogEntity logs = 16;</code>
        */
       public io.holoinsight.server.query.grpc.QueryProto.LogEntity.Builder addLogsBuilder() {
         return getLogsFieldBuilder()
@@ -26224,7 +25754,7 @@ public final class QueryProto {
       }
 
       /**
-       * <code>repeated .io.holoinsight.server.query.grpc.LogEntity logs = 17;</code>
+       * <code>repeated .io.holoinsight.server.query.grpc.LogEntity logs = 16;</code>
        */
       public io.holoinsight.server.query.grpc.QueryProto.LogEntity.Builder addLogsBuilder(
           int index) {
@@ -26233,7 +25763,7 @@ public final class QueryProto {
       }
 
       /**
-       * <code>repeated .io.holoinsight.server.query.grpc.LogEntity logs = 17;</code>
+       * <code>repeated .io.holoinsight.server.query.grpc.LogEntity logs = 16;</code>
        */
       public java.util.List<io.holoinsight.server.query.grpc.QueryProto.LogEntity.Builder> getLogsBuilderList() {
         return getLogsFieldBuilder().getBuilderList();
@@ -26252,7 +25782,7 @@ public final class QueryProto {
       private boolean isRoot_;
 
       /**
-       * <code>bool isRoot = 18;</code>
+       * <code>bool isRoot = 17;</code>
        * 
        * @return The isRoot.
        */
@@ -26262,7 +25792,7 @@ public final class QueryProto {
       }
 
       /**
-       * <code>bool isRoot = 18;</code>
+       * <code>bool isRoot = 17;</code>
        * 
        * @param value The isRoot to set.
        * @return This builder for chaining.
@@ -26275,175 +25805,13 @@ public final class QueryProto {
       }
 
       /**
-       * <code>bool isRoot = 18;</code>
+       * <code>bool isRoot = 17;</code>
        * 
        * @return This builder for chaining.
        */
       public Builder clearIsRoot() {
 
         isRoot_ = false;
-        onChanged();
-        return this;
-      }
-
-      private java.lang.Object segmentSpanId_ = "";
-
-      /**
-       * <code>string segmentSpanId = 19;</code>
-       * 
-       * @return The segmentSpanId.
-       */
-      public java.lang.String getSegmentSpanId() {
-        java.lang.Object ref = segmentSpanId_;
-        if (!(ref instanceof java.lang.String)) {
-          com.google.protobuf.ByteString bs = (com.google.protobuf.ByteString) ref;
-          java.lang.String s = bs.toStringUtf8();
-          segmentSpanId_ = s;
-          return s;
-        } else {
-          return (java.lang.String) ref;
-        }
-      }
-
-      /**
-       * <code>string segmentSpanId = 19;</code>
-       * 
-       * @return The bytes for segmentSpanId.
-       */
-      public com.google.protobuf.ByteString getSegmentSpanIdBytes() {
-        java.lang.Object ref = segmentSpanId_;
-        if (ref instanceof String) {
-          com.google.protobuf.ByteString b =
-              com.google.protobuf.ByteString.copyFromUtf8((java.lang.String) ref);
-          segmentSpanId_ = b;
-          return b;
-        } else {
-          return (com.google.protobuf.ByteString) ref;
-        }
-      }
-
-      /**
-       * <code>string segmentSpanId = 19;</code>
-       * 
-       * @param value The segmentSpanId to set.
-       * @return This builder for chaining.
-       */
-      public Builder setSegmentSpanId(java.lang.String value) {
-        if (value == null) {
-          throw new NullPointerException();
-        }
-
-        segmentSpanId_ = value;
-        onChanged();
-        return this;
-      }
-
-      /**
-       * <code>string segmentSpanId = 19;</code>
-       * 
-       * @return This builder for chaining.
-       */
-      public Builder clearSegmentSpanId() {
-
-        segmentSpanId_ = getDefaultInstance().getSegmentSpanId();
-        onChanged();
-        return this;
-      }
-
-      /**
-       * <code>string segmentSpanId = 19;</code>
-       * 
-       * @param value The bytes for segmentSpanId to set.
-       * @return This builder for chaining.
-       */
-      public Builder setSegmentSpanIdBytes(com.google.protobuf.ByteString value) {
-        if (value == null) {
-          throw new NullPointerException();
-        }
-        checkByteStringIsUtf8(value);
-
-        segmentSpanId_ = value;
-        onChanged();
-        return this;
-      }
-
-      private java.lang.Object segmentParentSpanId_ = "";
-
-      /**
-       * <code>string segmentParentSpanId = 20;</code>
-       * 
-       * @return The segmentParentSpanId.
-       */
-      public java.lang.String getSegmentParentSpanId() {
-        java.lang.Object ref = segmentParentSpanId_;
-        if (!(ref instanceof java.lang.String)) {
-          com.google.protobuf.ByteString bs = (com.google.protobuf.ByteString) ref;
-          java.lang.String s = bs.toStringUtf8();
-          segmentParentSpanId_ = s;
-          return s;
-        } else {
-          return (java.lang.String) ref;
-        }
-      }
-
-      /**
-       * <code>string segmentParentSpanId = 20;</code>
-       * 
-       * @return The bytes for segmentParentSpanId.
-       */
-      public com.google.protobuf.ByteString getSegmentParentSpanIdBytes() {
-        java.lang.Object ref = segmentParentSpanId_;
-        if (ref instanceof String) {
-          com.google.protobuf.ByteString b =
-              com.google.protobuf.ByteString.copyFromUtf8((java.lang.String) ref);
-          segmentParentSpanId_ = b;
-          return b;
-        } else {
-          return (com.google.protobuf.ByteString) ref;
-        }
-      }
-
-      /**
-       * <code>string segmentParentSpanId = 20;</code>
-       * 
-       * @param value The segmentParentSpanId to set.
-       * @return This builder for chaining.
-       */
-      public Builder setSegmentParentSpanId(java.lang.String value) {
-        if (value == null) {
-          throw new NullPointerException();
-        }
-
-        segmentParentSpanId_ = value;
-        onChanged();
-        return this;
-      }
-
-      /**
-       * <code>string segmentParentSpanId = 20;</code>
-       * 
-       * @return This builder for chaining.
-       */
-      public Builder clearSegmentParentSpanId() {
-
-        segmentParentSpanId_ = getDefaultInstance().getSegmentParentSpanId();
-        onChanged();
-        return this;
-      }
-
-      /**
-       * <code>string segmentParentSpanId = 20;</code>
-       * 
-       * @param value The bytes for segmentParentSpanId to set.
-       * @return This builder for chaining.
-       */
-      public Builder setSegmentParentSpanIdBytes(com.google.protobuf.ByteString value) {
-        if (value == null) {
-          throw new NullPointerException();
-        }
-        checkByteStringIsUtf8(value);
-
-        segmentParentSpanId_ = value;
         onChanged();
         return this;
       }
@@ -28161,28 +27529,14 @@ public final class QueryProto {
     com.google.protobuf.ByteString getTraceIdBytes();
 
     /**
-     * <code>string parentSegmentId = 2;</code>
-     * 
-     * @return The parentSegmentId.
-     */
-    java.lang.String getParentSegmentId();
-
-    /**
-     * <code>string parentSegmentId = 2;</code>
-     * 
-     * @return The bytes for parentSegmentId.
-     */
-    com.google.protobuf.ByteString getParentSegmentIdBytes();
-
-    /**
-     * <code>string parentSpanId = 3;</code>
+     * <code>string parentSpanId = 2;</code>
      * 
      * @return The parentSpanId.
      */
     java.lang.String getParentSpanId();
 
     /**
-     * <code>string parentSpanId = 3;</code>
+     * <code>string parentSpanId = 2;</code>
      * 
      * @return The bytes for parentSpanId.
      */
@@ -28217,7 +27571,6 @@ public final class QueryProto {
 
     private Ref() {
       traceId_ = "";
-      parentSegmentId_ = "";
       parentSpanId_ = "";
       type_ = "";
     }
@@ -28257,12 +27610,6 @@ public final class QueryProto {
               break;
             }
             case 18: {
-              java.lang.String s = input.readStringRequireUtf8();
-
-              parentSegmentId_ = s;
-              break;
-            }
-            case 26: {
               java.lang.String s = input.readStringRequireUtf8();
 
               parentSpanId_ = s;
@@ -28342,50 +27689,11 @@ public final class QueryProto {
       }
     }
 
-    public static final int PARENTSEGMENTID_FIELD_NUMBER = 2;
-    private volatile java.lang.Object parentSegmentId_;
-
-    /**
-     * <code>string parentSegmentId = 2;</code>
-     * 
-     * @return The parentSegmentId.
-     */
-    @java.lang.Override
-    public java.lang.String getParentSegmentId() {
-      java.lang.Object ref = parentSegmentId_;
-      if (ref instanceof java.lang.String) {
-        return (java.lang.String) ref;
-      } else {
-        com.google.protobuf.ByteString bs = (com.google.protobuf.ByteString) ref;
-        java.lang.String s = bs.toStringUtf8();
-        parentSegmentId_ = s;
-        return s;
-      }
-    }
-
-    /**
-     * <code>string parentSegmentId = 2;</code>
-     * 
-     * @return The bytes for parentSegmentId.
-     */
-    @java.lang.Override
-    public com.google.protobuf.ByteString getParentSegmentIdBytes() {
-      java.lang.Object ref = parentSegmentId_;
-      if (ref instanceof java.lang.String) {
-        com.google.protobuf.ByteString b =
-            com.google.protobuf.ByteString.copyFromUtf8((java.lang.String) ref);
-        parentSegmentId_ = b;
-        return b;
-      } else {
-        return (com.google.protobuf.ByteString) ref;
-      }
-    }
-
-    public static final int PARENTSPANID_FIELD_NUMBER = 3;
+    public static final int PARENTSPANID_FIELD_NUMBER = 2;
     private volatile java.lang.Object parentSpanId_;
 
     /**
-     * <code>string parentSpanId = 3;</code>
+     * <code>string parentSpanId = 2;</code>
      * 
      * @return The parentSpanId.
      */
@@ -28403,7 +27711,7 @@ public final class QueryProto {
     }
 
     /**
-     * <code>string parentSpanId = 3;</code>
+     * <code>string parentSpanId = 2;</code>
      * 
      * @return The bytes for parentSpanId.
      */
@@ -28478,11 +27786,8 @@ public final class QueryProto {
       if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(traceId_)) {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 1, traceId_);
       }
-      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(parentSegmentId_)) {
-        com.google.protobuf.GeneratedMessageV3.writeString(output, 2, parentSegmentId_);
-      }
       if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(parentSpanId_)) {
-        com.google.protobuf.GeneratedMessageV3.writeString(output, 3, parentSpanId_);
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 2, parentSpanId_);
       }
       if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(type_)) {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 4, type_);
@@ -28500,11 +27805,8 @@ public final class QueryProto {
       if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(traceId_)) {
         size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, traceId_);
       }
-      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(parentSegmentId_)) {
-        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(2, parentSegmentId_);
-      }
       if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(parentSpanId_)) {
-        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(3, parentSpanId_);
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(2, parentSpanId_);
       }
       if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(type_)) {
         size += com.google.protobuf.GeneratedMessageV3.computeStringSize(4, type_);
@@ -28527,8 +27829,6 @@ public final class QueryProto {
 
       if (!getTraceId().equals(other.getTraceId()))
         return false;
-      if (!getParentSegmentId().equals(other.getParentSegmentId()))
-        return false;
       if (!getParentSpanId().equals(other.getParentSpanId()))
         return false;
       if (!getType().equals(other.getType()))
@@ -28547,8 +27847,6 @@ public final class QueryProto {
       hash = (19 * hash) + getDescriptor().hashCode();
       hash = (37 * hash) + TRACEID_FIELD_NUMBER;
       hash = (53 * hash) + getTraceId().hashCode();
-      hash = (37 * hash) + PARENTSEGMENTID_FIELD_NUMBER;
-      hash = (53 * hash) + getParentSegmentId().hashCode();
       hash = (37 * hash) + PARENTSPANID_FIELD_NUMBER;
       hash = (53 * hash) + getParentSpanId().hashCode();
       hash = (37 * hash) + TYPE_FIELD_NUMBER;
@@ -28692,8 +27990,6 @@ public final class QueryProto {
         super.clear();
         traceId_ = "";
 
-        parentSegmentId_ = "";
-
         parentSpanId_ = "";
 
         type_ = "";
@@ -28725,7 +28021,6 @@ public final class QueryProto {
         io.holoinsight.server.query.grpc.QueryProto.Ref result =
             new io.holoinsight.server.query.grpc.QueryProto.Ref(this);
         result.traceId_ = traceId_;
-        result.parentSegmentId_ = parentSegmentId_;
         result.parentSpanId_ = parentSpanId_;
         result.type_ = type_;
         onBuilt();
@@ -28780,10 +28075,6 @@ public final class QueryProto {
           return this;
         if (!other.getTraceId().isEmpty()) {
           traceId_ = other.traceId_;
-          onChanged();
-        }
-        if (!other.getParentSegmentId().isEmpty()) {
-          parentSegmentId_ = other.parentSegmentId_;
           onChanged();
         }
         if (!other.getParentSpanId().isEmpty()) {
@@ -28903,91 +28194,10 @@ public final class QueryProto {
         return this;
       }
 
-      private java.lang.Object parentSegmentId_ = "";
-
-      /**
-       * <code>string parentSegmentId = 2;</code>
-       * 
-       * @return The parentSegmentId.
-       */
-      public java.lang.String getParentSegmentId() {
-        java.lang.Object ref = parentSegmentId_;
-        if (!(ref instanceof java.lang.String)) {
-          com.google.protobuf.ByteString bs = (com.google.protobuf.ByteString) ref;
-          java.lang.String s = bs.toStringUtf8();
-          parentSegmentId_ = s;
-          return s;
-        } else {
-          return (java.lang.String) ref;
-        }
-      }
-
-      /**
-       * <code>string parentSegmentId = 2;</code>
-       * 
-       * @return The bytes for parentSegmentId.
-       */
-      public com.google.protobuf.ByteString getParentSegmentIdBytes() {
-        java.lang.Object ref = parentSegmentId_;
-        if (ref instanceof String) {
-          com.google.protobuf.ByteString b =
-              com.google.protobuf.ByteString.copyFromUtf8((java.lang.String) ref);
-          parentSegmentId_ = b;
-          return b;
-        } else {
-          return (com.google.protobuf.ByteString) ref;
-        }
-      }
-
-      /**
-       * <code>string parentSegmentId = 2;</code>
-       * 
-       * @param value The parentSegmentId to set.
-       * @return This builder for chaining.
-       */
-      public Builder setParentSegmentId(java.lang.String value) {
-        if (value == null) {
-          throw new NullPointerException();
-        }
-
-        parentSegmentId_ = value;
-        onChanged();
-        return this;
-      }
-
-      /**
-       * <code>string parentSegmentId = 2;</code>
-       * 
-       * @return This builder for chaining.
-       */
-      public Builder clearParentSegmentId() {
-
-        parentSegmentId_ = getDefaultInstance().getParentSegmentId();
-        onChanged();
-        return this;
-      }
-
-      /**
-       * <code>string parentSegmentId = 2;</code>
-       * 
-       * @param value The bytes for parentSegmentId to set.
-       * @return This builder for chaining.
-       */
-      public Builder setParentSegmentIdBytes(com.google.protobuf.ByteString value) {
-        if (value == null) {
-          throw new NullPointerException();
-        }
-        checkByteStringIsUtf8(value);
-
-        parentSegmentId_ = value;
-        onChanged();
-        return this;
-      }
-
       private java.lang.Object parentSpanId_ = "";
 
       /**
-       * <code>string parentSpanId = 3;</code>
+       * <code>string parentSpanId = 2;</code>
        * 
        * @return The parentSpanId.
        */
@@ -29004,7 +28214,7 @@ public final class QueryProto {
       }
 
       /**
-       * <code>string parentSpanId = 3;</code>
+       * <code>string parentSpanId = 2;</code>
        * 
        * @return The bytes for parentSpanId.
        */
@@ -29021,7 +28231,7 @@ public final class QueryProto {
       }
 
       /**
-       * <code>string parentSpanId = 3;</code>
+       * <code>string parentSpanId = 2;</code>
        * 
        * @param value The parentSpanId to set.
        * @return This builder for chaining.
@@ -29037,7 +28247,7 @@ public final class QueryProto {
       }
 
       /**
-       * <code>string parentSpanId = 3;</code>
+       * <code>string parentSpanId = 2;</code>
        * 
        * @return This builder for chaining.
        */
@@ -29049,7 +28259,7 @@ public final class QueryProto {
       }
 
       /**
-       * <code>string parentSpanId = 3;</code>
+       * <code>string parentSpanId = 2;</code>
        * 
        * @param value The bytes for parentSpanId to set.
        * @return This builder for chaining.
@@ -47163,137 +46373,134 @@ public final class QueryProto {
         + "ationB\023\n\021_maxTraceDurationB\r\n\013_traceStat"
         + "eB\r\n\013_queryOrderB\n\n\010_pageNumB\013\n\t_pageSiz"
         + "e\"J\n\nTraceBrief\022<\n\006traces\030\001 \003(\0132,.io.hol"
-        + "oinsight.server.query.grpc.BasicTrace\"\256\001"
-        + "\n\nBasicTrace\022\021\n\tsegmentId\030\001 \001(\t\022\024\n\014servi"
-        + "ceNames\030\002 \003(\t\022\034\n\024serviceInstanceNames\030\003 "
-        + "\003(\t\022\025\n\rendpointNames\030\004 \003(\t\022\020\n\010duration\030\005"
-        + " \001(\005\022\r\n\005start\030\006 \001(\003\022\017\n\007isError\030\007 \001(\010\022\020\n\010"
-        + "traceIds\030\010 \003(\t\">\n\005Trace\0225\n\005spans\030\001 \003(\0132&"
-        + ".io.holoinsight.server.query.grpc.Span\"\371"
-        + "\003\n\004Span\022\017\n\007traceId\030\001 \001(\t\022\021\n\tsegmentId\030\002 "
-        + "\001(\t\022\016\n\006spanId\030\003 \001(\t\022\024\n\014parentSpanId\030\004 \001("
-        + "\t\0223\n\004refs\030\005 \003(\0132%.io.holoinsight.server."
-        + "query.grpc.Ref\022\023\n\013serviceCode\030\006 \001(\t\022\033\n\023s"
-        + "erviceInstanceName\030\007 \001(\t\022\021\n\tstartTime\030\010 "
-        + "\001(\003\022\017\n\007endTime\030\t \001(\003\022\024\n\014endpointName\030\n \001"
-        + "(\t\022\014\n\004type\030\013 \001(\t\022\014\n\004peer\030\014 \001(\t\022\021\n\tcompon"
-        + "ent\030\r \001(\t\022\017\n\007isError\030\016 \001(\010\022\r\n\005layer\030\017 \001("
-        + "\t\0228\n\004tags\030\020 \003(\0132*.io.holoinsight.server."
-        + "query.grpc.KeyValue\0229\n\004logs\030\021 \003(\0132+.io.h"
-        + "oloinsight.server.query.grpc.LogEntity\022\016"
-        + "\n\006isRoot\030\022 \001(\010\022\025\n\rsegmentSpanId\030\023 \001(\t\022\033\n"
-        + "\023segmentParentSpanId\030\024 \001(\t\"&\n\010KeyValue\022\013"
-        + "\n\003key\030\001 \001(\t\022\r\n\005value\030\002 \001(\t\"S\n\tLogEntity\022"
-        + "\014\n\004time\030\001 \001(\003\0228\n\004data\030\002 \003(\0132*.io.holoins"
-        + "ight.server.query.grpc.KeyValue\"S\n\003Ref\022\017"
-        + "\n\007traceId\030\001 \001(\t\022\027\n\017parentSegmentId\030\002 \001(\t"
-        + "\022\024\n\014parentSpanId\030\003 \001(\t\022\014\n\004type\030\004 \001(\t\"\377\001\n"
-        + "\020QueryMetaRequest\022\016\n\006tenant\030\001 \001(\t\022\030\n\013ser"
-        + "viceName\030\002 \001(\tH\000\210\001\001\022\031\n\014endpointName\030\003 \001("
-        + "\tH\001\210\001\001\022\024\n\007address\030\004 \001(\tH\002\210\001\001\022\r\n\005start\030\005 "
-        + "\001(\003\022\013\n\003end\030\006 \001(\003\022\024\n\007isEntry\030\007 \001(\010H\003\210\001\001\022\023"
-        + "\n\013traceIdSize\030\010 \001(\003\022\020\n\010category\030\t \001(\tB\016\n"
-        + "\014_serviceNameB\017\n\r_endpointNameB\n\n\010_addre"
-        + "ssB\n\n\010_isEntry\"\263\003\n\024QueryTopologyRequest\022"
-        + "\016\n\006tenant\030\001 \001(\t\022\r\n\005start\030\002 \001(\003\022\013\n\003end\030\003 "
-        + "\001(\003\022\030\n\013serviceName\030\004 \001(\tH\000\210\001\001\022 \n\023service"
-        + "InstanceName\030\005 \001(\tH\001\210\001\001\022\031\n\014endpointName\030"
-        + "\006 \001(\tH\002\210\001\001\022\024\n\007address\030\007 \001(\tH\003\210\001\001\022\022\n\005dept"
-        + "h\030\010 \001(\005H\004\210\001\001\022\020\n\010category\030\t \001(\t\022Z\n\ntermPa"
-        + "rams\030\n \003(\0132F.io.holoinsight.server.query"
-        + ".grpc.QueryTopologyRequest.TermParamsEnt"
-        + "ry\0321\n\017TermParamsEntry\022\013\n\003key\030\001 \001(\t\022\r\n\005va"
-        + "lue\030\002 \001(\t:\0028\001B\016\n\014_serviceNameB\026\n\024_servic"
-        + "eInstanceNameB\017\n\r_endpointNameB\n\n\010_addre"
-        + "ssB\010\n\006_depth\"\211\001\n\016ResponseMetric\022\022\n\navgLa"
-        + "tency\030\001 \001(\001\022\022\n\np95Latency\030\002 \001(\001\022\022\n\np99La"
-        + "tency\030\003 \001(\001\022\022\n\ntotalCount\030\004 \001(\005\022\022\n\nerror"
-        + "Count\030\005 \001(\005\022\023\n\013successRate\030\006 \001(\001\"V\n\004Meta"
-        + "\022\014\n\004name\030\001 \001(\t\022@\n\006metric\030\002 \001(\01320.io.holo"
-        + "insight.server.query.grpc.ResponseMetric"
-        + "\"I\n\021QueryMetaResponse\0224\n\004mata\030\001 \003(\0132&.io"
-        + ".holoinsight.server.query.grpc.Meta\"s\n\020V"
-        + "irtualComponent\022\017\n\007address\030\001 \001(\t\022\014\n\004type"
-        + "\030\002 \001(\t\022@\n\006metric\030\003 \001(\01320.io.holoinsight."
-        + "server.query.grpc.ResponseMetric\"f\n\035Quer"
-        + "yVirtualComponentResponse\022E\n\tcomponent\030\001"
-        + " \003(\01322.io.holoinsight.server.query.grpc."
-        + "VirtualComponent\"w\n\007SlowSql\022\017\n\007address\030\001"
-        + " \001(\t\022\023\n\013serviceName\030\002 \001(\t\022\021\n\tstatement\030\003"
-        + " \001(\t\022\017\n\007latency\030\004 \001(\005\022\021\n\tstartTime\030\005 \001(\003"
-        + "\022\017\n\007traceId\030\006 \001(\t\"R\n\024QuerySlowSqlRespons"
-        + "e\022:\n\007slowSql\030\001 \003(\0132).io.holoinsight.serv"
-        + "er.query.grpc.SlowSql\"\225\001\n\004Node\022\n\n\002id\030\001 \001"
-        + "(\t\022\014\n\004name\030\002 \001(\t\022\014\n\004type\030\003 \001(\t\022\016\n\006isReal"
-        + "\030\004 \001(\010\022\023\n\013serviceName\030\005 \001(\t\022@\n\006metric\030\006 "
-        + "\001(\01320.io.holoinsight.server.query.grpc.R"
-        + "esponseMetric\"\320\001\n\004Call\022\n\n\002id\030\001 \001(\t\022\020\n\010so"
-        + "urceId\030\002 \001(\t\022\022\n\nsourceName\030\003 \001(\t\022\016\n\006dest"
-        + "Id\030\004 \001(\t\022\020\n\010destName\030\005 \001(\t\022\031\n\021sourceServ"
-        + "iceName\030\006 \001(\t\022\027\n\017destServiceName\030\007 \001(\t\022@"
-        + "\n\006metric\030\010 \001(\01320.io.holoinsight.server.q"
-        + "uery.grpc.ResponseMetric\"v\n\010Topology\0224\n\004"
-        + "node\030\001 \003(\0132&.io.holoinsight.server.query"
-        + ".grpc.Node\0224\n\004call\030\002 \003(\0132&.io.holoinsigh"
-        + "t.server.query.grpc.Call\"\033\n\010TraceIds\022\017\n\007"
-        + "traceId\030\001 \003(\t\"\323\001\n\016BizopsEndpoint\022\017\n\007serv"
-        + "ice\030\001 \001(\t\022\020\n\010endpoint\030\002 \001(\t\022\r\n\005stamp\030\003 \001"
-        + "(\t\022\021\n\tspanLayer\030\004 \001(\t\022\021\n\terrorCode\030\005 \001(\t"
-        + "\022\025\n\rrootErrorCode\030\006 \001(\t\022\020\n\010traceIds\030\007 \003("
-        + "\t\022@\n\006metric\030\010 \001(\01320.io.holoinsight.serve"
-        + "r.query.grpc.ResponseMetric\"V\n\017BizopsEnd"
-        + "points\022C\n\tendpoints\030\001 \003(\01320.io.holoinsig"
-        + "ht.server.query.grpc.BizopsEndpoint2\232\021\n\014"
-        + "QueryService\022l\n\tQueryData\022..io.holoinsig"
-        + "ht.server.query.grpc.QueryRequest\032/.io.h" + "oloinsight.server.query.grpc.QueryRespon"
-        + "se\022l\n\tQueryTags\022..io.holoinsight.server."
-        + "query.grpc.QueryRequest\032/.io.holoinsight"
-        + ".server.query.grpc.QueryResponse\022t\n\013Quer"
-        + "ySchema\022..io.holoinsight.server.query.gr"
-        + "pc.QueryRequest\0325.io.holoinsight.server."
-        + "query.grpc.QuerySchemaResponse\022}\n\014QueryM"
-        + "etrics\0225.io.holoinsight.server.query.grp"
-        + "c.QueryMetricsRequest\0326.io.holoinsight.s"
-        + "erver.query.grpc.QueryMetricsResponse\022m\n"
-        + "\nDeleteKeys\022..io.holoinsight.server.quer"
-        + "y.grpc.QueryRequest\032/.io.holoinsight.ser"
-        + "ver.query.grpc.QueryResponse\022w\n\017pqlInsta"
-        + "ntQuery\0223.io.holoinsight.server.query.gr"
-        + "pc.PqlInstantRequest\032/.io.holoinsight.se"
-        + "rver.query.grpc.QueryResponse\022s\n\rpqlRang"
-        + "eQuery\0221.io.holoinsight.server.query.grp"
-        + "c.PqlRangeRequest\032/.io.holoinsight.serve"
-        + "r.query.grpc.QueryResponse\022u\n\020QueryBasic"
-        + "Traces\0223.io.holoinsight.server.query.grp"
-        + "c.QueryTraceRequest\032,.io.holoinsight.ser"
-        + "ver.query.grpc.TraceBrief\022j\n\nQueryTrace\022"
-        + "3.io.holoinsight.server.query.grpc.Query"
-        + "TraceRequest\032\'.io.holoinsight.server.que"
-        + "ry.grpc.Trace\022{\n\020QueryServiceList\0222.io.h"
-        + "oloinsight.server.query.grpc.QueryMetaRe" + "quest\0323.io.holoinsight.server.query.grpc"
-        + ".QueryMetaResponse\022|\n\021QueryEndpointList\022"
-        + "2.io.holoinsight.server.query.grpc.Query" + "MetaRequest\0323.io.holoinsight.server.quer"
-        + "y.grpc.QueryMetaResponse\022\203\001\n\030QueryServic"
-        + "eInstanceList\0222.io.holoinsight.server.qu"
-        + "ery.grpc.QueryMetaRequest\0323.io.holoinsig"
-        + "ht.server.query.grpc.QueryMetaResponse\022\211"
-        + "\001\n\022QueryComponentList\0222.io.holoinsight.s"
-        + "erver.query.grpc.QueryMetaRequest\032?.io.h" + "oloinsight.server.query.grpc.QueryVirtua"
-        + "lComponentResponse\022x\n\026QueryComponentTrac"
-        + "eIds\0222.io.holoinsight.server.query.grpc."
-        + "QueryMetaRequest\032*.io.holoinsight.server"
-        + ".query.grpc.TraceIds\022s\n\rQueryTopology\0226."
-        + "io.holoinsight.server.query.grpc.QueryTo" + "pologyRequest\032*.io.holoinsight.server.qu"
-        + "ery.grpc.Topology\022}\n\024QueryBizEndpointLis"
-        + "t\0222.io.holoinsight.server.query.grpc.Que"
-        + "ryMetaRequest\0321.io.holoinsight.server.qu"
-        + "ery.grpc.BizopsEndpoints\022~\n\025QueryBizErro"
-        + "rCodeList\0222.io.holoinsight.server.query."
-        + "grpc.QueryMetaRequest\0321.io.holoinsight.s"
-        + "erver.query.grpc.BizopsEndpoints\022~\n\020Quer"
-        + "ySlowSqlList\0222.io.holoinsight.server.que"
-        + "ry.grpc.QueryMetaRequest\0326.io.holoinsigh" + "t.server.query.grpc.QuerySlowSqlResponse"
-        + "B\"\n io.holoinsight.server.query.grpcb\006pr" + "oto3"};
+        + "oinsight.server.query.grpc.BasicTrace\"\233\001"
+        + "\n\nBasicTrace\022\024\n\014serviceNames\030\001 \003(\t\022\034\n\024se"
+        + "rviceInstanceNames\030\002 \003(\t\022\025\n\rendpointName"
+        + "s\030\003 \003(\t\022\020\n\010duration\030\004 \001(\005\022\r\n\005start\030\005 \001(\003"
+        + "\022\017\n\007isError\030\006 \001(\010\022\020\n\010traceIds\030\007 \003(\t\">\n\005T"
+        + "race\0225\n\005spans\030\001 \003(\0132&.io.holoinsight.ser"
+        + "ver.query.grpc.Span\"\262\003\n\004Span\022\017\n\007traceId\030"
+        + "\001 \001(\t\022\016\n\006spanId\030\002 \001(\t\022\024\n\014parentSpanId\030\003 "
+        + "\001(\t\0223\n\004refs\030\004 \003(\0132%.io.holoinsight.serve"
+        + "r.query.grpc.Ref\022\023\n\013serviceCode\030\005 \001(\t\022\033\n"
+        + "\023serviceInstanceName\030\006 \001(\t\022\021\n\tstartTime\030"
+        + "\007 \001(\003\022\017\n\007endTime\030\010 \001(\003\022\024\n\014endpointName\030\t"
+        + " \001(\t\022\014\n\004type\030\n \001(\t\022\014\n\004peer\030\013 \001(\t\022\021\n\tcomp"
+        + "onent\030\014 \001(\t\022\017\n\007isError\030\r \001(\010\022\r\n\005layer\030\016 "
+        + "\001(\t\0228\n\004tags\030\017 \003(\0132*.io.holoinsight.serve"
+        + "r.query.grpc.KeyValue\0229\n\004logs\030\020 \003(\0132+.io"
+        + ".holoinsight.server.query.grpc.LogEntity"
+        + "\022\016\n\006isRoot\030\021 \001(\010\"&\n\010KeyValue\022\013\n\003key\030\001 \001("
+        + "\t\022\r\n\005value\030\002 \001(\t\"S\n\tLogEntity\022\014\n\004time\030\001 "
+        + "\001(\003\0228\n\004data\030\002 \003(\0132*.io.holoinsight.serve"
+        + "r.query.grpc.KeyValue\":\n\003Ref\022\017\n\007traceId\030"
+        + "\001 \001(\t\022\024\n\014parentSpanId\030\002 \001(\t\022\014\n\004type\030\004 \001("
+        + "\t\"\377\001\n\020QueryMetaRequest\022\016\n\006tenant\030\001 \001(\t\022\030"
+        + "\n\013serviceName\030\002 \001(\tH\000\210\001\001\022\031\n\014endpointName"
+        + "\030\003 \001(\tH\001\210\001\001\022\024\n\007address\030\004 \001(\tH\002\210\001\001\022\r\n\005sta"
+        + "rt\030\005 \001(\003\022\013\n\003end\030\006 \001(\003\022\024\n\007isEntry\030\007 \001(\010H\003"
+        + "\210\001\001\022\023\n\013traceIdSize\030\010 \001(\003\022\020\n\010category\030\t \001"
+        + "(\tB\016\n\014_serviceNameB\017\n\r_endpointNameB\n\n\010_"
+        + "addressB\n\n\010_isEntry\"\263\003\n\024QueryTopologyReq"
+        + "uest\022\016\n\006tenant\030\001 \001(\t\022\r\n\005start\030\002 \001(\003\022\013\n\003e"
+        + "nd\030\003 \001(\003\022\030\n\013serviceName\030\004 \001(\tH\000\210\001\001\022 \n\023se"
+        + "rviceInstanceName\030\005 \001(\tH\001\210\001\001\022\031\n\014endpoint"
+        + "Name\030\006 \001(\tH\002\210\001\001\022\024\n\007address\030\007 \001(\tH\003\210\001\001\022\022\n"
+        + "\005depth\030\010 \001(\005H\004\210\001\001\022\020\n\010category\030\t \001(\t\022Z\n\nt"
+        + "ermParams\030\n \003(\0132F.io.holoinsight.server."
+        + "query.grpc.QueryTopologyRequest.TermPara"
+        + "msEntry\0321\n\017TermParamsEntry\022\013\n\003key\030\001 \001(\t\022"
+        + "\r\n\005value\030\002 \001(\t:\0028\001B\016\n\014_serviceNameB\026\n\024_s"
+        + "erviceInstanceNameB\017\n\r_endpointNameB\n\n\010_"
+        + "addressB\010\n\006_depth\"\211\001\n\016ResponseMetric\022\022\n\n"
+        + "avgLatency\030\001 \001(\001\022\022\n\np95Latency\030\002 \001(\001\022\022\n\n"
+        + "p99Latency\030\003 \001(\001\022\022\n\ntotalCount\030\004 \001(\005\022\022\n\n"
+        + "errorCount\030\005 \001(\005\022\023\n\013successRate\030\006 \001(\001\"V\n"
+        + "\004Meta\022\014\n\004name\030\001 \001(\t\022@\n\006metric\030\002 \001(\01320.io"
+        + ".holoinsight.server.query.grpc.ResponseM"
+        + "etric\"I\n\021QueryMetaResponse\0224\n\004mata\030\001 \003(\013"
+        + "2&.io.holoinsight.server.query.grpc.Meta"
+        + "\"s\n\020VirtualComponent\022\017\n\007address\030\001 \001(\t\022\014\n"
+        + "\004type\030\002 \001(\t\022@\n\006metric\030\003 \001(\01320.io.holoins"
+        + "ight.server.query.grpc.ResponseMetric\"f\n"
+        + "\035QueryVirtualComponentResponse\022E\n\tcompon"
+        + "ent\030\001 \003(\01322.io.holoinsight.server.query."
+        + "grpc.VirtualComponent\"w\n\007SlowSql\022\017\n\007addr"
+        + "ess\030\001 \001(\t\022\023\n\013serviceName\030\002 \001(\t\022\021\n\tstatem"
+        + "ent\030\003 \001(\t\022\017\n\007latency\030\004 \001(\005\022\021\n\tstartTime\030"
+        + "\005 \001(\003\022\017\n\007traceId\030\006 \001(\t\"R\n\024QuerySlowSqlRe"
+        + "sponse\022:\n\007slowSql\030\001 \003(\0132).io.holoinsight"
+        + ".server.query.grpc.SlowSql\"\225\001\n\004Node\022\n\n\002i"
+        + "d\030\001 \001(\t\022\014\n\004name\030\002 \001(\t\022\014\n\004type\030\003 \001(\t\022\016\n\006i"
+        + "sReal\030\004 \001(\010\022\023\n\013serviceName\030\005 \001(\t\022@\n\006metr"
+        + "ic\030\006 \001(\01320.io.holoinsight.server.query.g"
+        + "rpc.ResponseMetric\"\320\001\n\004Call\022\n\n\002id\030\001 \001(\t\022"
+        + "\020\n\010sourceId\030\002 \001(\t\022\022\n\nsourceName\030\003 \001(\t\022\016\n"
+        + "\006destId\030\004 \001(\t\022\020\n\010destName\030\005 \001(\t\022\031\n\021sourc"
+        + "eServiceName\030\006 \001(\t\022\027\n\017destServiceName\030\007 "
+        + "\001(\t\022@\n\006metric\030\010 \001(\01320.io.holoinsight.ser"
+        + "ver.query.grpc.ResponseMetric\"v\n\010Topolog"
+        + "y\0224\n\004node\030\001 \003(\0132&.io.holoinsight.server."
+        + "query.grpc.Node\0224\n\004call\030\002 \003(\0132&.io.holoi"
+        + "nsight.server.query.grpc.Call\"\033\n\010TraceId"
+        + "s\022\017\n\007traceId\030\001 \003(\t\"\323\001\n\016BizopsEndpoint\022\017\n"
+        + "\007service\030\001 \001(\t\022\020\n\010endpoint\030\002 \001(\t\022\r\n\005stam"
+        + "p\030\003 \001(\t\022\021\n\tspanLayer\030\004 \001(\t\022\021\n\terrorCode\030"
+        + "\005 \001(\t\022\025\n\rrootErrorCode\030\006 \001(\t\022\020\n\010traceIds"
+        + "\030\007 \003(\t\022@\n\006metric\030\010 \001(\01320.io.holoinsight."
+        + "server.query.grpc.ResponseMetric\"V\n\017Bizo"
+        + "psEndpoints\022C\n\tendpoints\030\001 \003(\01320.io.holo"
+        + "insight.server.query.grpc.BizopsEndpoint"
+        + "2\232\021\n\014QueryService\022l\n\tQueryData\022..io.holo"
+        + "insight.server.query.grpc.QueryRequest\032/" + ".io.holoinsight.server.query.grpc.QueryR"
+        + "esponse\022l\n\tQueryTags\022..io.holoinsight.se"
+        + "rver.query.grpc.QueryRequest\032/.io.holoin"
+        + "sight.server.query.grpc.QueryResponse\022t\n"
+        + "\013QuerySchema\022..io.holoinsight.server.que"
+        + "ry.grpc.QueryRequest\0325.io.holoinsight.se"
+        + "rver.query.grpc.QuerySchemaResponse\022}\n\014Q"
+        + "ueryMetrics\0225.io.holoinsight.server.quer"
+        + "y.grpc.QueryMetricsRequest\0326.io.holoinsi" + "ght.server.query.grpc.QueryMetricsRespon"
+        + "se\022m\n\nDeleteKeys\022..io.holoinsight.server"
+        + ".query.grpc.QueryRequest\032/.io.holoinsigh"
+        + "t.server.query.grpc.QueryResponse\022w\n\017pql"
+        + "InstantQuery\0223.io.holoinsight.server.que"
+        + "ry.grpc.PqlInstantRequest\032/.io.holoinsig"
+        + "ht.server.query.grpc.QueryResponse\022s\n\rpq"
+        + "lRangeQuery\0221.io.holoinsight.server.quer"
+        + "y.grpc.PqlRangeRequest\032/.io.holoinsight."
+        + "server.query.grpc.QueryResponse\022u\n\020Query"
+        + "BasicTraces\0223.io.holoinsight.server.quer"
+        + "y.grpc.QueryTraceRequest\032,.io.holoinsigh"
+        + "t.server.query.grpc.TraceBrief\022j\n\nQueryT"
+        + "race\0223.io.holoinsight.server.query.grpc."
+        + "QueryTraceRequest\032\'.io.holoinsight.serve"
+        + "r.query.grpc.Trace\022{\n\020QueryServiceList\0222"
+        + ".io.holoinsight.server.query.grpc.QueryM" + "etaRequest\0323.io.holoinsight.server.query"
+        + ".grpc.QueryMetaResponse\022|\n\021QueryEndpoint"
+        + "List\0222.io.holoinsight.server.query.grpc."
+        + "QueryMetaRequest\0323.io.holoinsight.server"
+        + ".query.grpc.QueryMetaResponse\022\203\001\n\030QueryS"
+        + "erviceInstanceList\0222.io.holoinsight.serv"
+        + "er.query.grpc.QueryMetaRequest\0323.io.holo" + "insight.server.query.grpc.QueryMetaRespo"
+        + "nse\022\211\001\n\022QueryComponentList\0222.io.holoinsi"
+        + "ght.server.query.grpc.QueryMetaRequest\032?" + ".io.holoinsight.server.query.grpc.QueryV"
+        + "irtualComponentResponse\022x\n\026QueryComponen"
+        + "tTraceIds\0222.io.holoinsight.server.query."
+        + "grpc.QueryMetaRequest\032*.io.holoinsight.s"
+        + "erver.query.grpc.TraceIds\022s\n\rQueryTopolo"
+        + "gy\0226.io.holoinsight.server.query.grpc.Qu"
+        + "eryTopologyRequest\032*.io.holoinsight.serv"
+        + "er.query.grpc.Topology\022}\n\024QueryBizEndpoi"
+        + "ntList\0222.io.holoinsight.server.query.grp"
+        + "c.QueryMetaRequest\0321.io.holoinsight.serv"
+        + "er.query.grpc.BizopsEndpoints\022~\n\025QueryBi"
+        + "zErrorCodeList\0222.io.holoinsight.server.q"
+        + "uery.grpc.QueryMetaRequest\0321.io.holoinsi"
+        + "ght.server.query.grpc.BizopsEndpoints\022~\n"
+        + "\020QuerySlowSqlList\0222.io.holoinsight.serve"
+        + "r.query.grpc.QueryMetaRequest\0326.io.holoi" + "nsight.server.query.grpc.QuerySlowSqlRes"
+        + "ponseB\"\n io.holoinsight.server.query.grp" + "cb\006proto3"};
     descriptor = com.google.protobuf.Descriptors.FileDescriptor.internalBuildGeneratedFileFrom(
         descriptorData, new com.google.protobuf.Descriptors.FileDescriptor[] {});
     internal_static_io_holoinsight_server_query_grpc_QueryRequest_descriptor =
@@ -47418,8 +46625,8 @@ public final class QueryProto {
     internal_static_io_holoinsight_server_query_grpc_BasicTrace_fieldAccessorTable =
         new com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
             internal_static_io_holoinsight_server_query_grpc_BasicTrace_descriptor,
-            new java.lang.String[] {"SegmentId", "ServiceNames", "ServiceInstanceNames",
-                "EndpointNames", "Duration", "Start", "IsError", "TraceIds",});
+            new java.lang.String[] {"ServiceNames", "ServiceInstanceNames", "EndpointNames",
+                "Duration", "Start", "IsError", "TraceIds",});
     internal_static_io_holoinsight_server_query_grpc_Trace_descriptor =
         getDescriptor().getMessageTypes().get(17);
     internal_static_io_holoinsight_server_query_grpc_Trace_fieldAccessorTable =
@@ -47431,10 +46638,9 @@ public final class QueryProto {
     internal_static_io_holoinsight_server_query_grpc_Span_fieldAccessorTable =
         new com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
             internal_static_io_holoinsight_server_query_grpc_Span_descriptor,
-            new java.lang.String[] {"TraceId", "SegmentId", "SpanId", "ParentSpanId", "Refs",
-                "ServiceCode", "ServiceInstanceName", "StartTime", "EndTime", "EndpointName",
-                "Type", "Peer", "Component", "IsError", "Layer", "Tags", "Logs", "IsRoot",
-                "SegmentSpanId", "SegmentParentSpanId",});
+            new java.lang.String[] {"TraceId", "SpanId", "ParentSpanId", "Refs", "ServiceCode",
+                "ServiceInstanceName", "StartTime", "EndTime", "EndpointName", "Type", "Peer",
+                "Component", "IsError", "Layer", "Tags", "Logs", "IsRoot",});
     internal_static_io_holoinsight_server_query_grpc_KeyValue_descriptor =
         getDescriptor().getMessageTypes().get(19);
     internal_static_io_holoinsight_server_query_grpc_KeyValue_fieldAccessorTable =
@@ -47452,7 +46658,7 @@ public final class QueryProto {
     internal_static_io_holoinsight_server_query_grpc_Ref_fieldAccessorTable =
         new com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
             internal_static_io_holoinsight_server_query_grpc_Ref_descriptor,
-            new java.lang.String[] {"TraceId", "ParentSegmentId", "ParentSpanId", "Type",});
+            new java.lang.String[] {"TraceId", "ParentSpanId", "Type",});
     internal_static_io_holoinsight_server_query_grpc_QueryMetaRequest_descriptor =
         getDescriptor().getMessageTypes().get(22);
     internal_static_io_holoinsight_server_query_grpc_QueryMetaRequest_fieldAccessorTable =

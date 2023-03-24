@@ -48,7 +48,7 @@ public class PublicAttr {
 
     AnyValue httpCode = spanAttrMap.get(SemanticAttributes.HTTP_STATUS_CODE.getKey());
     if (httpCode != null) {
-      sourceBuilder.setHttpResponseStatusCode(Integer.parseInt(httpCode.getStringValue()));
+      sourceBuilder.setHttpResponseStatusCode(httpCode.getStringValue());
     }
 
     AnyValue grpcCode = spanAttrMap.get(SemanticAttributes.RPC_GRPC_STATUS_CODE.getKey());

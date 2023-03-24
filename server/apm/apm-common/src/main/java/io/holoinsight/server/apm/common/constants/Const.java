@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Const {
-  public static final int NONE = 0;
+  public static final String NONE = "0";
   public static final String SERVICE_ID_CONNECTOR = ".";
   public static final String SERVICE_ID_PARSER_SPLIT = "\\.";
   public static final String ID_CONNECTOR = "_";
@@ -38,8 +38,8 @@ public class Const {
   public static final String SW_REF_PARENT_SERVICE_INSTANCE_NAME = "parent.service.instance.name";
   public static final String SW_REF_REFTYPE = "refType";
   public static final String SW_ATTR_COMPONENT = "sw8.component";
-
   public static final String OTLP_RESOURCE_SERVICE_INSTANCE_NAME = "service.instance.name";
+  public static final String OTLP_RESOURCE_HOST_NAME = "host.name";
   public static final String OTLP_SPANLAYER = "spanLayer";
 
   // 小程序云自定义的tag

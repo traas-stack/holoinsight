@@ -46,7 +46,7 @@ public class ServiceRelation extends Source {
   private int traceStatus;
   @Getter
   @Setter
-  private int httpResponseStatusCode;
+  private String httpResponseStatusCode;
   @Getter
   @Setter
   private String rpcStatusCode;

@@ -19,7 +19,6 @@ import java.io.Serializable;
 public class Ref implements Serializable {
   private static final long serialVersionUID = -1599839859432306726L;
   private String traceId;
-  private String parentSegmentId;
   private String parentSpanId;
   private RefType type;
 }
