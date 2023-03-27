@@ -90,7 +90,8 @@ public class TenantAppMetaSyncTask extends AbstractMonitorTask {
       String serverTableName = tenantOps.getTenant() + "_server";
       String appTableName = tenantOps.getTenant() + "_app";
 
-      List<AppModel> fromDbServers = metaService.getAppModelFromServerTable(tenantOps.getTenant(), serverTableName);
+      List<AppModel> fromDbServers =
+          metaService.getAppModelFromServerTable(tenantOps.getTenant(), serverTableName);
       Debugger.print("TenantAppMetaSyncTask", "query app list from table={} size={}",
           serverTableName, fromDbServers.size());
       if (CollectionUtils.isEmpty(fromDbServers)) {

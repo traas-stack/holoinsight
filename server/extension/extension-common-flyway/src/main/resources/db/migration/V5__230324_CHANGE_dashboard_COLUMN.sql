@@ -30,6 +30,6 @@ END IF;
 END$$
 DELIMITER ;
 
-CALL Uniform_Holoinsight_Column("dashboard","conf","COLUMN `conf` MEDIUMTEXT",2);
+CALL Uniform_Holoinsight_Column("dashboard","conf","MEDIUMTEXT",2);
 
 DROP PROCEDURE IF EXISTS Uniform_Holoinsight_Column;

@@ -63,22 +63,24 @@ public class OpenmetricsScraperFacadeImpl extends BaseFacade {
   }
 
   @GetMapping("/{id}")
-  public JsonResult<Object> get(@PathVariable("id") Long id) {
+  public JsonResult<OpenmetricsScraperDTO> get(@PathVariable("id") Long id) {
     MonitorScope ms = RequestContext.getContext().ms;
-
+    JsonResult<OpenmetricsScraperDTO> result = new JsonResult<>();
     OpenmetricsScraperDTO model =
         openmetricsScraperService.queryById(id, ms.getTenant(), ms.getWorkspace());
     if (model == null || !model.getTenant().equals(ms.getTenant())) {
-      return JsonResult.createFailResult("can not find the record");
+      JsonResult.createFailResult(result, "can not find the record");
+      return result;
     }
 
     return JsonResult.createSuccessResult(model);
   }
 
   @PostMapping("/create")
-  public JsonResult<Object> create(@RequestBody OpenmetricsScraperDTO openmetricsScraperDTO) {
+  public JsonResult<OpenmetricsScraperDTO> create(
+      @RequestBody OpenmetricsScraperDTO openmetricsScraperDTO) {
 
-    final JsonResult<Object> result = new JsonResult<>();
+    final JsonResult<OpenmetricsScraperDTO> result = new JsonResult<>();
     facadeTemplate.manage(result, new ManageCallback() {
       @Override
       public void checkParameter() {
@@ -110,10 +112,10 @@ public class OpenmetricsScraperFacadeImpl extends BaseFacade {
   }
 
   @PostMapping("/update/{id}")
-  public JsonResult<Object> update(@PathVariable("id") Long id,
+  public JsonResult<OpenmetricsScraperDTO> update(@PathVariable("id") Long id,
       @RequestBody OpenmetricsScraperDTO openmetricsScraperDTO) {
 
-    final JsonResult<Object> result = new JsonResult<>();
+    final JsonResult<OpenmetricsScraperDTO> result = new JsonResult<>();
     facadeTemplate.manage(result, new ManageCallback() {
       @Override
       public void checkParameter() {
@@ -164,9 +166,9 @@ public class OpenmetricsScraperFacadeImpl extends BaseFacade {
   }
 
   @PostMapping("/delete/{id}")
-  public JsonResult<Object> delete(@PathVariable("id") Long id) {
+  public JsonResult<Boolean> delete(@PathVariable("id") Long id) {
 
-    final JsonResult<Object> result = new JsonResult<>();
+    final JsonResult<Boolean> result = new JsonResult<>();
     facadeTemplate.manage(result, new ManageCallback() {
       @Override
       public void checkParameter() {
@@ -185,13 +187,13 @@ public class OpenmetricsScraperFacadeImpl extends BaseFacade {
           return;
         }
 
-        openmetricsScraperService.removeById(id);
+        boolean b = openmetricsScraperService.removeById(id);
 
         userOpLogService.append("openmetrics_scraper", id, OpType.DELETE,
             RequestContext.getContext().mu.getLoginName(), ms.getTenant(), ms.getWorkspace(),
             J.toJson(model), null, null, "openmetrics_scraper_delete");
 
-        JsonResult.createSuccessResult(result, model);
+        JsonResult.createSuccessResult(result, b);
       }
     });
 

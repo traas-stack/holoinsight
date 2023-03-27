@@ -17,7 +17,6 @@ import io.holoinsight.server.home.common.util.scope.PowerConstants;
 import io.holoinsight.server.home.common.util.scope.RequestContext;
 import io.holoinsight.server.home.dal.model.Dashboard;
 import io.holoinsight.server.home.dal.model.OpType;
-import io.holoinsight.server.home.dal.model.dto.DashboardDTO;
 import io.holoinsight.server.home.facade.page.MonitorPageRequest;
 import io.holoinsight.server.home.facade.page.MonitorPageResult;
 import io.holoinsight.server.home.web.common.ManageCallback;
@@ -35,8 +34,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/webapi/v1/dashboard")
@@ -74,7 +71,7 @@ public class DashboardFacadeImpl extends BaseFacade {
   @PostMapping("/update")
   @ResponseBody
   @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.EDIT)
-  public JsonResult<Object> update(@RequestBody Dashboard request) {
+  public JsonResult<Dashboard> update(@RequestBody Dashboard request) {
     final JsonResult<Dashboard> result = new JsonResult<>();
     facadeTemplate.manage(result, new ManageCallback() {
       @Override
@@ -126,7 +123,7 @@ public class DashboardFacadeImpl extends BaseFacade {
       }
     });
 
-    return JsonResult.createSuccessResult(result);
+    return result;
   }
 
   @PostMapping("/create")
@@ -213,51 +210,11 @@ public class DashboardFacadeImpl extends BaseFacade {
         }
 
         boolean b = dashboardService.removeById(id);
-        userOpLogService.append("dashobard", id, OpType.DELETE,
+        userOpLogService.append("dashboard", id, OpType.DELETE,
             RequestContext.getContext().mu.getLoginName(), ms.getTenant(), ms.getWorkspace(),
-            J.toJson(id), null, null, "dashobard_delete");
+            J.toJson(id), null, null, "dashboard_delete");
 
         JsonResult.createSuccessResult(result, b);
-      }
-    });
-
-    return result;
-  }
-
-  @GetMapping("/{id}")
-  public JsonResult<DashboardDTO> get(@PathVariable Long id) {
-    final JsonResult<DashboardDTO> result = new JsonResult<>();
-    facadeTemplate.manage(result, new ManageCallback() {
-
-      @Override
-      public void checkParameter() {
-        ParaCheckUtil.checkParaNotNull(id, "id");
-      }
-
-      @Override
-      public void doManage() {
-        MonitorScope ms = RequestContext.getContext().ms;
-        Dashboard dashboard = dashboardService.queryById(id, ms.getTenant(), ms.getWorkspace());
-
-        if (dashboard == null) {
-          JsonResult.createSuccessResult(result, null);
-          return;
-        }
-
-        DashboardDTO dashboardDTO = new DashboardDTO();
-        dashboardDTO.setDashboard(dashboard.getConf());
-        dashboardDTO.getDashboard().put("version", 1);
-        dashboardDTO.getDashboard().put("id", dashboard.getId());
-        dashboardDTO.getDashboard().put("uid", String.valueOf(dashboard.getId()));
-
-        Map<String, Object> meta = new HashMap<>();
-        meta.put("canAdmin", true);
-        meta.put("canEdit", true);
-        meta.put("canSave", true);
-        meta.put("canStar", false);
-        dashboardDTO.setMeta(meta);
-        dashboardDTO.setType(dashboard.getType());
-        JsonResult.createSuccessResult(result, dashboardDTO);
       }
     });
 

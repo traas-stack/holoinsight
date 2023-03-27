@@ -38,7 +38,7 @@ public class MetaService {
   @Autowired
   private DataClientService dataClientService;
   @Autowired
-  private WorkspaceService  workspaceService;
+  private WorkspaceService workspaceService;
 
 
   public List<AppModel> getAppModelFromServerTable(String tenant, String serverTableName) {
@@ -65,7 +65,8 @@ public class MetaService {
       AppModel appModel = new AppModel();
 
       String workspace = meta_workspace_default;
-      if (map.containsKey(meta_workspace) && null != map.get(meta_workspace) && !CollectionUtils.isEmpty(byTenant)) {
+      if (map.containsKey(meta_workspace) && null != map.get(meta_workspace)
+          && !CollectionUtils.isEmpty(byTenant)) {
         workspace = map.get(meta_workspace).toString();
       }
       appModel.setApp(app);

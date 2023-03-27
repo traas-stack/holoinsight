@@ -369,7 +369,7 @@ public class AlarmRuleFacadeImpl extends BaseFacade {
     return result;
   }
 
-  private List<AlarmRuleDTO> getRuleListByGroup(boolean myself) {
+  protected List<AlarmRuleDTO> getRuleListByGroup(boolean myself) {
     MonitorScope ms = RequestContext.getContext().ms;
     String userId = RequestContext.getContext().mu.getUserId();
     List<AlarmGroupDTO> listByUserLike =
@@ -421,7 +421,7 @@ public class AlarmRuleFacadeImpl extends BaseFacade {
 
   }
 
-  private List<AlarmRuleDTO> getRuleListBySubscribe(boolean myself) {
+  protected List<AlarmRuleDTO> getRuleListBySubscribe(boolean myself) {
     MonitorScope ms = RequestContext.getContext().ms;
     String userId = RequestContext.getContext().mu.getUserId();
     Map<String, Object> conditions = new HashMap<>();
