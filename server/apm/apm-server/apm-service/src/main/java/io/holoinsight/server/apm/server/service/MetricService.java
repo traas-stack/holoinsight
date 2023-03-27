@@ -19,7 +19,7 @@ public interface MetricService {
   List<String> listMetrics();
 
   MetricValues queryMetric(String tenant, String metric, Duration duration,
-      Map<String, Object> conditions) throws IOException;
+      Map<String, Object> conditions) throws Exception;
 
   List<String> querySchema(String metric);
 }
