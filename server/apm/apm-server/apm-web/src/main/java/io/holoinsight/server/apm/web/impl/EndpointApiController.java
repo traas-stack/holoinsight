@@ -25,7 +25,7 @@ public class EndpointApiController implements EndpointApi {
 
   @Override
   public ResponseEntity<List<Endpoint>> queryEndpointList(QueryEndpointRequest request)
-      throws IOException {
+      throws Exception {
     String tenant = request.getTenant();
     String service = request.getServiceName();
 

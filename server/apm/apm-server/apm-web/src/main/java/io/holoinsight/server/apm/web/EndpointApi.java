@@ -36,5 +36,5 @@ public interface EndpointApi {
       consumes = {"application/json"}, method = RequestMethod.POST)
   ResponseEntity<List<Endpoint>> queryEndpointList(
       @ApiParam(value = "查询条件。", required = true) @Valid @RequestBody QueryEndpointRequest request)
-      throws IOException;
+      throws Exception;
 }

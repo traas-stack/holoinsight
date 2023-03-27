@@ -19,7 +19,7 @@ public class ServiceInstanceServiceImpl implements ServiceInstanceService {
 
   @Override
   public List<ServiceInstance> getServiceInstanceList(String tenant, String service, long startTime,
-      long endTime) throws IOException {
+      long endTime) throws Exception {
     return serviceInstanceStorage.getServiceInstanceList(tenant, service, startTime, endTime);
   }
 }

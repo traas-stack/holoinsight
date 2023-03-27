@@ -25,7 +25,7 @@ public class ServiceApiController implements ServiceApi {
 
   @Override
   public ResponseEntity<List<Service>> queryServiceList(QueryServiceRequest request)
-      throws IOException {
+      throws Exception {
     String tenant = request.getTenant();
 
     if (Strings.isNullOrEmpty(tenant)) {

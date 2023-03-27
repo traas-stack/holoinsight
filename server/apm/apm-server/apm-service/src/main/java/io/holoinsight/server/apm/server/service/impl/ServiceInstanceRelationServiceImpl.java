@@ -18,7 +18,7 @@ public class ServiceInstanceRelationServiceImpl implements ServiceInstanceRelati
   protected ServiceInstanceRelationStorage serviceInstanceRelationStorage;
 
   @Override
-  public void insert(List<ServiceInstanceRelationDO> relationList) throws IOException {
+  public void insert(List<ServiceInstanceRelationDO> relationList) throws Exception {
     serviceInstanceRelationStorage.batchInsert(relationList);
   }
 }

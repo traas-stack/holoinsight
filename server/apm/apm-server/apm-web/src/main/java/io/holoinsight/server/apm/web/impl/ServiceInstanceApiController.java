@@ -23,7 +23,7 @@ public class ServiceInstanceApiController implements ServiceInstanceApi {
 
   @Override
   public ResponseEntity<List<ServiceInstance>> queryServiceInstanceList(
-      QueryServiceInstanceRequest request) throws IOException {
+      QueryServiceInstanceRequest request) throws Exception {
     String tenant = request.getTenant();
     String service = request.getServiceName();
 

@@ -7,7 +7,6 @@ import io.holoinsight.server.apm.common.model.query.Endpoint;
 import io.holoinsight.server.apm.engine.model.EndpointRelationDO;
 import io.holoinsight.server.apm.engine.storage.EndpointStorage;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.time.StopWatch;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.RequestOptions;
@@ -35,7 +34,6 @@ public class EndpointEsStorage implements EndpointStorage {
   @Override
   public List<Endpoint> getEndpointList(String tenant, String service, long startTime, long endTime)
       throws IOException {
-    StopWatch stopWatch = StopWatch.createStarted();
     List<Endpoint> result = new ArrayList<>();
 
     BoolQueryBuilder queryBuilder = QueryBuilders.boolQuery()
@@ -63,8 +61,6 @@ public class EndpointEsStorage implements EndpointStorage {
       result.add(endpoint);
     }
 
-    log.info("[apm] get_endpoint_list finish, engine={}, cost={}", this.getClass().getSimpleName(),
-        stopWatch.getTime());
     return result;
   }
 }

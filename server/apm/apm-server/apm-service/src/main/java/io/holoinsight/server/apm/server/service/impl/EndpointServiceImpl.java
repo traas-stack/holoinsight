@@ -18,7 +18,7 @@ public class EndpointServiceImpl implements EndpointService {
 
   @Override
   public List<Endpoint> getEndpointList(String tenant, String service, long startTime, long endTime)
-      throws IOException {
+      throws Exception {
     return endpointStorage.getEndpointList(tenant, service, startTime, endTime);
   }
 }

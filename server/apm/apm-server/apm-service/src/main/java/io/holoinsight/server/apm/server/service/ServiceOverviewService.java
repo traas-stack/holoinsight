@@ -10,5 +10,5 @@ import java.util.List;
 
 public interface ServiceOverviewService {
 
-  List<Service> getServiceList(String tenant, long startTime, long endTime) throws IOException;
+  List<Service> getServiceList(String tenant, long startTime, long endTime) throws Exception;
 }

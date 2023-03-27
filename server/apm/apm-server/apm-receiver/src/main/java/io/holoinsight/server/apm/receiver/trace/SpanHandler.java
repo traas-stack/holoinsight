@@ -152,7 +152,7 @@ public class SpanHandler {
     }
   }
 
-  public void buildRelation(List<RelationBuilder> relationBuilders) throws IOException {
+  public void buildRelation(List<RelationBuilder> relationBuilders) throws Exception {
     List<ServiceRelationDO> serverRelationList = new ArrayList<>(relationBuilders.size());
     List<ServiceInstanceRelationDO> serverInstanceRelationList =
         new ArrayList<>(relationBuilders.size());
@@ -182,24 +182,24 @@ public class SpanHandler {
   }
 
   public void storageNetworkMapping(List<NetworkAddressMappingDO> networkAddressMappingList)
-      throws IOException {
+      throws Exception {
     networkAddressMappingService.insert(networkAddressMappingList);
   }
 
-  public void storageServiceRelation(List<ServiceRelationDO> relationList) throws IOException {
+  public void storageServiceRelation(List<ServiceRelationDO> relationList) throws Exception {
     serviceRelationService.insert(relationList);
   }
 
   public void storageServiceInstanceRelation(List<ServiceInstanceRelationDO> relationList)
-      throws IOException {
+      throws Exception {
     serviceInstanceRelationService.insert(relationList);
   }
 
-  public void storageEndpointRelation(List<EndpointRelationDO> relationList) throws IOException {
+  public void storageEndpointRelation(List<EndpointRelationDO> relationList) throws Exception {
     endpointRelationService.insert(relationList);
   }
 
-  public void storageSlowSql(List<SlowSqlDO> slowSqlEsDOList) throws IOException {
+  public void storageSlowSql(List<SlowSqlDO> slowSqlEsDOList) throws Exception {
     slowSqlService.insert(slowSqlEsDOList);
   }
 

@@ -9,7 +9,6 @@ import io.holoinsight.server.apm.engine.model.SlowSqlDO;
 import io.holoinsight.server.apm.engine.storage.SlowSqlStorage;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.time.StopWatch;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.RequestOptions;
@@ -37,7 +36,6 @@ public class SlowSqlEsStorage extends RecordEsStorage<SlowSqlDO> implements Slow
   @Override
   public List<SlowSql> getSlowSqlList(String tenant, String serviceName, String dbAddress,
       long startTime, long endTime) throws IOException {
-    StopWatch stopWatch = StopWatch.createStarted();
 
     BoolQueryBuilder queryBuilder =
         QueryBuilders.boolQuery().must(QueryBuilders.termQuery(SlowSqlDO.TENANT, tenant))
@@ -65,8 +63,6 @@ public class SlowSqlEsStorage extends RecordEsStorage<SlowSqlDO> implements Slow
       result.add(slowSql);
     }
 
-    log.info("[apm] get_slow_sql finish, engine={}, cost={}", this.getClass().getSimpleName(),
-        stopWatch.getTime());
     return result;
   }
 }

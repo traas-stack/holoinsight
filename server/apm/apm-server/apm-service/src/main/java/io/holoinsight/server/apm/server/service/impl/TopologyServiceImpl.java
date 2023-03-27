@@ -40,7 +40,7 @@ public class TopologyServiceImpl implements TopologyService {
 
   @Override
   public Topology getTenantTopology(String tenant, long startTime, long endTime,
-      Map<String, String> termParams) throws IOException {
+      Map<String, String> termParams) throws Exception {
     List<Call> calls = topologyStorage.getTenantCalls(tenant, startTime, endTime, termParams);
 
     Topology topology = buildServiceTopo(calls);
@@ -50,7 +50,7 @@ public class TopologyServiceImpl implements TopologyService {
 
   @Override
   public Topology getServiceTopology(String tenant, String service, long startTime, long endTime,
-      int depth, Map<String, String> termParams) throws IOException {
+      int depth, Map<String, String> termParams) throws Exception {
     List<Call> allCalls = topologyStorage.getTenantCalls(tenant, startTime, endTime, termParams);
     List<Call> result = filterDepend(allCalls, service, depth);
 
@@ -61,12 +61,41 @@ public class TopologyServiceImpl implements TopologyService {
 
   @Override
   public Topology getServiceInstanceTopology(String tenant, String service, String serviceInstance,
-      long startTime, long endTime, int depth, Map<String, String> termParams) throws IOException {
+      long startTime, long endTime, int depth, Map<String, String> termParams) throws Exception {
+    List<Call.DeepCall> calls = getDeepCalls(topologyStorage, tenant, service, serviceInstance,
+        null, startTime, endTime, depth, termParams);
+
+    Topology topology = buildServiceInstanceTopo(calls);
+    setNodeMetric(tenant, topology.getNodes(), startTime, endTime, termParams);
+    return topology;
+  }
+
+
+
+  @Override
+  public Topology getEndpointTopology(String tenant, String service, String endpoint,
+      long startTime, long endTime, int depth, Map<String, String> termParams) throws Exception {
+    List<Call.DeepCall> calls = getDeepCalls(topologyStorage, tenant, service, null, endpoint,
+        startTime, endTime, depth, termParams);
+
+    Topology topology = buildEndpointTopo(calls);
+    setNodeMetric(tenant, topology.getNodes(), startTime, endTime, termParams);
+    return topology;
+  }
+
+  protected List<Call.DeepCall> getDeepCalls(TopologyStorage storage, String tenant, String service,
+      String serviceInstance, String endpoint, long startTime, long endTime, int depth,
+      Map<String, String> termParams) throws IOException {
     List<Call.DeepCall> calls = new ArrayList<>();
     List<Call.DeepCall> sourceEndpointList = new ArrayList<>();
     Call.DeepCall sourceEndpoint = new Call.DeepCall();
     sourceEndpoint.setSourceServiceName(service);
-    sourceEndpoint.setSourceName(serviceInstance);
+    if (serviceInstance != null) {
+      sourceEndpoint.setSourceName(serviceInstance);
+    }
+    if (endpoint != null) {
+      sourceEndpoint.setSourceName(endpoint);
+    }
     sourceEndpointList.add(sourceEndpoint);
 
     List<Call.DeepCall> destEndpointList = new ArrayList<>();
@@ -79,7 +108,7 @@ public class TopologyServiceImpl implements TopologyService {
       List<Call.DeepCall> newSourceEndpointList = new ArrayList<>();
       for (Call.DeepCall item : sourceEndpointList) {
         newSourceEndpointList
-            .addAll(topologyStorage.getServiceInstanceCalls(tenant, item.getSourceServiceName(),
+            .addAll(storage.getServiceInstanceCalls(tenant, item.getSourceServiceName(),
                 item.getSourceName(), startTime, endTime, Const.DEST, termParams));
       }
       sourceEndpointList.clear();
@@ -88,7 +117,7 @@ public class TopologyServiceImpl implements TopologyService {
       List<Call.DeepCall> newDestEndpointList = new ArrayList<>();
       for (Call.DeepCall item : destEndpointList) {
         newDestEndpointList
-            .addAll(topologyStorage.getServiceInstanceCalls(tenant, item.getDestServiceName(),
+            .addAll(storage.getServiceInstanceCalls(tenant, item.getDestServiceName(),
                 item.getDestName(), startTime, endTime, Const.SOURCE, termParams));
       }
       destEndpointList.clear();
@@ -97,59 +126,12 @@ public class TopologyServiceImpl implements TopologyService {
       calls.addAll(newSourceEndpointList);
       calls.addAll(newDestEndpointList);
     }
-
-    Topology topology = buildServiceInstanceTopo(calls);
-    setNodeMetric(tenant, topology.getNodes(), startTime, endTime, termParams);
-    return topology;
-  }
-
-  @Override
-  public Topology getEndpointTopology(String tenant, String service, String endpoint,
-      long startTime, long endTime, int depth, Map<String, String> termParams) throws IOException {
-    List<Call.DeepCall> calls = new ArrayList<>();
-    List<Call.DeepCall> sourceEndpointList = new ArrayList<>();
-    Call.DeepCall sourceEndpoint = new Call.DeepCall();
-    sourceEndpoint.setSourceServiceName(service);
-    sourceEndpoint.setSourceName(endpoint);
-    sourceEndpointList.add(sourceEndpoint);
-
-    List<Call.DeepCall> destEndpointList = new ArrayList<>();
-    Call.DeepCall destEndpoint = new Call.DeepCall();
-    destEndpoint.setDestServiceName(service);
-    destEndpoint.setDestName(endpoint);
-    destEndpointList.add(destEndpoint);
-
-    for (int i = depth; i > 0; i--) {
-      List<Call.DeepCall> newSourceEndpointList = new ArrayList<>();
-      for (Call.DeepCall item : sourceEndpointList) {
-        newSourceEndpointList
-            .addAll(topologyStorage.getEndpointCalls(tenant, item.getSourceServiceName(),
-                item.getSourceName(), startTime, endTime, Const.DEST, termParams));
-      }
-      sourceEndpointList.clear();
-      sourceEndpointList.addAll(newSourceEndpointList);
-
-      List<Call.DeepCall> newDestEndpointList = new ArrayList<>();
-      for (Call.DeepCall item : destEndpointList) {
-        newDestEndpointList
-            .addAll(topologyStorage.getEndpointCalls(tenant, item.getDestServiceName(),
-                item.getDestName(), startTime, endTime, Const.SOURCE, termParams));
-      }
-      destEndpointList.clear();
-      destEndpointList.addAll(newDestEndpointList);
-
-      calls.addAll(newSourceEndpointList);
-      calls.addAll(newDestEndpointList);
-    }
-
-    Topology topology = buildEndpointTopo(calls);
-    setNodeMetric(tenant, topology.getNodes(), startTime, endTime, termParams);
-    return topology;
+    return calls;
   }
 
   @Override
   public Topology getDbTopology(String tenant, String address, long startTime, long endTime,
-      Map<String, String> termParams) throws IOException {
+      Map<String, String> termParams) throws Exception {
     List<Call> dbCalls = topologyStorage.getComponentCalls(tenant, address, startTime, endTime,
         Const.DEST, termParams);
 
@@ -160,7 +142,7 @@ public class TopologyServiceImpl implements TopologyService {
 
   @Override
   public Topology getMQTopology(String tenant, String address, long startTime, long endTime,
-      Map<String, String> termParams) throws IOException {
+      Map<String, String> termParams) throws Exception {
     List<Call> calls = new ArrayList<>();
     calls.addAll(topologyStorage.getComponentCalls(tenant, address, startTime, endTime,
         Const.SOURCE, termParams));
@@ -172,7 +154,7 @@ public class TopologyServiceImpl implements TopologyService {
     return topology;
   }
 
-  private Topology buildEndpointTopo(List<Call.DeepCall> calls) {
+  protected Topology buildEndpointTopo(List<Call.DeepCall> calls) {
     Topology topology = new Topology();
     Set<String> nodeIds = new HashSet<>();
 
@@ -191,7 +173,7 @@ public class TopologyServiceImpl implements TopologyService {
     return topology;
   }
 
-  private void setNodeMetric(String tenant, List<Node> nodes, long startTime, long endTime,
+  protected void setNodeMetric(String tenant, List<Node> nodes, long startTime, long endTime,
       Map<String, String> termParams) throws IOException {
     if (nodes == null || nodes.isEmpty()) {
       return;
@@ -218,7 +200,7 @@ public class TopologyServiceImpl implements TopologyService {
     });
   }
 
-  private Topology buildServiceInstanceTopo(List<Call.DeepCall> calls) {
+  protected Topology buildServiceInstanceTopo(List<Call.DeepCall> calls) {
     Topology topology = new Topology();
     Set<String> nodeIds = new HashSet<>();
     Set<String> callIds = new HashSet<>();
@@ -262,7 +244,7 @@ public class TopologyServiceImpl implements TopologyService {
     return topology;
   }
 
-  private Topology buildServiceTopo(List<Call> serviceRelationCalls) {
+  protected Topology buildServiceTopo(List<Call> serviceRelationCalls) {
     Topology topology = new Topology();
     Set<String> nodeIds = new HashSet<>();
     Set<String> callIds = new HashSet<>();
@@ -364,7 +346,7 @@ public class TopologyServiceImpl implements TopologyService {
     return node;
   }
 
-  private List<Call> filterDepend(List<Call> allCalls, String service, int depth) {
+  protected List<Call> filterDepend(List<Call> allCalls, String service, int depth) {
     List<Call> result = new ArrayList<>();
 
     findSource(result, allCalls, Arrays.asList(service), depth);

@@ -23,7 +23,7 @@ public class TopologyApiController implements TopologyApi {
 
   @Override
   public ResponseEntity<Topology> queryTenantTopology(QueryTopologyRequest request)
-      throws IOException {
+      throws Exception {
     String tenant;
     if (!Strings.isNullOrEmpty(request.getTenant())) {
       tenant = request.getTenant();
@@ -39,7 +39,7 @@ public class TopologyApiController implements TopologyApi {
 
   @Override
   public ResponseEntity<Topology> queryServiceTopology(QueryTopologyRequest request)
-      throws IOException {
+      throws Exception {
     String tenant = request.getTenant();
     String service = request.getServiceName();
 
@@ -57,7 +57,7 @@ public class TopologyApiController implements TopologyApi {
 
   @Override
   public ResponseEntity<Topology> queryServiceInstanceTopology(QueryTopologyRequest request)
-      throws IOException {
+      throws Exception {
     String tenant = request.getTenant();
     String service = request.getServiceName();
     String serviceInstanceName = request.getServiceInstanceName();
@@ -79,7 +79,7 @@ public class TopologyApiController implements TopologyApi {
 
   @Override
   public ResponseEntity<Topology> queryEndpointTopology(QueryTopologyRequest request)
-      throws IOException {
+      throws Exception {
     String tenant = request.getTenant();
     String service = request.getServiceName();
     String endpoint = request.getEndpointName();
@@ -99,7 +99,7 @@ public class TopologyApiController implements TopologyApi {
   }
 
   @Override
-  public ResponseEntity<Topology> queryDbTopology(QueryTopologyRequest request) throws IOException {
+  public ResponseEntity<Topology> queryDbTopology(QueryTopologyRequest request) throws Exception {
     String tenant = request.getTenant();
     String address = request.getAddress();
 
@@ -114,7 +114,7 @@ public class TopologyApiController implements TopologyApi {
   }
 
   @Override
-  public ResponseEntity<Topology> queryMQTopology(QueryTopologyRequest request) throws IOException {
+  public ResponseEntity<Topology> queryMQTopology(QueryTopologyRequest request) throws Exception {
     String tenant = request.getTenant();
     String address = request.getAddress();
 

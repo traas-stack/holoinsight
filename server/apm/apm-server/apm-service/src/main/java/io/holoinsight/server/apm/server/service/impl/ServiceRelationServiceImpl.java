@@ -19,7 +19,7 @@ public class ServiceRelationServiceImpl implements ServiceRelationService {
 
 
   @Override
-  public void insert(List<ServiceRelationDO> relationList) throws IOException {
+  public void insert(List<ServiceRelationDO> relationList) throws Exception {
     serviceRelationStorage.batchInsert(relationList);
   }
 

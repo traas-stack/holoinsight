@@ -19,7 +19,7 @@ public class ServiceOverviewServiceImpl implements ServiceOverviewService {
 
   @Override
   public List<Service> getServiceList(String tenant, long startTime, long endTime)
-      throws IOException {
+      throws Exception {
     return serviceOverviewStorage.getServiceList(tenant, startTime, endTime);
   }
 
