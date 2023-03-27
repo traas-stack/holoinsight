@@ -308,8 +308,8 @@ public class AlertCalculateIT extends BaseIT {
     trigger.setAggregator("avg");
     trigger.setDownsample(2L);
     trigger.setTriggerTitle("触发条件 title");
-    trigger.setCompareConfigs(
-        Collections.singletonList(buildCompareConfig("current alert test", 1000)));
+    trigger
+        .setCompareConfigs(Collections.singletonList(buildCompareConfig("current alert test", 10)));
     trigger.setDatasources(Collections.singletonList(buildDataSource()));
     return trigger;
   }
