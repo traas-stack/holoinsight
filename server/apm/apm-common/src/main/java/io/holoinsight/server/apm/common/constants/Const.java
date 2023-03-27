@@ -34,49 +34,27 @@ public class Const {
   public static final String SW_REF_NETWORK_ADDRESSUSEDATPEER = "network.AddressUsedAtPeer";
   public static final String SW_REF_PARENT_ENDPOINT = "parent.endpoint";
   public static final String SW_REF_PARENT_SERVICE = "parent.service";
-  public static final String SW_REF_PARENT_SERVICE_INSTANCE_ID = "parent.service.instance";
   public static final String SW_REF_PARENT_SERVICE_INSTANCE_NAME = "parent.service.instance.name";
   public static final String SW_REF_REFTYPE = "refType";
   public static final String SW_ATTR_COMPONENT = "sw8.component";
   public static final String OTLP_RESOURCE_SERVICE_INSTANCE_NAME = "service.instance.name";
-  public static final String OTLP_RESOURCE_HOST_NAME = "host.name";
-  public static final String OTLP_SPANLAYER = "spanLayer";
 
-  // 小程序云自定义的tag
-  public static final String BIZSTAMP = "bizStamp";
-  public static final String STAMP = "stamp";
-  public static final String ISENTRY = "isEntry";
-  public static final String ISENTRYTAG = "isEntry=1";
-
-  public static final String ERRORCODE = "errorCode";
-  public static final String ROOTERRORCODE = "rootErrorCode";
-  public static final String APPID = "appId";
-  public static final String ENVID = "envId";
+  public static final String OTLP_ATTRIBUTES_PREFIX = "attributes.";
 
   // slow sql latency threshold
   public static final long SLOW_SQL_THRESHOLD = 300;
 
-  public static final List<String> searchableTagKeys = new ArrayList() {
-    {
-      add("http.method");
-      add("http.status_code");
-      add("rpc.status_code");
-      add("db.type");
-      add("db.instance");
-      add("mq.queue");
-      add("mq.topic");
-      add("mq.broker");
-      add(ISENTRY);
-      add(ERRORCODE);
-      add(ROOTERRORCODE);
-      add(STAMP);
-      add(APPID);
-      add(ENVID);
-    }
-  };
-
   public static final String SOURCE = "source";
   public static final String DEST = "dest";
+
+  // custom tags
+  public static final String OTLP_SPANLAYER = "spanLayer";
+  public static final String STAMP = "stamp";
+  public static final String ISENTRY = "isEntry";
+  public static final String ERRORCODE = "errorCode";
+  public static final String ROOTERRORCODE = "rootErrorCode";
+  public static final String APPID = "appId";
+  public static final String ENVID = "envId";
 
 
 }
