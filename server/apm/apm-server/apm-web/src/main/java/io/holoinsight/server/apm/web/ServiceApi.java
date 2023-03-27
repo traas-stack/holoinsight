@@ -36,7 +36,7 @@ public interface ServiceApi {
       consumes = {"application/json"}, method = RequestMethod.POST)
   ResponseEntity<List<Service>> queryServiceList(
       @ApiParam(value = "查询条件。", required = true) @Valid @RequestBody QueryServiceRequest request)
-      throws IOException;
+      throws Exception;
 
 
 }

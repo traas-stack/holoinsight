@@ -1,7 +1,7 @@
 /*
  * Copyright 2022 Holoinsight Project Authors. Licensed under Apache-2.0.
  */
-package io.holoinsight.server.apm.engine;
+package io.holoinsight.server.apm.engine.postcal;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -10,10 +10,6 @@ import lombok.NoArgsConstructor;
 import java.util.List;
 import java.util.Map;
 
-/**
- * @author jiwliu
- * @version : MetricDefine.java, v 0.1 2022年09月29日 17:05 xiangwanpeng Exp $
- */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor

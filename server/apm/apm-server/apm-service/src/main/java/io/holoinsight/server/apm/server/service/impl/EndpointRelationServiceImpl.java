@@ -19,7 +19,7 @@ public class EndpointRelationServiceImpl implements EndpointRelationService {
 
 
   @Override
-  public void insert(List<EndpointRelationDO> relationList) throws IOException {
+  public void insert(List<EndpointRelationDO> relationList) throws Exception {
     endpointRelationStorage.batchInsert(relationList);
   }
 }

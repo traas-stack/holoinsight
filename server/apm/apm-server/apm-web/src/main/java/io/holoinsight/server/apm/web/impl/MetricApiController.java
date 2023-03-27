@@ -3,10 +3,10 @@
  */
 package io.holoinsight.server.apm.web.impl;
 
-import io.holoinsight.server.apm.web.MetricApi;
 import io.holoinsight.server.apm.common.model.query.MetricValues;
 import io.holoinsight.server.apm.common.model.query.QueryMetricRequest;
 import io.holoinsight.server.apm.server.service.MetricService;
+import io.holoinsight.server.apm.web.MetricApi;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -14,10 +14,6 @@ import org.springframework.http.ResponseEntity;
 import java.io.IOException;
 import java.util.List;
 
-/**
- * @author jiwliu
- * @version : TraceApiController.java, v 0.1 2022年09月20日 16:11 xiangwanpeng Exp $
- */
 @Slf4j
 public class MetricApiController implements MetricApi {
 
@@ -31,8 +27,7 @@ public class MetricApiController implements MetricApi {
   }
 
   @Override
-  public ResponseEntity<MetricValues> queryMetricData(QueryMetricRequest request)
-      throws IOException {
+  public ResponseEntity<MetricValues> queryMetricData(QueryMetricRequest request) throws Exception {
     MetricValues metricValues = metricService.queryMetric(request.getTenant(), request.getMetric(),
         request.getDuration(), request.getConditions());
     return ResponseEntity.ok(metricValues);

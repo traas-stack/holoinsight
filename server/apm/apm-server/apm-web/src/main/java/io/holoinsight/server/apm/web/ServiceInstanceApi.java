@@ -38,7 +38,7 @@ public interface ServiceInstanceApi {
   ResponseEntity<List<ServiceInstance>> queryServiceInstanceList(
       @ApiParam(value = "查询条件。",
           required = true) @Valid @RequestBody QueryServiceInstanceRequest request)
-      throws IOException;
+      throws Exception;
 
 
 }

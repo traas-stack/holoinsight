@@ -35,7 +35,7 @@ public interface TopologyApi {
       consumes = {"application/json"}, method = RequestMethod.POST)
   ResponseEntity<Topology> queryTenantTopology(
       @ApiParam(value = "查询条件。", required = true) @Valid @RequestBody QueryTopologyRequest request)
-      throws IOException;
+      throws Exception;
 
 
   @ApiOperation(value = "query service topology", nickname = "queryServiceTopology",
@@ -48,7 +48,7 @@ public interface TopologyApi {
       consumes = {"application/json"}, method = RequestMethod.POST)
   ResponseEntity<Topology> queryServiceTopology(
       @ApiParam(value = "查询条件。", required = true) @Valid @RequestBody QueryTopologyRequest request)
-      throws IOException;
+      throws Exception;
 
 
   @ApiOperation(value = "query serviceInstance topology", nickname = "queryServiceInstanceTopology",
@@ -61,7 +61,7 @@ public interface TopologyApi {
       consumes = {"application/json"}, method = RequestMethod.POST)
   ResponseEntity<Topology> queryServiceInstanceTopology(
       @ApiParam(value = "查询条件。", required = true) @Valid @RequestBody QueryTopologyRequest request)
-      throws IOException;
+      throws Exception;
 
   @ApiOperation(value = "query endpoint topology", nickname = "queryEndpointTopology",
       notes = "查询接口的拓扑", response = Topology.class, authorizations = {
@@ -73,7 +73,7 @@ public interface TopologyApi {
       consumes = {"application/json"}, method = RequestMethod.POST)
   ResponseEntity<Topology> queryEndpointTopology(
       @ApiParam(value = "查询条件。", required = true) @Valid @RequestBody QueryTopologyRequest request)
-      throws IOException;
+      throws Exception;
 
 
   @ApiOperation(value = "query db topology", nickname = "queryDbTopology", notes = "查询数据库的拓扑",
@@ -86,7 +86,7 @@ public interface TopologyApi {
       consumes = {"application/json"}, method = RequestMethod.POST)
   ResponseEntity<Topology> queryDbTopology(
       @ApiParam(value = "查询条件。", required = true) @Valid @RequestBody QueryTopologyRequest request)
-      throws IOException;
+      throws Exception;
 
   @ApiOperation(value = "query mq topology", nickname = "queryMQTopology", notes = "查询消息队列的拓扑",
       response = Topology.class, authorizations = {@Authorization(value = "APIKeyHeader"),
@@ -98,7 +98,7 @@ public interface TopologyApi {
       consumes = {"application/json"}, method = RequestMethod.POST)
   ResponseEntity<Topology> queryMQTopology(
       @ApiParam(value = "查询条件。", required = true) @Valid @RequestBody QueryTopologyRequest request)
-      throws IOException;
+      throws Exception;
 
 
 }

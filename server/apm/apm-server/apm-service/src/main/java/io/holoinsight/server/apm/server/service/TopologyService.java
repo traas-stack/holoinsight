@@ -10,21 +10,21 @@ import java.util.Map;
 
 public interface TopologyService {
   Topology getTenantTopology(String tenant, long startTime, long endTime,
-      Map<String, String> termParams) throws IOException;
+      Map<String, String> termParams) throws Exception;
 
   Topology getServiceTopology(String tenant, String service, long startTime, long endTime,
-      int depth, Map<String, String> termParams) throws IOException;
+      int depth, Map<String, String> termParams) throws Exception;
 
   Topology getServiceInstanceTopology(String tenant, String service, String serviceInstance,
-      long startTime, long endTime, int depth, Map<String, String> termParams) throws IOException;
+      long startTime, long endTime, int depth, Map<String, String> termParams) throws Exception;
 
   Topology getEndpointTopology(String tenant, String service, String endpoint, long startTime,
-      long endTime, int depth, Map<String, String> termParams) throws IOException;
+      long endTime, int depth, Map<String, String> termParams) throws Exception;
 
   Topology getDbTopology(String tenant, String address, long startTime, long endTime,
-      Map<String, String> termParams) throws IOException;
+      Map<String, String> termParams) throws Exception;
 
   Topology getMQTopology(String tenant, String address, long startTime, long endTime,
-      Map<String, String> termParams) throws IOException;
+      Map<String, String> termParams) throws Exception;
 
 }

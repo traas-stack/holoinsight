@@ -1,0 +1,68 @@
+/*
+ * Copyright 2022 Holoinsight Project Authors. Licensed under Apache-2.0.
+ */
+package io.holoinsight.server.apm.engine.postcal;
+
+import io.holoinsight.server.apm.common.model.query.Duration;
+import io.holoinsight.server.apm.common.model.query.MetricValues;
+import io.holoinsight.server.apm.common.model.specification.OtlpMappings;
+import io.holoinsight.server.apm.engine.storage.MetricStorage;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.Assert;
+
+import java.io.IOException;
+import java.util.*;
+import java.util.stream.Collectors;
+
+/**
+ * PostCalMetricStorage obtains indicator data through post-calculation (such as elasticsearch's
+ * DSL)
+ */
+public abstract class PostCalMetricStorage implements MetricStorage {
+
+  @Autowired
+  private MetricsManager metricsManager;
+
+  @Override
+  public List<String> listMetrics() {
+    return metricsManager.listMetrics();
+  }
+
+  @Override
+  public List<String> querySchema(String metric) {
+    Assert.notNull(metric, "metric can not be null!");
+    MetricDefine metricDefine = metricsManager.getMetric(metric);
+    Assert.notNull(metricDefine, String.format("metric not found: %s", metric));
+    return metricDefine.getGroups().stream().map(OtlpMappings::otlp2Sw)
+        .collect(Collectors.toList());
+  }
+
+  @Override
+  public MetricValues queryMetric(String tenant, String metric, Duration duration,
+      Map<String, Object> conditions, List<String> groups) throws Exception {
+    Assert.notNull(duration, "duration can not be null!");
+    MetricDefine metricDefine = metricsManager.getMetric(metric);
+    Assert.notNull(metricDefine, String.format("metric not found: %s", metric));
+    Map<String, Object> mergedConditions = new HashMap<>();
+    if (conditions != null) {
+      conditions.forEach((k, v) -> mergedConditions.put(OtlpMappings.sw2Otlp(k), v));
+    }
+    if (metricDefine.getConditions() != null) {
+      mergedConditions.putAll(metricDefine.getConditions());
+    }
+
+    Set<String> mergedGroups = new HashSet<>();
+    if (groups != null) {
+      groups.forEach(group -> mergedGroups.add(OtlpMappings.sw2Otlp(group)));
+    }
+    if (metricDefine.getGroups() != null) {
+      mergedGroups.addAll(metricDefine.getGroups());
+    }
+
+    return query(metricDefine, tenant, duration, mergedConditions, mergedGroups);
+  }
+
+  protected abstract MetricValues query(MetricDefine metricDefine, String tenant, Duration duration,
+      Map<String, Object> conditions, Set<String> groups) throws Exception;
+
+}

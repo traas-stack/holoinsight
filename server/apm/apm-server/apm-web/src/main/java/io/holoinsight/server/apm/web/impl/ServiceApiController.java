@@ -3,19 +3,16 @@
  */
 package io.holoinsight.server.apm.web.impl;
 
-import java.io.IOException;
-import java.util.List;
-
+import com.google.common.base.Strings;
 import io.holoinsight.server.apm.common.model.query.QueryServiceRequest;
 import io.holoinsight.server.apm.common.model.query.Service;
 import io.holoinsight.server.apm.server.service.ServiceOverviewService;
 import io.holoinsight.server.apm.web.ServiceApi;
 import lombok.extern.slf4j.Slf4j;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 
-import com.google.common.base.Strings;
+import java.util.List;
 
 @Slf4j
 public class ServiceApiController implements ServiceApi {
@@ -25,7 +22,7 @@ public class ServiceApiController implements ServiceApi {
 
   @Override
   public ResponseEntity<List<Service>> queryServiceList(QueryServiceRequest request)
-      throws IOException {
+      throws Exception {
     String tenant = request.getTenant();
 
     if (Strings.isNullOrEmpty(tenant)) {

@@ -7,10 +7,9 @@ import io.holoinsight.server.apm.common.model.query.Duration;
 import io.holoinsight.server.apm.common.model.query.MetricValue;
 import io.holoinsight.server.apm.common.model.query.MetricValues;
 import io.holoinsight.server.apm.common.model.specification.OtlpMappings;
-import io.holoinsight.server.apm.engine.MetricDefine;
-import io.holoinsight.server.apm.engine.MetricsManager;
 import io.holoinsight.server.apm.engine.model.SpanDO;
-import io.holoinsight.server.apm.engine.storage.MetricStorage;
+import io.holoinsight.server.apm.engine.postcal.MetricDefine;
+import io.holoinsight.server.apm.engine.postcal.PostCalMetricStorage;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.RequestOptions;
@@ -31,69 +30,27 @@ import org.elasticsearch.search.aggregations.metrics.ParsedPercentiles;
 import org.elasticsearch.search.aggregations.metrics.Percentile;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.util.Assert;
 
 import java.io.IOException;
 import java.time.ZonedDateTime;
 import java.util.*;
-import java.util.stream.Collectors;
 
-/**
- * @author jiwliu
- * @version : MetricEsServiceImpl.java, v 0.1 2022年09月29日 16:58 xiangwanpeng Exp $
- */
-public class SpanMetricEsStorage implements MetricStorage {
+public class SpanMetricEsStorage extends PostCalMetricStorage {
 
   private static final int AGG_TERM_MAX_SIZE = 100;
 
+
   @Autowired
-  private MetricsManager metricsManager;
-  @Autowired
-  private RestHighLevelClient restHighLevelClient;
+  private RestHighLevelClient esClient;
 
-  @Override
-  public List<String> listMetrics() {
-    return metricsManager.listMetrics();
+  protected RestHighLevelClient esClient() {
+    return esClient;
   }
 
-  @Override
-  public MetricValues queryMetric(String tenant, String metric, Duration duration,
-      Map<String, Object> conditions, List<String> groups) throws IOException {
-    Assert.notNull(duration, "duration can not be null!");
-    MetricDefine metricDefine = metricsManager.getMetric(metric);
-    Assert.notNull(metricDefine, String.format("metric not found: %s", metric));
-    Map<String, Object> mergedConditions = new HashMap<>();
-    if (conditions != null) {
-      conditions.forEach((k, v) -> mergedConditions.put(OtlpMappings.sw2Otlp(k), v));
-    }
-    if (metricDefine.getConditions() != null) {
-      mergedConditions.putAll(metricDefine.getConditions());
-    }
-
-    Set<String> mergedGroups = new HashSet<>();
-    if (groups != null) {
-      groups.forEach(group -> mergedGroups.add(OtlpMappings.sw2Otlp(group)));
-    }
-    if (metricDefine.getGroups() != null) {
-      mergedGroups.addAll(metricDefine.getGroups());
-    }
-
-    return queryFromEs(tenant, metricDefine.getIndex(), duration, mergedConditions,
-        metricDefine.getField(), metricDefine.getFunction(), mergedGroups);
-  }
 
   @Override
-  public List<String> querySchema(String metric) {
-    Assert.notNull(metric, "metric can not be null!");
-    MetricDefine metricDefine = metricsManager.getMetric(metric);
-    Assert.notNull(metricDefine, String.format("metric not found: %s", metric));
-    return metricDefine.getGroups().stream().map(OtlpMappings::otlp2Sw)
-        .collect(Collectors.toList());
-  }
-
-  private MetricValues queryFromEs(String tenant, String index, Duration duration,
-      Map<String, Object> conditions, String field, String function, Set<String> groups)
-      throws IOException {
+  protected MetricValues query(MetricDefine metricDefine, String tenant, Duration duration,
+      Map<String, Object> conditions, Set<String> groups) throws IOException {
     List<MetricValue> values = new ArrayList<>();
     MetricValues metricValues = new MetricValues(values);
     SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
@@ -124,13 +81,14 @@ public class SpanMetricEsStorage implements MetricStorage {
         parentAggregationBuilder = subAggregationBuilder;
       }
     }
-    parentAggregationBuilder.subAggregation(statBuilder(field, function));
+    parentAggregationBuilder
+        .subAggregation(statBuilder(metricDefine.getField(), metricDefine.getFunction()));
 
     searchSourceBuilder.size(0).query(boolQueryBuilder)
         .aggregation(dateHistogramAggregationBuilder);
-    SearchRequest searchRequest = new SearchRequest(new String[] {index}, searchSourceBuilder);
-    SearchResponse searchResponse =
-        restHighLevelClient.search(searchRequest, RequestOptions.DEFAULT);
+    SearchRequest searchRequest =
+        new SearchRequest(new String[] {metricDefine.getIndex()}, searchSourceBuilder);
+    SearchResponse searchResponse = esClient.search(searchRequest, RequestOptions.DEFAULT);
     Aggregations aggregations = searchResponse.getAggregations();
     Aggregation aggregation = aggregations.get(SpanDO.START_TIME);
     ParsedDateHistogram dateHistogram = (ParsedDateHistogram) aggregation;

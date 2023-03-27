@@ -11,5 +11,5 @@ import java.util.List;
 public interface EndpointService {
 
   List<Endpoint> getEndpointList(String tenant, String service, long startTime, long endTime)
-      throws IOException;
+      throws Exception;
 }

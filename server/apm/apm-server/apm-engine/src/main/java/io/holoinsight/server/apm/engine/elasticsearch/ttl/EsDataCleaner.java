@@ -23,10 +23,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * @author jiwliu
- * @version : EsDataCleaner.java, v 0.1 2022年10月12日 20:38 xiangwanpeng Exp $
- */
 @Slf4j
 public class EsDataCleaner implements DataCleaner {
 
@@ -39,10 +35,14 @@ public class EsDataCleaner implements DataCleaner {
     return esClient;
   }
 
+  protected long ttl(Model model) {
+    return model.getTtl();
+  }
+
   @Override
   public void clean(Model model) throws IOException {
     String name = model.getName();
-    long ttl = model.getTtl();
+    long ttl = ttl(model);
     long deadline = Long.parseLong(new DateTime().plus(-ttl).toString("yyyyMMdd"));
     Long latestSuccessDeadline = this.indexLatestSuccess.get(name);
     if (latestSuccessDeadline != null && deadline <= latestSuccessDeadline) {

@@ -11,6 +11,6 @@ import java.util.List;
 
 public interface EndpointRelationService {
 
-  void insert(final List<EndpointRelationDO> relationList) throws IOException;
+  void insert(final List<EndpointRelationDO> relationList) throws Exception;
 
 }

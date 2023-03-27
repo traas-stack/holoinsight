@@ -3,17 +3,14 @@
  */
 package io.holoinsight.server.apm.web.impl;
 
-import io.holoinsight.server.apm.web.TopologyApi;
+import com.google.common.base.Strings;
 import io.holoinsight.server.apm.common.model.query.QueryTopologyRequest;
 import io.holoinsight.server.apm.common.model.query.Topology;
 import io.holoinsight.server.apm.server.service.TopologyService;
-import com.google.common.base.Strings;
-
+import io.holoinsight.server.apm.web.TopologyApi;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-
-import java.io.IOException;
 
 @Slf4j
 public class TopologyApiController implements TopologyApi {
@@ -23,7 +20,7 @@ public class TopologyApiController implements TopologyApi {
 
   @Override
   public ResponseEntity<Topology> queryTenantTopology(QueryTopologyRequest request)
-      throws IOException {
+      throws Exception {
     String tenant;
     if (!Strings.isNullOrEmpty(request.getTenant())) {
       tenant = request.getTenant();
@@ -39,7 +36,7 @@ public class TopologyApiController implements TopologyApi {
 
   @Override
   public ResponseEntity<Topology> queryServiceTopology(QueryTopologyRequest request)
-      throws IOException {
+      throws Exception {
     String tenant = request.getTenant();
     String service = request.getServiceName();
 
@@ -57,7 +54,7 @@ public class TopologyApiController implements TopologyApi {
 
   @Override
   public ResponseEntity<Topology> queryServiceInstanceTopology(QueryTopologyRequest request)
-      throws IOException {
+      throws Exception {
     String tenant = request.getTenant();
     String service = request.getServiceName();
     String serviceInstanceName = request.getServiceInstanceName();
@@ -79,7 +76,7 @@ public class TopologyApiController implements TopologyApi {
 
   @Override
   public ResponseEntity<Topology> queryEndpointTopology(QueryTopologyRequest request)
-      throws IOException {
+      throws Exception {
     String tenant = request.getTenant();
     String service = request.getServiceName();
     String endpoint = request.getEndpointName();
@@ -99,7 +96,7 @@ public class TopologyApiController implements TopologyApi {
   }
 
   @Override
-  public ResponseEntity<Topology> queryDbTopology(QueryTopologyRequest request) throws IOException {
+  public ResponseEntity<Topology> queryDbTopology(QueryTopologyRequest request) throws Exception {
     String tenant = request.getTenant();
     String address = request.getAddress();
 
@@ -114,7 +111,7 @@ public class TopologyApiController implements TopologyApi {
   }
 
   @Override
-  public ResponseEntity<Topology> queryMQTopology(QueryTopologyRequest request) throws IOException {
+  public ResponseEntity<Topology> queryMQTopology(QueryTopologyRequest request) throws Exception {
     String tenant = request.getTenant();
     String address = request.getAddress();
 

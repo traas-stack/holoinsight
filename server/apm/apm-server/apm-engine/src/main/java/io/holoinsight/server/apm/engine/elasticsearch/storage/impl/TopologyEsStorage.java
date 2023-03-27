@@ -12,7 +12,6 @@ import io.holoinsight.server.apm.engine.model.ServiceRelationDO;
 import io.holoinsight.server.apm.engine.model.SpanDO;
 import io.holoinsight.server.apm.engine.storage.TopologyStorage;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.time.StopWatch;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.RequestOptions;
@@ -43,7 +42,6 @@ public class TopologyEsStorage implements TopologyStorage {
   public List<Call.DeepCall> getEndpointCalls(String tenant, String service, String endpoint,
       long startTime, long endTime, String sourceOrDest, Map<String, String> termParams)
       throws IOException {
-    StopWatch stopWatch = StopWatch.createStarted();
     BoolQueryBuilder queryBuilder = QueryBuilders.boolQuery()
         .must(QueryBuilders.termQuery(EndpointRelationDO.TENANT, tenant))
         .must(QueryBuilders.termQuery(sourceOrDest + "_service_name", service))
@@ -60,8 +58,6 @@ public class TopologyEsStorage implements TopologyStorage {
     searchRequest.source(sourceBuilder);
     SearchResponse response = esClient().search(searchRequest, RequestOptions.DEFAULT);
 
-    log.info("[apm] get_endpoint_calls finish, engine={}, cost={}", this.getClass().getSimpleName(),
-        stopWatch.getTime());
     return buildEndpointCalls(response);
   }
 
@@ -90,7 +86,6 @@ public class TopologyEsStorage implements TopologyStorage {
   public Map<String, ResponseMetric> getServiceAggMetric(String tenant, List<String> fieldValueList,
       long startTime, long endTime, String aggField, Map<String, String> termParams)
       throws IOException {
-    StopWatch stopWatch = StopWatch.createStarted();
     BoolQueryBuilder queryBuilder =
         QueryBuilders.boolQuery().must(QueryBuilders.termsQuery(aggField, fieldValueList))
             .must(QueryBuilders.termQuery(SpanDO.resource(SpanDO.TENANT), tenant))
@@ -112,8 +107,6 @@ public class TopologyEsStorage implements TopologyStorage {
     searchRequest.source(sourceBuilder);
     SearchResponse response = esClient().search(searchRequest, RequestOptions.DEFAULT);
 
-    log.info("[apm] get_service_metric finish, engine={}, cost={}", this.getClass().getSimpleName(),
-        stopWatch.getTime());
     return buildServiceMetric(response, aggField);
   }
 
@@ -144,7 +137,6 @@ public class TopologyEsStorage implements TopologyStorage {
   @Override
   public List<Call> getTenantCalls(String tenant, long startTime, long endTime,
       Map<String, String> termParams) throws IOException {
-    StopWatch stopWatch = StopWatch.createStarted();
     BoolQueryBuilder queryBuilder = QueryBuilders.boolQuery()
         .must(QueryBuilders.termQuery(ServiceRelationDO.TENANT, tenant))
         .must(QueryBuilders.rangeQuery(ServiceRelationDO.START_TIME).gte(startTime).lte(endTime));
@@ -159,8 +151,6 @@ public class TopologyEsStorage implements TopologyStorage {
     searchRequest.source(sourceBuilder);
     SearchResponse response = esClient().search(searchRequest, RequestOptions.DEFAULT);
 
-    log.info("[apm] get_tenant_calls finish, engine={}, cost={}", this.getClass().getSimpleName(),
-        stopWatch.getTime());
     return buildCalls(response);
   }
 
