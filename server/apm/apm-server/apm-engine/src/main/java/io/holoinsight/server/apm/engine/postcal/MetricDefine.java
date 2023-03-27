@@ -10,10 +10,6 @@ import lombok.NoArgsConstructor;
 import java.util.List;
 import java.util.Map;
 
-/**
- * @author jiwliu
- * @version : MetricDefine.java, v 0.1 2022年09月29日 17:05 xiangwanpeng Exp $
- */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor

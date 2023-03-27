@@ -45,7 +45,7 @@ public interface MetricApi {
   @RequestMapping(value = "/query", produces = {"application/json"},
       consumes = {"application/json"}, method = RequestMethod.POST)
   ResponseEntity<MetricValues> queryMetricData(@ApiParam(value = "metric查询条件。",
-      required = false) @Valid @RequestBody QueryMetricRequest request) throws IOException;
+      required = false) @Valid @RequestBody QueryMetricRequest request) throws Exception;
 
   @ApiOperation(value = "query metric schema", nickname = "queryMetricSchema", notes = "查询指标结构",
       response = MetricValues.class, authorizations = {@Authorization(value = "APIKeyHeader"),

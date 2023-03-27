@@ -14,10 +14,6 @@ import io.holoinsight.server.apm.engine.model.SpanDO;
 
 import java.util.List;
 
-/**
- * @author jiwliu
- * @version : TraceService.java, v 0.1 2022年09月20日 16:46 xiangwanpeng Exp $
- */
 public interface TraceService {
 
   TraceBrief queryBasicTraces(final String tenant, final String serviceName,

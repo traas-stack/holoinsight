@@ -3,7 +3,6 @@
  */
 package io.holoinsight.server.apm.web.impl;
 
-import io.holoinsight.server.apm.web.TraceApi;
 import io.holoinsight.server.apm.common.model.query.Pagination;
 import io.holoinsight.server.apm.common.model.query.QueryOrder;
 import io.holoinsight.server.apm.common.model.query.QueryTraceRequest;
@@ -11,6 +10,7 @@ import io.holoinsight.server.apm.common.model.query.TraceBrief;
 import io.holoinsight.server.apm.common.model.specification.sw.Trace;
 import io.holoinsight.server.apm.common.model.specification.sw.TraceState;
 import io.holoinsight.server.apm.server.service.TraceService;
+import io.holoinsight.server.apm.web.TraceApi;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,10 +21,6 @@ import java.util.List;
 
 import static java.util.Objects.nonNull;
 
-/**
- * @author jiwliu
- * @version : TraceApiController.java, v 0.1 2022年09月20日 16:11 xiangwanpeng Exp $
- */
 @Slf4j
 public class TraceApiController implements TraceApi {
 

@@ -7,8 +7,8 @@ import io.holoinsight.server.apm.common.model.query.Duration;
 import io.holoinsight.server.apm.common.model.query.MetricValue;
 import io.holoinsight.server.apm.common.model.query.MetricValues;
 import io.holoinsight.server.apm.common.model.specification.OtlpMappings;
-import io.holoinsight.server.apm.engine.postcal.MetricDefine;
 import io.holoinsight.server.apm.engine.model.SpanDO;
+import io.holoinsight.server.apm.engine.postcal.MetricDefine;
 import io.holoinsight.server.apm.engine.postcal.PostCalMetricStorage;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
@@ -35,10 +35,6 @@ import java.io.IOException;
 import java.time.ZonedDateTime;
 import java.util.*;
 
-/**
- * @author jiwliu
- * @version : MetricEsServiceImpl.java, v 0.1 2022年09月29日 16:58 xiangwanpeng Exp $
- */
 public class SpanMetricEsStorage extends PostCalMetricStorage {
 
   private static final int AGG_TERM_MAX_SIZE = 100;

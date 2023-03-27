@@ -10,18 +10,14 @@ import io.holoinsight.server.apm.common.model.query.TraceBrief;
 import io.holoinsight.server.apm.common.model.specification.sw.Tag;
 import io.holoinsight.server.apm.common.model.specification.sw.Trace;
 import io.holoinsight.server.apm.common.model.specification.sw.TraceState;
-import io.holoinsight.server.apm.engine.storage.SpanStorage;
 import io.holoinsight.server.apm.engine.model.SpanDO;
+import io.holoinsight.server.apm.engine.storage.SpanStorage;
 import io.holoinsight.server.apm.server.service.TraceService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 
-/**
- * @author jiwliu
- * @version : TraceServiceImpl.java, v 0.1 2022年09月20日 16:48 xiangwanpeng Exp $
- */
 
 @Slf4j
 public class TraceServiceImpl implements TraceService {

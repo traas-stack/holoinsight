@@ -3,17 +3,17 @@
  */
 package io.holoinsight.server.apm.receiver.trace;
 
-import io.holoinsight.server.apm.common.model.specification.otel.*;
-import io.holoinsight.server.apm.engine.model.*;
-import io.holoinsight.server.apm.receiver.analysis.RelationAnalysis;
-import io.holoinsight.server.apm.receiver.builder.RelationBuilder;
-import io.holoinsight.server.apm.server.service.*;
-import io.holoinsight.server.common.springboot.ConditionalOnFeature;
 import io.holoinsight.server.apm.common.constants.Const;
+import io.holoinsight.server.apm.common.model.specification.otel.*;
 import io.holoinsight.server.apm.common.model.specification.sw.EndpointRelation;
 import io.holoinsight.server.apm.common.model.specification.sw.ServiceInstanceRelation;
 import io.holoinsight.server.apm.common.model.specification.sw.ServiceRelation;
+import io.holoinsight.server.apm.engine.model.*;
+import io.holoinsight.server.apm.receiver.analysis.RelationAnalysis;
+import io.holoinsight.server.apm.receiver.builder.RelationBuilder;
 import io.holoinsight.server.apm.receiver.common.TransformAttr;
+import io.holoinsight.server.apm.server.service.*;
+import io.holoinsight.server.common.springboot.ConditionalOnFeature;
 import io.opentelemetry.proto.common.v1.AnyValue;
 import io.opentelemetry.proto.trace.v1.ScopeSpans;
 import lombok.extern.slf4j.Slf4j;
@@ -23,17 +23,12 @@ import org.apache.commons.lang3.time.StopWatch;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-/**
- * @author jiwliu
- * @version : SpanHandler.java, v 0.1 2022年11月03日 14:12 xiangwanpeng Exp $
- */
 @Service
 @ConditionalOnFeature("trace")
 @Slf4j

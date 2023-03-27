@@ -3,17 +3,14 @@
  */
 package io.holoinsight.server.apm.web.impl;
 
-import io.holoinsight.server.apm.web.TopologyApi;
+import com.google.common.base.Strings;
 import io.holoinsight.server.apm.common.model.query.QueryTopologyRequest;
 import io.holoinsight.server.apm.common.model.query.Topology;
 import io.holoinsight.server.apm.server.service.TopologyService;
-import com.google.common.base.Strings;
-
+import io.holoinsight.server.apm.web.TopologyApi;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-
-import java.io.IOException;
 
 @Slf4j
 public class TopologyApiController implements TopologyApi {

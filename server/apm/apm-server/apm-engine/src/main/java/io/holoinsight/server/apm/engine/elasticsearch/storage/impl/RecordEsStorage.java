@@ -22,10 +22,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.io.IOException;
 import java.util.List;
 
-/**
- * @author jiwliu
- * @version : RecordEsService.java, v 0.1 2022年10月12日 11:52 xiangwanpeng Exp $
- */
 @ConditionalOnFeature("trace")
 @Slf4j
 public class RecordEsStorage<T extends RecordDO> implements RecordStorage<T> {
