@@ -39,10 +39,14 @@ public class EsDataCleaner implements DataCleaner {
     return esClient;
   }
 
+  protected long ttl(Model model) {
+    return model.getTtl();
+  }
+
   @Override
   public void clean(Model model) throws IOException {
     String name = model.getName();
-    long ttl = model.getTtl();
+    long ttl = ttl(model);
     long deadline = Long.parseLong(new DateTime().plus(-ttl).toString("yyyyMMdd"));
     Long latestSuccessDeadline = this.indexLatestSuccess.get(name);
     if (latestSuccessDeadline != null && deadline <= latestSuccessDeadline) {
