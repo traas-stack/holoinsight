@@ -7,6 +7,7 @@ import static org.junit.platform.engine.discovery.DiscoverySelectors.selectClass
 
 import io.holoinsight.server.test.it.AlertCalculateIT;
 import io.holoinsight.server.test.it.AlertRuleIT;
+import io.holoinsight.server.test.it.IntegrationPluginIT;
 import org.junit.platform.launcher.LauncherDiscoveryRequest;
 import org.junit.platform.launcher.core.LauncherDiscoveryRequestBuilder;
 
@@ -39,6 +40,7 @@ public class ITSets {
         .selectors(selectClass(LogMonitoringIT.class)) //
         .selectors(selectClass(AlertRuleIT.class)) //
         .selectors(selectClass(AlertCalculateIT.class)) //
+        .selectors(selectClass(IntegrationPluginIT.class)) //
         .build(); //
   }
 }
