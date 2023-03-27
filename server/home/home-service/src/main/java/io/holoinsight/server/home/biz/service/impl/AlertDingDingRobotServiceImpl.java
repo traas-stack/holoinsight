@@ -83,12 +83,10 @@ public class AlertDingDingRobotServiceImpl extends
 
     if (StringUtil.isNotBlank(pageRequest.getSortBy())
         && StringUtil.isNotBlank(pageRequest.getSortRule())) {
-      if (pageRequest.getSortBy().equals("gmtCreate")) {
-        if (pageRequest.getSortRule().toLowerCase(Locale.ROOT).equals("desc")) {
-          wrapper.orderByDesc("gmt_create");
-        } else {
-          wrapper.orderByAsc("gmt_create");
-        }
+      if (pageRequest.getSortRule().toLowerCase(Locale.ROOT).equals("desc")) {
+        wrapper.orderByDesc(pageRequest.getSortBy());
+      } else {
+        wrapper.orderByAsc(pageRequest.getSortBy());
       }
     } else {
       wrapper.orderByDesc("id");

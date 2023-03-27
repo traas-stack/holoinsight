@@ -119,15 +119,12 @@ public class AlarmHistoryServiceImpl extends ServiceImpl<AlarmHistoryMapper, Ala
 
     if (StringUtil.isNotBlank(pageRequest.getSortBy())
         && StringUtil.isNotBlank(pageRequest.getSortRule())) {
-      if (pageRequest.getSortBy().equals("alarmTime")) {
-        if (pageRequest.getSortRule().toLowerCase(Locale.ROOT).equals("desc")) {
-          wrapper.orderByDesc("alarm_time");
-        } else {
-          wrapper.orderByAsc("alarm_time");
-        }
+      if (pageRequest.getSortRule().toLowerCase(Locale.ROOT).equals("desc")) {
+        wrapper.orderByDesc(pageRequest.getSortBy());
+      } else {
+        wrapper.orderByAsc(pageRequest.getSortBy());
       }
     } else {
-      // 默认id降序排序
       wrapper.orderByDesc("id");
     }
 

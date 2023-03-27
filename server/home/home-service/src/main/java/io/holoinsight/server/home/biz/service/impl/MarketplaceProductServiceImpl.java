@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -78,55 +79,65 @@ public class MarketplaceProductServiceImpl extends
 
   @Override
   public MonitorPageResult<MarketplaceProductDTO> getListByPage(
-      MonitorPageRequest<MarketplaceProductDTO> MarketplaceProductDTORequest) {
-    if (MarketplaceProductDTORequest.getTarget() == null) {
+      MonitorPageRequest<MarketplaceProductDTO> pageRequest) {
+    if (pageRequest.getTarget() == null) {
       return null;
     }
 
     QueryWrapper<MarketplaceProduct> wrapper = new QueryWrapper<>();
 
-    MarketplaceProductDTO MarketplaceProductDTO = MarketplaceProductDTORequest.getTarget();
+    MarketplaceProductDTO marketplaceProductDTO = pageRequest.getTarget();
 
-    if (null != MarketplaceProductDTO.getGmtCreate()) {
-      wrapper.ge("gmt_create", MarketplaceProductDTO.getGmtCreate());
+    if (null != marketplaceProductDTO.getGmtCreate()) {
+      wrapper.ge("gmt_create", marketplaceProductDTO.getGmtCreate());
     }
-    if (null != MarketplaceProductDTO.getGmtModified()) {
-      wrapper.le("gmt_modified", MarketplaceProductDTO.getGmtCreate());
-    }
-
-    if (StringUtil.isNotBlank(MarketplaceProductDTO.getCreator())) {
-      wrapper.eq("creator", MarketplaceProductDTO.getCreator().trim());
+    if (null != marketplaceProductDTO.getGmtModified()) {
+      wrapper.le("gmt_modified", marketplaceProductDTO.getGmtCreate());
     }
 
-    if (StringUtil.isNotBlank(MarketplaceProductDTO.getModifier())) {
-      wrapper.eq("modifier", MarketplaceProductDTO.getModifier().trim());
+    if (StringUtil.isNotBlank(marketplaceProductDTO.getCreator())) {
+      wrapper.eq("creator", marketplaceProductDTO.getCreator().trim());
     }
 
-    if (null != MarketplaceProductDTO.getId()) {
-      wrapper.eq("id", MarketplaceProductDTO.getId());
+    if (StringUtil.isNotBlank(marketplaceProductDTO.getModifier())) {
+      wrapper.eq("modifier", marketplaceProductDTO.getModifier().trim());
     }
 
-    if (StringUtil.isNotBlank(MarketplaceProductDTO.getName())) {
-      wrapper.like("name", MarketplaceProductDTO.getName().trim());
+    if (null != marketplaceProductDTO.getId()) {
+      wrapper.eq("id", marketplaceProductDTO.getId());
+    }
+
+    if (StringUtil.isNotBlank(marketplaceProductDTO.getName())) {
+      wrapper.like("name", marketplaceProductDTO.getName().trim());
     }
 
 
-    if (null != MarketplaceProductDTO.getStatus()) {
-      wrapper.eq("status", MarketplaceProductDTO.getStatus());
+    if (null != marketplaceProductDTO.getStatus()) {
+      wrapper.eq("status", marketplaceProductDTO.getStatus());
     }
+    if (StringUtil.isNotBlank(pageRequest.getSortBy())
+        && StringUtil.isNotBlank(pageRequest.getSortRule())) {
+      if (pageRequest.getSortRule().toLowerCase(Locale.ROOT).equals("desc")) {
+        wrapper.orderByDesc(pageRequest.getSortBy());
+      } else {
+        wrapper.orderByAsc(pageRequest.getSortBy());
+      }
+    } else {
+      wrapper.orderByDesc("gmt_modified");
+    }
+
     wrapper.select(MarketplaceProduct.class,
         info -> !info.getColumn().equals("creator") && !info.getColumn().equals("modifier"));
 
-    Page<MarketplaceProduct> page = new Page<>(MarketplaceProductDTORequest.getPageNum(),
-        MarketplaceProductDTORequest.getPageSize());
+    Page<MarketplaceProduct> page = new Page<>(pageRequest.getPageNum(), pageRequest.getPageSize());
 
     page = page(page, wrapper);
 
     MonitorPageResult<MarketplaceProductDTO> dtos = new MonitorPageResult<>();
 
     dtos.setItems(marketplaceProductConverter.dosToDTOs(page.getRecords()));
-    dtos.setPageNum(MarketplaceProductDTORequest.getPageNum());
-    dtos.setPageSize(MarketplaceProductDTORequest.getPageSize());
+    dtos.setPageNum(pageRequest.getPageNum());
+    dtos.setPageSize(pageRequest.getPageSize());
     dtos.setTotalCount(page.getTotal());
     dtos.setTotalPage(page.getPages());
 

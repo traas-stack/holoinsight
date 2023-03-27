@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import io.holoinsight.server.home.biz.service.AlertBlockService;
+import io.holoinsight.server.home.common.util.StringUtil;
 import io.holoinsight.server.home.dal.converter.AlarmBlockConverter;
 import io.holoinsight.server.home.dal.mapper.AlarmBlockMapper;
 import io.holoinsight.server.home.dal.model.AlarmBlock;
@@ -87,17 +88,17 @@ public class AlertBlockServiceImpl extends ServiceImpl<AlarmBlockMapper, AlarmBl
       wrapper.eq("workspace", alarmBlock.getWorkspace());
     }
 
-
-    if (StringUtils.isNotBlank(pageRequest.getSortBy())
-        && StringUtils.isNotBlank(pageRequest.getSortRule())) {
-      if (pageRequest.getSortBy().equals("gmtCreate")) {
-        if (pageRequest.getSortRule().toLowerCase(Locale.ROOT).equals("desc")) {
-          wrapper.orderByDesc("gmt_create");
-        } else {
-          wrapper.orderByAsc("gmt_create");
-        }
+    if (StringUtil.isNotBlank(pageRequest.getSortBy())
+        && StringUtil.isNotBlank(pageRequest.getSortRule())) {
+      if (pageRequest.getSortRule().toLowerCase(Locale.ROOT).equals("desc")) {
+        wrapper.orderByDesc(pageRequest.getSortBy());
+      } else {
+        wrapper.orderByAsc(pageRequest.getSortBy());
       }
+    } else {
+      wrapper.orderByDesc("gmt_create");
     }
+
     wrapper.select(AlarmBlock.class,
         info -> !info.getColumn().equals("creator") && !info.getColumn().equals("modifier"));
 

@@ -60,25 +60,15 @@ public class AlertmanagerWebhookServiceImpl
 
     if (StringUtil.isNotBlank(request.getSortBy())
         && StringUtil.isNotBlank(request.getSortRule())) {
-      if (request.getSortBy().equals("gmtModified")) {
-        if (request.getSortRule().toLowerCase(Locale.ROOT).equals("desc")) {
-          wrapper.orderByDesc("gmt_modified");
-        } else {
-          wrapper.orderByAsc("gmt_modified");
-        }
+      if (request.getSortRule().toLowerCase(Locale.ROOT).equals("desc")) {
+        wrapper.orderByDesc(request.getSortBy());
+      } else {
+        wrapper.orderByAsc(request.getSortBy());
       }
+    } else {
+      wrapper.orderByDesc("gmt_modified");
     }
 
-    if (StringUtil.isNotBlank(request.getSortBy())
-        && StringUtil.isNotBlank(request.getSortRule())) {
-      if (request.getSortBy().equals("gmtModified")) {
-        if (request.getSortRule().toLowerCase(Locale.ROOT).equals("desc")) {
-          wrapper.orderByDesc("gmt_modified");
-        } else {
-          wrapper.orderByAsc("gmt_modified");
-        }
-      }
-    }
     wrapper.select(AlertmanagerWebhook.class,
         info -> !info.getColumn().equals("creator") && !info.getColumn().equals("modifier"));
     Page<AlertmanagerWebhook> page = new Page<>(request.getPageNum(), request.getPageSize());

@@ -157,13 +157,13 @@ public class CustomPluginServiceImpl extends ServiceImpl<CustomPluginMapper, Cus
 
     if (StringUtil.isNotBlank(customPluginDTORequest.getSortBy())
         && StringUtil.isNotBlank(customPluginDTORequest.getSortRule())) {
-      if (customPluginDTORequest.getSortBy().equals("gmtModified")) {
-        if (customPluginDTORequest.getSortRule().toLowerCase(Locale.ROOT).equals("desc")) {
-          wrapper.orderByDesc("gmt_modified");
-        } else {
-          wrapper.orderByAsc("gmt_modified");
-        }
+      if (customPluginDTORequest.getSortRule().toLowerCase(Locale.ROOT).equals("desc")) {
+        wrapper.orderByDesc(customPluginDTORequest.getSortBy());
+      } else {
+        wrapper.orderByAsc(customPluginDTORequest.getSortBy());
       }
+    } else {
+      wrapper.orderByDesc("gmt_modified");
     }
 
     wrapper.select(CustomPlugin.class,
