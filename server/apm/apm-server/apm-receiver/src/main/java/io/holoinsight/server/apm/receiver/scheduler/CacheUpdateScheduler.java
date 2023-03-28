@@ -4,15 +4,14 @@
 package io.holoinsight.server.apm.receiver.scheduler;
 
 import io.holoinsight.server.apm.common.utils.TimeBucket;
-import io.holoinsight.server.apm.server.cache.NetworkAddressMappingCache;
 import io.holoinsight.server.apm.engine.model.NetworkAddressMappingDO;
+import io.holoinsight.server.apm.server.cache.NetworkAddressMappingCache;
 import io.holoinsight.server.apm.server.service.NetworkAddressMappingService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.DependsOn;
 
 import javax.annotation.PostConstruct;
-import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -37,20 +36,20 @@ public class CacheUpdateScheduler {
         .scheduleAtFixedRate(new RunnableWithExceptionProtection(() -> {
           try {
             update();
-          } catch (IOException e) {
+          } catch (Exception e) {
             throw new RuntimeException(e);
           }
         }, t -> log.error("Cache update failure.", t)), 1, timeInterval, TimeUnit.SECONDS);
   }
 
-  private void update() throws IOException {
+  private void update() throws Exception {
     updateNetAddressAliasCache();
   }
 
   /**
    * Update the cached data updated in last 1 minutes.
    */
-  private void updateNetAddressAliasCache() throws IOException {
+  private void updateNetAddressAliasCache() throws Exception {
     long loadStartTime;
     if (networkAddressMappingCache.currentSize() == 0) {
       loadStartTime =

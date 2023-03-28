@@ -12,7 +12,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 
-import java.io.IOException;
 import java.util.List;
 
 @Slf4j
@@ -23,7 +22,7 @@ public class SlowSqlApiController implements SlowSqlApi {
 
   @Override
   public ResponseEntity<List<SlowSql>> querySlowSqlList(QueryComponentRequest request)
-      throws IOException {
+      throws Exception {
     String tenant = request.getTenant();
 
     if (Strings.isNullOrEmpty(tenant)) {

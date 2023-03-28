@@ -6,10 +6,8 @@ package io.holoinsight.server.apm.server.service.impl;
 import io.holoinsight.server.apm.engine.model.NetworkAddressMappingDO;
 import io.holoinsight.server.apm.engine.storage.NetworkAddressMappingStorage;
 import io.holoinsight.server.apm.server.service.NetworkAddressMappingService;
-
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.io.IOException;
 import java.util.List;
 
 public class NetworkAddressMappingServiceImpl implements NetworkAddressMappingService {
@@ -23,7 +21,7 @@ public class NetworkAddressMappingServiceImpl implements NetworkAddressMappingSe
   }
 
   @Override
-  public List<NetworkAddressMappingDO> loadByTime(long timeBucketInMinute) throws IOException {
+  public List<NetworkAddressMappingDO> loadByTime(long timeBucketInMinute) throws Exception {
     return networkAddressMappingStorage.loadByTime(timeBucketInMinute);
   }
 }

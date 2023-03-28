@@ -3,16 +3,15 @@
  */
 package io.holoinsight.server.apm.web.impl;
 
-import io.holoinsight.server.apm.web.VirtualComponentApi;
+import com.google.common.base.Strings;
 import io.holoinsight.server.apm.common.model.query.QueryComponentRequest;
 import io.holoinsight.server.apm.common.model.query.VirtualComponent;
 import io.holoinsight.server.apm.server.service.VirtualComponentService;
-import com.google.common.base.Strings;
+import io.holoinsight.server.apm.web.VirtualComponentApi;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 
-import java.io.IOException;
 import java.util.List;
 
 @Slf4j
@@ -23,7 +22,7 @@ public class VirtualComponentApiController implements VirtualComponentApi {
 
   @Override
   public ResponseEntity<List<VirtualComponent>> queryDbList(QueryComponentRequest request)
-      throws IOException {
+      throws Exception {
     String tenant = request.getTenant();
     String service = request.getServiceName();
 
@@ -38,7 +37,7 @@ public class VirtualComponentApiController implements VirtualComponentApi {
 
   @Override
   public ResponseEntity<List<VirtualComponent>> queryCacheList(QueryComponentRequest request)
-      throws IOException {
+      throws Exception {
     String tenant = request.getTenant();
     String service = request.getServiceName();
 
@@ -53,7 +52,7 @@ public class VirtualComponentApiController implements VirtualComponentApi {
 
   @Override
   public ResponseEntity<List<VirtualComponent>> queryMQList(QueryComponentRequest request)
-      throws IOException {
+      throws Exception {
     String tenant = request.getTenant();
     String service = request.getServiceName();
 
@@ -68,7 +67,7 @@ public class VirtualComponentApiController implements VirtualComponentApi {
 
   @Override
   public ResponseEntity<List<String>> queryComponentTraceIds(QueryComponentRequest request)
-      throws IOException {
+      throws Exception {
     String tenant = request.getTenant();
     String address = request.getAddress();
 

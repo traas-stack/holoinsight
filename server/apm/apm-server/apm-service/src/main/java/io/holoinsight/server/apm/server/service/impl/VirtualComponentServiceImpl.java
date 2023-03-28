@@ -22,7 +22,7 @@ public class VirtualComponentServiceImpl implements VirtualComponentService {
 
   @Override
   public List<VirtualComponent> getDbList(String tenant, String service, long startTime,
-      long endTime) throws IOException {
+      long endTime) throws Exception {
     List<VirtualComponent> dbList = virtualComponentStorage.getComponentList(tenant, service,
         startTime, endTime, RequestType.DATABASE, Const.SOURCE);
     dbList.forEach(db -> {
@@ -34,7 +34,7 @@ public class VirtualComponentServiceImpl implements VirtualComponentService {
 
   @Override
   public List<VirtualComponent> getCacheList(String tenant, String service, long startTime,
-      long endTime) throws IOException {
+      long endTime) throws Exception {
     List<VirtualComponent> cacheList = virtualComponentStorage.getComponentList(tenant, service,
         startTime, endTime, RequestType.CACHE, Const.SOURCE);
     cacheList.forEach(cache -> {
@@ -46,7 +46,7 @@ public class VirtualComponentServiceImpl implements VirtualComponentService {
 
   @Override
   public List<VirtualComponent> getMQList(String tenant, String service, long startTime,
-      long endTime) throws IOException {
+      long endTime) throws Exception {
     List<VirtualComponent> mqList = new ArrayList<>();
     mqList.addAll(virtualComponentStorage.getComponentList(tenant, service, startTime, endTime,
         RequestType.MQ, Const.SOURCE));
@@ -61,7 +61,7 @@ public class VirtualComponentServiceImpl implements VirtualComponentService {
 
   @Override
   public List<String> getTraceIds(String tenant, String service, String address, long startTime,
-      long endTime) throws IOException {
+      long endTime) throws Exception {
     return virtualComponentStorage.getTraceIds(tenant, service, address, startTime, endTime);
   }
 }
