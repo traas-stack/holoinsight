@@ -21,6 +21,7 @@ import org.junit.jupiter.api.Tag;
 import org.junit.platform.commons.util.AnnotationUtils;
 import org.junit.platform.engine.DiscoverySelector;
 import org.junit.platform.engine.Filter;
+import org.junit.platform.engine.TestExecutionResult;
 import org.junit.platform.engine.discovery.DiscoverySelectors;
 import org.junit.platform.engine.support.descriptor.ClassSource;
 import org.junit.platform.launcher.Launcher;
@@ -37,7 +38,8 @@ import org.junit.platform.launcher.listeners.TestExecutionSummary;
 import io.holoinsight.server.test.it.env.DockerComposeEnv;
 import io.holoinsight.server.test.it.env.Env;
 import io.holoinsight.server.test.it.utils.DockerHolder;
-import lombok.Cleanup;
+import io.holoinsight.server.test.it.utils.MemoryTestExecutionListener;
+import lombok.val;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -48,30 +50,32 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 public class IntegrationBootstrapHelper {
-  protected static void run0(Supplier<Env> envProvider, Class<?>... classes) {
+  protected static void run0(Supplier<Env> envProvider, Class<?>... classes) throws Exception {
     run0(envProvider, Arrays.stream(classes).collect(Collectors.toList()));
   }
 
   protected static void run0(Supplier<Env> envProvider, List<DiscoverySelector> selectors,
-      List<Filter<?>> filters) {
+      List<Filter<?>> filters) throws Exception {
     LauncherDiscoveryRequestBuilder b = LauncherDiscoveryRequestBuilder.request();
     b.selectors(selectors).filters(filters.toArray(new Filter[0]));
     LauncherDiscoveryRequest request = b.build();
     run0(envProvider, request);
   }
 
-  protected static void run0(Supplier<Env> envProvider, List<Class<?>> classes) {
+  protected static void run0(Supplier<Env> envProvider, List<Class<?>> classes) throws Exception {
     LauncherDiscoveryRequestBuilder b = LauncherDiscoveryRequestBuilder.request();
     classes.stream().map(DiscoverySelectors::selectClass).forEach(b::selectors);
     LauncherDiscoveryRequest request = b.build();
     run0(envProvider, request);
   }
 
-  protected static void run0(Supplier<Env> envProvider, LauncherDiscoveryRequest request) {
+  protected static void run0(Supplier<Env> envProvider, LauncherDiscoveryRequest request)
+      throws Exception {
     SummaryGeneratingListener listener = new SummaryGeneratingListener();
+    MemoryTestExecutionListener memoryListener = new MemoryTestExecutionListener();
     try (LauncherSession session = LauncherFactory.openSession()) {
       Launcher launcher = session.getLauncher();
-      launcher.registerTestExecutionListeners(listener);
+      launcher.registerTestExecutionListeners(listener, memoryListener);
       launcher.registerTestExecutionListeners(
           LoggingListener.forBiConsumer(new BiConsumer<Throwable, Supplier<String>>() {
             @Override
@@ -102,12 +106,53 @@ public class IntegrationBootstrapHelper {
     PrintWriter pw = new PrintWriter(System.out);
     summary.printTo(pw);
     summary.printFailuresTo(pw);
+
+    printResult(memoryListener);
+
     if (summary.getTestsFailedCount() > 0) {
       throw new IllegalStateException("IT fail");
     }
   }
 
-  protected static void runBySceneAndGroup(LauncherDiscoveryRequest request) {
+  private static void printResult(MemoryTestExecutionListener memoryListener) {
+    log.info("");
+    log.info("result begin");
+
+    log.info("success tests:");
+    for (val e : memoryListener.getDisplayRecords().entrySet()) {
+      String id = e.getKey();
+      MemoryTestExecutionListener.Record r = e.getValue();
+      if (r.skipReason == null && r.result.getStatus() == TestExecutionResult.Status.SUCCESSFUL) {
+        log.info("[{}], cost=[{}s]", id, r.costSeconds());
+      }
+    }
+    log.info("");
+
+    log.info("failure tests:");
+    for (val e : memoryListener.getDisplayRecords().entrySet()) {
+      String id = e.getKey();
+      MemoryTestExecutionListener.Record r = e.getValue();
+      if (r.skipReason == null && r.result.getStatus() != TestExecutionResult.Status.SUCCESSFUL) {
+        log.info("[{}] [{}], cost=[{}s]", id, r.result.getStatus(), r.costSeconds());
+      }
+    }
+    log.info("");
+
+    log.info("skipped tests:");
+    for (val e : memoryListener.getDisplayRecords().entrySet()) {
+      String id = e.getKey();
+      MemoryTestExecutionListener.Record r = e.getValue();
+      if (r.skipReason != null) {
+        log.info("[{}], reason=[{}]", id, r.skipReason);
+      }
+    }
+    log.info("");
+
+    log.info("result end");
+    log.info("");
+  }
+
+  protected static void runBySceneAndGroup(LauncherDiscoveryRequest request) throws Exception {
     try (LauncherSession session = LauncherFactory.openSession()) {
       Launcher launcher = session.getLauncher();
 

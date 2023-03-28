@@ -35,7 +35,7 @@ services:
       retries: 300
       timeout: 10s
   ceresdb:
-    image: ${ceresdb_image:-ceresdb/ceresdb-server:v0.3.1}
+    image: ${ceresdb_image:-ceresdb/ceresdb-server:v1.0.0}
     volumes:
     - ./ceresdb_entrypoint.sh:/entrypoint.sh
     restart: always
@@ -52,8 +52,9 @@ services:
       retries: 300
       timeout: 10s
     ports:
-    - 80
-    - 8080
+    - 80 # nginx
+    - 8080 # tomcat
+    - 8000 # java debug
   agent-image:
     image: ${server_image:-holoinsight/agent:latest}
-    entrypoint: ["true"]
+    entrypoint: [ "true" ]

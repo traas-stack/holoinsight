@@ -22,4 +22,20 @@ if [ -z "$forks" ]; then
   forks=1
 fi
 
-mvn clean integration-test -f server/server-parent -am -pl ../../test/server-e2e-test -Dgroups=e2e-all -DskipITs=false -DitForkCount=${forks}
+if [ "$MVN_NO_CLEAN"x = "1"x ]; then
+  goals="integration-test"
+else
+  goals="clean integration-test"
+fi
+
+mvn $goals -f server/server-parent -am -pl ../../test/server-e2e-test -Dgroups=e2e-all -DskipUTs=true -DskipITs=false -DitForkCount=${forks}
+
+summary=./test/server-e2e-test/target/failsafe-reports/failsafe-summary.xml
+cat $summary
+errors=`awk -F '[<>]' '/errors/{print $3}' $summary`
+failures=`awk -F '[<>]' '/failures/{print $3}' $summary`
+if [ "$errors" -gt 0 ] || [ "$failures" -gt 0 ]; then
+  echo
+  echo 'IT failure'
+  exit 1
+fi

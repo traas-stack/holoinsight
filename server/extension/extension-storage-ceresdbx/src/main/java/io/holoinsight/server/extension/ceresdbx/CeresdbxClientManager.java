@@ -13,6 +13,7 @@ import javax.annotation.PostConstruct;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import io.ceresdb.CeresDBClient;
+import io.ceresdb.RouteMode;
 import io.ceresdb.options.CeresDBOptions;
 import io.ceresdb.rpc.RpcOptions;
 import io.ceresdb.rpc.RpcOptions.LimitKind;
@@ -33,10 +34,10 @@ import org.springframework.util.Assert;
  *
  * @author jiwliu
  */
-class CeresdbxClientManager {
+public class CeresdbxClientManager {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(CeresdbxClientManager.class);
-  public static final int DEFAULT_MANAGEMENT_PORT = 5440;
+  public static final String PUBLIC_DATABASE = "public";
 
   private TenantOpsMapper tenantOpsMapper;
 
@@ -64,22 +65,17 @@ class CeresdbxClientManager {
         String accessUser = (String) ceresdbConfig.get("accessUser");
         String accessKey = (String) ceresdbConfig.get("accessKey");
         String address = (String) ceresdbConfig.get("address");
+        String database = (String) ceresdbConfig.get("database");
         Object portObj = ceresdbConfig.get("port");
         int port = Double.valueOf(String.valueOf(portObj)).intValue();
-        Object managePortObj = ceresdbConfig.get("managePort");
-        int managePort = 0;
-        if (Objects.nonNull(managePortObj)) {
-          managePort = Double.valueOf(String.valueOf(managePortObj)).intValue();
-        }
         String newConfigKey = configKey(address, port, accessUser, accessKey);
         CeresDBxClientInstance clientInstance = instances.get(tenant);
         if (clientInstance == null
             || !StringUtils.equals(clientInstance.getConfigKey(), newConfigKey)) {
           RpcOptions rpcOptions = new RpcOptions();
           rpcOptions.setLimitKind(LimitKind.None);
-          CeresDBOptions opts = CeresDBOptions.newBuilder(address, port)
-              .managementAddress(address, managePort != 0 ? managePort : DEFAULT_MANAGEMENT_PORT)
-              .tenant(accessUser, "", accessKey).maxInFlightWriteRows(10000).rpcOptions(rpcOptions)
+          CeresDBOptions opts = CeresDBOptions.newBuilder(address, port, RouteMode.DIRECT)
+              .database(StringUtils.isBlank(database) ? PUBLIC_DATABASE : database)
               .writeMaxRetries(2).readMaxRetries(2).maxWriteSize(512).build();
           CeresDBClient client = new CeresDBClient();
           try {
