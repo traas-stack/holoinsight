@@ -196,7 +196,8 @@ public class AlertRuleServiceImpl extends ServiceImpl<AlarmRuleMapper, AlarmRule
   }
 
   protected void setAlarmContent(AlarmRuleDTO alarmRuleDTO) {
-    if (alarmRuleDTO.getRule() != null && alarmRuleDTO.getRule().containsKey("triggers")) {
+    if (alarmRuleDTO != null && alarmRuleDTO.getRule() != null
+        && alarmRuleDTO.getRule().containsKey("triggers")) {
       List<String> alarmContent = new ArrayList<>();
       List<Map<String, Object>> triggers =
           (List<Map<String, Object>>) alarmRuleDTO.getRule().get("triggers");

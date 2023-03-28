@@ -81,7 +81,7 @@ public class AlertTaskCompute implements AlarmTaskExecutor<ComputeTaskPackage> {
         Map<String, InspectConfig> inspectConfigMap = cacheData.getUniqueIdMap();
         List<AlertNotify> alarmNotifies = new ArrayList<>();
         for (EventInfo eventInfo : eventLists) {
-          if (StringUtils.isEmpty(eventInfo.getUniqueId())) {
+          if (eventInfo == null || StringUtils.isEmpty(eventInfo.getUniqueId())) {
             continue;
           }
           InspectConfig inspectConfig = inspectConfigMap.get(eventInfo.getUniqueId());

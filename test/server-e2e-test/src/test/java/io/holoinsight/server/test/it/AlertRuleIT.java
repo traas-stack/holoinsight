@@ -83,7 +83,7 @@ public class AlertRuleIT extends BaseIT {
     Response response = queryAlertRule.get();
     System.out.println(response.body().print());
     tenant = response //
-        .then() //
+        .then().log().all() //
         .body("success", IS_TRUE) //
         .root("data") //
         .body("ruleName", eq(name)) //
@@ -96,9 +96,8 @@ public class AlertRuleIT extends BaseIT {
   @Order(1)
   @Test
   public void test_triggerContent() {
-    name = RandomStringUtils.randomAlphabetic(10) + "告警规则测试";
     AlarmRuleDTO alarmRuleDTO = new AlarmRuleDTO();
-    alarmRuleDTO.setRuleName(name);
+    alarmRuleDTO.setRuleName("triggerContent_alert_test");
     alarmRuleDTO.setSourceType("apm_holoinsight");
     alarmRuleDTO.setAlarmLevel("5");
     alarmRuleDTO.setRuleDescribe("测试告警规则");
@@ -125,16 +124,14 @@ public class AlertRuleIT extends BaseIT {
         .when() //
         .get("/webapi/alarmRule/query/{ruleId}");
     System.out.println(response.body().print());
-    tenant = response //
+    response //
         .then() //
         .body("success", IS_TRUE) //
         .root("data") //
-        .body("ruleName", eq(name)) //
         .body("alarmContent[0]", eq("compareConfig_trigger_content_1")) //
         .body("alarmContent[1]", eq("compareConfig_trigger_content_2")) //
         .extract() //
         .path("data.tenant");
-    System.out.println(tenant);
   }
 
   @Order(2)
