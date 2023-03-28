@@ -8,6 +8,9 @@ import io.holoinsight.server.common.JsonResult;
 import com.google.protobuf.InvalidProtocolBufferException;
 import com.google.protobuf.Message;
 import com.google.protobuf.util.JsonFormat;
+import io.holoinsight.server.common.LatchWork;
+import io.holoinsight.server.common.UtilMisc;
+import io.holoinsight.server.common.threadpool.CommonThreadPools;
 import io.holoinsight.server.home.biz.common.MetaDictUtil;
 import io.holoinsight.server.home.biz.service.AgentConfigurationService;
 import io.holoinsight.server.home.common.service.QueryClientService;
@@ -28,6 +31,9 @@ import io.holoinsight.server.home.web.common.PqlParser;
 import io.holoinsight.server.home.web.common.TokenUrls;
 import io.holoinsight.server.home.web.common.pql.PqlException;
 import io.holoinsight.server.home.web.controller.model.DataQueryRequest;
+import io.holoinsight.server.home.web.controller.model.DataQueryRequest.QueryDataSource;
+import io.holoinsight.server.home.web.controller.model.DataQueryRequest.QueryFilter;
+import io.holoinsight.server.home.web.controller.model.DelTagReq;
 import io.holoinsight.server.home.web.controller.model.PqlInstanceRequest;
 import io.holoinsight.server.home.web.controller.model.PqlParseRequest;
 import io.holoinsight.server.home.web.controller.model.PqlParseResult;
@@ -45,8 +51,12 @@ import io.holoinsight.server.apm.common.model.query.Topology;
 import io.holoinsight.server.apm.common.model.query.TraceBrief;
 import io.holoinsight.server.apm.common.model.query.VirtualComponent;
 import io.holoinsight.server.apm.common.model.specification.sw.Trace;
+import io.holoinsight.server.query.grpc.QueryProto.QueryRequest;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.CollectionUtils;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -55,13 +65,19 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 @RestController
 @RequestMapping("/webapi/v1/query")
 @TokenUrls("/webapi/v1/query")
+@Slf4j
 public class QueryFacadeImpl extends BaseFacade {
 
   @Autowired
@@ -72,6 +88,9 @@ public class QueryFacadeImpl extends BaseFacade {
 
   @Autowired
   private PqlParser pqlParser;
+
+  @Autowired
+  private CommonThreadPools commonThreadPools;
 
   @PostMapping
   public JsonResult<QueryResponse> query(@RequestBody DataQueryRequest request) {
@@ -91,7 +110,7 @@ public class QueryFacadeImpl extends BaseFacade {
 
       @Override
       public void doManage() {
-        QueryResponse response = queryClientService.query(converRequest(request));
+        QueryResponse response = queryClientService.query(convertRequest(request));
         JsonResult.createSuccessResult(result, response);
       }
     });
@@ -117,7 +136,7 @@ public class QueryFacadeImpl extends BaseFacade {
 
       @Override
       public void doManage() {
-        QueryResponse response = queryClientService.queryTags(converRequest(request));
+        QueryResponse response = queryClientService.queryTags(convertRequest(request));
 
         JsonResult.createSuccessResult(result, response);
       }
@@ -126,8 +145,59 @@ public class QueryFacadeImpl extends BaseFacade {
     return result;
   }
 
+  @DeleteMapping("/deltags")
+  public JsonResult<?> delTags(@RequestBody DelTagReq request) {
+    final JsonResult<Boolean> result = new JsonResult<>();
+    facadeTemplate.manage(result, new ManageCallback() {
+      @Override
+      public void checkParameter() {
+        ParaCheckUtil.checkParaNotNull(request, "request");
+        ParaCheckUtil.checkParaNotNull(request.getMetric(), "metric");
+        if (StringUtils.isNotBlank(request.getTenant())) {
+          ParaCheckUtil.checkEquals(request.getTenant(), RequestContext.getContext().ms.getTenant(),
+              "tenant is illegal");
+        }
+      }
+
+      @Override
+      public void doManage() {
+        List<DataQueryRequest> queryRequests = convertQueryRequest(request);
+        if (CollectionUtils.isEmpty(queryRequests)) {
+          log.info("queryRequests is empty");
+          return;
+        }
+        final CountDownLatch latch = new CountDownLatch(queryRequests.size());
+        for (DataQueryRequest dataQueryRequest : queryRequests) {
+
+          final QueryRequest queryRequest = convertRequest(dataQueryRequest);
+          commonThreadPools.getScheduler().execute(new LatchWork("delTags", latch) {
+            @Override
+            public void doWork() {
+              queryClientService.delTags(queryRequest);
+            }
+
+            @Override
+            public void doException(String msg) {
+              log.error("queryRequests error, {}", msg);
+            }
+          });
+
+        }
+        try {
+          latch.await(30L, TimeUnit.SECONDS);
+        } catch (InterruptedException e) {
+          log.info("delTags timeout {}", e.getMessage());
+          JsonResult.createFailResult(result, "delTags timeout " + e.getMessage());
+          return;
+        }
+        JsonResult.createSuccessResult(result, true);
+      }
+    });
+    return result;
+  }
+
   @PostMapping("/deltags")
-  public JsonResult<?> deltags(@RequestBody DataQueryRequest request) {
+  public JsonResult<?> delTags(@RequestBody DataQueryRequest request) {
 
     final JsonResult<Boolean> result = new JsonResult<>();
 
@@ -144,7 +214,7 @@ public class QueryFacadeImpl extends BaseFacade {
 
       @Override
       public void doManage() {
-        queryClientService.delTags(converRequest(request));
+        queryClientService.delTags(convertRequest(request));
 
         JsonResult.createSuccessResult(result, true);
       }
@@ -282,8 +352,7 @@ public class QueryFacadeImpl extends BaseFacade {
       public void doManage() {
         QueryProto.PqlRangeRequest rangeRequest = QueryProto.PqlRangeRequest.newBuilder()
             .setQuery(request.getQuery()).setTenant(RequestContext.getContext().ms.getTenant())
-            .setDelta(request.getDelta()).setTimeout(request.getTimeout())
-            .setStart(request.getStart()).setEnd(request.getEnd())
+            .setTimeout(request.getTimeout()).setStart(request.getStart()).setEnd(request.getEnd())
             .setFillZero(request.getFillZero()).setStep(request.getStep()).build();
         QueryResponse response = queryClientService.pqlRangeQuery(rangeRequest);
         GrafanaJsonResult.createSuccessResult(result, response.getResults());
@@ -663,7 +732,64 @@ public class QueryFacadeImpl extends BaseFacade {
     return result;
   }
 
-  public QueryProto.QueryRequest converRequest(DataQueryRequest request) {
+  public List<DataQueryRequest> convertQueryRequest(DelTagReq req) {
+
+    MonitorScope ms = RequestContext.getContext().ms;
+    long start = (req.getStart() == null) ? (System.currentTimeMillis() - 7 * 24 * 60 * 60 * 1000)
+        : req.getStart();
+    long end = (req.getEnd() == null) ? (System.currentTimeMillis()) : req.getEnd();
+
+    List<DataQueryRequest> queryRequests = new ArrayList<>();
+    List<QueryDataSource> queryDataSources = new ArrayList<>();
+
+    if (req.isAll()) {
+      {
+        QueryDataSource queryDataSource = new QueryDataSource();
+        {
+          queryDataSource.setStart(start);
+          queryDataSource.setEnd(end);
+          queryDataSource.setMetric(req.getMetric());
+        }
+
+        queryDataSources.add(queryDataSource);
+      }
+    } else if (!CollectionUtils.isEmpty(req.getKeys())) {
+      for (Map<String, String> map : req.getKeys()) {
+        if (CollectionUtils.isEmpty(map))
+          continue;
+        QueryDataSource queryDataSource = new QueryDataSource();
+        queryDataSource.setStart(start);
+        queryDataSource.setEnd(end);
+        queryDataSource.setMetric(req.getMetric());
+        List<QueryFilter> filters = new ArrayList<>();
+        for (Entry<String, String> entry : map.entrySet()) {
+          QueryFilter filter = new QueryFilter();
+          filter.setName(entry.getKey());
+          filter.setValue(entry.getValue());
+          filter.setType("literal");
+          filters.add(filter);
+        }
+        queryDataSource.setFilters(filters);
+        queryDataSources.add(queryDataSource);
+      }
+    }
+
+    if (CollectionUtils.isEmpty(queryDataSources)) {
+      return new ArrayList<>();
+    }
+
+    List<List<QueryDataSource>> lists = UtilMisc.divideList(queryDataSources, 200);
+    lists.forEach(list -> {
+      DataQueryRequest queryRequest = new DataQueryRequest();
+      queryRequest.setTenant(ms.getTenant());
+      queryRequest.setDatasources(list);
+      queryRequests.add(queryRequest);
+    });
+
+    return queryRequests;
+  }
+
+  public QueryProto.QueryRequest convertRequest(DataQueryRequest request) {
     MonitorScope ms = RequestContext.getContext().ms;
     QueryProto.QueryRequest.Builder builder = QueryProto.QueryRequest.newBuilder();
 
