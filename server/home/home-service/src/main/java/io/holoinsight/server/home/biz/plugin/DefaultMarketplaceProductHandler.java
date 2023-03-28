@@ -114,9 +114,7 @@ public class DefaultMarketplaceProductHandler implements MarketplaceProductHandl
         configMap.put("type", "webhook");
 
         configList.add(configMap);
-      }
-
-      if (map.get("type").equals("dataQuery")) {
+      } else if (map.get("type").equals("dataQuery")) {
         Map<String, Object> params = new HashMap<>();
         params.put("tenant", MonitorCookieUtil.getTenantOrException());
         params.put("name", productDTO.getName());

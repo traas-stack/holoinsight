@@ -67,6 +67,11 @@ public class AlertRuleServiceImpl extends ServiceImpl<AlarmRuleMapper, AlarmRule
   }
 
   @Override
+  public AlarmRuleDTO queryById(Long id, String tenant) {
+    return queryById(id, tenant, null);
+  }
+
+  @Override
   public MonitorPageResult<AlarmRuleDTO> getListByPage(
       MonitorPageRequest<AlarmRuleDTO> pageRequest) {
     if (pageRequest.getTarget() == null) {

@@ -62,7 +62,7 @@ public class MigrateService {
    */
   public CustomPluginDTO migrateCustomPlugin(Long id, String sourceTenant, String targetTenant,
       String targetWorkspace) {
-    CustomPluginDTO customPluginDTO = customPluginService.queryById(id, sourceTenant, null);
+    CustomPluginDTO customPluginDTO = customPluginService.queryById(id, sourceTenant);
     customPluginDTO.setId(null);
     customPluginDTO.setTenant(targetTenant);
     if (StringUtils.isNotBlank(targetWorkspace)) {
@@ -84,7 +84,7 @@ public class MigrateService {
         break;
       }
 
-      Folder folder = folderService.queryById(parentFolderId, sourceTenant, null);
+      Folder folder = folderService.queryById(parentFolderId, sourceTenant);
       if (folder == null) {
         throw new MonitorException("invalid folder status [folderId: " + parentFolderId + "]"
             + "[tenant: " + sourceTenant + "]");
@@ -127,7 +127,7 @@ public class MigrateService {
    */
   public Dashboard migrateDashboard(Long id, String sourceTenant, String targetTenant,
       String targetWorkspace) {
-    Dashboard dashboard = dashboardService.queryById(id, sourceTenant, null);
+    Dashboard dashboard = dashboardService.queryById(id, sourceTenant);
     dashboard.setId(null);
     dashboard.setTenant(targetTenant);
     if (StringUtils.isNotBlank(targetWorkspace)) {
@@ -150,7 +150,7 @@ public class MigrateService {
    */
   public AlarmRuleDTO migrateAlarmRule(Long id, String sourceTenant, String targetTenant,
       String targetWorkspace) {
-    AlarmRuleDTO alarmRuleDTO = alarmRuleService.queryById(id, sourceTenant, null);
+    AlarmRuleDTO alarmRuleDTO = alarmRuleService.queryById(id, sourceTenant);
     alarmRuleDTO.setTenant(targetTenant);
     if (StringUtils.isNotBlank(targetWorkspace)) {
       alarmRuleDTO.setWorkspace(targetWorkspace);

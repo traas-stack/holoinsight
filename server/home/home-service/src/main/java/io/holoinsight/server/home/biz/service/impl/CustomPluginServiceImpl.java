@@ -54,6 +54,11 @@ public class CustomPluginServiceImpl extends ServiceImpl<CustomPluginMapper, Cus
   }
 
   @Override
+  public CustomPluginDTO queryById(Long id, String tenant) {
+    return queryById(id, tenant, null);
+  }
+
+  @Override
   public List<CustomPluginDTO> findByMap(Map<String, Object> columnMap) {
     List<CustomPlugin> models = listByMap(columnMap);
 

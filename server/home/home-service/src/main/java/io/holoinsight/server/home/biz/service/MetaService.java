@@ -54,7 +54,7 @@ public class MetaService {
 
     List<AppModel> appModels = new ArrayList<>();
     for (Map<String, Object> map : mapList) {
-      if (!map.containsKey(meta_app)) {
+      if (!map.containsKey(meta_app) || null == map.get(meta_app)) {
         continue;
       }
 
@@ -72,7 +72,7 @@ public class MetaService {
       appModel.setApp(app);
       appModel.setWorkspace(workspace);
 
-      if (map.containsKey(meta_type)) {
+      if (map.containsKey(meta_type) && null != map.get(meta_type)) {
         appModel.setMachineType(map.get(meta_type).toString());
       }
       appModels.add(appModel);
@@ -90,14 +90,14 @@ public class MetaService {
     }
 
     dbLists.forEach(db -> {
-      if (!db.containsKey(meta_app)) {
+      if (null != db.get(meta_app)) {
         return;
       }
       AppModel appModel = new AppModel();
       appModel.setApp(db.get(meta_app).toString());
       appModel.setWorkspace(db.getOrDefault(meta_workspace, meta_workspace_default).toString());
 
-      if (!db.containsKey("_label"))
+      if (null != db.get("_label"))
         return;
 
       Map<String, Object> map = J.toMap(J.toJson(db.get("_label")));

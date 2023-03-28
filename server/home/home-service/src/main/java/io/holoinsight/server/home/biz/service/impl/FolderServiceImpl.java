@@ -71,6 +71,11 @@ public class FolderServiceImpl extends ServiceImpl<FolderMapper, Folder> impleme
   }
 
   @Override
+  public Folder queryById(Long id, String tenant) {
+    return queryById(id, tenant, null);
+  }
+
+  @Override
   public Long create(Folder folder) {
     folder.setGmtCreate(new Date());
     folder.setGmtModified(new Date());

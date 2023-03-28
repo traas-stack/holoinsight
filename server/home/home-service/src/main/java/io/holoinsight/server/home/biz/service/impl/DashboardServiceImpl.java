@@ -42,6 +42,11 @@ public class DashboardServiceImpl extends ServiceImpl<DashboardMapper, Dashboard
   }
 
   @Override
+  public Dashboard queryById(Long id, String tenant) {
+    return queryById(id, tenant, null);
+  }
+
+  @Override
   public DashboardDTO save(DashboardDTO dashboardDTO) {
     Object dashId = dashboardDTO.getDashboard().get("id");
     String title = (String) dashboardDTO.getDashboard().get("title");

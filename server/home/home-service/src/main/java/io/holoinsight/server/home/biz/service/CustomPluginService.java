@@ -16,6 +16,8 @@ public interface CustomPluginService extends IService<CustomPlugin> {
 
   CustomPluginDTO queryById(Long id, String tenant, String workspace);
 
+  CustomPluginDTO queryById(Long id, String tenant);
+
   List<CustomPluginDTO> findByMap(Map<String, Object> columnMap);
 
   List<CustomPluginDTO> findByIds(List<String> ids);

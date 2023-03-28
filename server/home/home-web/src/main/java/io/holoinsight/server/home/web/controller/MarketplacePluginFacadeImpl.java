@@ -565,10 +565,10 @@ public class MarketplacePluginFacadeImpl extends BaseFacade {
       @Override
       public void doManage() {
         MonitorScope ms = RequestContext.getContext().ms;
-        if (null != ms && !StringUtils.isEmpty(ms.tenant)) {
+        if (null != ms && StringUtils.isNotBlank(ms.tenant)) {
           customPluginRequest.getTarget().setTenant(ms.tenant);
         }
-        if (null != ms && !StringUtils.isEmpty(ms.getWorkspace())) {
+        if (null != ms && StringUtils.isNotBlank(ms.getWorkspace())) {
           customPluginRequest.getTarget().setWorkspace(ms.getWorkspace());
         }
         JsonResult.createSuccessResult(result,

@@ -15,6 +15,8 @@ public interface DashboardService extends IService<Dashboard> {
 
   Dashboard queryById(Long id, String tenant, String workspace);
 
+  Dashboard queryById(Long id, String tenant);
+
   DashboardDTO save(DashboardDTO dashboardDTO);
 
   List<Dashboard> findByIds(List<String> ids);

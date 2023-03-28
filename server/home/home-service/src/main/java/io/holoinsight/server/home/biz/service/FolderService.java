@@ -23,6 +23,8 @@ public interface FolderService extends IService<Folder> {
 
   Folder queryById(Long id, String tenant, String workspace);
 
+  Folder queryById(Long id, String tenant);
+
   Long create(Folder folder);
 
 }
