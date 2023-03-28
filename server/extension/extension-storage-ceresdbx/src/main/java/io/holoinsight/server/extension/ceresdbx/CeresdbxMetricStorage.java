@@ -206,6 +206,8 @@ public class CeresdbxMetricStorage implements MetricStorage {
         }
       });
     } catch (Exception e) {
+      StatUtils.STORAGE_WRITE.add(StringsKey.of("CeresDBx", tenant, "N"),
+          new long[] {1, oneBatch.size(), System.currentTimeMillis() - start});
       LOGGER.error("save metrics:{} to CeresDBx error, msg:{}", metrics, e.getMessage(), e);
     }
 

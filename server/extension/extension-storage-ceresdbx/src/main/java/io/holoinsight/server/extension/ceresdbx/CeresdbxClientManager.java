@@ -37,6 +37,7 @@ import org.springframework.util.Assert;
 public class CeresdbxClientManager {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(CeresdbxClientManager.class);
+  public static final String PUBLIC_DATABASE = "public";
 
   private TenantOpsMapper tenantOpsMapper;
 
@@ -64,6 +65,7 @@ public class CeresdbxClientManager {
         String accessUser = (String) ceresdbConfig.get("accessUser");
         String accessKey = (String) ceresdbConfig.get("accessKey");
         String address = (String) ceresdbConfig.get("address");
+        String database = (String) ceresdbConfig.get("database");
         Object portObj = ceresdbConfig.get("port");
         int port = Double.valueOf(String.valueOf(portObj)).intValue();
         String newConfigKey = configKey(address, port, accessUser, accessKey);
@@ -73,7 +75,8 @@ public class CeresdbxClientManager {
           RpcOptions rpcOptions = new RpcOptions();
           rpcOptions.setLimitKind(LimitKind.None);
           CeresDBOptions opts = CeresDBOptions.newBuilder(address, port, RouteMode.DIRECT)
-              .database("public").writeMaxRetries(2).readMaxRetries(2).maxWriteSize(512).build();
+              .database(StringUtils.isBlank(database) ? PUBLIC_DATABASE : database)
+              .writeMaxRetries(2).readMaxRetries(2).maxWriteSize(512).build();
           CeresDBClient client = new CeresDBClient();
           try {
             final boolean ret = client.init(opts);
