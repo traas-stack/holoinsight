@@ -9,7 +9,7 @@ fi
 JAVA_BIN=/usr/local/java/bin/java
 APP_JAR=/home/admin/app.jar
 
-JAVA_OPTS=""
+JAVA_OPTS="-Dfile.encoding=UTF-8"
 
 # java heap config
 # Container memory limit may not be accurately read inside the running container.

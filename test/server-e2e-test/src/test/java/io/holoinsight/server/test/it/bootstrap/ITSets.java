@@ -50,6 +50,7 @@ public class ITSets {
         .selectors(selectClass(AlertWebhookIT.class)) //
         .selectors(selectClass(DashboardIT.class)) //
         .selectors(selectClass(AlertDingDingRobotIT.class)) //
+        .selectors(selectClass(LogMonitoring_1_log_IT.class)) //
         .build(); //
   }
 }
