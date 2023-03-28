@@ -76,11 +76,11 @@ public class CustomPluginFacadeImpl extends BaseFacade {
         ParaCheckUtil.checkParaNotNull(customPluginDTO.conf, "conf");
 
         ParaCheckUtil.checkParaNotNull(customPluginDTO.getTenant(), "tenant");
-        ParaCheckUtil.checkEquals(customPluginDTO.getTenant(),
-            RequestContext.getContext().ms.getTenant(), "tenant is illegal");
+        MonitorScope ms = RequestContext.getContext().ms;
+        ParaCheckUtil.checkEquals(customPluginDTO.getTenant(), ms.getTenant(), "tenant is illegal");
 
         CustomPluginDTO item = customPluginService.queryById(customPluginDTO.getId(),
-            RequestContext.getContext().ms.getTenant());
+            ms.getTenant(), ms.getWorkspace());
 
         if (null == item) {
           throw new MonitorException("cannot find record: " + customPluginDTO.getId());
@@ -101,12 +101,15 @@ public class CustomPluginFacadeImpl extends BaseFacade {
         if (null != ms && !StringUtils.isEmpty(ms.tenant)) {
           customPluginDTO.setTenant(ms.tenant);
         }
+        if (null != ms && !StringUtils.isEmpty(ms.workspace)) {
+          customPluginDTO.setWorkspace(ms.workspace);
+        }
         customPluginDTO.setGmtModified(new Date());
         CustomPluginDTO update = customPluginService.updateByRequest(customPluginDTO);
         JsonResult.createSuccessResult(result, update);
         assert mu != null;
         userOpLogService.append("custom_plugin", update.getId(), OpType.UPDATE, mu.getLoginName(),
-            ms.getTenant(), J.toJson(customPluginDTO), J.toJson(update), null,
+            ms.getTenant(), ms.getWorkspace(), J.toJson(customPluginDTO), J.toJson(update), null,
             "custom_plugin_update");
 
       }
@@ -142,13 +145,18 @@ public class CustomPluginFacadeImpl extends BaseFacade {
         if (null != ms && !StringUtils.isEmpty(ms.tenant)) {
           customPluginDTO.setTenant(ms.tenant);
         }
+
+        if (null != ms && !StringUtils.isEmpty(ms.workspace)) {
+          customPluginDTO.setWorkspace(ms.workspace);
+        }
         customPluginDTO.setTenant(MonitorCookieUtil.getTenantOrException());
         CustomPluginDTO save = customPluginService.create(customPluginDTO);
         JsonResult.createSuccessResult(result, save);
 
         assert mu != null;
         userOpLogService.append("custom_plugin", save.getId(), OpType.CREATE, mu.getLoginName(),
-            ms.getTenant(), J.toJson(customPluginDTO), null, null, "custom_plugin_create");
+            ms.getTenant(), ms.getWorkspace(), J.toJson(customPluginDTO), null, null,
+            "custom_plugin_create");
 
       }
     });
@@ -174,8 +182,8 @@ public class CustomPluginFacadeImpl extends BaseFacade {
         MonitorScope ms = RequestContext.getContext().ms;
         MonitorUser mu = RequestContext.getContext().mu;
 
-        CustomPluginDTO update = customPluginService.queryById(customPluginDTO.id,
-            RequestContext.getContext().ms.getTenant());
+        CustomPluginDTO update =
+            customPluginService.queryById(customPluginDTO.id, ms.getTenant(), ms.getWorkspace());
         if (null == update) {
           throw new MonitorException(ResultCodeEnum.CANNOT_FIND_RECORD, "can not find record");
         }
@@ -183,8 +191,12 @@ public class CustomPluginFacadeImpl extends BaseFacade {
         if (null != mu) {
           update.setModifier(mu.getLoginName());
         }
-        if (null != ms && !StringUtils.isEmpty(ms.tenant)) {
+        if (!StringUtils.isEmpty(ms.tenant)) {
           update.setTenant(ms.tenant);
+        }
+
+        if (!StringUtils.isEmpty(ms.workspace)) {
+          update.setWorkspace(ms.workspace);
         }
         update.setGmtModified(new Date());
         update.setParentFolderId(customPluginDTO.parentFolderId);
@@ -192,7 +204,8 @@ public class CustomPluginFacadeImpl extends BaseFacade {
         JsonResult.createSuccessResult(result, true);
         assert mu != null;
         userOpLogService.append("custom_plugin", update.getId(), OpType.UPDATE, mu.getLoginName(),
-            ms.getTenant(), J.toJson(custom), J.toJson(update), null, "custom_plugin_update");
+            ms.getTenant(), ms.getWorkspace(), J.toJson(custom), J.toJson(update), null,
+            "custom_plugin_update");
 
       }
     });
@@ -212,8 +225,9 @@ public class CustomPluginFacadeImpl extends BaseFacade {
 
       @Override
       public void doManage() {
+        MonitorScope ms = RequestContext.getContext().ms;
         CustomPluginDTO customPluginDTO =
-            customPluginService.queryById(id, RequestContext.getContext().ms.getTenant());
+            customPluginService.queryById(id, ms.getTenant(), ms.getWorkspace());
 
         if (null == customPluginDTO) {
           throw new MonitorException(ResultCodeEnum.CANNOT_FIND_RECORD, "can not find record");
@@ -236,17 +250,16 @@ public class CustomPluginFacadeImpl extends BaseFacade {
 
       @Override
       public void doManage() {
-        CustomPluginDTO byId =
-            customPluginService.queryById(id, RequestContext.getContext().ms.getTenant());
+        MonitorScope ms = RequestContext.getContext().ms;
+        CustomPluginDTO byId = customPluginService.queryById(id, ms.getTenant(), ms.getWorkspace());
         if (null == byId) {
           throw new MonitorException(ResultCodeEnum.CANNOT_FIND_RECORD, "can not find record");
         }
         customPluginService.deleteById(id);
         JsonResult.createSuccessResult(result, null);
         userOpLogService.append("custom_plugin", byId.getId(), OpType.DELETE,
-            RequestContext.getContext().mu.getLoginName(),
-            RequestContext.getContext().ms.getTenant(), J.toJson(byId), null, null,
-            "custom_plugin_delete");
+            RequestContext.getContext().mu.getLoginName(), ms.getTenant(), ms.getWorkspace(),
+            J.toJson(byId), null, null, "custom_plugin_delete");
 
       }
     });
@@ -266,9 +279,13 @@ public class CustomPluginFacadeImpl extends BaseFacade {
 
       @Override
       public void doManage() {
+        MonitorScope ms = RequestContext.getContext().ms;
         Map<String, Object> conditions = new HashMap<>();
         conditions.put("parent_folder_id", parentFolderId);
         conditions.put("tenant", MonitorCookieUtil.getTenantOrException());
+        if (StringUtils.isNotBlank(ms.getWorkspace())) {
+          conditions.put("workspace", ms.getWorkspace());
+        }
         JsonResult.createSuccessResult(result, customPluginService.findByMap(conditions));
       }
     });
@@ -288,9 +305,13 @@ public class CustomPluginFacadeImpl extends BaseFacade {
 
       @Override
       public void doManage() {
+        MonitorScope ms = RequestContext.getContext().ms;
         Map<String, Object> conditions = new HashMap<>();
         conditions.put("name", name);
         conditions.put("tenant", MonitorCookieUtil.getTenantOrException());
+        if (StringUtils.isNotBlank(ms.getWorkspace())) {
+          conditions.put("workspace", ms.getWorkspace());
+        }
         JsonResult.createSuccessResult(result, customPluginService.findByMap(conditions));
       }
     });
@@ -310,9 +331,13 @@ public class CustomPluginFacadeImpl extends BaseFacade {
 
       @Override
       public void doManage() {
+        MonitorScope ms = RequestContext.getContext().ms;
         Map<String, Object> conditions = new HashMap<>();
         conditions.put("creator", creator);
         conditions.put("tenant", MonitorCookieUtil.getTenantOrException());
+        if (StringUtils.isNotBlank(ms.getWorkspace())) {
+          conditions.put("workspace", ms.getWorkspace());
+        }
         JsonResult.createSuccessResult(result, customPluginService.findByMap(conditions));
       }
     });
@@ -333,7 +358,11 @@ public class CustomPluginFacadeImpl extends BaseFacade {
 
       @Override
       public void doManage() {
-        customPluginRequest.getTarget().setTenant(RequestContext.getContext().ms.getTenant());
+        MonitorScope ms = RequestContext.getContext().ms;
+        customPluginRequest.getTarget().setTenant(ms.getTenant());
+        if (StringUtils.isNotBlank(ms.getWorkspace())) {
+          customPluginRequest.getTarget().setWorkspace(ms.getWorkspace());
+        }
         JsonResult.createSuccessResult(result,
             customPluginService.getListByPage(customPluginRequest));
       }

@@ -51,6 +51,7 @@ public class OpenmetricsScraperUpdateListener {
 
     GaeaCollectConfigDTO gaeaCollectConfigDTO = new GaeaCollectConfigDTO();
     gaeaCollectConfigDTO.tenant = openmetricsScraperDTO.getTenant();
+    gaeaCollectConfigDTO.workspace = openmetricsScraperDTO.getWorkspace();
     gaeaCollectConfigDTO.deleted = false;
     gaeaCollectConfigDTO.type = openmetricsScraperDTO.getClass().getName();
     gaeaCollectConfigDTO.refId = "openmetrics_" + openmetricsScraperDTO.getId();

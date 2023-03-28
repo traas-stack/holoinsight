@@ -15,11 +15,13 @@ import java.util.List;
  */
 public interface FolderService extends IService<Folder> {
 
-  List<Folder> getListByKeyword(String keyword, String tenant);
+  List<Folder> getListByKeyword(String keyword, String tenant, String workspace);
 
-  List<Folder> getListByNameLike(String name, String tenant);
+  List<Folder> getListByNameLike(String name, String tenant, String workspace);
 
   List<Folder> findByIds(List<String> ids);
+
+  Folder queryById(Long id, String tenant, String workspace);
 
   Folder queryById(Long id, String tenant);
 

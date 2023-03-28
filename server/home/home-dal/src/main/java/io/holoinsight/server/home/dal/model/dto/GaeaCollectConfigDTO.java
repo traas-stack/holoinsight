@@ -26,6 +26,8 @@ public class GaeaCollectConfigDTO {
   public String refId;
 
   public String tenant;
+  public String workspace;
+
   public String tableName;
 
   public Boolean deleted;

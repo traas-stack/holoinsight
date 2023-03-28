@@ -20,6 +20,7 @@ public class Folder {
   public Long id;
   public String name;
   public String tenant;
+  public String workspace;
   public Long parentFolderId;
   public String creator;
   public String modifier;

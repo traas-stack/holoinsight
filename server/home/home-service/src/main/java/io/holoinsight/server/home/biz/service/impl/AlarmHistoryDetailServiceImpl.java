@@ -4,6 +4,7 @@
 package io.holoinsight.server.home.biz.service.impl;
 
 import io.holoinsight.server.home.biz.service.AlarmHistoryDetailService;
+import io.holoinsight.server.home.common.util.StringUtil;
 import io.holoinsight.server.home.dal.converter.AlarmHistoryDetailConverter;
 import io.holoinsight.server.home.dal.mapper.AlarmHistoryDetailMapper;
 import io.holoinsight.server.home.dal.model.AlarmHistoryDetail;
@@ -13,10 +14,12 @@ import io.holoinsight.server.home.facade.page.MonitorPageResult;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.Date;
+import java.util.Locale;
 
 @Service
 public class AlarmHistoryDetailServiceImpl extends
@@ -49,6 +52,10 @@ public class AlarmHistoryDetailServiceImpl extends
       wrapper.eq("tenant", alarmHistoryDetail.getTenant());
     }
 
+    if (StringUtils.isNotBlank(alarmHistoryDetail.getWorkspace())) {
+      wrapper.eq("workspace", alarmHistoryDetail.getWorkspace());
+    }
+
     if (null != pageRequest.getFrom()) {
       wrapper.ge("alarm_time", new Date(pageRequest.getFrom()));
     }
@@ -61,7 +68,16 @@ public class AlarmHistoryDetailServiceImpl extends
       wrapper.eq("env_type", alarmHistoryDetail.getEnvType());
     }
 
-    wrapper.orderByDesc("id");
+    if (StringUtil.isNotBlank(pageRequest.getSortBy())
+        && StringUtil.isNotBlank(pageRequest.getSortRule())) {
+      if (pageRequest.getSortRule().toLowerCase(Locale.ROOT).equals("desc")) {
+        wrapper.orderByDesc(pageRequest.getSortBy());
+      } else {
+        wrapper.orderByAsc(pageRequest.getSortBy());
+      }
+    } else {
+      wrapper.orderByDesc("id");
+    }
 
     Page<AlarmHistoryDetail> page = new Page<>(pageRequest.getPageNum(), pageRequest.getPageSize());
 

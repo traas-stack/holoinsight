@@ -9,6 +9,7 @@ import io.holoinsight.server.home.dal.model.Dashboard;
 import io.holoinsight.server.home.dal.model.Folder;
 import io.holoinsight.server.home.dal.model.dto.*;
 import io.holoinsight.server.home.facade.AlarmRuleDTO;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -59,10 +60,14 @@ public class MigrateService {
    * @param targetTenant
    * @return
    */
-  public CustomPluginDTO migrateCustomPlugin(Long id, String sourceTenant, String targetTenant) {
+  public CustomPluginDTO migrateCustomPlugin(Long id, String sourceTenant, String targetTenant,
+      String targetWorkspace) {
     CustomPluginDTO customPluginDTO = customPluginService.queryById(id, sourceTenant);
     customPluginDTO.setId(null);
     customPluginDTO.setTenant(targetTenant);
+    if (StringUtils.isNotBlank(targetWorkspace)) {
+      customPluginDTO.setWorkspace(targetWorkspace);
+    }
     CustomPluginDTO targetCustomPluginDTO = customPluginService.create(customPluginDTO);
 
     int currentDeep = 0;
@@ -85,6 +90,9 @@ public class MigrateService {
             + "[tenant: " + sourceTenant + "]");
       }
       folder.setTenant(targetTenant);
+      if (StringUtils.isNotBlank(targetWorkspace)) {
+        folder.setWorkspace(targetWorkspace);
+      }
       folder.setId(null);
       Long saveId = folderService.create(folder);
       folder.setId(saveId);
@@ -117,10 +125,14 @@ public class MigrateService {
    * @param targetTenant
    * @return
    */
-  public Dashboard migrateDashboard(Long id, String sourceTenant, String targetTenant) {
+  public Dashboard migrateDashboard(Long id, String sourceTenant, String targetTenant,
+      String targetWorkspace) {
     Dashboard dashboard = dashboardService.queryById(id, sourceTenant);
     dashboard.setId(null);
     dashboard.setTenant(targetTenant);
+    if (StringUtils.isNotBlank(targetWorkspace)) {
+      dashboard.setWorkspace(targetWorkspace);
+    }
     dashboard.setGmtModified(new Date());
     dashboard.setGmtCreate(new Date());
     Long saveId = dashboardService.create(dashboard);
@@ -136,15 +148,19 @@ public class MigrateService {
    * @param targetTenant
    * @return
    */
-  public AlarmRuleDTO migrateAlarmRule(Long id, String sourceTenant, String targetTenant) {
+  public AlarmRuleDTO migrateAlarmRule(Long id, String sourceTenant, String targetTenant,
+      String targetWorkspace) {
     AlarmRuleDTO alarmRuleDTO = alarmRuleService.queryById(id, sourceTenant);
     alarmRuleDTO.setTenant(targetTenant);
+    if (StringUtils.isNotBlank(targetWorkspace)) {
+      alarmRuleDTO.setWorkspace(targetWorkspace);
+    }
     alarmRuleDTO.setId(null);
     alarmRuleDTO.setGmtModified(new Date());
     alarmRuleDTO.setGmtCreate(new Date());
     Long alarmRuleSaveId = alarmRuleService.save(alarmRuleDTO);
     alarmRuleDTO.setId(alarmRuleSaveId);
-    batchMigrateAlarmSubscribes("rule_" + id, sourceTenant, targetTenant);
+    batchMigrateAlarmSubscribes("rule_" + id, sourceTenant, targetTenant, targetWorkspace);
     return alarmRuleDTO;
   }
 
@@ -155,13 +171,19 @@ public class MigrateService {
    * @param sourceTenant
    * @param targetTenant
    */
-  public void batchMigrateAlarmSubscribes(String uniqueId, String sourceTenant,
-      String targetTenant) {
+  public void batchMigrateAlarmSubscribes(String uniqueId, String sourceTenant, String targetTenant,
+      String targetWorkspace) {
     Map<String, Object> params = new HashMap<>();
     params.put("unique_id", uniqueId);
+    if (StringUtils.isNotBlank(targetWorkspace)) {
+      params.put("workspace", targetWorkspace);
+    }
     AlarmSubscribeDTO alarmSubscribeDTO = alarmSubscribeService.queryByUniqueId(params);
     for (AlarmSubscribeInfo info : alarmSubscribeDTO.getAlarmSubscribe()) {
       info.setTenant(targetTenant);
+      if (StringUtils.isNotBlank(targetWorkspace)) {
+        info.setWorkspace(targetWorkspace);
+      }
       info.setUniqueId("rule_" + uniqueId);
       info.setId(null);
       Long alarmSubscribeSaveId = alarmSubscribeService.save(info);

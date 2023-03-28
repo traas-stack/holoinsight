@@ -25,6 +25,8 @@ public class Dashboard {
 
   public String tenant;
 
+  public String workspace;
+
   public String type;
 
   public Date gmtCreate;

@@ -59,6 +59,11 @@ public class AlarmHistoryDetail {
   private String tenant;
 
   /**
+   * workspace
+   */
+  private String workspace;
+
+  /**
    * 报警维度
    */
   private String tags;

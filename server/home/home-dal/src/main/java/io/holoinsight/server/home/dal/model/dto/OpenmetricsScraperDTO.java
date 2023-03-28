@@ -13,6 +13,7 @@ public class OpenmetricsScraperDTO {
   private Long id;
   private String name;
   private String tenant;
+  private String workspace;
   private String metricsPath;
   private String schema;
   private String port;

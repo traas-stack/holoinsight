@@ -75,6 +75,11 @@ public class AlarmSubscribe {
   private String tenant;
 
   /**
+   * workspace
+   */
+  private String workspace;
+
+  /**
    * 环境类型
    */
   @Column(name = "env_type")
@@ -284,5 +289,13 @@ public class AlarmSubscribe {
 
   public void setEnvType(String envType) {
     this.envType = envType;
+  }
+
+  public String getWorkspace() {
+    return workspace;
+  }
+
+  public void setWorkspace(String workspace) {
+    this.workspace = workspace;
   }
 }

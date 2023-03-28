@@ -240,6 +240,10 @@ public class MongoDataCoreService extends AbstractDataCoreService {
           query.addCriteria(Criteria.where(entry.getKey()).is(entry.getValue()));
           continue;
         }
+        if (entry.getKey().equalsIgnoreCase(default_workspace)) {
+          query.addCriteria(Criteria.where(entry.getKey()).is(entry.getValue()));
+          continue;
+        }
         orCriteria.add(Criteria.where(entry.getKey())
             .regex(J.json2Bean(J.toJson(entry.getValue()), Pattern.class)));
       }

@@ -117,8 +117,8 @@ public class AlertmanagerWebhookImpl extends BaseFacade {
     alertmanagerWebhookDTO = alertmanagerWebhookConverter.doToDTO(alertmanagerWebhook);
 
     userOpLogService.append("alertmanager_webhook", alertmanagerWebhookDTO.getId(), OpType.CREATE,
-        mu.getLoginName(), ms.getTenant(), J.toJson(alertmanagerWebhookDTO), null, null,
-        "alertmanager_webhook_create");
+        mu.getLoginName(), ms.getTenant(), ms.getWorkspace(), J.toJson(alertmanagerWebhookDTO),
+        null, null, "alertmanager_webhook_create");
 
     return JsonResult.createSuccessResult(alertmanagerWebhookDTO);
   }
@@ -155,8 +155,8 @@ public class AlertmanagerWebhookImpl extends BaseFacade {
         alertmanagerWebhookService.updateById(model);
 
         userOpLogService.append("alertmanager_webhook", id, OpType.UPDATE,
-            RequestContext.getContext().mu.getLoginName(), ms.getTenant(), J.toJson(model),
-            J.toJson(alertmanagerWebhookDTO), null, "alertmanager_webhook_update");
+            RequestContext.getContext().mu.getLoginName(), ms.getTenant(), ms.getWorkspace(),
+            J.toJson(model), J.toJson(alertmanagerWebhookDTO), null, "alertmanager_webhook_update");
 
         JsonResult.createSuccessResult(result, alertmanagerWebhookDTO);
       }
@@ -170,15 +170,14 @@ public class AlertmanagerWebhookImpl extends BaseFacade {
   public JsonResult<Object> delete(@PathVariable("id") Long id) {
     MonitorScope ms = RequestContext.getContext().ms;
 
-    AlertmanagerWebhook model =
-        alertmanagerWebhookService.queryById(id, RequestContext.getContext().ms.getTenant());
+    AlertmanagerWebhook model = alertmanagerWebhookService.queryById(id, ms.getTenant());
     if (model == null || !model.getTenant().equals(ms.getTenant())) {
       return JsonResult.createFailResult("can not find the record");
     }
 
     alertmanagerWebhookService.removeById(id);
     userOpLogService.append("alertmanager_webhook", id, OpType.DELETE,
-        RequestContext.getContext().mu.getLoginName(), RequestContext.getContext().ms.getTenant(),
+        RequestContext.getContext().mu.getLoginName(), ms.getTenant(), ms.getWorkspace(),
         J.toJson(id), null, null, "alertmanager_webhook_delete");
 
     return JsonResult.createSuccessResult(model);

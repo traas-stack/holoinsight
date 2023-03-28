@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import io.holoinsight.server.home.biz.service.AlertGroupService;
+import io.holoinsight.server.home.common.util.StringUtil;
 import io.holoinsight.server.home.dal.converter.AlarmGroupConverter;
 import io.holoinsight.server.home.dal.mapper.AlarmGroupMapper;
 import io.holoinsight.server.home.dal.model.AlarmGroup;
@@ -93,26 +94,15 @@ public class AlertGroupServiceImpl extends ServiceImpl<AlarmGroupMapper, AlarmGr
       wrapper.like("modifior", alarmHistory.getModifier().trim());
     }
 
-    if (StringUtils.isNotBlank(pageRequest.getSortBy())
-        && StringUtils.isNotBlank(pageRequest.getSortRule())) {
-      if (pageRequest.getSortBy().equals("gmtCreate")) {
-        if (pageRequest.getSortRule().toLowerCase(Locale.ROOT).equals("desc")) {
-          wrapper.orderByDesc("gmt_create");
-        } else {
-          wrapper.orderByAsc("gmt_create");
-        }
+    if (StringUtil.isNotBlank(pageRequest.getSortBy())
+        && StringUtil.isNotBlank(pageRequest.getSortRule())) {
+      if (pageRequest.getSortRule().toLowerCase(Locale.ROOT).equals("desc")) {
+        wrapper.orderByDesc(pageRequest.getSortBy());
+      } else {
+        wrapper.orderByAsc(pageRequest.getSortBy());
       }
-    }
-
-    if (StringUtils.isNotBlank(pageRequest.getSortBy())
-        && StringUtils.isNotBlank(pageRequest.getSortRule())) {
-      if (pageRequest.getSortBy().equals("gmtModified")) {
-        if (pageRequest.getSortRule().toLowerCase(Locale.ROOT).equals("desc")) {
-          wrapper.orderByDesc("gmt_modified");
-        } else {
-          wrapper.orderByAsc("gmt_modified");
-        }
-      }
+    } else {
+      wrapper.orderByDesc("gmt_modified");
     }
 
     wrapper.select(AlarmGroup.class,

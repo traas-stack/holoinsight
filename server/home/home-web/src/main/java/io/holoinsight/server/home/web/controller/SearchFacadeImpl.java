@@ -20,6 +20,7 @@ import io.holoinsight.server.common.JsonResult;
 import io.holoinsight.server.meta.common.model.QueryExample;
 import io.holoinsight.server.meta.facade.service.DataClientService;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -82,31 +83,32 @@ public class SearchFacadeImpl extends BaseFacade {
 
         MonitorScope ms = RequestContext.getContext().ms;
         String tenant = ms.tenant;
+        String workspace = ms.workspace;
 
         List<SearchKeywordRet> ret = new ArrayList<>();
         List<Future<SearchKeywordRet>> futures = new ArrayList<>();
         futures.add(queryThreadPool.submit(() -> {
-          return searchLogEntity(req.keyword, tenant);
+          return searchLogEntity(req.keyword, tenant, workspace);
         }));
 
         futures.add(queryThreadPool.submit(() -> {
-          return searchFolderEntity(req.keyword, tenant);
+          return searchFolderEntity(req.keyword, tenant, workspace);
         }));
 
         futures.add(queryThreadPool.submit(() -> {
-          return searchDashboardEntity(req.keyword, tenant);
+          return searchDashboardEntity(req.keyword, tenant, workspace);
         }));
 
         futures.add(queryThreadPool.submit(() -> {
-          return searchInfraEntity(req.keyword, tenant);
+          return searchInfraEntity(req.keyword, tenant, workspace);
         }));
 
         futures.add(queryThreadPool.submit(() -> {
-          return searchAppEntity(req.keyword, tenant);
+          return searchAppEntity(req.keyword, tenant, workspace);
         }));
 
         futures.add(queryThreadPool.submit(() -> {
-          return searchAlarmEntity(req.keyword, tenant);
+          return searchAlarmEntity(req.keyword, tenant, workspace);
         }));
 
         // 多线程
@@ -149,17 +151,19 @@ public class SearchFacadeImpl extends BaseFacade {
 
         MonitorScope ms = RequestContext.getContext().ms;
         String tenant = ms.tenant;
+        String workspace = ms.workspace;
 
         List<SearchKeywordRet> ret = new ArrayList<>();
         List<Future<SearchKeywordRet>> futures = new ArrayList<>();
         futures.add(queryThreadPool.submit(() -> {
           List<CustomPluginDTO> listByKeyword =
-              customPluginService.getListByNameLike(req.keyword, tenant);
+              customPluginService.getListByNameLike(req.keyword, tenant, workspace);
           return genSearchResult("log", listByKeyword);
         }));
 
         futures.add(queryThreadPool.submit(() -> {
-          List<Folder> listByKeyword = folderService.getListByNameLike(req.keyword, tenant);
+          List<Folder> listByKeyword =
+              folderService.getListByNameLike(req.keyword, tenant, workspace);
 
           return genSearchResult("folder", listByKeyword);
         }));
@@ -183,30 +187,35 @@ public class SearchFacadeImpl extends BaseFacade {
 
   }
 
-  public SearchKeywordRet searchLogEntity(String keyword, String tenant) {
+  public SearchKeywordRet searchLogEntity(String keyword, String tenant, String workspace) {
 
-    List<CustomPluginDTO> listByKeyword = customPluginService.getListByKeyword(keyword, tenant);
+    List<CustomPluginDTO> listByKeyword =
+        customPluginService.getListByKeyword(keyword, tenant, workspace);
     return genSearchResult("log", listByKeyword);
   }
 
-  public SearchKeywordRet searchFolderEntity(String keyword, String tenant) {
+  public SearchKeywordRet searchFolderEntity(String keyword, String tenant, String workspace) {
 
-    List<Folder> listByKeyword = folderService.getListByKeyword(keyword, tenant);
+    List<Folder> listByKeyword = folderService.getListByKeyword(keyword, tenant, workspace);
     return genSearchResult("folder", listByKeyword);
   }
 
-  public SearchKeywordRet searchDashboardEntity(String keyword, String tenant) {
+  public SearchKeywordRet searchDashboardEntity(String keyword, String tenant, String workspace) {
 
-    return genSearchResult("dashboard", dashboardService.getListByKeyword(keyword, tenant));
+    return genSearchResult("dashboard",
+        dashboardService.getListByKeyword(keyword, tenant, workspace));
   }
 
-  public SearchKeywordRet searchInfraEntity(String keyword, String tenant) {
+  public SearchKeywordRet searchInfraEntity(String keyword, String tenant, String workspace) {
 
     QueryExample queryExample = new QueryExample();
     queryExample.getParams().put("ip",
         Pattern.compile(String.format("^.*%s.*$", keyword), Pattern.CASE_INSENSITIVE));
     queryExample.getParams().put("hostname",
         Pattern.compile(String.format("^.*%s.*$", keyword), Pattern.CASE_INSENSITIVE));
+    if (StringUtils.isNotBlank(workspace)) {
+      queryExample.getParams().put("_workspace", workspace);
+    }
 
     List<Map<String, Object>> list = dataClientService
         .fuzzyByExample(TenantMetaUtil.genTenantServerTableName(tenant), queryExample);
@@ -214,20 +223,23 @@ public class SearchFacadeImpl extends BaseFacade {
     return genSearchResult("infra", list);
   }
 
-  public SearchKeywordRet searchAppEntity(String keyword, String tenant) {
+  public SearchKeywordRet searchAppEntity(String keyword, String tenant, String workspace) {
 
     QueryExample queryExample = new QueryExample();
     queryExample.getParams().put("app",
         Pattern.compile(String.format("^.*%s.*$", keyword), Pattern.CASE_INSENSITIVE));
+    if (StringUtils.isNotBlank(workspace)) {
+      queryExample.getParams().put("_workspace", workspace);
+    }
     List<Map<String, Object>> list = dataClientService
         .fuzzyByExample(TenantMetaUtil.genTenantAppTableName(tenant), queryExample);
 
     return genSearchResult("app", list);
   }
 
-  public SearchKeywordRet searchAlarmEntity(String keyword, String tenant) {
+  public SearchKeywordRet searchAlarmEntity(String keyword, String tenant, String workspace) {
 
-    return genSearchResult("alarm", alarmRuleService.getListByKeyword(keyword, tenant));
+    return genSearchResult("alarm", alarmRuleService.getListByKeyword(keyword, tenant, workspace));
   }
 
   public SearchKeywordRet genSearchResult(String type, List<?> datas) {

@@ -86,6 +86,11 @@ public class AlarmHistory {
   private String tenant;
 
   /**
+   * workspace
+   */
+  private String workspace;
+
+  /**
    * 来源类型
    */
   @Column(name = "source_type")

@@ -19,6 +19,8 @@ import io.holoinsight.server.home.biz.plugin.core.AbstractIntegrationPlugin;
 import io.holoinsight.server.home.biz.service.IntegrationGeneratedService;
 import io.holoinsight.server.home.biz.service.IntegrationPluginService;
 import io.holoinsight.server.common.service.TenantService;
+import io.holoinsight.server.home.biz.service.MetaService;
+import io.holoinsight.server.home.biz.service.MetaService.AppModel;
 import io.holoinsight.server.home.common.model.TaskEnum;
 import io.holoinsight.server.home.common.util.cache.local.CommonLocalCache;
 import io.holoinsight.server.home.dal.model.IntegrationGenerated;
@@ -64,6 +66,9 @@ public class TenantIntegrationGeneratedTask extends AbstractMonitorTask {
 
   @Autowired
   private TenantService tenantService;
+
+  @Autowired
+  private MetaService metaService;
 
   public TenantIntegrationGeneratedTask() {
     super(1, 2, TaskEnum.TENANT_INTEGRATION_GENERATED);
@@ -146,8 +151,10 @@ public class TenantIntegrationGeneratedTask extends AbstractMonitorTask {
       }
 
       for (IntegrationGenerated generated : dblist) {
-        dbUks.put(String.format("%s_%s_%s_%s", generated.getTenant(), generated.getProduct(),
-            generated.getItem(), generated.getName()), generated.getId());
+        dbUks.put(
+            String.format("%s_%s_%s_%s_%s", generated.getTenant(), generated.getWorkspace(),
+                generated.getProduct(), generated.getItem(), generated.getName()),
+            generated.getId());
       }
     }
 
@@ -163,25 +170,25 @@ public class TenantIntegrationGeneratedTask extends AbstractMonitorTask {
 
       String tableName = tenantDTO.code + "_app";
 
-      Map<String, String> dbAppMaps = getDbApps(tableName);
+      Map<String, AppModel> dbAppMaps = getDbApps(tableName);
       if (CollectionUtils.isEmpty(dbAppMaps))
         continue;
 
-      for (Map.Entry<String, String> entry : dbAppMaps.entrySet()) {
+      for (Map.Entry<String, AppModel> entry : dbAppMaps.entrySet()) {
 
-        if (entry.getValue().equalsIgnoreCase("VM")) {
-          generateds.add(generated(tenantDTO.getCode(), entry.getKey(), "vmsystem", "System",
-              new HashMap<>()));
+        if (entry.getValue().getMachineType().equalsIgnoreCase("VM")) {
+          generateds.add(generated(tenantDTO.getCode(), entry.getValue().getWorkspace(),
+              entry.getKey(), "vmsystem", "System", new HashMap<>()));
         } else {
-          generateds.add(generated(tenantDTO.getCode(), entry.getKey(), "podsystem", "System",
-              new HashMap<>()));
+          generateds.add(generated(tenantDTO.getCode(), entry.getValue().getWorkspace(),
+              entry.getKey(), "podsystem", "System", new HashMap<>()));
         }
 
-        generateds.add(generated(tenantDTO.getCode(), entry.getKey(), "logpattern", "LogPattern",
-            new HashMap<>()));
+        generateds.add(generated(tenantDTO.getCode(), entry.getValue().getWorkspace(),
+            entry.getKey(), "logpattern", "LogPattern", new HashMap<>()));
 
-        generateds.add(generated(tenantDTO.getCode(), entry.getKey(), "portcheck", "PortCheck",
-            new HashMap<>()));
+        generateds.add(generated(tenantDTO.getCode(), entry.getValue().getWorkspace(),
+            entry.getKey(), "portcheck", "PortCheck", new HashMap<>()));
       }
 
       List<IntegrationPluginDTO> integrationPluginDTOS =
@@ -223,8 +230,8 @@ public class TenantIntegrationGeneratedTask extends AbstractMonitorTask {
             if (appItemSets.contains(uk))
               continue;
 
-            generateds.add(generated(tenantDTO.getCode(), app, integrationPlugin.name,
-                integrationPluginDTO.getProduct(), new HashMap<>()));
+            generateds.add(generated(tenantDTO.getCode(), integrationPluginDTO.getWorkspace(), app,
+                integrationPlugin.name, integrationPluginDTO.getProduct(), new HashMap<>()));
 
             appItemSets.add(uk);
           }
@@ -233,17 +240,18 @@ public class TenantIntegrationGeneratedTask extends AbstractMonitorTask {
     }
 
     for (IntegrationGeneratedDTO generated : generateds) {
-      dtoMap.put(String.format("%s_%s_%s_%s", generated.getTenant(), generated.getProduct(),
-          generated.getItem(), generated.getName()), generated);
+      dtoMap.put(String.format("%s_%s_%s_%s_%s", generated.getTenant(), generated.getWorkspace(),
+          generated.getProduct(), generated.getItem(), generated.getName()), generated);
     }
     return dtoMap;
   }
 
-  private IntegrationGeneratedDTO generated(String tenant, String name, String item, String product,
-      Map<String, Object> config) {
+  private IntegrationGeneratedDTO generated(String tenant, String workspace, String name,
+      String item, String product, Map<String, Object> config) {
     IntegrationGeneratedDTO integrationGenerated = new IntegrationGeneratedDTO();
     {
       integrationGenerated.setTenant(tenant);
+      integrationGenerated.setWorkspace(workspace);
       integrationGenerated.setName(name);
       integrationGenerated.setProduct(product);
       integrationGenerated.setItem(item);
@@ -306,33 +314,22 @@ public class TenantIntegrationGeneratedTask extends AbstractMonitorTask {
     return appSets;
   }
 
-  private Map<String, String> getDbApps(String tableName) {
+  private Map<String, AppModel> getDbApps(String tableName) {
 
-    Map<String, String> o = CommonLocalCache.get(APP_META_KEY + tableName);
+    Map<String, AppModel> o = CommonLocalCache.get(APP_META_KEY + tableName);
     if (!CollectionUtils.isEmpty(o)) {
       return o;
     }
 
-    List<Map<String, Object>> dbLists = dataClientService.queryAll(tableName);
+    List<AppModel> appModels = metaService.getAppModelFromAppTable(tableName);
 
-    if (CollectionUtils.isEmpty(dbLists))
+    if (CollectionUtils.isEmpty(appModels))
       return new HashMap<>();
 
-    Map<String, String> appMaps = new HashMap<>();
+    Map<String, AppModel> appMaps = new HashMap<>();
 
-    dbLists.forEach(db -> {
-      if (!db.containsKey("app"))
-        return;
-
-      if (!db.containsKey("_label"))
-        return;
-
-      Map<String, Object> map = J.toMap(J.toJson(db.get("_label")));
-
-      if (!map.containsKey("machineType"))
-        return;
-
-      appMaps.put(db.get("app").toString(), map.getOrDefault("machineType", "-").toString());
+    appModels.forEach(db -> {
+      appMaps.put(db.getApp(), db);
     });
 
     CommonLocalCache.put(MD5Hash.getMD5(INTEGRATION_GENERATED_CACHE_KEY + tableName), appMaps, 10,

@@ -14,11 +14,13 @@ import java.util.Map;
 
 public interface IntegrationPluginService extends IService<IntegrationPlugin> {
 
-  IntegrationPluginDTO queryById(Long id, String tenant);
+  IntegrationPluginDTO queryById(Long id, String tenant, String workspace);
 
-  IntegrationPluginDTO queryByName(String name, String tenant);
+  IntegrationPluginDTO queryByName(String name, String tenant, String workspace);
 
   List<IntegrationPluginDTO> queryByTenant(String tenant);
+
+  List<IntegrationPluginDTO> queryByTenant(String tenant, String workspace);
 
   List<IntegrationPluginDTO> findByMap(Map<String, Object> columnMap);
 
@@ -31,8 +33,8 @@ public interface IntegrationPluginService extends IService<IntegrationPlugin> {
   MonitorPageResult<IntegrationPluginDTO> getListByPage(
       MonitorPageRequest<IntegrationPluginDTO> integrationPluginDTORequest);
 
-  List<IntegrationPluginDTO> getListByKeyword(String keyword, String tenant);
+  List<IntegrationPluginDTO> getListByKeyword(String keyword, String tenant, String workspace);
 
-  List<IntegrationPluginDTO> getListByNameLike(String name, String tenant);
+  List<IntegrationPluginDTO> getListByNameLike(String name, String tenant, String workspace);
 
 }

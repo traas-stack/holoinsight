@@ -90,7 +90,7 @@ public class MonitorCookieUtil {
     return CryptoUtils.getCookie(req, TENANT);
   }
 
-  public static MonitorScope getScope(HttpServletRequest req) {
+  public static MonitorScope getScope(HttpServletRequest req, MonitorUser mu) {
     List<NameValuePair> params;
     if (req.getQueryString() == null) {
       params = new ArrayList<>();
@@ -107,6 +107,18 @@ public class MonitorCookieUtil {
     MonitorScope ms = new MonitorScope();
     ms.tenant = tenant;
 
+    String loginTenant = CookieUtils.getCookie(req, "loginTenant");
+    String loginWorkspace = CookieUtils.getCookie(req, "loginWorkspace");
+    if (StringUtil.isNotBlank(loginTenant)) {
+      ms.tenant = loginTenant;
+      mu.setLoginTenant(loginTenant);
+    } else if (StringUtil.isNotBlank(mu.getLoginTenant())) {
+      ms.tenant = mu.getLoginTenant();
+    }
+
+    if (StringUtil.isNotBlank(loginWorkspace)) {
+      ms.workspace = loginWorkspace;
+    }
     return ms;
   }
 

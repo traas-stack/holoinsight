@@ -68,6 +68,11 @@ public class AlarmHistoryDTO {
   private String tenant;
 
   /**
+   * workspace
+   */
+  private String workspace;
+
+  /**
    * 来源类型
    */
   private String sourceType;

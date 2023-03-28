@@ -54,13 +54,21 @@ public class AlertRuleServiceImpl extends ServiceImpl<AlarmRuleMapper, AlarmRule
   }
 
   @Override
-  public AlarmRuleDTO queryById(Long id, String tenant) {
+  public AlarmRuleDTO queryById(Long id, String tenant, String workspace) {
     QueryWrapper<AlarmRule> wrapper = new QueryWrapper<>();
     wrapper.eq("tenant", tenant);
+    if (StringUtils.isNotBlank(workspace)) {
+      wrapper.eq("workspace", workspace);
+    }
     wrapper.eq("id", id);
     wrapper.last("LIMIT 1");
     AlarmRule alarmRule = this.getOne(wrapper);
     return alarmRuleConverter.doToDTO(alarmRule);
+  }
+
+  @Override
+  public AlarmRuleDTO queryById(Long id, String tenant) {
+    return queryById(id, tenant, null);
   }
 
   @Override
@@ -80,6 +88,10 @@ public class AlertRuleServiceImpl extends ServiceImpl<AlarmRuleMapper, AlarmRule
 
     if (StringUtils.isNotBlank(alarmRule.getTenant())) {
       wrapper.eq("tenant", alarmRule.getTenant().trim());
+    }
+
+    if (StringUtils.isNotBlank(alarmRule.getWorkspace())) {
+      wrapper.eq("workspace", alarmRule.getWorkspace());
     }
 
     if (null != alarmRule.getStatus()) {
@@ -189,10 +201,13 @@ public class AlertRuleServiceImpl extends ServiceImpl<AlarmRuleMapper, AlarmRule
   }
 
   @Override
-  public List<AlarmRuleDTO> getListByKeyword(String keyword, String tenant) {
+  public List<AlarmRuleDTO> getListByKeyword(String keyword, String tenant, String workspace) {
     QueryWrapper<AlarmRule> wrapper = new QueryWrapper<>();
     if (StringUtils.isNotBlank(tenant)) {
       wrapper.eq("tenant", tenant);
+    }
+    if (StringUtils.isNotBlank(workspace)) {
+      wrapper.eq("workspace", workspace);
     }
     wrapper.like("id", keyword).or().like("rule_name", keyword);
     Page<AlarmRule> page = new Page<>(1, 20);

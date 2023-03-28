@@ -103,7 +103,8 @@ public class AlarmWebhookFacadeImpl extends BaseFacade {
         Long id = alarmWebhookService.save(alarmWebhookDTO).getId();
 
         userOpLogService.append("alarm_webhook", id, OpType.CREATE, mu.getLoginName(),
-            ms.getTenant(), J.toJson(alarmWebhookDTO), null, null, "alarm_webhook_create");
+            ms.getTenant(), ms.getWorkspace(), J.toJson(alarmWebhookDTO), null, null,
+            "alarm_webhook_create");
 
         JsonResult.createSuccessResult(result, id);
       }
@@ -146,6 +147,7 @@ public class AlarmWebhookFacadeImpl extends BaseFacade {
           throw new MonitorException("the tenant parameter is invalid");
         }
 
+        MonitorScope ms = RequestContext.getContext().ms;
         MonitorUser mu = RequestContext.getContext().mu;
         if (null != mu) {
           alarmWebhookDTO.setModifier(mu.getLoginName());
@@ -160,9 +162,8 @@ public class AlarmWebhookFacadeImpl extends BaseFacade {
 
         boolean save = alarmWebhookService.updateById(alarmWebhookDTO);
         userOpLogService.append("alarm_webhook", alarmWebhookDTO.getId(), OpType.UPDATE,
-            RequestContext.getContext().mu.getLoginName(),
-            RequestContext.getContext().ms.getTenant(), J.toJson(item), J.toJson(alarmWebhookDTO),
-            null, "alarm_webhook_update");
+            mu.getLoginName(), ms.getTenant(), ms.getWorkspace(), J.toJson(item),
+            J.toJson(alarmWebhookDTO), null, "alarm_webhook_update");
 
         JsonResult.createSuccessResult(result, save);
       }
@@ -206,15 +207,14 @@ public class AlarmWebhookFacadeImpl extends BaseFacade {
 
       @Override
       public void doManage() {
+        MonitorScope ms = RequestContext.getContext().ms;
         boolean rtn = false;
-        AlarmWebhookDTO alarmWebhook =
-            alarmWebhookService.queryById(id, RequestContext.getContext().ms.getTenant());
+        AlarmWebhookDTO alarmWebhook = alarmWebhookService.queryById(id, ms.getTenant());
         if (alarmWebhook != null) {
           rtn = alarmWebhookService.removeById(id);
           userOpLogService.append("alarm_webhook", alarmWebhook.getId(), OpType.DELETE,
-              RequestContext.getContext().mu.getLoginName(),
-              RequestContext.getContext().ms.getTenant(), J.toJson(alarmWebhook), null, null,
-              "alarm_webhook_delete");
+              RequestContext.getContext().mu.getLoginName(), ms.getTenant(), ms.getWorkspace(),
+              J.toJson(alarmWebhook), null, null, "alarm_webhook_delete");
 
         }
         JsonResult.createSuccessResult(result, rtn);
@@ -235,9 +235,10 @@ public class AlarmWebhookFacadeImpl extends BaseFacade {
 
       @Override
       public void doManage() {
+        MonitorScope ms = RequestContext.getContext().ms;
         Map<String, Object> columnMap = new HashMap<>();
         columnMap.put("name", name);
-        columnMap.put("tenant", RequestContext.getContext().ms.getTenant());
+        columnMap.put("tenant", ms.getTenant());
         List<AlarmWebhook> apiKeys = alarmWebhookService.listByMap(columnMap);
         if (CollectionUtils.isEmpty(apiKeys)) {
           return;
@@ -249,9 +250,8 @@ public class AlarmWebhookFacadeImpl extends BaseFacade {
         JsonResult.createSuccessResult(result, null);
         if (!CollectionUtils.isEmpty(ids)) {
           userOpLogService.append("alarmWebhook", ids.get(0), OpType.DELETE,
-              RequestContext.getContext().mu.getLoginName(),
-              RequestContext.getContext().ms.getTenant(), J.toJson(apiKeys), null, null,
-              "alarmWebhook_delete");
+              RequestContext.getContext().mu.getLoginName(), ms.getTenant(), ms.getWorkspace(),
+              J.toJson(apiKeys), null, null, "alarmWebhook_delete");
         }
 
       }

@@ -81,8 +81,8 @@ public class MarketplaceProductFacadeImpl extends BaseFacade {
 
         assert mu != null;
         userOpLogService.append("marketplace_product", update.getId(), OpType.UPDATE,
-            mu.getLoginName(), ms.getTenant(), J.toJson(marketplaceProductDTO), J.toJson(update),
-            null, "marketplace_product_update");
+            mu.getLoginName(), ms.getTenant(), ms.getWorkspace(), J.toJson(marketplaceProductDTO),
+            J.toJson(update), null, "marketplace_product_update");
 
       }
     });
@@ -118,8 +118,8 @@ public class MarketplaceProductFacadeImpl extends BaseFacade {
 
         assert mu != null;
         userOpLogService.append("marketplace_product", save.getId(), OpType.CREATE,
-            mu.getLoginName(), ms.getTenant(), J.toJson(marketplaceProductDTO), null, null,
-            "marketplace_product_create");
+            mu.getLoginName(), ms.getTenant(), ms.getWorkspace(), J.toJson(marketplaceProductDTO),
+            null, null, "marketplace_product_create");
 
       }
     });
@@ -228,13 +228,13 @@ public class MarketplaceProductFacadeImpl extends BaseFacade {
           throw new MonitorException(ResultCodeEnum.CANNOT_FIND_RECORD,
               "can not find record:" + id);
         }
+        MonitorScope ms = RequestContext.getContext().ms;
 
         marketplaceProductService.deleteById(id);
         JsonResult.createSuccessResult(result, null);
         userOpLogService.append("marketplace_product", byId.getId(), OpType.DELETE,
-            RequestContext.getContext().mu.getLoginName(),
-            RequestContext.getContext().ms.getTenant(), J.toJson(byId), null, null,
-            "marketplace_product_delete");
+            RequestContext.getContext().mu.getLoginName(), ms.getTenant(), ms.getWorkspace(),
+            J.toJson(byId), null, null, "marketplace_product_delete");
 
       }
     });

@@ -53,8 +53,8 @@ public class UserOpLogFacadeImpl extends BaseFacade {
 
       @Override
       public void doManage() {
-        UserOpLog userOpLog =
-            userOpLogService.queryById(id, RequestContext.getContext().ms.getTenant());
+        MonitorScope ms = RequestContext.getContext().ms;
+        UserOpLog userOpLog = userOpLogService.queryById(id, ms.getTenant(), ms.getWorkspace());
 
         if (null == userOpLog) {
           throw new MonitorException(ResultCodeEnum.CANNOT_FIND_RECORD,
@@ -81,8 +81,11 @@ public class UserOpLogFacadeImpl extends BaseFacade {
       @Override
       public void doManage() {
         MonitorScope ms = RequestContext.getContext().ms;
-        if (null != ms && !StringUtils.isEmpty(ms.tenant)) {
+        if (null != ms && !StringUtils.isBlank(ms.tenant)) {
           userOpLogRequest.getTarget().setTenant(ms.tenant);
+        }
+        if (null != ms && !StringUtils.isBlank(ms.workspace)) {
+          userOpLogRequest.getTarget().setWorkspace(ms.workspace);
         }
         JsonResult.createSuccessResult(result, userOpLogService.getListByPage(userOpLogRequest));
       }

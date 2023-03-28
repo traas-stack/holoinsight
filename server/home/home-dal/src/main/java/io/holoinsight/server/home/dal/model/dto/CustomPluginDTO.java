@@ -19,6 +19,8 @@ public class CustomPluginDTO {
 
   public String tenant;
 
+  public String workspace;
+
   public Long parentFolderId;
 
   public String name;

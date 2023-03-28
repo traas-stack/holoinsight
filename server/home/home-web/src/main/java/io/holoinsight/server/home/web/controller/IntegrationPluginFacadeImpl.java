@@ -3,6 +3,7 @@
  */
 package io.holoinsight.server.home.web.controller;
 
+import io.holoinsight.server.home.common.util.StringUtil;
 import io.holoinsight.server.registry.model.integration.LocalIntegrationTask;
 import io.holoinsight.server.common.J;
 import io.holoinsight.server.common.JsonResult;
@@ -24,9 +25,9 @@ import io.holoinsight.server.home.web.common.ManageCallback;
 import io.holoinsight.server.home.web.common.ParaCheckUtil;
 import io.holoinsight.server.home.web.interceptor.MonitorScopeAuth;
 import io.holoinsight.server.registry.model.integration.GaeaTask;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -66,18 +67,13 @@ public class IntegrationPluginFacadeImpl extends BaseFacade {
       @Override
       public void checkParameter() {
         ParaCheckUtil.checkParaNotNull(integrationPluginDTO.id, "id");
-        // ParaCheckUtil.checkParaNotNull(integrationPluginDTO.product, "product");
-        // ParaCheckUtil.checkParaNotBlank(integrationPluginDTO.name, "name");
-        // ParaCheckUtil.checkParaNotNull(integrationPluginDTO.type, "type");
-        // ParaCheckUtil.checkParaNotBlank(integrationPluginDTO.json, "json");
-        // ParaCheckUtil.checkParaNotNull(integrationPluginDTO.status);
-
+        MonitorScope ms = RequestContext.getContext().ms;
         ParaCheckUtil.checkParaNotNull(integrationPluginDTO.getTenant(), "tenant");
-        ParaCheckUtil.checkEquals(integrationPluginDTO.getTenant(),
-            RequestContext.getContext().ms.getTenant(), "tenant is illegal");
+        ParaCheckUtil.checkEquals(integrationPluginDTO.getTenant(), ms.getTenant(),
+            "tenant is illegal");
 
         IntegrationPluginDTO item = integrationPluginService.queryById(integrationPluginDTO.getId(),
-            RequestContext.getContext().ms.getTenant());
+            ms.getTenant(), ms.getWorkspace());
 
         if (null == item) {
           throw new MonitorException("cannot find record: " + integrationPluginDTO.getId());
@@ -97,14 +93,17 @@ public class IntegrationPluginFacadeImpl extends BaseFacade {
         }
         integrationPluginDTO.setGmtModified(new Date());
         integrationPluginDTO.setStatus(true);
-        // integrationPluginDTO.setTenant(MonitorCookieUtil.getTenantOrException());
+        integrationPluginDTO.setTenant(ms.getTenant());
+        if (StringUtils.isNotBlank(ms.getWorkspace())) {
+          integrationPluginDTO.setWorkspace(ms.getWorkspace());
+        }
         IntegrationPluginDTO update =
             integrationPluginService.updateByRequest(integrationPluginDTO);
 
         assert mu != null;
         userOpLogService.append("integration_plugin", update.getId(), OpType.UPDATE,
-            mu.getLoginName(), ms.getTenant(), J.toJson(integrationPluginDTO), J.toJson(update),
-            null, "integration_plugin_update");
+            mu.getLoginName(), ms.getTenant(), ms.getWorkspace(), J.toJson(integrationPluginDTO),
+            J.toJson(update), null, "integration_plugin_update");
 
       }
     });
@@ -124,8 +123,9 @@ public class IntegrationPluginFacadeImpl extends BaseFacade {
 
       @Override
       public void doManage() {
+        MonitorScope ms = RequestContext.getContext().ms;
         IntegrationPluginDTO byId =
-            integrationPluginService.queryById(id, RequestContext.getContext().ms.getTenant());
+            integrationPluginService.queryById(id, ms.getTenant(), ms.getWorkspace());
         if (byId == null) {
           throw new MonitorException("cannot find record: " + id);
         }
@@ -133,9 +133,8 @@ public class IntegrationPluginFacadeImpl extends BaseFacade {
         integrationPluginService.deleteById(id);
         JsonResult.createSuccessResult(result, null);
         userOpLogService.append("integration_plugin", byId.getId(), OpType.DELETE,
-            RequestContext.getContext().mu.getLoginName(),
-            RequestContext.getContext().ms.getTenant(), J.toJson(byId), null, null,
-            "integration_plugin_delete");
+            RequestContext.getContext().mu.getLoginName(), ms.getTenant(), ms.getWorkspace(),
+            J.toJson(byId), null, null, "integration_plugin_delete");
 
       }
     });
@@ -154,8 +153,12 @@ public class IntegrationPluginFacadeImpl extends BaseFacade {
 
       @Override
       public void doManage() {
+        MonitorScope ms = RequestContext.getContext().ms;
         Map<String, Object> params = new HashMap<>();
         params.put("tenant", MonitorCookieUtil.getTenantOrException());
+        if (null != ms && !StringUtil.isBlank(ms.workspace)) {
+          params.put("workspace", ms.workspace);
+        }
         params.put("type", type);
         List<IntegrationPluginDTO> byTypes = integrationPluginService.findByMap(params);
         if (CollectionUtils.isEmpty(byTypes)) {
@@ -170,9 +173,8 @@ public class IntegrationPluginFacadeImpl extends BaseFacade {
         JsonResult.createSuccessResult(result, null);
         for (long id : ids) {
           userOpLogService.append("integration_plugin", id, OpType.DELETE,
-              RequestContext.getContext().mu.getLoginName(),
-              RequestContext.getContext().ms.getTenant(), J.toJson(id), null, null,
-              "integration_plugin_delete");
+              RequestContext.getContext().mu.getLoginName(), ms.getTenant(), ms.getWorkspace(),
+              J.toJson(id), null, null, "integration_plugin_delete");
         }
       }
     });
@@ -206,14 +208,17 @@ public class IntegrationPluginFacadeImpl extends BaseFacade {
           integrationPluginDTO.setCreator(mu.getLoginName());
           integrationPluginDTO.setModifier(mu.getLoginName());
         }
+        if (null != ms && !StringUtil.isBlank(ms.workspace)) {
+          integrationPluginDTO.setWorkspace(ms.workspace);
+        }
         integrationPluginDTO.setStatus(true);
         IntegrationPluginDTO save = integrationPluginService.create(integrationPluginDTO);
         JsonResult.createSuccessResult(result, save);
 
         assert mu != null;
         userOpLogService.append("integration_plugin", save.getId(), OpType.CREATE,
-            mu.getLoginName(), ms.getTenant(), J.toJson(integrationPluginDTO), null, null,
-            "integration_plugin_create");
+            mu.getLoginName(), ms.getTenant(), ms.getWorkspace(), J.toJson(integrationPluginDTO),
+            null, null, "integration_plugin_create");
 
       }
     });
@@ -233,8 +238,9 @@ public class IntegrationPluginFacadeImpl extends BaseFacade {
 
       @Override
       public void doManage() {
+        MonitorScope ms = RequestContext.getContext().ms;
         IntegrationPluginDTO integrationPluginDTO =
-            integrationPluginService.queryById(id, RequestContext.getContext().ms.getTenant());
+            integrationPluginService.queryById(id, ms.getTenant(), ms.getWorkspace());
 
         if (null == integrationPluginDTO) {
           throw new MonitorException(ResultCodeEnum.CANNOT_FIND_RECORD,
@@ -258,9 +264,13 @@ public class IntegrationPluginFacadeImpl extends BaseFacade {
 
       @Override
       public void doManage() {
+        MonitorScope ms = RequestContext.getContext().ms;
         Map<String, Object> params = new HashMap<>();
         params.put("tenant", MonitorCookieUtil.getTenantOrException());
         params.put("name", name);
+        if (null != ms && !StringUtil.isBlank(ms.workspace)) {
+          params.put("workspace", ms.workspace);
+        }
         List<IntegrationPluginDTO> integrationPluginDTOs =
             integrationPluginService.findByMap(params);
         JsonResult.createSuccessResult(result, integrationPluginDTOs);
@@ -279,8 +289,15 @@ public class IntegrationPluginFacadeImpl extends BaseFacade {
 
       @Override
       public void doManage() {
-        List<IntegrationPluginDTO> integrationPluginDTOs = integrationPluginService.findByMap(
-            Collections.singletonMap("tenant", MonitorCookieUtil.getTenantOrException()));
+        MonitorScope ms = RequestContext.getContext().ms;
+        Map<String, Object> params = new HashMap<>();
+        params.put("tenant", ms.getTenant());
+
+        if (StringUtils.isNotBlank(ms.getWorkspace())) {
+          params.put("workspace", ms.getWorkspace());
+        }
+        List<IntegrationPluginDTO> integrationPluginDTOs =
+            integrationPluginService.findByMap(params);
 
         JsonResult.createSuccessResult(result, integrationPluginDTOs);
       }
@@ -298,8 +315,15 @@ public class IntegrationPluginFacadeImpl extends BaseFacade {
 
       @Override
       public void doManage() {
-        List<IntegrationPluginDTO> integrationPluginDTOs = integrationPluginService.findByMap(
-            Collections.singletonMap("tenant", MonitorCookieUtil.getTenantOrException()));
+        MonitorScope ms = RequestContext.getContext().ms;
+        Map<String, Object> params = new HashMap<>();
+        params.put("tenant", ms.getTenant());
+
+        if (StringUtils.isNotBlank(ms.getWorkspace())) {
+          params.put("workspace", ms.getWorkspace());
+        }
+        List<IntegrationPluginDTO> integrationPluginDTOs =
+            integrationPluginService.findByMap(params);
         JsonResult.createSuccessResult(result, integrationPluginDTOs);
       }
     });
@@ -316,8 +340,16 @@ public class IntegrationPluginFacadeImpl extends BaseFacade {
 
       @Override
       public void doManage() {
-        List<IntegrationPluginDTO> integrationPluginDTOs = integrationPluginService.findByMap(
-            Collections.singletonMap("tenant", MonitorCookieUtil.getTenantOrException()));
+        MonitorScope ms = RequestContext.getContext().ms;
+        Map<String, Object> params = new HashMap<>();
+        params.put("tenant", ms.getTenant());
+
+        if (StringUtils.isNotBlank(ms.getWorkspace())) {
+          params.put("workspace", ms.getWorkspace());
+        }
+
+        List<IntegrationPluginDTO> integrationPluginDTOs =
+            integrationPluginService.findByMap(params);
         integrationPluginDTOs = integrationPluginDTOs.stream().filter(plugin -> {
           String type = plugin.getType();
           Class cls;
@@ -347,9 +379,14 @@ public class IntegrationPluginFacadeImpl extends BaseFacade {
 
       @Override
       public void doManage() {
+        MonitorScope ms = RequestContext.getContext().ms;
+
         Map<String, Object> params = new HashMap<>();
         params.put("tenant", MonitorCookieUtil.getTenantOrException());
         params.put("type", type);
+        if (StringUtils.isNotBlank(ms.getWorkspace())) {
+          params.put("workspace", ms.getWorkspace());
+        }
         List<IntegrationPluginDTO> integrationPluginDTOs =
             integrationPluginService.findByMap(params);
         JsonResult.createSuccessResult(result, integrationPluginDTOs);
@@ -368,8 +405,15 @@ public class IntegrationPluginFacadeImpl extends BaseFacade {
 
       @Override
       public void doManage() {
-        List<IntegrationPluginDTO> integrationPluginDTOs = integrationPluginService.findByMap(
-            Collections.singletonMap("tenant", MonitorCookieUtil.getTenantOrException()));
+        MonitorScope ms = RequestContext.getContext().ms;
+        Map<String, Object> params = new HashMap<>();
+        params.put("tenant", ms.getTenant());
+
+        if (StringUtils.isNotBlank(ms.getWorkspace())) {
+          params.put("workspace", ms.getWorkspace());
+        }
+        List<IntegrationPluginDTO> integrationPluginDTOs =
+            integrationPluginService.findByMap(params);
         List<String> names = integrationPluginDTOs == null ? null
             : integrationPluginDTOs.stream().map(IntegrationPluginDTO::getName)
                 .collect(Collectors.toList());
@@ -389,8 +433,15 @@ public class IntegrationPluginFacadeImpl extends BaseFacade {
 
       @Override
       public void doManage() {
-        List<IntegrationPluginDTO> integrationPluginDTOs = integrationPluginService.findByMap(
-            Collections.singletonMap("tenant", MonitorCookieUtil.getTenantOrException()));
+        MonitorScope ms = RequestContext.getContext().ms;
+        Map<String, Object> params = new HashMap<>();
+        params.put("tenant", ms.getTenant());
+
+        if (StringUtils.isNotBlank(ms.getWorkspace())) {
+          params.put("workspace", ms.getWorkspace());
+        }
+        List<IntegrationPluginDTO> integrationPluginDTOs =
+            integrationPluginService.findByMap(params);
         List<String> names = integrationPluginDTOs == null ? null
             : integrationPluginDTOs.stream().map(IntegrationPluginDTO::getName)
                 .collect(Collectors.toList());
@@ -410,9 +461,13 @@ public class IntegrationPluginFacadeImpl extends BaseFacade {
 
       @Override
       public void doManage() {
+        MonitorScope ms = RequestContext.getContext().ms;
         Map<String, Object> params = new HashMap<>();
         params.put("tenant", MonitorCookieUtil.getTenantOrException());
         params.put("type", type);
+        if (StringUtils.isNotBlank(ms.getWorkspace())) {
+          params.put("workspace", ms.getWorkspace());
+        }
         List<IntegrationPluginDTO> integrationPluginDTOs =
             integrationPluginService.findByMap(params);
         List<String> names = integrationPluginDTOs == null ? null
@@ -441,6 +496,10 @@ public class IntegrationPluginFacadeImpl extends BaseFacade {
         MonitorScope ms = RequestContext.getContext().ms;
         if (null != ms && !StringUtils.isEmpty(ms.tenant)) {
           customPluginRequest.getTarget().setTenant(ms.tenant);
+        }
+
+        if (null != ms && !StringUtils.isEmpty(ms.workspace)) {
+          customPluginRequest.getTarget().setWorkspace(ms.workspace);
         }
         JsonResult.createSuccessResult(result,
             integrationPluginService.getListByPage(customPluginRequest));

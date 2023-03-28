@@ -77,7 +77,7 @@ public class AlarmDingDingRobotFacadeImpl extends BaseFacade {
         Long id = alarmDingDingRobotService.save(alarmDingDingRobotDTO);
 
         userOpLogService.append("alarm_dingding_robot", id, OpType.CREATE, mu.getLoginName(),
-            ms.getTenant(), J.toJson(alarmDingDingRobotDTO), null, null,
+            ms.getTenant(), ms.getWorkspace(), J.toJson(alarmDingDingRobotDTO), null, null,
             "alarm_dingding_robot_create");
 
         JsonResult.createSuccessResult(result, id);
@@ -128,8 +128,7 @@ public class AlarmDingDingRobotFacadeImpl extends BaseFacade {
         boolean save = alarmDingDingRobotService.updateById(alarmDingDingRobotDTO);
 
         userOpLogService.append("alarm_dingding_robot", item.getId(), OpType.UPDATE,
-            RequestContext.getContext().mu.getLoginName(),
-            RequestContext.getContext().ms.getTenant(), J.toJson(item),
+            mu.getLoginName(), ms.getTenant(), ms.getWorkspace(), J.toJson(item),
             J.toJson(alarmDingDingRobotDTO), null, "alarm_dingding_robot_update");
 
         JsonResult.createSuccessResult(result, save);
@@ -174,17 +173,17 @@ public class AlarmDingDingRobotFacadeImpl extends BaseFacade {
 
       @Override
       public void doManage() {
+        MonitorScope ms = RequestContext.getContext().ms;
         boolean rtn = false;
         AlarmDingDingRobotDTO alarmDingDingRobot =
-            alarmDingDingRobotService.queryById(id, RequestContext.getContext().ms.getTenant());
+            alarmDingDingRobotService.queryById(id, ms.getTenant());
         if (alarmDingDingRobot != null) {
           rtn = alarmDingDingRobotService.removeById(id);
         }
 
         userOpLogService.append("alarm_dingding_robot", id, OpType.DELETE,
-            RequestContext.getContext().mu.getLoginName(),
-            RequestContext.getContext().ms.getTenant(), J.toJson(alarmDingDingRobot), null, null,
-            "alarm_dingding_robot_delete");
+            RequestContext.getContext().mu.getLoginName(), ms.getTenant(), ms.getWorkspace(),
+            J.toJson(alarmDingDingRobot), null, null, "alarm_dingding_robot_delete");
 
         JsonResult.createSuccessResult(result, rtn);
       }

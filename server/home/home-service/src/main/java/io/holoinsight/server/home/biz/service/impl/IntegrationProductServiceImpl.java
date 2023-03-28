@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -82,55 +83,64 @@ public class IntegrationProductServiceImpl extends
 
   @Override
   public MonitorPageResult<IntegrationProductDTO> getListByPage(
-      MonitorPageRequest<IntegrationProductDTO> IntegrationProductDTORequest) {
-    if (IntegrationProductDTORequest.getTarget() == null) {
+      MonitorPageRequest<IntegrationProductDTO> pageRequest) {
+    if (pageRequest.getTarget() == null) {
       return null;
     }
 
     QueryWrapper<IntegrationProduct> wrapper = new QueryWrapper<>();
 
-    IntegrationProductDTO IntegrationProductDTO = IntegrationProductDTORequest.getTarget();
+    IntegrationProductDTO integrationProductDTO = pageRequest.getTarget();
 
-    if (null != IntegrationProductDTO.getGmtCreate()) {
-      wrapper.ge("gmt_create", IntegrationProductDTO.getGmtCreate());
+    if (null != integrationProductDTO.getGmtCreate()) {
+      wrapper.ge("gmt_create", integrationProductDTO.getGmtCreate());
     }
-    if (null != IntegrationProductDTO.getGmtModified()) {
-      wrapper.le("gmt_modified", IntegrationProductDTO.getGmtCreate());
-    }
-
-    if (StringUtil.isNotBlank(IntegrationProductDTO.getCreator())) {
-      wrapper.eq("creator", IntegrationProductDTO.getCreator().trim());
+    if (null != integrationProductDTO.getGmtModified()) {
+      wrapper.le("gmt_modified", integrationProductDTO.getGmtCreate());
     }
 
-    if (StringUtil.isNotBlank(IntegrationProductDTO.getModifier())) {
-      wrapper.eq("modifier", IntegrationProductDTO.getModifier().trim());
+    if (StringUtil.isNotBlank(integrationProductDTO.getCreator())) {
+      wrapper.eq("creator", integrationProductDTO.getCreator().trim());
     }
 
-    if (null != IntegrationProductDTO.getId()) {
-      wrapper.eq("id", IntegrationProductDTO.getId());
+    if (StringUtil.isNotBlank(integrationProductDTO.getModifier())) {
+      wrapper.eq("modifier", integrationProductDTO.getModifier().trim());
     }
 
-    if (StringUtil.isNotBlank(IntegrationProductDTO.getName())) {
-      wrapper.like("name", IntegrationProductDTO.getName().trim());
+    if (null != integrationProductDTO.getId()) {
+      wrapper.eq("id", integrationProductDTO.getId());
     }
 
+    if (StringUtil.isNotBlank(integrationProductDTO.getName())) {
+      wrapper.like("name", integrationProductDTO.getName().trim());
+    }
 
-    if (null != IntegrationProductDTO.getStatus()) {
-      wrapper.eq("status", IntegrationProductDTO.getStatus());
+    if (StringUtil.isNotBlank(pageRequest.getSortBy())
+        && StringUtil.isNotBlank(pageRequest.getSortRule())) {
+      if (pageRequest.getSortRule().toLowerCase(Locale.ROOT).equals("desc")) {
+        wrapper.orderByDesc(pageRequest.getSortBy());
+      } else {
+        wrapper.orderByAsc(pageRequest.getSortBy());
+      }
+    } else {
+      wrapper.orderByDesc("gmt_modified");
+    }
+
+    if (null != integrationProductDTO.getStatus()) {
+      wrapper.eq("status", integrationProductDTO.getStatus());
     }
     wrapper.select(IntegrationProduct.class,
         info -> !info.getColumn().equals("creator") && !info.getColumn().equals("modifier"));
 
-    Page<IntegrationProduct> page = new Page<>(IntegrationProductDTORequest.getPageNum(),
-        IntegrationProductDTORequest.getPageSize());
+    Page<IntegrationProduct> page = new Page<>(pageRequest.getPageNum(), pageRequest.getPageSize());
 
     page = page(page, wrapper);
 
     MonitorPageResult<IntegrationProductDTO> customPluginDTOs = new MonitorPageResult<>();
 
     customPluginDTOs.setItems(IntegrationProductConverter.dosToDTOs(page.getRecords()));
-    customPluginDTOs.setPageNum(IntegrationProductDTORequest.getPageNum());
-    customPluginDTOs.setPageSize(IntegrationProductDTORequest.getPageSize());
+    customPluginDTOs.setPageNum(pageRequest.getPageNum());
+    customPluginDTOs.setPageSize(pageRequest.getPageSize());
     customPluginDTOs.setTotalCount(page.getTotal());
     customPluginDTOs.setTotalPage(page.getPages());
 

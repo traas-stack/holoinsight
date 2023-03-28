@@ -10,6 +10,7 @@ import io.holoinsight.server.home.dal.mapper.AlarmSubscribeMapper;
 import io.holoinsight.server.home.dal.model.AlarmSubscribe;
 import io.holoinsight.server.home.dal.model.dto.AlarmSubscribeDTO;
 import io.holoinsight.server.home.dal.model.dto.AlarmSubscribeInfo;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
@@ -33,11 +34,16 @@ public class AlertSubscribeServiceImpl extends ServiceImpl<AlarmSubscribeMapper,
   @Resource
   private AlarmSubscribeConverter alarmSubscribeConverter;
 
-  public Boolean saveDataBatch(AlarmSubscribeDTO alarmSubscribeDTO, String creator, String tenant) {
+  public Boolean saveDataBatch(AlarmSubscribeDTO alarmSubscribeDTO, String creator, String tenant,
+      String workspace) {
 
     Map<String, Object> conditions = new HashMap<>();
     conditions.put("unique_id", alarmSubscribeDTO.getUniqueId());
     conditions.put("tenant", tenant);
+    if (StringUtils.isNotBlank(workspace)) {
+      conditions.put("workspace", workspace);
+    }
+
     List<AlarmSubscribe> alarmSubscribes = listByMap(conditions);
     List<Long> ids =
         alarmSubscribes.stream().map(AlarmSubscribe::getId).collect(Collectors.toList());
@@ -60,6 +66,9 @@ public class AlertSubscribeServiceImpl extends ServiceImpl<AlarmSubscribeMapper,
       }
       alarmSubscribe.setUniqueId(alarmSubscribeDTO.getUniqueId());
       alarmSubscribe.setTenant(tenant);
+      if (StringUtils.isNotBlank(workspace)) {
+        alarmSubscribe.setWorkspace(workspace);
+      }
       alarmSubscribe.setStatus((byte) 1);
       alarmSubscribe.setEnvType(alarmSubscribeDTO.getEnvType());
       alarmSubscribeList.add(alarmSubscribe);

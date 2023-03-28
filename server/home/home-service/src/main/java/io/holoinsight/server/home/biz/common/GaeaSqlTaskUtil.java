@@ -134,7 +134,9 @@ public class GaeaSqlTaskUtil {
       }
 
       if (null != logParse.getMultiLine() && logParse.getMultiLine().multi) {
-        parse.setMultiline(new Multiline());
+        Multiline logMultiLine = new Multiline();
+        logMultiLine.setEnabled(true);
+        parse.setMultiline(logMultiLine);
         parse.getMultiline().setWhat(
             logParse.getMultiLine().lineType.equalsIgnoreCase("logHead") ? "previous" : "next");
 
@@ -166,11 +168,11 @@ public class GaeaSqlTaskUtil {
       MultiLine multiLine = logParse.multiLine;
       if (null != multiLine && null != multiLine.multi && multiLine.multi) {
         Multiline logMultiLine = new Multiline();
-
+        logMultiLine.setEnabled(true);
         if (multiLine.lineType.equalsIgnoreCase("logHead")) {
-          logMultiLine.setWhat("next");
-        } else {
           logMultiLine.setWhat("previous");
+        } else {
+          logMultiLine.setWhat("next");
         }
         Where match = new Where();
         Regexp regexp = new Regexp();

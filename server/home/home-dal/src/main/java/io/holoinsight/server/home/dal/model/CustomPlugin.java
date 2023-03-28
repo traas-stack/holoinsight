@@ -14,6 +14,7 @@ public class CustomPlugin {
   @TableId(type = IdType.AUTO)
   public Long id;
   public String tenant;
+  public String workspace;
 
   public Long parentFolderId;
 

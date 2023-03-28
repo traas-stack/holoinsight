@@ -98,6 +98,9 @@ public class MetaDictUtil {
     return MetaDictUtil.getStringValue(MetaDictType.GLOBAL_CONFIG, MetaDictKey.ULA_HOST);
   }
 
+  public static String getSystemNotice() {
+    return MetaDictUtil.getStringValue(MetaDictType.GLOBAL_CONFIG, MetaDictKey.SYSTEM_NOTICE);
+  }
 
   public static String getJiGuangHost() {
     return MetaDictUtil.getStringValue(MetaDictType.MARKETPLACE_CONFIG,

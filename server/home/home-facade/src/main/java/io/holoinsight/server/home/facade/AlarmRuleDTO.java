@@ -99,6 +99,11 @@ public class AlarmRuleDTO {
   private String tenant;
 
   /**
+   * workspace
+   */
+  private String workspace;
+
+  /**
    * 告警规则
    */
   private Map<String, Object> rule;

@@ -18,4 +18,5 @@ public class MigrateAlarmRequest {
   private String sourceTenant;
 
   private String targetTenant;
+  private String targetWorkspace;
 }

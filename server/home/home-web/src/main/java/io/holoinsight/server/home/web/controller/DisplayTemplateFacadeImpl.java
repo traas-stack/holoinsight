@@ -100,8 +100,8 @@ public class DisplayTemplateFacadeImpl extends BaseFacade {
 
         assert mu != null;
         userOpLogService.append("display_template", template.getId(), OpType.UPDATE,
-            mu.getLoginName(), ms.getTenant(), J.toJson(template), J.toJson(update), null,
-            "display_template_update");
+            mu.getLoginName(), ms.getTenant(), ms.getWorkspace(), J.toJson(template),
+            J.toJson(update), null, "display_template_update");
       }
     });
 
@@ -141,7 +141,7 @@ public class DisplayTemplateFacadeImpl extends BaseFacade {
 
         assert mu != null;
         userOpLogService.append("display_template", template.getId(), OpType.CREATE,
-            mu.getLoginName(), ms.getTenant(), J.toJson(template), null, null,
+            mu.getLoginName(), ms.getTenant(), ms.getWorkspace(), J.toJson(template), null, null,
             "display_template_create");
 
       }

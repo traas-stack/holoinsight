@@ -15,12 +15,12 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface UserOpLogService extends IService<UserOpLog> {
 
-  UserOpLog queryById(Long id, String tenant);
+  UserOpLog queryById(Long id, String tenant, String workspace);
 
   UserOpLog create(UserOpLog userOpLog);
 
   MonitorPageResult<UserOpLog> getListByPage(MonitorTimePageRequest<UserOpLog> userOpLogRequest);
 
   UserOpLog append(String tableName, Long tableEntityId, String opType, String user, String tenant,
-      String before, String after, String relate, String name);
+      String workspace, String before, String after, String relate, String name);
 }

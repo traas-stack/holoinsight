@@ -17,6 +17,7 @@ public class DashboardDTO {
   private Map<String, Object> meta;
 
   public String tenant;
+  public String workspace;
   public String type;
   public String modifier;
 }

@@ -18,7 +18,8 @@ import java.util.Map;
 public interface AlertSubscribeService extends IService<AlarmSubscribe> {
 
 
-  Boolean saveDataBatch(AlarmSubscribeDTO alarmSubscribeDTO, String creator, String tenant);
+  Boolean saveDataBatch(AlarmSubscribeDTO alarmSubscribeDTO, String creator, String tenant,
+      String workspace);
 
   AlarmSubscribeDTO queryByUniqueId(Map<String, Object> columnMap);
 

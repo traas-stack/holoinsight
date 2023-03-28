@@ -22,6 +22,7 @@ public class MigrateCustomPluginRequest {
    * target tenant
    */
   private String targetTenant;
+  private String targetWorkspace;
 
   /**
    * source tenant

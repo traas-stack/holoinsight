@@ -113,6 +113,7 @@ public class CustomPluginUpdateListener {
     for (Map.Entry<String, SqlTask> entry : sqlTasks.entrySet()) {
       GaeaCollectConfigDTO gaeaCollectConfigDTO = new GaeaCollectConfigDTO();
       gaeaCollectConfigDTO.tenant = customPluginDTO.tenant;
+      gaeaCollectConfigDTO.workspace = customPluginDTO.workspace;
       gaeaCollectConfigDTO.deleted = false;
       gaeaCollectConfigDTO.json = entry.getValue();
       gaeaCollectConfigDTO.tableName = entry.getKey();
