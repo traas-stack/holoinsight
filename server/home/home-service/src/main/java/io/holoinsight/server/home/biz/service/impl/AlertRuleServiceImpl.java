@@ -63,7 +63,9 @@ public class AlertRuleServiceImpl extends ServiceImpl<AlarmRuleMapper, AlarmRule
     wrapper.eq("id", id);
     wrapper.last("LIMIT 1");
     AlarmRule alarmRule = this.getOne(wrapper);
-    return alarmRuleConverter.doToDTO(alarmRule);
+    AlarmRuleDTO alarmRuleDTO = alarmRuleConverter.doToDTO(alarmRule);
+    setAlarmContent(alarmRuleDTO);
+    return alarmRuleDTO;
   }
 
   @Override
@@ -172,23 +174,8 @@ public class AlertRuleServiceImpl extends ServiceImpl<AlarmRuleMapper, AlarmRule
 
     Map<String, Long> finalAlarmBlockMap = alarmBlockMap;
     alarmRuleList.parallelStream().forEach(e -> {
-      if (e.getRule() != null && e.getRule().containsKey("triggers")) {
-        List<String> alarmCOntent = new ArrayList<>();
-        List<Map<String, Object>> triggers =
-            (List<Map<String, Object>>) e.getRule().get("triggers");
-        if (triggers != null) {
-          triggers.forEach(map -> {
-            if (map.containsKey("triggerContent")) {
-              alarmCOntent.add((String) map.get("triggerContent"));
-            }
-          });
-          e.setAlarmContent(alarmCOntent);
-        }
-      }
-      if (finalAlarmBlockMap != null) {
-        Long blockId = finalAlarmBlockMap.get(e.getRuleType() + "_" + e.getId());
-        e.setBlockId(blockId);
-      }
+      setAlarmContent(e);
+      setBlockId(e, finalAlarmBlockMap);
     });
 
     alarmRules.setItems(alarmRuleList);
@@ -198,6 +185,44 @@ public class AlertRuleServiceImpl extends ServiceImpl<AlarmRuleMapper, AlarmRule
     alarmRules.setTotalPage(page.getPages());
 
     return alarmRules;
+  }
+
+  private void setBlockId(AlarmRuleDTO alarmRuleDTO, Map<String, Long> finalAlarmBlockMap) {
+    if (finalAlarmBlockMap != null) {
+      Long blockId =
+          finalAlarmBlockMap.get(alarmRuleDTO.getRuleType() + "_" + alarmRuleDTO.getId());
+      alarmRuleDTO.setBlockId(blockId);
+    }
+  }
+
+  protected void setAlarmContent(AlarmRuleDTO alarmRuleDTO) {
+    if (alarmRuleDTO != null && alarmRuleDTO.getRule() != null
+        && alarmRuleDTO.getRule().containsKey("triggers")) {
+      List<String> alarmContent = new ArrayList<>();
+      List<Map<String, Object>> triggers =
+          (List<Map<String, Object>>) alarmRuleDTO.getRule().get("triggers");
+      if (triggers != null) {
+        triggers.forEach(trigger -> {
+          String triggerContent = (String) trigger.get("triggerContent");
+          if (StringUtils.isNotBlank(triggerContent)) {
+            alarmContent.add(triggerContent);
+          } else {
+            Object compareConfigsObj = trigger.get("compareConfigs");
+            if (compareConfigsObj instanceof List) {
+              List<Map<String, Object>> compareConfigs =
+                  (List<Map<String, Object>>) compareConfigsObj;
+              for (Map<String, Object> compareConfig : compareConfigs) {
+                triggerContent = (String) compareConfig.get("triggerContent");
+                if (StringUtils.isNotBlank(triggerContent)) {
+                  alarmContent.add(triggerContent);
+                }
+              }
+            }
+          }
+        });
+        alarmRuleDTO.setAlarmContent(alarmContent);
+      }
+    }
   }
 
   @Override

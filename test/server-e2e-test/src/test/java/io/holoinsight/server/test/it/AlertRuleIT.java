@@ -32,6 +32,7 @@ import org.junit.jupiter.api.Test;
 import java.time.Duration;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.Stack;
 import java.util.function.Supplier;
@@ -82,15 +83,58 @@ public class AlertRuleIT extends BaseIT {
     Response response = queryAlertRule.get();
     System.out.println(response.body().print());
     tenant = response //
-        .then() //
+        .then().log().all() //
         .body("success", IS_TRUE) //
-        .root("data").body("ruleName", eq(name)) //
+        .root("data") //
+        .body("ruleName", eq(name)) //
+        .body("alarmContent[0]", eq("test trigger content")) //
         .extract() //
         .path("data.tenant");
     System.out.println(tenant);
   }
 
   @Order(1)
+  @Test
+  public void test_triggerContent() {
+    AlarmRuleDTO alarmRuleDTO = new AlarmRuleDTO();
+    alarmRuleDTO.setRuleName("triggerContent_alert_test");
+    alarmRuleDTO.setSourceType("apm_holoinsight");
+    alarmRuleDTO.setAlarmLevel("5");
+    alarmRuleDTO.setRuleDescribe("测试告警规则");
+    alarmRuleDTO.setStatus((byte) 1);
+    alarmRuleDTO.setIsMerge((byte) 0);
+    alarmRuleDTO.setRecover((byte) 0);
+    alarmRuleDTO.setRuleType("rule");
+    alarmRuleDTO.setTimeFilter(buildTimeFilter());
+    alarmRuleDTO.setRule(buildRuleWithMultiTriggerContent());
+
+    // Create folder
+    Integer multiId = given() //
+        .body(new JSONObject(J.toMap(J.toJson(alarmRuleDTO)))) //
+        .when() //
+        .post("/webapi/alarmRule/create") //
+        .then() //
+        .body("success", IS_TRUE) //
+        .body("data", Matchers.any(Number.class)) //
+        .extract() //
+        .path("data"); //
+    System.out.println(multiId);
+    Response response = given() //
+        .pathParam("ruleId", multiId) //
+        .when() //
+        .get("/webapi/alarmRule/query/{ruleId}");
+    System.out.println(response.body().print());
+    response //
+        .then() //
+        .body("success", IS_TRUE) //
+        .root("data") //
+        .body("alarmContent[0]", eq("compareConfig_trigger_content_1")) //
+        .body("alarmContent[1]", eq("compareConfig_trigger_content_2")) //
+        .extract() //
+        .path("data.tenant");
+  }
+
+  @Order(2)
   @Test
   public void test_rule_update() {
     name = name + "_v2";
@@ -113,7 +157,7 @@ public class AlertRuleIT extends BaseIT {
         .root("data").body("ruleName", eq(name));
   }
 
-  @Order(2)
+  @Order(3)
   @Test
   public void test_rule_delete() {
     given() //
@@ -128,7 +172,7 @@ public class AlertRuleIT extends BaseIT {
         .body("data", IS_NULL);
   }
 
-  @Order(3)
+  @Order(4)
   @Test
   public void test_rule_pageQuery() {
     Stack<Integer> ids = new Stack<>();
@@ -177,7 +221,7 @@ public class AlertRuleIT extends BaseIT {
         }));
   }
 
-  @Order(4)
+  @Order(5)
   @Test
   public void test_alert_calculate() {
     Integer ruleId = given() //
@@ -223,6 +267,39 @@ public class AlertRuleIT extends BaseIT {
     alarmRuleDTO.setTimeFilter(buildTimeFilter());
     alarmRuleDTO.setRule(buildRule());
     return alarmRuleDTO;
+  }
+
+  private Map<String, Object> buildRuleWithMultiTriggerContent() {
+    Rule rule = new Rule();
+    rule.setBoolOperation(BoolOperationEnum.AND);
+    rule.setTriggers(Collections.singletonList(buildTriggerWithMultiTriggerContent()));
+    return J.toMap(J.toJson(rule));
+  }
+
+  private Trigger buildTriggerWithMultiTriggerContent() {
+    Trigger trigger = new Trigger();
+    trigger.setZeroFill(true);
+    trigger.setQuery("a");
+    trigger.setType(FunctionEnum.Current);
+    trigger.setStepNum(1);
+    trigger.setAggregator("avg");
+    trigger.setDownsample(2L);
+    trigger.setTriggerTitle("触发条件 title");
+    trigger.setCompareConfigs(buildCompareConfigWithMultiTriggerContent());
+    trigger.setDatasources(Collections.singletonList(buildDataSource()));
+    return trigger;
+  }
+
+  private List<CompareConfig> buildCompareConfigWithMultiTriggerContent() {
+    CompareConfig compareConfig1 = new CompareConfig();
+    compareConfig1.setTriggerLevel("4");
+    compareConfig1.setCompareParam(Collections.singletonList(buildCompareParam()));
+    compareConfig1.setTriggerContent("compareConfig_trigger_content_1");
+    CompareConfig compareConfig2 = new CompareConfig();
+    compareConfig2.setTriggerLevel("3");
+    compareConfig2.setCompareParam(Collections.singletonList(buildCompareParam()));
+    compareConfig2.setTriggerContent("compareConfig_trigger_content_2");
+    return Arrays.asList(compareConfig1, compareConfig2);
   }
 
   private Map<String, Object> buildRule() {
