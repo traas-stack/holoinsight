@@ -48,7 +48,7 @@ public class DockerComposeEnv implements Env<DockerComposeEnv> {
     dcc = new DockerComposeContainer<>(composeFile) //
         .withLocalCompose(true) //
         .withExposedService("server", 80) //
-        .withExposedService("ceresdb", 8331); //
+        .withExposedService("ceresdb", 8831); //
 
     this.envs.forEach(dcc::withEnv);
 
