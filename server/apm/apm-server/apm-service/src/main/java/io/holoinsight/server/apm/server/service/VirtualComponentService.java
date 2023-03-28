@@ -10,13 +10,13 @@ import java.util.List;
 
 public interface VirtualComponentService {
   List<VirtualComponent> getDbList(String tenant, String service, long startTime, long endTime)
-          throws Exception;
+      throws Exception;
 
   List<VirtualComponent> getCacheList(String tenant, String service, long startTime, long endTime)
-          throws Exception;
+      throws Exception;
 
   List<VirtualComponent> getMQList(String tenant, String service, long startTime, long endTime)
-          throws Exception;
+      throws Exception;
 
   List<String> getTraceIds(String tenant, String service, String address, long startTime,
       long endTime) throws Exception;
