@@ -138,14 +138,6 @@ jobs:
       # https://docs.github.com/zh/actions/using-workflows/workflow-commands-for-github-actions
       run: |
         ./scripts/test/e2e/one.sh
-        summary=./test/server-e2e-test/target/failsafe-reports/failsafe-summary.xml
-        cat $summary
-        errors=`awk -F '[<>]' '/errors/{print $3}' $summary`
-        failures=`awk -F '[<>]' '/failures/{print $3}' $summary`
-        if [ "$errors" -gt 0 ] || [ "$failures" -gt 0 ]; then
-          echo 'IT failure'
-          exit 1
-        fi
       env:
         IT_CLASS: "${{ matrix.it.test }}"
         IT_SCENE: "${{ matrix.it.scene }}"

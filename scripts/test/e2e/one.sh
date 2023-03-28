@@ -20,3 +20,12 @@ if [ "$build"x = "1"x ]; then
 fi
 
 IT_CLASS=$it_class mvn clean integration-test -f server/server-parent -am -pl ../../test/server-e2e-test -Dgroups=e2e-one -DskipITs=false
+
+summary=./test/server-e2e-test/target/failsafe-reports/failsafe-summary.xml
+cat $summary
+errors=`awk -F '[<>]' '/errors/{print $3}' $summary`
+failures=`awk -F '[<>]' '/failures/{print $3}' $summary`
+if [ "$errors" -gt 0 ] || [ "$failures" -gt 0 ]; then
+  echo 'IT failure'
+  exit 1
+fi
