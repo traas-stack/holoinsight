@@ -34,7 +34,7 @@ public class SceneDefaultIT extends ITSets {
    * This is a normal junit5 test method. It will call other ITs using junit5 launcher API.
    */
   @Test
-  public void basic() {
+  public void basic() throws Exception {
     run0(() -> prepareScene("scene-default"), allITs());
   }
 

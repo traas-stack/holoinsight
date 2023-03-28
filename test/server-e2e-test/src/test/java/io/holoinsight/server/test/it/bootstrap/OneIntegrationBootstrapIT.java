@@ -31,7 +31,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class OneIntegrationBootstrapIT {
   @Test
-  public void test() {
+  public void test() throws Exception {
     String className = System.getenv("IT_CLASS");
     if (StringUtils.isEmpty(className)) {
       throw new IllegalArgumentException("IT_CLASS env is required");
