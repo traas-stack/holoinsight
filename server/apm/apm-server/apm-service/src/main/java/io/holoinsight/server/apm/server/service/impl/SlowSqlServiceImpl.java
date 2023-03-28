@@ -9,7 +9,6 @@ import io.holoinsight.server.apm.engine.storage.SlowSqlStorage;
 import io.holoinsight.server.apm.server.service.SlowSqlService;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.io.IOException;
 import java.util.List;
 
 public class SlowSqlServiceImpl implements SlowSqlService {
@@ -24,7 +23,7 @@ public class SlowSqlServiceImpl implements SlowSqlService {
 
   @Override
   public List<SlowSql> getSlowSqlList(String tenant, String serviceName, String dbAddress,
-      long startTime, long endTime) throws IOException {
+      long startTime, long endTime) throws Exception {
     return slowSqlStorage.getSlowSqlList(tenant, serviceName, dbAddress, startTime, endTime);
   }
 

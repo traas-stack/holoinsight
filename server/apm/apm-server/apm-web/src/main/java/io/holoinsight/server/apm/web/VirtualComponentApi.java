@@ -19,7 +19,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import javax.validation.Valid;
-import java.io.IOException;
 import java.util.List;
 
 @javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen")
@@ -38,7 +37,7 @@ public interface VirtualComponentApi {
       consumes = {"application/json"}, method = RequestMethod.POST)
   ResponseEntity<List<VirtualComponent>> queryDbList(
       @ApiParam(value = "查询条件。", required = true) @Valid @RequestBody QueryComponentRequest request)
-      throws IOException;
+      throws Exception;
 
 
   @ApiOperation(value = "query cache list", nickname = "queryCacheList", notes = "查询缓存列表",
@@ -52,7 +51,7 @@ public interface VirtualComponentApi {
       consumes = {"application/json"}, method = RequestMethod.POST)
   ResponseEntity<List<VirtualComponent>> queryCacheList(
       @ApiParam(value = "查询条件。", required = true) @Valid @RequestBody QueryComponentRequest request)
-      throws IOException;
+      throws Exception;
 
 
   @ApiOperation(value = "query mq list", nickname = "queryMQList", notes = "查询消息队列列表",
@@ -66,7 +65,7 @@ public interface VirtualComponentApi {
       consumes = {"application/json"}, method = RequestMethod.POST)
   ResponseEntity<List<VirtualComponent>> queryMQList(
       @ApiParam(value = "查询条件。", required = true) @Valid @RequestBody QueryComponentRequest request)
-      throws IOException;
+      throws Exception;
 
 
   @ApiOperation(value = "query trace list", nickname = "queryTraceList", notes = "查询调用链列表",
@@ -79,6 +78,6 @@ public interface VirtualComponentApi {
       consumes = {"application/json"}, method = RequestMethod.POST)
   ResponseEntity<List<String>> queryComponentTraceIds(
       @ApiParam(value = "查询条件。", required = true) @Valid @RequestBody QueryComponentRequest request)
-      throws IOException;
+      throws Exception;
 
 }

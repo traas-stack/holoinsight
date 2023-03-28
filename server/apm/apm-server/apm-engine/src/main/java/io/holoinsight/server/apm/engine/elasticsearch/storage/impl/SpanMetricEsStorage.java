@@ -47,6 +47,10 @@ public class SpanMetricEsStorage extends PostCalMetricStorage {
     return esClient;
   }
 
+  protected String dateHistogramField() {
+    return SpanDO.START_TIME;
+  }
+
 
   @Override
   protected MetricValues query(MetricDefine metricDefine, String tenant, Duration duration,
@@ -69,7 +73,7 @@ public class SpanMetricEsStorage extends PostCalMetricStorage {
     }
 
     DateHistogramAggregationBuilder dateHistogramAggregationBuilder =
-        AggregationBuilders.dateHistogram(SpanDO.START_TIME).field(SpanDO.START_TIME)
+        AggregationBuilders.dateHistogram(SpanDO.START_TIME).field(dateHistogramField())
             .fixedInterval(new DateHistogramInterval(duration.getStep())).minDocCount(1)
             .extendedBounds(new ExtendedBounds(duration.getStart(), duration.getEnd()));
     AggregationBuilder parentAggregationBuilder = dateHistogramAggregationBuilder;
