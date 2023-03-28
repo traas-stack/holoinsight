@@ -66,7 +66,6 @@ public class Step2IdentityFilter implements Filter {
     // token 降级
     String token = req.getHeader("apiToken");
     if (StringUtil.isNotBlank(token)) {
-      req.setAttribute(MonitorUser.MONITOR_USER, MonitorUser.newTokenUser(token));
       return tokenCheck(token, req, resp);
     }
 
@@ -138,14 +137,13 @@ public class Step2IdentityFilter implements Filter {
       log.error(req.getServletPath() + " is not open, please connect monitor admin, " + token);
       return false;
     }
-    Boolean aBoolean = monitorAccessService.tokenExpire(token, token_expire_sec);
+    Boolean aBoolean = monitorAccessService.tokenExpire(req, token, token_expire_sec);
     if (aBoolean) {
       resp.sendError(HttpServletResponse.SC_UNAUTHORIZED,
           req.getServletPath() + ", token expired, " + token);
       log.error(req.getServletPath() + ", token expired, " + token);
       return false;
     }
-
     return true;
   }
 }

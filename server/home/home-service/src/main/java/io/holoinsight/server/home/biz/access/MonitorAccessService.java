@@ -7,6 +7,7 @@ import com.alibaba.fastjson.JSON;
 import io.holoinsight.server.home.biz.access.model.MonitorAccessConfig;
 import io.holoinsight.server.home.biz.access.model.MonitorTokenData;
 import io.holoinsight.server.home.common.util.scope.MonitorScope;
+import io.holoinsight.server.home.common.util.scope.MonitorUser;
 import io.holoinsight.server.home.common.util.scope.RequestContext;
 import io.holoinsight.server.home.common.util.scope.RequestContext.Context;
 import lombok.extern.slf4j.Slf4j;
@@ -17,6 +18,7 @@ import org.springframework.stereotype.Component;
 
 import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
+import javax.servlet.http.HttpServletRequest;
 import java.nio.charset.StandardCharsets;
 
 /**
@@ -89,7 +91,7 @@ public class MonitorAccessService {
     return tokenData;
   }
 
-  public Boolean tokenExpire(String token, long expireInSecond) {
+  public Boolean tokenExpire(HttpServletRequest req, String token, long expireInSecond) {
     final MonitorTokenData tokenData = check(token);
 
     if (System.currentTimeMillis() - tokenData.time <= expireInSecond * 1000) {
@@ -99,6 +101,7 @@ public class MonitorAccessService {
       monitorScope.accessKey = tokenData.accessKey;
       Context c = new Context(monitorScope);
       RequestContext.setContext(c);
+      req.setAttribute(MonitorUser.MONITOR_USER, MonitorUser.newTokenUser(tokenData.accessKey));
       return false;
     }
     return true;
