@@ -35,7 +35,7 @@ services:
       retries: 300
       timeout: 10s
   ceresdb:
-    image: ${ceresdb_image:-ceresdb/ceresdb-server:v0.3.1}
+    image: ${ceresdb_image:-ceresdb/ceresdb-server:v1.0.0}
     volumes:
     - ./ceresdb_entrypoint.sh:/entrypoint.sh
     restart: always
