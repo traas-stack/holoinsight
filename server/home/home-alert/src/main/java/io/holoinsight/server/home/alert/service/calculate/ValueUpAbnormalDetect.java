@@ -67,7 +67,7 @@ public class ValueUpAbnormalDetect implements FunctionLogic {
         .setExtendConfig(ExtendConfig.triggerConverter(dataResult, functionConfigAIParam));
     RuleConfig ruleConfig = functionConfigAIParam.getTrigger().getRuleConfig();
     if (ruleConfig == null) {
-      ruleConfig = RuleConfig.defaultUpConfig();
+      ruleConfig = RuleConfig.defaultUpConfig(dataResult.getMetric());
     }
     valueAlgorithmRequest.setRuleConfig(ruleConfig);
     // 设置算法接口名称
