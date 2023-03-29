@@ -17,6 +17,7 @@ import org.elasticsearch.search.aggregations.bucket.terms.Terms;
 import org.elasticsearch.search.aggregations.bucket.terms.TermsAggregationBuilder;
 import org.elasticsearch.search.aggregations.metrics.Avg;
 import org.elasticsearch.search.aggregations.metrics.ParsedCardinality;
+import org.elasticsearch.search.aggregations.metrics.Percentile;
 import org.elasticsearch.search.aggregations.metrics.Percentiles;
 import org.elasticsearch.search.aggregations.metrics.ValueCount;
 
@@ -53,10 +54,8 @@ public class CommonBuilder {
             .field(ServiceRelationDO.COMPONENT).executionHint("map")
             .collectMode(Aggregator.SubAggCollectionMode.BREADTH_FIRST))
         .subAggregation(AggregationBuilders.avg("avg_latency").field(ServiceRelationDO.LATENCY))
-        .subAggregation(AggregationBuilders.percentiles("p95_latency")
-            .field(ServiceRelationDO.LATENCY).percentiles(95.0))
-        .subAggregation(AggregationBuilders.percentiles("p99_latency")
-            .field(ServiceRelationDO.LATENCY).percentiles(99.0))
+        .subAggregation(AggregationBuilders.percentiles("percentiles_latency")
+            .field(ServiceRelationDO.LATENCY).percentiles(95.0, 99.0))
         .subAggregation(AggregationBuilders.count("total_count").field(ServiceRelationDO.TRACE_ID))
         .subAggregation(AggregationBuilders
             .filter(ServiceRelationDO.TRACE_STATUS,
@@ -71,11 +70,17 @@ public class CommonBuilder {
     Avg avgLatency = bucket.getAggregations().get("avg_latency");
     double latency = Double.valueOf(avgLatency.getValue());
 
-    Percentiles p95Percentiles = bucket.getAggregations().get("p95_latency");
-    double p95Latency = p95Percentiles.iterator().next().getValue();
+    Percentiles percentiles = bucket.getAggregations().get("percentiles_latency");
 
-    Percentiles p99Percentiles = bucket.getAggregations().get("p99_latency");
-    double p99Latency = p99Percentiles.iterator().next().getValue();
+    double p95Latency = 0;
+    double p99Latency = 0;
+    for (Percentile percentile : percentiles) {
+      if (percentile.getPercent() == 95) {
+        p95Latency = percentile.getValue();
+      } else if (percentile.getPercent() == 99) {
+        p99Latency = percentile.getValue();
+      }
+    }
 
     ValueCount totalTerm = bucket.getAggregations().get("total_count");
     int totalCount = (int) totalTerm.getValue();
