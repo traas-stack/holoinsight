@@ -92,7 +92,7 @@ public class SpanMetricEsStorage extends PostCalMetricStorage {
         .aggregation(dateHistogramAggregationBuilder);
     SearchRequest searchRequest =
         new SearchRequest(new String[] {metricDefine.getIndex()}, searchSourceBuilder);
-    SearchResponse searchResponse = esClient.search(searchRequest, RequestOptions.DEFAULT);
+    SearchResponse searchResponse = esClient().search(searchRequest, RequestOptions.DEFAULT);
     Aggregations aggregations = searchResponse.getAggregations();
     Aggregation aggregation = aggregations.get(SpanDO.START_TIME);
     ParsedDateHistogram dateHistogram = (ParsedDateHistogram) aggregation;
