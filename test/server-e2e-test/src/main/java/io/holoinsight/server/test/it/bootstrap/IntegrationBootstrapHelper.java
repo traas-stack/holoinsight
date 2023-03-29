@@ -69,7 +69,7 @@ public class IntegrationBootstrapHelper {
     run0(envProvider, request);
   }
 
-  protected static void run0(Supplier<Env> envProvider, LauncherDiscoveryRequest request)
+  public static void run0(Supplier<Env> envProvider, LauncherDiscoveryRequest request)
       throws Exception {
     SummaryGeneratingListener listener = new SummaryGeneratingListener();
     MemoryTestExecutionListener memoryListener = new MemoryTestExecutionListener();
@@ -214,7 +214,7 @@ public class IntegrationBootstrapHelper {
     }
   }
 
-  protected static Env<?> prepareScene(String name) {
+  public static Env<?> prepareScene(String name) {
     return new DockerComposeEnv(name);
   }
 

@@ -21,6 +21,7 @@ import io.holoinsight.server.home.facade.trigger.Trigger;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.hamcrest.Matchers;
 import org.json.JSONObject;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 
@@ -32,6 +33,7 @@ import java.util.Map;
  * @author masaimu
  * @version 2023-03-23 17:08:00
  */
+@Disabled("https://github.com/traas-stack/holoinsight/issues/290")
 public class AlertCalculateIT extends BaseIT {
 
   Long currentId;

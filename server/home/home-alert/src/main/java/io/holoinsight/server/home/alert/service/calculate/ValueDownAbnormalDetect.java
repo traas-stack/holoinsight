@@ -67,7 +67,7 @@ public class ValueDownAbnormalDetect implements FunctionLogic {
         .setExtendConfig(ExtendConfig.triggerConverter(dataResult, functionConfigAIParam));
     RuleConfig ruleConfig = functionConfigAIParam.getTrigger().getRuleConfig();
     if (ruleConfig == null) {
-      ruleConfig = RuleConfig.defaultDownConfig();
+      ruleConfig = RuleConfig.defaultDownConfig(dataResult.getMetric());
     }
     valueAlgorithmRequest.setRuleConfig(ruleConfig);
     // 设置算法接口名称

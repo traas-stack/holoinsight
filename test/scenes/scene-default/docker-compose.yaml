@@ -23,8 +23,8 @@ services:
     - ../common/my.cnf:/etc/mysql/conf.d/my.cnf
     - ../../../server/extension/extension-common-flyway/src/main/resources/db/migration:/sql/0migration
     - ./data.sql:/sql/1data/V999999__data.sql
-    - ./init-db.sh:/init-db.sh
-    - ./exec-sql-script.sh:/exec-sql-script.sh
+    - ../common/init-db.sh:/init-db.sh
+    - ../common/exec-sql-script.sh:/exec-sql-script.sh
     working_dir: /
     entrypoint:
     - /init-db.sh
@@ -53,4 +53,4 @@ services:
         condition: service_healthy
       agent-image:
         condition: service_completed_successfully
-    entrypoint: [ "bash","-c", "echo 'holoinsight started successfully, visit http://YOUR_HOST_IP:8080'" ]
+    entrypoint: [ "bash","-c", "echo 'holoinsight started successfully'" ]

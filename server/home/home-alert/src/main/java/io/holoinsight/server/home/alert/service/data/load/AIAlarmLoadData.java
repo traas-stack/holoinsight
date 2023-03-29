@@ -21,7 +21,9 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author wangsiyuan
@@ -45,6 +47,11 @@ public class AIAlarmLoadData implements AlarmLoadData {
         DataResult dataResult = new DataResult();
         dataResult.setMetric(result.getMetric());
         dataResult.setTags(result.getTagsMap());
+        Map<Long, Double> points = new HashMap<>();
+        for (QueryProto.Point point : result.getPointsList()) {
+          points.put(point.getTimestamp(), point.getValue());
+        }
+        dataResult.setPoints(points);
         dataResults.add(dataResult);
       }
     }
@@ -83,7 +90,7 @@ public class AIAlarmLoadData implements AlarmLoadData {
 
 
       response = queryClientService.queryTag(request);
-      LOGGER.info("QueryTags Success Request:{} Response:{}", G.get().toJson(request),
+      LOGGER.debug("QueryTags Success Request:{} Response:{}", G.get().toJson(request),
           G.get().toJson(response));
       return response;
     } catch (Exception exception) {
@@ -93,8 +100,44 @@ public class AIAlarmLoadData implements AlarmLoadData {
     return null;
   }
 
-  private QueryProto.QueryResponse queryDataCount(ComputeTaskPackage computeTask, InspectConfig e,
-      Trigger trigger) {
+  private QueryProto.QueryResponse queryDataCount(ComputeTaskPackage computeTask,
+      InspectConfig inspectConfig, Trigger trigger) {
+    QueryProto.QueryResponse response = null;
+    try {
+      long start = computeTask.getTimestamp() - 4L * PeriodType.HOUR.intervalMillis();
+      long end = computeTask.getTimestamp();
+      QueryProto.QueryResponse response1 = getData(inspectConfig, trigger, start, end);
+      if (response1 == null) {
+        return null;
+      }
+      long yesterdayPeriod = computeTask.getTimestamp() - PeriodType.DAY.intervalMillis();
+      long yesterdayStart = yesterdayPeriod - 4L * PeriodType.HOUR.intervalMillis();
+      long yesterdayEnd = yesterdayPeriod + PeriodType.HOUR.intervalMillis();
+      QueryProto.QueryResponse response2 =
+          getData(inspectConfig, trigger, yesterdayStart, yesterdayEnd);
+      if (response2 == null) {
+        return null;
+      }
+      QueryProto.QueryResponse.Builder reponseBuilder = QueryProto.QueryResponse.newBuilder();
+      response1.getResultsList().forEach(result1 -> response2.getResultsList().forEach(result2 -> {
+        if (result2.getTagsMap().equals(result1.getTagsMap())) {
+          List<QueryProto.Point> points = new ArrayList<>();
+          points.addAll(result1.getPointsList());
+          points.addAll(result2.getPointsList());
+          QueryProto.Result result = QueryProto.Result.newBuilder().addAllPoints(points)
+              .setMetric(result1.getMetric()).putAllTags(result1.getTagsMap()).build();
+          reponseBuilder.addResults(result);
+        }
+      }));
+      response = reponseBuilder.build();
+    } catch (Exception e) {
+      LOGGER.error("QueryData Exception", e);
+    }
+    return response;
+  }
+
+  private QueryProto.QueryResponse getData(InspectConfig inspectConfig, Trigger trigger, long start,
+      long end) {
     QueryProto.QueryResponse response = null;
     QueryProto.QueryRequest request = null;
     try {
@@ -105,10 +148,6 @@ public class AIAlarmLoadData implements AlarmLoadData {
         if (StringUtils.isNotEmpty(aggregator) && !aggregator.equals("none")) {
           dataSource.setDownsample("1m");
         }
-        // 获取检测那一分钟的数据
-        long start = computeTask.getTimestamp() - PeriodType.MINUTE.intervalMillis();
-        long end = computeTask.getTimestamp();
-
         QueryProto.Datasource.Builder builder = QueryProto.Datasource.newBuilder()
             .setName(dataSource.getName()).setStart(start).setEnd(end)
             .setMetric(dataSource.getMetric()).addAllFilters(filterConvert(dataSource.getFilters()))
@@ -122,22 +161,18 @@ public class AIAlarmLoadData implements AlarmLoadData {
         }
         QueryProto.Datasource queryDatasource = builder.build();
         datasources.add(queryDatasource);
-
       }
 
-      request = QueryProto.QueryRequest.newBuilder().setTenant(e.getTenant())
+      request = QueryProto.QueryRequest.newBuilder().setTenant(inspectConfig.getTenant())
           .setQuery(trigger.getQuery()).addAllDatasources(datasources).build();
-
-
       response = queryClientService.queryData(request);
       LOGGER.debug("QueryData Success Request:{} Response:{}", G.get().toJson(request),
           G.get().toJson(response));
-      return response;
-    } catch (Exception exception) {
+    } catch (Exception e) {
       LOGGER.error("QueryData Exception Request:{} Response:{}", G.get().toJson(request),
-          G.get().toJson(response), exception);
+          G.get().toJson(response), e);
     }
-    return null;
+    return response;
   }
 
   private List<QueryProto.QueryFilter> filterConvert(List<Filter> filters) {

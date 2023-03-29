@@ -18,8 +18,6 @@ import io.holoinsight.server.home.facade.trigger.CompareParam;
 import io.holoinsight.server.home.facade.trigger.DataSource;
 import io.holoinsight.server.home.facade.trigger.Filter;
 import io.holoinsight.server.home.facade.trigger.Trigger;
-import io.holoinsight.server.test.it.BaseIT;
-import io.holoinsight.server.test.it.utils.WebapiUtils;
 import io.restassured.response.Response;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.hamcrest.CustomMatcher;
@@ -93,7 +91,7 @@ public class AlertRuleIT extends BaseIT {
     System.out.println(tenant);
   }
 
-  @Order(1)
+  @Order(2)
   @Test
   public void test_triggerContent() {
     AlarmRuleDTO alarmRuleDTO = new AlarmRuleDTO();
@@ -134,7 +132,7 @@ public class AlertRuleIT extends BaseIT {
         .path("data.tenant");
   }
 
-  @Order(2)
+  @Order(3)
   @Test
   public void test_rule_update() {
     name = name + "_v2";
@@ -157,7 +155,7 @@ public class AlertRuleIT extends BaseIT {
         .root("data").body("ruleName", eq(name));
   }
 
-  @Order(3)
+  @Order(4)
   @Test
   public void test_rule_delete() {
     given() //
@@ -172,7 +170,7 @@ public class AlertRuleIT extends BaseIT {
         .body("data", IS_NULL);
   }
 
-  @Order(4)
+  @Order(5)
   @Test
   public void test_rule_pageQuery() {
     Stack<Integer> ids = new Stack<>();
@@ -216,12 +214,12 @@ public class AlertRuleIT extends BaseIT {
             Map<String, Object> item = (Map<String, Object>) o;
             Long queryId = ((Number) item.get("id")).longValue();
             Long id = ids.pop().longValue();
-            return queryId == id;
+            return queryId.equals(id);
           }
         }));
   }
 
-  @Order(5)
+  @Order(6)
   @Test
   public void test_alert_calculate() {
     Integer ruleId = given() //
