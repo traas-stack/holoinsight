@@ -171,10 +171,8 @@ public class TenantIntegrationGeneratedTask extends AbstractMonitorTask {
     for (TenantOps ops : tenantOps) {
 
       String tableName = ops.getTenant() + "_app";
-      log.info("outList: " + tableName);
 
       Map<String, AppModel> dbAppMaps = getDbApps(tableName);
-      log.info("outList: " + tableName + ", " + dbAppMaps.size());
       if (CollectionUtils.isEmpty(dbAppMaps))
         continue;
 
