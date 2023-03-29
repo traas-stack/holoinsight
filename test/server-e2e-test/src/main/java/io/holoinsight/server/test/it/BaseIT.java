@@ -5,6 +5,7 @@ package io.holoinsight.server.test.it;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.time.Duration;
 import java.util.List;
@@ -146,6 +147,10 @@ public abstract class BaseIT extends Matchers {
   }
 
   protected static JSONObject getJsonFromClasspath(String name) {
-    return new JSONObject(new JSONTokener(getResourceAsStream(name)));
+    try (InputStream is = getResourceAsStream(name)) {
+      return new JSONObject(new JSONTokener(is));
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
   }
 }

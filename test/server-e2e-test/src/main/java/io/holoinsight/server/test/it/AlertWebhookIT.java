@@ -65,7 +65,7 @@ public class AlertWebhookIT extends BaseIT {
     System.out.println(tenant);
   }
 
-  @Order(1)
+  @Order(2)
   @Test
   public void test_rule_update() {
     name = name + "_v2";
@@ -87,7 +87,7 @@ public class AlertWebhookIT extends BaseIT {
         .root("data").body("webhookName", eq(name));
   }
 
-  @Order(2)
+  @Order(3)
   @Test
   public void test_rule_delete() {
     given() //
@@ -104,7 +104,7 @@ public class AlertWebhookIT extends BaseIT {
         .body("data", IS_NULL); //
   }
 
-  @Order(3)
+  @Order(4)
   @Test
   public void test_rule_pageQuery() {
     Stack<Long> ids = new Stack<>();
@@ -138,7 +138,7 @@ public class AlertWebhookIT extends BaseIT {
     given() //
         .body(new JSONObject(J.toMap(J.toJson(pageRequest)))) //
         .when() //
-        .post("/webapi/alarmDingDingRobot/pageQuery") //
+        .post("/webapi/alarmWebhook/pageQuery") //
         .then() //
         .body("success", IS_TRUE) //
         .root("data")
