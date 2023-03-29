@@ -16,6 +16,9 @@ import io.holoinsight.server.home.dal.model.dto.IntegrationPluginDTO.DataRange;
 import io.holoinsight.server.home.dal.model.dto.IntegrationProductDTO;
 import io.holoinsight.server.home.facade.AlarmRuleDTO;
 import io.holoinsight.server.home.facade.page.MonitorPageRequest;
+import io.holoinsight.server.home.facade.trigger.RuleConfig;
+import org.hamcrest.CustomMatcher;
+import org.hamcrest.core.Every;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
@@ -25,6 +28,7 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -70,7 +74,7 @@ public class IntegrationPluginIT extends BaseIT {
         .path("data"); //
     plugin = gson.fromJson(gson.toJson(data), IntegrationPluginDTO.class);
 
-    await("Test alert history generation") //
+    await("Test alert rule generation") //
         .atMost(Duration.ofSeconds(10)) //
         .untilAsserted(() -> {
           AlarmRuleDTO alertCondition = new AlarmRuleDTO();
@@ -83,11 +87,24 @@ public class IntegrationPluginIT extends BaseIT {
               .post("/webapi/alarmRule/pageQuery") //
               .then().log().all() //
               .body("success", IS_TRUE) //
-              .body("data.items.size()", gt(0));
+              .body("data.items.size()", gt(0)) //
+              .root("data") //
+              .body("items",
+                  new Every<>(new CustomMatcher<Map<String, Object>>("check rule config") {
+                    @Override
+                    public boolean matches(Object o) {
+                      Map<String, Object> item = (Map<String, Object>) o;
+                      Map<String, Object> rule = (Map<String, Object>) item.get("rule");
+                      List<Map<String, Object>> triggers =
+                          (List<Map<String, Object>>) rule.get("triggers");
+                      Map<String, Object> trigger = triggers.get(0);
+                      Map<String, Object> ruleConfig =
+                          (Map<String, Object>) trigger.get("ruleConfig");
+                      return ruleConfig.containsKey("system_cpu_util")
+                          || ruleConfig.containsKey("system_mem_util");
+                    }
+                  }));
         });
-
-
-
   }
 
   private IntegrationPluginDTO buildPlugin(IntegrationProductDTO product) {
@@ -153,6 +170,7 @@ public class IntegrationPluginIT extends BaseIT {
     hostingAlert.aggregator = "avg";
     hostingAlert.groupBy = Arrays.asList("app");
     hostingAlert.functionType = "ValueUp";
+    hostingAlert.ruleConfig = RuleConfig.defaultUpConfig(metricName);
     return hostingAlert;
   }
 }
