@@ -45,10 +45,10 @@ import lombok.SneakyThrows;
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public abstract class BaseIT extends Matchers {
-  protected static final Matcher<?> IS_TRUE = is(true);
-  protected static final Matcher<?> IS_FALSE = is(false);
-  protected static final Matcher<?> IS_NULL = nullValue();
-  protected static final Matcher<?> NOT_NULL = notNullValue();
+  protected static final Matcher<?> IS_TRUE = Matchers.is(true);
+  protected static final Matcher<?> IS_FALSE = Matchers.is(false);
+  protected static final Matcher<?> IS_NULL = Matchers.nullValue();
+  protected static final Matcher<?> NOT_NULL = Matchers.notNullValue();
 
   protected static final Duration DEFAULT_AWAIT_TIMEOUT = Duration.ofMinutes(5);
   protected static final Duration DEFAULT_POLL_INTERVAL = Duration.ofSeconds(5);
@@ -107,11 +107,11 @@ public abstract class BaseIT extends Matchers {
   }
 
   protected static <T> Matcher<T> eq(T t) {
-    return equalTo(t);
+    return Matchers.equalTo(t);
   }
 
   protected static <T extends Comparable<T>> Matcher<T> gt(T t) {
-    return greaterThan(t);
+    return Matchers.greaterThan(t);
   }
 
   protected static <T> List<T> newArrayList(T... list) {

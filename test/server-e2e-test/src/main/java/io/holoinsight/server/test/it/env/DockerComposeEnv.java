@@ -44,11 +44,11 @@ public class DockerComposeEnv implements Env<DockerComposeEnv> {
   public void start() {
     composeFile = new File( //
         new File(".").getAbsolutePath(), //
-        "../scenes/" + name + "/docker-compose.yaml"); //
+        "../scenes/" + name + "/docker-compose.yaml") //
+            .getCanonicalFile(); //
     dcc = new DockerComposeContainer<>(composeFile) //
         .withLocalCompose(true) //
-        .withExposedService("server", 80) //
-        .withExposedService("ceresdb", 8831); //
+        .withExposedService("server", 80); //
 
     this.envs.forEach(dcc::withEnv);
 
@@ -61,6 +61,7 @@ public class DockerComposeEnv implements Env<DockerComposeEnv> {
     });
 
     long begin = System.currentTimeMillis();
+    log.info("docker-compose up file={}", composeFile.getAbsolutePath());
     dcc.start();
     long cost = System.currentTimeMillis() - begin;
     log.info("docker-compose bootstrap success, cost=[{}]ms", cost);
