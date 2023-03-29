@@ -44,7 +44,7 @@ public class UserCache {
    */
   public MonitorUser get(String loginName, String tenantId) {
     UserCacheKey key = new UserCacheKey(loginName, tenantId);
-    return CommonLocalCache.get(USER_CACHE_KEY + MD5Hash.getMD5(J.toJson(key)));
+    return CommonLocalCache.get(MD5Hash.getMD5(USER_CACHE_KEY + J.toJson(key)));
   }
 
   @Data

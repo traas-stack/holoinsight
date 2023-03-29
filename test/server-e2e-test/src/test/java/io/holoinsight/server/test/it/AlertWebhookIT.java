@@ -138,7 +138,7 @@ public class AlertWebhookIT extends BaseIT {
     given() //
         .body(new JSONObject(J.toMap(J.toJson(pageRequest)))) //
         .when() //
-        .post("/webapi/alarmDingDingRobot/pageQuery") //
+        .post("/webapi/alarmWebhook/pageQuery") //
         .then() //
         .body("success", IS_TRUE) //
         .root("data")

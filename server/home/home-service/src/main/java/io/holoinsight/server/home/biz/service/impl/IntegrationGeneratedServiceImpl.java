@@ -42,16 +42,16 @@ public class IntegrationGeneratedServiceImpl
   @Override
   public List<IntegrationGenerated> queryByTenant(String tenant) {
     QueryWrapper<IntegrationGenerated> queryWrapper = new QueryWrapper<>();
-    queryWrapper.select("name", "product", "tenant", "item", "id").eq("deleted", 0).eq("tenant",
-        tenant);
+    queryWrapper.select("name", "product", "tenant", "workspace", "item", "id").eq("deleted", 0)
+        .eq("tenant", tenant);
     return baseMapper.selectList(queryWrapper);
   }
 
   @Override
   public List<IntegrationGenerated> queryByTenant(String tenant, String workspace) {
     QueryWrapper<IntegrationGenerated> queryWrapper = new QueryWrapper<>();
-    queryWrapper.select("name", "product", "tenant", "item", "id").eq("deleted", 0).eq("tenant",
-        tenant);
+    queryWrapper.select("name", "product", "tenant", "workspace", "item", "id").eq("deleted", 0)
+        .eq("tenant", tenant);
     if (StringUtils.isNotBlank(workspace)) {
       queryWrapper.eq("workspace", workspace);
     }
