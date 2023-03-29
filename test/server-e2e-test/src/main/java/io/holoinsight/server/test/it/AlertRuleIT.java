@@ -18,8 +18,6 @@ import io.holoinsight.server.home.facade.trigger.CompareParam;
 import io.holoinsight.server.home.facade.trigger.DataSource;
 import io.holoinsight.server.home.facade.trigger.Filter;
 import io.holoinsight.server.home.facade.trigger.Trigger;
-import io.holoinsight.server.test.it.BaseIT;
-import io.holoinsight.server.test.it.utils.WebapiUtils;
 import io.restassured.response.Response;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.hamcrest.CustomMatcher;
@@ -216,7 +214,7 @@ public class AlertRuleIT extends BaseIT {
             Map<String, Object> item = (Map<String, Object>) o;
             Long queryId = ((Number) item.get("id")).longValue();
             Long id = ids.pop().longValue();
-            return queryId == id;
+            return queryId.equals(id);
           }
         }));
   }

@@ -61,3 +61,14 @@ services:
   agent-image:
     image: ${server_image:-holoinsight/agent:latest}
     entrypoint: [ "true" ]
+  mysql-data-init:
+    image: ${mysql_image:-mysql:8}
+    restart: "no"
+    volumes:
+    - ./my.cnf:/etc/mysql/conf.d/my.cnf
+    - ./init-db.sh:/init-db.sh
+    - ./exec-sql-script.sh:/exec-sql-script.sh
+    - ../../../server/extension/extension-common-flyway/src/main/resources/db/migration:/sql/0migration
+    working_dir: /
+    entrypoint:
+    - /init-db.sh

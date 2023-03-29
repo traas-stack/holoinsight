@@ -9,8 +9,6 @@ import static org.junit.platform.engine.discovery.DiscoverySelectors.selectClass
 
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
-import org.junit.platform.launcher.LauncherDiscoveryRequest;
-import org.junit.platform.launcher.core.LauncherDiscoveryRequestBuilder;
 
 import io.holoinsight.server.test.it.AgentVMIT;
 import io.holoinsight.server.test.it.AppMonitoringIT;
@@ -35,7 +33,7 @@ public class SceneDefaultIT extends ITSets {
    */
   @Test
   public void basic() throws Exception {
-    run0(() -> prepareScene("scene-default"), allITs());
+    IntegrationBootstrapHelper.run0(() -> prepareScene("scene-default"), allITs());
   }
 
 }
