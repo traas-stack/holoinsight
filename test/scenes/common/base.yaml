@@ -44,6 +44,9 @@ services:
       interval: 3s
       retries: 300
       timeout: 10s
+    ports:
+    - 8831
+    - 5440
   server:
     image: ${server_image:-holoinsight/server:latest}
     healthcheck:

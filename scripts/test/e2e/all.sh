@@ -18,6 +18,11 @@ else
   fi
 fi
 
+if [ "$build"x = "1"x ] && [ -z "$MVN_NO_CLEAN" ]; then
+  # There is no need to clean when `build=1`
+  MVN_NO_CLEAN='1'
+fi
+
 if [ -z "$forks" ]; then
   forks=1
 fi
