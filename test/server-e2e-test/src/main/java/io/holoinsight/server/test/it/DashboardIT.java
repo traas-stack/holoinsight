@@ -69,7 +69,7 @@ public class DashboardIT extends BaseIT {
     System.out.println(tenant);
   }
 
-  @Order(1)
+  @Order(2)
   @Test
   public void test_rule_update() {
     name = name + "_v2";
@@ -92,7 +92,7 @@ public class DashboardIT extends BaseIT {
         .root("data").body("title", eq(name));
   }
 
-  @Order(2)
+  @Order(3)
   @Test
   public void test_rule_delete() {
     given() //
@@ -108,7 +108,7 @@ public class DashboardIT extends BaseIT {
         .body("data", IS_NULL); //
   }
 
-  @Order(3)
+  @Order(4)
   @Test
   public void test_rule_pageQuery() {
     Stack<Long> ids = new Stack<>();
