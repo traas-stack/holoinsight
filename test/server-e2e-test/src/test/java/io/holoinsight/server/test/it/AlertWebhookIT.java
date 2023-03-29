@@ -138,7 +138,7 @@ public class AlertWebhookIT extends BaseIT {
     given() //
         .body(new JSONObject(J.toMap(J.toJson(pageRequest)))) //
         .when() //
-        .post("/webapi/alarmWebhook/pageQuery") //
+        .post("/webapi/alarmDingDingRobot/pageQuery") //
         .then() //
         .body("success", IS_TRUE) //
         .root("data")
@@ -158,7 +158,7 @@ public class AlertWebhookIT extends BaseIT {
     item.setWebhookName(title);
     item.setStatus((byte) 1);
     item.setRequestType("POST");
-    item.setRequestUrl("http://localhost:8080/internal/api/home/alarmDingDingRobot/testCase");
+    item.setRequestUrl("http://localhost:8080/internal/api/home/alarmWebhook/testCase");
     item.setRequestHeaders("{\"Content-Type\":\"application/json\",\"charset\":\"utf-8\"}");
     item.setRequestBody(
         "{ \t\"ruleName\": \"${ruleName}\", \t\"alarmTimestamp\": \"${alarmTimestamp}\", \t\"alarmLevel\": "
