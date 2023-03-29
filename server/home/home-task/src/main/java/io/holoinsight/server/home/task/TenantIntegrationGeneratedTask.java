@@ -14,13 +14,16 @@ import java.util.concurrent.TimeUnit;
 
 import io.holoinsight.server.common.J;
 import io.holoinsight.server.common.MD5Hash;
+import io.holoinsight.server.common.dao.entity.TenantOps;
 import io.holoinsight.server.home.biz.plugin.PluginRepository;
 import io.holoinsight.server.home.biz.plugin.core.AbstractIntegrationPlugin;
+import io.holoinsight.server.home.biz.plugin.model.Plugin;
+import io.holoinsight.server.home.biz.plugin.model.PluginType;
 import io.holoinsight.server.home.biz.service.IntegrationGeneratedService;
 import io.holoinsight.server.home.biz.service.IntegrationPluginService;
-import io.holoinsight.server.common.service.TenantService;
 import io.holoinsight.server.home.biz.service.MetaService;
 import io.holoinsight.server.home.biz.service.MetaService.AppModel;
+import io.holoinsight.server.home.biz.service.TenantOpsService;
 import io.holoinsight.server.home.common.model.TaskEnum;
 import io.holoinsight.server.home.common.util.cache.local.CommonLocalCache;
 import io.holoinsight.server.home.dal.model.IntegrationGenerated;
@@ -28,7 +31,6 @@ import io.holoinsight.server.home.dal.model.dto.CloudMonitorRange;
 import io.holoinsight.server.home.dal.model.dto.GaeaCollectConfigDTO.GaeaCollectRange;
 import io.holoinsight.server.home.dal.model.dto.IntegrationGeneratedDTO;
 import io.holoinsight.server.home.dal.model.dto.IntegrationPluginDTO;
-import io.holoinsight.server.common.dao.entity.dto.TenantDTO;
 import io.holoinsight.server.meta.common.model.QueryExample;
 import lombok.extern.slf4j.Slf4j;
 
@@ -65,7 +67,7 @@ public class TenantIntegrationGeneratedTask extends AbstractMonitorTask {
   private PluginRepository pluginRepository;
 
   @Autowired
-  private TenantService tenantService;
+  private TenantOpsService tenantOpsService;
 
   @Autowired
   private MetaService metaService;
@@ -80,7 +82,7 @@ public class TenantIntegrationGeneratedTask extends AbstractMonitorTask {
   }
 
   public long getTaskPeriod() {
-    return TEN_MINUTE;
+    return FIVE_MINUTE;
   }
 
   @Override
@@ -140,12 +142,12 @@ public class TenantIntegrationGeneratedTask extends AbstractMonitorTask {
   }
 
   private Map<String, Long> getFromDb() {
-    List<TenantDTO> tenantDTOS = tenantService.queryAll();
+    List<TenantOps> tenantOps = tenantOpsService.list();
     Map<String, Long> dbUks = new HashMap<>();
 
-    for (TenantDTO tenantDTO : tenantDTOS) {
+    for (TenantOps ops : tenantOps) {
       List<IntegrationGenerated> dblist =
-          integrationGeneratedService.queryByTenant(tenantDTO.getCode());
+          integrationGeneratedService.queryByTenant(ops.getTenant());
       if (CollectionUtils.isEmpty(dblist)) {
         continue;
       }
@@ -165,10 +167,10 @@ public class TenantIntegrationGeneratedTask extends AbstractMonitorTask {
 
     Map<String, IntegrationGeneratedDTO> dtoMap = new HashMap<>();
     List<IntegrationGeneratedDTO> generateds = new ArrayList<>();
-    List<TenantDTO> tenantDTOS = tenantService.queryAll();
-    for (TenantDTO tenantDTO : tenantDTOS) {
+    List<TenantOps> tenantOps = tenantOpsService.list();
+    for (TenantOps ops : tenantOps) {
 
-      String tableName = tenantDTO.code + "_app";
+      String tableName = ops.getTenant() + "_app";
 
       Map<String, AppModel> dbAppMaps = getDbApps(tableName);
       if (CollectionUtils.isEmpty(dbAppMaps))
@@ -177,34 +179,36 @@ public class TenantIntegrationGeneratedTask extends AbstractMonitorTask {
       for (Map.Entry<String, AppModel> entry : dbAppMaps.entrySet()) {
 
         if (entry.getValue().getMachineType().equalsIgnoreCase("VM")) {
-          generateds.add(generated(tenantDTO.getCode(), entry.getValue().getWorkspace(),
-              entry.getKey(), "vmsystem", "System", new HashMap<>()));
+          generateds.add(generated(ops.getTenant(), entry.getValue().getWorkspace(), entry.getKey(),
+              "vmsystem", "System", new HashMap<>()));
         } else {
-          generateds.add(generated(tenantDTO.getCode(), entry.getValue().getWorkspace(),
-              entry.getKey(), "podsystem", "System", new HashMap<>()));
+          generateds.add(generated(ops.getTenant(), entry.getValue().getWorkspace(), entry.getKey(),
+              "podsystem", "System", new HashMap<>()));
         }
 
-        generateds.add(generated(tenantDTO.getCode(), entry.getValue().getWorkspace(),
-            entry.getKey(), "logpattern", "LogPattern", new HashMap<>()));
+        generateds.add(generated(ops.getTenant(), entry.getValue().getWorkspace(), entry.getKey(),
+            "logpattern", "LogPattern", new HashMap<>()));
 
-        generateds.add(generated(tenantDTO.getCode(), entry.getValue().getWorkspace(),
-            entry.getKey(), "portcheck", "PortCheck", new HashMap<>()));
+        generateds.add(generated(ops.getTenant(), entry.getValue().getWorkspace(), entry.getKey(),
+            "portcheck", "PortCheck", new HashMap<>()));
       }
 
       List<IntegrationPluginDTO> integrationPluginDTOS =
-          integrationPluginService.queryByTenant(tenantDTO.getCode());
+          integrationPluginService.queryByTenant(ops.getTenant());
 
       if (CollectionUtils.isEmpty(integrationPluginDTOS))
         continue;
 
       for (IntegrationPluginDTO integrationPluginDTO : integrationPluginDTOS) {
-        AbstractIntegrationPlugin plugin = (AbstractIntegrationPlugin) this.pluginRepository
-            .getTemplate(integrationPluginDTO.type, integrationPluginDTO.version);
-
-        if (null == plugin)
+        Plugin plugin = this.pluginRepository.getTemplate(integrationPluginDTO.type,
+            integrationPluginDTO.version);
+        if (null == plugin || plugin.getPluginType().equals(PluginType.hosting)) {
           continue;
+        }
+
+        AbstractIntegrationPlugin abstractIntegrationPlugin = (AbstractIntegrationPlugin) plugin;
         List<AbstractIntegrationPlugin> abstractIntegrationPlugins =
-            plugin.genPluginList(integrationPluginDTO);
+            abstractIntegrationPlugin.genPluginList(integrationPluginDTO);
         if (CollectionUtils.isEmpty(abstractIntegrationPlugins))
           continue;
 
@@ -230,12 +234,13 @@ public class TenantIntegrationGeneratedTask extends AbstractMonitorTask {
             if (appItemSets.contains(uk))
               continue;
 
-            generateds.add(generated(tenantDTO.getCode(), integrationPluginDTO.getWorkspace(), app,
+            generateds.add(generated(ops.getTenant(), integrationPluginDTO.getWorkspace(), app,
                 integrationPlugin.name, integrationPluginDTO.getProduct(), new HashMap<>()));
 
             appItemSets.add(uk);
           }
         }
+        log.info("outList: " + tableName + ", generated size: " + generateds.size());
       }
     }
 
@@ -271,8 +276,8 @@ public class TenantIntegrationGeneratedTask extends AbstractMonitorTask {
 
   private Set<String> getCollectApps(CloudMonitorRange cloudMonitorRange) {
 
-    Set<String> o = CommonLocalCache
-        .get(INTEGRATION_GENERATED_CACHE_KEY + MD5Hash.getMD5(J.toJson(cloudMonitorRange)));
+    Set<String> o = CommonLocalCache.get(MD5Hash
+        .getMD5(INTEGRATION_GENERATED_CACHE_KEY + MD5Hash.getMD5(J.toJson(cloudMonitorRange))));
 
     if (!CollectionUtils.isEmpty(o)) {
       return o;
@@ -316,9 +321,9 @@ public class TenantIntegrationGeneratedTask extends AbstractMonitorTask {
 
   private Map<String, AppModel> getDbApps(String tableName) {
 
-    Map<String, AppModel> o = CommonLocalCache.get(APP_META_KEY + tableName);
-    if (!CollectionUtils.isEmpty(o)) {
-      return o;
+    Object o = CommonLocalCache.get(MD5Hash.getMD5(APP_META_KEY + tableName));
+    if (null != o) {
+      return (Map<String, AppModel>) o;
     }
 
     List<AppModel> appModels = metaService.getAppModelFromAppTable(tableName);
@@ -332,8 +337,7 @@ public class TenantIntegrationGeneratedTask extends AbstractMonitorTask {
       appMaps.put(db.getApp(), db);
     });
 
-    CommonLocalCache.put(MD5Hash.getMD5(INTEGRATION_GENERATED_CACHE_KEY + tableName), appMaps, 10,
-        TimeUnit.MINUTES);
+    CommonLocalCache.put(MD5Hash.getMD5(APP_META_KEY + tableName), appMaps, 10, TimeUnit.MINUTES);
 
     return appMaps;
   }

@@ -90,14 +90,14 @@ public class MetaService {
     }
 
     dbLists.forEach(db -> {
-      if (null != db.get(meta_app)) {
+      if (null == db.get(meta_app)) {
         return;
       }
       AppModel appModel = new AppModel();
       appModel.setApp(db.get(meta_app).toString());
       appModel.setWorkspace(db.getOrDefault(meta_workspace, meta_workspace_default).toString());
 
-      if (null != db.get("_label"))
+      if (null == db.get("_label"))
         return;
 
       Map<String, Object> map = J.toMap(J.toJson(db.get("_label")));
