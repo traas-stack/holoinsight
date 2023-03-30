@@ -79,7 +79,11 @@ public class DockerComposeEnv implements Env<DockerComposeEnv> {
           .timeout(10, TimeUnit.MINUTES) //
           .execute(); //
 
-      log.info("execute {} stdout:\n{}", afterPath, result.getOutput().getUTF8());
+      log.info("execute {} code=[{}] stdout:\n{}", afterPath, result.getExitValue(),
+          result.getOutput().getUTF8());
+      if (result.getExitValue() != 0) {
+        throw new IllegalStateException("fail to execute " + afterPath);
+      }
     }
   }
 
