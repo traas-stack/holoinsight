@@ -12,17 +12,21 @@ import io.holoinsight.server.home.alert.model.function.FunctionConfigParam;
 import io.holoinsight.server.home.alert.model.function.FunctionLogic;
 import io.holoinsight.server.home.facade.DataResult;
 import io.holoinsight.server.home.facade.InspectConfig;
+import io.holoinsight.server.home.facade.PqlRule;
 import io.holoinsight.server.home.facade.Rule;
 import io.holoinsight.server.home.facade.emuns.BoolOperationEnum;
 import io.holoinsight.server.home.facade.trigger.CompareConfig;
+import io.holoinsight.server.home.facade.trigger.DataSource;
 import io.holoinsight.server.home.facade.trigger.Trigger;
 import io.holoinsight.server.home.facade.trigger.TriggerResult;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -75,10 +79,46 @@ public class AbstractUniformInspectRunningRule {
       eventInfo.setEnvType(inspectConfig.getEnvType());
       eventInfo.setIsRecover(false);
       eventInfo.setUniqueId(inspectConfig.getUniqueId());
+      Map<Trigger, List<TriggerResult>> triggerMap =
+          convertFromPql(inspectConfig.getPqlRule(), period, inspectConfig);
+      eventInfo.setAlarmTriggerResults(triggerMap);
       return eventInfo;
     }
     // 恢复时这里返回null
     return null;
+  }
+
+  private Map<Trigger, List<TriggerResult>> convertFromPql(PqlRule pqlRule, long period,
+      InspectConfig inspectConfig) {
+    Trigger trigger = new Trigger();
+    trigger.setQuery(pqlRule.getPql());
+    trigger.setTriggerContent(pqlRule.getPql());
+    trigger.setTriggerTitle(pqlRule.getPql());
+    trigger.setDataResult(pqlRule.getDataResult());
+    trigger.setCompareConfigs(new ArrayList<>());
+    trigger.setAggregator(StringUtils.EMPTY);
+    trigger.setDownsample(0L);
+    DataSource dataSource = new DataSource();
+    dataSource.setMetric(pqlRule.getPql());
+    dataSource.setMetricType("pql");
+    trigger.setDatasources(Collections.singletonList(dataSource));
+
+    List<TriggerResult> resultList = new ArrayList<>();
+    for (DataResult dataResult : pqlRule.getDataResult()) {
+      TriggerResult triggerResult = new TriggerResult();
+      triggerResult.setMetric(pqlRule.getPql());
+      triggerResult.setHit(true);
+      triggerResult.setTags(dataResult.getTags());
+      if (!CollectionUtils.isEmpty(dataResult.getPoints())) {
+        triggerResult.setCurrentValue(dataResult.getPoints().get(period));
+        dataResult.getPoints().forEach(triggerResult::addValue);
+      }
+      triggerResult.setTriggerLevel(inspectConfig.getAlarmLevel());
+      resultList.add(triggerResult);
+    }
+    Map<Trigger, List<TriggerResult>> map = new HashMap<>();
+    map.put(trigger, resultList);
+    return map;
   }
 
   public EventInfo runRule(InspectConfig inspectConfig, long period) throws InterruptedException {

@@ -3,10 +3,7 @@
  */
 package io.holoinsight.server.home.alert.model.event;
 
-import com.alibaba.fastjson.JSON;
 import io.holoinsight.server.common.AddressUtil;
-import io.holoinsight.server.home.alert.common.AlarmContentGenerator;
-import io.holoinsight.server.home.facade.DataResult;
 import io.holoinsight.server.home.facade.InspectConfig;
 import io.holoinsight.server.home.facade.PqlRule;
 import io.holoinsight.server.home.facade.TemplateValue;
@@ -26,8 +23,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.TimeZone;
-import java.util.stream.Collectors;
 
 /**
  * @author wangsiyuan
@@ -91,32 +86,27 @@ public class AlertNotify {
 
   private String sourceType; // 来源类型
 
-  public static AlertNotify eventInfoConver(EventInfo eventInfo, InspectConfig inspectConfig) {
+  public static AlertNotify eventInfoConvert(EventInfo eventInfo, InspectConfig inspectConfig) {
     AlertNotify alertNotify = new AlertNotify();
     BeanUtils.copyProperties(inspectConfig, alertNotify);
     BeanUtils.copyProperties(eventInfo, alertNotify);
     if (!eventInfo.getIsRecover()) {
-
-      if (inspectConfig.getIsPql()) {
-        alertNotify.setIsPql(true);
-      } else {
-        Map<Trigger, List<NotifyDataInfo>> notifyDataInfoMap = new HashMap<>();
-        eventInfo.getAlarmTriggerResults().forEach((trigger, resultList) -> {
-          List<NotifyDataInfo> notifyDataInfos = new ArrayList<>();
-          resultList.forEach(result -> {
-            NotifyDataInfo notifyDataInfo = new NotifyDataInfo();
-            notifyDataInfo.setMetric(result.getMetric());
-            notifyDataInfo.setTags(result.getTags());
-            notifyDataInfo.setCurrentValue(result.getCurrentValue());
-            notifyDataInfo.setTriggerContent(result.getTriggerContent());
-            notifyDataInfos.add(notifyDataInfo);
-          });
-          notifyDataInfoMap.put(trigger, notifyDataInfos);
+      alertNotify.setIsPql(inspectConfig.getIsPql() != null && inspectConfig.getIsPql());
+      Map<Trigger, List<NotifyDataInfo>> notifyDataInfoMap = new HashMap<>();
+      eventInfo.getAlarmTriggerResults().forEach((trigger, resultList) -> {
+        List<NotifyDataInfo> notifyDataInfos = new ArrayList<>();
+        resultList.forEach(result -> {
+          NotifyDataInfo notifyDataInfo = new NotifyDataInfo();
+          notifyDataInfo.setMetric(result.getMetric());
+          notifyDataInfo.setTags(result.getTags());
+          notifyDataInfo.setCurrentValue(result.getCurrentValue());
+          notifyDataInfo.setTriggerContent(result.getTriggerContent());
+          notifyDataInfos.add(notifyDataInfo);
         });
-        alertNotify.setNotifyDataInfos(notifyDataInfoMap);
-        alertNotify.setAggregationNum(notifyDataInfoMap.size());
-        alertNotify.setIsPql(false);
-      }
+        notifyDataInfoMap.put(trigger, notifyDataInfos);
+      });
+      alertNotify.setNotifyDataInfos(notifyDataInfoMap);
+      alertNotify.setAggregationNum(notifyDataInfoMap.size());
       alertNotify.setEnvType(eventInfo.getEnvType());
       // 对于平台消费侧，可能需要知道完整的告警规则
       alertNotify.setRuleConfig(inspectConfig);
