@@ -41,6 +41,7 @@ services:
         condition: service_healthy
     environment:
       JAVA_APP_OPTS: "-Xmx1024m -Xms1024m -Xmn512m"
+      JAVA_DEBUG_OPTS: ${JAVA_DEBUG_OPTS:-}
     volumes:
     - ./application.yaml:/home/admin/application.yaml
   agent-image:
