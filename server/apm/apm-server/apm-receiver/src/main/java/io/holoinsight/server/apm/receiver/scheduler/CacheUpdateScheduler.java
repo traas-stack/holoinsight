@@ -3,7 +3,6 @@
  */
 package io.holoinsight.server.apm.receiver.scheduler;
 
-import io.holoinsight.server.apm.common.utils.TimeBucket;
 import io.holoinsight.server.apm.engine.model.NetworkAddressMappingDO;
 import io.holoinsight.server.apm.server.cache.NetworkAddressMappingCache;
 import io.holoinsight.server.apm.server.service.NetworkAddressMappingService;
@@ -52,12 +51,11 @@ public class CacheUpdateScheduler {
   private void updateNetAddressAliasCache() throws Exception {
     long loadStartTime;
     if (networkAddressMappingCache.currentSize() == 0) {
-      loadStartTime =
-          TimeBucket.getMinuteTimeBucket(System.currentTimeMillis() - 60_000L * 60 * 24 * 10); // init
+      loadStartTime = System.currentTimeMillis() - 60_000L * 60 * 24 * 10; // init
                                                                                                // 10
                                                                                                // day
     } else {
-      loadStartTime = TimeBucket.getMinuteTimeBucket(System.currentTimeMillis() - 60_000L * 10); // update
+      loadStartTime = System.currentTimeMillis() - 60_000L * 10; // update
                                                                                                  // 10
                                                                                                  // minute
     }

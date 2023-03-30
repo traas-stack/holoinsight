@@ -21,7 +21,7 @@ public class NetworkAddressMappingServiceImpl implements NetworkAddressMappingSe
   }
 
   @Override
-  public List<NetworkAddressMappingDO> loadByTime(long timeBucketInMinute) throws Exception {
-    return networkAddressMappingStorage.loadByTime(timeBucketInMinute);
+  public List<NetworkAddressMappingDO> loadByTime(long startTime) throws Exception {
+    return networkAddressMappingStorage.loadByTime(startTime);
   }
 }

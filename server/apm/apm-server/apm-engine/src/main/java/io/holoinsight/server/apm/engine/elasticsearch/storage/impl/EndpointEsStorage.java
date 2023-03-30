@@ -5,6 +5,7 @@ package io.holoinsight.server.apm.engine.elasticsearch.storage.impl;
 
 import io.holoinsight.server.apm.common.model.query.Endpoint;
 import io.holoinsight.server.apm.engine.model.EndpointRelationDO;
+import io.holoinsight.server.apm.engine.model.SpanDO;
 import io.holoinsight.server.apm.engine.storage.EndpointStorage;
 import lombok.extern.slf4j.Slf4j;
 import org.elasticsearch.action.search.SearchRequest;
@@ -31,6 +32,10 @@ public class EndpointEsStorage implements EndpointStorage {
     return client;
   }
 
+  protected String rangeTimeField() {
+    return SpanDO.START_TIME;
+  }
+
   @Override
   public List<Endpoint> getEndpointList(String tenant, String service, long startTime, long endTime)
       throws IOException {
@@ -39,7 +44,7 @@ public class EndpointEsStorage implements EndpointStorage {
     BoolQueryBuilder queryBuilder = QueryBuilders.boolQuery()
         .must(QueryBuilders.termQuery(EndpointRelationDO.TENANT, tenant))
         .must(QueryBuilders.termQuery(EndpointRelationDO.DEST_SERVICE_NAME, service))
-        .must(QueryBuilders.rangeQuery(EndpointRelationDO.START_TIME).gte(startTime).lte(endTime));
+        .must(QueryBuilders.rangeQuery(rangeTimeField()).gte(startTime).lte(endTime));
 
     SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
     sourceBuilder.size(1000);

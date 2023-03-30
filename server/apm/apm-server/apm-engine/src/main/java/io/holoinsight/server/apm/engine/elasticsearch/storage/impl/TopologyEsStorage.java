@@ -38,6 +38,10 @@ public class TopologyEsStorage implements TopologyStorage {
     return client;
   }
 
+  protected String rangeTimeField() {
+    return SpanDO.START_TIME;
+  }
+
   @Override
   public List<Call.DeepCall> getEndpointCalls(String tenant, String service, String endpoint,
       long startTime, long endTime, String sourceOrDest, Map<String, String> termParams)
@@ -46,7 +50,7 @@ public class TopologyEsStorage implements TopologyStorage {
         .must(QueryBuilders.termQuery(EndpointRelationDO.TENANT, tenant))
         .must(QueryBuilders.termQuery(sourceOrDest + "_service_name", service))
         .must(QueryBuilders.termQuery(sourceOrDest + "_endpoint_name", endpoint))
-        .must(QueryBuilders.rangeQuery(EndpointRelationDO.START_TIME).gte(startTime).lte(endTime));
+        .must(QueryBuilders.rangeQuery(rangeTimeField()).gte(startTime).lte(endTime));
 
     CommonBuilder.addTermParams(queryBuilder, termParams);
     SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
@@ -67,7 +71,7 @@ public class TopologyEsStorage implements TopologyStorage {
     BoolQueryBuilder queryBuilder =
         QueryBuilders.boolQuery().must(QueryBuilders.termQuery(EndpointRelationDO.TENANT, tenant))
             .must(QueryBuilders.termQuery(sourceOrDest + "_service_name", address)).must(
-                QueryBuilders.rangeQuery(ServiceRelationDO.START_TIME).gte(startTime).lte(endTime));
+                QueryBuilders.rangeQuery(rangeTimeField()).gte(startTime).lte(endTime));
 
     CommonBuilder.addTermParams(queryBuilder, termParams);
     SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
@@ -89,7 +93,7 @@ public class TopologyEsStorage implements TopologyStorage {
     BoolQueryBuilder queryBuilder =
         QueryBuilders.boolQuery().must(QueryBuilders.termsQuery(aggField, fieldValueList))
             .must(QueryBuilders.termQuery(SpanDO.resource(SpanDO.TENANT), tenant))
-            .must(QueryBuilders.rangeQuery(SpanDO.START_TIME).gte(startTime).lte(endTime));
+            .must(QueryBuilders.rangeQuery(rangeTimeField()).gte(startTime).lte(endTime));
 
     if (!SpanDO.NAME.equals(aggField)) {
       queryBuilder.must(
@@ -118,7 +122,7 @@ public class TopologyEsStorage implements TopologyStorage {
         .must(QueryBuilders.termQuery(ServiceInstanceRelationDO.TENANT, tenant))
         .must(QueryBuilders.termQuery(sourceOrDest + "_service_name", service))
         .must(QueryBuilders.termQuery(sourceOrDest + "_service_instance_name", serviceInstance))
-        .must(QueryBuilders.rangeQuery(ServiceInstanceRelationDO.START_TIME).gte(startTime)
+        .must(QueryBuilders.rangeQuery(rangeTimeField()).gte(startTime)
             .lte(endTime));
 
     CommonBuilder.addTermParams(queryBuilder, termParams);
@@ -139,7 +143,7 @@ public class TopologyEsStorage implements TopologyStorage {
       Map<String, String> termParams) throws IOException {
     BoolQueryBuilder queryBuilder = QueryBuilders.boolQuery()
         .must(QueryBuilders.termQuery(ServiceRelationDO.TENANT, tenant))
-        .must(QueryBuilders.rangeQuery(ServiceRelationDO.START_TIME).gte(startTime).lte(endTime));
+        .must(QueryBuilders.rangeQuery(rangeTimeField()).gte(startTime).lte(endTime));
 
     CommonBuilder.addTermParams(queryBuilder, termParams);
     SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();

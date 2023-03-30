@@ -6,6 +6,7 @@ package io.holoinsight.server.apm.engine.elasticsearch.storage.impl;
 import io.holoinsight.server.apm.common.model.query.SlowSql;
 import io.holoinsight.server.apm.engine.elasticsearch.utils.EsGsonUtils;
 import io.holoinsight.server.apm.engine.model.SlowSqlDO;
+import io.holoinsight.server.apm.engine.model.SpanDO;
 import io.holoinsight.server.apm.engine.storage.SlowSqlStorage;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -33,13 +34,17 @@ public class SlowSqlEsStorage extends RecordEsStorage<SlowSqlDO> implements Slow
     return client;
   }
 
+  protected String rangeTimeField() {
+    return SpanDO.START_TIME;
+  }
+
   @Override
   public List<SlowSql> getSlowSqlList(String tenant, String serviceName, String dbAddress,
       long startTime, long endTime) throws IOException {
 
     BoolQueryBuilder queryBuilder =
         QueryBuilders.boolQuery().must(QueryBuilders.termQuery(SlowSqlDO.TENANT, tenant))
-            .must(QueryBuilders.rangeQuery(SlowSqlDO.START_TIME).gte(startTime).lte(endTime));
+            .must(QueryBuilders.rangeQuery(rangeTimeField()).gte(startTime).lte(endTime));
 
     if (!StringUtils.isEmpty(serviceName)) {
       queryBuilder.must(QueryBuilders.termQuery(SlowSqlDO.SERVICE_NAME, serviceName));
