@@ -91,10 +91,10 @@ public class SpanEsStorage extends RecordEsStorage<SpanDO> implements SpanStorag
     switch (traceState) {
       case ERROR:
         boolQueryBuilder
-            .must(new MatchQueryBuilder(SpanDO.TRACE_STATUS, StatusCode.ERROR.getCode()));
+            .must(new TermQueryBuilder(SpanDO.TRACE_STATUS, StatusCode.ERROR.getCode()));
         break;
       case SUCCESS:
-        boolQueryBuilder.must(new MatchQueryBuilder(SpanDO.TRACE_STATUS, StatusCode.OK.getCode()));
+        boolQueryBuilder.must(new TermQueryBuilder(SpanDO.TRACE_STATUS, StatusCode.OK.getCode()));
         break;
     }
 
