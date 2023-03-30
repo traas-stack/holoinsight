@@ -29,20 +29,25 @@ public class NetworkAddressMappingEsStorage extends RecordEsStorage<NetworkAddre
   protected RestHighLevelClient esClient() {
     return client;
   }
+
   protected String rangeTimeField() {
     return NetworkAddressMappingDO.TIME_BUCKET;
   }
 
   @Override
   public List<NetworkAddressMappingDO> loadByTime(long startTime) throws IOException {
-    long rangeStartTime = NetworkAddressMappingDO.TIME_BUCKET.equals(rangeTimeField()) ? TimeBucket.getMinuteTimeBucket(startTime) : startTime;
-    long rangeEndTime = NetworkAddressMappingDO.TIME_BUCKET.equals(rangeTimeField()) ? TimeBucket.getMinuteTimeBucket(System.currentTimeMillis()) : System.currentTimeMillis();
+    long rangeStartTime = NetworkAddressMappingDO.TIME_BUCKET.equals(rangeTimeField())
+        ? TimeBucket.getMinuteTimeBucket(startTime)
+        : startTime;
+    long rangeEndTime = NetworkAddressMappingDO.TIME_BUCKET.equals(rangeTimeField())
+        ? TimeBucket.getMinuteTimeBucket(System.currentTimeMillis())
+        : System.currentTimeMillis();
 
     List<NetworkAddressMappingDO> networkAddressMapping = new ArrayList<>();
     SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
     searchSourceBuilder.size(1000);
-    searchSourceBuilder.query(new RangeQueryBuilder(rangeTimeField())
-        .gte(rangeStartTime).lte(rangeEndTime));
+    searchSourceBuilder
+        .query(new RangeQueryBuilder(rangeTimeField()).gte(rangeStartTime).lte(rangeEndTime));
     SearchRequest searchRequest =
         new SearchRequest(new String[] {NetworkAddressMappingDO.INDEX_NAME}, searchSourceBuilder);
 

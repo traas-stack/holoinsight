@@ -52,12 +52,12 @@ public class CacheUpdateScheduler {
     long loadStartTime;
     if (networkAddressMappingCache.currentSize() == 0) {
       loadStartTime = System.currentTimeMillis() - 60_000L * 60 * 24 * 10; // init
-                                                                                               // 10
-                                                                                               // day
+                                                                           // 10
+                                                                           // day
     } else {
       loadStartTime = System.currentTimeMillis() - 60_000L * 10; // update
-                                                                                                 // 10
-                                                                                                 // minute
+                                                                 // 10
+                                                                 // minute
     }
     List<NetworkAddressMappingDO> addressInventories =
         networkAddressMappingService.loadByTime(loadStartTime);

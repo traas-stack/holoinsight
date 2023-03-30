@@ -41,10 +41,10 @@ public class EndpointEsStorage implements EndpointStorage {
       throws IOException {
     List<Endpoint> result = new ArrayList<>();
 
-    BoolQueryBuilder queryBuilder = QueryBuilders.boolQuery()
-        .must(QueryBuilders.termQuery(EndpointRelationDO.TENANT, tenant))
-        .must(QueryBuilders.termQuery(EndpointRelationDO.DEST_SERVICE_NAME, service))
-        .must(QueryBuilders.rangeQuery(rangeTimeField()).gte(startTime).lte(endTime));
+    BoolQueryBuilder queryBuilder =
+        QueryBuilders.boolQuery().must(QueryBuilders.termQuery(EndpointRelationDO.TENANT, tenant))
+            .must(QueryBuilders.termQuery(EndpointRelationDO.DEST_SERVICE_NAME, service))
+            .must(QueryBuilders.rangeQuery(rangeTimeField()).gte(startTime).lte(endTime));
 
     SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
     sourceBuilder.size(1000);

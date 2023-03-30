@@ -60,8 +60,8 @@ public class CommonBuilder {
         .subAggregation(AggregationBuilders.count("total_count").field(ServiceRelationDO.TRACE_ID))
         .subAggregation(AggregationBuilders
             .filter(ServiceRelationDO.TRACE_STATUS,
-                    QueryBuilders.termQuery(ServiceRelationDO.TRACE_STATUS,
-                            Status.StatusCode.STATUS_CODE_ERROR_VALUE))
+                QueryBuilders.termQuery(ServiceRelationDO.TRACE_STATUS,
+                    Status.StatusCode.STATUS_CODE_ERROR_VALUE))
             .subAggregation(AggregationBuilders.cardinality("error_count").field("trace_id")))
         .executionHint("map").collectMode(Aggregator.SubAggCollectionMode.BREADTH_FIRST).size(1000);
 
