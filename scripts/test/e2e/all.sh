@@ -7,7 +7,7 @@ cd `dirname $0`/../../..
 
 # if $HOLOINSIGHT_DEV is not empty, then it is used as a prefix of docker images and containers to avoid conflicts with others.
 if [ -n "$HOLOINSIGHT_DEV" ]; then
-  tag="dev-$HOLOINSIGHT_DEV-`basename $0 | awk -F. '{print $1}'`"
+  tag="dev-$HOLOINSIGHT_DEV"
   export COMPOSE_server_image=holoinsight/server:$tag
   if [ "$build"x = "1"x ]; then
       holoinsight_server_tag=$tag ./scripts/docker/build.sh
@@ -33,7 +33,8 @@ else
   goals="clean integration-test"
 fi
 
-mvn $goals -f server/server-parent -am -pl ../../test/server-e2e-test -Dgroups=e2e-all -DskipUTs=true -DskipITs=false -DitForkCount=${forks}
+# prevent maven from using too much memory
+MAVEN_OPTS="-Xmx512m" mvn $goals -f server/server-parent -T 1C -am -pl ../../test/server-e2e-test -Dgroups=e2e-all -DskipUTs=true -DskipITs=false -DitForkCount=${forks}
 
 summary=./test/server-e2e-test/target/failsafe-reports/failsafe-summary.xml
 cat $summary

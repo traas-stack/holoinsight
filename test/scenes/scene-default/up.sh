@@ -1,35 +1,35 @@
 #!/usr/bin/env bash
 set -e
 
-# doc: Run this script to deploy HoloInsight quick start demo using docker-compose
-# usage: up.sh
-# usage: build=1 up.sh
+# docs: Run this script to start holoinsight-enterprise server with its dependencies
+# options:
+# - build=1 : build image before start
+# - debug=1 : start server with debug options
 
-cd `dirname $0`
-script_dir=`pwd`
+source `dirname $0`/../common/setup-env.sh
 
 ./down.sh
 
-if [ -n "$HOLOINSIGHT_DEV" ]; then
-  tag="dev-$HOLOINSIGHT_DEV-`basename $script_dir`"
-  export COMPOSE_PROJECT_NAME="$tag"
-  echo COMPOSE_PROJECT_NAME=$COMPOSE_PROJECT_NAME
-  export server_image=holoinsight/server:$tag
-  if [ "$build"x = "1"x ]; then
-      holoinsight_server_tag=$tag $script_dir/../../../scripts/docker/build.sh
-  fi
-else
-  if [ "$build"x = "1"x ]; then
-    $script_dir/../../../scripts/docker/build.sh
-  fi
+if [ "$build"x = "1"x ]; then
+  $project_root/scripts/docker/build.sh
+fi
+
+if [ "$debug"x = "1"x ]; then
+  export JAVA_DEBUG_OPTS="-Xdebug -Xrunjdwp:transport=dt_socket,address=8000,server=y,suspend=n"
+  echo 'debug enabled'
 fi
 
 docker-compose up -d
 
 ip=`hostname -I | awk '{print $1}'`
 
-echo holoinsight bootstrap successfully, please visit http://$ip:`docker-compose port server 80 | awk -F: '{print $2}'`
-echo visit mysql at $ip:`docker-compose port mysql 3306 | awk -F: '{print $2}'`
+echo Visit server http://$ip:`docker-compose port server 80 | awk -F: '{print $2}'`
+echo Exec server using ./server-exec.sh
+if [ "$debug"x = "1"x ]; then
+  echo Debug server at $ip:`docker-compose port server 8000 | awk -F: '{print $2}'`
+fi
+echo Visit mysql at $ip:`docker-compose port mysql 3306 | awk -F: '{print $2}'`
+echo Exec mysql using ./mysql-exec.sh
 echo
 
 if [ -x "$script_dir/after.sh" ]; then
