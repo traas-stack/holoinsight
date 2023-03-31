@@ -12,3 +12,5 @@ holoinsight:
   metric:
     storage:
       type: ceresdbx
+  flyway:
+    enabled: false
