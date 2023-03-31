@@ -18,7 +18,7 @@ import org.springframework.context.annotation.Configuration;
 @ConditionalOnFeature("trace")
 public class ApmSchedulerConfiguration {
   @Bean
-  public CacheUpdateScheduler cacheUpdateScheduler() {
-    return new CacheUpdateScheduler();
+  public ApmCacheUpdateScheduler cacheUpdateScheduler() {
+    return new ApmCacheUpdateScheduler();
   }
 }

@@ -17,7 +17,7 @@ import java.util.concurrent.TimeUnit;
 
 @DependsOn(value = {"networkAddressMappingCache"})
 @Slf4j
-public class CacheUpdateScheduler {
+public class ApmCacheUpdateScheduler {
 
   @Autowired
   private NetworkAddressMappingCache networkAddressMappingCache;
@@ -45,24 +45,21 @@ public class CacheUpdateScheduler {
     updateNetAddressAliasCache();
   }
 
-  /**
-   * Update the cached data updated in last 1 minutes.
-   */
   private void updateNetAddressAliasCache() throws Exception {
     long loadStartTime;
     if (networkAddressMappingCache.currentSize() == 0) {
-      loadStartTime = System.currentTimeMillis() - 60_000L * 60 * 24 * 10; // init
-                                                                           // 10
-                                                                           // day
+      loadStartTime = System.currentTimeMillis() - 60_000L * 60 * 24 * 3; // init
+                                                                          // 3
+                                                                          // day
     } else {
       loadStartTime = System.currentTimeMillis() - 60_000L * 10; // update
                                                                  // 10
                                                                  // minute
     }
-    List<NetworkAddressMappingDO> addressInventories =
+    List<NetworkAddressMappingDO> addressMapping =
         networkAddressMappingService.loadByTime(loadStartTime);
 
-    networkAddressMappingCache.load(addressInventories);
+    networkAddressMappingCache.load(addressMapping);
   }
 
 }
