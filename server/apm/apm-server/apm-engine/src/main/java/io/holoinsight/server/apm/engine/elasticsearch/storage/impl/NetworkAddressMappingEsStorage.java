@@ -34,20 +34,17 @@ public class NetworkAddressMappingEsStorage extends RecordEsStorage<NetworkAddre
     return NetworkAddressMappingDO.TIME_BUCKET;
   }
 
+  protected long getTime(long timestamp) {
+    return TimeBucket.getMinuteTimeBucket(timestamp);
+  }
+
   @Override
   public List<NetworkAddressMappingDO> loadByTime(long startTime) throws IOException {
-    long rangeStartTime = NetworkAddressMappingDO.TIME_BUCKET.equals(rangeTimeField())
-        ? TimeBucket.getMinuteTimeBucket(startTime)
-        : startTime;
-    long rangeEndTime = NetworkAddressMappingDO.TIME_BUCKET.equals(rangeTimeField())
-        ? TimeBucket.getMinuteTimeBucket(System.currentTimeMillis())
-        : System.currentTimeMillis();
-
     List<NetworkAddressMappingDO> networkAddressMapping = new ArrayList<>();
     SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
     searchSourceBuilder.size(1000);
     searchSourceBuilder
-        .query(new RangeQueryBuilder(rangeTimeField()).gte(rangeStartTime).lte(rangeEndTime));
+        .query(new RangeQueryBuilder(rangeTimeField()).gte(getTime(startTime)).lte(getTime(System.currentTimeMillis())));
     SearchRequest searchRequest =
         new SearchRequest(new String[] {NetworkAddressMappingDO.INDEX_NAME}, searchSourceBuilder);
 
