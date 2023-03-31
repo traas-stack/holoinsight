@@ -35,7 +35,7 @@ public class NetworkAddressMappingEsStorage extends RecordEsStorage<NetworkAddre
   }
 
   protected long getTime(long timestamp) {
-    return TimeBucket.getMinuteTimeBucket(timestamp);
+    return TimeBucket.getRecordTimeBucket(timestamp);
   }
 
   @Override
