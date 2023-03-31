@@ -51,6 +51,10 @@ public class SpanMetricEsStorage extends PostCalMetricStorage {
     return SpanDO.START_TIME;
   }
 
+  protected String rangeTimeField() {
+    return SpanDO.START_TIME;
+  }
+
 
   @Override
   protected MetricValues query(MetricDefine metricDefine, String tenant, Duration duration,
@@ -60,7 +64,7 @@ public class SpanMetricEsStorage extends PostCalMetricStorage {
     SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
     BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder();
     boolQueryBuilder.filter(new TermQueryBuilder(SpanDO.resource(SpanDO.TENANT), tenant)).filter(
-        new RangeQueryBuilder(SpanDO.START_TIME).gte(duration.getStart()).lte(duration.getEnd()));
+        new RangeQueryBuilder(rangeTimeField()).gte(duration.getStart()).lte(duration.getEnd()));
 
     if (conditions != null) {
       conditions.forEach((conditionKey, conditionVal) -> {

@@ -43,6 +43,10 @@ public class SpanEsStorage extends RecordEsStorage<SpanDO> implements SpanStorag
 
   private static final int SPAN_QUERY_MAX_SIZE = 2000;
 
+  protected String rangeTimeField() {
+    return SpanDO.START_TIME;
+  }
+
   @Override
   public TraceBrief queryBasicTraces(final String tenant, String serviceName,
       String serviceInstanceName, String endpointName, List<String> traceIds, int minTraceDuration,
@@ -57,7 +61,7 @@ public class SpanEsStorage extends RecordEsStorage<SpanDO> implements SpanStorag
       boolQueryBuilder.must(new TermQueryBuilder(SpanDO.resource(SpanDO.TENANT), tenant));
     }
     if (start != 0 && end != 0) {
-      boolQueryBuilder.must(new RangeQueryBuilder(SpanDO.START_TIME).gte(start).lte(end));
+      boolQueryBuilder.must(new RangeQueryBuilder(rangeTimeField()).gte(start).lte(end));
     }
 
     if (minTraceDuration != 0 || maxTraceDuration != 0) {
@@ -87,10 +91,10 @@ public class SpanEsStorage extends RecordEsStorage<SpanDO> implements SpanStorag
     switch (traceState) {
       case ERROR:
         boolQueryBuilder
-            .must(new MatchQueryBuilder(SpanDO.TRACE_STATUS, StatusCode.ERROR.getCode()));
+            .must(new TermQueryBuilder(SpanDO.TRACE_STATUS, StatusCode.ERROR.getCode()));
         break;
       case SUCCESS:
-        boolQueryBuilder.must(new MatchQueryBuilder(SpanDO.TRACE_STATUS, StatusCode.OK.getCode()));
+        boolQueryBuilder.must(new TermQueryBuilder(SpanDO.TRACE_STATUS, StatusCode.OK.getCode()));
         break;
     }
 
@@ -189,7 +193,7 @@ public class SpanEsStorage extends RecordEsStorage<SpanDO> implements SpanStorag
     List<StatisticData> result = new ArrayList<>();
 
     BoolQueryBuilder queryBuilder = QueryBuilders.boolQuery()
-        .must(QueryBuilders.rangeQuery(SpanDO.START_TIME).gte(startTime).lte(endTime));
+        .must(QueryBuilders.rangeQuery(rangeTimeField()).gte(startTime).lte(endTime));
 
     TermsAggregationBuilder aggregationBuilder =
         AggregationBuilders.terms(SpanDO.attributes(Const.APPID))

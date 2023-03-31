@@ -32,6 +32,10 @@ public class ServiceInstanceEsStorage implements ServiceInstanceStorage {
     return client;
   }
 
+  protected String rangeTimeField() {
+    return SpanDO.START_TIME;
+  }
+
   @Override
   public List<ServiceInstance> getServiceInstanceList(String tenant, String service, long startTime,
       long endTime) throws IOException {
@@ -44,7 +48,7 @@ public class ServiceInstanceEsStorage implements ServiceInstanceStorage {
                 .should(QueryBuilders.termQuery(SpanDO.KIND, SpanKind.SERVER))
                 .should(QueryBuilders.termQuery(SpanDO.KIND, SpanKind.CONSUMER)))
             .must(QueryBuilders.termQuery(SpanDO.resource(SpanDO.SERVICE_NAME), service))
-            .must(QueryBuilders.rangeQuery(SpanDO.START_TIME).gte(startTime).lte(endTime));
+            .must(QueryBuilders.rangeQuery(rangeTimeField()).gte(startTime).lte(endTime));
 
     SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
     sourceBuilder.size(1000);

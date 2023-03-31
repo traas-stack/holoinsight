@@ -30,14 +30,21 @@ public class NetworkAddressMappingEsStorage extends RecordEsStorage<NetworkAddre
     return client;
   }
 
-  @Override
-  public List<NetworkAddressMappingDO> loadByTime(long timeBucketInMinute) throws IOException {
-    List<NetworkAddressMappingDO> networkAddressMapping = new ArrayList<>();
+  protected String rangeTimeField() {
+    return NetworkAddressMappingDO.TIME_BUCKET;
+  }
 
+  protected long getTime(long timestamp) {
+    return TimeBucket.getMinuteTimeBucket(timestamp);
+  }
+
+  @Override
+  public List<NetworkAddressMappingDO> loadByTime(long startTime) throws IOException {
+    List<NetworkAddressMappingDO> networkAddressMapping = new ArrayList<>();
     SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
     searchSourceBuilder.size(1000);
-    searchSourceBuilder.query(new RangeQueryBuilder(NetworkAddressMappingDO.TIME_BUCKET)
-        .gte(timeBucketInMinute).lte(TimeBucket.getMinuteTimeBucket(System.currentTimeMillis())));
+    searchSourceBuilder.query(new RangeQueryBuilder(rangeTimeField()).gte(getTime(startTime))
+        .lte(getTime(System.currentTimeMillis())));
     SearchRequest searchRequest =
         new SearchRequest(new String[] {NetworkAddressMappingDO.INDEX_NAME}, searchSourceBuilder);
 
