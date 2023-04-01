@@ -33,6 +33,7 @@ public class MetaService {
 
   private static final String meta_app = "app";
   private static final String meta_type = "_type";
+  private static final String MACHINE_TYPE = "machineType";
   private static final String meta_workspace = "_workspace";
   private static final String meta_workspace_default = "default";
   @Autowired
@@ -101,8 +102,8 @@ public class MetaService {
         return;
 
       Map<String, Object> map = J.toMap(J.toJson(db.get("_label")));
-      assert map != null;
-      appModel.setMachineType(map.getOrDefault(meta_type, "-").toString());
+      // assert map != null;
+      appModel.setMachineType(map.getOrDefault(MACHINE_TYPE, "-").toString());
       appModels.add(appModel);
     });
 

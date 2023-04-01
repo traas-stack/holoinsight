@@ -38,6 +38,25 @@ public class AppMonitoringIT extends BaseIT {
   }
 
   @Test
+  public void test_has_correct_displayMenu() {
+    await() //
+        .untilAsserted(() -> { //
+          given() //
+              .pathParam("app", "holoinsight-server-example") //
+              .when() //
+              .get("/webapi/displaymenu/query/apm/{app}") //
+              .then() //
+              .isSuccess() //
+              // TODO i18n
+              .rootPath("data.find{ it.name =='%s' }", withArgs("系统监控")) //
+              .body(NOT_NULL) //
+              .body("children.size()", eq(1)) //
+              .body("children.find{ it.name == '单机系统' }", NOT_NULL) //
+          ;
+        });
+  }
+
+  @Test
   void test_has_system_metrics() {
     // After docker-docker bootstrapped, it takes about 2~3 minutes to generate first CPU data.
     await("Has System Metrics") //
