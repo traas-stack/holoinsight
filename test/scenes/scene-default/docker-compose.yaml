@@ -12,22 +12,14 @@ services:
       file: ../common/base.yaml
       service: ceresdb
   mysql-data-init:
-    image: ${mysql_image:-mysql:8}
+    extends:
+      file: ../common/base.yaml
+      service: mysql-data-init
     depends_on:
       mysql:
         condition: service_healthy
-    restart: "no"
-    links:
-    - mysql
     volumes:
-    - ../common/my.cnf:/etc/mysql/conf.d/my.cnf
-    - ../../../server/extension/extension-common-flyway/src/main/resources/db/migration:/sql/0migration
     - ./data.sql:/sql/1data/V999999__data.sql
-    - ../common/init-db.sh:/init-db.sh
-    - ../common/exec-sql-script.sh:/exec-sql-script.sh
-    working_dir: /
-    entrypoint:
-    - /init-db.sh
   server:
     extends:
       file: ../common/base.yaml
