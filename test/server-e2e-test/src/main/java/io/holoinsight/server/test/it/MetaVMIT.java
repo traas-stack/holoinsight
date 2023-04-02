@@ -29,10 +29,10 @@ public class MetaVMIT extends BaseIT {
 
     @Override
     public boolean matches(Object o) {
-      return Double.parseDouble((String) o) >= 0;
+      return o != null && Double.parseDouble((String) o) >= 0;
     }
   };
-
+  private static final String APP = "holoinsight-server-example";
   String tenant = "default";
   String ip;
   String hostname;
@@ -47,10 +47,9 @@ public class MetaVMIT extends BaseIT {
               .body(json().put("_type", "VM")) //
               .post("/webapi/meta/{tenant}_server/queryByCondition") //
               .then() //
-              .body("success", IS_TRUE) //
-              .body("data", hasSize(1)) //
-              .rootPath("data[0]") //
-              .body("app", eq("holoinsight-server-example")) //
+              .isSuccess() //
+              .rootPath("data.find{ it.app = '%s' }", withArgs(APP)) //
+              .body("app", eq(APP)) //
               .body("cluster", eq("default")) //
               .body("workspace", eq("default")) //
               .body("_type", eq("VM")) //
@@ -60,8 +59,8 @@ public class MetaVMIT extends BaseIT {
               .body("_modified",
                   Matchers.greaterThan((float) (System.currentTimeMillis() - 15 * 60 * 1000L))) //
               .extract();
-          ip = extract.path("data[0].ip");
-          hostname = extract.path("data[0].hostname");
+          ip = extract.path("data.find{ it.app == '%s' }.ip", APP);
+          hostname = extract.path("data.find{ it.app == '%s'}.hostname", APP);
         }); //
   }
 
@@ -93,16 +92,17 @@ public class MetaVMIT extends BaseIT {
               .body(body) //
               .post("/webapi/v1/query") //
               .then() //
-              .body("success", IS_TRUE) //
-              .body("data.results", hasSize(2)) //
-              .body("data.results[0].metric", eq("system_cpu_util")) //
-              .body("data.results[0].tags", hasEntry("app", "holoinsight-server-example")) //
-              .body("data.results[0].values", not(emptyArray())) //
-              .body("data.results[0].values[0][1]", STRING_NUMBER_GTE_0) //
-              .body("data.results[1].metric", eq("system_mem_util")) //
-              .body("data.results[1].tags", hasEntry("app", "holoinsight-server-example")) //
-              .body("data.results[1].values", not(emptyArray())) //
-              .body("data.results[1].values[0][1]", STRING_NUMBER_GTE_0) //
+              .isSuccess() //
+              .rootPath("data.results.find{ it.metric=='%s' && it.tags.app == '%s' }", //
+                  withArgs("system_cpu_util", APP)) //
+              .body(NOT_NULL) //
+              .body("values", not(emptyArray())) // //
+              .body("values[0][1]", STRING_NUMBER_GTE_0) //
+              .rootPath("data.results.find{ it.metric=='%s' && it.tags.app == '%s' }", //
+                  withArgs("system_mem_util", APP)) //
+              .body(NOT_NULL) //
+              .body("values", not(emptyArray())) //
+              .body("values[0][1]", STRING_NUMBER_GTE_0) //
           ;
         });
   }

@@ -47,6 +47,8 @@ public class DockerComposeEnv implements Env<DockerComposeEnv> {
         "../scenes/" + name + "/docker-compose.yaml") //
             .getCanonicalFile(); //
     dcc = new DockerComposeContainer<>(composeFile) //
+        .withRemoveImages(DockerComposeContainer.RemoveImages.LOCAL) //
+        .withBuild(true) //
         .withLocalCompose(true) //
         .withExposedService("server", 80); //
 
@@ -54,6 +56,9 @@ public class DockerComposeEnv implements Env<DockerComposeEnv> {
 
     // Pass envs starting with COMPOSE_ to the docker-compose.
     System.getenv().forEach((k, v) -> {
+      if (DockerUtils.COMPOSE_PROJECT_NAME.equals(k) || DockerUtils.COMPOSE_FILE.equals(k)) {
+        return;
+      }
       if (k.startsWith("COMPOSE_")) {
         String trimmedKey = k.substring("COMPOSE_".length());
         dcc.withEnv(trimmedKey, v);
@@ -66,6 +71,7 @@ public class DockerComposeEnv implements Env<DockerComposeEnv> {
     long cost = System.currentTimeMillis() - begin;
     log.info("docker-compose bootstrap success, cost=[{}]ms", cost);
 
+
     File after = new File(composeFile.getParentFile(), "after.sh");
     if (after.exists() && after.canExecute()) {
       String afterPath = after.getAbsolutePath();
@@ -74,7 +80,7 @@ public class DockerComposeEnv implements Env<DockerComposeEnv> {
       String project = DockerUtils.getProject(dcc);
 
       ProcessResult result = new ProcessExecutor(afterPath) //
-          .environment("COMPOSE_PROJECT_NAME", project) //
+          .environment(DockerUtils.COMPOSE_PROJECT_NAME, project) //
           .readOutput(true) //
           .timeout(10, TimeUnit.MINUTES) //
           .execute(); //
