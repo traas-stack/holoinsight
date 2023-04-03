@@ -101,7 +101,7 @@ public class TenantAppServerUpdateTask extends AbstractMonitorTask {
 
       // 熔断
       if ((serverUkSets.size() * 1.0 / mapList.size()) > 0.8) {
-        log.warn("need delete expried list from table={} size={} mapList={}, is fusing",
+        log.warn("need delete expired list from table={} size={} mapList={}, is fusing",
             metaTableDTO.name, serverUkSets.size(), mapList.size());
         continue;
       }

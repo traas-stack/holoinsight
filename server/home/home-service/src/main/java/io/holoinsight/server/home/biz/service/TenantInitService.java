@@ -19,4 +19,9 @@ public interface TenantInitService {
    * @return
    */
   TenantOpsStorage.StorageMetric createStorageMetric(String tenant);
+
+
+  String getTenantServerTable();
+
+  String getTenantAppTable();
 }
