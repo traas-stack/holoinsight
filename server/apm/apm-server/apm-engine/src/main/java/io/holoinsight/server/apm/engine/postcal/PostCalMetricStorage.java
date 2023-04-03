@@ -44,7 +44,7 @@ public abstract class PostCalMetricStorage implements MetricStorage {
     Assert.notNull(metricDefine, String.format("metric not found: %s", metric));
     Map<String, Object> mergedConditions = new HashMap<>();
     if (conditions != null) {
-      conditions.forEach((k, v) -> mergedConditions.put(OtlpMappings.toOltp(k), v));
+      conditions.forEach((k, v) -> mergedConditions.put(OtlpMappings.toOtlp(k), v));
     }
     if (metricDefine.getConditions() != null) {
       mergedConditions.putAll(metricDefine.getConditions());
@@ -52,7 +52,7 @@ public abstract class PostCalMetricStorage implements MetricStorage {
 
     Set<String> mergedGroups = new HashSet<>();
     if (groups != null) {
-      groups.forEach(group -> mergedGroups.add(OtlpMappings.toOltp(group)));
+      groups.forEach(group -> mergedGroups.add(OtlpMappings.toOtlp(group)));
     }
     if (metricDefine.getGroups() != null) {
       mergedGroups.addAll(metricDefine.getGroups());

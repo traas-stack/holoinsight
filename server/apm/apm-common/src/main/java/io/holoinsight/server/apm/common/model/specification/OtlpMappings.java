@@ -19,12 +19,16 @@ public class OtlpMappings {
 
   private static final BiMap<String, String> OTLP_SW_MAPPINGS = HashBiMap.create();
 
+  private static final String NAME = "name";
+
   static {
     OTLP_SW_MAPPINGS.put("tenant", "resource.tenant");
     OTLP_SW_MAPPINGS.put("serviceName", "resource.service.name");
     OTLP_SW_MAPPINGS.put("serviceInstanceName", "resource.service.instance.name");
-    OTLP_SW_MAPPINGS.put("endpointName", "name");
+    OTLP_SW_MAPPINGS.put("endpointName", NAME);
   }
+
+
 
   /**
    * null -> null <br>
@@ -34,12 +38,13 @@ public class OtlpMappings {
    * endpointName -> name <br>
    * attributes.* -> attributes.* <br>
    * resource.* -> resource.* <br>
+   * name -> name <br>
    * OTHERWISE: * -> attributes.*
    *
    * @param name
    * @return
    */
-  public static String toOltp(String name) {
+  public static String toOtlp(String name) {
     if (name == null) {
       return null;
     }
@@ -47,7 +52,8 @@ public class OtlpMappings {
       return OTLP_SW_MAPPINGS.get(name);
     }
     if (StringUtils.startsWith(name, Const.OTLP_ATTRIBUTES_PREFIX)
-        || StringUtils.startsWith(name, Const.OTLP_RESOURCE_PREFIX)) {
+        || StringUtils.startsWith(name, Const.OTLP_RESOURCE_PREFIX)
+        || StringUtils.equals(name, NAME)) {
       return name;
     }
     return Const.OTLP_ATTRIBUTES_PREFIX + name;

@@ -109,7 +109,7 @@ public class SpanEsStorage extends RecordEsStorage<SpanDO> implements SpanStorag
     if (CollectionUtils.isNotEmpty(tags)) {
       BoolQueryBuilder tagMatchQuery = new BoolQueryBuilder();
       tags.forEach(tag -> tagMatchQuery
-          .must(new TermQueryBuilder(OtlpMappings.toOltp(tag.getKey()), tag.getValue())));
+          .must(new TermQueryBuilder(SpanDO.attributes(tag.getKey()), tag.getValue())));
       boolQueryBuilder.must(tagMatchQuery);
     }
 
