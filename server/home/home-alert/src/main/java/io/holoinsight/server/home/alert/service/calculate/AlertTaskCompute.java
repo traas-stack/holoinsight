@@ -88,7 +88,7 @@ public class AlertTaskCompute implements AlarmTaskExecutor<ComputeTaskPackage> {
           if (inspectConfig == null) {
             continue;
           }
-          alarmNotifies.add(AlertNotify.eventInfoConver(eventInfo, inspectConfig));
+          alarmNotifies.add(AlertNotify.eventInfoConvert(eventInfo, inspectConfig));
         }
         alertEventService.handleEvent(alarmNotifies);
       }
