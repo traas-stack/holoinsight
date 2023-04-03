@@ -9,40 +9,69 @@ import io.holoinsight.server.apm.common.constants.Const;
 import org.apache.commons.lang3.StringUtils;
 
 /**
- * @author jiwliu
- * @version : OtelMappings.java, v 0.1 2022年11月11日 17:26 xiangwanpeng Exp $
+ * Used to be compatible with the OpenTelemetry protocol when querying. <br>
+ * For example: <br>
+ * Convert between SkyWalking protocol and OpenTelemetry protocol. <br>
+ * Use custom tags query without adding prefix {attributes.} <br>
+ * etc.
  */
 public class OtlpMappings {
 
-  private static final BiMap<String, String> OTEL_SW_MAPPINGS = HashBiMap.create();
+  private static final BiMap<String, String> OTLP_SW_MAPPINGS = HashBiMap.create();
 
   static {
-    OTEL_SW_MAPPINGS.put("tenant", "resource.tenant");
-    OTEL_SW_MAPPINGS.put("serviceName", "resource.service.name");
-    OTEL_SW_MAPPINGS.put("serviceInstanceName", "resource.service.instance.name");
-    OTEL_SW_MAPPINGS.put("endpointName", "name");
+    OTLP_SW_MAPPINGS.put("tenant", "resource.tenant");
+    OTLP_SW_MAPPINGS.put("serviceName", "resource.service.name");
+    OTLP_SW_MAPPINGS.put("serviceInstanceName", "resource.service.instance.name");
+    OTLP_SW_MAPPINGS.put("endpointName", "name");
   }
 
-  public static String sw2Otlp(String name) {
+  /**
+   * null -> null <br>
+   * tenant -> resource.tenant <br>
+   * serviceName -> resource.service.name <br>
+   * serviceInstanceName -> resource.service.instance.name <br>
+   * endpointName -> name <br>
+   * attributes.* -> attributes.* <br>
+   * resource.* -> resource.* <br>
+   * OTHERWISE: * -> attributes.*
+   *
+   * @param name
+   * @return
+   */
+  public static String toOltp(String name) {
     if (name == null) {
       return null;
     }
-    if (OTEL_SW_MAPPINGS.containsKey(name)) {
-      return OTEL_SW_MAPPINGS.get(name);
+    if (OTLP_SW_MAPPINGS.containsKey(name)) {
+      return OTLP_SW_MAPPINGS.get(name);
     }
-    if (!StringUtils.startsWith(name, Const.OTLP_ATTRIBUTES_PREFIX)) {
-      return Const.OTLP_ATTRIBUTES_PREFIX + name;
+    if (StringUtils.startsWith(name, Const.OTLP_ATTRIBUTES_PREFIX)
+        || StringUtils.startsWith(name, Const.OTLP_RESOURCE_PREFIX)) {
+      return name;
     }
-    return name;
+    return Const.OTLP_ATTRIBUTES_PREFIX + name;
   }
 
-  public static String otlp2Sw(String name) {
+  /**
+   * null -> null <br>
+   * resource.tenant -> tenant <br>
+   * resource.service.name -> serviceName <br>
+   * resource.service.instance.name -> serviceInstanceName <br>
+   * name -> endpointName <br>
+   * attributes.* -> * <br>
+   * OTHERWISE: * -> *
+   *
+   * @param name
+   * @return
+   */
+  public static String fromOtlp(String name) {
 
     if (name == null) {
       return null;
     }
-    if (OTEL_SW_MAPPINGS.inverse().containsKey(name)) {
-      return OTEL_SW_MAPPINGS.inverse().get(name);
+    if (OTLP_SW_MAPPINGS.inverse().containsKey(name)) {
+      return OTLP_SW_MAPPINGS.inverse().get(name);
     }
     if (StringUtils.startsWith(name, Const.OTLP_ATTRIBUTES_PREFIX)) {
       return name.substring(Const.OTLP_ATTRIBUTES_PREFIX.length());

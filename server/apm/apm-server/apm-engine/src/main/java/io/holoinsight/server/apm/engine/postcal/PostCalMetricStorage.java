@@ -10,7 +10,6 @@ import io.holoinsight.server.apm.engine.storage.MetricStorage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.Assert;
 
-import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -33,7 +32,7 @@ public abstract class PostCalMetricStorage implements MetricStorage {
     Assert.notNull(metric, "metric can not be null!");
     MetricDefine metricDefine = metricsManager.getMetric(metric);
     Assert.notNull(metricDefine, String.format("metric not found: %s", metric));
-    return metricDefine.getGroups().stream().map(OtlpMappings::otlp2Sw)
+    return metricDefine.getGroups().stream().map(OtlpMappings::fromOtlp)
         .collect(Collectors.toList());
   }
 
@@ -45,7 +44,7 @@ public abstract class PostCalMetricStorage implements MetricStorage {
     Assert.notNull(metricDefine, String.format("metric not found: %s", metric));
     Map<String, Object> mergedConditions = new HashMap<>();
     if (conditions != null) {
-      conditions.forEach((k, v) -> mergedConditions.put(OtlpMappings.sw2Otlp(k), v));
+      conditions.forEach((k, v) -> mergedConditions.put(OtlpMappings.toOltp(k), v));
     }
     if (metricDefine.getConditions() != null) {
       mergedConditions.putAll(metricDefine.getConditions());
@@ -53,7 +52,7 @@ public abstract class PostCalMetricStorage implements MetricStorage {
 
     Set<String> mergedGroups = new HashSet<>();
     if (groups != null) {
-      groups.forEach(group -> mergedGroups.add(OtlpMappings.sw2Otlp(group)));
+      groups.forEach(group -> mergedGroups.add(OtlpMappings.toOltp(group)));
     }
     if (metricDefine.getGroups() != null) {
       mergedGroups.addAll(metricDefine.getGroups());

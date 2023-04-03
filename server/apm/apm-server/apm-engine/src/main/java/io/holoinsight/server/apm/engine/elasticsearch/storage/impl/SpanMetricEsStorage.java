@@ -168,7 +168,7 @@ public class SpanMetricEsStorage extends PostCalMetricStorage {
       if (buckets != null) {
         for (Terms.Bucket bucket : buckets) {
           String tagV = bucket.getKeyAsString();
-          tags.put(OtlpMappings.otlp2Sw(tagK), tagV);
+          tags.put(OtlpMappings.fromOtlp(tagK), tagV);
           Aggregation subAggregation = bucket.getAggregations().iterator().next();
           backtrackExtract(time, subAggregation, tagsValues, tags);
           tags.remove(tagK);
