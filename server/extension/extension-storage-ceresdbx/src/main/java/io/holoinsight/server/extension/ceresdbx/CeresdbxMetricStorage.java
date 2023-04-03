@@ -24,6 +24,7 @@ import io.ceresdb.models.SqlQueryOk;
 import io.ceresdb.models.SqlQueryRequest;
 import io.ceresdb.models.Value;
 import io.ceresdb.models.WriteRequest;
+import io.holoinsight.server.extension.promql.PqlQueryService;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -65,8 +66,16 @@ public class CeresdbxMetricStorage implements MetricStorage {
   private static final List<String> SUPPORT_DMY_UNIT = Lists.newArrayList("d", "M", "y");
   CeresdbxClientManager ceresdbxClientManager;
 
+  private PqlQueryService pqlQueryService;
+
   public CeresdbxMetricStorage(CeresdbxClientManager ceresdbxClientManager) {
     this.ceresdbxClientManager = ceresdbxClientManager;
+  }
+
+  public CeresdbxMetricStorage(CeresdbxClientManager ceresdbxClientManager,
+      PqlQueryService pqlQueryService) {
+    this.ceresdbxClientManager = ceresdbxClientManager;
+    this.pqlQueryService = pqlQueryService;
   }
 
   @Override
@@ -172,12 +181,20 @@ public class CeresdbxMetricStorage implements MetricStorage {
 
   @Override
   public List<Result> pqlInstantQuery(PqlParam pqlParam) {
-    return null;
+    if (Objects.isNull(pqlQueryService)) {
+      LOGGER.warn("[CeresDB] pqlQueryService is null");
+      return Lists.newArrayList();
+    }
+    return pqlQueryService.query(pqlParam);
   }
 
   @Override
   public List<Result> pqlRangeQuery(PqlParam pqlParam) {
-    return null;
+    if (Objects.isNull(pqlQueryService)) {
+      LOGGER.warn("[CeresDB] pqlQueryService is null");
+      return Lists.newArrayList();
+    }
+    return pqlQueryService.queryRange(pqlParam);
   }
 
   private void doBatchInsert(Set<String> metrics, String tenant,

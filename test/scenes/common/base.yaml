@@ -47,6 +47,13 @@ services:
     ports:
     - 8831
     - 5440
+  prometheus:
+    image: prom/prometheus:latest
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    restart: always
+    ports:
+      - 9090
   server:
     image: ${server_image:-holoinsight/server:latest}
     healthcheck:

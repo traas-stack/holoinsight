@@ -1,0 +1,118 @@
+{
+  "title": "test_remote_pql",
+  "conf": {
+    "title": "test_remote_pql",
+    "version": "0.0.0",
+    "variables": [],
+    "groupType": "collapse",
+    "panels": [
+      {
+        "title": "test_remote_pql",
+        "type": "line_chart_panel",
+        "showTimeInfo": true,
+        "grid": {
+          "x": 0,
+          "y": 0,
+          "w": 12,
+          "h": 6
+        },
+        "targets": [
+          {
+            "source": {
+              "dsId": "jvm_eden_capacity",
+              "type": "PROMETHEUS",
+              "legend": "{{__name__}}",
+              "dims": [],
+              "groupbyName": [],
+              "metrics": [
+                "jvm_eden_capacity"
+              ],
+              "multi": false,
+              "tables": {
+                "labels": false,
+                "metrics": [
+                  {
+                    "label": "jvm_eden_capacity",
+                    "value": "jvm_eden_capacity"
+                  }
+                ],
+                "multi": false
+              }
+            },
+            "text": "PQL-jvm_eden_capacity",
+            "type": "PROMETHEUS",
+            "legend": "{{__name__}}",
+            "dims": [],
+            "groupbyName": [],
+            "metrics": [
+              "jvm_eden_capacity"
+            ],
+            "uuid": "target-4658-57aa-3a83",
+            "refId": "A"
+          }
+        ],
+        "id": "panel-af7c-4e27-1dad",
+        "options": {
+          "xAxis": {
+            "label": {
+              "formatter": "HH:mm"
+            },
+            "visible": true
+          },
+          "yAxis": {
+            "label": {
+              "formatter": {
+                "op": "/",
+                "opValue": 1,
+                "unit": "default"
+              }
+            },
+            "visible": true
+          },
+          "lineStyle": {
+            "size": 2
+          },
+          "line": {
+            "connectNulls": false
+          },
+          "point": {
+            "visible": false,
+            "size": 4
+          },
+          "area": {
+            "visible": false,
+            "opacity": 0.03
+          },
+          "tooltip": {
+            "visible": true,
+            "mode": "share",
+            "order": "desc"
+          },
+          "legend": {
+            "visible": true,
+            "asTable": false,
+            "position": "bottom",
+            "values": {
+              "min": false,
+              "max": false,
+              "avg": false,
+              "current": false,
+              "total": false
+            }
+          },
+          "stack": false
+        },
+        "metricList": [
+          {
+            "name": "jvm_eden_capacity",
+            "refId": "a",
+            "targetUuid": "target-4658-57aa-3a83",
+            "type": "ds"
+          }
+        ]
+      }
+    ],
+    "activeTab": -2
+  },
+  "type": "magi"
+}
