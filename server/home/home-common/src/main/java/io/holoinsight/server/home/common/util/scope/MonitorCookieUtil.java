@@ -8,16 +8,11 @@ import io.holoinsight.server.home.common.util.CryptoUtils;
 import io.holoinsight.server.home.common.util.StringUtil;
 import io.holoinsight.server.common.J;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.http.NameValuePair;
-import org.apache.http.client.utils.URLEncodedUtils;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.ByteArrayOutputStream;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.zip.DataFormatException;
 import java.util.zip.Deflater;
 import java.util.zip.Inflater;
@@ -34,6 +29,7 @@ public class MonitorCookieUtil {
   static String USER = APPNAME + "_USER_COOKIE";
   static String AUTH = APPNAME + "_AUTH_COOKIE";
   static String TENANT = "loginTenant";
+  static String WORKSPACE = "loginWorkspace";
 
   /**
    * 用户身份cookie
@@ -91,24 +87,10 @@ public class MonitorCookieUtil {
   }
 
   public static MonitorScope getScope(HttpServletRequest req, MonitorUser mu) {
-    List<NameValuePair> params;
-    if (req.getQueryString() == null) {
-      params = new ArrayList<>();
-    } else {
-      params = URLEncodedUtils.parse(req.getQueryString(), StandardCharsets.UTF_8);
-    }
-    String tenant = null;
-    for (NameValuePair param : params) {
-      if ("tenant".equals(param.getName())) {
-        tenant = param.getValue();
-      }
-    }
-
     MonitorScope ms = new MonitorScope();
-    ms.tenant = tenant;
 
-    String loginTenant = CookieUtils.getCookie(req, "loginTenant");
-    String loginWorkspace = CookieUtils.getCookie(req, "loginWorkspace");
+    String loginTenant = CookieUtils.getCookie(req, TENANT);
+    String loginWorkspace = CookieUtils.getCookie(req, WORKSPACE);
     if (StringUtil.isNotBlank(loginTenant)) {
       ms.tenant = loginTenant;
       mu.setLoginTenant(loginTenant);

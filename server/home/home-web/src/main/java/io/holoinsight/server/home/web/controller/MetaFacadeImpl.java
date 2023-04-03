@@ -3,6 +3,7 @@
  */
 package io.holoinsight.server.home.web.controller;
 
+import io.holoinsight.server.home.biz.service.TenantInitService;
 import io.holoinsight.server.home.common.util.MonitorException;
 import io.holoinsight.server.home.common.util.scope.AuthTargetType;
 import io.holoinsight.server.home.common.util.scope.MonitorUser;
@@ -49,6 +50,93 @@ public class MetaFacadeImpl extends BaseFacade {
   @Autowired
   private TableClientService tableClientService;
 
+  @Autowired
+  private TenantInitService tenantInitService;
+
+  @PostMapping("/queryByTenantServer")
+  @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.VIEW)
+  public JsonResult<List<Map<String, Object>>> queryByTenantServer(
+      @RequestBody Map<String, Object> condition) {
+    final JsonResult<List<Map<String, Object>>> result = new JsonResult<>();
+    facadeTemplate.manage(result, new ManageCallback() {
+      @Override
+      public void checkParameter() {
+        // ParaCheckUtil.checkParaNotEmpty(condition, "condition");
+      }
+
+      @Override
+      public void doManage() {
+        QueryExample queryExample = new QueryExample();
+        queryExample.setParams(new HashMap<>());
+        queryExample.getParams().putAll(condition);
+
+        List<Map<String, Object>> list = dataClientService
+            .queryByExample(tenantInitService.getTenantServerTable(), queryExample);
+        JsonResult.createSuccessResult(result, list);
+      }
+    });
+
+    return result;
+  }
+
+  @PostMapping("/queryByTenantApp")
+  @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.VIEW)
+  public JsonResult<List<Map<String, Object>>> queryByTenantApp(
+      @RequestBody Map<String, Object> condition) {
+    final JsonResult<List<Map<String, Object>>> result = new JsonResult<>();
+    facadeTemplate.manage(result, new ManageCallback() {
+      @Override
+      public void checkParameter() {
+        // ParaCheckUtil.checkParaNotEmpty(condition, "condition");
+      }
+
+      @Override
+      public void doManage() {
+        QueryExample queryExample = new QueryExample();
+        queryExample.setParams(new HashMap<>());
+        queryExample.getParams().putAll(condition);
+
+        List<Map<String, Object>> list =
+            dataClientService.queryByExample(tenantInitService.getTenantAppTable(), queryExample);
+        JsonResult.createSuccessResult(result, list);
+      }
+    });
+
+    return result;
+  }
+
+  @PostMapping("/fuzzyQueryByTenantServer")
+  @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.VIEW)
+  public JsonResult<List<Map<String, Object>>> fuzzyQueryByTenant(
+      @RequestBody Map<String, Object> condition) {
+    final JsonResult<List<Map<String, Object>>> result = new JsonResult<>();
+    facadeTemplate.manage(result, new ManageCallback() {
+      @Override
+      public void checkParameter() {
+        ParaCheckUtil.checkParaNotEmpty(condition, "condition");
+      }
+
+      @Override
+      public void doManage() {
+        QueryExample queryExample = new QueryExample();
+        for (Map.Entry<String, Object> entry : condition.entrySet()) {
+          if (entry.getKey().equalsIgnoreCase("ip")
+              || entry.getKey().equalsIgnoreCase("hostname")) {
+            Pattern pattern = Pattern.compile(String.format("^.*%s.*$", entry.getValue()),
+                Pattern.CASE_INSENSITIVE);
+            queryExample.getParams().put(entry.getKey(), pattern);
+          } else {
+            queryExample.getParams().put(entry.getKey(), entry.getValue());
+          }
+        }
+        List<Map<String, Object>> list = dataClientService
+            .fuzzyByExample(tenantInitService.getTenantServerTable(), queryExample);
+        JsonResult.createSuccessResult(result, list);
+      }
+    });
+
+    return result;
+  }
 
   /**
    * 批量导入
@@ -121,7 +209,7 @@ public class MetaFacadeImpl extends BaseFacade {
 
   @PostMapping("/{table}/queryByCondition")
   @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.VIEW)
-  public JsonResult<List<Map<String, Object>>> queryById(@PathVariable("table") String table,
+  public JsonResult<List<Map<String, Object>>> queryByCondition(@PathVariable("table") String table,
       @RequestBody Map<String, Object> condition) {
     final JsonResult<List<Map<String, Object>>> result = new JsonResult<>();
     facadeTemplate.manage(result, new ManageCallback() {
