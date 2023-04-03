@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 /**
  * @author wangsiyuan
@@ -29,40 +30,48 @@ public class AlgorithmHttp {
         .setConnectionRequestTimeout(1000 * 6).setSocketTimeout(1000 * 60 * 3).build();
   }
 
-  public static String invokeAlgorithm(String algorithmUrl, String requestBody) {
+  public static String invokeAlgorithm(String algorithmUrl, String requestBody, String traceId) {
     Map<String, String> headers = new HashMap<>();
     headers.put("Content-Type", "application/json");
-    return post(algorithmUrl, requestBody, headers);
+    return post(algorithmUrl, requestBody, headers, traceId);
   }
 
-  public static String post(String algorithmUrl, String requestBody, Map<String, String> headers) {
+  public static String post(String algorithmUrl, String requestBody, Map<String, String> headers,
+      String traceId) {
     XHttpResponse response = null;
     String resultString = null;
+    String detailTraceId = UUID.randomUUID().toString();
+    long start = System.currentTimeMillis();
     try {
-      long start = System.currentTimeMillis();
       XHttpRequest req = XHttpRequest.post(algorithmUrl, Collections.emptyMap(), "utf-8", 5000,
           requestBody.getBytes(), "application/json; charset=utf-8");
       response = HttpProxy.request(req);
-      long cost = System.currentTimeMillis() - start;
+
       if (response != null) {
         resultString = response.getStringResponse();
         if (response.code != 200) {
           LOGGER.error(
-              "[InvokeAlgorithmError],AlgorithmUrl={},requestBody={},response={},content={},cost={}",
-              algorithmUrl, requestBody, response.code, resultString, cost);
+              "{} {} [InvokeAlgorithmError],AlgorithmUrl={},requestBody={},response={},content={}",
+              traceId, detailTraceId, algorithmUrl, requestBody, response.code, resultString);
           return null;
         } else {
           LOGGER.info(
-              "[InvokeAlgorithmInfo],AlgorithmUrl={},requestBody={},response={},content={},cost={}",
-              algorithmUrl, requestBody, response.code, resultString, cost);
+              "{} [InvokeAlgorithmDetail],AlgorithmUrl={}, requestBody={},response={},content={}",
+              detailTraceId, algorithmUrl, requestBody, response.code, resultString);
         }
       } else {
-        LOGGER.error("[InvokeAlgorithmError],AlgorithmUrl={}, response is null,cost={}",
-            algorithmUrl, cost);
+        LOGGER.error("{} {} [InvokeAlgorithmError],AlgorithmUrl={}, response is null", traceId,
+            detailTraceId, algorithmUrl);
       }
 
     } catch (Exception e) {
-      LOGGER.error("[InvokeAlgorithmException] Sync Exception for {}", algorithmUrl, e);
+      LOGGER.error("{} {} [InvokeAlgorithmException] Sync Exception for {}", traceId, detailTraceId,
+          algorithmUrl, e);
+    } finally {
+      long cost = System.currentTimeMillis() - start;
+      int code = response == null ? 500 : response.code;
+      LOGGER.info("{} {} [InvokeAlgorithmInfo],AlgorithmUrl={},responseCode={},cost={}", traceId,
+          detailTraceId, algorithmUrl, code, cost);
     }
     return resultString;
   }
