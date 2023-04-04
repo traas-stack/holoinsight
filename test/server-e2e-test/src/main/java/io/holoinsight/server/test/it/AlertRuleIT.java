@@ -134,6 +134,53 @@ public class AlertRuleIT extends BaseIT {
 
   @Order(3)
   @Test
+  public void test_check_rule_name() {
+    String invalidRuleName =
+        RandomStringUtils.randomAlphabetic(10) + "<a href=http://www.baidu.com>点击查看详情</a>";
+    AlarmRuleDTO alarmRuleDTO = new AlarmRuleDTO();
+    alarmRuleDTO.setRuleName(invalidRuleName);
+    alarmRuleDTO.setSourceType("apm_holoinsight");
+    alarmRuleDTO.setAlarmLevel("5");
+    alarmRuleDTO.setRuleDescribe("Invalid rule name");
+    alarmRuleDTO.setStatus((byte) 1);
+    alarmRuleDTO.setIsMerge((byte) 0);
+    alarmRuleDTO.setRecover((byte) 0);
+    alarmRuleDTO.setRuleType("rule");
+    alarmRuleDTO.setTimeFilter(buildTimeFilter());
+    alarmRuleDTO.setRule(buildRule());
+
+    // Create folder
+    given() //
+        .body(new JSONObject(J.toMap(J.toJson(alarmRuleDTO)))) //
+        .when() //
+        .post("/webapi/alarmRule/create") //
+        .then() //
+        .body("success", IS_FALSE) //
+        .body("data", eq("invalid ruleName"));
+
+    invalidRuleName = name + "<a href=http://www.baidu.com>点击查看详情</a>";
+    alarmRuleDTO = new AlarmRuleDTO();
+    alarmRuleDTO.setRuleName(invalidRuleName);
+    alarmRuleDTO.setId(id.longValue());
+    alarmRuleDTO.setTenant(tenant);
+    given() //
+        .body(new JSONObject(J.toMap(J.toJson(alarmRuleDTO)))) //
+        .when() //
+        .post("/webapi/alarmRule/update") //
+        .then() //
+        .body("success", IS_FALSE) //
+        .body("data", eq("invalid ruleName"));
+    Response response = queryAlertRule.get();
+    System.out.println(response.body().print());
+    response //
+        .then() //
+        .body("success", IS_TRUE) //
+        .root("data").body("ruleName", eq(name));
+
+  }
+
+  @Order(4)
+  @Test
   public void test_rule_update() {
     name = name + "_v2";
     AlarmRuleDTO alarmRuleDTO = new AlarmRuleDTO();
@@ -155,7 +202,7 @@ public class AlertRuleIT extends BaseIT {
         .root("data").body("ruleName", eq(name));
   }
 
-  @Order(4)
+  @Order(5)
   @Test
   public void test_rule_delete() {
     given() //
@@ -170,7 +217,7 @@ public class AlertRuleIT extends BaseIT {
         .body("data", IS_NULL);
   }
 
-  @Order(5)
+  @Order(6)
   @Test
   public void test_rule_pageQuery() {
     Stack<Integer> ids = new Stack<>();
@@ -219,7 +266,7 @@ public class AlertRuleIT extends BaseIT {
         }));
   }
 
-  @Order(6)
+  @Order(7)
   @Test
   public void test_alert_calculate() {
     Integer ruleId = given() //
