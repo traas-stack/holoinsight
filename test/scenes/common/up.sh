@@ -10,7 +10,7 @@ source `dirname $0`/../common/setup-env.sh
 docker-compose down --remove-orphans --volumes --rmi local
 
 if [ "$build"x = "1"x ]; then
-  $project/scripts/docker/build.sh
+  $project_root/scripts/docker/build.sh
 fi
 
 if [ "$debug"x = "1"x ]; then
