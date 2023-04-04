@@ -43,7 +43,7 @@ public class TraceServiceImpl implements TraceService {
 
   @Override
   public void insertSpans(List<SpanDO> spans) throws Exception {
-    spanStorage.batchInsert(spans);
+    spanStorage.insert(spans);
   }
 
   @Override

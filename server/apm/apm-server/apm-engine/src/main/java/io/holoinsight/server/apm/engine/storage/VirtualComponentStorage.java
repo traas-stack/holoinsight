@@ -9,7 +9,7 @@ import io.holoinsight.server.apm.common.model.specification.sw.RequestType;
 import java.io.IOException;
 import java.util.List;
 
-public interface VirtualComponentStorage {
+public interface VirtualComponentStorage extends ReadableStorage {
 
   List<VirtualComponent> getComponentList(String tenant, String service, long startTime,
       long endTime, RequestType type, String sourceOrDest) throws IOException;

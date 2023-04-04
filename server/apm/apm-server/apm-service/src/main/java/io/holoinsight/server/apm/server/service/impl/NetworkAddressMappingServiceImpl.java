@@ -17,7 +17,7 @@ public class NetworkAddressMappingServiceImpl implements NetworkAddressMappingSe
 
   @Override
   public void insert(List<NetworkAddressMappingDO> addressMappingList) throws Exception {
-    networkAddressMappingStorage.batchInsert(addressMappingList);
+    networkAddressMappingStorage.insert(addressMappingList);
   }
 
   @Override

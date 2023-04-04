@@ -9,9 +9,8 @@ import java.io.IOException;
 import java.util.List;
 
 
-public interface NetworkAddressMappingStorage {
-
-  void batchInsert(final List<NetworkAddressMappingDO> addressMappingList) throws IOException;
+public interface NetworkAddressMappingStorage
+    extends WritableStorage<NetworkAddressMappingDO>, ReadableStorage {
 
   List<NetworkAddressMappingDO> loadByTime(long timeBucketInMinute) throws IOException;
 }

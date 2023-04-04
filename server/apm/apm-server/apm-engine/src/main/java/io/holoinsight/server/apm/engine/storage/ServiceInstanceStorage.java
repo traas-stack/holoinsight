@@ -8,7 +8,7 @@ import io.holoinsight.server.apm.common.model.query.ServiceInstance;
 import java.io.IOException;
 import java.util.List;
 
-public interface ServiceInstanceStorage {
+public interface ServiceInstanceStorage extends ReadableStorage {
 
   List<ServiceInstance> getServiceInstanceList(String tenant, String service, long startTime,
       long endTime) throws IOException;

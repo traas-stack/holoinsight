@@ -9,8 +9,5 @@ import java.io.IOException;
 import java.util.List;
 
 
-public interface ServiceErrorStorage {
-
-  void batchInsert(final List<ServiceErrorDO> serviceErrorEsDOList) throws IOException;
-
+public interface ServiceErrorStorage extends WritableStorage<ServiceErrorDO> {
 }

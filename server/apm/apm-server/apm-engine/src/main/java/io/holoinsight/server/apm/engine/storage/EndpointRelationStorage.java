@@ -8,8 +8,6 @@ import io.holoinsight.server.apm.engine.model.EndpointRelationDO;
 import java.io.IOException;
 import java.util.List;
 
-public interface EndpointRelationStorage {
-
-  void batchInsert(final List<EndpointRelationDO> relationList) throws IOException;
+public interface EndpointRelationStorage extends WritableStorage<EndpointRelationDO> {
 
 }

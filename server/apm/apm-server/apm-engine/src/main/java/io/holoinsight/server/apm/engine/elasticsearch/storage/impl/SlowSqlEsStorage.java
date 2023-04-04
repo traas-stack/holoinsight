@@ -34,8 +34,9 @@ public class SlowSqlEsStorage extends RecordEsStorage<SlowSqlDO> implements Slow
     return client;
   }
 
-  protected String rangeTimeField() {
-    return SpanDO.START_TIME;
+  @Override
+  public String timeField() {
+    return SpanDO.END_TIME;
   }
 
   @Override
@@ -44,7 +45,7 @@ public class SlowSqlEsStorage extends RecordEsStorage<SlowSqlDO> implements Slow
 
     BoolQueryBuilder queryBuilder =
         QueryBuilders.boolQuery().must(QueryBuilders.termQuery(SlowSqlDO.TENANT, tenant))
-            .must(QueryBuilders.rangeQuery(rangeTimeField()).gte(startTime).lte(endTime));
+            .must(QueryBuilders.rangeQuery(timeField()).gte(startTime).lte(endTime));
 
     if (!StringUtils.isEmpty(serviceName)) {
       queryBuilder.must(QueryBuilders.termQuery(SlowSqlDO.SERVICE_NAME, serviceName));

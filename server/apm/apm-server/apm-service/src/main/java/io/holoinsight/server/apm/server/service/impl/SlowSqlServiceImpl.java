@@ -18,7 +18,7 @@ public class SlowSqlServiceImpl implements SlowSqlService {
 
   @Override
   public void insert(List<SlowSqlDO> slowSqlEsDOList) throws Exception {
-    slowSqlStorage.batchInsert(slowSqlEsDOList);
+    slowSqlStorage.insert(slowSqlEsDOList);
   }
 
   @Override

@@ -6,7 +6,6 @@ package io.holoinsight.server.apm.engine.elasticsearch.storage.impl;
 import com.google.common.base.Strings;
 import io.holoinsight.server.apm.common.constants.Const;
 import io.holoinsight.server.apm.common.model.query.*;
-import io.holoinsight.server.apm.common.model.specification.OtlpMappings;
 import io.holoinsight.server.apm.common.model.specification.otel.KeyValue;
 import io.holoinsight.server.apm.common.model.specification.otel.*;
 import io.holoinsight.server.apm.common.model.specification.sw.Span;
@@ -43,8 +42,9 @@ public class SpanEsStorage extends RecordEsStorage<SpanDO> implements SpanStorag
 
   private static final int SPAN_QUERY_MAX_SIZE = 2000;
 
-  protected String rangeTimeField() {
-    return SpanDO.START_TIME;
+  @Override
+  public String timeField() {
+    return SpanDO.END_TIME;
   }
 
   @Override
@@ -61,7 +61,7 @@ public class SpanEsStorage extends RecordEsStorage<SpanDO> implements SpanStorag
       boolQueryBuilder.must(new TermQueryBuilder(SpanDO.resource(SpanDO.TENANT), tenant));
     }
     if (start != 0 && end != 0) {
-      boolQueryBuilder.must(new RangeQueryBuilder(rangeTimeField()).gte(start).lte(end));
+      boolQueryBuilder.must(new RangeQueryBuilder(timeField()).gte(start).lte(end));
     }
 
     if (minTraceDuration != 0 || maxTraceDuration != 0) {
@@ -193,7 +193,7 @@ public class SpanEsStorage extends RecordEsStorage<SpanDO> implements SpanStorag
     List<StatisticData> result = new ArrayList<>();
 
     BoolQueryBuilder queryBuilder = QueryBuilders.boolQuery()
-        .must(QueryBuilders.rangeQuery(rangeTimeField()).gte(startTime).lte(endTime));
+        .must(QueryBuilders.rangeQuery(timeField()).gte(startTime).lte(endTime));
 
     TermsAggregationBuilder aggregationBuilder =
         AggregationBuilders.terms(SpanDO.attributes(Const.APPID))

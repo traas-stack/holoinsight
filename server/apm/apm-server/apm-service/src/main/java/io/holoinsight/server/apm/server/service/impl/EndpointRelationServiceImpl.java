@@ -9,7 +9,6 @@ import io.holoinsight.server.apm.server.service.EndpointRelationService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.io.IOException;
 import java.util.List;
 
 public class EndpointRelationServiceImpl implements EndpointRelationService {
@@ -20,6 +19,6 @@ public class EndpointRelationServiceImpl implements EndpointRelationService {
 
   @Override
   public void insert(List<EndpointRelationDO> relationList) throws Exception {
-    endpointRelationStorage.batchInsert(relationList);
+    endpointRelationStorage.insert(relationList);
   }
 }

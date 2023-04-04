@@ -47,12 +47,10 @@ public class SpanMetricEsStorage extends PostCalMetricStorage {
     return esClient;
   }
 
-  protected String dateHistogramField() {
-    return SpanDO.START_TIME;
-  }
 
-  protected String rangeTimeField() {
-    return SpanDO.START_TIME;
+  @Override
+  public String timeField() {
+    return SpanDO.END_TIME;
   }
 
 
@@ -63,8 +61,8 @@ public class SpanMetricEsStorage extends PostCalMetricStorage {
     MetricValues metricValues = new MetricValues(values);
     SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
     BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder();
-    boolQueryBuilder.filter(new TermQueryBuilder(SpanDO.resource(SpanDO.TENANT), tenant)).filter(
-        new RangeQueryBuilder(rangeTimeField()).gte(duration.getStart()).lte(duration.getEnd()));
+    boolQueryBuilder.filter(new TermQueryBuilder(SpanDO.resource(SpanDO.TENANT), tenant))
+        .filter(new RangeQueryBuilder(timeField()).gte(duration.getStart()).lte(duration.getEnd()));
 
     if (conditions != null) {
       conditions.forEach((conditionKey, conditionVal) -> {
@@ -77,7 +75,7 @@ public class SpanMetricEsStorage extends PostCalMetricStorage {
     }
 
     DateHistogramAggregationBuilder dateHistogramAggregationBuilder =
-        AggregationBuilders.dateHistogram(SpanDO.START_TIME).field(dateHistogramField())
+        AggregationBuilders.dateHistogram(timeField()).field(timeField())
             .fixedInterval(new DateHistogramInterval(duration.getStep())).minDocCount(1)
             .extendedBounds(new ExtendedBounds(duration.getStart(), duration.getEnd()));
     AggregationBuilder parentAggregationBuilder = dateHistogramAggregationBuilder;
@@ -98,7 +96,7 @@ public class SpanMetricEsStorage extends PostCalMetricStorage {
         new SearchRequest(new String[] {metricDefine.getIndex()}, searchSourceBuilder);
     SearchResponse searchResponse = esClient().search(searchRequest, RequestOptions.DEFAULT);
     Aggregations aggregations = searchResponse.getAggregations();
-    Aggregation aggregation = aggregations.get(SpanDO.START_TIME);
+    Aggregation aggregation = aggregations.get(timeField());
     ParsedDateHistogram dateHistogram = (ParsedDateHistogram) aggregation;
     List<? extends Histogram.Bucket> timeBuckets = dateHistogram.getBuckets();
     Map<Map<String, String>, Map<Long, Double>> valuesMap = new HashMap<>();

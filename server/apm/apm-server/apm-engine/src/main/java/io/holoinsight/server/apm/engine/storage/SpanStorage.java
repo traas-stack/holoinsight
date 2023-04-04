@@ -18,7 +18,7 @@ import java.util.List;
  * @author jiwliu
  * @version : SpanEsService.java, v 0.1 2022年09月29日 16:56 xiangwanpeng Exp $
  */
-public interface SpanStorage {
+public interface SpanStorage extends WritableStorage<SpanDO>, ReadableStorage {
 
   TraceBrief queryBasicTraces(final String tenant, final String serviceName,
       final String serviceInstanceName, final String endpointName, final List<String> traceIds,
@@ -27,8 +27,6 @@ public interface SpanStorage {
       final List<Tag> tags) throws Exception;
 
   Trace queryTrace(final String traceId) throws Exception;
-
-  void batchInsert(final List<SpanDO> spans) throws Exception;
 
   List<StatisticData> statisticTrace(long startTime, long endTime) throws Exception;
 }

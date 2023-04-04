@@ -19,7 +19,7 @@ public class ServiceErrorServiceImpl implements ServiceErrorService {
 
   @Override
   public void insert(List<ServiceErrorDO> serviceErrorEsDOList) throws IOException {
-    serviceErrorStorage.batchInsert(serviceErrorEsDOList);
+    serviceErrorStorage.insert(serviceErrorEsDOList);
   }
 
 }
