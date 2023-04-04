@@ -21,7 +21,7 @@
 
 		<dependency>
 			<groupId>io.holoinsight.server</groupId>
-			<artifactId>extension-storage</artifactId>
+			<artifactId>extension-storage-remote-promql</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>

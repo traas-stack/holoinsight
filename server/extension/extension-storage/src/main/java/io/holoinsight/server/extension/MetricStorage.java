@@ -14,7 +14,7 @@ import io.holoinsight.server.extension.model.QueryParam;
 import reactor.core.publisher.Mono;
 
 /**
- * @author jinyan.ljw
+ * @author jiwliu
  * @date 2023/1/04
  */
 public interface MetricStorage {

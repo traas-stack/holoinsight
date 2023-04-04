@@ -15,12 +15,16 @@ import io.holoinsight.server.apm.common.utils.GsonUtils;
 import io.holoinsight.server.common.DurationUtil;
 import io.holoinsight.server.common.ProtoJsonUtils;
 import io.holoinsight.server.extension.MetricStorage;
+import io.holoinsight.server.extension.model.PqlParam;
 import io.holoinsight.server.extension.model.QueryMetricsParam;
 import io.holoinsight.server.extension.model.QueryParam;
+import io.holoinsight.server.extension.model.QueryResult.Point;
 import io.holoinsight.server.extension.model.QueryResult.Result;
 import io.holoinsight.server.query.common.RpnResolver;
 import io.holoinsight.server.query.common.convertor.ApmConvertor;
 import io.holoinsight.server.query.grpc.QueryProto;
+import io.holoinsight.server.query.grpc.QueryProto.Point.Builder;
+import io.holoinsight.server.query.grpc.QueryProto.PqlInstantRequest;
 import io.holoinsight.server.query.service.QueryException;
 import io.holoinsight.server.query.service.QueryService;
 import io.holoinsight.server.query.service.analysis.AnalysisCenter;
@@ -147,13 +151,61 @@ public class DefaultQueryServiceImpl implements QueryService {
   @Override
   public QueryProto.QueryResponse pqlInstantQuery(QueryProto.PqlInstantRequest request)
       throws QueryException {
-    throw new UnsupportedOperationException();
+    QueryProto.QueryResponse.Builder builder = QueryProto.QueryResponse.newBuilder();
+    List<Result> pqlResult = metricStorage.pqlInstantQuery(transToPqlParam(request));
+    QueryProto.Result.Builder resultBuilder = QueryProto.Result.newBuilder();
+    resultBuilder.setMetric(request.getQuery());
+    for (Result result : pqlResult) {
+      resultBuilder.putAllTags(result.getTags());
+      for (Point point : result.getPoints()) {
+        Builder pointBuilder = QueryProto.Point.newBuilder().setTimestamp(point.getTimestamp())
+            .setValue(point.getValue());
+        resultBuilder.addPoints(pointBuilder.build());
+      }
+    }
+    builder.addResults(resultBuilder.build());
+    return builder.build();
+  }
+
+  private PqlParam transToPqlParam(PqlInstantRequest request) {
+    PqlParam pqlParam = new PqlParam();
+    pqlParam.setTenant(request.getTenant());
+    pqlParam.setQuery(request.getQuery());
+    pqlParam.setTime(request.getTime());
+    pqlParam.setTimeout(request.getTimeout());
+    pqlParam.setDelta(request.getDelta());
+    return pqlParam;
+  }
+
+  private PqlParam transToPqlParam(QueryProto.PqlRangeRequest request) {
+    PqlParam pqlParam = new PqlParam();
+    pqlParam.setTenant(request.getTenant());
+    pqlParam.setQuery(request.getQuery());
+    pqlParam.setTimeout(request.getTimeout());
+    pqlParam.setDelta(request.getDelta());
+    pqlParam.setStart(request.getStart());
+    pqlParam.setEnd(request.getEnd());
+    pqlParam.setStep(request.getStep());
+    return pqlParam;
   }
 
   @Override
   public QueryProto.QueryResponse pqlRangeQuery(QueryProto.PqlRangeRequest request)
       throws QueryException {
-    throw new UnsupportedOperationException();
+    QueryProto.QueryResponse.Builder builder = QueryProto.QueryResponse.newBuilder();
+    List<Result> pqlResult = metricStorage.pqlInstantQuery(transToPqlParam(request));
+    for (Result result : pqlResult) {
+      QueryProto.Result.Builder resultBuilder = QueryProto.Result.newBuilder();
+      resultBuilder.setMetric(result.getMetric());
+      resultBuilder.putAllTags(result.getTags());
+      for (Point point : result.getPoints()) {
+        Builder pointBuilder = QueryProto.Point.newBuilder().setTimestamp(point.getTimestamp())
+            .setStrValue(point.getStrValue());
+        resultBuilder.addPoints(pointBuilder.build());
+      }
+      builder.addResults(resultBuilder.build());
+    }
+    return builder.build();
   }
 
   @Override

@@ -14,5 +14,12 @@ holoinsight:
   metric:
     storage:
       type: ceresdbx
+    pql:
+      remote:
+        enabled: true
+        endpoints:
+          default:
+            host: prometheus
+            port: 9090
   flyway:
     enabled: false

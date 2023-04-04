@@ -69,6 +69,7 @@
 		<module>../extension/extension-storage</module>
 		<module>../extension/extension-common-flyway</module>
 		<module>../extension/extension-storage-ceresdbx</module>
+		<module>../extension/extension-storage-remote-promql</module>
 
 		<module>../../test/server-e2e-test</module>
 	</modules>

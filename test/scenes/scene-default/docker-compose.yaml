@@ -11,6 +11,13 @@ services:
     extends:
       file: ../common/base.yaml
       service: ceresdb
+  prometheus:
+    extends:
+      file: ../common/base.yaml
+      service: prometheus
+    depends_on:
+      ceresdb:
+        condition: service_healthy
   mysql-data-init:
     extends:
       file: ../common/base.yaml
