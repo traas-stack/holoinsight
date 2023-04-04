@@ -84,7 +84,7 @@ public class AlarmGroupFacadeImpl extends BaseFacade {
       @Override
       public void checkParameter() {
         ParaCheckUtil.checkParaNotBlank(alarmGroup.getGroupName(), "groupName");
-        ParaCheckUtil.checkInvalidCharacter(alarmGroup.getGroupName(), "invalid groupname");
+        ParaCheckUtil.checkInvalidCharacter(alarmGroup.getGroupName(), "invalid groupName");
       }
 
       @Override
