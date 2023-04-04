@@ -33,6 +33,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -55,13 +56,13 @@ public class AlertTaskCompute implements AlarmTaskExecutor<ComputeTaskPackage> {
   private AlarmDataSet alarmDataSet;
 
   @Resource
-  private AbstractUniformInspectRunningRule abstractUniformInspectRunningRule;
+  protected AbstractUniformInspectRunningRule abstractUniformInspectRunningRule;
 
   @Resource
   private AlertEventService alertEventService;
 
   @Resource
-  private AlarmHistoryMapper alertHistoryDOMapper;
+  protected AlarmHistoryMapper alertHistoryDOMapper;
 
   @Resource
   private CacheData cacheData;
@@ -81,7 +82,7 @@ public class AlertTaskCompute implements AlarmTaskExecutor<ComputeTaskPackage> {
         Map<String, InspectConfig> inspectConfigMap = cacheData.getUniqueIdMap();
         List<AlertNotify> alarmNotifies = new ArrayList<>();
         for (EventInfo eventInfo : eventLists) {
-          if (eventInfo == null || StringUtils.isEmpty(eventInfo.getUniqueId())) {
+          if (StringUtils.isEmpty(eventInfo.getUniqueId())) {
             continue;
           }
           InspectConfig inspectConfig = inspectConfigMap.get(eventInfo.getUniqueId());
@@ -114,8 +115,8 @@ public class AlertTaskCompute implements AlarmTaskExecutor<ComputeTaskPackage> {
     }
   }
 
-  private List<EventInfo> calculate(ComputeTaskPackage computeTaskPackage) {
-    List<EventInfo> eventLists = new ArrayList<>();
+  protected List<EventInfo> calculate(ComputeTaskPackage computeTaskPackage) {
+    List<EventInfo> eventLists = new CopyOnWriteArrayList<>();
 
     if (CollectionUtils.isEmpty(computeTaskPackage.getInspectConfigs())) {
       return Collections.emptyList();
