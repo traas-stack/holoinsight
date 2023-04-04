@@ -4,6 +4,7 @@
 package io.holoinsight.server.home.web.controller;
 
 import io.holoinsight.server.common.JsonResult;
+import io.holoinsight.server.common.config.EnvironmentProperties;
 import io.holoinsight.server.home.biz.ula.ULAFacade;
 import io.holoinsight.server.home.biz.common.MetaDictUtil;
 import io.holoinsight.server.common.service.TenantService;
@@ -38,9 +39,10 @@ public class SysFacadeImpl extends BaseFacade {
 
   @Autowired
   private ULAFacade ulaFacade;
-
   @Autowired
   private TenantService tenantService;
+  @Autowired
+  private EnvironmentProperties environmentProperties;
 
   @GetMapping(value = "/time")
   @ResponseBody
@@ -66,6 +68,7 @@ public class SysFacadeImpl extends BaseFacade {
     Map<String, Object> sysMap = new HashMap<>();
     sysMap.put("authUrl", ulaFacade.getCurrentULA().getLoginUrl());
     sysMap.put("ula", ulaFacade.getCurrentULA().name());
+    sysMap.put("site", this.environmentProperties.getDeploymentSite());
     sysMap.put("authApplyUrl", ulaFacade.getCurrentULA().authApplyUrl());
     sysMap.put("jiguanghost", MetaDictUtil.getJiGuangHost());
     sysMap.put("systemNotice", MetaDictUtil.getSystemNotice());
