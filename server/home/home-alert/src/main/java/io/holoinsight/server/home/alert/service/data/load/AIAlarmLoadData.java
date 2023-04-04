@@ -58,48 +58,6 @@ public class AIAlarmLoadData implements AlarmLoadData {
     return dataResults;
   }
 
-  private QueryProto.QueryResponse queryTags(ComputeTaskPackage computeTask, InspectConfig e,
-      Trigger trigger) {
-    QueryProto.QueryResponse response = null;
-    QueryProto.QueryRequest request = null;
-    try {
-      List<QueryProto.Datasource> datasources = new ArrayList<>();
-      for (DataSource dataSource : trigger.getDatasources()) {
-        // 获取检测那一分钟的tags
-        long start = computeTask.getTimestamp() - PeriodType.MINUTE.intervalMillis();
-        long end = computeTask.getTimestamp();
-
-        QueryProto.Datasource.Builder builder = QueryProto.Datasource.newBuilder()
-            .setName(dataSource.getName()).setStart(start).setEnd(end)
-            .setMetric(dataSource.getMetric()).addAllFilters(filterConvert(dataSource.getFilters()))
-            .setAggregator(dataSource.getAggregator());
-
-        if (dataSource.getGroupBy() != null) {
-          builder.addAllGroupBy(dataSource.getGroupBy());
-        }
-        if (dataSource.getDownsample() != null) {
-          builder.setDownsample(dataSource.getDownsample());
-        }
-        QueryProto.Datasource queryDatasource = builder.build();
-        datasources.add(queryDatasource);
-
-      }
-
-      request = QueryProto.QueryRequest.newBuilder().setTenant(e.getTenant())
-          .setQuery(trigger.getQuery()).addAllDatasources(datasources).build();
-
-
-      response = queryClientService.queryTag(request);
-      LOGGER.debug("QueryTags Success Request:{} Response:{}", G.get().toJson(request),
-          G.get().toJson(response));
-      return response;
-    } catch (Exception exception) {
-      LOGGER.error("QueryTags Exception Request:{} Response:{}", G.get().toJson(request),
-          G.get().toJson(response), exception);
-    }
-    return null;
-  }
-
   private QueryProto.QueryResponse queryDataCount(ComputeTaskPackage computeTask,
       InspectConfig inspectConfig, Trigger trigger) {
     QueryProto.QueryResponse response = null;

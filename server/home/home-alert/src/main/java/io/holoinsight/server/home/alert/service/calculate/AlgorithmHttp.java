@@ -55,7 +55,7 @@ public class AlgorithmHttp {
               traceId, detailTraceId, algorithmUrl, requestBody, response.code, resultString);
           return null;
         } else {
-          LOGGER.info(
+          LOGGER.debug(
               "{} [InvokeAlgorithmDetail],AlgorithmUrl={}, requestBody={},response={},content={}",
               detailTraceId, algorithmUrl, requestBody, response.code, resultString);
         }
