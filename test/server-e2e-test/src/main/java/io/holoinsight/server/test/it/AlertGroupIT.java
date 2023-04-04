@@ -21,7 +21,7 @@ import java.util.function.Supplier;
 public class AlertGroupIT extends BaseIT {
 
   String name;
-  Long id;
+  Integer id;
   String tenant;
 
   Supplier<Response> queryAlertGroup = () -> given() //
@@ -66,19 +66,20 @@ public class AlertGroupIT extends BaseIT {
         RandomStringUtils.randomAlphabetic(10) + "<a href=http://www.baidu.com>点击查看详情</a>";
     AlarmGroupDTO alarmGroup = new AlarmGroupDTO();
     alarmGroup.setGroupName(invalidRuleName);
-    alarmGroup.setId(id);
+    alarmGroup.setId(id.longValue());
     alarmGroup.setTenant(tenant);
 
     // Create folder
-    given() //
+    Response response = given() //
         .body(new JSONObject(J.toMap(J.toJson(alarmGroup)))) //
         .when() //
-        .post("/webapi/alarmGroup/update") //
-        .then() //
+        .post("/webapi/alarmGroup/update");
+    System.out.println(response.print());
+    response.then() //
         .body("success", IS_FALSE) //
-        .body("data", eq("invalid groupname"));
+        .body("message", eq("invalid groupName"));
 
-    Response response = queryAlertGroup.get();
+    response = queryAlertGroup.get();
     System.out.println(response.body().print());
     response //
         .then() //

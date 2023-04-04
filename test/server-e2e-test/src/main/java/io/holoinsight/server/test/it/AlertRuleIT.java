@@ -156,7 +156,7 @@ public class AlertRuleIT extends BaseIT {
         .post("/webapi/alarmRule/create") //
         .then() //
         .body("success", IS_FALSE) //
-        .body("data", eq("invalid ruleName"));
+        .body("message", eq("invalid ruleName"));
 
     invalidRuleName = name + "<a href=http://www.baidu.com>点击查看详情</a>";
     alarmRuleDTO = new AlarmRuleDTO();
@@ -169,7 +169,7 @@ public class AlertRuleIT extends BaseIT {
         .post("/webapi/alarmRule/update") //
         .then() //
         .body("success", IS_FALSE) //
-        .body("data", eq("invalid ruleName"));
+        .body("message", eq("invalid ruleName"));
     Response response = queryAlertRule.get();
     System.out.println(response.body().print());
     response //
