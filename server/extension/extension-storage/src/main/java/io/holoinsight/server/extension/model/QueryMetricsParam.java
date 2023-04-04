@@ -6,7 +6,7 @@ package io.holoinsight.server.extension.model;
 import lombok.Data;
 
 /**
- * @author jinyan.ljw
+ * @author jiwliu
  * @date 2023/1/11
  */
 @Data
