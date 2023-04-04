@@ -107,6 +107,7 @@ public class AlarmRuleFacadeImpl extends BaseFacade {
         ParaCheckUtil.checkParaNotNull(alarmRuleDTO.getStatus(), "status");
         ParaCheckUtil.checkParaNotNull(alarmRuleDTO.getRecover(), "recover");
         ParaCheckUtil.checkParaNotNull(alarmRuleDTO.getIsMerge(), "isMerge");
+        ParaCheckUtil.checkInvalidCharacter(alarmRuleDTO.getRuleName(), "invalid ruleName");
       }
 
       @Override
@@ -169,7 +170,9 @@ public class AlarmRuleFacadeImpl extends BaseFacade {
         ParaCheckUtil.checkParaNotNull(alarmRuleDTO.getTenant(), "tenant");
         ParaCheckUtil.checkEquals(alarmRuleDTO.getTenant(),
             RequestContext.getContext().ms.getTenant(), "tenant is illegal");
-
+        if (StringUtils.isNotBlank(alarmRuleDTO.getRuleName())) {
+          ParaCheckUtil.checkInvalidCharacter(alarmRuleDTO.getRuleName(), "invalid ruleName");
+        }
       }
 
       @Override

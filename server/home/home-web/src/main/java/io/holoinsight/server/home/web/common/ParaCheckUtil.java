@@ -12,13 +12,14 @@ import org.springframework.util.CollectionUtils;
 
 import java.util.Collection;
 import java.util.Map;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * 参数检测工具类
+ * Parameter checker
  * 
  * @author jsy1001de
- * @version 1.0: ParaCheckUtil.java, v 0.1 2022年03月15日 1:14 下午 jinsong.yjs Exp $
+ * @version 1.0: ParaCheckUtil.java, v 0.1 2022-03-15 13:14
  */
 public class ParaCheckUtil {
   private static final Pattern PATTERN = Pattern.compile("^[a-z][a-z0-9\\-]*[a-z0-9]$");
@@ -31,24 +32,17 @@ public class ParaCheckUtil {
 
   private static final Pattern PATTERN_APPLICATION = Pattern.compile("^[a-z]{1,20}");
 
+  private static Pattern PATTERN_SQL = Pattern.compile("^[A-Za-z0-9\\u4e00-\\u9fa5\\-_,\\.]*$");
+
   private static final Pattern PATTERN_AIG_NAME =
       Pattern.compile("^[a-z]{1,20}-[a-z][a-z0-9]{0,27}");
 
-  /// **
-  // * 检测对象类型
-  // *
-  // * @param object 对象
-  // */
-  // public static void checkParaNotNull(Object object) {
-  // if (object == null) {
-  // throw new MonitorException(ResultCodeEnum.PARAMETER_ILLEGAL);
-  // }
-  // }
+  private static Pattern uniCodePattern = Pattern.compile("\\\\u[0-9a-f]{4}");
 
   /**
-   * 检测对象类型
+   * Check whether the object param is null.
    *
-   * @param object 对象
+   * @param object
    */
   public static void checkParaNotNull(Object object, String errorMsg) {
     if (object == null) {
@@ -57,9 +51,8 @@ public class ParaCheckUtil {
   }
 
   /**
-   * 检测 end > start
+   * Check time range
    *
-   * @param param 数值
    */
   public static void checkTimeRange(Long start, Long end, String errorMsg) {
     if (start > end) {
@@ -67,19 +60,8 @@ public class ParaCheckUtil {
     }
   }
 
-  /// **
-  // * 检测字符串类型
-  // *
-  // * @param param 字符串
-  // */
-  // public static void checkParaNotBlank(String param) {
-  // if (StringUtils.isBlank(param)) {
-  // throw new MonitorException(ResultCodeEnum.PARAMETER_ILLEGAL);
-  // }
-  // }
-
   /**
-   * 检测字符串类型
+   * Check whether the string param is blank.
    *
    * @param param
    * @param errorMsg
@@ -97,21 +79,8 @@ public class ParaCheckUtil {
     }
   }
 
-  /// **
-  // * 检测数值不是负数
-  // *
-  // * @param param 数值
-  // */
-  // public static void checkParaNotNegative(Integer param) {
-  // if (param == null || param < 0) {
-  // throw new MonitorException(ResultCodeEnum.PARAMETER_ILLEGAL);
-  // }
-  // }
-
   /**
-   * 检测数值不是负数
-   *
-   * @param param 数值
+   * Check whether the integer param is negative.
    */
   public static void checkParaNotNegative(Integer param, String errorMsg) {
     if (param == null || param < 0) {
@@ -119,32 +88,8 @@ public class ParaCheckUtil {
     }
   }
 
-  /// **
-  // * 检测数值是正数
-  // *
-  // * @param param
-  // */
-  // public static void checkParaPositive(Integer param) {
-  // if (param == null || param <= 0) {
-  // throw new MonitorException(ResultCodeEnum.PARAMETER_ILLEGAL);
-  // }
-  // }
-
-  /// **
-  // * 检测集合类型
-  // *
-  // * @param collection 集合
-  // */
-  // public static void checkParaNotEmpty(Collection<?> collection) {
-  // if (CollectionUtils.isEmpty(collection)) {
-  // throw new MonitorException(ResultCodeEnum.PARAMETER_ILLEGAL);
-  // }
-  // }
-
   /**
-   * 检测集合类型
-   *
-   * @param collection 集合
+   * Check whether the collection param is empty.
    */
   public static void checkParaNotEmpty(Collection<?> collection, String errorMsg) {
     if (CollectionUtils.isEmpty(collection)) {
@@ -152,43 +97,17 @@ public class ParaCheckUtil {
     }
   }
 
-  /// **
-  // * 检测集合类型
-  // *
-  // * @param collection 集合
-  // */
-  // public static void checkParaNotEmpty(Map map) {
-  // if (CollectionUtils.isEmpty(map)) {
-  // throw new MonitorException(ResultCodeEnum.PARAMETER_ILLEGAL);
-  // }
-  // }
-
   /**
-   * 检测集合类型
-   *
-   * @param collection 集合
+   * Check whether the map param is empty.
    */
-  public static void checkParaNotEmpty(Map map, String errorMsg) {
+  public static void checkParaNotEmpty(Map<?, ?> map, String errorMsg) {
     if (CollectionUtils.isEmpty(map)) {
       throw new MonitorException(ResultCodeEnum.PARAMETER_ILLEGAL, errorMsg);
     }
   }
 
-  /// **
-  // * 检测数组类型
-  // *
-  // * @param array 数组
-  // */
-  // public static void checkParaNotEmpty(String[] array) {
-  // if (ArrayUtils.isEmpty(array)) {
-  // throw new MonitorException(ResultCodeEnum.PARAMETER_ILLEGAL);
-  // }
-  // }
-
   /**
-   * 检测数组类型
-   *
-   * @param array 数组
+   * Check whether the array param is empty.
    */
   public static void checkParaNotEmpty(String[] array, String errorMsg) {
     if (ArrayUtils.isEmpty(array)) {
@@ -197,10 +116,7 @@ public class ParaCheckUtil {
   }
 
   /**
-   * 检查两个对象是否相等
-   *
-   * @param obj1
-   * @param obj2
+   * Check whether the obj1 equals with obj2.
    */
   public static void checkEquals(Object obj1, Object obj2, String errorMsg) {
     if (!ObjectUtils.equals(obj1, obj2)) {
@@ -208,78 +124,50 @@ public class ParaCheckUtil {
     }
   }
 
-  /// **
-  // * 应用名称由小写字母，数字和中横线组成，必须字母开头，最大32个字符
-  // *
-  // * @param appname
-  // */
-  // public static void checkAppname(String appname) {
-  // Pattern pattern = Pattern.compile("^[a-z][0-9a-z-]{5,31}$");
-  // Matcher matcher = pattern.matcher(appname);
-  // boolean result = matcher.matches(); //当条件满足时，将返回true，否则返回false
-  // if (!result) {
-  // String checkMessage = "应用名[" + appname + "]不符合长域名规范，格式：小写字母，数字和中横线组成，必须字母开头，最大32个字符";
-  // throw new MonitorException(ResultCodeEnum.PARAMETER_ILLEGAL, checkMessage);
-  // }
-  // }
-  //
-  /// **
-  // * 检查主机名是否为长域名
-  // * 例如：foo-60-10.foo.foo.com
-  // *
-  // * @param hostname
-  // * @return 如果返回值为null，则说明服务器主机名验证无误，反之则有误，且返回值即错误信息
-  // */
-  // public static void checkHostnameStyle(List<String> hostnames) {
-  // StringBuilder sb = null;
-  // if (!CollectionUtils.isEmpty(hostnames)) {
-  // for (String hostname : hostnames) {
-  // if (!isHostnameCorrect(hostname)) {
-  // if (sb == null) {
-  // sb = new StringBuilder();
-  // sb.append("服务器主机名[");
-  // }
-  // sb.append(hostname + ",");
-  // }
-  // }
-  // }
-  // if (sb != null) {
-  // String checkMessage = sb.substring(0, sb.length() - 1)
-  // + "]不符合长域名规范，格式如：foo-60-10.foo.foo.com";
-  // throw new MonitorException(ResultCodeEnum.PARAMETER_ILLEGAL, checkMessage);
-  // }
-  // }
-  //
-  /// **
-  // * 长域名格式xxx-数字-数字.xxx.xxx.xxx
-  // *
-  // * @param hostname
-  // * @return
-  // */
-  // private static boolean isHostnameCorrect(String hostname) {
-  // if (StringUtils.isNotBlank(hostname)) {
-  // Pattern pattern = Pattern
-  // .compile("[a-zA-Z]{1,}-[0-9]{1,}-[0-9]{1,}\\.[a-zA-Z]{1,}\\.[a-zA-Z]{1,}\\.[a-zA-Z]{1,}");
-  // Matcher matcher = pattern.matcher(hostname);
-  // if (!matcher.find()) {
-  // return false;
-  // } else {
-  // return true;
-  // }
-  // } else {
-  // return false;
-  // }
-  // }
-
   /**
-   * 判断boolean, false直接报错
-   * 
-   * @param result
-   * @param errorMsg
+   * Check whether the boolean result is true.
    */
   public static void checkParaBoolean(Boolean result, String errorMsg) {
     if (!result) {
       throw new MonitorException(ResultCodeEnum.PARAMETER_ILLEGAL, errorMsg);
     }
+  }
+
+  /**
+   *
+   * @param param
+   * @param errorMsg
+   */
+  public static void checkInvalidCharacter(String param, String errorMsg) {
+    checkParaBoolean(commonCheck(param), errorMsg);
+  }
+
+  private static boolean commonCheck(String param) {
+    Matcher commonAllowed = PATTERN_SQL.matcher(param);
+    if (commonAllowed.find()) {
+      if (!unicodeCheck(param)) {
+        return false;
+      }
+      return true;
+    }
+    return false;
+  }
+
+  private static boolean unicodeCheck(String param) {
+    // unicode encoding check
+    int start = 0;
+    Matcher uniCodeMatcher = uniCodePattern.matcher(param);
+    while (uniCodeMatcher.find(start)) {
+      start = uniCodeMatcher.end();
+      String keyword = uniCodeMatcher.group(0);
+      if (StringUtils.isNotBlank(keyword) && keyword.startsWith("\\u")) {
+        String hexString = StringUtils.substring(keyword, 2);
+        int valueInteger = Integer.parseInt(hexString, 16);
+        if (valueInteger < 19968 || valueInteger > 40869) {
+          return false;
+        }
+      }
+    }
+    return true;
   }
 }

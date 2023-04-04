@@ -84,6 +84,7 @@ public class AlarmGroupFacadeImpl extends BaseFacade {
       @Override
       public void checkParameter() {
         ParaCheckUtil.checkParaNotBlank(alarmGroup.getGroupName(), "groupName");
+        ParaCheckUtil.checkInvalidCharacter(alarmGroup.getGroupName(), "invalid groupName");
       }
 
       @Override
@@ -122,7 +123,9 @@ public class AlarmGroupFacadeImpl extends BaseFacade {
         ParaCheckUtil.checkParaNotNull(alarmGroup.getTenant(), "tenant");
         ParaCheckUtil.checkEquals(alarmGroup.getTenant(),
             RequestContext.getContext().ms.getTenant(), "tenant is illegal");
-
+        if (StringUtils.isNotBlank(alarmGroup.getGroupName())) {
+          ParaCheckUtil.checkInvalidCharacter(alarmGroup.getGroupName(), "invalid groupName");
+        }
       }
 
       @Override
