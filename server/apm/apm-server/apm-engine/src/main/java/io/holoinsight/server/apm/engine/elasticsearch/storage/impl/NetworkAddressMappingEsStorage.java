@@ -30,7 +30,8 @@ public class NetworkAddressMappingEsStorage extends RecordEsStorage<NetworkAddre
     return client;
   }
 
-  protected String rangeTimeField() {
+  @Override
+  public String timeField() {
     return NetworkAddressMappingDO.TIME_BUCKET;
   }
 
@@ -43,7 +44,7 @@ public class NetworkAddressMappingEsStorage extends RecordEsStorage<NetworkAddre
     List<NetworkAddressMappingDO> networkAddressMapping = new ArrayList<>();
     SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
     searchSourceBuilder.size(1000);
-    searchSourceBuilder.query(new RangeQueryBuilder(rangeTimeField()).gte(getTime(startTime))
+    searchSourceBuilder.query(new RangeQueryBuilder(timeField()).gte(getTime(startTime))
         .lte(getTime(System.currentTimeMillis())));
     SearchRequest searchRequest =
         new SearchRequest(new String[] {NetworkAddressMappingDO.INDEX_NAME}, searchSourceBuilder);

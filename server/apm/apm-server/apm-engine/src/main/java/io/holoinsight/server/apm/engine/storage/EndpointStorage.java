@@ -8,12 +8,8 @@ import io.holoinsight.server.apm.common.model.query.Endpoint;
 import java.io.IOException;
 import java.util.List;
 
-public interface EndpointStorage {
+public interface EndpointStorage extends ReadableStorage {
 
   List<Endpoint> getEndpointList(String tenant, String service, long startTime, long endTime)
       throws IOException;
-  // List<BizopsEndpoint> getEntryEndpointList(String tenant, long startTime, long endTime) throws
-  // IOException;
-  // List<BizopsEndpoint> getErrorCodeList(String tenant, String service, String endpoint, boolean
-  // isEntry, int traceIdSize, long startTime, long endTime) throws IOException;
 }

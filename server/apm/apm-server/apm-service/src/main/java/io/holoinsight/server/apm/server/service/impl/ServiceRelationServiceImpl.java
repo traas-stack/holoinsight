@@ -9,7 +9,6 @@ import io.holoinsight.server.apm.server.service.ServiceRelationService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.io.IOException;
 import java.util.List;
 
 public class ServiceRelationServiceImpl implements ServiceRelationService {
@@ -20,7 +19,7 @@ public class ServiceRelationServiceImpl implements ServiceRelationService {
 
   @Override
   public void insert(List<ServiceRelationDO> relationList) throws Exception {
-    serviceRelationStorage.batchInsert(relationList);
+    serviceRelationStorage.insert(relationList);
   }
 
 }

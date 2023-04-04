@@ -102,7 +102,7 @@ public class SpanDO extends RecordDO {
   public static SpanDO fromSpan(Span span, Resource resource) {
     SpanDO spanEsDO = new SpanDO();
     spanEsDO.setTimeBucket(
-        TimeBucket.getTimeBucket(span.getStartTimeUnixNano() / 1000000, DownSampling.Second));
+        TimeBucket.getTimeBucket(span.getEndTimeUnixNano() / 1000000, DownSampling.Second));
     spanEsDO.setStartTime(span.getStartTimeUnixNano() / 1000000);
     spanEsDO.setEndTime(span.getEndTimeUnixNano() / 1000000);
     spanEsDO.setTraceId(span.getTraceId());

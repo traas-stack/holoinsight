@@ -10,9 +10,7 @@ import java.io.IOException;
 import java.util.List;
 
 
-public interface SlowSqlStorage {
-
-  void batchInsert(final List<SlowSqlDO> slowSqlEsDOList) throws IOException;
+public interface SlowSqlStorage extends WritableStorage<SlowSqlDO>, ReadableStorage {
 
   List<SlowSql> getSlowSqlList(String tenant, String serviceName, String dbAddress, long startTime,
       long endTime) throws IOException;

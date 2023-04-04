@@ -182,7 +182,7 @@ public class RelationAnalysis {
     slowSqlEsDO.setLatency((int) latency);
     slowSqlEsDO.setStartTime(TimeUtils.unixNano2MS(span.getStartTimeUnixNano()));
     slowSqlEsDO.setTimeBucket(
-        TimeBucket.getRecordTimeBucket(TimeUtils.unixNano2MS(span.getStartTimeUnixNano())));
+        TimeBucket.getRecordTimeBucket(TimeUtils.unixNano2MS(span.getEndTimeUnixNano())));
     slowSqlEsDO.setTraceId(Hex.encodeHexString(span.getTraceId().toByteArray()));
     slowSqlEsDO.setStatement(statement.getStringValue());
 

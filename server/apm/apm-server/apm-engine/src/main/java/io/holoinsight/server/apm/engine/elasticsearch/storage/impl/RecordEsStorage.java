@@ -6,7 +6,7 @@ package io.holoinsight.server.apm.engine.elasticsearch.storage.impl;
 import io.holoinsight.server.apm.common.constants.Const;
 import io.holoinsight.server.apm.engine.elasticsearch.utils.EsGsonUtils;
 import io.holoinsight.server.apm.engine.model.RecordDO;
-import io.holoinsight.server.apm.engine.storage.RecordStorage;
+import io.holoinsight.server.apm.engine.storage.WritableStorage;
 import io.holoinsight.server.common.springboot.ConditionalOnFeature;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
@@ -24,7 +24,7 @@ import java.util.List;
 
 @ConditionalOnFeature("trace")
 @Slf4j
-public class RecordEsStorage<T extends RecordDO> implements RecordStorage<T> {
+public class RecordEsStorage<T extends RecordDO> implements WritableStorage<T> {
 
   @Autowired
   private RestHighLevelClient esClient;
@@ -33,20 +33,24 @@ public class RecordEsStorage<T extends RecordDO> implements RecordStorage<T> {
     return esClient;
   }
 
-  public void batchInsert(List<T> entities) throws IOException {
+  public void insert(List<T> entities) throws IOException {
     if (CollectionUtils.isNotEmpty(entities)) {
       BulkRequest bulkRequest = new BulkRequest();
       entities.forEach(entity -> {
-        String writeIndexName = writeIndexName(entity.indexName(), entity.getTimeBucket());
+        String writeIndexName = writeIndexName(entity);
         bulkRequest.add(new IndexRequest(writeIndexName).opType(DocWriteRequest.OpType.CREATE)
             .source(EsGsonUtils.esGson().toJson(entity), XContentType.JSON));
       });
       BulkResponse bulkItemRsp = esClient().bulk(bulkRequest, RequestOptions.DEFAULT);
+      if (bulkItemRsp.hasFailures()) {
+        throw new RuntimeException(bulkItemRsp.buildFailureMessage());
+      }
     }
   }
 
-  private static String writeIndexName(String indexName, long timeBucket) {
-    return indexName + Const.LINE + timeBucket / 1000000;
+  @Override
+  public String writeIndexName(T entity) {
+    return entity.indexName() + Const.LINE + entity.getTimeBucket() / 1000000;
   }
 
 }

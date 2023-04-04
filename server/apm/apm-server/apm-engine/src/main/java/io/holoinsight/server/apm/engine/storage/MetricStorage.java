@@ -9,7 +9,7 @@ import io.holoinsight.server.apm.common.model.query.MetricValues;
 import java.util.List;
 import java.util.Map;
 
-public interface MetricStorage {
+public interface MetricStorage extends ReadableStorage {
 
   List<String> listMetrics();
 

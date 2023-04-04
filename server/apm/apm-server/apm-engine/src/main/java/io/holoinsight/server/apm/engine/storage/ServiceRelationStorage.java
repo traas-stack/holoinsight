@@ -8,8 +8,5 @@ import io.holoinsight.server.apm.engine.model.ServiceRelationDO;
 import java.io.IOException;
 import java.util.List;
 
-public interface ServiceRelationStorage {
-
-  void batchInsert(final List<ServiceRelationDO> relationList) throws IOException;
-
+public interface ServiceRelationStorage extends WritableStorage<ServiceRelationDO> {
 }
