@@ -38,19 +38,16 @@ services:
         condition: service_healthy
       ceresdb:
         condition: service_healthy
-    environment:
-      JAVA_APP_OPTS: "-Xmx1024m -Xms1024m -Xmn512m"
-      JAVA_DEBUG_OPTS: ${JAVA_DEBUG_OPTS:-}
     volumes:
     - ./application.yaml:/home/admin/application.yaml
   agent-image:
     image: ${agent_image:-holoinsight/agent:latest}
     entrypoint: [ "true" ]
   finish:
-    image: ${server_image:-holoinsight/server:latest}
+    image: busybox:1.35
     depends_on:
       server:
         condition: service_healthy
       agent-image:
         condition: service_completed_successfully
-    entrypoint: [ "bash","-c", "echo 'holoinsight started successfully'" ]
+    entrypoint: [ "true" ]

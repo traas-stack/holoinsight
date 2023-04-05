@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-set -e -x
+set -e
 
 # Don't use source here
 #source `dirname $0`/../common/setup-env.sh

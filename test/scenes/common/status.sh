@@ -9,7 +9,8 @@ echo
 docker-compose ps
 
 echo
-echo Visit server http://$ip:`docker-compose port server 80 | awk -F: '{print $2}'`
+echo Visit server at http://$ip:`docker-compose port server 80 | awk -F: '{print $2}'`
+echo Debug server at $ip:`docker-compose port server 8000 | awk -F: '{print $2}'` "(if debug mode is enabled)"
 echo Exec server using ./server-exec.sh
 echo
 

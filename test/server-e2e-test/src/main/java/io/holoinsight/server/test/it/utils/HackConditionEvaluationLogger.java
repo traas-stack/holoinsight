@@ -6,15 +6,20 @@ package io.holoinsight.server.test.it.utils;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static java.util.concurrent.TimeUnit.SECONDS;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
+import org.apache.commons.lang3.StringUtils;
 import org.awaitility.core.ConditionEvaluationListener;
 import org.awaitility.core.ConditionEvaluationLogger;
 import org.awaitility.core.EvaluatedCondition;
 import org.awaitility.core.IgnoredException;
 import org.awaitility.core.StartEvaluationEvent;
 import org.awaitility.core.TimeoutEvent;
+
+import manifold.ext.rt.api.Jailbreak;
 
 /**
  * <p>
@@ -112,6 +117,28 @@ public class HackConditionEvaluationLogger implements ConditionEvaluationListene
     }
     lastException = ignoredException;
 
-    ignoredException.getThrowable().printStackTrace();
+    Throwable te = ignoredException.getThrowable();
+    trimStackTrace(te);
+    te.printStackTrace();
+  }
+
+  /**
+   * Trim stack trace elements which are not belong to HoloInsight.
+   * @param te
+   */
+  private void trimStackTrace(@Jailbreak Throwable te) {
+    StackTraceElement[] stackTrace = te.getStackTrace();
+    List<StackTraceElement> keep = new ArrayList<>();
+    for (StackTraceElement e : stackTrace) {
+      if (e.getClassName().startsWith("io.holoinsight.")) {
+        keep.add(e);
+      }
+    }
+
+    stackTrace = keep.toArray(new StackTraceElement[0]);
+    te.setStackTrace(stackTrace);
+    if (StringUtils.endsWith(te.detailMessage, "\n")) {
+      te.detailMessage = te.detailMessage.substring(0, te.detailMessage.length() - 1);
+    }
   }
 }
