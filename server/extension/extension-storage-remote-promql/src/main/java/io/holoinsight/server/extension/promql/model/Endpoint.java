@@ -5,6 +5,7 @@ package io.holoinsight.server.extension.promql.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  * @author jiwliu
@@ -13,8 +14,8 @@ import lombok.Data;
 
 @Data
 @AllArgsConstructor
+@NoArgsConstructor
 public class Endpoint {
   private String host;
   private int port;
-
 }
