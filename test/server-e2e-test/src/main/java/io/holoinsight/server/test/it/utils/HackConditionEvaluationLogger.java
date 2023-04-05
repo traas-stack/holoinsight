@@ -124,6 +124,7 @@ public class HackConditionEvaluationLogger implements ConditionEvaluationListene
 
   /**
    * Trim stack trace elements which are not belong to HoloInsight.
+   * 
    * @param te
    */
   private void trimStackTrace(@Jailbreak Throwable te) {
