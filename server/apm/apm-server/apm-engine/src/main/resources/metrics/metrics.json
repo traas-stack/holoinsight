@@ -24,7 +24,7 @@
       "resource.service.name"
     ],
     "conditions": {
-      "trace_status": 2,
+      "trace_status": "2",
       "kind": [
         "SERVER",
         "CONSUMER"
@@ -36,7 +36,7 @@
     "name": "apm_service_resp_time_total",
     "index": "holoinsight-span",
     "field": "latency",
-    "function": "avg",
+    "function": "sum",
     "groups": [
       "resource.service.name"
     ],
@@ -95,7 +95,7 @@
       "resource.service.instance.name"
     ],
     "conditions": {
-      "trace_status": 2,
+      "trace_status": "2",
       "kind": [
         "SERVER",
         "CONSUMER"
@@ -107,7 +107,7 @@
     "name": "apm_service_instance_resp_time_total",
     "index": "holoinsight-span",
     "field": "latency",
-    "function": "avg",
+    "function": "sum",
     "groups": [
       "resource.service.name",
       "resource.service.instance.name"
@@ -164,7 +164,7 @@
       "name"
     ],
     "conditions": {
-      "trace_status": 2
+      "trace_status": "2"
     },
     "parent": "apm_span_materialized_cpm"
   },
@@ -172,7 +172,7 @@
     "name": "apm_endpoint_resp_time_total",
     "index": "holoinsight-span",
     "field": "latency",
-    "function": "avg",
+    "function": "sum",
     "groups": [
       "resource.service.name",
       "name"
@@ -226,7 +226,7 @@
       "attributes.spanLayer"
     ],
     "conditions": {
-      "trace_status": 2,
+      "trace_status": "2",
       "attributes.isEntry": "true"
     },
     "parent": "apm_span_materialized_cpm"
@@ -235,7 +235,7 @@
     "name": "apm_service_endpoint_stamp_layer_resp_time",
     "index": "holoinsight-span",
     "field": "latency",
-    "function": "avg",
+    "function": "sum",
     "groups": [
       "resource.service.name",
       "name",
@@ -290,7 +290,7 @@
     "name": "apm_error_code_resp_time_total",
     "index": "holoinsight-span",
     "field": "latency",
-    "function": "avg",
+    "function": "sum",
     "groups": [
       "resource.service.name",
       "name",
@@ -390,7 +390,7 @@
     "name": "apm_component_resp_time_total",
     "index": "holoinsight-service_relation",
     "field": "latency",
-    "function": "avg",
+    "function": "sum",
     "groups": [],
     "conditions": {
       "type": "MQ"

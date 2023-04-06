@@ -33,21 +33,6 @@ public class MetricsManager {
   @Autowired
   private SuperCacheService superCacheService;
 
-  private Map<String, List<String>> composedMetrics = new HashMap<>();
-
-  public static final String SUFFIX_CPM = "_cpm";
-  public static final String SUFFIX_CPM_FAIL = "_cpm_fail";
-  public static final String SUFFIX_RESP_TIME = "_resp_time";
-  // the materialized detailed metrics defined in metrics.json
-  public static final String SPAN_MATERIALIZED_CPM = "apm_span_materialized_cpm";
-  public static final String SPAN_MATERIALIZED_CPM_FAIL = "apm_span_materialized_cpm_fail";
-  public static final String SPAN_MATERIALIZED_RESP_TIME = "apm_span_materialized_resp_time";
-  public static final String COMPONENT_MATERIALIZED_CPM = "apm_component_materialized_cpm";
-  public static final String COMPONENT_MATERIALIZED_CPM_FAIL =
-      "apm_component_materialized_cpm_fail";
-  public static final String COMPONENT_MATERIALIZED_RESP_TIME =
-      "apm_component_materialized_resp_time";
-
   @Getter
   private Map<String, MetricDefine> metricDefines = new HashMap<>();
 
@@ -57,33 +42,11 @@ public class MetricsManager {
     if (rsMetrics != null) {
       rsMetrics.forEach(rsMetric -> this.metricDefines.put(rsMetric.getName(), rsMetric));
     }
+    // Metrics defined in the database have higher priority, which can override the content in metrics.json
     List<MetricDefine> dbMetrics = loadFromDB();
     if (dbMetrics != null) {
       dbMetrics.forEach(dbMetric -> this.metricDefines.put(dbMetric.getName(), dbMetric));
     }
-    this.metricDefines.forEach((name, metric) -> {
-      if (StringUtils.endsWith(name, SUFFIX_CPM)) {
-        if (StringUtils.equals(metric.getIndex(), SpanDO.INDEX_NAME)) {
-          composedMetrics.put(name, Collections.singletonList(SPAN_MATERIALIZED_CPM));
-        } else if (StringUtils.equals(metric.getIndex(), ServiceRelationDO.INDEX_NAME)) {
-          composedMetrics.put(name, Collections.singletonList(COMPONENT_MATERIALIZED_CPM));
-        }
-      } else if (StringUtils.endsWith(name, SUFFIX_CPM_FAIL)) {
-        if (StringUtils.equals(metric.getIndex(), SpanDO.INDEX_NAME)) {
-          composedMetrics.put(name, Collections.singletonList(SPAN_MATERIALIZED_CPM_FAIL));
-        } else if (StringUtils.equals(metric.getIndex(), ServiceRelationDO.INDEX_NAME)) {
-          composedMetrics.put(name, Collections.singletonList(COMPONENT_MATERIALIZED_CPM_FAIL));
-        }
-      } else if (StringUtils.endsWith(name, SUFFIX_RESP_TIME)) {
-        if (StringUtils.equals(metric.getIndex(), SpanDO.INDEX_NAME)) {
-          composedMetrics.put(name,
-              Arrays.asList(SPAN_MATERIALIZED_RESP_TIME, "/", SPAN_MATERIALIZED_CPM));
-        } else if (StringUtils.equals(metric.getIndex(), ServiceRelationDO.INDEX_NAME)) {
-          composedMetrics.put(name,
-              Arrays.asList(COMPONENT_MATERIALIZED_RESP_TIME, "/", COMPONENT_MATERIALIZED_CPM));
-        }
-      }
-    });
     log.info("[apm] load metric definitions: {}", this.metricDefines);
   }
 
@@ -123,10 +86,6 @@ public class MetricsManager {
     });
     metrics.sort(String::compareTo);
     return metrics;
-  }
-
-  public List<String> fromMaterializedMetrics(String metric) {
-    return composedMetrics.get(metric);
   }
 
   public MetricDefine getMetric(String name) {
