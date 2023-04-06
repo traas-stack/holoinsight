@@ -23,7 +23,9 @@ import org.elasticsearch.search.aggregations.AggregationBuilder;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
 import org.elasticsearch.search.aggregations.Aggregations;
 import org.elasticsearch.search.aggregations.bucket.histogram.*;
+import org.elasticsearch.search.aggregations.bucket.terms.ParsedLongTerms;
 import org.elasticsearch.search.aggregations.bucket.terms.ParsedStringTerms;
+import org.elasticsearch.search.aggregations.bucket.terms.ParsedTerms;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms;
 import org.elasticsearch.search.aggregations.metrics.NumericMetricsAggregation;
 import org.elasticsearch.search.aggregations.metrics.ParsedPercentiles;
@@ -159,10 +161,10 @@ public class SpanMetricEsStorage extends PostCalMetricStorage {
       }
       return;
     }
-    if (aggregation instanceof ParsedStringTerms) {
-      ParsedStringTerms parsedStringTerms = (ParsedStringTerms) aggregation;
-      String tagK = parsedStringTerms.getName();
-      List<? extends Terms.Bucket> buckets = parsedStringTerms.getBuckets();
+    if (aggregation instanceof ParsedTerms) {
+      ParsedTerms parsedTerms = (ParsedTerms) aggregation;
+      String tagK = parsedTerms.getName();
+      List<? extends Terms.Bucket> buckets = parsedTerms.getBuckets();
       if (buckets != null) {
         for (Terms.Bucket bucket : buckets) {
           String tagV = bucket.getKeyAsString();
