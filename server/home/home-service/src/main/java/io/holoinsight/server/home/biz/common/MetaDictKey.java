@@ -37,4 +37,6 @@ public class MetaDictKey {
 
   public static final String MARKETPLACE_JIGUANG_HOST = "jiguang_host";
   public static final String SYSTEM_NOTICE = "system_notice";
+
+  public static final String METERING_LOG_OPEN = "metering_log_open";
 }

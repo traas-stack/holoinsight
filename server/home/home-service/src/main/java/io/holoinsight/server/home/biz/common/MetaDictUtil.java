@@ -133,4 +133,13 @@ public class MetaDictUtil {
     return MetaDictUtil.getValue(MetaDictType.MANAGE_TASK, MetaDictKey.IGNORE_TASK_LIST,
         new TypeToken<List<String>>() {});
   }
+
+  public static Boolean isLogMeteringOpen() {
+    Boolean value = MetaDictUtil.getValue(MetaDictType.GLOBAL_CONFIG,
+            MetaDictKey.METERING_LOG_OPEN, new TypeToken<Boolean>() {});
+    if (null == value) {
+      return false;
+    }
+    return value;
+  }
 }
