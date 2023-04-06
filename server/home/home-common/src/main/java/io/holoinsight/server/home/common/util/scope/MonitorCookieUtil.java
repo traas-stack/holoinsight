@@ -53,6 +53,12 @@ public class MonitorCookieUtil {
     }
   }
 
+  public static void addTenantWorkspaceCookie(String workspace, HttpServletResponse resp) {
+    if (StringUtil.isNotBlank(workspace)) {
+      CookieUtils.addCookie(resp, WORKSPACE, workspace);
+    }
+  }
+
   public static void removeUserCookie(HttpServletResponse resp) {
     CookieUtils.removeCookie(resp, USER);
     CookieUtils.removeCookie(resp, AUTH);
