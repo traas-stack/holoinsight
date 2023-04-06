@@ -12,7 +12,8 @@
         "SERVER",
         "CONSUMER"
       ]
-    }
+    },
+    "parent": "apm_span_materialized_cpm"
   },
   {
     "name": "apm_service_cpm_fail",
@@ -28,7 +29,8 @@
         "SERVER",
         "CONSUMER"
       ]
-    }
+    },
+    "parent": "apm_span_materialized_cpm"
   },
   {
     "name": "apm_service_resp_time_total",
@@ -43,7 +45,8 @@
         "SERVER",
         "CONSUMER"
       ]
-    }
+    },
+    "parent": "apm_span_materialized_resp_time_total"
   },
   {
     "name": "apm_service_resp_time",
@@ -79,7 +82,8 @@
         "SERVER",
         "CONSUMER"
       ]
-    }
+    },
+    "parent": "apm_span_materialized_cpm"
   },
   {
     "name": "apm_service_instance_cpm_fail",
@@ -96,7 +100,8 @@
         "SERVER",
         "CONSUMER"
       ]
-    }
+    },
+    "parent": "apm_span_materialized_cpm"
   },
   {
     "name": "apm_service_instance_resp_time_total",
@@ -112,7 +117,8 @@
         "SERVER",
         "CONSUMER"
       ]
-    }
+    },
+    "parent": "apm_span_materialized_resp_time_total"
   },
   {
     "name": "apm_service_instance_resp_time",
@@ -145,7 +151,8 @@
       "name"
     ],
     "conditions": {
-    }
+    },
+    "parent": "apm_span_materialized_cpm"
   },
   {
     "name": "apm_endpoint_cpm_fail",
@@ -158,7 +165,8 @@
     ],
     "conditions": {
       "trace_status": 2
-    }
+    },
+    "parent": "apm_span_materialized_cpm"
   },
   {
     "name": "apm_endpoint_resp_time_total",
@@ -170,7 +178,8 @@
       "name"
     ],
     "conditions": {
-    }
+    },
+    "parent": "apm_span_materialized_resp_time_total"
   },
   {
     "name": "apm_endpoint_resp_time",
@@ -202,7 +211,8 @@
     ],
     "conditions": {
       "attributes.isEntry": "true"
-    }
+    },
+    "parent": "apm_span_materialized_cpm"
   },
   {
     "name": "apm_service_endpoint_stamp_layer_cpm_fail",
@@ -218,7 +228,8 @@
     "conditions": {
       "trace_status": 2,
       "attributes.isEntry": "true"
-    }
+    },
+    "parent": "apm_span_materialized_cpm"
   },
   {
     "name": "apm_service_endpoint_stamp_layer_resp_time",
@@ -233,7 +244,8 @@
     ],
     "conditions": {
       "attributes.isEntry": "true"
-    }
+    },
+    "parent": "apm_span_materialized_resp_time_total"
   },
   {
     "name": "apm_service_endpoint_stamp_layer_resp_time",
@@ -271,7 +283,8 @@
         "SERVER",
         "CONSUMER"
       ]
-    }
+    },
+    "parent": "apm_span_materialized_cpm"
   },
   {
     "name": "apm_error_code_resp_time_total",
@@ -289,7 +302,8 @@
         "SERVER",
         "CONSUMER"
       ]
-    }
+    },
+    "parent": "apm_span_materialized_resp_time_total"
   },
   {
     "name": "apm_error_code_resp_time",
@@ -357,7 +371,8 @@
     "groups": [],
     "conditions": {
       "type": "MQ"
-    }
+    },
+    "parent": "apm_component_materialized_cpm"
   },
   {
     "name": "apm_component_cpm_fail",
@@ -368,7 +383,8 @@
     "conditions": {
       "type": "MQ",
       "is_error": "1"
-    }
+    },
+    "parent": "apm_component_materialized_cpm"
   },
   {
     "name": "apm_component_resp_time_total",
@@ -378,7 +394,8 @@
     "groups": [],
     "conditions": {
       "type": "MQ"
-    }
+    },
+    "parent": "apm_component_materialized_resp_time_total"
   },
   {
     "name": "apm_component_resp_time",

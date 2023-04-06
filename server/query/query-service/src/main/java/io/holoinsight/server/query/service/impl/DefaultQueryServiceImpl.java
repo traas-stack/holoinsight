@@ -762,7 +762,7 @@ public class DefaultQueryServiceImpl implements QueryService {
         });
       }
       dsBuilder.addAllGroupBy(groups);
-      dsBuilder.setMetric(metricDefine.getName());
+      dsBuilder.setMetric(metricDefine.getParent());
       dsBuilder.setAggregator("sum");
       return queryMetricStore(tenant, dsBuilder.build());
     });
