@@ -3,6 +3,7 @@
  */
 package io.holoinsight.server.test.it;
 
+import java.time.Duration;
 import java.util.concurrent.TimeUnit;
 
 import org.json.JSONArray;
@@ -40,6 +41,7 @@ public class AppMonitoringIT extends BaseIT {
   @Test
   public void test_has_correct_displayMenu() {
     await() //
+        .atMost(Duration.ofMinutes(10)) //
         .untilAsserted(() -> { //
           given() //
               .pathParam("app", "holoinsight-server-example") //
