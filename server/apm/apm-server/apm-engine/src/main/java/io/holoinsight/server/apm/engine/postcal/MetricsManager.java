@@ -61,9 +61,12 @@ public class MetricsManager {
   }
 
   private List<MetricDefine> loadFromResource(Resource rs) throws IOException {
+    List<MetricDefine> materializedMetrics = new ArrayList<>();
     String metricDefineJson = IOUtils.toString(rs.getInputStream(), Charset.defaultCharset());
-    return GsonUtils.get().fromJson(metricDefineJson,
+    materializedMetrics =  GsonUtils.get().fromJson(metricDefineJson,
         new TypeToken<List<MetricDefine>>() {}.getType());
+    log.info("[apm] load metric definitions from database: {}", materializedMetrics);
+    return materializedMetrics;
   }
 
   private List<MetricDefine> loadFromDB() {
@@ -74,6 +77,7 @@ public class MetricsManager {
       return GsonUtils.get().fromJson(metricDefineDictVal.getDictValue(),
           new TypeToken<List<MetricDefine>>() {}.getType());
     }
+    log.info("[apm] load metric definitions from database: {}", materializedMetrics);
     return materializedMetrics;
   }
 
@@ -86,7 +90,7 @@ public class MetricsManager {
   public List<String> listMaterializedMetrics() {
     List<String> metrics = new ArrayList<>();
     this.metricDefines.forEach((name, metric) -> {
-      if (metric.getMaterialized()) {
+      if (metric.isMaterialized()) {
         metrics.add(name);
       }
     });

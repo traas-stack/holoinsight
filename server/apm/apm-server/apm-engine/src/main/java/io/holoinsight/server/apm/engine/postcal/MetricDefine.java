@@ -21,6 +21,7 @@ public class MetricDefine {
   private String function;
   private List<String> groups;
   private Map<String, Object> conditions;
-  private Boolean materialized;
+  // Whether this metric should be materialized to MetricStore
+  private boolean materialized;
 
 }
