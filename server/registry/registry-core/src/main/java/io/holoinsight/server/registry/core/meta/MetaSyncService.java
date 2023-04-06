@@ -44,6 +44,9 @@ public class MetaSyncService {
   @Autowired
   private ApikeyService apikeyService;
 
+  @Autowired
+  private MetaWriterService metaWriterService;
+
   @Value("${holoinsight.meta.mongodb_config.key-need-convert:false}")
   private Boolean keyNeedConvert;
 
@@ -184,6 +187,11 @@ public class MetaSyncService {
       }
     }
 
+    Map<String, Object> extraLabel = metaWriterService.getExtraLabel(resource.getLabels());
+    if (!CollectionUtils.isEmpty(extraLabel)) {
+      map.putAll(extraLabel);
+    }
+
     map.put("app", resource.getApp());
     map.put("ip", resource.getIp());
     if (StringUtils.isNotEmpty(resource.getHostname())) {
@@ -198,7 +206,6 @@ public class MetaSyncService {
     map.put("_modifier", "agent");
     map.put("_modified", System.currentTimeMillis());
 
-    // TODO 解释
     if ("POD".equals(type)) {
       map.put("agentId", "dim2:" + uk);
     }

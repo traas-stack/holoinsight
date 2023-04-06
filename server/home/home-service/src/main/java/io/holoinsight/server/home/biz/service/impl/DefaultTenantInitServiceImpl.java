@@ -8,6 +8,9 @@ import io.holoinsight.server.home.biz.service.TenantInitService;
 import io.holoinsight.server.home.common.util.scope.MonitorScope;
 import io.holoinsight.server.home.common.util.scope.RequestContext;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * <p>
  * created at 2023/2/2
@@ -34,4 +37,15 @@ public class DefaultTenantInitServiceImpl implements TenantInitService {
     MonitorScope ms = RequestContext.getContext().ms;
     return ms.getTenant() + "_app";
   }
+
+  @Override
+  public Map<String, String> getTenantMetaConditions(String workspace) {
+    return new HashMap<>();
+  }
+
+  @Override
+  public Map<String, String> getTenantWorkspaceMetaConditions(String workspace) {
+    return new HashMap<>();
+  }
+
 }
