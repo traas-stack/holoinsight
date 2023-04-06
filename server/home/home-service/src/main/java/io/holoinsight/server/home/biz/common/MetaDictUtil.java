@@ -135,8 +135,8 @@ public class MetaDictUtil {
   }
 
   public static Boolean isLogMeteringOpen() {
-    Boolean value = MetaDictUtil.getValue(MetaDictType.GLOBAL_CONFIG,
-            MetaDictKey.METERING_LOG_OPEN, new TypeToken<Boolean>() {});
+    Boolean value = MetaDictUtil.getValue(MetaDictType.GLOBAL_CONFIG, MetaDictKey.METERING_LOG_OPEN,
+        new TypeToken<Boolean>() {});
     if (null == value) {
       return false;
     }
