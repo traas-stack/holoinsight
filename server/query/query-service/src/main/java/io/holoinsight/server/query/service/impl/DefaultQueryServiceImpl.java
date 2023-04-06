@@ -720,11 +720,13 @@ public class DefaultQueryServiceImpl implements QueryService {
         costBuilder.setName(materializedMetrics.get(0));
         costBuilder.setAggregator("sum");
         costBuilder.addAllGroupBy(groups);
+        datasources.add(costBuilder.build());
         QueryProto.Datasource.Builder cpmBuilder = datasource.toBuilder();
         cpmBuilder.setMetric("b");
         cpmBuilder.setName(materializedMetrics.get(1));
         cpmBuilder.setAggregator("sum");
         cpmBuilder.addAllGroupBy(groups);
+        datasources.add(cpmBuilder.build());
         return complexQuery(tenant, "a/b", metric, datasource.getDownsample(),
             datasource.getFillPolicy(), datasources).toBuilder();
       } else {
