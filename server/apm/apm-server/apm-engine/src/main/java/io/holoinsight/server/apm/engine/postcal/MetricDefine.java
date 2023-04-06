@@ -23,5 +23,10 @@ public class MetricDefine {
   private Map<String, Object> conditions;
   // Whether this metric should be materialized to MetricStore
   private boolean materialized;
+  // Whether to force statistics from search engines, such as some functions(e.g. Percentile) not
+  // supported by MetricStore
+  private boolean forceQuerySearchEngine;
+  // Set when the metric is calculated from an expression with other metrics
+  private String expr;
 
 }

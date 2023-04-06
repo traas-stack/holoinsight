@@ -31,7 +31,7 @@
     }
   },
   {
-    "name": "apm_service_resp_time",
+    "name": "apm_service_resp_time_total",
     "index": "holoinsight-span",
     "field": "latency",
     "function": "avg",
@@ -46,6 +46,10 @@
     }
   },
   {
+    "name": "apm_service_resp_time",
+    "expr": "apm_service_resp_time_total/apm_service_cpm"
+  },
+  {
     "name": "apm_service_percentile",
     "index": "holoinsight-span",
     "field": "latency",
@@ -58,7 +62,8 @@
         "SERVER",
         "CONSUMER"
       ]
-    }
+    },
+    "forceQuerySearchEngine": true
   },
   {
     "name": "apm_service_instance_cpm",
@@ -94,7 +99,7 @@
     }
   },
   {
-    "name": "apm_service_instance_resp_time",
+    "name": "apm_service_instance_resp_time_total",
     "index": "holoinsight-span",
     "field": "latency",
     "function": "avg",
@@ -110,6 +115,10 @@
     }
   },
   {
+    "name": "apm_service_instance_resp_time",
+    "expr": "apm_service_instance_resp_time_total/apm_service_instance_cpm"
+  },
+  {
     "name": "apm_service_instance_percentile",
     "index": "holoinsight-span",
     "field": "latency",
@@ -123,7 +132,8 @@
         "SERVER",
         "CONSUMER"
       ]
-    }
+    },
+    "forceQuerySearchEngine": true
   },
   {
     "name": "apm_endpoint_cpm",
@@ -151,7 +161,7 @@
     }
   },
   {
-    "name": "apm_endpoint_resp_time",
+    "name": "apm_endpoint_resp_time_total",
     "index": "holoinsight-span",
     "field": "latency",
     "function": "avg",
@@ -163,6 +173,10 @@
     }
   },
   {
+    "name": "apm_endpoint_resp_time",
+    "expr": "apm_endpoint_resp_time_total/apm_endpoint_cpm"
+  },
+  {
     "name": "apm_endpoint_percentile",
     "index": "holoinsight-span",
     "field": "latency",
@@ -172,7 +186,8 @@
       "name"
     ],
     "conditions": {
-    }
+    },
+    "forceQuerySearchEngine": true
   },
   {
     "name": "apm_service_endpoint_stamp_layer_cpm",
@@ -221,6 +236,10 @@
     }
   },
   {
+    "name": "apm_service_endpoint_stamp_layer_resp_time",
+    "expr": "apm_service_endpoint_stamp_layer_resp_time_total/apm_service_endpoint_stamp_layer_cpm"
+  },
+  {
     "name": "apm_service_endpoint_stamp_layer_percentile",
     "index": "holoinsight-span",
     "field": "latency",
@@ -233,7 +252,8 @@
     ],
     "conditions": {
       "attributes.isEntry": "true"
-    }
+    },
+    "forceQuerySearchEngine": true
   },
   {
     "name": "apm_error_code_cpm",
@@ -254,7 +274,7 @@
     }
   },
   {
-    "name": "apm_error_code_resp_time",
+    "name": "apm_error_code_resp_time_total",
     "index": "holoinsight-span",
     "field": "latency",
     "function": "avg",
@@ -272,6 +292,10 @@
     }
   },
   {
+    "name": "apm_error_code_resp_time",
+    "expr": "apm_error_code_resp_time_total/apm_error_code_cpm"
+  },
+  {
     "name": "apm_span_materialized_cpm",
     "index": "holoinsight-span",
     "field": "trace_id",
@@ -281,39 +305,16 @@
       "resource.service.name",
       "resource.service.instance.name",
       "name",
-      "attributes.spanLayer"
+      "attributes.spanLayer",
+      "kind",
+      "trace_status"
     ],
     "conditions": {
-      "kind": [
-        "SERVER",
-        "CONSUMER"
-      ]
     },
     "materialized": true
   },
   {
-    "name": "apm_span_materialized_cpm_fail",
-    "index": "holoinsight-span",
-    "field": "trace_id",
-    "function": "cardinality",
-    "groups": [
-      "resource.tenant",
-      "resource.service.name",
-      "resource.service.instance.name",
-      "name",
-      "attributes.spanLayer"
-    ],
-    "conditions": {
-      "trace_status": 2,
-      "kind": [
-        "SERVER",
-        "CONSUMER"
-      ]
-    },
-    "materialized": true
-  },
-  {
-    "name": "apm_span_materialized_resp_time",
+    "name": "apm_span_materialized_resp_time_total",
     "index": "holoinsight-span",
     "field": "latency",
     "function": "sum",
@@ -322,13 +323,11 @@
       "resource.service.name",
       "resource.service.instance.name",
       "name",
-      "attributes.spanLayer"
+      "attributes.spanLayer",
+      "kind",
+      "trace_status"
     ],
     "conditions": {
-      "kind": [
-        "SERVER",
-        "CONSUMER"
-      ]
     },
     "materialized": true
   },
@@ -342,13 +341,11 @@
       "resource.service.name",
       "resource.service.instance.name",
       "name",
-      "attributes.spanLayer"
+      "attributes.spanLayer",
+      "kind",
+      "trace_status"
     ],
     "conditions": {
-      "kind": [
-        "SERVER",
-        "CONSUMER"
-      ]
     },
     "materialized": true
   },
@@ -374,7 +371,7 @@
     }
   },
   {
-    "name": "apm_component_resp_time",
+    "name": "apm_component_resp_time_total",
     "index": "holoinsight-service_relation",
     "field": "latency",
     "function": "avg",
@@ -384,6 +381,10 @@
     }
   },
   {
+    "name": "apm_component_resp_time",
+    "expr": "apm_component_resp_time_total/apm_component_cpm"
+  },
+  {
     "name": "apm_component_percentile",
     "index": "holoinsight-service_relation",
     "field": "latency",
@@ -391,7 +392,8 @@
     "groups": [],
     "conditions": {
       "type": "MQ"
-    }
+    },
+    "forceQuerySearchEngine": true
   },
   {
     "name": "apm_component_materialized_cpm",
@@ -403,33 +405,15 @@
       "source_service_name",
       "dest_service_name",
       "component",
-      "type"
+      "type",
+      "is_error"
     ],
     "conditions": {
-      "type": "MQ"
     },
     "materialized": true
   },
   {
-    "name": "apm_component_materialized_cpm_fail",
-    "index": "holoinsight-service_relation",
-    "field": "trace_id",
-    "function": "cardinality",
-    "groups": [
-      "tenant",
-      "source_service_name",
-      "dest_service_name",
-      "component",
-      "type"
-    ],
-    "conditions": {
-      "type": "MQ",
-      "is_error": "1"
-    },
-    "materialized": true
-  },
-  {
-    "name": "apm_component_materialized_resp_time",
+    "name": "apm_component_materialized_resp_time_total",
     "index": "holoinsight-service_relation",
     "field": "latency",
     "function": "sum",
@@ -438,10 +422,10 @@
       "source_service_name",
       "dest_service_name",
       "component",
-      "type"
+      "type",
+      "is_error"
     ],
     "conditions": {
-      "type": "MQ"
     },
     "materialized": true
   },
@@ -455,10 +439,10 @@
       "source_service_name",
       "dest_service_name",
       "component",
-      "type"
+      "type",
+      "is_error"
     ],
     "conditions": {
-      "type": "MQ"
     },
     "materialized": true
   }

@@ -33,7 +33,7 @@ public class MetricsManager {
   @Autowired
   private SuperCacheService superCacheService;
 
-  private Map<String, List<String>> metricsMaterialization = new HashMap<>();
+  private Map<String, List<String>> composedMetrics = new HashMap<>();
 
   public static final String SUFFIX_CPM = "_cpm";
   public static final String SUFFIX_CPM_FAIL = "_cpm_fail";
@@ -64,23 +64,22 @@ public class MetricsManager {
     this.metricDefines.forEach((name, metric) -> {
       if (StringUtils.endsWith(name, SUFFIX_CPM)) {
         if (StringUtils.equals(metric.getIndex(), SpanDO.INDEX_NAME)) {
-          metricsMaterialization.put(name, Collections.singletonList(SPAN_MATERIALIZED_CPM));
+          composedMetrics.put(name, Collections.singletonList(SPAN_MATERIALIZED_CPM));
         } else if (StringUtils.equals(metric.getIndex(), ServiceRelationDO.INDEX_NAME)) {
-          metricsMaterialization.put(name, Collections.singletonList(COMPONENT_MATERIALIZED_CPM));
+          composedMetrics.put(name, Collections.singletonList(COMPONENT_MATERIALIZED_CPM));
         }
       } else if (StringUtils.endsWith(name, SUFFIX_CPM_FAIL)) {
         if (StringUtils.equals(metric.getIndex(), SpanDO.INDEX_NAME)) {
-          metricsMaterialization.put(name, Collections.singletonList(SPAN_MATERIALIZED_CPM_FAIL));
+          composedMetrics.put(name, Collections.singletonList(SPAN_MATERIALIZED_CPM_FAIL));
         } else if (StringUtils.equals(metric.getIndex(), ServiceRelationDO.INDEX_NAME)) {
-          metricsMaterialization.put(name,
-              Collections.singletonList(COMPONENT_MATERIALIZED_CPM_FAIL));
+          composedMetrics.put(name, Collections.singletonList(COMPONENT_MATERIALIZED_CPM_FAIL));
         }
       } else if (StringUtils.endsWith(name, SUFFIX_RESP_TIME)) {
         if (StringUtils.equals(metric.getIndex(), SpanDO.INDEX_NAME)) {
-          metricsMaterialization.put(name,
+          composedMetrics.put(name,
               Arrays.asList(SPAN_MATERIALIZED_RESP_TIME, "/", SPAN_MATERIALIZED_CPM));
         } else if (StringUtils.equals(metric.getIndex(), ServiceRelationDO.INDEX_NAME)) {
-          metricsMaterialization.put(name,
+          composedMetrics.put(name,
               Arrays.asList(COMPONENT_MATERIALIZED_RESP_TIME, "/", COMPONENT_MATERIALIZED_CPM));
         }
       }
@@ -127,7 +126,7 @@ public class MetricsManager {
   }
 
   public List<String> fromMaterializedMetrics(String metric) {
-    return metricsMaterialization.get(metric);
+    return composedMetrics.get(metric);
   }
 
   public MetricDefine getMetric(String name) {
