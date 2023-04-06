@@ -272,6 +272,87 @@
     }
   },
   {
+    "name": "apm_span_materialized_cpm",
+    "index": "holoinsight-span",
+    "field": "trace_id",
+    "function": "cardinality",
+    "groups": [
+      "resource.tenant",
+      "resource.service.name",
+      "resource.service.instance.name",
+      "name",
+      "attributes.spanLayer"
+    ],
+    "conditions": {
+      "kind": [
+        "SERVER",
+        "CONSUMER"
+      ]
+    },
+    "materialized": true
+  },
+  {
+    "name": "apm_span_materialized_cpm_fail",
+    "index": "holoinsight-span",
+    "field": "trace_id",
+    "function": "cardinality",
+    "groups": [
+      "resource.tenant",
+      "resource.service.name",
+      "resource.service.instance.name",
+      "name",
+      "attributes.spanLayer"
+    ],
+    "conditions": {
+      "trace_status": 2,
+      "kind": [
+        "SERVER",
+        "CONSUMER"
+      ]
+    },
+    "materialized": true
+  },
+  {
+    "name": "apm_span_materialized_resp_time",
+    "index": "holoinsight-span",
+    "field": "latency",
+    "function": "sum",
+    "groups": [
+      "resource.tenant",
+      "resource.service.name",
+      "resource.service.instance.name",
+      "name",
+      "attributes.spanLayer"
+    ],
+    "conditions": {
+      "kind": [
+        "SERVER",
+        "CONSUMER"
+      ]
+    },
+    "materialized": true
+  },
+  {
+    "name": "apm_span_materialized_percentile",
+    "index": "holoinsight-span",
+    "field": "latency",
+    "function": "percentiles",
+    "groups": [
+      "resource.tenant",
+      "resource.service.name",
+      "resource.service.instance.name",
+      "name",
+      "attributes.spanLayer"
+    ],
+    "conditions": {
+      "kind": [
+        "SERVER",
+        "CONSUMER"
+      ]
+    },
+    "materialized": true
+  },
+  {
     "name": "apm_component_cpm",
     "index": "holoinsight-service_relation",
     "field": "trace_id",
@@ -313,83 +394,71 @@
     }
   },
   {
-    "name": "apm_cpm",
-    "index": "holoinsight-span",
+    "name": "apm_component_materialized_cpm",
+    "index": "holoinsight-service_relation",
     "field": "trace_id",
     "function": "cardinality",
     "groups": [
-      "resource.tenant",
-      "resource.service.name",
-      "resource.service.instance.name",
-      "name",
-      "attributes.spanLayer"
+      "tenant",
+      "source_service_name",
+      "dest_service_name",
+      "component",
+      "type"
     ],
     "conditions": {
-      "kind": [
-        "SERVER",
-        "CONSUMER"
-      ]
+      "type": "MQ"
     },
     "materialized": true
   },
   {
-    "name": "apm_cpm_fail",
-    "index": "holoinsight-span",
+    "name": "apm_component_materialized_cpm_fail",
+    "index": "holoinsight-service_relation",
     "field": "trace_id",
     "function": "cardinality",
     "groups": [
-      "resource.tenant",
-      "resource.service.name",
-      "resource.service.instance.name",
-      "name",
-      "attributes.spanLayer"
+      "tenant",
+      "source_service_name",
+      "dest_service_name",
+      "component",
+      "type"
     ],
     "conditions": {
-      "trace_status": 2,
-      "kind": [
-        "SERVER",
-        "CONSUMER"
-      ]
+      "type": "MQ",
+      "is_error": "1"
     },
     "materialized": true
   },
   {
-    "name": "apm_resp_time",
-    "index": "holoinsight-span",
+    "name": "apm_component_materialized_resp_time",
+    "index": "holoinsight-service_relation",
     "field": "latency",
     "function": "sum",
     "groups": [
-      "resource.tenant",
-      "resource.service.name",
-      "resource.service.instance.name",
-      "name",
-      "attributes.spanLayer"
+      "tenant",
+      "source_service_name",
+      "dest_service_name",
+      "component",
+      "type"
     ],
     "conditions": {
-      "kind": [
-        "SERVER",
-        "CONSUMER"
-      ]
+      "type": "MQ"
     },
     "materialized": true
   },
   {
-    "name": "apm_percentile",
-    "index": "holoinsight-span",
+    "name": "apm_component_materialized_percentile",
+    "index": "holoinsight-service_relation",
     "field": "latency",
     "function": "percentiles",
     "groups": [
-      "resource.tenant",
-      "resource.service.name",
-      "resource.service.instance.name",
-      "name",
-      "attributes.spanLayer"
+      "tenant",
+      "source_service_name",
+      "dest_service_name",
+      "component",
+      "type"
     ],
     "conditions": {
-      "kind": [
-        "SERVER",
-        "CONSUMER"
-      ]
+      "type": "MQ"
     },
     "materialized": true
   }

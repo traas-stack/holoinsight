@@ -686,8 +686,10 @@ public class DefaultQueryServiceImpl implements QueryService {
       QueryProto.Datasource datasource) throws QueryException {
     Set<String> apmMetrics = this.apmMetrics.getUnchecked(tenant);
     if (CollectionUtils.isNotEmpty(apmMetrics) && apmMetrics.contains(datasource.getMetric())) {
-      if (datasource.getApmMaterialized()) {
-        return queryApmFromMetricStore(tenant, datasource);
+      List<String> fromMaterializedMetrics =
+          metricsManager.fromMaterializedMetrics(datasource.getMetric());
+      if (datasource.getApmMaterialized() && CollectionUtils.isNotEmpty(fromMaterializedMetrics)) {
+        return queryApmFromMetricStore(tenant, datasource, fromMaterializedMetrics);
       } else {
         return queryApmFromSearchEngine(tenant, datasource);
       }
@@ -699,7 +701,7 @@ public class DefaultQueryServiceImpl implements QueryService {
   }
 
   private QueryProto.QueryResponse.Builder queryApmFromMetricStore(String tenant,
-      QueryProto.Datasource datasource) throws QueryException {
+      QueryProto.Datasource datasource, List<String> materializedMetrics) throws QueryException {
     return wrap(() -> {
       QueryProto.Datasource.Builder dsBuilder = datasource.toBuilder();
       String metric = datasource.getMetric();
@@ -707,34 +709,26 @@ public class DefaultQueryServiceImpl implements QueryService {
       List<String> groups = metricDefine.getGroups().stream().map(OtlpMappings::fromOtlp)
           .collect(Collectors.toList());
       dsBuilder.addAllGroupBy(groups);
-      if (StringUtils.endsWith(metric, MetricsManager.METRIC_CPM)) {
-        dsBuilder.setMetric(MetricsManager.DETAIL_METRIC_CPM);
+      if (materializedMetrics.size() == 1) {
+        dsBuilder.setMetric(materializedMetrics.get(0));
         dsBuilder.setAggregator("sum");
         return queryMetricStore(tenant, dsBuilder.build());
-      } else if (StringUtils.endsWith(metric, MetricsManager.METRIC_CPM_FAIL)) {
-        dsBuilder.setMetric(MetricsManager.DETAIL_METRIC_CPM_FAIL);
-        dsBuilder.setAggregator("sum");
-        return queryMetricStore(tenant, dsBuilder.build());
-      } else if (StringUtils.endsWith(metric, MetricsManager.METRIC_RESP_TIME)) {
+      } else if (materializedMetrics.size() == 2) {
         List<QueryProto.Datasource> datasources = new ArrayList<>();
         QueryProto.Datasource.Builder costBuilder = datasource.toBuilder();
-        costBuilder.setMetric(MetricsManager.DETAIL_METRIC_RESP_TIME);
-        costBuilder.setName("a");
+        costBuilder.setMetric("a");
+        costBuilder.setName(materializedMetrics.get(0));
         costBuilder.setAggregator("sum");
         costBuilder.addAllGroupBy(groups);
         QueryProto.Datasource.Builder cpmBuilder = datasource.toBuilder();
-        cpmBuilder.setMetric(MetricsManager.DETAIL_METRIC_CPM);
-        cpmBuilder.setName("b");
+        cpmBuilder.setMetric("b");
+        cpmBuilder.setName(materializedMetrics.get(1));
         cpmBuilder.setAggregator("sum");
         cpmBuilder.addAllGroupBy(groups);
         return complexQuery(tenant, "a/b", metric, datasource.getDownsample(),
             datasource.getFillPolicy(), datasources).toBuilder();
-      } else if (StringUtils.endsWith(metric, MetricsManager.METRIC_PERCENTILE)) {
-        // PERCENTILE indicators can only be obtained through search engine post-calculation before
-        // the MetricStore supports that
-        return queryApmFromSearchEngine(tenant, datasource);
       } else {
-        throw new IllegalArgumentException("unknown apm metric: " + metric);
+        throw new UnsupportedOperationException(metric);
       }
     });
   }

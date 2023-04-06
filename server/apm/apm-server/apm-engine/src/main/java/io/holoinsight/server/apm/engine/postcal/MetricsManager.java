@@ -5,11 +5,14 @@ package io.holoinsight.server.apm.engine.postcal;
 
 import com.google.gson.reflect.TypeToken;
 import io.holoinsight.server.apm.common.utils.GsonUtils;
+import io.holoinsight.server.apm.engine.model.ServiceRelationDO;
+import io.holoinsight.server.apm.engine.model.SpanDO;
 import io.holoinsight.server.common.dao.entity.MetaDataDictValue;
 import io.holoinsight.server.common.service.SuperCacheService;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
@@ -18,12 +21,7 @@ import org.springframework.stereotype.Component;
 import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.function.Function;
-import java.util.stream.Collectors;
+import java.util.*;
 
 @Slf4j
 @Component
@@ -35,14 +33,20 @@ public class MetricsManager {
   @Autowired
   private SuperCacheService superCacheService;
 
-  public static final String METRIC_CPM = "_cpm";
-  public static final String METRIC_CPM_FAIL = "_cpm_fail";
-  public static final String METRIC_RESP_TIME = "_resp_time";
-  public static final String METRIC_PERCENTILE = "_percentile";
-  public static final String DETAIL_METRIC_CPM = "apm_cpm";
-  public static final String DETAIL_METRIC_CPM_FAIL = "apm_cpm_fail";
-  public static final String DETAIL_METRIC_RESP_TIME = "apm_resp_time";
-  public static final String DETAIL_METRIC_PERCENTILE = "apm_percentile";
+  private Map<String, List<String>> metricsMaterialization = new HashMap<>();
+
+  public static final String SUFFIX_CPM = "_cpm";
+  public static final String SUFFIX_CPM_FAIL = "_cpm_fail";
+  public static final String SUFFIX_RESP_TIME = "_resp_time";
+  // the materialized detailed metrics defined in metrics.json
+  public static final String SPAN_MATERIALIZED_CPM = "apm_span_materialized_cpm";
+  public static final String SPAN_MATERIALIZED_CPM_FAIL = "apm_span_materialized_cpm_fail";
+  public static final String SPAN_MATERIALIZED_RESP_TIME = "apm_span_materialized_resp_time";
+  public static final String COMPONENT_MATERIALIZED_CPM = "apm_component_materialized_cpm";
+  public static final String COMPONENT_MATERIALIZED_CPM_FAIL =
+      "apm_component_materialized_cpm_fail";
+  public static final String COMPONENT_MATERIALIZED_RESP_TIME =
+      "apm_component_materialized_resp_time";
 
   @Getter
   private Map<String, MetricDefine> metricDefines = new HashMap<>();
@@ -57,13 +61,37 @@ public class MetricsManager {
     if (dbMetrics != null) {
       dbMetrics.forEach(dbMetric -> this.metricDefines.put(dbMetric.getName(), dbMetric));
     }
+    this.metricDefines.forEach((name, metric) -> {
+      if (StringUtils.endsWith(name, SUFFIX_CPM)) {
+        if (StringUtils.equals(metric.getIndex(), SpanDO.INDEX_NAME)) {
+          metricsMaterialization.put(name, Collections.singletonList(SPAN_MATERIALIZED_CPM));
+        } else if (StringUtils.equals(metric.getIndex(), ServiceRelationDO.INDEX_NAME)) {
+          metricsMaterialization.put(name, Collections.singletonList(COMPONENT_MATERIALIZED_CPM));
+        }
+      } else if (StringUtils.endsWith(name, SUFFIX_CPM_FAIL)) {
+        if (StringUtils.equals(metric.getIndex(), SpanDO.INDEX_NAME)) {
+          metricsMaterialization.put(name, Collections.singletonList(SPAN_MATERIALIZED_CPM_FAIL));
+        } else if (StringUtils.equals(metric.getIndex(), ServiceRelationDO.INDEX_NAME)) {
+          metricsMaterialization.put(name,
+              Collections.singletonList(COMPONENT_MATERIALIZED_CPM_FAIL));
+        }
+      } else if (StringUtils.endsWith(name, SUFFIX_RESP_TIME)) {
+        if (StringUtils.equals(metric.getIndex(), SpanDO.INDEX_NAME)) {
+          metricsMaterialization.put(name,
+              Arrays.asList(SPAN_MATERIALIZED_RESP_TIME, "/", SPAN_MATERIALIZED_CPM));
+        } else if (StringUtils.equals(metric.getIndex(), ServiceRelationDO.INDEX_NAME)) {
+          metricsMaterialization.put(name,
+              Arrays.asList(COMPONENT_MATERIALIZED_RESP_TIME, "/", COMPONENT_MATERIALIZED_CPM));
+        }
+      }
+    });
     log.info("[apm] load metric definitions: {}", this.metricDefines);
   }
 
   private List<MetricDefine> loadFromResource(Resource rs) throws IOException {
     List<MetricDefine> materializedMetrics = new ArrayList<>();
     String metricDefineJson = IOUtils.toString(rs.getInputStream(), Charset.defaultCharset());
-    materializedMetrics =  GsonUtils.get().fromJson(metricDefineJson,
+    materializedMetrics = GsonUtils.get().fromJson(metricDefineJson,
         new TypeToken<List<MetricDefine>>() {}.getType());
     log.info("[apm] load metric definitions from database: {}", materializedMetrics);
     return materializedMetrics;
@@ -96,6 +124,10 @@ public class MetricsManager {
     });
     metrics.sort(String::compareTo);
     return metrics;
+  }
+
+  public List<String> fromMaterializedMetrics(String metric) {
+    return metricsMaterialization.get(metric);
   }
 
   public MetricDefine getMetric(String name) {
