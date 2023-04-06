@@ -55,9 +55,11 @@ public class AlgorithmHttp {
               traceId, detailTraceId, algorithmUrl, requestBody, response.code, resultString);
           return null;
         } else {
-          LOGGER.debug(
-              "{} [InvokeAlgorithmDetail],AlgorithmUrl={}, requestBody={},response={},content={}",
-              detailTraceId, algorithmUrl, requestBody, response.code, resultString);
+          if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug(
+                "{} [InvokeAlgorithmDetail],AlgorithmUrl={}, requestBody={},response={},content={}",
+                detailTraceId, algorithmUrl, requestBody, response.code, resultString);
+          }
         }
       } else {
         LOGGER.error("{} {} [InvokeAlgorithmError],AlgorithmUrl={}, response is null", traceId,

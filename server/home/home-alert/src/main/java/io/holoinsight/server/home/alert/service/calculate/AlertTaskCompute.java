@@ -151,10 +151,12 @@ public class AlertTaskCompute implements AlarmTaskExecutor<ComputeTaskPackage> {
               eventLists.add(eventInfo);
               eventInfo.setEnvType(inspectConfig.getEnvType());
             }
-            LOGGER.debug("{} {} {} calculate package {} ,eventList: {}",
-                computeTaskPackage.getTraceId(), inspectConfig.getTraceId(),
-                inspectConfig.getUniqueId(), G.get().toJson(inspectConfig),
-                G.get().toJson(eventInfo));
+            if (LOGGER.isDebugEnabled()) {
+              LOGGER.debug("{} {} {} calculate package {} ,eventList: {}",
+                  computeTaskPackage.getTraceId(), inspectConfig.getTraceId(),
+                  inspectConfig.getUniqueId(), G.get().toJson(inspectConfig),
+                  G.get().toJson(eventInfo));
+            }
             String result = eventInfo == null ? "N" : "Y";
             LOGGER.info("{} {} {} calculate result: {}", computeTaskPackage.getTraceId(),
                 inspectConfig.getTraceId(), inspectConfig.getUniqueId(), result);

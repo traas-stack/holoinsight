@@ -124,8 +124,10 @@ public class AIAlarmLoadData implements AlarmLoadData {
       request = QueryProto.QueryRequest.newBuilder().setTenant(inspectConfig.getTenant())
           .setQuery(trigger.getQuery()).addAllDatasources(datasources).build();
       response = queryClientService.queryData(request);
-      LOGGER.debug("QueryData Success Request:{} Response:{}", G.get().toJson(request),
-          G.get().toJson(response));
+      if (LOGGER.isDebugEnabled()) {
+        LOGGER.debug("{} QueryData Success Request:{} Response:{}", inspectConfig.getTraceId(),
+            G.get().toJson(request), G.get().toJson(response));
+      }
     } catch (Exception e) {
       LOGGER.error("QueryData Exception Request:{} Response:{}", G.get().toJson(request),
           G.get().toJson(response), e);
