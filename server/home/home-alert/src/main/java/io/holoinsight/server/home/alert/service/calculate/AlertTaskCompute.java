@@ -140,21 +140,26 @@ public class AlertTaskCompute implements AlarmTaskExecutor<ComputeTaskPackage> {
             ComputeContext context = new ComputeContext();
             context.setTimestamp(computeTaskPackage.getTimestamp());
             context.setInspectConfig(inspectConfig);
-            EventInfo eventList = abstractUniformInspectRunningRule.eval(context);
-            if (eventList != null) {
-              eventLists.add(eventList);
+            EventInfo eventInfo = abstractUniformInspectRunningRule.eval(context);
+            if (eventInfo != null) {
+              eventLists.add(eventInfo);
             } else if (uniqueIds.contains(inspectConfig.getUniqueId())) {
-              eventList = new EventInfo();
-              eventList.setAlarmTime(computeTaskPackage.getTimestamp());
-              eventList.setUniqueId(inspectConfig.getUniqueId());
-              eventList.setIsRecover(true);
-              eventLists.add(eventList);
-              eventList.setEnvType(inspectConfig.getEnvType());
+              eventInfo = new EventInfo();
+              eventInfo.setAlarmTime(computeTaskPackage.getTimestamp());
+              eventInfo.setUniqueId(inspectConfig.getUniqueId());
+              eventInfo.setIsRecover(true);
+              eventLists.add(eventInfo);
+              eventInfo.setEnvType(inspectConfig.getEnvType());
             }
-            LOGGER.info("{} {} {} calculate package {} ,eventList: {}",
-                computeTaskPackage.getTraceId(), inspectConfig.getTraceId(),
-                inspectConfig.getUniqueId(), G.get().toJson(inspectConfig),
-                G.get().toJson(eventList));
+            if (LOGGER.isDebugEnabled()) {
+              LOGGER.debug("{} {} {} calculate package {} ,eventList: {}",
+                  computeTaskPackage.getTraceId(), inspectConfig.getTraceId(),
+                  inspectConfig.getUniqueId(), G.get().toJson(inspectConfig),
+                  G.get().toJson(eventInfo));
+            }
+            String result = eventInfo == null ? "N" : "Y";
+            LOGGER.info("{} {} {} calculate result: {}", computeTaskPackage.getTraceId(),
+                inspectConfig.getTraceId(), inspectConfig.getUniqueId(), result);
           } finally {
             latch.countDown();
           }
