@@ -38,7 +38,7 @@ public abstract class PostCalMetricStorage implements MetricStorage {
 
   @Override
   public MetricValues queryMetric(String tenant, String metric, Duration duration,
-      Map<String, Object> conditions, List<String> groups) throws Exception {
+      Map<String, Object> conditions) throws Exception {
     Assert.notNull(duration, "duration can not be null!");
     MetricDefine metricDefine = metricsManager.getMetric(metric);
     Assert.notNull(metricDefine, String.format("metric not found: %s", metric));
@@ -50,18 +50,10 @@ public abstract class PostCalMetricStorage implements MetricStorage {
       mergedConditions.putAll(metricDefine.getConditions());
     }
 
-    Set<String> mergedGroups = new HashSet<>();
-    if (groups != null) {
-      groups.forEach(group -> mergedGroups.add(OtlpMappings.toOtlp(group)));
-    }
-    if (metricDefine.getGroups() != null) {
-      mergedGroups.addAll(metricDefine.getGroups());
-    }
-
-    return query(metricDefine, tenant, duration, mergedConditions, mergedGroups);
+    return query(metricDefine, tenant, duration, mergedConditions, metricDefine.getGroups());
   }
 
   protected abstract MetricValues query(MetricDefine metricDefine, String tenant, Duration duration,
-      Map<String, Object> conditions, Set<String> groups) throws Exception;
+      Map<String, Object> conditions, Collection<String> groups) throws Exception;
 
 }

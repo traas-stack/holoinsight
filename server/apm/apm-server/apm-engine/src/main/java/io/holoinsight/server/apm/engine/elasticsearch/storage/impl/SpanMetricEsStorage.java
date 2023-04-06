@@ -56,7 +56,7 @@ public class SpanMetricEsStorage extends PostCalMetricStorage {
 
   @Override
   protected MetricValues query(MetricDefine metricDefine, String tenant, Duration duration,
-      Map<String, Object> conditions, Set<String> groups) throws IOException {
+      Map<String, Object> conditions, Collection<String> groups) throws IOException {
     List<MetricValue> values = new ArrayList<>();
     MetricValues metricValues = new MetricValues(values);
     SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();

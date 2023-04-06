@@ -52,9 +52,6 @@ public class ApmMetricMaterializer {
   @Autowired
   private TenantOpsMapper tenantOpsMapper;
 
-  @Autowired
-  private SuperCacheService superCacheService;
-
   private static final long INTERVAL = 60000;
 
   private static final long DELAY = 5000;
@@ -79,63 +76,52 @@ public class ApmMetricMaterializer {
   private void materialize() {
     long start = System.currentTimeMillis() / INTERVAL * INTERVAL - INTERVAL;
     long end = start + INTERVAL;
-    Map<String, List<String>> indexGroups = new HashMap<>();
-    MetaDataDictValue cachedGroups = superCacheService.getSc().metaDataDictValueMap
-        .getOrDefault("global_config", new HashMap<>()).get("apm_materialized_groups");
-    if (cachedGroups != null) {
-      indexGroups = GsonUtils.fromJson(cachedGroups.getDictValue(),
-          new TypeToken<Map<String, List<String>>>() {}.getType());
-    }
+    List<String> metrics = metricsManager.listMaterializedMetrics();
     QueryWrapper<TenantOps> wrapper = new QueryWrapper<>();
     List<TenantOps> tenantOpsList = tenantOpsMapper.selectList(wrapper);
     if (CollectionUtils.isNotEmpty(tenantOpsList)) {
-      Map<String, List<String>> finalIndexGroups = indexGroups;
       tenantOpsList.forEach(tenantOps -> {
         String tenant = tenantOps.getTenant();
-        Map<String, MetricDefine> metrics = metricsManager.getMetricDefines();
-        if (metrics != null) {
-          metrics.forEach((metricName, metricDefine) -> {
-            List<String> groups = finalIndexGroups.get(metricDefine.getIndex());
-            EXECUTOR.submit(() -> {
-              try {
-                log.info(
-                    "[apm] ready to materialize metric, tenant={}, metric={}, start={}, end={}, step={}, groups={}",
-                    tenant, metricName, start, end, STEP, groups);
-                MetricValues metricValues = apmMetricStorage.queryMetric(tenant, metricName,
-                    new Duration(start, end, STEP), null, groups);
-                log.info(
-                    "[apm] query metric success, tenant={}, metric={}, start={}, end={}, step={}, groups={}, series={}",
-                    tenant, metricName, start, end, STEP, groups,
-                    metricValues == null ? 0 : CollectionUtils.size(metricValues.getValues()));
-                WriteMetricsParam param = new WriteMetricsParam();
-                param.setTenant(tenant);
-                param.setPoints(new ArrayList<>());
-                AtomicInteger pointCnt = new AtomicInteger(0);
-                if (metricValues != null && CollectionUtils.isNotEmpty(metricValues.getValues())) {
-                  metricValues.getValues().forEach(value -> {
-                    value.getValues().forEach((t, v) -> {
-                      WriteMetricsParam.Point point = new WriteMetricsParam.Point();
-                      point.setMetricName(metricName);
-                      point.setTags(value.getTags());
-                      point.setTimeStamp(t);
-                      point.setValue(v);
-                      param.getPoints().add(point);
-                      pointCnt.incrementAndGet();
-                    });
+        metrics.forEach(metric -> {
+          EXECUTOR.submit(() -> {
+            try {
+              log.info(
+                  "[apm] ready to materialize metric, tenant={}, metric={}, start={}, end={}, step={}",
+                  tenant, metric, start, end, STEP);
+              MetricValues metricValues = apmMetricStorage.queryMetric(tenant, metric,
+                  new Duration(start, end, STEP), null);
+              log.info(
+                  "[apm] query metric success, tenant={}, metric={}, start={}, end={}, step={}, series={}",
+                  tenant, metric, start, end, STEP,
+                  metricValues == null ? 0 : CollectionUtils.size(metricValues.getValues()));
+              WriteMetricsParam param = new WriteMetricsParam();
+              param.setTenant(tenant);
+              param.setPoints(new ArrayList<>());
+              AtomicInteger pointCnt = new AtomicInteger(0);
+              if (metricValues != null && CollectionUtils.isNotEmpty(metricValues.getValues())) {
+                metricValues.getValues().forEach(value -> {
+                  value.getValues().forEach((t, v) -> {
+                    WriteMetricsParam.Point point = new WriteMetricsParam.Point();
+                    point.setMetricName(metric);
+                    point.setTags(value.getTags());
+                    point.setTimeStamp(t);
+                    point.setValue(v);
+                    param.getPoints().add(point);
+                    pointCnt.incrementAndGet();
                   });
-                }
-                metricStorage.write(param).block();
-                log.info(
-                    "[apm] materialize metric success, tenant={}, metric={}, start={}, end={}, step={}, points={}",
-                    tenant, metricName, start, end, STEP, pointCnt.get());
-              } catch (Exception e) {
-                log.error(
-                    "[apm] materialize metric failed, tenant={}, metric={}, start={}, end={}, step={}",
-                    tenant, metricName, start, end, STEP, e);
+                });
               }
-            });
+              metricStorage.write(param).block();
+              log.info(
+                  "[apm] materialize metric success, tenant={}, metric={}, start={}, end={}, step={}, points={}",
+                  tenant, metric, start, end, STEP, pointCnt.get());
+            } catch (Exception e) {
+              log.error(
+                  "[apm] materialize metric failed, tenant={}, metric={}, start={}, end={}, step={}",
+                  tenant, metric, start, end, STEP, e);
+            }
           });
-        }
+        });
       });
     }
   }
