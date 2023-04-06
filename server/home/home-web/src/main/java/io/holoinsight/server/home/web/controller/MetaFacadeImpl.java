@@ -6,6 +6,7 @@ package io.holoinsight.server.home.web.controller;
 import io.holoinsight.server.home.biz.service.TenantInitService;
 import io.holoinsight.server.home.common.util.MonitorException;
 import io.holoinsight.server.home.common.util.scope.AuthTargetType;
+import io.holoinsight.server.home.common.util.scope.MonitorScope;
 import io.holoinsight.server.home.common.util.scope.MonitorUser;
 import io.holoinsight.server.home.common.util.scope.PowerConstants;
 import io.holoinsight.server.home.common.util.scope.RequestContext;
@@ -19,7 +20,9 @@ import io.holoinsight.server.meta.common.model.QueryExample;
 import io.holoinsight.server.meta.facade.service.DataClientService;
 import io.holoinsight.server.meta.facade.service.TableClientService;
 import lombok.Data;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -69,6 +72,12 @@ public class MetaFacadeImpl extends BaseFacade {
         QueryExample queryExample = new QueryExample();
         queryExample.setParams(new HashMap<>());
         queryExample.getParams().putAll(condition);
+        MonitorScope ms = RequestContext.getContext().ms;
+        Map<String, String> conditions =
+            tenantInitService.getTenantWorkspaceMetaConditions(ms.getWorkspace());
+        if (!CollectionUtils.isEmpty(conditions)) {
+          queryExample.getParams().putAll(conditions);
+        }
 
         List<Map<String, Object>> list = dataClientService
             .queryByExample(tenantInitService.getTenantServerTable(), queryExample);
@@ -95,6 +104,11 @@ public class MetaFacadeImpl extends BaseFacade {
         QueryExample queryExample = new QueryExample();
         queryExample.setParams(new HashMap<>());
         queryExample.getParams().putAll(condition);
+
+        MonitorScope ms = RequestContext.getContext().ms;
+        if (StringUtils.isNotBlank(ms.getWorkspace())) {
+          queryExample.getParams().put("_workspace", ms.getWorkspace());
+        }
 
         List<Map<String, Object>> list =
             dataClientService.queryByExample(tenantInitService.getTenantAppTable(), queryExample);
@@ -128,6 +142,12 @@ public class MetaFacadeImpl extends BaseFacade {
           } else {
             queryExample.getParams().put(entry.getKey(), entry.getValue());
           }
+        }
+        MonitorScope ms = RequestContext.getContext().ms;
+        Map<String, String> conditions =
+            tenantInitService.getTenantWorkspaceMetaConditions(ms.getWorkspace());
+        if (!CollectionUtils.isEmpty(conditions)) {
+          queryExample.getParams().putAll(conditions);
         }
         List<Map<String, Object>> list = dataClientService
             .fuzzyByExample(tenantInitService.getTenantServerTable(), queryExample);

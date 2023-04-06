@@ -5,6 +5,8 @@ package io.holoinsight.server.home.biz.service;
 
 import io.holoinsight.server.common.dao.entity.dto.TenantOpsStorage;
 
+import java.util.Map;
+
 /**
  * <p>
  * created at 2023/2/2
@@ -24,4 +26,8 @@ public interface TenantInitService {
   String getTenantServerTable();
 
   String getTenantAppTable();
+
+  Map<String, String> getTenantMetaConditions(String workspace);
+
+  Map<String, String> getTenantWorkspaceMetaConditions(String workspace);
 }
