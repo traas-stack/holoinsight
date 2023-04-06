@@ -15,7 +15,6 @@ fi
 server_container_name=`docker inspect -f '{{.Name}}' $(docker-compose ps -q server) | cut -c2-`
 
 temp_agent_path=`../common/copy-agent-0.sh`
-echo $temp_agent_path
 
 echo [agent] install agent to server
 agent_path=$temp_agent_path target=$server_container_name ../common/copy-agent.sh
