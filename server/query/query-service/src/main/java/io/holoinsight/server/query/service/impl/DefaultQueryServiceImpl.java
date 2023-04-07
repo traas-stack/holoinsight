@@ -700,11 +700,7 @@ public class DefaultQueryServiceImpl implements QueryService {
 
   private QueryProto.QueryResponse.Builder queryApm(String tenant, QueryProto.Datasource datasource,
       MetricDefine metricDefine) throws QueryException {
-    if (!datasource.getApmMaterialized() || StringUtils.isEmpty(metricDefine.getExpr())) {
-      return queryApmFromSearchEngine(tenant, datasource);
-    } else if (metricDefine.isMaterialized()) {
-      return queryMetricStore(tenant, datasource);
-    } else {
+    if (StringUtils.isNotEmpty(metricDefine.getExpr())) {
       List<String> exprs = new RpnResolver().expr2Infix(metricDefine.getExpr());
       Map<String, List<QueryProto.Result>> resultMap = new HashMap<>();
       for (String expr : exprs) {
@@ -755,6 +751,10 @@ public class DefaultQueryServiceImpl implements QueryService {
             datasource.getFillPolicy());
       }
       return rspBuilder;
+    } else if (datasource.getApmMaterialized() && metricDefine.isMaterialized()) {
+      return queryMetricStore(tenant, datasource);
+    } else {
+      return queryApmFromSearchEngine(tenant, datasource);
     }
   }
 
