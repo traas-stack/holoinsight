@@ -27,7 +27,7 @@ public class MetricDefine {
   private Map<String, Object> conditions;
   // Whether this metric should be materialized into a MetricStore
   private boolean materialized;
-  // Set when the metric is calculated from an expression with other metrics
-  private String expr;
+  // Set when the metric is calculated from an expression with materialized metrics
+  private String materializedExp;
 
 }

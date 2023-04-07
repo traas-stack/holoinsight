@@ -34,7 +34,6 @@ import io.holoinsight.server.query.service.analysis.AnalysisCenter;
 import io.holoinsight.server.query.service.analysis.Mergable;
 import io.holoinsight.server.query.service.apm.ApmAPI;
 import io.holoinsight.server.query.service.apm.ApmClient;
-import joptsimple.internal.Strings;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.apache.commons.collections.CollectionUtils;
@@ -700,9 +699,11 @@ public class DefaultQueryServiceImpl implements QueryService {
 
   private QueryProto.QueryResponse.Builder queryApm(String tenant, QueryProto.Datasource datasource,
       MetricDefine metricDefine) throws QueryException {
-    if (StringUtils.isNotEmpty(metricDefine.getExpr())) {
-      List<String> exprs = new RpnResolver().expr2Infix(metricDefine.getExpr());
-      if (exprs.size() > 1) {
+    if (datasource.getApmMaterialized()) {
+      if (metricDefine.isMaterialized()) {
+        return queryMetricStore(tenant, datasource);
+      } else if (StringUtils.isNotEmpty(metricDefine.getMaterializedExp())) {
+        List<String> exprs = new RpnResolver().expr2Infix(metricDefine.getMaterializedExp());
         Map<String, List<QueryProto.Result>> resultMap = new HashMap<>();
         for (String expr : exprs) {
           String func = "none";
@@ -745,7 +746,7 @@ public class DefaultQueryServiceImpl implements QueryService {
           }
         }
         QueryProto.QueryResponse.Builder rspBuilder = QueryProto.QueryResponse.newBuilder();
-        List<QueryProto.Result> results = calculate(metricDefine.getExpr(), resultMap,
+        List<QueryProto.Result> results = calculate(metricDefine.getMaterializedExp(), resultMap,
             metricDefine.getName(), resultMap.keySet());
         rspBuilder.addAllResults(results);
         if (StringUtils.isNotEmpty(datasource.getDownsample())
@@ -756,11 +757,7 @@ public class DefaultQueryServiceImpl implements QueryService {
         return rspBuilder;
       }
     }
-    if (datasource.getApmMaterialized() && metricDefine.isMaterialized()) {
-      return queryMetricStore(tenant, datasource);
-    } else {
-      return queryApmFromSearchEngine(tenant, datasource);
-    }
+    return queryApmFromSearchEngine(tenant, datasource);
   }
 
   private QueryProto.QueryResponse.Builder queryApmFromSearchEngine(String tenant,
