@@ -59,8 +59,9 @@ public class OtlpMappings {
     if (name == null) {
       return null;
     }
-    if (OTLP_SW_MAPPINGS.containsKey(name)) {
-      return OTLP_SW_MAPPINGS.getOrDefault(index, HashBiMap.create()).get(name);
+    BiMap<String, String> mappings = OTLP_SW_MAPPINGS.getOrDefault(index, HashBiMap.create());
+    if (mappings.containsKey(name)) {
+      return mappings.get(name);
     }
     if (StringUtils.startsWith(name, Const.OTLP_ATTRIBUTES_PREFIX)
         || StringUtils.startsWith(name, Const.OTLP_RESOURCE_PREFIX)
@@ -87,8 +88,10 @@ public class OtlpMappings {
     if (name == null) {
       return null;
     }
-    if (OTLP_SW_MAPPINGS.getOrDefault(index, HashBiMap.create()).inverse().containsKey(name)) {
-      return OTLP_SW_MAPPINGS.getOrDefault(index, HashBiMap.create()).inverse().get(name);
+    BiMap<String, String> mappings =
+        OTLP_SW_MAPPINGS.getOrDefault(index, HashBiMap.create()).inverse();
+    if (mappings.containsKey(name)) {
+      return mappings.get(name);
     }
     if (StringUtils.startsWith(name, Const.OTLP_ATTRIBUTES_PREFIX)) {
       return name.substring(Const.OTLP_ATTRIBUTES_PREFIX.length());
