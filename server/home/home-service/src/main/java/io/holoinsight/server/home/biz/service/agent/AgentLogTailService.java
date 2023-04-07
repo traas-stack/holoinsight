@@ -5,10 +5,10 @@ package io.holoinsight.server.home.biz.service.agent;
 
 import io.holoinsight.server.common.RetryUtils;
 import io.holoinsight.server.common.UtilMisc;
+import io.holoinsight.server.home.biz.service.TenantInitService;
 import io.holoinsight.server.home.common.service.RegistryService;
 import io.holoinsight.server.home.common.util.MonitorException;
 import io.holoinsight.server.home.common.util.StringUtil;
-import io.holoinsight.server.home.common.util.TenantMetaUtil;
 import io.holoinsight.server.common.J;
 import com.google.protobuf.ProtocolStringList;
 import io.holoinsight.server.common.grpc.FileNode;
@@ -38,9 +38,13 @@ public class AgentLogTailService {
   @Autowired
   private DataClientService dataClientService;
 
-  public FileTailResponse listFiles(AgentParamRequest agentParamRequest, String tenant) {
+  @Autowired
+  private TenantInitService tenantInitService;
 
-    Map<String, Object> dim = getDimByRequest(agentParamRequest, tenant);
+  public FileTailResponse listFiles(AgentParamRequest agentParamRequest, String tenant,
+      String workspace) {
+
+    Map<String, Object> dim = getDimByRequest(agentParamRequest, tenant, workspace);
 
     FileTailResponse response = new FileTailResponse();
     List<FileNode> fileNodes = RetryUtils.invoke(
@@ -56,9 +60,10 @@ public class AgentLogTailService {
     return response;
   }
 
-  public FileTailResponse previewFile(AgentParamRequest agentParamRequest, String tenant) {
+  public FileTailResponse previewFile(AgentParamRequest agentParamRequest, String tenant,
+      String workspace) {
 
-    Map<String, Object> dim = getDimByRequest(agentParamRequest, tenant);
+    Map<String, Object> dim = getDimByRequest(agentParamRequest, tenant, workspace);
     FileTailResponse response = new FileTailResponse();
     ProtocolStringList protocolStringList = RetryUtils.invoke(
         () -> registryService.previewFile(tenant, dim, agentParamRequest.getLogpath()), null, 3,
@@ -73,9 +78,10 @@ public class AgentLogTailService {
     return response;
   }
 
-  public FileTailResponse inspect(AgentParamRequest agentParamRequest, String tenant) {
+  public FileTailResponse inspect(AgentParamRequest agentParamRequest, String tenant,
+      String workspace) {
 
-    Map<String, Object> dim = getDimByRequest(agentParamRequest, tenant);
+    Map<String, Object> dim = getDimByRequest(agentParamRequest, tenant, workspace);
     FileTailResponse response = new FileTailResponse();
     String result = RetryUtils.invoke(() -> registryService.inspect(tenant, dim), null, 3, 1000,
         new ArrayList<>());
@@ -98,7 +104,8 @@ public class AgentLogTailService {
    * @param tenant
    * @return
    */
-  private Map<String, Object> getDimByRequest(AgentParamRequest agentParamRequest, String tenant) {
+  private Map<String, Object> getDimByRequest(AgentParamRequest agentParamRequest, String tenant,
+      String workspace) {
 
     QueryExample queryExample = new QueryExample();
 
@@ -119,8 +126,13 @@ public class AgentLogTailService {
         queryExample.getParams().put(entry.getKey(), entry.getValue());
       }
     }
+    Map<String, String> conditions = tenantInitService.getTenantWorkspaceMetaConditions(workspace);
+    if (!CollectionUtils.isEmpty(conditions)) {
+      queryExample.getParams().putAll(conditions);
+    }
+
     List<Map<String, Object>> list = dataClientService
-        .queryByExample(TenantMetaUtil.genTenantServerTableName(tenant), queryExample);
+        .queryByExample(tenantInitService.getTenantServerTable(tenant), queryExample);
 
     if (CollectionUtils.isEmpty(list)) {
       log.warn("get meta error，query param [" + queryExample.getParams().toString() + "] [" + tenant

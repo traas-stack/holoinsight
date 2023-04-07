@@ -23,9 +23,9 @@ public interface TenantInitService {
   TenantOpsStorage.StorageMetric createStorageMetric(String tenant);
 
 
-  String getTenantServerTable();
+  String getTenantServerTable(String tenant);
 
-  String getTenantAppTable();
+  String getTenantAppTable(String tenant);
 
   Map<String, String> getTenantMetaConditions(String workspace);
 

@@ -9,7 +9,6 @@ import io.holoinsight.server.home.biz.service.DashboardService;
 import io.holoinsight.server.home.biz.service.FolderService;
 import io.holoinsight.server.home.biz.service.TenantInitService;
 import io.holoinsight.server.home.common.util.CommonThreadPool;
-import io.holoinsight.server.home.common.util.TenantMetaUtil;
 import io.holoinsight.server.home.common.util.scope.MonitorScope;
 import io.holoinsight.server.home.common.util.scope.RequestContext;
 import io.holoinsight.server.home.dal.model.Folder;
@@ -227,7 +226,7 @@ public class SearchFacadeImpl extends BaseFacade {
     }
 
     List<Map<String, Object>> list = dataClientService
-        .fuzzyByExample(TenantMetaUtil.genTenantServerTableName(tenant), queryExample);
+        .fuzzyByExample(tenantInitService.getTenantServerTable(tenant), queryExample);
 
     return genSearchResult("infra", list);
   }
@@ -240,8 +239,8 @@ public class SearchFacadeImpl extends BaseFacade {
     if (StringUtils.isNotBlank(workspace)) {
       queryExample.getParams().put("_workspace", workspace);
     }
-    List<Map<String, Object>> list = dataClientService
-        .fuzzyByExample(TenantMetaUtil.genTenantAppTableName(tenant), queryExample);
+    List<Map<String, Object>> list =
+        dataClientService.fuzzyByExample(tenantInitService.getTenantAppTable(tenant), queryExample);
 
     return genSearchResult("app", list);
   }

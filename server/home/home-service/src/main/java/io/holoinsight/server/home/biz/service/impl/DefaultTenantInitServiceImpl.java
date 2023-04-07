@@ -5,8 +5,6 @@ package io.holoinsight.server.home.biz.service.impl;
 
 import io.holoinsight.server.common.dao.entity.dto.TenantOpsStorage;
 import io.holoinsight.server.home.biz.service.TenantInitService;
-import io.holoinsight.server.home.common.util.scope.MonitorScope;
-import io.holoinsight.server.home.common.util.scope.RequestContext;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -27,15 +25,13 @@ public class DefaultTenantInitServiceImpl implements TenantInitService {
   }
 
   @Override
-  public String getTenantServerTable() {
-    MonitorScope ms = RequestContext.getContext().ms;
-    return ms.getTenant() + "_server";
+  public String getTenantServerTable(String tenant) {
+    return tenant + "_server";
   }
 
   @Override
-  public String getTenantAppTable() {
-    MonitorScope ms = RequestContext.getContext().ms;
-    return ms.getTenant() + "_app";
+  public String getTenantAppTable(String tenant) {
+    return tenant + "_app";
   }
 
   @Override

@@ -35,7 +35,6 @@ import io.holoinsight.server.home.biz.service.MetaTableService;
 import io.holoinsight.server.home.biz.service.TenantInitService;
 import io.holoinsight.server.home.biz.service.TenantOpsService;
 import io.holoinsight.server.home.common.util.Debugger;
-import io.holoinsight.server.home.common.util.TenantMetaUtil;
 import io.holoinsight.server.home.common.util.scope.MonitorCookieUtil;
 import io.holoinsight.server.home.common.util.scope.MonitorScope;
 import io.holoinsight.server.home.common.util.scope.MonitorUser;
@@ -224,11 +223,11 @@ public class InitFacadeImpl extends BaseFacade {
     MetaTableDTO metaTable = new MetaTableDTO();
     metaTable.setCreator(mu.getLoginName());
     metaTable.setModifier(mu.getLoginName());
-    metaTable.setTenant(MonitorCookieUtil.getTenantOrException());
+    metaTable.setTenant(ms.getTenant());
     metaTable.setGmtCreate(new Date());
     metaTable.setGmtModified(new Date());
 
-    metaTable.setName(TenantMetaUtil.genTenantServerTableName(ms.getTenant()));
+    metaTable.setName(String.format("%s_server", ms.getTenant()));
     metaTable.setStatus(TableStatus.ONLINE);
 
     List<MetaTableCol> tableSchema = new ArrayList<>();

@@ -80,7 +80,7 @@ public class MetaFacadeImpl extends BaseFacade {
         }
 
         List<Map<String, Object>> list = dataClientService
-            .queryByExample(tenantInitService.getTenantServerTable(), queryExample);
+            .queryByExample(tenantInitService.getTenantServerTable(ms.getTenant()), queryExample);
         JsonResult.createSuccessResult(result, list);
       }
     });
@@ -110,8 +110,8 @@ public class MetaFacadeImpl extends BaseFacade {
           queryExample.getParams().put("_workspace", ms.getWorkspace());
         }
 
-        List<Map<String, Object>> list =
-            dataClientService.queryByExample(tenantInitService.getTenantAppTable(), queryExample);
+        List<Map<String, Object>> list = dataClientService
+            .queryByExample(tenantInitService.getTenantAppTable(ms.getTenant()), queryExample);
         JsonResult.createSuccessResult(result, list);
       }
     });
@@ -150,7 +150,7 @@ public class MetaFacadeImpl extends BaseFacade {
           queryExample.getParams().putAll(conditions);
         }
         List<Map<String, Object>> list = dataClientService
-            .fuzzyByExample(tenantInitService.getTenantServerTable(), queryExample);
+            .fuzzyByExample(tenantInitService.getTenantServerTable(ms.getTenant()), queryExample);
         JsonResult.createSuccessResult(result, list);
       }
     });
