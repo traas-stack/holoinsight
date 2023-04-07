@@ -76,8 +76,9 @@ public class ApmMetricMaterializer {
   }
 
   private void materialize() {
-    long start = System.currentTimeMillis() / INTERVAL * INTERVAL - INTERVAL * (REPLENISH + 1);
-    long end = start + INTERVAL;
+    long now = System.currentTimeMillis();
+    long start = now / INTERVAL * INTERVAL - INTERVAL * (REPLENISH + 1);
+    long end = now / INTERVAL * INTERVAL;
     List<String> metrics = metricsManager.listMaterializedMetrics();
     QueryWrapper<TenantOps> wrapper = new QueryWrapper<>();
     List<TenantOps> tenantOpsList = tenantOpsMapper.selectList(wrapper);

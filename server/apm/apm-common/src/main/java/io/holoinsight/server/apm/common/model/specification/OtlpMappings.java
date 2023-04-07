@@ -26,9 +26,15 @@ public class OtlpMappings {
     OTLP_SW_MAPPINGS.put("serviceName", "resource.service.name");
     OTLP_SW_MAPPINGS.put("serviceInstanceName", "resource.service.instance.name");
     OTLP_SW_MAPPINGS.put("endpointName", NAME);
+    OTLP_SW_MAPPINGS.put("trace_status", "trace_status");
+    OTLP_SW_MAPPINGS.put("span_id", "span_id");
+    OTLP_SW_MAPPINGS.put("time_bucket", "time_bucket");
+    OTLP_SW_MAPPINGS.put("trace_id", "trace_id");
+    OTLP_SW_MAPPINGS.put("kind", "kind");
+    OTLP_SW_MAPPINGS.put("parent_span_id", "parent_span_id");
+    OTLP_SW_MAPPINGS.put("start_time", "start_time");
+    OTLP_SW_MAPPINGS.put("end_time", "end_time");
   }
-
-
 
   /**
    * null -> null <br>
