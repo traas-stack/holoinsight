@@ -719,20 +719,6 @@ public class DefaultQueryServiceImpl implements QueryService {
             QueryProto.Datasource.Builder argDsBuilder = datasource.toBuilder();
             argDsBuilder.setMetric(metricName);
             argDsBuilder.setName(expr);
-            Map<String, Object> conditions = metricDefine.getConditions();
-            if (conditions != null) {
-              conditions.forEach((conditionK, ConditionV) -> {
-                QueryProto.QueryFilter.Builder filterBuilder =
-                    QueryProto.QueryFilter.newBuilder().setName(conditionK);
-                if (ConditionV instanceof List) {
-                  filterBuilder.setType("literal_or")
-                      .setValue(StringUtils.join((List) ConditionV, "|"));
-                } else {
-                  filterBuilder.setType("literal").setValue(String.valueOf(ConditionV));
-                }
-                argDsBuilder.addFilters(filterBuilder.build());
-              });
-            }
             argDsBuilder.setAggregator(func);
             if (CollectionUtils.isNotEmpty(metricDefine.getGroups())) {
               List<String> groups = metricDefine.getGroups().stream()
