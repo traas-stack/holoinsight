@@ -56,7 +56,7 @@ public class MetricsManager {
     String metricDefineJson = IOUtils.toString(rs.getInputStream(), Charset.defaultCharset());
     materializedMetrics = GsonUtils.get().fromJson(metricDefineJson,
         new TypeToken<List<MetricDefine>>() {}.getType());
-    log.info("[apm] load metric definitions from database: {}", materializedMetrics);
+    log.info("[apm] load metric definitions from resource: {}", materializedMetrics);
     return materializedMetrics;
   }
 

@@ -702,19 +702,29 @@ public class DefaultQueryServiceImpl implements QueryService {
       MetricDefine metricDefine) throws QueryException {
     if (StringUtils.isNotEmpty(metricDefine.getExpr())) {
       List<String> exprs = new RpnResolver().expr2Infix(metricDefine.getExpr());
-      List<MetricDefine> argMetricDefines = exprs.stream().map(metricsManager::getMetric)
-          .filter(Objects::nonNull).collect(Collectors.toList());
-      List<QueryProto.Datasource> argDatasources =
-          argMetricDefines.stream().map(argMetricDefine -> {
-            QueryProto.Datasource.Builder exprDsBuilder = datasource.toBuilder();
-            exprDsBuilder.setName(argMetricDefine.getName());
-            exprDsBuilder.setMetric(argMetricDefine.getName());
-            exprDsBuilder.setAggregator("sum");
-            List<String> groups = argMetricDefine.getGroups().stream().map(OtlpMappings::fromOtlp)
-                .collect(Collectors.toList());
-            exprDsBuilder.addAllGroupBy(groups);
-            return exprDsBuilder.build();
-          }).collect(Collectors.toList());
+      List<QueryProto.Datasource> argDatasources = exprs.stream().map(expr -> {
+        String func = "none";
+        String metricName = expr;
+        int leftBracket = expr.indexOf("{");
+        int rightBracket = expr.indexOf("}");
+        if (leftBracket != -1 && rightBracket != -1 && leftBracket < rightBracket) {
+          func = expr.substring(0, leftBracket);
+          metricName = expr.substring(leftBracket + 1, rightBracket);
+        }
+        MetricDefine argMetricDefine = metricsManager.getMetric(metricName);
+        if (argMetricDefine != null) {
+          QueryProto.Datasource.Builder exprDsBuilder = datasource.toBuilder();
+          exprDsBuilder.setMetric(metricName);
+          exprDsBuilder.setName(expr);
+          exprDsBuilder.setAggregator(func);
+          List<String> groups = argMetricDefine.getGroups().stream().map(OtlpMappings::fromOtlp)
+              .collect(Collectors.toList());
+          exprDsBuilder.addAllGroupBy(groups);
+          return exprDsBuilder.build();
+        } else {
+          return null;
+        }
+      }).filter(Objects::nonNull).collect(Collectors.toList());
       List<String> dsNames =
           argDatasources.stream().map(QueryProto.Datasource::getName).collect(Collectors.toList());
       Map<String, List<QueryProto.Result>> resultMap = new HashMap<>();

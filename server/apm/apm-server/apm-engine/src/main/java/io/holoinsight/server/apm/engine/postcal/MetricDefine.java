@@ -10,6 +10,11 @@ import lombok.NoArgsConstructor;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * MetricDefine defines how to calculate an APM metric, which may be obtained through some DSL of
+ * the search engine, may be obtained through a metric materialized into MetricStore, or may be
+ * obtained by including other MetricDefine arithmetic expressions
+ */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
