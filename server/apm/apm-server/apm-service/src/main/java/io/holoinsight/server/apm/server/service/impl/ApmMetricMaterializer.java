@@ -54,9 +54,11 @@ public class ApmMetricMaterializer {
 
   private static final long INTERVAL = 60000;
 
-  private static final long DELAY = 60000;
+  private static final long DELAY = 10000;
 
   private static final String STEP = "1m";
+
+  private static final int REPLENISH = 3;
 
   private static final ScheduledExecutorService SCHEDULER = new ScheduledThreadPoolExecutor(1,
       new BasicThreadFactory.Builder().namingPattern("apm-materialize-scheduler-%d").build());
@@ -74,7 +76,7 @@ public class ApmMetricMaterializer {
   }
 
   private void materialize() {
-    long start = System.currentTimeMillis() / INTERVAL * INTERVAL - INTERVAL;
+    long start = System.currentTimeMillis() / INTERVAL * INTERVAL - INTERVAL * (REPLENISH + 1);
     long end = start + INTERVAL;
     List<String> metrics = metricsManager.listMaterializedMetrics();
     QueryWrapper<TenantOps> wrapper = new QueryWrapper<>();
