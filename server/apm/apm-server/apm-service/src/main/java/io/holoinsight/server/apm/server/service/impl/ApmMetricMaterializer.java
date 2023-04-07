@@ -103,6 +103,9 @@ public class ApmMetricMaterializer {
                   value.getValues().forEach((t, v) -> {
                     WriteMetricsParam.Point point = new WriteMetricsParam.Point();
                     point.setMetricName(metric);
+                    if (value.getTags() != null) {
+                      value.getTags().put("tenant", tenant);
+                    }
                     point.setTags(value.getTags());
                     point.setTimeStamp(t);
                     point.setValue(v);

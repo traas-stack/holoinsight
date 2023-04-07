@@ -1,5 +1,21 @@
 [
   {
+    "name": "apm_service_cpm_materialized",
+    "index": "holoinsight-span",
+    "field": "trace_id",
+    "function": "cardinality",
+    "groups": [
+      "resource.service.name"
+    ],
+    "conditions": {
+      "kind": [
+        "SERVER",
+        "CONSUMER"
+      ]
+    },
+    "materialized": true
+  },
+  {
     "name": "apm_service_cpm",
     "index": "holoinsight-span",
     "field": "trace_id",
@@ -13,7 +29,24 @@
         "CONSUMER"
       ]
     },
-    "materializedExp": "sum{apm_span_materialized_cpm}"
+    "materializedExp": "sum{apm_service_cpm_materialized}"
+  },
+  {
+    "name": "apm_service_cpm_fail_materialized",
+    "index": "holoinsight-span",
+    "field": "trace_id",
+    "function": "cardinality",
+    "groups": [
+      "resource.service.name"
+    ],
+    "conditions": {
+      "trace_status": "2",
+      "kind": [
+        "SERVER",
+        "CONSUMER"
+      ]
+    },
+    "materialized": true
   },
   {
     "name": "apm_service_cpm_fail",
@@ -30,7 +63,23 @@
         "CONSUMER"
       ]
     },
-    "materializedExp": "sum{apm_span_materialized_cpm}"
+    "materializedExp": "sum{apm_service_cpm_fail_materialized}"
+  },
+  {
+    "name": "apm_service_resp_time_total_materialized",
+    "index": "holoinsight-span",
+    "field": "latency",
+    "function": "sum",
+    "groups": [
+      "resource.service.name"
+    ],
+    "conditions": {
+      "kind": [
+        "SERVER",
+        "CONSUMER"
+      ]
+    },
+    "materialized": true
   },
   {
     "name": "apm_service_resp_time",
@@ -46,7 +95,7 @@
         "CONSUMER"
       ]
     },
-    "materializedExp": "sum{apm_span_materialized_resp_time_total}/sum{apm_span_materialized_cpm}"
+    "materializedExp": "sum{apm_service_resp_time_total_materialized}/sum{apm_service_cpm_materialized}"
   },
   {
     "name": "apm_service_percentile",
@@ -64,6 +113,23 @@
     }
   },
   {
+    "name": "apm_service_instance_cpm_materialized",
+    "index": "holoinsight-span",
+    "field": "trace_id",
+    "function": "cardinality",
+    "groups": [
+      "resource.service.name",
+      "resource.service.instance.name"
+    ],
+    "conditions": {
+      "kind": [
+        "SERVER",
+        "CONSUMER"
+      ]
+    },
+    "materialized": true
+  },
+  {
     "name": "apm_service_instance_cpm",
     "index": "holoinsight-span",
     "field": "trace_id",
@@ -78,7 +144,25 @@
         "CONSUMER"
       ]
     },
-    "materializedExp": "sum{apm_span_materialized_cpm}"
+    "materializedExp": "sum{apm_service_instance_cpm_materialized}"
+  },
+  {
+    "name": "apm_service_instance_cpm_fail_materialized",
+    "index": "holoinsight-span",
+    "field": "trace_id",
+    "function": "cardinality",
+    "groups": [
+      "resource.service.name",
+      "resource.service.instance.name"
+    ],
+    "conditions": {
+      "trace_status": "2",
+      "kind": [
+        "SERVER",
+        "CONSUMER"
+      ]
+    },
+    "materialized": true
   },
   {
     "name": "apm_service_instance_cpm_fail",
@@ -96,7 +180,24 @@
         "CONSUMER"
       ]
     },
-    "materializedExp": "sum{apm_span_materialized_cpm}"
+    "materializedExp": "sum{apm_service_instance_cpm_fail_materialized}"
+  },
+  {
+    "name": "apm_service_instance_resp_time_total_materialized",
+    "index": "holoinsight-span",
+    "field": "latency",
+    "function": "sum",
+    "groups": [
+      "resource.service.name",
+      "resource.service.instance.name"
+    ],
+    "conditions": {
+      "kind": [
+        "SERVER",
+        "CONSUMER"
+      ]
+    },
+    "materialized": true
   },
   {
     "name": "apm_service_instance_resp_time",
@@ -113,7 +214,7 @@
         "CONSUMER"
       ]
     },
-    "materializedExp": "sum{apm_span_materialized_resp_time_total}/sum{apm_span_materialized_cpm}"
+    "materializedExp": "sum{apm_service_instance_resp_time_total_materialized}/sum{apm_service_instance_cpm_materialized}"
   },
   {
     "name": "apm_service_instance_percentile",
@@ -132,6 +233,19 @@
     }
   },
   {
+    "name": "apm_endpoint_cpm_materialized",
+    "index": "holoinsight-span",
+    "field": "trace_id",
+    "function": "cardinality",
+    "groups": [
+      "resource.service.name",
+      "name"
+    ],
+    "conditions": {
+    },
+    "materialized": true
+  },
+  {
     "name": "apm_endpoint_cpm",
     "index": "holoinsight-span",
     "field": "trace_id",
@@ -142,7 +256,21 @@
     ],
     "conditions": {
     },
-    "materializedExp": "sum{apm_span_materialized_cpm}"
+    "materializedExp": "sum{apm_endpoint_cpm_materialized}"
+  },
+  {
+    "name": "apm_endpoint_cpm_fail_materialized",
+    "index": "holoinsight-span",
+    "field": "trace_id",
+    "function": "cardinality",
+    "groups": [
+      "resource.service.name",
+      "name"
+    ],
+    "conditions": {
+      "trace_status": "2"
+    },
+    "materialized": true
   },
   {
     "name": "apm_endpoint_cpm_fail",
@@ -156,7 +284,20 @@
     "conditions": {
       "trace_status": "2"
     },
-    "materializedExp": "sum{apm_span_materialized_cpm}"
+    "materializedExp": "sum{apm_endpoint_cpm_fail_materialized}"
+  },
+  {
+    "name": "apm_endpoint_resp_time_total_materialized",
+    "index": "holoinsight-span",
+    "field": "latency",
+    "function": "sum",
+    "groups": [
+      "resource.service.name",
+      "name"
+    ],
+    "conditions": {
+    },
+    "materialized": true
   },
   {
     "name": "apm_endpoint_resp_time",
@@ -169,7 +310,7 @@
     ],
     "conditions": {
     },
-    "materializedExp": "sum{apm_span_materialized_resp_time_total}/sum{apm_span_materialized_cpm}"
+    "materializedExp": "sum{apm_endpoint_resp_time_total_materialized}/sum{apm_endpoint_cpm_materialized}"
   },
   {
     "name": "apm_endpoint_percentile",
@@ -184,56 +325,13 @@
     }
   },
   {
-    "name": "apm_span_materialized_cpm",
-    "index": "holoinsight-span",
+    "name": "apm_component_cpm_materialized",
+    "index": "holoinsight-service_relation",
     "field": "trace_id",
     "function": "cardinality",
-    "groups": [
-      "resource.tenant",
-      "resource.service.name",
-      "resource.service.instance.name",
-      "name",
-      "attributes.spanLayer",
-      "kind",
-      "trace_status"
-    ],
+    "groups": [],
     "conditions": {
-    },
-    "materialized": true
-  },
-  {
-    "name": "apm_span_materialized_resp_time_total",
-    "index": "holoinsight-span",
-    "field": "latency",
-    "function": "sum",
-    "groups": [
-      "resource.tenant",
-      "resource.service.name",
-      "resource.service.instance.name",
-      "name",
-      "attributes.spanLayer",
-      "kind",
-      "trace_status"
-    ],
-    "conditions": {
-    },
-    "materialized": true
-  },
-  {
-    "name": "apm_span_materialized_percentile",
-    "index": "holoinsight-span",
-    "field": "latency",
-    "function": "percentiles",
-    "groups": [
-      "resource.tenant",
-      "resource.service.name",
-      "resource.service.instance.name",
-      "name",
-      "attributes.spanLayer",
-      "kind",
-      "trace_status"
-    ],
-    "conditions": {
+      "type": "MQ"
     },
     "materialized": true
   },
@@ -246,7 +344,19 @@
     "conditions": {
       "type": "MQ"
     },
-    "materializedExp": "sum{apm_component_materialized_cpm}"
+    "materializedExp": "sum{apm_component_cpm_materialized}"
+  },
+  {
+    "name": "apm_component_cpm_fail_materialized",
+    "index": "holoinsight-service_relation",
+    "field": "trace_id",
+    "function": "cardinality",
+    "groups": [],
+    "conditions": {
+      "type": "MQ",
+      "is_error": "1"
+    },
+    "materialized": true
   },
   {
     "name": "apm_component_cpm_fail",
@@ -258,7 +368,18 @@
       "type": "MQ",
       "is_error": "1"
     },
-    "materializedExp": "sum{apm_component_materialized_cpm}"
+    "materializedExp": "sum{apm_component_cpm_fail_materialized}"
+  },
+  {
+    "name": "apm_component_resp_time_total_materialized",
+    "index": "holoinsight-service_relation",
+    "field": "latency",
+    "function": "sum",
+    "groups": [],
+    "conditions": {
+      "type": "MQ"
+    },
+    "materialized": true
   },
   {
     "name": "apm_component_resp_time",
@@ -269,7 +390,7 @@
     "conditions": {
       "type": "MQ"
     },
-    "materializedExp": "sum{apm_component_materialized_resp_time_total}/sum{apm_component_materialized_cpm}"
+    "materializedExp": "sum{apm_component_resp_time_total_materialized}/sum{apm_component_cpm_materialized}"
   },
   {
     "name": "apm_component_percentile",
@@ -280,56 +401,5 @@
     "conditions": {
       "type": "MQ"
     }
-  },
-  {
-    "name": "apm_component_materialized_cpm",
-    "index": "holoinsight-service_relation",
-    "field": "trace_id",
-    "function": "cardinality",
-    "groups": [
-      "tenant",
-      "source_service_name",
-      "dest_service_name",
-      "component",
-      "type",
-      "is_error"
-    ],
-    "conditions": {
-    },
-    "materialized": true
-  },
-  {
-    "name": "apm_component_materialized_resp_time_total",
-    "index": "holoinsight-service_relation",
-    "field": "latency",
-    "function": "sum",
-    "groups": [
-      "tenant",
-      "source_service_name",
-      "dest_service_name",
-      "component",
-      "type",
-      "is_error"
-    ],
-    "conditions": {
-    },
-    "materialized": true
-  },
-  {
-    "name": "apm_component_materialized_percentile",
-    "index": "holoinsight-service_relation",
-    "field": "latency",
-    "function": "percentiles",
-    "groups": [
-      "tenant",
-      "source_service_name",
-      "dest_service_name",
-      "component",
-      "type",
-      "is_error"
-    ],
-    "conditions": {
-    },
-    "materialized": true
   }
 ]
