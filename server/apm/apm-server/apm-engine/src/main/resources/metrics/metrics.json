@@ -50,7 +50,7 @@
   },
   {
     "name": "apm_service_resp_time",
-    "expr": "sum{apm_service_resp_time_total}/sum{apm_service_cpm}"
+    "expr": "apm_service_resp_time_total/apm_service_cpm"
   },
   {
     "name": "apm_service_percentile",
@@ -121,7 +121,7 @@
   },
   {
     "name": "apm_service_instance_resp_time",
-    "expr": "sum{apm_service_instance_resp_time_total}/sum{apm_service_instance_cpm}"
+    "expr": "apm_service_instance_resp_time_total/apm_service_instance_cpm"
   },
   {
     "name": "apm_service_instance_percentile",
@@ -181,7 +181,7 @@
   },
   {
     "name": "apm_endpoint_resp_time",
-    "expr": "sum{apm_endpoint_resp_time_total}/sum{apm_endpoint_cpm}"
+    "expr": "apm_endpoint_resp_time_total/apm_endpoint_cpm"
   },
   {
     "name": "apm_endpoint_percentile",
@@ -285,7 +285,7 @@
   },
   {
     "name": "apm_component_resp_time",
-    "expr": "sum{apm_component_resp_time_total}/sum{apm_component_cpm}"
+    "expr": "apm_component_resp_time_total/apm_component_cpm"
   },
   {
     "name": "apm_component_percentile",

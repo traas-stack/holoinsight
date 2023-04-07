@@ -732,10 +732,12 @@ public class DefaultQueryServiceImpl implements QueryService {
             });
           }
           argDsBuilder.setAggregator(func);
-          List<String> groups = metricDefine.getGroups().stream()
-              .map(group -> OtlpMappings.fromOtlp(metricDefine.getIndex(), group))
-              .collect(Collectors.toList());
-          argDsBuilder.addAllGroupBy(groups);
+          if (CollectionUtils.isNotEmpty(metricDefine.getGroups())) {
+            List<String> groups = metricDefine.getGroups().stream()
+                .map(group -> OtlpMappings.fromOtlp(metricDefine.getIndex(), group))
+                .collect(Collectors.toList());
+            argDsBuilder.addAllGroupBy(groups);
+          }
           List<QueryProto.Result> dsResults =
               queryApm(tenant, argDsBuilder.build(), argMetricDefine).getResultsList();
           resultMap.put(argDsBuilder.getName(), dsResults);
