@@ -7,7 +7,6 @@ import io.holoinsight.server.home.web.config.RestAuthUtil;
 import io.holoinsight.server.common.J;
 import io.holoinsight.server.home.biz.ula.ULAFacade;
 import io.holoinsight.server.home.biz.common.MetaDictUtil;
-import io.holoinsight.server.home.common.util.CookieUtils;
 import io.holoinsight.server.home.common.util.Debugger;
 import io.holoinsight.server.home.common.util.StringUtil;
 import io.holoinsight.server.home.common.util.scope.IdentityType;
@@ -53,17 +52,19 @@ public class Step3AuthFilter implements Filter {
       FilterChain filterChain) throws IOException, ServletException {
     HttpServletRequest req = (HttpServletRequest) servletRequest;
     HttpServletResponse resp = (HttpServletResponse) servletResponse;
+    boolean next;
     try {
-      boolean next = auth(req, resp);
-      if (next) {
-        filterChain.doFilter(servletRequest, servletResponse);
-      }
+      next = auth(req, resp);
     } catch (Throwable e) {
       resp.sendError(HttpServletResponse.SC_UNAUTHORIZED, "auth check error, " + e.getMessage());
       log.error("{} auth check error, auth info: {}", RequestContext.getTrace(),
           J.toJson(J.toJson(RequestContext.getContext())), e);
+      return;
     } finally {
       Debugger.print("Step3AuthFilter", "CTX: " + J.toJson(J.toJson(RequestContext.getContext())));
+    }
+    if (next) {
+      filterChain.doFilter(servletRequest, servletResponse);
     }
   }
 

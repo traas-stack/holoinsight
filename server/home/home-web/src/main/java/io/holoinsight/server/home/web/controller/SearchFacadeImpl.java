@@ -7,6 +7,7 @@ import io.holoinsight.server.home.biz.service.AlertRuleService;
 import io.holoinsight.server.home.biz.service.CustomPluginService;
 import io.holoinsight.server.home.biz.service.DashboardService;
 import io.holoinsight.server.home.biz.service.FolderService;
+import io.holoinsight.server.home.biz.service.TenantInitService;
 import io.holoinsight.server.home.common.util.CommonThreadPool;
 import io.holoinsight.server.home.common.util.TenantMetaUtil;
 import io.holoinsight.server.home.common.util.scope.MonitorScope;
@@ -23,6 +24,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -61,6 +63,9 @@ public class SearchFacadeImpl extends BaseFacade {
 
   @Autowired
   private DataClientService dataClientService;
+
+  @Autowired
+  private TenantInitService tenantInitService;
 
   @ResponseBody
   @PostMapping(value = "/queryByKeyword")
@@ -214,7 +219,11 @@ public class SearchFacadeImpl extends BaseFacade {
     queryExample.getParams().put("hostname",
         Pattern.compile(String.format("^.*%s.*$", keyword), Pattern.CASE_INSENSITIVE));
     if (StringUtils.isNotBlank(workspace)) {
-      queryExample.getParams().put("_workspace", workspace);
+      Map<String, String> conditions =
+          tenantInitService.getTenantWorkspaceMetaConditions(workspace);
+      if (!CollectionUtils.isEmpty(conditions)) {
+        queryExample.getParams().putAll(conditions);
+      }
     }
 
     List<Map<String, Object>> list = dataClientService
