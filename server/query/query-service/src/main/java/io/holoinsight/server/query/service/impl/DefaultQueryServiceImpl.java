@@ -702,58 +702,61 @@ public class DefaultQueryServiceImpl implements QueryService {
       MetricDefine metricDefine) throws QueryException {
     if (StringUtils.isNotEmpty(metricDefine.getExpr())) {
       List<String> exprs = new RpnResolver().expr2Infix(metricDefine.getExpr());
-      Map<String, List<QueryProto.Result>> resultMap = new HashMap<>();
-      for (String expr : exprs) {
-        String func = "none";
-        String metricName = expr;
-        int leftBracket = expr.indexOf("{");
-        int rightBracket = expr.indexOf("}");
-        if (leftBracket != -1 && rightBracket != -1 && leftBracket < rightBracket) {
-          func = expr.substring(0, leftBracket);
-          metricName = expr.substring(leftBracket + 1, rightBracket);
-        }
-        MetricDefine argMetricDefine = metricsManager.getMetric(metricName);
-        if (argMetricDefine != null) {
-          QueryProto.Datasource.Builder argDsBuilder = datasource.toBuilder();
-          argDsBuilder.setMetric(metricName);
-          argDsBuilder.setName(expr);
-          Map<String, Object> conditions = argMetricDefine.getConditions();
-          if (conditions != null) {
-            conditions.forEach((conditionK, ConditionV) -> {
-              QueryProto.QueryFilter.Builder filterBuilder =
-                  QueryProto.QueryFilter.newBuilder().setName(conditionK);
-              if (ConditionV instanceof List) {
-                filterBuilder.setType("literal_or")
-                    .setValue(StringUtils.join((List) ConditionV, "|"));
-              } else {
-                filterBuilder.setType("literal").setValue(String.valueOf(ConditionV));
-              }
-              argDsBuilder.addFilters(filterBuilder.build());
-            });
+      if (exprs.size() > 1) {
+        Map<String, List<QueryProto.Result>> resultMap = new HashMap<>();
+        for (String expr : exprs) {
+          String func = "none";
+          String metricName = expr;
+          int leftBracket = expr.indexOf("{");
+          int rightBracket = expr.indexOf("}");
+          if (leftBracket != -1 && rightBracket != -1 && leftBracket < rightBracket) {
+            func = expr.substring(0, leftBracket);
+            metricName = expr.substring(leftBracket + 1, rightBracket);
           }
-          argDsBuilder.setAggregator(func);
-          if (CollectionUtils.isNotEmpty(metricDefine.getGroups())) {
-            List<String> groups = metricDefine.getGroups().stream()
-                .map(group -> OtlpMappings.fromOtlp(metricDefine.getIndex(), group))
-                .collect(Collectors.toList());
-            argDsBuilder.addAllGroupBy(groups);
+          MetricDefine argMetricDefine = metricsManager.getMetric(metricName);
+          if (argMetricDefine != null) {
+            QueryProto.Datasource.Builder argDsBuilder = datasource.toBuilder();
+            argDsBuilder.setMetric(metricName);
+            argDsBuilder.setName(expr);
+            Map<String, Object> conditions = metricDefine.getConditions();
+            if (conditions != null) {
+              conditions.forEach((conditionK, ConditionV) -> {
+                QueryProto.QueryFilter.Builder filterBuilder =
+                    QueryProto.QueryFilter.newBuilder().setName(conditionK);
+                if (ConditionV instanceof List) {
+                  filterBuilder.setType("literal_or")
+                      .setValue(StringUtils.join((List) ConditionV, "|"));
+                } else {
+                  filterBuilder.setType("literal").setValue(String.valueOf(ConditionV));
+                }
+                argDsBuilder.addFilters(filterBuilder.build());
+              });
+            }
+            argDsBuilder.setAggregator(func);
+            if (CollectionUtils.isNotEmpty(metricDefine.getGroups())) {
+              List<String> groups = metricDefine.getGroups().stream()
+                  .map(group -> OtlpMappings.fromOtlp(metricDefine.getIndex(), group))
+                  .collect(Collectors.toList());
+              argDsBuilder.addAllGroupBy(groups);
+            }
+            List<QueryProto.Result> dsResults =
+                queryApm(tenant, argDsBuilder.build(), argMetricDefine).getResultsList();
+            resultMap.put(argDsBuilder.getName(), dsResults);
           }
-          List<QueryProto.Result> dsResults =
-              queryApm(tenant, argDsBuilder.build(), argMetricDefine).getResultsList();
-          resultMap.put(argDsBuilder.getName(), dsResults);
         }
+        QueryProto.QueryResponse.Builder rspBuilder = QueryProto.QueryResponse.newBuilder();
+        List<QueryProto.Result> results = calculate(metricDefine.getExpr(), resultMap,
+            metricDefine.getName(), resultMap.keySet());
+        rspBuilder.addAllResults(results);
+        if (StringUtils.isNotEmpty(datasource.getDownsample())
+            && StringUtils.isNotEmpty(datasource.getFillPolicy())) {
+          fillData(rspBuilder, datasource.getStart(), datasource.getEnd(),
+              datasource.getDownsample(), datasource.getFillPolicy());
+        }
+        return rspBuilder;
       }
-      QueryProto.QueryResponse.Builder rspBuilder = QueryProto.QueryResponse.newBuilder();
-      List<QueryProto.Result> results =
-          calculate(metricDefine.getExpr(), resultMap, metricDefine.getName(), resultMap.keySet());
-      rspBuilder.addAllResults(results);
-      if (StringUtils.isNotEmpty(datasource.getDownsample())
-          && StringUtils.isNotEmpty(datasource.getFillPolicy())) {
-        fillData(rspBuilder, datasource.getStart(), datasource.getEnd(), datasource.getDownsample(),
-            datasource.getFillPolicy());
-      }
-      return rspBuilder;
-    } else if (datasource.getApmMaterialized() && metricDefine.isMaterialized()) {
+    }
+    if (datasource.getApmMaterialized() && metricDefine.isMaterialized()) {
       return queryMetricStore(tenant, datasource);
     } else {
       return queryApmFromSearchEngine(tenant, datasource);
