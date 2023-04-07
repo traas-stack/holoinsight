@@ -13,7 +13,7 @@
         "CONSUMER"
       ]
     },
-    "parent": "apm_span_materialized_cpm"
+    "expr": "sum{apm_span_materialized_cpm}"
   },
   {
     "name": "apm_service_cpm_fail",
@@ -30,7 +30,7 @@
         "CONSUMER"
       ]
     },
-    "parent": "apm_span_materialized_cpm"
+    "expr": "sum{apm_span_materialized_cpm}"
   },
   {
     "name": "apm_service_resp_time_total",
@@ -46,7 +46,7 @@
         "CONSUMER"
       ]
     },
-    "parent": "apm_span_materialized_resp_time_total"
+    "expr": "sum{apm_span_materialized_resp_time_total}"
   },
   {
     "name": "apm_service_resp_time",
@@ -65,8 +65,7 @@
         "SERVER",
         "CONSUMER"
       ]
-    },
-    "forceQuerySearchEngine": true
+    }
   },
   {
     "name": "apm_service_instance_cpm",
@@ -83,7 +82,7 @@
         "CONSUMER"
       ]
     },
-    "parent": "apm_span_materialized_cpm"
+    "expr": "sum{apm_span_materialized_cpm}"
   },
   {
     "name": "apm_service_instance_cpm_fail",
@@ -101,7 +100,7 @@
         "CONSUMER"
       ]
     },
-    "parent": "apm_span_materialized_cpm"
+    "expr": "sum{apm_span_materialized_cpm}"
   },
   {
     "name": "apm_service_instance_resp_time_total",
@@ -118,7 +117,7 @@
         "CONSUMER"
       ]
     },
-    "parent": "apm_span_materialized_resp_time_total"
+    "expr": "sum{apm_span_materialized_resp_time_total}"
   },
   {
     "name": "apm_service_instance_resp_time",
@@ -138,8 +137,7 @@
         "SERVER",
         "CONSUMER"
       ]
-    },
-    "forceQuerySearchEngine": true
+    }
   },
   {
     "name": "apm_endpoint_cpm",
@@ -152,7 +150,7 @@
     ],
     "conditions": {
     },
-    "parent": "apm_span_materialized_cpm"
+    "expr": "sum{apm_span_materialized_cpm}"
   },
   {
     "name": "apm_endpoint_cpm_fail",
@@ -166,7 +164,7 @@
     "conditions": {
       "trace_status": "2"
     },
-    "parent": "apm_span_materialized_cpm"
+    "expr": "sum{apm_span_materialized_cpm}"
   },
   {
     "name": "apm_endpoint_resp_time_total",
@@ -179,7 +177,7 @@
     ],
     "conditions": {
     },
-    "parent": "apm_span_materialized_resp_time_total"
+    "expr": "sum{apm_span_materialized_resp_time_total}"
   },
   {
     "name": "apm_endpoint_resp_time",
@@ -195,8 +193,7 @@
       "name"
     ],
     "conditions": {
-    },
-    "forceQuerySearchEngine": true
+    }
   },
   {
     "name": "apm_span_materialized_cpm",
@@ -215,7 +212,7 @@
     "conditions": {
     },
     "materialized": true,
-    "parent": "apm_span_materialized_cpm"
+    "expr": "apm_span_materialized_cpm"
   },
   {
     "name": "apm_span_materialized_resp_time_total",
@@ -234,7 +231,7 @@
     "conditions": {
     },
     "materialized": true,
-    "parent": "apm_span_materialized_resp_time_total"
+    "expr": "apm_span_materialized_resp_time_total"
   },
   {
     "name": "apm_span_materialized_percentile",
@@ -253,7 +250,7 @@
     "conditions": {
     },
     "materialized": true,
-    "parent": "apm_span_materialized_percentile"
+    "expr": "apm_span_materialized_percentile"
   },
   {
     "name": "apm_component_cpm",
@@ -264,7 +261,7 @@
     "conditions": {
       "type": "MQ"
     },
-    "parent": "apm_component_materialized_cpm"
+    "expr": "sum{apm_component_materialized_cpm}"
   },
   {
     "name": "apm_component_cpm_fail",
@@ -276,7 +273,7 @@
       "type": "MQ",
       "is_error": "1"
     },
-    "parent": "apm_component_materialized_cpm"
+    "expr": "sum{apm_component_materialized_cpm}"
   },
   {
     "name": "apm_component_resp_time_total",
@@ -287,7 +284,7 @@
     "conditions": {
       "type": "MQ"
     },
-    "parent": "apm_component_materialized_resp_time_total"
+    "expr": "sum{apm_component_materialized_resp_time_total}"
   },
   {
     "name": "apm_component_resp_time",
@@ -301,8 +298,7 @@
     "groups": [],
     "conditions": {
       "type": "MQ"
-    },
-    "forceQuerySearchEngine": true
+    }
   },
   {
     "name": "apm_component_materialized_cpm",
@@ -320,7 +316,7 @@
     "conditions": {
     },
     "materialized": true,
-    "parent": "apm_component_materialized_cpm"
+    "expr": "apm_component_materialized_cpm"
   },
   {
     "name": "apm_component_materialized_resp_time_total",
@@ -338,7 +334,7 @@
     "conditions": {
     },
     "materialized": true,
-    "parent": "apm_component_materialized_resp_time_total"
+    "expr": "apm_component_materialized_resp_time_total"
   },
   {
     "name": "apm_component_materialized_percentile",
@@ -356,6 +352,6 @@
     "conditions": {
     },
     "materialized": true,
-    "parent": "apm_component_materialized_percentile"
+    "expr": "apm_component_materialized_percentile"
   }
 ]

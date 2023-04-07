@@ -638,7 +638,7 @@ public class DefaultQueryServiceImpl implements QueryService {
   }
 
   private List<QueryProto.Result> calculate(String queryExpr,
-      Map<String, List<QueryProto.Result>> resultMap, String as, List<String> dsNames) {
+      Map<String, List<QueryProto.Result>> resultMap, String as, Collection<String> dsNames) {
     List<QueryProto.Result> results = new ArrayList<>();
     Map<Map, Map<Long, Map<String, Double>>> detailMap = new HashMap<>();
     resultMap.forEach((dsName, rspResults) -> {
@@ -700,9 +700,14 @@ public class DefaultQueryServiceImpl implements QueryService {
 
   private QueryProto.QueryResponse.Builder queryApm(String tenant, QueryProto.Datasource datasource,
       MetricDefine metricDefine) throws QueryException {
-    if (StringUtils.isNotEmpty(metricDefine.getExpr())) {
+    if (!datasource.getApmMaterialized() || StringUtils.isEmpty(metricDefine.getExpr())) {
+      return queryApmFromSearchEngine(tenant, datasource);
+    } else if (metricDefine.isMaterialized()) {
+      return queryMetricStore(tenant, datasource);
+    } else {
       List<String> exprs = new RpnResolver().expr2Infix(metricDefine.getExpr());
-      List<QueryProto.Datasource> argDatasources = exprs.stream().map(expr -> {
+      Map<String, List<QueryProto.Result>> resultMap = new HashMap<>();
+      for (String expr : exprs) {
         String func = "none";
         String metricName = expr;
         int leftBracket = expr.indexOf("{");
@@ -713,30 +718,37 @@ public class DefaultQueryServiceImpl implements QueryService {
         }
         MetricDefine argMetricDefine = metricsManager.getMetric(metricName);
         if (argMetricDefine != null) {
-          QueryProto.Datasource.Builder exprDsBuilder = datasource.toBuilder();
-          exprDsBuilder.setMetric(metricName);
-          exprDsBuilder.setName(expr);
-          exprDsBuilder.setAggregator(func);
-          List<String> groups = argMetricDefine.getGroups().stream().map(OtlpMappings::fromOtlp)
+          QueryProto.Datasource.Builder argDsBuilder = datasource.toBuilder();
+          argDsBuilder.setMetric(metricName);
+          argDsBuilder.setName(expr);
+          Map<String, Object> conditions = argMetricDefine.getConditions();
+          if (conditions != null) {
+            conditions.forEach((conditionK, ConditionV) -> {
+              QueryProto.QueryFilter.Builder filterBuilder =
+                  QueryProto.QueryFilter.newBuilder().setName(conditionK);
+              if (ConditionV instanceof List) {
+                filterBuilder.setType("literal_or")
+                    .setValue(StringUtils.join((List) ConditionV, "|"));
+              } else {
+                filterBuilder.setType("literal").setValue(String.valueOf(ConditionV));
+              }
+              argDsBuilder.addFilters(filterBuilder.build());
+            });
+          }
+          argDsBuilder.setAggregator(func);
+          List<String> groups = argMetricDefine.getGroups().stream()
+              .map(group -> OtlpMappings.fromOtlp(metricDefine.getIndex(), group))
               .collect(Collectors.toList());
-          exprDsBuilder.addAllGroupBy(groups);
-          return exprDsBuilder.build();
-        } else {
-          return null;
+          argDsBuilder.addAllGroupBy(groups);
+          List<QueryProto.Result> dsResults =
+              queryApm(tenant, argDsBuilder.build(), argMetricDefine).getResultsList();
+          resultMap.put(argDsBuilder.getName(), dsResults);
         }
-      }).filter(Objects::nonNull).collect(Collectors.toList());
-      List<String> dsNames =
-          argDatasources.stream().map(QueryProto.Datasource::getName).collect(Collectors.toList());
-      Map<String, List<QueryProto.Result>> resultMap = new HashMap<>();
-      for (QueryProto.Datasource argDatasource : argDatasources) {
-        String dsName = argDatasource.getName();
-        List<QueryProto.Result> dsResults = queryDs(tenant, argDatasource).getResultsList();
-        resultMap.put(dsName, dsResults);
       }
       QueryProto.QueryResponse.Builder rspBuilder = QueryProto.QueryResponse.newBuilder();
-      List<QueryProto.Result> argResults =
-          calculate(metricDefine.getExpr(), resultMap, metricDefine.getName(), dsNames);
-      rspBuilder.addAllResults(argResults);
+      List<QueryProto.Result> results =
+          calculate(metricDefine.getExpr(), resultMap, metricDefine.getName(), resultMap.keySet());
+      rspBuilder.addAllResults(results);
       if (StringUtils.isNotEmpty(datasource.getDownsample())
           && StringUtils.isNotEmpty(datasource.getFillPolicy())) {
         fillData(rspBuilder, datasource.getStart(), datasource.getEnd(), datasource.getDownsample(),
@@ -744,38 +756,6 @@ public class DefaultQueryServiceImpl implements QueryService {
       }
       return rspBuilder;
     }
-    if (datasource.getApmMaterialized() && !metricDefine.isForceQuerySearchEngine()) {
-      return queryApmFromMetricStore(tenant, datasource, metricDefine);
-    } else {
-      return queryApmFromSearchEngine(tenant, datasource);
-    }
-  }
-
-  private QueryProto.QueryResponse.Builder queryApmFromMetricStore(String tenant,
-      QueryProto.Datasource datasource, MetricDefine metricDefine) throws QueryException {
-    return wrap(() -> {
-      QueryProto.Datasource.Builder dsBuilder = datasource.toBuilder();
-      String metricName = datasource.getMetric();
-      List<String> groups = metricsManager.getMetric(metricName).getGroups().stream()
-          .map(OtlpMappings::fromOtlp).collect(Collectors.toList());
-      Map<String, Object> conditions = metricDefine.getConditions();
-      if (conditions != null) {
-        conditions.forEach((conditionK, ConditionV) -> {
-          QueryProto.QueryFilter.Builder filterBuilder =
-              QueryProto.QueryFilter.newBuilder().setName(conditionK);
-          if (ConditionV instanceof List) {
-            filterBuilder.setType("literal_or").setValue(StringUtils.join((List) ConditionV, "|"));
-          } else {
-            filterBuilder.setType("literal").setValue(String.valueOf(ConditionV));
-          }
-          dsBuilder.addFilters(filterBuilder.build());
-        });
-      }
-      dsBuilder.addAllGroupBy(groups);
-      dsBuilder.setMetric(metricDefine.getParent());
-      dsBuilder.setAggregator("sum");
-      return queryMetricStore(tenant, dsBuilder.build());
-    });
   }
 
   private QueryProto.QueryResponse.Builder queryApmFromSearchEngine(String tenant,

@@ -110,7 +110,7 @@ public class SpanMetricEsStorage extends PostCalMetricStorage {
         Aggregations timeAggregations = parsedBucket.getAggregations();
         Map<String, String> tags = new HashMap<>();
         Aggregation timeAggregation = timeAggregations.iterator().next();
-        backtrackExtract(time, timeAggregation, valuesMap, tags);
+        backtrackExtract(metricDefine, time, timeAggregation, valuesMap, tags);
       }
     }
     valuesMap.forEach((tags, timeVals) -> {
@@ -141,7 +141,7 @@ public class SpanMetricEsStorage extends PostCalMetricStorage {
     }
   }
 
-  private void backtrackExtract(Long time, Aggregation aggregation,
+  private void backtrackExtract(MetricDefine metricDefine, Long time, Aggregation aggregation,
       Map<Map<String, String>, Map<Long, Double>> tagsValues, Map<String, String> tags) {
     if (aggregation instanceof NumericMetricsAggregation.SingleValue) {
       NumericMetricsAggregation.SingleValue singleValue =
@@ -168,9 +168,9 @@ public class SpanMetricEsStorage extends PostCalMetricStorage {
       if (buckets != null) {
         for (Terms.Bucket bucket : buckets) {
           String tagV = bucket.getKeyAsString();
-          tags.put(OtlpMappings.fromOtlp(tagK), tagV);
+          tags.put(OtlpMappings.fromOtlp(metricDefine.getIndex(), tagK), tagV);
           Aggregation subAggregation = bucket.getAggregations().iterator().next();
-          backtrackExtract(time, subAggregation, tagsValues, tags);
+          backtrackExtract(metricDefine, time, subAggregation, tagsValues, tags);
           tags.remove(tagK);
         }
       }

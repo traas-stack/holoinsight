@@ -8,6 +8,9 @@ import com.google.common.collect.HashBiMap;
 import io.holoinsight.server.apm.common.constants.Const;
 import org.apache.commons.lang3.StringUtils;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * Used to be compatible with the OpenTelemetry protocol when querying. <br>
  * For example: <br>
@@ -17,23 +20,25 @@ import org.apache.commons.lang3.StringUtils;
  */
 public class OtlpMappings {
 
-  private static final BiMap<String, String> OTLP_SW_MAPPINGS = HashBiMap.create();
+  private static final Map<String, BiMap<String, String>> OTLP_SW_MAPPINGS = new HashMap<>();
 
   private static final String NAME = "name";
 
   static {
-    OTLP_SW_MAPPINGS.put("tenant", "resource.tenant");
-    OTLP_SW_MAPPINGS.put("serviceName", "resource.service.name");
-    OTLP_SW_MAPPINGS.put("serviceInstanceName", "resource.service.instance.name");
-    OTLP_SW_MAPPINGS.put("endpointName", NAME);
-    OTLP_SW_MAPPINGS.put("trace_status", "trace_status");
-    OTLP_SW_MAPPINGS.put("span_id", "span_id");
-    OTLP_SW_MAPPINGS.put("time_bucket", "time_bucket");
-    OTLP_SW_MAPPINGS.put("trace_id", "trace_id");
-    OTLP_SW_MAPPINGS.put("kind", "kind");
-    OTLP_SW_MAPPINGS.put("parent_span_id", "parent_span_id");
-    OTLP_SW_MAPPINGS.put("start_time", "start_time");
-    OTLP_SW_MAPPINGS.put("end_time", "end_time");
+    BiMap<String, String> spanMappings = HashBiMap.create();
+    spanMappings.put("tenant", "resource.tenant");
+    spanMappings.put("serviceName", "resource.service.name");
+    spanMappings.put("serviceInstanceName", "resource.service.instance.name");
+    spanMappings.put("endpointName", NAME);
+    spanMappings.put("trace_status", "trace_status");
+    spanMappings.put("span_id", "span_id");
+    spanMappings.put("time_bucket", "time_bucket");
+    spanMappings.put("trace_id", "trace_id");
+    spanMappings.put("kind", "kind");
+    spanMappings.put("parent_span_id", "parent_span_id");
+    spanMappings.put("start_time", "start_time");
+    spanMappings.put("end_time", "end_time");
+    OTLP_SW_MAPPINGS.put("holoinsight-span", spanMappings);
   }
 
   /**
@@ -50,12 +55,12 @@ public class OtlpMappings {
    * @param name
    * @return
    */
-  public static String toOtlp(String name) {
+  public static String toOtlp(String index, String name) {
     if (name == null) {
       return null;
     }
     if (OTLP_SW_MAPPINGS.containsKey(name)) {
-      return OTLP_SW_MAPPINGS.get(name);
+      return OTLP_SW_MAPPINGS.getOrDefault(index, HashBiMap.create()).get(name);
     }
     if (StringUtils.startsWith(name, Const.OTLP_ATTRIBUTES_PREFIX)
         || StringUtils.startsWith(name, Const.OTLP_RESOURCE_PREFIX)
@@ -77,13 +82,13 @@ public class OtlpMappings {
    * @param name
    * @return
    */
-  public static String fromOtlp(String name) {
+  public static String fromOtlp(String index, String name) {
 
     if (name == null) {
       return null;
     }
-    if (OTLP_SW_MAPPINGS.inverse().containsKey(name)) {
-      return OTLP_SW_MAPPINGS.inverse().get(name);
+    if (OTLP_SW_MAPPINGS.getOrDefault(index, HashBiMap.create()).inverse().containsKey(name)) {
+      return OTLP_SW_MAPPINGS.getOrDefault(index, HashBiMap.create()).inverse().get(name);
     }
     if (StringUtils.startsWith(name, Const.OTLP_ATTRIBUTES_PREFIX)) {
       return name.substring(Const.OTLP_ATTRIBUTES_PREFIX.length());

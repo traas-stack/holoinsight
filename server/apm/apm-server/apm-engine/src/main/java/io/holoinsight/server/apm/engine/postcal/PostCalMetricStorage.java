@@ -32,7 +32,8 @@ public abstract class PostCalMetricStorage implements MetricStorage {
     Assert.notNull(metric, "metric can not be null!");
     MetricDefine metricDefine = metricsManager.getMetric(metric);
     Assert.notNull(metricDefine, String.format("metric not found: %s", metric));
-    return metricDefine.getGroups().stream().map(OtlpMappings::fromOtlp)
+    return metricDefine.getGroups().stream()
+        .map(group -> OtlpMappings.fromOtlp(metricDefine.getIndex(), group))
         .collect(Collectors.toList());
   }
 
@@ -44,7 +45,8 @@ public abstract class PostCalMetricStorage implements MetricStorage {
     Assert.notNull(metricDefine, String.format("metric not found: %s", metric));
     Map<String, Object> mergedConditions = new HashMap<>();
     if (conditions != null) {
-      conditions.forEach((k, v) -> mergedConditions.put(OtlpMappings.toOtlp(k), v));
+      conditions.forEach(
+          (k, v) -> mergedConditions.put(OtlpMappings.toOtlp(metricDefine.getIndex(), k), v));
     }
     if (metricDefine.getConditions() != null) {
       mergedConditions.putAll(metricDefine.getConditions());
