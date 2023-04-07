@@ -50,15 +50,17 @@ public class Step2IdentityFilter implements Filter {
       FilterChain filterChain) throws IOException, ServletException {
     HttpServletRequest req = (HttpServletRequest) servletRequest;
     HttpServletResponse resp = (HttpServletResponse) servletResponse;
+    boolean next;
     try {
-      boolean next = identity(req, resp);
-      if (next) {
-        filterChain.doFilter(servletRequest, servletResponse);
-      }
+      next = identity(req, resp);
     } catch (Throwable e) {
       resp.sendError(HttpServletResponse.SC_UNAUTHORIZED,
           RequestContext.getTrace() + " identity error, " + e.getMessage());
       log.error("{} identity error", RequestContext.getTrace(), e);
+      return;
+    }
+    if (next) {
+      filterChain.doFilter(servletRequest, servletResponse);
     }
   }
 

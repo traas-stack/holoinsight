@@ -11,8 +11,9 @@ import io.holoinsight.server.common.security.InternalWebApiSecurityConfiguration
 import io.holoinsight.server.common.springboot.ConditionalOnRole;
 import io.holoinsight.server.common.threadpool.ThreadPoolConfiguration;
 import io.holoinsight.server.registry.core.RegistryProperties;
-import io.holoinsight.server.registry.core.grpc.RegistryServerForProd;
 
+import io.holoinsight.server.registry.core.meta.DefaultMetaWriterServiceImpl;
+import io.holoinsight.server.registry.core.meta.MetaWriterService;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -37,4 +38,9 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @Import({ConfigConfiguration.class, GroovyConfiguration.class, ThreadPoolConfiguration.class,
     InternalWebApiSecurityConfiguration.class, ApiKeyAutoConfiguration.class})
 public class HoloinsightRegistryConfiguration {
+
+  @Bean
+  public MetaWriterService metaWriterService() {
+    return new DefaultMetaWriterServiceImpl();
+  }
 }

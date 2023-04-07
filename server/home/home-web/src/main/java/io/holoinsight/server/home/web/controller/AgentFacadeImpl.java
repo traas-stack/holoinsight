@@ -10,6 +10,7 @@ import io.holoinsight.server.home.biz.service.ApiKeyService;
 import io.holoinsight.server.home.biz.service.agent.AgentLogTailService;
 import io.holoinsight.server.home.biz.service.agent.AgentParamRequest;
 import io.holoinsight.server.home.common.util.scope.MonitorCookieUtil;
+import io.holoinsight.server.home.common.util.scope.MonitorScope;
 import io.holoinsight.server.home.common.util.scope.RequestContext;
 import io.holoinsight.server.home.dal.model.ApiKey;
 import io.holoinsight.server.home.web.common.ManageCallback;
@@ -112,9 +113,10 @@ public class AgentFacadeImpl extends BaseFacade {
 
       @Override
       public void doManage() {
+        MonitorScope ms = RequestContext.getContext().ms;
         try {
           JsonResult.createSuccessResult(result, agentLogTailService
-              .listFiles(agentParamRequest, MonitorCookieUtil.getTenantOrException()).getDatas());
+              .listFiles(agentParamRequest, ms.getTenant(), ms.getWorkspace()).getDatas());
         } catch (Exception e) {
           result.setMessage(e.getMessage());
           JsonResult.createSuccessResult(result, new HashMap<>());
@@ -138,9 +140,10 @@ public class AgentFacadeImpl extends BaseFacade {
 
       @Override
       public void doManage() {
+        MonitorScope ms = RequestContext.getContext().ms;
         try {
           JsonResult.createSuccessResult(result, agentLogTailService
-              .previewFile(agentParamRequest, MonitorCookieUtil.getTenantOrException()).getDatas());
+              .previewFile(agentParamRequest, ms.getTenant(), ms.getWorkspace()).getDatas());
         } catch (Exception e) {
           result.setMessage(e.getMessage());
           JsonResult.createSuccessResult(result, new HashMap<>());
@@ -163,9 +166,10 @@ public class AgentFacadeImpl extends BaseFacade {
 
       @Override
       public void doManage() {
+        MonitorScope ms = RequestContext.getContext().ms;
         try {
           JsonResult.createSuccessResult(result, agentLogTailService
-              .inspect(agentParamRequest, MonitorCookieUtil.getTenantOrException()).getDatas());
+              .inspect(agentParamRequest, ms.getTenant(), ms.getWorkspace()).getDatas());
 
         } catch (Exception e) {
           result.setMessage(e.getMessage());
