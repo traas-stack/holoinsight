@@ -54,7 +54,7 @@ public class ApmMetricMaterializer {
 
   private static final long INTERVAL = 60000;
 
-  private static final long DELAY = 5000;
+  private static final long DELAY = 10000;
 
   private static final String STEP = "1m";
 
@@ -125,6 +125,4 @@ public class ApmMetricMaterializer {
       });
     }
   }
-
-
 }

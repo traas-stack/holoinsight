@@ -720,8 +720,8 @@ public class DefaultQueryServiceImpl implements QueryService {
       Map<String, List<QueryProto.Result>> resultMap = new HashMap<>();
       for (QueryProto.Datasource argDatasource : argDatasources) {
         String dsName = argDatasource.getName();
-        List<QueryProto.Result> rspResults = queryDs(tenant, argDatasource).getResultsList();
-        resultMap.put(dsName, rspResults);
+        List<QueryProto.Result> dsResults = queryDs(tenant, argDatasource).getResultsList();
+        resultMap.put(dsName, dsResults);
       }
       QueryProto.QueryResponse.Builder rspBuilder = QueryProto.QueryResponse.newBuilder();
       List<QueryProto.Result> argResults =

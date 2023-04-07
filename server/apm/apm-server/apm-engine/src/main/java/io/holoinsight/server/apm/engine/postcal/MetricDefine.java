@@ -21,9 +21,9 @@ public class MetricDefine {
   private String function;
   private List<String> groups;
   private Map<String, Object> conditions;
-  // Whether this metric should be materialized to MetricStore
+  // Whether this metric should be materialized into a MetricStore
   private boolean materialized;
-  // Can be calculated by a parent metric
+  // Can be calculated by a parent metric which has been materialized into a MetricStore
   private String parent;
   // Whether to force statistics from search engines, such as some functions(e.g. Percentile) not
   // supported by MetricStore

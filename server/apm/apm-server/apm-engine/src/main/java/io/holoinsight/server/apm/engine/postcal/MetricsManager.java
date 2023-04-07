@@ -42,7 +42,8 @@ public class MetricsManager {
     if (rsMetrics != null) {
       rsMetrics.forEach(rsMetric -> this.metricDefines.put(rsMetric.getName(), rsMetric));
     }
-    // Metrics defined in the database have higher priority, which can override the content in metrics.json
+    // Metrics defined in the database have higher priority, which can override the content in
+    // metrics.json
     List<MetricDefine> dbMetrics = loadFromDB();
     if (dbMetrics != null) {
       dbMetrics.forEach(dbMetric -> this.metricDefines.put(dbMetric.getName(), dbMetric));
