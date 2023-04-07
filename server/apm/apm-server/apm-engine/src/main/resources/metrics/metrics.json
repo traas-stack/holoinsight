@@ -214,7 +214,8 @@
     ],
     "conditions": {
     },
-    "materialized": true
+    "materialized": true,
+    "parent": "apm_span_materialized_cpm"
   },
   {
     "name": "apm_span_materialized_resp_time_total",
@@ -232,7 +233,8 @@
     ],
     "conditions": {
     },
-    "materialized": true
+    "materialized": true,
+    "parent": "apm_span_materialized_resp_time_total"
   },
   {
     "name": "apm_span_materialized_percentile",
@@ -250,7 +252,8 @@
     ],
     "conditions": {
     },
-    "materialized": true
+    "materialized": true,
+    "parent": "apm_span_materialized_percentile"
   },
   {
     "name": "apm_component_cpm",
@@ -316,7 +319,8 @@
     ],
     "conditions": {
     },
-    "materialized": true
+    "materialized": true,
+    "parent": "apm_component_materialized_cpm"
   },
   {
     "name": "apm_component_materialized_resp_time_total",
@@ -333,7 +337,8 @@
     ],
     "conditions": {
     },
-    "materialized": true
+    "materialized": true,
+    "parent": "apm_component_materialized_resp_time_total"
   },
   {
     "name": "apm_component_materialized_percentile",
@@ -350,6 +355,7 @@
     ],
     "conditions": {
     },
-    "materialized": true
+    "materialized": true,
+    "parent": "apm_component_materialized_percentile"
   }
 ]
