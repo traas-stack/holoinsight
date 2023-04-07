@@ -4,17 +4,12 @@
 package io.holoinsight.server.apm.server.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.google.gson.reflect.TypeToken;
 import io.holoinsight.server.apm.common.model.query.Duration;
 import io.holoinsight.server.apm.common.model.query.MetricValues;
-import io.holoinsight.server.apm.common.utils.GsonUtils;
-import io.holoinsight.server.apm.engine.postcal.MetricDefine;
 import io.holoinsight.server.apm.engine.postcal.MetricsManager;
 import io.holoinsight.server.apm.engine.storage.MetricStorage;
-import io.holoinsight.server.common.dao.entity.MetaDataDictValue;
 import io.holoinsight.server.common.dao.entity.TenantOps;
 import io.holoinsight.server.common.dao.mapper.TenantOpsMapper;
-import io.holoinsight.server.common.service.SuperCacheService;
 import io.holoinsight.server.extension.model.WriteMetricsParam;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
@@ -24,9 +19,7 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -58,7 +51,11 @@ public class ApmMetricMaterializer {
 
   private static final String STEP = "1m";
 
-  private static final int REPLENISH = 3;
+  // The number of cycles to fix forward each time it is materialized, this is to deal with the data
+  // inaccuracy problem caused by trace recording delay.
+  // Notice that the repaired data will be repeatedly written to the MetricStore, so it is necessary
+  // to ensure that the MetricStore's policy for repeated data is OVERWRITE instead of APPEND.
+  private static final int REPAIR_PERIODS = 3;
 
   private static final ScheduledExecutorService SCHEDULER = new ScheduledThreadPoolExecutor(1,
       new BasicThreadFactory.Builder().namingPattern("apm-materialize-scheduler-%d").build());
@@ -77,7 +74,7 @@ public class ApmMetricMaterializer {
 
   private void materialize() {
     long now = System.currentTimeMillis();
-    long start = now / INTERVAL * INTERVAL - INTERVAL * (REPLENISH + 1);
+    long start = now / INTERVAL * INTERVAL - INTERVAL * (REPAIR_PERIODS + 1);
     long end = now / INTERVAL * INTERVAL;
     List<String> metrics = metricsManager.listMaterializedMetrics();
     QueryWrapper<TenantOps> wrapper = new QueryWrapper<>();
