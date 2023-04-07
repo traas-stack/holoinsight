@@ -732,7 +732,7 @@ public class DefaultQueryServiceImpl implements QueryService {
             });
           }
           argDsBuilder.setAggregator(func);
-          List<String> groups = argMetricDefine.getGroups().stream()
+          List<String> groups = metricDefine.getGroups().stream()
               .map(group -> OtlpMappings.fromOtlp(metricDefine.getIndex(), group))
               .collect(Collectors.toList());
           argDsBuilder.addAllGroupBy(groups);
