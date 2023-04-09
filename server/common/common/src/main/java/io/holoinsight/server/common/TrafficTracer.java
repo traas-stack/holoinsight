@@ -81,21 +81,11 @@ public class TrafficTracer extends ServerStreamTracer {
     outboundUncompressedSize += bytes;
   }
 
-  /**
-   * {@inheritDoc}
-   *
-   * TCP 传输入流量
-   */
   @Override
   public void inboundWireSize(long bytes) {
     this.inboundWireSize += bytes;
   }
 
-  /**
-   * {@inheritDoc}
-   *
-   * 解压后的入流量
-   */
   @Override
   public void inboundUncompressedSize(long bytes) {
     this.inboundUncompressedSize += bytes;

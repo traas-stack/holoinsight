@@ -93,7 +93,7 @@ public class LogMonitoring_1_log_IT extends BaseIT {
               .get("/webapi/v1/query/schema") //
               .then() //
               .isSuccess() //
-              .body("data.tags", hasItems("app", "hostname", "ip", "host", "level")); //
+              .body("data.tags", hasItems("app", "hostname", "ip", "level")); //
 
         });
   }
@@ -134,7 +134,7 @@ public class LogMonitoring_1_log_IT extends BaseIT {
               .get("/webapi/v1/query/schema") //
               .then() //
               .isSuccess() //
-              .body("data.tags", hasItems("app", "hostname", "ip", "host", "biz")); //
+              .body("data.tags", hasItems("app", "hostname", "ip", "biz")); //
 
         });
   }
