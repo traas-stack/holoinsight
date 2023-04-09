@@ -13,27 +13,37 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import io.grpc.Status;
-import io.grpc.StatusException;
-import io.grpc.StatusRuntimeException;
-import io.grpc.stub.StreamObserver;
-import io.holoinsight.server.common.GrpcUtils;
-import io.holoinsight.server.common.JsonUtils;
-import io.holoinsight.server.common.auth.ApikeyAuthService;
-import io.holoinsight.server.common.auth.AuthErrorException;
-import io.holoinsight.server.common.auth.AuthInfo;
-import reactor.core.publisher.Mono;
-
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.google.common.hash.Hasher;
+import com.google.common.hash.Hashing;
+import com.google.protobuf.ByteString;
+import com.google.protobuf.Empty;
+import com.xzchaoo.commons.basic.Ack;
+import com.xzchaoo.commons.stat.StatAccumulator;
+import com.xzchaoo.commons.stat.Stats;
+import com.xzchaoo.commons.stat.StringsKey;
+
+import io.grpc.Status;
+import io.grpc.StatusException;
+import io.grpc.StatusRuntimeException;
+import io.grpc.stub.StreamObserver;
+import io.holoinsight.server.common.GrpcUtils;
+import io.holoinsight.server.common.JsonUtils;
+import io.holoinsight.server.common.MetricsUtils;
+import io.holoinsight.server.common.TrafficTracer;
+import io.holoinsight.server.common.auth.ApikeyAuthService;
+import io.holoinsight.server.common.auth.AuthErrorException;
+import io.holoinsight.server.common.auth.AuthInfo;
 import io.holoinsight.server.common.grpc.CommonRequestHeader;
 import io.holoinsight.server.common.grpc.CommonResponseHeader;
 import io.holoinsight.server.common.grpc.GenericRpcCommand;
 import io.holoinsight.server.registry.core.agent.Agent;
+import io.holoinsight.server.registry.core.agent.AgentEventService;
 import io.holoinsight.server.registry.core.agent.AgentService;
 import io.holoinsight.server.registry.core.agent.AgentStorage;
 import io.holoinsight.server.registry.core.collecttarget.CollectTargetKey;
@@ -48,7 +58,6 @@ import io.holoinsight.server.registry.core.meta.Resource;
 import io.holoinsight.server.registry.core.template.CollectRange;
 import io.holoinsight.server.registry.core.template.CollectTemplate;
 import io.holoinsight.server.registry.core.template.TemplateStorage;
-import io.holoinsight.server.registry.core.utils.MetricsUtils;
 import io.holoinsight.server.registry.grpc.agent.BasicConfig;
 import io.holoinsight.server.registry.grpc.agent.CollectConfig;
 import io.holoinsight.server.registry.grpc.agent.CollectConfigsBucket;
@@ -62,16 +71,10 @@ import io.holoinsight.server.registry.grpc.agent.MetaSync;
 import io.holoinsight.server.registry.grpc.agent.RegisterAgentRequest;
 import io.holoinsight.server.registry.grpc.agent.RegisterAgentResponse;
 import io.holoinsight.server.registry.grpc.agent.RegistryServiceForAgentGrpc;
+import io.holoinsight.server.registry.grpc.agent.ReportEventRequest;
 import io.holoinsight.server.registry.grpc.agent.SendAgentHeartbeatRequest;
 import io.holoinsight.server.registry.grpc.agent.SendAgentHeartbeatResponse;
-import com.google.common.hash.Hasher;
-import com.google.common.hash.Hashing;
-import com.google.protobuf.ByteString;
-import com.google.protobuf.Empty;
-import com.xzchaoo.commons.basic.Ack;
-import com.xzchaoo.commons.stat.StatAccumulator;
-import com.xzchaoo.commons.stat.Stats;
-import com.xzchaoo.commons.stat.StringsKey;
+import reactor.core.publisher.Mono;
 
 /**
  * <p>
@@ -88,7 +91,6 @@ public class RegistryServiceForAgentImpl
       MetricsUtils.SM1S.create("grpc.agent.heartbeat");
   private static final StatAccumulator<StringsKey> AGENT_PULLCONFIG_STAT =
       MetricsUtils.SM.create("agent.pullconfig.stat");
-
   @Autowired
   private ServerStreamManager serverStreamManager;
   @Autowired
@@ -107,6 +109,8 @@ public class RegistryServiceForAgentImpl
   private AgentStorage agentStorage;
   @Autowired
   private MetaSyncService metaSyncService;
+  @Autowired
+  private AgentEventService agentEventService;
 
   @Override
   public void ping(Empty request, StreamObserver<Empty> o) {
@@ -217,13 +221,8 @@ public class RegistryServiceForAgentImpl
 
   @Override
   public void metaDeltaSync(MetaSync.DeltaSyncRequest request, StreamObserver<Empty> o) {
-    // TODO 先auth
-
-    DeltaSyncRequest req;
-    if (StringUtils.isNotEmpty(request.getTemp())) {
-      req = JsonUtils.fromJson(request.getTemp(), DeltaSyncRequest.class);
-    } else {
-      req = new DeltaSyncRequest();
+    authAndMap(request, request.getHeader(), o, ai -> {
+      DeltaSyncRequest req = new DeltaSyncRequest();
       req.setApikey(request.getHeader().getApikey());
       req.setWorkspace(request.getWorkspace());
       req.setCluster(request.getCluster());
@@ -236,10 +235,17 @@ public class RegistryServiceForAgentImpl
           .stream() //
           .map(RegistryServiceForAgentImpl::convertToResourceModel) //
           .collect(Collectors.toList()));
-    }
-    metaSyncService.handleDelta(req);
-    o.onNext(Empty.getDefaultInstance());
-    o.onCompleted();
+      metaSyncService.handleDelta(req);
+      return Empty.getDefaultInstance();
+    });
+  }
+
+  @Override
+  public void reportEvents(ReportEventRequest request, StreamObserver<Empty> o) {
+    authAndMap(request, request.getHeader(), o, ai -> { //
+      agentEventService.reportEvents(ai, request); //
+      return Empty.getDefaultInstance(); //
+    }); //
   }
 
   private <R> void authAndFlatMap(CommonRequestHeader header, StreamObserver<R> o,
@@ -251,8 +257,12 @@ public class RegistryServiceForAgentImpl
 
   private <R> void authAndMap(Object request, CommonRequestHeader header, StreamObserver<R> o,
       Function<? super AuthInfo, ? extends R> transformer) {
+    TrafficTracer tt = TrafficTracer.KEY.get();
     apikeyAuthService.get(header.getApikey()) //
-        .map(transformer) //
+        .map(ai -> { //
+          tt.setTenant(ai.getTenant()); //
+          return transformer.apply(ai);
+        }) //
         .subscribe(o::onNext, error -> {
           if (error instanceof StatusRuntimeException) {
             o.onError(error);
@@ -436,5 +446,4 @@ public class RegistryServiceForAgentImpl
 
     return r;
   }
-
 }

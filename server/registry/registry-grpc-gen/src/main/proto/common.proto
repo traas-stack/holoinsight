@@ -78,6 +78,8 @@ message CommonRequestHeader {
   string apikey = 1;
   string trace_id = 2;
   map<string, string> header = 3;
+  // workspace
+  string workspace = 4;
 }
 
 message CommonResponseHeader {

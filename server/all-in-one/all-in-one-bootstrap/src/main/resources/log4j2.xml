@@ -232,6 +232,39 @@
 			</Policies>
 		</RollingFile>
 
+		<RollingFile name="AGENT_EVENT_STAT" fileName="${LOG_PATH}/agent/stat.log"
+		             filePattern="${LOG_PATH}/agent/stat.log.%i" immediateFlush="true">
+			<DefaultRolloverStrategy max="1"/>
+			<PatternLayout charset="utf-8">
+				<pattern>%d %m%n</pattern>
+			</PatternLayout>
+			<Policies>
+				<SizeBasedTriggeringPolicy size="1GB"/>
+			</Policies>
+		</RollingFile>
+
+		<RollingFile name="AGENT_EVENT_DIGEST" fileName="${LOG_PATH}/agent/digest.log"
+		             filePattern="${LOG_PATH}/agent/digest.log.%i" immediateFlush="true">
+			<DefaultRolloverStrategy max="1"/>
+			<PatternLayout charset="utf-8">
+				<pattern>%d %m%n</pattern>
+			</PatternLayout>
+			<Policies>
+				<SizeBasedTriggeringPolicy size="1GB"/>
+			</Policies>
+		</RollingFile>
+
+		<RollingFile name="AGENT_EVENT_UP" fileName="${LOG_PATH}/agent/up.log"
+		             filePattern="${LOG_PATH}/agent/up.log.%i" immediateFlush="true">
+			<DefaultRolloverStrategy max="1"/>
+			<PatternLayout charset="utf-8">
+				<pattern>%d %m%n</pattern>
+			</PatternLayout>
+			<Policies>
+				<SizeBasedTriggeringPolicy size="1GB"/>
+			</Policies>
+		</RollingFile>
+
 	</Appenders>
 
 	<Loggers>
@@ -267,6 +300,15 @@
 		</Logger>
 		<Logger name="io.holoinsight.server.common.config.ProdLog" additivity="false" level="INFO">
 			<Appender-Ref ref="HOME"/>
+		</Logger>
+		<Logger name="AGENT_EVENT_STAT" additivity="false" level="INFO">
+			<Appender-Ref ref="AGENT_EVENT_STAT"/>
+		</Logger>
+		<Logger name="AGENT_EVENT_DIGEST" additivity="false" level="INFO">
+			<Appender-Ref ref="AGENT_EVENT_DIGEST"/>
+		</Logger>
+		<Logger name="AGENT_EVENT_UP" additivity="false" level="INFO">
+			<Appender-Ref ref="AGENT_EVENT_UP"/>
 		</Logger>
 		<Root level="INFO">
 			<Appender-Ref level="INFO" ref="ROOT-APPENDER"/>

@@ -20,7 +20,7 @@ import org.springframework.stereotype.Component;
 
 import io.holoinsight.server.registry.core.template.CollectTemplate;
 import io.holoinsight.server.registry.core.template.CollectTemplateDelta;
-import io.holoinsight.server.registry.core.utils.MetricsUtils;
+import io.holoinsight.server.common.MetricsUtils;
 import com.xzchaoo.commons.hashedeventloop.DisruptorEventLoopManager;
 import com.xzchaoo.commons.hashedeventloop.EventLoopManagerConfig;
 import com.xzchaoo.commons.stat.StringsKey;

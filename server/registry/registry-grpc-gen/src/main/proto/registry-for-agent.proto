@@ -231,6 +231,35 @@ message MetaSync {
   }
 }
 
+message ReportEventRequest {
+  io.holoinsight.server.common.grpc.CommonRequestHeader header = 1;
+  repeated Event events = 2;
+
+  message Event {
+    // event time
+    int64 born_timestamp = 1;
+    int64 event_timestamp = 2;
+    // event type: STAT/DIGEST/DEBUG
+    // STAT: reports some Statistical indicators. strings must be empty.
+    // DIGEST: reports important events when running. It can have numbers and strings
+    // DEBUG: like digest, but only reported when debug mode is enabled.
+    // LOG: logs
+    string event_type = 3;
+    // event payload type
+    string payload_type = 4;
+    // event tags, such tenant,agentIp,targetIp
+    // event tags, numbers, and strings maps must have different keys.
+    map<string, string> tags = 5;
+    // event numbers
+    map<string, int64> numbers = 6;
+    // event strings
+    map<string, string> strings = 7;
+    // event logs
+    repeated string logs = 8;
+    string json = 9;
+  }
+}
+
 // 有一个问题, grpc的client能否感知到连接曾经断开? 一般来说当重新连上某个reg时, 需要重新执行 get_auth_info, register_agent
 // 也就是关闭grpc的自动重试机制, ... 感觉是我们的设计有点不好
 
@@ -271,4 +300,5 @@ service RegistryServiceForAgent {
 
   rpc meta_full_sync(MetaSync.FullSyncRequest)returns(google.protobuf.Empty){}
   rpc meta_delta_sync(MetaSync.DeltaSyncRequest)returns(google.protobuf.Empty){}
+  rpc report_events(ReportEventRequest) returns(google.protobuf.Empty){}
 }

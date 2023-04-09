@@ -21,7 +21,7 @@ import io.holoinsight.server.registry.core.grpc.RegistryServerForAgent;
 import io.holoinsight.server.registry.core.template.CollectTemplate;
 import io.holoinsight.server.registry.core.template.CollectTemplateSyncer;
 import io.holoinsight.server.registry.core.template.TemplateStorage;
-import io.holoinsight.server.registry.core.utils.MetricsUtils;
+import io.holoinsight.server.common.MetricsUtils;
 import io.prometheus.client.Gauge;
 import reactor.core.publisher.Mono;
 

@@ -81,6 +81,16 @@ public final class RegistryForAgentProtos {
   static final com.google.protobuf.GeneratedMessageV3.FieldAccessorTable internal_static_io_holoinsight_server_registry_grpc_agent_MetaSync_Resource_AnnotationsEntry_fieldAccessorTable;
   static final com.google.protobuf.Descriptors.Descriptor internal_static_io_holoinsight_server_registry_grpc_agent_MetaSync_Resource_SpecEntry_descriptor;
   static final com.google.protobuf.GeneratedMessageV3.FieldAccessorTable internal_static_io_holoinsight_server_registry_grpc_agent_MetaSync_Resource_SpecEntry_fieldAccessorTable;
+  static final com.google.protobuf.Descriptors.Descriptor internal_static_io_holoinsight_server_registry_grpc_agent_ReportEventRequest_descriptor;
+  static final com.google.protobuf.GeneratedMessageV3.FieldAccessorTable internal_static_io_holoinsight_server_registry_grpc_agent_ReportEventRequest_fieldAccessorTable;
+  static final com.google.protobuf.Descriptors.Descriptor internal_static_io_holoinsight_server_registry_grpc_agent_ReportEventRequest_Event_descriptor;
+  static final com.google.protobuf.GeneratedMessageV3.FieldAccessorTable internal_static_io_holoinsight_server_registry_grpc_agent_ReportEventRequest_Event_fieldAccessorTable;
+  static final com.google.protobuf.Descriptors.Descriptor internal_static_io_holoinsight_server_registry_grpc_agent_ReportEventRequest_Event_TagsEntry_descriptor;
+  static final com.google.protobuf.GeneratedMessageV3.FieldAccessorTable internal_static_io_holoinsight_server_registry_grpc_agent_ReportEventRequest_Event_TagsEntry_fieldAccessorTable;
+  static final com.google.protobuf.Descriptors.Descriptor internal_static_io_holoinsight_server_registry_grpc_agent_ReportEventRequest_Event_NumbersEntry_descriptor;
+  static final com.google.protobuf.GeneratedMessageV3.FieldAccessorTable internal_static_io_holoinsight_server_registry_grpc_agent_ReportEventRequest_Event_NumbersEntry_fieldAccessorTable;
+  static final com.google.protobuf.Descriptors.Descriptor internal_static_io_holoinsight_server_registry_grpc_agent_ReportEventRequest_Event_StringsEntry_descriptor;
+  static final com.google.protobuf.GeneratedMessageV3.FieldAccessorTable internal_static_io_holoinsight_server_registry_grpc_agent_ReportEventRequest_Event_StringsEntry_fieldAccessorTable;
 
   public static com.google.protobuf.Descriptors.FileDescriptor getDescriptor() {
     return descriptor;
@@ -201,30 +211,51 @@ public final class RegistryForAgentProtos {
         + "ntry\022\013\n\003key\030\001 \001(\t\022\r\n\005value\030\002 \001(\t:\0028\001\0322\n\020"
         + "AnnotationsEntry\022\013\n\003key\030\001 \001(\t\022\r\n\005value\030\002"
         + " \001(\t:\0028\001\032+\n\tSpecEntry\022\013\n\003key\030\001 \001(\t\022\r\n\005va"
-        + "lue\030\002 \001(\t:\0028\0012\273\010\n\027RegistryServiceForAgen"
-        + "t\0228\n\004ping\022\026.google.protobuf.Empty\032\026.goog"
-        + "le.protobuf.Empty\"\000\022\225\001\n\016register_agent\022?"
-        + ".io.holoinsight.server.registry.grpc.age" + "nt.RegisterAgentRequest\032@.io.holoinsight"
-        + ".server.registry.grpc.agent.RegisterAgen"
-        + "tResponse\"\000\022\245\001\n\024send_agent_heartbeat\022D.i"
-        + "o.holoinsight.server.registry.grpc.agent" + ".SendAgentHeartbeatRequest\032E.io.holoinsi"
-        + "ght.server.registry.grpc.agent.SendAgent"
-        + "HeartbeatResponse\"\000\022\242\001\n\023get_control_conf"
-        + "igs\022C.io.holoinsight.server.registry.grp"
-        + "c.agent.GetControlConfigsRequest\032D.io.ho" + "loinsight.server.registry.grpc.agent.Get"
-        + "ControlConfigsResponse\"\000\022\234\001\n\021get_collect"
-        + "_tasks\022A.io.holoinsight.server.registry."
-        + "grpc.agent.GetCollectTasksRequest\032B.io.h" + "oloinsight.server.registry.grpc.agent.Ge"
-        + "tCollectTasksResponse\"\000\022~\n\nbi_streams\0224."
-        + "io.holoinsight.server.common.grpc.Generi" + "cRpcCommand\0324.io.holoinsight.server.comm"
-        + "on.grpc.GenericRpcCommand\"\000(\0010\001\022o\n\016meta_"
-        + "full_sync\022C.io.holoinsight.server.regist"
-        + "ry.grpc.agent.MetaSync.FullSyncRequest\032\026"
-        + ".google.protobuf.Empty\"\000\022q\n\017meta_delta_s"
-        + "ync\022D.io.holoinsight.server.registry.grp"
-        + "c.agent.MetaSync.DeltaSyncRequest\032\026.goog"
-        + "le.protobuf.Empty\"\000BE\n)io.holoinsight.se"
-        + "rver.registry.grpc.agentB\026RegistryForAge" + "ntProtosP\001b\006proto3"};
+        + "lue\030\002 \001(\t:\0028\001\"\342\005\n\022ReportEventRequest\022F\n\006"
+        + "header\030\001 \001(\01326.io.holoinsight.server.com"
+        + "mon.grpc.CommonRequestHeader\022S\n\006events\030\002"
+        + " \003(\0132C.io.holoinsight.server.registry.gr"
+        + "pc.agent.ReportEventRequest.Event\032\256\004\n\005Ev"
+        + "ent\022\026\n\016born_timestamp\030\001 \001(\003\022\027\n\017event_tim"
+        + "estamp\030\002 \001(\003\022\022\n\nevent_type\030\003 \001(\t\022\024\n\014payl"
+        + "oad_type\030\004 \001(\t\022[\n\004tags\030\005 \003(\0132M.io.holoin"
+        + "sight.server.registry.grpc.agent.ReportE"
+        + "ventRequest.Event.TagsEntry\022a\n\007numbers\030\006"
+        + " \003(\0132P.io.holoinsight.server.registry.gr"
+        + "pc.agent.ReportEventRequest.Event.Number"
+        + "sEntry\022a\n\007strings\030\007 \003(\0132P.io.holoinsight"
+        + ".server.registry.grpc.agent.ReportEventR"
+        + "equest.Event.StringsEntry\022\014\n\004logs\030\010 \003(\t\022"
+        + "\014\n\004json\030\t \001(\t\032+\n\tTagsEntry\022\013\n\003key\030\001 \001(\t\022"
+        + "\r\n\005value\030\002 \001(\t:\0028\001\032.\n\014NumbersEntry\022\013\n\003ke"
+        + "y\030\001 \001(\t\022\r\n\005value\030\002 \001(\003:\0028\001\032.\n\014StringsEnt"
+        + "ry\022\013\n\003key\030\001 \001(\t\022\r\n\005value\030\002 \001(\t:\0028\0012\245\t\n\027R"
+        + "egistryServiceForAgent\0228\n\004ping\022\026.google."
+        + "protobuf.Empty\032\026.google.protobuf.Empty\"\000"
+        + "\022\225\001\n\016register_agent\022?.io.holoinsight.ser"
+        + "ver.registry.grpc.agent.RegisterAgentReq" + "uest\032@.io.holoinsight.server.registry.gr"
+        + "pc.agent.RegisterAgentResponse\"\000\022\245\001\n\024sen"
+        + "d_agent_heartbeat\022D.io.holoinsight.serve" + "r.registry.grpc.agent.SendAgentHeartbeat"
+        + "Request\032E.io.holoinsight.server.registry"
+        + ".grpc.agent.SendAgentHeartbeatResponse\"\000"
+        + "\022\242\001\n\023get_control_configs\022C.io.holoinsigh"
+        + "t.server.registry.grpc.agent.GetControlC" + "onfigsRequest\032D.io.holoinsight.server.re"
+        + "gistry.grpc.agent.GetControlConfigsRespo"
+        + "nse\"\000\022\234\001\n\021get_collect_tasks\022A.io.holoins"
+        + "ight.server.registry.grpc.agent.GetColle" + "ctTasksRequest\032B.io.holoinsight.server.r"
+        + "egistry.grpc.agent.GetCollectTasksRespon"
+        + "se\"\000\022~\n\nbi_streams\0224.io.holoinsight.serv"
+        + "er.common.grpc.GenericRpcCommand\0324.io.ho" + "loinsight.server.common.grpc.GenericRpcC"
+        + "ommand\"\000(\0010\001\022o\n\016meta_full_sync\022C.io.holo"
+        + "insight.server.registry.grpc.agent.MetaS"
+        + "ync.FullSyncRequest\032\026.google.protobuf.Em"
+        + "pty\"\000\022q\n\017meta_delta_sync\022D.io.holoinsigh"
+        + "t.server.registry.grpc.agent.MetaSync.De"
+        + "ltaSyncRequest\032\026.google.protobuf.Empty\"\000"
+        + "\022h\n\rreport_events\022=.io.holoinsight.serve"
+        + "r.registry.grpc.agent.ReportEventRequest"
+        + "\032\026.google.protobuf.Empty\"\000BE\n)io.holoins"
+        + "ight.server.registry.grpc.agentB\026Registr" + "yForAgentProtosP\001b\006proto3"};
     descriptor = com.google.protobuf.Descriptors.FileDescriptor.internalBuildGeneratedFileFrom(
         descriptorData,
         new com.google.protobuf.Descriptors.FileDescriptor[] {
@@ -444,6 +475,41 @@ public final class RegistryForAgentProtos {
     internal_static_io_holoinsight_server_registry_grpc_agent_MetaSync_Resource_SpecEntry_fieldAccessorTable =
         new com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
             internal_static_io_holoinsight_server_registry_grpc_agent_MetaSync_Resource_SpecEntry_descriptor,
+            new java.lang.String[] {"Key", "Value",});
+    internal_static_io_holoinsight_server_registry_grpc_agent_ReportEventRequest_descriptor =
+        getDescriptor().getMessageTypes().get(20);
+    internal_static_io_holoinsight_server_registry_grpc_agent_ReportEventRequest_fieldAccessorTable =
+        new com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+            internal_static_io_holoinsight_server_registry_grpc_agent_ReportEventRequest_descriptor,
+            new java.lang.String[] {"Header", "Events",});
+    internal_static_io_holoinsight_server_registry_grpc_agent_ReportEventRequest_Event_descriptor =
+        internal_static_io_holoinsight_server_registry_grpc_agent_ReportEventRequest_descriptor
+            .getNestedTypes().get(0);
+    internal_static_io_holoinsight_server_registry_grpc_agent_ReportEventRequest_Event_fieldAccessorTable =
+        new com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+            internal_static_io_holoinsight_server_registry_grpc_agent_ReportEventRequest_Event_descriptor,
+            new java.lang.String[] {"BornTimestamp", "EventTimestamp", "EventType", "PayloadType",
+                "Tags", "Numbers", "Strings", "Logs", "Json",});
+    internal_static_io_holoinsight_server_registry_grpc_agent_ReportEventRequest_Event_TagsEntry_descriptor =
+        internal_static_io_holoinsight_server_registry_grpc_agent_ReportEventRequest_Event_descriptor
+            .getNestedTypes().get(0);
+    internal_static_io_holoinsight_server_registry_grpc_agent_ReportEventRequest_Event_TagsEntry_fieldAccessorTable =
+        new com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+            internal_static_io_holoinsight_server_registry_grpc_agent_ReportEventRequest_Event_TagsEntry_descriptor,
+            new java.lang.String[] {"Key", "Value",});
+    internal_static_io_holoinsight_server_registry_grpc_agent_ReportEventRequest_Event_NumbersEntry_descriptor =
+        internal_static_io_holoinsight_server_registry_grpc_agent_ReportEventRequest_Event_descriptor
+            .getNestedTypes().get(1);
+    internal_static_io_holoinsight_server_registry_grpc_agent_ReportEventRequest_Event_NumbersEntry_fieldAccessorTable =
+        new com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+            internal_static_io_holoinsight_server_registry_grpc_agent_ReportEventRequest_Event_NumbersEntry_descriptor,
+            new java.lang.String[] {"Key", "Value",});
+    internal_static_io_holoinsight_server_registry_grpc_agent_ReportEventRequest_Event_StringsEntry_descriptor =
+        internal_static_io_holoinsight_server_registry_grpc_agent_ReportEventRequest_Event_descriptor
+            .getNestedTypes().get(2);
+    internal_static_io_holoinsight_server_registry_grpc_agent_ReportEventRequest_Event_StringsEntry_fieldAccessorTable =
+        new com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+            internal_static_io_holoinsight_server_registry_grpc_agent_ReportEventRequest_Event_StringsEntry_descriptor,
             new java.lang.String[] {"Key", "Value",});
     com.google.protobuf.EmptyProto.getDescriptor();
     io.holoinsight.server.common.grpc.CommonProtos.getDescriptor();

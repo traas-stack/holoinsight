@@ -63,5 +63,9 @@
 			<artifactId>protobuf-java-util</artifactId>
 			<scope>provided</scope>
 		</dependency>
+		<dependency>
+			<artifactId>commons-stat</artifactId>
+			<groupId>com.xzchaoo.commons</groupId>
+		</dependency>
 	</dependencies>
 </project>

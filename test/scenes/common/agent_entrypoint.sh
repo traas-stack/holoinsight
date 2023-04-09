@@ -7,4 +7,6 @@ fi
 
 cd /usr/local/holoinsight/agent
 
+pkill -f /usr/local/holoinsight/agent/bin/agent || true
+
 nohup /usr/local/holoinsight/agent/bin/agent > /usr/local/holoinsight/agent/logs/stdout.log &

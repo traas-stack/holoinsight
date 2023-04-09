@@ -22,6 +22,7 @@ public final class CommonRequestHeader extends com.google.protobuf.GeneratedMess
   private CommonRequestHeader() {
     apikey_ = "";
     traceId_ = "";
+    workspace_ = "";
   }
 
   @java.lang.Override
@@ -75,6 +76,12 @@ public final class CommonRequestHeader extends com.google.protobuf.GeneratedMess
                 input.readMessage(HeaderDefaultEntryHolder.defaultEntry.getParserForType(),
                     extensionRegistry);
             header_.getMutableMap().put(header__.getKey(), header__.getValue());
+            break;
+          }
+          case 34: {
+            java.lang.String s = input.readStringRequireUtf8();
+
+            workspace_ = s;
             break;
           }
           default: {
@@ -261,6 +268,39 @@ public final class CommonRequestHeader extends com.google.protobuf.GeneratedMess
     return map.get(key);
   }
 
+  public static final int WORKSPACE_FIELD_NUMBER = 4;
+  private volatile java.lang.Object workspace_;
+
+  /**
+   * <code>string workspace = 4;</code>
+   */
+  public java.lang.String getWorkspace() {
+    java.lang.Object ref = workspace_;
+    if (ref instanceof java.lang.String) {
+      return (java.lang.String) ref;
+    } else {
+      com.google.protobuf.ByteString bs = (com.google.protobuf.ByteString) ref;
+      java.lang.String s = bs.toStringUtf8();
+      workspace_ = s;
+      return s;
+    }
+  }
+
+  /**
+   * <code>string workspace = 4;</code>
+   */
+  public com.google.protobuf.ByteString getWorkspaceBytes() {
+    java.lang.Object ref = workspace_;
+    if (ref instanceof java.lang.String) {
+      com.google.protobuf.ByteString b =
+          com.google.protobuf.ByteString.copyFromUtf8((java.lang.String) ref);
+      workspace_ = b;
+      return b;
+    } else {
+      return (com.google.protobuf.ByteString) ref;
+    }
+  }
+
   private byte memoizedIsInitialized = -1;
 
   @java.lang.Override
@@ -285,6 +325,9 @@ public final class CommonRequestHeader extends com.google.protobuf.GeneratedMess
     }
     com.google.protobuf.GeneratedMessageV3.serializeStringMapTo(output, internalGetHeader(),
         HeaderDefaultEntryHolder.defaultEntry, 3);
+    if (!getWorkspaceBytes().isEmpty()) {
+      com.google.protobuf.GeneratedMessageV3.writeString(output, 4, workspace_);
+    }
     unknownFields.writeTo(output);
   }
 
@@ -308,6 +351,9 @@ public final class CommonRequestHeader extends com.google.protobuf.GeneratedMess
               .setValue(entry.getValue()).build();
       size += com.google.protobuf.CodedOutputStream.computeMessageSize(3, header__);
     }
+    if (!getWorkspaceBytes().isEmpty()) {
+      size += com.google.protobuf.GeneratedMessageV3.computeStringSize(4, workspace_);
+    }
     size += unknownFields.getSerializedSize();
     memoizedSize = size;
     return size;
@@ -330,6 +376,8 @@ public final class CommonRequestHeader extends com.google.protobuf.GeneratedMess
       return false;
     if (!internalGetHeader().equals(other.internalGetHeader()))
       return false;
+    if (!getWorkspace().equals(other.getWorkspace()))
+      return false;
     if (!unknownFields.equals(other.unknownFields))
       return false;
     return true;
@@ -350,6 +398,8 @@ public final class CommonRequestHeader extends com.google.protobuf.GeneratedMess
       hash = (37 * hash) + HEADER_FIELD_NUMBER;
       hash = (53 * hash) + internalGetHeader().hashCode();
     }
+    hash = (37 * hash) + WORKSPACE_FIELD_NUMBER;
+    hash = (53 * hash) + getWorkspace().hashCode();
     hash = (29 * hash) + unknownFields.hashCode();
     memoizedHashCode = hash;
     return hash;
@@ -513,6 +563,8 @@ public final class CommonRequestHeader extends com.google.protobuf.GeneratedMess
       traceId_ = "";
 
       internalGetMutableHeader().clear();
+      workspace_ = "";
+
       return this;
     }
 
@@ -544,6 +596,7 @@ public final class CommonRequestHeader extends com.google.protobuf.GeneratedMess
       result.traceId_ = traceId_;
       result.header_ = internalGetHeader();
       result.header_.makeImmutable();
+      result.workspace_ = workspace_;
       onBuilt();
       return result;
     }
@@ -603,6 +656,10 @@ public final class CommonRequestHeader extends com.google.protobuf.GeneratedMess
         onChanged();
       }
       internalGetMutableHeader().mergeFrom(other.internalGetHeader());
+      if (!other.getWorkspace().isEmpty()) {
+        workspace_ = other.workspace_;
+        onChanged();
+      }
       this.mergeUnknownFields(other.unknownFields);
       onChanged();
       return this;
@@ -895,6 +952,75 @@ public final class CommonRequestHeader extends com.google.protobuf.GeneratedMess
 
     public Builder putAllHeader(java.util.Map<java.lang.String, java.lang.String> values) {
       internalGetMutableHeader().getMutableMap().putAll(values);
+      return this;
+    }
+
+    private java.lang.Object workspace_ = "";
+
+    /**
+     * <code>string workspace = 4;</code>
+     */
+    public java.lang.String getWorkspace() {
+      java.lang.Object ref = workspace_;
+      if (!(ref instanceof java.lang.String)) {
+        com.google.protobuf.ByteString bs = (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        workspace_ = s;
+        return s;
+      } else {
+        return (java.lang.String) ref;
+      }
+    }
+
+    /**
+     * <code>string workspace = 4;</code>
+     */
+    public com.google.protobuf.ByteString getWorkspaceBytes() {
+      java.lang.Object ref = workspace_;
+      if (ref instanceof String) {
+        com.google.protobuf.ByteString b =
+            com.google.protobuf.ByteString.copyFromUtf8((java.lang.String) ref);
+        workspace_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    /**
+     * <code>string workspace = 4;</code>
+     */
+    public Builder setWorkspace(java.lang.String value) {
+      if (value == null) {
+        throw new NullPointerException();
+      }
+
+      workspace_ = value;
+      onChanged();
+      return this;
+    }
+
+    /**
+     * <code>string workspace = 4;</code>
+     */
+    public Builder clearWorkspace() {
+
+      workspace_ = getDefaultInstance().getWorkspace();
+      onChanged();
+      return this;
+    }
+
+    /**
+     * <code>string workspace = 4;</code>
+     */
+    public Builder setWorkspaceBytes(com.google.protobuf.ByteString value) {
+      if (value == null) {
+        throw new NullPointerException();
+      }
+      checkByteStringIsUtf8(value);
+
+      workspace_ = value;
+      onChanged();
       return this;
     }
 

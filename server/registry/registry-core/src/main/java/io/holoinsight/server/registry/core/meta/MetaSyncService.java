@@ -33,7 +33,7 @@ import io.holoinsight.server.common.MD5Hash;
  */
 @Service
 public class MetaSyncService {
-  private static final String DEFAULT_WORKSPACE = "default";
+  public static final String DEFAULT_WORKSPACE = "default";
   private static final String DEFAULT_CLUSTER = "default";
 
   private static final Logger LOGGER = LoggerFactory.getLogger(MetaSyncService.class);
