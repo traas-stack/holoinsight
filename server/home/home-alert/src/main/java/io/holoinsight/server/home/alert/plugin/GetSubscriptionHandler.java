@@ -160,6 +160,7 @@ public class GetSubscriptionHandler implements AlertHandlerExecutor {
             for (AlarmSubscribe alertSubscribe : alertSubscribeList) {
               String noticeTypeStr = alertSubscribe.getNoticeType();
               if (StringUtils.isEmpty(noticeTypeStr) || !noticeTypeStr.startsWith("[")) {
+                LOGGER.warn("{} invalid noticeTypeStr {}", alertNotify.getTraceId(), noticeTypeStr);
                 continue;
               }
               List<String> noticeTypeList = G.parseList(noticeTypeStr, String.class);
@@ -222,6 +223,10 @@ public class GetSubscriptionHandler implements AlertHandlerExecutor {
                         webhookInfos.addAll(alertWebhookList.stream()
                             .map(DoConvert::alertWebhookDoConverter).collect(Collectors.toList()));
                       }
+                      LOGGER.info("{} webhookInfos is {}.", alertNotify.getTraceId(),
+                          G.get().toJson(webhookInfos));
+                    } else {
+                      LOGGER.info("{} alert is recover.", alertNotify.getTraceId());
                     }
                     break;
                 }
@@ -246,7 +251,7 @@ public class GetSubscriptionHandler implements AlertHandlerExecutor {
             }
           }
           FuseProtector.voteComplete(NORMAL_GetSubscriptionDetail);
-        } catch (Exception e) {
+        } catch (Throwable e) {
           LOGGER.error(
               "[HoloinsightAlertInternalException][GetSubscriptionHandler][1] {}  fail to get_subscription for {}",
               alertNotify.getTraceId(), e.getMessage(), e);

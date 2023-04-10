@@ -56,7 +56,7 @@ public abstract class GatewayService {
 
   public boolean sendAlertNotifyV3(AlertNotifyRequest notify) {
     String traceId = notify.getTraceId();
-    LOGGER.info("{} receive_alarm_notify_requestat {}", traceId,
+    LOGGER.info("{} receive_alarm_notify_request at {}", traceId,
         this.environmentProperties.getDeploymentSite());
 
     NotifyChain defaultNotifyChain = new NotifyChain(this.scheduleQueue);
