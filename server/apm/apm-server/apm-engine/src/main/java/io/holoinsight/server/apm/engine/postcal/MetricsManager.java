@@ -16,6 +16,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
@@ -36,40 +37,34 @@ public class MetricsManager {
   @Getter
   private Map<String, MetricDefine> metricDefines = new HashMap<>();
 
-  @PostConstruct
-  public void load() throws IOException {
-    List<MetricDefine> rsMetrics = loadFromResource(resource);
-    if (rsMetrics != null) {
-      rsMetrics.forEach(rsMetric -> this.metricDefines.put(rsMetric.getName(), rsMetric));
-    }
-    // Metrics defined in the database have higher priority, which can override the content in
-    // metrics.json
-    List<MetricDefine> dbMetrics = loadFromDB();
-    if (dbMetrics != null) {
-      dbMetrics.forEach(dbMetric -> this.metricDefines.put(dbMetric.getName(), dbMetric));
-    }
-    log.info("[apm] load metric definitions: {}", this.metricDefines);
-  }
 
-  private List<MetricDefine> loadFromResource(Resource rs) throws IOException {
-    List<MetricDefine> materializedMetrics = new ArrayList<>();
-    String metricDefineJson = IOUtils.toString(rs.getInputStream(), Charset.defaultCharset());
+  @PostConstruct
+  private List<MetricDefine> loadFromResource() throws IOException {
+    List<MetricDefine> materializedMetrics;
+    String metricDefineJson = IOUtils.toString(resource.getInputStream(), Charset.defaultCharset());
     materializedMetrics = GsonUtils.get().fromJson(metricDefineJson,
         new TypeToken<List<MetricDefine>>() {}.getType());
     log.info("[apm] load metric definitions from resource: {}", materializedMetrics);
+    materializedMetrics.forEach(materializedMetric -> this.metricDefines
+        .put(materializedMetric.getName(), materializedMetric));
     return materializedMetrics;
   }
 
-  private List<MetricDefine> loadFromDB() {
-    List<MetricDefine> materializedMetrics = new ArrayList<>();
-    MetaDataDictValue metricDefineDictVal = superCacheService.getSc().metaDataDictValueMap
-        .getOrDefault("global_config", new HashMap<>()).get("apm_materialized_metrics");
-    if (metricDefineDictVal != null) {
-      return GsonUtils.get().fromJson(metricDefineDictVal.getDictValue(),
-          new TypeToken<List<MetricDefine>>() {}.getType());
+  @Scheduled(initialDelay = 10000L, fixedDelay = 60000L)
+  private void loadFromDB() {
+    try {
+      MetaDataDictValue metricDefineDictVal = superCacheService.getSc().metaDataDictValueMap
+          .getOrDefault("global_config", new HashMap<>()).get("apm_materialized_metrics");
+      if (metricDefineDictVal != null) {
+        List<MetricDefine> materializedMetrics = GsonUtils.get().fromJson(
+            metricDefineDictVal.getDictValue(), new TypeToken<List<MetricDefine>>() {}.getType());
+        log.info("[apm] load metric definitions from database: {}", materializedMetrics);
+        materializedMetrics.forEach(materializedMetric -> this.metricDefines
+            .put(materializedMetric.getName(), materializedMetric));
+      }
+    } catch (Exception e) {
+      log.info("[apm] load metric definitions from database fail", e);
     }
-    log.info("[apm] load metric definitions from database: {}", materializedMetrics);
-    return materializedMetrics;
   }
 
   public List<String> listMetrics() {
