@@ -50,6 +50,10 @@ public class MetricsManager {
     return materializedMetrics;
   }
 
+  /**
+   * Metrics defined in the database have higher priority, which can override the content in
+   * metrics.json
+   */
   @Scheduled(initialDelay = 10000L, fixedDelay = 60000L)
   private void loadFromDB() {
     try {
