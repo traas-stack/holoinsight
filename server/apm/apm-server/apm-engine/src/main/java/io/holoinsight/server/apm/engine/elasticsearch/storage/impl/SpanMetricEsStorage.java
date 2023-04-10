@@ -23,7 +23,9 @@ import org.elasticsearch.search.aggregations.AggregationBuilder;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
 import org.elasticsearch.search.aggregations.Aggregations;
 import org.elasticsearch.search.aggregations.bucket.histogram.*;
+import org.elasticsearch.search.aggregations.bucket.terms.ParsedLongTerms;
 import org.elasticsearch.search.aggregations.bucket.terms.ParsedStringTerms;
+import org.elasticsearch.search.aggregations.bucket.terms.ParsedTerms;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms;
 import org.elasticsearch.search.aggregations.metrics.NumericMetricsAggregation;
 import org.elasticsearch.search.aggregations.metrics.ParsedPercentiles;
@@ -56,7 +58,7 @@ public class SpanMetricEsStorage extends PostCalMetricStorage {
 
   @Override
   protected MetricValues query(MetricDefine metricDefine, String tenant, Duration duration,
-      Map<String, Object> conditions, Set<String> groups) throws IOException {
+      Map<String, Object> conditions, Collection<String> groups) throws IOException {
     List<MetricValue> values = new ArrayList<>();
     MetricValues metricValues = new MetricValues(values);
     SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
@@ -108,7 +110,7 @@ public class SpanMetricEsStorage extends PostCalMetricStorage {
         Aggregations timeAggregations = parsedBucket.getAggregations();
         Map<String, String> tags = new HashMap<>();
         Aggregation timeAggregation = timeAggregations.iterator().next();
-        backtrackExtract(time, timeAggregation, valuesMap, tags);
+        backtrackExtract(metricDefine, time, timeAggregation, valuesMap, tags);
       }
     }
     valuesMap.forEach((tags, timeVals) -> {
@@ -139,7 +141,7 @@ public class SpanMetricEsStorage extends PostCalMetricStorage {
     }
   }
 
-  private void backtrackExtract(Long time, Aggregation aggregation,
+  private void backtrackExtract(MetricDefine metricDefine, Long time, Aggregation aggregation,
       Map<Map<String, String>, Map<Long, Double>> tagsValues, Map<String, String> tags) {
     if (aggregation instanceof NumericMetricsAggregation.SingleValue) {
       NumericMetricsAggregation.SingleValue singleValue =
@@ -159,16 +161,16 @@ public class SpanMetricEsStorage extends PostCalMetricStorage {
       }
       return;
     }
-    if (aggregation instanceof ParsedStringTerms) {
-      ParsedStringTerms parsedStringTerms = (ParsedStringTerms) aggregation;
-      String tagK = parsedStringTerms.getName();
-      List<? extends Terms.Bucket> buckets = parsedStringTerms.getBuckets();
+    if (aggregation instanceof ParsedTerms) {
+      ParsedTerms parsedTerms = (ParsedTerms) aggregation;
+      String tagK = parsedTerms.getName();
+      List<? extends Terms.Bucket> buckets = parsedTerms.getBuckets();
       if (buckets != null) {
         for (Terms.Bucket bucket : buckets) {
           String tagV = bucket.getKeyAsString();
-          tags.put(OtlpMappings.fromOtlp(tagK), tagV);
+          tags.put(OtlpMappings.fromOtlp(metricDefine.getIndex(), tagK), tagV);
           Aggregation subAggregation = bucket.getAggregations().iterator().next();
-          backtrackExtract(time, subAggregation, tagsValues, tags);
+          backtrackExtract(metricDefine, time, subAggregation, tagsValues, tags);
           tags.remove(tagK);
         }
       }

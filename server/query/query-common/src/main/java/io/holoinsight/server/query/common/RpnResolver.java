@@ -22,7 +22,7 @@ public class RpnResolver {
 
   public List<String> expr2Infix(String expr) {
     Objects.requireNonNull(expr);
-    Pattern pattern_expr = Pattern.compile("(\\(|\\)|\\+|\\-|\\*|/|\\d+(\\.\\d+)?|\\w+)");
+    Pattern pattern_expr = Pattern.compile("(\\(|\\)|\\+|-|\\*|/|\\d+(\\.\\d+)?|\\w+(\\{\\w+})?)");
     Matcher matcher = pattern_expr.matcher(expr);
     List<String> exprs = new ArrayList<>();
     while (matcher.find()) {

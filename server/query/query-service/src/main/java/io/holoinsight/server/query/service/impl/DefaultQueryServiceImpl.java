@@ -9,9 +9,11 @@ import com.google.common.cache.LoadingCache;
 import com.google.common.collect.Lists;
 import com.google.protobuf.MessageOrBuilder;
 import io.holoinsight.server.apm.common.model.query.*;
+import io.holoinsight.server.apm.common.model.specification.OtlpMappings;
 import io.holoinsight.server.apm.common.model.specification.sw.Trace;
 import io.holoinsight.server.apm.common.model.specification.sw.TraceState;
 import io.holoinsight.server.apm.common.utils.GsonUtils;
+import io.holoinsight.server.apm.engine.postcal.MetricDefine;
 import io.holoinsight.server.common.DurationUtil;
 import io.holoinsight.server.common.ProtoJsonUtils;
 import io.holoinsight.server.extension.MetricStorage;
@@ -57,13 +59,14 @@ public class DefaultQueryServiceImpl implements QueryService {
   @Autowired
   private ApmClient apmClient;
 
-  private LoadingCache<String, Set<String>> apmMetrics = CacheBuilder.newBuilder()
-      .expireAfterWrite(60, TimeUnit.SECONDS).build(new CacheLoader<String, Set<String>>() {
-        @Override
-        public Set<String> load(String tenantName) throws Exception {
-          return new HashSet<>(listApmMetrics(tenantName));
-        }
-      });
+  private LoadingCache<String, Map<String, MetricDefine>> apmMetrics =
+      CacheBuilder.newBuilder().expireAfterWrite(60, TimeUnit.SECONDS)
+          .build(new CacheLoader<String, Map<String, MetricDefine>>() {
+            @Override
+            public Map<String, MetricDefine> load(String tenantName) {
+              return listApmMetrics(tenantName);
+            }
+          });
 
   @Override
   public QueryProto.QueryResponse queryData(QueryProto.QueryRequest request) throws QueryException {
@@ -78,7 +81,7 @@ public class DefaultQueryServiceImpl implements QueryService {
           || datasources.stream().anyMatch(ds -> query.equals(ds.getName()))) {
         return simpleQuery(tenant, datasources);
       } else {
-        return complexQuery(tenant, query, downsample, fillPolicy, datasources);
+        return complexQuery(tenant, query, query, downsample, fillPolicy, datasources);
       }
     }, "queryData", request);
   }
@@ -585,30 +588,27 @@ public class DefaultQueryServiceImpl implements QueryService {
     return QueryProto.QueryResponse.newBuilder().addAllResults(results).build();
   }
 
-  private QueryProto.QueryResponse complexQuery(String tenant, String query, String downsample,
-      String fillPolicy, List<QueryProto.Datasource> datasources) throws QueryException {
-    List<String> queryExprs = Lists.newArrayList(StringUtils.split(query, ","));
+  private QueryProto.QueryResponse complexQuery(String tenant, String expression, String as,
+      String downsample, String fillPolicy, List<QueryProto.Datasource> datasources)
+      throws QueryException {
+    List<String> queryExprs = Lists.newArrayList(StringUtils.split(expression, ","));
+    List<String> queryAs = Lists.newArrayList(StringUtils.split(as, ","));
+    Map<String, String> asMap = new HashMap<>();
+    if (CollectionUtils.size(queryExprs) == CollectionUtils.size(queryAs)) {
+      for (int i = 0; i < CollectionUtils.size(queryExprs); i++) {
+        asMap.put(queryExprs.get(i), queryAs.get(i));
+      }
+    }
     QueryProto.QueryResponse.Builder rspBuilder = QueryProto.QueryResponse.newBuilder();
     List<QueryProto.Result> results = new ArrayList<>();
 
     List<String> dsNames =
         datasources.stream().map(QueryProto.Datasource::getName).collect(Collectors.toList());
-    Map<Map, Map<Long, Map<String, Double>>> detailMap = new HashMap<>();
     Map<String, List<QueryProto.Result>> resultMap = new HashMap<>();
     for (QueryProto.Datasource datasource : datasources) {
       String dsName = datasource.getName();
       List<QueryProto.Result> rspResults = queryDs(tenant, datasource).getResultsList();
       resultMap.put(dsName, rspResults);
-      for (QueryProto.Result result : rspResults) {
-        Map<String, String> tags = result.getTagsMap();
-        List<QueryProto.Point> points = result.getPointsList();
-        for (QueryProto.Point point : points) {
-          Long timestamp = point.getTimestamp();
-          Double value = point.getValue();
-          detailMap.computeIfAbsent(tags, _0 -> new TreeMap<>())
-              .computeIfAbsent(timestamp, _1 -> new HashMap<>()).put(dsName, value);
-        }
-      }
     }
 
     List<String> singleQueryExprs = queryExprs.stream()
@@ -621,35 +621,8 @@ public class DefaultQueryServiceImpl implements QueryService {
     // simpleQuery(tenant, datasources);
 
     for (String queryExpr : queryExprs) {
-      RpnResolver rpnResolver = new RpnResolver();
-      List<String> queryExprArgs = rpnResolver.expr2Infix(queryExpr);
-      detailMap.forEach((tags, map0) -> {
-        QueryProto.Result.Builder resultBuilder = QueryProto.Result.newBuilder();
-        resultBuilder.setMetric(queryExpr).putAllTags(tags);
-        map0.forEach((timestamp, map2) -> {
-          dsNames.forEach(dsName -> map2.putIfAbsent(dsName, 0d));
-          List rpnArgs = queryExprArgs.stream().map(expr -> {
-            if (NumberUtils.isCreatable(expr)) {
-              return Double.parseDouble(expr);
-            } else if (map2.containsKey(expr)) {
-              return map2.get(expr);
-            } else {
-              return expr;
-            }
-          }).collect(Collectors.toList());
-          try {
-            Double rpnResult = rpnResolver.calByInfix(rpnArgs);
-            QueryProto.Point.Builder pointBuilder = QueryProto.Point.newBuilder();
-            pointBuilder.setTimestamp(timestamp).setValue(rpnResult);
-            QueryProto.Point point = pointBuilder.build();
-            resultBuilder.addPoints(point);
-          } catch (Exception e) {
-            // disable this point and expect data to be filled from the outer layer
-          }
-        });
-        QueryProto.Result result = resultBuilder.build();
-        results.add(result);
-      });
+      results.addAll(
+          calculate(queryExpr, resultMap, asMap.getOrDefault(queryExpr, queryExpr), dsNames));
     }
     rspBuilder.addAllResults(results);
     if (CollectionUtils.isNotEmpty(datasources) && StringUtils.isNotEmpty(downsample)
@@ -660,12 +633,59 @@ public class DefaultQueryServiceImpl implements QueryService {
     return rspBuilder.build();
   }
 
+  private List<QueryProto.Result> calculate(String queryExpr,
+      Map<String, List<QueryProto.Result>> resultMap, String as, Collection<String> dsNames) {
+    List<QueryProto.Result> results = new ArrayList<>();
+    Map<Map, Map<Long, Map<String, Double>>> detailMap = new HashMap<>();
+    resultMap.forEach((dsName, rspResults) -> {
+      for (QueryProto.Result result : rspResults) {
+        Map<String, String> tags = result.getTagsMap();
+        List<QueryProto.Point> points = result.getPointsList();
+        for (QueryProto.Point point : points) {
+          Long timestamp = point.getTimestamp();
+          Double value = point.getValue();
+          detailMap.computeIfAbsent(tags, _0 -> new TreeMap<>())
+              .computeIfAbsent(timestamp, _1 -> new HashMap<>()).put(dsName, value);
+        }
+      }
+    });
+    RpnResolver rpnResolver = new RpnResolver();
+    List<String> queryExprArgs = rpnResolver.expr2Infix(queryExpr);
+    detailMap.forEach((tags, map0) -> {
+      QueryProto.Result.Builder resultBuilder = QueryProto.Result.newBuilder();
+      resultBuilder.setMetric(as).putAllTags(tags);
+      map0.forEach((timestamp, map2) -> {
+        dsNames.forEach(dsName -> map2.putIfAbsent(dsName, 0d));
+        List rpnArgs = queryExprArgs.stream().map(expr -> {
+          if (NumberUtils.isCreatable(expr)) {
+            return Double.parseDouble(expr);
+          } else if (map2.containsKey(expr)) {
+            return map2.get(expr);
+          } else {
+            return expr;
+          }
+        }).collect(Collectors.toList());
+        try {
+          Double rpnResult = rpnResolver.calByInfix(rpnArgs);
+          QueryProto.Point.Builder pointBuilder = QueryProto.Point.newBuilder();
+          pointBuilder.setTimestamp(timestamp).setValue(rpnResult);
+          QueryProto.Point point = pointBuilder.build();
+          resultBuilder.addPoints(point);
+        } catch (Exception e) {
+          // disable this point and expect data to be filled from the outer layer
+        }
+      });
+      QueryProto.Result result = resultBuilder.build();
+      results.add(result);
+    });
+    return results;
+  }
+
   protected QueryProto.QueryResponse.Builder queryDs(String tenant,
       QueryProto.Datasource datasource) throws QueryException {
-    Set<String> apmMetrics = this.apmMetrics.getUnchecked(tenant);
-    if (CollectionUtils.isNotEmpty(apmMetrics) && apmMetrics.contains(datasource.getMetric())
-        && !datasource.getApmMaterialized()) {
-      return postQueryApm(tenant, datasource);
+    MetricDefine apmMetric = this.apmMetrics.getUnchecked(tenant).get(datasource.getMetric());
+    if (apmMetric != null) {
+      return queryApm(tenant, datasource, apmMetric);
     } else if (AnalysisCenter.isAnalysis(datasource.getAggregator())) {
       return analysis(tenant, datasource);
     } else {
@@ -673,7 +693,56 @@ public class DefaultQueryServiceImpl implements QueryService {
     }
   }
 
-  private QueryProto.QueryResponse.Builder postQueryApm(String tenant,
+  private QueryProto.QueryResponse.Builder queryApm(String tenant, QueryProto.Datasource datasource,
+      MetricDefine metricDefine) throws QueryException {
+    if (datasource.getApmMaterialized()) {
+      if (metricDefine.isMaterialized()) {
+        return queryMetricStore(tenant, datasource);
+      } else if (StringUtils.isNotEmpty(metricDefine.getMaterializedExp())) {
+        List<String> exprs = new RpnResolver().expr2Infix(metricDefine.getMaterializedExp());
+        Map<String, List<QueryProto.Result>> resultMap = new HashMap<>();
+        for (String expr : exprs) {
+          String func = "none";
+          String metricName = expr;
+          int leftBracket = expr.indexOf("{");
+          int rightBracket = expr.indexOf("}");
+          if (leftBracket != -1 && rightBracket != -1 && leftBracket < rightBracket) {
+            func = expr.substring(0, leftBracket);
+            metricName = expr.substring(leftBracket + 1, rightBracket);
+          }
+          MetricDefine argMetricDefine = this.apmMetrics.getUnchecked(tenant).get(metricName);
+          if (argMetricDefine != null) {
+            QueryProto.Datasource.Builder argDsBuilder = datasource.toBuilder();
+            argDsBuilder.setMetric(metricName);
+            argDsBuilder.setName(expr);
+            argDsBuilder.setAggregator(func);
+            if (CollectionUtils.isNotEmpty(metricDefine.getGroups())) {
+              List<String> groups = metricDefine.getGroups().stream()
+                  .map(group -> OtlpMappings.fromOtlp(metricDefine.getIndex(), group))
+                  .collect(Collectors.toList());
+              argDsBuilder.addAllGroupBy(groups);
+            }
+            List<QueryProto.Result> dsResults =
+                queryApm(tenant, argDsBuilder.build(), argMetricDefine).getResultsList();
+            resultMap.put(argDsBuilder.getName(), dsResults);
+          }
+        }
+        QueryProto.QueryResponse.Builder rspBuilder = QueryProto.QueryResponse.newBuilder();
+        List<QueryProto.Result> results = calculate(metricDefine.getMaterializedExp(), resultMap,
+            metricDefine.getName(), resultMap.keySet());
+        rspBuilder.addAllResults(results);
+        if (StringUtils.isNotEmpty(datasource.getDownsample())
+            && StringUtils.isNotEmpty(datasource.getFillPolicy())) {
+          fillData(rspBuilder, datasource.getStart(), datasource.getEnd(),
+              datasource.getDownsample(), datasource.getFillPolicy());
+        }
+        return rspBuilder;
+      }
+    }
+    return queryApmFromSearchEngine(tenant, datasource);
+  }
+
+  private QueryProto.QueryResponse.Builder queryApmFromSearchEngine(String tenant,
       QueryProto.Datasource datasource) throws QueryException {
     return wrap(() -> {
       String metric = datasource.getMetric();
@@ -726,27 +795,27 @@ public class DefaultQueryServiceImpl implements QueryService {
     });
   }
 
-  private List<String> listApmMetrics(String tenant) {
+  private Map<String, MetricDefine> listApmMetrics(String tenant) {
     try {
       ApmAPI apmAPI = apmClient.getClient(tenant);
       if (apmAPI == null) {
-        return Lists.newArrayList();
+        return new HashMap<>();
       }
-      Call<List<String>> call = apmAPI.listMetrics();
-      Response<List<String>> metricsRsp = call.execute();
+      Call<List<MetricDefine>> call = apmAPI.listMetricDefines();
+      Response<List<MetricDefine>> metricsRsp = call.execute();
       if (!metricsRsp.isSuccessful()) {
         throw new QueryException(metricsRsp.errorBody().string());
       }
-      return metricsRsp.body();
+      return metricsRsp.body().stream()
+          .collect(Collectors.toMap(MetricDefine::getName, Function.identity()));
     } catch (Exception e) {
       log.error("[apm] list metrics failed, tenant={}", tenant, e);
-      return Lists.newArrayList();
+      return new HashMap<>();
     }
   }
 
   private QueryProto.QueryResponse.Builder queryMetricStore(String tenant,
       QueryProto.Datasource datasource) {
-
     QueryParam param = QueryStorageUtils.convertToQueryParam(tenant, datasource);
     List<io.holoinsight.server.extension.model.QueryResult.Result> results =
         metricStorage.queryData(param);
