@@ -10,7 +10,10 @@ import io.holoinsight.server.apm.engine.storage.MetricStorage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.Assert;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -21,11 +24,6 @@ public abstract class PostCalMetricStorage implements MetricStorage {
 
   @Autowired
   private MetricsManager metricsManager;
-
-  @Override
-  public List<String> listMetrics() {
-    return metricsManager.listMetrics();
-  }
 
   @Override
   public List<String> querySchema(String metric) {

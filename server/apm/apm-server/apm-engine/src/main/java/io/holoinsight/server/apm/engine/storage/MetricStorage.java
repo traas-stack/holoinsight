@@ -11,8 +11,6 @@ import java.util.Map;
 
 public interface MetricStorage extends ReadableStorage {
 
-  List<String> listMetrics();
-
   MetricValues queryMetric(String tenant, String metric, Duration duration,
       Map<String, Object> conditions) throws Exception;
 

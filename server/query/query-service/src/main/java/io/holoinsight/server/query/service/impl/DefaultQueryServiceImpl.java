@@ -14,7 +14,6 @@ import io.holoinsight.server.apm.common.model.specification.sw.Trace;
 import io.holoinsight.server.apm.common.model.specification.sw.TraceState;
 import io.holoinsight.server.apm.common.utils.GsonUtils;
 import io.holoinsight.server.apm.engine.postcal.MetricDefine;
-import io.holoinsight.server.apm.engine.postcal.MetricsManager;
 import io.holoinsight.server.common.DurationUtil;
 import io.holoinsight.server.common.ProtoJsonUtils;
 import io.holoinsight.server.extension.MetricStorage;
@@ -58,18 +57,16 @@ public class DefaultQueryServiceImpl implements QueryService {
   protected MetricStorage metricStorage;
 
   @Autowired
-  protected MetricsManager metricsManager;
-
-  @Autowired
   private ApmClient apmClient;
 
-  private LoadingCache<String, Set<String>> apmMetrics = CacheBuilder.newBuilder()
-      .expireAfterWrite(60, TimeUnit.SECONDS).build(new CacheLoader<String, Set<String>>() {
-        @Override
-        public Set<String> load(String tenantName) throws Exception {
-          return new HashSet<>(listApmMetrics(tenantName));
-        }
-      });
+  private LoadingCache<String, Map<String, MetricDefine>> apmMetrics =
+      CacheBuilder.newBuilder().expireAfterWrite(60, TimeUnit.SECONDS)
+          .build(new CacheLoader<String, Map<String, MetricDefine>>() {
+            @Override
+            public Map<String, MetricDefine> load(String tenantName) {
+              return listApmMetrics(tenantName);
+            }
+          });
 
   @Override
   public QueryProto.QueryResponse queryData(QueryProto.QueryRequest request) throws QueryException {
@@ -686,10 +683,9 @@ public class DefaultQueryServiceImpl implements QueryService {
 
   protected QueryProto.QueryResponse.Builder queryDs(String tenant,
       QueryProto.Datasource datasource) throws QueryException {
-    Set<String> apmMetrics = this.apmMetrics.getUnchecked(tenant);
-    if (CollectionUtils.isNotEmpty(apmMetrics) && apmMetrics.contains(datasource.getMetric())) {
-      MetricDefine metricDefine = metricsManager.getMetric(datasource.getMetric());
-      return queryApm(tenant, datasource, metricDefine);
+    MetricDefine apmMetric = this.apmMetrics.getUnchecked(tenant).get(datasource.getMetric());
+    if (apmMetric != null) {
+      return queryApm(tenant, datasource, apmMetric);
     } else if (AnalysisCenter.isAnalysis(datasource.getAggregator())) {
       return analysis(tenant, datasource);
     } else {
@@ -714,7 +710,7 @@ public class DefaultQueryServiceImpl implements QueryService {
             func = expr.substring(0, leftBracket);
             metricName = expr.substring(leftBracket + 1, rightBracket);
           }
-          MetricDefine argMetricDefine = metricsManager.getMetric(metricName);
+          MetricDefine argMetricDefine = this.apmMetrics.getUnchecked(tenant).get(metricName);
           if (argMetricDefine != null) {
             QueryProto.Datasource.Builder argDsBuilder = datasource.toBuilder();
             argDsBuilder.setMetric(metricName);
@@ -799,21 +795,22 @@ public class DefaultQueryServiceImpl implements QueryService {
     });
   }
 
-  private List<String> listApmMetrics(String tenant) {
+  private Map<String, MetricDefine> listApmMetrics(String tenant) {
     try {
       ApmAPI apmAPI = apmClient.getClient(tenant);
       if (apmAPI == null) {
-        return Lists.newArrayList();
+        return new HashMap<>();
       }
-      Call<List<String>> call = apmAPI.listMetrics();
-      Response<List<String>> metricsRsp = call.execute();
+      Call<List<MetricDefine>> call = apmAPI.listMetricDefines();
+      Response<List<MetricDefine>> metricsRsp = call.execute();
       if (!metricsRsp.isSuccessful()) {
         throw new QueryException(metricsRsp.errorBody().string());
       }
-      return metricsRsp.body();
+      return metricsRsp.body().stream()
+          .collect(Collectors.toMap(MetricDefine::getName, Function.identity()));
     } catch (Exception e) {
       log.error("[apm] list metrics failed, tenant={}", tenant, e);
-      return Lists.newArrayList();
+      return new HashMap<>();
     }
   }
 

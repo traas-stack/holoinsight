@@ -5,6 +5,7 @@ package io.holoinsight.server.apm.web.impl;
 
 import io.holoinsight.server.apm.common.model.query.MetricValues;
 import io.holoinsight.server.apm.common.model.query.QueryMetricRequest;
+import io.holoinsight.server.apm.engine.postcal.MetricDefine;
 import io.holoinsight.server.apm.server.service.MetricService;
 import io.holoinsight.server.apm.web.MetricApi;
 import lombok.extern.slf4j.Slf4j;
@@ -27,10 +28,20 @@ public class MetricApiController implements MetricApi {
   }
 
   @Override
+  public ResponseEntity<List<MetricDefine>> listMetricDefines() throws IOException {
+    return ResponseEntity.ok(metricService.listMetricDefines());
+  }
+
+  @Override
   public ResponseEntity<MetricValues> queryMetricData(QueryMetricRequest request) throws Exception {
     MetricValues metricValues = metricService.queryMetric(request.getTenant(), request.getMetric(),
         request.getDuration(), request.getConditions());
     return ResponseEntity.ok(metricValues);
+  }
+
+  @Override
+  public ResponseEntity<MetricDefine> queryMetricDefine(QueryMetricRequest metric) {
+    return ResponseEntity.ok(metricService.getMetricDefine(metric.getMetric()));
   }
 
   @Override

@@ -78,6 +78,10 @@ public class MetricsManager {
     return metrics;
   }
 
+  public List<MetricDefine> listMetricDefines() {
+    return new ArrayList<>(this.metricDefines.values());
+  }
+
   public List<String> listMaterializedMetrics() {
     List<String> metrics = new ArrayList<>();
     this.metricDefines.forEach((name, metric) -> {

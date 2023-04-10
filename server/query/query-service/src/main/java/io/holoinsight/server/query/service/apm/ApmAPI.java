@@ -20,10 +20,12 @@ import io.holoinsight.server.apm.common.model.query.Topology;
 import io.holoinsight.server.apm.common.model.query.TraceBrief;
 import io.holoinsight.server.apm.common.model.query.VirtualComponent;
 import io.holoinsight.server.apm.common.model.specification.sw.Trace;
+import io.holoinsight.server.apm.engine.postcal.MetricDefine;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.Headers;
 import retrofit2.http.POST;
+import retrofit2.http.Path;
 
 import java.util.List;
 
@@ -38,6 +40,13 @@ public interface ApmAPI {
   @POST("/cluster/api/v1/metric/list")
   @Headers({"Content-Type: application/json", "Accept: application/json"})
   Call<List<String>> listMetrics();
+
+  @POST("/cluster/api/v1/metric/defines")
+  @Headers({"Content-Type: application/json", "Accept: application/json"})
+  Call<List<MetricDefine>> listMetricDefines();
+
+  @POST("/cluster/api/v1/metric/define/{name}")
+  Call<MetricDefine> getMetricDefine(@Path("name") String name);
 
   @POST("/cluster/api/v1/metric/schema")
   @Headers({"Content-Type: application/json", "Accept: application/json"})
