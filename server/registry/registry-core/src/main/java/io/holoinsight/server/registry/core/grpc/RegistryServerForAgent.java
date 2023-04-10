@@ -26,6 +26,7 @@ import io.grpc.Server;
 import io.grpc.ServerBuilder;
 import io.grpc.ServerServiceDefinition;
 import io.grpc.ServerTransportFilter;
+import io.holoinsight.server.common.TrafficTracer;
 import io.holoinsight.server.common.hook.CommonHooksManager;
 import io.holoinsight.server.registry.core.RegistryProperties;
 
@@ -80,12 +81,6 @@ public class RegistryServerForAgent {
       b.useTransportSecurity(certIs, keyIs);
       certIs.close();
       keyIs.close();
-      b.addTransportFilter(new ServerTransportFilter() {
-        @Override
-        public Attributes transportReady(Attributes transportAttrs) {
-          return super.transportReady(transportAttrs);
-        }
-      });
     }
     for (ServerServiceDefinition ssd : services1) {
       LOGGER.info("[registryserver] [foragent] add service {}",
@@ -110,6 +105,7 @@ public class RegistryServerForAgent {
         new ThreadPoolExecutor.AbortPolicy());
 
     b.executor(executor);
+    b.addStreamTracerFactory(new TrafficTracer.Factory());
     server = b.build();
     server.start();
 

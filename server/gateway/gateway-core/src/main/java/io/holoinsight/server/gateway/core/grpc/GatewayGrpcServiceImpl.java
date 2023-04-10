@@ -18,6 +18,7 @@ import com.google.protobuf.Empty;
 import com.xzchaoo.commons.stat.StringsKey;
 
 import io.grpc.stub.StreamObserver;
+import io.holoinsight.server.common.TrafficTracer;
 import io.holoinsight.server.common.auth.ApikeyAuthService;
 import io.holoinsight.server.common.auth.AuthInfo;
 import io.holoinsight.server.extension.MetricStorage;
@@ -111,6 +112,7 @@ public class GatewayGrpcServiceImpl extends GatewayServiceGrpc.GatewayServiceImp
     if (tt == null) {
       return;
     }
+    tt.setTenant(authInfo.getTenant());
     StatUtils.GRPC_TRAFFIC.add(StringsKey.of(authInfo.getTenant()), //
         new long[] {1, //
             tt.getInboundWireSize(), // TCP入流量

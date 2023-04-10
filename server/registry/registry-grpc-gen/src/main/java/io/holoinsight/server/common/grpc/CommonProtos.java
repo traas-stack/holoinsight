@@ -51,14 +51,14 @@ public final class CommonProtos {
         + "er.common.grpc.FileInfo\022\016\n\006symbol\030\005 \001(\010\022"
         + "\020\n\010readable\030\006 \001(\010\022\r\n\005exist\030\007 \001(\010\"8\n\010File"
         + "Info\022\014\n\004size\030\001 \001(\003\022\020\n\010mod_time\030\002 \001(\003\022\014\n\004"
-        + "mode\030\003 \001(\005\"\272\001\n\023CommonRequestHeader\022\016\n\006ap"
+        + "mode\030\003 \001(\005\"\315\001\n\023CommonRequestHeader\022\016\n\006ap"
         + "ikey\030\001 \001(\t\022\020\n\010trace_id\030\002 \001(\t\022R\n\006header\030\003"
         + " \003(\0132B.io.holoinsight.server.common.grpc"
-        + ".CommonRequestHeader.HeaderEntry\032-\n\013Head"
-        + "erEntry\022\013\n\003key\030\001 \001(\t\022\r\n\005value\030\002 \001(\t:\0028\001\""
-        + "5\n\024CommonResponseHeader\022\014\n\004code\030\001 \001(\005\022\017\n"
-        + "\007message\030\002 \001(\tB3\n!io.holoinsight.server."
-        + "common.grpcB\014CommonProtosP\001b\006proto3"};
+        + ".CommonRequestHeader.HeaderEntry\022\021\n\twork"
+        + "space\030\004 \001(\t\032-\n\013HeaderEntry\022\013\n\003key\030\001 \001(\t\022"
+        + "\r\n\005value\030\002 \001(\t:\0028\001\"5\n\024CommonResponseHead"
+        + "er\022\014\n\004code\030\001 \001(\005\022\017\n\007message\030\002 \001(\tB3\n!io."
+        + "holoinsight.server.common.grpcB\014CommonPr" + "otosP\001b\006proto3"};
     descriptor = com.google.protobuf.Descriptors.FileDescriptor.internalBuildGeneratedFileFrom(
         descriptorData, new com.google.protobuf.Descriptors.FileDescriptor[] {});
     internal_static_io_holoinsight_server_common_grpc_GenericData_descriptor =
@@ -97,7 +97,7 @@ public final class CommonProtos {
     internal_static_io_holoinsight_server_common_grpc_CommonRequestHeader_fieldAccessorTable =
         new com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
             internal_static_io_holoinsight_server_common_grpc_CommonRequestHeader_descriptor,
-            new java.lang.String[] {"Apikey", "TraceId", "Header",});
+            new java.lang.String[] {"Apikey", "TraceId", "Header", "Workspace",});
     internal_static_io_holoinsight_server_common_grpc_CommonRequestHeader_HeaderEntry_descriptor =
         internal_static_io_holoinsight_server_common_grpc_CommonRequestHeader_descriptor
             .getNestedTypes().get(0);

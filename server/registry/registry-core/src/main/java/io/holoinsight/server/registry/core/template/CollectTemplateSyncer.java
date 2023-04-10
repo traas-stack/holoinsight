@@ -25,7 +25,7 @@ import io.holoinsight.server.common.dao.entity.GaeaCollectConfigDOExample;
 import io.holoinsight.server.common.dao.mapper.GaeaCollectConfigDOMapper;
 import io.holoinsight.server.registry.core.collecttarget.CollectTargetMaintainer;
 import io.holoinsight.server.registry.core.utils.BoundedSchedulers;
-import io.holoinsight.server.registry.core.utils.MetricsUtils;
+import io.holoinsight.server.common.MetricsUtils;
 import lombok.val;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;

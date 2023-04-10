@@ -275,6 +275,36 @@ public final class RegistryServiceForAgentGrpc {
     return getMetaDeltaSyncMethod;
   }
 
+  private static volatile io.grpc.MethodDescriptor<io.holoinsight.server.registry.grpc.agent.ReportEventRequest, com.google.protobuf.Empty> getReportEventsMethod;
+
+  @io.grpc.stub.annotations.RpcMethod(fullMethodName = SERVICE_NAME + '/' + "report_events",
+      requestType = io.holoinsight.server.registry.grpc.agent.ReportEventRequest.class,
+      responseType = com.google.protobuf.Empty.class,
+      methodType = io.grpc.MethodDescriptor.MethodType.UNARY)
+  public static io.grpc.MethodDescriptor<io.holoinsight.server.registry.grpc.agent.ReportEventRequest, com.google.protobuf.Empty> getReportEventsMethod() {
+    io.grpc.MethodDescriptor<io.holoinsight.server.registry.grpc.agent.ReportEventRequest, com.google.protobuf.Empty> getReportEventsMethod;
+    if ((getReportEventsMethod = RegistryServiceForAgentGrpc.getReportEventsMethod) == null) {
+      synchronized (RegistryServiceForAgentGrpc.class) {
+        if ((getReportEventsMethod = RegistryServiceForAgentGrpc.getReportEventsMethod) == null) {
+          RegistryServiceForAgentGrpc.getReportEventsMethod = getReportEventsMethod =
+              io.grpc.MethodDescriptor.<io.holoinsight.server.registry.grpc.agent.ReportEventRequest, com.google.protobuf.Empty>newBuilder()
+                  .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
+                  .setFullMethodName(generateFullMethodName(SERVICE_NAME, "report_events"))
+                  .setSampledToLocalTracing(true)
+                  .setRequestMarshaller(io.grpc.protobuf.ProtoUtils
+                      .marshaller(io.holoinsight.server.registry.grpc.agent.ReportEventRequest
+                          .getDefaultInstance()))
+                  .setResponseMarshaller(io.grpc.protobuf.ProtoUtils
+                      .marshaller(com.google.protobuf.Empty.getDefaultInstance()))
+                  .setSchemaDescriptor(
+                      new RegistryServiceForAgentMethodDescriptorSupplier("report_events"))
+                  .build();
+        }
+      }
+    }
+    return getReportEventsMethod;
+  }
+
   /**
    * Creates a new async stub that supports all call types for the service
    */
@@ -378,6 +408,13 @@ public final class RegistryServiceForAgentGrpc {
       asyncUnimplementedUnaryCall(getMetaDeltaSyncMethod(), responseObserver);
     }
 
+    /**
+     */
+    public void reportEvents(io.holoinsight.server.registry.grpc.agent.ReportEventRequest request,
+        io.grpc.stub.StreamObserver<com.google.protobuf.Empty> responseObserver) {
+      asyncUnimplementedUnaryCall(getReportEventsMethod(), responseObserver);
+    }
+
     @java.lang.Override
     public final io.grpc.ServerServiceDefinition bindService() {
       return io.grpc.ServerServiceDefinition.builder(getServiceDescriptor()).addMethod(
@@ -405,6 +442,9 @@ public final class RegistryServiceForAgentGrpc {
           .addMethod(getMetaDeltaSyncMethod(), asyncUnaryCall(
               new MethodHandlers<io.holoinsight.server.registry.grpc.agent.MetaSync.DeltaSyncRequest, com.google.protobuf.Empty>(
                   this, METHODID_META_DELTA_SYNC)))
+          .addMethod(getReportEventsMethod(), asyncUnaryCall(
+              new MethodHandlers<io.holoinsight.server.registry.grpc.agent.ReportEventRequest, com.google.protobuf.Empty>(
+                  this, METHODID_REPORT_EVENTS)))
           .build();
     }
   }
@@ -512,6 +552,14 @@ public final class RegistryServiceForAgentGrpc {
       asyncUnaryCall(getChannel().newCall(getMetaDeltaSyncMethod(), getCallOptions()), request,
           responseObserver);
     }
+
+    /**
+     */
+    public void reportEvents(io.holoinsight.server.registry.grpc.agent.ReportEventRequest request,
+        io.grpc.stub.StreamObserver<com.google.protobuf.Empty> responseObserver) {
+      asyncUnaryCall(getChannel().newCall(getReportEventsMethod(), getCallOptions()), request,
+          responseObserver);
+    }
   }
 
   /**
@@ -593,6 +641,13 @@ public final class RegistryServiceForAgentGrpc {
     public com.google.protobuf.Empty metaDeltaSync(
         io.holoinsight.server.registry.grpc.agent.MetaSync.DeltaSyncRequest request) {
       return blockingUnaryCall(getChannel(), getMetaDeltaSyncMethod(), getCallOptions(), request);
+    }
+
+    /**
+     */
+    public com.google.protobuf.Empty reportEvents(
+        io.holoinsight.server.registry.grpc.agent.ReportEventRequest request) {
+      return blockingUnaryCall(getChannel(), getReportEventsMethod(), getCallOptions(), request);
     }
   }
 
@@ -681,6 +736,14 @@ public final class RegistryServiceForAgentGrpc {
       return futureUnaryCall(getChannel().newCall(getMetaDeltaSyncMethod(), getCallOptions()),
           request);
     }
+
+    /**
+     */
+    public com.google.common.util.concurrent.ListenableFuture<com.google.protobuf.Empty> reportEvents(
+        io.holoinsight.server.registry.grpc.agent.ReportEventRequest request) {
+      return futureUnaryCall(getChannel().newCall(getReportEventsMethod(), getCallOptions()),
+          request);
+    }
   }
 
   private static final int METHODID_PING = 0;
@@ -690,7 +753,8 @@ public final class RegistryServiceForAgentGrpc {
   private static final int METHODID_GET_COLLECT_TASKS = 4;
   private static final int METHODID_META_FULL_SYNC = 5;
   private static final int METHODID_META_DELTA_SYNC = 6;
-  private static final int METHODID_BI_STREAMS = 7;
+  private static final int METHODID_REPORT_EVENTS = 7;
+  private static final int METHODID_BI_STREAMS = 8;
 
   private static final class MethodHandlers<Req, Resp>
       implements io.grpc.stub.ServerCalls.UnaryMethod<Req, Resp>,
@@ -741,6 +805,11 @@ public final class RegistryServiceForAgentGrpc {
         case METHODID_META_DELTA_SYNC:
           serviceImpl.metaDeltaSync(
               (io.holoinsight.server.registry.grpc.agent.MetaSync.DeltaSyncRequest) request,
+              (io.grpc.stub.StreamObserver<com.google.protobuf.Empty>) responseObserver);
+          break;
+        case METHODID_REPORT_EVENTS:
+          serviceImpl.reportEvents(
+              (io.holoinsight.server.registry.grpc.agent.ReportEventRequest) request,
               (io.grpc.stub.StreamObserver<com.google.protobuf.Empty>) responseObserver);
           break;
         default:
@@ -811,7 +880,8 @@ public final class RegistryServiceForAgentGrpc {
               .addMethod(getPingMethod()).addMethod(getRegisterAgentMethod())
               .addMethod(getSendAgentHeartbeatMethod()).addMethod(getGetControlConfigsMethod())
               .addMethod(getGetCollectTasksMethod()).addMethod(getBiStreamsMethod())
-              .addMethod(getMetaFullSyncMethod()).addMethod(getMetaDeltaSyncMethod()).build();
+              .addMethod(getMetaFullSyncMethod()).addMethod(getMetaDeltaSyncMethod())
+              .addMethod(getReportEventsMethod()).build();
         }
       }
     }

@@ -10,11 +10,10 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import io.grpc.BindableService;
-import io.grpc.Metadata;
 import io.grpc.Server;
 import io.grpc.ServerServiceDefinition;
-import io.grpc.ServerStreamTracer;
 import io.grpc.netty.shaded.io.grpc.netty.NettyServerBuilder;
+import io.holoinsight.server.common.TrafficTracer;
 import io.holoinsight.server.common.hook.CommonHooksManager;
 import io.holoinsight.server.common.threadpool.CommonThreadPools;
 
@@ -75,12 +74,7 @@ public class GatewayServerForAgent implements SmartLifecycle {
         b.addService(ssd);
         commonHooksManager.triggerPublishGrpcHooks(b, ssd);
       }
-      b.addStreamTracerFactory(new ServerStreamTracer.Factory() {
-        @Override
-        public ServerStreamTracer newServerStreamTracer(String fullMethodName, Metadata headers) {
-          return new TrafficTracer();
-        }
-      });
+      b.addStreamTracerFactory(new TrafficTracer.Factory());
 
       server = b.build();
 

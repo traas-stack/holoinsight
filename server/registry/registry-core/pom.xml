@@ -54,10 +54,6 @@
 			<groupId>com.xzchaoo.commons</groupId>
 		</dependency>
 		<dependency>
-			<artifactId>commons-stat</artifactId>
-			<groupId>com.xzchaoo.commons</groupId>
-		</dependency>
-		<dependency>
 			<artifactId>groovy</artifactId>
 			<groupId>org.codehaus.groovy</groupId>
 		</dependency>
