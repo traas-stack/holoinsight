@@ -44,7 +44,7 @@ jobs:
       run: ./scripts/all-in-one/build.sh
     - name: Build server docker image
       run: |
-        NO_BUILD_APP=1 docker buildx build --load -t holoinsight/server:latest -f ./scripts/docker/Dockerfile .
+        nobuild=1 docker buildx build --load -t holoinsight/server:latest -f ./scripts/docker/Dockerfile .
         docker save -o holoinsight-server.tar holoinsight/server:latest
     - name: Upload server docker image
       uses: actions/upload-artifact@v3
