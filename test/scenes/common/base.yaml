@@ -137,3 +137,11 @@ services:
       ELASTICSEARCH_HOSTS: 'http://es:9200'
     ports:
     - 5601
+  grafana:
+    image: grafana/grafana-oss:8.5.22
+    volumes:
+    - ./grafana/grafana.ini:/etc/grafana/grafana.ini
+    ports:
+    - 3000
+    profiles:
+    - debug

@@ -25,10 +25,15 @@ echo
 
 if echo "$ps" | grep mongo-express >/dev/null; then
   echo Visit Mongo Web UI at http://$ip:`docker-compose port mongo-express 8081 | awk -F: '{print $2}'`/db/holoinsight/
+  echo
 fi
-echo
 
 if echo "$ps" | grep kibana >/dev/null; then
   echo Visit Kibana at http://$ip:`docker-compose port kibana 5601 | awk -F: '{print $2}'`
+  echo
 fi
-echo
+
+if echo "$ps" | grep grafana >/dev/null; then
+  echo Visit Grafana at http://$ip:`docker-compose port grafana 3000 | awk -F: '{print $2}'`
+  echo
+fi
