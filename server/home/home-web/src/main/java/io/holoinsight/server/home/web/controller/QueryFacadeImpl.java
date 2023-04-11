@@ -316,7 +316,7 @@ public class QueryFacadeImpl extends BaseFacade {
         MonitorScope ms = RequestContext.getContext().ms;
         QueryProto.Datasource datasource = QueryProto.Datasource.newBuilder()
             .setMetric(tagQueryRequest.getMetric()).setStart(System.currentTimeMillis() - 60000 * 5)
-            .setEnd(System.currentTimeMillis() - 60000 * 4).setAggregator("count")
+            .setEnd(System.currentTimeMillis()).setAggregator("count")
             .addAllGroupBy(Collections.singletonList(tagQueryRequest.getKey())).build();
 
         QueryProto.QueryRequest.Builder builder = QueryProto.QueryRequest.newBuilder()
