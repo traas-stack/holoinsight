@@ -1,3 +1,7 @@
+# shared directory between containers
+volumes:
+  share:
+
 services:
   mysql:
     extends:
@@ -56,7 +60,10 @@ services:
       es:
         condition: service_healthy
     volumes:
-    - ./application.yaml:/home/admin/application.yaml
+    - ./application.yaml:/home/admin/application.yaml:ro
+    - share:/share
+    - ../common/log-generator.py:/home/admin/test/log-generator.py:ro
+    - ../common/log-alert-generator.py:/home/admin/test/log-alert-generator.py:ro
   collector:
     extends:
       file: ../common/base.yaml
@@ -66,7 +73,30 @@ services:
         condition: service_healthy
   agent-image:
     image: ${agent_image:-holoinsight/agent:latest}
-    entrypoint: [ "true" ]
+    volumes:
+    - share:/share
+    - ../common/agent.yaml:/temp/agent.yaml
+    entrypoint:
+    - bash
+    - -c
+    - |
+      cp /usr/local/holoinsight/agent/bin/agent /share/agent
+      cp /temp/agent.yaml /share/agent.yaml
+  grafana:
+    extends:
+      file: ../common/base.yaml
+      service: grafana
+    profiles:
+    - debug
+  ttyd:
+    extends:
+      file: ../common/base.yaml
+      service: ttyd
+    profiles:
+    - ttyd
+    volumes:
+    - share:/share
+    entrypoint: [ "cp", "/usr/bin/ttyd", "/share/ttyd" ]
   finish:
     image: busybox:1.35
     depends_on:
@@ -77,9 +107,3 @@ services:
       agent-image:
         condition: service_completed_successfully
     entrypoint: [ "true" ]
-  grafana:
-    extends:
-      file: ../common/base.yaml
-      service: grafana
-    profiles:
-    - debug
