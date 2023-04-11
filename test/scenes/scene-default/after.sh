@@ -14,15 +14,11 @@ fi
 
 server_container_name=`docker inspect -f '{{.Name}}' $(docker-compose ps -q server) | cut -c2-`
 
-temp_agent_path=`../common/copy-agent-0.sh`
-
 echo [agent] install agent to server
-agent_path=$temp_agent_path target=$server_container_name ../common/copy-agent.sh
+target=$server_container_name ../common/copy-agent.sh
 
 echo copy log-generator.py to $server_container_name
-docker cp $project_root/test/scenes/common/log-generator.py $server_container_name:/home/admin/logs/holoinsight-server/log-generator.py >/dev/null
-docker exec -w /home/admin/logs/holoinsight-server $server_container_name bash -c ' python log-generator.py & '
+docker-compose exec -w /home/admin/logs/holoinsight-server -d -T server bash -c ' python /home/admin/test/log-generator.py & '
 
 echo copy log-alert-generator.py to $server_container_name
-docker cp $project_root/test/scenes/common/log-alert-generator.py $server_container_name:/home/admin/logs/holoinsight-server/log-alert-generator.py >/dev/null
-docker exec -w /home/admin/logs/holoinsight-server $server_container_name bash -c ' python log-alert-generator.py & '
+docker-compose exec -w /home/admin/logs/holoinsight-server -d -T server bash -c ' python /home/admin/test/log-alert-generator.py & '
