@@ -10,7 +10,7 @@ spring:
 
 holoinsight:
   roles:
-    active: query,registry,gateway,home,meta
+    active: query,registry,gateway,home,meta,apm
   metric:
     storage:
       type: ceresdbx
@@ -23,3 +23,10 @@ holoinsight:
             port: 9090
   flyway:
     enabled: false
+  features:
+    active: trace
+  storage:
+    elasticsearch:
+      enable: true
+      hosts: es
+      port: 9200

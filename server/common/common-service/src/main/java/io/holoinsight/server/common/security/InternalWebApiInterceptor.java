@@ -3,23 +3,20 @@
  */
 package io.holoinsight.server.common.security;
 
-import java.io.IOException;
-import java.util.Set;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
+import com.google.common.collect.Sets;
 import io.holoinsight.server.common.NetUtils;
 import io.holoinsight.server.common.web.InternalWebApi;
-
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
-
-import com.google.common.collect.Sets;
 import org.springframework.web.util.UrlPathHelper;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.Set;
 
 /**
  * 该 interceptor 用于拦截通过 spring mvc 定义的处理器
@@ -31,7 +28,7 @@ import org.springframework.web.util.UrlPathHelper;
 public class InternalWebApiInterceptor implements HandlerInterceptor {
   static final Set<String> LOCALHOST = Sets.newHashSet("localhost", "127.0.0.1", "0:0:0:0:0:0:0:1");
   private static final Set<String> INTERNAL_WHITE_HOSTS =
-      Sets.newHashSet("gateway.holoinsight-gateway", "gateway.holoinsight-server");
+      Sets.newHashSet("gateway.holoinsight-gateway", "gateway.holoinsight-server", "server");
 
   @Autowired
   private HoloinsightSecurityProperties properties;

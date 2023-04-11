@@ -4,15 +4,15 @@
 package io.holoinsight.server.gateway.core.trace;
 
 import io.holoinsight.server.common.springboot.ConditionalOnFeature;
+import io.holoinsight.server.common.springboot.HoloinsightProperties;
 import io.holoinsight.server.gateway.core.trace.config.GetAgentConfigurationService;
 import io.holoinsight.server.gateway.core.trace.controller.AgentConfigurationController;
+import io.holoinsight.server.gateway.core.trace.exporter.LocalTraceExporter;
 import io.holoinsight.server.gateway.core.trace.exporter.RelayTraceExporter;
 import io.holoinsight.server.gateway.core.trace.exporter.TraceExporter;
 import io.holoinsight.server.gateway.core.trace.receiver.opentelemetry.TraceServiceImpl;
 import io.holoinsight.server.gateway.core.trace.scheduler.AgentConfigurationScheduler;
-
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -32,8 +32,10 @@ public class GatewayTraceConfiguration {
    * </p>
    */
   @Bean
-  @ConditionalOnMissingBean
-  public TraceExporter traceExporter() {
+  public TraceExporter traceExporter(HoloinsightProperties hp) {
+    if (hp.getRoles().getActive().contains("apm")) {
+      return new LocalTraceExporter();
+    }
     return new RelayTraceExporter();
   }
 
