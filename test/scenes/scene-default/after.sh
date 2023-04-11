@@ -10,9 +10,13 @@ project_root=`realpath ../../..`
 
 if [ -z "$COMPOSE_PROJECT_NAME" ]; then
   source ../common/setup-env.sh
+else
+  source ../common/utils.sh
 fi
 
-server_container_name=`docker inspect -f '{{.Name}}' $(docker-compose ps -q server) | cut -c2-`
+export ps=`docker-compose ps`
+
+server_container_name=`get_container server`
 
 echo [agent] install agent to server
 target=$server_container_name ../common/copy-agent.sh

@@ -17,3 +17,5 @@ if [ -z "$COMPOSE_PROJECT_NAME" ] && [ -n "$HOLOINSIGHT_DEV" ]; then
     export COMPOSE_FILE=$script_dir/docker-compose.yaml
   fi
 fi
+
+source ../common/utils.sh

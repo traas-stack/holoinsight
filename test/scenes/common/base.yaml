@@ -38,8 +38,6 @@ services:
     volumes:
     - ./init.js:/docker-entrypoint-initdb.d/init.js
     restart: always
-    ports:
-    - 27017
     healthcheck:
       test: [ "CMD", "timeout", "1", "bash", "-c", "cat < /dev/null > /dev/tcp/127.0.0.1/27017" ]
       interval: 3s
@@ -66,9 +64,6 @@ services:
       interval: 3s
       retries: 300
       timeout: 10s
-    ports:
-    - 8831
-    - 5440
   prometheus:
     image: prom/prometheus:latest
     volumes:
@@ -94,7 +89,6 @@ services:
     - 80 # nginx
     - 8080 # tomcat
     - 8000 # java debug
-    - 11800 # trace
     - 7681 # web terminal
     volumes:
     - ./agent_entrypoint.sh:/agent_entrypoint.sh:ro
@@ -105,8 +99,6 @@ services:
       interval: 3s
       retries: 300
       timeout: 10s
-    ports:
-      - 11800 # skywalking
     volumes:
     - ./collector-config.yml:/config/config.yml
   agent-image:
@@ -128,8 +120,6 @@ services:
     environment:
       "discovery.type": "single-node"
       ES_JAVA_OPTS: -Xmx1g
-    ports:
-    - 9200
     healthcheck:
       test: [ "CMD", "timeout", "1", "bash", "-c", "cat < /dev/null > /dev/tcp/127.0.0.1/9200" ]
       interval: 1s

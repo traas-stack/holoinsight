@@ -37,6 +37,15 @@ services:
     extends:
       file: ../common/base.yaml
       service: es
+  kibana:
+    extends:
+      file: ../common/base.yaml
+      service: kibana
+    depends_on:
+      es:
+        condition: service_healthy
+    profiles:
+    - debug
   mysql-data-init:
     extends:
       file: ../common/base.yaml
