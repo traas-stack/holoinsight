@@ -102,7 +102,9 @@ services:
     volumes:
     - ./collector-config.yml:/config/config.yml
   agent-image:
-    image: ${server_image:-holoinsight/agent:latest}
+    image: ${agent_image:-holoinsight/agent:latest}
+    volumes:
+    - ./agent.yaml:/temp/agent.yaml
     entrypoint: [ "true" ]
   mysql-data-init:
     image: ${mysql_image:-mysql:8}

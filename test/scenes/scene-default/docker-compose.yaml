@@ -81,10 +81,11 @@ services:
       server:
         condition: service_healthy
   agent-image:
-    image: ${agent_image:-holoinsight/agent:latest}
+    extends:
+      file: ../common/base.yaml
+      service: agent-image
     volumes:
     - share:/share
-    - ../common/agent.yaml:/temp/agent.yaml
     entrypoint:
     - bash
     - -c
