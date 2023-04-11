@@ -17,13 +17,14 @@ import org.springframework.beans.factory.annotation.Autowired;
  * @author xiangfeng.xzc
  */
 public class LocalTraceExporter implements TraceExporter {
-    @Autowired
-    private SpanHandler spanHandler;
+  @Autowired
+  private SpanHandler spanHandler;
 
-    @Override
-    public void export(ExportTraceServiceRequest request, StreamObserver<ExportTraceServiceResponse> o) {
-        spanHandler.handleResourceSpans(request.getResourceSpansList());
-        o.onNext(ExportTraceServiceResponse.getDefaultInstance());
-        o.onCompleted();
-    }
+  @Override
+  public void export(ExportTraceServiceRequest request,
+      StreamObserver<ExportTraceServiceResponse> o) {
+    spanHandler.handleResourceSpans(request.getResourceSpansList());
+    o.onNext(ExportTraceServiceResponse.getDefaultInstance());
+    o.onCompleted();
+  }
 }
