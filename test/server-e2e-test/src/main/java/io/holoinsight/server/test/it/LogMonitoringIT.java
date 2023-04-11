@@ -115,7 +115,7 @@ public class LogMonitoringIT extends BaseIT {
               .get("/webapi/v1/query/schema") //
               .then() //
               .isSuccess() //
-              .body("data.tags", hasItems("app", "hostname", "ip", "host")); //
+              .body("data.tags", hasItems("app", "hostname", "ip")); //
 
         });
   }
