@@ -1,5 +1,10 @@
 FROM holoinsight/server-base:1.0.2
 
+COPY --chown=admin:admin --from=apache/skywalking-java-agent:8.11.0-java8 /skywalking/agent /home/admin/skywalking-agent
+
+COPY --from=holoinsight/front:8 --chown=admin:admin /dist.zip /home/admin/dist.zip
+RUN unzip -d /home/admin/holoinsight-server-static/ /home/admin/dist.zip && rm /home/admin/dist.zip
+
 COPY scripts/docker/sc /usr/local/bin/
 COPY scripts/docker/ensure_supervisord.sh /usr/local/bin/
 COPY scripts/docker/supervisord.conf /etc/supervisord.conf
@@ -22,12 +27,7 @@ EXPOSE 80
 COPY scripts/api /home/admin/api
 COPY scripts/docker/nginx.conf /etc/nginx/nginx.conf
 
-COPY --from=holoinsight/front:8 --chown=admin:admin /dist.zip /home/admin/dist.zip
-RUN unzip -d /home/admin/holoinsight-server-static/ /home/admin/dist.zip && rm /home/admin/dist.zip
-
 COPY --chown=admin:admin server/all-in-one/all-in-one-bootstrap/target/holoinsight-server.jar /home/admin/app.jar
 RUN echo `date` > /home/admin/build-time
-
-COPY --chown=admin:admin --from=apache/skywalking-java-agent:8.11.0-java8 /skywalking/agent /home/admin/skywalking-agent
 
 ENTRYPOINT ["/entrypoint.sh"]
