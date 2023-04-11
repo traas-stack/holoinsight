@@ -53,6 +53,8 @@ services:
         condition: service_healthy
       ceresdb:
         condition: service_healthy
+      es:
+        condition: service_healthy
     volumes:
     - ./application.yaml:/home/admin/application.yaml
   collector:
@@ -60,8 +62,6 @@ services:
       file: ../common/base.yaml
       service: collector
     depends_on:
-      es:
-        condition: service_healthy
       server:
         condition: service_healthy
   agent-image:
@@ -71,6 +71,8 @@ services:
     image: busybox:1.35
     depends_on:
       server:
+        condition: service_healthy
+      collector:
         condition: service_healthy
       agent-image:
         condition: service_completed_successfully

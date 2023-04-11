@@ -123,7 +123,7 @@ services:
     image: ${es_image:-elasticsearch:7.16.1}
     environment:
       "discovery.type": "single-node"
-      ES_JAVA_OPTS: -Xms1g -Xmx1g
+      ES_JAVA_OPTS: -Xmx1g
     ports:
     - 9200
     healthcheck:
