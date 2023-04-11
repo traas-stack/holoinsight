@@ -125,6 +125,8 @@ jobs:
           scene: scene-default
         - test: CeresdbPqlMonitoringIT
           scene: scene-default
+        - test: MetricMonitoringIT
+          scene: scene-default
     steps:
     - uses: actions/checkout@v3
       with:
