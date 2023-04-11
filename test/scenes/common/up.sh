@@ -2,8 +2,9 @@
 set -e
 
 # doc: Run this script to deploy HoloInsight quick start demo using docker-compose
-# usage: up.sh
-# usage: build=1 up.sh
+# usage: build=1 debug=1 up.sh
+# build=1: re build docker image before up
+# debug=1: using debug mode, start Java with debug mode and start Web UI of MySQL and MongoDB as well
 
 source `dirname $0`/../common/setup-env.sh
 

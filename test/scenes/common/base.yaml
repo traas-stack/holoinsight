@@ -18,6 +18,17 @@ services:
       interval: 3s
       retries: 300
       timeout: 10s
+  # mysql web ui
+  phpmyadmin:
+    image: phpmyadmin:latest
+    environment:
+      PMA_HOSTS: mysql
+      PMA_USER: holoinsight
+      PMA_PASSWORD: holoinsight
+    ports:
+    - 80
+    profiles:
+    - debug
   mongo:
     image: ${mongo_image:-mongo:4.4.18}
     environment:
@@ -34,6 +45,17 @@ services:
       interval: 3s
       retries: 300
       timeout: 10s
+  # mongo web ui
+  mongo-express:
+    image: mongo-express:latest
+    environment:
+      ME_CONFIG_MONGODB_SERVER: mongo
+      ME_CONFIG_MONGODB_ADMINUSERNAME: holoinsight
+      ME_CONFIG_MONGODB_ADMINPASSWORD: holoinsight
+    ports:
+    - 8081
+    profiles:
+    - debug
   ceresdb:
     image: ${ceresdb_image:-ceresdb/ceresdb-server:v1.0.0}
     volumes:
@@ -50,10 +72,10 @@ services:
   prometheus:
     image: prom/prometheus:latest
     volumes:
-      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    - ./prometheus.yml:/etc/prometheus/prometheus.yml
     restart: always
     ports:
-      - 9090
+    - 9090
   server:
     image: ${server_image:-holoinsight/server:latest}
     environment:
@@ -104,7 +126,6 @@ services:
       ES_JAVA_OPTS: -Xms1g -Xmx1g
     ports:
     - 9200
-    - 9300
     healthcheck:
       test: [ "CMD", "timeout", "1", "bash", "-c", "cat < /dev/null > /dev/tcp/127.0.0.1/9200" ]
       interval: 1s
@@ -114,3 +135,5 @@ services:
     image: ${kibana_image:-kibana:7.16.1}
     environment:
       ELASTICSEARCH_HOSTS: 'http://es:9200'
+    ports:
+    - 5601

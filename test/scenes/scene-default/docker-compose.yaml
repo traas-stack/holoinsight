@@ -3,10 +3,21 @@ services:
     extends:
       file: ../common/base.yaml
       service: mysql
+  phpmyadmin:
+    extends:
+      file: ../common/base.yaml
+      service: phpmyadmin
   mongo:
     extends:
       file: ../common/base.yaml
       service: mongo
+  mongo-express:
+    extends:
+      file: ../common/base.yaml
+      service: mongo-express
+    depends_on:
+      mongo:
+        condition: service_healthy
   ceresdb:
     extends:
       file: ../common/base.yaml
