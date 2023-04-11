@@ -28,4 +28,6 @@ RUN unzip -d /home/admin/holoinsight-server-static/ /home/admin/dist.zip && rm /
 COPY --chown=admin:admin server/all-in-one/all-in-one-bootstrap/target/holoinsight-server.jar /home/admin/app.jar
 RUN echo `date` > /home/admin/build-time
 
+COPY --chown=admin:admin --from=apache/skywalking-java-agent:8.11.0-java8 /skywalking/agent /home/admin/skywalking-agent
+
 ENTRYPOINT ["/entrypoint.sh"]

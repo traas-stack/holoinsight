@@ -81,6 +81,9 @@ services:
     environment:
       JAVA_APP_OPTS: "-Xmx1024m -Xms1024m -Xmn512m"
       JAVA_DEBUG_OPTS: ${JAVA_DEBUG_OPTS:-}
+      SW_AGENT_NAME: holoinsight-server-example
+      SW_AGENT_AUTHENTICATION: example
+      SW_AGENT_COLLECTOR_BACKEND_SERVICES: collector:11800
     healthcheck:
       test: [ "CMD", "bash", "/home/admin/bin/health.sh" ]
       interval: 3s
@@ -90,6 +93,18 @@ services:
     - 80 # nginx
     - 8080 # tomcat
     - 8000 # java debug
+    - 11800 # trace
+  collector:
+    image: ${collector_image:-holoinsight/otelcontribcol:latest}
+    healthcheck:
+      test: [ "CMD", "timeout", "1", "bash", "-c", "cat < /dev/null > /dev/tcp/127.0.0.1/11800" ]
+      interval: 3s
+      retries: 300
+      timeout: 10s
+    ports:
+      - 11800 # skywalking
+    volumes:
+    - ./collector-config.yml:/config/config.yml
   agent-image:
     image: ${server_image:-holoinsight/agent:latest}
     entrypoint: [ "true" ]

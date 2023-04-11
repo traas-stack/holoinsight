@@ -6,6 +6,7 @@ resources:
 - mongo.yaml
 - ceresdb.yaml
 - server.yaml
+- collector.yaml
 - cadvisor.yaml
 - daemonagent.yaml
 - clusteragent.yaml

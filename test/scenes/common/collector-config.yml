@@ -1,0 +1,34 @@
+receivers:
+  holoinsight_skywalking:
+    protocols:
+      grpc:
+        endpoint: 0.0.0.0:11800
+        auth:
+          authenticator: http_forwarder_auth
+    holoinsight_server:
+      http:
+        endpoint: server:8080
+
+exporters:
+  otlp:
+    endpoint: server:11800
+    tls:
+      insecure: true
+
+processors:
+  batch:
+
+extensions:
+  health_check:
+  pprof:
+  zpages:
+  http_forwarder_auth:
+    url: http://server:8080/internal/api/gateway/apikey/check
+
+service:
+  extensions: [pprof, health_check, http_forwarder_auth]
+  pipelines:
+    traces:
+      receivers: [holoinsight_skywalking]
+      exporters: [otlp]
+      processors: [batch]

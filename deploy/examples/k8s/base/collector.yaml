@@ -1,0 +1,105 @@
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  namespace: holoinsight-example
+  name: collector-config
+data:
+  config.yml: |
+    receivers:
+      holoinsight_skywalking:
+        protocols:
+          grpc:
+            endpoint: 0.0.0.0:11800
+            auth:
+              authenticator: http_forwarder_auth
+        holoinsight_server:
+          http:
+            endpoint: gateway:8080
+    
+    exporters:
+      otlp:
+        endpoint: gateway:11800
+        tls:
+          insecure: true
+    
+    processors:
+      batch:
+    
+    extensions:
+      health_check:
+      pprof:
+      zpages:
+      http_forwarder_auth:
+        url: http://gateway:8080/internal/api/gateway/apikey/check
+    
+    service:
+      extensions: [pprof, health_check, http_forwarder_auth]
+      pipelines:
+        traces:
+          receivers: [holoinsight_skywalking]
+          exporters: [otlp]
+          processors: [batch]
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: holoinsight-example
+  name: collector
+  labels:
+    app: collector
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: collector
+  strategy:
+    rollingUpdate:
+      maxSurge: 2
+      maxUnavailable: 2
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: collector
+    spec:
+      containers:
+        - name: app
+          image: holoinsight/otelcontribcol:latest
+          ports:
+            - name: grpc
+              containerPort: 11800
+          imagePullPolicy: IfNotPresent
+          livenessProbe:
+            tcpSocket:
+              port: 8888
+            failureThreshold: 3
+            periodSeconds: 20
+            initialDelaySeconds: 20
+          readinessProbe:
+            tcpSocket:
+              port: 8888
+            failureThreshold: 3
+            initialDelaySeconds: 20
+            periodSeconds: 20
+          volumeMounts:
+            - name: collector-config
+              mountPath: /config/config.yml
+              subPath: config.yml
+      volumes:
+        - name: collector-config
+          configMap:
+            name: collector-config
+---
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: holoinsight-example
+  name: service-collector
+spec:
+  ports:
+    - name: grpc-skywalking
+      port: 11800
+      protocol: TCP
+      targetPort: 11800
+  selector:
+    app: collector

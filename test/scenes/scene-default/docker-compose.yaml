@@ -29,6 +29,10 @@ services:
     depends_on:
       ceresdb:
         condition: service_healthy
+  es:
+    extends:
+      file: ../common/base.yaml
+      service: es
   mysql-data-init:
     extends:
       file: ../common/base.yaml
@@ -51,6 +55,15 @@ services:
         condition: service_healthy
     volumes:
     - ./application.yaml:/home/admin/application.yaml
+  collector:
+    extends:
+      file: ../common/base.yaml
+      service: collector
+    depends_on:
+      es:
+        condition: service_healthy
+      server:
+        condition: service_healthy
   agent-image:
     image: ${agent_image:-holoinsight/agent:latest}
     entrypoint: [ "true" ]
