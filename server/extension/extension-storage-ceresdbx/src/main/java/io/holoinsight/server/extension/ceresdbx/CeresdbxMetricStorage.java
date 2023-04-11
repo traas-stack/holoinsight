@@ -128,8 +128,8 @@ public class CeresdbxMetricStorage implements MetricStorage {
       String[] header = getHeader(rows.get(0));
       return transToResults(queryParam, header, rows);
     } catch (Exception e) {
-      LOGGER.error("[CERESDBX_QUERY] failed to exec sql:{}, cost:{}, error:{}", sql,
-          System.currentTimeMillis() - begin, e.getMessage());
+      LOGGER.error("[CERESDBX_QUERY] failed to exec sql:{}, cost:{}", sql,
+          System.currentTimeMillis() - begin, e);
       return Lists.newArrayList();
     }
   }
@@ -273,9 +273,9 @@ public class CeresdbxMetricStorage implements MetricStorage {
           continue;
         }
         if ("value".equals(name)) {
-          if (Objects.nonNull(value)) {
-            point.setValue(value.getDouble());
-          } else {
+          try {
+            point.setValue(Double.parseDouble(value.getObject().toString()));
+          } catch (Exception e) {
             point.setValue(0D);
           }
           continue;

@@ -13,6 +13,7 @@ import io.holoinsight.server.test.it.AlertWebhookIT;
 import io.holoinsight.server.test.it.CeresdbPqlMonitoringIT;
 import io.holoinsight.server.test.it.DashboardIT;
 import io.holoinsight.server.test.it.IntegrationPluginIT;
+import io.holoinsight.server.test.it.MetricMonitoringIT;
 import org.junit.platform.launcher.LauncherDiscoveryRequest;
 import org.junit.platform.launcher.core.LauncherDiscoveryRequestBuilder;
 
@@ -55,6 +56,7 @@ public class ITSets {
         .selectors(selectClass(AlertDingDingRobotIT.class)) //
         .selectors(selectClass(LogMonitoring_1_log_IT.class)) //
         .selectors(selectClass(CeresdbPqlMonitoringIT.class)) //
+        .selectors(selectClass(MetricMonitoringIT.class)) //
         .build(); //
   }
 }
