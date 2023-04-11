@@ -77,3 +77,9 @@ services:
       agent-image:
         condition: service_completed_successfully
     entrypoint: [ "true" ]
+  grafana:
+    extends:
+      file: ../common/base.yaml
+      service: grafana
+    profiles:
+    - debug
