@@ -59,6 +59,9 @@ services:
     environment:
       JAVA_APP_OPTS: "-Xmx1024m -Xms1024m -Xmn512m"
       JAVA_DEBUG_OPTS: ${JAVA_DEBUG_OPTS:-}
+      SW_AGENT_NAME: holoinsight-server-example
+      SW_AGENT_AUTHENTICATION: example
+      SW_AGENT_COLLECTOR_BACKEND_SERVICES: collector:11800
     healthcheck:
       test: [ "CMD", "bash", "/home/admin/bin/health.sh" ]
       interval: 3s

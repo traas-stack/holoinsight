@@ -30,3 +30,5 @@ holoinsight:
       enable: true
       hosts: es
       port: 9200
+  security:
+    whiteHosts: server
