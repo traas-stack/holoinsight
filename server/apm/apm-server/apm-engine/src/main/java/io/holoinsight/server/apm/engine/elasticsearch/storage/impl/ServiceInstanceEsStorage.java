@@ -6,6 +6,7 @@ package io.holoinsight.server.apm.engine.elasticsearch.storage.impl;
 import io.holoinsight.server.apm.common.model.query.ServiceInstance;
 import io.holoinsight.server.apm.common.model.specification.otel.SpanKind;
 import io.holoinsight.server.apm.engine.model.SpanDO;
+import io.holoinsight.server.apm.engine.storage.ICommonBuilder;
 import io.holoinsight.server.apm.engine.storage.ServiceInstanceStorage;
 import lombok.extern.slf4j.Slf4j;
 import org.elasticsearch.action.search.SearchRequest;
@@ -21,12 +22,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 public class ServiceInstanceEsStorage implements ServiceInstanceStorage {
 
   @Autowired
   private RestHighLevelClient client;
+
+  @Autowired
+  private ICommonBuilder commonBuilder;
 
   protected RestHighLevelClient esClient() {
     return client;
@@ -39,7 +44,7 @@ public class ServiceInstanceEsStorage implements ServiceInstanceStorage {
 
   @Override
   public List<ServiceInstance> getServiceInstanceList(String tenant, String service, long startTime,
-      long endTime) throws IOException {
+      long endTime, Map<String, String> termParams) throws IOException {
     List<ServiceInstance> result = new ArrayList<>();
 
     BoolQueryBuilder queryBuilder =
@@ -51,11 +56,12 @@ public class ServiceInstanceEsStorage implements ServiceInstanceStorage {
             .must(QueryBuilders.termQuery(SpanDO.resource(SpanDO.SERVICE_NAME), service))
             .must(QueryBuilders.rangeQuery(timeField()).gte(startTime).lte(endTime));
 
+    commonBuilder.addTermParams(queryBuilder, termParams);
     SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
     sourceBuilder.size(1000);
     sourceBuilder.query(queryBuilder);
     sourceBuilder
-        .aggregation(CommonBuilder.buildAgg(SpanDO.resource(SpanDO.SERVICE_INSTANCE_NAME)));
+        .aggregation(commonBuilder.buildAgg(SpanDO.resource(SpanDO.SERVICE_INSTANCE_NAME)));
 
     SearchRequest searchRequest = new SearchRequest(SpanDO.INDEX_NAME);
     searchRequest.source(sourceBuilder);
@@ -67,7 +73,7 @@ public class ServiceInstanceEsStorage implements ServiceInstanceStorage {
 
       ServiceInstance serviceInstance = new ServiceInstance();
       serviceInstance.setName(serviceInstanceName);
-      serviceInstance.setMetric(CommonBuilder.buildMetric(bucket));
+      serviceInstance.setMetric(commonBuilder.buildMetric(bucket));
 
       result.add(serviceInstance);
     }

@@ -34,9 +34,6 @@ public class ServiceInstanceRelationDO extends RecordDO {
   public static final String ENTITY_ID = "entity_id";
   public static final String TRACE_ID = "trace_id";
   public static final String TYPE = "type";
-  public static final String APPP_ID = "app_id";
-  public static final String ENV_ID = "env_id";
-  public static final String STAMP = "stamp";
 
   @Id
   private String id;
@@ -66,12 +63,6 @@ public class ServiceInstanceRelationDO extends RecordDO {
   private String traceId;
   @Column(name = TYPE)
   private String type;
-  @Column(name = APPP_ID)
-  private String appId;
-  @Column(name = ENV_ID)
-  private String envId;
-  @Column(name = STAMP)
-  private String stamp;
 
   @Override
   public String indexName() {

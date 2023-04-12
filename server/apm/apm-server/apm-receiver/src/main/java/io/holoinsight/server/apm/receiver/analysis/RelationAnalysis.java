@@ -14,7 +14,7 @@ import io.holoinsight.server.apm.engine.model.NetworkAddressMappingDO;
 import io.holoinsight.server.apm.engine.model.SlowSqlDO;
 import io.holoinsight.server.apm.grpc.trace.RefType;
 import io.holoinsight.server.apm.receiver.builder.RelationBuilder;
-import io.holoinsight.server.apm.receiver.common.PublicAttr;
+import io.holoinsight.server.apm.receiver.common.IPublicAttr;
 import io.holoinsight.server.apm.receiver.common.TransformAttr;
 import io.holoinsight.server.apm.server.cache.NetworkAddressMappingCache;
 import io.opentelemetry.proto.common.v1.AnyValue;
@@ -37,6 +37,9 @@ public class RelationAnalysis {
 
   @Autowired
   private NetworkAddressMappingCache networkAddressMappingCache;
+
+  @Autowired
+  private IPublicAttr publicAttr;
 
   public List<RelationBuilder> analysisServerSpan(Span span, Map<String, AnyValue> spanAttrMap,
       Map<String, AnyValue> resourceAttrMap) {
@@ -86,7 +89,7 @@ public class RelationAnalysis {
         sourceBuilder.setDestServiceName(serviceName);
         sourceBuilder.setDestLayer(Layer.GENERAL);
         sourceBuilder.setDetectPoint(DetectPoint.SERVER);
-        PublicAttr.setPublicAttrs(sourceBuilder, span, spanAttrMap, resourceAttrMap);
+        publicAttr.setPublicAttrs(sourceBuilder, span, spanAttrMap, resourceAttrMap);
         callingInTraffic.add(sourceBuilder);
       }
     } else {
@@ -101,7 +104,7 @@ public class RelationAnalysis {
       sourceBuilder.setDestEndpointName(span.getName());
       sourceBuilder.setDetectPoint(DetectPoint.SERVER);
 
-      PublicAttr.setPublicAttrs(sourceBuilder, span, spanAttrMap, resourceAttrMap);
+      publicAttr.setPublicAttrs(sourceBuilder, span, spanAttrMap, resourceAttrMap);
       callingInTraffic.add(sourceBuilder);
     }
 
@@ -149,7 +152,7 @@ public class RelationAnalysis {
     }
 
     sourceBuilder.setDetectPoint(DetectPoint.CLIENT);
-    PublicAttr.setPublicAttrs(sourceBuilder, span, spanAttrMap, resourceAttrMap);
+    publicAttr.setPublicAttrs(sourceBuilder, span, spanAttrMap, resourceAttrMap);
     callingOutTraffic.add(sourceBuilder);
 
     return callingOutTraffic;
@@ -238,7 +241,7 @@ public class RelationAnalysis {
         sourceBuilder.setDestServiceName(serviceName);
         sourceBuilder.setDestLayer(Layer.GENERAL);
         sourceBuilder.setDetectPoint(DetectPoint.SERVER);
-        PublicAttr.setPublicAttrs(sourceBuilder, span, spanAttrMap, resourceAttrMap);
+        publicAttr.setPublicAttrs(sourceBuilder, span, spanAttrMap, resourceAttrMap);
         result.add(sourceBuilder);
       }
     }

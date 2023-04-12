@@ -10,6 +10,7 @@ import io.holoinsight.server.apm.engine.model.EndpointRelationDO;
 import io.holoinsight.server.apm.engine.model.ServiceInstanceRelationDO;
 import io.holoinsight.server.apm.engine.model.ServiceRelationDO;
 import io.holoinsight.server.apm.engine.model.SpanDO;
+import io.holoinsight.server.apm.engine.storage.ICommonBuilder;
 import io.holoinsight.server.apm.engine.storage.TopologyStorage;
 import lombok.extern.slf4j.Slf4j;
 import org.elasticsearch.action.search.SearchRequest;
@@ -34,6 +35,9 @@ public class TopologyEsStorage implements TopologyStorage {
   @Autowired
   private RestHighLevelClient client;
 
+  @Autowired
+  private ICommonBuilder commonBuilder;
+
   protected RestHighLevelClient esClient() {
     return client;
   }
@@ -53,11 +57,11 @@ public class TopologyEsStorage implements TopologyStorage {
             .must(QueryBuilders.termQuery(sourceOrDest + "_endpoint_name", endpoint))
             .must(QueryBuilders.rangeQuery(timeField()).gte(startTime).lte(endTime));
 
-    CommonBuilder.addTermParams(queryBuilder, termParams);
+    commonBuilder.addTermParams(queryBuilder, termParams);
     SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
     sourceBuilder.size(1000);
     sourceBuilder.query(queryBuilder);
-    sourceBuilder.aggregation(CommonBuilder.buildAgg(EndpointRelationDO.ENTITY_ID));
+    sourceBuilder.aggregation(commonBuilder.buildAgg(EndpointRelationDO.ENTITY_ID));
 
     SearchRequest searchRequest = new SearchRequest(EndpointRelationDO.INDEX_NAME);
     searchRequest.source(sourceBuilder);
@@ -74,11 +78,11 @@ public class TopologyEsStorage implements TopologyStorage {
             .must(QueryBuilders.termQuery(sourceOrDest + "_service_name", address))
             .must(QueryBuilders.rangeQuery(timeField()).gte(startTime).lte(endTime));
 
-    CommonBuilder.addTermParams(queryBuilder, termParams);
+    commonBuilder.addTermParams(queryBuilder, termParams);
     SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
     sourceBuilder.size(1000);
     sourceBuilder.query(queryBuilder);
-    sourceBuilder.aggregation(CommonBuilder.buildAgg(EndpointRelationDO.ENTITY_ID));
+    sourceBuilder.aggregation(commonBuilder.buildAgg(EndpointRelationDO.ENTITY_ID));
 
     SearchRequest searchRequest = new SearchRequest(ServiceRelationDO.INDEX_NAME);
     searchRequest.source(sourceBuilder);
@@ -102,11 +106,11 @@ public class TopologyEsStorage implements TopologyStorage {
               .should(QueryBuilders.termQuery(SpanDO.KIND, SpanKind.CONSUMER)));
     }
 
-    CommonBuilder.addTermParamsWithAttr(queryBuilder, termParams);
+    commonBuilder.addTermParamsWithAttrPrefix(queryBuilder, termParams);
     SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
     sourceBuilder.size(1000);
     sourceBuilder.query(queryBuilder);
-    sourceBuilder.aggregation(CommonBuilder.buildAgg(aggField));
+    sourceBuilder.aggregation(commonBuilder.buildAgg(aggField));
 
     SearchRequest searchRequest = new SearchRequest(SpanDO.INDEX_NAME);
     searchRequest.source(sourceBuilder);
@@ -125,11 +129,11 @@ public class TopologyEsStorage implements TopologyStorage {
         .must(QueryBuilders.termQuery(sourceOrDest + "_service_instance_name", serviceInstance))
         .must(QueryBuilders.rangeQuery(timeField()).gte(startTime).lte(endTime));
 
-    CommonBuilder.addTermParams(queryBuilder, termParams);
+    commonBuilder.addTermParams(queryBuilder, termParams);
     SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
     sourceBuilder.size(1000);
     sourceBuilder.query(queryBuilder);
-    sourceBuilder.aggregation(CommonBuilder.buildAgg(ServiceInstanceRelationDO.ENTITY_ID));
+    sourceBuilder.aggregation(commonBuilder.buildAgg(ServiceInstanceRelationDO.ENTITY_ID));
 
     SearchRequest searchRequest = new SearchRequest(ServiceInstanceRelationDO.INDEX_NAME);
     searchRequest.source(sourceBuilder);
@@ -145,11 +149,11 @@ public class TopologyEsStorage implements TopologyStorage {
         QueryBuilders.boolQuery().must(QueryBuilders.termQuery(ServiceRelationDO.TENANT, tenant))
             .must(QueryBuilders.rangeQuery(timeField()).gte(startTime).lte(endTime));
 
-    CommonBuilder.addTermParams(queryBuilder, termParams);
+    commonBuilder.addTermParams(queryBuilder, termParams);
     SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
     sourceBuilder.size(1000);
     sourceBuilder.query(queryBuilder);
-    sourceBuilder.aggregation(CommonBuilder.buildAgg(ServiceRelationDO.ENTITY_ID));
+    sourceBuilder.aggregation(commonBuilder.buildAgg(ServiceRelationDO.ENTITY_ID));
 
     SearchRequest searchRequest = new SearchRequest(ServiceRelationDO.INDEX_NAME);
     searchRequest.source(sourceBuilder);
@@ -163,7 +167,7 @@ public class TopologyEsStorage implements TopologyStorage {
     Terms terms = response.getAggregations().get(aggField);
     for (Terms.Bucket bucket : terms.getBuckets()) {
       String service = bucket.getKey().toString();
-      result.put(service, CommonBuilder.buildMetric(bucket));
+      result.put(service, commonBuilder.buildMetric(bucket));
     }
 
     return result;
@@ -182,7 +186,7 @@ public class TopologyEsStorage implements TopologyStorage {
 
       Call call = new Call();
       call.buildFromServiceRelation(entityId, component);
-      call.setMetric(CommonBuilder.buildMetric(bucket));
+      call.setMetric(commonBuilder.buildMetric(bucket));
 
       calls.add(call);
     }
@@ -202,7 +206,7 @@ public class TopologyEsStorage implements TopologyStorage {
       }
       Call.DeepCall call = new Call.DeepCall();
       call.buildFromInstanceRelation(entityId, component);
-      call.setMetric(CommonBuilder.buildMetric(bucket));
+      call.setMetric(commonBuilder.buildMetric(bucket));
 
       calls.add(call);
     }
@@ -218,7 +222,7 @@ public class TopologyEsStorage implements TopologyStorage {
 
       Call.DeepCall call = new Call.DeepCall();
       call.buildFromEndpointRelation(entityId);
-      call.setMetric(CommonBuilder.buildMetric(bucket));
+      call.setMetric(commonBuilder.buildMetric(bucket));
 
       calls.add(call);
     }

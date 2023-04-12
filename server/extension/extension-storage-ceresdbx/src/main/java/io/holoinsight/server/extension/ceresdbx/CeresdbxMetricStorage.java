@@ -107,10 +107,6 @@ public class CeresdbxMetricStorage implements MetricStorage {
   public List<Result> queryData(QueryParam queryParam) {
     String whereStatement = parseWhere(queryParam);
     String fromStatement = parseFrom(queryParam);
-    if (StringUtils.isBlank(fromStatement)) {
-      LOGGER.warn("fromStatement is empty, queryParam:{}", queryParam);
-      return Lists.newArrayList();
-    }
     String sql = genSqlWithGroupBy(queryParam, fromStatement, whereStatement);
     LOGGER.info("queryData queryparam:{}, sql:{}", queryParam, sql);
     final SqlQueryRequest queryRequest =
@@ -447,14 +443,8 @@ public class CeresdbxMetricStorage implements MetricStorage {
           + " %s(value) as value FROM %s WHERE timestamp >= %s AND timestamp < %s group by time_bucket(`%s`, '%s'),%s)";
       String interval = getInterval(downsample);
       if (StringUtils.isNotBlank(interval)) {
-        String tagNames;
-        try {
-          tagNames = getTagNames(queryParam);
-        } catch (Exception e) {
-          LOGGER.error("get {} tags error", fromMetrics, e);
-          return StringUtils.EMPTY;
-        }
-        return String.format(downsampleSql, "timestamp", interval, tagNames, aggregator,
+        String tagNames = getTagNames(queryParam);
+        fromMetrics = String.format(downsampleSql, "timestamp", interval, tagNames, aggregator,
             queryParam.getMetric(), queryParam.getStart(), queryParam.getEnd(), "timestamp",
             interval, tagNames);
       }

@@ -30,8 +30,8 @@ public class ServiceInstanceApiController implements ServiceInstanceApi {
       throw new IllegalArgumentException("The condition must contains tenant and service.");
     }
 
-    List<ServiceInstance> serviceInstanceList = serviceInstanceService
-        .getServiceInstanceList(tenant, service, request.getStartTime(), request.getEndTime());
+    List<ServiceInstance> serviceInstanceList = serviceInstanceService.getServiceInstanceList(
+        tenant, service, request.getStartTime(), request.getEndTime(), request.getTermParams());
 
     return ResponseEntity.ok(serviceInstanceList);
   }
