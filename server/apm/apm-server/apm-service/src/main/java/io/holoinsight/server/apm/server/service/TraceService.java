@@ -26,5 +26,13 @@ public interface TraceService {
 
   void insertSpans(final List<SpanDO> spans) throws Exception;
 
+  /**
+   * Query statistical trace data, which can be used to monitor the amount of trace data
+   * 
+   * @param startTime
+   * @param endTime
+   * @return
+   * @throws Exception
+   */
   List<StatisticData> statisticTrace(long startTime, long endTime) throws Exception;
 }

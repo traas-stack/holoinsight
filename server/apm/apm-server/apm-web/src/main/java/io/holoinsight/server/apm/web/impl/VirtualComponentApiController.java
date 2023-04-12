@@ -31,7 +31,7 @@ public class VirtualComponentApiController implements VirtualComponentApi {
     }
 
     List<VirtualComponent> dbList = virtualComponentService.getDbList(tenant, service,
-        request.getStartTime(), request.getEndTime());
+        request.getStartTime(), request.getEndTime(), request.getTermParams());
     return ResponseEntity.ok(dbList);
   }
 
@@ -46,7 +46,7 @@ public class VirtualComponentApiController implements VirtualComponentApi {
     }
 
     List<VirtualComponent> cacheList = virtualComponentService.getCacheList(tenant, service,
-        request.getStartTime(), request.getEndTime());
+        request.getStartTime(), request.getEndTime(), request.getTermParams());
     return ResponseEntity.ok(cacheList);
   }
 
@@ -61,7 +61,7 @@ public class VirtualComponentApiController implements VirtualComponentApi {
     }
 
     List<VirtualComponent> mqList = virtualComponentService.getMQList(tenant, service,
-        request.getStartTime(), request.getEndTime());
+        request.getStartTime(), request.getEndTime(), request.getTermParams());
     return ResponseEntity.ok(mqList);
   }
 
@@ -75,8 +75,9 @@ public class VirtualComponentApiController implements VirtualComponentApi {
       throw new IllegalArgumentException("The condition must contains tenant and address.");
     }
 
-    List<String> traceIds = virtualComponentService.getTraceIds(tenant, request.getServiceName(),
-        request.getAddress(), request.getStartTime(), request.getEndTime());
+    List<String> traceIds =
+        virtualComponentService.getTraceIds(tenant, request.getServiceName(), request.getAddress(),
+            request.getStartTime(), request.getEndTime(), request.getTermParams());
 
     return ResponseEntity.ok(traceIds);
   }

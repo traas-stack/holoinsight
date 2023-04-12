@@ -3,18 +3,15 @@
  */
 package io.holoinsight.server.apm.web.impl;
 
-import io.holoinsight.server.apm.web.EndpointApi;
-
+import com.google.common.base.Strings;
 import io.holoinsight.server.apm.common.model.query.Endpoint;
 import io.holoinsight.server.apm.common.model.query.QueryEndpointRequest;
 import io.holoinsight.server.apm.server.service.EndpointService;
-import com.google.common.base.Strings;
-
+import io.holoinsight.server.apm.web.EndpointApi;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 
-import java.io.IOException;
 import java.util.List;
 
 @Slf4j
@@ -34,7 +31,7 @@ public class EndpointApiController implements EndpointApi {
     }
 
     List<Endpoint> endpointList = endpointService.getEndpointList(tenant, service,
-        request.getStartTime(), request.getEndTime());
+        request.getStartTime(), request.getEndTime(), request.getTermParams());
 
     return ResponseEntity.ok(endpointList);
   }

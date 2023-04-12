@@ -33,9 +33,6 @@ public class EndpointRelationDO extends RecordDO {
   public static final String LATENCY = "latency";
   public static final String ENTITY_ID = "entity_id";
   public static final String TRACE_ID = "trace_id";
-  public static final String APPP_ID = "app_id";
-  public static final String ENV_ID = "env_id";
-  public static final String STAMP = "stamp";
   public static final String TYPE = "type";
 
   @Id
@@ -64,12 +61,6 @@ public class EndpointRelationDO extends RecordDO {
   private String entityId;
   @Column(name = TRACE_ID)
   private String traceId;
-  @Column(name = APPP_ID)
-  private String appId;
-  @Column(name = ENV_ID)
-  private String envId;
-  @Column(name = STAMP)
-  private String stamp;
   @Column(name = TYPE)
   private String type;
 

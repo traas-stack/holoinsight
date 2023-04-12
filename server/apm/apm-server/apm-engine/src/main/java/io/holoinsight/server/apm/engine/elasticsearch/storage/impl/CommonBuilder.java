@@ -3,11 +3,10 @@
  */
 package io.holoinsight.server.apm.engine.elasticsearch.storage.impl;
 
-import io.holoinsight.server.apm.common.constants.Const;
 import io.holoinsight.server.apm.common.model.query.ResponseMetric;
-import io.holoinsight.server.apm.engine.model.EndpointRelationDO;
 import io.holoinsight.server.apm.engine.model.ServiceRelationDO;
 import io.holoinsight.server.apm.engine.model.SpanDO;
+import io.holoinsight.server.apm.engine.storage.ICommonBuilder;
 import io.opentelemetry.proto.trace.v1.Status;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
@@ -24,9 +23,10 @@ import org.elasticsearch.search.aggregations.metrics.ValueCount;
 
 import java.util.Map;
 
-public class CommonBuilder {
+public class CommonBuilder implements ICommonBuilder {
 
-  public static void addTermParams(BoolQueryBuilder queryBuilder, Map<String, String> termParams) {
+  @Override
+  public void addTermParams(BoolQueryBuilder queryBuilder, Map<String, String> termParams) {
     if (termParams != null && termParams.size() > 0) {
       termParams.keySet().forEach(k -> {
         queryBuilder.must(QueryBuilders.termQuery(k, termParams.get(k)));
@@ -34,22 +34,25 @@ public class CommonBuilder {
     }
   }
 
-  public static void addTermParamsWithAttr(BoolQueryBuilder queryBuilder,
+  /**
+   * The tags of the query need to add 'attributes.' as a prefix when query from holoinsight-span
+   * 
+   * @param queryBuilder
+   * @param termParams
+   */
+  @Override
+  public void addTermParamsWithAttrPrefix(BoolQueryBuilder queryBuilder,
       Map<String, String> termParams) {
     if (termParams != null && termParams.size() > 0) {
       termParams.keySet().forEach(k -> {
         String value = termParams.get(k);
-        if (k.equals(EndpointRelationDO.APPP_ID)) {
-          k = Const.APPID;
-        } else if (k.equals(EndpointRelationDO.ENV_ID)) {
-          k = Const.ENVID;
-        }
         queryBuilder.must(QueryBuilders.termQuery(SpanDO.attributes(k), value));
       });
     }
   }
 
-  public static TermsAggregationBuilder buildAgg(String aggField) {
+  @Override
+  public TermsAggregationBuilder buildAgg(String aggField) {
     TermsAggregationBuilder aggregationBuilder = AggregationBuilders.terms(aggField).field(aggField)
         .subAggregation(AggregationBuilders.terms(ServiceRelationDO.COMPONENT)
             .field(ServiceRelationDO.COMPONENT).executionHint("map")
@@ -68,7 +71,8 @@ public class CommonBuilder {
     return aggregationBuilder;
   }
 
-  public static ResponseMetric buildMetric(Terms.Bucket bucket) {
+  @Override
+  public ResponseMetric buildMetric(Terms.Bucket bucket) {
     Avg avgLatency = bucket.getAggregations().get("avg_latency");
     double latency = Double.valueOf(avgLatency.getValue());
 
@@ -97,7 +101,8 @@ public class CommonBuilder {
     return metric;
   }
 
-  public static ResponseMetric buildMetricWithDistinct(Terms.Bucket bucket) {
+  @Override
+  public ResponseMetric buildMetricWithDistinct(Terms.Bucket bucket) {
     Avg avgLatency = bucket.getAggregations().get("avg_latency");
     double latency = Double.valueOf(avgLatency.getValue());
 

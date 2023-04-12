@@ -29,8 +29,9 @@ public class SlowSqlApiController implements SlowSqlApi {
       throw new IllegalArgumentException("The condition must contains tenant.");
     }
 
-    List<SlowSql> slowSqlList = slowSqlService.getSlowSqlList(tenant, request.getServiceName(),
-        request.getAddress(), request.getStartTime(), request.getEndTime());
+    List<SlowSql> slowSqlList =
+        slowSqlService.getSlowSqlList(tenant, request.getServiceName(), request.getAddress(),
+            request.getStartTime(), request.getEndTime(), request.getTermParams());
     return ResponseEntity.ok(slowSqlList);
   }
 }

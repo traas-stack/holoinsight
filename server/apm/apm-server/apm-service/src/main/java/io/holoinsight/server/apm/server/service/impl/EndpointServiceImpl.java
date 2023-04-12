@@ -8,8 +8,8 @@ import io.holoinsight.server.apm.engine.storage.EndpointStorage;
 import io.holoinsight.server.apm.server.service.EndpointService;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 public class EndpointServiceImpl implements EndpointService {
 
@@ -17,8 +17,8 @@ public class EndpointServiceImpl implements EndpointService {
   protected EndpointStorage endpointStorage;
 
   @Override
-  public List<Endpoint> getEndpointList(String tenant, String service, long startTime, long endTime)
-      throws Exception {
-    return endpointStorage.getEndpointList(tenant, service, startTime, endTime);
+  public List<Endpoint> getEndpointList(String tenant, String service, long startTime, long endTime,
+      Map<String, String> termParams) throws Exception {
+    return endpointStorage.getEndpointList(tenant, service, startTime, endTime, termParams);
   }
 }

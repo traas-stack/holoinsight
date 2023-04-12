@@ -4,7 +4,6 @@
 package io.holoinsight.server.apm.receiver.common;
 
 import io.holoinsight.server.apm.common.constants.Const;
-import io.holoinsight.server.apm.common.model.specification.otel.StatusCode;
 import io.holoinsight.server.apm.common.utils.TimeBucket;
 import io.holoinsight.server.apm.common.utils.TimeUtils;
 import io.holoinsight.server.apm.receiver.builder.RelationBuilder;
@@ -15,9 +14,11 @@ import org.apache.commons.codec.binary.Hex;
 
 import java.util.Map;
 
-public class PublicAttr {
 
-  public static void setPublicAttrs(RelationBuilder sourceBuilder, Span span,
+public class PublicAttr implements IPublicAttr {
+
+  @Override
+  public void setPublicAttrs(RelationBuilder sourceBuilder, Span span,
       Map<String, AnyValue> spanAttrMap, Map<String, AnyValue> resourceAttrMap) {
     sourceBuilder.setTenant(resourceAttrMap.get(Const.TENANT).getStringValue());
     long latency = TimeUtils.unixNano2MS(span.getEndTimeUnixNano())
@@ -30,11 +31,6 @@ public class PublicAttr {
     sourceBuilder.setLatency((int) latency);
     sourceBuilder.setHttpResponseStatusCode(Const.NONE);
     sourceBuilder.setTraceStatus(span.getStatus().getCodeValue());
-
-    // bizops errorCode、rootErrorCode
-    if (spanAttrMap.get(Const.ERRORCODE) != null && spanAttrMap.get(Const.ROOTERRORCODE) != null) {
-      sourceBuilder.setTraceStatus(StatusCode.ERROR.getCode());
-    }
 
     AnyValue component = spanAttrMap.get(Const.SW_ATTR_COMPONENT);
     if (component != null) {
@@ -55,21 +51,5 @@ public class PublicAttr {
     if (grpcCode != null) {
       sourceBuilder.setRpcStatusCode(grpcCode.getStringValue());
     }
-
-    AnyValue appId = spanAttrMap.get(Const.APPID);
-    if (appId != null) {
-      sourceBuilder.setAppId(appId.getStringValue());
-    }
-
-    AnyValue envId = spanAttrMap.get(Const.ENVID);
-    if (envId != null) {
-      sourceBuilder.setEnvId(envId.getStringValue());
-    }
-
-    AnyValue stamp = spanAttrMap.get(Const.STAMP);
-    if (stamp != null) {
-      sourceBuilder.setStamp(stamp.getStringValue());
-    }
-
   }
 }

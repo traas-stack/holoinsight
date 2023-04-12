@@ -7,6 +7,7 @@ import io.holoinsight.server.apm.common.model.query.Endpoint;
 import io.holoinsight.server.apm.engine.model.EndpointRelationDO;
 import io.holoinsight.server.apm.engine.model.SpanDO;
 import io.holoinsight.server.apm.engine.storage.EndpointStorage;
+import io.holoinsight.server.apm.engine.storage.ICommonBuilder;
 import lombok.extern.slf4j.Slf4j;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
@@ -21,12 +22,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 public class EndpointEsStorage implements EndpointStorage {
 
   @Autowired
   private RestHighLevelClient client;
+
+  @Autowired
+  private ICommonBuilder commonBuilder;
 
   protected RestHighLevelClient esClient() {
     return client;
@@ -38,8 +43,8 @@ public class EndpointEsStorage implements EndpointStorage {
   }
 
   @Override
-  public List<Endpoint> getEndpointList(String tenant, String service, long startTime, long endTime)
-      throws IOException {
+  public List<Endpoint> getEndpointList(String tenant, String service, long startTime, long endTime,
+      Map<String, String> termParams) throws IOException {
     List<Endpoint> result = new ArrayList<>();
 
     BoolQueryBuilder queryBuilder =
@@ -47,10 +52,11 @@ public class EndpointEsStorage implements EndpointStorage {
             .must(QueryBuilders.termQuery(EndpointRelationDO.DEST_SERVICE_NAME, service))
             .must(QueryBuilders.rangeQuery(timeField()).gte(startTime).lte(endTime));
 
+    commonBuilder.addTermParams(queryBuilder, termParams);
     SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
     sourceBuilder.size(1000);
     sourceBuilder.query(queryBuilder);
-    sourceBuilder.aggregation(CommonBuilder.buildAgg(EndpointRelationDO.DEST_ENDPOINT_NAME));
+    sourceBuilder.aggregation(commonBuilder.buildAgg(EndpointRelationDO.DEST_ENDPOINT_NAME));
 
     SearchRequest searchRequest = new SearchRequest(EndpointRelationDO.INDEX_NAME);
     searchRequest.source(sourceBuilder);
@@ -62,7 +68,7 @@ public class EndpointEsStorage implements EndpointStorage {
 
       Endpoint endpoint = new Endpoint();
       endpoint.setName(endpointName);
-      endpoint.setMetric(CommonBuilder.buildMetric(bucket));
+      endpoint.setMetric(commonBuilder.buildMetric(bucket));
 
       result.add(endpoint);
     }

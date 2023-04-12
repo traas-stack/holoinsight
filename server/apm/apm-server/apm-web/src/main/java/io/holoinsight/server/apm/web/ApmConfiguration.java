@@ -3,13 +3,12 @@
  */
 package io.holoinsight.server.apm.web;
 
+import io.holoinsight.server.apm.core.ModelCenter;
+import io.holoinsight.server.apm.core.ttl.ModelTtlManager;
+import io.holoinsight.server.apm.receiver.trace.TraceOtelServiceImpl;
 import io.holoinsight.server.common.springboot.ConditionalOnFeature;
 import io.holoinsight.server.common.springboot.ConditionalOnRole;
 import io.holoinsight.server.common.threadpool.ThreadPoolConfiguration;
-import io.holoinsight.server.apm.core.ModelCenter;
-import io.holoinsight.server.apm.core.installer.ModelInstallManager;
-import io.holoinsight.server.apm.core.ttl.ModelTtlManager;
-import io.holoinsight.server.apm.receiver.trace.TraceOtelServiceImpl;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -58,11 +57,6 @@ public class ApmConfiguration {
   @Bean
   public ModelTtlManager modelTtlManager() {
     return new ModelTtlManager();
-  }
-
-  @Bean
-  public ModelInstallManager modelInstallManager() {
-    return new ModelInstallManager();
   }
 
 

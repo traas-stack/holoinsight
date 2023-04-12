@@ -3,18 +3,17 @@
  */
 package io.holoinsight.server.apm.core;
 
+import io.holoinsight.server.apm.common.model.storage.Model;
+import io.holoinsight.server.apm.core.installer.IModelInstallManager;
+import io.holoinsight.server.apm.core.ttl.ModelTtlManager;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import io.holoinsight.server.apm.common.model.storage.Model;
-import io.holoinsight.server.apm.core.installer.ModelInstallManager;
-import io.holoinsight.server.apm.core.ttl.ModelTtlManager;
-import lombok.extern.slf4j.Slf4j;
-
-import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * @author jiwliu
@@ -24,7 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class ModelCenter {
 
   @Autowired
-  private ModelInstallManager modelInstallManager;
+  private IModelInstallManager modelInstallManager;
 
   @Autowired
   private ModelTtlManager modelTtlManager;

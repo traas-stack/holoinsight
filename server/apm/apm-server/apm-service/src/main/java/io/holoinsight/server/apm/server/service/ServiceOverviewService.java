@@ -5,10 +5,11 @@ package io.holoinsight.server.apm.server.service;
 
 import io.holoinsight.server.apm.common.model.query.Service;
 
-import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 public interface ServiceOverviewService {
 
-  List<Service> getServiceList(String tenant, long startTime, long endTime) throws Exception;
+  List<Service> getServiceList(String tenant, long startTime, long endTime,
+      Map<String, String> termParams) throws Exception;
 }
