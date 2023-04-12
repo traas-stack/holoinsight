@@ -52,7 +52,7 @@ public class MetricMonitoringIT extends BaseIT {
   /**
    * Test query tagValues
    */
-  @Order(1)
+  @Order(2)
   @Test
   public void test_query_tag_values_monitoring_item() {
     await("test query tag values") //
