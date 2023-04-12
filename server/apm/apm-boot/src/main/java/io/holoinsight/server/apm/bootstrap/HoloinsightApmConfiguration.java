@@ -3,7 +3,22 @@
  */
 package io.holoinsight.server.apm.bootstrap;
 
-import io.holoinsight.server.apm.server.service.impl.*;
+import io.holoinsight.server.apm.core.installer.ModelInstallManager;
+import io.holoinsight.server.apm.engine.elasticsearch.storage.impl.CommonBuilder;
+import io.holoinsight.server.apm.receiver.common.PublicAttr;
+import io.holoinsight.server.apm.server.service.impl.EndpointRelationServiceImpl;
+import io.holoinsight.server.apm.server.service.impl.EndpointServiceImpl;
+import io.holoinsight.server.apm.server.service.impl.MetricServiceImpl;
+import io.holoinsight.server.apm.server.service.impl.NetworkAddressMappingServiceImpl;
+import io.holoinsight.server.apm.server.service.impl.ServiceErrorServiceImpl;
+import io.holoinsight.server.apm.server.service.impl.ServiceInstanceRelationServiceImpl;
+import io.holoinsight.server.apm.server.service.impl.ServiceInstanceServiceImpl;
+import io.holoinsight.server.apm.server.service.impl.ServiceOverviewServiceImpl;
+import io.holoinsight.server.apm.server.service.impl.ServiceRelationServiceImpl;
+import io.holoinsight.server.apm.server.service.impl.SlowSqlServiceImpl;
+import io.holoinsight.server.apm.server.service.impl.TopologyServiceImpl;
+import io.holoinsight.server.apm.server.service.impl.TraceServiceImpl;
+import io.holoinsight.server.apm.server.service.impl.VirtualComponentServiceImpl;
 import io.holoinsight.server.common.springboot.ConditionalOnFeature;
 import io.holoinsight.server.common.springboot.ConditionalOnRole;
 import org.springframework.context.annotation.Bean;
@@ -78,4 +93,20 @@ public class HoloinsightApmConfiguration {
   public VirtualComponentServiceImpl virtualComponentService() {
     return new VirtualComponentServiceImpl();
   }
+
+  @Bean("modelInstallManager")
+  public ModelInstallManager modelInstallManager() {
+    return new ModelInstallManager();
+  }
+
+  @Bean("commonBuilder")
+  public CommonBuilder commonBuilder() {
+    return new CommonBuilder();
+  }
+
+  @Bean("publicAttr")
+  public PublicAttr publicAttr() {
+    return new PublicAttr();
+  }
+
 }

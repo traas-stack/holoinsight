@@ -6,11 +6,10 @@ package io.holoinsight.server.apm.server.service.impl;
 import io.holoinsight.server.apm.common.model.query.ServiceInstance;
 import io.holoinsight.server.apm.engine.storage.ServiceInstanceStorage;
 import io.holoinsight.server.apm.server.service.ServiceInstanceService;
-
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 public class ServiceInstanceServiceImpl implements ServiceInstanceService {
 
@@ -19,7 +18,8 @@ public class ServiceInstanceServiceImpl implements ServiceInstanceService {
 
   @Override
   public List<ServiceInstance> getServiceInstanceList(String tenant, String service, long startTime,
-      long endTime) throws Exception {
-    return serviceInstanceStorage.getServiceInstanceList(tenant, service, startTime, endTime);
+      long endTime, Map<String, String> termParams) throws Exception {
+    return serviceInstanceStorage.getServiceInstanceList(tenant, service, startTime, endTime,
+        termParams);
   }
 }

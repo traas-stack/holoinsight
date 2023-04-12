@@ -196,33 +196,24 @@ public class SpanEsStorage extends RecordEsStorage<SpanDO> implements SpanStorag
         .must(QueryBuilders.rangeQuery(timeField()).gte(startTime).lte(endTime));
 
     TermsAggregationBuilder aggregationBuilder =
-        AggregationBuilders.terms(SpanDO.attributes(Const.APPID))
-            .field(SpanDO
-                .attributes(Const.APPID))
-            .subAggregation(
-                AggregationBuilders.terms(SpanDO.attributes(Const.ENVID))
-                    .field(SpanDO.attributes(Const.ENVID))
-                    .subAggregation(AggregationBuilders.cardinality("service_count")
-                        .field(SpanDO.resource(SpanDO.SERVICE_NAME)))
-                    .subAggregation(
-                        AggregationBuilders.cardinality("trace_count").field(SpanDO.TRACE_ID))
-                    .subAggregation(AggregationBuilders
-                        .filter(SpanDO.TRACE_STATUS,
-                            QueryBuilders.termQuery(SpanDO.TRACE_STATUS,
-                                Status.StatusCode.STATUS_CODE_ERROR_VALUE))
-                        .subAggregation(
-                            AggregationBuilders.cardinality("error_count").field(SpanDO.TRACE_ID)))
-                    .subAggregation(AggregationBuilders
-                        .filter(SpanDO.attributes(Const.ISENTRY),
-                            QueryBuilders.boolQuery()
-                                .must(QueryBuilders.termQuery(SpanDO.attributes(Const.ISENTRY),
-                                    "true"))
-                                .mustNot(QueryBuilders.termQuery(SpanDO.NAME, "GET:/")))
-                        .subAggregation(
-                            AggregationBuilders.cardinality("entry_count").field(SpanDO.NAME)))
-                    .subAggregation(AggregationBuilders.avg("avg_latency").field(SpanDO.LATENCY))
-                    .executionHint("map").collectMode(Aggregator.SubAggCollectionMode.BREADTH_FIRST)
-                    .size(1000));
+        AggregationBuilders.terms(SpanDO.TENANT).field(SpanDO.attributes(SpanDO.TENANT))
+            .subAggregation(AggregationBuilders.cardinality("service_count")
+                .field(SpanDO.resource(SpanDO.SERVICE_NAME)))
+            .subAggregation(AggregationBuilders.cardinality("trace_count").field(SpanDO.TRACE_ID))
+            .subAggregation(AggregationBuilders
+                .filter(SpanDO.TRACE_STATUS,
+                    QueryBuilders.termQuery(SpanDO.TRACE_STATUS,
+                        Status.StatusCode.STATUS_CODE_ERROR_VALUE))
+                .subAggregation(AggregationBuilders.cardinality("error_count")
+                    .field(SpanDO.TRACE_ID)))
+            .subAggregation(AggregationBuilders.filter(SpanDO.attributes(Const.ISENTRY),
+                QueryBuilders.boolQuery()
+                    .must(QueryBuilders.termQuery(SpanDO.attributes(Const.ISENTRY), "true"))
+                    .mustNot(QueryBuilders.termQuery(SpanDO.NAME, "GET:/")))
+                .subAggregation(AggregationBuilders.cardinality("entry_count").field(SpanDO.NAME)))
+            .subAggregation(AggregationBuilders.avg("avg_latency").field(SpanDO.LATENCY))
+            .executionHint("map").collectMode(Aggregator.SubAggCollectionMode.BREADTH_FIRST)
+            .size(1000);
 
     SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
     sourceBuilder.size(1000);
@@ -233,41 +224,36 @@ public class SpanEsStorage extends RecordEsStorage<SpanDO> implements SpanStorag
     searchRequest.source(sourceBuilder);
     SearchResponse response = esClient().search(searchRequest, RequestOptions.DEFAULT);
 
-    Terms terms = response.getAggregations().get(SpanDO.attributes(Const.APPID));
+    Terms terms = response.getAggregations().get(SpanDO.TENANT);
     for (Terms.Bucket bucket : terms.getBuckets()) {
-      String appId = bucket.getKey().toString();
-      Terms envTerms = bucket.getAggregations().get(SpanDO.attributes(Const.ENVID));
-      for (Terms.Bucket envBucket : envTerms.getBuckets()) {
-        String envId = envBucket.getKey().toString();
+      String tenant = bucket.getKey().toString();
 
-        ParsedCardinality serviceTerm = envBucket.getAggregations().get("service_count");
-        long serviceCount = serviceTerm.getValue();
+      ParsedCardinality serviceTerm = bucket.getAggregations().get("service_count");
+      long serviceCount = serviceTerm.getValue();
 
-        ParsedCardinality traceTerm = envBucket.getAggregations().get("trace_count");
-        long traceCount = traceTerm.getValue();
+      ParsedCardinality traceTerm = bucket.getAggregations().get("trace_count");
+      long traceCount = traceTerm.getValue();
 
-        Filter errFilter = envBucket.getAggregations().get(SpanDO.TRACE_STATUS);
-        ParsedCardinality errorTerm = errFilter.getAggregations().get("error_count");
-        int errorCount = (int) errorTerm.getValue();
+      Filter errFilter = bucket.getAggregations().get(SpanDO.TRACE_STATUS);
+      ParsedCardinality errorTerm = errFilter.getAggregations().get("error_count");
+      int errorCount = (int) errorTerm.getValue();
 
-        Filter entryFilter = envBucket.getAggregations().get(SpanDO.attributes(Const.ISENTRY));
-        ParsedCardinality entryTerm = entryFilter.getAggregations().get("entry_count");
-        int entryCount = (int) entryTerm.getValue();
+      Filter entryFilter = bucket.getAggregations().get(SpanDO.attributes(Const.ISENTRY));
+      ParsedCardinality entryTerm = entryFilter.getAggregations().get("entry_count");
+      int entryCount = (int) entryTerm.getValue();
 
-        Avg avgLatency = envBucket.getAggregations().get("avg_latency");
-        double latency = Double.valueOf(avgLatency.getValue());
+      Avg avgLatency = bucket.getAggregations().get("avg_latency");
+      double latency = Double.valueOf(avgLatency.getValue());
 
-        StatisticData statisticData = new StatisticData();
-        statisticData.setAppId(appId);
-        statisticData.setEnvId(envId);
-        statisticData.setServiceCount(serviceCount);
-        statisticData.setTraceCount(traceCount);
-        statisticData.setEntryCount(entryCount);
-        statisticData.setAvgLatency(latency);
-        statisticData.setSuccessRate(((double) (traceCount - errorCount) / traceCount) * 100);
+      StatisticData statisticData = new StatisticData();
+      statisticData.setTenant(tenant);
+      statisticData.setServiceCount(serviceCount);
+      statisticData.setTraceCount(traceCount);
+      statisticData.setEntryCount(entryCount);
+      statisticData.setAvgLatency(latency);
+      statisticData.setSuccessRate(((double) (traceCount - errorCount) / traceCount) * 100);
 
-        result.add(statisticData);
-      }
+      result.add(statisticData);
     }
     return result;
   }

@@ -12,7 +12,6 @@ import io.holoinsight.server.apm.core.ModelCenter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
-import org.springframework.scheduling.annotation.Scheduled;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
@@ -25,9 +24,14 @@ import java.util.List;
  * @version : ModelInstaller.java, v 0.1 2022年10月11日 21:24 xiangwanpeng Exp $
  */
 @Slf4j
-public class ModelInstallManager {
+public class ModelInstallManager implements IModelInstallManager {
 
   private static final String MODEL_PATH = "io.holoinsight.server.apm";
+
+  public String getModelPath() {
+    return MODEL_PATH;
+  }
+
 
   @Autowired
   private List<ModelInstaller> installers;
@@ -38,6 +42,7 @@ public class ModelInstallManager {
   /**
    * @throws IOException
    */
+  @Override
   public void start() throws IOException {
     List<Model> models = scanModels();
     for (Model model : models) {
@@ -47,9 +52,9 @@ public class ModelInstallManager {
 
   private List<Model> scanModels() throws IOException {
     List<Model> models = new ArrayList<>();
-    Collection<Class<?>> modelPathClasses = ClassUtil.getClasses(MODEL_PATH);
+    Collection<Class<?>> modelPathClasses = ClassUtil.getClasses(getModelPath());
     log.info("[apm] load {} models, path={}",
-        modelPathClasses == null ? 0 : modelPathClasses.size(), MODEL_PATH);
+        modelPathClasses == null ? 0 : modelPathClasses.size(), getModelPath());
     for (Class<?> cls : modelPathClasses) {
       if (cls.isAnnotationPresent(ModelAnnotation.class)) {
         ModelAnnotation modelAnnotation = cls.getAnnotation(ModelAnnotation.class);

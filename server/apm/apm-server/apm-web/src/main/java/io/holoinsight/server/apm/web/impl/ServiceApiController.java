@@ -29,8 +29,8 @@ public class ServiceApiController implements ServiceApi {
       throw new IllegalArgumentException("The condition must contains tenant.");
     }
 
-    List<Service> serviceList =
-        serviceOverviewService.getServiceList(tenant, request.getStartTime(), request.getEndTime());
+    List<Service> serviceList = serviceOverviewService.getServiceList(tenant,
+        request.getStartTime(), request.getEndTime(), request.getTermParams());
 
     return ResponseEntity.ok(serviceList);
   }

@@ -7,6 +7,7 @@ import io.holoinsight.server.apm.common.model.query.SlowSql;
 import io.holoinsight.server.apm.engine.model.SlowSqlDO;
 
 import java.util.List;
+import java.util.Map;
 
 
 public interface SlowSqlService {
@@ -14,5 +15,5 @@ public interface SlowSqlService {
   void insert(final List<SlowSqlDO> slowSqlEsDOList) throws Exception;
 
   List<SlowSql> getSlowSqlList(String tenant, String serviceName, String dbAddress, long startTime,
-      long endTime) throws Exception;
+      long endTime, Map<String, String> termParams) throws Exception;
 }
