@@ -450,7 +450,7 @@ public class CeresdbxMetricStorage implements MetricStorage {
         String tagNames;
         try {
           tagNames = getTagNames(queryParam);
-        }catch (Exception e){
+        } catch (Exception e) {
           LOGGER.error("get {} tags error", fromMetrics, e);
           return StringUtils.EMPTY;
         }
