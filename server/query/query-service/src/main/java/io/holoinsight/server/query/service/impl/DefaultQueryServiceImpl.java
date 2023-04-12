@@ -729,7 +729,9 @@ public class DefaultQueryServiceImpl implements QueryService {
         }
         QueryProto.QueryResponse.Builder rspBuilder = QueryProto.QueryResponse.newBuilder();
         List<QueryProto.Result> results = calculate(metricDefine.getMaterializedExp(), resultMap,
-            metricDefine.getName(), resultMap.keySet());
+            StringUtils.isNotEmpty(datasource.getName()) ? datasource.getName()
+                : datasource.getMetric(),
+            resultMap.keySet());
         rspBuilder.addAllResults(results);
         if (StringUtils.isNotEmpty(datasource.getDownsample())
             && StringUtils.isNotEmpty(datasource.getFillPolicy())) {
