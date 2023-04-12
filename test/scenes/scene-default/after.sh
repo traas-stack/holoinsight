@@ -20,6 +20,8 @@ server_container_name=`get_container server`
 
 echo [agent] install agent to server
 target=$server_container_name ../common/copy-agent.sh
+target=`get_container demo-client` ../common/copy-agent.sh
+target=`get_container demo-server` ../common/copy-agent.sh
 
 echo copy log-generator.py to $server_container_name
 docker-compose exec -w /home/admin/logs/holoinsight-server -d -T server bash -c ' python /home/admin/test/log-generator.py & '

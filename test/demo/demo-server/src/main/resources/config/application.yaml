@@ -1,0 +1,11 @@
+spring:
+  application:
+    name: demo-server
+  datasource:
+    url: jdbc:mysql://mysql:3306/holoinsight?useUnicode=true&characterEncoding=UTF-8&autoReconnect=true&rewriteBatchedStatements=true&socketTimeout=15000&connectTimeout=3000&useTimezone=true&serverTimezone=Asia/Shanghai
+    username: holoinsight
+    password: holoinsight
+    driver-class-name: com.mysql.jdbc.Driver
+  redis:
+    host: demo-redis
+    client-type: jedis

@@ -1,0 +1,32 @@
+syntax = "proto3";
+
+// TODO 这个common文件如何在  agent/registry/gateway 之间共享?
+// agent 要开源
+// registry/gateway 不开源
+
+package io.holoinsight.server.demo.server;
+
+option java_multiple_files = true;
+option java_package = "io.holoinsight.server.demo.server.grpc";
+option java_outer_classname = "DemoServerProtos";
+
+message FooRequest {
+  int32 a = 1;
+}
+
+message FooResponse {
+  int32 a = 1;
+}
+
+message BarRequest {
+  int32 a = 1;
+}
+
+message BarResponse {
+  int32 a = 1;
+}
+
+service DemoService {
+  rpc foo(FooRequest)returns(FooResponse){}
+  rpc bar(BarRequest)returns(BarResponse){}
+}

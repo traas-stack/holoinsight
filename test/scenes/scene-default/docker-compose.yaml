@@ -117,3 +117,35 @@ services:
       agent-image:
         condition: service_completed_successfully
     entrypoint: [ "true" ]
+
+  # demo
+  demo-client:
+    extends:
+      file: ../demo/docker-compose.yaml
+      service: demo-client
+    volumes:
+    - share:/share
+    - ../common/agent_entrypoint.sh:/agent_entrypoint.sh
+    depends_on:
+      collector:
+        condition: service_healthy
+      demo-server:
+        condition: service_healthy
+  demo-server:
+    extends:
+      file: ../demo/docker-compose.yaml
+      service: demo-server
+    volumes:
+    - share:/share
+    - ../common/agent_entrypoint.sh:/agent_entrypoint.sh
+    depends_on:
+      collector:
+        condition: service_healthy
+      demo-redis:
+        condition: service_healthy
+      mysql:
+        condition: service_healthy
+  demo-redis:
+    extends:
+      file: ../demo/docker-compose.yaml
+      service: demo-redis
