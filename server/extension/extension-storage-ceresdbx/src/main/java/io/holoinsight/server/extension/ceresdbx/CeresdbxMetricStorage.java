@@ -461,7 +461,6 @@ public class CeresdbxMetricStorage implements MetricStorage {
   private String getTagNames(QueryParam queryParam) {
     Set<String> fields = querySchema(queryParam).getTags().keySet();
     if (CollectionUtils.isEmpty(fields)) {
-      LOGGER.warn("");
       throw new RuntimeException("fields is empty");
     }
     return fields.stream().collect(Collectors.joining("`,`", "`", "`"));
