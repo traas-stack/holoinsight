@@ -8,7 +8,6 @@ import io.holoinsight.server.home.biz.service.UserOpLogService;
 import io.holoinsight.server.home.common.util.MonitorException;
 import io.holoinsight.server.home.common.util.ResultCodeEnum;
 import io.holoinsight.server.home.common.util.scope.AuthTargetType;
-import io.holoinsight.server.home.common.util.scope.MonitorCookieUtil;
 import io.holoinsight.server.home.common.util.scope.MonitorScope;
 import io.holoinsight.server.home.common.util.scope.MonitorUser;
 import io.holoinsight.server.home.common.util.scope.PowerConstants;
@@ -66,19 +65,6 @@ public class DisplayTemplateFacadeImpl extends BaseFacade {
         ParaCheckUtil.checkParaNotBlank(template.type, "type");
         ParaCheckUtil.checkParaNotBlank(template.config, "config");
         ParaCheckUtil.checkParaNotNull(template.refId, "refId");
-        // ParaCheckUtil.checkParaNotNull(template.getTenant(), "tenant");
-        // ParaCheckUtil.checkEquals(template.getTenant(),
-        // RequestContext.getContext().ms.getTenant(), "tenant is illegal");
-
-        // DisplayTemplateDTO item = displayTemplateService.queryById(template.getId(),
-        // RequestContext.getContext().ms.getTenant());
-
-        // if (null == item) {
-        // throw new MonitorException("cannot find record: " + template.getId());
-        // }
-        // if (!item.getTenant().equalsIgnoreCase(template.getTenant())) {
-        // throw new MonitorException("the tenant parameter is invalid");
-        // }
       }
 
       @Override
@@ -129,11 +115,7 @@ public class DisplayTemplateFacadeImpl extends BaseFacade {
           template.setCreator(mu.getLoginName());
           template.setModifier(mu.getLoginName());
         }
-        // if (null != ms && !StringUtils.isEmpty(ms.tenant)) {
-        // template.setTenant(ms.tenant);
-        // }
         template.setTenant("-1");
-        template.setTenant(MonitorCookieUtil.getTenantOrException());
         template.setGmtCreate(new Date());
         template.setGmtModified(new Date());
         displayTemplateService.save(template);
@@ -143,7 +125,6 @@ public class DisplayTemplateFacadeImpl extends BaseFacade {
         userOpLogService.append("display_template", template.getId(), OpType.CREATE,
             mu.getLoginName(), ms.getTenant(), ms.getWorkspace(), J.toJson(template), null, null,
             "display_template_create");
-
       }
     });
 
@@ -200,32 +181,4 @@ public class DisplayTemplateFacadeImpl extends BaseFacade {
     });
     return result;
   }
-
-  // @DeleteMapping(value = "/delete/{id}")
-  // @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.EDIT)
-  // public JsonResult<Object> deleteById(@PathVariable("id") Long id) {
-  // final JsonResult<Object> result = new JsonResult<>();
-  // facadeTemplate.manage(result, new ManageCallback() {
-  // @Override
-  // public void checkParameter() {
-  // ParaCheckUtil.checkParaNotNull(id, "id");
-  // }
-  //
-  // @Override
-  // public void doManage() {
-  //
-  //
-  // DisplayTemplate byId = displayTemplateService.queryById(id,
-  // RequestContext.getContext().ms.getTenant());
-  // displayTemplateService.removeById(id);
-  // JsonResult.createSuccessResult(result, null);
-  // userOpLogService.append("display_template", String.valueOf(byId.getId()), OpType.DELETE,
-  // RequestContext.getContext().mu.getLoginName(),
-  // RequestContext.getContext().ms.getTenant(), J.toJson(byId), null, null,
-  // "display_template_delete");
-  //
-  // }
-  // });
-  // return result;
-  // }
 }

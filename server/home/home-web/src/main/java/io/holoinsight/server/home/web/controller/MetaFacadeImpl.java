@@ -147,7 +147,7 @@ public class MetaFacadeImpl extends BaseFacade {
         Map<String, String> conditions =
             tenantInitService.getTenantWorkspaceMetaConditions(ms.getWorkspace());
         if (!CollectionUtils.isEmpty(conditions)) {
-          queryExample.getParams().putAll(conditions);
+          conditions.forEach((k, v) -> queryExample.getParams().put(k, v));
         }
         List<Map<String, Object>> list = dataClientService
             .fuzzyByExample(tenantInitService.getTenantServerTable(ms.getTenant()), queryExample);
