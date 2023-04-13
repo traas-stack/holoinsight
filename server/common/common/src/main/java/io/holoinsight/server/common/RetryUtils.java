@@ -3,10 +3,10 @@
  */
 package io.holoinsight.server.common;
 
-import lombok.extern.slf4j.Slf4j;
-
 import java.util.List;
 import java.util.function.Consumer;
+
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * 重试工具类
@@ -34,7 +34,8 @@ public abstract class RetryUtils {
     Throwable ex = null;
     for (int i = 0; i < retryCount; i++) {
       try {
-        if (sleepTime > 0) {
+        // i>0: only sleep when retry
+        if (i > 0 && sleepTime > 0) {
           Thread.sleep(sleepTime);
         }
         return dataSupplier.get();
