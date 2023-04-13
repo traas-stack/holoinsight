@@ -75,7 +75,7 @@ public class TraceQueryFacadeImpl extends BaseFacade {
     return result;
   }
 
-  @PostMapping(value = "/query/span")
+  @PostMapping(value = "/query")
   public JsonResult<Trace> queryTrace(@RequestBody QueryTraceRequest request) {
 
     final JsonResult<Trace> result = new JsonResult<>();
@@ -118,7 +118,7 @@ public class TraceQueryFacadeImpl extends BaseFacade {
 
       @Override
       public void doManage() {
-        request.newBuilderForType().setTenant(
+        request.toBuilder().setTenant(
             tenantInitService.getTraceTenant(RequestContext.getContext().ms.getTenant()));
         List<Service> services = queryClientService.queryServiceList(request);
         // search by serviceName
@@ -157,7 +157,7 @@ public class TraceQueryFacadeImpl extends BaseFacade {
 
       @Override
       public void doManage() {
-        request.newBuilderForType().setTenant(
+        request.toBuilder().setTenant(
             tenantInitService.getTraceTenant(RequestContext.getContext().ms.getTenant()));
         List<Endpoint> endpoints = queryClientService.queryEndpointList(request);
         JsonResult.createSuccessResult(result, endpoints);
@@ -185,7 +185,7 @@ public class TraceQueryFacadeImpl extends BaseFacade {
 
       @Override
       public void doManage() {
-        request.newBuilderForType().setTenant(
+        request.toBuilder().setTenant(
             tenantInitService.getTraceTenant(RequestContext.getContext().ms.getTenant()));
         List<ServiceInstance> serviceInstances =
             queryClientService.queryServiceInstanceList(request);
@@ -221,7 +221,7 @@ public class TraceQueryFacadeImpl extends BaseFacade {
 
       @Override
       public void doManage() {
-        request.newBuilderForType().setTenant(
+        request.toBuilder().setTenant(
             tenantInitService.getTraceTenant(RequestContext.getContext().ms.getTenant()));
         List<VirtualComponent> VirtualComponents = queryClientService.queryComponentList(request);
         JsonResult.createSuccessResult(result, VirtualComponents);
@@ -250,7 +250,7 @@ public class TraceQueryFacadeImpl extends BaseFacade {
 
       @Override
       public void doManage() {
-        request.newBuilderForType().setTenant(
+        request.toBuilder().setTenant(
             tenantInitService.getTraceTenant(RequestContext.getContext().ms.getTenant()));
         List<String> traceIds = queryClientService.queryComponentTraceIds(request);
         JsonResult.createSuccessResult(result, traceIds);
@@ -284,7 +284,7 @@ public class TraceQueryFacadeImpl extends BaseFacade {
 
       @Override
       public void doManage() {
-        request.newBuilderForType().setTenant(
+        request.toBuilder().setTenant(
             tenantInitService.getTraceTenant(RequestContext.getContext().ms.getTenant()));
         Topology topology = queryClientService.queryTopology(request);
         JsonResult.createSuccessResult(result, topology);
@@ -396,7 +396,7 @@ public class TraceQueryFacadeImpl extends BaseFacade {
 
       @Override
       public void doManage() {
-        request.newBuilderForType().setTenant(
+        request.toBuilder().setTenant(
             tenantInitService.getTraceTenant(RequestContext.getContext().ms.getTenant()));
         List<SlowSql> slowSqlList = queryClientService.querySlowSqlList(request);
         JsonResult.createSuccessResult(result, slowSqlList);
