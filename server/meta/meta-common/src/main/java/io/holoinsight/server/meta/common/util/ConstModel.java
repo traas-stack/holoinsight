@@ -13,6 +13,8 @@ public class ConstModel {
   public static final String default_id = "_id";
   public static final String default_pk = "_uk";
   public static final String default_type = "_type";
+  public static final String default_ip = "ip";
+  public static final String default_hostname = "hostname";
   public static final String default_workspace = "_workspace";
   public static final String default_modifier = "_modifier";
   public static final String default_status = "_status";
