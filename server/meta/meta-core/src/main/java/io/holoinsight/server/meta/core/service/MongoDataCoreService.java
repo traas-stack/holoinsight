@@ -236,16 +236,12 @@ public class MongoDataCoreService extends AbstractDataCoreService {
 
     if (!CollectionUtils.isEmpty(queryExample.getParams())) {
       for (Map.Entry<String, Object> entry : queryExample.getParams().entrySet()) {
-        if (entry.getKey().equalsIgnoreCase(default_type)) {
-          query.addCriteria(Criteria.where(entry.getKey()).is(entry.getValue()));
+        if (entry.getKey().equals(default_ip) || entry.getKey().equals(default_hostname)) {
+          orCriteria.add(Criteria.where(entry.getKey())
+              .regex(J.json2Bean(J.toJson(entry.getValue()), Pattern.class)));
           continue;
         }
-        if (entry.getKey().equalsIgnoreCase(default_workspace)) {
-          query.addCriteria(Criteria.where(entry.getKey()).is(entry.getValue()));
-          continue;
-        }
-        orCriteria.add(Criteria.where(entry.getKey())
-            .regex(J.json2Bean(J.toJson(entry.getValue()), Pattern.class)));
+        query.addCriteria(Criteria.where(entry.getKey()).is(entry.getValue()));
       }
     }
     criteria.orOperator(orCriteria.toArray(new Criteria[0]));
