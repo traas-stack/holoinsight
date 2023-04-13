@@ -22,6 +22,8 @@ import io.holoinsight.server.home.web.common.ManageCallback;
 import io.holoinsight.server.home.web.common.ParaCheckUtil;
 import io.holoinsight.server.home.web.common.TokenUrls;
 import io.holoinsight.server.query.grpc.QueryProto;
+import io.holoinsight.server.query.grpc.QueryProto.QueryMetaRequest.Builder;
+import io.holoinsight.server.query.grpc.QueryProto.QueryTopologyRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -118,9 +120,10 @@ public class TraceQueryFacadeImpl extends BaseFacade {
 
       @Override
       public void doManage() {
-        request.toBuilder().setTenant(
+        Builder builder = request.toBuilder();
+        builder.setTenant(
             tenantInitService.getTraceTenant(RequestContext.getContext().ms.getTenant()));
-        List<Service> services = queryClientService.queryServiceList(request);
+        List<Service> services = queryClientService.queryServiceList(builder.build());
         // search by serviceName
         if (!StringUtils.isEmpty(request.getServiceName())) {
           Iterator<Service> iterator = services.iterator();
@@ -157,9 +160,10 @@ public class TraceQueryFacadeImpl extends BaseFacade {
 
       @Override
       public void doManage() {
-        request.toBuilder().setTenant(
+        Builder builder = request.toBuilder();
+        builder.setTenant(
             tenantInitService.getTraceTenant(RequestContext.getContext().ms.getTenant()));
-        List<Endpoint> endpoints = queryClientService.queryEndpointList(request);
+        List<Endpoint> endpoints = queryClientService.queryEndpointList(builder.build());
         JsonResult.createSuccessResult(result, endpoints);
       }
     });
@@ -185,10 +189,11 @@ public class TraceQueryFacadeImpl extends BaseFacade {
 
       @Override
       public void doManage() {
-        request.toBuilder().setTenant(
+        Builder builder = request.toBuilder();
+        builder.setTenant(
             tenantInitService.getTraceTenant(RequestContext.getContext().ms.getTenant()));
         List<ServiceInstance> serviceInstances =
-            queryClientService.queryServiceInstanceList(request);
+            queryClientService.queryServiceInstanceList(builder.build());
         JsonResult.createSuccessResult(result, serviceInstances);
       }
     });
@@ -221,9 +226,11 @@ public class TraceQueryFacadeImpl extends BaseFacade {
 
       @Override
       public void doManage() {
-        request.toBuilder().setTenant(
+        Builder builder = request.toBuilder();
+        builder.setTenant(
             tenantInitService.getTraceTenant(RequestContext.getContext().ms.getTenant()));
-        List<VirtualComponent> VirtualComponents = queryClientService.queryComponentList(request);
+        List<VirtualComponent> VirtualComponents =
+            queryClientService.queryComponentList(builder.build());
         JsonResult.createSuccessResult(result, VirtualComponents);
       }
     });
@@ -250,9 +257,10 @@ public class TraceQueryFacadeImpl extends BaseFacade {
 
       @Override
       public void doManage() {
-        request.toBuilder().setTenant(
+        Builder builder = request.toBuilder();
+        builder.setTenant(
             tenantInitService.getTraceTenant(RequestContext.getContext().ms.getTenant()));
-        List<String> traceIds = queryClientService.queryComponentTraceIds(request);
+        List<String> traceIds = queryClientService.queryComponentTraceIds(builder.build());
         JsonResult.createSuccessResult(result, traceIds);
       }
     });
@@ -284,9 +292,10 @@ public class TraceQueryFacadeImpl extends BaseFacade {
 
       @Override
       public void doManage() {
-        request.toBuilder().setTenant(
+        QueryTopologyRequest.Builder builder = request.toBuilder();
+        builder.setTenant(
             tenantInitService.getTraceTenant(RequestContext.getContext().ms.getTenant()));
-        Topology topology = queryClientService.queryTopology(request);
+        Topology topology = queryClientService.queryTopology(builder.build());
         JsonResult.createSuccessResult(result, topology);
       }
     });
@@ -396,9 +405,10 @@ public class TraceQueryFacadeImpl extends BaseFacade {
 
       @Override
       public void doManage() {
-        request.toBuilder().setTenant(
+        Builder builder = request.toBuilder();
+        builder.setTenant(
             tenantInitService.getTraceTenant(RequestContext.getContext().ms.getTenant()));
-        List<SlowSql> slowSqlList = queryClientService.querySlowSqlList(request);
+        List<SlowSql> slowSqlList = queryClientService.querySlowSqlList(builder.build());
         JsonResult.createSuccessResult(result, slowSqlList);
       }
     });
