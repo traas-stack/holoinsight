@@ -28,7 +28,7 @@ services:
   demo-client:
     extends:
       service: demo-client-base
-    image: holoinsight/demo-client:latest
+    image: holoinsight/demo-client:1.0.0
 
   demo-server-base:
     extends:
@@ -47,7 +47,7 @@ services:
   demo-server:
     extends:
       service: demo-server-base
-    image: holoinsight/demo-server:latest
+    image: holoinsight/demo-server:1.0.0
 
   demo-redis:
     image: redis:5

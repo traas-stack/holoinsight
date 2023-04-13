@@ -5,7 +5,7 @@ cd `dirname $0`
 
 ./build.sh
 
-tag="latest"
+tag="1.0.0"
 
 docker buildx build --platform linux/amd64,linux/arm64/v8 --push -t holoinsight/demo-client:$tag -f ./demo-client/Dockerfile ./demo-client
 
