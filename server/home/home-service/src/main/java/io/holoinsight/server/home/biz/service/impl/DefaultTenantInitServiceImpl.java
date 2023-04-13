@@ -35,6 +35,11 @@ public class DefaultTenantInitServiceImpl implements TenantInitService {
   }
 
   @Override
+  public String getTraceTenant(String tenant) {
+    return tenant;
+  }
+
+  @Override
   public Map<String, String> getTenantMetaConditions(String workspace) {
     return new HashMap<>();
   }
