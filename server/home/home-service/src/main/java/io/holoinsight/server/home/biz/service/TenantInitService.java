@@ -27,6 +27,8 @@ public interface TenantInitService {
 
   String getTenantAppTable(String tenant);
 
+  String getTraceTenant(String tenant);
+
   Map<String, String> getTenantMetaConditions(String workspace);
 
   Map<String, String> getTenantWorkspaceMetaConditions(String workspace);

@@ -12,7 +12,6 @@ import io.holoinsight.server.common.LatchWork;
 import io.holoinsight.server.common.UtilMisc;
 import io.holoinsight.server.common.threadpool.CommonThreadPools;
 import io.holoinsight.server.home.biz.common.MetaDictUtil;
-import io.holoinsight.server.home.biz.service.AgentConfigurationService;
 import io.holoinsight.server.home.common.service.QueryClientService;
 import io.holoinsight.server.home.common.service.query.KeyResult;
 import io.holoinsight.server.home.common.service.query.QueryResponse;
@@ -24,7 +23,6 @@ import io.holoinsight.server.home.common.util.scope.AuthTargetType;
 import io.holoinsight.server.home.common.util.scope.MonitorScope;
 import io.holoinsight.server.home.common.util.scope.PowerConstants;
 import io.holoinsight.server.home.common.util.scope.RequestContext;
-import io.holoinsight.server.home.dal.model.AgentConfiguration;
 import io.holoinsight.server.home.web.common.ManageCallback;
 import io.holoinsight.server.home.web.common.ParaCheckUtil;
 import io.holoinsight.server.home.web.common.PqlParser;
@@ -42,15 +40,6 @@ import io.holoinsight.server.home.web.controller.model.TagQueryRequest;
 import io.holoinsight.server.home.web.controller.model.open.GrafanaJsonResult;
 import io.holoinsight.server.home.web.interceptor.MonitorScopeAuth;
 import io.holoinsight.server.query.grpc.QueryProto;
-import io.holoinsight.server.apm.common.model.query.Endpoint;
-import io.holoinsight.server.apm.common.model.query.QueryTraceRequest;
-import io.holoinsight.server.apm.common.model.query.Service;
-import io.holoinsight.server.apm.common.model.query.ServiceInstance;
-import io.holoinsight.server.apm.common.model.query.SlowSql;
-import io.holoinsight.server.apm.common.model.query.Topology;
-import io.holoinsight.server.apm.common.model.query.TraceBrief;
-import io.holoinsight.server.apm.common.model.query.VirtualComponent;
-import io.holoinsight.server.apm.common.model.specification.sw.Trace;
 import io.holoinsight.server.query.grpc.QueryProto.QueryRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -67,7 +56,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -82,9 +70,6 @@ public class QueryFacadeImpl extends BaseFacade {
 
   @Autowired
   private QueryClientService queryClientService;
-
-  @Autowired
-  private AgentConfigurationService agentConfigurationService;
 
   @Autowired
   private PqlParser pqlParser;
@@ -385,347 +370,6 @@ public class QueryFacadeImpl extends BaseFacade {
                 .setTimeout(request.getTimeout()).setTime(request.getTime()).build();
         QueryResponse response = queryClientService.pqlInstantQuery(instantRequest);
         GrafanaJsonResult.createSuccessResult(result, response.getResults());
-      }
-    });
-
-    return result;
-  }
-
-  @PostMapping(value = "/trace/query/basic")
-  public JsonResult<TraceBrief> queryBasicTraces(@RequestBody QueryTraceRequest request) {
-
-    final JsonResult<TraceBrief> result = new JsonResult<>();
-
-    facadeTemplate.manage(result, new ManageCallback() {
-      @Override
-      public void checkParameter() {
-        ParaCheckUtil.checkParaNotNull(request, "request");
-        ParaCheckUtil.checkParaNotNull(request.getTenant(), "tenant");
-        ParaCheckUtil.checkEquals(request.getTenant(), RequestContext.getContext().ms.getTenant(),
-            "tenant is illegal");
-      }
-
-      @Override
-      public void doManage() {
-        request.setTenant(RequestContext.getContext().ms.getTenant());
-        TraceBrief traceBrief = queryClientService.queryBasicTraces(request);
-        JsonResult.createSuccessResult(result, traceBrief);
-      }
-    });
-
-    return result;
-  }
-
-  @PostMapping(value = "/trace/query")
-  public JsonResult<Trace> queryTrace(@RequestBody QueryTraceRequest request) {
-
-    final JsonResult<Trace> result = new JsonResult<>();
-
-    facadeTemplate.manage(result, new ManageCallback() {
-      @Override
-      public void checkParameter() {
-        ParaCheckUtil.checkParaNotNull(request, "request");
-        ParaCheckUtil.checkParaNotNull(request.getTenant(), "tenant");
-        ParaCheckUtil.checkEquals(request.getTenant(), RequestContext.getContext().ms.getTenant(),
-            "tenant is illegal");
-      }
-
-      @Override
-      public void doManage() {
-        request.setTenant(RequestContext.getContext().ms.getTenant());
-        Trace trace = queryClientService.queryTrace(request);
-        JsonResult.createSuccessResult(result, trace);
-      }
-    });
-
-    return result;
-  }
-
-  @PostMapping(value = "/service/query/serviceList")
-  public JsonResult<List<Service>> queryServiceList(
-      @RequestBody QueryProto.QueryMetaRequest request) {
-
-    final JsonResult<List<Service>> result = new JsonResult<>();
-
-    facadeTemplate.manage(result, new ManageCallback() {
-      @Override
-      public void checkParameter() {
-        ParaCheckUtil.checkParaNotNull(request, "request");
-        ParaCheckUtil.checkParaNotNull(request.getTenant(), "tenant");
-        ParaCheckUtil.checkEquals(request.getTenant(), RequestContext.getContext().ms.getTenant(),
-            "tenant is illegal");
-      }
-
-      @Override
-      public void doManage() {
-        List<Service> services = queryClientService.queryServiceList(request);
-        // search by serviceName
-        if (!StringUtils.isEmpty(request.getServiceName())) {
-          Iterator<Service> iterator = services.iterator();
-          while (iterator.hasNext()) {
-            String name = iterator.next().getName();
-            if (!name.equals(request.getServiceName())
-                && !name.contains(request.getServiceName())) {
-              iterator.remove();
-            }
-          }
-        }
-        JsonResult.createSuccessResult(result, services);
-      }
-    });
-
-    return result;
-  }
-
-  @PostMapping(value = "/endpoint/query/endpointList")
-  public JsonResult<List<Endpoint>> queryEndpointList(
-      @RequestBody QueryProto.QueryMetaRequest request) {
-
-    final JsonResult<List<Endpoint>> result = new JsonResult<>();
-
-    facadeTemplate.manage(result, new ManageCallback() {
-      @Override
-      public void checkParameter() {
-        ParaCheckUtil.checkParaNotNull(request, "request");
-        ParaCheckUtil.checkParaNotNull(request.getTenant(), "tenant");
-        ParaCheckUtil.checkParaNotNull(request.getServiceName(), "serviceName");
-        ParaCheckUtil.checkEquals(request.getTenant(), RequestContext.getContext().ms.getTenant(),
-            "tenant is illegal");
-      }
-
-      @Override
-      public void doManage() {
-        List<Endpoint> endpoints = queryClientService.queryEndpointList(request);
-        JsonResult.createSuccessResult(result, endpoints);
-      }
-    });
-
-    return result;
-  }
-
-  @PostMapping(value = "/serviceInstance/query/serviceInstanceList")
-  public JsonResult<List<ServiceInstance>> queryServiceInstanceList(
-      @RequestBody QueryProto.QueryMetaRequest request) {
-
-    final JsonResult<List<ServiceInstance>> result = new JsonResult<>();
-
-    facadeTemplate.manage(result, new ManageCallback() {
-      @Override
-      public void checkParameter() {
-        ParaCheckUtil.checkParaNotNull(request, "request");
-        ParaCheckUtil.checkParaNotNull(request.getTenant(), "tenant");
-        ParaCheckUtil.checkParaNotNull(request.getServiceName(), "serviceName");
-        ParaCheckUtil.checkEquals(request.getTenant(), RequestContext.getContext().ms.getTenant(),
-            "tenant is illegal");
-      }
-
-      @Override
-      public void doManage() {
-        List<ServiceInstance> serviceInstances =
-            queryClientService.queryServiceInstanceList(request);
-        JsonResult.createSuccessResult(result, serviceInstances);
-      }
-    });
-
-    return result;
-  }
-
-  /**
-   * 查询组件列表
-   *
-   * @param request
-   * @return
-   */
-  @PostMapping(value = "/component/query/componentList")
-  public JsonResult<List<VirtualComponent>> queryComponentList(
-      @RequestBody QueryProto.QueryMetaRequest request) {
-
-    final JsonResult<List<VirtualComponent>> result = new JsonResult<>();
-
-    facadeTemplate.manage(result, new ManageCallback() {
-      @Override
-      public void checkParameter() {
-        ParaCheckUtil.checkParaNotNull(request, "request");
-        ParaCheckUtil.checkParaNotNull(request.getTenant(), "tenant");
-        ParaCheckUtil.checkParaNotNull(request.getServiceName(), "serviceName");
-        ParaCheckUtil.checkParaNotNull(request.getCategory(), "category");
-        ParaCheckUtil.checkEquals(request.getTenant(), RequestContext.getContext().ms.getTenant(),
-            "tenant is illegal");
-      }
-
-      @Override
-      public void doManage() {
-        List<VirtualComponent> VirtualComponents = queryClientService.queryComponentList(request);
-        JsonResult.createSuccessResult(result, VirtualComponents);
-      }
-    });
-
-    return result;
-  }
-
-  @PostMapping(value = "/component/query/componentTraceIds")
-  public JsonResult<List<String>> queryComponentTraceIds(
-      @RequestBody QueryProto.QueryMetaRequest request) {
-
-    final JsonResult<List<String>> result = new JsonResult<>();
-
-    facadeTemplate.manage(result, new ManageCallback() {
-      @Override
-      public void checkParameter() {
-        ParaCheckUtil.checkParaNotNull(request, "request");
-        ParaCheckUtil.checkParaNotNull(request.getTenant(), "tenant");
-        ParaCheckUtil.checkParaNotNull(request.getServiceName(), "serviceName");
-        ParaCheckUtil.checkParaNotNull(request.getAddress(), "address");
-        ParaCheckUtil.checkEquals(request.getTenant(), RequestContext.getContext().ms.getTenant(),
-            "tenant is illegal");
-      }
-
-      @Override
-      public void doManage() {
-        List<String> traceIds = queryClientService.queryComponentTraceIds(request);
-        JsonResult.createSuccessResult(result, traceIds);
-      }
-    });
-
-    return result;
-  }
-
-  /**
-   * 查询拓扑
-   *
-   * @param request
-   * @return
-   */
-  @PostMapping(value = "/topology/query/topology")
-  public JsonResult<Topology> queryTenantTopology(
-      @RequestBody QueryProto.QueryTopologyRequest request) {
-
-    final JsonResult<Topology> result = new JsonResult<>();
-
-    facadeTemplate.manage(result, new ManageCallback() {
-      @Override
-      public void checkParameter() {
-        ParaCheckUtil.checkParaNotNull(request, "request");
-        ParaCheckUtil.checkParaNotNull(request.getTenant(), "tenant");
-        ParaCheckUtil.checkParaNotNull(request.getCategory(), "category");
-        ParaCheckUtil.checkEquals(request.getTenant(), RequestContext.getContext().ms.getTenant(),
-            "tenant is illegal");
-      }
-
-      @Override
-      public void doManage() {
-        Topology topology = queryClientService.queryTopology(request);
-        JsonResult.createSuccessResult(result, topology);
-      }
-    });
-
-    return result;
-  }
-
-  /**
-   * agent 配置下发
-   *
-   * @return
-   */
-  @PostMapping(value = "/agent/create/configuration")
-  public JsonResult<Boolean> createAgentConfiguration(
-      @RequestBody AgentConfiguration agentConfiguration) {
-
-    final JsonResult<Boolean> result = new JsonResult<>();
-
-    facadeTemplate.manage(result, new ManageCallback() {
-      @Override
-      public void checkParameter() {
-        ParaCheckUtil.checkParaNotNull(agentConfiguration, "request");
-        ParaCheckUtil.checkParaNotNull(agentConfiguration.getTenant(), "tenant");
-        ParaCheckUtil.checkParaNotNull(agentConfiguration.getService(), "service");
-        ParaCheckUtil.checkEquals(agentConfiguration.getTenant(),
-            RequestContext.getContext().ms.getTenant(), "tenant is illegal");
-      }
-
-      @Override
-      public void doManage() {
-        if (StringUtils.isEmpty(agentConfiguration.getAppId())) {
-          agentConfiguration.setAppId("*");
-        }
-        if (StringUtils.isEmpty(agentConfiguration.getEnvId())) {
-          agentConfiguration.setEnvId("*");
-        }
-        boolean isSuccess = agentConfigurationService.createOrUpdate(agentConfiguration);
-        if (isSuccess) {
-          JsonResult.createSuccessResult(result, isSuccess);
-        } else {
-          JsonResult.createFailResult(result, "Create agent configuration failed!");
-        }
-      }
-    });
-
-    return result;
-  }
-
-  /**
-   * agent 配置获取
-   *
-   * @return
-   */
-  @PostMapping(value = "/agent/query/configuration")
-  public JsonResult<AgentConfiguration> queryAgentConfiguration(
-      @RequestBody AgentConfiguration agentConfiguration) {
-
-    final JsonResult<AgentConfiguration> result = new JsonResult<>();
-
-    facadeTemplate.manage(result, new ManageCallback() {
-      @Override
-      public void checkParameter() {
-        ParaCheckUtil.checkParaNotNull(agentConfiguration, "request");
-        ParaCheckUtil.checkParaNotNull(agentConfiguration.getTenant(), "tenant");
-        ParaCheckUtil.checkParaNotNull(agentConfiguration.getService(), "service");
-        ParaCheckUtil.checkEquals(agentConfiguration.getTenant(),
-            RequestContext.getContext().ms.getTenant(), "tenant is illegal");
-      }
-
-      @Override
-      public void doManage() {
-        if (StringUtils.isEmpty(agentConfiguration.getAppId())) {
-          agentConfiguration.setAppId("*");
-        }
-        if (StringUtils.isEmpty(agentConfiguration.getEnvId())) {
-          agentConfiguration.setEnvId("*");
-        }
-        AgentConfiguration configuration = agentConfigurationService.get(agentConfiguration);
-        JsonResult.createSuccessResult(result, configuration);
-      }
-    });
-
-    return result;
-  }
-
-
-  /**
-   * 查询慢sql列表
-   *
-   * @param request
-   * @return
-   */
-  @PostMapping(value = "/slowSql")
-  public JsonResult<List<SlowSql>> querySlowSqlList(
-      @RequestBody QueryProto.QueryMetaRequest request) {
-
-    final JsonResult<List<SlowSql>> result = new JsonResult<>();
-
-    facadeTemplate.manage(result, new ManageCallback() {
-      @Override
-      public void checkParameter() {
-        ParaCheckUtil.checkParaNotNull(request, "request");
-        ParaCheckUtil.checkParaNotNull(request.getTenant(), "tenant");
-        ParaCheckUtil.checkEquals(request.getTenant(), RequestContext.getContext().ms.getTenant(),
-            "tenant is illegal");
-      }
-
-      @Override
-      public void doManage() {
-        List<SlowSql> slowSqlList = queryClientService.querySlowSqlList(request);
-        JsonResult.createSuccessResult(result, slowSqlList);
       }
     });
 
