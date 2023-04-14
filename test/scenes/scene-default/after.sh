@@ -1,9 +1,6 @@
 #!/usr/bin/env bash
 set -e
 
-# Don't use source here
-#source `dirname $0`/../common/setup-env.sh
-
 cd `dirname $0`
 script_dir=`pwd`
 project_root=`realpath ../../..`
@@ -18,7 +15,7 @@ export ps=`docker-compose ps`
 
 server_container_name=`get_container server`
 
-echo [agent] install agent to server
+echo [agent] install agent to server,demo-client,demo-server
 target=$server_container_name ../common/copy-agent.sh
 target=`get_container demo-client` ../common/copy-agent.sh
 target=`get_container demo-server` ../common/copy-agent.sh
