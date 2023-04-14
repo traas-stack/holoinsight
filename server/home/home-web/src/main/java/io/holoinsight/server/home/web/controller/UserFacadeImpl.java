@@ -6,7 +6,6 @@ package io.holoinsight.server.home.web.controller;
 import io.holoinsight.server.common.J;
 import io.holoinsight.server.common.JsonResult;
 import io.holoinsight.server.home.biz.ula.ULAFacade;
-import io.holoinsight.server.home.biz.service.MarketplacePluginService;
 import io.holoinsight.server.home.common.util.Debugger;
 import io.holoinsight.server.home.common.util.ResultCodeEnum;
 import io.holoinsight.server.home.common.util.scope.AuthTarget;
@@ -53,9 +52,6 @@ public class UserFacadeImpl extends BaseFacade {
   @Autowired
   private ULAFacade ulaFacade;
 
-  @Autowired
-  private MarketplacePluginService marketplacePluginService;
-
   @ResponseBody
   // @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.VIEW)
   @GetMapping(value = "/getCurrentUser")
@@ -78,10 +74,6 @@ public class UserFacadeImpl extends BaseFacade {
         resultObj.put("tPowers", ma.getTenantViewPowerList());
         resultObj.put("tenants", ulaFacade.getCurrentULA().getUserTenants(mu));
         resultObj.put("loginUrl", ulaFacade.getCurrentULA().getLoginUrl());
-
-        resultObj.put("marketplaces",
-            marketplacePluginService.queryByTenant(ms.tenant, ms.workspace));
-
         Debugger.print("UserFacadeImpl", "getCurrentUser: " + J.toJson(resultObj));
         JsonResult.createSuccessResult(result, resultObj);
       }

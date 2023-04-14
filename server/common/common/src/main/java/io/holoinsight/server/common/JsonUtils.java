@@ -12,6 +12,7 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Writer;
 
 /**
  * <p>
@@ -101,6 +102,14 @@ public class JsonUtils {
   public static <T> T fromJson(String str, Class<T> clazz, Class<?> view) {
     try {
       return OM.readerWithView(view).forType(clazz).readValue(str);
+    } catch (IOException e) {
+      throw new IllegalStateException(e);
+    }
+  }
+
+  public static void writeValue(Writer w, Object value) {
+    try {
+      OM.writeValue(w, value);
     } catch (IOException e) {
       throw new IllegalStateException(e);
     }

@@ -34,6 +34,8 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.Set;
 
+import static io.holoinsight.server.home.web.common.ResponseUtil.authFailedResponse;
+
 /**
  *
  * @author jsy1001de
@@ -56,7 +58,8 @@ public class Step3AuthFilter implements Filter {
     try {
       next = auth(req, resp);
     } catch (Throwable e) {
-      resp.sendError(HttpServletResponse.SC_UNAUTHORIZED, "auth check error, " + e.getMessage());
+      authFailedResponse(resp, HttpServletResponse.SC_UNAUTHORIZED,
+          "auth check error, " + e.getMessage());
       log.error("{} auth check error, auth info: {}", RequestContext.getTrace(),
           J.toJson(J.toJson(RequestContext.getContext())), e);
       return;
@@ -81,7 +84,7 @@ public class Step3AuthFilter implements Filter {
       // 接口权限判定
       if (!ulaFacade.authFunc(req) && StringUtil.isBlank(token)) {
         log.warn("{} authFunc check failed", RequestContext.getTrace());
-        resp.sendError(HttpServletResponse.SC_METHOD_NOT_ALLOWED,
+        authFailedResponse(resp, HttpServletResponse.SC_METHOD_NOT_ALLOWED,
             RequestContext.getTrace() + " authFunc check failed");
         return false;
       }
@@ -110,13 +113,13 @@ public class Step3AuthFilter implements Filter {
       if (null == ma || CollectionUtils.isEmpty(ma.powerConstants)
           || CollectionUtils.isEmpty(ma.getTenantViewPowerList())) {
         log.error("check tenant auth failed, " + J.toJson(ma));
-        resp.sendError(HttpServletResponse.SC_UNAUTHORIZED, "check tenant auth failed");
+        authFailedResponse(resp, HttpServletResponse.SC_UNAUTHORIZED, "check tenant auth failed");
         return false;
       }
 
       if (!ma.getTenantViewPowerList().containsKey(ms.getTenant())) {
         log.error("check tenant " + ms.getTenant() + " is not auth, " + J.toJson(ma));
-        resp.sendError(HttpServletResponse.SC_UNAUTHORIZED,
+        authFailedResponse(resp, HttpServletResponse.SC_UNAUTHORIZED,
             "check tenant " + ms.getTenant() + " is not auth");
         return false;
       }
@@ -126,6 +129,8 @@ public class Step3AuthFilter implements Filter {
       // 放到线程上下文中
     } catch (Throwable e) {
       log.error("auth failed by cookie", e);
+      authFailedResponse(resp, HttpServletResponse.SC_UNAUTHORIZED,
+          "auth failed by cookie" + e.getMessage());
       return false;
     } finally {
       Context c = new Context(ms, mu, ma);

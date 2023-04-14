@@ -4,7 +4,10 @@
 package io.holoinsight.server.home.web.common;
 
 import io.holoinsight.server.common.J;
+import io.holoinsight.server.common.JsonResult;
+import io.holoinsight.server.common.JsonUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.MediaType;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -26,8 +29,15 @@ public class ResponseUtil {
       res.setContentType("application/json; charset=UTF-8");
       res.getWriter().write(r);
     } catch (IOException e) {
-      log.error("响应JSON数据出错", e);
+      log.error("json error", e);
     }
+  }
+
+  public static void authFailedResponse(HttpServletResponse resp, int status, String errorMsg)
+      throws IOException {
+    resp.setContentType(MediaType.APPLICATION_JSON_VALUE);
+    resp.setStatus(status);
+    JsonUtils.writeValue(resp.getWriter(), JsonResult.createFailResult(errorMsg));
   }
 
 }

@@ -18,13 +18,12 @@ public class RestAuthUtil {
 
   public static RestAuthUtil singleton = new RestAuthUtil();
 
-  public static final Set<String> NO_AUTH_PATH =
-      Collections.unmodifiableSet(new HashSet<>(Arrays.asList("/webapi/sys/authurl",
-          "/webapi/sys/config", "/webapi/token/apply", "/webapi/sys/time", "/webapi/user/logout",
-          "/webapi/sys/checkservice", "/api/v1/prometheus/write")));
+  public static final Set<String> NO_AUTH_PATH = Collections.unmodifiableSet(
+      new HashSet<>(Arrays.asList("/webapi/sys/config", "/webapi/token/apply", "/webapi/sys/time",
+          "/webapi/user/logout", "/webapi/sys/checkservice", "/api/v1/prometheus/write")));
 
   public static final Set<String> AUTH_PATH =
-      Collections.unmodifiableSet(new HashSet<>(Arrays.asList("/webapi", "/openapi/microapp")));
+      Collections.unmodifiableSet(new HashSet<>(Arrays.asList("/webapi", "/openapi")));
 
   public static final List<String> NO_AUTH_PREFIX =
       Collections.unmodifiableList(Arrays.asList("/actuator", "/internal/api/"));

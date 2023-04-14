@@ -12,6 +12,7 @@ public class MetaDictKey {
   public static final String ULA_CLOSE = "ula_close";
   public static final String ULA_HOST = "ula_host";
   public static final String IS_QUERY_TEST = "is_query_test";
+  public static final String TOKEN_URL_WRITE_LIST = "token_url_write_list";
   public static final String IS_APM_MATERIALIZED = "is_apm_materialized";
 
   public static final String AGENT_INSTALL_HOST = "agentInstallHost";
@@ -34,8 +35,6 @@ public class MetaDictKey {
   public static final String MNP_ANTLOG_ACCESS_ID = "mnp_antlog_id";
   public static final String MNP_ANTLOG_ACCESS_KEY = "mnp_antlog_key";
   public static final String MNP_ANTLOG_URL = "mnp_antlog_url";
-
-  public static final String MARKETPLACE_JIGUANG_HOST = "jiguang_host";
   public static final String SYSTEM_NOTICE = "system_notice";
 
   public static final String METERING_LOG_OPEN = "metering_log_open";
