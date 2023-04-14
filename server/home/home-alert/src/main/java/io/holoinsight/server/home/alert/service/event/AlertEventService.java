@@ -45,6 +45,7 @@ public class AlertEventService {
         logger.warn("AlertEventHanderList pipeline is empty.");
         return;
       }
+
       for (AlertHandlerExecutor handler : pipeline) {
         // 当前处理器处理数据，并返回是否继续向下处理
         handler.handle(alarmNotifies);

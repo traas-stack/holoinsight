@@ -34,14 +34,15 @@ public abstract class AlertNotifyHandler implements AlertHandlerExecutor {
     if (CollectionUtils.isEmpty(alertNotifies)) {
       LOGGER.info("alertNotifies is empty.");
     }
+    int count = 0;
     for (AlertNotify alertNotify : alertNotifies) {
       try {
         LOGGER.info("{} alert notify handle begin.", alertNotify.getTraceId());
         if (alertNotify.getIsRecover() != null && alertNotify.getIsRecover()) {
           LOGGER.info("{} alert notify is recover.", alertNotify.getTraceId());
-          return;
+          continue;
         }
-
+        count++;
         sendPlugin(alertNotify);
         FuseProtector.voteComplete(NORMAL_AlertNotifyHandler);
       } catch (Throwable e) {
@@ -51,6 +52,7 @@ public abstract class AlertNotifyHandler implements AlertHandlerExecutor {
         FuseProtector.voteNormalError(NORMAL_AlertNotifyHandler, e.getMessage());
       }
     }
+    LOGGER.info("alert_notification_notify_step size [{}]", count);
   }
 
   private void sendPlugin(AlertNotify alertNotify) {
