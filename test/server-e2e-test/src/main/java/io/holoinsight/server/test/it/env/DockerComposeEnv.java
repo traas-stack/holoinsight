@@ -91,6 +91,15 @@ public class DockerComposeEnv implements Env<DockerComposeEnv> {
         throw new IllegalStateException("fail to execute " + afterPath);
       }
     }
+
+    if (new File("/usr/bin/free").canExecute()) {
+      ProcessResult result = new ProcessExecutor("/usr/bin/free", "-m") //
+          .readOutput(true) //
+          .timeout(10, TimeUnit.MINUTES) //
+          .execute(); //
+
+      log.info("free -m:\n{}", result.getOutput().getUTF8());
+    }
   }
 
   @Override

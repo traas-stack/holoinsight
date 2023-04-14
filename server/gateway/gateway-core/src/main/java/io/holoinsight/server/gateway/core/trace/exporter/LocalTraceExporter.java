@@ -14,7 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  * <p>
  * created at 2022/11/30
  *
- * @author xiangfeng.xzc
+ * @author xzchaoo
  */
 public class LocalTraceExporter implements TraceExporter {
   @Autowired

@@ -14,6 +14,8 @@ echo
 
 if [ "$build"x = "1"x ]; then
   $project_root/scripts/docker/build.sh
+  #$project_root/test/demo/demo-client/build.sh
+  #$project_root/test/demo/demo-server/build.sh
 fi
 
 if [ "$debug"x = "1"x ]; then
