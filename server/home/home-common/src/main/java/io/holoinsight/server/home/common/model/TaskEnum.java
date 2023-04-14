@@ -9,7 +9,7 @@ import java.util.Map;
 /**
  *
  * @author jsy1001de
- * @version 1.0: TaskEnum.java, v 0.1 2022年03月17日 7:49 下午 jinsong.yjs Exp $
+ * @version 1.0: TaskEnum.java, v 0.1 2022-03-17 19:49 jinsong.yjs Exp $
  */
 public enum TaskEnum {
 
@@ -23,21 +23,13 @@ public enum TaskEnum {
 
   TENANT_INTEGRATION_GENERATED("TENANT_INTEGRATION_GENERATED", "TENANT_INTEGRATION_GENERATED"),
 
-  TENANT_OB_SERVER_SYNC("TENANT_OB_SERVER_SYNC", "TENANT_OB_SERVER_SYNC"), TENANT_CLOUD_MODEL_SYNC(
-      "TENANT_CLOUD_MODEL_SYNC", "TENANT_CLOUD_MODEL_SYNC"),
+  TENANT_OB_SERVER_SYNC("TENANT_OB_SERVER_SYNC", "TENANT_OB_SERVER_SYNC"),
 
-  CLEAN_ALERT_HISTORY("CLEAN_ALERT_HISTORY", "CLEAN_ALERT_HISTORY"),
+  TENANT_CLOUD_MODEL_SYNC("TENANT_CLOUD_MODEL_SYNC", "TENANT_CLOUD_MODEL_SYNC"),
 
-  HOSTING_ALERT("HOSTING_ALERT", "HOSTING_ALERT"),;
+  UNKNOWN_TASK("UNKNOWN_TASK", "UNKNOWN_TASK"),;
 
-  /**
-   * 枚举值
-   */
   private String code;
-
-  /**
-   * 描述
-   */
   private String desc;
 
   public String getCode() {
@@ -66,10 +58,8 @@ public enum TaskEnum {
   }
 
   /**
-   * 根据code获取描述信息
+   * get desc by code
    *
-   * @param code 待查询的枚举值
-   * @return 对应的描述信息
    */
   public static String getByCode(String code) {
     if (code != null && !"".equals(code.trim())) {

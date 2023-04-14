@@ -5,6 +5,7 @@ package io.holoinsight.server.home.task;
 
 import io.holoinsight.server.home.common.model.TaskEnum;
 import io.holoinsight.server.home.common.model.TaskEnum.TaskType;
+import org.apache.commons.lang3.StringUtils;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -14,12 +15,14 @@ import java.lang.annotation.Target;
 /**
  *
  * @author jsy1001de
- * @version : TaskHandler.java, v 0.1 2022年03月17日 8:01 下午 jinsong.yjs Exp $
+ * @version : TaskHandler.java, v 0.1 2022-03-17 20:01 jinsong.yjs Exp $
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface TaskHandler {
-  TaskEnum value();
+  TaskEnum value() default TaskEnum.UNKNOWN_TASK;
+
+  String code() default StringUtils.EMPTY;
 
   TaskType type() default TaskType.TASK;
 }
