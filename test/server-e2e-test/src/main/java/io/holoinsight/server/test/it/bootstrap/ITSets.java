@@ -25,6 +25,10 @@ import io.holoinsight.server.test.it.LogMonitoringIT;
 import io.holoinsight.server.test.it.LogMonitoring_1_log_IT;
 import io.holoinsight.server.test.it.MetaVMIT;
 import io.holoinsight.server.test.it.OpenMetricsScraperIT;
+import io.holoinsight.server.test.it.apm.ApmAppMetricStatIT;
+import io.holoinsight.server.test.it.apm.ApmCallLinkDetailIT;
+import io.holoinsight.server.test.it.apm.ApmCallLinkIT;
+import io.holoinsight.server.test.it.apm.ApmTopologyIT;
 
 /**
  * <p>
@@ -57,6 +61,10 @@ public class ITSets {
         .selectors(selectClass(LogMonitoring_1_log_IT.class)) //
         .selectors(selectClass(CeresdbPqlMonitoringIT.class)) //
         .selectors(selectClass(MetricMonitoringIT.class)) //
+        .selectors(selectClass(ApmCallLinkIT.class)) //
+        .selectors(selectClass(ApmTopologyIT.class)) //
+        .selectors(selectClass(ApmCallLinkDetailIT.class)) //
+        .selectors(selectClass(ApmAppMetricStatIT.class)) //
         .build(); //
   }
 }
