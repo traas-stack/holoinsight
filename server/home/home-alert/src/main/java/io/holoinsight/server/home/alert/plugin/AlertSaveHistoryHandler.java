@@ -71,6 +71,7 @@ public class AlertSaveHistoryHandler implements AlertHandlerExecutor {
       makeAlertHistory(alertHistoryMap, alertNotifyHistory);
 
       makeAlertRecover(alertHistoryMap, alertNotifyRecover);
+      LOGGER.info("alert_notification_history_step size [{}]", alertNotifies.size());
     } catch (Exception e) {
       LOGGER.error(
           "[HoloinsightAlertInternalException][AlertSaveHistoryHandler][{}] fail to alert_history_save for {}",
@@ -161,6 +162,8 @@ public class AlertSaveHistoryHandler implements AlertHandlerExecutor {
     alarmHistoryDetail.setAlarmContent(AlarmContentGenerator.genPqlAlarmContent(
         alertNotify.getPqlRule().getPql(), alertNotify.getPqlRule().getDataResult()));
     alarmHistoryDetailDOMapper.insert(alarmHistoryDetail);
+    LOGGER.info("{} AlarmSaveHistoryDetail {} {} ", alertNotify.getTraceId(),
+        alertNotify.getUniqueId(), historyId);
     alertNotify.setAlarmHistoryId(alarmHistoryDetail.getHistoryId());
     alertNotify.setAlarmHistoryDetailId(alarmHistoryDetail.getId());
   }

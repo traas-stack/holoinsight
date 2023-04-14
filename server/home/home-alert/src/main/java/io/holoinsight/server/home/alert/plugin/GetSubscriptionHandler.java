@@ -39,6 +39,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -150,9 +151,9 @@ public class GetSubscriptionHandler implements AlertHandlerExecutor {
 
           List<AlarmSubscribe> alertSubscribeList =
               alarmSubscribeDOMapper.selectList(alertSubscribeQueryWrapper);
-          LOGGER.info("{} GetSubscription SUCCESS {} ", alertNotify.getTraceId(),
-              G.get().toJson(alertSubscribeList));
-          if (alertSubscribeList != null) {
+          LOGGER.info("{} GetSubscription_SUCCESS {} {} ", alertNotify.getTraceId(),
+              alertNotify.getUniqueId(), G.get().toJson(alertSubscribeList));
+          if (!CollectionUtils.isEmpty(alertSubscribeList)) {
             Set<String> userIdList = new HashSet<>();
             Set<Long> dingDingGroupIdList = new HashSet<>();
             List<WebhookInfo> webhookInfos = new ArrayList<>();
