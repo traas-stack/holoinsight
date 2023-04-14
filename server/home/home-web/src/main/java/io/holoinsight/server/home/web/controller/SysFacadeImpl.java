@@ -70,20 +70,9 @@ public class SysFacadeImpl extends BaseFacade {
     sysMap.put("ula", ulaFacade.getCurrentULA().name());
     sysMap.put("site", this.environmentProperties.getDeploymentSite());
     sysMap.put("authApplyUrl", ulaFacade.getCurrentULA().authApplyUrl());
-    sysMap.put("jiguanghost", MetaDictUtil.getJiGuangHost());
     sysMap.put("systemNotice", MetaDictUtil.getSystemNotice());
     return JsonResult.createSuccessResult(sysMap);
   }
-
-  // internal api, no publish !!!
-  // @ResponseBody
-  // @GetMapping(value = "/properties")
-  // public JsonResult<Map<String, Object>> properties() {
-  //
-  // Map<String, Object> sysMap = new HashMap<>();
-  // sysMap.put("properties", PropertiesListenerConfig.getAllProperty());
-  // return JsonResult.createSuccessResult(sysMap);
-  // }
 
   @RequestMapping(value = "/debug/enable/{ukFlag}", method = RequestMethod.GET)
   @ResponseBody

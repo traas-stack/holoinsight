@@ -10,7 +10,9 @@ import io.holoinsight.server.home.common.service.SpringContext;
 import io.holoinsight.server.home.common.util.scope.IdentityType;
 import io.holoinsight.server.common.dao.entity.MetaDataDictValue;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.util.CollectionUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -102,11 +104,6 @@ public class MetaDictUtil {
     return MetaDictUtil.getStringValue(MetaDictType.GLOBAL_CONFIG, MetaDictKey.SYSTEM_NOTICE);
   }
 
-  public static String getJiGuangHost() {
-    return MetaDictUtil.getStringValue(MetaDictType.MARKETPLACE_CONFIG,
-        MetaDictKey.MARKETPLACE_JIGUANG_HOST);
-  }
-
 
   public static Boolean getUlaClose() {
 
@@ -132,6 +129,14 @@ public class MetaDictUtil {
   public static List<String /* 任务名 */> getIgnoreTasks() {
     return MetaDictUtil.getValue(MetaDictType.MANAGE_TASK, MetaDictKey.IGNORE_TASK_LIST,
         new TypeToken<List<String>>() {});
+  }
+
+  public static List<String> getTokenUrlWriteList() {
+    List<String> value = MetaDictUtil.getValue(MetaDictType.GLOBAL_CONFIG,
+        MetaDictKey.TOKEN_URL_WRITE_LIST, new TypeToken<List<String>>() {});
+    if (CollectionUtils.isEmpty(value))
+      return new ArrayList<>();
+    return value;
   }
 
   public static Boolean isLogMeteringOpen() {
