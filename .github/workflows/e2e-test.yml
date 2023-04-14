@@ -128,6 +128,14 @@ jobs:
           scene: scene-default
         - test: MetricMonitoringIT
           scene: scene-default
+        - test: ApmCallLinkIT
+          scene: scene-default
+        - test: ApmTopologyIT
+          scene: scene-default
+        - test: ApmCallLinkDetailIT
+          scene: scene-default
+        - test: ApmAppMetricStatIT
+          scene: scene-default
     steps:
     - uses: actions/checkout@v3
       with:
