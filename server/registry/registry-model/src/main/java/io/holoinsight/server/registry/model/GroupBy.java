@@ -21,6 +21,10 @@ import lombok.ToString;
 public class GroupBy {
   private int maxKeys;
   private List<Group> groups;
+  /**
+   * Log analysis conf
+   */
+  private LogAnalysis logAnalysis;
 
   @ToString
   @Getter
@@ -28,5 +32,40 @@ public class GroupBy {
   public static class Group {
     private String name;
     private Elect elect;
+  }
+
+  /**
+   * Log analysis conf
+   */
+  @ToString
+  @Getter
+  @Setter
+  public static class LogAnalysis {
+    /**
+     * patterns to match, will be visited in order, break when first match
+     */
+    private List<LogAnalysisPattern> patterns;
+    /**
+     * max Count of generated unknown patterns, defaults to 64
+     */
+    private int maxUnknownPatterns;
+    /**
+     * truncate log if length(bytes) exceed MaxLogLength, defaults to 300
+     */
+    private int maxLogLength;
+  }
+
+  @ToString
+  @Getter
+  @Setter
+  public static class LogAnalysisPattern {
+    /**
+     * pattern name
+     */
+    private String name;
+    /**
+     * 'where' predicate of pattern
+     */
+    private Where where;
   }
 }
