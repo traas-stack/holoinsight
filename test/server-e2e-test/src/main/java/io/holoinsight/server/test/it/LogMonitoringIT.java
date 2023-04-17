@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 
 import io.holoinsight.server.test.it.utils.WebapiUtils;
+import io.restassured.response.ValidatableResponse;
 
 /**
  * This IT tests the features of 'Log Monitoring'.
@@ -101,13 +102,15 @@ public class LogMonitoringIT extends BaseIT {
 
           String metricName = "linecount_" + id;
 
-          WebapiUtils.queryMetricsRaw("a", metricName, start, end) //
-              .body("data.results[0].values.size()", gt(2)) //
-              // the first point is incomplete so we ignore it.
-              // the value of second and third points must be 180
-              .body("data.results[0].values[1][1]", eq("180.0")) //
-              .body("data.results[0].values[2][1]", eq("180.0")) //
-          ;
+          ValidatableResponse resp = WebapiUtils.queryMetricsRaw("a", metricName, start, end);
+          int size = resp.body("data.results[0].values.size()", gt(2)).extract()
+              .path("data.results[0].values.size()");
+
+          for (int i = size - 2; i < size; i++) {
+            // the first point is incomplete so we ignore it.
+            // the value of second and third points must be 180
+            resp.body("data.results[0].values[%d][1]", withArgs(i), eq("180.0"));
+          }
 
           given() //
               .queryParam("name", metricName) //
