@@ -9,7 +9,6 @@ import io.holoinsight.server.home.biz.common.MetaDictUtil;
 import io.holoinsight.server.home.biz.service.ClusterService;
 import io.holoinsight.server.home.biz.service.ClusterTaskService;
 import io.holoinsight.server.home.biz.service.impl.ClusterTaskServiceImpl;
-import io.holoinsight.server.home.common.model.TaskEnum;
 import io.holoinsight.server.home.common.util.CLUSTER_ROLE_CONST;
 import io.holoinsight.server.home.common.util.Debugger;
 import io.holoinsight.server.common.config.ProdLog;
@@ -28,7 +27,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 /**
  *
  * @author jsy1001de
- * @version 1.0: MonitorTaskManager.java, v 0.1 2022年03月17日 7:40 下午 jinsong.yjs Exp $
+ * @version 1.0: MonitorTaskManager.java, v 0.1 2022-03-17 19:40 jinsong.yjs Exp $
  */
 @Service
 public class MonitorTaskManager extends ScheduleLoadTask {
@@ -133,13 +132,8 @@ public class MonitorTaskManager extends ScheduleLoadTask {
     ProdLog.info("get my task by period:" + period + ", task size:" + cts.size());
     // 开始执行
     for (ClusterTask ct : cts) {
-      TaskEnum taskCode = TaskEnum.getEnumByCode(ct.getTaskId());
-      if (taskCode == null) {
-        ProdLog.info("unknown task, enum not match:" + J.toJson(ct));
-        continue;
-      }
       // 得到task
-      AbstractMonitorTask task = TaskFactoryHolder.getExecutorTask(taskCode);
+      AbstractMonitorTask task = TaskFactoryHolder.getExecutorTask(ct.getTaskId());
       if (task == null) {
         ProdLog.info("unknown task:" + J.toJson(ct));
         continue;

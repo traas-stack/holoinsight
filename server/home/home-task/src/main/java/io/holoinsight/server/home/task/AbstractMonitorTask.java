@@ -53,16 +53,22 @@ public abstract class AbstractMonitorTask {
 
   private ThreadPoolTaskExecutor corePool; // 构建任务用的
   private ThreadPoolTaskExecutor pool;
-  protected TaskEnum task;
+  protected String taskCode;
 
   public AbstractMonitorTask(int thread, int queueSize, TaskEnum taskEnum) {
     pool = CommonThreadPool.createThreadPool(thread, thread, queueSize, taskEnum.getCode());
     corePool = CommonThreadPool.createThreadPool(2, 2, 5, "core-" + taskEnum.getCode());
-    task = taskEnum;
+    this.taskCode = taskEnum.getCode();
+  }
+
+  public AbstractMonitorTask(int thread, int queueSize, String taskCode) {
+    pool = CommonThreadPool.createThreadPool(thread, thread, queueSize, taskCode);
+    corePool = CommonThreadPool.createThreadPool(2, 2, 5, "core-" + taskCode);
+    this.taskCode = taskCode;
   }
 
   public String getTaskId() {
-    return task.getCode();
+    return taskCode;
   }
 
   public ThreadPoolTaskExecutor getCorePool() {

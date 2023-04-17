@@ -5,6 +5,7 @@ package io.holoinsight.server.home.task;
 
 import com.google.common.collect.Maps;
 import io.holoinsight.server.home.common.model.TaskEnum;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.Map;
 
@@ -15,18 +16,22 @@ import java.util.Map;
  */
 public class TaskFactoryHolder {
 
-  // 普通的那些定制任务型的，叫做task
-  static final Map<TaskEnum, AbstractMonitorTask> taskFactoryMap = Maps.newConcurrentMap();
 
-  public static AbstractMonitorTask getExecutorTask(TaskEnum type) {
+  static final Map<String, AbstractMonitorTask> taskFactoryMap = Maps.newConcurrentMap();
+
+  public static AbstractMonitorTask getExecutorTask(String taskCode) {
     synchronized (taskFactoryMap) {
-      return taskFactoryMap.get(type);
+      return taskFactoryMap.get(taskCode);
     }
   }
 
-  public static void setExecutorTask(TaskEnum type, AbstractMonitorTask task) {
+  public static void setExecutorTask(TaskHandler handler, AbstractMonitorTask task) {
     synchronized (taskFactoryMap) {
-      taskFactoryMap.put(type, task);
+      if (handler.value() != TaskEnum.UNKNOWN_TASK) {
+        taskFactoryMap.put(handler.value().getCode(), task);
+      } else if (StringUtils.isNotEmpty(handler.code())) {
+        taskFactoryMap.put(handler.code(), task);
+      }
     }
   }
 }

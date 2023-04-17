@@ -19,7 +19,7 @@ import org.springframework.stereotype.Component;
 /**
  *
  * @author jsy1001de
- * @version 1.0: MonitorBeanPostProcessor.java, v 0.1 2022年03月15日 8:23 下午 jinsong.yjs Exp $
+ * @version 1.0: MonitorBeanPostProcessor.java, v 0.1 2022-03-15 20:23 jinsong.yjs Exp $
  */
 @Component
 public class MonitorBeanPostProcessor implements BeanPostProcessor {
@@ -71,7 +71,7 @@ public class MonitorBeanPostProcessor implements BeanPostProcessor {
     }
 
     if (environmentService.runTaskAction(taskHandler.value())) {
-      TaskFactoryHolder.setExecutorTask(taskHandler.value(), (AbstractMonitorTask) bean);
+      TaskFactoryHolder.setExecutorTask(taskHandler, (AbstractMonitorTask) bean);
     }
   }
 
