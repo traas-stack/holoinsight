@@ -1,0 +1,28 @@
+Holoinsight APM
+Copyright 2022 Holoinsight Project Authors. Licensed under Apache-2.0.
+
+This product includes software developed at
+The Apache Software Foundation (http://www.apache.org/).
+
+-----------------------------------------------------------------------
+This product contains code derived from the Apache SkyWalking Project (http://skywalking.apache.org/):
+
+Data model and query protocol referenced from SkyWalking:
+- src/main/java/io/holoinsight/server/apm/common/model/specification/sw/*.java
+- src/main/java/io/holoinsight/server/apm/common/model/query/*.java
+- src/main/java/io/holoinsight/server/apm/engine/elasticsearch/installer/EsModelInstaller.java
+- src/main/java/io/holoinsight/server/apm/engine/elasticsearch/installer/ColumnTypeEsMapping.java
+- src/main/java/io/holoinsight/server/apm/engine/elasticsearch/installer/IndexStructures.java
+- src/main/java/io/holoinsight/server/apm/receiver/builder/EndpointSourceBuilder.java
+- src/main/java/io/holoinsight/server/apm/receiver/builder/RPCTrafficSourceBuilder.java
+- src/main/java/io/holoinsight/server/apm/receiver/analysis/RelationAnalysis.java
+
+Copyright 2017-2022 The Apache Software Foundation.
+
+-----------------------------------------------------------------------
+This product contains code derived from the OpenTelemetry Project (https://opentelemetry.io/):
+
+OpenTelemetry specification:
+- src/main/proto/opentelemetry/proto/*
+
+Copyright The OpenTelemetry Authors.
