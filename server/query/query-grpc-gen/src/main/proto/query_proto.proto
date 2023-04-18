@@ -298,21 +298,6 @@ message TraceIds {
   repeated string traceId = 1;
 }
 
-message BizopsEndpoint {
-  string service = 1;
-  string endpoint = 2;
-  string stamp = 3;
-  string spanLayer = 4;
-  string errorCode = 5;
-  string rootErrorCode = 6;
-  repeated string traceIds = 7;
-  ResponseMetric metric = 8;
-}
-
-message BizopsEndpoints {
-  repeated BizopsEndpoint endpoints = 1;
-}
-
 service QueryService {
   rpc QueryData(QueryRequest) returns (QueryResponse);
 
@@ -343,10 +328,6 @@ service QueryService {
   rpc QueryComponentTraceIds(QueryMetaRequest) returns (TraceIds);
 
   rpc QueryTopology(QueryTopologyRequest) returns (Topology);
-
-  rpc QueryBizEndpointList(QueryMetaRequest) returns (BizopsEndpoints);
-
-  rpc QueryBizErrorCodeList(QueryMetaRequest) returns (BizopsEndpoints);
 
   rpc QuerySlowSqlList(QueryMetaRequest) returns (QuerySlowSqlResponse);
 

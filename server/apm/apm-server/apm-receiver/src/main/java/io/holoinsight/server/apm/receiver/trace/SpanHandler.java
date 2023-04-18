@@ -3,17 +3,32 @@
  */
 package io.holoinsight.server.apm.receiver.trace;
 
-import io.holoinsight.server.apm.common.constants.Const;
-import io.holoinsight.server.apm.common.model.specification.otel.*;
+import io.holoinsight.server.apm.common.model.specification.otel.Event;
+import io.holoinsight.server.apm.common.model.specification.otel.KeyValue;
+import io.holoinsight.server.apm.common.model.specification.otel.Link;
+import io.holoinsight.server.apm.common.model.specification.otel.Resource;
+import io.holoinsight.server.apm.common.model.specification.otel.Span;
+import io.holoinsight.server.apm.common.model.specification.otel.SpanKind;
+import io.holoinsight.server.apm.common.model.specification.otel.Status;
+import io.holoinsight.server.apm.common.model.specification.otel.StatusCode;
 import io.holoinsight.server.apm.common.model.specification.sw.EndpointRelation;
 import io.holoinsight.server.apm.common.model.specification.sw.ServiceInstanceRelation;
 import io.holoinsight.server.apm.common.model.specification.sw.ServiceRelation;
-import io.holoinsight.server.apm.engine.model.*;
+import io.holoinsight.server.apm.engine.model.EndpointRelationDO;
+import io.holoinsight.server.apm.engine.model.NetworkAddressMappingDO;
+import io.holoinsight.server.apm.engine.model.ServiceInstanceRelationDO;
+import io.holoinsight.server.apm.engine.model.ServiceRelationDO;
+import io.holoinsight.server.apm.engine.model.SlowSqlDO;
+import io.holoinsight.server.apm.engine.model.SpanDO;
 import io.holoinsight.server.apm.receiver.analysis.RelationAnalysis;
-import io.holoinsight.server.apm.receiver.builder.RelationBuilder;
+import io.holoinsight.server.apm.receiver.builder.RPCTrafficSourceBuilder;
 import io.holoinsight.server.apm.receiver.common.TransformAttr;
-import io.holoinsight.server.apm.server.service.*;
-import io.holoinsight.server.common.springboot.ConditionalOnFeature;
+import io.holoinsight.server.apm.server.service.EndpointRelationService;
+import io.holoinsight.server.apm.server.service.NetworkAddressMappingService;
+import io.holoinsight.server.apm.server.service.ServiceInstanceRelationService;
+import io.holoinsight.server.apm.server.service.ServiceRelationService;
+import io.holoinsight.server.apm.server.service.SlowSqlService;
+import io.holoinsight.server.apm.server.service.TraceService;
 import io.opentelemetry.proto.common.v1.AnyValue;
 import io.opentelemetry.proto.trace.v1.ScopeSpans;
 import lombok.extern.slf4j.Slf4j;
@@ -21,7 +36,6 @@ import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.time.StopWatch;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -29,8 +43,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-@Service
-@ConditionalOnFeature("trace")
 @Slf4j
 public class SpanHandler {
 
@@ -55,7 +67,7 @@ public class SpanHandler {
     StopWatch stopWatch = StopWatch.createStarted();
     List<SpanDO> spanEsDOList = new ArrayList<>();
     List<NetworkAddressMappingDO> networkAddressMappingList = new ArrayList<>();
-    List<RelationBuilder> relationBuilders = new ArrayList<>();
+    List<RPCTrafficSourceBuilder> relationBuilders = new ArrayList<>();
     List<SlowSqlDO> slowSqlEsDOList = new ArrayList<>();
     boolean success = true;
     try {
@@ -81,7 +93,6 @@ public class SpanHandler {
               spans.forEach(span -> {
                 Map<String, AnyValue> spanAttrMap =
                     TransformAttr.attList2Map(span.getAttributesList());
-
                 if (span
                     .getKind() == io.opentelemetry.proto.trace.v1.Span.SpanKind.SPAN_KIND_SERVER) {
                   networkAddressMappingList.addAll(relationAnalysis
@@ -147,7 +158,7 @@ public class SpanHandler {
     }
   }
 
-  public void buildRelation(List<RelationBuilder> relationBuilders) throws Exception {
+  public void buildRelation(List<RPCTrafficSourceBuilder> relationBuilders) throws Exception {
     List<ServiceRelationDO> serverRelationList = new ArrayList<>(relationBuilders.size());
     List<ServiceInstanceRelationDO> serverInstanceRelationList =
         new ArrayList<>(relationBuilders.size());
@@ -214,7 +225,7 @@ public class SpanHandler {
     return result;
   }
 
-  private Span transformSpan(io.opentelemetry.proto.trace.v1.Span span) {
+  protected Span transformSpan(io.opentelemetry.proto.trace.v1.Span span) {
     Span otelSpan = new Span();
     otelSpan.setTraceId(Hex.encodeHexString(span.getTraceId().toByteArray()));
     otelSpan.setSpanId(Hex.encodeHexString(span.getSpanId().toByteArray()));
@@ -253,15 +264,6 @@ public class SpanHandler {
     otelSpan.setDroppedLinksCount(span.getDroppedLinksCount());
     otelSpan.setStatus(new Status(span.getStatus().getMessage(),
         StatusCode.fromProto(span.getStatus().getCode())));
-
-    for (io.opentelemetry.proto.common.v1.KeyValue attr : span.getAttributesList()) {
-      // bizops errorCode、rootErrorCode
-      if ((Const.ERRORCODE.equals(attr.getKey()) || Const.ROOTERRORCODE.equals(attr.getKey()))
-          && attr.getValue() != null) {
-        otelSpan.getStatus().setStatusCode(StatusCode.ERROR);
-        break;
-      }
-    }
 
     return otelSpan;
   }

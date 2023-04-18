@@ -3,10 +3,8 @@
  */
 package io.holoinsight.server.query.common.convertor;
 
-import io.holoinsight.server.query.grpc.QueryProto;
-
+import com.google.common.collect.Iterables;
 import io.holoinsight.server.apm.common.model.query.BasicTrace;
-import io.holoinsight.server.apm.common.model.query.BizopsEndpoint;
 import io.holoinsight.server.apm.common.model.query.Call;
 import io.holoinsight.server.apm.common.model.query.Endpoint;
 import io.holoinsight.server.apm.common.model.query.Node;
@@ -24,8 +22,7 @@ import io.holoinsight.server.apm.common.model.specification.sw.RefType;
 import io.holoinsight.server.apm.common.model.specification.sw.Span;
 import io.holoinsight.server.apm.common.model.specification.sw.Tag;
 import io.holoinsight.server.apm.common.model.specification.sw.Trace;
-
-import com.google.common.collect.Iterables;
+import io.holoinsight.server.query.grpc.QueryProto;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -453,48 +450,6 @@ public class ApmConvertor {
       }
       return result;
     }
-  }
-
-  public static QueryProto.BizopsEndpoint convertBizEndpoint(BizopsEndpoint endpoint) {
-    QueryProto.BizopsEndpoint.Builder builder = QueryProto.BizopsEndpoint.newBuilder();
-    builder.setService(endpoint.getService());
-    builder.setEndpoint(endpoint.getEndpoint());
-    if (endpoint.getTraceIds() != null) {
-      builder.addAllTraceIds(endpoint.getTraceIds());
-    }
-    if (endpoint.getErrorCode() != null) {
-      builder.setErrorCode(endpoint.getErrorCode());
-    }
-    if (endpoint.getRootErrorCode() != null) {
-      builder.setRootErrorCode(endpoint.getRootErrorCode());
-    }
-    if (endpoint.getStamp() != null) {
-      builder.setStamp(endpoint.getStamp());
-    }
-    if (endpoint.getSpanLayer() != null) {
-      builder.setSpanLayer(endpoint.getSpanLayer());
-    }
-    if (endpoint.getMetric() != null) {
-      builder.setMetric(convertResponseMetric(endpoint.getMetric()));
-    }
-
-    return builder.build();
-  }
-
-  public static BizopsEndpoint deConvertBizEndpoint(QueryProto.BizopsEndpoint meta) {
-    BizopsEndpoint result = new BizopsEndpoint();
-    result.setService(meta.getService());
-    result.setEndpoint(meta.getEndpoint());
-    result.setTraceIds(meta.getTraceIdsList());
-    result.setStamp(meta.getStamp());
-    result.setErrorCode(meta.getErrorCode());
-    result.setRootErrorCode(meta.getRootErrorCode());
-    result.setSpanLayer(meta.getSpanLayer());
-    if (meta.hasMetric()) {
-      result.setMetric(deConvertResponseMetric(meta.getMetric()));
-    }
-
-    return result;
   }
 
   public static QueryProto.SlowSql convertSlowSql(SlowSql slowSql) {

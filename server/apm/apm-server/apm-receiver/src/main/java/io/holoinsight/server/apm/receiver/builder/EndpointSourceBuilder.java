@@ -18,12 +18,9 @@ import java.util.Map;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class DetailInfo {
+public class EndpointSourceBuilder {
 
   protected String traceId;
-  protected String appId;
-  protected String envId;
-  protected String stamp;
   protected String tenant;
   protected long timeBucket;
   protected long startTime;

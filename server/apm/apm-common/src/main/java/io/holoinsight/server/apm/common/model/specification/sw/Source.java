@@ -23,13 +23,4 @@ public abstract class Source implements ISource {
   @Getter
   @Setter
   private String traceId;
-  @Getter
-  @Setter
-  private String appId;
-  @Getter
-  @Setter
-  private String envId;
-  @Getter
-  @Setter
-  private String stamp;
 }

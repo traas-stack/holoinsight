@@ -3,6 +3,14 @@
  */
 package io.holoinsight.server.home.common.service;
 
+import io.holoinsight.server.apm.common.model.query.Endpoint;
+import io.holoinsight.server.apm.common.model.query.QueryTraceRequest;
+import io.holoinsight.server.apm.common.model.query.ServiceInstance;
+import io.holoinsight.server.apm.common.model.query.SlowSql;
+import io.holoinsight.server.apm.common.model.query.Topology;
+import io.holoinsight.server.apm.common.model.query.TraceBrief;
+import io.holoinsight.server.apm.common.model.query.VirtualComponent;
+import io.holoinsight.server.apm.common.model.specification.sw.Trace;
 import io.holoinsight.server.common.J;
 import io.holoinsight.server.home.common.service.query.KeyResult;
 import io.holoinsight.server.home.common.service.query.QueryResponse;
@@ -14,15 +22,6 @@ import io.holoinsight.server.query.common.convertor.ApmConvertor;
 import io.holoinsight.server.query.grpc.QueryProto;
 import io.holoinsight.server.query.grpc.QueryProto.Datasource;
 import io.holoinsight.server.query.grpc.QueryServiceGrpc;
-import io.holoinsight.server.apm.common.model.query.BizopsEndpoint;
-import io.holoinsight.server.apm.common.model.query.Endpoint;
-import io.holoinsight.server.apm.common.model.query.QueryTraceRequest;
-import io.holoinsight.server.apm.common.model.query.ServiceInstance;
-import io.holoinsight.server.apm.common.model.query.SlowSql;
-import io.holoinsight.server.apm.common.model.query.Topology;
-import io.holoinsight.server.apm.common.model.query.TraceBrief;
-import io.holoinsight.server.apm.common.model.query.VirtualComponent;
-import io.holoinsight.server.apm.common.model.specification.sw.Trace;
 import net.devh.boot.grpc.client.inject.GrpcClient;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -273,26 +272,6 @@ public class QueryClientService {
     List<SlowSql> result = new ArrayList<>(querySlowSqlList.getSlowSqlCount());
     querySlowSqlList.getSlowSqlList().forEach(sql -> {
       result.add(ApmConvertor.deConvertSlowSql(sql));
-    });
-    return result;
-  }
-
-  public List<BizopsEndpoint> queryBizEndpointList(QueryProto.QueryMetaRequest request) {
-    QueryProto.BizopsEndpoints bizopsEndpoints =
-        queryServiceBlockingStub.queryBizEndpointList(request);
-    List<BizopsEndpoint> result = new ArrayList<>(bizopsEndpoints.getEndpointsCount());
-    bizopsEndpoints.getEndpointsList().forEach(endpoint -> {
-      result.add(ApmConvertor.deConvertBizEndpoint(endpoint));
-    });
-    return result;
-  }
-
-  public List<BizopsEndpoint> queryBizErrorCodeList(QueryProto.QueryMetaRequest request) {
-    QueryProto.BizopsEndpoints bizopsEndpoints =
-        queryServiceBlockingStub.queryBizErrorCodeList(request);
-    List<BizopsEndpoint> result = new ArrayList<>(bizopsEndpoints.getEndpointsCount());
-    bizopsEndpoints.getEndpointsList().forEach(endpoint -> {
-      result.add(ApmConvertor.deConvertBizEndpoint(endpoint));
     });
     return result;
   }

@@ -11,7 +11,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
 
-public class RelationBuilder extends DetailInfo {
+public class RPCTrafficSourceBuilder extends EndpointSourceBuilder {
   @Getter
   @Setter
   private String sourceServiceName;
@@ -34,8 +34,11 @@ public class RelationBuilder extends DetailInfo {
   @Setter
   private String component;
 
-  public ServiceRelation toServiceRelation() {
-    ServiceRelation serviceRelation = new ServiceRelation();
+  public ServiceRelation serviceRelation() {
+    return new ServiceRelation();
+  }
+
+  public void setServiceRelation(ServiceRelation serviceRelation) {
     serviceRelation.setTraceId(traceId);
     serviceRelation.setSourceServiceName(sourceServiceName);
     serviceRelation.setSourceServiceInstanceName(sourceServiceInstanceName);
@@ -55,27 +58,20 @@ public class RelationBuilder extends DetailInfo {
     serviceRelation.setTenant(tenant);
     serviceRelation.setStartTime(startTime);
     serviceRelation.setEndTime(endTime);
-    if (!StringUtils.isEmpty(appId)) {
-      serviceRelation.setAppId(appId);
-    }
-    if (!StringUtils.isEmpty(envId)) {
-      serviceRelation.setEnvId(envId);
-    }
-    if (!StringUtils.isEmpty(stamp)) {
-      serviceRelation.setStamp(stamp);
-    }
-    serviceRelation.setEnvId(envId);
+  }
+
+  public ServiceRelation toServiceRelation() {
+    ServiceRelation serviceRelation = serviceRelation();
+    setServiceRelation(serviceRelation);
     serviceRelation.prepare();
     return serviceRelation;
   }
 
+  public ServiceInstanceRelation serviceInstanceRelation() {
+    return new ServiceInstanceRelation();
+  }
 
-  public ServiceInstanceRelation toServiceInstanceRelation() {
-    if (StringUtils.isEmpty(sourceServiceInstanceName)
-        || StringUtils.isEmpty(destServiceInstanceName)) {
-      return null;
-    }
-    ServiceInstanceRelation serviceInstanceRelation = new ServiceInstanceRelation();
+  public void setServiceInstanceRelation(ServiceInstanceRelation serviceInstanceRelation) {
     serviceInstanceRelation.setTraceId(traceId);
     serviceInstanceRelation.setSourceServiceName(sourceServiceName);
     serviceInstanceRelation.setSourceServiceInstanceName(sourceServiceInstanceName);
@@ -95,24 +91,24 @@ public class RelationBuilder extends DetailInfo {
     serviceInstanceRelation.setTenant(tenant);
     serviceInstanceRelation.setStartTime(startTime);
     serviceInstanceRelation.setEndTime(endTime);
-    if (!StringUtils.isEmpty(appId)) {
-      serviceInstanceRelation.setAppId(appId);
+  }
+
+  public ServiceInstanceRelation toServiceInstanceRelation() {
+    if (StringUtils.isEmpty(sourceServiceInstanceName)
+        || StringUtils.isEmpty(destServiceInstanceName)) {
+      return null;
     }
-    if (!StringUtils.isEmpty(envId)) {
-      serviceInstanceRelation.setEnvId(envId);
-    }
-    if (!StringUtils.isEmpty(stamp)) {
-      serviceInstanceRelation.setStamp(stamp);
-    }
+    ServiceInstanceRelation serviceInstanceRelation = serviceInstanceRelation();
+    setServiceInstanceRelation(serviceInstanceRelation);
     serviceInstanceRelation.prepare();
     return serviceInstanceRelation;
   }
 
-  public EndpointRelation toEndpointRelation() {
-    if (StringUtils.isEmpty(sourceEndpointName) || StringUtils.isEmpty(destEndpointName)) {
-      return null;
-    }
-    EndpointRelation endpointRelation = new EndpointRelation();
+  public EndpointRelation endpointRelation() {
+    return new EndpointRelation();
+  }
+
+  public void setEndpointRelation(EndpointRelation endpointRelation) {
     endpointRelation.setTraceId(traceId);
     endpointRelation.setSourceEndpointName(sourceEndpointName);
     if (sourceEndpointOwnerServiceName == null) {
@@ -138,15 +134,14 @@ public class RelationBuilder extends DetailInfo {
     endpointRelation.setTenant(tenant);
     endpointRelation.setStartTime(startTime);
     endpointRelation.setEndTime(endTime);
-    if (!StringUtils.isEmpty(appId)) {
-      endpointRelation.setAppId(appId);
+  }
+
+  public EndpointRelation toEndpointRelation() {
+    if (StringUtils.isEmpty(sourceEndpointName) || StringUtils.isEmpty(destEndpointName)) {
+      return null;
     }
-    if (!StringUtils.isEmpty(envId)) {
-      endpointRelation.setEnvId(envId);
-    }
-    if (!StringUtils.isEmpty(stamp)) {
-      endpointRelation.setStamp(stamp);
-    }
+    EndpointRelation endpointRelation = endpointRelation();
+    setEndpointRelation(endpointRelation);
     endpointRelation.prepare();
     return endpointRelation;
   }

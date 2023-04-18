@@ -48,12 +48,6 @@ public interface QueryService {
 
   QueryProto.Topology queryTopology(QueryProto.QueryTopologyRequest request) throws QueryException;
 
-  QueryProto.BizopsEndpoints queryBizEndpointList(QueryProto.QueryMetaRequest request)
-      throws QueryException;
-
-  QueryProto.BizopsEndpoints queryBizErrorCodeList(QueryProto.QueryMetaRequest request)
-      throws QueryException;
-
   QueryProto.QuerySlowSqlResponse querySlowSqlList(QueryProto.QueryMetaRequest request)
       throws QueryException;
 
