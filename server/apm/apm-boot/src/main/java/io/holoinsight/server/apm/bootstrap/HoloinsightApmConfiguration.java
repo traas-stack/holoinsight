@@ -5,7 +5,9 @@ package io.holoinsight.server.apm.bootstrap;
 
 import io.holoinsight.server.apm.core.installer.ModelInstallManager;
 import io.holoinsight.server.apm.engine.elasticsearch.storage.impl.CommonBuilder;
+import io.holoinsight.server.apm.receiver.analysis.RelationAnalysis;
 import io.holoinsight.server.apm.receiver.common.PublicAttr;
+import io.holoinsight.server.apm.receiver.trace.SpanHandler;
 import io.holoinsight.server.apm.server.service.impl.EndpointRelationServiceImpl;
 import io.holoinsight.server.apm.server.service.impl.EndpointServiceImpl;
 import io.holoinsight.server.apm.server.service.impl.MetricServiceImpl;
@@ -107,6 +109,16 @@ public class HoloinsightApmConfiguration {
   @Bean("publicAttr")
   public PublicAttr publicAttr() {
     return new PublicAttr();
+  }
+
+  @Bean("spanHandler")
+  public SpanHandler spanHandler() {
+    return new SpanHandler();
+  }
+
+  @Bean("relationAnalysis")
+  public RelationAnalysis relationAnalysis() {
+    return new RelationAnalysis();
   }
 
 }

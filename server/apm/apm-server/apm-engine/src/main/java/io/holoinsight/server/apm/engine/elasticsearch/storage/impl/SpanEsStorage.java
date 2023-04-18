@@ -4,12 +4,23 @@
 package io.holoinsight.server.apm.engine.elasticsearch.storage.impl;
 
 import com.google.common.base.Strings;
-import io.holoinsight.server.apm.common.constants.Const;
-import io.holoinsight.server.apm.common.model.query.*;
+import io.holoinsight.server.apm.common.model.query.BasicTrace;
+import io.holoinsight.server.apm.common.model.query.Pagination;
+import io.holoinsight.server.apm.common.model.query.QueryOrder;
+import io.holoinsight.server.apm.common.model.query.StatisticData;
+import io.holoinsight.server.apm.common.model.query.TraceBrief;
+import io.holoinsight.server.apm.common.model.specification.otel.Event;
 import io.holoinsight.server.apm.common.model.specification.otel.KeyValue;
-import io.holoinsight.server.apm.common.model.specification.otel.*;
+import io.holoinsight.server.apm.common.model.specification.otel.Link;
+import io.holoinsight.server.apm.common.model.specification.otel.SpanKind;
+import io.holoinsight.server.apm.common.model.specification.otel.StatusCode;
+import io.holoinsight.server.apm.common.model.specification.sw.LogEntity;
+import io.holoinsight.server.apm.common.model.specification.sw.Ref;
+import io.holoinsight.server.apm.common.model.specification.sw.RefType;
 import io.holoinsight.server.apm.common.model.specification.sw.Span;
-import io.holoinsight.server.apm.common.model.specification.sw.*;
+import io.holoinsight.server.apm.common.model.specification.sw.Tag;
+import io.holoinsight.server.apm.common.model.specification.sw.Trace;
+import io.holoinsight.server.apm.common.model.specification.sw.TraceState;
 import io.holoinsight.server.apm.common.utils.GsonUtils;
 import io.holoinsight.server.apm.engine.elasticsearch.utils.EsGsonUtils;
 import io.holoinsight.server.apm.engine.model.SpanDO;
@@ -21,7 +32,12 @@ import org.apache.commons.lang3.StringUtils;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.RequestOptions;
-import org.elasticsearch.index.query.*;
+import org.elasticsearch.index.query.BoolQueryBuilder;
+import org.elasticsearch.index.query.QueryBuilder;
+import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.index.query.RangeQueryBuilder;
+import org.elasticsearch.index.query.TermQueryBuilder;
+import org.elasticsearch.index.query.TermsQueryBuilder;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
 import org.elasticsearch.search.aggregations.Aggregator;
 import org.elasticsearch.search.aggregations.bucket.filter.Filter;
@@ -33,7 +49,13 @@ import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.elasticsearch.search.sort.SortOrder;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 import static java.util.Objects.nonNull;
 
@@ -200,17 +222,13 @@ public class SpanEsStorage extends RecordEsStorage<SpanDO> implements SpanStorag
             .subAggregation(AggregationBuilders.cardinality("service_count")
                 .field(SpanDO.resource(SpanDO.SERVICE_NAME)))
             .subAggregation(AggregationBuilders.cardinality("trace_count").field(SpanDO.TRACE_ID))
-            .subAggregation(AggregationBuilders
-                .filter(SpanDO.TRACE_STATUS,
-                    QueryBuilders.termQuery(SpanDO.TRACE_STATUS,
-                        Status.StatusCode.STATUS_CODE_ERROR_VALUE))
-                .subAggregation(AggregationBuilders.cardinality("error_count")
-                    .field(SpanDO.TRACE_ID)))
-            .subAggregation(AggregationBuilders.filter(SpanDO.attributes(Const.ISENTRY),
-                QueryBuilders.boolQuery()
-                    .must(QueryBuilders.termQuery(SpanDO.attributes(Const.ISENTRY), "true"))
-                    .mustNot(QueryBuilders.termQuery(SpanDO.NAME, "GET:/")))
-                .subAggregation(AggregationBuilders.cardinality("entry_count").field(SpanDO.NAME)))
+            .subAggregation(
+                AggregationBuilders
+                    .filter(SpanDO.TRACE_STATUS,
+                        QueryBuilders.termQuery(SpanDO.TRACE_STATUS,
+                            Status.StatusCode.STATUS_CODE_ERROR_VALUE))
+                    .subAggregation(
+                        AggregationBuilders.cardinality("error_count").field(SpanDO.TRACE_ID)))
             .subAggregation(AggregationBuilders.avg("avg_latency").field(SpanDO.LATENCY))
             .executionHint("map").collectMode(Aggregator.SubAggCollectionMode.BREADTH_FIRST)
             .size(1000);
@@ -238,10 +256,6 @@ public class SpanEsStorage extends RecordEsStorage<SpanDO> implements SpanStorag
       ParsedCardinality errorTerm = errFilter.getAggregations().get("error_count");
       int errorCount = (int) errorTerm.getValue();
 
-      Filter entryFilter = bucket.getAggregations().get(SpanDO.attributes(Const.ISENTRY));
-      ParsedCardinality entryTerm = entryFilter.getAggregations().get("entry_count");
-      int entryCount = (int) entryTerm.getValue();
-
       Avg avgLatency = bucket.getAggregations().get("avg_latency");
       double latency = Double.valueOf(avgLatency.getValue());
 
@@ -249,7 +263,6 @@ public class SpanEsStorage extends RecordEsStorage<SpanDO> implements SpanStorag
       statisticData.setTenant(tenant);
       statisticData.setServiceCount(serviceCount);
       statisticData.setTraceCount(traceCount);
-      statisticData.setEntryCount(entryCount);
       statisticData.setAvgLatency(latency);
       statisticData.setSuccessRate(((double) (traceCount - errorCount) / traceCount) * 100);
 

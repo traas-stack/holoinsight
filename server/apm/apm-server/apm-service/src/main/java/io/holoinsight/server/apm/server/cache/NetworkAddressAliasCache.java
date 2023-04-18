@@ -17,7 +17,7 @@ import java.util.List;
  * memory cache. This data was original analysis from reference of trace span.
  */
 @Service
-public class NetworkAddressMappingCache {
+public class NetworkAddressAliasCache {
   private Cache<String, NetworkAddressMappingDO> networkAddressMappingCache;
 
   @PostConstruct

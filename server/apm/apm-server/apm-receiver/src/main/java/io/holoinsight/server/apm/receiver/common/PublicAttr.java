@@ -6,7 +6,7 @@ package io.holoinsight.server.apm.receiver.common;
 import io.holoinsight.server.apm.common.constants.Const;
 import io.holoinsight.server.apm.common.utils.TimeBucket;
 import io.holoinsight.server.apm.common.utils.TimeUtils;
-import io.holoinsight.server.apm.receiver.builder.RelationBuilder;
+import io.holoinsight.server.apm.receiver.builder.RPCTrafficSourceBuilder;
 import io.opentelemetry.proto.common.v1.AnyValue;
 import io.opentelemetry.proto.trace.v1.Span;
 import io.opentelemetry.semconv.trace.attributes.SemanticAttributes;
@@ -18,7 +18,7 @@ import java.util.Map;
 public class PublicAttr implements IPublicAttr {
 
   @Override
-  public void setPublicAttrs(RelationBuilder sourceBuilder, Span span,
+  public RPCTrafficSourceBuilder setPublicAttrs(RPCTrafficSourceBuilder sourceBuilder, Span span,
       Map<String, AnyValue> spanAttrMap, Map<String, AnyValue> resourceAttrMap) {
     sourceBuilder.setTenant(resourceAttrMap.get(Const.TENANT).getStringValue());
     long latency = TimeUtils.unixNano2MS(span.getEndTimeUnixNano())
@@ -51,5 +51,7 @@ public class PublicAttr implements IPublicAttr {
     if (grpcCode != null) {
       sourceBuilder.setRpcStatusCode(grpcCode.getStringValue());
     }
+
+    return sourceBuilder;
   }
 }

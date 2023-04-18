@@ -3,7 +3,6 @@
  */
 package io.holoinsight.server.query.service.apm;
 
-import io.holoinsight.server.apm.common.model.query.BizopsEndpoint;
 import io.holoinsight.server.apm.common.model.query.Endpoint;
 import io.holoinsight.server.apm.common.model.query.MetricValues;
 import io.holoinsight.server.apm.common.model.query.QueryComponentRequest;
@@ -93,12 +92,6 @@ public interface ApmAPI {
 
   @POST("/cluster/api/v1/topology/query/mqTopology")
   Call<Topology> queryMQTopology(@Body QueryTopologyRequest request);
-
-  @POST("/cluster/api/v1/endpoint/bizops/endpointList")
-  Call<List<BizopsEndpoint>> queryBizEndpointList(@Body QueryEndpointRequest request);
-
-  @POST("/cluster/api/v1/endpoint/bizops/errorCodeList")
-  Call<List<BizopsEndpoint>> queryBizErrorCodeList(@Body QueryEndpointRequest request);
 
   @POST("/cluster/api/v1/slowSql/query")
   Call<List<SlowSql>> querySlowSqlList(@Body QueryComponentRequest request);

@@ -184,26 +184,6 @@ public class QueryController {
     }
   }
 
-  @PostMapping(path = "/bizops/endpointList", produces = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<?> queryBizEndpointList(@RequestBody QueryProto.QueryMetaRequest request) {
-    try {
-      return ResponseEntity.ok(queryService.queryBizEndpointList(request));
-    } catch (Exception e) {
-      e.printStackTrace();
-      return ResponseEntity.badRequest().body(Collections.singletonMap("message", e.getMessage()));
-    }
-  }
-
-  @PostMapping(path = "/bizops/errorCodeList", produces = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<?> queryBizErrorCodeList(@RequestBody QueryProto.QueryMetaRequest request) {
-    try {
-      return ResponseEntity.ok(queryService.queryBizErrorCodeList(request));
-    } catch (Exception e) {
-      e.printStackTrace();
-      return ResponseEntity.badRequest().body(Collections.singletonMap("message", e.getMessage()));
-    }
-  }
-
   @PostMapping(path = "/slowSqlList", produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<?> querySlowSqlList(@RequestBody QueryProto.QueryMetaRequest request) {
     try {

@@ -4,7 +4,7 @@
 package io.holoinsight.server.apm.receiver.scheduler;
 
 import io.holoinsight.server.apm.engine.model.NetworkAddressMappingDO;
-import io.holoinsight.server.apm.server.cache.NetworkAddressMappingCache;
+import io.holoinsight.server.apm.server.cache.NetworkAddressAliasCache;
 import io.holoinsight.server.apm.server.service.NetworkAddressMappingService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,12 +15,12 @@ import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-@DependsOn(value = {"networkAddressMappingCache"})
+@DependsOn(value = {"networkAddressAliasCache"})
 @Slf4j
-public class ApmCacheUpdateScheduler {
+public class CacheUpdateTimer {
 
   @Autowired
-  private NetworkAddressMappingCache networkAddressMappingCache;
+  private NetworkAddressAliasCache networkAddressMappingCache;
 
   @Autowired
   private NetworkAddressMappingService networkAddressMappingService;

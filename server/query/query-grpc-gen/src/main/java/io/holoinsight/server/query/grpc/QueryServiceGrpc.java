@@ -474,71 +474,6 @@ public final class QueryServiceGrpc {
     return getQueryTopologyMethod;
   }
 
-  private static volatile io.grpc.MethodDescriptor<io.holoinsight.server.query.grpc.QueryProto.QueryMetaRequest, io.holoinsight.server.query.grpc.QueryProto.BizopsEndpoints> getQueryBizEndpointListMethod;
-
-  @io.grpc.stub.annotations.RpcMethod(fullMethodName = SERVICE_NAME + '/' + "QueryBizEndpointList",
-      requestType = io.holoinsight.server.query.grpc.QueryProto.QueryMetaRequest.class,
-      responseType = io.holoinsight.server.query.grpc.QueryProto.BizopsEndpoints.class,
-      methodType = io.grpc.MethodDescriptor.MethodType.UNARY)
-  public static io.grpc.MethodDescriptor<io.holoinsight.server.query.grpc.QueryProto.QueryMetaRequest, io.holoinsight.server.query.grpc.QueryProto.BizopsEndpoints> getQueryBizEndpointListMethod() {
-    io.grpc.MethodDescriptor<io.holoinsight.server.query.grpc.QueryProto.QueryMetaRequest, io.holoinsight.server.query.grpc.QueryProto.BizopsEndpoints> getQueryBizEndpointListMethod;
-    if ((getQueryBizEndpointListMethod = QueryServiceGrpc.getQueryBizEndpointListMethod) == null) {
-      synchronized (QueryServiceGrpc.class) {
-        if ((getQueryBizEndpointListMethod =
-            QueryServiceGrpc.getQueryBizEndpointListMethod) == null) {
-          QueryServiceGrpc.getQueryBizEndpointListMethod = getQueryBizEndpointListMethod =
-              io.grpc.MethodDescriptor.<io.holoinsight.server.query.grpc.QueryProto.QueryMetaRequest, io.holoinsight.server.query.grpc.QueryProto.BizopsEndpoints>newBuilder()
-                  .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
-                  .setFullMethodName(generateFullMethodName(SERVICE_NAME, "QueryBizEndpointList"))
-                  .setSampledToLocalTracing(true)
-                  .setRequestMarshaller(io.grpc.protobuf.ProtoUtils
-                      .marshaller(io.holoinsight.server.query.grpc.QueryProto.QueryMetaRequest
-                          .getDefaultInstance()))
-                  .setResponseMarshaller(io.grpc.protobuf.ProtoUtils
-                      .marshaller(io.holoinsight.server.query.grpc.QueryProto.BizopsEndpoints
-                          .getDefaultInstance()))
-                  .setSchemaDescriptor(
-                      new QueryServiceMethodDescriptorSupplier("QueryBizEndpointList"))
-                  .build();
-        }
-      }
-    }
-    return getQueryBizEndpointListMethod;
-  }
-
-  private static volatile io.grpc.MethodDescriptor<io.holoinsight.server.query.grpc.QueryProto.QueryMetaRequest, io.holoinsight.server.query.grpc.QueryProto.BizopsEndpoints> getQueryBizErrorCodeListMethod;
-
-  @io.grpc.stub.annotations.RpcMethod(fullMethodName = SERVICE_NAME + '/' + "QueryBizErrorCodeList",
-      requestType = io.holoinsight.server.query.grpc.QueryProto.QueryMetaRequest.class,
-      responseType = io.holoinsight.server.query.grpc.QueryProto.BizopsEndpoints.class,
-      methodType = io.grpc.MethodDescriptor.MethodType.UNARY)
-  public static io.grpc.MethodDescriptor<io.holoinsight.server.query.grpc.QueryProto.QueryMetaRequest, io.holoinsight.server.query.grpc.QueryProto.BizopsEndpoints> getQueryBizErrorCodeListMethod() {
-    io.grpc.MethodDescriptor<io.holoinsight.server.query.grpc.QueryProto.QueryMetaRequest, io.holoinsight.server.query.grpc.QueryProto.BizopsEndpoints> getQueryBizErrorCodeListMethod;
-    if ((getQueryBizErrorCodeListMethod =
-        QueryServiceGrpc.getQueryBizErrorCodeListMethod) == null) {
-      synchronized (QueryServiceGrpc.class) {
-        if ((getQueryBizErrorCodeListMethod =
-            QueryServiceGrpc.getQueryBizErrorCodeListMethod) == null) {
-          QueryServiceGrpc.getQueryBizErrorCodeListMethod = getQueryBizErrorCodeListMethod =
-              io.grpc.MethodDescriptor.<io.holoinsight.server.query.grpc.QueryProto.QueryMetaRequest, io.holoinsight.server.query.grpc.QueryProto.BizopsEndpoints>newBuilder()
-                  .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
-                  .setFullMethodName(generateFullMethodName(SERVICE_NAME, "QueryBizErrorCodeList"))
-                  .setSampledToLocalTracing(true)
-                  .setRequestMarshaller(io.grpc.protobuf.ProtoUtils
-                      .marshaller(io.holoinsight.server.query.grpc.QueryProto.QueryMetaRequest
-                          .getDefaultInstance()))
-                  .setResponseMarshaller(io.grpc.protobuf.ProtoUtils
-                      .marshaller(io.holoinsight.server.query.grpc.QueryProto.BizopsEndpoints
-                          .getDefaultInstance()))
-                  .setSchemaDescriptor(
-                      new QueryServiceMethodDescriptorSupplier("QueryBizErrorCodeList"))
-                  .build();
-        }
-      }
-    }
-    return getQueryBizErrorCodeListMethod;
-  }
-
   private static volatile io.grpc.MethodDescriptor<io.holoinsight.server.query.grpc.QueryProto.QueryMetaRequest, io.holoinsight.server.query.grpc.QueryProto.QuerySlowSqlResponse> getQuerySlowSqlListMethod;
 
   @io.grpc.stub.annotations.RpcMethod(fullMethodName = SERVICE_NAME + '/' + "QuerySlowSqlList",
@@ -745,24 +680,6 @@ public final class QueryServiceGrpc {
 
     /**
      */
-    public void queryBizEndpointList(
-        io.holoinsight.server.query.grpc.QueryProto.QueryMetaRequest request,
-        io.grpc.stub.StreamObserver<io.holoinsight.server.query.grpc.QueryProto.BizopsEndpoints> responseObserver) {
-      io.grpc.stub.ServerCalls.asyncUnimplementedUnaryCall(getQueryBizEndpointListMethod(),
-          responseObserver);
-    }
-
-    /**
-     */
-    public void queryBizErrorCodeList(
-        io.holoinsight.server.query.grpc.QueryProto.QueryMetaRequest request,
-        io.grpc.stub.StreamObserver<io.holoinsight.server.query.grpc.QueryProto.BizopsEndpoints> responseObserver) {
-      io.grpc.stub.ServerCalls.asyncUnimplementedUnaryCall(getQueryBizErrorCodeListMethod(),
-          responseObserver);
-    }
-
-    /**
-     */
     public void querySlowSqlList(
         io.holoinsight.server.query.grpc.QueryProto.QueryMetaRequest request,
         io.grpc.stub.StreamObserver<io.holoinsight.server.query.grpc.QueryProto.QuerySlowSqlResponse> responseObserver) {
@@ -818,12 +735,6 @@ public final class QueryServiceGrpc {
           .addMethod(getQueryTopologyMethod(), io.grpc.stub.ServerCalls.asyncUnaryCall(
               new MethodHandlers<io.holoinsight.server.query.grpc.QueryProto.QueryTopologyRequest, io.holoinsight.server.query.grpc.QueryProto.Topology>(
                   this, METHODID_QUERY_TOPOLOGY)))
-          .addMethod(getQueryBizEndpointListMethod(), io.grpc.stub.ServerCalls.asyncUnaryCall(
-              new MethodHandlers<io.holoinsight.server.query.grpc.QueryProto.QueryMetaRequest, io.holoinsight.server.query.grpc.QueryProto.BizopsEndpoints>(
-                  this, METHODID_QUERY_BIZ_ENDPOINT_LIST)))
-          .addMethod(getQueryBizErrorCodeListMethod(), io.grpc.stub.ServerCalls.asyncUnaryCall(
-              new MethodHandlers<io.holoinsight.server.query.grpc.QueryProto.QueryMetaRequest, io.holoinsight.server.query.grpc.QueryProto.BizopsEndpoints>(
-                  this, METHODID_QUERY_BIZ_ERROR_CODE_LIST)))
           .addMethod(getQuerySlowSqlListMethod(), io.grpc.stub.ServerCalls.asyncUnaryCall(
               new MethodHandlers<io.holoinsight.server.query.grpc.QueryProto.QueryMetaRequest, io.holoinsight.server.query.grpc.QueryProto.QuerySlowSqlResponse>(
                   this, METHODID_QUERY_SLOW_SQL_LIST)))
@@ -986,26 +897,6 @@ public final class QueryServiceGrpc {
 
     /**
      */
-    public void queryBizEndpointList(
-        io.holoinsight.server.query.grpc.QueryProto.QueryMetaRequest request,
-        io.grpc.stub.StreamObserver<io.holoinsight.server.query.grpc.QueryProto.BizopsEndpoints> responseObserver) {
-      io.grpc.stub.ClientCalls.asyncUnaryCall(
-          getChannel().newCall(getQueryBizEndpointListMethod(), getCallOptions()), request,
-          responseObserver);
-    }
-
-    /**
-     */
-    public void queryBizErrorCodeList(
-        io.holoinsight.server.query.grpc.QueryProto.QueryMetaRequest request,
-        io.grpc.stub.StreamObserver<io.holoinsight.server.query.grpc.QueryProto.BizopsEndpoints> responseObserver) {
-      io.grpc.stub.ClientCalls.asyncUnaryCall(
-          getChannel().newCall(getQueryBizErrorCodeListMethod(), getCallOptions()), request,
-          responseObserver);
-    }
-
-    /**
-     */
     public void querySlowSqlList(
         io.holoinsight.server.query.grpc.QueryProto.QueryMetaRequest request,
         io.grpc.stub.StreamObserver<io.holoinsight.server.query.grpc.QueryProto.QuerySlowSqlResponse> responseObserver) {
@@ -1147,22 +1038,6 @@ public final class QueryServiceGrpc {
         io.holoinsight.server.query.grpc.QueryProto.QueryTopologyRequest request) {
       return io.grpc.stub.ClientCalls.blockingUnaryCall(getChannel(), getQueryTopologyMethod(),
           getCallOptions(), request);
-    }
-
-    /**
-     */
-    public io.holoinsight.server.query.grpc.QueryProto.BizopsEndpoints queryBizEndpointList(
-        io.holoinsight.server.query.grpc.QueryProto.QueryMetaRequest request) {
-      return io.grpc.stub.ClientCalls.blockingUnaryCall(getChannel(),
-          getQueryBizEndpointListMethod(), getCallOptions(), request);
-    }
-
-    /**
-     */
-    public io.holoinsight.server.query.grpc.QueryProto.BizopsEndpoints queryBizErrorCodeList(
-        io.holoinsight.server.query.grpc.QueryProto.QueryMetaRequest request) {
-      return io.grpc.stub.ClientCalls.blockingUnaryCall(getChannel(),
-          getQueryBizErrorCodeListMethod(), getCallOptions(), request);
     }
 
     /**
@@ -1310,22 +1185,6 @@ public final class QueryServiceGrpc {
 
     /**
      */
-    public com.google.common.util.concurrent.ListenableFuture<io.holoinsight.server.query.grpc.QueryProto.BizopsEndpoints> queryBizEndpointList(
-        io.holoinsight.server.query.grpc.QueryProto.QueryMetaRequest request) {
-      return io.grpc.stub.ClientCalls.futureUnaryCall(
-          getChannel().newCall(getQueryBizEndpointListMethod(), getCallOptions()), request);
-    }
-
-    /**
-     */
-    public com.google.common.util.concurrent.ListenableFuture<io.holoinsight.server.query.grpc.QueryProto.BizopsEndpoints> queryBizErrorCodeList(
-        io.holoinsight.server.query.grpc.QueryProto.QueryMetaRequest request) {
-      return io.grpc.stub.ClientCalls.futureUnaryCall(
-          getChannel().newCall(getQueryBizErrorCodeListMethod(), getCallOptions()), request);
-    }
-
-    /**
-     */
     public com.google.common.util.concurrent.ListenableFuture<io.holoinsight.server.query.grpc.QueryProto.QuerySlowSqlResponse> querySlowSqlList(
         io.holoinsight.server.query.grpc.QueryProto.QueryMetaRequest request) {
       return io.grpc.stub.ClientCalls.futureUnaryCall(
@@ -1348,9 +1207,7 @@ public final class QueryServiceGrpc {
   private static final int METHODID_QUERY_COMPONENT_LIST = 12;
   private static final int METHODID_QUERY_COMPONENT_TRACE_IDS = 13;
   private static final int METHODID_QUERY_TOPOLOGY = 14;
-  private static final int METHODID_QUERY_BIZ_ENDPOINT_LIST = 15;
-  private static final int METHODID_QUERY_BIZ_ERROR_CODE_LIST = 16;
-  private static final int METHODID_QUERY_SLOW_SQL_LIST = 17;
+  private static final int METHODID_QUERY_SLOW_SQL_LIST = 15;
 
   private static final class MethodHandlers<Req, Resp>
       implements io.grpc.stub.ServerCalls.UnaryMethod<Req, Resp>,
@@ -1441,16 +1298,6 @@ public final class QueryServiceGrpc {
               (io.holoinsight.server.query.grpc.QueryProto.QueryTopologyRequest) request,
               (io.grpc.stub.StreamObserver<io.holoinsight.server.query.grpc.QueryProto.Topology>) responseObserver);
           break;
-        case METHODID_QUERY_BIZ_ENDPOINT_LIST:
-          serviceImpl.queryBizEndpointList(
-              (io.holoinsight.server.query.grpc.QueryProto.QueryMetaRequest) request,
-              (io.grpc.stub.StreamObserver<io.holoinsight.server.query.grpc.QueryProto.BizopsEndpoints>) responseObserver);
-          break;
-        case METHODID_QUERY_BIZ_ERROR_CODE_LIST:
-          serviceImpl.queryBizErrorCodeList(
-              (io.holoinsight.server.query.grpc.QueryProto.QueryMetaRequest) request,
-              (io.grpc.stub.StreamObserver<io.holoinsight.server.query.grpc.QueryProto.BizopsEndpoints>) responseObserver);
-          break;
         case METHODID_QUERY_SLOW_SQL_LIST:
           serviceImpl.querySlowSqlList(
               (io.holoinsight.server.query.grpc.QueryProto.QueryMetaRequest) request,
@@ -1525,9 +1372,7 @@ public final class QueryServiceGrpc {
               .addMethod(getQueryEndpointListMethod())
               .addMethod(getQueryServiceInstanceListMethod())
               .addMethod(getQueryComponentListMethod()).addMethod(getQueryComponentTraceIdsMethod())
-              .addMethod(getQueryTopologyMethod()).addMethod(getQueryBizEndpointListMethod())
-              .addMethod(getQueryBizErrorCodeListMethod()).addMethod(getQuerySlowSqlListMethod())
-              .build();
+              .addMethod(getQueryTopologyMethod()).addMethod(getQuerySlowSqlListMethod()).build();
         }
       }
     }

@@ -488,66 +488,6 @@ public class DefaultQueryServiceImpl implements QueryService {
   }
 
   @Override
-  public QueryProto.BizopsEndpoints queryBizEndpointList(QueryProto.QueryMetaRequest request)
-      throws QueryException {
-    return wrap(() -> {
-      ApmAPI apmAPI = apmClient.getClient(request.getTenant());
-
-      QueryEndpointRequest queryEndpointRequest = new QueryEndpointRequest();
-      queryEndpointRequest.setTenant(request.getTenant());
-      queryEndpointRequest.setStartTime(request.getStart());
-      queryEndpointRequest.setEndTime(request.getEnd());
-
-      Call<List<BizopsEndpoint>> listCall = apmAPI.queryBizEndpointList(queryEndpointRequest);
-      Response<List<BizopsEndpoint>> listResponse = listCall.execute();
-      if (!listResponse.isSuccessful()) {
-        throw new QueryException(listResponse.errorBody().string());
-      }
-
-      QueryProto.BizopsEndpoints.Builder builder = QueryProto.BizopsEndpoints.newBuilder();
-      listResponse.body().forEach(endpoint -> {
-        builder.addEndpoints((ApmConvertor.convertBizEndpoint(endpoint)));
-      });
-
-      return builder.build();
-    }, "queryBizEndpointList", request);
-  }
-
-  @Override
-  public QueryProto.BizopsEndpoints queryBizErrorCodeList(QueryProto.QueryMetaRequest request)
-      throws QueryException {
-    return wrap(() -> {
-      Assert.notNull(request.getServiceName(), "service is null!");
-      Assert.notNull(request.getEndpointName(), "endpoint is null!");
-      ApmAPI apmAPI = apmClient.getClient(request.getTenant());
-
-      QueryEndpointRequest queryEndpointRequest = new QueryEndpointRequest();
-      queryEndpointRequest.setTenant(request.getTenant());
-      queryEndpointRequest.setServiceName(request.getServiceName());
-      queryEndpointRequest.setEndpointName(request.getEndpointName());
-      queryEndpointRequest.setStartTime(request.getStart());
-      queryEndpointRequest.setEndTime(request.getEnd());
-      queryEndpointRequest.setTraceIdSize((int) request.getTraceIdSize());
-      if (request.hasIsEntry()) {
-        queryEndpointRequest.setEntry(request.getIsEntry());
-      }
-
-      Call<List<BizopsEndpoint>> listCall = apmAPI.queryBizErrorCodeList(queryEndpointRequest);
-      Response<List<BizopsEndpoint>> listResponse = listCall.execute();
-      if (!listResponse.isSuccessful()) {
-        throw new QueryException(listResponse.errorBody().string());
-      }
-
-      QueryProto.BizopsEndpoints.Builder builder = QueryProto.BizopsEndpoints.newBuilder();
-      listResponse.body().forEach(endpoint -> {
-        builder.addEndpoints((ApmConvertor.convertBizEndpoint(endpoint)));
-      });
-
-      return builder.build();
-    }, "queryBizErrorCodeList", request);
-  }
-
-  @Override
   public QueryProto.QuerySlowSqlResponse querySlowSqlList(QueryProto.QueryMetaRequest request)
       throws QueryException {
     return wrap(() -> {

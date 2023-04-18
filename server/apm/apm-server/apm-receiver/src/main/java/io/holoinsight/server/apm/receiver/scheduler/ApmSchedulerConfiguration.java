@@ -4,7 +4,6 @@
 package io.holoinsight.server.apm.receiver.scheduler;
 
 import io.holoinsight.server.common.springboot.ConditionalOnFeature;
-
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -18,7 +17,7 @@ import org.springframework.context.annotation.Configuration;
 @ConditionalOnFeature("trace")
 public class ApmSchedulerConfiguration {
   @Bean
-  public ApmCacheUpdateScheduler cacheUpdateScheduler() {
-    return new ApmCacheUpdateScheduler();
+  public CacheUpdateTimer cacheUpdateScheduler() {
+    return new CacheUpdateTimer();
   }
 }

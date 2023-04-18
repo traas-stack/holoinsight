@@ -9,7 +9,7 @@ import io.holoinsight.server.apm.common.model.query.Node;
 import io.holoinsight.server.apm.common.model.query.ResponseMetric;
 import io.holoinsight.server.apm.common.model.query.Topology;
 import io.holoinsight.server.apm.common.utils.IDManager;
-import io.holoinsight.server.apm.server.cache.NetworkAddressMappingCache;
+import io.holoinsight.server.apm.server.cache.NetworkAddressAliasCache;
 import io.holoinsight.server.apm.server.service.TopologyService;
 import io.holoinsight.server.apm.engine.model.NetworkAddressMappingDO;
 import io.holoinsight.server.apm.engine.model.SpanDO;
@@ -34,7 +34,7 @@ public class TopologyServiceImpl implements TopologyService {
   private TopologyStorage topologyStorage;
 
   @Autowired
-  protected NetworkAddressMappingCache networkAddressMappingCache;
+  protected NetworkAddressAliasCache networkAddressMappingCache;
 
   private static final String USERID = IDManager.ServiceID.buildId(Const.USER_SERVICE_NAME, false);
 
