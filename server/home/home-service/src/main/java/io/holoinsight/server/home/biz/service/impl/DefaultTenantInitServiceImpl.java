@@ -5,8 +5,11 @@ package io.holoinsight.server.home.biz.service.impl;
 
 import io.holoinsight.server.common.dao.entity.dto.TenantOpsStorage;
 import io.holoinsight.server.home.biz.service.TenantInitService;
+import io.holoinsight.server.home.facade.trigger.Filter;
+import io.holoinsight.server.query.grpc.QueryProto.QueryFilter;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -40,13 +43,18 @@ public class DefaultTenantInitServiceImpl implements TenantInitService {
   }
 
   @Override
-  public Map<String, String> getTenantMetaConditions(String workspace) {
-    return new HashMap<>();
+  public String getTsdbTenant(String metric, String tenant) {
+    return tenant;
   }
 
   @Override
   public Map<String, String> getTenantWorkspaceMetaConditions(String workspace) {
     return new HashMap<>();
+  }
+
+  @Override
+  public List<QueryFilter> getTenantFilters(String workspace) {
+    return null;
   }
 
 }
