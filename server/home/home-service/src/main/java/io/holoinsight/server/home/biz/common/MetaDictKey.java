@@ -11,7 +11,6 @@ public class MetaDictKey {
   public static final String ULA = "ula";
   public static final String ULA_CLOSE = "ula_close";
   public static final String ULA_HOST = "ula_host";
-  public static final String IS_QUERY_TEST = "is_query_test";
   public static final String TOKEN_URL_WRITE_LIST = "token_url_write_list";
   public static final String IS_APM_MATERIALIZED = "is_apm_materialized";
 
@@ -23,6 +22,7 @@ public class MetaDictKey {
   public static final String K8S_AGENT_INSTALL_DOCUMENT = "k8sInstallDocument";
 
   public static final String COLLECTOR_HOST = "collectorHost";
+  public static final String TRACE_INSTALL_DOCUMENT = "traceInstallDocument";
 
   public static final String IGNORE_TASK_LIST = "ignore_task_list";
 

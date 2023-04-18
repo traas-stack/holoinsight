@@ -4,6 +4,7 @@
 package io.holoinsight.server.home.biz.service.impl;
 
 import io.holoinsight.server.home.biz.service.IntegrationGeneratedService;
+import io.holoinsight.server.home.common.util.StringUtil;
 import io.holoinsight.server.home.dal.converter.IntegrationGeneratedConverter;
 import io.holoinsight.server.home.dal.mapper.IntegrationGeneratedMapper;
 import io.holoinsight.server.home.dal.model.IntegrationGenerated;
@@ -14,7 +15,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  *
@@ -56,5 +59,16 @@ public class IntegrationGeneratedServiceImpl
       queryWrapper.eq("workspace", workspace);
     }
     return baseMapper.selectList(queryWrapper);
+  }
+
+  @Override
+  public List<IntegrationGeneratedDTO> queryByName(String tenant, String workspace, String name) {
+    Map<String, Object> map = new HashMap<>();
+    map.put("tenant", tenant);
+    if (StringUtil.isNotBlank(workspace)) {
+      map.put("workspace", workspace);
+    }
+    map.put("name", name);
+    return integrationGeneratedConverter.dosToDTOs(listByMap(map));
   }
 }

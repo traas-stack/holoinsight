@@ -20,6 +20,8 @@ import io.holoinsight.server.registry.model.From.Log.Multiline;
 import io.holoinsight.server.registry.model.From.Log.Parse;
 import io.holoinsight.server.registry.model.From.Log.Separator;
 import io.holoinsight.server.registry.model.GroupBy;
+import io.holoinsight.server.registry.model.GroupBy.LogAnalysis;
+import io.holoinsight.server.registry.model.GroupBy.LogAnalysisPattern;
 import io.holoinsight.server.registry.model.Output;
 import io.holoinsight.server.registry.model.Output.Gateway;
 import io.holoinsight.server.registry.model.Select;
@@ -393,9 +395,79 @@ public class GaeaSqlTaskUtil {
     return where;
   }
 
+  public static GroupBy buildLogPatternParse(LogParse logParse) {
+    GroupBy groupBy = new GroupBy();
+    groupBy.setMaxKeys(logParse.maxKeySize);
+
+    LogPattern logPattern = logParse.pattern;
+
+    LogAnalysis logAnalysis = new LogAnalysis();
+    logAnalysis.setMaxLogLength(logPattern.getMaxLogLength());
+    logAnalysis.setMaxUnknownPatterns(logPattern.getMaxUnknownPatterns());
+    List<LogAnalysisPattern> logAnalysisPatterns = new ArrayList<>();
+    if (!CollectionUtils.isEmpty(logPattern.getLogKnownPatterns())) {
+      logPattern.getLogKnownPatterns().forEach(logKnownPattern -> {
+        if (CollectionUtils.isEmpty(logKnownPattern.values))
+          return;
+        LogAnalysisPattern logAnalysisPattern = new LogAnalysisPattern();
+        logAnalysisPattern.setName(logKnownPattern.eventName);
+        Where where = new Where();
+        Elect elect = new Elect();
+        switch (logKnownPattern.type) {
+          case leftRight:
+            Elect.LeftRight leftRight = new Elect.LeftRight();
+            leftRight.setLeft(logKnownPattern.rule.left);
+            leftRight.setLeftIndex(logKnownPattern.rule.leftIndex);
+            leftRight.setRight(logKnownPattern.rule.right);
+
+            elect.setType("leftRight");
+            elect.setLeftRight(leftRight);
+
+            Where.In in = new Where.In();
+            in.setValues(logKnownPattern.values);
+            in.setElect(elect);
+            where.setIn(in);
+            break;
+
+          case contains:
+            ContainsAny contains = new ContainsAny();
+            elect.setType("line");
+            contains.setElect(elect);
+            contains.setValues(logKnownPattern.values);
+            where.setContainsAny(contains);
+            break;
+          case regexp:
+            List<Where> orList = new ArrayList<>();
+            logKnownPattern.values.forEach(v -> {
+              Regexp regexp = new Regexp();
+              elect.setType("line");
+              regexp.setElect(elect);
+              regexp.setExpression(v);
+
+              Where or = new Where();
+              or.setRegexp(regexp);
+              orList.add(or);
+            });
+            where.setOr(orList);
+            break;
+          default:
+            break;
+        }
+        logAnalysisPattern.setWhere(where);
+        logAnalysisPatterns.add(logAnalysisPattern);
+      });
+    }
+    logAnalysis.setPatterns(logAnalysisPatterns);
+    groupBy.setLogAnalysis(logAnalysis);
+    return groupBy;
+  }
+
   public static GroupBy buildGroupBy(LogParse logParse,
       Map<String, Map<String, SplitCol>> splitColMap, CollectMetric collectMetric) {
 
+    if (null != logParse.pattern && logParse.pattern.logPattern) {
+      return buildLogPatternParse(logParse);
+    }
     List<String> tags = collectMetric.getTags();
 
     GroupBy groupBy = new GroupBy();

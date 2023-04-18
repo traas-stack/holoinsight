@@ -12,6 +12,7 @@ import io.holoinsight.server.common.LatchWork;
 import io.holoinsight.server.common.UtilMisc;
 import io.holoinsight.server.common.threadpool.CommonThreadPools;
 import io.holoinsight.server.home.biz.common.MetaDictUtil;
+import io.holoinsight.server.home.biz.service.TenantInitService;
 import io.holoinsight.server.home.common.service.QueryClientService;
 import io.holoinsight.server.home.common.service.query.KeyResult;
 import io.holoinsight.server.home.common.service.query.QueryResponse;
@@ -40,6 +41,8 @@ import io.holoinsight.server.home.web.controller.model.TagQueryRequest;
 import io.holoinsight.server.home.web.controller.model.open.GrafanaJsonResult;
 import io.holoinsight.server.home.web.interceptor.MonitorScopeAuth;
 import io.holoinsight.server.query.grpc.QueryProto;
+import io.holoinsight.server.query.grpc.QueryProto.Datasource;
+import io.holoinsight.server.query.grpc.QueryProto.Datasource.Builder;
 import io.holoinsight.server.query.grpc.QueryProto.QueryRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -77,6 +80,9 @@ public class QueryFacadeImpl extends BaseFacade {
   @Autowired
   private CommonThreadPools commonThreadPools;
 
+  @Autowired
+  private TenantInitService tenantInitService;
+
   @PostMapping
   public JsonResult<QueryResponse> query(@RequestBody DataQueryRequest request) {
 
@@ -87,6 +93,9 @@ public class QueryFacadeImpl extends BaseFacade {
       public void checkParameter() {
         ParaCheckUtil.checkParaNotNull(request, "request");
         ParaCheckUtil.checkParaNotEmpty(request.datasources, "datasources");
+        ParaCheckUtil.checkParaNotBlank(request.datasources.get(0).metric, "metric");
+        ParaCheckUtil.checkTimeRange(request.datasources.get(0).start,
+            request.datasources.get(0).end, "start time must less than end time");
         if (StringUtils.isNotBlank(request.getTenant())) {
           ParaCheckUtil.checkEquals(request.getTenant(), RequestContext.getContext().ms.getTenant(),
               "tenant is illegal");
@@ -113,6 +122,9 @@ public class QueryFacadeImpl extends BaseFacade {
       public void checkParameter() {
         ParaCheckUtil.checkParaNotNull(request, "request");
         ParaCheckUtil.checkParaNotEmpty(request.datasources, "datasources");
+        ParaCheckUtil.checkParaNotBlank(request.datasources.get(0).metric, "metric");
+        ParaCheckUtil.checkTimeRange(request.datasources.get(0).start,
+            request.datasources.get(0).end, "start time must less than end time");
         if (StringUtils.isNotBlank(request.getTenant())) {
           ParaCheckUtil.checkEquals(request.getTenant(), RequestContext.getContext().ms.getTenant(),
               "tenant is illegal");
@@ -181,33 +193,6 @@ public class QueryFacadeImpl extends BaseFacade {
     return result;
   }
 
-  @PostMapping("/deltags")
-  public JsonResult<?> delTags(@RequestBody DataQueryRequest request) {
-
-    final JsonResult<Boolean> result = new JsonResult<>();
-
-    facadeTemplate.manage(result, new ManageCallback() {
-      @Override
-      public void checkParameter() {
-        ParaCheckUtil.checkParaNotNull(request, "request");
-        ParaCheckUtil.checkParaNotEmpty(request.datasources, "datasources");
-        if (StringUtils.isNotBlank(request.getTenant())) {
-          ParaCheckUtil.checkEquals(request.getTenant(), RequestContext.getContext().ms.getTenant(),
-              "tenant is illegal");
-        }
-      }
-
-      @Override
-      public void doManage() {
-        queryClientService.delTags(convertRequest(request));
-
-        JsonResult.createSuccessResult(result, true);
-      }
-    });
-
-    return result;
-  }
-
   @GetMapping("/schema")
   @ResponseBody
   @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.EDIT)
@@ -220,16 +205,21 @@ public class QueryFacadeImpl extends BaseFacade {
       @Override
       public void doManage() {
         MonitorScope ms = RequestContext.getContext().ms;
-        QueryProto.Datasource datasource = QueryProto.Datasource.newBuilder().setMetric(metric)
+        Builder builder = Datasource.newBuilder().setMetric(metric)
             .setStart(System.currentTimeMillis() - 60000 * 60 * 5)
-            .setEnd(System.currentTimeMillis() - 60000 * 5).build();
-        QueryProto.QueryRequest.Builder builder = QueryProto.QueryRequest.newBuilder();
-        if (null != ms) {
-          builder.setTenant(ms.getTenant());
+            .setEnd(System.currentTimeMillis() - 60000 * 5);
+
+        List<QueryProto.QueryFilter> tenantFilters =
+            tenantInitService.getTenantFilters(ms.getWorkspace());
+        if (!CollectionUtils.isEmpty(tenantFilters)) {
+          builder.addAllFilters(tenantFilters);
         }
 
+        QueryProto.QueryRequest.Builder requestBuilder = QueryProto.QueryRequest.newBuilder();
+        requestBuilder.setTenant(tenantInitService.getTsdbTenant(metric, ms.getTenant()));
+
         QueryProto.QueryRequest request =
-            builder.addAllDatasources(Collections.singletonList(datasource)).build();
+            requestBuilder.addAllDatasources(Collections.singletonList(builder.build())).build();
         QuerySchemaResponse querySchema = queryClientService.querySchema(request);
         KeyResult keyResult = new KeyResult();
         if (querySchema != null && querySchema.getResults() != null
@@ -294,23 +284,31 @@ public class QueryFacadeImpl extends BaseFacade {
       @Override
       public void checkParameter() {
         ParaCheckUtil.checkParaNotNull(tagQueryRequest, "request");
+        ParaCheckUtil.checkParaNotNull(tagQueryRequest.getMetric(), "metric");
       }
 
       @Override
       public void doManage() {
         MonitorScope ms = RequestContext.getContext().ms;
-        QueryProto.Datasource datasource = QueryProto.Datasource.newBuilder()
-            .setMetric(tagQueryRequest.getMetric()).setStart(System.currentTimeMillis() - 60000 * 5)
+        Builder builder = Datasource.newBuilder().setMetric(tagQueryRequest.getMetric())
+            .setStart(System.currentTimeMillis() - 60000 * 60 * 5)
             .setEnd(System.currentTimeMillis()).setAggregator("count")
-            .addAllGroupBy(Collections.singletonList(tagQueryRequest.getKey())).build();
+            .addAllGroupBy(Collections.singletonList(tagQueryRequest.getKey()));
 
-        QueryProto.QueryRequest.Builder builder = QueryProto.QueryRequest.newBuilder()
-            .addAllDatasources(Collections.singletonList(datasource));
-        if (null != ms) {
-          builder.setTenant(ms.getTenant());
+        List<QueryProto.QueryFilter> tenantFilters =
+            tenantInitService.getTenantFilters(ms.getWorkspace());
+        if (!CollectionUtils.isEmpty(tenantFilters)) {
+          builder.addAllFilters(tenantFilters);
         }
+
+        QueryProto.Datasource datasource = builder.build();
+        QueryProto.QueryRequest.Builder requestBuilder = QueryProto.QueryRequest.newBuilder()
+            .addAllDatasources(Collections.singletonList(datasource));
+        requestBuilder.setTenant(
+            tenantInitService.getTsdbTenant(tagQueryRequest.getMetric(), ms.getTenant()));
+
         ValueResult response =
-            queryClientService.queryTagValues(builder.build(), tagQueryRequest.getKey());
+            queryClientService.queryTagValues(requestBuilder.build(), tagQueryRequest.getKey());
         JsonResult.createSuccessResult(result, response);
       }
     });
@@ -379,7 +377,7 @@ public class QueryFacadeImpl extends BaseFacade {
   public List<DataQueryRequest> convertQueryRequest(DelTagReq req) {
 
     MonitorScope ms = RequestContext.getContext().ms;
-    long start = (req.getStart() == null) ? (System.currentTimeMillis() - 7 * 24 * 60 * 60 * 1000)
+    long start = (req.getStart() == null) ? (System.currentTimeMillis() - 5 * 24 * 60 * 60 * 1000)
         : req.getStart();
     long end = (req.getEnd() == null) ? (System.currentTimeMillis()) : req.getEnd();
 
@@ -424,8 +422,10 @@ public class QueryFacadeImpl extends BaseFacade {
 
     List<List<QueryDataSource>> lists = UtilMisc.divideList(queryDataSources, 200);
     lists.forEach(list -> {
+      if (CollectionUtils.isEmpty(list))
+        return;
       DataQueryRequest queryRequest = new DataQueryRequest();
-      queryRequest.setTenant(ms.getTenant());
+      queryRequest.setTenant(tenantInitService.getTsdbTenant(list.get(0).metric, ms.getTenant()));
       queryRequest.setDatasources(list);
       queryRequests.add(queryRequest);
     });
@@ -436,18 +436,27 @@ public class QueryFacadeImpl extends BaseFacade {
   public QueryProto.QueryRequest convertRequest(DataQueryRequest request) {
     MonitorScope ms = RequestContext.getContext().ms;
     QueryProto.QueryRequest.Builder builder = QueryProto.QueryRequest.newBuilder();
-
-    if (StringUtil.isNotBlank(request.getTenant())) {
-      builder.setTenant(request.getTenant());
-    } else if (null != ms && StringUtil.isNotBlank(ms.getTenant())) {
-      builder.setTenant(ms.getTenant());
-    }
-
+    builder.setTenant(
+        tenantInitService.getTsdbTenant(request.getDatasources().get(0).metric, ms.getTenant()));
     if (StringUtil.isNotBlank(request.getQuery())) {
       builder.setQuery(request.getQuery());
     }
 
     request.datasources.forEach(d -> {
+      // Timeline alignment
+      if (StringUtils.isNotBlank(d.downsample)) {
+        long interval = getInterval(d.downsample);
+        d.end -= d.end % interval;
+        d.start = d.start % interval > 0 ? (d.start + interval - d.start % interval) : d.start;
+      }
+      // wait data collect
+      if ((System.currentTimeMillis() - d.end) < 80000L) {
+        d.end -= 60000L;
+      }
+      if ((System.currentTimeMillis() - d.start) < 80000L) {
+        d.start -= 60000L;
+      }
+
       QueryProto.Datasource.Builder datasourceBuilder = QueryProto.Datasource.newBuilder();
       toProtoBean(datasourceBuilder, d);
       datasourceBuilder
@@ -456,6 +465,32 @@ public class QueryFacadeImpl extends BaseFacade {
     });
 
     return builder.build();
+  }
+
+  private long getInterval(String downsample) {
+    long interval = 60000L;
+    switch (downsample) {
+      case "1m":
+        interval = 60000L;
+        break;
+      case "1s":
+        interval = 1000L;
+        break;
+      case "5s":
+        interval = 5000L;
+        break;
+      case "15s":
+        interval = 15000L;
+        break;
+      case "30s":
+        interval = 30000L;
+        break;
+      case "10m":
+        interval = 10 * 60000L;
+        break;
+      default:
+    }
+    return interval;
   }
 
   public static void toProtoBean(Message.Builder destPojoClass, Object source) {

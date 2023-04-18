@@ -96,6 +96,8 @@ public class AgentFacadeImpl extends BaseFacade {
     }
     sysMap.put("collectorHost",
         MetaDictUtil.getStringValue(MetaDictType.TRACE_AGENT_CONFIG, MetaDictKey.COLLECTOR_HOST));
+    sysMap.put("traceInstallDocument", MetaDictUtil.getStringValue(MetaDictType.TRACE_AGENT_CONFIG,
+        MetaDictKey.TRACE_INSTALL_DOCUMENT));
     return JsonResult.createSuccessResult(sysMap);
   }
 

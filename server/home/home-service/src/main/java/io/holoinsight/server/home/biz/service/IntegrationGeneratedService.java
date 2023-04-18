@@ -23,4 +23,6 @@ public interface IntegrationGeneratedService extends IService<IntegrationGenerat
   List<IntegrationGenerated> queryByTenant(String tenant);
 
   List<IntegrationGenerated> queryByTenant(String tenant, String workspace);
+
+  List<IntegrationGeneratedDTO> queryByName(String tenant, String workspace, String name);
 }

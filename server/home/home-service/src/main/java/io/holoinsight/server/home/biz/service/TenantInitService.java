@@ -4,7 +4,9 @@
 package io.holoinsight.server.home.biz.service;
 
 import io.holoinsight.server.common.dao.entity.dto.TenantOpsStorage;
+import io.holoinsight.server.query.grpc.QueryProto.QueryFilter;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -22,14 +24,52 @@ public interface TenantInitService {
    */
   TenantOpsStorage.StorageMetric createStorageMetric(String tenant);
 
-
+  /**
+   * get meta_server table for tenant
+   * 
+   * @param tenant
+   * @return
+   */
   String getTenantServerTable(String tenant);
 
+  /**
+   * get meta_app table for tenant
+   * 
+   * @param tenant
+   * @return
+   */
   String getTenantAppTable(String tenant);
 
+  /**
+   * get actual tenant for request tenant
+   * 
+   * @param tenant
+   * @return
+   */
   String getTraceTenant(String tenant);
 
-  Map<String, String> getTenantMetaConditions(String workspace);
+  /**
+   * get actual tsdb tenant for request tenant and metric
+   * 
+   * @param metric
+   * @param tenant
+   * @return
+   */
+  String getTsdbTenant(String metric, String tenant);
 
+  /**
+   * get meta_server conditions for workspace
+   * 
+   * @param workspace
+   * @return
+   */
   Map<String, String> getTenantWorkspaceMetaConditions(String workspace);
+
+  /**
+   * add query filters by workspace
+   * 
+   * @param workspace
+   * @return
+   */
+  List<QueryFilter> getTenantFilters(String workspace);
 }
