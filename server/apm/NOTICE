@@ -16,7 +16,6 @@ Data model and query protocol referenced from SkyWalking:
 - src/main/java/io/holoinsight/server/apm/receiver/builder/EndpointSourceBuilder.java
 - src/main/java/io/holoinsight/server/apm/receiver/builder/RPCTrafficSourceBuilder.java
 - src/main/java/io/holoinsight/server/apm/receiver/analysis/RelationAnalysis.java
--
 
 Copyright 2017-2022 The Apache Software Foundation.
 
