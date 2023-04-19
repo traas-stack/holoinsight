@@ -35,9 +35,6 @@ public class MetaGrpcServer {
   @Autowired
   private CommonThreadPools commonThreadPools;
   private Server dataServer;
-  private Server tableServer;
-  @Autowired
-  private TableServiceGrpcImpl tableServiceGrpcImpl;
   @Autowired
   private CommonHooksManager commonHooksManager;
 
@@ -55,21 +52,11 @@ public class MetaGrpcServer {
     dataServer.start();
 
     log.info("[meta] start data grpc server at port {}", ConstPool.GRPC_PORT_DATA);
-
-    tableServer = ServerBuilder.forPort(ConstPool.GRPC_PORT_TABLE) //
-        .executor(commonThreadPools.getRpcServer()) //
-        .addService(tableServiceGrpcImpl) //
-        .build(); //
-    tableServer.start();
-    log.info("[meta] start table grpc server at port {}", ConstPool.GRPC_PORT_TABLE);
   }
 
   @PreDestroy
   public void stop() throws InterruptedException {
     dataServer.shutdown();
     dataServer.awaitTermination(10, TimeUnit.SECONDS);
-
-    tableServer.shutdown();
-    tableServer.awaitTermination(10, TimeUnit.SECONDS);
   }
 }

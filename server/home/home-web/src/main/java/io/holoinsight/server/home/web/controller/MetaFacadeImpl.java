@@ -18,7 +18,6 @@ import io.holoinsight.server.common.J;
 import io.holoinsight.server.common.JsonResult;
 import io.holoinsight.server.meta.common.model.QueryExample;
 import io.holoinsight.server.meta.facade.service.DataClientService;
-import io.holoinsight.server.meta.facade.service.TableClientService;
 import lombok.Data;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,9 +48,6 @@ public class MetaFacadeImpl extends BaseFacade {
 
   @Autowired
   private DataClientService dataClientService;
-
-  @Autowired
-  private TableClientService tableClientService;
 
   @Autowired
   private TenantInitService tenantInitService;
@@ -317,85 +313,6 @@ public class MetaFacadeImpl extends BaseFacade {
         queryExample.getParams().putAll(condition);
         dataClientService.deleteByExample(table, queryExample);
         JsonResult.createSuccessResult(result, true);
-      }
-    });
-
-    return result;
-  }
-
-  @PostMapping("/{table}/deleteIndex")
-  @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.EDIT)
-  public JsonResult<Boolean> deleteIndex(@PathVariable("table") String table,
-      @RequestBody MetaTableIndex condition) {
-    final JsonResult<Boolean> result = new JsonResult<>();
-    facadeTemplate.manage(result, new ManageCallback() {
-      @Override
-      public void checkParameter() {
-        ParaCheckUtil.checkParaNotBlank(table, "table");
-        ParaCheckUtil.checkParaNotNull(condition, "condition");
-        ParaCheckUtil.checkParaNotBlank(condition.index, "index");
-        if (!table.startsWith(RequestContext.getContext().ms.getTenant())) {
-          throw new MonitorException("table is illegal");
-        }
-      }
-
-      @Override
-      public void doManage() {
-        tableClientService.deleteIndex(table, condition.index);
-        JsonResult.createSuccessResult(result, true);
-      }
-    });
-
-    return result;
-  }
-
-  @PostMapping("/{table}/createIndex")
-  @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.EDIT)
-  public JsonResult<Boolean> createIndex(@PathVariable("table") String table,
-      @RequestBody MetaTableIndex condition) {
-    final JsonResult<Boolean> result = new JsonResult<>();
-    facadeTemplate.manage(result, new ManageCallback() {
-      @Override
-      public void checkParameter() {
-        ParaCheckUtil.checkParaNotBlank(table, "table");
-        ParaCheckUtil.checkParaNotNull(condition, "condition");
-        ParaCheckUtil.checkParaNotBlank(condition.index, "index");
-        if (!table.startsWith(RequestContext.getContext().ms.getTenant())) {
-          throw new MonitorException("table is illegal");
-        }
-      }
-
-      @Override
-      public void doManage() {
-
-        tableClientService.createIndex(table, condition.index, condition.sort);
-        JsonResult.createSuccessResult(result, true);
-      }
-    });
-
-    return result;
-  }
-
-  @PostMapping("/{table}/getIndexInfo")
-  @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.EDIT)
-  public JsonResult<List<Object>> getIndexInfo(@PathVariable("table") String table,
-      @RequestBody MetaTableIndex condition) {
-    final JsonResult<List<Object>> result = new JsonResult<>();
-    facadeTemplate.manage(result, new ManageCallback() {
-      @Override
-      public void checkParameter() {
-        ParaCheckUtil.checkParaNotBlank(table, "table");
-        ParaCheckUtil.checkParaNotNull(condition, "condition");
-        if (!table.startsWith(RequestContext.getContext().ms.getTenant())) {
-          throw new MonitorException("table is illegal");
-        }
-      }
-
-      @Override
-      public void doManage() {
-
-        List<Object> indexInfo = tableClientService.getIndexInfo(table);
-        JsonResult.createSuccessResult(result, indexInfo);
       }
     });
 

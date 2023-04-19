@@ -5,10 +5,8 @@ package io.holoinsight.server.meta.facade.client;
 
 import io.holoinsight.server.meta.facade.service.AgentHeartBeatService;
 import io.holoinsight.server.meta.facade.service.DataClientService;
-import io.holoinsight.server.meta.facade.service.TableClientService;
 import io.holoinsight.server.meta.facade.service.impl.AgentHeartBeatServiceImpl;
 import io.holoinsight.server.meta.facade.service.impl.DataClientServiceImpl;
-import io.holoinsight.server.meta.facade.service.impl.TableClientServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -19,7 +17,6 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class MetaClient {
 
-  private static volatile TableClientService tableClientService;
   private static volatile DataClientService dataClientService;
   private static volatile AgentHeartBeatService agentHeartBeatService;
 
@@ -35,17 +32,6 @@ public class MetaClient {
     return dataClientService;
   }
 
-  public static TableClientService getTableClientService(String domain) {
-    if (tableClientService == null) {
-      synchronized (MetaClient.class) {
-        if (tableClientService == null) {
-          log.info("new instance of tableClientService, target address={}, remote={}", null, false);
-          tableClientService = TableClientServiceImpl.getInstance(domain);
-        }
-      }
-    }
-    return tableClientService;
-  }
 
   public static AgentHeartBeatService getAgentHeartBeatService(String domain) {
     if (agentHeartBeatService == null) {

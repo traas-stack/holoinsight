@@ -19,6 +19,10 @@ import java.util.Map;
  */
 public class DocumentUtil {
 
+  public static Document parse(Map<String, Object> row) {
+    return Document.parse(J.toJson(row));
+  }
+
   public static List<Document> parseList(List<Map<String, Object>> rows) {
     List<Document> list = new ArrayList<>();
     rows.forEach(row -> list.add(Document.parse(J.toJson(row))));

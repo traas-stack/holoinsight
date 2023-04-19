@@ -3,15 +3,17 @@
  */
 package io.holoinsight.server.meta.core.web.controller;
 
-import io.holoinsight.server.meta.dal.service.MongoDbHelper;
+import io.holoinsight.server.meta.common.model.QueryExample;
+import io.holoinsight.server.meta.core.service.MongoDataCoreService;
 import io.holoinsight.server.common.JsonResult;
-import org.bson.Document;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
+import java.util.Map;
 
 /**
  *
@@ -23,14 +25,16 @@ import java.util.List;
 public class AdminController {
 
   @Autowired
-  private MongoDbHelper mongoDbHelper;
+  private MongoDataCoreService mongoDataCoreService;
 
 
-  @RequestMapping("/mongodb/query/{collection}")
-  public JsonResult<Object> query(@PathVariable("collection") String collection) {
-
-    List<Document> all = mongoDbHelper.findAll(Document.class, collection);
-    return JsonResult.createSuccessResult(all);
+  @PostMapping("/mongodb/query/{collection}")
+  public JsonResult<Object> query(@PathVariable("collection") String collection,
+      @RequestBody Map<String, Object> condition) {
+    QueryExample queryExample = new QueryExample();
+    queryExample.getParams().putAll(condition);
+    return JsonResult
+        .createSuccessResult(mongoDataCoreService.queryByExample(collection, queryExample));
   }
 
 }
