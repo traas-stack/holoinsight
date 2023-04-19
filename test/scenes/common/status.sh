@@ -11,30 +11,36 @@ ps=`docker-compose ps`
 echo "$ps"
 
 echo
-echo Visit server at http://$ip:`get_port server 80`
-echo Debug server at $ip:`get_port server 8000` "(if debug mode is enabled)"
-echo Exec server using ./server-exec.sh
-echo Exec server using Web UI http://$ip:`get_port server 7681` "(if debug mode is enabled)"
-echo
 
-echo Visit MySQL at $ip:`get_port mysql 3306`
-echo Exec MySQL using ./mysql-exec.sh
+source="  Component\t  Access
+  Server_UI\t  http://$ip:`get_port server 80`
+  Server_JVM_Debugger\t  $ip:`get_port server 8000`
+  Server_exec\t  ./server-exec.sh
+  Server_Web_Shell\t  http://$ip:`get_port server 7681`
+  MySQL\t  $ip:`get_port mysql 3306`
+  MySQL_exec\t  ./mysql-exec.sh"
+
 if echo "$ps" | grep phpmyadmin >/dev/null; then
-  echo Visit MySQL Web UI at http://$ip:`get_port phpmyadmin 80`"?db=holoinsight"
+  source="$source
+  MySQL_Web_UI\t  http://$ip:`get_port phpmyadmin 80`?db=holoinsight"
 fi
-echo
 
 if echo "$ps" | grep mongo-express >/dev/null; then
-  echo Visit Mongo Web UI at http://$ip:`get_port mongo-express 8081`/db/holoinsight/
-  echo
+  source="$source
+  MongoDB_Web_UI\t  http://$ip:`get_port mongo-express 8081`/db/holoinsight/"
 fi
 
 if echo "$ps" | grep kibana >/dev/null; then
-  echo Visit Kibana at http://$ip:`get_port kibana 5601`
-  echo
+  source="$source
+  Kibana_Web_UI\t  http://$ip:`get_port kibana 5601`"
 fi
 
 if echo "$ps" | grep grafana >/dev/null; then
-  echo Visit Grafana at http://$ip:`get_port grafana 3000`
-  echo
+  source="$source
+  Grafana_Web_UI\t  http://$ip:`get_port grafana 3000`"
 fi
+
+#echo "$source" | column -t | sed '1{p;s/./-/g}'
+#echo
+echo "$source" | ../common/utils/prettytable/prettytable.sh 2
+
