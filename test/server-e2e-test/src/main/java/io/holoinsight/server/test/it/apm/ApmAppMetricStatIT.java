@@ -23,7 +23,7 @@ public class ApmAppMetricStatIT extends BaseIT {
   @Test
   public void test_serviceList() {
     await() //
-        .untilAsserted(() -> {
+        .untilNoException(() -> {
 
           long now = System.currentTimeMillis();
           JSONObject body = json() //

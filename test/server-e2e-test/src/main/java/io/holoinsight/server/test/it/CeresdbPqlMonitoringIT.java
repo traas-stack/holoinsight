@@ -48,7 +48,7 @@ public class CeresdbPqlMonitoringIT extends BaseIT {
   public void test_wait_pql_monitoring_metric1() {
     await("Test querying pql monitoring metrics") //
         .atMost(Duration.ofMinutes(2)) //
-        .untilAsserted(() -> {
+        .untilNoException(() -> {
           long end = System.currentTimeMillis() / 60000 * 60000;
           long start = end - 60000;
           JSONObject params = json() //

@@ -41,7 +41,7 @@ public class MetaVMIT extends BaseIT {
   @Order(1)
   public void test_has_VM_metadata() {
     await("Has VM metadata") //
-        .untilAsserted(() -> {
+        .untilNoException(() -> {
           val extract = given() //
               .pathParam("tenant", tenant) //
               .body(json().put("_type", "VM")) //
@@ -68,7 +68,7 @@ public class MetaVMIT extends BaseIT {
   @Order(2)
   public void test_has_system_metrics() {
     await("Has system metrics") //
-        .untilAsserted(() -> {
+        .untilNoException(() -> {
           long now = now();
 
           JSONObject body = json() //

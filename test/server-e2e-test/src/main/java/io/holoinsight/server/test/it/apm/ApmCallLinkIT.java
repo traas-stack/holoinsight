@@ -20,7 +20,7 @@ public class ApmCallLinkIT extends BaseIT {
   @Test
   public void test_trace_search_by_app() {
     await() //
-        .untilAsserted(() -> {
+        .untilNoException(() -> {
           for (String app : Arrays.asList("demo-client", "demo-server",
               "holoinsight-server-example")) {
             long now = System.currentTimeMillis();
@@ -45,7 +45,7 @@ public class ApmCallLinkIT extends BaseIT {
   @Test
   public void test_trace_search_by_endpoint() {
     await() //
-        .untilAsserted(() -> {
+        .untilNoException(() -> {
           for (String endpoint : Arrays.asList("Jedis/incr", "GET:/demo-server")) {
             long now = System.currentTimeMillis();
             JSONObject r = json() //

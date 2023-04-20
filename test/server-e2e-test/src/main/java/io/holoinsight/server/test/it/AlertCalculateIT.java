@@ -169,7 +169,7 @@ public class AlertCalculateIT extends BaseIT {
 
     await("Alert history generation") //
         .atMost(Duration.ofMinutes(10)) //
-        .untilAsserted(() -> {
+        .untilNoException(() -> {
           AlarmHistoryDTO condition = new AlarmHistoryDTO();
           condition.setUniqueId("rule_" + currentId);
           MonitorPageRequest<AlarmHistoryDTO> pageRequest = new MonitorPageRequest<>();

@@ -22,7 +22,7 @@ public class MetricMonitoringIT extends BaseIT {
   @Test
   public void test_query_not_exists_metrics_monitoring() {
     await("test query not exist metric") //
-        .untilAsserted(() -> {
+        .untilNoException(() -> {
           long end = System.currentTimeMillis() / 60000 * 60000;
           long start = end - 60000;
           String name = "test_query_not_exists_metrics_monitoring";
@@ -55,7 +55,7 @@ public class MetricMonitoringIT extends BaseIT {
   @Test
   public void test_query_tag_values_monitoring_item() {
     await("test query tag values") //
-        .untilAsserted(() -> {
+        .untilNoException(() -> {
           JSONObject body = new JSONObject();
           body.put("metric", "system_mem_util");
           body.put("key", "app");

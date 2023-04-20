@@ -23,7 +23,6 @@ import org.json.JSONObject;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 
-import java.lang.reflect.Type;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -76,7 +75,7 @@ public class IntegrationPluginIT extends BaseIT {
 
     await("Test alert rule generation") //
         .atMost(Duration.ofSeconds(10)) //
-        .untilAsserted(() -> {
+        .untilNoException(() -> {
           AlarmRuleDTO alertCondition = new AlarmRuleDTO();
           alertCondition.setSourceType(new DefaultHostingAlertPlugin().getSourceType());
           MonitorPageRequest<AlarmRuleDTO> pageRequest = new MonitorPageRequest<>();
