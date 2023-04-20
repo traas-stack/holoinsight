@@ -795,6 +795,8 @@ public class DefaultQueryServiceImpl implements QueryService {
       QueryProto.Datasource datasource) {
 
     QueryParam queryParam = QueryStorageUtils.convertToQueryParam(tenant, datasource);
+    queryParam.setAggregator("none");
+
     List<io.holoinsight.server.extension.model.QueryResult.Result> results =
         metricStorage.queryData(queryParam);
 
