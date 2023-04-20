@@ -213,6 +213,7 @@ message QueryMetaRequest {
   optional bool isEntry = 7;
   int64 traceIdSize = 8;
   string category = 9;
+  map<string, string> termParams = 10;
 }
 
 message QueryTopologyRequest {
