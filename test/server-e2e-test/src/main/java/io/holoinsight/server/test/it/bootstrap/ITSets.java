@@ -14,6 +14,7 @@ import io.holoinsight.server.test.it.CeresdbPqlMonitoringIT;
 import io.holoinsight.server.test.it.DashboardIT;
 import io.holoinsight.server.test.it.IntegrationPluginIT;
 import io.holoinsight.server.test.it.MetricMonitoringIT;
+import io.holoinsight.server.test.it.TaskIT;
 import org.junit.platform.launcher.LauncherDiscoveryRequest;
 import org.junit.platform.launcher.core.LauncherDiscoveryRequestBuilder;
 
@@ -65,6 +66,7 @@ public class ITSets {
         .selectors(selectClass(ApmTopologyIT.class)) //
         .selectors(selectClass(ApmCallLinkDetailIT.class)) //
         .selectors(selectClass(ApmAppMetricStatIT.class)) //
+        .selectors(selectClass(TaskIT.class)) //
         .build(); //
   }
 }

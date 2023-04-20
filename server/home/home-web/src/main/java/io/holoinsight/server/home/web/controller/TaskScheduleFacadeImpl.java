@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -37,6 +38,7 @@ public class TaskScheduleFacadeImpl extends BaseFacade {
   public JsonResult<List<ClusterTask>> getClusterTasks(@PathVariable("taskId") String taskId) {
     final JsonResult<List<ClusterTask>> result = new JsonResult<>();
     result.setSuccess(true);
+    result.setData(new ArrayList<>());
     facadeTemplate.manage(result, new ManageCallback() {
       @Override
       public void checkParameter() {}
