@@ -18,7 +18,7 @@ public class ApmTopologyIT extends BaseIT {
   @Test
   public void test_topology() {
     await() //
-        .untilAsserted(() -> {
+        .untilNoException(() -> {
 
           long now = System.currentTimeMillis();
           JSONObject r = json() //

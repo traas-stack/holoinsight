@@ -21,7 +21,7 @@ public class ApmCallLinkDetailIT extends BaseIT {
   @Test
   public void test_trace_detail() {
     await() //
-        .untilAsserted(() -> {
+        .untilNoException(() -> {
           String endpoint = "Jedis/incr";
           long now = System.currentTimeMillis();
           JSONObject r = json() //

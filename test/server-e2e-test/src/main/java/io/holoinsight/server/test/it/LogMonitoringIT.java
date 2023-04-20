@@ -96,7 +96,7 @@ public class LogMonitoringIT extends BaseIT {
   public void test_wait_log_monitoring_metrics() {
     await("Test querying log monitoring metrics") //
         .atMost(Duration.ofMinutes(10)) //
-        .untilAsserted(() -> {
+        .untilNoException(() -> {
           long end = System.currentTimeMillis() / 60000 * 60000;
           long start = end - 60000 * 10;
 

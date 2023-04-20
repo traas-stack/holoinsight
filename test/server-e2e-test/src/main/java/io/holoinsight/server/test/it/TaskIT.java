@@ -18,7 +18,7 @@ public class TaskIT extends BaseIT {
   public void test_task_scheduler() {
     await("Test task scheduler") //
         .atMost(Duration.ofMinutes(2)) //
-        .untilAsserted(() -> {
+        .untilNoException(() -> {
           given() //
               .pathParam("taskId", TaskEnum.TASK_DEMO.getCode()) //
               .when() //

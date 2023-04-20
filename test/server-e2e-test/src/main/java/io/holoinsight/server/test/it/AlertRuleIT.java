@@ -282,7 +282,7 @@ public class AlertRuleIT extends BaseIT {
     System.out.println(uniqueId);
     await("Test alert history generation") //
         .atMost(Duration.ofMinutes(10)) //
-        .untilAsserted(() -> {
+        .untilNoException(() -> {
           AlarmHistoryDTO condition = new AlarmHistoryDTO();
           condition.setUniqueId(uniqueId);
           MonitorPageRequest<AlarmHistoryDTO> pageRequest = new MonitorPageRequest<>();
