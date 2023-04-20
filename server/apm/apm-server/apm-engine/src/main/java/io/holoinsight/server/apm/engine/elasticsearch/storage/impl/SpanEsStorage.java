@@ -152,7 +152,7 @@ public class SpanEsStorage extends RecordEsStorage<SpanDO> implements SpanStorag
       basicTrace.getServiceNames()
           .add(spanEsDO.getTags().get(SpanDO.resource(SpanDO.SERVICE_NAME)));
       basicTrace.getServiceInstanceNames()
-          .add(spanEsDO.getTags().get(SpanDO.resource(SpanDO.SERVICE_INSTANCE_NAME)));
+          .add(spanEsDO.getTags().getOrDefault(SpanDO.resource(SpanDO.SERVICE_INSTANCE_NAME), ""));
       basicTrace.getEndpointNames().add(spanEsDO.getName());
       basicTrace.setDuration(spanEsDO.getLatency());
       basicTrace.setError(spanEsDO.getTraceStatus() == StatusCode.ERROR.getCode());
