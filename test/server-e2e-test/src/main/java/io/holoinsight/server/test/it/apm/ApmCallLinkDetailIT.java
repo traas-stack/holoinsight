@@ -100,7 +100,7 @@ public class ApmCallLinkDetailIT extends BaseIT {
               .body("parentSpanId", eq(demoServerSpanId)); //
 
           resp.rootPath("data.spans.find{ it.serviceCode == '%s' && it.endpointName == '%s' }", //
-              withArgs("demo-server", "Mysql/JDBI/Statement/executeQuery")) //
+              withArgs("demo-server", "Mysql/JDBC/Statement/executeQuery")) //
               .body("parentSpanId", eq(demoServerSpanId)); //
 
           resp.rootPath("data.spans.find{ it.serviceCode == '%s' && it.endpointName == '%s' }", //

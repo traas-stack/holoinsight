@@ -29,6 +29,7 @@ services:
     extends:
       service: demo-client-base
     image: holoinsight/demo-client:1.0.0
+    pull_policy: always
 
   demo-server-base:
     extends:
@@ -48,6 +49,7 @@ services:
     extends:
       service: demo-server-base
     image: holoinsight/demo-server:1.0.0
+    pull_policy: always
 
   demo-redis:
     image: redis:5
