@@ -4,6 +4,7 @@
 package io.holoinsight.server.apm.engine.elasticsearch.storage.impl;
 
 import com.google.common.base.Strings;
+import io.holoinsight.server.apm.common.constants.Const;
 import io.holoinsight.server.apm.common.model.query.BasicTrace;
 import io.holoinsight.server.apm.common.model.query.Pagination;
 import io.holoinsight.server.apm.common.model.query.QueryOrder;
@@ -151,8 +152,8 @@ public class SpanEsStorage extends RecordEsStorage<SpanDO> implements SpanStorag
       basicTrace.setStart(spanEsDO.getStartTime());
       basicTrace.getServiceNames()
           .add(spanEsDO.getTags().get(SpanDO.resource(SpanDO.SERVICE_NAME)));
-      basicTrace.getServiceInstanceNames()
-          .add(spanEsDO.getTags().get(SpanDO.resource(SpanDO.SERVICE_INSTANCE_NAME)));
+      basicTrace.getServiceInstanceNames().add(spanEsDO.getTags()
+          .getOrDefault(SpanDO.resource(SpanDO.SERVICE_INSTANCE_NAME), Const.UNKNOWN));
       basicTrace.getEndpointNames().add(spanEsDO.getName());
       basicTrace.setDuration(spanEsDO.getLatency());
       basicTrace.setError(spanEsDO.getTraceStatus() == StatusCode.ERROR.getCode());

@@ -280,6 +280,9 @@ public class DefaultQueryServiceImpl implements QueryService {
       queryServiceRequest.setTenant(request.getTenant());
       queryServiceRequest.setStartTime(request.getStart());
       queryServiceRequest.setEndTime(request.getEnd());
+      if (request.getTermParamsMap() != null) {
+        queryServiceRequest.setTermParams(request.getTermParamsMap());
+      }
 
       Call<List<Service>> serviceList = apmAPI.queryServiceList(queryServiceRequest);
       Response<List<Service>> listResponse = serviceList.execute();
@@ -308,6 +311,9 @@ public class DefaultQueryServiceImpl implements QueryService {
       queryEndpointRequest.setServiceName(request.getServiceName());
       queryEndpointRequest.setStartTime(request.getStart());
       queryEndpointRequest.setEndTime(request.getEnd());
+      if (request.getTermParamsMap() != null) {
+        queryEndpointRequest.setTermParams(request.getTermParamsMap());
+      }
 
       Call<List<Endpoint>> listCall = apmAPI.queryEndpointList(queryEndpointRequest);
       Response<List<Endpoint>> listResponse = listCall.execute();
@@ -336,6 +342,9 @@ public class DefaultQueryServiceImpl implements QueryService {
       queryServiceRequest.setServiceName(request.getServiceName());
       queryServiceRequest.setStartTime(request.getStart());
       queryServiceRequest.setEndTime(request.getEnd());
+      if (request.getTermParamsMap() != null) {
+        queryServiceRequest.setTermParams(request.getTermParamsMap());
+      }
 
       Call<List<ServiceInstance>> listCall = apmAPI.queryServiceInstanceList(queryServiceRequest);
       Response<List<ServiceInstance>> listResponse = listCall.execute();
@@ -364,6 +373,10 @@ public class DefaultQueryServiceImpl implements QueryService {
       queryComponentRequest.setServiceName(request.getServiceName());
       queryComponentRequest.setStartTime(request.getStart());
       queryComponentRequest.setEndTime(request.getEnd());
+      if (request.getTermParamsMap() != null) {
+        queryComponentRequest.setTermParams(request.getTermParamsMap());
+      }
+
       Call<List<VirtualComponent>> listCall = null;
 
       switch (request.getCategory().toUpperCase()) {
@@ -409,6 +422,9 @@ public class DefaultQueryServiceImpl implements QueryService {
       queryComponentRequest.setAddress(request.getAddress());
       queryComponentRequest.setStartTime(request.getStart());
       queryComponentRequest.setEndTime(request.getEnd());
+      if (request.getTermParamsMap() != null) {
+        queryComponentRequest.setTermParams(request.getTermParamsMap());
+      }
 
       Call<List<String>> listCall = apmAPI.queryComponentTraceIds(queryComponentRequest);
       Response<List<String>> listResponse = listCall.execute();
@@ -499,6 +515,9 @@ public class DefaultQueryServiceImpl implements QueryService {
       queryComponentRequest.setAddress(request.getAddress());
       queryComponentRequest.setStartTime(request.getStart());
       queryComponentRequest.setEndTime(request.getEnd());
+      if (request.getTermParamsMap() != null) {
+        queryComponentRequest.setTermParams(request.getTermParamsMap());
+      }
 
       Call<List<SlowSql>> listCall = apmAPI.querySlowSqlList(queryComponentRequest);
       Response<List<SlowSql>> listResponse = listCall.execute();
