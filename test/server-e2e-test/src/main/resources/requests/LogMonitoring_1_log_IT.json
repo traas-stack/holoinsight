@@ -18,7 +18,7 @@
     "blackFilters": [],
     "logPaths": [
       {
-        "path": "/home/admin/logs/holoinsight-server/1.log",
+        "path": "/home/admin/logs/holoinsight-server/test/1.log",
         "charset": "utf-8",
         "type": "path"
       }

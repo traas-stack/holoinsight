@@ -1,0 +1,71 @@
+{
+  "name": "TODO",
+  "parentFolderId": -1,
+  "periodType": "MINUTE",
+  "pluginType": "custom",
+  "status": "ONLINE",
+  "conf": {
+    "whiteFilters": [
+      {
+        "type": "CONTAINS",
+        "rule": {
+        },
+        "values": [
+          "index_not_found_exception"
+        ]
+      }
+    ],
+    "blackFilters": [],
+    "logPaths": [
+      {
+        "path": "/home/admin/logs/holoinsight-server/test/multiline.log",
+        "charset": "utf-8",
+        "type": "path"
+      }
+    ],
+    "logParse": {
+      "splitType": "LR",
+      "multiLine": {
+        "multi": true,
+        "lineType": "logHead",
+        "logRegexp": "^[0-9]{4}-"
+      }
+    },
+    "collectMetrics": [
+      {
+        "metricType": "count",
+        "tags": [
+          "thread"
+        ],
+        "tableName": "multiline_count",
+        "metrics": [
+          {
+            "name": "value",
+            "func": "count"
+          }
+        ]
+      }
+    ],
+    "splitCols": [
+      {
+        "colType": "DIM",
+        "name": "thread",
+        "rule": {
+          "leftIndex": 0,
+          "left": "thread=[",
+          "right": "]"
+        }
+      }
+    ],
+    "collectRanges": {
+      "table": "default_server",
+      "condition": [
+        {
+          "app": [
+            "holoinsight-server-example"
+          ]
+        }
+      ]
+    }
+  }
+}
