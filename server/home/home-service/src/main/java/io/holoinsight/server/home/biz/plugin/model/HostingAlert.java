@@ -119,9 +119,20 @@ public class HostingAlert {
     alarmRuleDTO.setTimeFilter(buildTimeFilter());
     alarmRuleDTO.setSourceType(sourceType);
     alarmRuleDTO.setSourceId(pluginDTO.id);
-    alarmRuleDTO.setEnvType(pluginDTO.json);
+    alarmRuleDTO.setEnvType(parseEnvType(pluginDTO.json));
+    alarmRuleDTO.setWorkspace(parseWorkspace(pluginDTO.json));
 
     return alarmRuleDTO;
+  }
+
+  private String parseWorkspace(String json) {
+    Map<String, Object> map = J.toMap(json);
+    return (String) map.get("workspace");
+  }
+
+  private String parseEnvType(String json) {
+    Map<String, Object> map = J.toMap(json);
+    return (String) map.get("envType");
   }
 
   private String getAlertTypeDesc(String alertType) {

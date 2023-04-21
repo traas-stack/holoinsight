@@ -184,6 +184,7 @@ public class AlertSaveHistoryHandler implements AlertHandlerExecutor {
       alarmHistoryDetail.setEnvType(alertNotify.getEnvType());
       alarmHistoryDetail.setDatasource(G.get().toJson(trigger));
       alarmHistoryDetail.setTags(G.get().toJson(tagList));
+      alarmHistoryDetail.setWorkspace(alertNotify.getWorkspace());
       String alarmContentJson = getAlertContentJsonList(notifyDataInfoList);
       alarmHistoryDetail.setAlarmContent(alarmContentJson);
       alarmHistoryDetailDOMapper.insert(alarmHistoryDetail);
