@@ -25,6 +25,8 @@ holoinsight:
     enabled: false
   features:
     active: trace
+  meta:
+    database: holoinsight
   storage:
     elasticsearch:
       enable: true

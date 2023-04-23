@@ -5,7 +5,6 @@ package io.holoinsight.server.home.biz.service;
 
 import io.holoinsight.server.meta.facade.client.MetaClient;
 import io.holoinsight.server.meta.facade.service.DataClientService;
-import io.holoinsight.server.meta.facade.service.TableClientService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -22,11 +21,6 @@ public class MetaConfiguration {
   public DataClientService getDataClientService(
       @Value("${holoinsight.meta.domain}") String domain) {
     return MetaClient.getDataClientService(domain);
-  }
-
-  @Bean("homeTableClientService")
-  public TableClientService tableClientService(@Value("${holoinsight.meta.domain}") String domain) {
-    return MetaClient.getTableClientService(domain);
   }
 
   @Bean("homeProdDimService")
