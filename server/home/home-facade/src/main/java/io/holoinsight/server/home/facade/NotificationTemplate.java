@@ -170,6 +170,8 @@ public class NotificationTemplate {
         return templateValue.aggregationNum;
       case ALERT_TRIGGER_CONDITION:
         return templateValue.triggerCondition;
+      case LOG_CONTENT:
+        return templateValue.logContent;
     }
     return StringUtils.EMPTY;
   }

@@ -42,7 +42,7 @@ public enum AlertTemplateField {
   aggregationNum("aggregationNum", "告警聚合数量", "numeric"), //
   ALERT_TRIGGER_CONDITION("ALERT_TRIGGER_CONDITION", "告警触发条件", "string"), //
   SOURCE_TYPE("SOURCE_TYPE", "告警来源类型", "string"), //
-
+  LOG_CONTENT("LOG_CONTENT", "告警来源日志采样内容", "string"), //
 
   ;
 

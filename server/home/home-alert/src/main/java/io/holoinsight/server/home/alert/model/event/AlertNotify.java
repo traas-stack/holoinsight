@@ -38,53 +38,59 @@ public class AlertNotify {
 
   private String workspace;
 
-  private String uniqueId; // 告警id
+  private String uniqueId;
 
-  private String ruleName; // 告警名称
+  private String ruleName;
 
-  private Long alarmTime; // 告警时间
+  private Long alarmTime;
 
-  private String alarmLevel; // 告警级别
+  private String alarmLevel;
 
-  private Map<Trigger, List<NotifyDataInfo>> notifyDataInfos; // 数据信息
+  // data info
+  private Map<Trigger, List<NotifyDataInfo>> notifyDataInfos;
 
-  private List<String> msgList; // 告警消息
+  // alert msg
+  private List<String> msgList;
 
-  private int aggregationNum; // 聚合告警数
+  private int aggregationNum;
 
-  private Boolean isRecover; // 恢复通知
+  private Boolean isRecover;
 
-  private List<SubscriptionInfo> subscriptionInfos; // 订阅信息
+  private List<SubscriptionInfo> subscriptionInfos;
 
-  private List<UserInfo> userInfos; // 用户信息
+  private List<UserInfo> userInfos;
 
-  private Map<String/* notify type */, List<String>> userNotifyMap; // 用户信息和通知渠道
+  private Map<String/* notify type */, List<String>> userNotifyMap;
 
-  private List<WebhookInfo> dingdingUrl; // 钉钉群
+  private List<WebhookInfo> dingdingUrl;
 
-  private List<WebhookInfo> webhookInfos; // 告警相关webhook消息
+  private List<WebhookInfo> webhookInfos;
 
-  private NotifyConfig notifyConfig; // 通知增加的信息
+  private NotifyConfig notifyConfig;
 
-  private InspectConfig ruleConfig; // 告警规则配置
+  // alert rule config
+  private InspectConfig ruleConfig;
 
-  private PqlRule pqlRule; // pql告警规则+结果
+  private PqlRule pqlRule;
 
-  private Boolean isPql; // 是否属于pql告警通知
+  private Boolean isPql;
 
-  private String alarmTraceId; // 告警唯一id
+  private String alarmTraceId;
 
-  public Long alarmHistoryId; // 告警历史 id
+  public Long alarmHistoryId;
 
-  public Long alarmHistoryDetailId; // 告警历史明细 id
+  public Long alarmHistoryDetailId;
 
-  private Long duration; // 持续时间
+  private Long duration;
 
   private String alertServer;
 
-  private String envType; // 环境类型
+  private String envType;
 
-  private String sourceType; // 来源类型
+  private String sourceType;
+
+  // log analysis content
+  private List<String> logAnalysis;
 
   public static AlertNotify eventInfoConvert(EventInfo eventInfo, InspectConfig inspectConfig) {
     AlertNotify alertNotify = new AlertNotify();

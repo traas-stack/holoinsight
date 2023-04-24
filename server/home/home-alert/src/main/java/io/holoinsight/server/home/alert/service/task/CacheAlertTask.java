@@ -7,9 +7,14 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import io.holoinsight.server.home.alert.model.compute.ComputeTaskPackage;
 import io.holoinsight.server.home.alert.service.converter.DoConvert;
 import io.holoinsight.server.home.alert.service.data.CacheData;
+import io.holoinsight.server.home.biz.service.CustomPluginService;
 import io.holoinsight.server.home.dal.mapper.AlarmRuleMapper;
 import io.holoinsight.server.home.dal.model.AlarmRule;
+import io.holoinsight.server.home.dal.model.dto.CustomPluginDTO;
+import io.holoinsight.server.home.dal.model.dto.conf.CustomPluginConf;
+import io.holoinsight.server.home.dal.model.dto.conf.LogPattern;
 import io.holoinsight.server.home.facade.InspectConfig;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,6 +61,9 @@ public class CacheAlertTask {
   @Autowired
   private CacheAlertConfig cacheAlertConfig;
 
+  @Autowired
+  private CustomPluginService customPluginService;
+
   public void start() {
     LOGGER.info("[AlarmConfig] start alarm config syn!");
 
@@ -81,16 +89,23 @@ public class CacheAlertTask {
     ComputeTaskPackage computeTaskPackage = new ComputeTaskPackage();
     computeTaskPackage.setTraceId(UUID.randomUUID().toString());
     List<InspectConfig> inspectConfigs = new ArrayList<>();
+    Map<String, List<InspectConfig>> logInspectConfigs = new HashMap<>();
     Map<String, InspectConfig> uniqueIdMap = new HashMap<>();
     try {
       alarmRuleDOS.forEach(alarmRuleDO -> {
         InspectConfig inspectConfig = DoConvert.alarmRuleConverter(alarmRuleDO);
-        if (isFillter(inspectConfig)) {
+        if (enableAlert(inspectConfig)) {
           // cache
+          if (isLogAlert(inspectConfig)) {
+            List<InspectConfig> configs = logInspectConfigs.computeIfAbsent(
+                String.valueOf(inspectConfig.getSourceId()), k -> new ArrayList<>());
+            configs.add(inspectConfig);
+          }
           uniqueIdMap.put(inspectConfig.getUniqueId(), inspectConfig);
           inspectConfigs.add(inspectConfig);
         }
       });
+      supplementLogConfig(logInspectConfigs);
       cacheData.setUniqueIdMap(uniqueIdMap);
       if (inspectConfigs.size() != 0) {
         computeTaskPackage.setInspectConfigs(inspectConfigs);
@@ -101,7 +116,37 @@ public class CacheAlertTask {
     return computeTaskPackage;
   }
 
-  private boolean isFillter(InspectConfig inspectConfig) {
+  private void supplementLogConfig(Map<String, List<InspectConfig>> logInspectConfigs) {
+    if (CollectionUtils.isEmpty(logInspectConfigs)) {
+      return;
+    }
+    List<CustomPluginDTO> cps =
+        this.customPluginService.findByIds(new ArrayList<>(logInspectConfigs.keySet()));
+    if (CollectionUtils.isEmpty(cps)) {
+      return;
+    }
+    for (CustomPluginDTO customPluginDTO : cps) {
+      CustomPluginConf conf = customPluginDTO.getConf();
+      if (conf == null || conf.logParse == null || conf.logParse.pattern == null) {
+        continue;
+      }
+      LogPattern pattern = conf.logParse.pattern;
+      if (pattern.logPattern != null && pattern.logPattern) {
+        List<InspectConfig> configs = logInspectConfigs.get(String.valueOf(customPluginDTO.id));
+        for (InspectConfig inspectConfig : configs) {
+          inspectConfig.setLogPatternEnable(true);
+        }
+      }
+    }
+  }
+
+  private boolean isLogAlert(InspectConfig inspectConfig) {
+    return StringUtils.isNotEmpty(inspectConfig.getSourceType())
+        && inspectConfig.getSourceType().equals("log") && inspectConfig.getSourceId() != null
+        && inspectConfig.getSourceId() > 0;
+  }
+
+  private boolean enableAlert(InspectConfig inspectConfig) {
     Boolean status = inspectConfig.getStatus();
     return status != null && status;
   }

@@ -8,67 +8,75 @@ import io.holoinsight.server.home.facade.emuns.AlertLevel;
 import io.holoinsight.server.home.facade.trigger.DataSource;
 import io.holoinsight.server.home.facade.trigger.Trigger;
 import lombok.Data;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author wangsiyuan
- * @date 2022/3/29 8:10 下午
+ * @date 2022/3/29 20:10
  */
 @Data
 public class TemplateValue {
 
-  String tenant; // 租户
+  String tenant;
 
-  String workspace; // workspace
+  String workspace;
 
-  String ruleId; // 规则id
+  String ruleId;
 
-  String uniqueId; // 唯一id
+  String uniqueId;
 
-  String ruleName; // 规则名称
+  String ruleName;
 
-  String alarmTime; // 告警时间
+  String alarmTime;
 
-  String alarmStartTime; // 告警开始时间
+  String alarmStartTime;
 
-  String alarmTimestamp; // 告警时间戳
+  String alarmTimestamp;
 
-  String metric; // 监控项
+  String metric;
 
-  AlertLevel alarmLevel; // 告警级别
+  AlertLevel alarmLevel;
 
-  String alarmTags; // 告警对象
+  String alarmTags;
 
-  String alarmContent; // 告警内容
+  String alarmContent;
 
-  String aggregationNum; // 聚合告警数
+  String aggregationNum;
 
-  String ruleUrl; // 告警url
+  String ruleUrl;
 
-  InspectConfig ruleConfig; // 告警配置规则
+  InspectConfig ruleConfig;
 
-  String alarmTraceId; // 告警唯一id
+  String alarmTraceId;
 
-  Long alarmHistoryId; // 告警历史 id
+  Long alarmHistoryId;
 
-  Long alarmHistoryDetailId; // 告警历史明细 id
+  Long alarmHistoryDetailId;
 
-  Double alertValue; // 告警触发值
+  Double alertValue;
 
-  String sourceType; // 来源类型
+  String sourceType;
 
-  String alertQuery; // 告警查询
+  String alertQuery;
 
-  String metricType; // 指标类型
+  String metricType;
 
-  Long duration; // 持续时间
+  Long duration;
 
-  String triggerCondition; // 触发条件
+  String triggerCondition;
 
-  String alertServer; // 告警机器
+  String alertServer;
+
+  /**
+   * log content triggered alert
+   */
+  String logContent;
 
   public void setAlertQuery(Trigger trigger) {
     StringBuilder query = new StringBuilder();
@@ -116,5 +124,19 @@ public class TemplateValue {
 
   public void setMetric(String pql) {
     this.metric = pql;
+  }
+
+  public void setLogContent(List<String> logAnalysis) {
+    if (CollectionUtils.isEmpty(logAnalysis)) {
+      this.logContent = StringUtils.EMPTY;
+    } else {
+      String json = logAnalysis.get(0);
+      Map<String, Object> map = J.toMap(json);
+      String sample = (String) map.getOrDefault("sample", "");
+      Map<String, Object> ipCountMap =
+          (Map<String, Object>) map.getOrDefault("ipCountMap", new HashMap<>());
+      sample = sample + " FROM [" + String.join(",", ipCountMap.keySet()) + "]";
+      this.logContent = sample;
+    }
   }
 }
