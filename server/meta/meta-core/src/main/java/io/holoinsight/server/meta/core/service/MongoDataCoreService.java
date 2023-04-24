@@ -3,12 +3,10 @@
  */
 package io.holoinsight.server.meta.core.service;
 
-import com.mongodb.bulk.BulkWriteResult;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.Sorts;
-import com.mongodb.client.model.UpdateOneModel;
 import com.mongodb.client.model.UpdateOptions;
 import com.mongodb.client.result.DeleteResult;
 import com.mongodb.client.result.UpdateResult;
@@ -29,7 +27,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 import static io.holoinsight.server.meta.common.util.ConstModel.*;
 
@@ -53,8 +50,9 @@ public class MongoDataCoreService extends AbstractDataCoreService {
     List<Map<String, Object>> filterRows = addUkValues(tableName, rows);
 
     StopWatch stopWatch = StopWatch.createStarted();
-    List<Document> documents = new ArrayList<>();
-
+    int matchedCount = 0;
+    int modifiedCount = 0;
+    int upsertSize = 0;
     for (Map<String, Object> data : filterRows) {
 
       Document doc = new Document(default_pk, data.get(default_pk));
@@ -65,20 +63,18 @@ public class MongoDataCoreService extends AbstractDataCoreService {
         }
         doc.append(entry.getKey(), entry.getValue());
       }
-      documents.add(doc);
+      UpdateResult updateResult = mongoDatabase.getCollection(tableName).updateOne(
+          new Document(default_pk, data.get(default_pk)), new Document("$set", doc),
+          new UpdateOptions().upsert(true));
+      matchedCount += updateResult.getMatchedCount();
+      modifiedCount += updateResult.getModifiedCount();
+      upsertSize += updateResult.getMatchedCount() - updateResult.getModifiedCount();
     }
-
-    BulkWriteResult result = mongoDatabase.getCollection(tableName)
-        .bulkWrite(documents.stream()
-            .map(doc -> new UpdateOneModel<Document>(Filters.eq(default_pk, doc.get(default_pk)),
-                new Document("$set", doc), new UpdateOptions().upsert(true)))
-            .collect(Collectors.toList()));
 
     logger.info(
         "[insertOrUpdate] finish, table={}, upsertSize={}, matchedCount={}, modifiedCount={}, cost={}.",
-        tableName, result.getInsertedCount(), result.getMatchedCount(), result.getModifiedCount(),
-        stopWatch.getTime());
-    return new Pair<>(result.getMatchedCount(), result.getModifiedCount());
+        tableName, upsertSize, matchedCount, modifiedCount, stopWatch.getTime());
+    return new io.holoinsight.server.common.Pair<>(upsertSize, modifiedCount);
   }
 
   @Override
