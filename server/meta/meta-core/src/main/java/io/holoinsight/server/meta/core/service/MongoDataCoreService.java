@@ -3,12 +3,10 @@
  */
 package io.holoinsight.server.meta.core.service;
 
-import com.mongodb.bulk.BulkWriteResult;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.Sorts;
-import com.mongodb.client.model.UpdateOneModel;
 import com.mongodb.client.model.UpdateOptions;
 import com.mongodb.client.result.DeleteResult;
 import com.mongodb.client.result.UpdateResult;
@@ -29,7 +27,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 import static io.holoinsight.server.meta.common.util.ConstModel.*;
 
@@ -53,8 +50,9 @@ public class MongoDataCoreService extends AbstractDataCoreService {
     List<Map<String, Object>> filterRows = addUkValues(tableName, rows);
 
     StopWatch stopWatch = StopWatch.createStarted();
-    List<Document> documents = new ArrayList<>();
-
+    int matchedCount = 0;
+    int modifiedCount = 0;
+    int upsertSize = 0;
     for (Map<String, Object> data : filterRows) {
 
       Document doc = new Document(default_pk, data.get(default_pk));
@@ -65,27 +63,25 @@ public class MongoDataCoreService extends AbstractDataCoreService {
         }
         doc.append(entry.getKey(), entry.getValue());
       }
-      documents.add(doc);
+      UpdateResult updateResult = mongoDatabase.getCollection(tableName).updateOne(
+              new Document(default_pk, data.get(default_pk)), new Document("$set", doc),
+              new UpdateOptions().upsert(true));
+      matchedCount += updateResult.getMatchedCount();
+      modifiedCount += updateResult.getModifiedCount();
+      upsertSize += updateResult.getMatchedCount() - updateResult.getModifiedCount();
     }
 
-    BulkWriteResult result = mongoDatabase.getCollection(tableName)
-        .bulkWrite(documents.stream()
-            .map(doc -> new UpdateOneModel<Document>(Filters.eq(default_pk, doc.get(default_pk)),
-                new Document("$set", doc), new UpdateOptions().upsert(true)))
-            .collect(Collectors.toList()));
-
     logger.info(
-        "[insertOrUpdate] finish, table={}, upsertSize={}, matchedCount={}, modifiedCount={}, cost={}.",
-        tableName, result.getInsertedCount(), result.getMatchedCount(), result.getModifiedCount(),
-        stopWatch.getTime());
-    return new Pair<>(result.getMatchedCount(), result.getModifiedCount());
+            "[insertOrUpdate] finish, table={}, upsertSize={}, matchedCount={}, modifiedCount={}, cost={}.",
+            tableName, upsertSize, matchedCount, modifiedCount, stopWatch.getTime());
+    return new io.holoinsight.server.common.Pair<>(upsertSize, modifiedCount);
   }
 
   @Override
   public List<Map<String, Object>> updateByExample(String tableName, QueryExample queryExample,
-      Map<String, Object> row) {
+                                                   Map<String, Object> row) {
     logger.info("[updateByExample] finish, table={}, queryExample={}, row={}.", tableName,
-        J.toJson(queryExample), J.toJson(row));
+            J.toJson(queryExample), J.toJson(row));
     StopWatch stopWatch = StopWatch.createStarted();
     List<Map<String, Object>> list = queryByExample(tableName, queryExample);
 
@@ -100,7 +96,7 @@ public class MongoDataCoreService extends AbstractDataCoreService {
       UpdateResult updateResult = mongoDatabase.getCollection(tableName).updateOne(filter, update);
       documents.add(update);
       logger.info("[update] finish, table={}, record={}, cost={}.", tableName,
-          updateResult.getMatchedCount(), stopWatch.getTime());
+              updateResult.getMatchedCount(), stopWatch.getTime());
     });
     logger.info("[updateByExample] finish, table={}, cost={}.", tableName, stopWatch.getTime());
     return DocumentUtil.toMapList(new ArrayList<>(documents));
@@ -114,7 +110,7 @@ public class MongoDataCoreService extends AbstractDataCoreService {
     List<Document> rows = new ArrayList<>();
     documents.into(rows);
     logger.info("[queryByTable] finish, table={}, records={}, cost={}.", tableName, rows.size(),
-        stopWatch.getTime());
+            stopWatch.getTime());
     return DocumentUtil.toMapList(rows);
   }
 
@@ -130,11 +126,11 @@ public class MongoDataCoreService extends AbstractDataCoreService {
     }
 
     FindIterable<Document> documents =
-        mongoDatabase.getCollection(tableName).find().projection(projection);
+            mongoDatabase.getCollection(tableName).find().projection(projection);
     List<Document> rows = new ArrayList<>();
     documents.into(rows);
     logger.info("[queryByTable] finish, table={}, records={}, cost={}.", tableName, rows.size(),
-        stopWatch.getTime());
+            stopWatch.getTime());
     return DocumentUtil.toMapList(rows);
   }
 
@@ -152,7 +148,7 @@ public class MongoDataCoreService extends AbstractDataCoreService {
     documents.sort(Sorts.descending(default_modified)).into(rows);
 
     logger.info("[queryByPks] finish, table={}, records={}, cost={}.", tableName, rows.size(),
-        stopWatch.getTime());
+            stopWatch.getTime());
 
     if (CollectionUtils.isEmpty(rows)) {
       return new ArrayList<>();
@@ -163,7 +159,7 @@ public class MongoDataCoreService extends AbstractDataCoreService {
   @Override
   public List<Map<String, Object>> queryByExample(String tableName, QueryExample queryExample) {
     logger.info("[queryByExample] finish, table={}, queryExample={}.", tableName,
-        J.toJson(queryExample));
+            J.toJson(queryExample));
     StopWatch stopWatch = StopWatch.createStarted();
     List<Bson> filters = new ArrayList<>();
 
@@ -171,11 +167,11 @@ public class MongoDataCoreService extends AbstractDataCoreService {
       for (Map.Entry<String, Object> entry : queryExample.getParams().entrySet()) {
 
         if (entry.getValue() instanceof String
-            && StringUtils.isNotBlank(entry.getValue().toString())) {
+                && StringUtils.isNotBlank(entry.getValue().toString())) {
           filters.add(new Document(entry.getKey(), entry.getValue()));
         } else if (entry.getValue() instanceof List) {
           List<String> o =
-              J.fromJson(J.toJson(entry.getValue()), new TypeToken<List<String>>() {}.getType());
+                  J.fromJson(J.toJson(entry.getValue()), new TypeToken<List<String>>() {}.getType());
           if (CollectionUtils.isEmpty(o))
             continue;
           filters.add(new Document(entry.getKey(), new Document("$in", o)));
@@ -194,7 +190,7 @@ public class MongoDataCoreService extends AbstractDataCoreService {
     documents.sort(Sorts.descending(default_modified)).into(rows);
 
     logger.info("[queryByExample] finish, table={}, records={}, cost={}.", tableName, rows.size(),
-        stopWatch.getTime());
+            stopWatch.getTime());
 
     return DocumentUtil.toMapList(rows);
   }
@@ -202,7 +198,7 @@ public class MongoDataCoreService extends AbstractDataCoreService {
   @Override
   public List<Map<String, Object>> fuzzyByExample(String tableName, QueryExample queryExample) {
     logger.info("[fuzzyByExample] finish, table={}, queryExample={}.", tableName,
-        J.toJson(queryExample));
+            J.toJson(queryExample));
     StopWatch stopWatch = StopWatch.createStarted();
     List<Bson> filters = new ArrayList<>();
     if (!CollectionUtils.isEmpty(queryExample.getParams())) {
@@ -213,7 +209,7 @@ public class MongoDataCoreService extends AbstractDataCoreService {
           continue;
         }
         if (entry.getValue() instanceof String
-            && StringUtils.isNotBlank(entry.getValue().toString())) {
+                && StringUtils.isNotBlank(entry.getValue().toString())) {
           filters.add(new Document(entry.getKey(), entry.getValue()));
         } else if (entry.getValue() instanceof List) {
           if (CollectionUtils.isEmpty((List) entry.getValue()))
@@ -231,7 +227,7 @@ public class MongoDataCoreService extends AbstractDataCoreService {
     List<Document> rows = new ArrayList<>();
     documents.sort(Sorts.descending(default_modified)).into(rows);
     logger.info("[fuzzyByExample] finish, table={}, records={}, cost={}.", tableName, rows.size(),
-        stopWatch.getTime());
+            stopWatch.getTime());
 
     return DocumentUtil.toMapList(rows);
   }
@@ -240,7 +236,7 @@ public class MongoDataCoreService extends AbstractDataCoreService {
   @Override
   public long deleteByExample(String tableName, QueryExample queryExample) {
     logger.info("[deleteByExample] finish, table={}, queryExample={}.", tableName,
-        J.toJson(queryExample));
+            J.toJson(queryExample));
 
     StopWatch stopWatch = StopWatch.createStarted();
     List<Bson> filters = new ArrayList<>();
@@ -248,7 +244,7 @@ public class MongoDataCoreService extends AbstractDataCoreService {
     if (!CollectionUtils.isEmpty(queryExample.getParams())) {
       for (Map.Entry<String, Object> entry : queryExample.getParams().entrySet()) {
         if (entry.getValue() instanceof String
-            && StringUtils.isNotBlank(entry.getValue().toString())) {
+                && StringUtils.isNotBlank(entry.getValue().toString())) {
           filters.add(new Document(entry.getKey(), entry.getValue()));
         } else if (entry.getValue() instanceof List) {
           if (CollectionUtils.isEmpty((List) entry.getValue()))
@@ -259,11 +255,11 @@ public class MongoDataCoreService extends AbstractDataCoreService {
     }
 
     DeleteResult deleteResult =
-        mongoDatabase.getCollection(tableName).deleteMany(Filters.and(filters));
+            mongoDatabase.getCollection(tableName).deleteMany(Filters.and(filters));
 
     // 输出结果信息
     logger.info("[deleteByExample] finish, table={}, deleteCount={}, cost={}.", tableName,
-        deleteResult.getDeletedCount(), stopWatch.getTime());
+            deleteResult.getDeletedCount(), stopWatch.getTime());
     return deleteResult.getDeletedCount();
   }
 
@@ -284,7 +280,7 @@ public class MongoDataCoreService extends AbstractDataCoreService {
   @Override
   public long batchDeleteByPk(String tableName, List<String> default_pks) {
     logger.info("[batchDeleteByPk] finish, table={}, default_pks={}.", tableName,
-        default_pks.size());
+            default_pks.size());
 
     if (CollectionUtils.isEmpty(default_pks))
       return 0;
@@ -295,10 +291,10 @@ public class MongoDataCoreService extends AbstractDataCoreService {
     }
 
     DeleteResult deleteResult =
-        mongoDatabase.getCollection(tableName).deleteMany(Filters.and(filters));
+            mongoDatabase.getCollection(tableName).deleteMany(Filters.and(filters));
 
     logger.info("[batchDeleteByPk] finish, table={}, deleteCount={}, cost={}.", tableName,
-        deleteResult.getDeletedCount(), stopWatch.getTime());
+            deleteResult.getDeletedCount(), stopWatch.getTime());
     return deleteResult.getDeletedCount();
   }
 }
