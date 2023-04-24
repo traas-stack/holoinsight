@@ -22,22 +22,17 @@ public class LocalDataClientService implements DataClientService {
   public void insertOrUpdate(String tableName, List<Map<String, Object>> rows) {}
 
   @Override
-  public void insert(String tableName, List<Map<String, Object>> rows) {
-
-  }
-
-  @Override
-  public void update(String tableName, List<Map<String, Object>> rows) {
-
-  }
-
-  @Override
   public void delete(String tableName, List<String> uks) {
 
   }
 
   @Override
   public List<Map<String, Object>> queryAll(String tableName) {
+    return null;
+  }
+
+  @Override
+  public List<Map<String, Object>> queryAll(String tableName, List<String> rowKeys) {
     return null;
   }
 

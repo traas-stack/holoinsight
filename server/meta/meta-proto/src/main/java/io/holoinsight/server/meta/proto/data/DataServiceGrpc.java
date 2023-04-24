@@ -226,6 +226,42 @@ public final class DataServiceGrpc {
     return getQueryDataByTableStreamMethod;
   }
 
+  private static volatile io.grpc.MethodDescriptor<io.holoinsight.server.meta.proto.data.QueryDataByTableRowsRequest, io.holoinsight.server.meta.proto.data.QueryDataResponse> getQueryDataByTableRowsStreamMethod;
+
+  @io.grpc.stub.annotations.RpcMethod(
+      fullMethodName = SERVICE_NAME + '/' + "queryDataByTableRowsStream",
+      requestType = io.holoinsight.server.meta.proto.data.QueryDataByTableRowsRequest.class,
+      responseType = io.holoinsight.server.meta.proto.data.QueryDataResponse.class,
+      methodType = io.grpc.MethodDescriptor.MethodType.SERVER_STREAMING)
+  public static io.grpc.MethodDescriptor<io.holoinsight.server.meta.proto.data.QueryDataByTableRowsRequest, io.holoinsight.server.meta.proto.data.QueryDataResponse> getQueryDataByTableRowsStreamMethod() {
+    io.grpc.MethodDescriptor<io.holoinsight.server.meta.proto.data.QueryDataByTableRowsRequest, io.holoinsight.server.meta.proto.data.QueryDataResponse> getQueryDataByTableRowsStreamMethod;
+    if ((getQueryDataByTableRowsStreamMethod =
+        DataServiceGrpc.getQueryDataByTableRowsStreamMethod) == null) {
+      synchronized (DataServiceGrpc.class) {
+        if ((getQueryDataByTableRowsStreamMethod =
+            DataServiceGrpc.getQueryDataByTableRowsStreamMethod) == null) {
+          DataServiceGrpc.getQueryDataByTableRowsStreamMethod =
+              getQueryDataByTableRowsStreamMethod =
+                  io.grpc.MethodDescriptor.<io.holoinsight.server.meta.proto.data.QueryDataByTableRowsRequest, io.holoinsight.server.meta.proto.data.QueryDataResponse>newBuilder()
+                      .setType(io.grpc.MethodDescriptor.MethodType.SERVER_STREAMING)
+                      .setFullMethodName(
+                          generateFullMethodName(SERVICE_NAME, "queryDataByTableRowsStream"))
+                      .setSampledToLocalTracing(true)
+                      .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+                          io.holoinsight.server.meta.proto.data.QueryDataByTableRowsRequest
+                              .getDefaultInstance()))
+                      .setResponseMarshaller(io.grpc.protobuf.ProtoUtils
+                          .marshaller(io.holoinsight.server.meta.proto.data.QueryDataResponse
+                              .getDefaultInstance()))
+                      .setSchemaDescriptor(
+                          new DataServiceMethodDescriptorSupplier("queryDataByTableRowsStream"))
+                      .build();
+        }
+      }
+    }
+    return getQueryDataByTableRowsStreamMethod;
+  }
+
   private static volatile io.grpc.MethodDescriptor<io.holoinsight.server.meta.proto.data.BatchDeleteByPkRequest, io.holoinsight.server.meta.proto.data.DataBaseResponse> getBatchDeleteByPkMethod;
 
   @io.grpc.stub.annotations.RpcMethod(fullMethodName = SERVICE_NAME + '/' + "batchDeleteByPk",
@@ -568,6 +604,15 @@ public final class DataServiceGrpc {
 
     /**
      */
+    public void queryDataByTableRowsStream(
+        io.holoinsight.server.meta.proto.data.QueryDataByTableRowsRequest request,
+        io.grpc.stub.StreamObserver<io.holoinsight.server.meta.proto.data.QueryDataResponse> responseObserver) {
+      io.grpc.stub.ServerCalls.asyncUnimplementedUnaryCall(getQueryDataByTableRowsStreamMethod(),
+          responseObserver);
+    }
+
+    /**
+     */
     public void batchDeleteByPk(
         io.holoinsight.server.meta.proto.data.BatchDeleteByPkRequest request,
         io.grpc.stub.StreamObserver<io.holoinsight.server.meta.proto.data.DataBaseResponse> responseObserver) {
@@ -664,6 +709,10 @@ public final class DataServiceGrpc {
               io.grpc.stub.ServerCalls.asyncServerStreamingCall(
                   new MethodHandlers<io.holoinsight.server.meta.proto.data.QueryDataByTableRequest, io.holoinsight.server.meta.proto.data.QueryDataResponse>(
                       this, METHODID_QUERY_DATA_BY_TABLE_STREAM)))
+          .addMethod(getQueryDataByTableRowsStreamMethod(),
+              io.grpc.stub.ServerCalls.asyncServerStreamingCall(
+                  new MethodHandlers<io.holoinsight.server.meta.proto.data.QueryDataByTableRowsRequest, io.holoinsight.server.meta.proto.data.QueryDataResponse>(
+                      this, METHODID_QUERY_DATA_BY_TABLE_ROWS_STREAM)))
           .addMethod(getBatchDeleteByPkMethod(), io.grpc.stub.ServerCalls.asyncUnaryCall(
               new MethodHandlers<io.holoinsight.server.meta.proto.data.BatchDeleteByPkRequest, io.holoinsight.server.meta.proto.data.DataBaseResponse>(
                   this, METHODID_BATCH_DELETE_BY_PK)))
@@ -769,6 +818,16 @@ public final class DataServiceGrpc {
         io.grpc.stub.StreamObserver<io.holoinsight.server.meta.proto.data.QueryDataResponse> responseObserver) {
       io.grpc.stub.ClientCalls.asyncServerStreamingCall(
           getChannel().newCall(getQueryDataByTableStreamMethod(), getCallOptions()), request,
+          responseObserver);
+    }
+
+    /**
+     */
+    public void queryDataByTableRowsStream(
+        io.holoinsight.server.meta.proto.data.QueryDataByTableRowsRequest request,
+        io.grpc.stub.StreamObserver<io.holoinsight.server.meta.proto.data.QueryDataResponse> responseObserver) {
+      io.grpc.stub.ClientCalls.asyncServerStreamingCall(
+          getChannel().newCall(getQueryDataByTableRowsStreamMethod(), getCallOptions()), request,
           responseObserver);
     }
 
@@ -925,6 +984,14 @@ public final class DataServiceGrpc {
         io.holoinsight.server.meta.proto.data.QueryDataByTableRequest request) {
       return io.grpc.stub.ClientCalls.blockingServerStreamingCall(getChannel(),
           getQueryDataByTableStreamMethod(), getCallOptions(), request);
+    }
+
+    /**
+     */
+    public java.util.Iterator<io.holoinsight.server.meta.proto.data.QueryDataResponse> queryDataByTableRowsStream(
+        io.holoinsight.server.meta.proto.data.QueryDataByTableRowsRequest request) {
+      return io.grpc.stub.ClientCalls.blockingServerStreamingCall(getChannel(),
+          getQueryDataByTableRowsStreamMethod(), getCallOptions(), request);
     }
 
     /**
@@ -1127,14 +1194,15 @@ public final class DataServiceGrpc {
   private static final int METHODID_QUERY_DATA_BY_PK = 4;
   private static final int METHODID_QUERY_DATA_BY_PKS = 5;
   private static final int METHODID_QUERY_DATA_BY_TABLE_STREAM = 6;
-  private static final int METHODID_BATCH_DELETE_BY_PK = 7;
-  private static final int METHODID_DELETE_BY_EXAMPLE = 8;
-  private static final int METHODID_DELETE_BY_ROW_MAP = 9;
-  private static final int METHODID_UPDATE_BY_EXAMPLE = 10;
-  private static final int METHODID_QUERY_BY_EXAMPLE = 11;
-  private static final int METHODID_FUZZY_BY_EXAMPLE = 12;
-  private static final int METHODID_QUERY_BY_EXAMPLE_STREAM = 13;
-  private static final int METHODID_HEART_BEAT = 14;
+  private static final int METHODID_QUERY_DATA_BY_TABLE_ROWS_STREAM = 7;
+  private static final int METHODID_BATCH_DELETE_BY_PK = 8;
+  private static final int METHODID_DELETE_BY_EXAMPLE = 9;
+  private static final int METHODID_DELETE_BY_ROW_MAP = 10;
+  private static final int METHODID_UPDATE_BY_EXAMPLE = 11;
+  private static final int METHODID_QUERY_BY_EXAMPLE = 12;
+  private static final int METHODID_FUZZY_BY_EXAMPLE = 13;
+  private static final int METHODID_QUERY_BY_EXAMPLE_STREAM = 14;
+  private static final int METHODID_HEART_BEAT = 15;
 
   private static final class MethodHandlers<Req, Resp>
       implements io.grpc.stub.ServerCalls.UnaryMethod<Req, Resp>,
@@ -1184,6 +1252,11 @@ public final class DataServiceGrpc {
         case METHODID_QUERY_DATA_BY_TABLE_STREAM:
           serviceImpl.queryDataByTableStream(
               (io.holoinsight.server.meta.proto.data.QueryDataByTableRequest) request,
+              (io.grpc.stub.StreamObserver<io.holoinsight.server.meta.proto.data.QueryDataResponse>) responseObserver);
+          break;
+        case METHODID_QUERY_DATA_BY_TABLE_ROWS_STREAM:
+          serviceImpl.queryDataByTableRowsStream(
+              (io.holoinsight.server.meta.proto.data.QueryDataByTableRowsRequest) request,
               (io.grpc.stub.StreamObserver<io.holoinsight.server.meta.proto.data.QueryDataResponse>) responseObserver);
           break;
         case METHODID_BATCH_DELETE_BY_PK:
@@ -1289,11 +1362,12 @@ public final class DataServiceGrpc {
               .addMethod(getInsertOrUpdateMethod()).addMethod(getInsertMethod())
               .addMethod(getUpdateMethod()).addMethod(getQueryDataByTableMethod())
               .addMethod(getQueryDataByPkMethod()).addMethod(getQueryDataByPksMethod())
-              .addMethod(getQueryDataByTableStreamMethod()).addMethod(getBatchDeleteByPkMethod())
-              .addMethod(getDeleteByExampleMethod()).addMethod(getDeleteByRowMapMethod())
-              .addMethod(getUpdateByExampleMethod()).addMethod(getQueryByExampleMethod())
-              .addMethod(getFuzzyByExampleMethod()).addMethod(getQueryByExampleStreamMethod())
-              .addMethod(getHeartBeatMethod()).build();
+              .addMethod(getQueryDataByTableStreamMethod())
+              .addMethod(getQueryDataByTableRowsStreamMethod())
+              .addMethod(getBatchDeleteByPkMethod()).addMethod(getDeleteByExampleMethod())
+              .addMethod(getDeleteByRowMapMethod()).addMethod(getUpdateByExampleMethod())
+              .addMethod(getQueryByExampleMethod()).addMethod(getFuzzyByExampleMethod())
+              .addMethod(getQueryByExampleStreamMethod()).addMethod(getHeartBeatMethod()).build();
         }
       }
     }
