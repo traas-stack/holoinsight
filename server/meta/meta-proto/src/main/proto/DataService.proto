@@ -30,6 +30,9 @@ service DataService {
   rpc queryDataByTableStream (QueryDataByTableRequest) returns (stream QueryDataResponse) {
   }
 
+  rpc queryDataByTableRowsStream (QueryDataByTableRowsRequest) returns (stream QueryDataResponse) {
+  }
+
   rpc batchDeleteByPk (BatchDeleteByPkRequest) returns (DataBaseResponse) {
   }
 
@@ -72,6 +75,13 @@ message QueryDataByTableRequest {
   string tableName = 1;
   string fromApp = 2;
   string fromIp = 3;
+}
+
+message QueryDataByTableRowsRequest {
+  string tableName = 1;
+  string pkRows = 2;
+  string fromApp = 3;
+  string fromIp = 4;
 }
 
 message QueryDataByPkRequest {

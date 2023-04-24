@@ -223,6 +223,31 @@ public class MetaFacadeImpl extends BaseFacade {
     return result;
   }
 
+  @PostMapping("/{table}/queryByRows")
+  @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.VIEW)
+  public JsonResult<List<Map<String, Object>>> queryByRows(@PathVariable("table") String table,
+      @RequestBody List<String> rowKeys) {
+    final JsonResult<List<Map<String, Object>>> result = new JsonResult<>();
+    facadeTemplate.manage(result, new ManageCallback() {
+      @Override
+      public void checkParameter() {
+        ParaCheckUtil.checkParaNotEmpty(rowKeys, "rowKeys");
+        ParaCheckUtil.checkParaNotBlank(table, "table");
+        if (!table.startsWith(RequestContext.getContext().ms.getTenant())) {
+          throw new MonitorException("table is illegal");
+        }
+      }
+
+      @Override
+      public void doManage() {
+        List<Map<String, Object>> list = dataClientService.queryAll(table, rowKeys);
+        JsonResult.createSuccessResult(result, list);
+      }
+    });
+
+    return result;
+  }
+
   @PostMapping("/{table}/queryByCondition")
   @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.VIEW)
   public JsonResult<List<Map<String, Object>>> queryByCondition(@PathVariable("table") String table,

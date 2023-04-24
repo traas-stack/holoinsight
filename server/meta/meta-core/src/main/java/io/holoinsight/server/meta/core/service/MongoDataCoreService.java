@@ -45,11 +45,10 @@ public class MongoDataCoreService extends AbstractDataCoreService {
   private MongoDatabase mongoDatabase;
 
   @Override
-  public io.holoinsight.server.common.Pair<Integer, Integer> insertOrUpdate(String tableName,
-      List<Map<String, Object>> rows) {
+  public Pair<Integer, Integer> insertOrUpdate(String tableName, List<Map<String, Object>> rows) {
     logger.info("[insertOrUpdate] start, table={}, records={}.", tableName, rows.size());
     if (CollectionUtils.isEmpty(rows))
-      return new io.holoinsight.server.common.Pair<>(0, 0);
+      return new Pair<>(0, 0);
 
     List<Map<String, Object>> filterRows = addUkValues(tableName, rows);
 
@@ -79,38 +78,7 @@ public class MongoDataCoreService extends AbstractDataCoreService {
         "[insertOrUpdate] finish, table={}, upsertSize={}, matchedCount={}, modifiedCount={}, cost={}.",
         tableName, result.getInsertedCount(), result.getMatchedCount(), result.getModifiedCount(),
         stopWatch.getTime());
-    return new io.holoinsight.server.common.Pair<>(result.getMatchedCount(),
-        result.getModifiedCount());
-  }
-
-  @Override
-  public List<Map<String, Object>> insert(String tableName, List<Map<String, Object>> rows) {
-
-    logger.info("[insert] start, table={}, records={}.", tableName, rows.size());
-    if (CollectionUtils.isEmpty(rows))
-      return new ArrayList<>();
-
-    StopWatch stopWatch = StopWatch.createStarted();
-    Pair<Integer, Integer> pair = insertOrUpdate(tableName, rows);
-    logger.info("[insert] finish, table={}, records={}, cost={}.", tableName, pair.left(),
-        stopWatch.getTime());
-
-    return DocumentUtil.toMapList(new ArrayList<>());
-  }
-
-  @Override
-  public List<Map<String, Object>> update(String tableName, List<Map<String, Object>> rows) {
-
-    logger.info("[update] start, table={}, records={}.", tableName, rows.size());
-    if (CollectionUtils.isEmpty(rows))
-      return new ArrayList<>();
-
-    StopWatch stopWatch = StopWatch.createStarted();
-    Pair<Integer, Integer> integerIntegerPair = insertOrUpdate(tableName, rows);
-
-    logger.info("[update] finish, table={}, records={}, cost={}.", tableName,
-        integerIntegerPair.left(), stopWatch.getTime());
-    return DocumentUtil.toMapList(new ArrayList<>());
+    return new Pair<>(result.getMatchedCount(), result.getModifiedCount());
   }
 
   @Override
@@ -150,6 +118,25 @@ public class MongoDataCoreService extends AbstractDataCoreService {
     return DocumentUtil.toMapList(rows);
   }
 
+  @Override
+  public List<Map<String, Object>> queryByTable(String tableName, List<String> rowKeys) {
+    logger.info("[queryByTable] finish, table={}, rowsKeys={}.", tableName, rowKeys);
+    StopWatch stopWatch = StopWatch.createStarted();
+    Document projection = new Document();
+    if (!CollectionUtils.isEmpty(rowKeys)) {
+      rowKeys.forEach(row -> {
+        projection.append(row, 1);
+      });
+    }
+
+    FindIterable<Document> documents =
+        mongoDatabase.getCollection(tableName).find().projection(projection);
+    List<Document> rows = new ArrayList<>();
+    documents.into(rows);
+    logger.info("[queryByTable] finish, table={}, records={}, cost={}.", tableName, rows.size(),
+        stopWatch.getTime());
+    return DocumentUtil.toMapList(rows);
+  }
 
   @Override
   public List<Map<String, Object>> queryByPks(String tableName, List<String> pkValList) {

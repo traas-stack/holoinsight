@@ -19,6 +19,7 @@ import io.holoinsight.server.meta.proto.data.DeleteDataByExampleRequest;
 import io.holoinsight.server.meta.proto.data.InsertOrUpdateRequest;
 import io.holoinsight.server.meta.proto.data.QueryDataByExampleRequest;
 import io.holoinsight.server.meta.proto.data.QueryDataByTableRequest;
+import io.holoinsight.server.meta.proto.data.QueryDataByTableRowsRequest;
 import io.holoinsight.server.meta.proto.data.QueryDataResponse;
 import io.holoinsight.server.meta.proto.data.UpdateDataByExampleRequest;
 import io.grpc.ManagedChannel;
@@ -134,46 +135,6 @@ public class DimCookie implements DataClientService, AgentHeartBeatService, Seri
   }
 
   @Override
-  public void insert(String tableName, List<Map<String, Object>> rows) {
-    if (rows.size() > ConstPool.GRPC_INSERT_MAX_SIZE) {
-      throw new IllegalArgumentException(
-          String.format("insert [%s] records fail, max allow size is [%s] !", rows.size(),
-              ConstPool.GRPC_INSERT_MAX_SIZE));
-    }
-    String rowsJson = J.toJson(rows);
-    InsertOrUpdateRequest insertOrUpdateRequest = InsertOrUpdateRequest.newBuilder()
-        .setTableName(tableName).setRowsJson(rowsJson).setFromApp(clientService.getCurrentApp())
-        .setFromIp(clientService.getLocalIp()).build();
-    DataBaseResponse dataBaseResponse = DataServiceGrpc.newBlockingStub(channel)
-        .withDeadlineAfter(ConstPool.GRPC_WITH_DEADLINE_AFTER_MS_1, TimeUnit.MILLISECONDS)
-        .insert(insertOrUpdateRequest);
-    if (!dataBaseResponse.getSuccess()) {
-      throw new ClientException("execute insert for dimTable[%s] fail : %s. ", tableName,
-          dataBaseResponse.getErrMsg());
-    }
-  }
-
-  @Override
-  public void update(String tableName, List<Map<String, Object>> rows) {
-    if (rows.size() > ConstPool.GRPC_UPDATE_MAX_SIZE) {
-      throw new IllegalArgumentException(
-          String.format("update [%s] records fail, max allow size is [%s] !", rows.size(),
-              ConstPool.GRPC_UPDATE_MAX_SIZE));
-    }
-    String rowsJson = J.toJson(rows);
-    InsertOrUpdateRequest insertOrUpdateRequest = InsertOrUpdateRequest.newBuilder()
-        .setTableName(tableName).setRowsJson(rowsJson).setFromApp(clientService.getCurrentApp())
-        .setFromIp(clientService.getLocalIp()).build();
-    DataBaseResponse dataBaseResponse = DataServiceGrpc.newBlockingStub(channel)
-        .withDeadlineAfter(ConstPool.GRPC_WITH_DEADLINE_AFTER_MS_1, TimeUnit.MILLISECONDS)
-        .update(insertOrUpdateRequest);
-    if (!dataBaseResponse.getSuccess()) {
-      throw new ClientException("execute update for dimTable[%s] fail : %s. ", tableName,
-          dataBaseResponse.getErrMsg());
-    }
-  }
-
-  @Override
   public void delete(String tableName, List<String> uks) {
     String primaryKeyValsJson = J.toJson(uks);
     BatchDeleteByPkRequest batchDeleteByPkRequest = BatchDeleteByPkRequest.newBuilder()
@@ -200,6 +161,28 @@ public class DimCookie implements DataClientService, AgentHeartBeatService, Seri
     Iterator<QueryDataResponse> responseIterator = DataServiceGrpc.newBlockingStub(channel)
         .withDeadlineAfter(ConstPool.GRPC_WITH_DEADLINE_AFTER_MS_2, TimeUnit.MILLISECONDS)
         .queryDataByTableStream(queryDataByTableRequest);
+
+    while (responseIterator.hasNext()) {
+      QueryDataResponse response = responseIterator.next();
+      String batchRowsJson = response.getRowsJson();
+      List<Map<String, Object>> batchRows = J.toMapList(batchRowsJson);
+      rows.addAll(batchRows);
+    }
+
+    return rows;
+  }
+
+  @Override
+  public List<Map<String, Object>> queryAll(String tableName, List<String> rowKeys) {
+    QueryDataByTableRowsRequest queryDataByTableRowsRequest = QueryDataByTableRowsRequest
+        .newBuilder().setTableName(tableName).setPkRows(J.toJson(rowKeys))
+        .setFromApp(clientService.getCurrentApp()).setFromIp(clientService.getLocalIp()).build();
+
+    List<Map<String, Object>> rows = new ArrayList<>();
+
+    Iterator<QueryDataResponse> responseIterator = DataServiceGrpc.newBlockingStub(channel)
+        .withDeadlineAfter(ConstPool.GRPC_WITH_DEADLINE_AFTER_MS_2, TimeUnit.MILLISECONDS)
+        .queryDataByTableRowsStream(queryDataByTableRowsRequest);
 
     while (responseIterator.hasNext()) {
       QueryDataResponse response = responseIterator.next();

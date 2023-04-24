@@ -20,6 +20,7 @@ import io.holoinsight.server.meta.common.util.RetryPolicy;
 import io.holoinsight.server.meta.core.service.DBCoreService;
 import io.holoinsight.server.meta.core.service.MongoDataCoreService;
 
+import io.holoinsight.server.meta.proto.data.QueryDataByTableRowsRequest;
 import org.apache.commons.lang3.time.StopWatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -122,8 +123,49 @@ public class DataServiceGrpcImpl extends DataServiceGrpc.DataServiceImplBase {
     String tableName = request.getTableName();
     List<Map<String, Object>> rows;
     try {
-      rows = tryUntilSuccess(() -> getCurrentService().queryByTable(tableName),
-          "queryByTableStream", 0);
+      rows = tryUntilSuccess(() -> getCurrentService().queryByTable(tableName), "queryByTable", 0);
+      Iterator<Map<String, Object>> it = rows.iterator();
+      int total = 0;
+      int count = 0;
+      List<Map<String, Object>> batchRows = new ArrayList<>();
+      while (it.hasNext()) {
+        if (count == ConstPool.GRPC_QUERY_RETURN_BATCH_SIZE) {
+          o.onNext(QueryDataResponse.newBuilder().setSuccess(true).setRowsJson(J.toJson(batchRows))
+              .build());
+          batchRows.clear();
+          count = 0;
+        } else {
+          batchRows.add(it.next());
+          count++;
+          total++;
+        }
+      }
+      if (count != 0) {
+        o.onNext(QueryDataResponse.newBuilder().setSuccess(true).setRowsJson(J.toJson(batchRows))
+            .build());
+      }
+      logger.info("DimWriterGrpcBackend,queryDataByTableStream,Y,{},{},{},{},{},{},",
+          stopWatch.getTime(), tableName, 0, total, request.getFromApp(), request.getFromIp());
+      o.onCompleted();
+    } catch (Exception e) {
+      logger.error("DimWriterGrpcBackend,queryDataByTableStream,N,{},{},{},{},{},{},{},",
+          stopWatch.getTime(), tableName, 0, 0, request.getFromApp(), request.getFromIp(),
+          e.getMessage(), e);
+      o.onError(e);
+    }
+  }
+
+  @Override
+  public void queryDataByTableRowsStream(QueryDataByTableRowsRequest request,
+      io.grpc.stub.StreamObserver<QueryDataResponse> o) {
+    StopWatch stopWatch = StopWatch.createStarted();
+    String tableName = request.getTableName();
+    List<Map<String, Object>> rows;
+    String pkRows = request.getPkRows();
+    List<String> rowVals = J.toList(pkRows);
+    try {
+      rows = tryUntilSuccess(() -> getCurrentService().queryByTable(tableName, rowVals),
+          "queryByTable", 0);
       Iterator<Map<String, Object>> it = rows.iterator();
       int total = 0;
       int count = 0;
