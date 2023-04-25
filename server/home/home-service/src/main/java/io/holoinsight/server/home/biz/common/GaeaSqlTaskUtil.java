@@ -147,9 +147,13 @@ public class GaeaSqlTaskUtil {
         regexp.setElect(new Elect());
         regexp.getElect().setType("line");
 
+        Where not = new Where();
+        not.setRegexp(regexp);
+
         Where where = new Where();
-        where.setRegexp(regexp);
-        parse.getMultiline().setMatch(where);
+        where.setNot(not);
+
+        parse.getMultiline().setWhere(where);
 
       }
 
@@ -176,13 +180,19 @@ public class GaeaSqlTaskUtil {
         } else {
           logMultiLine.setWhat("next");
         }
-        Where match = new Where();
+
         Regexp regexp = new Regexp();
         regexp.setElect(new Elect());
         regexp.getElect().setType("line");
-        match.setRegexp(regexp);
+
+        Where not = new Where();
+        not.setRegexp(regexp);
+
+        Where where = new Where();
+        where.setNot(not);
+
         regexp.setExpression(multiLine.logRegexp);
-        logMultiLine.setMatch(match);
+        logMultiLine.setWhere(where);
         fromLog.setMultiline(logMultiLine);
       }
 

@@ -384,7 +384,7 @@ public class BiStreamService {
       return (String) header.getField(header.getDescriptorForType().getFields().get(1));
     } catch (ClassCastException e) {
       LOGGER.error("getTraceId error: {}", ProtoJsonUtils.toJson(request), e);
-      throw e;
+      return "";
     }
   }
 

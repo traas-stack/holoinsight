@@ -146,13 +146,25 @@ public class From {
       private Multiline multiline;
     }
 
+    /**
+     * Log multiline config
+     * 
+     * @see <a href=
+     *      "https://traas-stack.github.io/holoinsight-docs/dev-guide/internals/log-multiline.html">log-multiline</a>
+     */
     @ToString
     @Getter
     @Setter
     public static class Multiline {
+      /**
+       * Lines which match this condition belong to group specified by 'what' field.
+       */
       @Nullable
-      private Where match;
+      private Where where;
 
+      /**
+       * Whether log multiline is enabled
+       */
       @Nullable
       private boolean enabled;
 

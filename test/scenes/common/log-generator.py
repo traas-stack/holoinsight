@@ -18,11 +18,13 @@ def schedule_with_fixed_rate(init_delay, interval, action, args):
     s.enter(init_delay, 1, wrapper, args)
 
 
-log1 = open('1.log', mode='a')
+log1 = open('test/1.log', mode='a')
 atexit.register(log1.close)
 
+multiline_log = open('test/multiline.log', mode='a')
+atexit.register(multiline_log.close)
 
-def task1(*args):
+def write_1_log(*args):
     time_str = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     log1.write('%s level=%s biz=[biz1] cost=%d\n' % (time_str, 'INFO', 1))
     log1.write('%s level=%s biz=[biz2] cost=%d\n' % (time_str, 'INFO', 2))
@@ -33,6 +35,40 @@ def task1(*args):
     log1.flush()
 
 
-schedule_with_fixed_rate(0, 1, task1, ())
+def write_multiline_log(*args):
+    time_str = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    text = '''%s ERROR thread=[thread-%d] i.h.s.a.r.s.CacheUpdateTimer - Cache update failure.
+java.lang.RuntimeException: [holoinsight-network_address_mapping] ElasticsearchStatusException[Elasticsearch exception [type=index_not_found_exception, reason=no such index [holoinsight-network_address_mapping]]]
+	at io.holoinsight.server.apm.receiver.scheduler.CacheUpdateTimer.lambda$init$0(CacheUpdateTimer.java:39) ~[apm-receiver-1.0.0-SNAPSHOT.jar!/:1.0.0-SNAPSHOT]
+	at io.holoinsight.server.apm.receiver.scheduler.RunnableWithExceptionProtection.run(RunnableWithExceptionProtection.java:18) ~[apm-receiver-1.0.0-SNAPSHOT.jar!/:1.0.0-SNAPSHOT]
+	at java.lang.Thread.run(Thread.java:750) ~[?:1.8.0_362]
+Caused by: org.elasticsearch.ElasticsearchStatusException: Elasticsearch exception [type=index_not_found_exception, reason=no such index [holoinsight-network_address_mapping]]
+	at org.elasticsearch.rest.BytesRestResponse.errorFromXContent(BytesRestResponse.java:177) ~[elasticsearch-7.8.0.jar!/:7.8.0]
+	at org.elasticsearch.client.RestHighLevelClient.parseEntity(RestHighLevelClient.java:1897) ~[elasticsearch-rest-high-level-client-7.8.0.jar!/:7.8.0]
+	at io.holoinsight.server.apm.server.service.impl.NetworkAddressMappingServiceImpl.loadByTime(NetworkAddressMappingServiceImpl.java:25) ~[apm-service-1.0.0-SNAPSHOT.jar!/:1.0.0-SNAPSHOT]
+	at io.holoinsight.server.apm.receiver.scheduler.CacheUpdateTimer.updateNetAddressAliasCache(CacheUpdateTimer.java:60) ~[apm-receiver-1.0.0-SNAPSHOT.jar!/:1.0.0-SNAPSHOT]
+	at io.holoinsight.server.apm.receiver.scheduler.CacheUpdateTimer.lambda$init$0(CacheUpdateTimer.java:37) ~[apm-receiver-1.0.0-SNAPSHOT.jar!/:1.0.0-SNAPSHOT]
+	... 8 more
+	Suppressed: org.elasticsearch.client.ResponseException: method [POST], host [http://es:9200], URI [/holoinsight-network_address_mapping/_search?typed_keys=true&max_concurrent_shard_requests=5&ignore_unavailable=false&expand_wildcards=open&allow_no_indices=true&ignore_throttled=true&search_type=query_then_fetch&batched_reduce_size=512&ccs_minimize_roundtrips=true], status line [HTTP/1.1 404 Not Found]
+Warnings: [Elasticsearch built-in security features are not enabled. Without authentication, your cluster could be accessible to anyone. See https://www.elastic.co/guide/en/elasticsearch/reference/7.16/security-minimal-setup.html to enable security., [ignore_throttled] parameter is deprecated because frozen indices have been deprecated. Consider cold or frozen tiers in place of frozen indices.]
+{"error":{"root_cause":[{"type":"index_not_found_exception","reason":"no such index [holoinsight-network_address_mapping]","resource.type":"index_or_alias","resource.id":"holoinsight-network_address_mapping","index_uuid":"_na_","index":"holoinsight-network_address_mapping"}],"type":"index_not_found_exception","reason":"no such index [holoinsight-network_address_mapping]","resource.type":"index_or_alias","resource.id":"holoinsight-network_address_mapping","index_uuid":"_na_","index":"holoinsight-network_address_mapping"},"status":404}
+		at org.elasticsearch.client.RestClient.convertResponse(RestClient.java:283) ~[elasticsearch-rest-client-7.8.0.jar!/:7.8.0]
+		at java.lang.Thread.run(Thread.java:750) ~[?:1.8.0_362]
+'''
+    multiline_log.write(text % (time_str,0))
+    multiline_log.write(text % (time_str,1))
+
+    text='''%s ERROR thread=[thread-%d] i.h.s.a.r.s.CacheUpdateTimer - Other exception.
+java.lang.RuntimeException: [holoinsight-network_address_mapping] ElasticsearchStatusException[Elasticsearch exception [type=other ... ]
+	at io.holoinsight.server.apm.receiver.scheduler.CacheUpdateTimer.lambda$init$0(CacheUpdateTimer.java:39) ~[apm-receiver-1.0.0-SNAPSHOT.jar!/:1.0.0-SNAPSHOT]
+	at io.holoinsight.server.apm.receiver.scheduler.RunnableWithExceptionProtection.run(RunnableWithExceptionProtection.java:18) ~[apm-receiver-1.0.0-SNAPSHOT.jar!/:1.0.0-SNAPSHOT]
+	at java.lang.Thread.run(Thread.java:750) ~[?:1.8.0_362]
+'''
+    multiline_log.write(text % (time_str,1))
+    multiline_log.flush()
+
+
+schedule_with_fixed_rate(0, 1, write_1_log, ())
+schedule_with_fixed_rate(1, 5, write_multiline_log, ())
 
 s.run()
