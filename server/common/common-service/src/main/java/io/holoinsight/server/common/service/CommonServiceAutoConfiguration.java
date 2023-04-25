@@ -44,4 +44,10 @@ public class CommonServiceAutoConfiguration {
   public WorkspaceService workspaceService() {
     return new WorkspaceServiceImpl();
   }
+
+  @Bean
+  @ConditionalOnMissingBean
+  public MetricInfoService metricInfoService() {
+    return new MetricInfoServiceImpl();
+  }
 }

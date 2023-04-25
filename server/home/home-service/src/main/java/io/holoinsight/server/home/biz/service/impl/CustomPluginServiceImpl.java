@@ -4,6 +4,7 @@
 package io.holoinsight.server.home.biz.service.impl;
 
 import io.holoinsight.server.home.biz.service.CustomPluginService;
+import io.holoinsight.server.home.biz.service.TenantInitService;
 import io.holoinsight.server.home.common.util.EventBusHolder;
 import io.holoinsight.server.home.common.util.StringUtil;
 import io.holoinsight.server.home.dal.converter.CustomPluginConverter;
@@ -36,6 +37,8 @@ public class CustomPluginServiceImpl extends ServiceImpl<CustomPluginMapper, Cus
 
   @Autowired
   private CustomPluginConverter customPluginConverter;
+  @Autowired
+  private TenantInitService tenantInitService;
 
   @Override
   public CustomPluginDTO queryById(Long id, String tenant, String workspace) {
@@ -245,11 +248,11 @@ public class CustomPluginServiceImpl extends ServiceImpl<CustomPluginMapper, Cus
         if (null != customPluginDTO.getConf()
             && !CollectionUtils.isEmpty(customPluginDTO.getConf().collectMetrics)) {
           customPluginDTO.getConf().collectMetrics.forEach(collectMetric -> {
+            String tableName = collectMetric.tableName + "_" + customPluginDTO.id;
             if (StringUtil.isNotBlank(collectMetric.name)) {
-              collectMetric.targetTable = collectMetric.name;
-            } else {
-              collectMetric.targetTable = collectMetric.tableName + "_" + customPluginDTO.id;
+              tableName = collectMetric.name;
             }
+            collectMetric.targetTable = tenantInitService.getLogMonitorMetricTable(tableName);
           });
         }
       });

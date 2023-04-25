@@ -25,7 +25,7 @@ public class MysqlPlugin extends AbstractCentralIntegrationPlugin<MysqlPlugin> {
   public MysqlTask mysqlTask;
 
   @Override
-  MysqlTask buildTask() {
+  public MysqlTask buildTask() {
     return mysqlTask;
   }
 

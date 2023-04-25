@@ -21,6 +21,7 @@ import io.holoinsight.server.registry.model.Select;
 import io.holoinsight.server.registry.model.SqlTask;
 import io.holoinsight.server.registry.model.Where;
 import io.holoinsight.server.registry.model.Window;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
@@ -127,7 +128,7 @@ public class LogPlugin extends AbstractLocalIntegrationPlugin<LogPlugin> {
         logPlugin.collectMetric = collectMetric;
         logPlugin.periodType = config.periodType;
         logPlugin.name = config.name;
-        logPlugin.metricName = String.join("_", integrationPluginDTO.product.toLowerCase(),
+        logPlugin.metricName = getMetricName(integrationPluginDTO.product.toLowerCase(),
             config.getName(), collectMetric.tableName);
 
         logPlugin.gaeaTableName =
@@ -142,5 +143,16 @@ public class LogPlugin extends AbstractLocalIntegrationPlugin<LogPlugin> {
     }
 
     return logPlugins;
+  }
+
+  public String getMetricName(String product, String configName, String tableName) {
+    if (StringUtils.isNotBlank(getPrefix())) {
+      return String.join("_", getPrefix(), product, configName, tableName);
+    }
+    return String.join("_", product, configName, tableName);
+  }
+
+  public String getPrefix() {
+    return null;
   }
 }

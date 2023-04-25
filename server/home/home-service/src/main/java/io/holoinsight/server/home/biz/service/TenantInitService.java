@@ -72,4 +72,12 @@ public interface TenantInitService {
    * @return
    */
   List<QueryFilter> getTenantFilters(String workspace);
+
+  /**
+   * logmonitor metric table
+   * 
+   * @param tableName
+   * @return
+   */
+  String getLogMonitorMetricTable(String tableName);
 }

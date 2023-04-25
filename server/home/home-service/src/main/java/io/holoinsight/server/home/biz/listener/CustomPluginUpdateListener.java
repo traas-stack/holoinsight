@@ -164,8 +164,7 @@ public class CustomPluginUpdateListener {
     Where where = GaeaSqlTaskUtil.buildWhere(conf.logParse, splitColMap, collectMetric);
     GroupBy groupBy = GaeaSqlTaskUtil.buildGroupBy(conf.logParse, splitColMap, collectMetric);
     Window window = GaeaSqlTaskUtil.buildWindow(customPluginDTO.periodType.getDataUnitMs());
-    Output output =
-        GaeaSqlTaskUtil.buildOutput(getTargetTableName(customPluginDTO.id, collectMetric));
+    Output output = GaeaSqlTaskUtil.buildOutput(collectMetric.getTargetTable());
     ExecuteRule executeRule = GaeaSqlTaskUtil.buildExecuteRule();
 
     SqlTask sqlTask = new SqlTask();
@@ -180,13 +179,5 @@ public class CustomPluginUpdateListener {
     }
 
     return sqlTask;
-  }
-
-  private String getTargetTableName(Long id, CollectMetric collectMetric) {
-    String targetTableName = String.format("%s_%s", collectMetric.tableName, id);
-    if (!StringUtils.isEmpty(collectMetric.name)) {
-      targetTableName = collectMetric.name;
-    }
-    return targetTableName;
   }
 }

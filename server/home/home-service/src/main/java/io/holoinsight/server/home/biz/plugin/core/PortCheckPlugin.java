@@ -30,7 +30,7 @@ public class PortCheckPlugin extends AbstractLocalIntegrationPlugin<PortCheckPlu
   public PortCheckTask portCheckTask;
 
   @Override
-  PortCheckTask buildTask() {
+  public PortCheckTask buildTask() {
     return portCheckTask;
   }
 
