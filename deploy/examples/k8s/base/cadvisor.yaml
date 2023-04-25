@@ -33,6 +33,8 @@ spec:
         volumeMounts:
         - name: rootfs
           mountPath: /rootfs
+          # The content of this yaml file is mainly copied from https://github.com/google/cadvisor/blob/master/deploy/kubernetes/base/daemonset.yaml.
+          # If you encounter an error about "read-only filesystem" when starting cadvisor, please comment out all "readOnly: true" lines in this file.
           readOnly: true
         - name: var-run
           mountPath: /var/run

@@ -20,6 +20,14 @@ spec:
     spec:
       restartPolicy: Always
       terminationGracePeriodSeconds: 30
+      initContainers:
+      # Wait for holoinsight-server to be ready and then start the clusteragent.
+      # Otherwise, the first meta full sync request will fail because clusteragent starts faster than the server side.
+      # And it needs to wait another 5min to trigger next meta full sync request.
+      - name: wait-for-server
+        image: tehkapa/docker-wait-for-dependencies
+        args:
+        - registry:7202
       containers:
       - name: clusteragent
         image: holoinsight/agent:latest

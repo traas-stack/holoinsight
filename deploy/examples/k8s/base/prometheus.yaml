@@ -1,0 +1,81 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: prometheus
+  namespace: holoinsight-example
+  labels:
+    app: prometheus
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: prometheus
+  template:
+    metadata:
+      labels:
+        app: prometheus
+        hi_common_version: '2'
+    spec:
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 30
+      volumes:
+        - name: cm
+          configMap:
+            name: prometheus-cm
+      containers:
+      - name: prometheus
+        image: prom/prometheus:latest
+        imagePullPolicy: Always
+        volumeMounts:
+          - mountPath: /etc/prometheus/prometheus.yml
+            name: cm
+            subPath: prometheus.yml
+        resources:
+          requests:
+            cpu: "0"
+            memory: "0"
+          limits:
+            cpu: "0.25"
+            memory: "256Mi"
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: prometheus-cm
+  namespace: holoinsight-example
+data:
+  prometheus.yml: |
+    global:
+      scrape_interval: 15s # Set the scrape interval to every 15 seconds. Default is every 1 minute.
+      evaluation_interval: 15s # Evaluate rules every 15 seconds. The default is every 1 minute.
+    alerting:
+      alertmanagers:
+      - static_configs:
+        - targets:
+          # - alertmanager:9093
+    scrape_configs:
+    - job_name: "prometheus"
+      static_configs:
+      - targets: ["localhost:9090"]
+    remote_write:
+    - url: "http://ceresdb:5440/prom/v1/write"
+    remote_read:
+    - url: "http://ceresdb:5440/prom/v1/read"
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: prometheus
+  namespace: holoinsight-example
+  labels:
+    name: prometheus
+spec:
+  ports:
+  - name: p9090
+    protocol: TCP
+    port: 9090
+  selector:
+    app: prometheus

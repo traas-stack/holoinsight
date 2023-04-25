@@ -27,6 +27,9 @@ spec:
       - name: app
         image: holoinsight/server:latest
         imagePullPolicy: Always
+        env:
+        - name: JAVA_APP_OPTS
+          value: '-Xmx1024m -Xms1024m -Xmn512m'
         readinessProbe:
           exec:
             command:
@@ -63,6 +66,15 @@ data:
       metric:
         storage:
           type: ceresdbx
+        pql:
+          remote:
+            enabled: true
+            endpoints:
+              default:
+                host: prometheus
+                port: 9090
+      flyway:
+        enabled: false
 
 ---
 apiVersion: v1
