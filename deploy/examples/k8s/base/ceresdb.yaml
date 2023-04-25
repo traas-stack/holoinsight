@@ -18,39 +18,9 @@ spec:
         app: ceresdb
         common_version: "2"
     spec:
-      volumes:
-      - name: temp
-        emptyDir: { }
-      - name: cm
-        configMap:
-          name: ceresdb-config
-      initContainers:
-      - name: init
-        image: ceresdb/ceresdb-server:v1.0.0
-        env:
-        - name: POD_IP
-          valueFrom:
-            fieldRef:
-              fieldPath: status.podIP
-        command: [ "/bin/sh" ]
-        args:
-        - -c
-        - |
-          cp -f /ceresdb.toml /etc/ceresdb/ceresdb.toml
-          echo "addr = \"$POD_IP\"" >> /etc/ceresdb/ceresdb.toml
-        volumeMounts:
-        - mountPath: /etc/ceresdb
-          name: temp
-        - name: cm
-          mountPath: /ceresdb.toml
-          subPath: ceresdb.toml
       containers:
       - name: ceresdb
         image: ceresdb/ceresdb-server:v1.0.0
-        volumeMounts:
-        - mountPath: /etc/ceresdb/ceresdb.toml
-          name: temp
-          subPath: ceresdb.toml
         readinessProbe:
           tcpSocket:
             port: 8831
@@ -58,40 +28,6 @@ spec:
           successThreshold: 1
           failureThreshold: 3
           periodSeconds: 3
-
----
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: ceresdb-config
-  namespace: holoinsight-example
-data:
-  ceresdb.toml: |
-    bind_addr = "0.0.0.0"
-    http_port = 5440
-    grpc_port = 8831
-    mysql_port = 3307
-    log_level = "info"
-    
-    [analytic.storage]
-    type = "Local"
-    data_path = "/tmp/ceresdb"
-    
-    [analytic]
-    wal_path = "/tmp/ceresdb"
-    sst_data_cache_cap = 10000
-    sst_meta_cache_cap = 10000
-    
-    [[static_route.topology.schema_shards]]
-    schema = 'public'
-    auto_create_tables = true
-    
-    [[static_route.topology.schema_shards.shard_views]]
-    shard_id = 0
-    
-    [static_route.topology.schema_shards.shard_views.endpoint]
-    port = 8831
-
 
 ---
 apiVersion: v1

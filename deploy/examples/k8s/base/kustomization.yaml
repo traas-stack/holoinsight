@@ -10,3 +10,4 @@ resources:
 - cadvisor.yaml
 - daemonagent.yaml
 - clusteragent.yaml
+- prometheus.yaml
