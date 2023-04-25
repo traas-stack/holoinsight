@@ -58,7 +58,7 @@ public abstract class AbstractIntegrationPlugin<T> extends Plugin {
     return buildTask();
   }
 
-  abstract GaeaTask buildTask();
+  public abstract GaeaTask buildTask();
 
   public abstract List<T> genPluginList(IntegrationPluginDTO integrationPluginDTO);
 

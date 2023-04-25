@@ -35,7 +35,7 @@ public class AlibabaCloudPlugin extends AbstractCentralIntegrationPlugin<Alibaba
   public AliCloudTask aliCloudTask;
 
   @Override
-  AliCloudTask buildTask() {
+  public AliCloudTask buildTask() {
     return aliCloudTask;
   }
 

@@ -5,7 +5,7 @@ package io.holoinsight.server.home.dal.converter;
 
 import io.holoinsight.server.home.dal.model.AlarmHistoryDetail;
 import io.holoinsight.server.home.facade.AlarmHistoryDetailDTO;
-import io.holoinsight.server.home.dal.transformer.ListJsonMapper;
+import io.holoinsight.server.common.dao.transformer.ListJsonMapper;
 import org.mapstruct.Mapper;
 
 import java.util.List;

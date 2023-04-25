@@ -26,7 +26,7 @@ public class SpringBootPlugin extends AbstractLocalIntegrationPlugin<SpringBootP
   public SpringBootTask springBootTask;
 
   @Override
-  SpringBootTask buildTask() {
+  public SpringBootTask buildTask() {
     return springBootTask;
   }
 

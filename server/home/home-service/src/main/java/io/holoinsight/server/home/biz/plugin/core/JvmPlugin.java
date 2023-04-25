@@ -26,7 +26,7 @@ public class JvmPlugin extends AbstractLocalIntegrationPlugin<JvmPlugin> {
   public JvmTask jvmTask;
 
   @Override
-  JvmTask buildTask() {
+  public JvmTask buildTask() {
     return jvmTask;
   }
 

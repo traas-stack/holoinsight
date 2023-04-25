@@ -5,7 +5,6 @@ package io.holoinsight.server.home.biz.service.impl;
 
 import io.holoinsight.server.common.dao.entity.dto.TenantOpsStorage;
 import io.holoinsight.server.home.biz.service.TenantInitService;
-import io.holoinsight.server.home.facade.trigger.Filter;
 import io.holoinsight.server.query.grpc.QueryProto.QueryFilter;
 
 import java.util.HashMap;
@@ -55,6 +54,11 @@ public class DefaultTenantInitServiceImpl implements TenantInitService {
   @Override
   public List<QueryFilter> getTenantFilters(String workspace) {
     return null;
+  }
+
+  @Override
+  public String getLogMonitorMetricTable(String tableName) {
+    return tableName;
   }
 
 }
