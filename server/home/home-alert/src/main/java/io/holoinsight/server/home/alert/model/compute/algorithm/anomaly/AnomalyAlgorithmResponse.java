@@ -13,24 +13,24 @@ import java.util.Map;
  */
 @Data
 public class AnomalyAlgorithmResponse {
-    /**
-     * detectTime
-     */
-    private Long detectTime;
-    /**
-     * errorCode
-     */
-    private Map<String, Object> errorCode;
-    /**
-     * isException
-     */
-    private Boolean isException;
-    /**
-     * isSuccessful
-     */
-    private Boolean isSuccessful;
-    /**
-     * traceId
-     */
-    private Object traceId;
+  /**
+   * detectTime
+   */
+  private Long detectTime;
+  /**
+   * errorCode
+   */
+  private Map<String, Object> errorCode;
+  /**
+   * isException
+   */
+  private Boolean isException;
+  /**
+   * isSuccessful
+   */
+  private Boolean isSuccessful;
+  /**
+   * traceId
+   */
+  private Object traceId;
 }

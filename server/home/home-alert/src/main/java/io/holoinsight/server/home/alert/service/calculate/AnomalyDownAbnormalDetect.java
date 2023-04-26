@@ -55,20 +55,22 @@ public class AnomalyDownAbnormalDetect implements FunctionLogic {
     algorithmRequest.setAlgorithmConfig(algorithmConfig);
     algorithmRequest.setRuleConfig(ruleConfig);
     Map<String, Double> inputTimeSeries = new HashMap<>();
-    dataResult.getPoints().forEach((k,v) -> inputTimeSeries.put(k.toString(), v));
+    dataResult.getPoints().forEach((k, v) -> inputTimeSeries.put(k.toString(), v));
     algorithmRequest.setInputTimeSeries(inputTimeSeries);
 
     TriggerAIResult triggerAIResult = new TriggerAIResult();
     // 设置算法接口名称
     String algoUrl = url + "/anomaly_detect";
     // 调用算法接口
-    String abnormalResult =
-        AlgorithmHttp.invokeAlgorithm(algoUrl, G.get().toJson(algorithmRequest), functionConfigParam.getTraceId());
+    String abnormalResult = AlgorithmHttp.invokeAlgorithm(algoUrl, G.get().toJson(algorithmRequest),
+        functionConfigParam.getTraceId());
     AnomalyAlgorithmResponse anomalyAlgorithmResponse =
         G.get().fromJson(abnormalResult, AnomalyAlgorithmResponse.class);
-    if (anomalyAlgorithmResponse != null && anomalyAlgorithmResponse.getIsSuccessful() && anomalyAlgorithmResponse.getIsException()) {
+    if (anomalyAlgorithmResponse != null && anomalyAlgorithmResponse.getIsSuccessful()
+        && anomalyAlgorithmResponse.getIsException()) {
       triggerAIResult.setHit(true);
-      triggerAIResult.setCurrentValue(dataResult.getPoints().get(anomalyAlgorithmResponse.getDetectTime()));
+      triggerAIResult
+          .setCurrentValue(dataResult.getPoints().get(anomalyAlgorithmResponse.getDetectTime()));
     }
     return triggerAIResult;
   }

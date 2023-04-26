@@ -62,13 +62,15 @@ public class AnomalyUpAbnormalDetect implements FunctionLogic {
     // 设置算法接口名称
     String algoUrl = url + "/anomaly_detect";
     // 调用算法接口
-    String abnormalResult =
-            AlgorithmHttp.invokeAlgorithm(algoUrl, G.get().toJson(algorithmRequest), functionConfigParam.getTraceId());
+    String abnormalResult = AlgorithmHttp.invokeAlgorithm(algoUrl, G.get().toJson(algorithmRequest),
+        functionConfigParam.getTraceId());
     AnomalyAlgorithmResponse anomalyAlgorithmResponse =
-            G.get().fromJson(abnormalResult, AnomalyAlgorithmResponse.class);
-    if (anomalyAlgorithmResponse != null && anomalyAlgorithmResponse.getIsSuccessful() && anomalyAlgorithmResponse.getIsException()) {
+        G.get().fromJson(abnormalResult, AnomalyAlgorithmResponse.class);
+    if (anomalyAlgorithmResponse != null && anomalyAlgorithmResponse.getIsSuccessful()
+        && anomalyAlgorithmResponse.getIsException()) {
       triggerAIResult.setHit(true);
-      triggerAIResult.setCurrentValue(dataResult.getPoints().get(anomalyAlgorithmResponse.getDetectTime()));
+      triggerAIResult
+          .setCurrentValue(dataResult.getPoints().get(anomalyAlgorithmResponse.getDetectTime()));
     }
     return triggerAIResult;
   }

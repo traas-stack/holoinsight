@@ -15,24 +15,24 @@ import java.util.Map;
  */
 @Data
 public class AnomalyAlgorithmRequest {
-    /**
-     * inputTimeSeries
-     */
-    private Map<String, Double> inputTimeSeries;
-    /**
-     * intervalTime
-     */
-    private Integer intervalTime;
-    /**
-     * detectTime
-     */
-    private Long detectTime;
-    /**
-     * algorithmConfig
-     */
-    private AlgorithmConfig algorithmConfig;
-    /**
-     * ruleConfig
-     */
-    private RuleConfig ruleConfig;
+  /**
+   * inputTimeSeries
+   */
+  private Map<String, Double> inputTimeSeries;
+  /**
+   * intervalTime
+   */
+  private Integer intervalTime;
+  /**
+   * detectTime
+   */
+  private Long detectTime;
+  /**
+   * algorithmConfig
+   */
+  private AlgorithmConfig algorithmConfig;
+  /**
+   * ruleConfig
+   */
+  private RuleConfig ruleConfig;
 }

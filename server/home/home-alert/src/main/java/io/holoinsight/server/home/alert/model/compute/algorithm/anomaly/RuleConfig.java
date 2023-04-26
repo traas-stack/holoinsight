@@ -11,12 +11,12 @@ import lombok.Data;
  */
 @Data
 public class RuleConfig {
-    /**
-     * defaultDuration
-     */
-    private Integer defaultDuration;
-    /**
-     * customChangeRate
-     */
-    private Double customChangeRate;
+  /**
+   * defaultDuration
+   */
+  private Integer defaultDuration;
+  /**
+   * customChangeRate
+   */
+  private Double customChangeRate;
 }

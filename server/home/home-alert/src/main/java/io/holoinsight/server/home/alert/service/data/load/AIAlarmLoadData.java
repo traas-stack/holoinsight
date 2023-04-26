@@ -71,9 +71,10 @@ public class AIAlarmLoadData implements AlarmLoadData {
       }
       long yesterdayPeriod = computeTask.getTimestamp() - PeriodType.DAY.intervalMillis();
       long yesterdayStart = yesterdayPeriod - 4L * PeriodType.HOUR.intervalMillis();
-      long yesterdayEnd = yesterdayPeriod + PeriodType.HOUR.intervalMillis() + PeriodType.MINUTE.intervalMillis();
+      long yesterdayEnd =
+          yesterdayPeriod + PeriodType.HOUR.intervalMillis() + PeriodType.MINUTE.intervalMillis();
       QueryProto.QueryResponse response2 =
-              getData(inspectConfig, trigger, yesterdayStart, yesterdayEnd);
+          getData(inspectConfig, trigger, yesterdayStart, yesterdayEnd);
       // If only have data for the day
       QueryProto.QueryResponse.Builder reponseBuilder = QueryProto.QueryResponse.newBuilder();
       if (response2 == null || CollectionUtils.isEmpty(response2.getResultsList())) {
@@ -81,20 +82,21 @@ public class AIAlarmLoadData implements AlarmLoadData {
           List<QueryProto.Point> points = new ArrayList<>();
           points.addAll(result1.getPointsList());
           QueryProto.Result result = QueryProto.Result.newBuilder().addAllPoints(points)
-                  .setMetric(result1.getMetric()).putAllTags(result1.getTagsMap()).build();
+              .setMetric(result1.getMetric()).putAllTags(result1.getTagsMap()).build();
           reponseBuilder.addResults(result);
         });
       } else {
-        response1.getResultsList().forEach(result1 -> response2.getResultsList().forEach(result2 -> {
-          if (result2.getTagsMap().equals(result1.getTagsMap())) {
-            List<QueryProto.Point> points = new ArrayList<>();
-            points.addAll(result1.getPointsList());
-            points.addAll(result2.getPointsList());
-            QueryProto.Result result = QueryProto.Result.newBuilder().addAllPoints(points)
+        response1.getResultsList()
+            .forEach(result1 -> response2.getResultsList().forEach(result2 -> {
+              if (result2.getTagsMap().equals(result1.getTagsMap())) {
+                List<QueryProto.Point> points = new ArrayList<>();
+                points.addAll(result1.getPointsList());
+                points.addAll(result2.getPointsList());
+                QueryProto.Result result = QueryProto.Result.newBuilder().addAllPoints(points)
                     .setMetric(result1.getMetric()).putAllTags(result1.getTagsMap()).build();
-            reponseBuilder.addResults(result);
-          }
-        }));
+                reponseBuilder.addResults(result);
+              }
+            }));
       }
       response = reponseBuilder.build();
     } catch (Exception e) {
