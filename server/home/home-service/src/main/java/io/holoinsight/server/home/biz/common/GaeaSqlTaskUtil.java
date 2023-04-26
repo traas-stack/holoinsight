@@ -8,11 +8,19 @@ import io.holoinsight.server.home.dal.model.dto.conf.*;
 import io.holoinsight.server.home.dal.model.dto.conf.CollectMetric.AfterFilter;
 import io.holoinsight.server.home.dal.model.dto.conf.CollectMetric.Metric;
 import io.holoinsight.server.home.dal.model.dto.conf.CustomPluginConf.SplitCol;
+import io.holoinsight.server.home.dal.model.dto.conf.Translate.TranslateTransform;
 import io.holoinsight.server.registry.model.Elect;
 import io.holoinsight.server.registry.model.Elect.RefIndex;
 import io.holoinsight.server.registry.model.Elect.RefName;
+import io.holoinsight.server.registry.model.Elect.TransFormFilter;
+import io.holoinsight.server.registry.model.Elect.TransFormFilterAppend;
+import io.holoinsight.server.registry.model.Elect.TransFormFilterConst;
+import io.holoinsight.server.registry.model.Elect.TransFormFilterMapping;
+import io.holoinsight.server.registry.model.Elect.TransFormFilterRegexpReplace;
+import io.holoinsight.server.registry.model.Elect.TransFormFilterSubstring;
+import io.holoinsight.server.registry.model.Elect.TransFormFilterSwitch;
+import io.holoinsight.server.registry.model.Elect.TransFormFilterSwitchCase;
 import io.holoinsight.server.registry.model.Elect.Transform;
-import io.holoinsight.server.registry.model.Elect.TransformItem;
 import io.holoinsight.server.registry.model.ExecuteRule;
 import io.holoinsight.server.registry.model.From;
 import io.holoinsight.server.registry.model.From.Log;
@@ -526,22 +534,9 @@ public class GaeaSqlTaskUtil {
           break;
       }
 
-      if (null != rule.translate) {
-        Translate translate = rule.translate;
-        List<ColumnCalExpr> exprs = translate.exprs;
-
+      if (null != rule.translate && !CollectionUtils.isEmpty(rule.translate.transforms)) {
         Transform transform = new Transform();
-        List<TransformItem> transformItems = new ArrayList<>();
-        if (!CollectionUtils.isEmpty(exprs)) {
-          exprs.forEach(expr -> {
-            TransformItem transformItem = new TransformItem();
-            transformItem.setArg(expr.getParams());
-            transformItem.setFunc(expr.getFunc());
-            transformItems.add(transformItem);
-          });
-        }
-
-        transform.setTransforms(transformItems);
+        transform.setFilters(convertTransFormFilters(rule.translate.transforms));
         elect.setTransform(transform);
       }
 
@@ -619,26 +614,121 @@ public class GaeaSqlTaskUtil {
       default:
         break;
     }
-    if (null != rule.translate) {
-      Translate translate = rule.translate;
-      List<ColumnCalExpr> exprs = translate.exprs;
+    if (null != rule.translate && !CollectionUtils.isEmpty(rule.translate.transforms)) {
       Transform transform = new Transform();
-      List<TransformItem> transformItems = new ArrayList<>();
-      if (!CollectionUtils.isEmpty(exprs)) {
-        exprs.forEach(expr -> {
-          TransformItem transformItem = new TransformItem();
-          transformItem.setArg(expr.getParams());
-          transformItem.setFunc(expr.getFunc());
-          transformItems.add(transformItem);
-        });
-      }
-      transform.setTransforms(transformItems);
+      transform.setFilters(convertTransFormFilters(rule.translate.transforms));
       elect.setTransform(transform);
     }
     if (StringUtils.isNotEmpty(rule.defaultValue)) {
       elect.setDefaultValue(rule.defaultValue);
     }
     return elect;
+  }
+
+  private static List<TransFormFilter> convertTransFormFilters(
+      List<TranslateTransform> transforms) {
+    List<TransFormFilter> filters = new ArrayList<>();
+    transforms.forEach(transform -> {
+      TransFormFilter transFormFilter = new TransFormFilter();
+
+      switch (transform.getType().toLowerCase()) {
+        case "append":
+          if (StringUtils.isBlank(transform.getDefaultValue())) {
+            break;
+          }
+          TransFormFilterAppend append = new TransFormFilterAppend();
+          append.setValue(transform.getDefaultValue());
+          append.setAppendIfMissing(false);
+          transFormFilter.setAppendV1(append);
+          break;
+        case "substring":
+          if (StringUtils.isBlank(transform.getDefaultValue())) {
+            break;
+          }
+          String[] array = StringUtils.split(transform.getDefaultValue(), ",");
+          if (array.length < 2) {
+            break;
+          }
+          TransFormFilterSubstring substring = new TransFormFilterSubstring();
+          substring.setBegin(Integer.parseInt(array[0]));
+          substring.setEnd(Integer.parseInt(array[1]));
+          substring.setEmptyIfError(true);
+          transFormFilter.setSubstringV1(substring);
+          break;
+        case "mapping":
+          if (CollectionUtils.isEmpty(transform.getMappings())) {
+            break;
+          }
+          TransFormFilterMapping mapping = new TransFormFilterMapping();
+          mapping.setMappings(transform.getMappings());
+          mapping.setDefaultValue(transform.getDefaultValue());
+          transFormFilter.setMappingV1(mapping);
+          break;
+        case "const":
+          TransFormFilterConst aConst = new TransFormFilterConst();
+          aConst.setValue(transform.getDefaultValue());
+          transFormFilter.setConstV1(aConst);
+          break;
+        case "contains":
+        case "regexp":
+          if (CollectionUtils.isEmpty(transform.getMappings())) {
+            break;
+          }
+
+          if (transform.getMappings().size() == 1 && transform.getType().equalsIgnoreCase("regexp")
+              && StringUtils.isBlank(transform.getDefaultValue())) {
+            TransFormFilterRegexpReplace regexpReplace = new TransFormFilterRegexpReplace();
+            Map<String, String> mappings = transform.getMappings();
+            regexpReplace.setExpression(mappings.keySet().iterator().next());
+            regexpReplace.setReplacement(mappings.values().iterator().next());
+            transFormFilter.setRegexpReplaceV1(regexpReplace);
+            break;
+          }
+
+          TransFormFilterSwitch aSwitch = new TransFormFilterSwitch(); {
+          TransFormFilterConst defaultConst = new TransFormFilterConst();
+          defaultConst.setValue(transform.getDefaultValue());
+          TransFormFilter defaultFilter = new TransFormFilter();
+          defaultFilter.setConstV1(defaultConst);
+          aSwitch.setDefaultAction(defaultFilter);
+        }
+          List<TransFormFilterSwitchCase> switchCases = new ArrayList<>();
+
+          transform.getMappings().forEach((k, v) -> {
+            TransFormFilterSwitchCase switchCase = new TransFormFilterSwitchCase();
+            TransFormFilter filter = new TransFormFilter();
+
+            Where caseWhere = new Where();
+            if (transform.getType().equalsIgnoreCase("regexp")) {
+              Regexp regexp = new Regexp();
+              regexp.setExpression(k);
+              regexp.setCatchGroups(true);
+              caseWhere.setRegexp(regexp);
+              TransFormFilterRegexpReplace regexpReplace = new TransFormFilterRegexpReplace();
+              regexpReplace.setReplacement(v);
+              filter.setRegexpReplaceV1(regexpReplace);
+            } else if (transform.getType().equalsIgnoreCase("contains")) {
+              Contains contains = new Contains();
+              contains.setValue(k);
+              caseWhere.setContains(contains);
+              TransFormFilterConst vConst = new TransFormFilterConst();
+              vConst.setValue(v);
+              filter.setConstV1(vConst);
+            }
+
+            switchCase.setCaseWhere(caseWhere);
+            switchCase.setAction(filter);
+            switchCases.add(switchCase);
+          });
+
+          aSwitch.setCases(switchCases);
+          transFormFilter.setSwitchCaseV1(aSwitch);
+          break;
+      }
+
+      filters.add(transFormFilter);
+    });
+    return filters;
   }
 
   public static String convertTimeLayout(String time) {

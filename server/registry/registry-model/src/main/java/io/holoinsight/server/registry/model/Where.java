@@ -77,6 +77,8 @@ public class Where {
      * 正则表达式
      */
     private String expression;
+
+    private Boolean catchGroups;
   }
 
 }
