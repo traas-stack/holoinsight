@@ -55,6 +55,9 @@ services:
         condition: service_healthy
     volumes:
     - ./data.sql:/sql/1data/V999999__data.sql
+  ai:
+    image: holoinsight/ai:1.0.0
+    pull_policy: always
   server:
     extends:
       file: ../common/base.yaml

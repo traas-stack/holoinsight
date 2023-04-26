@@ -52,7 +52,7 @@ holoinsight:
   alert:
     env: dev
     algorithm:
-      url: http://127.0.0.1:5005
+      url: http://ai:5000
   query:
     apm:
       address: http://127.0.0.1:8080

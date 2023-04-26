@@ -30,6 +30,6 @@ holoinsight:
     domain: 127.0.0.1
   alert:
     algorithm:
-      url: http://127.0.0.1
+      url: http://ai:5000
   meta:
     domain: 127.0.0.1
