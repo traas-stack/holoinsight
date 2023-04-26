@@ -22,7 +22,7 @@ public class Translate implements Serializable {
   private static final long serialVersionUID = 8300941265450477069L;
 
   /**
-   * 转换函数
+   * trans function
    */
   public List<TranslateTransform> transforms;
 
