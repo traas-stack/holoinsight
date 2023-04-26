@@ -70,9 +70,9 @@ public class ValueDownAbnormalDetect implements FunctionLogic {
       ruleConfig = RuleConfig.defaultDownConfig(dataResult.getMetric());
     }
     valueAlgorithmRequest.setRuleConfig(ruleConfig);
-    // 设置算法接口名称
+    // Set the name of the algorithm interface
     String algoUrl = url + "/serving";
-    // 调用算法接口
+    // Call algorithm interface
     String abnormalResult = AlgorithmHttp.invokeAlgorithm(algoUrl,
         G.get().toJson(valueAlgorithmRequest), functionConfigParam.getTraceId());
     ValueAlgorithmResponse valueAlgorithmResponse =

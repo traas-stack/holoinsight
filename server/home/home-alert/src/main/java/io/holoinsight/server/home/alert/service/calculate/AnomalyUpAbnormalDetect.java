@@ -59,9 +59,9 @@ public class AnomalyUpAbnormalDetect implements FunctionLogic {
     algorithmRequest.setInputTimeSeries(inputTimeSeries);
 
     TriggerAIResult triggerAIResult = new TriggerAIResult();
-    // 设置算法接口名称
+    // Set the name of the algorithm interface
     String algoUrl = url + "/anomaly_detect";
-    // 调用算法接口
+    // Call algorithm interface
     String abnormalResult = AlgorithmHttp.invokeAlgorithm(algoUrl, G.get().toJson(algorithmRequest),
         functionConfigParam.getTraceId());
     AnomalyAlgorithmResponse anomalyAlgorithmResponse =
