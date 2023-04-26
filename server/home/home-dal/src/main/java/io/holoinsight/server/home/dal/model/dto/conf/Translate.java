@@ -4,9 +4,13 @@
 package io.holoinsight.server.home.dal.model.dto.conf;
 
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Map;
 
 /**
  *
@@ -20,6 +24,18 @@ public class Translate implements Serializable {
   /**
    * 转换函数
    */
-  public List<ColumnCalExpr> exprs;
+  public List<TranslateTransform> transforms;
+
+  @ToString
+  @Getter
+  @Setter
+  public static class TranslateTransform {
+
+    // contains/regexp/append/mapping/const
+    private String type;
+    private Map<String, String> mappings;
+    private String defaultValue;
+
+  }
 
 }

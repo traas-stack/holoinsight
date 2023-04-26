@@ -18,6 +18,7 @@ import java.util.List;
 public class CustomPluginConf implements Serializable {
   private static final long serialVersionUID = 7595849765231492514L;
 
+  public ExtraConfig extraConfig;
   /**
    * 日志路径
    */
@@ -65,4 +66,10 @@ public class CustomPluginConf implements Serializable {
     public String colType;
   }
 
+  @Data
+  public static class ExtraConfig {
+    public Integer keyCleanInterval = 0;
+
+    public Integer maxKeySize = 1000;
+  }
 }
