@@ -820,6 +820,7 @@ public class DefaultQueryServiceImpl implements QueryService {
         metricStorage.queryData(queryParam);
 
     QueryProto.QueryResponse.Builder builder = QueryProto.QueryResponse.newBuilder();
+    Map<Map<String, String>, QueryProto.Result.Builder> tagsResults = new HashMap<>();
 
     Map<Long, List<Pair<Map<String, String>, Mergable>>> detailMap = new HashMap<>();
 
@@ -852,16 +853,17 @@ public class DefaultQueryServiceImpl implements QueryService {
             return pair1;
           })));
       reducedByTags.forEach((tags, vals) -> {
-        QueryProto.Result.Builder resultBuilder = QueryProto.Result.newBuilder();
-        resultBuilder.setMetric(StringUtils.isNotEmpty(datasource.getName()) ? datasource.getName()
-            : datasource.getMetric()).putAllTags(tags);
+        QueryProto.Result.Builder resultBuilder = tagsResults.computeIfAbsent(tags,
+            k -> QueryProto.Result.newBuilder()
+                .setMetric(StringUtils.isNotEmpty(datasource.getName()) ? datasource.getName()
+                    : datasource.getMetric())
+                .putAllTags(tags));
         QueryProto.Point.Builder pointBuilder = QueryProto.Point.newBuilder()
             .setTimestamp(timestamp).setStrValue(GsonUtils.toJson(vals.get().getRight()));
         resultBuilder.addPoints(pointBuilder);
-        builder.addResults(resultBuilder);
       });
     });
-
+    tagsResults.values().forEach(builder::addResults);
     return builder;
   }
 
