@@ -15,7 +15,9 @@ public enum FunctionEnum {
   PeriodAbs("PeriodAbs", "同环比绝对值", "RULE"), //
   Step("Step", "周期时间比较", "RULE"), //
   ValueUp("ValueUp", "值上涨", "AI"), //
-  ValueDown("ValueDown", "值下跌", "AI");
+  ValueDown("ValueDown", "值下跌", "AI"),
+  AnomalyUp("AnomalyUp", "异常检测值上涨","AI"),
+  AnomalyDown("AnomalyDown", "异常检测值下跌", "AI");
 
   private final String code;
 
