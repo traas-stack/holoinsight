@@ -17,6 +17,7 @@ import io.holoinsight.server.registry.model.Elect.TransFormFilterAppend;
 import io.holoinsight.server.registry.model.Elect.TransFormFilterConst;
 import io.holoinsight.server.registry.model.Elect.TransFormFilterMapping;
 import io.holoinsight.server.registry.model.Elect.TransFormFilterRegexpReplace;
+import io.holoinsight.server.registry.model.Elect.TransFormFilterSubstring;
 import io.holoinsight.server.registry.model.Elect.TransFormFilterSwitch;
 import io.holoinsight.server.registry.model.Elect.TransFormFilterSwitchCase;
 import io.holoinsight.server.registry.model.Elect.Transform;
@@ -632,9 +633,27 @@ public class GaeaSqlTaskUtil {
 
       switch (transform.getType().toLowerCase()) {
         case "append":
+          if (StringUtils.isBlank(transform.getDefaultValue())) {
+            break;
+          }
           TransFormFilterAppend append = new TransFormFilterAppend();
           append.setValue(transform.getDefaultValue());
+          append.setAppendIfMissing(false);
           transFormFilter.setAppendV1(append);
+          break;
+        case "substring":
+          if (StringUtils.isBlank(transform.getDefaultValue())) {
+            break;
+          }
+          String[] array = StringUtils.split(transform.getDefaultValue(), ",");
+          if (array.length < 2) {
+            break;
+          }
+          TransFormFilterSubstring substring = new TransFormFilterSubstring();
+          substring.setBegin(Integer.parseInt(array[0]));
+          substring.setEnd(Integer.parseInt(array[1]));
+          substring.setEmptyIfError(true);
+          transFormFilter.setSubstringV1(substring);
           break;
         case "mapping":
           if (CollectionUtils.isEmpty(transform.getMappings())) {

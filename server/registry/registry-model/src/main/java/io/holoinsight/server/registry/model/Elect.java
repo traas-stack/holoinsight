@@ -111,6 +111,7 @@ public class Elect {
   @Setter
   public static class TransFormFilter {
 
+    private TransFormFilterSubstring substringV1;
     private TransFormFilterAppend appendV1;
     private TransFormFilterMapping mappingV1;
     private TransFormFilterConst constV1;
@@ -123,6 +124,18 @@ public class Elect {
   @Setter
   public static class TransFormFilterAppend {
     private String value;
+
+    private Boolean appendIfMissing;
+  }
+
+  @ToString
+  @Getter
+  @Setter
+  public static class TransFormFilterSubstring {
+    private int begin;
+    private int end;
+
+    private Boolean emptyIfError;
   }
 
   @ToString
