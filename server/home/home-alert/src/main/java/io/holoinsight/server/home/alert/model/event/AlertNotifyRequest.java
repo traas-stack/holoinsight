@@ -19,11 +19,14 @@ import java.util.Map;
 @Data
 public class AlertNotifyRequest {
 
-  private Map<String/* notify type */, List<String>> userNotifyMap; // 用户信息和通知渠道
+  /**
+   * user info and notification channel
+   */
+  private Map<String/* notify type */, List<String>> userNotifyMap;
 
-  private List<WebhookInfo> dingdingUrls; // 钉钉群
+  private List<WebhookInfo> dingdingUrls;
 
-  private List<WebhookInfo> webhookInfos; // 告警相关webhook消息
+  private List<WebhookInfo> webhookInfos;
 
   private String traceId;
 
@@ -31,34 +34,37 @@ public class AlertNotifyRequest {
 
   private String workspace;
 
-  private String uniqueId; // 告警规则+id
+  private String uniqueId;
 
-  private String ruleId; // 告警id
+  private String ruleId;
 
-  private String ruleName; // 告警名称
+  private String ruleName;
 
-  private Long alarmTime; // 告警时间
+  private Long alarmTime;
 
-  private String alarmLevel; // 告警级别
+  private String alarmLevel;
 
-  private String aggregationNum; // 聚合告警数
+  private String aggregationNum;
 
-  private Map<Trigger, List<NotifyDataInfo>> notifyDataInfos; // 告警计算结果
+  private Map<Trigger, List<NotifyDataInfo>> notifyDataInfos;
 
-  private InspectConfig ruleConfig; // 告警规则配置
+  private InspectConfig ruleConfig;
 
-  private String envType; // 环境类型
+  private String envType;
 
-  private AlertRuleExtra alertRuleExtra; // 告警附加信息
+  private AlertRuleExtra alertRuleExtra;
 
-  public Long alarmHistoryId; // 告警历史 id
+  public Long alarmHistoryId;
 
-  public Long alarmHistoryDetailId; // 告警历史明细 id
+  public Long alarmHistoryDetailId;
 
-  public String sourceType; // 来源类型
+  public String sourceType;
 
-  private Long duration; // 持续时间
+  private Long duration;
 
-  private String alertServer; // 告警机器
+  private String alertServer;
+
+  // log analysis content
+  private List<String> logAnalysis;
 
 }
