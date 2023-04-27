@@ -409,7 +409,7 @@ public class CeresdbxMetricStorage implements MetricStorage {
     if (!isNestedQuery) {
       long start = queryParam.getStart();
       long end = queryParam.getEnd();
-      whereSqlBuilder.append("timestamp >= ").append(start).append(" AND ").append(" timestamp < ")
+      whereSqlBuilder.append("timestamp >= ").append(start).append(" AND ").append(" timestamp <= ")
           .append(end);
     }
     List<QueryFilter> filters = queryParam.getFilters();
@@ -451,7 +451,7 @@ public class CeresdbxMetricStorage implements MetricStorage {
     if (StringUtils.isNotBlank(downsample) && StringUtils.isNotBlank(aggregator)
         && !StringUtils.equalsIgnoreCase(aggregator, "none")) {
       String downsampleSql = "(SELECT time_bucket(`%s`, '%s') as timestamp, %s,"
-          + " %s(value) as value FROM %s WHERE timestamp >= %s AND timestamp < %s group by time_bucket(`%s`, '%s'),%s)";
+          + " %s(value) as value FROM %s WHERE timestamp >= %s AND timestamp <= %s group by time_bucket(`%s`, '%s'),%s)";
       String interval = getInterval(downsample);
       if (StringUtils.isNotBlank(interval)) {
         String tagNames;
