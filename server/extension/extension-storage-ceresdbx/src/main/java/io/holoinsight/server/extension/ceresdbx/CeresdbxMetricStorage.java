@@ -4,7 +4,6 @@
 package io.holoinsight.server.extension.ceresdbx;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -17,14 +16,6 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import io.ceresdb.models.Point.PointBuilder;
-import io.ceresdb.models.Row;
-import io.ceresdb.models.Row.Column;
-import io.ceresdb.models.SqlQueryOk;
-import io.ceresdb.models.SqlQueryRequest;
-import io.ceresdb.models.Value;
-import io.ceresdb.models.WriteRequest;
-import io.holoinsight.server.extension.promql.PqlQueryService;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,7 +28,14 @@ import com.xzchaoo.commons.stat.StringsKey;
 
 import io.ceresdb.CeresDBClient;
 import io.ceresdb.models.Err;
+import io.ceresdb.models.Point.PointBuilder;
+import io.ceresdb.models.Row;
+import io.ceresdb.models.Row.Column;
+import io.ceresdb.models.SqlQueryOk;
+import io.ceresdb.models.SqlQueryRequest;
+import io.ceresdb.models.Value;
 import io.ceresdb.models.WriteOk;
+import io.ceresdb.models.WriteRequest;
 import io.grpc.Context;
 import io.holoinsight.server.extension.MetricStorage;
 import io.holoinsight.server.extension.ceresdbx.utils.StatUtils;
@@ -50,6 +48,7 @@ import io.holoinsight.server.extension.model.QueryResult;
 import io.holoinsight.server.extension.model.QueryResult.Result;
 import io.holoinsight.server.extension.model.WriteMetricsParam;
 import io.holoinsight.server.extension.model.WriteMetricsParam.Point;
+import io.holoinsight.server.extension.promql.PqlQueryService;
 import reactor.core.publisher.Mono;
 
 /**
@@ -242,7 +241,11 @@ public class CeresdbxMetricStorage implements MetricStorage {
     final PointBuilder builder =
         io.ceresdb.models.Point.newPointBuilder(metric).setTimestamp(point.getTimeStamp());
     tags.forEach(builder::addTag);
-    builder.addField("value", Value.withDouble(point.getValue()));
+    if (point.getStrValue() != null) {
+      builder.addField("value", Value.withString(point.getStrValue()));
+    } else {
+      builder.addField("value", Value.withDouble(point.getValue()));
+    }
     oneBatch.add(builder.build());
     return tags.size();
   }
@@ -277,10 +280,14 @@ public class CeresdbxMetricStorage implements MetricStorage {
           continue;
         }
         if ("value".equals(name)) {
-          try {
-            point.setValue(Double.parseDouble(value.getObject().toString()));
-          } catch (Exception e) {
-            point.setValue(0D);
+          if (value.getObject() instanceof String) {
+            point.setStrValue(value.getString());
+          } else {
+            try {
+              point.setValue(Double.parseDouble(value.getObject().toString()));
+            } catch (Exception e) {
+              point.setValue(0D);
+            }
           }
           continue;
         }
