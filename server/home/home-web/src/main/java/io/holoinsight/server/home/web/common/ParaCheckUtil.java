@@ -32,7 +32,7 @@ public class ParaCheckUtil {
 
   private static final Pattern PATTERN_APPLICATION = Pattern.compile("^[a-z]{1,20}");
 
-  private static Pattern PATTERN_SQL = Pattern.compile("^[A-Za-z0-9\\u4e00-\\u9fa5\\-_,\\.]*$");
+  private static Pattern PATTERN_SQL = Pattern.compile("^[A-Za-z0-9\\u4e00-\\u9fa5\\-_ ,\\.]*$");
 
   private static final Pattern PATTERN_AIG_NAME =
       Pattern.compile("^[a-z]{1,20}-[a-z][a-z0-9]{0,27}");
