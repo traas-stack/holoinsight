@@ -22,7 +22,6 @@ import org.apache.commons.lang3.RandomStringUtils;
 import org.hamcrest.Matchers;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 
 import java.time.Duration;
@@ -43,7 +42,6 @@ public class AlertCalculateIT extends BaseIT {
   Long cpId;
   String metricName;
 
-  @Order(1)
   @Test
   public void test_rule_calculate() {
     String name = RandomStringUtils.randomAlphabetic(6);
@@ -228,6 +226,8 @@ public class AlertCalculateIT extends BaseIT {
         });
   }
 
+
+
   private Map<String, Object> buildPeriodAbsRule() {
     Rule rule = new Rule();
     rule.setBoolOperation(BoolOperationEnum.AND);
@@ -245,7 +245,7 @@ public class AlertCalculateIT extends BaseIT {
     trigger.setDownsample(2L);
     trigger.setCompareConfigs(
         Collections.singletonList(buildCompareConfig("periodAbs alert test", 10)));
-    trigger.setDatasources(Collections.singletonList(buildDataSource()));
+    trigger.setDatasources(Collections.singletonList(buildDataSource(this.metricName)));
     trigger.setPeriodType(PeriodType.MINUTE);
     return trigger;
   }
@@ -267,7 +267,7 @@ public class AlertCalculateIT extends BaseIT {
     trigger.setDownsample(2L);
     trigger.setCompareConfigs(
         Collections.singletonList(buildCompareConfig("periodRate alert test", 0.1)));
-    trigger.setDatasources(Collections.singletonList(buildDataSource()));
+    trigger.setDatasources(Collections.singletonList(buildDataSource(this.metricName)));
     trigger.setPeriodType(PeriodType.MINUTE);
     return trigger;
   }
@@ -289,7 +289,7 @@ public class AlertCalculateIT extends BaseIT {
     trigger.setDownsample(2L);
     trigger.setCompareConfigs(
         Collections.singletonList(buildCompareConfig("periodValue alert test", 10)));
-    trigger.setDatasources(Collections.singletonList(buildDataSource()));
+    trigger.setDatasources(Collections.singletonList(buildDataSource(this.metricName)));
     trigger.setPeriodType(PeriodType.MINUTE);
     return trigger;
   }
@@ -312,11 +312,11 @@ public class AlertCalculateIT extends BaseIT {
     trigger.setTriggerTitle("触发条件 title");
     trigger
         .setCompareConfigs(Collections.singletonList(buildCompareConfig("current alert test", 10)));
-    trigger.setDatasources(Collections.singletonList(buildDataSource()));
+    trigger.setDatasources(Collections.singletonList(buildDataSource(this.metricName)));
     return trigger;
   }
 
-  private DataSource buildDataSource() {
+  protected static DataSource buildDataSource(String metricName) {
     DataSource dataSource = new DataSource();
     dataSource.setMetricType("log");
     dataSource.setMetric(metricName);
@@ -325,7 +325,7 @@ public class AlertCalculateIT extends BaseIT {
     return dataSource;
   }
 
-  private CompareConfig buildCompareConfig(String triggerContent, double cmpValue) {
+  protected static CompareConfig buildCompareConfig(String triggerContent, double cmpValue) {
     CompareConfig compareConfig = new CompareConfig();
     compareConfig.setTriggerLevel("4");
     compareConfig.setCompareParam(Collections.singletonList(buildCompareParam(cmpValue)));
@@ -333,7 +333,7 @@ public class AlertCalculateIT extends BaseIT {
     return compareConfig;
   }
 
-  private Map<String, Object> buildTimeFilter() {
+  protected static Map<String, Object> buildTimeFilter() {
     TimeFilter timeFilter = new TimeFilter();
     timeFilter.setModel(TimeFilterEnum.DAY.getDesc());
     timeFilter.setFrom("00:00:00");
@@ -342,7 +342,7 @@ public class AlertCalculateIT extends BaseIT {
     return J.toMap(J.toJson(timeFilter));
   }
 
-  private CompareParam buildCompareParam(double cmpValue) {
+  protected static CompareParam buildCompareParam(double cmpValue) {
     CompareParam param = new CompareParam();
     param.setCmp(CompareOperationEnum.GT);
     param.setCmpValue(cmpValue);

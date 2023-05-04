@@ -65,8 +65,6 @@ public class AlertSaveHistoryHandler implements AlertHandlerExecutor {
   @Resource
   private QueryClientService queryClientService;
 
-  private static final int MAX_LOG_SIZE = 3;
-
   public void handle(List<AlertNotify> alertNotifies) {
     try {
       // Get alert histories that have not yet been recovered

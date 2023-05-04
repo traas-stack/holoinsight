@@ -8,6 +8,7 @@ import static org.junit.platform.engine.discovery.DiscoverySelectors.selectClass
 import io.holoinsight.server.test.it.AlertCalculateIT;
 import io.holoinsight.server.test.it.AlertDingDingRobotIT;
 import io.holoinsight.server.test.it.AlertGroupIT;
+import io.holoinsight.server.test.it.AlertLogAnalysisIT;
 import io.holoinsight.server.test.it.AlertRuleIT;
 import io.holoinsight.server.test.it.AlertWebhookIT;
 import io.holoinsight.server.test.it.CeresdbPqlMonitoringIT;
@@ -71,6 +72,7 @@ public class ITSets {
         .selectors(selectClass(TaskIT.class)) //
         .selectors(selectClass(LogMonitoringMultilineIT.class)) //
         .selectors(selectClass(LogMonitoringAnalysisIT.class)) //
+        .selectors(selectClass(AlertLogAnalysisIT.class)) //
         .build(); //
   }
 }

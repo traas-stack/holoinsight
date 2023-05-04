@@ -74,6 +74,10 @@ public class AlarmHistoryDetailServiceImpl extends
       wrapper.eq("env_type", alarmHistoryDetail.getEnvType());
     }
 
+    if (null != alarmHistoryDetail.getUniqueId()) {
+      wrapper.eq("unique_id", alarmHistoryDetail.getUniqueId());
+    }
+
     if (StringUtil.isNotBlank(pageRequest.getSortBy())
         && StringUtil.isNotBlank(pageRequest.getSortRule())) {
       if (pageRequest.getSortRule().toLowerCase(Locale.ROOT).equals("desc")) {
