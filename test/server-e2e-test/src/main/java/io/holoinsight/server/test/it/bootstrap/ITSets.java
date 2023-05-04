@@ -13,6 +13,7 @@ import io.holoinsight.server.test.it.AlertWebhookIT;
 import io.holoinsight.server.test.it.CeresdbPqlMonitoringIT;
 import io.holoinsight.server.test.it.DashboardIT;
 import io.holoinsight.server.test.it.IntegrationPluginIT;
+import io.holoinsight.server.test.it.LogMonitoringAnalysisIT;
 import io.holoinsight.server.test.it.LogMonitoringMultilineIT;
 import io.holoinsight.server.test.it.MetricMonitoringIT;
 import io.holoinsight.server.test.it.TaskIT;
@@ -69,6 +70,7 @@ public class ITSets {
         .selectors(selectClass(ApmAppMetricStatIT.class)) //
         .selectors(selectClass(TaskIT.class)) //
         .selectors(selectClass(LogMonitoringMultilineIT.class)) //
+        .selectors(selectClass(LogMonitoringAnalysisIT.class)) //
         .build(); //
   }
 }

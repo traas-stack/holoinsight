@@ -74,6 +74,7 @@ services:
     volumes:
     - ./application.yaml:/home/admin/application.yaml:ro
     - share:/share
+    - ../common/logwriter.py:/home/admin/test/logwriter.py:ro
     - ../common/log-generator.py:/home/admin/test/log-generator.py:ro
     - ../common/log-alert-generator.py:/home/admin/test/log-alert-generator.py:ro
   collector:
