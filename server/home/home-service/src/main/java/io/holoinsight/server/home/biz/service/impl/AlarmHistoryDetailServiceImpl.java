@@ -3,6 +3,8 @@
  */
 package io.holoinsight.server.home.biz.service.impl;
 
+import io.holoinsight.server.common.DateUtil;
+import io.holoinsight.server.common.J;
 import io.holoinsight.server.home.biz.service.AlarmHistoryDetailService;
 import io.holoinsight.server.home.common.util.StringUtil;
 import io.holoinsight.server.home.dal.converter.AlarmHistoryDetailConverter;
@@ -14,14 +16,18 @@ import io.holoinsight.server.home.facade.page.MonitorPageResult;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 @Service
+@Slf4j
 public class AlarmHistoryDetailServiceImpl extends
     ServiceImpl<AlarmHistoryDetailMapper, AlarmHistoryDetail> implements AlarmHistoryDetailService {
 
@@ -92,5 +98,34 @@ public class AlarmHistoryDetailServiceImpl extends
     AlarmHistoryDetails.setTotalPage(page.getPages());
 
     return AlarmHistoryDetails;
+  }
+
+  @Override
+  public List<Map<String, Object>> count(MonitorPageRequest<AlarmHistoryDetailDTO> pageRequest) {
+    AlarmHistoryDetailDTO target = pageRequest.getTarget();
+    QueryWrapper<AlarmHistoryDetail> queryWrapper = new QueryWrapper<>();
+    queryWrapper.select("count(1) as c", "alarm_time");
+    queryWrapper.groupBy("alarm_time");
+    queryWrapper.orderByDesc("alarm_time");
+    queryWrapper.last("limit 600");
+
+    if (StringUtils.isNotBlank(target.getUniqueId())) {
+      queryWrapper.eq("unique_id", target.getUniqueId());
+    }
+    if (StringUtils.isNotBlank(target.getTenant())) {
+      queryWrapper.eq("tenant", target.getTenant());
+    }
+    if (StringUtils.isNotBlank(target.getWorkspace())) {
+      queryWrapper.eq("workspace", target.getWorkspace());
+    }
+    queryWrapper.between("gmt_create",
+        DateUtil.getDateOf_YYMMDD_HHMMSS(new Date(pageRequest.getFrom())),
+        DateUtil.getDateOf_YYMMDD_HHMMSS(new Date(pageRequest.getTo())));
+
+    String sql = queryWrapper.getSqlSegment();
+    log.info("sql :{} {}", sql, J.toJson(queryWrapper.getParamNameValuePairs()));
+    List<Map<String, Object>> list = listMaps(queryWrapper);
+
+    return list;
   }
 }
