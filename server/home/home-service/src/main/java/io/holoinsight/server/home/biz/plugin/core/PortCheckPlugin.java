@@ -58,6 +58,7 @@ public class PortCheckPlugin extends AbstractLocalIntegrationPlugin<PortCheckPlu
     List<PortCheckPluginConfig> portCheckPluginConfigs = J.fromJson(J.toJson(map.get("confs")),
         new TypeToken<List<PortCheckPluginConfig>>() {}.getType());
 
+    int i = 0;
     for (PortCheckPluginConfig config : portCheckPluginConfigs) {
       PortCheckPlugin portCheckPlugin = new PortCheckPlugin();
 
@@ -83,7 +84,7 @@ public class PortCheckPlugin extends AbstractLocalIntegrationPlugin<PortCheckPlu
         portCheckPlugin.name = integrationPluginDTO.product.toLowerCase();
         portCheckPlugin.metricName =
             String.join("_", integrationPluginDTO.product.toLowerCase(), "tcp_ping");
-        portCheckPlugin.gaeaTableName = integrationPluginDTO.name + "_" + config.port;
+        portCheckPlugin.gaeaTableName = integrationPluginDTO.name + "_" + i++;
 
         portCheckPlugin.collectRange =
             tenantInitService.getCollectMonitorRange(integrationPluginDTO.getTenant() + "_server",
