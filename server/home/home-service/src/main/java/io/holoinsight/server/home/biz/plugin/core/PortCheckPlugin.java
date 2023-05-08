@@ -12,6 +12,7 @@ import io.holoinsight.server.registry.model.integration.portcheck.PortCheckTask;
 import io.holoinsight.server.common.J;
 import com.google.gson.reflect.TypeToken;
 import io.holoinsight.server.registry.model.ExecuteRule;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -63,6 +64,9 @@ public class PortCheckPlugin extends AbstractLocalIntegrationPlugin<PortCheckPlu
         portCheckTask.times = 1;
         portCheckTask.network = "tcp";
         portCheckTask.networkMode = "AGENT";
+        if (StringUtils.isNotBlank(config.getNetworkMode())) {
+          portCheckTask.networkMode = config.getNetworkMode();
+        }
 
         ExecuteRule executeRule = new ExecuteRule();
         executeRule.setType("fixedRate");

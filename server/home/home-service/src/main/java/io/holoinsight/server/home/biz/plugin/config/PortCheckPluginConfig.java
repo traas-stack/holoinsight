@@ -15,4 +15,5 @@ import lombok.EqualsAndHashCode;
 @Data
 public class PortCheckPluginConfig extends BasePluginConfig {
   public Integer port;
+  public String networkMode;
 }
