@@ -49,4 +49,12 @@ public class GaeaConvertUtil {
 
     return cloudMonitorRange;
   }
+
+  public static CloudMonitorRange convertCloudMonitorRange(String tableName,
+      Map<String, List<String>> conditionMap) {
+    CloudMonitorRange cloudMonitorRange = new CloudMonitorRange();
+    cloudMonitorRange.setTable(tableName);
+    cloudMonitorRange.setCondition(Collections.singletonList(conditionMap));
+    return cloudMonitorRange;
+  }
 }

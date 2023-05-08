@@ -4,7 +4,10 @@
 package io.holoinsight.server.home.biz.service.impl;
 
 import io.holoinsight.server.common.dao.entity.dto.TenantOpsStorage;
+import io.holoinsight.server.home.biz.common.GaeaConvertUtil;
+import io.holoinsight.server.home.biz.plugin.config.MetaLabel;
 import io.holoinsight.server.home.biz.service.TenantInitService;
+import io.holoinsight.server.home.dal.model.dto.CloudMonitorRange;
 import io.holoinsight.server.query.grpc.QueryProto.QueryFilter;
 
 import java.util.HashMap;
@@ -59,6 +62,12 @@ public class DefaultTenantInitServiceImpl implements TenantInitService {
   @Override
   public String getLogMonitorMetricTable(String tableName) {
     return tableName;
+  }
+
+  @Override
+  public CloudMonitorRange getCollectMonitorRange(String table, String workspace,
+      List<String> strings, MetaLabel metaLabel) {
+    return GaeaConvertUtil.convertCloudMonitorRange(table, metaLabel, strings);
   }
 
 }

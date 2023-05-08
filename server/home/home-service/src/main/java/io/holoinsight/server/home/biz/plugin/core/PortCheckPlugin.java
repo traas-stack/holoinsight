@@ -3,16 +3,17 @@
  */
 package io.holoinsight.server.home.biz.plugin.core;
 
-import io.holoinsight.server.home.biz.common.GaeaConvertUtil;
 import io.holoinsight.server.home.biz.plugin.config.PortCheckPluginConfig;
 import io.holoinsight.server.home.biz.plugin.model.PluginModel;
 import io.holoinsight.server.home.biz.plugin.model.PluginType;
+import io.holoinsight.server.home.biz.service.TenantInitService;
 import io.holoinsight.server.home.dal.model.dto.IntegrationPluginDTO;
 import io.holoinsight.server.registry.model.integration.portcheck.PortCheckTask;
 import io.holoinsight.server.common.J;
 import com.google.gson.reflect.TypeToken;
 import io.holoinsight.server.registry.model.ExecuteRule;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -29,6 +30,9 @@ import java.util.Map;
 public class PortCheckPlugin extends AbstractLocalIntegrationPlugin<PortCheckPlugin> {
 
   public PortCheckTask portCheckTask;
+
+  @Autowired
+  public TenantInitService tenantInitService;
 
   @Override
   public PortCheckTask buildTask() {
@@ -81,8 +85,9 @@ public class PortCheckPlugin extends AbstractLocalIntegrationPlugin<PortCheckPlu
             String.join("_", integrationPluginDTO.product.toLowerCase(), "tcp_ping");
         portCheckPlugin.gaeaTableName = integrationPluginDTO.name + "_" + config.port;
 
-        portCheckPlugin.collectRange = GaeaConvertUtil.convertCloudMonitorRange(
-            integrationPluginDTO.getTenant() + "_server", config.getMetaLabel(), config.range);
+        portCheckPlugin.collectRange =
+            tenantInitService.getCollectMonitorRange(integrationPluginDTO.getTenant() + "_server",
+                integrationPluginDTO.getWorkspace(), config.range, config.getMetaLabel());
 
         portCheckPlugin.portCheckTask = portCheckTask;
         portCheckPlugin.collectPlugin = "dialcheck";

@@ -4,6 +4,8 @@
 package io.holoinsight.server.home.biz.service;
 
 import io.holoinsight.server.common.dao.entity.dto.TenantOpsStorage;
+import io.holoinsight.server.home.biz.plugin.config.MetaLabel;
+import io.holoinsight.server.home.dal.model.dto.CloudMonitorRange;
 import io.holoinsight.server.query.grpc.QueryProto.QueryFilter;
 
 import java.util.List;
@@ -80,4 +82,8 @@ public interface TenantInitService {
    * @return
    */
   String getLogMonitorMetricTable(String tableName);
+
+
+  CloudMonitorRange getCollectMonitorRange(String table, String workspace, List<String> strings,
+      MetaLabel metaLabel);
 }
