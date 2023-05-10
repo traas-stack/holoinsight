@@ -125,6 +125,9 @@ public class CollectTargetStorage {
         byTemplate.computeIfAbsent(templateId, i -> MapSetUtils.newCHS());
     for (CollectTarget t : combs) {
       CollectTargetKey key = t.getKey();
+
+      this.delete(key);
+
       byKey.put(key, t);
       templateKeys.add(key);
       MapSetUtils.addMapSetKey(byAgent, t.getRefAgent(), key);
