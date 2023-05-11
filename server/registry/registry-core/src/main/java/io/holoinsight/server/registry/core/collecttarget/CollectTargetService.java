@@ -3,25 +3,23 @@
  */
 package io.holoinsight.server.registry.core.collecttarget;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import io.holoinsight.server.meta.common.model.QueryExample;
-import io.holoinsight.server.meta.facade.service.DataClientService;
-
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import io.holoinsight.server.meta.common.model.QueryExample;
+import io.holoinsight.server.meta.facade.service.DataClientService;
 import io.holoinsight.server.registry.core.agent.Agent;
-import io.holoinsight.server.registry.core.agent.AgentStorage;
 import io.holoinsight.server.registry.core.agent.CentralAgentService;
 import io.holoinsight.server.registry.core.agent.DaemonsetAgent;
 import io.holoinsight.server.registry.core.agent.DaemonsetAgentService;
-import io.holoinsight.server.registry.core.dim.GaeaDimService;
 import io.holoinsight.server.registry.core.template.CollectRange;
 import io.holoinsight.server.registry.core.template.CollectTemplate;
 import io.holoinsight.server.registry.core.template.ExecutorSelector;
@@ -34,16 +32,14 @@ import io.holoinsight.server.registry.core.template.ExecutorSelector;
  */
 @Service
 public class CollectTargetService {
-  @Autowired(required = false)
-  private GaeaDimService gaeaDimService;
   @Autowired
   private DataClientService dataClientService;
-  @Autowired
-  private AgentStorage agentStorage;
   @Autowired
   private CentralAgentService centralAgentService;
   @Autowired
   private DaemonsetAgentService daemonsetAgentService;
+  @Autowired(required = false)
+  private List<TargetHostIPResolver> targetHostIPResolvers = new ArrayList<>();
 
   /**
    * TODO 考虑一下有多个 refAgents 的case
@@ -73,6 +69,15 @@ public class CollectTargetService {
         Map<String, Object> inner = (Map<String, Object>) dimRow.getInner();
         String tenant = t.getTenant();
         String hostIP = (String) inner.get("hostIP");
+        if (StringUtils.isEmpty(hostIP)) {
+          for (TargetHostIPResolver resolver : targetHostIPResolvers) {
+            hostIP = resolver.getHostIP(t, dimRow);
+            if (StringUtils.isNotEmpty(hostIP)) {
+              break;
+            }
+          }
+        }
+
         if (StringUtils.isNotEmpty(hostIP)) {
           DaemonsetAgentService.State state = daemonsetAgentService.getState();
           DaemonsetAgent da = state.getAgents().get(new DaemonsetAgent.Key(tenant, hostIP));
