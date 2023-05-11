@@ -1,0 +1,84 @@
+.loggerHeader {
+  display: flex;
+  align-items: center;
+  margin-bottom: 24px;
+
+  .syncBtn {
+    margin-left: 4px;
+  }
+}
+
+.loggerList {
+  border: 1px solid rgba(0, 10, 26, 16%);
+  border-radius: 8px;
+
+  :global {
+    .ant-list-item {
+      padding: 4px 24px;
+      align-items: flex-start;
+
+      .ant-list-item-meta-content {
+        display: flex;
+      }
+
+      .ant-list-item-meta-title {
+        margin: 0 32px 0 0;
+        color: rgba(0, 10, 26, 89%);
+      }
+
+      .ant-list-item-meta-description {
+        width: calc(100% - 180px);
+      }
+
+      .ant-list-item-action {
+        visibility: hidden;
+      }
+
+      &:hover {
+        background-color: rgba(248, 258, 221, 0.2);
+
+        .ant-list-item-action {
+          visibility: visible;
+        }
+      }
+
+      &:first-child {
+        border-radius: 8px 8px 0 0;
+      }
+    }
+
+    .ant-typography {
+      margin-bottom: 0;
+      overflow-wrap: unset;
+    }
+
+    .ant-typography code {
+      border: 0;
+      background-color: transparent;
+    }
+  }
+}
+
+.extraComponent {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  margin-right: 16px;
+}
+
+.filterContainer {
+  flex: 1;
+  display: flex;
+  align-items: center;
+}
+
+:global {
+  .amui-tp-container {
+    flex: 1;
+  }
+
+  .amui-tp-input-container,
+  .amui-tp-input-area {
+    width: 100% !important;
+  }
+}

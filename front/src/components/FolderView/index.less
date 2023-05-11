@@ -1,0 +1,160 @@
+.xf-card {
+  margin: 0 3px;
+  border: none;
+}
+
+.folderView {
+  background-color: rgba(31, 45, 61, 0.3);
+  border-radius: 8px;
+  box-shadow: rgb(0 10 26 / 8%) 0px 6px 16px -8px;
+  backdrop-filter: blur(50px);
+}
+body[theme='holoLight'] {
+  .folderView{
+    background-color: #fff;
+
+  }
+}
+
+.no-content-warning {
+  padding: 40px 0;
+  // color: rgba(0, 0, 0, 0.5);
+}
+
+.text-center {
+  text-align: center;
+}
+
+.padding10 {
+  padding: 10px 10px 10px 20px;
+}
+
+.xf-fs {
+  .search-btn {
+    margin-right: 20px;
+  }
+
+  button {
+    margin: 0 4px;
+  }
+}
+
+.cursor-pointer {
+  cursor: pointer;
+}
+
+.col-right {
+  text-align: right;
+}
+
+@var-8: 8px;
+@var-16: 16px;
+
+.flex {
+  display: flex;
+}
+
+.item-center {
+  align-items: center;
+}
+
+.flex-col {
+  flex-direction: column;
+}
+
+.justify-center {
+  justify-content: center;
+}
+
+.justify-between {
+  justify-content: space-between;
+}
+
+.hidden {
+  display: none;
+}
+
+.p-16 {
+  padding: @var-16;
+}
+
+.bg-white {
+  background-color: #fff;
+}
+
+.m-b-8 {
+  margin-bottom: @var-8;
+}
+
+.m-r-8 {
+  margin-right: @var-8;
+}
+
+.m-l-8 {
+  margin-left: @var-8;
+}
+
+.m-l-44 {
+  margin-left: 44px;
+}
+
+.m-b-16 {
+  margin-bottom: @var-16;
+}
+
+.m-r-16 {
+  margin-right: @var-16;
+}
+
+.m-l-16 {
+  margin-left: @var-16;
+}
+
+.text-14 {
+  font-size: 14px;
+  line-height: 14px;
+}
+
+.text-16 {
+  font-size: @var-16;
+  line-height: @var-16;
+}
+
+.text-gray {
+  color: rgba(0, 0, 0, 0.45);
+}
+
+.text-hover {
+  font-size: 20px;
+  font-family: 'DINAlternate-Bold';
+  cursor: pointer;
+  transition: 0.5s;
+  &:hover {
+    color: #1890ff;
+  }
+}
+
+.folderViewBread {
+  padding: 10px 10px 0px 20px;
+}
+
+/* 定义滚动条样式 */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+  background-color: rgb(26, 36, 52);
+}
+
+/*定义滚动条轨道 内阴影+圆角*/
+::-webkit-scrollbar-track {
+  box-shadow: inset 0 0 0px rgba(240, 240, 240, 0.5);
+  border-radius: 10px;
+  background-color: rgba(26, 36, 52, 0.5);
+}
+
+/*定义滑块 内阴影+圆角*/
+::-webkit-scrollbar-thumb {
+  border-radius: 10px;
+  box-shadow: inset 0 0 0px rgba(240, 240, 240, 0.1);
+  background-color: rgba(240, 240, 240, 0.5);
+}

@@ -1,0 +1,30 @@
+.row {
+  padding: 0;
+}
+.col {
+  padding: 0;
+  &:last-child {
+    .card {
+      border: none;
+    }
+  }
+}
+.card {
+  width: 100%;
+  height: 180px;
+  border-right: 1px solid var(--card-background-color-gray);
+  overflow: hidden;
+  > h5 {
+    font-size: 14px;
+    color: var(--font-color-primary);
+    line-height: 22px;
+    margin: 20px 0 0 20px;
+  }
+}
+body[theme='holoLight'] {
+  .card {
+    > h5 {
+      color: #000;
+    }
+  }
+}

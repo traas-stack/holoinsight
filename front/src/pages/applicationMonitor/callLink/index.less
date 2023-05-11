@@ -1,0 +1,74 @@
+.appContainer{
+    margin-bottom: 12px;
+    .title{
+        line-height: 32px;
+        font-weight: 500;
+        font-size: 16px;
+    }
+}
+.callLinkTable{
+    :global{
+        .ant-select-selection-overflow {
+            flex-wrap: nowrap;
+        }
+        .ant-select-multiple .ant-select-selection-item{
+            max-width: 300px;
+        }
+    }
+
+    .linkPagination{
+        display: flex;
+        flex-wrap: wrap;
+        row-gap: 8px;
+        margin: 16px 0;
+        justify-content: flex-end;
+        padding: 0;
+        color: rgba(255, 255, 255, 0.85);
+        font-size: 14px;
+        font-variant: tabular-nums;
+        line-height: 1.5715;
+        list-style: none;
+        .linkPaginationBtn{
+            flex: none;
+            box-sizing: border-box;
+            font-family: Arial, Helvetica, sans-serif;
+            outline: 0;
+            display: inline-block;
+            min-width: 32px;
+            margin-right: 8px;
+            height: 32px;
+            color: rgba(255, 255, 255, 0.85);
+            line-height: 32px;
+            text-align: center;
+            vertical-align: middle;
+            list-style: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .linkPaginationText{
+            display: inline-block;
+            min-width: 32px;
+            height: 32px;
+            margin-right: 8px;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+            line-height: 30px;
+            text-align: center;
+            vertical-align: middle;
+            list-style: none;
+            background-color: transparent;
+            border: 1px solid #434343;
+            border-radius: 6px;
+            outline: 0;
+            cursor: pointer;
+            user-select: none;
+            flex: none;
+            box-sizing: border-box;
+        }
+        .linkPaginationTextActive{
+            font-weight: 500;
+            background: transparent;
+            border-color: #177ddc;
+        }
+    }
+}
