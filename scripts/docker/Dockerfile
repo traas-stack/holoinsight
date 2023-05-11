@@ -4,6 +4,7 @@ COPY --chown=admin:admin --from=apache/skywalking-java-agent:8.15.0-java8 /skywa
 # Temporarily disable the grpc plugin, because it will cause our business code to throw exceptions.
 RUN rm /home/admin/skywalking-agent/plugins/apm-grpc-1.x-plugin-8.15.0.jar
 
+#COPY --from=holoinsight/front:test --chown=admin:admin /dist.zip /home/admin/dist.zip
 COPY --from=holoinsight/front:11 --chown=admin:admin /dist.zip /home/admin/dist.zip
 RUN unzip -d /home/admin/holoinsight-server-static/ /home/admin/dist.zip && rm /home/admin/dist.zip
 
