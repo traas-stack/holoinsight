@@ -167,7 +167,8 @@ public class CollectTargetMaintainer {
         CollectTarget ct = build(add0, target);
         needAdd.add(ct);
       } catch (Throwable e) {
-        LOGGER.error("build collect collecttarget error [{}/{}/{}]", add0.getId(), add0.getTableName(), target.getId(), e);
+        LOGGER.error("build collect collecttarget error [{}/{}/{}]", add0.getId(),
+            add0.getTableName(), target.getId(), e);
       }
     }
 
