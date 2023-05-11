@@ -1,0 +1,45 @@
+.expandCard {
+  border-radius: 8px;
+  width: 100%;
+  max-height: 800px;
+  overflow: auto;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+}
+.sider {
+  position: relative;
+  border-right: 1px solid rgba(255, 255, 255, 0.1);
+  width: 0;
+  transition: width ease 200ms;
+  opacity: 0;
+  &.expand {
+    width: 320px;
+    opacity: 1;
+  }
+}
+.content {
+  flex: 1;
+  position: relative;
+}
+.expandBtn {
+  &.expand {
+    border-radius: 50%;
+    transform: translateX(-50%);
+    left: 0;
+  }
+  opacity: 0.4;
+  &:hover {
+    opacity: 1;
+  }
+  visibility: visible;
+  position: absolute;
+  transform: rotate(180deg);
+  top: 24px;
+  left: 0;
+  z-index: 999999;
+  transition: all ease 200ms;
+  border-radius: 50% 0 0 50%;
+  background-color: #303d4c !important;
+  box-shadow: 0 3px 6px -4px rgba(0, 0, 0, 0.12),
+    0 6px 16px 0 rgba(0, 0, 0, 0.08), 0 9px 28px 8px rgba(0, 0, 0, 0.05);
+}

@@ -1,0 +1,32 @@
+.APIMonitor {
+  padding-top: 8px;
+  :global {
+    .ant-pro-card {
+      margin-bottom: 16px;
+      // color: var(--font-color-primary);
+      .ant-pro-card-header-border {
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      }
+      .ant-pro-card-title {
+        color: #fff;
+        font-weight: 600;
+        font-size: 16px;
+      }
+    }
+  }
+}
+body[theme='holoLight'] {
+  :global {
+    .ant-pro-card {
+      color: #000;
+      .ant-pro-card-header-border {
+        border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+      }
+      .ant-pro-card-title {
+        color: #000;
+      }
+    }
+  }
+
+ 
+}

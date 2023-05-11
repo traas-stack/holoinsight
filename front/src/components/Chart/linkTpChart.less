@@ -1,0 +1,69 @@
+.chartWrap {
+  position: relative;
+  background: url('../../assets//chartWrap.png');
+  :global {
+    .g6-minimap {
+      position: absolute;
+      top: 0;
+      left: 0;
+      background-color: #666;
+    }
+    .g6-minimap-viewport {
+      border-color: #666 !important;
+      border-radius: 2px;
+    }
+    .g6-tooltip {
+      padding: 6px;
+      color: #444;
+      background-color: rgba(255, 255, 255, 0.9);
+      border: 1px solid #e2e2e2;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+  }
+}
+
+.fullscreen {
+  position: fixed;
+  background-color: #fff;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 101;
+  height: auto;
+  .controls {
+    top: 0px !important;
+    right: 0px;
+  }
+}
+
+.fullscreenIcon {
+  padding: 4px;
+  border: 1px solid #d9d9d9;
+  border-radius: 2px;
+}
+
+.container {
+  height: 100%;
+  width: 100%;
+  border: 1px solid #555;
+  border-radius: 8px;
+  canvas {
+    cursor: pointer !important;
+  }
+}
+
+.controls {
+  position: absolute;
+  right: -16px;
+}
+body[theme='holoLight'] {
+  .chartWrap {
+    :global {
+      .g6-minimap {
+        background-color: #89898954;
+      }
+    }
+  }
+}

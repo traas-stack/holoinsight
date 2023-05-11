@@ -1,0 +1,43 @@
+.overviewPage {
+  a {
+    user-select: none;
+  }
+  :global {
+    .ant-pro-card {
+      margin-bottom: 16px;
+      color: var(--font-color-primary);
+      .ant-pro-card-header-border {
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      }
+      .ant-pro-card-title {
+        color: #fff;
+        font-weight: 600;
+        font-size: 16px;
+      }
+    }
+  }
+}
+
+.container {
+  margin-top: 12px;
+}
+.depth {
+  color: #fff;
+}
+body[theme='holoLight'] {
+  :global {
+    .ant-pro-card {
+      color: #000;
+
+      .ant-pro-card-title {
+        color: #000;
+      }
+    }
+  }
+  .overviewPage {
+    .depth{
+      color:#000
+    }
+  }
+ 
+}
