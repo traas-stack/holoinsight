@@ -18,4 +18,4 @@ if [ -z "$tag" ]; then
 fi
 
 # build with current arch
-docker buildx build --load -t holoinsight/server:$tag -f ./scripts/docker/Dockerfile .
+docker build -t holoinsight/server:$tag -f ./scripts/docker/Dockerfile .
