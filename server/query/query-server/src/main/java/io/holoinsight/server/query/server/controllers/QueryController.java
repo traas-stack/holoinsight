@@ -3,8 +3,10 @@
  */
 package io.holoinsight.server.query.server.controllers;
 
+import io.holoinsight.server.common.SSRFUtils;
 import io.holoinsight.server.query.grpc.QueryProto;
 import io.holoinsight.server.common.dao.mapper.TenantOpsMapper;
+import io.holoinsight.server.query.grpc.QueryProto.QueryResponse;
 import io.holoinsight.server.query.service.QueryException;
 import io.holoinsight.server.query.service.QueryService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -88,8 +90,12 @@ public class QueryController {
   @PostMapping(path = "/pql/instant", produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<?> pqlInstantQuery(@RequestBody QueryProto.PqlInstantRequest request) {
     try {
-      return ResponseEntity.ok(queryService.pqlInstantQuery(request));
+      SSRFUtils.hookStart();
+      ResponseEntity<QueryResponse> ok = ResponseEntity.ok(queryService.pqlInstantQuery(request));
+      SSRFUtils.hookStop();
+      return ok;
     } catch (QueryException e) {
+      SSRFUtils.hookStop();
       return ResponseEntity.badRequest().body(Collections.singletonMap("message", e.getMessage()));
     }
   }
@@ -97,8 +103,12 @@ public class QueryController {
   @PostMapping(path = "/pql/range", produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<?> pqlRangeQuery(@RequestBody QueryProto.PqlRangeRequest request) {
     try {
-      return ResponseEntity.ok(queryService.pqlRangeQuery(request));
+      SSRFUtils.hookStart();
+      ResponseEntity<QueryResponse> ok = ResponseEntity.ok(queryService.pqlRangeQuery(request));
+      SSRFUtils.hookStop();
+      return ok;
     } catch (QueryException e) {
+      SSRFUtils.hookStop();
       return ResponseEntity.badRequest().body(Collections.singletonMap("message", e.getMessage()));
     }
   }

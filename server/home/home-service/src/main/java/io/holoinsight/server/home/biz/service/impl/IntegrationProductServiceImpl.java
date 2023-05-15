@@ -167,4 +167,11 @@ public class IntegrationProductServiceImpl extends
     List<IntegrationProduct> customPlugins = baseMapper.selectList(wrapper);
     return IntegrationProductConverter.dosToDTOs(customPlugins);
   }
+
+  @Override
+  public List<IntegrationProductDTO> queryByRows() {
+    QueryWrapper<IntegrationProduct> queryWrapper = new QueryWrapper<>();
+    queryWrapper.select("id", "name", "type", "version");
+    return IntegrationProductConverter.dosToDTOs(baseMapper.selectList(queryWrapper));
+  }
 }

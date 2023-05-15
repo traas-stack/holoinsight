@@ -483,7 +483,7 @@ public class GaeaSqlTaskUtil {
   public static GroupBy buildGroupBy(LogParse logParse,
       Map<String, Map<String, SplitCol>> splitColMap, CollectMetric collectMetric) {
 
-    if (null != logParse.pattern && logParse.pattern.logPattern) {
+    if (logParse.checkIsPattern() && collectMetric.checkLogPattern()) {
       return buildLogPatternParse(logParse);
     }
     List<String> tags = collectMetric.getTags();

@@ -8,6 +8,8 @@ import io.holoinsight.server.home.biz.plugin.model.Plugin;
 import io.holoinsight.server.home.biz.plugin.model.PluginModel;
 import io.holoinsight.server.home.biz.service.EnvironmentService;
 import io.holoinsight.server.home.task.AbstractMonitorTask;
+import io.holoinsight.server.home.task.MetricCrawler;
+import io.holoinsight.server.home.task.MetricCrawlerBuilder;
 import io.holoinsight.server.home.task.TaskFactoryHolder;
 import io.holoinsight.server.home.task.TaskHandler;
 import org.springframework.aop.framework.AopProxyUtils;
@@ -37,6 +39,7 @@ public class MonitorBeanPostProcessor implements BeanPostProcessor {
     processTokenUrlScopeAnnotation(bean, beanClass);
     processExecutorHandlerAnnotation(bean, beanClass);
     processPluginModelAnnotation(bean, beanClass);
+    processCrawlerHandlerAnnotation(bean, beanClass);
     return bean;
   }
 
@@ -75,4 +78,12 @@ public class MonitorBeanPostProcessor implements BeanPostProcessor {
     }
   }
 
+  private void processCrawlerHandlerAnnotation(Object bean, Class<?> beanClass) {
+
+    MetricCrawler metricCrawler = beanClass.getAnnotation(MetricCrawler.class);
+    if (metricCrawler == null) {
+      return;
+    }
+    TaskFactoryHolder.setCrawlerTask(metricCrawler, (MetricCrawlerBuilder) bean);
+  }
 }

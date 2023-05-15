@@ -42,4 +42,8 @@ public class LogParse implements Serializable {
   public static class LogRegexp {
     public String expression;
   }
+
+  public boolean checkIsPattern() {
+    return null != pattern && pattern.logPattern;
+  }
 }

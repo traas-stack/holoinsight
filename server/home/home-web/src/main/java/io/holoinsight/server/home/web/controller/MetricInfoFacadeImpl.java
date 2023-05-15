@@ -12,6 +12,7 @@ import io.holoinsight.server.home.common.util.scope.AuthTargetType;
 import io.holoinsight.server.home.common.util.scope.MonitorScope;
 import io.holoinsight.server.home.common.util.scope.PowerConstants;
 import io.holoinsight.server.home.common.util.scope.RequestContext;
+import io.holoinsight.server.home.task.MetricCrawlerConstant;
 import io.holoinsight.server.home.web.common.ManageCallback;
 import io.holoinsight.server.home.web.common.ParaCheckUtil;
 import io.holoinsight.server.home.web.interceptor.MonitorScopeAuth;
@@ -34,10 +35,10 @@ public class MetricInfoFacadeImpl extends BaseFacade {
   @Autowired
   private MetricInfoService metricInfoService;
 
-  @GetMapping(value = "/query/{tenant}/{product}")
+  @GetMapping(value = "/query/{tenant}/{workspace}/{product}")
   @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.VIEW)
   public JsonResult<List<MetricInfoDTO>> queryByProduct(@PathVariable("tenant") String tenant,
-      @PathVariable("product") String product) {
+      @PathVariable("workspace") String workspace, @PathVariable("product") String product) {
     final JsonResult<List<MetricInfoDTO>> result = new JsonResult<>();
     facadeTemplate.manage(result, new ManageCallback() {
       @Override
@@ -45,16 +46,20 @@ public class MetricInfoFacadeImpl extends BaseFacade {
         ParaCheckUtil.checkParaNotNull(tenant, "tenant");
         ParaCheckUtil.checkParaNotNull(product, "product");
         MonitorScope ms = RequestContext.getContext().ms;
-        if (!tenant.equalsIgnoreCase("global") && !ms.getTenant().equalsIgnoreCase(tenant)) {
+        if (!tenant.equalsIgnoreCase(MetricCrawlerConstant.GLOBAL_TENANT)
+            && !ms.getTenant().equalsIgnoreCase(tenant)) {
+          throw new MonitorException("tenant is illegal, " + tenant);
+        }
+        if (!tenant.equalsIgnoreCase(MetricCrawlerConstant.GLOBAL_WORKSPACE)
+            && !ms.getWorkspace().equalsIgnoreCase(workspace)) {
           throw new MonitorException("tenant is illegal, " + tenant);
         }
       }
 
       @Override
       public void doManage() {
-        MonitorScope ms = RequestContext.getContext().ms;
-        JsonResult.createSuccessResult(result, metricInfoService.queryListByTenantProduct(tenant,
-            !tenant.equalsIgnoreCase("global") ? ms.getWorkspace() : null, product));
+        JsonResult.createSuccessResult(result,
+            metricInfoService.queryListByTenantProduct(tenant, workspace, product));
       }
     });
     return result;
