@@ -1,6 +1,3 @@
-/*
- * Copyright 2022 Holoinsight Project Authors. Licensed under Apache-2.0.
- */
 package io.holoinsight.server.query.grpc;
 
 import static io.grpc.MethodDescriptor.generateFullMethodName;
@@ -283,6 +280,36 @@ public final class QueryServiceGrpc {
       }
     }
     return getQueryTraceMethod;
+  }
+
+  private static volatile io.grpc.MethodDescriptor<io.holoinsight.server.query.grpc.QueryProto.QueryTraceRequest, io.holoinsight.server.query.grpc.QueryProto.StatisticData> getBillingTraceMethod;
+
+  @io.grpc.stub.annotations.RpcMethod(fullMethodName = SERVICE_NAME + '/' + "BillingTrace",
+      requestType = io.holoinsight.server.query.grpc.QueryProto.QueryTraceRequest.class,
+      responseType = io.holoinsight.server.query.grpc.QueryProto.StatisticData.class,
+      methodType = io.grpc.MethodDescriptor.MethodType.UNARY)
+  public static io.grpc.MethodDescriptor<io.holoinsight.server.query.grpc.QueryProto.QueryTraceRequest, io.holoinsight.server.query.grpc.QueryProto.StatisticData> getBillingTraceMethod() {
+    io.grpc.MethodDescriptor<io.holoinsight.server.query.grpc.QueryProto.QueryTraceRequest, io.holoinsight.server.query.grpc.QueryProto.StatisticData> getBillingTraceMethod;
+    if ((getBillingTraceMethod = QueryServiceGrpc.getBillingTraceMethod) == null) {
+      synchronized (QueryServiceGrpc.class) {
+        if ((getBillingTraceMethod = QueryServiceGrpc.getBillingTraceMethod) == null) {
+          QueryServiceGrpc.getBillingTraceMethod = getBillingTraceMethod =
+              io.grpc.MethodDescriptor.<io.holoinsight.server.query.grpc.QueryProto.QueryTraceRequest, io.holoinsight.server.query.grpc.QueryProto.StatisticData>newBuilder()
+                  .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
+                  .setFullMethodName(generateFullMethodName(SERVICE_NAME, "BillingTrace"))
+                  .setSampledToLocalTracing(true)
+                  .setRequestMarshaller(io.grpc.protobuf.ProtoUtils
+                      .marshaller(io.holoinsight.server.query.grpc.QueryProto.QueryTraceRequest
+                          .getDefaultInstance()))
+                  .setResponseMarshaller(io.grpc.protobuf.ProtoUtils
+                      .marshaller(io.holoinsight.server.query.grpc.QueryProto.StatisticData
+                          .getDefaultInstance()))
+                  .setSchemaDescriptor(new QueryServiceMethodDescriptorSupplier("BillingTrace"))
+                  .build();
+        }
+      }
+    }
+    return getBillingTraceMethod;
   }
 
   private static volatile io.grpc.MethodDescriptor<io.holoinsight.server.query.grpc.QueryProto.QueryMetaRequest, io.holoinsight.server.query.grpc.QueryProto.QueryMetaResponse> getQueryServiceListMethod;
@@ -626,6 +653,14 @@ public final class QueryServiceGrpc {
 
     /**
      */
+    public void billingTrace(io.holoinsight.server.query.grpc.QueryProto.QueryTraceRequest request,
+        io.grpc.stub.StreamObserver<io.holoinsight.server.query.grpc.QueryProto.StatisticData> responseObserver) {
+      io.grpc.stub.ServerCalls.asyncUnimplementedUnaryCall(getBillingTraceMethod(),
+          responseObserver);
+    }
+
+    /**
+     */
     public void queryServiceList(
         io.holoinsight.server.query.grpc.QueryProto.QueryMetaRequest request,
         io.grpc.stub.StreamObserver<io.holoinsight.server.query.grpc.QueryProto.QueryMetaResponse> responseObserver) {
@@ -717,6 +752,9 @@ public final class QueryServiceGrpc {
           .addMethod(getQueryTraceMethod(), io.grpc.stub.ServerCalls.asyncUnaryCall(
               new MethodHandlers<io.holoinsight.server.query.grpc.QueryProto.QueryTraceRequest, io.holoinsight.server.query.grpc.QueryProto.Trace>(
                   this, METHODID_QUERY_TRACE)))
+          .addMethod(getBillingTraceMethod(), io.grpc.stub.ServerCalls.asyncUnaryCall(
+              new MethodHandlers<io.holoinsight.server.query.grpc.QueryProto.QueryTraceRequest, io.holoinsight.server.query.grpc.QueryProto.StatisticData>(
+                  this, METHODID_BILLING_TRACE)))
           .addMethod(getQueryServiceListMethod(), io.grpc.stub.ServerCalls.asyncUnaryCall(
               new MethodHandlers<io.holoinsight.server.query.grpc.QueryProto.QueryMetaRequest, io.holoinsight.server.query.grpc.QueryProto.QueryMetaResponse>(
                   this, METHODID_QUERY_SERVICE_LIST)))
@@ -833,6 +871,15 @@ public final class QueryServiceGrpc {
         io.grpc.stub.StreamObserver<io.holoinsight.server.query.grpc.QueryProto.Trace> responseObserver) {
       io.grpc.stub.ClientCalls.asyncUnaryCall(
           getChannel().newCall(getQueryTraceMethod(), getCallOptions()), request, responseObserver);
+    }
+
+    /**
+     */
+    public void billingTrace(io.holoinsight.server.query.grpc.QueryProto.QueryTraceRequest request,
+        io.grpc.stub.StreamObserver<io.holoinsight.server.query.grpc.QueryProto.StatisticData> responseObserver) {
+      io.grpc.stub.ClientCalls.asyncUnaryCall(
+          getChannel().newCall(getBillingTraceMethod(), getCallOptions()), request,
+          responseObserver);
     }
 
     /**
@@ -994,6 +1041,14 @@ public final class QueryServiceGrpc {
 
     /**
      */
+    public io.holoinsight.server.query.grpc.QueryProto.StatisticData billingTrace(
+        io.holoinsight.server.query.grpc.QueryProto.QueryTraceRequest request) {
+      return io.grpc.stub.ClientCalls.blockingUnaryCall(getChannel(), getBillingTraceMethod(),
+          getCallOptions(), request);
+    }
+
+    /**
+     */
     public io.holoinsight.server.query.grpc.QueryProto.QueryMetaResponse queryServiceList(
         io.holoinsight.server.query.grpc.QueryProto.QueryMetaRequest request) {
       return io.grpc.stub.ClientCalls.blockingUnaryCall(getChannel(), getQueryServiceListMethod(),
@@ -1137,6 +1192,14 @@ public final class QueryServiceGrpc {
 
     /**
      */
+    public com.google.common.util.concurrent.ListenableFuture<io.holoinsight.server.query.grpc.QueryProto.StatisticData> billingTrace(
+        io.holoinsight.server.query.grpc.QueryProto.QueryTraceRequest request) {
+      return io.grpc.stub.ClientCalls.futureUnaryCall(
+          getChannel().newCall(getBillingTraceMethod(), getCallOptions()), request);
+    }
+
+    /**
+     */
     public com.google.common.util.concurrent.ListenableFuture<io.holoinsight.server.query.grpc.QueryProto.QueryMetaResponse> queryServiceList(
         io.holoinsight.server.query.grpc.QueryProto.QueryMetaRequest request) {
       return io.grpc.stub.ClientCalls.futureUnaryCall(
@@ -1201,13 +1264,14 @@ public final class QueryServiceGrpc {
   private static final int METHODID_PQL_RANGE_QUERY = 6;
   private static final int METHODID_QUERY_BASIC_TRACES = 7;
   private static final int METHODID_QUERY_TRACE = 8;
-  private static final int METHODID_QUERY_SERVICE_LIST = 9;
-  private static final int METHODID_QUERY_ENDPOINT_LIST = 10;
-  private static final int METHODID_QUERY_SERVICE_INSTANCE_LIST = 11;
-  private static final int METHODID_QUERY_COMPONENT_LIST = 12;
-  private static final int METHODID_QUERY_COMPONENT_TRACE_IDS = 13;
-  private static final int METHODID_QUERY_TOPOLOGY = 14;
-  private static final int METHODID_QUERY_SLOW_SQL_LIST = 15;
+  private static final int METHODID_BILLING_TRACE = 9;
+  private static final int METHODID_QUERY_SERVICE_LIST = 10;
+  private static final int METHODID_QUERY_ENDPOINT_LIST = 11;
+  private static final int METHODID_QUERY_SERVICE_INSTANCE_LIST = 12;
+  private static final int METHODID_QUERY_COMPONENT_LIST = 13;
+  private static final int METHODID_QUERY_COMPONENT_TRACE_IDS = 14;
+  private static final int METHODID_QUERY_TOPOLOGY = 15;
+  private static final int METHODID_QUERY_SLOW_SQL_LIST = 16;
 
   private static final class MethodHandlers<Req, Resp>
       implements io.grpc.stub.ServerCalls.UnaryMethod<Req, Resp>,
@@ -1267,6 +1331,11 @@ public final class QueryServiceGrpc {
           serviceImpl.queryTrace(
               (io.holoinsight.server.query.grpc.QueryProto.QueryTraceRequest) request,
               (io.grpc.stub.StreamObserver<io.holoinsight.server.query.grpc.QueryProto.Trace>) responseObserver);
+          break;
+        case METHODID_BILLING_TRACE:
+          serviceImpl.billingTrace(
+              (io.holoinsight.server.query.grpc.QueryProto.QueryTraceRequest) request,
+              (io.grpc.stub.StreamObserver<io.holoinsight.server.query.grpc.QueryProto.StatisticData>) responseObserver);
           break;
         case METHODID_QUERY_SERVICE_LIST:
           serviceImpl.queryServiceList(
@@ -1368,8 +1437,8 @@ public final class QueryServiceGrpc {
               .addMethod(getQuerySchemaMethod()).addMethod(getQueryMetricsMethod())
               .addMethod(getDeleteKeysMethod()).addMethod(getPqlInstantQueryMethod())
               .addMethod(getPqlRangeQueryMethod()).addMethod(getQueryBasicTracesMethod())
-              .addMethod(getQueryTraceMethod()).addMethod(getQueryServiceListMethod())
-              .addMethod(getQueryEndpointListMethod())
+              .addMethod(getQueryTraceMethod()).addMethod(getBillingTraceMethod())
+              .addMethod(getQueryServiceListMethod()).addMethod(getQueryEndpointListMethod())
               .addMethod(getQueryServiceInstanceListMethod())
               .addMethod(getQueryComponentListMethod()).addMethod(getQueryComponentTraceIdsMethod())
               .addMethod(getQueryTopologyMethod()).addMethod(getQuerySlowSqlListMethod()).build();

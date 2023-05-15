@@ -3,9 +3,13 @@
  */
 package io.holoinsight.server.apm.common.model.query;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class StatisticData {
   private String tenant;
   private long traceCount;
