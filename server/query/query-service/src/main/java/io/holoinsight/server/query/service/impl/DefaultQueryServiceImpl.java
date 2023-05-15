@@ -295,13 +295,6 @@ public class DefaultQueryServiceImpl implements QueryService {
       } else {
         queryTraceRequest.setTraceState(TraceState.valueOf(request.getTraceState()));
       }
-      if (StringUtils.isEmpty(request.getQueryOrder())) {
-        queryTraceRequest.setQueryOrder(QueryOrder.BY_DURATION);
-      } else {
-        queryTraceRequest.setQueryOrder(QueryOrder.valueOf(request.getQueryOrder()));
-      }
-      Assert.isTrue(request.getPageSize() > 0, "page size should be set!");
-      queryTraceRequest.setPaging(new Pagination(request.getPageNum(), request.getPageSize()));
       queryTraceRequest.setTags(ApmConvertor.convertTagsMap(request.getTagsMap()));
       Call<StatisticData> call = apmAPI.billing(queryTraceRequest);
       Response<StatisticData> statisticDataRsp = call.execute();
