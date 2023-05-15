@@ -4,6 +4,7 @@
 package io.holoinsight.server.apm.web;
 
 import io.holoinsight.server.apm.common.model.query.QueryTraceRequest;
+import io.holoinsight.server.apm.common.model.query.StatisticData;
 import io.holoinsight.server.apm.common.model.query.TraceBrief;
 import io.holoinsight.server.apm.common.model.specification.sw.Trace;
 import io.holoinsight.server.apm.web.model.FailResponse;
@@ -48,4 +49,18 @@ public interface TraceApi {
       consumes = {"application/json"}, method = RequestMethod.POST)
   ResponseEntity<Trace> queryTrace(@ApiParam(value = "trace查询条件。",
       required = false) @Valid @RequestBody QueryTraceRequest request) throws Exception;
+
+
+  @ApiOperation(value = "billing", nickname = "billing", notes = "根据条件进行计费。",
+      response = StatisticData.class, authorizations = {@Authorization(value = "APIKeyHeader"),
+          @Authorization(value = "APIKeyQueryParam")},
+      tags = {"billing",})
+  @ApiResponses(
+      value = {@ApiResponse(code = 200, message = "请求正常。", response = StatisticData.class),
+          @ApiResponse(code = 400, message = "请求失败。", response = FailResponse.class)})
+  @RequestMapping(value = "/billing", produces = {"application/json"},
+      consumes = {"application/json"}, method = RequestMethod.POST)
+  ResponseEntity<StatisticData> billing(
+      @ApiParam(value = "查询条件。", required = false) @Valid @RequestBody QueryTraceRequest request)
+      throws Exception;
 }

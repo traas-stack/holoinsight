@@ -28,5 +28,9 @@ public interface SpanStorage extends WritableStorage<SpanDO>, ReadableStorage {
 
   Trace queryTrace(final String traceId) throws Exception;
 
-  List<StatisticData> statisticTrace(long startTime, long endTime) throws Exception;
+  StatisticData billing(final String tenant, String serviceName, String serviceInstanceName,
+      String endpointName, List<String> traceIds, int minTraceDuration, int maxTraceDuration,
+      TraceState traceState, long start, long end, List<Tag> tags) throws Exception;
+
+  List<StatisticData> statistic(long startTime, long endTime) throws Exception;
 }

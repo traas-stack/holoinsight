@@ -10,6 +10,7 @@ import io.holoinsight.server.apm.common.model.query.Pagination;
 import io.holoinsight.server.apm.common.model.query.QueryOrder;
 import io.holoinsight.server.apm.common.model.query.StatisticData;
 import io.holoinsight.server.apm.common.model.query.TraceBrief;
+import io.holoinsight.server.apm.common.model.specification.OtlpMappings;
 import io.holoinsight.server.apm.common.model.specification.otel.Event;
 import io.holoinsight.server.apm.common.model.specification.otel.KeyValue;
 import io.holoinsight.server.apm.common.model.specification.otel.Link;
@@ -39,6 +40,8 @@ import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.index.query.RangeQueryBuilder;
 import org.elasticsearch.index.query.TermQueryBuilder;
 import org.elasticsearch.index.query.TermsQueryBuilder;
+import org.elasticsearch.search.aggregations.AbstractAggregationBuilder;
+import org.elasticsearch.search.aggregations.AggregationBuilder;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
 import org.elasticsearch.search.aggregations.Aggregator;
 import org.elasticsearch.search.aggregations.bucket.filter.Filter;
@@ -77,49 +80,8 @@ public class SpanEsStorage extends RecordEsStorage<SpanDO> implements SpanStorag
       long start, long end, List<Tag> tags) throws IOException {
     SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
 
-    BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder();
-    searchSourceBuilder.query(boolQueryBuilder);
-
-    if (StringUtils.isNotEmpty(tenant)) {
-      boolQueryBuilder.must(new TermQueryBuilder(SpanDO.resource(SpanDO.TENANT), tenant));
-    }
-    if (start != 0 && end != 0) {
-      boolQueryBuilder.must(new RangeQueryBuilder(timeField()).gte(start).lte(end));
-    }
-
-    if (minTraceDuration != 0 || maxTraceDuration != 0) {
-      RangeQueryBuilder rangeQueryBuilder = new RangeQueryBuilder(SpanDO.LATENCY);
-      if (minTraceDuration != 0) {
-        rangeQueryBuilder.gte(minTraceDuration);
-      }
-      if (maxTraceDuration != 0) {
-        rangeQueryBuilder.lte(maxTraceDuration);
-      }
-      boolQueryBuilder.must(rangeQueryBuilder);
-    }
-    if (StringUtils.isNotEmpty(serviceName)) {
-      boolQueryBuilder
-          .must(new TermQueryBuilder(SpanDO.resource(SpanDO.SERVICE_NAME), serviceName));
-    }
-    if (StringUtils.isNotEmpty(serviceInstanceName)) {
-      boolQueryBuilder.must(
-          new TermQueryBuilder(SpanDO.resource(SpanDO.SERVICE_INSTANCE_NAME), serviceInstanceName));
-    }
-    if (!Strings.isNullOrEmpty(endpointName)) {
-      boolQueryBuilder.must(new TermQueryBuilder(SpanDO.NAME, endpointName));
-    }
-    if (CollectionUtils.isNotEmpty(traceIds)) {
-      boolQueryBuilder.must(new TermsQueryBuilder(SpanDO.TRACE_ID, traceIds));
-    }
-    switch (traceState) {
-      case ERROR:
-        boolQueryBuilder
-            .must(new TermQueryBuilder(SpanDO.TRACE_STATUS, StatusCode.ERROR.getCode()));
-        break;
-      case SUCCESS:
-        boolQueryBuilder.must(new TermQueryBuilder(SpanDO.TRACE_STATUS, StatusCode.OK.getCode()));
-        break;
-    }
+    searchSourceBuilder.query(boolQueryBuilder(tenant, serviceName, serviceInstanceName,
+        endpointName, traceIds, minTraceDuration, maxTraceDuration, traceState, start, end, tags));
 
     switch (queryOrder) {
       case BY_START_TIME:
@@ -129,13 +91,6 @@ public class SpanEsStorage extends RecordEsStorage<SpanDO> implements SpanStorag
         searchSourceBuilder.sort(SpanDO.LATENCY, SortOrder.DESC);
         break;
     }
-    if (CollectionUtils.isNotEmpty(tags)) {
-      BoolQueryBuilder tagMatchQuery = new BoolQueryBuilder();
-      tags.forEach(tag -> tagMatchQuery
-          .must(new TermQueryBuilder(SpanDO.attributes(tag.getKey()), tag.getValue())));
-      boolQueryBuilder.must(tagMatchQuery);
-    }
-
     int limit = paging.getPageSize();
     int from = paging.getPageSize() * ((paging.getPageNum() == 0 ? 1 : paging.getPageNum()) - 1);
     searchSourceBuilder.from(from).size(limit);
@@ -212,7 +167,62 @@ public class SpanEsStorage extends RecordEsStorage<SpanDO> implements SpanStorag
   }
 
   @Override
-  public List<StatisticData> statisticTrace(long startTime, long endTime) throws IOException {
+  public StatisticData billing(final String tenant, String serviceName, String serviceInstanceName,
+      String endpointName, List<String> traceIds, int minTraceDuration, int maxTraceDuration,
+      TraceState traceState, long start, long end, List<Tag> tags) throws Exception {
+
+    BoolQueryBuilder queryBuilder = boolQueryBuilder(tenant, serviceName, serviceInstanceName,
+        endpointName, traceIds, minTraceDuration, maxTraceDuration, traceState, start, end, tags);
+
+
+    AggregationBuilder aggregationBuilder =
+        AggregationBuilders.cardinality("service_count").field(SpanDO.resource(SpanDO.SERVICE_NAME))
+            .subAggregation(AggregationBuilders.cardinality("trace_count").field(SpanDO.TRACE_ID))
+            .subAggregation(
+                AggregationBuilders
+                    .filter(SpanDO.TRACE_STATUS,
+                        QueryBuilders.termQuery(SpanDO.TRACE_STATUS,
+                            Status.StatusCode.STATUS_CODE_ERROR_VALUE))
+                    .subAggregation(
+                        AggregationBuilders.cardinality("error_count").field(SpanDO.TRACE_ID)))
+            .subAggregation(AggregationBuilders.avg("avg_latency").field(SpanDO.LATENCY));
+
+    SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
+    sourceBuilder.size(0);
+    sourceBuilder.query(queryBuilder);
+    sourceBuilder.aggregation(aggregationBuilder);
+    sourceBuilder.trackTotalHits(true);
+
+    SearchRequest searchRequest = new SearchRequest(SpanDO.INDEX_NAME);
+    searchRequest.source(sourceBuilder);
+    SearchResponse response = esClient().search(searchRequest, RequestOptions.DEFAULT);
+
+
+    ParsedCardinality serviceTerm = response.getAggregations().get("service_count");
+    long serviceCount = serviceTerm.getValue();
+
+    ParsedCardinality traceTerm = response.getAggregations().get("trace_count");
+    long traceCount = traceTerm.getValue();
+
+    Filter errFilter = response.getAggregations().get(SpanDO.TRACE_STATUS);
+    ParsedCardinality errorTerm = errFilter.getAggregations().get("error_count");
+    int errorCount = (int) errorTerm.getValue();
+
+    Avg avgLatency = response.getAggregations().get("avg_latency");
+    double latency = Double.valueOf(avgLatency.getValue());
+
+    StatisticData statisticData = new StatisticData();
+    statisticData.setSpanCount(response.getHits().getTotalHits().value);
+    statisticData.setServiceCount(serviceCount);
+    statisticData.setTraceCount(traceCount);
+    statisticData.setAvgLatency(latency);
+    statisticData.setSuccessRate(((double) (traceCount - errorCount) / traceCount) * 100);
+
+    return statisticData;
+  }
+
+  @Override
+  public List<StatisticData> statistic(long startTime, long endTime) throws IOException {
     List<StatisticData> result = new ArrayList<>();
 
     BoolQueryBuilder queryBuilder = QueryBuilders.boolQuery()
@@ -235,9 +245,10 @@ public class SpanEsStorage extends RecordEsStorage<SpanDO> implements SpanStorag
             .size(1000);
 
     SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
-    sourceBuilder.size(1000);
+    sourceBuilder.size(0);
     sourceBuilder.query(queryBuilder);
     sourceBuilder.aggregation(aggregationBuilder);
+    sourceBuilder.trackTotalHits(true);
 
     SearchRequest searchRequest = new SearchRequest(SpanDO.INDEX_NAME);
     searchRequest.source(sourceBuilder);
@@ -262,6 +273,7 @@ public class SpanEsStorage extends RecordEsStorage<SpanDO> implements SpanStorag
 
       StatisticData statisticData = new StatisticData();
       statisticData.setTenant(tenant);
+      statisticData.setSpanCount(response.getHits().getTotalHits().value);
       statisticData.setServiceCount(serviceCount);
       statisticData.setTraceCount(traceCount);
       statisticData.setAvgLatency(latency);
@@ -384,5 +396,61 @@ public class SpanEsStorage extends RecordEsStorage<SpanDO> implements SpanStorag
         findChildren(spans, span, childrenSpan);
       }
     });
+  }
+
+  private BoolQueryBuilder boolQueryBuilder(final String tenant, String serviceName,
+      String serviceInstanceName, String endpointName, List<String> traceIds, int minTraceDuration,
+      int maxTraceDuration, TraceState traceState, long start, long end, List<Tag> tags) {
+    BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder();
+
+    if (StringUtils.isNotEmpty(tenant)) {
+      boolQueryBuilder.must(new TermQueryBuilder(SpanDO.resource(SpanDO.TENANT), tenant));
+    }
+    if (start != 0 && end != 0) {
+      boolQueryBuilder.must(new RangeQueryBuilder(timeField()).gte(start).lte(end));
+    }
+
+    if (minTraceDuration != 0 || maxTraceDuration != 0) {
+      RangeQueryBuilder rangeQueryBuilder = new RangeQueryBuilder(SpanDO.LATENCY);
+      if (minTraceDuration != 0) {
+        rangeQueryBuilder.gte(minTraceDuration);
+      }
+      if (maxTraceDuration != 0) {
+        rangeQueryBuilder.lte(maxTraceDuration);
+      }
+      boolQueryBuilder.must(rangeQueryBuilder);
+    }
+    if (StringUtils.isNotEmpty(serviceName)) {
+      boolQueryBuilder
+          .must(new TermQueryBuilder(SpanDO.resource(SpanDO.SERVICE_NAME), serviceName));
+    }
+    if (StringUtils.isNotEmpty(serviceInstanceName)) {
+      boolQueryBuilder.must(
+          new TermQueryBuilder(SpanDO.resource(SpanDO.SERVICE_INSTANCE_NAME), serviceInstanceName));
+    }
+    if (!Strings.isNullOrEmpty(endpointName)) {
+      boolQueryBuilder.must(new TermQueryBuilder(SpanDO.NAME, endpointName));
+    }
+    if (CollectionUtils.isNotEmpty(traceIds)) {
+      boolQueryBuilder.must(new TermsQueryBuilder(SpanDO.TRACE_ID, traceIds));
+    }
+    switch (traceState) {
+      case ERROR:
+        boolQueryBuilder
+            .must(new TermQueryBuilder(SpanDO.TRACE_STATUS, StatusCode.ERROR.getCode()));
+        break;
+      case SUCCESS:
+        boolQueryBuilder.must(new TermQueryBuilder(SpanDO.TRACE_STATUS, StatusCode.OK.getCode()));
+        break;
+    }
+
+
+    if (CollectionUtils.isNotEmpty(tags)) {
+      BoolQueryBuilder tagMatchQuery = new BoolQueryBuilder();
+      tags.forEach(tag -> tagMatchQuery.must(new TermQueryBuilder(
+          OtlpMappings.toOtlp(SpanDO.INDEX_NAME, tag.getKey()), tag.getValue())));
+      boolQueryBuilder.must(tagMatchQuery);
+    }
+    return boolQueryBuilder;
   }
 }

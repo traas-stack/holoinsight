@@ -8,6 +8,7 @@ import lombok.Data;
 @Data
 public class StatisticData {
   private String tenant;
+  private long spanCount;
   private long serviceCount;
   private long traceCount;
   private double successRate;
