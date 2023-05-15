@@ -180,6 +180,9 @@ public class SpanEsStorage extends RecordEsStorage<SpanDO> implements SpanStorag
     sourceBuilder
         .aggregation(AggregationBuilders.cardinality("service_count")
             .field(SpanDO.resource(SpanDO.SERVICE_NAME)))
+        .aggregation(AggregationBuilders.cardinality("service_instance_count")
+            .field(SpanDO.resource(SpanDO.SERVICE_INSTANCE_NAME)))
+        .aggregation(AggregationBuilders.cardinality("endpoint_count").field(SpanDO.NAME))
         .aggregation(AggregationBuilders.cardinality("trace_count").field(SpanDO.TRACE_ID))
         .aggregation(AggregationBuilders.filter(SpanDO.TRACE_STATUS,
             QueryBuilders.termQuery(SpanDO.TRACE_STATUS, Status.StatusCode.STATUS_CODE_ERROR_VALUE))
@@ -195,6 +198,13 @@ public class SpanEsStorage extends RecordEsStorage<SpanDO> implements SpanStorag
     ParsedCardinality serviceTerm = response.getAggregations().get("service_count");
     long serviceCount = serviceTerm.getValue();
 
+    ParsedCardinality serviceInstanceTerm =
+        response.getAggregations().get("service_instance_count");
+    long serviceInstanceCount = serviceInstanceTerm.getValue();
+
+    ParsedCardinality endpointTerm = response.getAggregations().get("endpoint_count");
+    long endpointCount = endpointTerm.getValue();
+
     ParsedCardinality traceTerm = response.getAggregations().get("trace_count");
     long traceCount = traceTerm.getValue();
 
@@ -208,6 +218,8 @@ public class SpanEsStorage extends RecordEsStorage<SpanDO> implements SpanStorag
     StatisticData statisticData = new StatisticData();
     statisticData.setSpanCount(response.getHits().getTotalHits().value);
     statisticData.setServiceCount(serviceCount);
+    statisticData.setServiceInstanceCount(serviceInstanceCount);
+    statisticData.setEndpointCount(endpointCount);
     statisticData.setTraceCount(traceCount);
     statisticData.setAvgLatency(latency);
     statisticData.setSuccessRate(((double) (traceCount - errorCount) / traceCount) * 100);
