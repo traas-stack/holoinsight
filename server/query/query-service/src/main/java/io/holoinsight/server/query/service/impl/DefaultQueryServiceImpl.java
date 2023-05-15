@@ -271,6 +271,41 @@ public class DefaultQueryServiceImpl implements QueryService {
   }
 
   @Override
+  public QueryProto.StatisticData billingTrace(QueryProto.QueryTraceRequest request)
+      throws QueryException {
+    return wrap(() -> {
+      Assert.isTrue(
+          !request.getTraceIdsList().isEmpty()
+              || (request.getStart() != 0 && request.getEnd() != 0),
+          "traceId or timeRange should be set!");
+
+      ApmAPI apmAPI = apmClient.getClient(request.getTenant());
+      QueryTraceRequest queryTraceRequest = new QueryTraceRequest();
+      queryTraceRequest.setTenant(request.getTenant());
+      queryTraceRequest.setServiceName(request.getServiceName());
+      queryTraceRequest.setServiceInstanceName(request.getServiceInstanceName());
+      queryTraceRequest.setTraceIds(request.getTraceIdsList());
+      queryTraceRequest.setEndpointName(request.getEndpointName());
+      queryTraceRequest.setDuration(new Duration(request.getStart(), request.getEnd(), null));
+
+      queryTraceRequest.setMinTraceDuration(request.getMinTraceDuration());
+      queryTraceRequest.setMaxTraceDuration(request.getMaxTraceDuration());
+      if (StringUtils.isEmpty(request.getTraceState())) {
+        queryTraceRequest.setTraceState(TraceState.ALL);
+      } else {
+        queryTraceRequest.setTraceState(TraceState.valueOf(request.getTraceState()));
+      }
+      queryTraceRequest.setTags(ApmConvertor.convertTagsMap(request.getTagsMap()));
+      Call<StatisticData> call = apmAPI.billing(queryTraceRequest);
+      Response<StatisticData> statisticDataRsp = call.execute();
+      if (!statisticDataRsp.isSuccessful()) {
+        throw new QueryException(statisticDataRsp.errorBody().string());
+      }
+      return ApmConvertor.convertStatisticData(statisticDataRsp.body());
+    }, "billingTrace", request);
+  }
+
+  @Override
   public QueryProto.QueryMetaResponse queryServiceList(QueryProto.QueryMetaRequest request)
       throws QueryException {
     return wrap(() -> {

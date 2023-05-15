@@ -299,6 +299,17 @@ message TraceIds {
   repeated string traceId = 1;
 }
 
+message StatisticData{
+  string tenant = 1;
+  int64 traceCount = 2;
+  int64 spanCount = 3;
+  int64 serviceCount = 4;
+  int64 serviceInstanceCount = 5;
+  int64 endpointCount = 6;
+  double successRate = 7;
+  double avgLatency = 8;
+}
+
 service QueryService {
   rpc QueryData(QueryRequest) returns (QueryResponse);
 
@@ -317,6 +328,8 @@ service QueryService {
   rpc QueryBasicTraces(QueryTraceRequest) returns (TraceBrief);
 
   rpc QueryTrace(QueryTraceRequest) returns (Trace);
+
+  rpc BillingTrace(QueryTraceRequest) returns (StatisticData);
 
   rpc QueryServiceList(QueryMetaRequest) returns (QueryMetaResponse);
 

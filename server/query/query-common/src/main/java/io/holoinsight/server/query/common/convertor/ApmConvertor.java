@@ -4,17 +4,7 @@
 package io.holoinsight.server.query.common.convertor;
 
 import com.google.common.collect.Iterables;
-import io.holoinsight.server.apm.common.model.query.BasicTrace;
-import io.holoinsight.server.apm.common.model.query.Call;
-import io.holoinsight.server.apm.common.model.query.Endpoint;
-import io.holoinsight.server.apm.common.model.query.Node;
-import io.holoinsight.server.apm.common.model.query.ResponseMetric;
-import io.holoinsight.server.apm.common.model.query.Service;
-import io.holoinsight.server.apm.common.model.query.ServiceInstance;
-import io.holoinsight.server.apm.common.model.query.SlowSql;
-import io.holoinsight.server.apm.common.model.query.Topology;
-import io.holoinsight.server.apm.common.model.query.TraceBrief;
-import io.holoinsight.server.apm.common.model.query.VirtualComponent;
+import io.holoinsight.server.apm.common.model.query.*;
 import io.holoinsight.server.apm.common.model.specification.sw.KeyValue;
 import io.holoinsight.server.apm.common.model.specification.sw.LogEntity;
 import io.holoinsight.server.apm.common.model.specification.sw.Ref;
@@ -81,6 +71,32 @@ public class ApmConvertor {
     return new TraceBrief(traceBriefProto.getTracesList().stream()
         .map(ApmConvertor::convertBasicTrace).collect(Collectors.toList()));
   }
+
+  public static QueryProto.StatisticData convertStatisticData(StatisticData statisticData) {
+    if (statisticData == null) {
+      return null;
+    }
+    QueryProto.StatisticData.Builder statisticDataBuilder = QueryProto.StatisticData.newBuilder();
+    if (statisticData.getTenant() != null) {
+      statisticDataBuilder.setTenant(statisticData.getTenant());
+    }
+    statisticDataBuilder.setTraceCount(statisticData.getTraceCount());
+    statisticDataBuilder.setSpanCount(statisticData.getSpanCount());
+    statisticDataBuilder.setServiceCount(statisticData.getServiceCount());
+    statisticDataBuilder.setServiceInstanceCount(statisticData.getServiceInstanceCount());
+    statisticDataBuilder.setEndpointCount(statisticData.getEndpointCount());
+    statisticDataBuilder.setSuccessRate(statisticData.getSuccessRate());
+    statisticDataBuilder.setAvgLatency(statisticData.getAvgLatency());
+    return statisticDataBuilder.build();
+  }
+
+  public static StatisticData convertStatisticData(QueryProto.StatisticData statisticDataProto) {
+    return new StatisticData(statisticDataProto.getTenant(), statisticDataProto.getTraceCount(),
+        statisticDataProto.getSpanCount(), statisticDataProto.getServiceCount(),
+        statisticDataProto.getServiceInstanceCount(), statisticDataProto.getEndpointCount(),
+        statisticDataProto.getSuccessRate(), statisticDataProto.getAvgLatency());
+  }
+
 
   public static QueryProto.BasicTrace convertBasicTrace(BasicTrace basicTrace) {
     return QueryProto.BasicTrace.newBuilder().addAllServiceNames(basicTrace.getServiceNames())

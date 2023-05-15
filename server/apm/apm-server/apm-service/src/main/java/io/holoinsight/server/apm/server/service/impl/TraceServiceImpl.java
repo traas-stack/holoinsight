@@ -17,7 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
-
+import java.util.Map;
 
 @Slf4j
 public class TraceServiceImpl implements TraceService {
@@ -47,7 +47,16 @@ public class TraceServiceImpl implements TraceService {
   }
 
   @Override
-  public List<StatisticData> statisticTrace(long startTime, long endTime) throws Exception {
-    return spanStorage.statisticTrace(startTime, endTime);
+  public StatisticData billing(String tenant, String serviceName, String serviceInstanceName,
+      String endpointName, List<String> traceIds, int minTraceDuration, int maxTraceDuration,
+      TraceState traceState, long start, long end, List<Tag> tags) throws Exception {
+    return spanStorage.billing(tenant, serviceName, serviceInstanceName, endpointName, traceIds,
+        minTraceDuration, maxTraceDuration, traceState, start, end, tags);
   }
+
+  @Override
+  public List<StatisticData> statisticTrace(long startTime, long endTime) throws Exception {
+    return spanStorage.statistic(startTime, endTime);
+  }
+
 }
