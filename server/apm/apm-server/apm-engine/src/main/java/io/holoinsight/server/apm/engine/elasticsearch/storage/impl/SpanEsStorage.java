@@ -174,23 +174,17 @@ public class SpanEsStorage extends RecordEsStorage<SpanDO> implements SpanStorag
     BoolQueryBuilder queryBuilder = boolQueryBuilder(tenant, serviceName, serviceInstanceName,
         endpointName, traceIds, minTraceDuration, maxTraceDuration, traceState, start, end, tags);
 
-
-    AggregationBuilder aggregationBuilder =
-        AggregationBuilders.cardinality("service_count").field(SpanDO.resource(SpanDO.SERVICE_NAME))
-            .subAggregation(AggregationBuilders.cardinality("trace_count").field(SpanDO.TRACE_ID))
-            .subAggregation(
-                AggregationBuilders
-                    .filter(SpanDO.TRACE_STATUS,
-                        QueryBuilders.termQuery(SpanDO.TRACE_STATUS,
-                            Status.StatusCode.STATUS_CODE_ERROR_VALUE))
-                    .subAggregation(
-                        AggregationBuilders.cardinality("error_count").field(SpanDO.TRACE_ID)))
-            .subAggregation(AggregationBuilders.avg("avg_latency").field(SpanDO.LATENCY));
-
     SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
     sourceBuilder.size(0);
     sourceBuilder.query(queryBuilder);
-    sourceBuilder.aggregation(aggregationBuilder);
+    sourceBuilder
+        .aggregation(AggregationBuilders.cardinality("service_count")
+            .field(SpanDO.resource(SpanDO.SERVICE_NAME)))
+        .aggregation(AggregationBuilders.cardinality("trace_count").field(SpanDO.TRACE_ID))
+        .aggregation(AggregationBuilders.filter(SpanDO.TRACE_STATUS,
+            QueryBuilders.termQuery(SpanDO.TRACE_STATUS, Status.StatusCode.STATUS_CODE_ERROR_VALUE))
+            .subAggregation(AggregationBuilders.cardinality("error_count").field(SpanDO.TRACE_ID)))
+        .aggregation(AggregationBuilders.avg("avg_latency").field(SpanDO.LATENCY));
     sourceBuilder.trackTotalHits(true);
 
     SearchRequest searchRequest = new SearchRequest(SpanDO.INDEX_NAME);
@@ -434,14 +428,17 @@ public class SpanEsStorage extends RecordEsStorage<SpanDO> implements SpanStorag
     if (CollectionUtils.isNotEmpty(traceIds)) {
       boolQueryBuilder.must(new TermsQueryBuilder(SpanDO.TRACE_ID, traceIds));
     }
-    switch (traceState) {
-      case ERROR:
-        boolQueryBuilder
-            .must(new TermQueryBuilder(SpanDO.TRACE_STATUS, StatusCode.ERROR.getCode()));
-        break;
-      case SUCCESS:
-        boolQueryBuilder.must(new TermQueryBuilder(SpanDO.TRACE_STATUS, StatusCode.OK.getCode()));
-        break;
+
+    if (traceState != null) {
+      switch (traceState) {
+        case ERROR:
+          boolQueryBuilder
+              .must(new TermQueryBuilder(SpanDO.TRACE_STATUS, StatusCode.ERROR.getCode()));
+          break;
+        case SUCCESS:
+          boolQueryBuilder.must(new TermQueryBuilder(SpanDO.TRACE_STATUS, StatusCode.OK.getCode()));
+          break;
+      }
     }
 
 
