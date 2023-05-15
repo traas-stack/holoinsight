@@ -29,7 +29,7 @@ import io.holoinsight.server.home.biz.service.AlertWebhookService;
 import io.holoinsight.server.home.biz.service.UserOpLogService;
 import io.holoinsight.server.home.common.service.query.WebhookResponse;
 import io.holoinsight.server.home.common.util.MonitorException;
-import io.holoinsight.server.home.common.util.SSRFUtils;
+import io.holoinsight.server.common.SSRFUtils;
 import io.holoinsight.server.home.common.util.scope.AuthTargetType;
 import io.holoinsight.server.home.common.util.scope.MonitorScope;
 import io.holoinsight.server.home.common.util.scope.MonitorUser;

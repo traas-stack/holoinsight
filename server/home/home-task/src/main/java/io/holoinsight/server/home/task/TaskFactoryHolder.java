@@ -18,6 +18,7 @@ public class TaskFactoryHolder {
 
 
   static final Map<String, AbstractMonitorTask> taskFactoryMap = Maps.newConcurrentMap();
+  static final Map<String, MetricCrawlerBuilder> metricCrawlerBuilderMap = Maps.newConcurrentMap();
 
   public static AbstractMonitorTask getExecutorTask(String taskCode) {
     synchronized (taskFactoryMap) {
@@ -32,6 +33,18 @@ public class TaskFactoryHolder {
       } else if (StringUtils.isNotEmpty(handler.code())) {
         taskFactoryMap.put(handler.code(), task);
       }
+    }
+  }
+
+  public static MetricCrawlerBuilder getCrawlerTask(String builderTask) {
+    synchronized (metricCrawlerBuilderMap) {
+      return metricCrawlerBuilderMap.get(builderTask);
+    }
+  }
+
+  public static void setCrawlerTask(MetricCrawler handler, MetricCrawlerBuilder builder) {
+    synchronized (metricCrawlerBuilderMap) {
+      metricCrawlerBuilderMap.put(handler.code(), builder);
     }
   }
 }

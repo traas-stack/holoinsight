@@ -31,4 +31,6 @@ public interface IntegrationProductService extends IService<IntegrationProduct> 
 
   List<IntegrationProductDTO> getListByNameLike(String name, String tenant);
 
+  List<IntegrationProductDTO> queryByRows();
+
 }

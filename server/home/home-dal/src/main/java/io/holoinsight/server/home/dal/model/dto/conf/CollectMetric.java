@@ -4,6 +4,7 @@
 package io.holoinsight.server.home.dal.model.dto.conf;
 
 import lombok.Data;
+import org.springframework.util.CollectionUtils;
 
 import java.io.Serializable;
 import java.util.List;
@@ -70,5 +71,15 @@ public class CollectMetric implements Serializable {
     public FilterType filterType;
 
     public List<String> values;
+  }
+
+  public boolean checkLogPattern() {
+    if (!CollectionUtils.isEmpty(metrics)) {
+      for (Metric metric : metrics) {
+        if (metric.getFunc().equals("loganalysis"))
+          return true;
+      }
+    }
+    return false;
   }
 }

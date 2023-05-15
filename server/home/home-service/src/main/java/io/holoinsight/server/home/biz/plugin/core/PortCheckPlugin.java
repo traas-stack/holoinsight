@@ -8,6 +8,7 @@ import io.holoinsight.server.home.biz.plugin.model.PluginModel;
 import io.holoinsight.server.home.biz.plugin.model.PluginType;
 import io.holoinsight.server.home.biz.service.TenantInitService;
 import io.holoinsight.server.home.dal.model.dto.IntegrationPluginDTO;
+import io.holoinsight.server.registry.model.integration.IntegrationTransForm;
 import io.holoinsight.server.registry.model.integration.portcheck.PortCheckTask;
 import io.holoinsight.server.common.J;
 import com.google.gson.reflect.TypeToken;
@@ -77,6 +78,10 @@ public class PortCheckPlugin extends AbstractLocalIntegrationPlugin<PortCheckPlu
         executeRule.setType("fixedRate");
         executeRule.setFixedRate(60000);
         portCheckTask.setExecuteRule(executeRule);
+
+        IntegrationTransForm transformMap = new IntegrationTransForm();
+        transformMap.setMetricPrefix("portcheck_");
+        portCheckTask.setTransform(transformMap);
       }
 
       {
