@@ -10,6 +10,7 @@ CREATE TABLE `metric_info` (
       `workspace` VARCHAR(200) NOT NULL COMMENT 'workspace',
       `organization` VARCHAR(100) NOT NULL COMMENT 'organization',
       `product` VARCHAR(100) NOT NULL COMMENT 'product',
+      `metric_type` VARCHAR(100) NOT NULL COMMENT 'metric type',
       `metric` VARCHAR(100) NOT NULL COMMENT 'metric',
       `metric_table` VARCHAR(200) NOT NULL COMMENT 'metric_table',
       `description` VARCHAR(400) NULL COMMENT 'description',

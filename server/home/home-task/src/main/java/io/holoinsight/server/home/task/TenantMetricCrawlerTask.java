@@ -43,7 +43,7 @@ public class TenantMetricCrawlerTask extends AbstractMonitorTask {
 
 
   public TenantMetricCrawlerTask() {
-    super(1, 2, "TENANT_METRIC_CRAWLER");
+    super(2, 20, "TENANT_METRIC_CRAWLER");
   }
 
   @Override
@@ -64,7 +64,7 @@ public class TenantMetricCrawlerTask extends AbstractMonitorTask {
 
     CountDownLatch countDownLatch = new CountDownLatch(list.size());
     for (IntegrationProductDTO integrationProduct : list) {
-      log.info("stack {} start buildJobs", integrationProduct.getName());
+      log.info("crawler {} start buildJobs", integrationProduct.getName());
       taskPool.execute(() -> {
         try {
           args.addAll(preDoJob(integrationProduct));

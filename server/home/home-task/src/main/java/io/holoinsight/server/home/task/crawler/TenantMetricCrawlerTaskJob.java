@@ -5,7 +5,6 @@
 package io.holoinsight.server.home.task.crawler;
 
 import io.holoinsight.server.common.Pair;
-import io.holoinsight.server.common.config.ProdLog;
 import io.holoinsight.server.common.dao.entity.MetricInfo;
 import io.holoinsight.server.common.service.MetricInfoService;
 import io.holoinsight.server.home.task.MonitorTaskJob;
@@ -91,7 +90,7 @@ public class TenantMetricCrawlerTaskJob extends MonitorTaskJob {
         metricInfoService.save(create);
       });
     }
-    ProdLog.info("[crawlerTask][" + product + "] [" + tenant + "], end");
+    log.info("[crawlerTask][{}][{}], end", product, tenant);
   }
 
   private Map<String, Pair<Long, MetricInfo>> getFromDb(String tenant, String workspace,

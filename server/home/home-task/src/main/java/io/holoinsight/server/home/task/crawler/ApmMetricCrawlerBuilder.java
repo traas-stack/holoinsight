@@ -34,37 +34,45 @@ public class ApmMetricCrawlerBuilder extends AbstractMetricCrawlerBuilder {
     List<MetricInfo> metricInfoList = new ArrayList<>();
 
     metricInfoList.add(genMetricInfo(GLOBAL_TENANT, GLOBAL_WORKSPACE, GLOBAL_ORGANIZATION, "apm",
-        "endpoint_cpm", "apm_endpoint_cpm", "endpoint calls per minute", NUMBER_UNIT, 60,
-        Arrays.asList("endpointName", "serviceName")));
-    metricInfoList.add(genMetricInfo(GLOBAL_TENANT, GLOBAL_WORKSPACE, GLOBAL_ORGANIZATION, "apm",
-        "endpoint_cpm_fail", "apm_endpoint_cpm_fail", "endpoint calls fail per minute", NUMBER_UNIT,
+        "Endpoint", "endpoint_cpm", "apm_endpoint_cpm", "endpoint calls per minute", NUMBER_UNIT,
         60, Arrays.asList("endpointName", "serviceName")));
     metricInfoList.add(genMetricInfo(GLOBAL_TENANT, GLOBAL_WORKSPACE, GLOBAL_ORGANIZATION, "apm",
-        "endpoint_resp_time", "apm_endpoint_resp_time", "endpoint response time per minute(ms)",
+        "Endpoint", "endpoint_cpm_fail", "apm_endpoint_cpm_fail", "endpoint calls fail per minute",
         NUMBER_UNIT, 60, Arrays.asList("endpointName", "serviceName")));
+    metricInfoList
+        .add(genMetricInfo(GLOBAL_TENANT, GLOBAL_WORKSPACE, GLOBAL_ORGANIZATION, "apm", "Endpoint",
+            "endpoint_resp_time", "apm_endpoint_resp_time", "endpoint response time per minute(ms)",
+            NUMBER_UNIT, 60, Arrays.asList("endpointName", "serviceName")));
 
     metricInfoList.add(genMetricInfo(GLOBAL_TENANT, GLOBAL_WORKSPACE, GLOBAL_ORGANIZATION, "apm",
-        "service_cpm", "apm_service_cpm", "service calls per minute", NUMBER_UNIT, 60,
+        "Service", "service_cpm", "apm_service_cpm", "service calls per minute", NUMBER_UNIT, 60,
         Collections.singletonList("serviceName")));
     metricInfoList.add(genMetricInfo(GLOBAL_TENANT, GLOBAL_WORKSPACE, GLOBAL_ORGANIZATION, "apm",
-        "service_cpm_fail", "apm_service_cpm_fail", "service calls fail per minute", NUMBER_UNIT,
-        60, Collections.singletonList("serviceName")));
-    metricInfoList.add(genMetricInfo(GLOBAL_TENANT, GLOBAL_WORKSPACE, GLOBAL_ORGANIZATION, "apm",
-        "service_resp_time", "apm_service_resp_time", "service response time per minute(ms)",
+        "Service", "service_cpm_fail", "apm_service_cpm_fail", "service calls fail per minute",
         NUMBER_UNIT, 60, Collections.singletonList("serviceName")));
+    metricInfoList
+        .add(genMetricInfo(GLOBAL_TENANT, GLOBAL_WORKSPACE, GLOBAL_ORGANIZATION, "apm", "Service",
+            "service_resp_time", "apm_service_resp_time", "service response time per minute(ms)",
+            NUMBER_UNIT, 60, Collections.singletonList("serviceName")));
 
+    metricInfoList
+        .add(genMetricInfo(GLOBAL_TENANT, GLOBAL_WORKSPACE, GLOBAL_ORGANIZATION, "apm", "Instance",
+            "service_instance_cpm", "apm_service_instance_cpm", "service instance calls per minute",
+            NUMBER_UNIT, 60, Arrays.asList("serviceName", "serviceInstanceName")));
     metricInfoList.add(genMetricInfo(GLOBAL_TENANT, GLOBAL_WORKSPACE, GLOBAL_ORGANIZATION, "apm",
-        "service_instance_cpm", "apm_service_instance_cpm", "service instance calls per minute",
-        NUMBER_UNIT, 60, Arrays.asList("serviceName", "serviceInstanceName")));
-    metricInfoList.add(genMetricInfo(GLOBAL_TENANT, GLOBAL_WORKSPACE, GLOBAL_ORGANIZATION, "apm",
-        "service_instance_cpm_fail", "apm_service_instance_cpm_fail",
+        "Instance", "service_instance_cpm_fail", "apm_service_instance_cpm_fail",
         "service instance calls fail per minute", NUMBER_UNIT, 60,
         Arrays.asList("serviceName", "serviceInstanceName")));
     metricInfoList.add(genMetricInfo(GLOBAL_TENANT, GLOBAL_WORKSPACE, GLOBAL_ORGANIZATION, "apm",
-        "service_instance_resp_time", "apm_service_instance_resp_time",
+        "Instance", "service_instance_resp_time", "apm_service_instance_resp_time",
         "service instance response time per minute(ms)", NUMBER_UNIT, 60,
         Arrays.asList("serviceName", "serviceInstanceName")));
 
     return metricInfoList;
+  }
+
+  @Override
+  protected List<MetricInfo> getMetricInfoList(String metric, List<String> tags) {
+    return null;
   }
 }

@@ -3,6 +3,9 @@
  */
 package io.holoinsight.server.home.web.controller;
 
+import io.holoinsight.server.common.dao.entity.MetricInfo;
+import io.holoinsight.server.common.dao.entity.dto.MetricInfoDTO;
+import io.holoinsight.server.common.service.MetricInfoService;
 import io.holoinsight.server.home.biz.service.IntegrationPluginService;
 import io.holoinsight.server.home.biz.service.IntegrationProductService;
 import io.holoinsight.server.home.biz.service.UserOpLogService;
@@ -63,6 +66,9 @@ public class IntegrationProductFacadeImpl extends BaseFacade {
 
   @Autowired
   private IntegrationPluginService integrationPluginService;
+
+  @Autowired
+  private MetricInfoService metricInfoService;
 
   @PostMapping("/update")
   @ResponseBody
@@ -292,57 +298,28 @@ public class IntegrationProductFacadeImpl extends BaseFacade {
         List<IntegrationProductDTO> integrationProductDTOs =
             integrationProductService.findByMap(Collections.emptyMap());
 
+        if (!CollectionUtils.isEmpty(integrationProductDTOs)) {
+          integrationProductDTOs.forEach(integrationProductDTO -> {
+            List<MetricInfoDTO> metricInfoDTOS = metricInfoService.queryListByTenantProduct(null,
+                null, integrationProductDTO.getName());
+            if (CollectionUtils.isEmpty(metricInfoDTOS))
+              return;
+            integrationProductDTO.setMetrics(convertIntegrationMetrics(metricInfoDTOS));
+          });
+        }
+
         JsonResult.createSuccessResult(result, integrationProductDTOs);
       }
     });
     return result;
   }
 
-  @GetMapping(value = "/listAllNames")
-  @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.VIEW)
-  public JsonResult<List<String>> listAllNames() {
-    final JsonResult<List<String>> result = new JsonResult<>();
-    facadeTemplate.manage(result, new ManageCallback() {
-      @Override
-      public void checkParameter() {}
+  private IntegrationMetricsDTO convertIntegrationMetrics(List<MetricInfoDTO> metricInfoDTOS) {
+    IntegrationMetricsDTO metricsDTO = new IntegrationMetricsDTO();
 
-      @Override
-      public void doManage() {
-        List<IntegrationProductDTO> integrationProductDTOs =
-            integrationProductService.findByMap(Collections.emptyMap());
-        List<String> names = integrationProductDTOs == null ? null
-            : integrationProductDTOs.stream().map(IntegrationProductDTO::getName)
-                .collect(Collectors.toList());
-        JsonResult.createSuccessResult(result, names);
-      }
-    });
-    return result;
+    return metricsDTO;
   }
 
-  // @DeleteMapping(value = "/delete/{id}")
-  // @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.EDIT)
-  // public JsonResult<Object> deleteById(@PathVariable("id") Long id) {
-  // final JsonResult<Object> result = new JsonResult<>();
-  // facadeTemplate.manage(result, new ManageCallback() {
-  // @Override
-  // public void checkParameter() {
-  // ParaCheckUtil.checkParaNotNull(id, "id");
-  // }
-  //
-  // @Override
-  // public void doManage() {
-  // IntegrationProductDTO byId = integrationProductService.findById(id);
-  // integrationProductService.deleteById(id);
-  // JsonResult.createSuccessResult(result, null);
-  // userOpLogService.append("integration_product", String.valueOf(byId.getId()),
-  // OpType.DELETE, RequestContext.getContext().mu.getLoginName(),
-  // RequestContext.getContext().ms.getTenant(), J.toJson(byId), null, null,
-  // "integration_product_create");
-  //
-  // }
-  // });
-  // return result;
-  // }
 
   @PostMapping("/pageQuery")
   @ResponseBody
