@@ -58,7 +58,7 @@ public class ServiceInstanceEsStorage implements ServiceInstanceStorage {
 
     commonBuilder.addTermParams(queryBuilder, termParams);
     SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
-    sourceBuilder.size(1000);
+    sourceBuilder.size(0);
     sourceBuilder.query(queryBuilder);
     sourceBuilder
         .aggregation(commonBuilder.buildAgg(SpanDO.resource(SpanDO.SERVICE_INSTANCE_NAME)));
