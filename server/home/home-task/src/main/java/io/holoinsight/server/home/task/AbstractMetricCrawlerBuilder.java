@@ -8,8 +8,10 @@ import com.google.gson.reflect.TypeToken;
 import io.holoinsight.server.common.J;
 import io.holoinsight.server.common.dao.entity.MetricInfo;
 import io.holoinsight.server.home.biz.common.MetaDictUtil;
+import io.holoinsight.server.home.dal.model.dto.IntegrationProductDTO;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,6 +24,31 @@ import static io.holoinsight.server.home.biz.common.MetaDictType.METRIC_CONFIG;
  */
 @Slf4j
 public abstract class AbstractMetricCrawlerBuilder implements MetricCrawlerBuilder {
+
+  @Override
+  public List<MetricInfo> buildEntity(IntegrationProductDTO integrationProduct) {
+    List<MetricInfo> metricInfoList = new ArrayList<>();
+    List<MetricInfoModel> metricInfoModels = getMetricInfoModel(integrationProduct.getName());
+    if (CollectionUtils.isEmpty(metricInfoModels))
+      return metricInfoList;
+
+    for (MetricInfoModel model : metricInfoModels) {
+      if (CollectionUtils.isEmpty(model.getTags()))
+        continue;
+
+      if (!CollectionUtils.isEmpty(model.getMetricInfoList())) {
+        metricInfoList.addAll(model.getMetricInfoList());
+      }
+      List<MetricInfo> list = getMetricInfoList(model.getMetric(), model.getTags());
+      if (!CollectionUtils.isEmpty(list)) {
+        metricInfoList.addAll(list);
+      }
+    }
+    return metricInfoList;
+  }
+
+  protected abstract List<MetricInfo> getMetricInfoList(String metric, List<String> tags);
+
 
   public List<MetricInfoModel> getMetricInfoModel(String product) {
     List<MetricInfoModel> value =
@@ -41,14 +68,15 @@ public abstract class AbstractMetricCrawlerBuilder implements MetricCrawlerBuild
   }
 
   public MetricInfo genMetricInfo(String tenant, String workspace, String organization,
-      String product, String metric, String metricTable, String description, String unit,
-      Integer period, List<String> tags) {
+      String product, String metricType, String metric, String metricTable, String description,
+      String unit, Integer period, List<String> tags) {
 
     MetricInfo metricInfo = new MetricInfo();
     metricInfo.setTenant(tenant);
     metricInfo.setWorkspace(workspace);
     metricInfo.setOrganization(organization);
     metricInfo.setProduct(product);
+    metricInfo.setMetricType(metricType);
     metricInfo.setMetric(metric);
     metricInfo.setMetricTable(metricTable);
     metricInfo.setDescription(description);

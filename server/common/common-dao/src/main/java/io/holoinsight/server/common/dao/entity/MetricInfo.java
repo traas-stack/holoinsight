@@ -30,6 +30,8 @@ public class MetricInfo {
 
   public String product;
 
+  public String metricType;
+
   public String metric;
 
   public String metricTable;

@@ -23,7 +23,6 @@ import io.holoinsight.server.home.web.interceptor.MonitorScopeAuth;
 import io.holoinsight.server.common.J;
 import io.holoinsight.server.common.JsonResult;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -35,7 +34,6 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * @author jsy1001de
@@ -185,57 +183,6 @@ public class MarketplaceProductFacadeImpl extends BaseFacade {
             marketplaceProductService.findByMap(Collections.emptyMap());
 
         JsonResult.createSuccessResult(result, marketplaceProductDTOs);
-      }
-    });
-    return result;
-  }
-
-  @GetMapping(value = "/listAllNames")
-  @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.VIEW)
-  public JsonResult<List<String>> listAllNames() {
-    final JsonResult<List<String>> result = new JsonResult<>();
-    facadeTemplate.manage(result, new ManageCallback() {
-      @Override
-      public void checkParameter() {}
-
-      @Override
-      public void doManage() {
-        List<MarketplaceProductDTO> marketplaceProductDTOs =
-            marketplaceProductService.findByMap(Collections.emptyMap());
-        List<String> names = marketplaceProductDTOs == null ? null
-            : marketplaceProductDTOs.stream().map(MarketplaceProductDTO::getName)
-                .collect(Collectors.toList());
-        JsonResult.createSuccessResult(result, names);
-      }
-    });
-    return result;
-  }
-
-  @DeleteMapping(value = "/delete/{id}")
-  @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.EDIT)
-  public JsonResult<Object> deleteById(@PathVariable("id") Long id) {
-    final JsonResult<Object> result = new JsonResult<>();
-    facadeTemplate.manage(result, new ManageCallback() {
-      @Override
-      public void checkParameter() {
-        ParaCheckUtil.checkParaNotNull(id, "id");
-      }
-
-      @Override
-      public void doManage() {
-        MarketplaceProductDTO byId = marketplaceProductService.findById(id);
-        if (null == byId) {
-          throw new MonitorException(ResultCodeEnum.CANNOT_FIND_RECORD,
-              "can not find record:" + id);
-        }
-        MonitorScope ms = RequestContext.getContext().ms;
-
-        marketplaceProductService.deleteById(id);
-        JsonResult.createSuccessResult(result, null);
-        userOpLogService.append("marketplace_product", byId.getId(), OpType.DELETE,
-            RequestContext.getContext().mu.getLoginName(), ms.getTenant(), ms.getWorkspace(),
-            J.toJson(byId), null, null, "marketplace_product_delete");
-
       }
     });
     return result;

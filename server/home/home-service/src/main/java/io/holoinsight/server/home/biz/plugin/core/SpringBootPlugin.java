@@ -20,7 +20,7 @@ import java.util.List;
  * @version 1.0: SpringBootPlugin.java, v 0.1 2022年11月22日 上午11:14 jinsong.yjs Exp $
  */
 @Component
-@PluginModel(name = "io.holoinsight.plugin..SpringBootPlugin", version = "1")
+@PluginModel(name = "io.holoinsight.plugin.SpringBootPlugin", version = "1")
 public class SpringBootPlugin extends AbstractLocalIntegrationPlugin<SpringBootPlugin> {
 
   public SpringBootTask springBootTask;
