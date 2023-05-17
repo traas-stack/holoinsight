@@ -77,9 +77,6 @@ public class ApmConvertor {
       return null;
     }
     QueryProto.StatisticData.Builder statisticDataBuilder = QueryProto.StatisticData.newBuilder();
-    if (statisticData.getTenant() != null) {
-      statisticDataBuilder.setTenant(statisticData.getTenant());
-    }
     statisticDataBuilder.setTraceCount(statisticData.getTraceCount());
     statisticDataBuilder.setSpanCount(statisticData.getSpanCount());
     statisticDataBuilder.setServiceCount(statisticData.getServiceCount());
@@ -87,14 +84,18 @@ public class ApmConvertor {
     statisticDataBuilder.setEndpointCount(statisticData.getEndpointCount());
     statisticDataBuilder.setSuccessRate(statisticData.getSuccessRate());
     statisticDataBuilder.setAvgLatency(statisticData.getAvgLatency());
+    if (statisticData.getResources() != null) {
+      statisticDataBuilder.putAllResources(statisticData.getResources());
+    }
     return statisticDataBuilder.build();
   }
 
   public static StatisticData convertStatisticData(QueryProto.StatisticData statisticDataProto) {
-    return new StatisticData(statisticDataProto.getTenant(), statisticDataProto.getTraceCount(),
-        statisticDataProto.getSpanCount(), statisticDataProto.getServiceCount(),
-        statisticDataProto.getServiceInstanceCount(), statisticDataProto.getEndpointCount(),
-        statisticDataProto.getSuccessRate(), statisticDataProto.getAvgLatency());
+    return new StatisticData(statisticDataProto.getResourcesMap(),
+        statisticDataProto.getTraceCount(), statisticDataProto.getSpanCount(),
+        statisticDataProto.getServiceCount(), statisticDataProto.getServiceInstanceCount(),
+        statisticDataProto.getEndpointCount(), statisticDataProto.getSuccessRate(),
+        statisticDataProto.getAvgLatency());
   }
 
 

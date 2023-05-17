@@ -308,6 +308,7 @@ message StatisticData{
   int64 endpointCount = 6;
   double successRate = 7;
   double avgLatency = 8;
+  map<string, string> resources = 9;
 }
 
 service QueryService {
