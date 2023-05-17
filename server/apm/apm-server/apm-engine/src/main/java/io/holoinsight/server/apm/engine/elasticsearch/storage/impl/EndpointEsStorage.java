@@ -54,7 +54,7 @@ public class EndpointEsStorage implements EndpointStorage {
 
     commonBuilder.addTermParams(queryBuilder, termParams);
     SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
-    sourceBuilder.size(1000);
+    sourceBuilder.size(0);
     sourceBuilder.query(queryBuilder);
     sourceBuilder.aggregation(commonBuilder.buildAgg(EndpointRelationDO.DEST_ENDPOINT_NAME));
 
