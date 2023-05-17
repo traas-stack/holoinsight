@@ -300,7 +300,7 @@ message TraceIds {
 }
 
 message StatisticData{
-  string tenant = 1;
+  map<string, string> resources = 1;
   int64 traceCount = 2;
   int64 spanCount = 3;
   int64 serviceCount = 4;
@@ -308,7 +308,6 @@ message StatisticData{
   int64 endpointCount = 6;
   double successRate = 7;
   double avgLatency = 8;
-  map<string, string> resources = 9;
 }
 
 service QueryService {
