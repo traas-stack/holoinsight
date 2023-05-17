@@ -13,7 +13,6 @@ import io.holoinsight.server.apm.common.model.specification.sw.TraceState;
 import io.holoinsight.server.apm.engine.model.SpanDO;
 
 import java.util.List;
-import java.util.Map;
 
 public interface TraceService {
 
@@ -56,5 +55,5 @@ public interface TraceService {
    * @return
    * @throws Exception
    */
-  List<StatisticData> statisticTrace(long startTime, long endTime) throws Exception;
+  List<StatisticData> statistic(long startTime, long endTime) throws Exception;
 }

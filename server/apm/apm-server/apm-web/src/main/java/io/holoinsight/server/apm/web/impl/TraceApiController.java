@@ -84,4 +84,9 @@ public class TraceApiController implements TraceApi {
         minDuration, maxDuration, traceState, start, end, request.getTags());
     return ResponseEntity.ok(statisticData);
   }
+
+  @Override
+  public ResponseEntity<List<StatisticData>> statistic(Duration duration) throws Exception {
+    return ResponseEntity.ok(traceService.statistic(duration.getStart(), duration.getEnd()));
+  }
 }

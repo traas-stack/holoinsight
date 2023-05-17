@@ -55,7 +55,7 @@ public class TraceServiceImpl implements TraceService {
   }
 
   @Override
-  public List<StatisticData> statisticTrace(long startTime, long endTime) throws Exception {
+  public List<StatisticData> statistic(long startTime, long endTime) throws Exception {
     return spanStorage.statistic(startTime, endTime);
   }
 
