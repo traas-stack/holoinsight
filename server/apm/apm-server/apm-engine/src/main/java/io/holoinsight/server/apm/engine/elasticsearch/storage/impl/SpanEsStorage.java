@@ -288,7 +288,7 @@ public class SpanEsStorage extends RecordEsStorage<SpanDO> implements SpanStorag
       double latency = Double.valueOf(avgLatency.getValue());
 
       StatisticData statisticData = new StatisticData();
-      statisticData.setTenant(tenant);
+      statisticData.setResources(Collections.singletonMap("tenant", tenant));
       statisticData.setSpanCount(response.getHits().getTotalHits().value);
       statisticData.setServiceCount(serviceCount);
       statisticData.setServiceInstanceCount(serviceInstanceCount);

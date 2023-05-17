@@ -75,6 +75,6 @@ public interface TraceApi {
   @RequestMapping(value = "/statistic", produces = {"application/json"},
       consumes = {"application/json"}, method = RequestMethod.POST)
   ResponseEntity<List<StatisticData>> statistic(
-      @ApiParam(value = "查询条件。", required = false) @Valid @RequestBody Duration duration)
+      @ApiParam(value = "查询条件。", required = false) @Valid @RequestBody QueryTraceRequest request)
       throws Exception;
 }
