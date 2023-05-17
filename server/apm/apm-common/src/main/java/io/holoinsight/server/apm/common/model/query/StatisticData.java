@@ -7,11 +7,13 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Map;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class StatisticData {
-  private String tenant;
+  private Map<String, String> resources;
   private long traceCount;
   private long spanCount;
   private long serviceCount;

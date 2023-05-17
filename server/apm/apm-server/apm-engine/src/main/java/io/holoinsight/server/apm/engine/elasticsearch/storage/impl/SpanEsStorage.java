@@ -238,6 +238,9 @@ public class SpanEsStorage extends RecordEsStorage<SpanDO> implements SpanStorag
         AggregationBuilders.terms(SpanDO.TENANT).field(SpanDO.attributes(SpanDO.TENANT))
             .subAggregation(AggregationBuilders.cardinality("service_count")
                 .field(SpanDO.resource(SpanDO.SERVICE_NAME)))
+            .subAggregation(AggregationBuilders.cardinality("service_instance_count")
+                .field(SpanDO.resource(SpanDO.SERVICE_INSTANCE_NAME)))
+            .subAggregation(AggregationBuilders.cardinality("endpoint_count").field(SpanDO.NAME))
             .subAggregation(AggregationBuilders.cardinality("trace_count").field(SpanDO.TRACE_ID))
             .subAggregation(
                 AggregationBuilders
@@ -267,6 +270,13 @@ public class SpanEsStorage extends RecordEsStorage<SpanDO> implements SpanStorag
       ParsedCardinality serviceTerm = bucket.getAggregations().get("service_count");
       long serviceCount = serviceTerm.getValue();
 
+      ParsedCardinality serviceInstanceTerm =
+          bucket.getAggregations().get("service_instance_count");
+      long serviceInstanceCount = serviceInstanceTerm.getValue();
+
+      ParsedCardinality endpointTerm = bucket.getAggregations().get("endpoint_count");
+      long endpointCount = endpointTerm.getValue();
+
       ParsedCardinality traceTerm = bucket.getAggregations().get("trace_count");
       long traceCount = traceTerm.getValue();
 
@@ -278,9 +288,11 @@ public class SpanEsStorage extends RecordEsStorage<SpanDO> implements SpanStorag
       double latency = Double.valueOf(avgLatency.getValue());
 
       StatisticData statisticData = new StatisticData();
-      statisticData.setTenant(tenant);
+      statisticData.setResources(Collections.singletonMap("tenant", tenant));
       statisticData.setSpanCount(response.getHits().getTotalHits().value);
       statisticData.setServiceCount(serviceCount);
+      statisticData.setServiceInstanceCount(serviceInstanceCount);
+      statisticData.setEndpointCount(endpointCount);
       statisticData.setTraceCount(traceCount);
       statisticData.setAvgLatency(latency);
       statisticData.setSuccessRate(((double) (traceCount - errorCount) / traceCount) * 100);

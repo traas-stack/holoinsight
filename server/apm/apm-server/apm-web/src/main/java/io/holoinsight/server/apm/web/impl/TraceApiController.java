@@ -12,6 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.Assert;
 
 import java.util.Collections;
 import java.util.List;
@@ -83,5 +84,12 @@ public class TraceApiController implements TraceApi {
         request.getServiceName(), request.getServiceInstanceName(), endpointName, traceIds,
         minDuration, maxDuration, traceState, start, end, request.getTags());
     return ResponseEntity.ok(statisticData);
+  }
+
+  @Override
+  public ResponseEntity<List<StatisticData>> statistic(QueryTraceRequest request) throws Exception {
+    Assert.notNull(request.getDuration(), "timeRange must be specified");
+    return ResponseEntity.ok(
+        traceService.statistic(request.getDuration().getStart(), request.getDuration().getEnd()));
   }
 }
