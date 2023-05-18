@@ -9,8 +9,10 @@ import io.holoinsight.server.apm.common.model.specification.sw.ServiceInstanceRe
 import io.holoinsight.server.apm.common.model.specification.sw.ServiceRelation;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
+@Slf4j
 public class RPCTrafficSourceBuilder extends EndpointSourceBuilder {
   @Getter
   @Setter
@@ -96,6 +98,12 @@ public class RPCTrafficSourceBuilder extends EndpointSourceBuilder {
   public ServiceInstanceRelation toServiceInstanceRelation() {
     if (StringUtils.isEmpty(sourceServiceInstanceName)
         || StringUtils.isEmpty(destServiceInstanceName)) {
+      log.warn(
+          "[apm] build service instance relation error, sourceServiceInstanceName or destServiceInstanceName is empty, traceId: {},"
+              + " sourceServiceName: {}, destServiceName: {}"
+              + " sourceServiceInstanceName: {}, destServiceInstanceName: {}",
+          traceId, sourceServiceName, destServiceName, sourceServiceInstanceName,
+          destServiceInstanceName);
       return null;
     }
     ServiceInstanceRelation serviceInstanceRelation = serviceInstanceRelation();
@@ -138,6 +146,11 @@ public class RPCTrafficSourceBuilder extends EndpointSourceBuilder {
 
   public EndpointRelation toEndpointRelation() {
     if (StringUtils.isEmpty(sourceEndpointName) || StringUtils.isEmpty(destEndpointName)) {
+      log.warn(
+          "[apm] build endpoint relation error, sourceEndpointName or destEndpointName is empty, traceId: {},"
+              + " sourceServiceName: {}, destServiceName: {}"
+              + " sourceEndpointName: {}, destEndpointName: {}",
+          traceId, sourceServiceName, destServiceName, sourceEndpointName, destEndpointName);
       return null;
     }
     EndpointRelation endpointRelation = endpointRelation();
