@@ -3,7 +3,6 @@
  */
 package io.holoinsight.server.home.web.controller;
 
-import io.holoinsight.server.common.dao.entity.MetricInfo;
 import io.holoinsight.server.common.dao.entity.dto.MetricInfoDTO;
 import io.holoinsight.server.common.service.MetricInfoService;
 import io.holoinsight.server.home.biz.service.IntegrationPluginService;
@@ -39,6 +38,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -164,6 +165,11 @@ public class IntegrationProductFacadeImpl extends BaseFacade {
         if (null == integrationProductDTO) {
           throw new MonitorException(ResultCodeEnum.CANNOT_FIND_RECORD, "can not find record");
         }
+        List<MetricInfoDTO> metricInfoDTOS = metricInfoService.queryListByTenantProduct(null, null,
+            integrationProductDTO.getName().toLowerCase());
+        if (!CollectionUtils.isEmpty(metricInfoDTOS)) {
+          integrationProductDTO.setMetrics(convertIntegrationMetrics(metricInfoDTOS));
+        }
         JsonResult.createSuccessResult(result, integrationProductDTO);
       }
     });
@@ -184,6 +190,15 @@ public class IntegrationProductFacadeImpl extends BaseFacade {
       public void doManage() {
         List<IntegrationProductDTO> integrationProductDTOs =
             integrationProductService.findByMap(Collections.singletonMap("name", name));
+        if (!CollectionUtils.isEmpty(integrationProductDTOs)) {
+          integrationProductDTOs.forEach(integrationProductDTO -> {
+            List<MetricInfoDTO> metricInfoDTOS = metricInfoService.queryListByTenantProduct(null,
+                null, integrationProductDTO.getName().toLowerCase());
+            if (CollectionUtils.isEmpty(metricInfoDTOS))
+              return;
+            integrationProductDTO.setMetrics(convertIntegrationMetrics(metricInfoDTOS));
+          });
+        }
         JsonResult.createSuccessResult(result, integrationProductDTOs);
       }
     });
@@ -301,7 +316,7 @@ public class IntegrationProductFacadeImpl extends BaseFacade {
         if (!CollectionUtils.isEmpty(integrationProductDTOs)) {
           integrationProductDTOs.forEach(integrationProductDTO -> {
             List<MetricInfoDTO> metricInfoDTOS = metricInfoService.queryListByTenantProduct(null,
-                null, integrationProductDTO.getName());
+                null, integrationProductDTO.getName().toLowerCase());
             if (CollectionUtils.isEmpty(metricInfoDTOS))
               return;
             integrationProductDTO.setMetrics(convertIntegrationMetrics(metricInfoDTOS));
@@ -315,9 +330,19 @@ public class IntegrationProductFacadeImpl extends BaseFacade {
   }
 
   private IntegrationMetricsDTO convertIntegrationMetrics(List<MetricInfoDTO> metricInfoDTOS) {
-    IntegrationMetricsDTO metricsDTO = new IntegrationMetricsDTO();
-
-    return metricsDTO;
+    IntegrationMetricsDTO integrationMetricsDTO = new IntegrationMetricsDTO();
+    Map<String, List<IntegrationMetricDTO>> subMetrics = new HashMap<>();
+    metricInfoDTOS.forEach(metricsDTO -> {
+      if (!subMetrics.containsKey(metricsDTO.getMetricType())) {
+        subMetrics.put(metricsDTO.getMetricType(), new ArrayList<>());
+      }
+      subMetrics.get(metricsDTO.getMetricType())
+          .add(new IntegrationMetricDTO(metricsDTO.getMetric(), metricsDTO.getUnit(),
+              metricsDTO.getDescription(), metricsDTO.getTags().toString(),
+              metricsDTO.getPeriod().toString()));
+    });
+    integrationMetricsDTO.setSubMetrics(subMetrics);
+    return integrationMetricsDTO;
   }
 
 
