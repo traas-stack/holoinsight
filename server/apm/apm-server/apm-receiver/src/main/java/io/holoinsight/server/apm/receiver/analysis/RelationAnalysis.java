@@ -24,6 +24,7 @@ import io.opentelemetry.semconv.resource.attributes.ResourceAttributes;
 import io.opentelemetry.semconv.trace.attributes.SemanticAttributes;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.binary.Hex;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.ArrayList;
@@ -122,7 +123,7 @@ public class RelationAnalysis {
     AnyValue peerName = spanAttrMap.get(SemanticAttributes.NET_PEER_NAME.getKey());
     AnyValue peerPort = spanAttrMap.get(SemanticAttributes.NET_PEER_PORT.getKey());
 
-    if (peerName == null && peerPort == null) {
+    if (peerName == null || StringUtils.isEmpty(peerName.getStringValue())) {
       return callingOutTraffic;
     }
 
@@ -174,7 +175,7 @@ public class RelationAnalysis {
     long latency = TimeUtils.unixNano2MS(span.getEndTimeUnixNano())
         - TimeUtils.unixNano2MS(span.getStartTimeUnixNano());
 
-    if ((peerName == null && peerPort == null) || statement == null
+    if (peerName == null || StringUtils.isEmpty(peerName.getStringValue()) || statement == null
         || latency < Const.SLOW_SQL_THRESHOLD) {
       return result;
     }
