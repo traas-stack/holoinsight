@@ -8,7 +8,6 @@ import io.holoinsight.server.apm.common.constants.Const;
 import io.holoinsight.server.apm.common.model.query.BasicTrace;
 import io.holoinsight.server.apm.common.model.query.Pagination;
 import io.holoinsight.server.apm.common.model.query.QueryOrder;
-import io.holoinsight.server.apm.common.model.query.StatisticData;
 import io.holoinsight.server.apm.common.model.query.TraceBrief;
 import io.holoinsight.server.apm.common.model.specification.OtlpMappings;
 import io.holoinsight.server.apm.common.model.specification.otel.Event;
@@ -27,7 +26,6 @@ import io.holoinsight.server.apm.common.utils.GsonUtils;
 import io.holoinsight.server.apm.engine.elasticsearch.utils.EsGsonUtils;
 import io.holoinsight.server.apm.engine.model.SpanDO;
 import io.holoinsight.server.apm.engine.storage.SpanStorage;
-import io.opentelemetry.proto.trace.v1.Status;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -36,19 +34,9 @@ import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
-import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.index.query.RangeQueryBuilder;
 import org.elasticsearch.index.query.TermQueryBuilder;
 import org.elasticsearch.index.query.TermsQueryBuilder;
-import org.elasticsearch.search.aggregations.AbstractAggregationBuilder;
-import org.elasticsearch.search.aggregations.AggregationBuilder;
-import org.elasticsearch.search.aggregations.AggregationBuilders;
-import org.elasticsearch.search.aggregations.Aggregator;
-import org.elasticsearch.search.aggregations.bucket.filter.Filter;
-import org.elasticsearch.search.aggregations.bucket.terms.Terms;
-import org.elasticsearch.search.aggregations.bucket.terms.TermsAggregationBuilder;
-import org.elasticsearch.search.aggregations.metrics.Avg;
-import org.elasticsearch.search.aggregations.metrics.ParsedCardinality;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.elasticsearch.search.sort.SortOrder;
 
@@ -80,8 +68,8 @@ public class SpanEsStorage extends RecordEsStorage<SpanDO> implements SpanStorag
       long start, long end, List<Tag> tags) throws IOException {
     SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
 
-    searchSourceBuilder.query(boolQueryBuilder(tenant, serviceName, serviceInstanceName,
-        endpointName, traceIds, minTraceDuration, maxTraceDuration, traceState, start, end, tags));
+    searchSourceBuilder.query(buildQuery(tenant, serviceName, serviceInstanceName, endpointName,
+        traceIds, minTraceDuration, maxTraceDuration, traceState, start, end, tags, timeField()));
 
     switch (queryOrder) {
       case BY_START_TIME:
@@ -165,143 +153,6 @@ public class SpanEsStorage extends RecordEsStorage<SpanDO> implements SpanStorag
     trace.getSpans().addAll(sortedSpans);
     return trace;
   }
-
-  @Override
-  public StatisticData billing(final String tenant, String serviceName, String serviceInstanceName,
-      String endpointName, List<String> traceIds, int minTraceDuration, int maxTraceDuration,
-      TraceState traceState, long start, long end, List<Tag> tags) throws Exception {
-
-    BoolQueryBuilder queryBuilder = boolQueryBuilder(tenant, serviceName, serviceInstanceName,
-        endpointName, traceIds, minTraceDuration, maxTraceDuration, traceState, start, end, tags);
-
-    SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
-    sourceBuilder.size(0);
-    sourceBuilder.query(queryBuilder);
-    sourceBuilder
-        .aggregation(AggregationBuilders.cardinality("service_count")
-            .field(SpanDO.resource(SpanDO.SERVICE_NAME)))
-        .aggregation(AggregationBuilders.cardinality("service_instance_count")
-            .field(SpanDO.resource(SpanDO.SERVICE_INSTANCE_NAME)))
-        .aggregation(AggregationBuilders.cardinality("endpoint_count").field(SpanDO.NAME))
-        .aggregation(AggregationBuilders.cardinality("trace_count").field(SpanDO.TRACE_ID))
-        .aggregation(AggregationBuilders.filter(SpanDO.TRACE_STATUS,
-            QueryBuilders.termQuery(SpanDO.TRACE_STATUS, Status.StatusCode.STATUS_CODE_ERROR_VALUE))
-            .subAggregation(AggregationBuilders.cardinality("error_count").field(SpanDO.TRACE_ID)))
-        .aggregation(AggregationBuilders.avg("avg_latency").field(SpanDO.LATENCY));
-    sourceBuilder.trackTotalHits(true);
-
-    SearchRequest searchRequest = new SearchRequest(SpanDO.INDEX_NAME);
-    searchRequest.source(sourceBuilder);
-    SearchResponse response = esClient().search(searchRequest, RequestOptions.DEFAULT);
-
-
-    ParsedCardinality serviceTerm = response.getAggregations().get("service_count");
-    long serviceCount = serviceTerm.getValue();
-
-    ParsedCardinality serviceInstanceTerm =
-        response.getAggregations().get("service_instance_count");
-    long serviceInstanceCount = serviceInstanceTerm.getValue();
-
-    ParsedCardinality endpointTerm = response.getAggregations().get("endpoint_count");
-    long endpointCount = endpointTerm.getValue();
-
-    ParsedCardinality traceTerm = response.getAggregations().get("trace_count");
-    long traceCount = traceTerm.getValue();
-
-    Filter errFilter = response.getAggregations().get(SpanDO.TRACE_STATUS);
-    ParsedCardinality errorTerm = errFilter.getAggregations().get("error_count");
-    int errorCount = (int) errorTerm.getValue();
-
-    Avg avgLatency = response.getAggregations().get("avg_latency");
-    double latency = Double.valueOf(avgLatency.getValue());
-
-    StatisticData statisticData = new StatisticData();
-    statisticData.setSpanCount(response.getHits().getTotalHits().value);
-    statisticData.setServiceCount(serviceCount);
-    statisticData.setServiceInstanceCount(serviceInstanceCount);
-    statisticData.setEndpointCount(endpointCount);
-    statisticData.setTraceCount(traceCount);
-    statisticData.setAvgLatency(latency);
-    statisticData.setSuccessRate(((double) (traceCount - errorCount) / traceCount) * 100);
-
-    return statisticData;
-  }
-
-  @Override
-  public List<StatisticData> statistic(long startTime, long endTime) throws IOException {
-    List<StatisticData> result = new ArrayList<>();
-
-    BoolQueryBuilder queryBuilder = QueryBuilders.boolQuery()
-        .must(QueryBuilders.rangeQuery(timeField()).gte(startTime).lte(endTime));
-
-    TermsAggregationBuilder aggregationBuilder =
-        AggregationBuilders.terms(SpanDO.TENANT).field(SpanDO.attributes(SpanDO.TENANT))
-            .subAggregation(AggregationBuilders.cardinality("service_count")
-                .field(SpanDO.resource(SpanDO.SERVICE_NAME)))
-            .subAggregation(AggregationBuilders.cardinality("service_instance_count")
-                .field(SpanDO.resource(SpanDO.SERVICE_INSTANCE_NAME)))
-            .subAggregation(AggregationBuilders.cardinality("endpoint_count").field(SpanDO.NAME))
-            .subAggregation(AggregationBuilders.cardinality("trace_count").field(SpanDO.TRACE_ID))
-            .subAggregation(
-                AggregationBuilders
-                    .filter(SpanDO.TRACE_STATUS,
-                        QueryBuilders.termQuery(SpanDO.TRACE_STATUS,
-                            Status.StatusCode.STATUS_CODE_ERROR_VALUE))
-                    .subAggregation(
-                        AggregationBuilders.cardinality("error_count").field(SpanDO.TRACE_ID)))
-            .subAggregation(AggregationBuilders.avg("avg_latency").field(SpanDO.LATENCY))
-            .executionHint("map").collectMode(Aggregator.SubAggCollectionMode.BREADTH_FIRST)
-            .size(1000);
-
-    SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
-    sourceBuilder.size(0);
-    sourceBuilder.query(queryBuilder);
-    sourceBuilder.aggregation(aggregationBuilder);
-    sourceBuilder.trackTotalHits(true);
-
-    SearchRequest searchRequest = new SearchRequest(SpanDO.INDEX_NAME);
-    searchRequest.source(sourceBuilder);
-    SearchResponse response = esClient().search(searchRequest, RequestOptions.DEFAULT);
-
-    Terms terms = response.getAggregations().get(SpanDO.TENANT);
-    for (Terms.Bucket bucket : terms.getBuckets()) {
-      String tenant = bucket.getKey().toString();
-
-      ParsedCardinality serviceTerm = bucket.getAggregations().get("service_count");
-      long serviceCount = serviceTerm.getValue();
-
-      ParsedCardinality serviceInstanceTerm =
-          bucket.getAggregations().get("service_instance_count");
-      long serviceInstanceCount = serviceInstanceTerm.getValue();
-
-      ParsedCardinality endpointTerm = bucket.getAggregations().get("endpoint_count");
-      long endpointCount = endpointTerm.getValue();
-
-      ParsedCardinality traceTerm = bucket.getAggregations().get("trace_count");
-      long traceCount = traceTerm.getValue();
-
-      Filter errFilter = bucket.getAggregations().get(SpanDO.TRACE_STATUS);
-      ParsedCardinality errorTerm = errFilter.getAggregations().get("error_count");
-      int errorCount = (int) errorTerm.getValue();
-
-      Avg avgLatency = bucket.getAggregations().get("avg_latency");
-      double latency = Double.valueOf(avgLatency.getValue());
-
-      StatisticData statisticData = new StatisticData();
-      statisticData.setResources(Collections.singletonMap("tenant", tenant));
-      statisticData.setSpanCount(response.getHits().getTotalHits().value);
-      statisticData.setServiceCount(serviceCount);
-      statisticData.setServiceInstanceCount(serviceInstanceCount);
-      statisticData.setEndpointCount(endpointCount);
-      statisticData.setTraceCount(traceCount);
-      statisticData.setAvgLatency(latency);
-      statisticData.setSuccessRate(((double) (traceCount - errorCount) / traceCount) * 100);
-
-      result.add(statisticData);
-    }
-    return result;
-  }
-
 
   private Span buildSpan(SpanDO spanEsDO) {
     Span span = new Span();
@@ -416,16 +267,17 @@ public class SpanEsStorage extends RecordEsStorage<SpanDO> implements SpanStorag
     });
   }
 
-  private BoolQueryBuilder boolQueryBuilder(final String tenant, String serviceName,
+  public static BoolQueryBuilder buildQuery(final String tenant, String serviceName,
       String serviceInstanceName, String endpointName, List<String> traceIds, int minTraceDuration,
-      int maxTraceDuration, TraceState traceState, long start, long end, List<Tag> tags) {
+      int maxTraceDuration, TraceState traceState, long start, long end, List<Tag> tags,
+      String timeField) {
     BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder();
 
     if (StringUtils.isNotEmpty(tenant)) {
       boolQueryBuilder.must(new TermQueryBuilder(SpanDO.resource(SpanDO.TENANT), tenant));
     }
     if (start != 0 && end != 0) {
-      boolQueryBuilder.must(new RangeQueryBuilder(timeField()).gte(start).lte(end));
+      boolQueryBuilder.must(new RangeQueryBuilder(timeField).gte(start).lte(end));
     }
 
     if (minTraceDuration != 0 || maxTraceDuration != 0) {

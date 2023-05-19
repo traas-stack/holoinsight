@@ -3,17 +3,21 @@
  */
 package io.holoinsight.server.apm.web.impl;
 
-import io.holoinsight.server.apm.common.model.query.MetricValues;
-import io.holoinsight.server.apm.common.model.query.QueryMetricRequest;
+import io.holoinsight.server.apm.common.model.query.*;
+import io.holoinsight.server.apm.common.model.specification.sw.TraceState;
 import io.holoinsight.server.apm.engine.postcal.MetricDefine;
 import io.holoinsight.server.apm.server.service.MetricService;
 import io.holoinsight.server.apm.web.MetricApi;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
+
+import static java.util.Objects.nonNull;
 
 @Slf4j
 public class MetricApiController implements MetricApi {
@@ -49,4 +53,37 @@ public class MetricApiController implements MetricApi {
       throws IOException {
     return ResponseEntity.ok(metricService.querySchema(request.getMetric()));
   }
+
+  @Override
+  public ResponseEntity<StatisticData> billing(QueryTraceRequest request) throws Exception {
+    long start = 0;
+    long end = 0;
+    List<String> traceIds = Collections.EMPTY_LIST;
+
+    if (CollectionUtils.isNotEmpty(request.getTraceIds())) {
+      traceIds = request.getTraceIds();
+    } else if (nonNull(request.getDuration())) {
+      start = request.getDuration().getStart();
+      end = request.getDuration().getEnd();
+    } else {
+      throw new IllegalArgumentException(
+          "The condition must contains either queryDuration or traceId.");
+    }
+
+    int minDuration = request.getMinTraceDuration();
+    int maxDuration = request.getMaxTraceDuration();
+    String endpointName = request.getEndpointName();
+    TraceState traceState = request.getTraceState();
+    StatisticData statisticData = metricService.billing(request.getTenant(),
+        request.getServiceName(), request.getServiceInstanceName(), endpointName, traceIds,
+        minDuration, maxDuration, traceState, start, end, request.getTags());
+    return ResponseEntity.ok(statisticData);
+  }
+
+  @Override
+  public ResponseEntity<List<StatisticData>> statistic(StatisticRequest request) throws Exception {
+    return ResponseEntity.ok(
+        metricService.statistic(request.getStart(), request.getEnd(), request.getGroups(), null));
+  }
+
 }

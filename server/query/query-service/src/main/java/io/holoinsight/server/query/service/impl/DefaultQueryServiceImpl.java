@@ -306,28 +306,20 @@ public class DefaultQueryServiceImpl implements QueryService {
   }
 
   @Override
-  public List<QueryProto.StatisticData> statisticTrace(QueryProto.QueryTraceRequest request)
+  public List<QueryProto.StatisticData> statisticTrace(QueryProto.StatisticRequest request)
       throws QueryException {
     return wrap(() -> {
       Assert.isTrue((request.getStart() != 0 && request.getEnd() != 0), "timeRange should be set!");
 
-      ApmAPI apmAPI = apmClient.getClient(request.getTenant());
-      QueryTraceRequest queryTraceRequest = new QueryTraceRequest();
-      queryTraceRequest.setTenant(request.getTenant());
-      queryTraceRequest.setServiceName(request.getServiceName());
-      queryTraceRequest.setServiceInstanceName(request.getServiceInstanceName());
-      queryTraceRequest.setTraceIds(request.getTraceIdsList());
-      queryTraceRequest.setEndpointName(request.getEndpointName());
-      queryTraceRequest.setDuration(new Duration(request.getStart(), request.getEnd(), null));
+      Assert.notEmpty((request.getGroupsList()),
+          "groups should be set, or you should use billing API!");
 
-      queryTraceRequest.setMinTraceDuration(request.getMinTraceDuration());
-      queryTraceRequest.setMaxTraceDuration(request.getMaxTraceDuration());
-      if (StringUtils.isEmpty(request.getTraceState())) {
-        queryTraceRequest.setTraceState(TraceState.ALL);
-      } else {
-        queryTraceRequest.setTraceState(TraceState.valueOf(request.getTraceState()));
-      }
-      queryTraceRequest.setTags(ApmConvertor.convertTagsMap(request.getTagsMap()));
+      ApmAPI apmAPI = apmClient.getClient(request.getTenant());
+      StatisticRequest queryTraceRequest = new StatisticRequest();
+      queryTraceRequest.setTenant(request.getTenant());
+      queryTraceRequest.setStart(request.getStart());
+      queryTraceRequest.setEnd(request.getEnd());
+      queryTraceRequest.setGroups(request.getGroupsList());
       Call<List<StatisticData>> call = apmAPI.statistic(queryTraceRequest);
       Response<List<StatisticData>> statisticDataRsp = call.execute();
       if (!statisticDataRsp.isSuccessful()) {

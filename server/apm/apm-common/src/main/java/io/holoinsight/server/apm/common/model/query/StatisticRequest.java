@@ -7,12 +7,14 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.Map;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class StatisticData {
-  private Map<String, String> resources;
-  private Map<String, Double> datas;
+public class StatisticRequest {
+  private String tenant;
+  private long start;
+  private long end;
+  private List<String> groups;
 }

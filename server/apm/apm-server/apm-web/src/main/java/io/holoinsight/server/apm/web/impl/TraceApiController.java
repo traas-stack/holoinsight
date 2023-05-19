@@ -3,7 +3,10 @@
  */
 package io.holoinsight.server.apm.web.impl;
 
-import io.holoinsight.server.apm.common.model.query.*;
+import io.holoinsight.server.apm.common.model.query.Pagination;
+import io.holoinsight.server.apm.common.model.query.QueryOrder;
+import io.holoinsight.server.apm.common.model.query.QueryTraceRequest;
+import io.holoinsight.server.apm.common.model.query.TraceBrief;
 import io.holoinsight.server.apm.common.model.specification.sw.Trace;
 import io.holoinsight.server.apm.common.model.specification.sw.TraceState;
 import io.holoinsight.server.apm.server.service.TraceService;
@@ -12,7 +15,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.util.Assert;
 
 import java.util.Collections;
 import java.util.List;
@@ -58,38 +60,5 @@ public class TraceApiController implements TraceApi {
   public ResponseEntity<Trace> queryTrace(QueryTraceRequest request) throws Exception {
     Trace trace = traceService.queryTrace(request.getTraceIds().get(0));
     return ResponseEntity.ok(trace);
-  }
-
-  @Override
-  public ResponseEntity<StatisticData> billing(QueryTraceRequest request) throws Exception {
-    long start = 0;
-    long end = 0;
-    List<String> traceIds = Collections.EMPTY_LIST;
-
-    if (CollectionUtils.isNotEmpty(request.getTraceIds())) {
-      traceIds = request.getTraceIds();
-    } else if (nonNull(request.getDuration())) {
-      start = request.getDuration().getStart();
-      end = request.getDuration().getEnd();
-    } else {
-      throw new IllegalArgumentException(
-          "The condition must contains either queryDuration or traceId.");
-    }
-
-    int minDuration = request.getMinTraceDuration();
-    int maxDuration = request.getMaxTraceDuration();
-    String endpointName = request.getEndpointName();
-    TraceState traceState = request.getTraceState();
-    StatisticData statisticData = traceService.billing(request.getTenant(),
-        request.getServiceName(), request.getServiceInstanceName(), endpointName, traceIds,
-        minDuration, maxDuration, traceState, start, end, request.getTags());
-    return ResponseEntity.ok(statisticData);
-  }
-
-  @Override
-  public ResponseEntity<List<StatisticData>> statistic(QueryTraceRequest request) throws Exception {
-    Assert.notNull(request.getDuration(), "timeRange must be specified");
-    return ResponseEntity.ok(
-        traceService.statistic(request.getDuration().getStart(), request.getDuration().getEnd()));
   }
 }

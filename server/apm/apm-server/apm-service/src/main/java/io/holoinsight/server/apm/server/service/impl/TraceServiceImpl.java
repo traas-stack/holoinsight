@@ -45,18 +45,4 @@ public class TraceServiceImpl implements TraceService {
   public void insertSpans(List<SpanDO> spans) throws Exception {
     spanStorage.insert(spans);
   }
-
-  @Override
-  public StatisticData billing(String tenant, String serviceName, String serviceInstanceName,
-      String endpointName, List<String> traceIds, int minTraceDuration, int maxTraceDuration,
-      TraceState traceState, long start, long end, List<Tag> tags) throws Exception {
-    return spanStorage.billing(tenant, serviceName, serviceInstanceName, endpointName, traceIds,
-        minTraceDuration, maxTraceDuration, traceState, start, end, tags);
-  }
-
-  @Override
-  public List<StatisticData> statistic(long startTime, long endTime) throws Exception {
-    return spanStorage.statistic(startTime, endTime);
-  }
-
 }

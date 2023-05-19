@@ -24,36 +24,7 @@ public interface TraceService {
 
   Trace queryTrace(final String traceId) throws Exception;
 
-  /**
-   * billing specified resource ranges by certain conditions
-   * 
-   * @param tenant
-   * @param serviceName
-   * @param serviceInstanceName
-   * @param endpointName
-   * @param traceIds
-   * @param minTraceDuration
-   * @param maxTraceDuration
-   * @param traceState
-   * @param start
-   * @param end
-   * @param tags
-   * @return
-   * @throws Exception
-   */
-  StatisticData billing(String tenant, String serviceName, String serviceInstanceName,
-      String endpointName, List<String> traceIds, int minTraceDuration, int maxTraceDuration,
-      TraceState traceState, long start, long end, List<Tag> tags) throws Exception;
-
   void insertSpans(final List<SpanDO> spans) throws Exception;
 
-  /**
-   * Query statistical trace data, which can be used to monitor the amount of trace data
-   * 
-   * @param startTime
-   * @param endTime
-   * @return
-   * @throws Exception
-   */
-  List<StatisticData> statistic(long startTime, long endTime) throws Exception;
+
 }
