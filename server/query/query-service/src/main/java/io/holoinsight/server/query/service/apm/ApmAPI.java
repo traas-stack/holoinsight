@@ -22,11 +22,11 @@ public interface ApmAPI {
   @POST("/cluster/api/v1/trace/query")
   Call<Trace> queryTrace(@Body QueryTraceRequest request);
 
-  @POST("/cluster/api/v1/trace/billing")
+  @POST("/cluster/api/v1/metric/billing")
   Call<StatisticData> billing(@Body QueryTraceRequest request);
 
-  @POST("/cluster/api/v1/trace/statistic")
-  Call<List<StatisticData>> statistic(@Body QueryTraceRequest request);
+  @POST("/cluster/api/v1/metric/statistic")
+  Call<List<StatisticData>> statistic(@Body StatisticRequest request);
 
   @POST("/cluster/api/v1/metric/list")
   @Headers({"Content-Type: application/json", "Accept: application/json"})

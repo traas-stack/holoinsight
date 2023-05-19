@@ -131,6 +131,13 @@ message PqlRangeRequest {
   bool fillZero = 8;
 }
 
+message StatisticRequest {
+  string tenant = 1;
+  int64 start = 2;
+  int64 end = 3;
+  repeated string groups = 4;
+}
+
 message QueryTraceRequest {
   string tenant = 1;
   optional string serviceName = 2;
@@ -301,13 +308,7 @@ message TraceIds {
 
 message StatisticData{
   map<string, string> resources = 1;
-  int64 traceCount = 2;
-  int64 spanCount = 3;
-  int64 serviceCount = 4;
-  int64 serviceInstanceCount = 5;
-  int64 endpointCount = 6;
-  double successRate = 7;
-  double avgLatency = 8;
+  map<string, double> datas = 2;
 }
 
 service QueryService {

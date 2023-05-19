@@ -3,8 +3,7 @@
  */
 package io.holoinsight.server.apm.web;
 
-import io.holoinsight.server.apm.common.model.query.MetricValues;
-import io.holoinsight.server.apm.common.model.query.QueryMetricRequest;
+import io.holoinsight.server.apm.common.model.query.*;
 import io.holoinsight.server.apm.engine.postcal.MetricDefine;
 import io.holoinsight.server.apm.web.model.FailResponse;
 import io.swagger.annotations.*;
@@ -79,4 +78,29 @@ public interface MetricApi {
       consumes = {"application/json"}, method = RequestMethod.POST)
   ResponseEntity<List<String>> queryMetricSchema(@ApiParam(value = "metric name",
       required = false) @RequestBody @Valid QueryMetricRequest metric) throws IOException;
+
+  @ApiOperation(value = "billing", nickname = "billing", notes = "根据条件进行计费。",
+      response = StatisticData.class, authorizations = {@Authorization(value = "APIKeyHeader"),
+          @Authorization(value = "APIKeyQueryParam")},
+      tags = {"billing",})
+  @ApiResponses(
+      value = {@ApiResponse(code = 200, message = "请求正常。", response = StatisticData.class),
+          @ApiResponse(code = 400, message = "请求失败。", response = FailResponse.class)})
+  @RequestMapping(value = "/billing", produces = {"application/json"},
+      consumes = {"application/json"}, method = RequestMethod.POST)
+  ResponseEntity<StatisticData> billing(
+      @ApiParam(value = "查询条件。", required = false) @Valid @RequestBody QueryTraceRequest request)
+      throws Exception;
+
+  @ApiOperation(value = "statistic", nickname = "statistic", notes = "统计计费。",
+      response = StatisticData.class, authorizations = {@Authorization(value = "APIKeyHeader"),
+          @Authorization(value = "APIKeyQueryParam")},
+      tags = {"statistic",})
+  @ApiResponses(value = {@ApiResponse(code = 200, message = "请求正常。", response = List.class),
+      @ApiResponse(code = 400, message = "请求失败。", response = FailResponse.class)})
+  @RequestMapping(value = "/statistic", produces = {"application/json"},
+      consumes = {"application/json"}, method = RequestMethod.POST)
+  ResponseEntity<List<StatisticData>> statistic(
+      @ApiParam(value = "查询条件。", required = false) @Valid @RequestBody StatisticRequest request)
+      throws Exception;
 }
