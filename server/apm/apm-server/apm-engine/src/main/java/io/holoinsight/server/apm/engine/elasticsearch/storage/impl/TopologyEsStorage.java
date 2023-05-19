@@ -59,7 +59,7 @@ public class TopologyEsStorage implements TopologyStorage {
 
     commonBuilder.addTermParams(queryBuilder, termParams);
     SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
-    sourceBuilder.size(1000);
+    sourceBuilder.size(0);
     sourceBuilder.query(queryBuilder);
     sourceBuilder.aggregation(commonBuilder.buildAgg(EndpointRelationDO.ENTITY_ID));
 
@@ -80,7 +80,7 @@ public class TopologyEsStorage implements TopologyStorage {
 
     commonBuilder.addTermParams(queryBuilder, termParams);
     SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
-    sourceBuilder.size(1000);
+    sourceBuilder.size(0);
     sourceBuilder.query(queryBuilder);
     sourceBuilder.aggregation(commonBuilder.buildAgg(EndpointRelationDO.ENTITY_ID));
 
@@ -108,7 +108,7 @@ public class TopologyEsStorage implements TopologyStorage {
 
     commonBuilder.addTermParamsWithAttrPrefix(queryBuilder, termParams);
     SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
-    sourceBuilder.size(1000);
+    sourceBuilder.size(0);
     sourceBuilder.query(queryBuilder);
     sourceBuilder.aggregation(commonBuilder.buildAgg(aggField));
 
@@ -131,7 +131,7 @@ public class TopologyEsStorage implements TopologyStorage {
 
     commonBuilder.addTermParams(queryBuilder, termParams);
     SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
-    sourceBuilder.size(1000);
+    sourceBuilder.size(0);
     sourceBuilder.query(queryBuilder);
     sourceBuilder.aggregation(commonBuilder.buildAgg(ServiceInstanceRelationDO.ENTITY_ID));
 
@@ -151,7 +151,7 @@ public class TopologyEsStorage implements TopologyStorage {
 
     commonBuilder.addTermParams(queryBuilder, termParams);
     SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
-    sourceBuilder.size(1000);
+    sourceBuilder.size(0);
     sourceBuilder.query(queryBuilder);
     sourceBuilder.aggregation(commonBuilder.buildAgg(ServiceRelationDO.ENTITY_ID));
 

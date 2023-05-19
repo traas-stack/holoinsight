@@ -60,7 +60,7 @@ public class VirtualComponentEsStorage implements VirtualComponentStorage {
 
     commonBuilder.addTermParams(queryBuilder, termParams);
     SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
-    sourceBuilder.size(1000);
+    sourceBuilder.size(0);
     sourceBuilder.query(queryBuilder);
     sourceBuilder.aggregation(commonBuilder.buildAgg(ServiceRelationDO.ENTITY_ID));
 
@@ -88,7 +88,7 @@ public class VirtualComponentEsStorage implements VirtualComponentStorage {
 
     commonBuilder.addTermParams(queryBuilder, termParams);
     SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
-    sourceBuilder.size(1000);
+    sourceBuilder.size(0);
     sourceBuilder.query(queryBuilder);
     sourceBuilder.aggregation(aggregationBuilder);
 
