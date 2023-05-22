@@ -20,9 +20,6 @@ public class RPCTrafficSourceBuilder extends EndpointSourceBuilder {
 
   @Getter
   @Setter
-  private String serviceName;
-  @Getter
-  @Setter
   private Layer sourceLayer;
   @Getter
   @Setter
@@ -47,7 +44,6 @@ public class RPCTrafficSourceBuilder extends EndpointSourceBuilder {
   public void setServiceRelation(ServiceRelation serviceRelation) {
     serviceRelation.setTraceId(traceId);
     serviceRelation.setSourceServiceName(sourceServiceName);
-    serviceRelation.setServiceName(sourceServiceName);
     serviceRelation.setSourceServiceInstanceName(sourceServiceInstanceName);
     serviceRelation.setSourceLayer(sourceLayer);
     serviceRelation.setDestServiceName(destServiceName);

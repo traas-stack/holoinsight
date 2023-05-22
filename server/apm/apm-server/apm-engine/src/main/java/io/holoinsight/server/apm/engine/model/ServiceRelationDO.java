@@ -26,7 +26,6 @@ public class ServiceRelationDO extends RecordDO {
   public static final String END_TIME = "end_time";
   public static final String SOURCE_SERVICE_NAME = "source_service_name";
 
-  public static final String SERVICE_NAME = "serviceName";
   public static final String DEST_SERVICE_NAME = "dest_service_name";
   public static final String COMPONENT = "component";
   public static final String TRACE_STATUS = "trace_status";
@@ -41,8 +40,6 @@ public class ServiceRelationDO extends RecordDO {
   private String tenant;
   @Column(name = SOURCE_SERVICE_NAME)
   private String sourceServiceName;
-  @Column(name = SERVICE_NAME)
-  private String serviceName;
   @Column(name = DEST_SERVICE_NAME)
   private String destServiceName;
   @Column(name = COMPONENT)

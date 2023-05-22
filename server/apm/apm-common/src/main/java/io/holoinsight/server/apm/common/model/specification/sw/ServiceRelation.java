@@ -18,10 +18,6 @@ public class ServiceRelation extends Source {
 
   @Getter
   @Setter
-  private String serviceName;
-
-  @Getter
-  @Setter
   private String sourceServiceInstanceName;
   @Getter
   @Setter
