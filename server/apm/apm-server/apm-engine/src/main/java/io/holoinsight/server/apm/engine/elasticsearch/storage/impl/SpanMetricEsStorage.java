@@ -3,6 +3,7 @@
  */
 package io.holoinsight.server.apm.engine.elasticsearch.storage.impl;
 
+import io.holoinsight.server.apm.common.constants.Const;
 import io.holoinsight.server.apm.common.model.query.Duration;
 import io.holoinsight.server.apm.common.model.query.MetricValue;
 import io.holoinsight.server.apm.common.model.query.MetricValues;
@@ -59,7 +60,11 @@ public class SpanMetricEsStorage extends PostCalMetricStorage {
     MetricValues metricValues = new MetricValues(values);
     SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
     BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder();
-    boolQueryBuilder.filter(new TermQueryBuilder(SpanDO.resource(SpanDO.TENANT), tenant))
+
+
+    boolQueryBuilder
+        .filter(new TermQueryBuilder(OtlpMappings.toOtlp(metricDefine.getIndex(), Const.TENANT),
+            tenant))
         .filter(new RangeQueryBuilder(timeField()).gte(duration.getStart()).lte(duration.getEnd()));
 
     if (conditions != null) {

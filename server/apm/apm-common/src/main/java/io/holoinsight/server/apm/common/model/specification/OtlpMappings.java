@@ -43,7 +43,7 @@ public class OtlpMappings {
 
   /**
    * null -> null <br>
-   * tenant -> resource.tenant <br>
+   * for holoinsight-span: tenant -> resource.tenant <br>
    * serviceName -> resource.service.name <br>
    * serviceInstanceName -> resource.service.instance.name <br>
    * endpointName -> name <br>
@@ -56,10 +56,10 @@ public class OtlpMappings {
    * @return
    */
   public static String toOtlp(String index, String name) {
-    if (name == null) {
-      return null;
+    BiMap<String, String> mappings = OTLP_SW_MAPPINGS.get(index);
+    if (mappings == null || name == null) {
+      return name;
     }
-    BiMap<String, String> mappings = OTLP_SW_MAPPINGS.getOrDefault(index, HashBiMap.create());
     if (mappings.containsKey(name)) {
       return mappings.get(name);
     }
@@ -73,7 +73,7 @@ public class OtlpMappings {
 
   /**
    * null -> null <br>
-   * resource.tenant -> tenant <br>
+   * for holoinsight-span: resource.tenant -> tenant <br>
    * resource.service.name -> serviceName <br>
    * resource.service.instance.name -> serviceInstanceName <br>
    * name -> endpointName <br>
@@ -84,12 +84,11 @@ public class OtlpMappings {
    * @return
    */
   public static String fromOtlp(String index, String name) {
-
-    if (name == null) {
-      return null;
+    BiMap<String, String> mappings = OTLP_SW_MAPPINGS.get(index);
+    if (mappings == null || name == null) {
+      return name;
     }
-    BiMap<String, String> mappings =
-        OTLP_SW_MAPPINGS.getOrDefault(index, HashBiMap.create()).inverse();
+    mappings = mappings.inverse();
     if (mappings.containsKey(name)) {
       return mappings.get(name);
     }
