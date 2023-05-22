@@ -35,7 +35,7 @@ public interface QueryService {
 
   QueryProto.StatisticData billingTrace(QueryProto.QueryTraceRequest request) throws QueryException;
 
-  List<QueryProto.StatisticData> statisticTrace(QueryProto.StatisticRequest request)
+  QueryProto.StatisticDataList statisticTrace(QueryProto.StatisticRequest request)
       throws QueryException;
 
   QueryProto.QueryMetaResponse queryServiceList(QueryProto.QueryMetaRequest request)

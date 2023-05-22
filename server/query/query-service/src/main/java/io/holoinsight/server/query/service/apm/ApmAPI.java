@@ -26,7 +26,7 @@ public interface ApmAPI {
   Call<StatisticData> billing(@Body QueryTraceRequest request);
 
   @POST("/cluster/api/v1/metric/statistic")
-  Call<List<StatisticData>> statistic(@Body StatisticRequest request);
+  Call<StatisticDataList> statistic(@Body StatisticRequest request);
 
   @POST("/cluster/api/v1/metric/list")
   @Headers({"Content-Type: application/json", "Accept: application/json"})

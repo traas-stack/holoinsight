@@ -311,6 +311,10 @@ message StatisticData{
   map<string, double> datas = 2;
 }
 
+message StatisticDataList {
+  repeated StatisticData statisticData = 1;
+}
+
 service QueryService {
   rpc QueryData(QueryRequest) returns (QueryResponse);
 
@@ -345,5 +349,7 @@ service QueryService {
   rpc QueryTopology(QueryTopologyRequest) returns (Topology);
 
   rpc QuerySlowSqlList(QueryMetaRequest) returns (QuerySlowSqlResponse);
+
+  rpc StatisticTrace(StatisticRequest) returns (StatisticDataList);
 
 }

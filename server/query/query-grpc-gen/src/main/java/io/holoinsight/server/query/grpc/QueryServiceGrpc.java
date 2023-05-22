@@ -534,6 +534,36 @@ public final class QueryServiceGrpc {
     return getQuerySlowSqlListMethod;
   }
 
+  private static volatile io.grpc.MethodDescriptor<io.holoinsight.server.query.grpc.QueryProto.StatisticRequest, io.holoinsight.server.query.grpc.QueryProto.StatisticDataList> getStatisticTraceMethod;
+
+  @io.grpc.stub.annotations.RpcMethod(fullMethodName = SERVICE_NAME + '/' + "StatisticTrace",
+      requestType = io.holoinsight.server.query.grpc.QueryProto.StatisticRequest.class,
+      responseType = io.holoinsight.server.query.grpc.QueryProto.StatisticDataList.class,
+      methodType = io.grpc.MethodDescriptor.MethodType.UNARY)
+  public static io.grpc.MethodDescriptor<io.holoinsight.server.query.grpc.QueryProto.StatisticRequest, io.holoinsight.server.query.grpc.QueryProto.StatisticDataList> getStatisticTraceMethod() {
+    io.grpc.MethodDescriptor<io.holoinsight.server.query.grpc.QueryProto.StatisticRequest, io.holoinsight.server.query.grpc.QueryProto.StatisticDataList> getStatisticTraceMethod;
+    if ((getStatisticTraceMethod = QueryServiceGrpc.getStatisticTraceMethod) == null) {
+      synchronized (QueryServiceGrpc.class) {
+        if ((getStatisticTraceMethod = QueryServiceGrpc.getStatisticTraceMethod) == null) {
+          QueryServiceGrpc.getStatisticTraceMethod = getStatisticTraceMethod =
+              io.grpc.MethodDescriptor.<io.holoinsight.server.query.grpc.QueryProto.StatisticRequest, io.holoinsight.server.query.grpc.QueryProto.StatisticDataList>newBuilder()
+                  .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
+                  .setFullMethodName(generateFullMethodName(SERVICE_NAME, "StatisticTrace"))
+                  .setSampledToLocalTracing(true)
+                  .setRequestMarshaller(io.grpc.protobuf.ProtoUtils
+                      .marshaller(io.holoinsight.server.query.grpc.QueryProto.StatisticRequest
+                          .getDefaultInstance()))
+                  .setResponseMarshaller(io.grpc.protobuf.ProtoUtils
+                      .marshaller(io.holoinsight.server.query.grpc.QueryProto.StatisticDataList
+                          .getDefaultInstance()))
+                  .setSchemaDescriptor(new QueryServiceMethodDescriptorSupplier("StatisticTrace"))
+                  .build();
+        }
+      }
+    }
+    return getStatisticTraceMethod;
+  }
+
   /**
    * Creates a new async stub that supports all call types for the service
    */
@@ -725,6 +755,14 @@ public final class QueryServiceGrpc {
           responseObserver);
     }
 
+    /**
+     */
+    public void statisticTrace(io.holoinsight.server.query.grpc.QueryProto.StatisticRequest request,
+        io.grpc.stub.StreamObserver<io.holoinsight.server.query.grpc.QueryProto.StatisticDataList> responseObserver) {
+      io.grpc.stub.ServerCalls.asyncUnimplementedUnaryCall(getStatisticTraceMethod(),
+          responseObserver);
+    }
+
     @java.lang.Override
     public final io.grpc.ServerServiceDefinition bindService() {
       return io.grpc.ServerServiceDefinition.builder(getServiceDescriptor())
@@ -779,6 +817,9 @@ public final class QueryServiceGrpc {
           .addMethod(getQuerySlowSqlListMethod(), io.grpc.stub.ServerCalls.asyncUnaryCall(
               new MethodHandlers<io.holoinsight.server.query.grpc.QueryProto.QueryMetaRequest, io.holoinsight.server.query.grpc.QueryProto.QuerySlowSqlResponse>(
                   this, METHODID_QUERY_SLOW_SQL_LIST)))
+          .addMethod(getStatisticTraceMethod(), io.grpc.stub.ServerCalls.asyncUnaryCall(
+              new MethodHandlers<io.holoinsight.server.query.grpc.QueryProto.StatisticRequest, io.holoinsight.server.query.grpc.QueryProto.StatisticDataList>(
+                  this, METHODID_STATISTIC_TRACE)))
           .build();
     }
   }
@@ -954,6 +995,15 @@ public final class QueryServiceGrpc {
           getChannel().newCall(getQuerySlowSqlListMethod(), getCallOptions()), request,
           responseObserver);
     }
+
+    /**
+     */
+    public void statisticTrace(io.holoinsight.server.query.grpc.QueryProto.StatisticRequest request,
+        io.grpc.stub.StreamObserver<io.holoinsight.server.query.grpc.QueryProto.StatisticDataList> responseObserver) {
+      io.grpc.stub.ClientCalls.asyncUnaryCall(
+          getChannel().newCall(getStatisticTraceMethod(), getCallOptions()), request,
+          responseObserver);
+    }
   }
 
   /**
@@ -1103,6 +1153,14 @@ public final class QueryServiceGrpc {
     public io.holoinsight.server.query.grpc.QueryProto.QuerySlowSqlResponse querySlowSqlList(
         io.holoinsight.server.query.grpc.QueryProto.QueryMetaRequest request) {
       return io.grpc.stub.ClientCalls.blockingUnaryCall(getChannel(), getQuerySlowSqlListMethod(),
+          getCallOptions(), request);
+    }
+
+    /**
+     */
+    public io.holoinsight.server.query.grpc.QueryProto.StatisticDataList statisticTrace(
+        io.holoinsight.server.query.grpc.QueryProto.StatisticRequest request) {
+      return io.grpc.stub.ClientCalls.blockingUnaryCall(getChannel(), getStatisticTraceMethod(),
           getCallOptions(), request);
     }
   }
@@ -1256,6 +1314,14 @@ public final class QueryServiceGrpc {
       return io.grpc.stub.ClientCalls.futureUnaryCall(
           getChannel().newCall(getQuerySlowSqlListMethod(), getCallOptions()), request);
     }
+
+    /**
+     */
+    public com.google.common.util.concurrent.ListenableFuture<io.holoinsight.server.query.grpc.QueryProto.StatisticDataList> statisticTrace(
+        io.holoinsight.server.query.grpc.QueryProto.StatisticRequest request) {
+      return io.grpc.stub.ClientCalls.futureUnaryCall(
+          getChannel().newCall(getStatisticTraceMethod(), getCallOptions()), request);
+    }
   }
 
   private static final int METHODID_QUERY_DATA = 0;
@@ -1275,6 +1341,7 @@ public final class QueryServiceGrpc {
   private static final int METHODID_QUERY_COMPONENT_TRACE_IDS = 14;
   private static final int METHODID_QUERY_TOPOLOGY = 15;
   private static final int METHODID_QUERY_SLOW_SQL_LIST = 16;
+  private static final int METHODID_STATISTIC_TRACE = 17;
 
   private static final class MethodHandlers<Req, Resp>
       implements io.grpc.stub.ServerCalls.UnaryMethod<Req, Resp>,
@@ -1375,6 +1442,11 @@ public final class QueryServiceGrpc {
               (io.holoinsight.server.query.grpc.QueryProto.QueryMetaRequest) request,
               (io.grpc.stub.StreamObserver<io.holoinsight.server.query.grpc.QueryProto.QuerySlowSqlResponse>) responseObserver);
           break;
+        case METHODID_STATISTIC_TRACE:
+          serviceImpl.statisticTrace(
+              (io.holoinsight.server.query.grpc.QueryProto.StatisticRequest) request,
+              (io.grpc.stub.StreamObserver<io.holoinsight.server.query.grpc.QueryProto.StatisticDataList>) responseObserver);
+          break;
         default:
           throw new AssertionError();
       }
@@ -1444,7 +1516,8 @@ public final class QueryServiceGrpc {
               .addMethod(getQueryServiceListMethod()).addMethod(getQueryEndpointListMethod())
               .addMethod(getQueryServiceInstanceListMethod())
               .addMethod(getQueryComponentListMethod()).addMethod(getQueryComponentTraceIdsMethod())
-              .addMethod(getQueryTopologyMethod()).addMethod(getQuerySlowSqlListMethod()).build();
+              .addMethod(getQueryTopologyMethod()).addMethod(getQuerySlowSqlListMethod())
+              .addMethod(getStatisticTraceMethod()).build();
         }
       }
     }
