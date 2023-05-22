@@ -331,7 +331,6 @@
     "function": "cardinality",
     "groups": [
       "source_service_name",
-      "serviceName",
       "dest_service_name",
       "component",
       "type"
@@ -347,7 +346,6 @@
     "function": "cardinality",
     "groups": [
       "source_service_name",
-      "serviceName",
       "dest_service_name",
       "component",
       "type"
@@ -363,7 +361,6 @@
     "function": "cardinality",
     "groups": [
       "source_service_name",
-      "serviceName",
       "dest_service_name",
       "component",
       "type"
@@ -380,7 +377,6 @@
     "function": "cardinality",
     "groups": [
       "source_service_name",
-      "serviceName",
       "dest_service_name",
       "component",
       "type"
@@ -397,7 +393,6 @@
     "function": "sum",
     "groups": [
       "source_service_name",
-      "serviceName",
       "dest_service_name",
       "component",
       "type"
@@ -413,7 +408,6 @@
     "function": "avg",
     "groups": [
       "source_service_name",
-      "serviceName",
       "dest_service_name",
       "component",
       "type"
@@ -429,7 +423,6 @@
     "function": "percentiles",
     "groups": [
       "source_service_name",
-      "serviceName",
       "dest_service_name",
       "component",
       "type"
