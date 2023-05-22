@@ -15,6 +15,7 @@ public class ServiceRelation extends Source {
   @Getter
   @Setter
   private String sourceServiceName;
+
   @Getter
   @Setter
   private String sourceServiceInstanceName;
