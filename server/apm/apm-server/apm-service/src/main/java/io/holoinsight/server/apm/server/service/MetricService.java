@@ -6,6 +6,7 @@ package io.holoinsight.server.apm.server.service;
 import io.holoinsight.server.apm.common.model.query.Duration;
 import io.holoinsight.server.apm.common.model.query.MetricValues;
 import io.holoinsight.server.apm.common.model.query.StatisticData;
+import io.holoinsight.server.apm.common.model.query.StatisticDataList;
 import io.holoinsight.server.apm.common.model.specification.sw.Tag;
 import io.holoinsight.server.apm.common.model.specification.sw.TraceState;
 import io.holoinsight.server.apm.engine.postcal.MetricDefine;
@@ -56,6 +57,6 @@ public interface MetricService {
    * @return
    * @throws Exception
    */
-  List<StatisticData> statistic(long startTime, long endTime, List<String> groups,
+  StatisticDataList statistic(long startTime, long endTime, List<String> groups,
       List<AggregationBuilder> aggregations) throws Exception;
 }

@@ -306,7 +306,7 @@ public class DefaultQueryServiceImpl implements QueryService {
   }
 
   @Override
-  public List<QueryProto.StatisticData> statisticTrace(QueryProto.StatisticRequest request)
+  public QueryProto.StatisticDataList statisticTrace(QueryProto.StatisticRequest request)
       throws QueryException {
     return wrap(() -> {
       Assert.isTrue((request.getStart() != 0 && request.getEnd() != 0), "timeRange should be set!");
@@ -320,13 +320,12 @@ public class DefaultQueryServiceImpl implements QueryService {
       queryTraceRequest.setStart(request.getStart());
       queryTraceRequest.setEnd(request.getEnd());
       queryTraceRequest.setGroups(request.getGroupsList());
-      Call<List<StatisticData>> call = apmAPI.statistic(queryTraceRequest);
-      Response<List<StatisticData>> statisticDataRsp = call.execute();
+      Call<StatisticDataList> call = apmAPI.statistic(queryTraceRequest);
+      Response<StatisticDataList> statisticDataRsp = call.execute();
       if (!statisticDataRsp.isSuccessful()) {
         throw new QueryException(statisticDataRsp.errorBody().string());
       }
-      return statisticDataRsp.body().stream().map(ApmConvertor::convertStatisticData)
-          .collect(Collectors.toList());
+      return ApmConvertor.convert(statisticDataRsp.body());
     }, "statisticTrace", request);
   }
 

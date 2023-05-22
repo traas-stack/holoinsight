@@ -485,4 +485,14 @@ public class ApmConvertor {
 
     return result;
   }
+
+  public static QueryProto.StatisticDataList convert(StatisticDataList statisticDataList) {
+    QueryProto.StatisticDataList.Builder builder = QueryProto.StatisticDataList.newBuilder();
+    if (!CollectionUtils.isEmpty(statisticDataList.getStatisticDataList())) {
+      for (StatisticData data : statisticDataList.getStatisticDataList()) {
+        builder.addStatisticData(convertStatisticData(data));
+      }
+    }
+    return builder.build();
+  }
 }

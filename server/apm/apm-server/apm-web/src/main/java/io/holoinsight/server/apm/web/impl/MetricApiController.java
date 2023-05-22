@@ -81,7 +81,7 @@ public class MetricApiController implements MetricApi {
   }
 
   @Override
-  public ResponseEntity<List<StatisticData>> statistic(StatisticRequest request) throws Exception {
+  public ResponseEntity<StatisticDataList> statistic(StatisticRequest request) throws Exception {
     return ResponseEntity.ok(
         metricService.statistic(request.getStart(), request.getEnd(), request.getGroups(), null));
   }

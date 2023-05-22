@@ -7,6 +7,7 @@ import io.holoinsight.server.apm.common.model.query.Duration;
 import io.holoinsight.server.apm.common.model.query.MetricValue;
 import io.holoinsight.server.apm.common.model.query.MetricValues;
 import io.holoinsight.server.apm.common.model.query.StatisticData;
+import io.holoinsight.server.apm.common.model.query.StatisticDataList;
 import io.holoinsight.server.apm.common.model.specification.OtlpMappings;
 import io.holoinsight.server.apm.common.model.specification.sw.Tag;
 import io.holoinsight.server.apm.common.model.specification.sw.TraceState;
@@ -159,12 +160,12 @@ public class SpanMetricEsStorage extends PostCalMetricStorage {
 
   }
 
-  public List<StatisticData> statistic(long startTime, long endTime, List<String> groups,
+  public StatisticDataList statistic(long startTime, long endTime, List<String> groups,
       List<AggregationBuilder> aggregations) throws IOException {
 
     Assert.notEmpty(groups, "statistic groups must be specified");
 
-    List<StatisticData> result = new ArrayList<>();
+    List<StatisticDataList> result = new ArrayList<>();
 
     BoolQueryBuilder queryBuilder = QueryBuilders.boolQuery()
         .must(QueryBuilders.rangeQuery(timeField()).gte(startTime).lte(endTime));
@@ -228,7 +229,9 @@ public class SpanMetricEsStorage extends PostCalMetricStorage {
 
       result.add(statisticData);
     });
-    return result;
+
+    StatisticDataList statisticDataList = new StatisticDataList(result);
+    return statisticDataList;
   }
 
   private AggregationBuilder statBuilder(String field, String function) {
