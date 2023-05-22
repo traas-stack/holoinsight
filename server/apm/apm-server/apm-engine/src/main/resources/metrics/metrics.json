@@ -329,9 +329,14 @@
     "index": "holoinsight-service_relation",
     "field": "trace_id",
     "function": "cardinality",
-    "groups": [],
+    "groups": [
+      "source_service_name",
+      "serviceName",
+      "dest_service_name",
+      "component",
+      "type"
+    ],
     "conditions": {
-      "type": "MQ"
     },
     "materialized": true
   },
@@ -340,9 +345,14 @@
     "index": "holoinsight-service_relation",
     "field": "trace_id",
     "function": "cardinality",
-    "groups": [],
+    "groups": [
+      "source_service_name",
+      "serviceName",
+      "dest_service_name",
+      "component",
+      "type"
+    ],
     "conditions": {
-      "type": "MQ"
     },
     "materializedExp": "sum{apm_component_cpm_materialized}"
   },
@@ -351,9 +361,14 @@
     "index": "holoinsight-service_relation",
     "field": "trace_id",
     "function": "cardinality",
-    "groups": [],
+    "groups": [
+      "source_service_name",
+      "serviceName",
+      "dest_service_name",
+      "component",
+      "type"
+    ],
     "conditions": {
-      "type": "MQ",
       "is_error": "1"
     },
     "materialized": true
@@ -363,9 +378,14 @@
     "index": "holoinsight-service_relation",
     "field": "trace_id",
     "function": "cardinality",
-    "groups": [],
+    "groups": [
+      "source_service_name",
+      "serviceName",
+      "dest_service_name",
+      "component",
+      "type"
+    ],
     "conditions": {
-      "type": "MQ",
       "is_error": "1"
     },
     "materializedExp": "sum{apm_component_cpm_fail_materialized}"
@@ -375,9 +395,14 @@
     "index": "holoinsight-service_relation",
     "field": "latency",
     "function": "sum",
-    "groups": [],
+    "groups": [
+      "source_service_name",
+      "serviceName",
+      "dest_service_name",
+      "component",
+      "type"
+    ],
     "conditions": {
-      "type": "MQ"
     },
     "materialized": true
   },
@@ -386,9 +411,14 @@
     "index": "holoinsight-service_relation",
     "field": "latency",
     "function": "avg",
-    "groups": [],
+    "groups": [
+      "source_service_name",
+      "serviceName",
+      "dest_service_name",
+      "component",
+      "type"
+    ],
     "conditions": {
-      "type": "MQ"
     },
     "materializedExp": "sum{apm_component_resp_time_total_materialized}/sum{apm_component_cpm_materialized}"
   },
@@ -397,9 +427,14 @@
     "index": "holoinsight-service_relation",
     "field": "latency",
     "function": "percentiles",
-    "groups": [],
+    "groups": [
+      "source_service_name",
+      "serviceName",
+      "dest_service_name",
+      "component",
+      "type"
+    ],
     "conditions": {
-      "type": "MQ"
     }
   }
 ]

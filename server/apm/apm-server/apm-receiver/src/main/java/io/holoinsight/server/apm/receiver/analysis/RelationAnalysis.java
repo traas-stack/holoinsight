@@ -76,6 +76,7 @@ public class RelationAnalysis {
 
         if (Span.SpanKind.SPAN_KIND_CONSUMER == span.getKind()) {
           sourceBuilder.setSourceServiceName(networkAddressUsedAtPeer);
+          sourceBuilder.setServiceName(serviceName);
           sourceBuilder.setSourceEndpointOwnerServiceName(parentServiceName);
           sourceBuilder.setSourceServiceInstanceName(networkAddressUsedAtPeer);
           sourceBuilder.setSourceLayer(Layer.VIRTUAL_MQ);
@@ -139,6 +140,7 @@ public class RelationAnalysis {
     String networkAddress = peerPort == null ? peerName.getStringValue()
         : peerName.getStringValue() + ":" + peerPort.getStringValue();
     sourceBuilder.setSourceServiceName(serviceName);
+    sourceBuilder.setServiceName(serviceName);
     sourceBuilder.setSourceServiceInstanceName(instanceName);
     sourceBuilder.setSourceLayer(Layer.GENERAL);
     sourceBuilder.setSourceEndpointName(
