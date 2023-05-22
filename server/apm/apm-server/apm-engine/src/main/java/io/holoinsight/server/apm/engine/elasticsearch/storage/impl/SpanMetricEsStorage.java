@@ -62,7 +62,8 @@ public class SpanMetricEsStorage extends PostCalMetricStorage {
 
 
     boolQueryBuilder
-        .filter(new TermQueryBuilder(OtlpMappings.toOtlp(metricDefine.getIndex(), Const.TENANT), tenant))
+        .filter(new TermQueryBuilder(OtlpMappings.toOtlp(metricDefine.getIndex(), Const.TENANT),
+            tenant))
         .filter(new RangeQueryBuilder(timeField()).gte(duration.getStart()).lte(duration.getEnd()));
 
     if (conditions != null) {
