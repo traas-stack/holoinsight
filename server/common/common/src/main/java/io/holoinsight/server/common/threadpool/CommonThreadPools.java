@@ -85,7 +85,7 @@ public class CommonThreadPools {
       synchronized (CommonThreadPools.class) {
         if (rpcServer == null) {
           int cpu = cpu();
-          rpcServer = executor(cpu * 4, cpu * 4, 0, 65536, "rpc-server-%d");
+          rpcServer = executor(cpu * 8, cpu * 8, 0, 65536, "rpc-server-%d");
         }
       }
     }

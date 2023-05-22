@@ -9,19 +9,22 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import io.grpc.BindableService;
-import io.grpc.Server;
-import io.grpc.ServerServiceDefinition;
-import io.grpc.netty.shaded.io.grpc.netty.NettyServerBuilder;
-import io.holoinsight.server.common.TrafficTracer;
-import io.holoinsight.server.common.hook.CommonHooksManager;
-import io.holoinsight.server.common.threadpool.CommonThreadPools;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.SmartLifecycle;
 import org.springframework.stereotype.Component;
+
+import io.grpc.BindableService;
+import io.grpc.Server;
+import io.grpc.ServerServiceDefinition;
+import io.grpc.netty.shaded.io.grpc.netty.NettyServerBuilder;
+import io.holoinsight.server.common.SlowGrpcServerInterceptor;
+import io.holoinsight.server.common.SlowGrpcTracer;
+import io.holoinsight.server.common.TrafficTracer;
+import io.holoinsight.server.common.grpc.SlowGrpcProperties;
+import io.holoinsight.server.common.hook.CommonHooksManager;
+import io.holoinsight.server.common.threadpool.CommonThreadPools;
 
 /**
  * <p>
@@ -43,13 +46,8 @@ public class GatewayServerForAgent implements SmartLifecycle {
   private CommonThreadPools commonThreadPools;
   @Autowired
   private CommonHooksManager commonHooksManager;
-
-  /**
-   * <p>
-   * Constructor for GatewayServerForAgent.
-   * </p>
-   */
-  public GatewayServerForAgent() {}
+  @Autowired
+  private SlowGrpcProperties slowGrpcProperties;
 
   /** {@inheritDoc} */
   @Override
@@ -60,6 +58,11 @@ public class GatewayServerForAgent implements SmartLifecycle {
       NettyServerBuilder b = NettyServerBuilder.forPort(port) //
           .executor(commonThreadPools.getRpcServer()) //
           .maxInboundMessageSize(64 * 1024 * 1024); //
+
+      if (slowGrpcProperties.isEnabled()) {
+        b.intercept(new SlowGrpcServerInterceptor(new SlowGrpcHandlerImpl(slowGrpcProperties)));
+        b.addStreamTracerFactory(new SlowGrpcTracer.Factory());
+      }
 
       if (grpc.isSslEnabled()) {
         InputStream cert = grpc.getServerCert().getInputStream();

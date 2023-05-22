@@ -3,7 +3,10 @@
  */
 package io.holoinsight.server.common.service;
 
+import io.holoinsight.server.common.grpc.SlowGrpcProperties;
+
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -12,6 +15,7 @@ import org.springframework.context.annotation.Configuration;
  * @author jsy1001de
  * @version 1.0: ServiceAutoConfiguration.java, v 0.1 2023年02月27日 下午2:20 jinsong.yjs Exp $
  */
+@EnableConfigurationProperties(SlowGrpcProperties.class)
 @Configuration
 public class CommonServiceAutoConfiguration {
   @Bean
