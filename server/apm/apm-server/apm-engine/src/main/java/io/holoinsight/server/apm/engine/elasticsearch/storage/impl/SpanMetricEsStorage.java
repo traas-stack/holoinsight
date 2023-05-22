@@ -165,7 +165,7 @@ public class SpanMetricEsStorage extends PostCalMetricStorage {
 
     Assert.notEmpty(groups, "statistic groups must be specified");
 
-    List<StatisticDataList> result = new ArrayList<>();
+    List<StatisticData> result = new ArrayList<>();
 
     BoolQueryBuilder queryBuilder = QueryBuilders.boolQuery()
         .must(QueryBuilders.rangeQuery(timeField()).gte(startTime).lte(endTime));
@@ -230,8 +230,7 @@ public class SpanMetricEsStorage extends PostCalMetricStorage {
       result.add(statisticData);
     });
 
-    StatisticDataList statisticDataList = new StatisticDataList(result);
-    return statisticDataList;
+    return new StatisticDataList(result);
   }
 
   private AggregationBuilder statBuilder(String field, String function) {
