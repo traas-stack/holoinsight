@@ -55,7 +55,7 @@ public class AgentLogTailService {
     response.addToDatas("agentId", dim.get("agentId"));
     response.addToDatas("ip", dim.get("ip"));
     response.addToDatas("namespace", dim.get("namespace"));
-    response.addToDatas("pod", dim.get("pod"));
+    response.addToDatas("hostname", dim.get("hostname"));
 
     return response;
   }
@@ -73,7 +73,7 @@ public class AgentLogTailService {
     response.addToDatas("agentId", dim.get("agentId"));
     response.addToDatas("ip", dim.get("ip"));
     response.addToDatas("namespace", dim.get("namespace"));
-    response.addToDatas("pod", dim.get("pod"));
+    response.addToDatas("hostname", dim.get("hostname"));
 
     return response;
   }
@@ -92,7 +92,7 @@ public class AgentLogTailService {
     response.addToDatas("agentId", dim.get("agentId"));
     response.addToDatas("ip", dim.get("ip"));
     response.addToDatas("namespace", dim.get("namespace"));
-    response.addToDatas("pod", dim.get("pod"));
+    response.addToDatas("hostname", dim.get("hostname"));
 
     return response;
   }

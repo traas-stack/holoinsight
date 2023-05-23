@@ -68,6 +68,18 @@ public class ApmMetricCrawlerBuilder extends AbstractMetricCrawlerBuilder {
         "service instance response time per minute(ms)", NUMBER_UNIT, 60,
         Arrays.asList("serviceName", "serviceInstanceName")));
 
+    metricInfoList.add(genMetricInfo(GLOBAL_TENANT, GLOBAL_WORKSPACE, GLOBAL_ORGANIZATION, "apm",
+        "Component", "component_cpm", "apm_component_cpm", "call component per minute", NUMBER_UNIT,
+        60, Arrays.asList("source_service_name", "dest_service_name", "component", "type")));
+    metricInfoList.add(genMetricInfo(GLOBAL_TENANT, GLOBAL_WORKSPACE, GLOBAL_ORGANIZATION, "apm",
+        "Component", "component_cpm_fail", "apm_component_cpm_fail",
+        "call component fail per minute", NUMBER_UNIT, 60,
+        Arrays.asList("source_service_name", "dest_service_name", "component", "type")));
+    metricInfoList.add(genMetricInfo(GLOBAL_TENANT, GLOBAL_WORKSPACE, GLOBAL_ORGANIZATION, "apm",
+        "Component", "component_resp_time", "apm_component_resp_time",
+        "call component response time per minute(ms)", NUMBER_UNIT, 60,
+        Arrays.asList("source_service_name", "dest_service_name", "component", "type")));
+
     return metricInfoList;
   }
 
