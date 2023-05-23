@@ -108,7 +108,7 @@ public class UserFacadeImpl extends BaseFacade {
             mu = ulaFacade.getByLoginName(loginName);
           } catch (Throwable e) {
             log.error("get user info error", e);
-            JsonResult.createFailResult(result, "get user info error" + e.getMessage(),
+            JsonResult.fillFailResultTo(result, "get user info error" + e.getMessage(),
                 ResultCodeEnum.SYSTEM_ERROR.name());
             return;
           }
@@ -131,7 +131,7 @@ public class UserFacadeImpl extends BaseFacade {
           JsonResult.createSuccessResult(result, uas);
         } catch (Throwable e) {
           log.error("get user auth failed", e);
-          JsonResult.createFailResult(result, "get user auth failed" + e.getMessage(),
+          JsonResult.fillFailResultTo(result, "get user auth failed" + e.getMessage(),
               ResultCodeEnum.SYSTEM_ERROR.name());
         }
       }

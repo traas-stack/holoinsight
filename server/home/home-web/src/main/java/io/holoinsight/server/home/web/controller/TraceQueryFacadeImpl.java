@@ -336,7 +336,7 @@ public class TraceQueryFacadeImpl extends BaseFacade {
         if (isSuccess) {
           JsonResult.createSuccessResult(result, isSuccess);
         } else {
-          JsonResult.createFailResult(result, "Create agent configuration failed!");
+          JsonResult.fillFailResultTo(result, "Create agent configuration failed!");
         }
       }
     });

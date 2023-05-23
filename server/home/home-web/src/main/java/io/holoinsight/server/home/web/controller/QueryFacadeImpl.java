@@ -184,7 +184,7 @@ public class QueryFacadeImpl extends BaseFacade {
           latch.await(30L, TimeUnit.SECONDS);
         } catch (InterruptedException e) {
           log.info("delTags timeout {}", e.getMessage());
-          JsonResult.createFailResult(result, "delTags timeout " + e.getMessage());
+          JsonResult.fillFailResultTo(result, "delTags timeout " + e.getMessage());
           return;
         }
         JsonResult.createSuccessResult(result, true);
@@ -513,10 +513,10 @@ public class QueryFacadeImpl extends BaseFacade {
         pqlParseResult.setExprs(exprs);
         JsonResult.createSuccessResult(result, pqlParseResult);
       } else {
-        JsonResult.createFailResult(result, "parse failed or pql is empty");
+        JsonResult.fillFailResultTo(result, "parse failed or pql is empty");
       }
     } catch (PqlException e) {
-      JsonResult.createFailResult(result, e.getMessage());
+      JsonResult.fillFailResultTo(result, e.getMessage());
     }
     return result;
   }

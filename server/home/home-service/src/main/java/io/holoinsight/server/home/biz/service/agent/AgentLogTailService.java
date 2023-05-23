@@ -3,25 +3,27 @@
  */
 package io.holoinsight.server.home.biz.service.agent;
 
-import io.holoinsight.server.common.RetryUtils;
-import io.holoinsight.server.common.UtilMisc;
-import io.holoinsight.server.home.biz.service.TenantInitService;
-import io.holoinsight.server.home.common.service.RegistryService;
-import io.holoinsight.server.home.common.util.MonitorException;
-import io.holoinsight.server.home.common.util.StringUtil;
-import io.holoinsight.server.common.J;
-import com.google.protobuf.ProtocolStringList;
-import io.holoinsight.server.common.grpc.FileNode;
-import io.holoinsight.server.meta.common.model.QueryExample;
-import io.holoinsight.server.meta.facade.service.DataClientService;
-import lombok.extern.slf4j.Slf4j;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import com.google.protobuf.ProtocolStringList;
+
+import io.holoinsight.server.common.J;
+import io.holoinsight.server.common.RetryUtils;
+import io.holoinsight.server.common.UtilMisc;
+import io.holoinsight.server.common.grpc.FileNode;
+import io.holoinsight.server.home.biz.service.TenantInitService;
+import io.holoinsight.server.home.common.service.RegistryService;
+import io.holoinsight.server.home.common.util.MonitorException;
+import io.holoinsight.server.home.common.util.StringUtil;
+import io.holoinsight.server.meta.common.model.QueryExample;
+import io.holoinsight.server.meta.facade.service.DataClientService;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  *
@@ -47,9 +49,9 @@ public class AgentLogTailService {
     Map<String, Object> dim = getDimByRequest(agentParamRequest, tenant, workspace);
 
     FileTailResponse response = new FileTailResponse();
-    List<FileNode> fileNodes = RetryUtils.invoke(
-        () -> registryService.listFiles(tenant, dim, agentParamRequest.getLogpath()), null, 3, 1000,
-        new ArrayList<>());
+
+    List<FileNode> fileNodes =
+        registryService.listFiles(tenant, dim, agentParamRequest.getLogpath());
 
     response.addToDatas("dirTrees", convertFiledNodes(fileNodes));
     response.addToDatas("agentId", dim.get("agentId"));
@@ -65,9 +67,9 @@ public class AgentLogTailService {
 
     Map<String, Object> dim = getDimByRequest(agentParamRequest, tenant, workspace);
     FileTailResponse response = new FileTailResponse();
-    ProtocolStringList protocolStringList = RetryUtils.invoke(
-        () -> registryService.previewFile(tenant, dim, agentParamRequest.getLogpath()), null, 3,
-        1000, new ArrayList<>());
+
+    ProtocolStringList protocolStringList =
+        registryService.previewFile(tenant, dim, agentParamRequest.getLogpath());
 
     response.addToDatas("lines", convertContentLines(protocolStringList));
     response.addToDatas("agentId", dim.get("agentId"));
@@ -126,6 +128,12 @@ public class AgentLogTailService {
         queryExample.getParams().put(entry.getKey(), entry.getValue());
       }
     }
+
+    if (queryExample.getParams().isEmpty()) {
+      throw new IllegalStateException("miss metadata query params");
+    }
+
+
     Map<String, String> conditions = tenantInitService.getTenantWorkspaceMetaConditions(workspace);
     if (!CollectionUtils.isEmpty(conditions)) {
       queryExample.getParams().putAll(conditions);

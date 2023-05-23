@@ -149,7 +149,12 @@ public class RegistryServiceForProdImpl
 
   public <RESP extends GeneratedMessageV3> void proxy(TargetIdentifier target, int bizType,
       GeneratedMessageV3 request, RESP defaultResp, StreamObserver<RESP> o) {
-    biStreamService.proxyForDim(target, bizType, request, defaultResp, o);
+    try {
+      biStreamService.proxyForDim(target, bizType, request, defaultResp, o);
+    } catch (RuntimeException e) {
+      log.error("proxyForDim error", e);
+      o.onError(Status.INTERNAL.withCause(e).withDescription(e.getMessage()).asRuntimeException());
+    }
   }
 }
 

@@ -3,6 +3,18 @@
  */
 package io.holoinsight.server.home.common.service;
 
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.PostConstruct;
+
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+
+import com.google.protobuf.ProtocolStringList;
+
+import io.grpc.ManagedChannel;
+import io.grpc.ManagedChannelBuilder;
 import io.holoinsight.server.common.grpc.FileNode;
 import io.holoinsight.server.home.common.util.MonitorException;
 import io.holoinsight.server.registry.grpc.prod.InspectRequest;
@@ -13,17 +25,7 @@ import io.holoinsight.server.registry.grpc.prod.PreviewFileRequest;
 import io.holoinsight.server.registry.grpc.prod.PreviewFileResponse;
 import io.holoinsight.server.registry.grpc.prod.RegistryServiceForProdGrpc;
 import io.holoinsight.server.registry.grpc.prod.TargetIdentifier;
-import com.google.protobuf.ProtocolStringList;
-import io.grpc.ManagedChannel;
-import io.grpc.ManagedChannelBuilder;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
-
-import java.util.List;
-import java.util.Map;
-
-import javax.annotation.PostConstruct;
 
 /**
  *
@@ -37,8 +39,8 @@ public class RegistryService {
   @Value("${holoinsight.registry.domain}")
   private String registryHost;
 
-  private static ManagedChannel channel;
-  private static RegistryServiceForProdGrpc.RegistryServiceForProdBlockingStub c;
+  private ManagedChannel channel;
+  private RegistryServiceForProdGrpc.RegistryServiceForProdBlockingStub c;
 
   @PostConstruct
   public void init() {

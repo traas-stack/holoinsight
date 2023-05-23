@@ -60,10 +60,10 @@ public class JsonResult<T> implements Serializable {
 
   /**
    * <p>
-   * createFailResult.
+   * fillFailResultTo
    * </p>
    */
-  public static <T> void createFailResult(JsonResult<T> result, String message) {
+  public static <T> void fillFailResultTo(JsonResult<T> result, String message) {
     result.setSuccess(false);
     result.setMessage(message);
     // result.setHost(AddressUtil.getLocalHostIPV4());
@@ -71,11 +71,10 @@ public class JsonResult<T> implements Serializable {
 
   /**
    * <p>
-   * createFailResult.
+   * fillFailResultTo
    * </p>
    */
-  public static void createFailResult(JsonResult<Object> result, String resultCode,
-      String message) {
+  public static void fillFailResultTo(JsonResult<?> result, String resultCode, String message) {
     result.setSuccess(false);
     result.setMessage(message);
     result.setResultCode(resultCode);

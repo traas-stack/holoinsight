@@ -3,20 +3,10 @@
  */
 package io.holoinsight.server.home.web.controller;
 
-import io.holoinsight.server.home.biz.common.MetaDictKey;
-import io.holoinsight.server.home.biz.common.MetaDictType;
-import io.holoinsight.server.home.biz.common.MetaDictUtil;
-import io.holoinsight.server.home.biz.service.ApiKeyService;
-import io.holoinsight.server.home.biz.service.agent.AgentLogTailService;
-import io.holoinsight.server.home.biz.service.agent.AgentParamRequest;
-import io.holoinsight.server.home.common.util.MonitorException;
-import io.holoinsight.server.home.common.util.scope.MonitorCookieUtil;
-import io.holoinsight.server.home.common.util.scope.MonitorScope;
-import io.holoinsight.server.home.common.util.scope.RequestContext;
-import io.holoinsight.server.home.dal.model.ApiKey;
-import io.holoinsight.server.home.web.common.ManageCallback;
-import io.holoinsight.server.home.web.common.ParaCheckUtil;
-import io.holoinsight.server.common.JsonResult;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -26,9 +16,19 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import io.holoinsight.server.common.JsonResult;
+import io.holoinsight.server.home.biz.common.MetaDictKey;
+import io.holoinsight.server.home.biz.common.MetaDictType;
+import io.holoinsight.server.home.biz.common.MetaDictUtil;
+import io.holoinsight.server.home.biz.service.ApiKeyService;
+import io.holoinsight.server.home.biz.service.agent.AgentLogTailService;
+import io.holoinsight.server.home.biz.service.agent.AgentParamRequest;
+import io.holoinsight.server.home.common.util.MonitorException;
+import io.holoinsight.server.home.common.util.scope.MonitorScope;
+import io.holoinsight.server.home.common.util.scope.RequestContext;
+import io.holoinsight.server.home.dal.model.ApiKey;
+import io.holoinsight.server.home.web.common.ManageCallback;
+import io.holoinsight.server.home.web.common.ParaCheckUtil;
 
 /**
  *
@@ -121,10 +121,9 @@ public class AgentFacadeImpl extends BaseFacade {
           JsonResult.createSuccessResult(result, agentLogTailService
               .listFiles(agentParamRequest, ms.getTenant(), ms.getWorkspace()).getDatas());
         } catch (MonitorException e) {
-          JsonResult.createFailResult(result, e.getMessage());
+          JsonResult.fillFailResultTo(result, e.getMessage());
         } catch (Exception e) {
-          result.setMessage(e.getMessage());
-          JsonResult.createSuccessResult(result, new HashMap<>());
+          JsonResult.fillFailResultTo(result, e.getMessage());
         }
       }
     });
@@ -150,10 +149,9 @@ public class AgentFacadeImpl extends BaseFacade {
           JsonResult.createSuccessResult(result, agentLogTailService
               .previewFile(agentParamRequest, ms.getTenant(), ms.getWorkspace()).getDatas());
         } catch (MonitorException e) {
-          JsonResult.createFailResult(result, e.getMessage());
+          JsonResult.fillFailResultTo(result, e.getMessage());
         } catch (Exception e) {
-          result.setMessage(e.getMessage());
-          JsonResult.createSuccessResult(result, new HashMap<>());
+          JsonResult.fillFailResultTo(result, e.getMessage());
         }
       }
     });
@@ -179,10 +177,9 @@ public class AgentFacadeImpl extends BaseFacade {
               .inspect(agentParamRequest, ms.getTenant(), ms.getWorkspace()).getDatas());
 
         } catch (MonitorException e) {
-          JsonResult.createFailResult(result, e.getMessage());
+          JsonResult.fillFailResultTo(result, e.getMessage());
         } catch (Exception e) {
-          result.setMessage(e.getMessage());
-          JsonResult.createSuccessResult(result, new HashMap<>());
+          JsonResult.fillFailResultTo(result, e.getMessage());
         }
       }
     });
