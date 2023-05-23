@@ -9,6 +9,7 @@ import io.holoinsight.server.home.biz.common.MetaDictUtil;
 import io.holoinsight.server.home.biz.service.ApiKeyService;
 import io.holoinsight.server.home.biz.service.agent.AgentLogTailService;
 import io.holoinsight.server.home.biz.service.agent.AgentParamRequest;
+import io.holoinsight.server.home.common.util.MonitorException;
 import io.holoinsight.server.home.common.util.scope.MonitorCookieUtil;
 import io.holoinsight.server.home.common.util.scope.MonitorScope;
 import io.holoinsight.server.home.common.util.scope.RequestContext;
@@ -119,6 +120,8 @@ public class AgentFacadeImpl extends BaseFacade {
         try {
           JsonResult.createSuccessResult(result, agentLogTailService
               .listFiles(agentParamRequest, ms.getTenant(), ms.getWorkspace()).getDatas());
+        } catch (MonitorException e) {
+          JsonResult.createFailResult(result, e.getMessage());
         } catch (Exception e) {
           result.setMessage(e.getMessage());
           JsonResult.createSuccessResult(result, new HashMap<>());
@@ -146,6 +149,8 @@ public class AgentFacadeImpl extends BaseFacade {
         try {
           JsonResult.createSuccessResult(result, agentLogTailService
               .previewFile(agentParamRequest, ms.getTenant(), ms.getWorkspace()).getDatas());
+        } catch (MonitorException e) {
+          JsonResult.createFailResult(result, e.getMessage());
         } catch (Exception e) {
           result.setMessage(e.getMessage());
           JsonResult.createSuccessResult(result, new HashMap<>());
@@ -173,6 +178,8 @@ public class AgentFacadeImpl extends BaseFacade {
           JsonResult.createSuccessResult(result, agentLogTailService
               .inspect(agentParamRequest, ms.getTenant(), ms.getWorkspace()).getDatas());
 
+        } catch (MonitorException e) {
+          JsonResult.createFailResult(result, e.getMessage());
         } catch (Exception e) {
           result.setMessage(e.getMessage());
           JsonResult.createSuccessResult(result, new HashMap<>());

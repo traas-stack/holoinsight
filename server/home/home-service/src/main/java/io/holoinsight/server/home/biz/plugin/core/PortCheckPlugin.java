@@ -66,6 +66,7 @@ public class PortCheckPlugin extends AbstractLocalIntegrationPlugin<PortCheckPlu
       PortCheckTask portCheckTask = new PortCheckTask();
       {
         portCheckTask.port = config.port;
+        portCheckTask.ports = config.ports;
         portCheckTask.timeout = 3000L;
         portCheckTask.times = 1;
         portCheckTask.network = "tcp";

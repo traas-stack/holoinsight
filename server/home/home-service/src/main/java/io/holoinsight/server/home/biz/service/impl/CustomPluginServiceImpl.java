@@ -230,11 +230,11 @@ public class CustomPluginServiceImpl extends ServiceImpl<CustomPluginMapper, Cus
     if (null != customPluginDTO.getConf()
         && !CollectionUtils.isEmpty(customPluginDTO.getConf().collectMetrics)) {
       customPluginDTO.getConf().collectMetrics.forEach(collectMetric -> {
+        String tableName = collectMetric.tableName + "_" + customPluginDTO.id;
         if (StringUtil.isNotBlank(collectMetric.name)) {
-          collectMetric.targetTable = collectMetric.name;
-        } else {
-          collectMetric.targetTable = collectMetric.tableName + "_" + customPlugin.id;
+          tableName = collectMetric.name;
         }
+        collectMetric.targetTable = tenantInitService.getLogMonitorMetricTable(tableName);
       });
     }
     return customPluginDTO;

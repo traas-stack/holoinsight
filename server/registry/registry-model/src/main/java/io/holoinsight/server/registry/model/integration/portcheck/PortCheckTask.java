@@ -7,6 +7,8 @@ import io.holoinsight.server.registry.model.integration.IntegrationTask;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 /**
  *
  * @author zzhb101
@@ -17,6 +19,8 @@ import lombok.NoArgsConstructor;
 public class PortCheckTask extends IntegrationTask {
   // [必填] 探测的端口
   public Integer port;
+
+  public List<Integer> ports;
 
   // [可选] 默认是tcp
   public String network;

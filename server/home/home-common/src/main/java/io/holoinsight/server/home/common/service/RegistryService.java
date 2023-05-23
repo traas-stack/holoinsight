@@ -4,6 +4,7 @@
 package io.holoinsight.server.home.common.service;
 
 import io.holoinsight.server.common.grpc.FileNode;
+import io.holoinsight.server.home.common.util.MonitorException;
 import io.holoinsight.server.registry.grpc.prod.InspectRequest;
 import io.holoinsight.server.registry.grpc.prod.InspectResponse;
 import io.holoinsight.server.registry.grpc.prod.ListFilesRequest;
@@ -64,7 +65,7 @@ public class RegistryService {
     if (listFilesResponse.getHeader().getCode() != 0) {
       log.warn("listFiles failed, " + dim + " from " + logPath + ", errorMsg: "
           + listFilesResponse.getHeader().getMessage());
-      throw new RuntimeException(
+      throw new MonitorException(
           "listFiles failed, errorMsg: " + listFilesResponse.getHeader().getMessage());
     }
 
@@ -83,7 +84,7 @@ public class RegistryService {
     if (previewFileResponse.getHeader().getCode() != 0) {
       log.warn("previewFile failed, " + dim.get("ip") + " from " + logPath + ", errorMsg: "
           + previewFileResponse.getHeader().getMessage());
-      throw new RuntimeException(
+      throw new MonitorException(
           "previewFile failed, errorMsg: " + previewFileResponse.getHeader().getMessage());
     }
 
@@ -96,7 +97,7 @@ public class RegistryService {
     InspectResponse resp = c.inspect(req);
     if (resp.getHeader().getCode() != 0) {
       log.warn("inspect failed, " + dim.get("ip") + ", errorMsg: " + resp.getHeader().getMessage());
-      throw new RuntimeException("inspect failed, errorMsg: " + resp.getHeader().getMessage());
+      throw new MonitorException("inspect failed, errorMsg: " + resp.getHeader().getMessage());
     }
 
     return resp.getResult();
