@@ -69,7 +69,7 @@ public class OpenmetricsScraperFacadeImpl extends BaseFacade {
     OpenmetricsScraperDTO model =
         openmetricsScraperService.queryById(id, ms.getTenant(), ms.getWorkspace());
     if (model == null || !model.getTenant().equals(ms.getTenant())) {
-      JsonResult.createFailResult(result, "can not find the record");
+      JsonResult.fillFailResultTo(result, "can not find the record");
       return result;
     }
 
@@ -183,7 +183,7 @@ public class OpenmetricsScraperFacadeImpl extends BaseFacade {
         OpenmetricsScraperDTO model =
             openmetricsScraperService.queryById(id, ms.getTenant(), ms.getWorkspace());
         if (model == null || !model.getTenant().equals(ms.getTenant())) {
-          JsonResult.createFailResult(result, "can not find the record");
+          JsonResult.fillFailResultTo(result, "can not find the record");
           return;
         }
 

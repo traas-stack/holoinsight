@@ -43,7 +43,7 @@ public class BaseFacade {
   public ResponseEntity<JsonResult> handleException(Throwable e) {
     log.error(e.getMessage(), e);
     JsonResult jsonResult = new JsonResult();
-    JsonResult.createFailResult(jsonResult, String.valueOf(HttpStatus.BAD_REQUEST.value()),
+    JsonResult.fillFailResultTo(jsonResult, String.valueOf(HttpStatus.BAD_REQUEST.value()),
         e.getMessage());
     return new ResponseEntity<>(jsonResult, HttpStatus.BAD_REQUEST);
   }

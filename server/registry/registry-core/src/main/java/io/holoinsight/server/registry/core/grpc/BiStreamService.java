@@ -182,7 +182,7 @@ public class BiStreamService {
     // TODO 将表信息带在 请求体里
     Map<String, Object> row = prodDimService.queryByDimId(tenant + "_server", targetUk, false);
     if (row == null) {
-      throw new IllegalStateException("no dim data " + ProtoJsonUtils.toJson(target));
+      throw new IllegalStateException("no metadata " + ProtoJsonUtils.toJson(target));
     }
 
     // TODO 其他类型想办法支持
@@ -197,7 +197,8 @@ public class BiStreamService {
       DaemonsetAgent da =
           daemonsetAgentService.getState().getAgents().get(new DaemonsetAgent.Key(tenant, hostIP));
       if (da == null) {
-        String msg = String.format("no daemonset for [%s/%s]", tenant, hostIP);
+        String msg =
+            String.format("%s: tenant=[%s] hostIP=[%s]", NO_CONNECTION_MSG, tenant, hostIP);
         throw new IllegalStateException(msg);
       }
       rpcAgentId = da.getHostAgentId();

@@ -9,17 +9,17 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 
-import io.grpc.stub.StreamObserver;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import io.grpc.Status;
+import io.grpc.stub.StreamObserver;
 import io.holoinsight.server.common.grpc.GenericRpcCommand;
-import io.holoinsight.server.registry.core.grpc.streambiz.EchoHandshakeHandler;
-
 import io.holoinsight.server.registry.core.agent.AgentService;
+import io.holoinsight.server.registry.core.agent.AgentStorage;
+import io.holoinsight.server.registry.core.grpc.streambiz.EchoHandshakeHandler;
 
 /**
  * <p>
@@ -34,6 +34,8 @@ public class ServerStreamManager {
   private ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
   @Autowired
   private AgentService agentService;
+  @Autowired
+  private AgentStorage agentStorage;
 
   public ServerStreamManager() {}
 
@@ -53,6 +55,14 @@ public class ServerStreamManager {
           String agentId = handshakeHandler.getRequest().getAgentId();
           // long version = handshakeHandler.getRequest().getVersion();
           String key = agentId;
+
+          if (agentStorage.get(key) == null) {
+            c.getWriter().sendError(Status.UNAUTHENTICATED
+                .withDescription("unknown agentId: " + key).asRuntimeException());
+            c.stop();
+            return;
+          }
+
           c.setId(agentId);
           ServerStreamImpl old = streams.put(key, c);
 
@@ -69,30 +79,6 @@ public class ServerStreamManager {
             old.stop();
           }
         }).subscribe();
-
-    c.waitHandshakeDone() //
-        // .then(Mono.defer(() -> {
-        // long begin = System.currentTimeMillis();
-        // int count = 10000;
-        // return Flux.range(0, count) //
-        // .flatMap(i -> {
-        // return c.rpc(BizTypes.ECHO, ByteString.copyFromUtf8(Integer.toString(i))) //
-        // .timeout(Duration.ofSeconds(3)) //
-        // .doOnSuccess(resp -> {
-        // int ret = Integer.parseInt(resp.getData().toStringUtf8());
-        // if (!i.equals(ret)) {
-        // LOGGER.error("出错了");
-        // }
-        // }).doOnError(error -> {
-        // LOGGER.info("{} 错误", c.getId(), error);
-        // });
-        // }, 16) //
-        // .doOnTerminate(() -> {
-        // LOGGER.info("");
-        // LOGGER.info("请求数={} 并发度={} 耗时={}", count, 16, System.currentTimeMillis() - begin);
-        // }).ignoreElements();
-        // })) //
-        .subscribe();
 
     return c;
   }

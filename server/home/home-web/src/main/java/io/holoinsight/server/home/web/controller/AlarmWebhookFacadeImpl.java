@@ -307,11 +307,11 @@ public class AlarmWebhookFacadeImpl extends BaseFacade {
           if (response.getCode() == 200) {
             JsonResult.createSuccessResult(result, response);
           } else {
-            JsonResult.createFailResult(result, J.toJson(response));
+            JsonResult.fillFailResultTo(result, J.toJson(response));
           }
         } catch (Throwable t) {
           log.error("alarm webhook test error", t);
-          JsonResult.createFailResult(result, t.getMessage());
+          JsonResult.fillFailResultTo(result, t.getMessage());
         } finally {
           SSRFUtils.hookStop();
         }
