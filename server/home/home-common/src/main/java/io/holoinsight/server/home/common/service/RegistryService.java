@@ -11,8 +11,6 @@ import javax.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import com.google.protobuf.ProtocolStringList;
-
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import io.holoinsight.server.common.grpc.FileNode;
@@ -74,7 +72,7 @@ public class RegistryService {
     return listFilesResponse.getNodesList();
   }
 
-  public ProtocolStringList previewFile(String tenant, Map<String, Object> dim, String logPath) {
+  public PreviewFileResponse previewFile(String tenant, Map<String, Object> dim, String logPath) {
     PreviewFileRequest req = PreviewFileRequest.newBuilder() //
         .setPath(logPath) //
         .setMaxBytes(4096) //
@@ -90,7 +88,7 @@ public class RegistryService {
           "previewFile failed, errorMsg: " + previewFileResponse.getHeader().getMessage());
     }
 
-    return previewFileResponse.getContentList();
+    return previewFileResponse;
   }
 
   public String inspect(String tenant, Map<String, Object> dim) {

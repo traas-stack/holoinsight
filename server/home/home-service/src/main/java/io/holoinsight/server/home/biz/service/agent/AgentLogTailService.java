@@ -23,6 +23,7 @@ import io.holoinsight.server.home.common.util.MonitorException;
 import io.holoinsight.server.home.common.util.StringUtil;
 import io.holoinsight.server.meta.common.model.QueryExample;
 import io.holoinsight.server.meta.facade.service.DataClientService;
+import io.holoinsight.server.registry.grpc.prod.PreviewFileResponse;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -68,10 +69,11 @@ public class AgentLogTailService {
     Map<String, Object> dim = getDimByRequest(agentParamRequest, tenant, workspace);
     FileTailResponse response = new FileTailResponse();
 
-    ProtocolStringList protocolStringList =
+    PreviewFileResponse grpcResp =
         registryService.previewFile(tenant, dim, agentParamRequest.getLogpath());
 
-    response.addToDatas("lines", convertContentLines(protocolStringList));
+    response.addToDatas("lines", convertContentLines(grpcResp.getContentList()));
+    response.addToDatas("charset", grpcResp.getCharset());
     response.addToDatas("agentId", dim.get("agentId"));
     response.addToDatas("ip", dim.get("ip"));
     response.addToDatas("namespace", dim.get("namespace"));
