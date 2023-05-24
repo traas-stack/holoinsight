@@ -41,7 +41,7 @@ public class SlowSqlEsStorage extends RecordEsStorage<SlowSqlDO> implements Slow
 
   @Override
   public String timeField() {
-    return SpanDO.END_TIME;
+    return SlowSqlDO.START_TIME;
   }
 
   @Override
