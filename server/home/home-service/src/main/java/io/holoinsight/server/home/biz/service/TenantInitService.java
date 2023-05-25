@@ -53,11 +53,10 @@ public interface TenantInitService {
   /**
    * get actual tsdb tenant for request tenant and metric
    * 
-   * @param metric
    * @param tenant
    * @return
    */
-  String getTsdbTenant(String metric, String tenant);
+  String getTsdbTenant(String tenant);
 
   /**
    * get meta_server conditions for workspace

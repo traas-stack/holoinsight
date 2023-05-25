@@ -118,14 +118,14 @@ public class Step2IdentityFilter implements Filter {
         MonitorCookieUtil.addUserCookie(user, resp);
         req.setAttribute(MonitorUser.MONITOR_USER, user);
         return true;
-      }
-      if (!resp.isCommitted()) {
-        authFailedResponse(resp, HttpServletResponse.SC_UNAUTHORIZED, "resp is not committed");
+      } else {
+        authFailedResponse(resp, HttpServletResponse.SC_UNAUTHORIZED, "check login failed");
+        return false;
       }
     } catch (Throwable e) {
-      log.error("login failed", e);
+      log.error("login failed, " + e.getMessage(), e);
       authFailedResponse(resp, HttpServletResponse.SC_UNAUTHORIZED,
-          "login failed, " + e.getMessage());
+          "check login failed, " + e.getMessage());
     }
     return false;
 

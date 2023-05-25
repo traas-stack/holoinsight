@@ -45,7 +45,7 @@ public class DefaultTenantInitServiceImpl implements TenantInitService {
   }
 
   @Override
-  public String getTsdbTenant(String metric, String tenant) {
+  public String getTsdbTenant(String tenant) {
     return tenant;
   }
 

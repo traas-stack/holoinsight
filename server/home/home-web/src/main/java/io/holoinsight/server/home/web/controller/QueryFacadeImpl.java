@@ -216,7 +216,7 @@ public class QueryFacadeImpl extends BaseFacade {
         }
 
         QueryProto.QueryRequest.Builder requestBuilder = QueryProto.QueryRequest.newBuilder();
-        requestBuilder.setTenant(tenantInitService.getTsdbTenant(metric, ms.getTenant()));
+        requestBuilder.setTenant(tenantInitService.getTsdbTenant(ms.getTenant()));
 
         QueryProto.QueryRequest request =
             requestBuilder.addAllDatasources(Collections.singletonList(builder.build())).build();
@@ -254,7 +254,7 @@ public class QueryFacadeImpl extends BaseFacade {
         QueryProto.QueryMetricsRequest.Builder builder =
             QueryProto.QueryMetricsRequest.newBuilder();
         if (null != ms) {
-          builder.setTenant(ms.getTenant());
+          builder.setTenant(tenantInitService.getTsdbTenant(ms.getTenant()));
         }
         builder.setName(name);
         builder.setLimit(3000);
@@ -304,8 +304,7 @@ public class QueryFacadeImpl extends BaseFacade {
         QueryProto.Datasource datasource = builder.build();
         QueryProto.QueryRequest.Builder requestBuilder = QueryProto.QueryRequest.newBuilder()
             .addAllDatasources(Collections.singletonList(datasource));
-        requestBuilder.setTenant(
-            tenantInitService.getTsdbTenant(tagQueryRequest.getMetric(), ms.getTenant()));
+        requestBuilder.setTenant(tenantInitService.getTsdbTenant(ms.getTenant()));
 
         ValueResult response =
             queryClientService.queryTagValues(requestBuilder.build(), tagQueryRequest.getKey());
@@ -334,7 +333,8 @@ public class QueryFacadeImpl extends BaseFacade {
       @Override
       public void doManage() {
         QueryProto.PqlRangeRequest rangeRequest = QueryProto.PqlRangeRequest.newBuilder()
-            .setQuery(request.getQuery()).setTenant(RequestContext.getContext().ms.getTenant())
+            .setQuery(request.getQuery())
+            .setTenant(tenantInitService.getTsdbTenant(RequestContext.getContext().ms.getTenant()))
             .setTimeout(request.getTimeout()).setStart(request.getStart()).setEnd(request.getEnd())
             .setFillZero(request.getFillZero()).setStep(request.getStep()).build();
         QueryResponse response = queryClientService.pqlRangeQuery(rangeRequest);
@@ -362,10 +362,11 @@ public class QueryFacadeImpl extends BaseFacade {
 
       @Override
       public void doManage() {
-        QueryProto.PqlInstantRequest instantRequest =
-            QueryProto.PqlInstantRequest.newBuilder().setQuery(request.getQuery())
-                .setTenant(RequestContext.getContext().ms.getTenant()).setDelta(request.getDelta())
-                .setTimeout(request.getTimeout()).setTime(request.getTime()).build();
+        QueryProto.PqlInstantRequest instantRequest = QueryProto.PqlInstantRequest.newBuilder()
+            .setQuery(request.getQuery())
+            .setTenant(tenantInitService.getTsdbTenant(RequestContext.getContext().ms.getTenant()))
+            .setDelta(request.getDelta()).setTimeout(request.getTimeout())
+            .setTime(request.getTime()).build();
         QueryResponse response = queryClientService.pqlInstantQuery(instantRequest);
         GrafanaJsonResult.createSuccessResult(result, response.getResults());
       }
@@ -425,7 +426,7 @@ public class QueryFacadeImpl extends BaseFacade {
       if (CollectionUtils.isEmpty(list))
         return;
       DataQueryRequest queryRequest = new DataQueryRequest();
-      queryRequest.setTenant(tenantInitService.getTsdbTenant(list.get(0).metric, ms.getTenant()));
+      queryRequest.setTenant(tenantInitService.getTsdbTenant(ms.getTenant()));
       queryRequest.setDatasources(list);
       queryRequests.add(queryRequest);
     });
@@ -436,8 +437,7 @@ public class QueryFacadeImpl extends BaseFacade {
   public QueryProto.QueryRequest convertRequest(DataQueryRequest request) {
     MonitorScope ms = RequestContext.getContext().ms;
     QueryProto.QueryRequest.Builder builder = QueryProto.QueryRequest.newBuilder();
-    builder.setTenant(
-        tenantInitService.getTsdbTenant(request.getDatasources().get(0).metric, ms.getTenant()));
+    builder.setTenant(tenantInitService.getTsdbTenant(ms.getTenant()));
     if (StringUtil.isNotBlank(request.getQuery())) {
       builder.setQuery(request.getQuery());
     }
