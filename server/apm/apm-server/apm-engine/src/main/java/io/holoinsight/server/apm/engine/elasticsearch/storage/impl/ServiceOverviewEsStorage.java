@@ -55,7 +55,7 @@ public class ServiceOverviewEsStorage implements ServiceOverviewStorage {
                 .should(QueryBuilders.termQuery(SpanDO.KIND, SpanKind.CONSUMER)))
             .must(QueryBuilders.rangeQuery(timeField()).gte(startTime).lte(endTime));
 
-    commonBuilder.addTermParams(queryBuilder, termParams);
+    commonBuilder.addTermParamsWithAttrPrefix(queryBuilder, termParams);
     SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
     sourceBuilder.size(0);
     sourceBuilder.query(queryBuilder);
