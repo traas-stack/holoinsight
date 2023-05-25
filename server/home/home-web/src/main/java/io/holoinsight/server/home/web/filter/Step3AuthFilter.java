@@ -84,8 +84,7 @@ public class Step3AuthFilter implements Filter {
       // 接口权限判定
       if (!ulaFacade.authFunc(req) && StringUtil.isBlank(token)) {
         log.warn("{} authFunc check failed", RequestContext.getTrace());
-        authFailedResponse(resp, HttpServletResponse.SC_METHOD_NOT_ALLOWED,
-            RequestContext.getTrace() + " authFunc check failed");
+        authFailedResponse(resp, HttpServletResponse.SC_FORBIDDEN, "权限不足，请联系账号管理员");
         return false;
       }
       Context c = new Context(RequestContext.getContext().ms, mu, new MonitorAuth(),
