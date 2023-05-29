@@ -58,7 +58,7 @@ public class Step3AuthFilter implements Filter {
     try {
       next = auth(req, resp);
     } catch (Throwable e) {
-      authFailedResponse(resp, HttpServletResponse.SC_UNAUTHORIZED,
+      authFailedResponse(resp, HttpServletResponse.SC_FORBIDDEN,
           "auth check error, " + e.getMessage());
       log.error("{} auth check error, auth info: {}", RequestContext.getTrace(),
           J.toJson(J.toJson(RequestContext.getContext())), e);
@@ -112,13 +112,13 @@ public class Step3AuthFilter implements Filter {
       if (null == ma || CollectionUtils.isEmpty(ma.powerConstants)
           || CollectionUtils.isEmpty(ma.getTenantViewPowerList())) {
         log.error("check tenant auth failed, " + J.toJson(ma));
-        authFailedResponse(resp, HttpServletResponse.SC_UNAUTHORIZED, "check tenant auth failed");
+        authFailedResponse(resp, HttpServletResponse.SC_FORBIDDEN, "check tenant auth failed");
         return false;
       }
 
       if (!ma.getTenantViewPowerList().containsKey(ms.getTenant())) {
         log.error("check tenant " + ms.getTenant() + " is not auth, " + J.toJson(ma));
-        authFailedResponse(resp, HttpServletResponse.SC_UNAUTHORIZED,
+        authFailedResponse(resp, HttpServletResponse.SC_FORBIDDEN,
             "check tenant " + ms.getTenant() + " is not auth");
         return false;
       }
@@ -128,7 +128,7 @@ public class Step3AuthFilter implements Filter {
       // 放到线程上下文中
     } catch (Throwable e) {
       log.error("auth failed by cookie", e);
-      authFailedResponse(resp, HttpServletResponse.SC_UNAUTHORIZED,
+      authFailedResponse(resp, HttpServletResponse.SC_FORBIDDEN,
           "auth failed by cookie" + e.getMessage());
       return false;
     } finally {
