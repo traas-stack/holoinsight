@@ -77,9 +77,6 @@ public class SearchFacadeImpl extends BaseFacade {
       public void checkParameter() {
         ParaCheckUtil.checkParaNotNull(req, "req");
         ParaCheckUtil.checkParaNotNull(req.keyword, "keyword");
-        ParaCheckUtil.checkParaNotNull(req.tenant, "tenant");
-        ParaCheckUtil.checkEquals(req.tenant, RequestContext.getContext().ms.getTenant(),
-            "tenant is illegal");
       }
 
       @Override
@@ -145,9 +142,6 @@ public class SearchFacadeImpl extends BaseFacade {
       public void checkParameter() {
         ParaCheckUtil.checkParaNotNull(req, "req");
         ParaCheckUtil.checkParaNotNull(req.keyword, "keyword");
-        ParaCheckUtil.checkParaNotNull(req.tenant, "tenant");
-        ParaCheckUtil.checkEquals(req.tenant, RequestContext.getContext().ms.getTenant(),
-            "tenant is illegal");
       }
 
       @Override
