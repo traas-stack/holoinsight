@@ -33,7 +33,7 @@ public class ServiceOverviewEsStorage implements ServiceOverviewStorage {
   @Autowired
   private ICommonBuilder commonBuilder;
 
-  protected RestHighLevelClient esClient() {
+  protected RestHighLevelClient client() {
     return client;
   }
 
@@ -63,7 +63,7 @@ public class ServiceOverviewEsStorage implements ServiceOverviewStorage {
 
     SearchRequest searchRequest = new SearchRequest(SpanDO.INDEX_NAME);
     searchRequest.source(sourceBuilder);
-    SearchResponse response = esClient().search(searchRequest, RequestOptions.DEFAULT);
+    SearchResponse response = client().search(searchRequest, RequestOptions.DEFAULT);
 
     Terms terms = response.getAggregations().get(SpanDO.resource(SpanDO.SERVICE_NAME));
     for (Terms.Bucket bucket : terms.getBuckets()) {

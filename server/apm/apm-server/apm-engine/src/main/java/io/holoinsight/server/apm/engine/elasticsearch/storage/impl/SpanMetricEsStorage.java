@@ -42,7 +42,7 @@ public class SpanMetricEsStorage extends PostCalMetricStorage {
   @Autowired
   private RestHighLevelClient esClient;
 
-  protected RestHighLevelClient esClient() {
+  protected RestHighLevelClient client() {
     return esClient;
   }
 
@@ -97,7 +97,7 @@ public class SpanMetricEsStorage extends PostCalMetricStorage {
         .aggregation(dateHistogramAggregationBuilder);
     SearchRequest searchRequest =
         new SearchRequest(new String[] {metricDefine.getIndex()}, searchSourceBuilder);
-    SearchResponse searchResponse = esClient().search(searchRequest, RequestOptions.DEFAULT);
+    SearchResponse searchResponse = client().search(searchRequest, RequestOptions.DEFAULT);
     Aggregations aggregations = searchResponse.getAggregations();
     Aggregation aggregation = aggregations.get(timeField());
     ParsedDateHistogram dateHistogram = (ParsedDateHistogram) aggregation;
@@ -151,7 +151,7 @@ public class SpanMetricEsStorage extends PostCalMetricStorage {
 
     SearchRequest searchRequest = new SearchRequest(SpanDO.INDEX_NAME);
     searchRequest.source(sourceBuilder);
-    SearchResponse response = esClient().search(searchRequest, RequestOptions.DEFAULT);
+    SearchResponse response = client().search(searchRequest, RequestOptions.DEFAULT);
 
     Map<Map<String, String>, Map<String, Double>> valuesMap = new HashMap<>();
     backtrackExtract(SpanDO.INDEX_NAME, response.getAggregations().iterator().next(), valuesMap,
@@ -217,7 +217,7 @@ public class SpanMetricEsStorage extends PostCalMetricStorage {
 
     SearchRequest searchRequest = new SearchRequest(SpanDO.INDEX_NAME);
     searchRequest.source(sourceBuilder);
-    SearchResponse response = esClient().search(searchRequest, RequestOptions.DEFAULT);
+    SearchResponse response = client().search(searchRequest, RequestOptions.DEFAULT);
 
     Map<Map<String, String>, Map<String, Double>> valuesMap = new HashMap<>();
     backtrackExtract(SpanDO.INDEX_NAME, response.getAggregations().iterator().next(), valuesMap,

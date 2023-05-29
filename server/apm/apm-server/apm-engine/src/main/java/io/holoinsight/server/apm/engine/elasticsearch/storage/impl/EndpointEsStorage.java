@@ -33,7 +33,7 @@ public class EndpointEsStorage implements EndpointStorage {
   @Autowired
   private ICommonBuilder commonBuilder;
 
-  protected RestHighLevelClient esClient() {
+  protected RestHighLevelClient client() {
     return client;
   }
 
@@ -60,7 +60,7 @@ public class EndpointEsStorage implements EndpointStorage {
 
     SearchRequest searchRequest = new SearchRequest(EndpointRelationDO.INDEX_NAME);
     searchRequest.source(sourceBuilder);
-    SearchResponse response = esClient().search(searchRequest, RequestOptions.DEFAULT);
+    SearchResponse response = client().search(searchRequest, RequestOptions.DEFAULT);
 
     Terms terms = response.getAggregations().get(EndpointRelationDO.DEST_ENDPOINT_NAME);
     for (Terms.Bucket bucket : terms.getBuckets()) {

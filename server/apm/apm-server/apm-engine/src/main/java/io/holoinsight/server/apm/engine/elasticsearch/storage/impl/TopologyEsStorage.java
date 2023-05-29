@@ -38,7 +38,7 @@ public class TopologyEsStorage implements TopologyStorage {
   @Autowired
   private ICommonBuilder commonBuilder;
 
-  protected RestHighLevelClient esClient() {
+  protected RestHighLevelClient client() {
     return client;
   }
 
@@ -65,7 +65,7 @@ public class TopologyEsStorage implements TopologyStorage {
 
     SearchRequest searchRequest = new SearchRequest(EndpointRelationDO.INDEX_NAME);
     searchRequest.source(sourceBuilder);
-    SearchResponse response = esClient().search(searchRequest, RequestOptions.DEFAULT);
+    SearchResponse response = client().search(searchRequest, RequestOptions.DEFAULT);
 
     return buildEndpointCalls(response);
   }
@@ -86,7 +86,7 @@ public class TopologyEsStorage implements TopologyStorage {
 
     SearchRequest searchRequest = new SearchRequest(ServiceRelationDO.INDEX_NAME);
     searchRequest.source(sourceBuilder);
-    SearchResponse response = esClient().search(searchRequest, RequestOptions.DEFAULT);
+    SearchResponse response = client().search(searchRequest, RequestOptions.DEFAULT);
 
     return buildCalls(response);
   }
@@ -114,7 +114,7 @@ public class TopologyEsStorage implements TopologyStorage {
 
     SearchRequest searchRequest = new SearchRequest(SpanDO.INDEX_NAME);
     searchRequest.source(sourceBuilder);
-    SearchResponse response = esClient().search(searchRequest, RequestOptions.DEFAULT);
+    SearchResponse response = client().search(searchRequest, RequestOptions.DEFAULT);
 
     return buildServiceMetric(response, aggField);
   }
@@ -137,7 +137,7 @@ public class TopologyEsStorage implements TopologyStorage {
 
     SearchRequest searchRequest = new SearchRequest(ServiceInstanceRelationDO.INDEX_NAME);
     searchRequest.source(sourceBuilder);
-    SearchResponse response = esClient().search(searchRequest, RequestOptions.DEFAULT);
+    SearchResponse response = client().search(searchRequest, RequestOptions.DEFAULT);
 
     return buildServiceInstanceCalls(response);
   }
@@ -157,7 +157,7 @@ public class TopologyEsStorage implements TopologyStorage {
 
     SearchRequest searchRequest = new SearchRequest(ServiceRelationDO.INDEX_NAME);
     searchRequest.source(sourceBuilder);
-    SearchResponse response = esClient().search(searchRequest, RequestOptions.DEFAULT);
+    SearchResponse response = client().search(searchRequest, RequestOptions.DEFAULT);
 
     return buildCalls(response);
   }

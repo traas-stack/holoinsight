@@ -7,15 +7,13 @@ import com.google.gson.JsonObject;
 import io.holoinsight.server.apm.common.model.specification.sw.Layer;
 import io.holoinsight.server.apm.common.model.specification.sw.RequestType;
 import io.holoinsight.server.apm.core.installer.DataTypeMapping;
+import org.springframework.stereotype.Component;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.List;
 
-/**
- * @author jiwliu
- * @version : ColumnTypeEsMapping.java, v 0.1 2022年10月11日 22:27 xiangwanpeng Exp $
- */
+@Component
 public class ColumnTypeEsMapping implements DataTypeMapping {
 
   @Override

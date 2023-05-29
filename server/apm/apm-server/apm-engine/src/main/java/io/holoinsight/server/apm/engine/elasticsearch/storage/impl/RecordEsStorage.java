@@ -29,7 +29,7 @@ public class RecordEsStorage<T extends RecordDO> implements WritableStorage<T> {
   @Autowired
   private RestHighLevelClient esClient;
 
-  protected RestHighLevelClient esClient() {
+  protected RestHighLevelClient client() {
     return esClient;
   }
 
@@ -41,7 +41,7 @@ public class RecordEsStorage<T extends RecordDO> implements WritableStorage<T> {
         bulkRequest.add(new IndexRequest(writeIndexName).opType(DocWriteRequest.OpType.CREATE)
             .source(EsGsonUtils.esGson().toJson(entity), XContentType.JSON));
       });
-      BulkResponse bulkItemRsp = esClient().bulk(bulkRequest, RequestOptions.DEFAULT);
+      BulkResponse bulkItemRsp = client().bulk(bulkRequest, RequestOptions.DEFAULT);
       if (bulkItemRsp.hasFailures()) {
         throw new RuntimeException(bulkItemRsp.buildFailureMessage());
       }

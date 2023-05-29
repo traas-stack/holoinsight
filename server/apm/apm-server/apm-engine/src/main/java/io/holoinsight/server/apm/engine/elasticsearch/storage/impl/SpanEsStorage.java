@@ -86,7 +86,7 @@ public class SpanEsStorage extends RecordEsStorage<SpanDO> implements SpanStorag
     SearchRequest searchRequest =
         new SearchRequest(new String[] {SpanDO.INDEX_NAME}, searchSourceBuilder);
 
-    SearchResponse searchResponse = esClient().search(searchRequest, RequestOptions.DEFAULT);
+    SearchResponse searchResponse = client().search(searchRequest, RequestOptions.DEFAULT);
     final TraceBrief traceBrief = new TraceBrief();
     for (org.elasticsearch.search.SearchHit hit : searchResponse.getHits().getHits()) {
       String hitJson = hit.getSourceAsString();
@@ -115,7 +115,7 @@ public class SpanEsStorage extends RecordEsStorage<SpanDO> implements SpanStorag
     searchSourceBuilder.size(SPAN_QUERY_MAX_SIZE);
     SearchRequest searchRequest =
         new SearchRequest(new String[] {SpanDO.INDEX_NAME}, searchSourceBuilder);
-    SearchResponse searchResponse = esClient().search(searchRequest, RequestOptions.DEFAULT);
+    SearchResponse searchResponse = client().search(searchRequest, RequestOptions.DEFAULT);
     List<SpanDO> spanRecords = new ArrayList<>();
     for (org.elasticsearch.search.SearchHit hit : searchResponse.getHits().getHits()) {
       String hitJson = hit.getSourceAsString();

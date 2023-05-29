@@ -26,7 +26,7 @@ public class NetworkAddressMappingEsStorage extends RecordEsStorage<NetworkAddre
   @Autowired
   private RestHighLevelClient client;
 
-  protected RestHighLevelClient esClient() {
+  protected RestHighLevelClient client() {
     return client;
   }
 
@@ -49,7 +49,7 @@ public class NetworkAddressMappingEsStorage extends RecordEsStorage<NetworkAddre
     SearchRequest searchRequest =
         new SearchRequest(new String[] {NetworkAddressMappingDO.INDEX_NAME}, searchSourceBuilder);
 
-    SearchResponse searchResponse = esClient().search(searchRequest, RequestOptions.DEFAULT);
+    SearchResponse searchResponse = client().search(searchRequest, RequestOptions.DEFAULT);
 
     for (SearchHit searchHit : searchResponse.getHits().getHits()) {
       String hitJson = searchHit.getSourceAsString();

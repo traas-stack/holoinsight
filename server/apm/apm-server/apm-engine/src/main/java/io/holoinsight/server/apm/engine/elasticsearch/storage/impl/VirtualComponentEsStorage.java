@@ -39,7 +39,7 @@ public class VirtualComponentEsStorage implements VirtualComponentStorage {
   @Autowired
   private ICommonBuilder commonBuilder;
 
-  protected RestHighLevelClient esClient() {
+  protected RestHighLevelClient client() {
     return client;
   }
 
@@ -66,7 +66,7 @@ public class VirtualComponentEsStorage implements VirtualComponentStorage {
 
     SearchRequest searchRequest = new SearchRequest(ServiceRelationDO.INDEX_NAME);
     searchRequest.source(sourceBuilder);
-    SearchResponse response = esClient().search(searchRequest, RequestOptions.DEFAULT);
+    SearchResponse response = client().search(searchRequest, RequestOptions.DEFAULT);
 
     return buildComponentList(response, sourceOrDest);
   }
@@ -94,7 +94,7 @@ public class VirtualComponentEsStorage implements VirtualComponentStorage {
 
     SearchRequest searchRequest = new SearchRequest(ServiceRelationDO.INDEX_NAME);
     searchRequest.source(sourceBuilder);
-    SearchResponse response = esClient().search(searchRequest, RequestOptions.DEFAULT);
+    SearchResponse response = client().search(searchRequest, RequestOptions.DEFAULT);
 
     List<String> traceIds = new ArrayList<>();
     Terms terms = response.getAggregations().get(ServiceRelationDO.TRACE_ID);
