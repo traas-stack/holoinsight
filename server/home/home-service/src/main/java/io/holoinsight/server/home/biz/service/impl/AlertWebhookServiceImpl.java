@@ -91,8 +91,6 @@ public class AlertWebhookServiceImpl extends ServiceImpl<AlarmWebhookMapper, Ala
       wrapper.orderByDesc("gmt_modified");
     }
 
-    wrapper.select(AlarmWebhook.class,
-        info -> !info.getColumn().equals("creator") && !info.getColumn().equals("modifier"));
     Page<AlarmWebhook> page = new Page<>(pageRequest.getPageNum(), pageRequest.getPageSize());
 
     page = page(page, wrapper);

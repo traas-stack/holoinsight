@@ -50,6 +50,11 @@ public class DefaultTenantInitServiceImpl implements TenantInitService {
   }
 
   @Override
+  public Boolean checkConditions(String workspace, List<QueryFilter> filters) {
+    return true;
+  }
+
+  @Override
   public Map<String, String> getTenantWorkspaceMetaConditions(String workspace) {
     return new HashMap<>();
   }

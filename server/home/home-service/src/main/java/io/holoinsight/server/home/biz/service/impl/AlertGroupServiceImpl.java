@@ -91,7 +91,7 @@ public class AlertGroupServiceImpl extends ServiceImpl<AlarmGroupMapper, AlarmGr
       wrapper.like("creator", alarmHistory.getCreator().trim());
     }
     if (StringUtils.isNotBlank(alarmHistory.getModifier())) {
-      wrapper.like("modifior", alarmHistory.getModifier().trim());
+      wrapper.like("modifier", alarmHistory.getModifier().trim());
     }
 
     if (StringUtil.isNotBlank(pageRequest.getSortBy())
@@ -104,9 +104,6 @@ public class AlertGroupServiceImpl extends ServiceImpl<AlarmGroupMapper, AlarmGr
     } else {
       wrapper.orderByDesc("gmt_modified");
     }
-
-    wrapper.select(AlarmGroup.class,
-        info -> !info.getColumn().equals("creator") && !info.getColumn().equals("modifier"));
 
     Page<AlarmGroup> page = new Page<>(pageRequest.getPageNum(), pageRequest.getPageSize());
 

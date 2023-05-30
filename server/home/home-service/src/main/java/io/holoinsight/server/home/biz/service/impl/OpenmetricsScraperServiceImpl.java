@@ -154,9 +154,6 @@ public class OpenmetricsScraperServiceImpl extends
       wrapper.orderByDesc("gmt_modified");
     }
 
-    wrapper.select(OpenmetricsScraper.class,
-        info -> !info.getColumn().equals("creator") && !info.getColumn().equals("modifier"));
-
     Page<OpenmetricsScraper> page = new Page<>(request.getPageNum(), request.getPageSize());
 
     page = page(page, wrapper);

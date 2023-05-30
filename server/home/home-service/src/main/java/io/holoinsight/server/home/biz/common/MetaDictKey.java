@@ -38,4 +38,5 @@ public class MetaDictKey {
   public static final String SYSTEM_NOTICE = "system_notice";
 
   public static final String METERING_LOG_OPEN = "metering_log_open";
+  public static final String INTEGRATION_LOCAL_PRODUCT = "integration_local_product";
 }

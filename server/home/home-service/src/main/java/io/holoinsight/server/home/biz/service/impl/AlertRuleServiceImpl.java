@@ -147,9 +147,6 @@ public class AlertRuleServiceImpl extends ServiceImpl<AlarmRuleMapper, AlarmRule
       wrapper.ge("gmt_create", alarmRule.getGmtCreate());
     }
 
-    wrapper.select(AlarmRule.class,
-        info -> !info.getColumn().equals("creator") && !info.getColumn().equals("modifier"));
-
     Page<AlarmRule> page = new Page<>(pageRequest.getPageNum(), pageRequest.getPageSize());
 
     page = page(page, wrapper);

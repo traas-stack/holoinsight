@@ -91,9 +91,6 @@ public class AlertDingDingRobotServiceImpl extends
     } else {
       wrapper.orderByDesc("id");
     }
-    wrapper.select(AlarmDingDingRobot.class,
-        info -> !info.getColumn().equals("creator") && !info.getColumn().equals("modifier"));
-
 
     Page<AlarmDingDingRobot> page = new Page<>(pageRequest.getPageNum(), pageRequest.getPageSize());
 

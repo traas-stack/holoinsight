@@ -6,7 +6,6 @@ package io.holoinsight.server.home.web.controller;
 import io.holoinsight.server.home.biz.service.CustomPluginService;
 import io.holoinsight.server.home.biz.service.DashboardService;
 import io.holoinsight.server.home.biz.service.FolderService;
-import io.holoinsight.server.home.biz.service.IntegrationPluginService;
 import io.holoinsight.server.home.biz.service.UserFavoriteService;
 import io.holoinsight.server.home.biz.service.UserOpLogService;
 import io.holoinsight.server.home.common.util.MonitorException;
@@ -22,7 +21,6 @@ import io.holoinsight.server.home.dal.model.Folder;
 import io.holoinsight.server.home.dal.model.OpType;
 import io.holoinsight.server.home.dal.model.UserFavorite;
 import io.holoinsight.server.home.dal.model.dto.CustomPluginDTO;
-import io.holoinsight.server.home.dal.model.dto.IntegrationPluginDTO;
 import io.holoinsight.server.home.facade.page.MonitorPageRequest;
 import io.holoinsight.server.home.facade.page.MonitorPageResult;
 import io.holoinsight.server.home.web.common.ManageCallback;
@@ -72,9 +70,6 @@ public class UserFavoriteFacadeImpl extends BaseFacade {
   private DashboardService dashboardService;
 
   @Autowired
-  private IntegrationPluginService integrationPluginService;
-
-  @Autowired
   private UserOpLogService userOpLogService;
 
   @PostMapping("/create")
@@ -109,14 +104,6 @@ public class UserFavoriteFacadeImpl extends BaseFacade {
             Dashboard dashboard = dashboardService
                 .queryById(Long.parseLong(userFavorite.getRelateId()), ms.tenant, ms.workspace);
             if (null == dashboard) {
-              throw new MonitorException(String.format("can not find record, %s-%s",
-                  userFavorite.type, userFavorite.relateId));
-            }
-            break;
-          case "integration":
-            IntegrationPluginDTO integrationPluginDTO = integrationPluginService
-                .queryByName(userFavorite.getRelateId(), ms.tenant, ms.workspace);
-            if (null == integrationPluginDTO) {
               throw new MonitorException(String.format("can not find record, %s-%s",
                   userFavorite.type, userFavorite.relateId));
             }
