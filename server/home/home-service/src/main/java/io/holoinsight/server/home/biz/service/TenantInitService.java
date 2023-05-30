@@ -58,6 +58,9 @@ public interface TenantInitService {
    */
   String getTsdbTenant(String tenant);
 
+  Boolean checkConditions(String workspace, List<QueryFilter> filters);
+
+
   /**
    * get meta_server conditions for workspace
    * 

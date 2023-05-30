@@ -165,8 +165,6 @@ public class DashboardServiceImpl extends ServiceImpl<DashboardMapper, Dashboard
     } else {
       wrapper.orderByDesc("gmt_modified");
     }
-    wrapper.select(Dashboard.class,
-        info -> !info.getColumn().equals("creator") && !info.getColumn().equals("modifier"));
 
     Page<Dashboard> page = new Page<>(request.getPageNum(), request.getPageSize());
 

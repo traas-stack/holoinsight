@@ -12,9 +12,11 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
+import com.google.gson.reflect.TypeToken;
 import io.holoinsight.server.common.J;
 import io.holoinsight.server.common.MD5Hash;
 import io.holoinsight.server.common.dao.entity.TenantOps;
+import io.holoinsight.server.home.biz.common.MetaDictUtil;
 import io.holoinsight.server.home.biz.plugin.PluginRepository;
 import io.holoinsight.server.home.biz.plugin.core.AbstractIntegrationPlugin;
 import io.holoinsight.server.home.biz.plugin.model.Plugin;
@@ -41,6 +43,8 @@ import org.springframework.util.CollectionUtils;
 
 import io.holoinsight.server.meta.facade.service.DataClientService;
 
+import static io.holoinsight.server.home.biz.common.MetaDictKey.INTEGRATION_LOCAL_PRODUCT;
+import static io.holoinsight.server.home.biz.common.MetaDictType.INTEGRATION_CONFIG;
 import static io.holoinsight.server.home.common.util.cache.local.CacheConst.APP_META_KEY;
 import static io.holoinsight.server.home.common.util.cache.local.CacheConst.INTEGRATION_GENERATED_CACHE_KEY;
 
@@ -185,12 +189,17 @@ public class TenantIntegrationGeneratedTask extends AbstractMonitorTask {
           generateds.add(generated(ops.getTenant(), entry.getValue().getWorkspace(), entry.getKey(),
               "podsystem", "System", new HashMap<>()));
         }
-
-        generateds.add(generated(ops.getTenant(), entry.getValue().getWorkspace(), entry.getKey(),
-            "logpattern", "LogPattern", new HashMap<>()));
-
         generateds.add(generated(ops.getTenant(), entry.getValue().getWorkspace(), entry.getKey(),
             "portcheck", "PortCheck", new HashMap<>()));
+
+        Map<String, String> dictMap = MetaDictUtil.getValue(INTEGRATION_CONFIG,
+            INTEGRATION_LOCAL_PRODUCT, new TypeToken<Map<String, String>>() {});
+        if (CollectionUtils.isEmpty(dictMap))
+          continue;
+        for (Map.Entry<String, String> dict : dictMap.entrySet()) {
+          generateds.add(generated(ops.getTenant(), entry.getValue().getWorkspace(), entry.getKey(),
+              dict.getValue(), dict.getKey(), new HashMap<>()));
+        }
       }
 
       List<IntegrationPluginDTO> integrationPluginDTOS =
@@ -226,7 +235,6 @@ public class TenantIntegrationGeneratedTask extends AbstractMonitorTask {
           if (CollectionUtils.isEmpty(collectApps))
             continue;
 
-          // appSets.addAll(collectApps);
           for (String app : collectApps) {
             if (StringUtils.isBlank(integrationPlugin.name))
               continue;
