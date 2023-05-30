@@ -33,10 +33,6 @@ import javax.annotation.Resource;
 import java.io.IOException;
 import java.util.*;
 
-/**
- * @author jiwliu
- * @version : EsModelInstaller.java, v 0.1 2022年10月11日 21:26 xiangwanpeng Exp $
- */
 @Slf4j
 public class EsModelInstaller implements ModelInstaller {
 
@@ -44,19 +40,18 @@ public class EsModelInstaller implements ModelInstaller {
   private RestHighLevelClient esClient;
 
   @Resource
-  @Qualifier("columnTypeEsMapping")
   DataTypeMapping dataTypeMapping;
 
   private IndexStructures structures = new IndexStructures();
 
-  protected RestHighLevelClient esClient() {
+  protected RestHighLevelClient client() {
     return esClient;
   }
 
   @Override
   public boolean isExists(Model model) {
     String tableName = model.getName();
-    IndicesClient indicesClient = esClient().indices();
+    IndicesClient indicesClient = client().indices();
     try {
       boolean isExists = indicesClient.existsIndexTemplate(
           new ComposableIndexTemplateExistRequest(tableName), RequestOptions.DEFAULT);
@@ -97,7 +92,7 @@ public class EsModelInstaller implements ModelInstaller {
 
   private void createTimeSeriesTable(Model model) {
     String tableName = model.getName();
-    IndicesClient indicesClient = esClient().indices();
+    IndicesClient indicesClient = client().indices();
     try {
       Mappings mappings = createMapping(model);
       boolean shouldUpdateTemplate = !isExists(model);

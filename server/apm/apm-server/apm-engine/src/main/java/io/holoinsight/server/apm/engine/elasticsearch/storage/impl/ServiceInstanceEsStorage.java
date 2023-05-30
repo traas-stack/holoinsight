@@ -33,12 +33,12 @@ public class ServiceInstanceEsStorage implements ServiceInstanceStorage {
   @Autowired
   private ICommonBuilder commonBuilder;
 
-  protected RestHighLevelClient esClient() {
+  protected RestHighLevelClient client() {
     return client;
   }
 
   @Override
-  public String timeField() {
+  public String timeSeriesField() {
     return SpanDO.END_TIME;
   }
 
@@ -54,7 +54,7 @@ public class ServiceInstanceEsStorage implements ServiceInstanceStorage {
                 .should(QueryBuilders.termQuery(SpanDO.KIND, SpanKind.SERVER))
                 .should(QueryBuilders.termQuery(SpanDO.KIND, SpanKind.CONSUMER)))
             .must(QueryBuilders.termQuery(SpanDO.resource(SpanDO.SERVICE_NAME), service))
-            .must(QueryBuilders.rangeQuery(timeField()).gte(startTime).lte(endTime));
+            .must(QueryBuilders.rangeQuery(this.timeSeriesField()).gte(startTime).lte(endTime));
 
     commonBuilder.addTermParams(queryBuilder, termParams);
     SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
@@ -65,7 +65,7 @@ public class ServiceInstanceEsStorage implements ServiceInstanceStorage {
 
     SearchRequest searchRequest = new SearchRequest(SpanDO.INDEX_NAME);
     searchRequest.source(sourceBuilder);
-    SearchResponse response = esClient().search(searchRequest, RequestOptions.DEFAULT);
+    SearchResponse response = client().search(searchRequest, RequestOptions.DEFAULT);
 
     Terms terms = response.getAggregations().get(SpanDO.resource(SpanDO.SERVICE_INSTANCE_NAME));
     for (Terms.Bucket bucket : terms.getBuckets()) {

@@ -80,12 +80,6 @@ public class HoloinsightEsConfiguration {
     return new EsDataCleaner();
   }
 
-  @Bean("columnTypeEsMapping")
-  @Primary
-  public ColumnTypeEsMapping columnTypeEsMapping() {
-    return new ColumnTypeEsMapping();
-  }
-
   @Bean("spanEsStorage")
   @Primary
   public SpanEsStorage spanEsStorage() {

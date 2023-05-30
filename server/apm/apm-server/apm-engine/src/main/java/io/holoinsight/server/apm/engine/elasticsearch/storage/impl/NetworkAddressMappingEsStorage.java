@@ -26,12 +26,12 @@ public class NetworkAddressMappingEsStorage extends RecordEsStorage<NetworkAddre
   @Autowired
   private RestHighLevelClient client;
 
-  protected RestHighLevelClient esClient() {
+  protected RestHighLevelClient client() {
     return client;
   }
 
   @Override
-  public String timeField() {
+  public String timeSeriesField() {
     return NetworkAddressMappingDO.TIME_BUCKET;
   }
 
@@ -44,12 +44,12 @@ public class NetworkAddressMappingEsStorage extends RecordEsStorage<NetworkAddre
     List<NetworkAddressMappingDO> networkAddressMapping = new ArrayList<>();
     SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
     searchSourceBuilder.size(1000);
-    searchSourceBuilder.query(new RangeQueryBuilder(timeField()).gte(getTime(startTime))
+    searchSourceBuilder.query(new RangeQueryBuilder(this.timeSeriesField()).gte(getTime(startTime))
         .lte(getTime(System.currentTimeMillis())));
     SearchRequest searchRequest =
         new SearchRequest(new String[] {NetworkAddressMappingDO.INDEX_NAME}, searchSourceBuilder);
 
-    SearchResponse searchResponse = esClient().search(searchRequest, RequestOptions.DEFAULT);
+    SearchResponse searchResponse = client().search(searchRequest, RequestOptions.DEFAULT);
 
     for (SearchHit searchHit : searchResponse.getHits().getHits()) {
       String hitJson = searchHit.getSourceAsString();
