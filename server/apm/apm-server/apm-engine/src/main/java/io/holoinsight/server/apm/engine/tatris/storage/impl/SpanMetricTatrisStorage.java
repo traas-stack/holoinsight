@@ -8,26 +8,20 @@ import org.elasticsearch.client.RestHighLevelClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 
-/**
- * TODO make some special implementation of tatris
- * 
- * @author jiwliu
- * @version : MetricEsServiceImpl.java, v 0.1 2022年09月29日 16:58 xiangwanpeng Exp $
- */
 public class SpanMetricTatrisStorage extends SpanMetricEsStorage {
 
-    @Autowired
-    @Qualifier("tatrisClient")
-    private RestHighLevelClient tatrisClient;
+  @Autowired
+  @Qualifier("tatrisClient")
+  private RestHighLevelClient tatrisClient;
 
-    @Override
-    protected RestHighLevelClient client() {
-        return tatrisClient;
-    }
+  @Override
+  protected RestHighLevelClient client() {
+    return tatrisClient;
+  }
 
-    @Override
-    public String timeField() {
-        return "_timestamp";
-    }
+  @Override
+  public String timeSeriesField() {
+    return "_timestamp";
+  }
 
 }

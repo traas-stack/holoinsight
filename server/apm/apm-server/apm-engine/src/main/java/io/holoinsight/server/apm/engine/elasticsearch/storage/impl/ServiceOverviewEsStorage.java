@@ -38,7 +38,7 @@ public class ServiceOverviewEsStorage implements ServiceOverviewStorage {
   }
 
   @Override
-  public String timeField() {
+  public String timeSeriesField() {
     return SpanDO.END_TIME;
   }
 
@@ -53,7 +53,7 @@ public class ServiceOverviewEsStorage implements ServiceOverviewStorage {
             .must(QueryBuilders.boolQuery()
                 .should(QueryBuilders.termQuery(SpanDO.KIND, SpanKind.SERVER))
                 .should(QueryBuilders.termQuery(SpanDO.KIND, SpanKind.CONSUMER)))
-            .must(QueryBuilders.rangeQuery(timeField()).gte(startTime).lte(endTime));
+            .must(QueryBuilders.rangeQuery(timeSeriesField()).gte(startTime).lte(endTime));
 
     commonBuilder.addTermParamsWithAttrPrefix(queryBuilder, termParams);
     SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();

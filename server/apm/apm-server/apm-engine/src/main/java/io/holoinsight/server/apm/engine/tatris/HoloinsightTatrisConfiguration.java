@@ -30,89 +30,89 @@ import org.springframework.context.annotation.Configuration;
 @ConditionalOnProperty(value = "holoinsight.storage.tatris.enable", havingValue = "true")
 public class HoloinsightTatrisConfiguration {
 
-    private String host;
-    private int port = 6060;
+  private String host;
+  private int port = 6060;
 
-    @Bean("tatrisClient")
-    public RestHighLevelClient elasticsearchClient() {
-        log.info("init tatris config, host={}, port={}", host, port);
-        RestClientBuilder builder = RestClient.builder(new HttpHost(host, port));
-        builder.setStrictDeprecationMode(false);
-        return new RestHighLevelClient(builder);
-    }
+  @Bean("tatrisClient")
+  public RestHighLevelClient elasticsearchClient() {
+    log.info("init tatris config, host={}, port={}", host, port);
+    RestClientBuilder builder = RestClient.builder(new HttpHost(host, port));
+    builder.setStrictDeprecationMode(false);
+    return new RestHighLevelClient(builder);
+  }
 
-    @Bean("tatrisModelInstaller")
-    public TatrisModelInstaller tatrisModelInstaller() {
-        return new TatrisModelInstaller();
-    }
+  @Bean("tatrisModelInstaller")
+  public TatrisModelInstaller tatrisModelInstaller() {
+    return new TatrisModelInstaller();
+  }
 
-    @Bean("tatrisDataCleaner")
-    public TatrisDataCleaner tatrisDataCleaner() {
-        return new TatrisDataCleaner();
-    }
+  @Bean("tatrisDataCleaner")
+  public TatrisDataCleaner tatrisDataCleaner() {
+    return new TatrisDataCleaner();
+  }
 
-    @Bean("spanTatrisStorage")
-    public SpanTatrisStorage spanTatrisStorage() {
-        return new SpanTatrisStorage();
-    }
+  @Bean("spanTatrisStorage")
+  public SpanTatrisStorage spanTatrisStorage() {
+    return new SpanTatrisStorage();
+  }
 
-    @Bean("spanMetricTatrisStorage")
-    public SpanMetricTatrisStorage spanMetricTatrisStorage() {
-        return new SpanMetricTatrisStorage();
-    }
+  @Bean("spanMetricTatrisStorage")
+  public SpanMetricTatrisStorage spanMetricTatrisStorage() {
+    return new SpanMetricTatrisStorage();
+  }
 
-    @Bean("endpointRelationTatrisStorage")
-    public EndpointRelationTatrisStorage endpointRelationTatrisStorage() {
-        return new EndpointRelationTatrisStorage();
-    }
+  @Bean("endpointRelationTatrisStorage")
+  public EndpointRelationTatrisStorage endpointRelationTatrisStorage() {
+    return new EndpointRelationTatrisStorage();
+  }
 
-    @Bean("endpointTatrisStorage")
-    public EndpointTatrisStorage endpointTatrisStorage() {
-        return new EndpointTatrisStorage();
-    }
+  @Bean("endpointTatrisStorage")
+  public EndpointTatrisStorage endpointTatrisStorage() {
+    return new EndpointTatrisStorage();
+  }
 
-    @Bean("networkAddressMappingTatrisStorage")
-    public NetworkAddressMappingTatrisStorage networkAddressMappingTatrisStorage() {
-        return new NetworkAddressMappingTatrisStorage();
-    }
+  @Bean("networkAddressMappingTatrisStorage")
+  public NetworkAddressMappingTatrisStorage networkAddressMappingTatrisStorage() {
+    return new NetworkAddressMappingTatrisStorage();
+  }
 
-    @Bean("serviceErrorTatrisStorage")
-    public ServiceErrorTatrisStorage serviceErrorTatrisStorage() {
-        return new ServiceErrorTatrisStorage();
-    }
+  @Bean("serviceErrorTatrisStorage")
+  public ServiceErrorTatrisStorage serviceErrorTatrisStorage() {
+    return new ServiceErrorTatrisStorage();
+  }
 
-    @Bean("serviceInstanceRelationTatrisStorage")
-    public ServiceInstanceRelationTatrisStorage serviceInstanceRelationTatrisStorage() {
-        return new ServiceInstanceRelationTatrisStorage();
-    }
+  @Bean("serviceInstanceRelationTatrisStorage")
+  public ServiceInstanceRelationTatrisStorage serviceInstanceRelationTatrisStorage() {
+    return new ServiceInstanceRelationTatrisStorage();
+  }
 
-    @Bean("serviceInstanceTatrisStorage")
-    public ServiceInstanceTatrisStorage serviceInstanceTatrisStorage() {
-        return new ServiceInstanceTatrisStorage();
-    }
+  @Bean("serviceInstanceTatrisStorage")
+  public ServiceInstanceTatrisStorage serviceInstanceTatrisStorage() {
+    return new ServiceInstanceTatrisStorage();
+  }
 
-    @Bean("serviceOverviewTatrisStorage")
-    public ServiceOverviewTatrisStorage serviceOverviewTatrisStorage() {
-        return new ServiceOverviewTatrisStorage();
-    }
+  @Bean("serviceOverviewTatrisStorage")
+  public ServiceOverviewTatrisStorage serviceOverviewTatrisStorage() {
+    return new ServiceOverviewTatrisStorage();
+  }
 
-    @Bean("serviceRelationTatrisStorage")
-    public ServiceRelationTatrisStorage serviceRelationTatrisStorage() {
-        return new ServiceRelationTatrisStorage();
-    }
+  @Bean("serviceRelationTatrisStorage")
+  public ServiceRelationTatrisStorage serviceRelationTatrisStorage() {
+    return new ServiceRelationTatrisStorage();
+  }
 
-    @Bean("slowSqlTatrisStorage")
-    public SlowSqlTatrisStorage slowSqlTatrisStorage() {
-        return new SlowSqlTatrisStorage();
-    }
+  @Bean("slowSqlTatrisStorage")
+  public SlowSqlTatrisStorage slowSqlTatrisStorage() {
+    return new SlowSqlTatrisStorage();
+  }
 
-    @Bean("topologyTatrisStorage")
-    public TopologyTatrisStorage topologyTatrisStorage() {
-        return new TopologyTatrisStorage();
-    }
+  @Bean("topologyTatrisStorage")
+  public TopologyTatrisStorage topologyTatrisStorage() {
+    return new TopologyTatrisStorage();
+  }
 
-    @Bean("virtualComponentTatrisStorage")
-    public VirtualComponentTatrisStorage virtualComponentTatrisStorage() {
-        return new VirtualComponentTatrisStorage();
-    }
+  @Bean("virtualComponentTatrisStorage")
+  public VirtualComponentTatrisStorage virtualComponentTatrisStorage() {
+    return new VirtualComponentTatrisStorage();
+  }
 }

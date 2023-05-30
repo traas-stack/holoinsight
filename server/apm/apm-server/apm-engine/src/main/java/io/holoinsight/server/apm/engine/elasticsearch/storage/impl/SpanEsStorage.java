@@ -57,7 +57,7 @@ public class SpanEsStorage extends RecordEsStorage<SpanDO> implements SpanStorag
   private static final int SPAN_QUERY_MAX_SIZE = 2000;
 
   @Override
-  public String timeField() {
+  public String timeSeriesField() {
     return SpanDO.END_TIME;
   }
 
@@ -69,7 +69,8 @@ public class SpanEsStorage extends RecordEsStorage<SpanDO> implements SpanStorag
     SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
 
     searchSourceBuilder.query(buildQuery(tenant, serviceName, serviceInstanceName, endpointName,
-        traceIds, minTraceDuration, maxTraceDuration, traceState, start, end, tags, timeField()));
+        traceIds, minTraceDuration, maxTraceDuration, traceState, start, end, tags,
+        this.timeSeriesField()));
 
     switch (queryOrder) {
       case BY_START_TIME:

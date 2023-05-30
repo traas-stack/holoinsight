@@ -38,7 +38,7 @@ public class EndpointEsStorage implements EndpointStorage {
   }
 
   @Override
-  public String timeField() {
+  public String timeSeriesField() {
     return SpanDO.END_TIME;
   }
 
@@ -50,7 +50,7 @@ public class EndpointEsStorage implements EndpointStorage {
     BoolQueryBuilder queryBuilder =
         QueryBuilders.boolQuery().must(QueryBuilders.termQuery(EndpointRelationDO.TENANT, tenant))
             .must(QueryBuilders.termQuery(EndpointRelationDO.DEST_SERVICE_NAME, service))
-            .must(QueryBuilders.rangeQuery(timeField()).gte(startTime).lte(endTime));
+            .must(QueryBuilders.rangeQuery(timeSeriesField()).gte(startTime).lte(endTime));
 
     commonBuilder.addTermParams(queryBuilder, termParams);
     SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();

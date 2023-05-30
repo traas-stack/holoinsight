@@ -10,12 +10,12 @@ import org.springframework.beans.factory.annotation.Qualifier;
 
 public class ServiceRelationTatrisStorage extends ServiceRelationEsStorage {
 
-    @Autowired
-    @Qualifier("tatrisClient")
-    private RestHighLevelClient tatrisClient;
+  @Autowired
+  @Qualifier("tatrisClient")
+  private RestHighLevelClient tatrisClient;
 
-    @Override
-    protected RestHighLevelClient client() {
-        return tatrisClient;
-    }
+  @Override
+  protected RestHighLevelClient client() {
+    return tatrisClient;
+  }
 }

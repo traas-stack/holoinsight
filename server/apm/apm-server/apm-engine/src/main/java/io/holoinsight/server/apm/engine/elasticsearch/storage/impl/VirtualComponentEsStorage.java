@@ -44,7 +44,7 @@ public class VirtualComponentEsStorage implements VirtualComponentStorage {
   }
 
   @Override
-  public String timeField() {
+  public String timeSeriesField() {
     return SpanDO.END_TIME;
   }
 
@@ -56,7 +56,7 @@ public class VirtualComponentEsStorage implements VirtualComponentStorage {
         QueryBuilders.boolQuery().must(QueryBuilders.termQuery(ServiceRelationDO.TENANT, tenant))
             .must(QueryBuilders.termQuery(sourceOrDest + "_service_name", service))
             .must(QueryBuilders.termQuery(ServiceRelationDO.TYPE, type.name()))
-            .must(QueryBuilders.rangeQuery(timeField()).gte(startTime).lte(endTime));
+            .must(QueryBuilders.rangeQuery(this.timeSeriesField()).gte(startTime).lte(endTime));
 
     commonBuilder.addTermParams(queryBuilder, termParams);
     SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
@@ -81,7 +81,7 @@ public class VirtualComponentEsStorage implements VirtualComponentStorage {
     BoolQueryBuilder queryBuilder =
         QueryBuilders.boolQuery().must(QueryBuilders.termQuery(ServiceRelationDO.TENANT, tenant))
             .must(QueryBuilders.termQuery(ServiceRelationDO.DEST_SERVICE_NAME, address))
-            .must(QueryBuilders.rangeQuery(timeField()).gte(startTime).lte(endTime));
+            .must(QueryBuilders.rangeQuery(this.timeSeriesField()).gte(startTime).lte(endTime));
     if (!StringUtils.isEmpty(service)) {
       queryBuilder.must(QueryBuilders.termQuery(ServiceRelationDO.SOURCE_SERVICE_NAME, service));
     }

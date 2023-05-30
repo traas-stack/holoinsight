@@ -16,17 +16,17 @@ import org.springframework.beans.factory.annotation.Qualifier;
 @Slf4j
 public class SpanTatrisStorage extends SpanEsStorage {
 
-    @Autowired
-    @Qualifier("tatrisClient")
-    private RestHighLevelClient tatrisClient;
+  @Autowired
+  @Qualifier("tatrisClient")
+  private RestHighLevelClient tatrisClient;
 
-    @Override
-    protected RestHighLevelClient client() {
-        return tatrisClient;
-    }
+  @Override
+  protected RestHighLevelClient client() {
+    return tatrisClient;
+  }
 
-    @Override
-    public String timeField() {
-        return "_timestamp";
-    }
+  @Override
+  public String timeSeriesField() {
+    return "_timestamp";
+  }
 }

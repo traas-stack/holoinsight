@@ -48,7 +48,7 @@ public class SpanMetricEsStorage extends PostCalMetricStorage {
 
 
   @Override
-  public String timeField() {
+  public String timeSeriesField() {
     return SpanDO.END_TIME;
   }
 
@@ -65,7 +65,8 @@ public class SpanMetricEsStorage extends PostCalMetricStorage {
     boolQueryBuilder
         .filter(new TermQueryBuilder(OtlpMappings.toOtlp(metricDefine.getIndex(), Const.TENANT),
             tenant))
-        .filter(new RangeQueryBuilder(timeField()).gte(duration.getStart()).lte(duration.getEnd()));
+        .filter(new RangeQueryBuilder(timeSeriesField()).gte(duration.getStart())
+            .lte(duration.getEnd()));
 
     if (conditions != null) {
       conditions.forEach((conditionKey, conditionVal) -> {
@@ -78,7 +79,7 @@ public class SpanMetricEsStorage extends PostCalMetricStorage {
     }
 
     DateHistogramAggregationBuilder dateHistogramAggregationBuilder =
-        AggregationBuilders.dateHistogram(timeField()).field(timeField())
+        AggregationBuilders.dateHistogram(timeSeriesField()).field(timeSeriesField())
             .fixedInterval(new DateHistogramInterval(duration.getStep())).minDocCount(1)
             .extendedBounds(new ExtendedBounds(duration.getStart(), duration.getEnd()));
     AggregationBuilder parentAggregationBuilder = dateHistogramAggregationBuilder;
@@ -99,7 +100,7 @@ public class SpanMetricEsStorage extends PostCalMetricStorage {
         new SearchRequest(new String[] {metricDefine.getIndex()}, searchSourceBuilder);
     SearchResponse searchResponse = client().search(searchRequest, RequestOptions.DEFAULT);
     Aggregations aggregations = searchResponse.getAggregations();
-    Aggregation aggregation = aggregations.get(timeField());
+    Aggregation aggregation = aggregations.get(timeSeriesField());
     ParsedDateHistogram dateHistogram = (ParsedDateHistogram) aggregation;
     List<? extends Histogram.Bucket> timeBuckets = dateHistogram.getBuckets();
     Map<Map<String, String>, Map<Long, Double>> resultMap = new HashMap<>();
@@ -131,7 +132,7 @@ public class SpanMetricEsStorage extends PostCalMetricStorage {
 
     BoolQueryBuilder queryBuilder =
         SpanEsStorage.buildQuery(tenant, serviceName, serviceInstanceName, endpointName, traceIds,
-            minTraceDuration, maxTraceDuration, traceState, start, end, tags, timeField());
+            minTraceDuration, maxTraceDuration, traceState, start, end, tags, timeSeriesField());
 
     SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
     sourceBuilder.size(0);
@@ -173,7 +174,7 @@ public class SpanMetricEsStorage extends PostCalMetricStorage {
     List<StatisticData> result = new ArrayList<>();
 
     BoolQueryBuilder queryBuilder = QueryBuilders.boolQuery()
-        .must(QueryBuilders.rangeQuery(timeField()).gte(startTime).lte(endTime));
+        .must(QueryBuilders.rangeQuery(timeSeriesField()).gte(startTime).lte(endTime));
 
     TermsAggregationBuilder aggregationBuilder = null;
     for (String group : groups) {

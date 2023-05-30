@@ -9,20 +9,16 @@ import org.elasticsearch.client.RestHighLevelClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 
-/**
- * @author xiangwanpeng
- * @version : TatrisModelInstaller.java, v 0.1 2023年02月26日 21:26 xiangwanpeng Exp $
- */
 @Slf4j
 public class TatrisModelInstaller extends EsModelInstaller {
 
-    @Autowired
-    @Qualifier("tatrisClient")
-    private RestHighLevelClient tatrisClient;
+  @Autowired
+  @Qualifier("tatrisClient")
+  private RestHighLevelClient tatrisClient;
 
-    @Override
-    protected RestHighLevelClient client() {
-        return tatrisClient;
-    }
+  @Override
+  protected RestHighLevelClient client() {
+    return tatrisClient;
+  }
 
 }

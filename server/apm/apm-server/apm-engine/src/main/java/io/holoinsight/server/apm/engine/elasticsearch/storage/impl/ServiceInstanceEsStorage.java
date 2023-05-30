@@ -38,7 +38,7 @@ public class ServiceInstanceEsStorage implements ServiceInstanceStorage {
   }
 
   @Override
-  public String timeField() {
+  public String timeSeriesField() {
     return SpanDO.END_TIME;
   }
 
@@ -54,7 +54,7 @@ public class ServiceInstanceEsStorage implements ServiceInstanceStorage {
                 .should(QueryBuilders.termQuery(SpanDO.KIND, SpanKind.SERVER))
                 .should(QueryBuilders.termQuery(SpanDO.KIND, SpanKind.CONSUMER)))
             .must(QueryBuilders.termQuery(SpanDO.resource(SpanDO.SERVICE_NAME), service))
-            .must(QueryBuilders.rangeQuery(timeField()).gte(startTime).lte(endTime));
+            .must(QueryBuilders.rangeQuery(this.timeSeriesField()).gte(startTime).lte(endTime));
 
     commonBuilder.addTermParams(queryBuilder, termParams);
     SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
