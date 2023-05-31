@@ -210,22 +210,6 @@ public class DimCookie implements DataClientService, AgentHeartBeatService, Seri
   }
 
   @Override
-  public void updateByExample(String tableName, QueryExample example, Map<String, Object> row) {
-    String exampleJson = J.toJson(example);
-    UpdateDataByExampleRequest updateDataByExampleRequest =
-        UpdateDataByExampleRequest.newBuilder().setTableName(tableName).setExampleJson(exampleJson)
-            .setFromApp(clientService.getCurrentApp()).setRowJson(J.toJson(row))
-            .setFromIp(clientService.getLocalIp()).build();
-    DataBaseResponse dataBaseResponse = DataServiceGrpc.newBlockingStub(channel)
-        .withDeadlineAfter(ConstPool.GRPC_WITH_DEADLINE_AFTER_MS_1, TimeUnit.MILLISECONDS)
-        .updateByExample(updateDataByExampleRequest);
-    if (!dataBaseResponse.getSuccess()) {
-      throw new ClientException("execute updateByExample for dimTable[%s] fail : %s. ", tableName,
-          dataBaseResponse.getErrMsg());
-    }
-  }
-
-  @Override
   public List<Map<String, Object>> queryByExample(String tableName, QueryExample example) {
 
     String exampleJson = J.toJson(example);

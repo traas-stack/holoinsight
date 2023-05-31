@@ -25,8 +25,6 @@ public interface DataClientService {
 
   void deleteByExample(String tableName, QueryExample example);
 
-  void updateByExample(String tableName, QueryExample example, Map<String, Object> row);
-
   List<Map<String, Object>> queryByExample(String tableName, QueryExample example);
 
   List<Map<String, Object>> fuzzyByExample(String tableName, QueryExample example);

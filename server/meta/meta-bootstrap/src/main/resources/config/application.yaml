@@ -34,3 +34,9 @@ management:
 holoinsight:
   roles:
     active: meta
+
+mybatis-plus:
+  config-location: classpath:mybatis/mybatis-config.xml
+  mapper-locations:
+    - classpath*:sqlmap/*.xml
+    - classpath*:sqlmap-ext/*.xml

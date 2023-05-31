@@ -60,11 +60,6 @@ public class DataClientServiceImpl extends AbstractCacheInteractService
   }
 
   @Override
-  public void updateByExample(String tableName, QueryExample example, Map<String, Object> row) {
-    pickOneCookie().updateByExample(tableName, example, row);
-  }
-
-  @Override
   public List<Map<String, Object>> queryByExample(String tableName, QueryExample example) {
     return pickOneCookie().queryByExample(tableName, example);
   }
