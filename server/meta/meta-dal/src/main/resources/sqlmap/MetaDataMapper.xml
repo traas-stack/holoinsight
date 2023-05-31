@@ -76,18 +76,6 @@
      AND deleted = 0
   </select>
 
-  <select id="selectByExample" resultMap="BaseResultMap">
-    select * from meta_dim_data
-    <where>
-      <if test="conditions != null and conditions.size() > 0">
-        <foreach collection="conditions" item="v" index="k">
-         and ${k} = #{v}
-        </foreach>
-      </if>
-    </where>
-    limit #{offset},#{limit}
-  </select>
-
   <select id="queryChangedMeta" resultType="io.holoinsight.server.meta.dal.service.model.MetaData">
     SELECT
       table_name AS tableName,
