@@ -215,11 +215,11 @@ public class CeresdbxMetricStorage implements MetricStorage {
           StatUtils.STORAGE_WRITE.add(StringsKey.of("CeresDBx", tenant, "N"),
               new long[] {1, oneBatch.size(), System.currentTimeMillis() - start});
           if (result != null && null != result.getErr()) {
-            LOGGER.error("save metrics:{} to CeresDBx result:{}, error msg:{}", metrics, result,
+            LOGGER.error("save metrics:{} to CeresDBx error msg:{}", metrics,
                 result.getErr().getError());
           } else if (null != throwable) {
-            LOGGER.error("save metrics:{} to CeresDBx result:{}, error msg:{}", metrics, result,
-                throwable);
+            LOGGER.error("save metrics:{} to CeresDBx error msg:{}", metrics,
+                throwable.getMessage(), throwable);
           } else {
             LOGGER.error("save metrics:{} to CeresDBx error", metrics);
           }

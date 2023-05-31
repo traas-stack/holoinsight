@@ -18,9 +18,6 @@ public interface DBCoreService {
 
   Pair<Integer, Integer> insertOrUpdate(String tableName, List<Map<String, Object>> rows);
 
-  List<Map<String, Object>> updateByExample(String tableName, QueryExample queryExample,
-      Map<String, Object> row);
-
   List<Map<String, Object>> queryByTable(String tableName);
 
   List<Map<String, Object>> queryByTable(String tableName, List<String> rowKeys);

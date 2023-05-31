@@ -3,6 +3,12 @@
  */
 package io.holoinsight.server.meta.core.service;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.regex.Pattern;
+
+import com.google.gson.reflect.TypeToken;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Filters;
@@ -10,36 +16,37 @@ import com.mongodb.client.model.Sorts;
 import com.mongodb.client.model.UpdateOptions;
 import com.mongodb.client.result.DeleteResult;
 import com.mongodb.client.result.UpdateResult;
+import io.holoinsight.server.common.J;
 import io.holoinsight.server.common.Pair;
 import io.holoinsight.server.meta.common.model.QueryExample;
 import io.holoinsight.server.meta.core.common.DocumentUtil;
-import io.holoinsight.server.common.J;
-import com.google.gson.reflect.TypeToken;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.StopWatch;
 import org.bson.Document;
 import org.bson.conversions.Bson;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.util.CollectionUtils;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.regex.Pattern;
-
-import static io.holoinsight.server.meta.common.util.ConstModel.*;
+import static io.holoinsight.server.meta.common.util.ConstModel.default_hostname;
+import static io.holoinsight.server.meta.common.util.ConstModel.default_ip;
+import static io.holoinsight.server.meta.common.util.ConstModel.default_modified;
+import static io.holoinsight.server.meta.common.util.ConstModel.default_pk;
 
 /**
  *
  * @author jsy1001de
  * @version 1.0: MongoDataService.java, v 0.1 2022年03月07日 9:13 下午 jinsong.yjs Exp $
  */
-@Service
 public class MongoDataCoreService extends AbstractDataCoreService {
 
-  @Autowired
+  public static final Logger logger = LoggerFactory.getLogger(MongoDataCoreService.class);
+
   private MongoDatabase mongoDatabase;
+
+  public MongoDataCoreService(MongoDatabase mongoDatabase) {
+    this.mongoDatabase = mongoDatabase;
+  }
 
   @Override
   public Pair<Integer, Integer> insertOrUpdate(String tableName, List<Map<String, Object>> rows) {
@@ -75,31 +82,6 @@ public class MongoDataCoreService extends AbstractDataCoreService {
         "[insertOrUpdate] finish, table={}, upsertSize={}, matchedCount={}, modifiedCount={}, cost={}.",
         tableName, upsertSize, matchedCount, modifiedCount, stopWatch.getTime());
     return new io.holoinsight.server.common.Pair<>(upsertSize, modifiedCount);
-  }
-
-  @Override
-  public List<Map<String, Object>> updateByExample(String tableName, QueryExample queryExample,
-      Map<String, Object> row) {
-    logger.info("[updateByExample] finish, table={}, queryExample={}, row={}.", tableName,
-        J.toJson(queryExample), J.toJson(row));
-    StopWatch stopWatch = StopWatch.createStarted();
-    List<Map<String, Object>> list = queryByExample(tableName, queryExample);
-
-    if (CollectionUtils.isEmpty(list)) {
-      return new ArrayList<>();
-    }
-    List<Document> documents = new ArrayList<>();
-    list.forEach(l -> {
-      l.putAll(row);
-      Bson filter = Filters.eq(default_pk, l.get(default_pk).toString());
-      Document update = Document.parse(J.toJson(row));
-      UpdateResult updateResult = mongoDatabase.getCollection(tableName).updateOne(filter, update);
-      documents.add(update);
-      logger.info("[update] finish, table={}, record={}, cost={}.", tableName,
-          updateResult.getMatchedCount(), stopWatch.getTime());
-    });
-    logger.info("[updateByExample] finish, table={}, cost={}.", tableName, stopWatch.getTime());
-    return DocumentUtil.toMapList(new ArrayList<>(documents));
   }
 
   @Override

@@ -4,9 +4,11 @@
 package io.holoinsight.server.meta.core.web.controller;
 
 import io.holoinsight.server.meta.common.model.QueryExample;
-import io.holoinsight.server.meta.core.service.MongoDataCoreService;
+import io.holoinsight.server.meta.core.service.DBCoreService;
 import io.holoinsight.server.common.JsonResult;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -25,8 +27,15 @@ import java.util.Map;
 public class AdminController {
 
   @Autowired
-  private MongoDataCoreService mongoDataCoreService;
+  @Qualifier("mongoDataCoreService")
+  private DBCoreService mongoDataCoreService;
 
+  @Autowired
+  @Qualifier("sqlDataCoreService")
+  private DBCoreService sqlDataCoreService;
+
+  @Value("${holoinsight.meta.readMysql.enabled:false}")
+  private boolean readMysqlEnable;
 
   @PostMapping("/mongodb/query/{collection}")
   public JsonResult<Object> query(@PathVariable("collection") String collection,
@@ -34,7 +43,17 @@ public class AdminController {
     QueryExample queryExample = new QueryExample();
     queryExample.getParams().putAll(condition);
     return JsonResult
-        .createSuccessResult(mongoDataCoreService.queryByExample(collection, queryExample));
+        .createSuccessResult(getDbCoreService().queryByExample(collection, queryExample));
+  }
+
+  private DBCoreService getDbCoreService() {
+    DBCoreService coreService;
+    if (readMysqlEnable) {
+      coreService = sqlDataCoreService;
+    } else {
+      coreService = mongoDataCoreService;
+    }
+    return coreService;
   }
 
 }

@@ -4,30 +4,24 @@
 package io.holoinsight.server.meta.core.service.grpc;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
-import javax.annotation.PostConstruct;
-
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
+import com.google.gson.reflect.TypeToken;
 import io.grpc.stub.StreamObserver;
+import io.holoinsight.server.common.J;
+import io.holoinsight.server.common.Pair;
 import io.holoinsight.server.meta.common.model.QueryExample;
 import io.holoinsight.server.meta.common.util.ConstPool;
 import io.holoinsight.server.meta.common.util.RetryPolicy;
 import io.holoinsight.server.meta.core.service.DBCoreService;
-import io.holoinsight.server.meta.core.service.MongoDataCoreService;
-
-import io.holoinsight.server.meta.proto.data.QueryDataByTableRowsRequest;
-import org.apache.commons.lang3.time.StopWatch;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
-
 import io.holoinsight.server.meta.proto.data.BatchDeleteByPkRequest;
 import io.holoinsight.server.meta.proto.data.DataBaseResponse;
 import io.holoinsight.server.meta.proto.data.DataHello;
@@ -37,11 +31,15 @@ import io.holoinsight.server.meta.proto.data.InsertOrUpdateRequest;
 import io.holoinsight.server.meta.proto.data.QueryDataByExampleRequest;
 import io.holoinsight.server.meta.proto.data.QueryDataByPksRequest;
 import io.holoinsight.server.meta.proto.data.QueryDataByTableRequest;
+import io.holoinsight.server.meta.proto.data.QueryDataByTableRowsRequest;
 import io.holoinsight.server.meta.proto.data.QueryDataResponse;
-import io.holoinsight.server.meta.proto.data.UpdateDataByExampleRequest;
-import io.holoinsight.server.common.J;
-import io.holoinsight.server.common.Pair;
-import com.google.gson.reflect.TypeToken;
+import org.apache.commons.lang3.time.StopWatch;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
 
 /**
  * @author jsy1001de
@@ -51,15 +49,23 @@ import com.google.gson.reflect.TypeToken;
 public class DataServiceGrpcImpl extends DataServiceGrpc.DataServiceImplBase {
   private static final Logger logger = LoggerFactory.getLogger(DataServiceGrpcImpl.class);
   @Autowired
-  private MongoDataCoreService mongoDataCoreService;
-  @Value("${holoinsight.meta.db_data_mode}")
-  private String db_data_mode;
-  private Map<String, DBCoreService> instanceMap = new HashMap<>();
+  @Qualifier("mongoDataCoreService")
+  private DBCoreService mongoDataCoreService;
 
-  @PostConstruct
-  public void init() {
-    instanceMap.put("mongodb", mongoDataCoreService);
-  }
+  @Autowired
+  @Qualifier("sqlDataCoreService")
+  private DBCoreService sqlDataCoreService;
+
+  @Value("${holoinsight.meta.writeMysql.enabled:true}")
+  private boolean writeMysqlEnable;
+
+  @Value("${holoinsight.meta.readMysql.enabled:false}")
+  private boolean readMysqlEnable;
+
+  private ThreadPoolExecutor writeMysqlExecutor = new ThreadPoolExecutor(3, 3, 0, TimeUnit.MINUTES, //
+      new ArrayBlockingQueue<>(65536), //
+      new ThreadFactoryBuilder().setNameFormat("meta-mysql-%d").build(), //
+      new ThreadPoolExecutor.AbortPolicy());
 
   @Override
   public void insertOrUpdate(InsertOrUpdateRequest request,
@@ -73,7 +79,10 @@ public class DataServiceGrpcImpl extends DataServiceGrpc.DataServiceImplBase {
     DataBaseResponse.Builder builder = DataBaseResponse.newBuilder();
     try {
       Pair<Integer, Integer> insertOrUpdate = tryUntilSuccess(
-          () -> getCurrentService().insertOrUpdate(tableName, rows), "insertOrUpdate", 0);
+          () -> mongoDataCoreService.insertOrUpdate(tableName, rows), "insertOrUpdate", 0);
+      if (writeMysqlEnable) {
+        writeMysqlExecutor.execute(() -> sqlDataCoreService.insertOrUpdate(tableName, rows));
+      }
       builder.setSuccess(true).setRowsJson(String.format("insertCount: %s, updateCount: %s",
           insertOrUpdate.left(), insertOrUpdate.right()));
       logger.info("DimWriterGrpcBackend,insert,Y,{},{},{},{},{},{},", stopWatch.getTime(),
@@ -96,9 +105,10 @@ public class DataServiceGrpcImpl extends DataServiceGrpc.DataServiceImplBase {
     String tableName = request.getTableName();
     List<String> pkVals =
         J.fromJson(request.getPkValsJson(), new TypeToken<List<String>>() {}.getType());
+    DBCoreService coreService = getDbCoreService();
     stopWatch.start();
-    List<Map<String, Object>> rows = tryUntilSuccess(
-        () -> getCurrentService().queryByPks(tableName, pkVals), "queryDataByPks", 0);
+    List<Map<String, Object>> rows =
+        tryUntilSuccess(() -> coreService.queryByPks(tableName, pkVals), "queryDataByPks", 0);
     stopWatch.stop();
     try {
       logger.info("DimWriterGrpcBackend,queryDataByPks,Y,{},{},{},{},{},{},", stopWatch.getTime(),
@@ -116,14 +126,25 @@ public class DataServiceGrpcImpl extends DataServiceGrpc.DataServiceImplBase {
     o.onCompleted();
   }
 
+  private DBCoreService getDbCoreService() {
+    DBCoreService coreService;
+    if (readMysqlEnable) {
+      coreService = sqlDataCoreService;
+    } else {
+      coreService = mongoDataCoreService;
+    }
+    return coreService;
+  }
+
   @Override
   public void queryDataByTableStream(QueryDataByTableRequest request,
       io.grpc.stub.StreamObserver<QueryDataResponse> o) {
     StopWatch stopWatch = StopWatch.createStarted();
     String tableName = request.getTableName();
     List<Map<String, Object>> rows;
+    DBCoreService coreService = getDbCoreService();
     try {
-      rows = tryUntilSuccess(() -> getCurrentService().queryByTable(tableName), "queryByTable", 0);
+      rows = tryUntilSuccess(() -> coreService.queryByTable(tableName), "queryByTable", 0);
       Iterator<Map<String, Object>> it = rows.iterator();
       int total = 0;
       int count = 0;
@@ -164,8 +185,8 @@ public class DataServiceGrpcImpl extends DataServiceGrpc.DataServiceImplBase {
     String pkRows = request.getPkRows();
     List<String> rowVals = J.toList(pkRows);
     try {
-      rows = tryUntilSuccess(() -> getCurrentService().queryByTable(tableName, rowVals),
-          "queryByTable", 0);
+      DBCoreService coreService = getDbCoreService();
+      rows = tryUntilSuccess(() -> coreService.queryByTable(tableName, rowVals), "queryByTable", 0);
       Iterator<Map<String, Object>> it = rows.iterator();
       int total = 0;
       int count = 0;
@@ -205,9 +226,9 @@ public class DataServiceGrpcImpl extends DataServiceGrpc.DataServiceImplBase {
     List<String> pkVals = J.toList(pkValsJson);
     DataBaseResponse.Builder builder = DataBaseResponse.newBuilder();
     try {
-      Long deleteCount =
-          tryUntilSuccess(() -> getCurrentService().batchDeleteByPk(request.getTableName(), pkVals),
-              "batchDeleteByPk", 0);
+      DBCoreService coreService = getDbCoreService();
+      Long deleteCount = tryUntilSuccess(
+          () -> coreService.batchDeleteByPk(request.getTableName(), pkVals), "batchDeleteByPk", 0);
       logger.info("DimWriterGrpcBackend,batchDeleteByPk,Y,{},{},{},{},{},{},{},",
           stopWatch.getTime(), request.getTableName(), pkVals.size(), 0, request.getFromApp(),
           request.getFromIp(), deleteCount);
@@ -232,8 +253,9 @@ public class DataServiceGrpcImpl extends DataServiceGrpc.DataServiceImplBase {
     QueryExample example = J.json2Bean(request.getExampleJson(), QueryExample.class);
     DataBaseResponse.Builder builder = DataBaseResponse.newBuilder();
     try {
-      Long deleteCount = tryUntilSuccess(
-          () -> getCurrentService().deleteByExample(tableName, example), "deleteByExample", 0);
+      DBCoreService coreService = getDbCoreService();
+      Long deleteCount = tryUntilSuccess(() -> coreService.deleteByExample(tableName, example),
+          "deleteByExample", 0);
       logger.info("DimWriterGrpcBackend,deleteByExample,Y,{},{},{},{},{},{},{},",
           stopWatch.getTime(), tableName, 0, 0, request.getFromApp(), request.getFromIp(),
           deleteCount);
@@ -259,8 +281,9 @@ public class DataServiceGrpcImpl extends DataServiceGrpc.DataServiceImplBase {
         (new TypeToken<List<Map<String, Object>>>() {}).getType());
     DataBaseResponse.Builder builder = DataBaseResponse.newBuilder();
     try {
-      Long deleteCount = tryUntilSuccess(
-          () -> getCurrentService().deleteByRowMap(tableName, example), "deleteByRowMap", 0);
+      DBCoreService coreService = getDbCoreService();
+      Long deleteCount = tryUntilSuccess(() -> coreService.deleteByRowMap(tableName, example),
+          "deleteByRowMap", 0);
       logger.info("DimWriterGrpcBackend,deleteByRowMap,Y,{},{},{},{},{},{},{},",
           stopWatch.getTime(), tableName, 0, 0, request.getFromApp(), request.getFromIp(),
           deleteCount);
@@ -268,31 +291,6 @@ public class DataServiceGrpcImpl extends DataServiceGrpc.DataServiceImplBase {
     } catch (Exception e) {
       logger.error("DimWriterGrpcBackend,deleteByRowMap,N,{},{},{},{},{},{},{},",
           stopWatch.getTime(), tableName, exampleJson, 0, request.getFromApp(), request.getFromIp(),
-          e.getMessage(), e);
-      builder.setSuccess(false);
-      builder.setErrMsg(e.getMessage());
-    }
-    o.onNext(builder.build());
-    o.onCompleted();
-  }
-
-  @Override
-  public void updateByExample(UpdateDataByExampleRequest request,
-      io.grpc.stub.StreamObserver<DataBaseResponse> o) {
-    StopWatch stopWatch = StopWatch.createStarted();
-    String tableName = request.getTableName();
-    QueryExample example = J.json2Bean(request.getExampleJson(), QueryExample.class);
-    Map<String, Object> row = J.toMap(request.getRowJson());
-    DataBaseResponse.Builder builder = DataBaseResponse.newBuilder();
-    try {
-      tryUntilSuccess(() -> getCurrentService().updateByExample(tableName, example, row),
-          "updateByExample", 0);
-      logger.info("DimWriterGrpcBackend,updateByExample,Y,{},{},{},{},{},{},", stopWatch.getTime(),
-          tableName, 0, 0, request.getFromApp(), request.getFromIp());
-      builder.setSuccess(true);
-    } catch (Exception e) {
-      logger.error("DimWriterGrpcBackend,updateByExample,N,{},{},{},{},{},{},{},",
-          stopWatch.getTime(), tableName, 0, 0, request.getFromApp(), request.getFromIp(),
           e.getMessage(), e);
       builder.setSuccess(false);
       builder.setErrMsg(e.getMessage());
@@ -311,8 +309,9 @@ public class DataServiceGrpcImpl extends DataServiceGrpc.DataServiceImplBase {
     List<Map<String, Object>> rows;
     QueryDataResponse.Builder builder = QueryDataResponse.newBuilder();
     try {
-      rows = tryUntilSuccess(() -> getCurrentService().queryByExample(tableName, example),
-          "queryByExample", 0);
+      DBCoreService coreService = getDbCoreService();
+      rows = tryUntilSuccess(() -> coreService.queryByExample(tableName, example), "queryByExample",
+          0);
       logger.info("DimWriterGrpcBackend,queryByExample,Y,{},{},{},{},{},{},", stopWatch.getTime(),
           tableName, 0, rows.size(), request.getFromApp(), request.getFromIp());
       builder.setSuccess(true);
@@ -338,8 +337,9 @@ public class DataServiceGrpcImpl extends DataServiceGrpc.DataServiceImplBase {
     List<Map<String, Object>> rows;
     QueryDataResponse.Builder builder = QueryDataResponse.newBuilder();
     try {
-      rows = tryUntilSuccess(() -> getCurrentService().fuzzyByExample(tableName, example),
-          "fuzzyByExample", 0);
+      DBCoreService coreService = getDbCoreService();
+      rows = tryUntilSuccess(() -> coreService.fuzzyByExample(tableName, example), "fuzzyByExample",
+          0);
       logger.info("DimWriterGrpcBackend,fuzzyByExample,Y,{},{},{},{},{},{},", stopWatch.getTime(),
           tableName, 0, rows.size(), request.getFromApp(), request.getFromIp());
       builder.setSuccess(true);
@@ -364,7 +364,8 @@ public class DataServiceGrpcImpl extends DataServiceGrpc.DataServiceImplBase {
     QueryExample example = J.json2Bean(exampleJson, QueryExample.class);
     List<Map<String, Object>> rows;
     try {
-      rows = tryUntilSuccess(() -> getCurrentService().queryByExample(tableName, example),
+      DBCoreService coreService = getDbCoreService();
+      rows = tryUntilSuccess(() -> coreService.queryByExample(tableName, example),
           "queryByExampleStream", 0);
       Iterator<Map<String, Object>> it = rows.iterator();
       int count = 0;
@@ -441,7 +442,4 @@ public class DataServiceGrpcImpl extends DataServiceGrpc.DataServiceImplBase {
     }
   }
 
-  public DBCoreService getCurrentService() {
-    return instanceMap.getOrDefault(db_data_mode, mongoDataCoreService);
-  }
 }

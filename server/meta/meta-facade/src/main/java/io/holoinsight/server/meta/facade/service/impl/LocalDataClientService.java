@@ -42,11 +42,6 @@ public class LocalDataClientService implements DataClientService {
   }
 
   @Override
-  public void updateByExample(String tableName, QueryExample example, Map<String, Object> row) {
-
-  }
-
-  @Override
   public List<Map<String, Object>> queryByExample(String tableName, QueryExample example) {
     return null;
   }
