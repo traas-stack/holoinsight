@@ -27,9 +27,6 @@ public interface MetaDataMapper {
   List<MetaData> selectByUks(@Param("tableName") String tableName,
       @Param("pkList") Collection<String> pkList);
 
-  List<MetaData> selectByExample(@Param("conditions") Map<String, Object> conditions,
-      @Param("offset") int offset, @Param("limit") int limit);
-
   Integer softDeleteByUks(@Param("tableName") String tableName,
       @Param("pkList") Collection<String> pkList, @Param("gmtModified") Date gmtModified);
 
