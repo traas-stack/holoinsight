@@ -64,7 +64,7 @@ public class AlertNotify {
 
   private List<WebhookInfo> dingdingUrl;
 
-  private List<WebhookInfo> webhookInfos;
+  private List<WebhookInfo> webhookInfos = new ArrayList<>();
 
   private NotifyConfig notifyConfig;
 

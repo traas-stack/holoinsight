@@ -22,6 +22,7 @@ import io.holoinsight.server.query.common.convertor.ApmConvertor;
 import io.holoinsight.server.query.grpc.QueryProto;
 import io.holoinsight.server.query.grpc.QueryProto.Datasource;
 import io.holoinsight.server.query.grpc.QueryServiceGrpc;
+import lombok.extern.slf4j.Slf4j;
 import net.devh.boot.grpc.client.inject.GrpcClient;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -35,6 +36,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 public class QueryClientService {
 
@@ -43,8 +45,13 @@ public class QueryClientService {
 
   public QueryResponse query(QueryProto.QueryRequest request) {
     Debugger.print("QueryService", "query, request: " + J.toJson(request));
+    long start = System.currentTimeMillis();
 
     QueryProto.QueryResponse res = queryServiceBlockingStub.queryData(request);
+
+    int pointSize = getPointSizeFromResp(res);
+    log.info("HOME_QUERY_STAT from[API] invoke[1], cost[{}], pointSize[{}]",
+        System.currentTimeMillis() - start, pointSize);
 
     Debugger.print("QueryService", "query, response: " + J.toJson(res));
 
@@ -317,7 +324,11 @@ public class QueryClientService {
 
   public QueryProto.QueryResponse queryData(QueryProto.QueryRequest request) {
 
+    long start = System.currentTimeMillis();
     QueryProto.QueryResponse response = queryServiceBlockingStub.queryData(request);
+    int pointSize = getPointSizeFromResp(response);
+    log.info("HOME_QUERY_STAT from[ALERT] invoke[1], cost[{}], pointSize[{}]",
+        System.currentTimeMillis() - start, pointSize);
     return response;
   }
 
@@ -328,7 +339,24 @@ public class QueryClientService {
   }
 
   public QueryProto.QueryResponse queryPqlRange(QueryProto.PqlRangeRequest request) {
+    long start = System.currentTimeMillis();
     QueryProto.QueryResponse response = queryServiceBlockingStub.pqlRangeQuery(request);
+    int pointSize = getPointSizeFromResp(response);
+    log.info("HOME_QUERY_STAT from[PQL] invoke[1], cost[{}], pointSize[{}]",
+        System.currentTimeMillis() - start, pointSize);
     return response;
+  }
+
+  private int getPointSizeFromResp(QueryProto.QueryResponse response) {
+    int size = 0;
+    if (response == null || response.getResultsCount() == 0) {
+      return size;
+    }
+
+    List<QueryProto.Result> results = response.getResultsList();
+    for (QueryProto.Result result : results) {
+      size += result.getPointsCount();
+    }
+    return size;
   }
 }
