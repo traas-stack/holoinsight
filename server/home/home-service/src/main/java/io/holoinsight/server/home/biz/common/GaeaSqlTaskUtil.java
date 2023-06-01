@@ -206,6 +206,8 @@ public class GaeaSqlTaskUtil {
 
       TimeParse timeParse = new TimeParse();
       timeParse.setType("auto");
+      fromLog.setTime(timeParse);
+
       if (!CollectionUtils.isEmpty(splitCols)) {
         for (CustomPluginConf.SplitCol splitCol : splitCols) {
           if ("TIME".equals(splitCol.colType)) {
@@ -229,7 +231,6 @@ public class GaeaSqlTaskUtil {
             timeParse.setElect(buildElect(splitCol.rule, logParse.splitType));
             timeParse.setType("elect");
             timeParse.setFormat("golangLayout");
-            fromLog.setTime(timeParse);
           }
         }
         fromLog.setTime(timeParse);
