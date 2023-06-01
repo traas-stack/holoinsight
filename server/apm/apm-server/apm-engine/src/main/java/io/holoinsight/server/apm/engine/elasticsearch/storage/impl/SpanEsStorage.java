@@ -41,13 +41,7 @@ import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.elasticsearch.search.sort.SortOrder;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static java.util.Objects.nonNull;
 
@@ -108,11 +102,14 @@ public class SpanEsStorage extends RecordEsStorage<SpanDO> implements SpanStorag
   }
 
   @Override
-  public Trace queryTrace(String traceId) throws IOException {
+  public Trace queryTrace(String tenant, long start, long end, String traceId) throws IOException {
     Trace trace = new Trace();
-    QueryBuilder queryBuilder = new TermQueryBuilder(SpanDO.TRACE_ID, traceId);
+
     SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
-    searchSourceBuilder.query(queryBuilder);
+
+    searchSourceBuilder.query(buildQuery(tenant, null, null, null,
+        Collections.singletonList(traceId), 0, 0, null, start, end, null, this.timeSeriesField()));
+
     searchSourceBuilder.size(SPAN_QUERY_MAX_SIZE);
     SearchRequest searchRequest =
         new SearchRequest(new String[] {SpanDO.INDEX_NAME}, searchSourceBuilder);

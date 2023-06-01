@@ -37,8 +37,8 @@ public class TraceServiceImpl implements TraceService {
   }
 
   @Override
-  public Trace queryTrace(String traceId) throws Exception {
-    return spanStorage.queryTrace(traceId);
+  public Trace queryTrace(String tenant, long start, long end, String traceId) throws Exception {
+    return spanStorage.queryTrace(tenant, start, end, traceId);
   }
 
   @Override
