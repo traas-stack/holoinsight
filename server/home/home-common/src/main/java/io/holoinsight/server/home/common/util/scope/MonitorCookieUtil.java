@@ -95,15 +95,11 @@ public class MonitorCookieUtil {
   public static MonitorScope getScope(HttpServletRequest req, MonitorUser mu) {
     MonitorScope ms = new MonitorScope();
 
-    String loginTenant = CookieUtils.getCookie(req, TENANT);
-    String loginWorkspace = CookieUtils.getCookie(req, WORKSPACE);
-    if (StringUtil.isNotBlank(loginTenant)) {
-      ms.tenant = loginTenant;
-      mu.setLoginTenant(loginTenant);
-    } else if (StringUtil.isNotBlank(mu.getLoginTenant())) {
+    // String loginTenant = CookieUtils.getCookie(req, TENANT);
+    if (StringUtil.isNotBlank(mu.getLoginTenant())) {
       ms.tenant = mu.getLoginTenant();
     }
-
+    String loginWorkspace = CookieUtils.getCookie(req, WORKSPACE);
     if (StringUtil.isNotBlank(loginWorkspace)) {
       ms.workspace = loginWorkspace;
     }
