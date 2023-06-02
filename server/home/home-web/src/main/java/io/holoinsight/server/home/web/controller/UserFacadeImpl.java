@@ -53,7 +53,6 @@ public class UserFacadeImpl extends BaseFacade {
   private ULAFacade ulaFacade;
 
   @ResponseBody
-  // @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.VIEW)
   @GetMapping(value = "/getCurrentUser")
   public JsonResult<Object> getCurrentUser() {
     final JsonResult<Object> result = new JsonResult<>();
@@ -68,12 +67,10 @@ public class UserFacadeImpl extends BaseFacade {
 
         MonitorUser mu = RequestContext.getContext().mu;
         MonitorAuth ma = RequestContext.getContext().ma;
-        MonitorScope ms = RequestContext.getContext().ms;
         Map<String, Object> resultObj = new HashMap<>();
         resultObj.put("user", mu);
         resultObj.put("tPowers", ma.getTenantViewPowerList());
         resultObj.put("tenants", ulaFacade.getCurrentULA().getUserTenants(mu));
-        resultObj.put("loginUrl", ulaFacade.getCurrentULA().getLoginUrl());
         Debugger.print("UserFacadeImpl", "getCurrentUser: " + J.toJson(resultObj));
         JsonResult.createSuccessResult(result, resultObj);
       }

@@ -129,7 +129,7 @@ public class Step3AuthFilter implements Filter {
     } catch (Throwable e) {
       log.error("auth failed by cookie", e);
       authFailedResponse(resp, HttpServletResponse.SC_FORBIDDEN,
-          "auth failed by cookie" + e.getMessage());
+          "auth failed by cookie, " + e.getMessage());
       return false;
     } finally {
       Context c = new Context(ms, mu, ma);
