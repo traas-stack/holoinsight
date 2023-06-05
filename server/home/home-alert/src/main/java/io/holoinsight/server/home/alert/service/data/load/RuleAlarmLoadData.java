@@ -102,7 +102,7 @@ public class RuleAlarmLoadData implements AlarmLoadData {
     return new ArrayList<>(map.values());
   }
 
-  protected QueryProto.QueryRequest buildRequest(long timestamp, String tenant, Trigger trigger) {
+  public QueryProto.QueryRequest buildRequest(long timestamp, String tenant, Trigger trigger) {
     QueryProto.QueryRequest request = null;
     List<QueryProto.Datasource> datasources = new ArrayList<>();
     for (DataSource dataSource : trigger.getDatasources()) {
