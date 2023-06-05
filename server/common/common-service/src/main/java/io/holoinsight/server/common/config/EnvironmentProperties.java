@@ -15,4 +15,5 @@ import lombok.Data;
 @Data
 public class EnvironmentProperties {
   private String deploymentSite;
+  private String userCenter;
 }

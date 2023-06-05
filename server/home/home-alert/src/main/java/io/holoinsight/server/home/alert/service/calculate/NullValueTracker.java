@@ -7,6 +7,7 @@ import io.holoinsight.server.common.J;
 import io.holoinsight.server.home.alert.model.compute.ComputeInfo;
 import io.holoinsight.server.home.alert.model.function.FunctionConfigParam;
 import io.holoinsight.server.home.alert.service.data.load.RuleAlarmLoadData;
+import io.holoinsight.server.home.biz.common.MetaDictUtil;
 import io.holoinsight.server.home.common.service.QueryClientService;
 import io.holoinsight.server.home.facade.DataResult;
 import io.holoinsight.server.home.facade.trigger.Trigger;
@@ -72,6 +73,9 @@ public class NullValueTracker {
 
   @Scheduled(cron = "0 0/1 * * * ?")
   public void review() {
+    if (!enable()) {
+      return;
+    }
     List<Record> allRecords = new ArrayList<>();
     long cur = System.currentTimeMillis() - 1800_000;
     for (Long k : map.keySet()) {
@@ -89,6 +93,11 @@ public class NullValueTracker {
         log.info("FIND_CONFLICT_RESULT {}", J.toJson(checkResult));
       }
     }
+  }
+
+  private boolean enable() {
+    String value = MetaDictUtil.getStringValue("task_enable", "NullValueTracker");
+    return StringUtils.isNotEmpty(value) && "true".equals(value);
   }
 
   private CheckResult doCheck(Record record) {
