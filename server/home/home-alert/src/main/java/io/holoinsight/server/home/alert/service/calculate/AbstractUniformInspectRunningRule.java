@@ -22,6 +22,7 @@ import io.holoinsight.server.home.facade.trigger.TriggerResult;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
@@ -49,6 +50,9 @@ public class AbstractUniformInspectRunningRule {
 
   ThreadPoolExecutor ruleRunner = new ThreadPoolExecutor(20, 100, 10, TimeUnit.SECONDS,
       new ArrayBlockingQueue<>(1000), r -> new Thread(r, "RuleRunner"));
+
+  @Autowired
+  private NullValueTracker nullValueTracker;
 
   public EventInfo eval(ComputeContext context) {
     long period = context.getTimestamp();
@@ -177,7 +181,7 @@ public class AbstractUniformInspectRunningRule {
    * @param trigger 触发
    * @return {@link TriggerResult}
    */
-  public static List<TriggerResult> apply(DataResult dataResult, ComputeInfo computeInfo,
+  public List<TriggerResult> apply(DataResult dataResult, ComputeInfo computeInfo,
       Trigger trigger) {
     FunctionLogic inspectFunction = FunctionManager.functionMap.get(trigger.getType());
     // 增加智能告警算法执行
@@ -197,6 +201,10 @@ public class AbstractUniformInspectRunningRule {
       if (ruleResult.isHit()) {
         break;
       }
+    }
+    List<Long> nullValTimes = this.nullValueTracker.hasNullValue(dataResult, functionConfigParams);
+    if (!CollectionUtils.isEmpty(nullValTimes)) {
+      this.nullValueTracker.record(dataResult, trigger, nullValTimes, computeInfo);
     }
 
     return triggerResults;
