@@ -51,8 +51,8 @@ public class AgentLogTailService {
 
     FileTailResponse response = new FileTailResponse();
 
-    List<FileNode> fileNodes =
-        registryService.listFiles(tenant, dim, agentParamRequest.getLogpath());
+    List<FileNode> fileNodes = registryService.listFiles(tenantInitService.getTsdbTenant(tenant),
+        dim, agentParamRequest.getLogpath());
 
     response.addToDatas("dirTrees", convertFiledNodes(fileNodes));
     response.addToDatas("agentId", dim.get("agentId"));
@@ -69,8 +69,8 @@ public class AgentLogTailService {
     Map<String, Object> dim = getDimByRequest(agentParamRequest, tenant, workspace);
     FileTailResponse response = new FileTailResponse();
 
-    PreviewFileResponse grpcResp =
-        registryService.previewFile(tenant, dim, agentParamRequest.getLogpath());
+    PreviewFileResponse grpcResp = registryService
+        .previewFile(tenantInitService.getTsdbTenant(tenant), dim, agentParamRequest.getLogpath());
 
     response.addToDatas("lines", convertContentLines(grpcResp.getContentList()));
     response.addToDatas("charset", grpcResp.getCharset());
@@ -87,7 +87,8 @@ public class AgentLogTailService {
 
     Map<String, Object> dim = getDimByRequest(agentParamRequest, tenant, workspace);
     FileTailResponse response = new FileTailResponse();
-    String result = RetryUtils.invoke(() -> registryService.inspect(tenant, dim), null, 3, 1000,
+    String result = RetryUtils.invoke(
+        () -> registryService.inspect(tenantInitService.getTsdbTenant(tenant), dim), null, 3, 1000,
         new ArrayList<>());
 
     Map<String, Object> map = J.toMap(result);
