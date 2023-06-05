@@ -61,7 +61,7 @@ public class ApmMetricMaterializer {
       new BasicThreadFactory.Builder().namingPattern("apm-materialize-scheduler-%d").build());
 
   private static final ThreadPoolExecutor EXECUTOR =
-      new ThreadPoolExecutor(4, 4, 60, TimeUnit.SECONDS, new LinkedBlockingQueue<>(),
+      new ThreadPoolExecutor(4, 4, 60, TimeUnit.SECONDS, new LinkedBlockingQueue<>(4096),
           new BasicThreadFactory.Builder().namingPattern("apm-materialize-executor-%d").build());
 
   @PostConstruct
