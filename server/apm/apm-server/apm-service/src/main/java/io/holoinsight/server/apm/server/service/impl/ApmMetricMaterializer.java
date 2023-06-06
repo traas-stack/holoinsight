@@ -8,6 +8,7 @@ import io.holoinsight.server.apm.common.model.query.Duration;
 import io.holoinsight.server.apm.common.model.query.MetricValues;
 import io.holoinsight.server.apm.engine.postcal.MetricsManager;
 import io.holoinsight.server.apm.engine.storage.MetricStorage;
+import io.holoinsight.server.apm.server.service.MetricService;
 import io.holoinsight.server.common.dao.entity.TenantOps;
 import io.holoinsight.server.common.dao.mapper.TenantOpsMapper;
 import io.holoinsight.server.extension.model.WriteMetricsParam;
@@ -36,8 +37,9 @@ public class ApmMetricMaterializer {
   @Autowired
   protected io.holoinsight.server.extension.MetricStorage metricStorage;
 
+
   @Autowired
-  private MetricStorage apmMetricStorage;
+  private MetricService apmMetricService;
 
   @Autowired
   private MetricsManager metricsManager;
@@ -88,7 +90,7 @@ public class ApmMetricMaterializer {
               log.info(
                   "[apm] ready to materialize metric, tenant={}, metric={}, start={}, end={}, step={}",
                   tenant, metric, start, end, STEP);
-              MetricValues metricValues = apmMetricStorage.queryMetric(tenant, metric,
+              MetricValues metricValues = apmMetricService.queryMetric(tenant, metric,
                   new Duration(start, end, STEP), null);
               log.info(
                   "[apm] query metric success, tenant={}, metric={}, start={}, end={}, step={}, series={}",
