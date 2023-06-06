@@ -69,4 +69,6 @@ public interface ULA {
   // 权限申请跳转链接
   String authApplyUrl();
 
+  MonitorScope getMonitorScope(HttpServletRequest req, MonitorUser mu);
+
 }

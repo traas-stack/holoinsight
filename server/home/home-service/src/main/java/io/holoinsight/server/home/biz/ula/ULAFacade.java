@@ -71,12 +71,12 @@ public class ULAFacade {
     return instanceMap.get(ulaType);
   }
 
-  public String getAuthTokenName() {
-    return getCurrentULA().authTokenName();
-  }
-
   public Boolean authFunc(HttpServletRequest req) {
     return getCurrentULA().authFunc(req);
+  }
+
+  public MonitorScope getMonitorScope(HttpServletRequest req, MonitorUser mu) {
+    return getCurrentULA().getMonitorScope(req, mu);
   }
 
 }
