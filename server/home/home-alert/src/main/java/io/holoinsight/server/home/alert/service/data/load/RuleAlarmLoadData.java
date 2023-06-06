@@ -52,6 +52,7 @@ public class RuleAlarmLoadData implements AlarmLoadData {
     QueryProto.QueryResponse deltaResponse = null;
     try {
       request = buildRequest(computeTask.getTimestamp(), inspectConfig.getTenant(), trigger);
+      LOGGER.debug("{} alert query request {}", inspectConfig.getTraceId(), request.toString());
       response = queryClientService.queryData(request);
       dataResults = merge(dataResults, response);
       long deltaTimestamp = getDeltaTimestamp(trigger.getPeriodType());

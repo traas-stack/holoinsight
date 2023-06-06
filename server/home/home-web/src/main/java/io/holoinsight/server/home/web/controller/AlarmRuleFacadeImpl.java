@@ -114,7 +114,7 @@ public class AlarmRuleFacadeImpl extends BaseFacade {
       public void doManage() {
         MonitorScope ms = RequestContext.getContext().ms;
         MonitorUser mu = RequestContext.getContext().mu;
-        if (null != mu) {
+        if (null != mu && StringUtils.isBlank(alarmRuleDTO.getCreator())) {
           alarmRuleDTO.setCreator(mu.getLoginName());
         }
         if (null != ms && !StringUtils.isEmpty(ms.tenant)) {
@@ -189,7 +189,7 @@ public class AlarmRuleFacadeImpl extends BaseFacade {
         }
 
         MonitorUser mu = RequestContext.getContext().mu;
-        if (null != mu) {
+        if (null != mu && StringUtils.isBlank(alarmRuleDTO.getModifier())) {
           alarmRuleDTO.setModifier(mu.getLoginName());
         }
         alarmRuleDTO.setGmtModified(new Date());
