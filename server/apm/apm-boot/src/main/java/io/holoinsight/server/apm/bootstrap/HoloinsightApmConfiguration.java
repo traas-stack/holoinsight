@@ -116,7 +116,7 @@ public class HoloinsightApmConfiguration {
   @Lazy
   public SpanHandler spanHandler() throws InterruptedException {
     // the startup of the trace data reporting service needs to wait for the necessary initialization conditions, such as the creation of the index template
-    Thread.sleep(30000);
+    Thread.sleep(10000);
     return new SpanHandler();
   }
 
