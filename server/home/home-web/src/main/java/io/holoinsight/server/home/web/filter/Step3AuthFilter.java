@@ -94,7 +94,7 @@ public class Step3AuthFilter implements Filter {
     }
 
     // 获取一个用户的权限包
-    MonitorScope ms = MonitorCookieUtil.getScope(req, mu);
+    MonitorScope ms = ulaFacade.getMonitorScope(req, mu);
     MonitorAuth ma = null;
 
     try {

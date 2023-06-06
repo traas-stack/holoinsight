@@ -145,4 +145,9 @@ public class MonitorULA implements ULA {
   public String authApplyUrl() {
     return "";
   }
+
+  @Override
+  public MonitorScope getMonitorScope(HttpServletRequest req, MonitorUser mu) {
+    return MonitorCookieUtil.getScope(req, mu);
+  }
 }
