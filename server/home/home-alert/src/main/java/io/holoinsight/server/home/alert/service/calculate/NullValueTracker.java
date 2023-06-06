@@ -45,6 +45,9 @@ public class NullValueTracker {
 
   public void record(DataResult dataResult, Trigger trigger, List<Long> nullValTimes,
       ComputeInfo computeInfo) {
+    if (!enable()) {
+      return;
+    }
     long period = computeInfo.getPeriod();
     log.info("record at {} {}", period, dataResult.getKey());
     List<Record> records = map.computeIfAbsent(period, k -> new ArrayList<>());
