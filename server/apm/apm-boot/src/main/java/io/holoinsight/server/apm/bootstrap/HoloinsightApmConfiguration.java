@@ -25,6 +25,7 @@ import io.holoinsight.server.common.springboot.ConditionalOnFeature;
 import io.holoinsight.server.common.springboot.ConditionalOnRole;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
 
 @ConditionalOnRole("apm")
 @ConditionalOnFeature("trace")
@@ -112,7 +113,10 @@ public class HoloinsightApmConfiguration {
   }
 
   @Bean("spanHandler")
-  public SpanHandler spanHandler() {
+  @Lazy
+  public SpanHandler spanHandler() throws InterruptedException {
+    // the startup of the trace data reporting service needs to wait for the necessary initialization conditions, such as the creation of the index template
+    Thread.sleep(30000);
     return new SpanHandler();
   }
 
