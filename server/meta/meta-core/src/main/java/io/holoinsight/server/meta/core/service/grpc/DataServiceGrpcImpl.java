@@ -226,9 +226,11 @@ public class DataServiceGrpcImpl extends DataServiceGrpc.DataServiceImplBase {
     List<String> pkVals = J.toList(pkValsJson);
     DataBaseResponse.Builder builder = DataBaseResponse.newBuilder();
     try {
-      DBCoreService coreService = getDbCoreService();
       Long deleteCount = tryUntilSuccess(
-          () -> coreService.batchDeleteByPk(request.getTableName(), pkVals), "batchDeleteByPk", 0);
+          () -> mongoDataCoreService.batchDeleteByPk(request.getTableName(), pkVals), "batchDeleteByPk", 0);
+      if (writeMysqlEnable) {
+        writeMysqlExecutor.execute(() -> sqlDataCoreService.batchDeleteByPk(request.getTableName(), pkVals));
+      }
       logger.info("DimWriterGrpcBackend,batchDeleteByPk,Y,{},{},{},{},{},{},{},",
           stopWatch.getTime(), request.getTableName(), pkVals.size(), 0, request.getFromApp(),
           request.getFromIp(), deleteCount);
@@ -253,9 +255,11 @@ public class DataServiceGrpcImpl extends DataServiceGrpc.DataServiceImplBase {
     QueryExample example = J.json2Bean(request.getExampleJson(), QueryExample.class);
     DataBaseResponse.Builder builder = DataBaseResponse.newBuilder();
     try {
-      DBCoreService coreService = getDbCoreService();
-      Long deleteCount = tryUntilSuccess(() -> coreService.deleteByExample(tableName, example),
+      Long deleteCount = tryUntilSuccess(() -> mongoDataCoreService.deleteByExample(tableName, example),
           "deleteByExample", 0);
+      if (writeMysqlEnable) {
+        writeMysqlExecutor.execute(() -> sqlDataCoreService.deleteByExample(tableName, example));
+      }
       logger.info("DimWriterGrpcBackend,deleteByExample,Y,{},{},{},{},{},{},{},",
           stopWatch.getTime(), tableName, 0, 0, request.getFromApp(), request.getFromIp(),
           deleteCount);
@@ -281,9 +285,11 @@ public class DataServiceGrpcImpl extends DataServiceGrpc.DataServiceImplBase {
         (new TypeToken<List<Map<String, Object>>>() {}).getType());
     DataBaseResponse.Builder builder = DataBaseResponse.newBuilder();
     try {
-      DBCoreService coreService = getDbCoreService();
-      Long deleteCount = tryUntilSuccess(() -> coreService.deleteByRowMap(tableName, example),
+      Long deleteCount = tryUntilSuccess(() -> mongoDataCoreService.deleteByRowMap(tableName, example),
           "deleteByRowMap", 0);
+      if (writeMysqlEnable) {
+        writeMysqlExecutor.execute(() -> sqlDataCoreService.deleteByRowMap(tableName, example));
+      }
       logger.info("DimWriterGrpcBackend,deleteByRowMap,Y,{},{},{},{},{},{},{},",
           stopWatch.getTime(), tableName, 0, 0, request.getFromApp(), request.getFromIp(),
           deleteCount);
