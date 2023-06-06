@@ -231,9 +231,11 @@ public class DataServiceGrpcImpl extends DataServiceGrpc.DataServiceImplBase {
     DataBaseResponse.Builder builder = DataBaseResponse.newBuilder();
     try {
       Long deleteCount = tryUntilSuccess(
-          () -> mongoDataCoreService.batchDeleteByPk(request.getTableName(), pkVals), "batchDeleteByPk", 0);
+          () -> mongoDataCoreService.batchDeleteByPk(request.getTableName(), pkVals),
+          "batchDeleteByPk", 0);
       if (writeMysqlEnable()) {
-        writeMysqlExecutor.execute(() -> sqlDataCoreService.batchDeleteByPk(request.getTableName(), pkVals));
+        writeMysqlExecutor
+            .execute(() -> sqlDataCoreService.batchDeleteByPk(request.getTableName(), pkVals));
       }
       logger.info("DimWriterGrpcBackend,batchDeleteByPk,Y,{},{},{},{},{},{},{},",
           stopWatch.getTime(), request.getTableName(), pkVals.size(), 0, request.getFromApp(),
@@ -259,8 +261,8 @@ public class DataServiceGrpcImpl extends DataServiceGrpc.DataServiceImplBase {
     QueryExample example = J.json2Bean(request.getExampleJson(), QueryExample.class);
     DataBaseResponse.Builder builder = DataBaseResponse.newBuilder();
     try {
-      Long deleteCount = tryUntilSuccess(() -> mongoDataCoreService.deleteByExample(tableName, example),
-          "deleteByExample", 0);
+      Long deleteCount = tryUntilSuccess(
+          () -> mongoDataCoreService.deleteByExample(tableName, example), "deleteByExample", 0);
       if (writeMysqlEnable()) {
         writeMysqlExecutor.execute(() -> sqlDataCoreService.deleteByExample(tableName, example));
       }
@@ -289,8 +291,8 @@ public class DataServiceGrpcImpl extends DataServiceGrpc.DataServiceImplBase {
         (new TypeToken<List<Map<String, Object>>>() {}).getType());
     DataBaseResponse.Builder builder = DataBaseResponse.newBuilder();
     try {
-      Long deleteCount = tryUntilSuccess(() -> mongoDataCoreService.deleteByRowMap(tableName, example),
-          "deleteByRowMap", 0);
+      Long deleteCount = tryUntilSuccess(
+          () -> mongoDataCoreService.deleteByRowMap(tableName, example), "deleteByRowMap", 0);
       if (writeMysqlEnable()) {
         writeMysqlExecutor.execute(() -> sqlDataCoreService.deleteByRowMap(tableName, example));
       }
@@ -452,27 +454,29 @@ public class DataServiceGrpcImpl extends DataServiceGrpc.DataServiceImplBase {
     }
   }
 
-  private boolean readMysqlEnable(){
-    Map<String, Map<String, MetaDataDictValue>> metaDataDictValueMap = superCacheService.getSc().metaDataDictValueMap;
+  private boolean readMysqlEnable() {
+    Map<String, Map<String, MetaDataDictValue>> metaDataDictValueMap =
+        superCacheService.getSc().metaDataDictValueMap;
     Map<String, MetaDataDictValue> indexKeyMaps = metaDataDictValueMap.get(ConstModel.META_CONFIG);
-    if (CollectionUtils.isEmpty(indexKeyMaps)){
+    if (CollectionUtils.isEmpty(indexKeyMaps)) {
       return false;
     }
     MetaDataDictValue metaDataDictValue = indexKeyMaps.get(ConstModel.READ_MYSQL_ENABLE);
-    if (Objects.isNull(metaDataDictValue) ){
+    if (Objects.isNull(metaDataDictValue)) {
       return false;
     }
     return "true".equalsIgnoreCase(metaDataDictValue.getDictValue());
   }
 
-  private boolean writeMysqlEnable(){
-    Map<String, Map<String, MetaDataDictValue>> metaDataDictValueMap = superCacheService.getSc().metaDataDictValueMap;
+  private boolean writeMysqlEnable() {
+    Map<String, Map<String, MetaDataDictValue>> metaDataDictValueMap =
+        superCacheService.getSc().metaDataDictValueMap;
     Map<String, MetaDataDictValue> indexKeyMaps = metaDataDictValueMap.get(ConstModel.META_CONFIG);
-    if (CollectionUtils.isEmpty(indexKeyMaps)){
+    if (CollectionUtils.isEmpty(indexKeyMaps)) {
       return false;
     }
     MetaDataDictValue metaDataDictValue = indexKeyMaps.get(ConstModel.WRITE_MYSQL_ENABLE);
-    if (Objects.isNull(metaDataDictValue) ){
+    if (Objects.isNull(metaDataDictValue)) {
       return false;
     }
     return "true".equalsIgnoreCase(metaDataDictValue.getDictValue());
