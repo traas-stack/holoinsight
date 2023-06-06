@@ -22,5 +22,8 @@ public class ConstModel {
   public static final String default_basic = "_basic";
   public static final String default_annotation = "_annotation";
   public static final String default_label = "_label";
+  public static final String READ_MYSQL_ENABLE = "readMysqlEnable";
+  public static final String WRITE_MYSQL_ENABLE = "writeMysqlEnable";
+  public static final String META_CONFIG = "meta_config";
 
 }

@@ -4,11 +4,13 @@
 package io.holoinsight.server.meta.core;
 
 import com.mongodb.client.MongoDatabase;
+import io.holoinsight.server.common.service.SuperCacheService;
 import io.holoinsight.server.meta.core.service.DBCoreService;
 import io.holoinsight.server.meta.core.service.MongoDataCoreService;
 import io.holoinsight.server.meta.core.service.SqlDataCoreService;
 import io.holoinsight.server.meta.dal.service.mapper.MetaDataMapper;
 import org.mybatis.spring.annotation.MapperScan;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -33,5 +35,11 @@ public class MetaServiceConfiguration {
   // @ConditionalOnProperty(value = "holoinsight.meta.db_data_mode", havingValue = "mysql")
   public DBCoreService SqlDataCoreService(MetaDataMapper metaDataMapper) {
     return new SqlDataCoreService(metaDataMapper);
+  }
+
+  @Bean
+  @ConditionalOnMissingBean
+  public SuperCacheService superCacheService() {
+    return new SuperCacheService();
   }
 }

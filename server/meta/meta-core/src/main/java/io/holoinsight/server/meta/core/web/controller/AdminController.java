@@ -34,26 +34,22 @@ public class AdminController {
   @Qualifier("sqlDataCoreService")
   private DBCoreService sqlDataCoreService;
 
-  @Value("${holoinsight.meta.readMysql.enabled:false}")
-  private boolean readMysqlEnable;
-
   @PostMapping("/mongodb/query/{collection}")
   public JsonResult<Object> query(@PathVariable("collection") String collection,
       @RequestBody Map<String, Object> condition) {
     QueryExample queryExample = new QueryExample();
     queryExample.getParams().putAll(condition);
     return JsonResult
-        .createSuccessResult(getDbCoreService().queryByExample(collection, queryExample));
+        .createSuccessResult(mongoDataCoreService.queryByExample(collection, queryExample));
   }
 
-  private DBCoreService getDbCoreService() {
-    DBCoreService coreService;
-    if (readMysqlEnable) {
-      coreService = sqlDataCoreService;
-    } else {
-      coreService = mongoDataCoreService;
-    }
-    return coreService;
+  @PostMapping("/mysql/query/{collection}")
+  public JsonResult<Object> mysqlQuery(@PathVariable("collection") String collection,
+      @RequestBody Map<String, Object> condition) {
+    QueryExample queryExample = new QueryExample();
+    queryExample.getParams().putAll(condition);
+    return JsonResult
+        .createSuccessResult(sqlDataCoreService.queryByExample(collection, queryExample));
   }
 
 }
