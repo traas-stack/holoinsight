@@ -481,7 +481,7 @@ CREATE TABLE IF NOT EXISTS `integration_plugin` (
   `id` bigint NOT NULL AUTO_INCREMENT COMMENT 'Data id',
   `tenant` varchar(255) NOT NULL COMMENT 'Relate tenant code',
   `name` varchar(100) NOT NULL COMMENT 'Plugin name',
-  `workspace` varchar(100) NOT NULL COMMENT 'Plugin workspace',
+  `workspace` varchar(100) DEFAULT NULL COMMENT 'Plugin workspace',
   `product` varchar(100) NOT NULL COMMENT 'Integration product name',
   `type` varchar(200) NOT NULL COMMENT 'Plugin type',
   `status` tinyint NOT NULL COMMENT 'Status',

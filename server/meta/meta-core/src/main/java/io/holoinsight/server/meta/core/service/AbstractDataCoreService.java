@@ -48,11 +48,6 @@ public abstract class AbstractDataCoreService implements DBCoreService {
         continue;
       }
 
-      // if (!ukMaps.containsKey(row.get(default_type).toString().toLowerCase())) {
-      // logger.info("[addUkValues] has not uks, table={}, type={}, row={}.", tableName,
-      // row.get(default_type), row.toString());
-      // continue;
-      // }
       List<String> uks = ukMaps.getOrDefault(row.get(default_type).toString().toLowerCase(),
           Collections.singletonList("_uk"));
 
@@ -92,11 +87,6 @@ public abstract class AbstractDataCoreService implements DBCoreService {
         continue;
       }
 
-      // if (!ukMaps.containsKey(row.get(default_type).toString().toLowerCase())) {
-      // logger.info("[getUks] has not uks, table={}, type={}, row={}.", tableName,
-      // row.get(default_type), row.toString());
-      // continue;
-      // }
       List<String> uks = ukMaps.getOrDefault(row.get(default_type).toString().toLowerCase(),
           Collections.singletonList("_uk"));
 

@@ -57,6 +57,7 @@ holoinsight:
     apm:
       address: http://127.0.0.1:8080
   meta:
+    database: holoinsight
     domain: 127.0.0.1
     db_data_mode: mongodb
     mongodb_config:
