@@ -12,6 +12,7 @@ import com.google.gson.reflect.TypeToken;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Filters;
+import com.mongodb.client.model.Projections;
 import com.mongodb.client.model.Sorts;
 import com.mongodb.client.model.UpdateOptions;
 import com.mongodb.client.result.DeleteResult;
@@ -88,7 +89,8 @@ public class MongoDataCoreService extends AbstractDataCoreService {
   public List<Map<String, Object>> queryByTable(String tableName) {
     logger.info("[queryByTable] finish, table={}.", tableName);
     StopWatch stopWatch = StopWatch.createStarted();
-    FindIterable<Document> documents = mongoDatabase.getCollection(tableName).find();
+    FindIterable<Document> documents = mongoDatabase.getCollection(tableName).find()
+        .projection(Projections.exclude("annotations"));
     List<Document> rows = new ArrayList<>();
     documents.into(rows);
     logger.info("[queryByTable] finish, table={}, records={}, cost={}.", tableName, rows.size(),
@@ -125,7 +127,8 @@ public class MongoDataCoreService extends AbstractDataCoreService {
     StopWatch stopWatch = StopWatch.createStarted();
     Bson filter = Filters.eq(default_pk, pkValList);
 
-    FindIterable<Document> documents = mongoDatabase.getCollection(tableName).find(filter);
+    FindIterable<Document> documents = mongoDatabase.getCollection(tableName).find(filter)
+        .projection(Projections.exclude("annotations"));
     List<Document> rows = new ArrayList<>();
     documents.sort(Sorts.descending(default_modified)).into(rows);
 
@@ -161,11 +164,18 @@ public class MongoDataCoreService extends AbstractDataCoreService {
       }
     }
 
+    Bson projection =
+        Projections.fields(Projections.excludeId(), Projections.exclude("annotations"));
+    if (!CollectionUtils.isEmpty(queryExample.getRowKeys())) {
+      projection = Projections.fields(Projections.include(queryExample.getRowKeys()));
+    }
+
     FindIterable<Document> documents;
     if (!CollectionUtils.isEmpty(filters)) {
-      documents = mongoDatabase.getCollection(tableName).find(Filters.and(filters));
+      documents =
+          mongoDatabase.getCollection(tableName).find(Filters.and(filters)).projection(projection);
     } else {
-      documents = mongoDatabase.getCollection(tableName).find();
+      documents = mongoDatabase.getCollection(tableName).find().projection(projection);
     }
 
     List<Document> rows = new ArrayList<>();
@@ -202,9 +212,11 @@ public class MongoDataCoreService extends AbstractDataCoreService {
     }
     FindIterable<Document> documents;
     if (!CollectionUtils.isEmpty(filters)) {
-      documents = mongoDatabase.getCollection(tableName).find(Filters.and(filters));
+      documents = mongoDatabase.getCollection(tableName).find(Filters.and(filters))
+          .projection(Projections.exclude("annotations"));
     } else {
-      documents = mongoDatabase.getCollection(tableName).find();
+      documents = mongoDatabase.getCollection(tableName).find()
+          .projection(Projections.exclude("annotations"));
     }
     List<Document> rows = new ArrayList<>();
     documents.sort(Sorts.descending(default_modified)).into(rows);
