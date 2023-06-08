@@ -272,6 +272,10 @@ public final class CommonRequestHeader extends com.google.protobuf.GeneratedMess
   private volatile java.lang.Object workspace_;
 
   /**
+   * <pre>
+   * workspace
+   * </pre>
+   *
    * <code>string workspace = 4;</code>
    */
   public java.lang.String getWorkspace() {
@@ -287,6 +291,10 @@ public final class CommonRequestHeader extends com.google.protobuf.GeneratedMess
   }
 
   /**
+   * <pre>
+   * workspace
+   * </pre>
+   *
    * <code>string workspace = 4;</code>
    */
   public com.google.protobuf.ByteString getWorkspaceBytes() {
@@ -958,6 +966,10 @@ public final class CommonRequestHeader extends com.google.protobuf.GeneratedMess
     private java.lang.Object workspace_ = "";
 
     /**
+     * <pre>
+     * workspace
+     * </pre>
+     *
      * <code>string workspace = 4;</code>
      */
     public java.lang.String getWorkspace() {
@@ -973,6 +985,10 @@ public final class CommonRequestHeader extends com.google.protobuf.GeneratedMess
     }
 
     /**
+     * <pre>
+     * workspace
+     * </pre>
+     *
      * <code>string workspace = 4;</code>
      */
     public com.google.protobuf.ByteString getWorkspaceBytes() {
@@ -988,6 +1004,10 @@ public final class CommonRequestHeader extends com.google.protobuf.GeneratedMess
     }
 
     /**
+     * <pre>
+     * workspace
+     * </pre>
+     *
      * <code>string workspace = 4;</code>
      */
     public Builder setWorkspace(java.lang.String value) {
@@ -1001,6 +1021,10 @@ public final class CommonRequestHeader extends com.google.protobuf.GeneratedMess
     }
 
     /**
+     * <pre>
+     * workspace
+     * </pre>
+     *
      * <code>string workspace = 4;</code>
      */
     public Builder clearWorkspace() {
@@ -1011,6 +1035,10 @@ public final class CommonRequestHeader extends com.google.protobuf.GeneratedMess
     }
 
     /**
+     * <pre>
+     * workspace
+     * </pre>
+     *
      * <code>string workspace = 4;</code>
      */
     public Builder setWorkspaceBytes(com.google.protobuf.ByteString value) {

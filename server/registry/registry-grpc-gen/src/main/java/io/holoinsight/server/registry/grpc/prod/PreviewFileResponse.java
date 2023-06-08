@@ -22,6 +22,7 @@ public final class PreviewFileResponse extends com.google.protobuf.GeneratedMess
   private PreviewFileResponse() {
     content_ = com.google.protobuf.LazyStringArrayList.EMPTY;
     charset_ = "";
+    timezone_ = "";
   }
 
   @java.lang.Override
@@ -80,6 +81,12 @@ public final class PreviewFileResponse extends com.google.protobuf.GeneratedMess
             java.lang.String s = input.readStringRequireUtf8();
 
             charset_ = s;
+            break;
+          }
+          case 34: {
+            java.lang.String s = input.readStringRequireUtf8();
+
+            timezone_ = s;
             break;
           }
           default: {
@@ -146,7 +153,7 @@ public final class PreviewFileResponse extends com.google.protobuf.GeneratedMess
 
   /**
    * <pre>
-   * 解析好的日志行
+   * parsed log lines
    * </pre>
    *
    * <code>repeated string content = 2;</code>
@@ -157,7 +164,7 @@ public final class PreviewFileResponse extends com.google.protobuf.GeneratedMess
 
   /**
    * <pre>
-   * 解析好的日志行
+   * parsed log lines
    * </pre>
    *
    * <code>repeated string content = 2;</code>
@@ -168,7 +175,7 @@ public final class PreviewFileResponse extends com.google.protobuf.GeneratedMess
 
   /**
    * <pre>
-   * 解析好的日志行
+   * parsed log lines
    * </pre>
    *
    * <code>repeated string content = 2;</code>
@@ -179,7 +186,7 @@ public final class PreviewFileResponse extends com.google.protobuf.GeneratedMess
 
   /**
    * <pre>
-   * 解析好的日志行
+   * parsed log lines
    * </pre>
    *
    * <code>repeated string content = 2;</code>
@@ -193,8 +200,7 @@ public final class PreviewFileResponse extends com.google.protobuf.GeneratedMess
 
   /**
    * <pre>
-   * 日志使用的编码
-   * 如果用户请求里没有提供编码, 那么此时该编码是猜测的编码
+   * detected charset by agent
    * </pre>
    *
    * <code>string charset = 3;</code>
@@ -213,8 +219,7 @@ public final class PreviewFileResponse extends com.google.protobuf.GeneratedMess
 
   /**
    * <pre>
-   * 日志使用的编码
-   * 如果用户请求里没有提供编码, 那么此时该编码是猜测的编码
+   * detected charset by agent
    * </pre>
    *
    * <code>string charset = 3;</code>
@@ -225,6 +230,47 @@ public final class PreviewFileResponse extends com.google.protobuf.GeneratedMess
       com.google.protobuf.ByteString b =
           com.google.protobuf.ByteString.copyFromUtf8((java.lang.String) ref);
       charset_ = b;
+      return b;
+    } else {
+      return (com.google.protobuf.ByteString) ref;
+    }
+  }
+
+  public static final int TIMEZONE_FIELD_NUMBER = 4;
+  private volatile java.lang.Object timezone_;
+
+  /**
+   * <pre>
+   * detected timezone by agent
+   * </pre>
+   *
+   * <code>string timezone = 4;</code>
+   */
+  public java.lang.String getTimezone() {
+    java.lang.Object ref = timezone_;
+    if (ref instanceof java.lang.String) {
+      return (java.lang.String) ref;
+    } else {
+      com.google.protobuf.ByteString bs = (com.google.protobuf.ByteString) ref;
+      java.lang.String s = bs.toStringUtf8();
+      timezone_ = s;
+      return s;
+    }
+  }
+
+  /**
+   * <pre>
+   * detected timezone by agent
+   * </pre>
+   *
+   * <code>string timezone = 4;</code>
+   */
+  public com.google.protobuf.ByteString getTimezoneBytes() {
+    java.lang.Object ref = timezone_;
+    if (ref instanceof java.lang.String) {
+      com.google.protobuf.ByteString b =
+          com.google.protobuf.ByteString.copyFromUtf8((java.lang.String) ref);
+      timezone_ = b;
       return b;
     } else {
       return (com.google.protobuf.ByteString) ref;
@@ -256,6 +302,9 @@ public final class PreviewFileResponse extends com.google.protobuf.GeneratedMess
     if (!getCharsetBytes().isEmpty()) {
       com.google.protobuf.GeneratedMessageV3.writeString(output, 3, charset_);
     }
+    if (!getTimezoneBytes().isEmpty()) {
+      com.google.protobuf.GeneratedMessageV3.writeString(output, 4, timezone_);
+    }
     unknownFields.writeTo(output);
   }
 
@@ -279,6 +328,9 @@ public final class PreviewFileResponse extends com.google.protobuf.GeneratedMess
     }
     if (!getCharsetBytes().isEmpty()) {
       size += com.google.protobuf.GeneratedMessageV3.computeStringSize(3, charset_);
+    }
+    if (!getTimezoneBytes().isEmpty()) {
+      size += com.google.protobuf.GeneratedMessageV3.computeStringSize(4, timezone_);
     }
     size += unknownFields.getSerializedSize();
     memoizedSize = size;
@@ -306,6 +358,8 @@ public final class PreviewFileResponse extends com.google.protobuf.GeneratedMess
       return false;
     if (!getCharset().equals(other.getCharset()))
       return false;
+    if (!getTimezone().equals(other.getTimezone()))
+      return false;
     if (!unknownFields.equals(other.unknownFields))
       return false;
     return true;
@@ -328,6 +382,8 @@ public final class PreviewFileResponse extends com.google.protobuf.GeneratedMess
     }
     hash = (37 * hash) + CHARSET_FIELD_NUMBER;
     hash = (53 * hash) + getCharset().hashCode();
+    hash = (37 * hash) + TIMEZONE_FIELD_NUMBER;
+    hash = (53 * hash) + getTimezone().hashCode();
     hash = (29 * hash) + unknownFields.hashCode();
     memoizedHashCode = hash;
     return hash;
@@ -476,6 +532,8 @@ public final class PreviewFileResponse extends com.google.protobuf.GeneratedMess
       bitField0_ = (bitField0_ & ~0x00000001);
       charset_ = "";
 
+      timezone_ = "";
+
       return this;
     }
 
@@ -514,6 +572,7 @@ public final class PreviewFileResponse extends com.google.protobuf.GeneratedMess
       }
       result.content_ = content_;
       result.charset_ = charset_;
+      result.timezone_ = timezone_;
       onBuilt();
       return result;
     }
@@ -580,6 +639,10 @@ public final class PreviewFileResponse extends com.google.protobuf.GeneratedMess
       }
       if (!other.getCharset().isEmpty()) {
         charset_ = other.charset_;
+        onChanged();
+      }
+      if (!other.getTimezone().isEmpty()) {
+        timezone_ = other.timezone_;
         onChanged();
       }
       this.mergeUnknownFields(other.unknownFields);
@@ -748,7 +811,7 @@ public final class PreviewFileResponse extends com.google.protobuf.GeneratedMess
 
     /**
      * <pre>
-     * 解析好的日志行
+     * parsed log lines
      * </pre>
      *
      * <code>repeated string content = 2;</code>
@@ -759,7 +822,7 @@ public final class PreviewFileResponse extends com.google.protobuf.GeneratedMess
 
     /**
      * <pre>
-     * 解析好的日志行
+     * parsed log lines
      * </pre>
      *
      * <code>repeated string content = 2;</code>
@@ -770,7 +833,7 @@ public final class PreviewFileResponse extends com.google.protobuf.GeneratedMess
 
     /**
      * <pre>
-     * 解析好的日志行
+     * parsed log lines
      * </pre>
      *
      * <code>repeated string content = 2;</code>
@@ -781,7 +844,7 @@ public final class PreviewFileResponse extends com.google.protobuf.GeneratedMess
 
     /**
      * <pre>
-     * 解析好的日志行
+     * parsed log lines
      * </pre>
      *
      * <code>repeated string content = 2;</code>
@@ -792,7 +855,7 @@ public final class PreviewFileResponse extends com.google.protobuf.GeneratedMess
 
     /**
      * <pre>
-     * 解析好的日志行
+     * parsed log lines
      * </pre>
      *
      * <code>repeated string content = 2;</code>
@@ -809,7 +872,7 @@ public final class PreviewFileResponse extends com.google.protobuf.GeneratedMess
 
     /**
      * <pre>
-     * 解析好的日志行
+     * parsed log lines
      * </pre>
      *
      * <code>repeated string content = 2;</code>
@@ -826,7 +889,7 @@ public final class PreviewFileResponse extends com.google.protobuf.GeneratedMess
 
     /**
      * <pre>
-     * 解析好的日志行
+     * parsed log lines
      * </pre>
      *
      * <code>repeated string content = 2;</code>
@@ -840,7 +903,7 @@ public final class PreviewFileResponse extends com.google.protobuf.GeneratedMess
 
     /**
      * <pre>
-     * 解析好的日志行
+     * parsed log lines
      * </pre>
      *
      * <code>repeated string content = 2;</code>
@@ -854,7 +917,7 @@ public final class PreviewFileResponse extends com.google.protobuf.GeneratedMess
 
     /**
      * <pre>
-     * 解析好的日志行
+     * parsed log lines
      * </pre>
      *
      * <code>repeated string content = 2;</code>
@@ -874,8 +937,7 @@ public final class PreviewFileResponse extends com.google.protobuf.GeneratedMess
 
     /**
      * <pre>
-     * 日志使用的编码
-     * 如果用户请求里没有提供编码, 那么此时该编码是猜测的编码
+     * detected charset by agent
      * </pre>
      *
      * <code>string charset = 3;</code>
@@ -894,8 +956,7 @@ public final class PreviewFileResponse extends com.google.protobuf.GeneratedMess
 
     /**
      * <pre>
-     * 日志使用的编码
-     * 如果用户请求里没有提供编码, 那么此时该编码是猜测的编码
+     * detected charset by agent
      * </pre>
      *
      * <code>string charset = 3;</code>
@@ -914,8 +975,7 @@ public final class PreviewFileResponse extends com.google.protobuf.GeneratedMess
 
     /**
      * <pre>
-     * 日志使用的编码
-     * 如果用户请求里没有提供编码, 那么此时该编码是猜测的编码
+     * detected charset by agent
      * </pre>
      *
      * <code>string charset = 3;</code>
@@ -932,8 +992,7 @@ public final class PreviewFileResponse extends com.google.protobuf.GeneratedMess
 
     /**
      * <pre>
-     * 日志使用的编码
-     * 如果用户请求里没有提供编码, 那么此时该编码是猜测的编码
+     * detected charset by agent
      * </pre>
      *
      * <code>string charset = 3;</code>
@@ -947,8 +1006,7 @@ public final class PreviewFileResponse extends com.google.protobuf.GeneratedMess
 
     /**
      * <pre>
-     * 日志使用的编码
-     * 如果用户请求里没有提供编码, 那么此时该编码是猜测的编码
+     * detected charset by agent
      * </pre>
      *
      * <code>string charset = 3;</code>
@@ -960,6 +1018,95 @@ public final class PreviewFileResponse extends com.google.protobuf.GeneratedMess
       checkByteStringIsUtf8(value);
 
       charset_ = value;
+      onChanged();
+      return this;
+    }
+
+    private java.lang.Object timezone_ = "";
+
+    /**
+     * <pre>
+     * detected timezone by agent
+     * </pre>
+     *
+     * <code>string timezone = 4;</code>
+     */
+    public java.lang.String getTimezone() {
+      java.lang.Object ref = timezone_;
+      if (!(ref instanceof java.lang.String)) {
+        com.google.protobuf.ByteString bs = (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        timezone_ = s;
+        return s;
+      } else {
+        return (java.lang.String) ref;
+      }
+    }
+
+    /**
+     * <pre>
+     * detected timezone by agent
+     * </pre>
+     *
+     * <code>string timezone = 4;</code>
+     */
+    public com.google.protobuf.ByteString getTimezoneBytes() {
+      java.lang.Object ref = timezone_;
+      if (ref instanceof String) {
+        com.google.protobuf.ByteString b =
+            com.google.protobuf.ByteString.copyFromUtf8((java.lang.String) ref);
+        timezone_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    /**
+     * <pre>
+     * detected timezone by agent
+     * </pre>
+     *
+     * <code>string timezone = 4;</code>
+     */
+    public Builder setTimezone(java.lang.String value) {
+      if (value == null) {
+        throw new NullPointerException();
+      }
+
+      timezone_ = value;
+      onChanged();
+      return this;
+    }
+
+    /**
+     * <pre>
+     * detected timezone by agent
+     * </pre>
+     *
+     * <code>string timezone = 4;</code>
+     */
+    public Builder clearTimezone() {
+
+      timezone_ = getDefaultInstance().getTimezone();
+      onChanged();
+      return this;
+    }
+
+    /**
+     * <pre>
+     * detected timezone by agent
+     * </pre>
+     *
+     * <code>string timezone = 4;</code>
+     */
+    public Builder setTimezoneBytes(com.google.protobuf.ByteString value) {
+      if (value == null) {
+        throw new NullPointerException();
+      }
+      checkByteStringIsUtf8(value);
+
+      timezone_ = value;
       onChanged();
       return this;
     }

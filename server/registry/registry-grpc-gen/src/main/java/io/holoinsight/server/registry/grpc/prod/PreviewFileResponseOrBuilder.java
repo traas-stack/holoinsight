@@ -27,7 +27,7 @@ public interface PreviewFileResponseOrBuilder extends
 
   /**
    * <pre>
-   * 解析好的日志行
+   * parsed log lines
    * </pre>
    *
    * <code>repeated string content = 2;</code>
@@ -36,7 +36,7 @@ public interface PreviewFileResponseOrBuilder extends
 
   /**
    * <pre>
-   * 解析好的日志行
+   * parsed log lines
    * </pre>
    *
    * <code>repeated string content = 2;</code>
@@ -45,7 +45,7 @@ public interface PreviewFileResponseOrBuilder extends
 
   /**
    * <pre>
-   * 解析好的日志行
+   * parsed log lines
    * </pre>
    *
    * <code>repeated string content = 2;</code>
@@ -54,7 +54,7 @@ public interface PreviewFileResponseOrBuilder extends
 
   /**
    * <pre>
-   * 解析好的日志行
+   * parsed log lines
    * </pre>
    *
    * <code>repeated string content = 2;</code>
@@ -63,8 +63,7 @@ public interface PreviewFileResponseOrBuilder extends
 
   /**
    * <pre>
-   * 日志使用的编码
-   * 如果用户请求里没有提供编码, 那么此时该编码是猜测的编码
+   * detected charset by agent
    * </pre>
    *
    * <code>string charset = 3;</code>
@@ -73,11 +72,28 @@ public interface PreviewFileResponseOrBuilder extends
 
   /**
    * <pre>
-   * 日志使用的编码
-   * 如果用户请求里没有提供编码, 那么此时该编码是猜测的编码
+   * detected charset by agent
    * </pre>
    *
    * <code>string charset = 3;</code>
    */
   com.google.protobuf.ByteString getCharsetBytes();
+
+  /**
+   * <pre>
+   * detected timezone by agent
+   * </pre>
+   *
+   * <code>string timezone = 4;</code>
+   */
+  java.lang.String getTimezone();
+
+  /**
+   * <pre>
+   * detected timezone by agent
+   * </pre>
+   *
+   * <code>string timezone = 4;</code>
+   */
+  com.google.protobuf.ByteString getTimezoneBytes();
 }
