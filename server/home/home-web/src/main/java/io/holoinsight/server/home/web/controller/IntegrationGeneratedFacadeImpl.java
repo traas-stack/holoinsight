@@ -8,7 +8,9 @@ import io.holoinsight.server.common.J;
 import io.holoinsight.server.common.JsonResult;
 import io.holoinsight.server.home.biz.service.IntegrationGeneratedService;
 import io.holoinsight.server.home.biz.service.UserOpLogService;
+import io.holoinsight.server.home.common.util.MonitorException;
 import io.holoinsight.server.home.common.util.scope.*;
+import io.holoinsight.server.home.dal.model.ApiKey;
 import io.holoinsight.server.home.dal.model.IntegrationGenerated;
 import io.holoinsight.server.home.dal.model.OpType;
 import io.holoinsight.server.home.dal.model.dto.IntegrationGeneratedDTO;
@@ -54,6 +56,16 @@ public class IntegrationGeneratedFacadeImpl extends BaseFacade {
         ParaCheckUtil.checkParaNotNull(generatedDTO.product, "product");
         ParaCheckUtil.checkParaNotNull(generatedDTO.config, "config");
         ParaCheckUtil.checkParaNotNull(generatedDTO.custom, "custom");
+
+        MonitorScope ms = RequestContext.getContext().ms;
+        IntegrationGeneratedDTO item = integrationGeneratedService.queryById(generatedDTO.getId(),
+            ms.getTenant(), ms.getWorkspace());
+
+        if (null == item) {
+          throw new MonitorException("cannot find record: " + generatedDTO.getId());
+        }
+        ParaCheckUtil.checkEquals(item.getTenant(), ms.getTenant(), "tenant is illegal");
+
       }
 
       @Override

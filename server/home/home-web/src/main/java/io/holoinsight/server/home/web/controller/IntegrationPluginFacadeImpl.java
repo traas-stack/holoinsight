@@ -5,7 +5,6 @@ package io.holoinsight.server.home.web.controller;
 
 import io.holoinsight.server.home.common.util.StringUtil;
 import io.holoinsight.server.home.web.common.TokenUrls;
-import io.holoinsight.server.registry.model.integration.LocalIntegrationTask;
 import io.holoinsight.server.common.J;
 import io.holoinsight.server.common.JsonResult;
 import io.holoinsight.server.home.biz.service.IntegrationPluginService;
@@ -20,15 +19,11 @@ import io.holoinsight.server.home.common.util.scope.PowerConstants;
 import io.holoinsight.server.home.common.util.scope.RequestContext;
 import io.holoinsight.server.home.dal.model.OpType;
 import io.holoinsight.server.home.dal.model.dto.IntegrationPluginDTO;
-import io.holoinsight.server.home.facade.page.MonitorPageRequest;
-import io.holoinsight.server.home.facade.page.MonitorPageResult;
 import io.holoinsight.server.home.web.common.ManageCallback;
 import io.holoinsight.server.home.web.common.ParaCheckUtil;
 import io.holoinsight.server.home.web.interceptor.MonitorScopeAuth;
-import io.holoinsight.server.registry.model.integration.GaeaTask;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -38,12 +33,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * @author jsy1001de
@@ -143,46 +136,6 @@ public class IntegrationPluginFacadeImpl extends BaseFacade {
     return result;
   }
 
-  @DeleteMapping(value = "/deleteByType/{type}")
-  @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.EDIT)
-  public JsonResult<Object> deleteByType(@PathVariable("type") String type) {
-    final JsonResult<Object> result = new JsonResult<>();
-    facadeTemplate.manage(result, new ManageCallback() {
-      @Override
-      public void checkParameter() {
-        ParaCheckUtil.checkParaNotNull(type, "type");
-      }
-
-      @Override
-      public void doManage() {
-        MonitorScope ms = RequestContext.getContext().ms;
-        Map<String, Object> params = new HashMap<>();
-        params.put("tenant", MonitorCookieUtil.getTenantOrException());
-        if (null != ms && !StringUtil.isBlank(ms.workspace)) {
-          params.put("workspace", ms.workspace);
-        }
-        params.put("type", type);
-        List<IntegrationPluginDTO> byTypes = integrationPluginService.findByMap(params);
-        if (CollectionUtils.isEmpty(byTypes)) {
-          throw new MonitorException("cannot find record: " + type);
-        }
-
-        List<Long> ids =
-            byTypes.stream().map(IntegrationPluginDTO::getId).collect(Collectors.toList());
-        for (long id : ids) {
-          integrationPluginService.deleteById(id);
-        }
-        JsonResult.createSuccessResult(result, null);
-        for (long id : ids) {
-          userOpLogService.append("integration_plugin", id, OpType.DELETE,
-              RequestContext.getContext().mu.getLoginName(), ms.getTenant(), ms.getWorkspace(),
-              J.toJson(id), null, null, "integration_plugin_delete");
-        }
-      }
-    });
-    return result;
-  }
-
   @PostMapping("/create")
   @ResponseBody
   @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.EDIT)
@@ -269,38 +222,12 @@ public class IntegrationPluginFacadeImpl extends BaseFacade {
         MonitorScope ms = RequestContext.getContext().ms;
         Map<String, Object> params = new HashMap<>();
         params.put("tenant", MonitorCookieUtil.getTenantOrException());
-        params.put("name", name);
+        params.put("product", name);
         if (null != ms && !StringUtil.isBlank(ms.workspace)) {
           params.put("workspace", ms.workspace);
         }
         List<IntegrationPluginDTO> integrationPluginDTOs =
             integrationPluginService.findByMap(params);
-        JsonResult.createSuccessResult(result, integrationPluginDTOs);
-      }
-    });
-    return result;
-  }
-
-  @GetMapping(value = "/listAll")
-  @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.VIEW)
-  public JsonResult<List<IntegrationPluginDTO>> listAll() {
-    final JsonResult<List<IntegrationPluginDTO>> result = new JsonResult<>();
-    facadeTemplate.manage(result, new ManageCallback() {
-      @Override
-      public void checkParameter() {}
-
-      @Override
-      public void doManage() {
-        MonitorScope ms = RequestContext.getContext().ms;
-        Map<String, Object> params = new HashMap<>();
-        params.put("tenant", ms.getTenant());
-
-        if (StringUtils.isNotBlank(ms.getWorkspace())) {
-          params.put("workspace", ms.getWorkspace());
-        }
-        List<IntegrationPluginDTO> integrationPluginDTOs =
-            integrationPluginService.findByMap(params);
-
         JsonResult.createSuccessResult(result, integrationPluginDTOs);
       }
     });
@@ -329,185 +256,6 @@ public class IntegrationPluginFacadeImpl extends BaseFacade {
         JsonResult.createSuccessResult(result, integrationPluginDTOs);
       }
     });
-    return result;
-  }
-
-  @GetMapping(value = "/list/app")
-  @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.VIEW)
-  public JsonResult<List<IntegrationPluginDTO>> listAppPlugins() {
-    final JsonResult<List<IntegrationPluginDTO>> result = new JsonResult<>();
-    facadeTemplate.manage(result, new ManageCallback() {
-      @Override
-      public void checkParameter() {}
-
-      @Override
-      public void doManage() {
-        MonitorScope ms = RequestContext.getContext().ms;
-        Map<String, Object> params = new HashMap<>();
-        params.put("tenant", ms.getTenant());
-
-        if (StringUtils.isNotBlank(ms.getWorkspace())) {
-          params.put("workspace", ms.getWorkspace());
-        }
-
-        List<IntegrationPluginDTO> integrationPluginDTOs =
-            integrationPluginService.findByMap(params);
-        integrationPluginDTOs = integrationPluginDTOs.stream().filter(plugin -> {
-          String type = plugin.getType();
-          Class cls;
-          try {
-            cls = Class.forName(type);
-          } catch (ClassNotFoundException e) {
-            return false;
-          }
-          String json = plugin.getJson();
-          GaeaTask gaeaTask = J.fromJson(json, cls);
-
-          return gaeaTask instanceof LocalIntegrationTask;
-        }).collect(Collectors.toList());
-        JsonResult.createSuccessResult(result, integrationPluginDTOs);
-      }
-    });
-    return result;
-  }
-
-  @GetMapping(value = "/listByType/{type}")
-  @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.VIEW)
-  public JsonResult<List<IntegrationPluginDTO>> listByType(@PathVariable String type) {
-    final JsonResult<List<IntegrationPluginDTO>> result = new JsonResult<>();
-    facadeTemplate.manage(result, new ManageCallback() {
-      @Override
-      public void checkParameter() {}
-
-      @Override
-      public void doManage() {
-        MonitorScope ms = RequestContext.getContext().ms;
-
-        Map<String, Object> params = new HashMap<>();
-        params.put("tenant", MonitorCookieUtil.getTenantOrException());
-        params.put("type", type);
-        if (StringUtils.isNotBlank(ms.getWorkspace())) {
-          params.put("workspace", ms.getWorkspace());
-        }
-        List<IntegrationPluginDTO> integrationPluginDTOs =
-            integrationPluginService.findByMap(params);
-        JsonResult.createSuccessResult(result, integrationPluginDTOs);
-      }
-    });
-    return result;
-  }
-
-  @GetMapping(value = "/listAllNames")
-  @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.VIEW)
-  public JsonResult<List<String>> listAllNames() {
-    final JsonResult<List<String>> result = new JsonResult<>();
-    facadeTemplate.manage(result, new ManageCallback() {
-      @Override
-      public void checkParameter() {}
-
-      @Override
-      public void doManage() {
-        MonitorScope ms = RequestContext.getContext().ms;
-        Map<String, Object> params = new HashMap<>();
-        params.put("tenant", ms.getTenant());
-
-        if (StringUtils.isNotBlank(ms.getWorkspace())) {
-          params.put("workspace", ms.getWorkspace());
-        }
-        List<IntegrationPluginDTO> integrationPluginDTOs =
-            integrationPluginService.findByMap(params);
-        List<String> names = integrationPluginDTOs == null ? null
-            : integrationPluginDTOs.stream().map(IntegrationPluginDTO::getName)
-                .collect(Collectors.toList());
-        JsonResult.createSuccessResult(result, names);
-      }
-    });
-    return result;
-  }
-
-  @GetMapping(value = "/listNames")
-  @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.VIEW)
-  public JsonResult<List<String>> listNames() {
-    final JsonResult<List<String>> result = new JsonResult<>();
-    facadeTemplate.manage(result, new ManageCallback() {
-      @Override
-      public void checkParameter() {}
-
-      @Override
-      public void doManage() {
-        MonitorScope ms = RequestContext.getContext().ms;
-        Map<String, Object> params = new HashMap<>();
-        params.put("tenant", ms.getTenant());
-
-        if (StringUtils.isNotBlank(ms.getWorkspace())) {
-          params.put("workspace", ms.getWorkspace());
-        }
-        List<IntegrationPluginDTO> integrationPluginDTOs =
-            integrationPluginService.findByMap(params);
-        List<String> names = integrationPluginDTOs == null ? null
-            : integrationPluginDTOs.stream().map(IntegrationPluginDTO::getName)
-                .collect(Collectors.toList());
-        JsonResult.createSuccessResult(result, names);
-      }
-    });
-    return result;
-  }
-
-  @GetMapping(value = "/listNamesByType/{type}")
-  @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.VIEW)
-  public JsonResult<List<String>> listNamesByType(@PathVariable String type) {
-    final JsonResult<List<String>> result = new JsonResult<>();
-    facadeTemplate.manage(result, new ManageCallback() {
-      @Override
-      public void checkParameter() {}
-
-      @Override
-      public void doManage() {
-        MonitorScope ms = RequestContext.getContext().ms;
-        Map<String, Object> params = new HashMap<>();
-        params.put("tenant", MonitorCookieUtil.getTenantOrException());
-        params.put("type", type);
-        if (StringUtils.isNotBlank(ms.getWorkspace())) {
-          params.put("workspace", ms.getWorkspace());
-        }
-        List<IntegrationPluginDTO> integrationPluginDTOs =
-            integrationPluginService.findByMap(params);
-        List<String> names = integrationPluginDTOs == null ? null
-            : integrationPluginDTOs.stream().map(IntegrationPluginDTO::getName)
-                .collect(Collectors.toList());
-        JsonResult.createSuccessResult(result, names);
-      }
-    });
-    return result;
-  }
-
-  @PostMapping("/pageQuery")
-  @ResponseBody
-  @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.VIEW)
-  public JsonResult<MonitorPageResult<IntegrationPluginDTO>> pageQuery(
-      @RequestBody MonitorPageRequest<IntegrationPluginDTO> customPluginRequest) {
-    final JsonResult<MonitorPageResult<IntegrationPluginDTO>> result = new JsonResult<>();
-    facadeTemplate.manage(result, new ManageCallback() {
-      @Override
-      public void checkParameter() {
-        ParaCheckUtil.checkParaNotNull(customPluginRequest.getTarget(), "target");
-      }
-
-      @Override
-      public void doManage() {
-        MonitorScope ms = RequestContext.getContext().ms;
-        if (null != ms && !StringUtils.isEmpty(ms.tenant)) {
-          customPluginRequest.getTarget().setTenant(ms.tenant);
-        }
-
-        if (null != ms && !StringUtils.isEmpty(ms.workspace)) {
-          customPluginRequest.getTarget().setWorkspace(ms.workspace);
-        }
-        JsonResult.createSuccessResult(result,
-            integrationPluginService.getListByPage(customPluginRequest));
-      }
-    });
-
     return result;
   }
 }

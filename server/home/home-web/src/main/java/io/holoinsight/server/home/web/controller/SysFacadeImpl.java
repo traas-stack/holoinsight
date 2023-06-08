@@ -11,7 +11,6 @@ import io.holoinsight.server.common.service.TenantService;
 import io.holoinsight.server.home.common.util.GlobalFlag;
 import io.holoinsight.server.home.common.util.scope.AuthTargetType;
 import io.holoinsight.server.home.common.util.scope.PowerConstants;
-import io.holoinsight.server.common.dao.entity.dto.TenantDTO;
 import io.holoinsight.server.home.web.common.TokenUrls;
 import io.holoinsight.server.home.web.interceptor.MonitorScopeAuth;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,17 +47,6 @@ public class SysFacadeImpl extends BaseFacade {
   @ResponseBody
   public JsonResult time() {
     return JsonResult.createSuccessResult(System.currentTimeMillis());
-  }
-
-  @GetMapping(value = "/tenants")
-  @ResponseBody
-  public JsonResult<List<TenantDTO>> tenants() {
-    return JsonResult.createSuccessResult(tenantService.queryAll());
-  }
-
-  @RequestMapping("/checkservice")
-  public JsonResult<Object> test() {
-    return JsonResult.createSuccessResult("I am ok");
   }
 
   @ResponseBody

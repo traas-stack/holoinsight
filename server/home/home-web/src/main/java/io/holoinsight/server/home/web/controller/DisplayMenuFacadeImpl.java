@@ -3,20 +3,15 @@
  */
 package io.holoinsight.server.home.web.controller;
 
-import io.holoinsight.server.common.J;
 import io.holoinsight.server.home.biz.service.DisplayMenuService;
 import io.holoinsight.server.home.biz.service.IntegrationGeneratedService;
-import io.holoinsight.server.home.biz.service.UserOpLogService;
 import io.holoinsight.server.home.common.util.MonitorException;
 import io.holoinsight.server.home.common.util.ResultCodeEnum;
 import io.holoinsight.server.home.common.util.scope.AuthTargetType;
 import io.holoinsight.server.home.common.util.scope.MonitorScope;
-import io.holoinsight.server.home.common.util.scope.MonitorUser;
 import io.holoinsight.server.home.common.util.scope.PowerConstants;
 import io.holoinsight.server.home.common.util.scope.RequestContext;
-import io.holoinsight.server.home.dal.model.DisplayMenu;
 import io.holoinsight.server.home.dal.model.IntegrationGenerated;
-import io.holoinsight.server.home.dal.model.OpType;
 import io.holoinsight.server.home.dal.model.dto.DisplayMenuConfig;
 import io.holoinsight.server.home.dal.model.dto.DisplayMenuDTO;
 import io.holoinsight.server.home.web.common.ManageCallback;
@@ -28,17 +23,12 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -56,109 +46,11 @@ import java.util.Set;
 public class DisplayMenuFacadeImpl extends BaseFacade {
 
   @Autowired
-  private UserOpLogService userOpLogService;
-
-  @Autowired
   private DisplayMenuService displayMenuService;
 
   @Autowired
   private IntegrationGeneratedService integrationGeneratedService;
 
-  @PostMapping("/update")
-  @ResponseBody
-  @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.EDIT)
-  public JsonResult<DisplayMenu> update(@RequestBody DisplayMenu menu) {
-    final JsonResult<DisplayMenu> result = new JsonResult<>();
-    facadeTemplate.manage(result, new ManageCallback() {
-      @Override
-      public void checkParameter() {
-        ParaCheckUtil.checkParaNotNull(menu.id, "id");
-        ParaCheckUtil.checkParaNotBlank(menu.type, "type");
-        ParaCheckUtil.checkParaNotBlank(menu.config, "config");
-        ParaCheckUtil.checkParaNotNull(menu.refId, "refId");
-        ParaCheckUtil.checkParaNotNull(menu.getTenant(), "tenant");
-        ParaCheckUtil.checkEquals(menu.getTenant(), RequestContext.getContext().ms.getTenant(),
-            "tenant is illegal");
-
-        DisplayMenuDTO item =
-            displayMenuService.queryById(menu.getId(), RequestContext.getContext().ms.getTenant());
-
-        if (null == item) {
-          throw new MonitorException("cannot find record: " + menu.getId());
-        }
-        if (!item.getTenant().equalsIgnoreCase(menu.getTenant())) {
-          throw new MonitorException("the tenant parameter is invalid");
-        }
-      }
-
-      @Override
-      public void doManage() {
-
-        MonitorScope ms = RequestContext.getContext().ms;
-        MonitorUser mu = RequestContext.getContext().mu;
-
-        DisplayMenu update = new DisplayMenu();
-
-        BeanUtils.copyProperties(menu, update);
-
-        if (null != mu) {
-          update.setModifier(mu.getLoginName());
-        }
-        if (null != ms && !StringUtils.isEmpty(ms.tenant)) {
-          update.setTenant(ms.tenant);
-        }
-        update.setGmtModified(new Date());
-        displayMenuService.updateById(update);
-
-        assert mu != null;
-        userOpLogService.append("display_menu", menu.getId(), OpType.UPDATE, mu.getLoginName(),
-            ms.getTenant(), ms.getWorkspace(), J.toJson(menu), J.toJson(update), null,
-            "display_menu_update");
-        JsonResult.createSuccessResult(result, update);
-      }
-    });
-
-    return result;
-  }
-
-  @PostMapping("/create")
-  @ResponseBody
-  @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.EDIT)
-  public JsonResult<DisplayMenu> save(@RequestBody DisplayMenu menu) {
-    final JsonResult<DisplayMenu> result = new JsonResult<>();
-    facadeTemplate.manage(result, new ManageCallback() {
-      @Override
-      public void checkParameter() {
-        ParaCheckUtil.checkParaNotBlank(menu.type, "type");
-        ParaCheckUtil.checkParaNotBlank(menu.config, "config");
-        ParaCheckUtil.checkParaNotNull(menu.refId, "refId");
-      }
-
-      @Override
-      public void doManage() {
-        MonitorScope ms = RequestContext.getContext().ms;
-        MonitorUser mu = RequestContext.getContext().mu;
-        if (null != mu) {
-          menu.setCreator(mu.getLoginName());
-          menu.setModifier(mu.getLoginName());
-        }
-        if (null != ms && !StringUtils.isEmpty(ms.tenant)) {
-          menu.setTenant(ms.tenant);
-        }
-        menu.setGmtCreate(new Date());
-        menu.setGmtModified(new Date());
-        displayMenuService.save(menu);
-        JsonResult.createSuccessResult(result, menu);
-
-        assert mu != null;
-        userOpLogService.append("display_menu", menu.getId(), OpType.CREATE, mu.getLoginName(),
-            ms.getTenant(), ms.getWorkspace(), J.toJson(menu), null, null, "display_menu_create");
-
-      }
-    });
-
-    return result;
-  }
 
   @GetMapping(value = "/query/{id}")
   @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.VIEW)
@@ -311,32 +203,5 @@ public class DisplayMenuFacadeImpl extends BaseFacade {
     }
 
     return menuConfigs;
-  }
-
-  @DeleteMapping(value = "/delete/{id}")
-  @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.EDIT)
-  public JsonResult<Boolean> deleteById(@PathVariable("id") Long id) {
-    final JsonResult<Boolean> result = new JsonResult<>();
-    facadeTemplate.manage(result, new ManageCallback() {
-      @Override
-      public void checkParameter() {
-        ParaCheckUtil.checkParaNotNull(id, "id");
-      }
-
-      @Override
-      public void doManage() {
-        MonitorScope ms = RequestContext.getContext().ms;
-        DisplayMenuDTO byId = displayMenuService.queryById(id, ms.getTenant());
-        if (null == byId)
-          return;
-        boolean b = displayMenuService.removeById(id);
-        JsonResult.createSuccessResult(result, null);
-        userOpLogService.append("display_menu", byId.getId(), OpType.DELETE,
-            RequestContext.getContext().mu.getLoginName(), ms.getTenant(), ms.getWorkspace(),
-            J.toJson(byId), null, null, "display_menu_delete");
-        JsonResult.createSuccessResult(result, b);
-      }
-    });
-    return result;
   }
 }

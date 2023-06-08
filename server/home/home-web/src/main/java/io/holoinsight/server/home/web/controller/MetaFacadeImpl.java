@@ -154,52 +154,6 @@ public class MetaFacadeImpl extends BaseFacade {
     return result;
   }
 
-  /**
-   * 批量导入
-   */
-  @PostMapping("/{table}/create")
-  @ResponseBody
-  @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.EDIT)
-  public JsonResult<Object> save(@PathVariable("table") String table,
-      @RequestBody List<Map<String, Object>> metaList) {
-    final JsonResult<Object> result = new JsonResult<>();
-    facadeTemplate.manage(result, new ManageCallback() {
-      @Override
-      public void checkParameter() {
-        ParaCheckUtil.checkParaNotBlank(table, "table");
-        ParaCheckUtil.checkParaNotEmpty(metaList, "metaList");
-
-        if (!table.startsWith(RequestContext.getContext().ms.getTenant())) {
-          throw new MonitorException("table is illegal");
-        }
-      }
-
-      @Override
-      public void doManage() {
-        Context context = RequestContext.getContext();
-        MonitorUser mu = context.mu;
-
-        List<Map<String, Object>> list = new ArrayList<>();
-
-        for (Map<String, Object> meta : metaList) {
-          if (!meta.containsKey("_type"))
-            continue;
-
-          Map<String, Object> map = new HashMap<>();
-          map.put("_modifier", mu.getLoginName());
-          map.put("_modified", System.currentTimeMillis());
-          map.putAll(meta);
-          list.add(map);
-        }
-
-        dataClientService.insertOrUpdate(table, J.toMapList(J.toJson(list)));
-        JsonResult.createSuccessResult(result, true);
-      }
-    });
-
-    return result;
-  }
-
   @GetMapping("/{table}/queryAll")
   @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.VIEW)
   public JsonResult<List<Map<String, Object>>> queryAll(@PathVariable("table") String table) {
@@ -216,31 +170,6 @@ public class MetaFacadeImpl extends BaseFacade {
       @Override
       public void doManage() {
         List<Map<String, Object>> list = dataClientService.queryAll(table);
-        JsonResult.createSuccessResult(result, list);
-      }
-    });
-
-    return result;
-  }
-
-  @PostMapping("/{table}/queryByRows")
-  @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.VIEW)
-  public JsonResult<List<Map<String, Object>>> queryByRows(@PathVariable("table") String table,
-      @RequestBody List<String> rowKeys) {
-    final JsonResult<List<Map<String, Object>>> result = new JsonResult<>();
-    facadeTemplate.manage(result, new ManageCallback() {
-      @Override
-      public void checkParameter() {
-        ParaCheckUtil.checkParaNotEmpty(rowKeys, "rowKeys");
-        ParaCheckUtil.checkParaNotBlank(table, "table");
-        if (!table.startsWith(RequestContext.getContext().ms.getTenant())) {
-          throw new MonitorException("table is illegal");
-        }
-      }
-
-      @Override
-      public void doManage() {
-        List<Map<String, Object>> list = dataClientService.queryAll(table, rowKeys);
         JsonResult.createSuccessResult(result, list);
       }
     });
