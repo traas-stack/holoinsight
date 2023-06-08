@@ -3,10 +3,7 @@
  */
 package io.holoinsight.server.test.it;
 
-import io.holoinsight.server.home.common.model.TaskEnum;
 import org.junit.jupiter.api.Test;
-
-import java.time.Duration;
 
 /**
  * @author masaimu
@@ -16,16 +13,6 @@ public class TaskIT extends BaseIT {
 
   @Test
   public void test_task_scheduler() {
-    //await("Test task scheduler") //
-    //    .atMost(Duration.ofMinutes(3)) //
-    //    .untilAsserted(() -> {
-    //      given() //
-    //          .pathParam("taskId", TaskEnum.TASK_DEMO.getCode()) //
-    //          .when() //
-    //          .get("/webapi/task/cluster/{taskId}") //
-    //          .then() //
-    //          .body("success", IS_TRUE) //
-    //          .body("data.size()", gt(0));
-    //    });
+
   }
 }
