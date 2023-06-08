@@ -43,6 +43,19 @@ public class IntegrationGeneratedServiceImpl
   }
 
   @Override
+  public IntegrationGeneratedDTO queryById(Long id, String tenant, String workspace) {
+    QueryWrapper<IntegrationGenerated> wrapper = new QueryWrapper<>();
+    wrapper.eq("tenant", tenant);
+    if (StringUtil.isNotBlank(workspace)) {
+      wrapper.eq("workspace", workspace);
+    }
+    wrapper.eq("id", id);
+    wrapper.last("LIMIT 1");
+
+    return integrationGeneratedConverter.doToDTO(this.getOne(wrapper));
+  }
+
+  @Override
   public List<IntegrationGenerated> queryByTenant(String tenant) {
     QueryWrapper<IntegrationGenerated> queryWrapper = new QueryWrapper<>();
     queryWrapper.select("name", "product", "tenant", "workspace", "item", "id").eq("deleted", 0)

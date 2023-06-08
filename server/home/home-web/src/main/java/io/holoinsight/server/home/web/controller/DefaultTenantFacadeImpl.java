@@ -12,6 +12,7 @@ import io.holoinsight.server.home.common.util.MonitorException;
 import io.holoinsight.server.home.common.util.ResultCodeEnum;
 import io.holoinsight.server.home.common.util.scope.AuthTargetType;
 import io.holoinsight.server.home.common.util.scope.PowerConstants;
+import io.holoinsight.server.home.common.util.scope.RequestContext;
 import io.holoinsight.server.home.dal.converter.TenantOpsConverter;
 import io.holoinsight.server.home.web.common.ManageCallback;
 import io.holoinsight.server.home.web.common.ParaCheckUtil;
@@ -51,6 +52,8 @@ public class DefaultTenantFacadeImpl extends BaseFacade {
       @Override
       public void checkParameter() {
         ParaCheckUtil.checkParaNotNull(name, "name");
+        ParaCheckUtil.checkEquals(name, RequestContext.getContext().ms.getTenant(),
+            "tenant is illegal");
       }
 
       @Override
