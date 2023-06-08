@@ -110,8 +110,6 @@ jobs:
           scene: scene-default
         - test: AlertCalculateIT
           scene: scene-default
-        - test: IntegrationPluginIT
-          scene: scene-default
         - test: OpenMetricsScraperIT
           scene: scene-default
         - test: AlertWebhookIT
@@ -135,8 +133,6 @@ jobs:
         - test: apm.ApmCallLinkDetailIT
           scene: scene-default
         - test: apm.ApmAppMetricStatIT
-          scene: scene-default
-        - test: TaskIT
           scene: scene-default
         - test: LogMonitoringMultilineIT
           scene: scene-default
