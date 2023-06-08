@@ -10,7 +10,9 @@ if [ -z "$NO_BUILD_APP" ]; then
   sh ./scripts/all-in-one/build.sh
 fi
 
-tag="latest"
+if [ -z "$tag" ]; then
+  tag="latest"
+fi
 
 docker buildx build \
   --platform=linux/amd64,linux/arm64/v8 \
