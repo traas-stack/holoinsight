@@ -148,6 +148,9 @@ public class RegistryServiceForAgentImpl
     maybeEnableCompression(o);
 
     authAndMap(request, request.getHeader(), o, a -> {
+      if (agentStorage.get(request.getAgentId()) == null) {
+        throw Status.UNAUTHENTICATED.withDescription("agent not found").asRuntimeException();
+      }
       SendAgentHeartbeatResponse resp = SendAgentHeartbeatResponse.newBuilder() //
           .setHeader(CommonResponseHeader.newBuilder() //
               .setCode(0) //
