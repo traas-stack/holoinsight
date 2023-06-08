@@ -18,6 +18,9 @@ HoloInsight 是一个云原生可观测性平台，特别专注于实时日志�
 # 快速入门
 [快速入门](https://traas-stack.github.io/holoinsight-docs/cn/introduction/quick-start.html)
 
+# 部署
+[基于 K8s 的部署](https://traas-stack.github.io/holoinsight-docs/cn/operations/deployment/k8s.html)
+
 # 开源许可
 HoloInsight 基于 [Apache License 2.0](https://github.com/traas-stack/holoinsight/blob/main/LICENSE) 协议。
 

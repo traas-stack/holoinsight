@@ -15,7 +15,10 @@ HoloInsight is a cloud-native observability platform with a special focus on rea
 * [HoloInsight Documentation](https://traas-stack.github.io/holoinsight-docs/)
 
 # Quick Start
-[Quick Start](https://traas-stack.github.io/holoinsight-docs/introduction/quick-start.html)
+Docker based [Quick Start](https://traas-stack.github.io/holoinsight-docs/introduction/quick-start.html)
+
+# Deploy
+K8s based [Deployment](https://traas-stack.github.io/holoinsight-docs/operations/deployment/k8s.html)
 
 # Licensing
 HoloInsight is under [Apache License 2.0](https://github.com/traas-stack/holoinsight/blob/main/LICENSE).
