@@ -3,7 +3,10 @@
  */
 package io.holoinsight.server.home.bootstrap;
 
+import io.holoinsight.server.common.config.EnvironmentProperties;
+import io.holoinsight.server.common.dao.CommonDaoConfiguration;
 import io.holoinsight.server.common.service.CommonServiceAutoConfiguration;
+import io.holoinsight.server.common.springboot.ConditionalOnRole;
 import io.holoinsight.server.home.alert.plugin.AlertNotifyHandler;
 import io.holoinsight.server.home.alert.plugin.DefaultAlertNotifyHandler;
 import io.holoinsight.server.home.alert.plugin.DefaultGatewayService;
@@ -13,7 +16,11 @@ import io.holoinsight.server.home.alert.service.event.DefaultAlertNotifyChainBui
 import io.holoinsight.server.home.biz.plugin.DefaultMarketplaceProductHandler;
 import io.holoinsight.server.home.biz.plugin.MarketplaceProductHandler;
 import io.holoinsight.server.home.biz.service.EnvironmentService;
+import io.holoinsight.server.home.biz.service.TenantInitService;
+import io.holoinsight.server.home.biz.service.UserinfoVerificationService;
 import io.holoinsight.server.home.biz.service.impl.DefaultEnvironmentServiceImpl;
+import io.holoinsight.server.home.biz.service.impl.DefaultTenantInitServiceImpl;
+import io.holoinsight.server.home.biz.service.impl.UserinfoVerificationServiceImpl;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -22,12 +29,6 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Import;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
-
-import io.holoinsight.server.common.config.EnvironmentProperties;
-import io.holoinsight.server.common.dao.CommonDaoConfiguration;
-import io.holoinsight.server.common.springboot.ConditionalOnRole;
-import io.holoinsight.server.home.biz.service.TenantInitService;
-import io.holoinsight.server.home.biz.service.impl.DefaultTenantInitServiceImpl;
 
 /**
  * @author masaimu
@@ -70,5 +71,10 @@ public class HoloinsightHomeConfiguration {
   @Bean
   public AlertNotifyChainBuilder alertNotifyChainBuilder() {
     return new DefaultAlertNotifyChainBuilder();
+  }
+
+  @Bean
+  public UserinfoVerificationService userinfoVerificationService() {
+    return new UserinfoVerificationServiceImpl();
   }
 }
