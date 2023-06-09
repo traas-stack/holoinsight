@@ -142,6 +142,11 @@ public class ParaCheckUtil {
     checkParaBoolean(commonCheck(param), errorMsg);
   }
 
+  public static void checkInvalidUserinfoVerificationContentType(String param, String errorMsg) {
+    checkParaBoolean(StringUtils.equals(param, "email") || StringUtils.equals(param, "phone"),
+        errorMsg);
+  }
+
   private static boolean commonCheck(String param) {
     Matcher commonAllowed = PATTERN_SQL.matcher(param);
     if (commonAllowed.find()) {
