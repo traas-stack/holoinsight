@@ -22,7 +22,7 @@ public class UserinfoDTO {
 
   public String nickname;
 
-  public String mobileNumberAlias;
+  public String phoneNumberAlias;
 
   public String emailAlias;
 

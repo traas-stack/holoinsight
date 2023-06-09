@@ -96,12 +96,12 @@ public class UserinfoVerificationFacadeImpl extends BaseFacade {
           checkFrequency(userinfoVerification);
           sendVerificationMsg(userinfoVerification);
           userinfoVerificationMapper.insert(userinfoVerification);
-          Long expireTimestamp = userinfoVerification.getExpireTimestamp();
+          Long id = userinfoVerification.getId();
 
-          userOpLogService.append("userinfo_verification", expireTimestamp, OpType.CREATE,
-              mu.getLoginName(), ms.getTenant(), ms.getWorkspace(), null,
-              J.toJson(userinfoVerification), null, "userinfo_create");
-          JsonResult.createSuccessResult(result, expireTimestamp);
+          userOpLogService.append("userinfo_verification", id, OpType.CREATE, mu.getLoginName(),
+              ms.getTenant(), ms.getWorkspace(), null, J.toJson(userinfoVerification), null,
+              "userinfo_create");
+          JsonResult.createSuccessResult(result, id);
         }
       });
     } catch (Exception e) {
@@ -122,7 +122,11 @@ public class UserinfoVerificationFacadeImpl extends BaseFacade {
   private void sendVerificationMsg(UserinfoVerification userinfoVerification) {
     String code = generateVerificationCode();
     userinfoVerification.setCode(code);
+    Long expireTimestamp = userinfoVerification.getGmtCreate().getTime()
+        + (3L * PeriodType.FIVE_MINUTE.intervalMillis());
+    userinfoVerification.setExpireTimestamp(expireTimestamp);
     userinfoVerificationService.sendMessage(userinfoVerification);
+    userinfoVerification.setStatus("valid");
   }
 
   public static String generateVerificationCode() {
@@ -152,6 +156,8 @@ public class UserinfoVerificationFacadeImpl extends BaseFacade {
       metaDataDictValue.setDictKey(dict_key);
       metaDataDictValue.setDictValue("1");
       metaDataDictValue.setVersion(1);
+      metaDataDictValue.setCreator("userinfo_verification");
+      metaDataDictValue.setModifier("userinfo_verification");
       metaDataDictValue.setGmtCreate(new Date());
       metaDataDictValue.setDictDesc(tenant + "day verification count");
       metaDataDictValueMapper.insert(metaDataDictValue);

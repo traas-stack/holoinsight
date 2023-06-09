@@ -98,6 +98,7 @@ public class UserinfoFacadeImpl extends BaseFacade {
           }
           userinfo.setGmtCreate(new Date());
           userinfo.setGmtModified(new Date());
+          userinfo.setDeleted(false);
 
           doVerify(userinfo, userinfoDTO);
 
@@ -158,9 +159,10 @@ public class UserinfoFacadeImpl extends BaseFacade {
         public void checkParameter() {
           ParaCheckUtil.checkParaNotNull(userinfoDTO.getId(), "id");
 
-          ParaCheckUtil.checkParaNotNull(userinfoDTO.getTenant(), "tenant");
-          ParaCheckUtil.checkEquals(userinfoDTO.getTenant(),
-              RequestContext.getContext().ms.getTenant(), "tenant is illegal");
+          if (StringUtils.isNotBlank(userinfoDTO.getTenant())) {
+            ParaCheckUtil.checkEquals(userinfoDTO.getTenant(),
+                RequestContext.getContext().ms.getTenant(), "tenant is illegal");
+          }
           if (StringUtils.isNotBlank(userinfoDTO.getNickname())) {
             ParaCheckUtil.checkInvalidCharacter(userinfoDTO.getNickname(), "invalid nickname");
           }
