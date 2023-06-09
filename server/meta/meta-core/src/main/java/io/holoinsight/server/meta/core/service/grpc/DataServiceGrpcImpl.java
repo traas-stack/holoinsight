@@ -130,9 +130,7 @@ public class DataServiceGrpcImpl extends DataServiceGrpc.DataServiceImplBase {
 
   private DBCoreService getDbCoreService() {
     DBCoreService coreService;
-    boolean b = readMysqlEnable();
-    logger.info("readMysqlEnable:{}", b);
-    if (b) {
+    if (readMysqlEnable()) {
       coreService = sqlDataCoreService;
     } else {
       coreService = mongoDataCoreService;
