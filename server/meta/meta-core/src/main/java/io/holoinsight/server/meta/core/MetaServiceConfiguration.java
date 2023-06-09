@@ -33,8 +33,9 @@ public class MetaServiceConfiguration {
 
   @Bean("sqlDataCoreService")
   // @ConditionalOnProperty(value = "holoinsight.meta.db_data_mode", havingValue = "mysql")
-  public DBCoreService SqlDataCoreService(MetaDataMapper metaDataMapper) {
-    return new SqlDataCoreService(metaDataMapper);
+  public DBCoreService SqlDataCoreService(MetaDataMapper metaDataMapper,
+      SuperCacheService superCacheService) {
+    return new SqlDataCoreService(metaDataMapper, superCacheService);
   }
 
   @Bean
