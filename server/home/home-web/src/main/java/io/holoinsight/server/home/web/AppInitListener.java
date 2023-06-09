@@ -6,7 +6,6 @@ package io.holoinsight.server.home.web;
 import io.holoinsight.server.common.config.ScheduleLoadTask;
 import io.holoinsight.server.home.alert.service.task.coordinator.AlertClusterService;
 import io.holoinsight.server.common.service.SuperCacheService;
-import io.holoinsight.server.home.biz.service.ClusterSchedulerTask;
 import io.holoinsight.server.home.common.util.cache.local.LocalCacheManage;
 import io.holoinsight.server.home.task.MonitorTaskManager;
 import org.springframework.beans.factory.InitializingBean;
@@ -26,9 +25,6 @@ public class AppInitListener implements InitializingBean {
   private SuperCacheService superCacheService;
 
   @Autowired
-  private ClusterSchedulerTask clusterSchedulerTask;
-
-  @Autowired
   private MonitorTaskManager monitorTaskManager;
 
   @Autowired
@@ -37,15 +33,12 @@ public class AppInitListener implements InitializingBean {
   @Autowired
   private AlertClusterService alertClusterService;
 
-  // @Autowired
-  // private SampleEventWriteTask sampleEventWriteTask;
 
   @Override
   public void afterPropertiesSet() {
     try {
       ScheduleLoadTask.registerTask(superCacheService, true);
       ScheduleLoadTask.registerTask(localCacheManage, true);
-      // ScheduleLoadTask.registerTask(clusterSchedulerTask, true);
       ScheduleLoadTask.registerTask(monitorTaskManager, true);
       ScheduleLoadTask.registerTask(alertClusterService, true);
     } catch (Exception e) {

@@ -20,7 +20,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -139,16 +138,7 @@ public class MarketplacePluginServiceImpl extends
       wrapper.eq("tenant", marketplacePluginDTO.getTenant());
     }
 
-    if (StringUtil.isNotBlank(marketplacePluginDTORequest.getSortBy())
-        && StringUtil.isNotBlank(marketplacePluginDTORequest.getSortRule())) {
-      if (marketplacePluginDTORequest.getSortRule().toLowerCase(Locale.ROOT).equals("desc")) {
-        wrapper.orderByDesc(marketplacePluginDTORequest.getSortBy());
-      } else {
-        wrapper.orderByAsc(marketplacePluginDTORequest.getSortBy());
-      }
-    } else {
-      wrapper.orderByDesc("gmt_modified");
-    }
+    wrapper.orderByDesc("gmt_modified");
 
     if (StringUtils.isNotBlank(marketplacePluginDTO.getWorkspace())) {
       wrapper.eq("workspace", marketplacePluginDTO.getWorkspace());

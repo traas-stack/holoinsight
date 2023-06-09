@@ -6,6 +6,7 @@ package io.holoinsight.server.home.biz.common;
 import io.holoinsight.server.home.common.util.StringUtil;
 import io.holoinsight.server.home.dal.model.dto.conf.*;
 import io.holoinsight.server.home.dal.model.dto.conf.CollectMetric.AfterFilter;
+import io.holoinsight.server.home.dal.model.dto.conf.CollectMetric.LogSampleRule;
 import io.holoinsight.server.home.dal.model.dto.conf.CollectMetric.Metric;
 import io.holoinsight.server.home.dal.model.dto.conf.CustomPluginConf.SplitCol;
 import io.holoinsight.server.home.dal.model.dto.conf.Translate.TranslateTransform;
@@ -33,12 +34,14 @@ import io.holoinsight.server.registry.model.GroupBy.LogAnalysisPattern;
 import io.holoinsight.server.registry.model.Output;
 import io.holoinsight.server.registry.model.Output.Gateway;
 import io.holoinsight.server.registry.model.Select;
+import io.holoinsight.server.registry.model.Select.LogSamples;
 import io.holoinsight.server.registry.model.Select.SelectItem;
 import io.holoinsight.server.registry.model.TimeParse;
 import io.holoinsight.server.registry.model.Where;
 import io.holoinsight.server.registry.model.Where.Contains;
 import io.holoinsight.server.registry.model.Where.ContainsAny;
 import io.holoinsight.server.registry.model.Where.In;
+import io.holoinsight.server.registry.model.Where.NumberOp;
 import io.holoinsight.server.registry.model.Where.Regexp;
 import io.holoinsight.server.registry.model.Window;
 import org.apache.commons.lang3.StringUtils;
@@ -110,6 +113,17 @@ public class GaeaSqlTaskUtil {
 
       select.getValues().add(selectItem);
     });
+
+    if (collectMetric.checkLogSample()) {
+      LogSamples logSamples = new LogSamples();
+      logSamples.setEnabled(true);
+      logSamples.setMaxCount(collectMetric.getSampleMaxCount());
+      logSamples.setMaxLength(collectMetric.getSampleMaxLength());
+
+      logSamples.setWhere(
+          buildSampleWhere(logParse.splitType, splitColMap, collectMetric.getLogSampleRules()));
+      select.setLogSamples(logSamples);
+    }
 
     return select;
   }
@@ -324,6 +338,100 @@ public class GaeaSqlTaskUtil {
       });
     }
 
+    where.setAnd(ands);
+    return where;
+  }
+
+  public static Where buildSampleWhere(String splitType,
+      Map<String, Map<String, SplitCol>> splitColMap, List<LogSampleRule> logSampleRules) {
+
+    Where where = new Where();
+    List<Where> ands = new ArrayList<>();
+
+    for (LogSampleRule logSampleRule : logSampleRules) {
+      Map<String, SplitCol> colMap = splitColMap.get(dimColType);
+      if (logSampleRule.keyType.equals(valColType)) {
+        colMap = splitColMap.get(valColType);
+      }
+      SplitCol splitCol = colMap.get(logSampleRule.getName());
+
+      Rule rule = splitCol.rule;
+      Elect elect = new Elect();
+
+      switch (splitType) {
+        case leftRight:
+          Elect.LeftRight leftRight = new Elect.LeftRight();
+          leftRight.setLeft(rule.left);
+          leftRight.setLeftIndex(rule.leftIndex);
+          leftRight.setRight(rule.right);
+
+          elect.setType("leftRight");
+          elect.setLeftRight(leftRight);
+          break;
+
+        case separator:
+          elect.setType("refIndex");
+          elect.setRefIndex(new RefIndex());
+          elect.getRefIndex().setIndex(rule.pos);
+          break;
+        case regexp:
+          if (StringUtils.isNotEmpty(rule.regexpName)) {
+            elect.setType("refName");
+            elect.setRefName(new RefName());
+            elect.getRefName().setName(rule.regexpName);
+          } else if (rule.pos != null) {
+            elect.setType("refIndex");
+            elect.setRefIndex(new RefIndex());
+            elect.getRefIndex().setIndex(rule.pos);
+          }
+          break;
+        default:
+          break;
+      }
+
+      Where and = new Where();
+
+      Where.In in = new In();
+      Where.NumberOp numberOp = new NumberOp();
+
+      switch (logSampleRule.filterType) {
+        case IN:
+          in.setElect(elect);
+          in.setValues(logSampleRule.getValues());
+          and.setIn(in);
+          break;
+        case NOT_IN:
+          Where not = new Where();
+          in.setValues(logSampleRule.getValues());
+          in.setElect(elect);
+          not.setIn(in);
+          and.setNot(not);
+          break;
+        case GT:
+          numberOp.setElect(elect);
+          numberOp.setGt(logSampleRule.getValue());
+          and.setNumberOp(numberOp);
+          break;
+        case GTE:
+          numberOp.setElect(elect);
+          numberOp.setGte(logSampleRule.getValue());
+          and.setNumberOp(numberOp);
+          break;
+        case LT:
+          numberOp.setElect(elect);
+          numberOp.setLt(logSampleRule.getValue());
+          and.setNumberOp(numberOp);
+          break;
+        case LTE:
+          numberOp.setElect(elect);
+          numberOp.setLte(logSampleRule.getValue());
+          and.setNumberOp(numberOp);
+          break;
+        default:
+          break;
+      }
+      ands.add(and);
+    }
     where.setAnd(ands);
     return where;
   }

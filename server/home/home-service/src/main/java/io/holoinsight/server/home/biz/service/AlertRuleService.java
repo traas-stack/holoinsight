@@ -21,6 +21,8 @@ public interface AlertRuleService extends IService<AlarmRule> {
 
   Boolean updateById(AlarmRuleDTO alarmRuleDTO);
 
+  Boolean deleteById(Long id);
+
   AlarmRuleDTO queryById(Long id, String tenant, String workspace);
 
   AlarmRuleDTO queryById(Long id, String tenant);

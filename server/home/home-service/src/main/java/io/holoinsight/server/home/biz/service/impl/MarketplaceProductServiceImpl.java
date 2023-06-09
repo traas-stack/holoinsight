@@ -115,16 +115,7 @@ public class MarketplaceProductServiceImpl extends
     if (null != marketplaceProductDTO.getStatus()) {
       wrapper.eq("status", marketplaceProductDTO.getStatus());
     }
-    if (StringUtil.isNotBlank(pageRequest.getSortBy())
-        && StringUtil.isNotBlank(pageRequest.getSortRule())) {
-      if (pageRequest.getSortRule().toLowerCase(Locale.ROOT).equals("desc")) {
-        wrapper.orderByDesc(pageRequest.getSortBy());
-      } else {
-        wrapper.orderByAsc(pageRequest.getSortBy());
-      }
-    } else {
-      wrapper.orderByDesc("gmt_modified");
-    }
+    wrapper.orderByDesc("gmt_modified");
 
     wrapper.select(MarketplaceProduct.class,
         info -> !info.getColumn().equals("creator") && !info.getColumn().equals("modifier"));

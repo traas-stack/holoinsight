@@ -16,6 +16,14 @@ import java.util.List;
  */
 public interface MetricInfoService extends IService<MetricInfo> {
 
+  void create(MetricInfoDTO metricInfoDTO);
+
+  void update(MetricInfoDTO metricInfoDTO);
+
+  List<MetricInfoDTO> queryListByTenant(String tenant, String workspace);
+
   List<MetricInfoDTO> queryListByTenantProduct(String tenant, String workspace, String product);
+
+  MetricInfoDTO queryByMetric(String tenant, String workspace, String metric);
 
 }

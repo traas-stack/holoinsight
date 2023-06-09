@@ -6,7 +6,6 @@ package io.holoinsight.server.home.biz.service.impl;
 import io.holoinsight.server.common.DateUtil;
 import io.holoinsight.server.common.J;
 import io.holoinsight.server.home.biz.service.AlarmHistoryDetailService;
-import io.holoinsight.server.home.common.util.StringUtil;
 import io.holoinsight.server.home.dal.converter.AlarmHistoryDetailConverter;
 import io.holoinsight.server.home.dal.mapper.AlarmHistoryDetailMapper;
 import io.holoinsight.server.home.dal.model.AlarmHistoryDetail;
@@ -23,7 +22,6 @@ import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
 import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
 @Service
@@ -78,16 +76,7 @@ public class AlarmHistoryDetailServiceImpl extends
       wrapper.eq("unique_id", alarmHistoryDetail.getUniqueId());
     }
 
-    if (StringUtil.isNotBlank(pageRequest.getSortBy())
-        && StringUtil.isNotBlank(pageRequest.getSortRule())) {
-      if (pageRequest.getSortRule().toLowerCase(Locale.ROOT).equals("desc")) {
-        wrapper.orderByDesc(pageRequest.getSortBy());
-      } else {
-        wrapper.orderByAsc(pageRequest.getSortBy());
-      }
-    } else {
-      wrapper.orderByDesc("id");
-    }
+    wrapper.orderByDesc("id");
 
     Page<AlarmHistoryDetail> page = new Page<>(pageRequest.getPageNum(), pageRequest.getPageSize());
 

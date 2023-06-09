@@ -18,7 +18,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 
 @Service
 public class DashboardServiceImpl extends ServiceImpl<DashboardMapper, Dashboard>
@@ -155,16 +154,7 @@ public class DashboardServiceImpl extends ServiceImpl<DashboardMapper, Dashboard
       wrapper.like("title", dashboard.getTitle().trim());
     }
 
-    if (StringUtil.isNotBlank(request.getSortBy())
-        && StringUtil.isNotBlank(request.getSortRule())) {
-      if (request.getSortRule().toLowerCase(Locale.ROOT).equals("desc")) {
-        wrapper.orderByDesc(request.getSortBy());
-      } else {
-        wrapper.orderByAsc(request.getSortBy());
-      }
-    } else {
-      wrapper.orderByDesc("gmt_modified");
-    }
+    wrapper.orderByDesc("id");
 
     Page<Dashboard> page = new Page<>(request.getPageNum(), request.getPageSize());
 

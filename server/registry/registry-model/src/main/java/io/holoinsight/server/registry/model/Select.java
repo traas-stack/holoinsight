@@ -22,6 +22,8 @@ import lombok.ToString;
 public class Select {
   private List<SelectItem> values = new ArrayList<>();
 
+  private LogSamples logSamples;
+
   /**
    * select agg($elect) as ...
    */
@@ -38,5 +40,15 @@ public class Select {
      * 聚合方法 sum/min/max/avg/count
      */
     private String agg;
+  }
+
+  @ToString
+  @Getter
+  @Setter
+  public static class LogSamples {
+    private Boolean enabled;
+    private Where where;
+    private Integer maxCount;
+    private Integer maxLength;
   }
 }

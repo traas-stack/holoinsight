@@ -14,7 +14,6 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
 
-import java.util.Locale;
 
 @Service
 public class AlertmanagerWebhookServiceImpl
@@ -58,16 +57,7 @@ public class AlertmanagerWebhookServiceImpl
       wrapper.like("name", alertmanagerWebhook.getName().trim());
     }
 
-    if (StringUtil.isNotBlank(request.getSortBy())
-        && StringUtil.isNotBlank(request.getSortRule())) {
-      if (request.getSortRule().toLowerCase(Locale.ROOT).equals("desc")) {
-        wrapper.orderByDesc(request.getSortBy());
-      } else {
-        wrapper.orderByAsc(request.getSortBy());
-      }
-    } else {
-      wrapper.orderByDesc("gmt_modified");
-    }
+    wrapper.orderByDesc("id");
 
     wrapper.select(AlertmanagerWebhook.class,
         info -> !info.getColumn().equals("creator") && !info.getColumn().equals("modifier"));

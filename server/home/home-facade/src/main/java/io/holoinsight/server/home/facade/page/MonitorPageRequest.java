@@ -20,10 +20,6 @@ public class MonitorPageRequest<T> implements Serializable {
 
   private int pageSize = 10;
 
-  private String sortBy;
-
-  private String sortRule;
-
   private T target;
   // 时间范围
   private Long from;
@@ -33,8 +29,6 @@ public class MonitorPageRequest<T> implements Serializable {
     MonitorPageRequest<K> request = new MonitorPageRequest<>();
     request.setPageSize(getPageSize());
     request.setPageNum(getPageNum());
-    request.setSortBy(getSortBy());
-    request.setSortRule(getSortRule());
     request.setFrom(getFrom());
     request.setTo(getTo());
     return request;

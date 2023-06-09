@@ -3,6 +3,8 @@
  */
 package io.holoinsight.server.home.biz.listener;
 
+import io.holoinsight.server.common.dao.entity.dto.MetricInfoDTO;
+import io.holoinsight.server.common.service.MetricInfoService;
 import io.holoinsight.server.home.biz.common.GaeaConvertUtil;
 import io.holoinsight.server.home.biz.common.GaeaSqlTaskUtil;
 import io.holoinsight.server.home.biz.service.GaeaCollectConfigService;
@@ -26,20 +28,20 @@ import io.holoinsight.server.registry.model.SqlTask;
 import io.holoinsight.server.registry.model.Where;
 import io.holoinsight.server.registry.model.Window;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.PostConstruct;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 /**
  * 通知registry
- * 
+ *
  * @author jsy1001de
  * @version 1.0: CustomPluginUpdateListener.java, v 0.1 2022年03月15日 8:40 下午 jinsong.yjs Exp $
  */
@@ -50,6 +52,9 @@ public class CustomPluginUpdateListener {
   @Autowired
   private GaeaCollectConfigService gaeaCollectConfigService;
 
+  @Autowired
+  private MetricInfoService metricInfoService;
+
   @PostConstruct
   void register() {
     EventBusHolder.register(this);
@@ -58,6 +63,10 @@ public class CustomPluginUpdateListener {
   @Subscribe
   @AllowConcurrentEvents
   public void onEvent(CustomPluginDTO customPluginDTO) {
+
+    // 0. save metricInfo
+    saveMetricInfo(customPluginDTO);
+
     // 1. 转换模型
     // 2. 落库
     // 3. 通知registry
@@ -89,7 +98,7 @@ public class CustomPluginUpdateListener {
 
       // 通知registry
       notify(upsert);
-    } catch (Exception e) {
+    } catch (Throwable e) {
       log.error("fail to convert customPlugin to gaeaCollectConfig id {} for {}",
           customPluginDTO.id, e.getMessage(), e);
     }
@@ -179,5 +188,52 @@ public class CustomPluginUpdateListener {
     }
 
     return sqlTask;
+  }
+
+  private void saveMetricInfo(CustomPluginDTO customPluginDTO) {
+    CustomPluginConf conf = customPluginDTO.getConf();
+    List<CollectMetric> collectMetrics = conf.getCollectMetrics();
+
+    for (CollectMetric collectMetric : collectMetrics) {
+      try {
+        MetricInfoDTO metricInfoDTO = new MetricInfoDTO();
+        metricInfoDTO.setTenant(customPluginDTO.getTenant());
+        metricInfoDTO.setWorkspace(
+            null == customPluginDTO.getWorkspace() ? "-" : customPluginDTO.getWorkspace());
+        metricInfoDTO.setOrganization("-");
+        metricInfoDTO.setProduct("logmonitor");
+
+        metricInfoDTO.setMetricType("logdefault");
+        if (collectMetric.checkLogPattern()) {
+          metricInfoDTO.setMetricType("logpattern");
+        } else if (collectMetric.checkLogSample()) {
+          metricInfoDTO.setMetricType("logsample");
+        }
+        metricInfoDTO.setMetric(collectMetric.getTableName());
+        metricInfoDTO.setMetricTable(collectMetric.getTargetTable());
+        metricInfoDTO.setDeleted(customPluginDTO.status == CustomPluginStatus.OFFLINE);
+        metricInfoDTO.setDescription(customPluginDTO.getName() + ", " + collectMetric.tableName);
+        metricInfoDTO.setUnit("number");
+        metricInfoDTO.setPeriod(customPluginDTO.getPeriodType().dataUnitMs / 1000);
+
+        List<String> tags = new ArrayList<>(Arrays.asList("ip", "hostname", "namespace"));
+        if (!CollectionUtils.isEmpty(collectMetric.tags)) {
+          tags.addAll(collectMetric.tags);
+        }
+        metricInfoDTO.setTags(tags);
+
+        MetricInfoDTO db = metricInfoService.queryByMetric(metricInfoDTO.getTenant(),
+            metricInfoDTO.getWorkspace(), collectMetric.getTargetTable());
+        if (null == db) {
+          metricInfoService.create(metricInfoDTO);
+        } else {
+          metricInfoDTO.setId(db.id);
+          metricInfoService.update(metricInfoDTO);
+        }
+      } catch (Exception e) {
+        log.error("saveLogMetricInfo error, {}, {}", collectMetric.getTargetTable(), e.getMessage(),
+            e);
+      }
+    }
   }
 }
