@@ -102,9 +102,9 @@ public class SpanDO extends RecordDO {
 
   public static SpanDO fromSpan(Span span, Resource resource) {
     SpanDO spanEsDO = new SpanDO();
-    spanEsDO.setTimestamp(TimeUtils.unixNano2MS(span.getEndTimeUnixNano() ));
-    spanEsDO.setStartTime(TimeUtils.unixNano2MS(span.getStartTimeUnixNano() ));
-    spanEsDO.setEndTime(TimeUtils.unixNano2MS(span.getEndTimeUnixNano() ));
+    spanEsDO.setTimestamp(TimeUtils.unixNano2MS(span.getEndTimeUnixNano()));
+    spanEsDO.setStartTime(TimeUtils.unixNano2MS(span.getStartTimeUnixNano()));
+    spanEsDO.setEndTime(TimeUtils.unixNano2MS(span.getEndTimeUnixNano()));
     spanEsDO.setTraceId(span.getTraceId());
     spanEsDO.setParentSpanId(span.getParentSpanId());
     spanEsDO.setSpanId(span.getSpanId());
@@ -113,8 +113,8 @@ public class SpanDO extends RecordDO {
     spanEsDO.setLinks(GsonUtils.get().toJson(span.getLinks()));
     spanEsDO.setEvents(GsonUtils.get().toJson(span.getEvents()));
     spanEsDO.setTraceStatus(span.getStatus().getStatusCode().getCode());
-    spanEsDO
-        .setLatency((int) (TimeUtils.unixNano2MS((span.getEndTimeUnixNano() - span.getStartTimeUnixNano())) ));
+    spanEsDO.setLatency(
+        (int) (TimeUtils.unixNano2MS((span.getEndTimeUnixNano() - span.getStartTimeUnixNano()))));
     Map<String, String> tags = new HashMap<>();
     spanEsDO.setTags(tags);
     List<KeyValue> spanAttrKvs = span.getAttributes();

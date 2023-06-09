@@ -19,9 +19,9 @@ public class ColumnTypeEsMapping implements DataTypeMapping {
 
   @Override
   public String transform(String field, Class<?> type, Type genericType) {
-    if (RecordDO.TIMESTAMP.equals(field)){
+    if (RecordDO.TIMESTAMP.equals(field)) {
       return "date";
-    }else if (Integer.class.equals(type) || int.class.equals(type) || Layer.class.equals(type)) {
+    } else if (Integer.class.equals(type) || int.class.equals(type) || Layer.class.equals(type)) {
       return "integer";
     } else if (Long.class.equals(type) || long.class.equals(type)) {
       return "long";
@@ -35,7 +35,7 @@ public class ColumnTypeEsMapping implements DataTypeMapping {
       return "text";
     } else if (List.class.isAssignableFrom(type)) {
       final Type elementType = ((ParameterizedType) genericType).getActualTypeArguments()[0];
-      return transform(field,(Class<?>) elementType, elementType);
+      return transform(field, (Class<?>) elementType, elementType);
     } else {
       throw new IllegalArgumentException("Unsupported data type: " + type.getName());
     }

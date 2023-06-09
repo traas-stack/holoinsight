@@ -165,8 +165,8 @@ public class EsModelInstaller implements ModelInstaller {
   private Map<String, Object> createProperties(Model model) {
     Map<String, Object> properties = new HashMap<>();
     for (ModelColumn columnDefine : model.getColumns()) {
-      final String type =
-          dataTypeMapping.transform(columnDefine.getName(),columnDefine.getType(), columnDefine.getGenericType());
+      final String type = dataTypeMapping.transform(columnDefine.getName(), columnDefine.getType(),
+          columnDefine.getGenericType());
       String columnName = columnDefine.getName();
       Map<String, Object> column = new HashMap<>();
       column.put("type", type);
