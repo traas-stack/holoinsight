@@ -26,6 +26,7 @@ import lombok.extern.slf4j.Slf4j;
 import net.devh.boot.grpc.client.inject.GrpcClient;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -42,6 +43,9 @@ public class QueryClientService {
 
   @GrpcClient("queryService")
   private QueryServiceGrpc.QueryServiceBlockingStub queryServiceBlockingStub;
+
+  @Autowired
+  private RequestContextAdapter requestContextAdapter;
 
   public QueryResponse query(QueryProto.QueryRequest request) {
     Debugger.print("QueryService", "query, request: " + J.toJson(request));
@@ -324,8 +328,9 @@ public class QueryClientService {
 
   public QueryProto.QueryResponse queryData(QueryProto.QueryRequest request) {
 
+    QueryProto.QueryRequest queryRequest = this.requestContextAdapter.requestAdapte(request);
     long start = System.currentTimeMillis();
-    QueryProto.QueryResponse response = queryServiceBlockingStub.queryData(request);
+    QueryProto.QueryResponse response = queryServiceBlockingStub.queryData(queryRequest);
     int pointSize = getPointSizeFromResp(response);
     log.info("HOME_QUERY_STAT from[ALERT] invoke[1], cost[{}], pointSize[{}]",
         System.currentTimeMillis() - start, pointSize);
@@ -333,14 +338,15 @@ public class QueryClientService {
   }
 
   public QueryProto.QueryResponse queryTag(QueryProto.QueryRequest request) {
-
-    QueryProto.QueryResponse response = queryServiceBlockingStub.queryTags(request);
+    QueryProto.QueryRequest queryRequest = this.requestContextAdapter.requestAdapte(request);
+    QueryProto.QueryResponse response = queryServiceBlockingStub.queryTags(queryRequest);
     return response;
   }
 
   public QueryProto.QueryResponse queryPqlRange(QueryProto.PqlRangeRequest request) {
+    QueryProto.PqlRangeRequest PqlRangeRequest = this.requestContextAdapter.requestAdapte(request);
     long start = System.currentTimeMillis();
-    QueryProto.QueryResponse response = queryServiceBlockingStub.pqlRangeQuery(request);
+    QueryProto.QueryResponse response = queryServiceBlockingStub.pqlRangeQuery(PqlRangeRequest);
     int pointSize = getPointSizeFromResp(response);
     log.info("HOME_QUERY_STAT from[PQL] invoke[1], cost[{}], pointSize[{}]",
         System.currentTimeMillis() - start, pointSize);
