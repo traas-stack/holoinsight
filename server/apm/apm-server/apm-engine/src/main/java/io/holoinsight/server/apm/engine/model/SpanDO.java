@@ -12,6 +12,7 @@ import io.holoinsight.server.apm.common.model.storage.annotation.ModelAnnotation
 import io.holoinsight.server.apm.common.utils.DownSampling;
 import io.holoinsight.server.apm.common.utils.GsonUtils;
 import io.holoinsight.server.apm.common.utils.TimeBucket;
+import io.holoinsight.server.apm.common.utils.TimeUtils;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -101,10 +102,9 @@ public class SpanDO extends RecordDO {
 
   public static SpanDO fromSpan(Span span, Resource resource) {
     SpanDO spanEsDO = new SpanDO();
-    spanEsDO.setTimeBucket(
-        TimeBucket.getTimeBucket(span.getEndTimeUnixNano() / 1000000, DownSampling.Second));
-    spanEsDO.setStartTime(span.getStartTimeUnixNano() / 1000000);
-    spanEsDO.setEndTime(span.getEndTimeUnixNano() / 1000000);
+    spanEsDO.setTimestamp(TimeUtils.unixNano2MS(span.getEndTimeUnixNano() ));
+    spanEsDO.setStartTime(TimeUtils.unixNano2MS(span.getStartTimeUnixNano() ));
+    spanEsDO.setEndTime(TimeUtils.unixNano2MS(span.getEndTimeUnixNano() ));
     spanEsDO.setTraceId(span.getTraceId());
     spanEsDO.setParentSpanId(span.getParentSpanId());
     spanEsDO.setSpanId(span.getSpanId());
@@ -114,7 +114,7 @@ public class SpanDO extends RecordDO {
     spanEsDO.setEvents(GsonUtils.get().toJson(span.getEvents()));
     spanEsDO.setTraceStatus(span.getStatus().getStatusCode().getCode());
     spanEsDO
-        .setLatency((int) ((span.getEndTimeUnixNano() - span.getStartTimeUnixNano()) / 1000000));
+        .setLatency((int) (TimeUtils.unixNano2MS((span.getEndTimeUnixNano() - span.getStartTimeUnixNano())) ));
     Map<String, String> tags = new HashMap<>();
     spanEsDO.setTags(tags);
     List<KeyValue> spanAttrKvs = span.getAttributes();

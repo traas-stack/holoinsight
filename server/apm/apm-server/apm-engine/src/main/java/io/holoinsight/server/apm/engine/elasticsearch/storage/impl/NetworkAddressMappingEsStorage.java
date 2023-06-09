@@ -32,7 +32,7 @@ public class NetworkAddressMappingEsStorage extends RecordEsStorage<NetworkAddre
 
   @Override
   public String timeSeriesField() {
-    return NetworkAddressMappingDO.TIME_BUCKET;
+    return NetworkAddressMappingDO.TIMESTAMP;
   }
 
   protected long getTime(long timestamp) {

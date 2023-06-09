@@ -4,6 +4,7 @@
 package io.holoinsight.server.apm.engine.elasticsearch.storage.impl;
 
 import io.holoinsight.server.apm.common.constants.Const;
+import io.holoinsight.server.apm.common.utils.DownSampling;
 import io.holoinsight.server.apm.common.utils.TimeBucket;
 import io.holoinsight.server.apm.engine.elasticsearch.utils.EsGsonUtils;
 import io.holoinsight.server.apm.engine.model.RecordDO;
@@ -21,9 +22,7 @@ import org.elasticsearch.common.xcontent.XContentType;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.IOException;
-import java.lang.reflect.Field;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicReference;
 
 @ConditionalOnFeature("trace")
 @Slf4j
@@ -55,7 +54,8 @@ public class RecordEsStorage<T extends RecordDO> implements WritableStorage<T> {
 
   @Override
   public String writeIndexName(T entity) {
-    return entity.indexName() + Const.LINE + entity.getTimeBucket() / 1000000;
+    long timeBucket = TimeBucket.getTimeBucket(entity.getTimestamp(), DownSampling.Second);
+    return entity.indexName() + Const.LINE + timeBucket / 1000000;
   }
 
 }

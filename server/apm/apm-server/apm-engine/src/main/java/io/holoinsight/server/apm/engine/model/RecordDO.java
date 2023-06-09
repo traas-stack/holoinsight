@@ -21,10 +21,10 @@ public abstract class RecordDO implements Serializable {
 
   private static final long serialVersionUID = -2175475836786269673L;
 
-  public static final String TIME_BUCKET = "time_bucket";
+  public static final String TIMESTAMP = "_timestamp";
 
-  @Column(name = TIME_BUCKET)
-  private long timeBucket;
+  @Column(name = TIMESTAMP)
+  private long timestamp;
 
   public abstract String indexName();
 }
