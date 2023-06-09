@@ -172,6 +172,7 @@ public class EsModelInstaller implements ModelInstaller {
       column.put("type", type);
       properties.put(columnName, column);
     }
+    log.info("[apm] model properties, model={}, properties={}", model.getName(), properties);
     return properties;
   }
 }
