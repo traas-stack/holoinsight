@@ -37,6 +37,11 @@ services:
     extends:
       file: ../common/base.yaml
       service: es
+  # tatris
+  tatris:
+    extends:
+      file: ../common/base.yaml
+      service: tatris
   kibana:
     extends:
       file: ../common/base.yaml
@@ -70,6 +75,8 @@ services:
       ceresdb:
         condition: service_healthy
       es:
+        condition: service_healthy
+      tatris:
         condition: service_healthy
     volumes:
     - ./application.yaml:/home/admin/application.yaml:ro
