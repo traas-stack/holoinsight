@@ -119,7 +119,8 @@ public class SqlDataCoreService extends AbstractDataCoreService {
           }
           if (now - logLast >= LOG_INTERVAL) {
             ukMetaCache.forEach((tableName, metaData) -> {
-              logger.info("[META-INFO] ukMetaCache at {}, table={}, records={}", now, tableName,
+              logger.info("[META-INFO] ukMetaCache at {}, table={}, index={}, records={}", now,
+                  tableName, ConstModel.default_pk,
                   CollectionUtils.isEmpty(metaData) ? 0 : metaData.size());
             });
             indexMetaCache.forEach((tableName, indexItem) -> {
@@ -438,7 +439,7 @@ public class SqlDataCoreService extends AbstractDataCoreService {
       logger.info("[META-CACHE] hit index: {}, table={}, params:{}", indexKeys, tableName, params);
       return getMetaDataFromIndexCache(tableName, ukToRowCache, params, indexKeys);
     }
-    logger.info("[META-CACHE] miss index, table={}, params:{}", tableName, params);
+    logger.info("[META-CACHE] miss index: [-], table={}, params:{}", tableName, params);
     return ukToRowCache.values();
   }
 
@@ -477,7 +478,6 @@ public class SqlDataCoreService extends AbstractDataCoreService {
 
   private Collection<Map<String, Object>> getMetaDataFromUkCache(
       Map<String, Map<String, Object>> ukToRowCache, Map<String, Object> params) {
-    logger.info("[META-CACHE] hit index: {}, params:{}", ConstModel.default_pk, params);
     Object uk = params.get(ConstModel.default_pk);
     if (uk instanceof List) {
       Collection<Map<String, Object>> metaData = Lists.newArrayList();
@@ -509,7 +509,6 @@ public class SqlDataCoreService extends AbstractDataCoreService {
         }
       }
       if (containsAllKeys) {
-        logger.info("[META-CACHE] hit index: {}, params:{}", indexFields, params);
         return indexFields;
       }
     }
