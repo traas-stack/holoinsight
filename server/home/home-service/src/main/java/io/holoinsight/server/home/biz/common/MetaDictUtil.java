@@ -150,7 +150,7 @@ public class MetaDictUtil {
 
   public static Boolean isMeteringCloudrunLogSubmitOpen() {
     Boolean value = MetaDictUtil.getValue(MetaDictType.GLOBAL_CONFIG,
-            MetaDictKey.METERING_CLOUDRUN_LOG_SUBMIT_OPEN, new TypeToken<Boolean>() {});
+        MetaDictKey.METERING_CLOUDRUN_LOG_SUBMIT_OPEN, new TypeToken<Boolean>() {});
     if (null == value) {
       return false;
     }
@@ -159,7 +159,7 @@ public class MetaDictUtil {
 
   public static Boolean isMeteringHoloinsightSubmitOpen() {
     Boolean value = MetaDictUtil.getValue(MetaDictType.GLOBAL_CONFIG,
-            MetaDictKey.METERING_HOLOINSIGHT_SUBMIT_OPEN, new TypeToken<Boolean>() {});
+        MetaDictKey.METERING_HOLOINSIGHT_SUBMIT_OPEN, new TypeToken<Boolean>() {});
     if (null == value) {
       return false;
     }
