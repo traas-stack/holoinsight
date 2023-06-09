@@ -416,13 +416,15 @@ public class SqlDataCoreService extends AbstractDataCoreService {
       QueryExample queryExample, Map<String, Map<String, Object>> ukToRowCache) {
     Map<String, Object> params = queryExample.getParams();
     if (params.containsKey(ConstModel.default_pk)) {
+      logger.info("[META-CACHE] hit index: [{}], table={}, params:{}", ConstModel.default_pk, tableName, params);
       return getMetaDataFromUkCache(ukToRowCache, params);
     }
     List<String> indexKeys = getMatchedIndex(tableName, params);
     if (!CollectionUtils.isEmpty(indexKeys)) {
+      logger.info("[META-CACHE] hit index: {}, table={}, params:{}", indexKeys, tableName, params);
       return getMetaDataFromIndexCache(tableName, ukToRowCache, params, indexKeys);
     }
-    logger.info("[META-CACHE] miss index, params:{}", params);
+    logger.info("[META-CACHE] miss index, table={}, params:{}", tableName, params);
     return ukToRowCache.values();
   }
 
