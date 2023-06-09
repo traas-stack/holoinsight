@@ -21,8 +21,4 @@ public class EndpointTatrisStorage extends EndpointEsStorage {
     return tatrisClient;
   }
 
-  @Override
-  public String timeSeriesField() {
-    return "_timestamp";
-  }
 }

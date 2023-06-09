@@ -25,8 +25,4 @@ public class SpanTatrisStorage extends SpanEsStorage {
     return tatrisClient;
   }
 
-  @Override
-  public String timeSeriesField() {
-    return "_timestamp";
-  }
 }

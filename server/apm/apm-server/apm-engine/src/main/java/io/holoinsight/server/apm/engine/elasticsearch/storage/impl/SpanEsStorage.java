@@ -24,6 +24,7 @@ import io.holoinsight.server.apm.common.model.specification.sw.Trace;
 import io.holoinsight.server.apm.common.model.specification.sw.TraceState;
 import io.holoinsight.server.apm.common.utils.GsonUtils;
 import io.holoinsight.server.apm.engine.elasticsearch.utils.EsGsonUtils;
+import io.holoinsight.server.apm.engine.model.RecordDO;
 import io.holoinsight.server.apm.engine.model.SpanDO;
 import io.holoinsight.server.apm.engine.storage.SpanStorage;
 import lombok.extern.slf4j.Slf4j;
@@ -52,7 +53,7 @@ public class SpanEsStorage extends RecordEsStorage<SpanDO> implements SpanStorag
 
   @Override
   public String timeSeriesField() {
-    return SpanDO.END_TIME;
+    return RecordDO.TIMESTAMP;
   }
 
   @Override

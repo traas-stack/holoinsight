@@ -21,8 +21,4 @@ public class ServiceInstanceTatrisStorage extends ServiceInstanceEsStorage {
     return tatrisClient;
   }
 
-  @Override
-  public String timeSeriesField() {
-    return "_timestamp";
-  }
 }

@@ -21,8 +21,4 @@ public class VirtualComponentTatrisStorage extends VirtualComponentEsStorage {
     return tatrisClient;
   }
 
-  @Override
-  public String timeSeriesField() {
-    return "_timestamp";
-  }
 }

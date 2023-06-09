@@ -5,6 +5,7 @@ package io.holoinsight.server.apm.engine.elasticsearch.storage.impl;
 
 import io.holoinsight.server.apm.common.model.query.SlowSql;
 import io.holoinsight.server.apm.engine.elasticsearch.utils.EsGsonUtils;
+import io.holoinsight.server.apm.engine.model.RecordDO;
 import io.holoinsight.server.apm.engine.model.SlowSqlDO;
 import io.holoinsight.server.apm.engine.storage.ICommonBuilder;
 import io.holoinsight.server.apm.engine.storage.SlowSqlStorage;
@@ -40,7 +41,7 @@ public class SlowSqlEsStorage extends RecordEsStorage<SlowSqlDO> implements Slow
 
   @Override
   public String timeSeriesField() {
-    return SlowSqlDO.START_TIME;
+    return RecordDO.TIMESTAMP;
   }
 
   @Override

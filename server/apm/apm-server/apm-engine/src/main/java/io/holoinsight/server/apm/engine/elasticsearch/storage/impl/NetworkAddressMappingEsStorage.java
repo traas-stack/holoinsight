@@ -6,6 +6,7 @@ package io.holoinsight.server.apm.engine.elasticsearch.storage.impl;
 import io.holoinsight.server.apm.common.utils.TimeBucket;
 import io.holoinsight.server.apm.engine.elasticsearch.utils.EsGsonUtils;
 import io.holoinsight.server.apm.engine.model.NetworkAddressMappingDO;
+import io.holoinsight.server.apm.engine.model.RecordDO;
 import io.holoinsight.server.apm.engine.storage.NetworkAddressMappingStorage;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
@@ -32,7 +33,7 @@ public class NetworkAddressMappingEsStorage extends RecordEsStorage<NetworkAddre
 
   @Override
   public String timeSeriesField() {
-    return NetworkAddressMappingDO.TIMESTAMP;
+    return RecordDO.TIMESTAMP;
   }
 
   protected long getTime(long timestamp) {

@@ -21,8 +21,4 @@ public class TopologyTatrisStorage extends TopologyEsStorage {
     return tatrisClient;
   }
 
-  @Override
-  public String timeSeriesField() {
-    return "_timestamp";
-  }
 }

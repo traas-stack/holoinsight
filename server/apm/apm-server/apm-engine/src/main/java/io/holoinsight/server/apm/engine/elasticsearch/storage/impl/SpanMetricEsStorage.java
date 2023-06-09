@@ -49,7 +49,7 @@ public class SpanMetricEsStorage extends PostCalMetricStorage {
 
   @Override
   public String timeSeriesField() {
-    return SpanDO.END_TIME;
+    return "_timestamp";
   }
 
 

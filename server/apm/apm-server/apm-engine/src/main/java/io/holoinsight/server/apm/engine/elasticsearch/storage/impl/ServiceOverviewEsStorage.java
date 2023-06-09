@@ -5,6 +5,7 @@ package io.holoinsight.server.apm.engine.elasticsearch.storage.impl;
 
 import io.holoinsight.server.apm.common.model.query.Service;
 import io.holoinsight.server.apm.common.model.specification.otel.SpanKind;
+import io.holoinsight.server.apm.engine.model.RecordDO;
 import io.holoinsight.server.apm.engine.model.SpanDO;
 import io.holoinsight.server.apm.engine.storage.ICommonBuilder;
 import io.holoinsight.server.apm.engine.storage.ServiceOverviewStorage;
@@ -39,7 +40,7 @@ public class ServiceOverviewEsStorage implements ServiceOverviewStorage {
 
   @Override
   public String timeSeriesField() {
-    return SpanDO.END_TIME;
+    return RecordDO.TIMESTAMP;
   }
 
   @Override

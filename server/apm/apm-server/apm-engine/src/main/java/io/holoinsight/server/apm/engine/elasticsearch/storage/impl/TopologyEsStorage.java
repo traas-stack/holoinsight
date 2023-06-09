@@ -6,10 +6,7 @@ package io.holoinsight.server.apm.engine.elasticsearch.storage.impl;
 import io.holoinsight.server.apm.common.model.query.Call;
 import io.holoinsight.server.apm.common.model.query.ResponseMetric;
 import io.holoinsight.server.apm.common.model.specification.otel.SpanKind;
-import io.holoinsight.server.apm.engine.model.EndpointRelationDO;
-import io.holoinsight.server.apm.engine.model.ServiceInstanceRelationDO;
-import io.holoinsight.server.apm.engine.model.ServiceRelationDO;
-import io.holoinsight.server.apm.engine.model.SpanDO;
+import io.holoinsight.server.apm.engine.model.*;
 import io.holoinsight.server.apm.engine.storage.ICommonBuilder;
 import io.holoinsight.server.apm.engine.storage.TopologyStorage;
 import lombok.extern.slf4j.Slf4j;
@@ -44,7 +41,7 @@ public class TopologyEsStorage implements TopologyStorage {
 
   @Override
   public String timeSeriesField() {
-    return SpanDO.END_TIME;
+    return RecordDO.TIMESTAMP;
   }
 
   @Override

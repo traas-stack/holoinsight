@@ -20,11 +20,6 @@ public class NetworkAddressMappingTatrisStorage extends NetworkAddressMappingEsS
   }
 
   @Override
-  public String timeSeriesField() {
-    return "_timestamp";
-  }
-
-  @Override
   protected long getTime(long timestamp) {
     return timestamp;
   }
