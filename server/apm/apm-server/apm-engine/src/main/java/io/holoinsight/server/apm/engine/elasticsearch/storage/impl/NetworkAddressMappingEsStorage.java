@@ -3,7 +3,6 @@
  */
 package io.holoinsight.server.apm.engine.elasticsearch.storage.impl;
 
-import io.holoinsight.server.apm.common.utils.TimeBucket;
 import io.holoinsight.server.apm.engine.elasticsearch.utils.EsGsonUtils;
 import io.holoinsight.server.apm.engine.model.NetworkAddressMappingDO;
 import io.holoinsight.server.apm.engine.model.RecordDO;
@@ -36,17 +35,13 @@ public class NetworkAddressMappingEsStorage extends RecordEsStorage<NetworkAddre
     return RecordDO.TIMESTAMP;
   }
 
-  protected long getTime(long timestamp) {
-    return TimeBucket.getRecordTimeBucket(timestamp);
-  }
-
   @Override
   public List<NetworkAddressMappingDO> loadByTime(long startTime) throws IOException {
     List<NetworkAddressMappingDO> networkAddressMapping = new ArrayList<>();
     SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
     searchSourceBuilder.size(1000);
-    searchSourceBuilder.query(new RangeQueryBuilder(this.timeSeriesField()).gte(getTime(startTime))
-        .lte(getTime(System.currentTimeMillis())));
+    searchSourceBuilder.query(new RangeQueryBuilder(this.timeSeriesField()).gte(startTime)
+        .lte(System.currentTimeMillis()));
     SearchRequest searchRequest =
         new SearchRequest(new String[] {NetworkAddressMappingDO.INDEX_NAME}, searchSourceBuilder);
 
