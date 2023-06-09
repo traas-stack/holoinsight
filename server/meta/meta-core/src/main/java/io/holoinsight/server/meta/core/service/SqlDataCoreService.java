@@ -416,7 +416,8 @@ public class SqlDataCoreService extends AbstractDataCoreService {
       QueryExample queryExample, Map<String, Map<String, Object>> ukToRowCache) {
     Map<String, Object> params = queryExample.getParams();
     if (params.containsKey(ConstModel.default_pk)) {
-      logger.info("[META-CACHE] hit index: [{}], table={}, params:{}", ConstModel.default_pk, tableName, params);
+      logger.info("[META-CACHE] hit index: [{}], table={}, params:{}", ConstModel.default_pk,
+          tableName, params);
       return getMetaDataFromUkCache(ukToRowCache, params);
     }
     List<String> indexKeys = getMatchedIndex(tableName, params);
@@ -568,8 +569,8 @@ public class SqlDataCoreService extends AbstractDataCoreService {
     }
     StopWatch stopWatch = StopWatch.createStarted();
     Integer count = metaDataMapper.softDeleteByUks(tableName, default_pks, new Date());
-    logger.info("[batchDeleteByPk] finish, table={}, deleteCount={}, cost={}",
-        tableName, count, stopWatch.getTime());
+    logger.info("[batchDeleteByPk] finish, table={}, deleteCount={}, cost={}", tableName, count,
+        stopWatch.getTime());
     return count;
   }
 }
