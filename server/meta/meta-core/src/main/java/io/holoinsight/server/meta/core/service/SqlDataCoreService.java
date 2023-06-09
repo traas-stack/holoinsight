@@ -4,6 +4,7 @@
 package io.holoinsight.server.meta.core.service;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -11,17 +12,24 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
+import com.google.gson.reflect.TypeToken;
 import io.holoinsight.server.common.J;
 import io.holoinsight.server.common.Pair;
+import io.holoinsight.server.common.dao.entity.MetaDataDictValue;
+import io.holoinsight.server.common.service.SuperCacheService;
 import io.holoinsight.server.meta.common.model.QueryExample;
+import io.holoinsight.server.meta.common.util.ConstModel;
 import io.holoinsight.server.meta.core.common.FilterUtil;
 import io.holoinsight.server.meta.dal.service.mapper.MetaDataMapper;
 import io.holoinsight.server.meta.dal.service.model.MetaData;
@@ -44,23 +52,49 @@ public class SqlDataCoreService extends AbstractDataCoreService {
   public static final int LIMIT = 1000;
   public static final int PERIOD = 30;
   public static final int DELETED = 1;
-  public static final String MODIFIED_FIELD = "_modified";
-  public static final String ANNOTATIONS_FIELD = "annotations";
+  public static final String EMPTY_VALUE = "NULL";
   private MetaDataMapper metaDataMapper;
+  private SuperCacheService superCacheService;
 
   // tableName ---> Map(uk ---> Map(key ---> value))
-  private Map<String, Map<String, Map<String, Object>>> metaCache;
+  private Map<String, Map<String, Map<String, Object>>> ukMetaCache;
+  // tableName ---> Map(index ---> Map(index ---> ukSet))
+  private final Map<String, Map<List<String>, Map<String, Set<String>>>> indexMetaCache;
+  private final Map<String, List<List<String>>> metaKeyConfig;
   private volatile long last = -1;
   private AtomicBoolean syncing = new AtomicBoolean(false);
   private final long interval = PERIOD * 1000;
   public static final ScheduledThreadPoolExecutor scheduledExecutor =
       new ScheduledThreadPoolExecutor(2, r -> new Thread(r, "meta-sync-scheduler"));
 
-  public SqlDataCoreService(MetaDataMapper metaDataMapper) {
+  public SqlDataCoreService(MetaDataMapper metaDataMapper, SuperCacheService superCacheService) {
     this.metaDataMapper = metaDataMapper;
-    metaCache = new HashMap<>();
+    this.superCacheService = superCacheService;
+    this.ukMetaCache = new ConcurrentHashMap<>();
+    this.indexMetaCache = new ConcurrentHashMap<>();
+    this.metaKeyConfig = new HashMap<>();
+    initMetaConfig();
     sync();
     scheduledExecutor.scheduleAtFixedRate(this::sync, PERIOD, PERIOD, TimeUnit.SECONDS);
+  }
+
+  private void initMetaConfig() {
+    Map<String, Map<String, MetaDataDictValue>> metaDataDictValueMap =
+        superCacheService.getSc().metaDataDictValueMap;
+    Map<String, MetaDataDictValue> indexKeyMaps =
+        metaDataDictValueMap.get(ConstModel.META_INDEX_CONFIG);
+    if (CollectionUtils.isEmpty(indexKeyMaps)) {
+      return;
+    }
+    logger.info("[META-INFO] index info:{}", indexKeyMaps);
+    indexKeyMaps.forEach((key, dict) -> {
+      if (StringUtils.isBlank(dict.dictValue)) {
+        return;
+      }
+      List<List<String>> indexFields =
+          J.fromJson(dict.dictValue, new TypeToken<List<List<String>>>() {}.getType());
+      metaKeyConfig.put(key, indexFields);
+    });
   }
 
   /**
@@ -73,19 +107,20 @@ public class SqlDataCoreService extends AbstractDataCoreService {
       if (syncing.compareAndSet(false, true)) {
         try {
           if (last < 0) {
-            int count = queryChangedMeta(new Date(0), new Date(now), false, dealUpdatedMeta());
-            logger.info("[FullCache] init query success, size={}, now={}, cost={}", count, now,
+            int count = queryChangedMeta(new Date(0), new Date(now), false, buildCache());
+            logger.info("[META-SYNC] init query success, size={}, now={}, cost={}", count, now,
                 stopWatch.getTime());
           } else {
-            int count =
-                queryChangedMeta(new Date(last - 2000), new Date(now), true, dealUpdatedMeta());
-            logger.info("[FullCache] sync query success, size={}, last={}, now={}, cost={}", count,
+            int count = queryChangedMeta(new Date(last - 2000), new Date(now), true, buildCache());
+            logger.info("[META-SYNC] sync query success, size={}, last={}, now={}, cost={}", count,
                 last, now, stopWatch.getTime());
           } ;
-          logger.info("[FullCache] sync success, last={}, now={}, cost={}", last, now,
-              stopWatch.getTime());
+          ukMetaCache.forEach((tableName, metaData) -> {
+            logger.info("[META-INFO] data at {}, table: {} has {} meta data", now, tableName,
+                CollectionUtils.isEmpty(metaData) ? 0 : metaData.size());
+          });
         } catch (Exception e) {
-          logger.error("[FullCache] sync fail, last={}, now={}", last, now, e);
+          logger.error("[META-SYNC] sync fail, last={}, now={}", last, now, e);
         } finally {
           last = now;
           syncing.compareAndSet(true, false);
@@ -99,16 +134,58 @@ public class SqlDataCoreService extends AbstractDataCoreService {
    * 
    * @return
    */
-  private Consumer<List<MetaData>> dealUpdatedMeta() {
+  private Consumer<List<MetaData>> buildCache() {
     return data -> data.forEach(metaData -> {
       Map<String, Map<String, Object>> items =
-          metaCache.computeIfAbsent(metaData.getTableName(), k -> Maps.newConcurrentMap());
+          ukMetaCache.computeIfAbsent(metaData.getTableName(), k -> Maps.newConcurrentMap());
+      Map<String, Object> metaRows = J.toMap(metaData.getJson());
       if (metaData.getDeleted() == DELETED) {
         items.remove(metaData.getUk());
       } else {
-        items.put(metaData.getUk(), J.toMap(metaData.getJson()));
+        items.put(metaData.getUk(), metaRows);
       }
+      buildIndexCache(metaData, metaRows);
     });
+  }
+
+  private void buildIndexCache(MetaData metaData, Map<String, Object> metaRows) {
+    List<List<String>> indexFieldList = metaKeyConfig.get(metaData.getTableName());
+    if (CollectionUtils.isEmpty(indexFieldList)) {
+      return;
+    }
+    Map<List<String>, Map<String, Set<String>>> indexToMetaDataUks =
+        indexMetaCache.computeIfAbsent(metaData.getTableName(), k -> Maps.newConcurrentMap());
+    for (List<String> indexFields : indexFieldList) {
+      String index = buildIndex(indexFields, metaRows);
+      Map<String, Set<String>> indexToUks =
+          indexToMetaDataUks.computeIfAbsent(indexFields, k -> Maps.newConcurrentMap());
+      Set<String> uks = indexToUks.computeIfAbsent(index, k -> Sets.newConcurrentHashSet());
+      if (metaData.getDeleted() == DELETED) {
+        uks.remove(metaData.getUk());
+      } else {
+        uks.add(metaData.getUk());
+      }
+    }
+  }
+
+  private String buildIndex(List<String> indexKeys, Map<String, Object> metaRows) {
+    StringBuilder builder = new StringBuilder();
+    boolean containAllKeys = true;
+    for (String key : indexKeys) {
+      Object value = metaRows.get(key);
+      if (Objects.isNull(value)) {
+        containAllKeys = false;
+        builder.append(EMPTY_VALUE);
+      } else {
+        builder.append(value);
+      }
+      builder.append(":");
+    }
+    if (!containAllKeys) {
+      logger.warn("[INDEX-BUILD] index: {}, uk: {} is not containAllKeys", indexKeys,
+          metaRows.get(ConstModel.default_pk));
+    }
+    return builder.substring(0, builder.length() - 1);
   }
 
   private Integer queryChangedMeta(Date start, Date end, Boolean containDeleted,
@@ -139,7 +216,7 @@ public class SqlDataCoreService extends AbstractDataCoreService {
       StopWatch stopWatch = StopWatch.createStarted();
       Map<String, Map<String, Object>> ukToUpdateOrInsertRow = Maps.newHashMap();
       filterRows.forEach(item -> {
-        String uk = item.getOrDefault("_uk", "").toString();
+        String uk = item.get(ConstModel.default_pk).toString();
         ukToUpdateOrInsertRow.put(uk, item);
       });
       List<MetaData> metaDataList =
@@ -154,7 +231,7 @@ public class SqlDataCoreService extends AbstractDataCoreService {
       int modifiedCount = sameAndExistSize.right() - sameAndExistSize.left();
       int upsertSize = addedSize + modifiedCount;
       logger.info(
-          "[insertOrUpdate]finish, table={}, upsertSize={}, matchedCount={}, modifiedCount={}, cost={}.",
+          "[insertOrUpdate] finish, table={}, upsertSize={}, matchedCount={}, modifiedCount={}, cost={}.",
           tableName, upsertSize, sameAndExistSize.right(), modifiedCount, stopWatch.getTime());
       return new Pair<>(upsertSize, modifiedCount);
     } catch (Exception e) {
@@ -177,7 +254,7 @@ public class SqlDataCoreService extends AbstractDataCoreService {
       metaData.setUk(uk);
       metaData.setTableName(tableName);
       metaData.setDeleted(0);
-      Object annotations = row.remove(ANNOTATIONS_FIELD);
+      Object annotations = row.remove(ConstModel.ANNOTATIONS);
       if (annotations != null) {
         metaData.setAnnotations(J.toJson(annotations));
       }
@@ -197,18 +274,18 @@ public class SqlDataCoreService extends AbstractDataCoreService {
   private Pair<Integer, Integer> doUpdate(String tableName, List<MetaData> metaDataList,
       Map<String, Map<String, Object>> ukToUpdateOrInsertRow) {
     Map<String, Map<String, Object>> ukToRowCache =
-        metaCache.getOrDefault(tableName, Maps.newConcurrentMap());
-    List<String> existUks = new ArrayList<>(metaDataList.size());
-    List<String> sameUks = new ArrayList<>(metaDataList.size());
+        ukMetaCache.getOrDefault(tableName, Maps.newConcurrentMap());
+    int existUkSize = 0;
+    int sameUkSize = 0;
     for (MetaData metaData : metaDataList) {
       String uk = metaData.getUk();
-      existUks.add(uk);
+      existUkSize++;
       Map<String, Object> updateOrInsertRow = ukToUpdateOrInsertRow.remove(uk);
       Map<String, Object> cachedRow = ukToRowCache.get(uk);
       Pair<Boolean, Object> sameWithDbAnnotations =
           sameWithDbAnnotations(metaData, updateOrInsertRow);
-      if (sameWithCache(updateOrInsertRow, cachedRow) && sameUks.add(uk)
-          && sameWithDbAnnotations.left()) {
+      if (sameWithCache(updateOrInsertRow, cachedRow) && sameWithDbAnnotations.left()) {
+        sameUkSize++;
         continue;
       }
       if (!sameWithDbAnnotations.left()) {
@@ -224,9 +301,9 @@ public class SqlDataCoreService extends AbstractDataCoreService {
       metaData.setGmtModified(new Date());
       metaDataMapper.updateByUk(tableName, metaData);
     }
-    logger.info("[insertOrUpdate] update finish, update same uks:{}, existUks:{}", sameUks,
-        existUks);
-    return new Pair<>(sameUks.size(), existUks.size());
+    logger.info("[insertOrUpdate] update finish, update existUkSize:{}, sameUkSize:{}", existUkSize,
+        sameUkSize);
+    return new Pair<>(sameUkSize, existUkSize);
   }
 
   /**
@@ -237,7 +314,7 @@ public class SqlDataCoreService extends AbstractDataCoreService {
    */
   private Pair<Boolean, Object> sameWithDbAnnotations(MetaData metaData,
       Map<String, Object> updateOrInsertRow) {
-    Object annotations = updateOrInsertRow.remove(ANNOTATIONS_FIELD);
+    Object annotations = updateOrInsertRow.remove(ConstModel.ANNOTATIONS);
     Map<String, Object> extraMap = null;
     String dbAnnotations = metaData.getAnnotations();
     if (StringUtils.isNotBlank(dbAnnotations)) {
@@ -256,7 +333,7 @@ public class SqlDataCoreService extends AbstractDataCoreService {
     }
     Set<String> keys = updateOrInsertRow.keySet();
     for (String key : keys) {
-      if (!MODIFIED_FIELD.equalsIgnoreCase(key)
+      if (!ConstModel.default_modified.equalsIgnoreCase(key)
           && !Objects.equals(updateOrInsertRow.get(key), cachedRow.get(key))) {
         return false;
       }
@@ -274,7 +351,7 @@ public class SqlDataCoreService extends AbstractDataCoreService {
     logger.info("[queryByTable] start, table={}, rowsKeys={}.", tableName, rowKeys);
     StopWatch stopWatch = StopWatch.createStarted();
     Map<String, Map<String, Object>> ukToRowCache =
-        metaCache.getOrDefault(tableName, Maps.newConcurrentMap());
+        ukMetaCache.getOrDefault(tableName, Maps.newConcurrentMap());
     List<Map<String, Object>> results;
     if (!CollectionUtils.isEmpty(rowKeys)) {
       results = ukToRowCache.values().stream()
@@ -293,7 +370,7 @@ public class SqlDataCoreService extends AbstractDataCoreService {
   public List<Map<String, Object>> queryByPks(String tableName, List<String> pkValList) {
     logger.info("[queryByPks] start, table={}, pkValList={}.", tableName, pkValList.size());
     Map<String, Map<String, Object>> ukToRowCache =
-        metaCache.getOrDefault(tableName, Maps.newConcurrentMap());
+        ukMetaCache.getOrDefault(tableName, Maps.newConcurrentMap());
     if (CollectionUtils.isEmpty(pkValList) || null == ukToRowCache) {
       return Lists.newArrayList();
     }
@@ -315,15 +392,111 @@ public class SqlDataCoreService extends AbstractDataCoreService {
     logger.info("[queryByExample] start, table={}, queryExample={}.", tableName,
         J.toJson(queryExample));
     StopWatch stopWatch = StopWatch.createStarted();
-    Map<String, Map<String, Object>> filters = FilterUtil.buildFilters(queryExample, false);
-    Map<String, Map<String, Object>> ukToRowCache = metaCache.get(tableName);
+    Map<String, Map<String, Object>> ukToRowCache = ukMetaCache.get(tableName);
     if (CollectionUtils.isEmpty(ukToRowCache)) {
       return Lists.newArrayList();
     }
-    List<Map<String, Object>> rows = FilterUtil.filterData(ukToRowCache.values(), filters, v -> v);
+    Map<String, Map<String, Object>> filters = FilterUtil.buildFilters(queryExample, false);
+    Collection<Map<String, Object>> metaData =
+        getMetaDataFromCache(tableName, queryExample, ukToRowCache);
+    final List<String> rowKeys = queryExample.getRowKeys();
+    Function<Map, Map<String, Object>> func;
+    if (CollectionUtils.isEmpty(rowKeys)) {
+      func = v -> v;
+    } else {
+      func = v -> Maps.filterKeys(v, rowKeys::contains);
+    }
+    List<Map<String, Object>> rows = FilterUtil.filterData(metaData, filters, func);
     logger.info("[queryByExample] finish, table={}, records={}, cost={}.", tableName, rows.size(),
         stopWatch.getTime());
     return rows;
+  }
+
+  private Collection<Map<String, Object>> getMetaDataFromCache(String tableName,
+      QueryExample queryExample, Map<String, Map<String, Object>> ukToRowCache) {
+    Map<String, Object> params = queryExample.getParams();
+    if (params.containsKey(ConstModel.default_pk)) {
+      return getMetaDataFromUkCache(ukToRowCache, params);
+    }
+    List<String> indexKeys = getMatchedIndex(tableName, params);
+    if (!CollectionUtils.isEmpty(indexKeys)) {
+      return getMetaDataFromIndexCache(tableName, ukToRowCache, params, indexKeys);
+    }
+    logger.info("[META-CACHE] miss index, params:{}", params);
+    return ukToRowCache.values();
+  }
+
+  private Collection<Map<String, Object>> getMetaDataFromIndexCache(String tableName,
+      Map<String, Map<String, Object>> ukToRowCache, Map<String, Object> params,
+      List<String> indexKeys) {
+    List<String> indexes = buildIndexByParam(indexKeys, params);
+    Map<String, Set<String>> indexToUks = indexMetaCache.get(tableName).get(indexKeys);
+    Collection<Map<String, Object>> metaData = Lists.newArrayList();
+    for (String index : indexes) {
+      Set<String> uks = indexToUks.get(index);
+      if (!CollectionUtils.isEmpty(uks)) {
+        uks.forEach(key -> {
+          Map<String, Object> data = ukToRowCache.get(key);
+          if (!CollectionUtils.isEmpty(data)) {
+            metaData.add(data);
+          }
+        });
+      }
+    }
+    return metaData;
+  }
+
+  private List<String> buildIndexByParam(List<String> indexKeys, Map<String, Object> params) {
+    List<List<String>> wordLists = Lists.newArrayList();
+    for (String key : indexKeys) {
+      Object value = params.get(key);
+      if (value instanceof List) {
+        wordLists.add((List) value);
+      } else {
+        wordLists.add(Lists.newArrayList(value.toString()));
+      }
+    }
+    return FilterUtil.genCartesianStrList(wordLists);
+  }
+
+  private Collection<Map<String, Object>> getMetaDataFromUkCache(
+      Map<String, Map<String, Object>> ukToRowCache, Map<String, Object> params) {
+    logger.info("[META-CACHE] hit index: {}, params:{}", ConstModel.default_pk, params);
+    Object uk = params.get(ConstModel.default_pk);
+    if (uk instanceof List) {
+      Collection<Map<String, Object>> metaData = Lists.newArrayList();
+      List<String> ukItems = (List) uk;
+      for (String ukItem : ukItems) {
+        metaData.add(ukToRowCache.get(ukItem));
+      }
+      return metaData;
+    } else {
+      return Lists.newArrayList(ukToRowCache.get(uk));
+    }
+  }
+
+  private List<String> getMatchedIndex(String tableName, Map<String, Object> params) {
+    if (CollectionUtils.isEmpty(params)) {
+      return null;
+    }
+    List<List<String>> indexFieldList = metaKeyConfig.get(tableName);
+    if (CollectionUtils.isEmpty(indexFieldList)) {
+      return null;
+    }
+    for (List<String> indexFields : indexFieldList) {
+      boolean containsAllKeys = true;
+      for (String field : indexFields) {
+        if (!params.containsKey(field)) {
+          containsAllKeys = false;
+          break;
+        }
+      }
+      if (containsAllKeys) {
+        logger.info("[META-CACHE] hit index: {}, params:{}", indexFields, params);
+        return indexFields;
+      }
+    }
+    return null;
   }
 
   @Override
@@ -332,8 +505,7 @@ public class SqlDataCoreService extends AbstractDataCoreService {
         J.toJson(queryExample));
     StopWatch stopWatch = StopWatch.createStarted();
     Map<String, Map<String, Object>> filters = FilterUtil.buildFilters(queryExample, true);
-    Map<String, Map<String, Object>> ukToRowCache = metaCache.get(tableName);
-
+    Map<String, Map<String, Object>> ukToRowCache = ukMetaCache.get(tableName);
     if (CollectionUtils.isEmpty(ukToRowCache)) {
       return Lists.newArrayList();
     }
@@ -349,17 +521,22 @@ public class SqlDataCoreService extends AbstractDataCoreService {
     logger.info("[deleteByExample] start, table={}, queryExample={}.", tableName,
         J.toJson(queryExample));
     StopWatch stopWatch = StopWatch.createStarted();
-    Map<String, Map<String, Object>> filters = FilterUtil.buildFilters(queryExample, false);
-    List<Map<String, Object>> metaDatas = queryByTable(tableName);
-    if (CollectionUtils.isEmpty(metaDatas)) {
+    Map<String, Map<String, Object>> ukToRowCache = ukMetaCache.get(tableName);
+    if (CollectionUtils.isEmpty(ukToRowCache)) {
       return 0;
     }
-    List<String> uks = FilterUtil.filterData(metaDatas, filters, map -> map.get("_uk").toString());
+    Collection<Map<String, Object>> metaData =
+        getMetaDataFromCache(tableName, queryExample, ukToRowCache);
+    if (CollectionUtils.isEmpty(metaData)) {
+      return 0;
+    }
+    Map<String, Map<String, Object>> filters = FilterUtil.buildFilters(queryExample, false);
+    List<String> uks =
+        FilterUtil.filterData(metaData, filters, map -> map.get(ConstModel.default_pk).toString());
     if (CollectionUtils.isEmpty(uks)) {
       return 0;
     }
     batchDeleteByPk(tableName, uks);
-    // 输出结果信息
     logger.info("[deleteByExample] finish, table={}, deleteCount={}, cost={}.", tableName,
         uks.size(), stopWatch.getTime());
     return uks.size();
@@ -389,8 +566,8 @@ public class SqlDataCoreService extends AbstractDataCoreService {
     }
     StopWatch stopWatch = StopWatch.createStarted();
     Integer count = metaDataMapper.softDeleteByUks(tableName, default_pks, new Date());
-    logger.info("[batchDeleteByPk] finish, table={}, deleteCount={}, cost={}, deleteUks:{}",
-        tableName, count, stopWatch.getTime(), default_pks);
+    logger.info("[batchDeleteByPk] finish, table={}, deleteCount={}, cost={}",
+        tableName, count, stopWatch.getTime());
     return count;
   }
 }

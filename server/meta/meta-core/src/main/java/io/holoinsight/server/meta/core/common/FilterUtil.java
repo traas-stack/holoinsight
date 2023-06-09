@@ -132,4 +132,13 @@ public class FilterUtil {
     }
   }
 
+  public static List<String> genCartesianStrList(List<List<String>> wordsList) {
+    List<String> cartesianStrList = wordsList.get(0);
+    for (int i = 1; i < wordsList.size(); i++) {
+      List<String> secondList = wordsList.get(i);
+      cartesianStrList = cartesianStrList.stream()
+          .flatMap(s1 -> secondList.stream().map(s2 -> s1 + ":" + s2)).collect(Collectors.toList());
+    }
+    return cartesianStrList;
+  }
 }
