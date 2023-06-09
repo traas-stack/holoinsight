@@ -164,7 +164,7 @@ public class UserinfoVerificationFacadeImpl extends BaseFacade {
     } else {
       metaDataDictValue = metaDataDictValueList.get(0);
       int count = Integer.parseInt(metaDataDictValue.dictValue);
-      if (count > 20) {
+      if (count > 21) {
         throw new MonitorException("Verification count reach the upper limit.");
       }
       MetaDataDictValue updateItem = new MetaDataDictValue();
