@@ -130,7 +130,7 @@ services:
       retries: 300
       timeout: 10s
   tatris:
-    image: ${tatris_image:-saas-acr-sh-registry.cn-shanghai.cr.aliyuncs.com/holoinsight/tatris:0.1.1}
+    image: ${tatris_image:-tatrisio/tatris:latest}
     ports:
       - 6060
     healthcheck:
