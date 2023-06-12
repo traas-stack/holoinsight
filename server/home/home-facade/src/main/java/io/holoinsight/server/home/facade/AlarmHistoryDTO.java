@@ -47,6 +47,8 @@ public class AlarmHistoryDTO {
    */
   private String uniqueId;
 
+  private List<String> uniqueIds;
+
   /**
    * 规则名称
    */

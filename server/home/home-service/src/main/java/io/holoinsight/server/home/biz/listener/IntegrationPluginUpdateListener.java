@@ -7,6 +7,7 @@ import io.holoinsight.server.home.biz.plugin.PluginRepository;
 import io.holoinsight.server.home.biz.plugin.core.AbstractIntegrationPlugin;
 import io.holoinsight.server.home.biz.plugin.model.HostingPlugin;
 import io.holoinsight.server.home.biz.service.GaeaCollectConfigService;
+import io.holoinsight.server.home.biz.service.TenantInitService;
 import io.holoinsight.server.home.common.util.EventBusHolder;
 import io.holoinsight.server.home.dal.model.dto.GaeaCollectConfigDTO;
 import io.holoinsight.server.home.dal.model.dto.IntegrationPluginDTO;
@@ -33,6 +34,9 @@ public class IntegrationPluginUpdateListener {
   private GaeaCollectConfigService gaeaCollectConfigService;
   @Autowired
   private PluginRepository pluginRepository;
+
+  @Autowired
+  private TenantInitService tenantInitService;
 
   @PostConstruct
   void register() {
@@ -61,7 +65,7 @@ public class IntegrationPluginUpdateListener {
 
   private List<Long> upsertGaea(IntegrationPluginDTO integrationPluginDTO) {
     GaeaCollectConfigDTO gaeaCollectConfigDTO = new GaeaCollectConfigDTO();
-    gaeaCollectConfigDTO.tenant = integrationPluginDTO.tenant;
+    gaeaCollectConfigDTO.tenant = tenantInitService.getTsdbTenant(integrationPluginDTO.tenant);
     gaeaCollectConfigDTO.workspace = integrationPluginDTO.workspace;
     gaeaCollectConfigDTO.deleted = false;
     if (!integrationPluginDTO.status) {

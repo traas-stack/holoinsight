@@ -230,6 +230,34 @@ public class AlarmRuleFacadeImpl extends BaseFacade {
     return result;
   }
 
+  @GetMapping("/queryByIds/{ids}")
+  @ResponseBody
+  @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.EDIT)
+  public JsonResult<List<AlarmRuleDTO>> queryByIds(@PathVariable("ids") String ids) {
+    final JsonResult<List<AlarmRuleDTO>> result = new JsonResult<>();
+    facadeTemplate.manage(result, new ManageCallback() {
+      @Override
+      public void checkParameter() {
+        ParaCheckUtil.checkParaNotNull(ids, "ids");
+      }
+
+      @Override
+      public void doManage() {
+        MonitorScope ms = RequestContext.getContext().ms;
+        List<AlarmRuleDTO> alarmRuleDTOS = new ArrayList<>();
+        String[] idArray = StringUtils.split(ids, ",");
+        for (String id : idArray) {
+          AlarmRuleDTO alarmRuleDTO =
+              alarmRuleService.queryById(Long.parseLong(id), ms.getTenant(), ms.getWorkspace());
+          alarmRuleDTOS.add(alarmRuleDTO);
+        }
+        JsonResult.createSuccessResult(result, alarmRuleDTOS);
+      }
+    });
+
+    return result;
+  }
+
   @DeleteMapping(value = "/delete/{id}")
   @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.EDIT)
   public JsonResult<Boolean> deleteById(@PathVariable("id") Long id) {

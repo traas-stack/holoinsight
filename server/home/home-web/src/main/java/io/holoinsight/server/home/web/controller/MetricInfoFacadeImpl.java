@@ -7,11 +7,12 @@ package io.holoinsight.server.home.web.controller;
 import io.holoinsight.server.common.JsonResult;
 import io.holoinsight.server.common.dao.entity.dto.MetricInfoDTO;
 import io.holoinsight.server.common.service.MetricInfoService;
-import io.holoinsight.server.home.common.util.MonitorException;
+import io.holoinsight.server.home.biz.service.IntegrationProductService;
 import io.holoinsight.server.home.common.util.scope.AuthTargetType;
 import io.holoinsight.server.home.common.util.scope.MonitorScope;
 import io.holoinsight.server.home.common.util.scope.PowerConstants;
 import io.holoinsight.server.home.common.util.scope.RequestContext;
+import io.holoinsight.server.home.dal.model.dto.IntegrationProductDTO;
 import io.holoinsight.server.home.task.MetricCrawlerConstant;
 import io.holoinsight.server.home.web.common.ManageCallback;
 import io.holoinsight.server.home.web.common.ParaCheckUtil;
@@ -37,31 +38,42 @@ public class MetricInfoFacadeImpl extends BaseFacade {
   @Autowired
   private MetricInfoService metricInfoService;
 
-  @GetMapping(value = "/query/{tenant}/{workspace}/{product}")
+  @Autowired
+  private IntegrationProductService integrationProductService;
+
+  @GetMapping(value = "/query/products")
   @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.VIEW)
-  public JsonResult<List<MetricInfoDTO>> queryByProduct(@PathVariable("tenant") String tenant,
-      @PathVariable("workspace") String workspace, @PathVariable("product") String product) {
+  public JsonResult<List<IntegrationProductDTO>> products() {
+    final JsonResult<List<IntegrationProductDTO>> result = new JsonResult<>();
+    facadeTemplate.manage(result, new ManageCallback() {
+      @Override
+      public void checkParameter() {}
+
+      @Override
+      public void doManage() {
+        JsonResult.createSuccessResult(result, integrationProductService.queryNames());
+      }
+    });
+    return result;
+  }
+
+  @GetMapping(value = "/query/{product}")
+  @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.VIEW)
+  public JsonResult<List<MetricInfoDTO>> queryByProduct(@PathVariable("product") String product) {
     final JsonResult<List<MetricInfoDTO>> result = new JsonResult<>();
     facadeTemplate.manage(result, new ManageCallback() {
       @Override
       public void checkParameter() {
-        ParaCheckUtil.checkParaNotNull(tenant, "tenant");
+
         ParaCheckUtil.checkParaNotNull(product, "product");
-        MonitorScope ms = RequestContext.getContext().ms;
-        if (!tenant.equalsIgnoreCase(MetricCrawlerConstant.GLOBAL_TENANT)
-            && !ms.getTenant().equalsIgnoreCase(tenant)) {
-          throw new MonitorException("tenant is illegal, " + tenant);
-        }
-        if (!tenant.equalsIgnoreCase(MetricCrawlerConstant.GLOBAL_WORKSPACE)
-            && !ms.getWorkspace().equalsIgnoreCase(workspace)) {
-          throw new MonitorException("tenant is illegal, " + tenant);
-        }
+
       }
 
       @Override
       public void doManage() {
+        MonitorScope ms = RequestContext.getContext().ms;
         JsonResult.createSuccessResult(result,
-            metricInfoService.queryListByTenantProduct(tenant, workspace, product));
+            metricInfoService.queryListByTenantProduct(ms.getTenant(), ms.getWorkspace(), product));
       }
     });
     return result;
@@ -102,7 +114,7 @@ public class MetricInfoFacadeImpl extends BaseFacade {
     return result;
   }
 
-  @GetMapping(value = "/query/log/{metric}")
+  @GetMapping(value = "/query/{metric}")
   @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.VIEW)
   public JsonResult<MetricInfoDTO> queryMetric(@PathVariable("metric") String metric) {
     final JsonResult<MetricInfoDTO> result = new JsonResult<>();
