@@ -67,6 +67,7 @@ public class ServiceRelationDO extends RecordDO {
   public static ServiceRelationDO fromServiceRelation(ServiceRelation serviceRelation) {
     ServiceRelationDO serviceRelationEsDO = new ServiceRelationDO();
     BeanUtils.copyProperties(serviceRelation, serviceRelationEsDO);
+    serviceRelationEsDO.setTimestamp(serviceRelation.getEndTime());
     return serviceRelationEsDO;
   }
 }
