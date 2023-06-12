@@ -4,6 +4,7 @@
 package io.holoinsight.server.home.biz.service.impl;
 
 import io.holoinsight.server.home.biz.service.AlarmHistoryService;
+import io.holoinsight.server.home.common.service.RequestContextAdapter;
 import io.holoinsight.server.home.common.util.StringUtil;
 import io.holoinsight.server.home.dal.converter.AlarmHistoryConverter;
 import io.holoinsight.server.home.dal.mapper.AlarmHistoryMapper;
@@ -15,6 +16,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
@@ -29,14 +31,15 @@ public class AlarmHistoryServiceImpl extends ServiceImpl<AlarmHistoryMapper, Ala
   @Resource
   private AlarmHistoryConverter alarmHistoryConverter;
 
+  @Autowired
+  private RequestContextAdapter requestContextAdapter;
+
   @Override
   public AlarmHistoryDTO queryById(Long id, String tenant, String workspace) {
 
     QueryWrapper<AlarmHistory> wrapper = new QueryWrapper<>();
-    wrapper.eq("tenant", tenant);
-    if (StringUtils.isNotBlank(workspace)) {
-      wrapper.eq("workspace", workspace);
-    }
+    this.requestContextAdapter.queryWrapperTenantAdapte(wrapper, tenant, workspace);
+
     wrapper.eq("id", id);
     wrapper.last("LIMIT 1");
     AlarmHistory alarmHistory = this.getOne(wrapper);
@@ -58,13 +61,8 @@ public class AlarmHistoryServiceImpl extends ServiceImpl<AlarmHistoryMapper, Ala
       wrapper.eq("id", alarmHistory.getId());
     }
 
-    if (StringUtil.isNotBlank(alarmHistory.getTenant())) {
-      wrapper.eq("tenant", alarmHistory.getTenant().trim());
-    }
-
-    if (StringUtils.isNotBlank(alarmHistory.getWorkspace())) {
-      wrapper.eq("workspace", alarmHistory.getWorkspace());
-    }
+    this.requestContextAdapter.queryWrapperTenantAdapte(wrapper, alarmHistory.getTenant(),
+        alarmHistory.getWorkspace());
 
     if (null != alarmHistory.getUniqueId()) {
       wrapper.eq("unique_id", alarmHistory.getUniqueId());

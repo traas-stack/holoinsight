@@ -6,6 +6,7 @@ package io.holoinsight.server.home.biz.service.impl;
 import io.holoinsight.server.common.DateUtil;
 import io.holoinsight.server.common.J;
 import io.holoinsight.server.home.biz.service.AlarmHistoryDetailService;
+import io.holoinsight.server.home.common.service.RequestContextAdapter;
 import io.holoinsight.server.home.dal.converter.AlarmHistoryDetailConverter;
 import io.holoinsight.server.home.dal.mapper.AlarmHistoryDetailMapper;
 import io.holoinsight.server.home.dal.model.AlarmHistoryDetail;
@@ -17,6 +18,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -31,6 +33,9 @@ public class AlarmHistoryDetailServiceImpl extends
 
   @Resource
   private AlarmHistoryDetailConverter alarmHistoryDetailConverter;
+
+  @Autowired
+  private RequestContextAdapter requestContextAdapter;
 
   @Override
   public MonitorPageResult<AlarmHistoryDetailDTO> getListByPage(
@@ -52,13 +57,8 @@ public class AlarmHistoryDetailServiceImpl extends
       wrapper.eq("alarm_time", alarmHistoryDetail.getAlarmTime());
     }
 
-    if (null != alarmHistoryDetail.getTenant()) {
-      wrapper.eq("tenant", alarmHistoryDetail.getTenant());
-    }
-
-    if (StringUtils.isNotBlank(alarmHistoryDetail.getWorkspace())) {
-      wrapper.eq("workspace", alarmHistoryDetail.getWorkspace());
-    }
+    this.requestContextAdapter.queryWrapperTenantAdapte(wrapper,
+        alarmHistoryDetail.getTenant().trim(), alarmHistoryDetail.getWorkspace());
 
     if (null != pageRequest.getFrom()) {
       wrapper.ge("alarm_time", new Date(pageRequest.getFrom()));
@@ -105,12 +105,9 @@ public class AlarmHistoryDetailServiceImpl extends
     if (StringUtils.isNotBlank(target.getUniqueId())) {
       queryWrapper.eq("unique_id", target.getUniqueId());
     }
-    if (StringUtils.isNotBlank(target.getTenant())) {
-      queryWrapper.eq("tenant", target.getTenant());
-    }
-    if (StringUtils.isNotBlank(target.getWorkspace())) {
-      queryWrapper.eq("workspace", target.getWorkspace());
-    }
+    this.requestContextAdapter.queryWrapperTenantAdapte(queryWrapper, target.getTenant(),
+        target.getWorkspace());
+
     queryWrapper.between("gmt_create",
         DateUtil.getDateOf_YYMMDD_HHMMSS(new Date(pageRequest.getFrom())),
         DateUtil.getDateOf_YYMMDD_HHMMSS(new Date(pageRequest.getTo())));
