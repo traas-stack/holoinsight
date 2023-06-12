@@ -164,4 +164,11 @@ public class IntegrationProductServiceImpl extends
     queryWrapper.select("id", "name", "type", "version");
     return IntegrationProductConverter.dosToDTOs(baseMapper.selectList(queryWrapper));
   }
+
+  @Override
+  public List<IntegrationProductDTO> queryNames() {
+    QueryWrapper<IntegrationProduct> queryWrapper = new QueryWrapper<>();
+    queryWrapper.select("name", "profile");
+    return IntegrationProductConverter.dosToDTOs(baseMapper.selectList(queryWrapper));
+  }
 }

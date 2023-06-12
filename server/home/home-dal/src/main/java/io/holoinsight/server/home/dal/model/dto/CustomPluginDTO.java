@@ -3,10 +3,12 @@
  */
 package io.holoinsight.server.home.dal.model.dto;
 
+import io.holoinsight.server.home.dal.model.AlarmMetric;
 import io.holoinsight.server.home.dal.model.dto.conf.CustomPluginConf;
 import lombok.Data;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  *
@@ -32,6 +34,8 @@ public class CustomPluginDTO {
   public CustomPluginPeriodType periodType;
 
   public CustomPluginConf conf;
+
+  public List<AlarmMetric> alarmMetrics;
 
   public String sampleLog;
 

@@ -8,6 +8,7 @@ import io.holoinsight.server.common.service.MetricInfoService;
 import io.holoinsight.server.home.biz.common.GaeaConvertUtil;
 import io.holoinsight.server.home.biz.common.GaeaSqlTaskUtil;
 import io.holoinsight.server.home.biz.service.GaeaCollectConfigService;
+import io.holoinsight.server.home.biz.service.TenantInitService;
 import io.holoinsight.server.home.common.util.EventBusHolder;
 import io.holoinsight.server.home.common.util.StringUtil;
 import io.holoinsight.server.home.dal.model.dto.CustomPluginDTO;
@@ -54,6 +55,9 @@ public class CustomPluginUpdateListener {
 
   @Autowired
   private MetricInfoService metricInfoService;
+
+  @Autowired
+  private TenantInitService tenantInitService;
 
   @PostConstruct
   void register() {
@@ -121,7 +125,7 @@ public class CustomPluginUpdateListener {
     List<Long> upsertList = new ArrayList<>();
     for (Map.Entry<String, SqlTask> entry : sqlTasks.entrySet()) {
       GaeaCollectConfigDTO gaeaCollectConfigDTO = new GaeaCollectConfigDTO();
-      gaeaCollectConfigDTO.tenant = customPluginDTO.tenant;
+      gaeaCollectConfigDTO.tenant = tenantInitService.getTsdbTenant(customPluginDTO.tenant);
       gaeaCollectConfigDTO.workspace = customPluginDTO.workspace;
       gaeaCollectConfigDTO.deleted = false;
       gaeaCollectConfigDTO.json = entry.getValue();

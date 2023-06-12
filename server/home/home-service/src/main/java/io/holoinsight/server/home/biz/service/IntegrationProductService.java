@@ -33,4 +33,6 @@ public interface IntegrationProductService extends IService<IntegrationProduct> 
 
   List<IntegrationProductDTO> queryByRows();
 
+  List<IntegrationProductDTO> queryNames();
+
 }

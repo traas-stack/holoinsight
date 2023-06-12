@@ -85,7 +85,7 @@ public class AlarmHistoryFacadeImpl extends BaseFacade {
           pageRequest.getTarget().setWorkspace(ms.workspace);
         }
         JsonResult.createSuccessResult(result,
-            alarmHistoryService.getListByPage(pageRequest, null));
+            alarmHistoryService.getListByPage(pageRequest, pageRequest.getTarget().getUniqueIds()));
       }
     });
 

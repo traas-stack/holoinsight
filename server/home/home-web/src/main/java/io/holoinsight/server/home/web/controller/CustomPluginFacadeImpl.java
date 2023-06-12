@@ -3,6 +3,8 @@
  */
 package io.holoinsight.server.home.web.controller;
 
+import io.holoinsight.server.home.biz.service.AlarmHistoryDetailService;
+import io.holoinsight.server.home.biz.service.AlarmMetricService;
 import io.holoinsight.server.home.biz.service.CustomPluginService;
 import io.holoinsight.server.home.biz.service.UserOpLogService;
 import io.holoinsight.server.home.common.util.MonitorException;
@@ -13,8 +15,10 @@ import io.holoinsight.server.home.common.util.scope.MonitorScope;
 import io.holoinsight.server.home.common.util.scope.MonitorUser;
 import io.holoinsight.server.home.common.util.scope.PowerConstants;
 import io.holoinsight.server.home.common.util.scope.RequestContext;
+import io.holoinsight.server.home.dal.model.AlarmMetric;
 import io.holoinsight.server.home.dal.model.OpType;
 import io.holoinsight.server.home.dal.model.dto.CustomPluginDTO;
+import io.holoinsight.server.home.dal.model.dto.conf.CollectMetric;
 import io.holoinsight.server.home.facade.page.MonitorPageRequest;
 import io.holoinsight.server.home.facade.page.MonitorPageResult;
 import io.holoinsight.server.home.web.common.ManageCallback;
@@ -25,6 +29,7 @@ import io.holoinsight.server.common.J;
 import io.holoinsight.server.common.JsonResult;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -57,6 +62,13 @@ public class CustomPluginFacadeImpl extends BaseFacade {
 
   @Autowired
   private UserOpLogService userOpLogService;
+
+  @Autowired
+  private AlarmMetricService alarmMetricService;
+
+  @Autowired
+  private AlarmHistoryDetailService alarmHistoryDetailService;
+
 
   @PostMapping("/update")
   @ResponseBody
@@ -286,7 +298,23 @@ public class CustomPluginFacadeImpl extends BaseFacade {
         if (StringUtils.isNotBlank(ms.getWorkspace())) {
           conditions.put("workspace", ms.getWorkspace());
         }
-        JsonResult.createSuccessResult(result, customPluginService.findByMap(conditions));
+        List<CustomPluginDTO> byMap = customPluginService.findByMap(conditions);
+
+        if (!CollectionUtils.isEmpty(byMap)) {
+          for (CustomPluginDTO customPluginDTO : byMap) {
+            List<AlarmMetric> alarmMetrics = new ArrayList<>();
+            for (CollectMetric collectMetric : customPluginDTO.getConf().collectMetrics) {
+              List<AlarmMetric> db = alarmMetricService
+                  .queryByMetric(collectMetric.getTargetTable(), ms.getTenant(), ms.getWorkspace());
+              if (!CollectionUtils.isEmpty(db)) {
+                alarmMetrics.addAll(db);
+              }
+            }
+            customPluginDTO.setAlarmMetrics(alarmMetrics);
+          }
+        }
+
+        JsonResult.createSuccessResult(result, byMap);
       }
     });
     return result;
