@@ -52,10 +52,10 @@ public class CollectMetric implements Serializable {
   public Boolean logSample;
   public List<LogSampleRule> logSampleRules;
 
-  // 单机最多采样10条, 因为我们只能做到单机粒度, 默认设置为1
+  // The maximum sample size of a single machine is 10, the default setting is 1
   public Integer sampleMaxCount = 1;
 
-  // 日志如果超过4096, 会被截断
+  // Logs that exceed 4096 are truncated
   public Integer sampleMaxLength = 4096;
 
   @Data
