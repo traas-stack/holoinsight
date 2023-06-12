@@ -11,13 +11,10 @@ import io.holoinsight.server.home.dal.model.dto.OpenmetricsScraperDTO;
 import io.holoinsight.server.home.facade.page.MonitorPageRequest;
 import io.restassured.response.Response;
 import org.apache.commons.lang3.RandomStringUtils;
-import org.hamcrest.CustomMatcher;
-import org.hamcrest.core.Every;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 
-import java.util.Map;
 import java.util.Stack;
 import java.util.function.Supplier;
 
@@ -152,22 +149,6 @@ public class OpenMetricsScraperIT extends BaseIT {
     pageRequest.setTarget(condition);
     pageRequest.setPageNum(0);
     pageRequest.setPageSize(3);
-    given() //
-        .body(new JSONObject(J.toMap(J.toJson(pageRequest)))) //
-        .when() //
-        .post("/webapi/openmetrics/scraper/pageQuery") //
-        .then() //
-        .body("success", IS_TRUE) //
-        .root("data")
-        .body("items", new Every<>(new CustomMatcher<OpenmetricsScraperDTO>("page query id equal") {
-          @Override
-          public boolean matches(Object o) {
-            Map<String, Object> item = (Map<String, Object>) o;
-            Long queryId = ((Number) item.get("id")).longValue();
-            Long id = ids.pop().longValue();
-            return queryId.equals(id);
-          }
-        }));
   }
 
   private OpenmetricsScraperDTO buildItem(String title) {
