@@ -8,6 +8,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import io.holoinsight.server.home.biz.service.AlertBlockService;
 import io.holoinsight.server.home.biz.service.AlertRuleService;
+import io.holoinsight.server.home.common.util.EventBusHolder;
 import io.holoinsight.server.home.dal.converter.AlarmRuleConverter;
 import io.holoinsight.server.home.dal.mapper.AlarmRuleMapper;
 import io.holoinsight.server.home.dal.model.AlarmBlock;
@@ -22,7 +23,6 @@ import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -44,13 +44,26 @@ public class AlertRuleServiceImpl extends ServiceImpl<AlarmRuleMapper, AlarmRule
   public Long save(AlarmRuleDTO alarmRuleDTO) {
     AlarmRule alarmRule = alarmRuleConverter.dtoToDO(alarmRuleDTO);
     this.save(alarmRule);
+    EventBusHolder.post(alarmRuleConverter.doToDTO(alarmRule));
     return alarmRule.getId();
   }
 
   @Override
   public Boolean updateById(AlarmRuleDTO alarmRuleDTO) {
     AlarmRule alarmRule = alarmRuleConverter.dtoToDO(alarmRuleDTO);
+    EventBusHolder.post(alarmRuleDTO);
     return this.updateById(alarmRule);
+  }
+
+  @Override
+  public Boolean deleteById(Long id) {
+    AlarmRule alarmRule = getById(id);
+    if (null == alarmRule) {
+      return true;
+    }
+    alarmRule.setStatus((byte) 0);
+    EventBusHolder.post(alarmRuleConverter.doToDTO(alarmRule));
+    return this.removeById(id);
   }
 
   @Override
@@ -132,16 +145,7 @@ public class AlertRuleServiceImpl extends ServiceImpl<AlarmRuleMapper, AlarmRule
       wrapper.eq("modifier", alarmRule.getModifier());
     }
 
-    if (StringUtils.isNotBlank(pageRequest.getSortBy())
-        && StringUtils.isNotBlank(pageRequest.getSortRule())) {
-      if (pageRequest.getSortRule().toLowerCase(Locale.ROOT).equals("desc")) {
-        wrapper.orderByDesc(pageRequest.getSortBy());
-      } else {
-        wrapper.orderByAsc(pageRequest.getSortBy());
-      }
-    } else {
-      wrapper.orderByDesc("gmt_modified");
-    }
+    wrapper.orderByDesc("id");
 
     if (null != alarmRule.getGmtCreate()) {
       wrapper.ge("gmt_create", alarmRule.getGmtCreate());

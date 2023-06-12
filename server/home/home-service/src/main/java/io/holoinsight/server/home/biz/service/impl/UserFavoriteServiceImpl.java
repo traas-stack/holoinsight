@@ -18,7 +18,6 @@ import org.springframework.stereotype.Service;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -151,16 +150,7 @@ public class UserFavoriteServiceImpl extends ServiceImpl<UserFavoriteMapper, Use
       wrapper.eq("workspace", userFavorite.getWorkspace());
     }
 
-    if (StringUtil.isNotBlank(userFavoriteRequest.getSortBy())
-        && StringUtil.isNotBlank(userFavoriteRequest.getSortRule())) {
-      if (userFavoriteRequest.getSortRule().toLowerCase(Locale.ROOT).equals("desc")) {
-        wrapper.orderByDesc(userFavoriteRequest.getSortBy());
-      } else {
-        wrapper.orderByAsc(userFavoriteRequest.getSortBy());
-      }
-    } else {
-      wrapper.orderByDesc("gmt_modified");
-    }
+    wrapper.orderByDesc("id");
 
     wrapper.select(UserFavorite.class, info -> !info.getColumn().equals("user_login_name"));
 

@@ -15,6 +15,6 @@ package io.holoinsight.server.home.dal.model.dto.conf;
  * @author jsy1001de
  */
 public enum FilterType {
-  IN, NOT_IN
+  IN, NOT_IN, GT, GTE, LT, LTE
 
 }

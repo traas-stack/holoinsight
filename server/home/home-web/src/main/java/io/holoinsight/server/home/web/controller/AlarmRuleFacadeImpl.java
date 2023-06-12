@@ -246,7 +246,7 @@ public class AlarmRuleFacadeImpl extends BaseFacade {
         boolean rtn = false;
         AlarmRuleDTO alarmRule = alarmRuleService.queryById(id, ms.getTenant(), ms.getWorkspace());
         if (alarmRule != null) {
-          rtn = alarmRuleService.removeById(id);
+          rtn = alarmRuleService.deleteById(id);
         }
 
         userOpLogService.append("alarm_rule", id, OpType.DELETE,

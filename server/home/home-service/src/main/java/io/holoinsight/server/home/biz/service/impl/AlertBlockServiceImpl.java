@@ -7,7 +7,6 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import io.holoinsight.server.home.biz.service.AlertBlockService;
-import io.holoinsight.server.home.common.util.StringUtil;
 import io.holoinsight.server.home.dal.converter.AlarmBlockConverter;
 import io.holoinsight.server.home.dal.mapper.AlarmBlockMapper;
 import io.holoinsight.server.home.dal.model.AlarmBlock;
@@ -20,7 +19,6 @@ import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
 import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 
 /**
  * @author wangsiyuan
@@ -88,16 +86,7 @@ public class AlertBlockServiceImpl extends ServiceImpl<AlarmBlockMapper, AlarmBl
       wrapper.eq("workspace", alarmBlock.getWorkspace());
     }
 
-    if (StringUtil.isNotBlank(pageRequest.getSortBy())
-        && StringUtil.isNotBlank(pageRequest.getSortRule())) {
-      if (pageRequest.getSortRule().toLowerCase(Locale.ROOT).equals("desc")) {
-        wrapper.orderByDesc(pageRequest.getSortBy());
-      } else {
-        wrapper.orderByAsc(pageRequest.getSortBy());
-      }
-    } else {
-      wrapper.orderByDesc("gmt_create");
-    }
+    wrapper.orderByDesc("id");
 
     wrapper.select(AlarmBlock.class,
         info -> !info.getColumn().equals("creator") && !info.getColumn().equals("modifier"));

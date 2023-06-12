@@ -25,7 +25,6 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 
 @Service
 public class OpenmetricsScraperServiceImpl extends
@@ -143,16 +142,7 @@ public class OpenmetricsScraperServiceImpl extends
       wrapper.eq("workspace", scraperDTO.getWorkspace());
     }
 
-    if (StringUtil.isNotBlank(request.getSortBy())
-        && StringUtil.isNotBlank(request.getSortRule())) {
-      if (request.getSortRule().toLowerCase(Locale.ROOT).equals("desc")) {
-        wrapper.orderByDesc(request.getSortBy());
-      } else {
-        wrapper.orderByAsc(request.getSortBy());
-      }
-    } else {
-      wrapper.orderByDesc("gmt_modified");
-    }
+    wrapper.orderByDesc("gmt_modified");
 
     Page<OpenmetricsScraper> page = new Page<>(request.getPageNum(), request.getPageSize());
 

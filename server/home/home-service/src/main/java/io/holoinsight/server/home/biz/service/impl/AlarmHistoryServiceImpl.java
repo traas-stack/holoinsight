@@ -20,10 +20,7 @@ import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
-import java.util.Map;
 
 @Service
 public class AlarmHistoryServiceImpl extends ServiceImpl<AlarmHistoryMapper, AlarmHistory>
@@ -117,16 +114,7 @@ public class AlarmHistoryServiceImpl extends ServiceImpl<AlarmHistoryMapper, Ala
       wrapper.isNotNull("recover_time");
     }
 
-    if (StringUtil.isNotBlank(pageRequest.getSortBy())
-        && StringUtil.isNotBlank(pageRequest.getSortRule())) {
-      if (pageRequest.getSortRule().toLowerCase(Locale.ROOT).equals("desc")) {
-        wrapper.orderByDesc(pageRequest.getSortBy());
-      } else {
-        wrapper.orderByAsc(pageRequest.getSortBy());
-      }
-    } else {
-      wrapper.orderByDesc("id");
-    }
+    wrapper.orderByDesc("id");
 
     Page<AlarmHistory> page = new Page<>(pageRequest.getPageNum(), pageRequest.getPageSize());
 

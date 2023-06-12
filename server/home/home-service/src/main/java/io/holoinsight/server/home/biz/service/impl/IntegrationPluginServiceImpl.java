@@ -9,8 +9,6 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import io.holoinsight.server.home.biz.plugin.PluginRepository;
 import io.holoinsight.server.home.biz.service.IntegrationPluginService;
 import io.holoinsight.server.home.common.util.EventBusHolder;
-import io.holoinsight.server.home.common.util.StringUtil;
-import io.holoinsight.server.home.common.util.scope.RequestContext;
 import io.holoinsight.server.home.dal.converter.IntegrationPluginConverter;
 import io.holoinsight.server.home.dal.mapper.IntegrationPluginMapper;
 import io.holoinsight.server.home.dal.model.IntegrationPlugin;
@@ -18,8 +16,6 @@ import io.holoinsight.server.home.dal.model.dto.IntegrationPluginDTO;
 import io.holoinsight.server.home.facade.page.MonitorPageRequest;
 import io.holoinsight.server.home.facade.page.MonitorPageResult;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -27,7 +23,6 @@ import javax.annotation.Resource;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -236,16 +231,7 @@ public class IntegrationPluginServiceImpl extends
     if (null != integrationPluginDTO.getStatus()) {
       wrapper.eq("status", integrationPluginDTO.getStatus());
     }
-    if (StringUtil.isNotBlank(integrationPluginDTORequest.getSortBy())
-        && StringUtil.isNotBlank(integrationPluginDTORequest.getSortRule())) {
-      if (integrationPluginDTORequest.getSortRule().toLowerCase(Locale.ROOT).equals("desc")) {
-        wrapper.orderByDesc(integrationPluginDTORequest.getSortBy());
-      } else {
-        wrapper.orderByAsc(integrationPluginDTORequest.getSortBy());
-      }
-    } else {
-      wrapper.orderByDesc("gmt_modified");
-    }
+    wrapper.orderByDesc("gmt_modified");
     wrapper.select(IntegrationPlugin.class,
         info -> !info.getColumn().equals("creator") && !info.getColumn().equals("modifier"));
 

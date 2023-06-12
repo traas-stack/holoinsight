@@ -23,7 +23,6 @@ import org.springframework.util.CollectionUtils;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -163,16 +162,7 @@ public class CustomPluginServiceImpl extends ServiceImpl<CustomPluginMapper, Cus
       wrapper.eq("parent_folder_id", customPluginDTO.getParentFolderId());
     }
 
-    if (StringUtil.isNotBlank(customPluginDTORequest.getSortBy())
-        && StringUtil.isNotBlank(customPluginDTORequest.getSortRule())) {
-      if (customPluginDTORequest.getSortRule().toLowerCase(Locale.ROOT).equals("desc")) {
-        wrapper.orderByDesc(customPluginDTORequest.getSortBy());
-      } else {
-        wrapper.orderByAsc(customPluginDTORequest.getSortBy());
-      }
-    } else {
-      wrapper.orderByDesc("gmt_modified");
-    }
+    wrapper.orderByDesc("id");
 
     wrapper.select(CustomPlugin.class,
         info -> !info.getColumn().equals("creator") && !info.getColumn().equals("modifier"));

@@ -18,7 +18,6 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.List;
-import java.util.Locale;
 
 
 /**
@@ -81,16 +80,7 @@ public class AlertDingDingRobotServiceImpl extends
       wrapper.like("group_name", alarmDingDingRobot.getGroupName().trim());
     }
 
-    if (StringUtil.isNotBlank(pageRequest.getSortBy())
-        && StringUtil.isNotBlank(pageRequest.getSortRule())) {
-      if (pageRequest.getSortRule().toLowerCase(Locale.ROOT).equals("desc")) {
-        wrapper.orderByDesc(pageRequest.getSortBy());
-      } else {
-        wrapper.orderByAsc(pageRequest.getSortBy());
-      }
-    } else {
-      wrapper.orderByDesc("id");
-    }
+    wrapper.orderByDesc("id");
 
     Page<AlarmDingDingRobot> page = new Page<>(pageRequest.getPageNum(), pageRequest.getPageSize());
 
