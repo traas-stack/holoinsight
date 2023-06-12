@@ -64,12 +64,12 @@ public class ModelInstallManager implements IModelInstallManager {
   }
 
   private Model scanModel(Class<?> cls) {
+    ModelAnnotation modelAnnotation = cls.getAnnotation(ModelAnnotation.class);
     List<Field> fields = new ArrayList<>();
     while (cls != null) {
       fields.addAll(Arrays.asList(cls.getDeclaredFields()));
       cls = cls.getSuperclass();
     }
-    ModelAnnotation modelAnnotation = cls.getAnnotation(ModelAnnotation.class);
     List<ModelColumn> modelColumns = new ArrayList<>();
     for (Field field : fields) {
       if (field.isAnnotationPresent(Column.class)) {
