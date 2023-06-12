@@ -21,6 +21,8 @@ import io.holoinsight.server.home.biz.service.UserinfoVerificationService;
 import io.holoinsight.server.home.biz.service.impl.DefaultEnvironmentServiceImpl;
 import io.holoinsight.server.home.biz.service.impl.DefaultTenantInitServiceImpl;
 import io.holoinsight.server.home.biz.service.impl.UserinfoVerificationServiceImpl;
+import io.holoinsight.server.home.common.service.RequestContextAdapter;
+import io.holoinsight.server.home.common.service.RequestContextAdapterImpl;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -76,5 +78,10 @@ public class HoloinsightHomeConfiguration {
   @Bean
   public UserinfoVerificationService userinfoVerificationService() {
     return new UserinfoVerificationServiceImpl();
+  }
+
+  @Bean
+  public RequestContextAdapter requestContextAdapter() {
+    return new RequestContextAdapterImpl();
   }
 }
