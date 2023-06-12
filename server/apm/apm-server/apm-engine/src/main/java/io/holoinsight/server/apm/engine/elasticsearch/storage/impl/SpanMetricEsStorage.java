@@ -12,6 +12,7 @@ import io.holoinsight.server.apm.common.model.query.StatisticDataList;
 import io.holoinsight.server.apm.common.model.specification.OtlpMappings;
 import io.holoinsight.server.apm.common.model.specification.sw.Tag;
 import io.holoinsight.server.apm.common.model.specification.sw.TraceState;
+import io.holoinsight.server.apm.engine.model.RecordDO;
 import io.holoinsight.server.apm.engine.model.SpanDO;
 import io.holoinsight.server.apm.engine.postcal.MetricDefine;
 import io.holoinsight.server.apm.engine.postcal.PostCalMetricStorage;
@@ -49,7 +50,7 @@ public class SpanMetricEsStorage extends PostCalMetricStorage {
 
   @Override
   public String timeSeriesField() {
-    return SpanDO.END_TIME;
+    return RecordDO.TIMESTAMP;
   }
 
 

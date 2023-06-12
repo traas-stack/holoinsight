@@ -6,6 +6,7 @@ package io.holoinsight.server.apm.engine.model;
 import io.holoinsight.server.apm.common.model.specification.sw.EndpointRelation;
 import io.holoinsight.server.apm.common.model.storage.annotation.Column;
 import io.holoinsight.server.apm.common.model.storage.annotation.ModelAnnotation;
+import io.holoinsight.server.apm.common.utils.TimeUtils;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -72,6 +73,7 @@ public class EndpointRelationDO extends RecordDO {
   public static EndpointRelationDO fromEndpointRelation(EndpointRelation endpointRelation) {
     EndpointRelationDO endpointRelationEsDO = new EndpointRelationDO();
     BeanUtils.copyProperties(endpointRelation, endpointRelationEsDO);
+    endpointRelationEsDO.setTimestamp(endpointRelation.getEndTime());
     return endpointRelationEsDO;
   }
 }

@@ -3,13 +3,16 @@
  */
 package io.holoinsight.server.apm.engine.elasticsearch.utils;
 
+import io.holoinsight.server.apm.common.model.specification.sw.EndpointRelation;
+import io.holoinsight.server.apm.common.model.specification.sw.ServiceRelation;
 import io.holoinsight.server.apm.common.model.storage.annotation.Column;
 import io.holoinsight.server.apm.common.model.storage.annotation.FlatColumn;
 import io.holoinsight.server.apm.common.utils.GsonUtils;
-import io.holoinsight.server.apm.engine.model.SpanDO;
+import io.holoinsight.server.apm.engine.model.*;
 
 import com.google.common.collect.Lists;
 import com.google.gson.*;
+import lombok.SneakyThrows;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Type;
@@ -28,7 +31,19 @@ public class EsGsonUtils extends GsonUtils {
       gson = new GsonBuilder().disableHtmlEscaping()
           .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
           .registerTypeHierarchyAdapter(byte[].class, new ByteArrayToBase64TypeAdapter())
-          .registerTypeHierarchyAdapter(SpanDO.class, new SpanTypeAdapter()).create();
+          .registerTypeHierarchyAdapter(SpanDO.class, new RecordTypeAdapter(SpanDO.class))
+          .registerTypeHierarchyAdapter(ServiceRelationDO.class,
+              new RecordTypeAdapter(ServiceRelationDO.class))
+          .registerTypeHierarchyAdapter(ServiceInstanceRelationDO.class,
+              new RecordTypeAdapter(ServiceInstanceRelationDO.class))
+          .registerTypeHierarchyAdapter(EndpointRelationDO.class,
+              new RecordTypeAdapter(EndpointRelationDO.class))
+          .registerTypeHierarchyAdapter(SlowSqlDO.class, new RecordTypeAdapter(SlowSqlDO.class))
+          .registerTypeHierarchyAdapter(ServiceErrorDO.class,
+              new RecordTypeAdapter(ServiceErrorDO.class))
+          .registerTypeHierarchyAdapter(NetworkAddressMappingDO.class,
+              new RecordTypeAdapter(NetworkAddressMappingDO.class))
+          .create();
       esGs.set(gson);
     }
     return gson;
@@ -46,36 +61,41 @@ public class EsGsonUtils extends GsonUtils {
     }
   }
 
-  private static class SpanTypeAdapter implements JsonSerializer<SpanDO>, JsonDeserializer<SpanDO> {
+  private static class RecordTypeAdapter<T extends RecordDO>
+      implements JsonSerializer<T>, JsonDeserializer<T> {
 
+
+    private Class<T> cls;
     private List<Field> allFields;
 
-    public SpanTypeAdapter() {
-      allFields = scanAllFields();
+    public RecordTypeAdapter(Class<T> cls) {
+      this.cls = cls;
+      this.allFields = scanAllFields();
     }
 
     private List<Field> scanAllFields() {
       Map<String, Field> fieldMap = new HashMap<>();
-      Class cls = SpanDO.class;
-      while (cls != Object.class) {
-        Field[] fields = cls.getDeclaredFields();
+      Class<?> c = cls;
+      while (c != Object.class) {
+        Field[] fields = c.getDeclaredFields();
         if (fields.length > 0) {
           for (Field field : fields) {
             fieldMap.putIfAbsent(field.getName(), field);
           }
         }
-        cls = cls.getSuperclass();
+        c = c.getSuperclass();
       }
       return Lists.newArrayList(fieldMap.values());
     }
 
-    public SpanDO deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context)
+    @SneakyThrows
+    public T deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context)
         throws JsonParseException {
 
       if (json == null) {
         return null;
       }
-      SpanDO spanEsDO = new SpanDO();
+      T spanEsDO = cls.newInstance();
       try {
         JsonObject jsonObject = json.getAsJsonObject();
         Field flatField = null;
@@ -127,7 +147,7 @@ public class EsGsonUtils extends GsonUtils {
       return spanEsDO;
     }
 
-    public JsonElement serialize(SpanDO src, Type typeOfSrc, JsonSerializationContext context) {
+    public JsonElement serialize(T src, Type typeOfSrc, JsonSerializationContext context) {
       if (src == null) {
         return null;
       }

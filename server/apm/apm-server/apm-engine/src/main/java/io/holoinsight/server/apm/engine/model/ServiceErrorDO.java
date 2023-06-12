@@ -53,6 +53,7 @@ public class ServiceErrorDO extends RecordDO {
   public static ServiceErrorDO fromErrorInfo(ErrorInfo errorInfo) {
     ServiceErrorDO serviceErrorEsDO = new ServiceErrorDO();
     BeanUtils.copyProperties(errorInfo, serviceErrorEsDO);
+    serviceErrorEsDO.setTimestamp(errorInfo.getEndTime());
     return serviceErrorEsDO;
   }
 

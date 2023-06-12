@@ -188,8 +188,7 @@ public class RelationAnalysis {
     slowSqlEsDO.setAddress(dbAddress);
     slowSqlEsDO.setLatency((int) latency);
     slowSqlEsDO.setStartTime(TimeUtils.unixNano2MS(span.getStartTimeUnixNano()));
-    slowSqlEsDO.setTimeBucket(
-        TimeBucket.getRecordTimeBucket(TimeUtils.unixNano2MS(span.getEndTimeUnixNano())));
+    slowSqlEsDO.setTimestamp(TimeUtils.unixNano2MS(span.getEndTimeUnixNano()));
     slowSqlEsDO.setTraceId(Hex.encodeHexString(span.getTraceId().toByteArray()));
     slowSqlEsDO.setStatement(statement.getStringValue());
 
@@ -283,7 +282,9 @@ public class RelationAnalysis {
       networkAddressMapping.setServiceNormal(true);
       networkAddressMapping.setServiceInstanceName(instanceName);
       networkAddressMapping.setTimeBucket(
-          TimeBucket.getRecordTimeBucket(TimeUtils.unixNano2MS(span.getStartTimeUnixNano())));
+          TimeBucket.getRecordTimeBucket(TimeUtils.unixNano2MS(span.getEndTimeUnixNano())));
+      networkAddressMapping.setStartTime(TimeUtils.unixNano2MS(span.getStartTimeUnixNano()));
+      networkAddressMapping.setEndTime(TimeUtils.unixNano2MS(span.getEndTimeUnixNano()));
       networkAddressMapping.prepare();
 
       // address mapping has existed

@@ -55,6 +55,7 @@ public class SlowSqlDO extends RecordDO {
   public static SlowSqlDO fromSlowSql(SlowSql slowSql) {
     SlowSqlDO slowSqlEsDO = new SlowSqlDO();
     BeanUtils.copyProperties(slowSql, slowSqlEsDO);
+    slowSqlEsDO.setTimestamp(slowSql.getEndTime());
     return slowSqlEsDO;
   }
 
