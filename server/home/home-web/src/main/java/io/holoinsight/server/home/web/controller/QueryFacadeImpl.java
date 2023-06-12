@@ -19,6 +19,7 @@ import io.holoinsight.server.home.common.service.query.QueryResponse;
 import io.holoinsight.server.home.common.service.query.QuerySchemaResponse;
 import io.holoinsight.server.home.common.service.query.Result;
 import io.holoinsight.server.home.common.service.query.ValueResult;
+import io.holoinsight.server.home.common.util.MonitorException;
 import io.holoinsight.server.home.common.util.StringUtil;
 import io.holoinsight.server.home.common.util.scope.AuthTargetType;
 import io.holoinsight.server.home.common.util.scope.MonitorScope;
@@ -459,6 +460,11 @@ public class QueryFacadeImpl extends BaseFacade {
 
       QueryProto.Datasource.Builder datasourceBuilder = QueryProto.Datasource.newBuilder();
       toProtoBean(datasourceBuilder, d);
+      Boolean aBoolean =
+          tenantInitService.checkConditions(ms.getWorkspace(), datasourceBuilder.getFiltersList());
+      if (!aBoolean) {
+        throw new MonitorException("workspace is illegal");
+      }
       datasourceBuilder
           .setApmMaterialized(d.isApmMaterialized() || MetaDictUtil.isApmMaterialized());
       builder.addDatasources(datasourceBuilder);

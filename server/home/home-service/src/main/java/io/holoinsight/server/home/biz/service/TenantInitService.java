@@ -88,4 +88,6 @@ public interface TenantInitService {
 
   CloudMonitorRange getCollectMonitorRange(String table, String workspace, List<String> strings,
       MetaLabel metaLabel);
+
+  Boolean checkCookie(String tenant, String workspace);
 }
