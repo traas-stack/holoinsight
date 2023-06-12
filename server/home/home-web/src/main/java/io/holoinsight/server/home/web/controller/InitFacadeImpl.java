@@ -14,6 +14,7 @@ import java.util.UUID;
 
 import javax.servlet.http.HttpServletResponse;
 
+import io.holoinsight.server.home.web.common.ParaCheckUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
@@ -119,7 +120,8 @@ public class InitFacadeImpl extends BaseFacade {
     facadeTemplate.manage(result, new ManageCallback() {
       @Override
       public void checkParameter() {
-
+        ParaCheckUtil.checkParaNotNull(tenant, "tenant");
+        tenantInitService.checkCookie(tenant, workspace);
       }
 
       @Override

@@ -75,4 +75,9 @@ public class DefaultTenantInitServiceImpl implements TenantInitService {
     return GaeaConvertUtil.convertCloudMonitorRange(table, metaLabel, strings);
   }
 
+  @Override
+  public Boolean checkCookie(String tenant, String workspace) {
+    return true;
+  }
+
 }
