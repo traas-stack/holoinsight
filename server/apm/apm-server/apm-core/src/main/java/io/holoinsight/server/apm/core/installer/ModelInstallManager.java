@@ -16,6 +16,7 @@ import org.springframework.context.annotation.Lazy;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
@@ -53,26 +54,32 @@ public class ModelInstallManager implements IModelInstallManager {
   private List<Model> scanModels() throws IOException {
     List<Model> models = new ArrayList<>();
     Collection<Class<?>> modelPathClasses = ClassUtil.getClasses(getModelPath());
-    log.info("[apm] load {} models, path={}",
-        modelPathClasses == null ? 0 : modelPathClasses.size(), getModelPath());
+    log.info("[apm] load {} models, path={}", modelPathClasses.size(), getModelPath());
     for (Class<?> cls : modelPathClasses) {
       if (cls.isAnnotationPresent(ModelAnnotation.class)) {
-        ModelAnnotation modelAnnotation = cls.getAnnotation(ModelAnnotation.class);
-        List<ModelColumn> modelColumns = new ArrayList<>();
-        Field[] fields = cls.getDeclaredFields();
-        for (Field field : fields) {
-          if (field.isAnnotationPresent(Column.class)) {
-            Column column = field.getAnnotation(Column.class);
-            ModelColumn modelColumn =
-                new ModelColumn(column.name(), field.getType(), field.getGenericType());
-            modelColumns.add(modelColumn);
-          }
-        }
-        Model model = new Model(modelAnnotation.name(), modelColumns, true, modelAnnotation.ttl());
-        models.add(model);
+        models.add(scanModel(cls));
       }
     }
     return models;
+  }
+
+  private Model scanModel(Class<?> cls) {
+    List<Field> fields = new ArrayList<>();
+    while (cls != null) {
+      fields.addAll(Arrays.asList(cls.getDeclaredFields()));
+      cls = cls.getSuperclass();
+    }
+    ModelAnnotation modelAnnotation = cls.getAnnotation(ModelAnnotation.class);
+    List<ModelColumn> modelColumns = new ArrayList<>();
+    for (Field field : fields) {
+      if (field.isAnnotationPresent(Column.class)) {
+        Column column = field.getAnnotation(Column.class);
+        ModelColumn modelColumn =
+            new ModelColumn(column.name(), field.getType(), field.getGenericType());
+        modelColumns.add(modelColumn);
+      }
+    }
+    return new Model(modelAnnotation.name(), modelColumns, true, modelAnnotation.ttl());
   }
 
   private void installModel(Model model) {
