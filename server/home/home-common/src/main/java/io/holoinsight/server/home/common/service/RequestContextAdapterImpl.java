@@ -36,16 +36,4 @@ public class RequestContextAdapterImpl implements RequestContextAdapter {
       }
     }
   }
-
-  @Override
-  public void queryMapTenantAdapte(Map<String, Object> queryMap, String tenant, String workspace) {
-    if (queryMap != null) {
-      if (StringUtils.isNotBlank(tenant)) {
-        queryMap.put("tenant", tenant);
-      }
-      if (StringUtils.isNotBlank(workspace)) {
-        queryMap.put("workspace", workspace);
-      }
-    }
-  }
 }
