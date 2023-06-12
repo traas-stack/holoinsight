@@ -3,6 +3,7 @@
  */
 package io.holoinsight.server.apm.engine.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import io.holoinsight.server.apm.common.model.storage.annotation.Column;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -21,10 +22,11 @@ public abstract class RecordDO implements Serializable {
 
   private static final long serialVersionUID = -2175475836786269673L;
 
-  public static final String TIME_BUCKET = "time_bucket";
+  public static final String TIMESTAMP = "_timestamp";
 
-  @Column(name = TIME_BUCKET)
-  private long timeBucket;
+  @Column(name = TIMESTAMP)
+  @JsonProperty(TIMESTAMP)
+  private long timestamp;
 
   public abstract String indexName();
 }

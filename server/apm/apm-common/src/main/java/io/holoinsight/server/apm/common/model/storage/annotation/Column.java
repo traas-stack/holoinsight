@@ -3,15 +3,13 @@
  */
 package io.holoinsight.server.apm.common.model.storage.annotation;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import java.lang.annotation.*;
 
 /**
  * @author jiwliu
  * @version : Column.java, v 0.1 2022年10月11日 19:18 xiangwanpeng Exp $
  */
+@Inherited
 @Target({ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Column {

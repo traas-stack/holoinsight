@@ -3,9 +3,9 @@
  */
 package io.holoinsight.server.apm.engine.elasticsearch.storage.impl;
 
-import io.holoinsight.server.apm.common.utils.TimeBucket;
 import io.holoinsight.server.apm.engine.elasticsearch.utils.EsGsonUtils;
 import io.holoinsight.server.apm.engine.model.NetworkAddressMappingDO;
+import io.holoinsight.server.apm.engine.model.RecordDO;
 import io.holoinsight.server.apm.engine.storage.NetworkAddressMappingStorage;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
@@ -32,11 +32,7 @@ public class NetworkAddressMappingEsStorage extends RecordEsStorage<NetworkAddre
 
   @Override
   public String timeSeriesField() {
-    return NetworkAddressMappingDO.TIME_BUCKET;
-  }
-
-  protected long getTime(long timestamp) {
-    return TimeBucket.getRecordTimeBucket(timestamp);
+    return RecordDO.TIMESTAMP;
   }
 
   @Override
@@ -44,8 +40,8 @@ public class NetworkAddressMappingEsStorage extends RecordEsStorage<NetworkAddre
     List<NetworkAddressMappingDO> networkAddressMapping = new ArrayList<>();
     SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
     searchSourceBuilder.size(1000);
-    searchSourceBuilder.query(new RangeQueryBuilder(this.timeSeriesField()).gte(getTime(startTime))
-        .lte(getTime(System.currentTimeMillis())));
+    searchSourceBuilder.query(new RangeQueryBuilder(this.timeSeriesField()).gte(startTime)
+        .lte(System.currentTimeMillis()));
     SearchRequest searchRequest =
         new SearchRequest(new String[] {NetworkAddressMappingDO.INDEX_NAME}, searchSourceBuilder);
 
