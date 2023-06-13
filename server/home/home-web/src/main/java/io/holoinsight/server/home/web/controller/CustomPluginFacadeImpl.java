@@ -23,6 +23,7 @@ import io.holoinsight.server.home.facade.page.MonitorPageRequest;
 import io.holoinsight.server.home.facade.page.MonitorPageResult;
 import io.holoinsight.server.home.web.common.ManageCallback;
 import io.holoinsight.server.home.web.common.ParaCheckUtil;
+import io.holoinsight.server.home.web.common.TokenUrls;
 import io.holoinsight.server.home.web.controller.model.LogSplitReq;
 import io.holoinsight.server.home.web.interceptor.MonitorScopeAuth;
 import io.holoinsight.server.common.J;
@@ -55,6 +56,7 @@ import java.util.regex.Pattern;
  */
 @RestController
 @RequestMapping("/webapi/customPlugin")
+@TokenUrls("/webapi/customPlugin/pageQuery")
 public class CustomPluginFacadeImpl extends BaseFacade {
 
   @Autowired
