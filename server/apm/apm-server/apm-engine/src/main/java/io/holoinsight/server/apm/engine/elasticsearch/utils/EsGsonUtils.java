@@ -3,25 +3,25 @@
  */
 package io.holoinsight.server.apm.engine.elasticsearch.utils;
 
-import io.holoinsight.server.apm.common.model.specification.sw.EndpointRelation;
-import io.holoinsight.server.apm.common.model.specification.sw.ServiceRelation;
+import com.google.common.collect.Lists;
+import com.google.gson.*;
 import io.holoinsight.server.apm.common.model.storage.annotation.Column;
 import io.holoinsight.server.apm.common.model.storage.annotation.FlatColumn;
 import io.holoinsight.server.apm.common.utils.GsonUtils;
 import io.holoinsight.server.apm.engine.model.*;
-
-import com.google.common.collect.Lists;
-import com.google.gson.*;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Type;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
  * @author jiwliu
  * @version : GsonUtils.java, v 0.1 2022年09月30日 14:47 xiangwanpeng Exp $
  */
+@Slf4j
 public class EsGsonUtils extends GsonUtils {
   public static ThreadLocal<Gson> esGs = new ThreadLocal<Gson>();
 
@@ -64,7 +64,6 @@ public class EsGsonUtils extends GsonUtils {
   private static class RecordTypeAdapter<T extends RecordDO>
       implements JsonSerializer<T>, JsonDeserializer<T> {
 
-
     private Class<T> cls;
     private List<Field> allFields;
 
@@ -88,6 +87,9 @@ public class EsGsonUtils extends GsonUtils {
       return Lists.newArrayList(fieldMap.values());
     }
 
+    private static final SimpleDateFormat SDF =
+        new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
+
     @SneakyThrows
     public T deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context)
         throws JsonParseException {
@@ -95,7 +97,7 @@ public class EsGsonUtils extends GsonUtils {
       if (json == null) {
         return null;
       }
-      T spanEsDO = cls.newInstance();
+      T instance = cls.newInstance();
       try {
         JsonObject jsonObject = json.getAsJsonObject();
         Field flatField = null;
@@ -104,33 +106,47 @@ public class EsGsonUtils extends GsonUtils {
           field.setAccessible(true);
           String fieldName = field.getName();
           Class<?> fieldType = field.getType();
+
           if (field.isAnnotationPresent(FlatColumn.class)) {
             flatField = field;
           } else if (field.isAnnotationPresent(Column.class)) {
             Column column = field.getAnnotation(Column.class);
             String columnName = column.name();
             JsonElement element = jsonObject.remove(columnName);
-            if (fieldType == Double.class || fieldType == double.class) {
-              field.set(spanEsDO, element.getAsNumber().doubleValue());
-            } else if (fieldType == Float.class || fieldType == float.class) {
-              field.set(spanEsDO, element.getAsNumber().floatValue());
-            } else if (fieldType == Integer.class || fieldType == int.class) {
-              field.set(spanEsDO, element.getAsNumber().intValue());
-            } else if (fieldType == Long.class || fieldType == long.class) {
-              field.set(spanEsDO, element.getAsNumber().longValue());
-            } else if (fieldType == Byte.class || fieldType == byte.class) {
-              field.set(spanEsDO, element.getAsNumber().byteValue());
-            } else if (fieldType == Short.class || fieldType == short.class) {
-              field.set(spanEsDO, element.getAsNumber().shortValue());
-            } else if (fieldType == Boolean.class || fieldType == boolean.class) {
-              field.set(spanEsDO, element.getAsBoolean());
-            } else if (fieldType == Character.class || fieldType == char.class) {
-              field.set(spanEsDO, element.getAsCharacter());
-            } else if (fieldType == String.class) {
-              field.set(spanEsDO, element.getAsString());
-            } else {
-              throw new IllegalArgumentException(
-                  String.format("unsupported field type, %s:%s", fieldName, fieldType.getName()));
+            try {
+              if (RecordDO.TIMESTAMP.equals(columnName)) {
+                try {
+                  field.set(instance, element.getAsNumber().longValue());
+                } catch (Exception e) {
+                  Date date = SDF.parse(element.getAsString());
+                  field.set(instance, date.getTime());
+                }
+              } else if (fieldType == Double.class || fieldType == double.class) {
+                field.set(instance, element.getAsNumber().doubleValue());
+              } else if (fieldType == Float.class || fieldType == float.class) {
+                field.set(instance, element.getAsNumber().floatValue());
+              } else if (fieldType == Integer.class || fieldType == int.class) {
+                field.set(instance, element.getAsNumber().intValue());
+              } else if (fieldType == Long.class || fieldType == long.class) {
+                field.set(instance, element.getAsNumber().longValue());
+              } else if (fieldType == Byte.class || fieldType == byte.class) {
+                field.set(instance, element.getAsNumber().byteValue());
+              } else if (fieldType == Short.class || fieldType == short.class) {
+                field.set(instance, element.getAsNumber().shortValue());
+              } else if (fieldType == Boolean.class || fieldType == boolean.class) {
+                field.set(instance, element.getAsBoolean());
+              } else if (fieldType == Character.class || fieldType == char.class) {
+                field.set(instance, element.getAsCharacter());
+              } else if (fieldType == String.class) {
+                field.set(instance, element.getAsString());
+              } else {
+                throw new IllegalArgumentException(
+                    String.format("unsupported field type, %s:%s", fieldName, fieldType.getName()));
+              }
+            } catch (Exception e) {
+              log.error("deserialize field fail, class={}, col={}, element={}", cls.getSimpleName(),
+                  columnName, element);
+              throw e;
             }
           }
         }
@@ -139,12 +155,12 @@ public class EsGsonUtils extends GsonUtils {
           for (String key : remainKeys) {
             map.put(key, jsonObject.get(key).getAsString());
           }
-          flatField.set(spanEsDO, map);
+          flatField.set(instance, map);
         }
       } catch (Exception e) {
         throw new RuntimeException(e);
       }
-      return spanEsDO;
+      return instance;
     }
 
     public JsonElement serialize(T src, Type typeOfSrc, JsonSerializationContext context) {
@@ -186,5 +202,4 @@ public class EsGsonUtils extends GsonUtils {
       return jsonObject;
     }
   }
-
 }

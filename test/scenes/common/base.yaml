@@ -129,6 +129,17 @@ services:
       interval: 1s
       retries: 300
       timeout: 10s
+  tatris:
+    image: ${tatris_image:-tatrisio/tatris:latest}
+    volumes:
+      - /usr/share/zoneinfo/Asia/Shanghai:/etc/localtime:ro
+    ports:
+      - 6060
+    healthcheck:
+      test: [ "CMD", "timeout", "1", "bash", "-c", "cat < /dev/null > /dev/tcp/127.0.0.1/6060" ]
+      interval: 1s
+      retries: 300
+      timeout: 10s
   kibana:
     image: ${kibana_image:-kibana:7.16.1}
     environment:
