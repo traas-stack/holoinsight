@@ -4,6 +4,7 @@
 package io.holoinsight.server.home.common.util.scope;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -15,6 +16,7 @@ import java.util.List;
 public enum AuthTargetType {
   SITE, // 站点
   TENANT, // 租户
+  WORKSPACE, // 空间
   CONTEXT, // 默认上下文
   FOLDER, // 文件夹
 
@@ -26,7 +28,10 @@ public enum AuthTargetType {
     List<AuthTargetType> ret = new ArrayList<>();
 
     if (type.equals(SITE)) {
-      return Collections.singletonList(TENANT);
+      return Arrays.asList(TENANT, WORKSPACE);
+    }
+    if (type.equals(TENANT)) {
+      return Collections.singletonList(WORKSPACE);
     }
     return ret;
   }

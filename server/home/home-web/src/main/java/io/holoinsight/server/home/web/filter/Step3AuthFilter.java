@@ -14,10 +14,10 @@ import io.holoinsight.server.home.common.util.scope.MonitorAuth;
 import io.holoinsight.server.home.common.util.scope.MonitorCookieUtil;
 import io.holoinsight.server.home.common.util.scope.MonitorScope;
 import io.holoinsight.server.home.common.util.scope.MonitorUser;
-import io.holoinsight.server.home.common.util.scope.PowerConstants;
 import io.holoinsight.server.home.common.util.scope.RequestContext;
 import io.holoinsight.server.home.common.util.scope.RequestContext.Context;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
@@ -31,7 +31,6 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.Map;
 import java.util.Set;
 
 import static io.holoinsight.server.home.web.common.ResponseUtil.authFailedResponse;
@@ -100,15 +99,20 @@ public class Step3AuthFilter implements Filter {
     try {
       ma = MonitorCookieUtil.getMonitorAuthCookie(req);
       if (ma != null && !CollectionUtils.isEmpty(ma.powerConstants)) {
-
         // 用户 cookies 里面拥有该租户权限，此时默认返回 true
-        Map<String, Set<PowerConstants>> tenantMaps = ma.getTenantViewPowerList();
-        if (tenantMaps.containsKey(ms.getTenant())) {
+        Set<String> tenantMaps = ma.hasTenantViewPowerList();
+        Set<String> workspaceMaps = ma.hasWsViewPowerList();
+        if (StringUtils.isBlank(ms.getWorkspace()) && tenantMaps.contains(ms.getTenant())) {
+          req.setAttribute(MonitorAuth.MONITOR_AUTH, ma);
+          return true;
+        } else if (StringUtils.isNotBlank(ms.getWorkspace()) && tenantMaps.contains(ms.getTenant())
+            && workspaceMaps.contains(ms.getWorkspace())) {
           req.setAttribute(MonitorAuth.MONITOR_AUTH, ma);
           return true;
         }
       }
       ma = ulaFacade.getUserPowerPkg(mu, ms);
+      ulaFacade.checkWorkspace(req, mu, ms);
       if (null == ma || CollectionUtils.isEmpty(ma.powerConstants)
           || CollectionUtils.isEmpty(ma.getTenantViewPowerList())) {
         log.error("check tenant auth failed, " + J.toJson(ma));

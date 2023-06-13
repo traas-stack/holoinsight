@@ -71,6 +71,10 @@ public class ULAFacade {
     return instanceMap.get(ulaType);
   }
 
+  public void checkWorkspace(HttpServletRequest req, MonitorUser user, MonitorScope ms) {
+    getCurrentULA().checkWorkspace(req, user, ms);
+  }
+
   public Boolean authFunc(HttpServletRequest req) {
     return getCurrentULA().authFunc(req);
   }

@@ -63,6 +63,7 @@ public class MonitorCookieUtil {
     CookieUtils.removeCookie(resp, USER);
     CookieUtils.removeCookie(resp, AUTH);
     CookieUtils.removeCookie(resp, TENANT);
+    CookieUtils.removeCookie(resp, WORKSPACE);
     resp.setHeader("P3P",
         "CP=\"CURa ADMa DEVa PSAo PSDo OUR BUS UNI PUR INT DEM STA PRE COM NAV OTC NOI DSP COR\"");
   }
