@@ -64,6 +64,8 @@ public interface ULA {
   String authTokenName();
 
   // 权限
+  Boolean checkWorkspace(HttpServletRequest request, MonitorUser user, MonitorScope ms);
+
   Boolean authFunc(HttpServletRequest request);
 
   // 权限申请跳转链接

@@ -137,6 +137,11 @@ public class MonitorULA implements ULA {
   }
 
   @Override
+  public Boolean checkWorkspace(HttpServletRequest request, MonitorUser user, MonitorScope ms) {
+    return true;
+  }
+
+  @Override
   public Boolean authFunc(HttpServletRequest request) {
     return true;
   }

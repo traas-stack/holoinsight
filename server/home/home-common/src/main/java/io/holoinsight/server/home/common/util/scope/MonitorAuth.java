@@ -55,22 +55,41 @@ public class MonitorAuth {
     return ts;
   }
 
-  //
-  // public void mergeMonitorAuth(MonitorAuth ma) {
-  // for (Entry<AuthTarget, Set<PowerConstants>> e : ma.powerConstants.entrySet()) {
-  // Set<PowerConstants> pcs = this.powerConstants.computeIfAbsent(e.getKey(), k -> new
-  // HashSet<>());
-  // pcs.addAll(e.getValue());
-  // }
-  // }
-  //
-  // public static MonitorAuth mergeMonitorAuth(List<MonitorAuth> mas) {
-  // MonitorAuth ret = new MonitorAuth();
-  // for (MonitorAuth ma : mas) {
-  // ret.mergeMonitorAuth(ma);
-  // }
-  // return ret;
-  // }
+  public Set<String> hasTenantViewPowerList() {
+    Set<String> ts = new HashSet<>();
+    for (Entry<AuthTarget, Set<PowerConstants>> pe : powerConstants.entrySet()) {
+      if (pe.getKey().authTargetType.equals(AuthTargetType.TENANT)) {
+        ts.add(pe.getKey().quthTargetId);
+      }
+    }
+    return ts;
+  }
+
+  public Set<String> hasWsViewPowerList() {
+    Set<String> ws = new HashSet<>();
+    for (Entry<AuthTarget, Set<PowerConstants>> pe : powerConstants.entrySet()) {
+      if (pe.getKey().authTargetType.equals(AuthTargetType.WORKSPACE)) {
+        ws.add(pe.getKey().quthTargetId);
+      }
+    }
+    return ws;
+  }
+
+  public void mergeMonitorAuth(MonitorAuth ma) {
+    for (Entry<AuthTarget, Set<PowerConstants>> e : ma.powerConstants.entrySet()) {
+      Set<PowerConstants> pcs =
+          this.powerConstants.computeIfAbsent(e.getKey(), k -> new HashSet<>());
+      pcs.addAll(e.getValue());
+    }
+  }
+
+  public static MonitorAuth mergeMonitorAuth(List<MonitorAuth> mas) {
+    MonitorAuth ret = new MonitorAuth();
+    for (MonitorAuth ma : mas) {
+      ret.mergeMonitorAuth(ma);
+    }
+    return ret;
+  }
 
   public MonitorAuthPure toPure() {
     MonitorAuthPure map = new MonitorAuthPure();
