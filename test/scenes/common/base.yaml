@@ -131,6 +131,8 @@ services:
       timeout: 10s
   tatris:
     image: ${tatris_image:-tatrisio/tatris:latest}
+    volumes:
+      - /usr/share/zoneinfo/Asia/Shanghai:/etc/localtime:ro
     ports:
       - 6060
     healthcheck:
