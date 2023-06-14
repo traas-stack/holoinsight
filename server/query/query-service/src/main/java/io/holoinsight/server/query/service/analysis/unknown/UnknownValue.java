@@ -3,7 +3,7 @@
  */
 package io.holoinsight.server.query.service.analysis.unknown;
 
-import io.holoinsight.server.query.service.analysis.Mergable;
+import io.holoinsight.server.query.service.analysis.Mergeable;
 import io.holoinsight.server.query.service.analysis.collect.MergeData;
 import lombok.Data;
 
@@ -16,7 +16,7 @@ import java.util.Map;
  * @version : LogAnalysisData.java, v 0.1 2022年12月09日 15:25 xiangwanpeng Exp $
  */
 @Data
-public class UnknownValue implements Mergable, Serializable {
+public class UnknownValue implements Mergeable, Serializable {
 
   private static final long serialVersionUID = 1204956131343394884L;
 
@@ -26,7 +26,7 @@ public class UnknownValue implements Mergable, Serializable {
   public UnknownValue() {}
 
   @Override
-  public void merge(Mergable other) {
+  public void merge(Mergeable other) {
     if (null == other) {
       return;
     }

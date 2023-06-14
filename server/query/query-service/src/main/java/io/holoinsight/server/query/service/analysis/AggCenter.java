@@ -8,6 +8,8 @@ import io.holoinsight.server.query.service.analysis.collect.MergeData;
 import io.holoinsight.server.query.service.analysis.known.KnownValue;
 import io.holoinsight.server.query.service.analysis.unknown.UnknownValue;
 import io.holoinsight.server.apm.common.utils.GsonUtils;
+import io.holoinsight.server.query.service.sample.LogSample;
+import io.holoinsight.server.query.service.sample.LogSamples;
 import org.apache.commons.collections.CollectionUtils;
 
 import java.util.HashMap;
@@ -15,16 +17,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.BiFunction;
 
-/**
- * @author xiangwanpeng
- * @version : AnalysisAggregators.java, v 0.1 2022年12月08日 16:38 xiangwanpeng Exp $
- */
-public class AnalysisCenter {
-  private static final Map<String, BiFunction<Map<String, String>, String, Mergable>> ANALYSIS_AGGREGATORS =
+public class AggCenter {
+  private static final Map<String, BiFunction<Map<String, String>, String, Mergeable>> AGGREGATORS =
       new HashMap();
 
   static {
-    ANALYSIS_AGGREGATORS.put("unknown-analysis", (tags, json) -> {
+    AGGREGATORS.put("unknown-analysis", (tags, json) -> {
       UnknownValue value = new UnknownValue();
       Analysis analysis = GsonUtils.fromJson(json, Analysis.class);
       if (analysis != null && CollectionUtils.isNotEmpty(analysis.getAnalyzedLogs())) {
@@ -45,7 +43,7 @@ public class AnalysisCenter {
       return value;
     });
 
-    ANALYSIS_AGGREGATORS.put("known-analysis", (tags, json) -> {
+    AGGREGATORS.put("known-analysis", (tags, json) -> {
       KnownValue value = null;
       Analysis analysis = GsonUtils.fromJson(json, Analysis.class);
       if (analysis != null && CollectionUtils.isNotEmpty(analysis.getAnalyzedLogs())) {
@@ -64,17 +62,26 @@ public class AnalysisCenter {
       }
       return value;
     });
+
+    AGGREGATORS.put("sample", (tags, json) -> {
+      LogSamples logSamples = GsonUtils.fromJson(json, LogSamples.class);
+      if (logSamples != null && CollectionUtils.isNotEmpty(logSamples.getSamples())) {
+        List<LogSample> lss = logSamples.getSamples();
+        lss.forEach(ls -> ls.setHostname(tags.getOrDefault("hostname", "UNKNOWN")));
+      }
+      return logSamples;
+    });
   }
 
-  public static boolean isAnalysis(String aggregator) {
-    return ANALYSIS_AGGREGATORS.containsKey(aggregator);
+  public static boolean isAggregator(String aggregator) {
+    return AGGREGATORS.containsKey(aggregator);
   }
 
-  public static Mergable parseAnalysis(Map<String, String> tags, String json, String aggregator) {
-    if (!isAnalysis(aggregator)) {
+  public static Mergeable parseMergeable(Map<String, String> tags, String json, String aggregator) {
+    if (!isAggregator(aggregator)) {
       return null;
     } else {
-      return ANALYSIS_AGGREGATORS.get(aggregator).apply(tags, json);
+      return AGGREGATORS.get(aggregator).apply(tags, json);
     }
   }
 }
