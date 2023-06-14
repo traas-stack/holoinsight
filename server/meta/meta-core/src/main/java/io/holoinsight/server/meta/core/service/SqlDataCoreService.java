@@ -78,7 +78,8 @@ public class SqlDataCoreService extends AbstractDataCoreService {
     this.metaKeyConfig = new HashMap<>();
     initMetaConfig();
     sync();
-    scheduledExecutor.scheduleAtFixedRate(this::sync, 60 - LocalTime.now().getSecond(), PERIOD, TimeUnit.SECONDS);
+    scheduledExecutor.scheduleAtFixedRate(this::sync, 60 - LocalTime.now().getSecond(), PERIOD,
+        TimeUnit.SECONDS);
   }
 
   private void initMetaConfig() {
