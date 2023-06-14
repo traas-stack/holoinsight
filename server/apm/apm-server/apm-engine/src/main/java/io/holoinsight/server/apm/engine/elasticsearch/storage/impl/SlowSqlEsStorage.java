@@ -4,7 +4,7 @@
 package io.holoinsight.server.apm.engine.elasticsearch.storage.impl;
 
 import io.holoinsight.server.apm.common.model.query.SlowSql;
-import io.holoinsight.server.apm.engine.elasticsearch.utils.EsGsonUtils;
+import io.holoinsight.server.apm.engine.elasticsearch.utils.ApmGsonUtils;
 import io.holoinsight.server.apm.engine.model.RecordDO;
 import io.holoinsight.server.apm.engine.model.SlowSqlDO;
 import io.holoinsight.server.apm.engine.storage.ICommonBuilder;
@@ -71,7 +71,7 @@ public class SlowSqlEsStorage extends RecordEsStorage<SlowSqlDO> implements Slow
     List<SlowSql> result = new ArrayList<>();
     for (SearchHit searchHit : response.getHits().getHits()) {
       String hitJson = searchHit.getSourceAsString();
-      SlowSql slowSql = EsGsonUtils.esGson().fromJson(hitJson, SlowSql.class);
+      SlowSql slowSql = ApmGsonUtils.apmGson().fromJson(hitJson, SlowSql.class);
       result.add(slowSql);
     }
 

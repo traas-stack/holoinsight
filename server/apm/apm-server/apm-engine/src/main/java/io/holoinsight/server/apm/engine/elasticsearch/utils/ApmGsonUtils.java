@@ -11,42 +11,51 @@ import io.holoinsight.server.apm.common.utils.GsonUtils;
 import io.holoinsight.server.apm.engine.model.*;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.util.Assert;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Type;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-/**
- * @author jiwliu
- * @version : GsonUtils.java, v 0.1 2022年09月30日 14:47 xiangwanpeng Exp $
- */
 @Slf4j
-public class EsGsonUtils extends GsonUtils {
-  public static ThreadLocal<Gson> esGs = new ThreadLocal<Gson>();
+public class ApmGsonUtils extends GsonUtils {
+  public static volatile Gson apmGson;
 
-  public static Gson esGson() {
-    Gson gson = esGs.get();
-    if (gson == null) {
-      gson = new GsonBuilder().disableHtmlEscaping()
-          .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
-          .registerTypeHierarchyAdapter(byte[].class, new ByteArrayToBase64TypeAdapter())
-          .registerTypeHierarchyAdapter(SpanDO.class, new RecordTypeAdapter(SpanDO.class))
-          .registerTypeHierarchyAdapter(ServiceRelationDO.class,
-              new RecordTypeAdapter(ServiceRelationDO.class))
-          .registerTypeHierarchyAdapter(ServiceInstanceRelationDO.class,
-              new RecordTypeAdapter(ServiceInstanceRelationDO.class))
-          .registerTypeHierarchyAdapter(EndpointRelationDO.class,
-              new RecordTypeAdapter(EndpointRelationDO.class))
-          .registerTypeHierarchyAdapter(SlowSqlDO.class, new RecordTypeAdapter(SlowSqlDO.class))
-          .registerTypeHierarchyAdapter(ServiceErrorDO.class,
-              new RecordTypeAdapter(ServiceErrorDO.class))
-          .registerTypeHierarchyAdapter(NetworkAddressMappingDO.class,
-              new RecordTypeAdapter(NetworkAddressMappingDO.class))
-          .create();
-      esGs.set(gson);
+  public static Gson apmGson() {
+    if (apmGson == null) {
+      synchronized (Gson.class) {
+        if (apmGson == null) {
+          apmGson = new GsonBuilder().disableHtmlEscaping()
+              .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
+              .registerTypeHierarchyAdapter(byte[].class, new ByteArrayToBase64TypeAdapter())
+              .registerTypeHierarchyAdapter(SpanDO.class, new RecordTypeAdapter(SpanDO.class))
+              .registerTypeHierarchyAdapter(ServiceRelationDO.class,
+                  new RecordTypeAdapter(ServiceRelationDO.class))
+              .registerTypeHierarchyAdapter(ServiceInstanceRelationDO.class,
+                  new RecordTypeAdapter(ServiceInstanceRelationDO.class))
+              .registerTypeHierarchyAdapter(EndpointRelationDO.class,
+                  new RecordTypeAdapter(EndpointRelationDO.class))
+              .registerTypeHierarchyAdapter(SlowSqlDO.class, new RecordTypeAdapter(SlowSqlDO.class))
+              .registerTypeHierarchyAdapter(ServiceErrorDO.class,
+                  new RecordTypeAdapter(ServiceErrorDO.class))
+              .registerTypeHierarchyAdapter(NetworkAddressMappingDO.class,
+                  new RecordTypeAdapter(NetworkAddressMappingDO.class))
+              .create();
+        }
+      }
     }
-    return gson;
+    return apmGson;
+  }
+
+  public static void register(List<Class<? extends RecordDO>> clsList) {
+    Assert.notEmpty(clsList, "cls list empty!");
+    synchronized (ApmGsonUtils.class) {
+      Gson gson = apmGson();
+      GsonBuilder builder = gson.newBuilder();
+      clsList.forEach(cls -> builder.registerTypeHierarchyAdapter(cls, new RecordTypeAdapter(cls)));
+      apmGson = builder.create();
+    }
   }
 
   private static class ByteArrayToBase64TypeAdapter

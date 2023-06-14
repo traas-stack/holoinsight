@@ -6,7 +6,7 @@ package io.holoinsight.server.apm.engine.elasticsearch.storage.impl;
 import io.holoinsight.server.apm.common.constants.Const;
 import io.holoinsight.server.apm.common.utils.DownSampling;
 import io.holoinsight.server.apm.common.utils.TimeBucket;
-import io.holoinsight.server.apm.engine.elasticsearch.utils.EsGsonUtils;
+import io.holoinsight.server.apm.engine.elasticsearch.utils.ApmGsonUtils;
 import io.holoinsight.server.apm.engine.model.RecordDO;
 import io.holoinsight.server.apm.engine.storage.WritableStorage;
 import io.holoinsight.server.common.springboot.ConditionalOnFeature;
@@ -43,7 +43,7 @@ public class RecordEsStorage<T extends RecordDO> implements WritableStorage<T> {
         String writeIndexName = writeIndexName(entity);
 
         bulkRequest.add(new IndexRequest(writeIndexName).opType(DocWriteRequest.OpType.CREATE)
-            .source(EsGsonUtils.esGson().toJson(entity), XContentType.JSON));
+            .source(ApmGsonUtils.apmGson().toJson(entity), XContentType.JSON));
       });
       BulkResponse bulkItemRsp = client().bulk(bulkRequest, RequestOptions.DEFAULT);
       if (bulkItemRsp.hasFailures()) {
