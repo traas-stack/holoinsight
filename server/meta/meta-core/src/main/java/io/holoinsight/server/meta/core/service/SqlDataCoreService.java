@@ -3,6 +3,7 @@
  */
 package io.holoinsight.server.meta.core.service;
 
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -50,7 +51,7 @@ public class SqlDataCoreService extends AbstractDataCoreService {
 
   public static final int BATCH_INSERT_SIZE = 5;
   public static final int LIMIT = 1000;
-  public static final int PERIOD = 30;
+  public static final int PERIOD = 20;
   public static final int DELETED = 1;
   public static final String EMPTY_VALUE = "NULL";
   private MetaDataMapper metaDataMapper;
@@ -77,7 +78,7 @@ public class SqlDataCoreService extends AbstractDataCoreService {
     this.metaKeyConfig = new HashMap<>();
     initMetaConfig();
     sync();
-    scheduledExecutor.scheduleAtFixedRate(this::sync, PERIOD, PERIOD, TimeUnit.SECONDS);
+    scheduledExecutor.scheduleAtFixedRate(this::sync, 60 - LocalTime.now().getSecond(), PERIOD, TimeUnit.SECONDS);
   }
 
   private void initMetaConfig() {
