@@ -11,7 +11,7 @@ import io.holoinsight.server.apm.common.utils.GsonUtils;
 import io.holoinsight.server.apm.common.utils.TimeBucket;
 import io.holoinsight.server.apm.core.installer.DataTypeMapping;
 import io.holoinsight.server.apm.core.installer.ModelInstaller;
-import io.holoinsight.server.apm.engine.elasticsearch.utils.EsGsonUtils;
+import io.holoinsight.server.apm.engine.elasticsearch.utils.ApmGsonUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.elasticsearch.ElasticsearchStatusException;
 import org.elasticsearch.action.support.master.AcknowledgedResponse;
@@ -27,7 +27,6 @@ import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.xcontent.XContentType;
 import org.elasticsearch.rest.RestStatus;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 
 import javax.annotation.Resource;
 import java.io.IOException;
@@ -103,7 +102,7 @@ public class EsModelInstaller implements ModelInstaller {
         structures.putStructure(tableName, mappings);
         Settings settings = createSettings(model);
         CompressedXContent mappingCompressedXContent =
-            new CompressedXContent(EsGsonUtils.esGson().toJson(mappings));
+            new CompressedXContent(ApmGsonUtils.apmGson().toJson(mappings));
         PutComposableIndexTemplateRequest putComposableIndexTemplateRequest =
             new PutComposableIndexTemplateRequest().name(tableName);
         Map<String, AliasMetadata> aliases = new HashMap<>();
@@ -126,7 +125,7 @@ public class EsModelInstaller implements ModelInstaller {
       GetIndexRequest getIndexRequest = new GetIndexRequest(indexName);
       if (!indicesClient.exists(getIndexRequest, RequestOptions.DEFAULT)) {
         CreateIndexRequest createIndexRequest = new CreateIndexRequest(indexName);
-        createIndexRequest.mapping(EsGsonUtils.esGson().toJson(mappings), XContentType.JSON);
+        createIndexRequest.mapping(ApmGsonUtils.apmGson().toJson(mappings), XContentType.JSON);
         CreateIndexResponse createIndexResponse =
             indicesClient.create(createIndexRequest, RequestOptions.DEFAULT);
         boolean isAcknowledged = createIndexResponse.isAcknowledged();

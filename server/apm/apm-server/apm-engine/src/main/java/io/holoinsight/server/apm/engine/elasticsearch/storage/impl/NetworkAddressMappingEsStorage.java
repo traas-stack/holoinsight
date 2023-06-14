@@ -3,7 +3,7 @@
  */
 package io.holoinsight.server.apm.engine.elasticsearch.storage.impl;
 
-import io.holoinsight.server.apm.engine.elasticsearch.utils.EsGsonUtils;
+import io.holoinsight.server.apm.engine.elasticsearch.utils.ApmGsonUtils;
 import io.holoinsight.server.apm.engine.model.NetworkAddressMappingDO;
 import io.holoinsight.server.apm.engine.model.RecordDO;
 import io.holoinsight.server.apm.engine.storage.NetworkAddressMappingStorage;
@@ -50,7 +50,7 @@ public class NetworkAddressMappingEsStorage extends RecordEsStorage<NetworkAddre
     for (SearchHit searchHit : searchResponse.getHits().getHits()) {
       String hitJson = searchHit.getSourceAsString();
       NetworkAddressMappingDO networkAddressMappingEsDO =
-          EsGsonUtils.esGson().fromJson(hitJson, NetworkAddressMappingDO.class);
+          ApmGsonUtils.apmGson().fromJson(hitJson, NetworkAddressMappingDO.class);
       networkAddressMapping.add(networkAddressMappingEsDO);
     }
 

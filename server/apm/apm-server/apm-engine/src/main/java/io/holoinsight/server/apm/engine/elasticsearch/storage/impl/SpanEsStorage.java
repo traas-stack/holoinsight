@@ -23,7 +23,7 @@ import io.holoinsight.server.apm.common.model.specification.sw.Tag;
 import io.holoinsight.server.apm.common.model.specification.sw.Trace;
 import io.holoinsight.server.apm.common.model.specification.sw.TraceState;
 import io.holoinsight.server.apm.common.utils.GsonUtils;
-import io.holoinsight.server.apm.engine.elasticsearch.utils.EsGsonUtils;
+import io.holoinsight.server.apm.engine.elasticsearch.utils.ApmGsonUtils;
 import io.holoinsight.server.apm.engine.model.RecordDO;
 import io.holoinsight.server.apm.engine.model.SpanDO;
 import io.holoinsight.server.apm.engine.storage.SpanStorage;
@@ -34,7 +34,6 @@ import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.index.query.BoolQueryBuilder;
-import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.RangeQueryBuilder;
 import org.elasticsearch.index.query.TermQueryBuilder;
 import org.elasticsearch.index.query.TermsQueryBuilder;
@@ -86,7 +85,7 @@ public class SpanEsStorage extends RecordEsStorage<SpanDO> implements SpanStorag
     final TraceBrief traceBrief = new TraceBrief();
     for (org.elasticsearch.search.SearchHit hit : searchResponse.getHits().getHits()) {
       String hitJson = hit.getSourceAsString();
-      SpanDO spanEsDO = EsGsonUtils.esGson().fromJson(hitJson, SpanDO.class);
+      SpanDO spanEsDO = ApmGsonUtils.apmGson().fromJson(hitJson, SpanDO.class);
       BasicTrace basicTrace = new BasicTrace();
       basicTrace.setStart(spanEsDO.getStartTime());
       basicTrace.getServiceNames()
@@ -118,7 +117,7 @@ public class SpanEsStorage extends RecordEsStorage<SpanDO> implements SpanStorag
     List<SpanDO> spanRecords = new ArrayList<>();
     for (org.elasticsearch.search.SearchHit hit : searchResponse.getHits().getHits()) {
       String hitJson = hit.getSourceAsString();
-      SpanDO spanEsDO = EsGsonUtils.esGson().fromJson(hitJson, SpanDO.class);
+      SpanDO spanEsDO = ApmGsonUtils.apmGson().fromJson(hitJson, SpanDO.class);
       spanRecords.add(spanEsDO);
     }
 
