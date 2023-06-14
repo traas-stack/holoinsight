@@ -99,7 +99,7 @@ public class AlarmHistoryDetailServiceImpl extends
     QueryWrapper<AlarmHistoryDetail> queryWrapper = new QueryWrapper<>();
     queryWrapper.select("count(1) as c", "alarm_time");
     queryWrapper.groupBy("alarm_time");
-    queryWrapper.orderByDesc("alarm_time");
+    queryWrapper.orderByAsc("alarm_time");
     queryWrapper.last("limit 600");
 
     if (StringUtils.isNotBlank(target.getUniqueId())) {

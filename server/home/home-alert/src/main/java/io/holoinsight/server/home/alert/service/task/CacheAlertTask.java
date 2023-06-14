@@ -23,6 +23,7 @@ import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -177,11 +178,13 @@ public class CacheAlertTask {
 
   private List<AlarmRule> getAlertRule(String ruleType, int pageNum, int pageSize) {
     List<AlarmRule> alarmRuleDOS = new ArrayList<>();
-    int limit = LIMIT;
-    int offset = 0;
+    int limit;
+    int offset;
     if (pageSize > 0) {
       limit = pageSize;
       offset = pageNum;
+    } else {
+      return Collections.emptyList();
     }
     QueryWrapper<AlarmRule> condition = new QueryWrapper<>();
     condition.orderByDesc("id");
@@ -191,6 +194,8 @@ public class CacheAlertTask {
     if (!CollectionUtils.isEmpty(alarmRuleDo)) {
       alarmRuleDOS.addAll(alarmRuleDo);
     }
+    LOGGER.info("rule_type={}, limit={}, offset={}, size={}", ruleType, limit, offset,
+        alarmRuleDOS.size());
     return alarmRuleDOS;
   }
 
