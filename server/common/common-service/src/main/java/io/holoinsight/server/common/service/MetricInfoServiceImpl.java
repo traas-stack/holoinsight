@@ -65,10 +65,10 @@ public class MetricInfoServiceImpl extends ServiceImpl<MetricInfoMapper, MetricI
   public List<MetricInfoDTO> queryListByTenantProduct(String tenant, String workspace,
       String product) {
     Map<String, Object> columnMap = new HashMap<>();
-    if (StringUtils.isNotBlank(tenant)) {
+    if (StringUtils.isNotBlank(tenant) || "-".equalsIgnoreCase(tenant)) {
       columnMap.put("tenant", tenant);
     }
-    if (StringUtils.isNotBlank(workspace)) {
+    if (StringUtils.isNotBlank(workspace) || "-".equalsIgnoreCase(workspace)) {
       columnMap.put("workspace", workspace);
     }
     columnMap.put("product", product);

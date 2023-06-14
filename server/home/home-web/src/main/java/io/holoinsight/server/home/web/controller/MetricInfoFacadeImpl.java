@@ -57,7 +57,7 @@ public class MetricInfoFacadeImpl extends BaseFacade {
     return result;
   }
 
-  @GetMapping(value = "/query/{product}")
+  @GetMapping(value = "/queryByProduct/{product}")
   @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.VIEW)
   public JsonResult<List<MetricInfoDTO>> queryByProduct(@PathVariable("product") String product) {
     final JsonResult<List<MetricInfoDTO>> result = new JsonResult<>();
@@ -73,7 +73,7 @@ public class MetricInfoFacadeImpl extends BaseFacade {
       public void doManage() {
         MonitorScope ms = RequestContext.getContext().ms;
         JsonResult.createSuccessResult(result,
-            metricInfoService.queryListByTenantProduct(ms.getTenant(), ms.getWorkspace(), product));
+            metricInfoService.queryListByTenantProduct(null, null, product.toLowerCase()));
       }
     });
     return result;
@@ -114,7 +114,7 @@ public class MetricInfoFacadeImpl extends BaseFacade {
     return result;
   }
 
-  @GetMapping(value = "/query/{metric}")
+  @GetMapping(value = "/queryMetric/{metric}")
   @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.VIEW)
   public JsonResult<MetricInfoDTO> queryMetric(@PathVariable("metric") String metric) {
     final JsonResult<MetricInfoDTO> result = new JsonResult<>();

@@ -17,6 +17,10 @@ public class DataSource implements Serializable {
 
   private String metricType; // 监控类型
 
+  private String product; // 产品
+
+  private String position;
+
   private String metric; // 监控项
 
   private List<String> groupBy; // 维度聚合

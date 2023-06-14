@@ -122,6 +122,7 @@ public class UserOpLogServiceImpl extends ServiceImpl<UserOpLogMapper, UserOpLog
     opLog.setOpType(opType);
     opLog.setCreator(user);
     opLog.setTenant(tenant);
+    opLog.setWorkspace(workspace);
     opLog.setGmtCreate(new Date());
     opLog.setGmtCreate(new Date());
     opLog.setOpBeforeContext(before);
