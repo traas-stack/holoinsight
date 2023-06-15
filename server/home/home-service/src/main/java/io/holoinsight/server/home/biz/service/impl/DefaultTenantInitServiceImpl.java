@@ -51,7 +51,7 @@ public class DefaultTenantInitServiceImpl implements TenantInitService {
   }
 
   @Override
-  public Boolean checkConditions(String workspace, List<QueryFilter> filters) {
+  public Boolean checkConditions(String workspace, String metric, List<QueryFilter> filters) {
     return true;
   }
 

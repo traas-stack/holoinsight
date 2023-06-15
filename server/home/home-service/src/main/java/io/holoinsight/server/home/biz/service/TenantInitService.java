@@ -59,7 +59,7 @@ public interface TenantInitService {
    */
   String getTsdbTenant(String tenant);
 
-  Boolean checkConditions(String workspace, List<QueryFilter> filters);
+  Boolean checkConditions(String workspace, String metric, List<QueryFilter> filters);
 
 
   /**
