@@ -142,10 +142,10 @@ public class AlarmHistoryDetailFacadeImpl extends BaseFacade {
     result.setValues(new ArrayList<>());
     long end = PeriodType.MINUTE.rounding(to);
     long start = PeriodType.MINUTE.rounding(from);
-    for (long time = end; time >= start;) {
+    for (long time = start; time <= end;) {
       Double v = values.getOrDefault(time, 0d);
       result.getValues().add(new Object[] {time, v});
-      time -= PeriodType.MINUTE.intervalMillis();
+      time += PeriodType.MINUTE.intervalMillis();
     }
     if (StringUtils.isNotBlank(target.getUniqueId())) {
       result.setTags(Collections.singletonMap("uniqueId", target.getUniqueId()));
