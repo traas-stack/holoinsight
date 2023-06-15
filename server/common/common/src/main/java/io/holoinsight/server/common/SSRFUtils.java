@@ -33,6 +33,15 @@ public class SSRFUtils {
     }
   }
 
+  public static Boolean hookCheckUrl(String url) {
+    for (int i = 0; i < hooks.size(); i++) {
+      Boolean aBoolean = hooks.get(i).checkUrl(url);
+      if (!aBoolean)
+        return false;
+    }
+    return true;
+  }
+
   public static void hookStop() {
     for (int i = hooks.size() - 1; i >= 0; i--) {
       hooks.get(i).stop();

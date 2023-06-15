@@ -103,10 +103,11 @@ public class DashboardServiceImpl extends ServiceImpl<DashboardMapper, Dashboard
       wrapper.eq("workspace", workspace);
     }
     wrapper.like("id", keyword).or().like("title", keyword);
-    Page<Dashboard> page = new Page<>(1, 20);
-    page = page(page, wrapper);
+    wrapper.last("LIMIT 10");
+    // Page<Dashboard> page = new Page<>(1, 20);
+    // page = page(page, wrapper);
 
-    return page.getRecords();
+    return baseMapper.selectList(wrapper);
   }
 
   @Override

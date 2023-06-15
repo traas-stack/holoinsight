@@ -83,12 +83,13 @@ public class SearchFacadeImpl extends BaseFacade {
       public void doManage() {
 
         MonitorScope ms = RequestContext.getContext().ms;
-        String tenant = ms.tenant;
-        String workspace = ms.workspace;
+        final String tenant = ms.tenant;
+        final String workspace = ms.workspace;
 
         List<SearchKeywordRet> ret = new ArrayList<>();
         List<Future<SearchKeywordRet>> futures = new ArrayList<>();
         futures.add(queryThreadPool.submit(() -> {
+          log.info(">>>>>, " + tenant + ", ..... , " + workspace);
           return searchLogEntity(req.keyword, tenant, workspace);
         }));
 
@@ -207,15 +208,15 @@ public class SearchFacadeImpl extends BaseFacade {
   public SearchKeywordRet searchInfraEntity(String keyword, String tenant, String workspace) {
 
     QueryExample queryExample = new QueryExample();
-    queryExample.getParams().put("ip",
-        Pattern.compile(String.format("^.*%s.*$", keyword), Pattern.CASE_INSENSITIVE));
+    // queryExample.getParams().put("ip",
+    // Pattern.compile(String.format("^.*%s.*$", keyword), Pattern.CASE_INSENSITIVE));
     queryExample.getParams().put("hostname",
         Pattern.compile(String.format("^.*%s.*$", keyword), Pattern.CASE_INSENSITIVE));
     if (StringUtils.isNotBlank(workspace)) {
       Map<String, String> conditions =
           tenantInitService.getTenantWorkspaceMetaConditions(workspace);
       if (!CollectionUtils.isEmpty(conditions)) {
-        queryExample.getParams().putAll(conditions);
+        conditions.forEach((k, v) -> queryExample.getParams().put(k, v));
       }
     }
 

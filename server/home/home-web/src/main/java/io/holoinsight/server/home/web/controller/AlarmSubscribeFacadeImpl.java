@@ -7,7 +7,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
+import io.holoinsight.server.home.dal.model.dto.AlarmSubscribeInfo;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
@@ -75,7 +77,18 @@ public class AlarmSubscribeFacadeImpl extends BaseFacade {
   @PostMapping("/submit")
   @ResponseBody
   @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.EDIT)
-  public JsonResult<Boolean> saveBatch(@RequestBody AlarmSubscribeDTO alarmSubscribeDTO) {
+  public JsonResult<Boolean> submit(@RequestBody AlarmSubscribeDTO alarmSubscribeDTO) {
+    JsonResult<Boolean> jsonResult = new JsonResult<>();
+    Boolean aBoolean = checkMembers(alarmSubscribeDTO);
+    if (!aBoolean) {
+      JsonResult.fillFailResultTo(jsonResult, jsonResult.getMessage());
+      return jsonResult;
+    }
+
+    return saveBatch(alarmSubscribeDTO);
+  }
+
+  public JsonResult<Boolean> saveBatch(AlarmSubscribeDTO alarmSubscribeDTO) {
     final JsonResult<Boolean> result = new JsonResult<>();
     facadeTemplate.manage(result, new ManageCallback() {
       @Override
@@ -152,5 +165,31 @@ public class AlarmSubscribeFacadeImpl extends BaseFacade {
       }
     });
     return result;
+  }
+
+  private Boolean checkMembers(AlarmSubscribeDTO alarmSubscribeDTO) {
+    MonitorScope ms = RequestContext.getContext().ms;
+    MonitorUser mu = RequestContext.getContext().mu;
+    if (null == alarmSubscribeDTO || CollectionUtils.isEmpty(alarmSubscribeDTO.getAlarmSubscribe()))
+      return true;
+    List<AlarmSubscribeInfo> alarmSubscribes = alarmSubscribeDTO.getAlarmSubscribe();
+    Set<String> userIds = ulaFacade.getCurrentULA().getUserIds(mu, ms);
+
+    for (AlarmSubscribeInfo alarmSubscribeInfo : alarmSubscribes) {
+      if (CollectionUtils.isEmpty(alarmSubscribeInfo.getNoticeType())
+          || StringUtils.isBlank(alarmSubscribeInfo.getSubscriber())) {
+        continue;
+      }
+
+      if (alarmSubscribeInfo.getNoticeType().contains("sms")
+          || alarmSubscribeInfo.getNoticeType().contains("phone")
+          || alarmSubscribeInfo.getNoticeType().contains("email")) {
+        if (!userIds.contains(alarmSubscribeInfo.getSubscriber())) {
+          return false;
+        }
+      }
+    }
+
+    return true;
   }
 }

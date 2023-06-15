@@ -16,6 +16,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class IntegrationMetricDTO {
+  private String metric;
   private String name;
   private String unit;
   private String desc;

@@ -29,6 +29,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.CollectionUtils;
 
+import static io.holoinsight.server.meta.common.util.ConstModel.default_app;
 import static io.holoinsight.server.meta.common.util.ConstModel.default_hostname;
 import static io.holoinsight.server.meta.common.util.ConstModel.default_ip;
 import static io.holoinsight.server.meta.common.util.ConstModel.default_modified;
@@ -195,7 +196,8 @@ public class MongoDataCoreService extends AbstractDataCoreService {
     List<Bson> filters = new ArrayList<>();
     if (!CollectionUtils.isEmpty(queryExample.getParams())) {
       for (Map.Entry<String, Object> entry : queryExample.getParams().entrySet()) {
-        if (entry.getKey().equals(default_ip) || entry.getKey().equals(default_hostname)) {
+        if (entry.getKey().equals(default_ip) || entry.getKey().equals(default_hostname)
+            || entry.getKey().equals(default_app)) {
           Pattern pattern = J.json2Bean(J.toJson(entry.getValue()), Pattern.class);
           filters.add(new Document(entry.getKey(), new Document("$regex", pattern.pattern())));
           continue;
