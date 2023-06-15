@@ -3,6 +3,7 @@
  */
 package io.holoinsight.server.home.biz.service.impl;
 
+import io.holoinsight.server.apm.common.model.specification.sw.Tag;
 import io.holoinsight.server.common.dao.entity.dto.TenantOpsStorage;
 import io.holoinsight.server.home.biz.common.GaeaConvertUtil;
 import io.holoinsight.server.home.biz.plugin.config.MetaLabel;
@@ -77,7 +78,17 @@ public class DefaultTenantInitServiceImpl implements TenantInitService {
 
   @Override
   public Boolean checkCookie(String tenant, String workspace) {
-    return true;
+    return Boolean.TRUE;
+  }
+
+  @Override
+  public Boolean checkTraceTags(String tenant, String workspace, List<Tag> tags) {
+    return Boolean.TRUE;
+  }
+
+  @Override
+  public Boolean checkTraceParams(String tenant, String workspace, Map<String, String> paramsMap) {
+    return Boolean.TRUE;
   }
 
 }

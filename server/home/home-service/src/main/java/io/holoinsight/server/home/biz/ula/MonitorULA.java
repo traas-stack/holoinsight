@@ -132,6 +132,11 @@ public class MonitorULA implements ULA {
   }
 
   @Override
+  public Set<String> getUserIds(MonitorUser user, MonitorScope ms) {
+    return null;
+  }
+
+  @Override
   public String authTokenName() {
     return "authToken";
   }

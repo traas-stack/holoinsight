@@ -18,6 +18,7 @@ import io.holoinsight.server.common.J;
 import io.holoinsight.server.meta.common.model.QueryExample;
 import org.springframework.util.CollectionUtils;
 
+import static io.holoinsight.server.meta.common.util.ConstModel.default_app;
 import static io.holoinsight.server.meta.common.util.ConstModel.default_hostname;
 import static io.holoinsight.server.meta.common.util.ConstModel.default_ip;
 
@@ -45,7 +46,8 @@ public class FilterUtil {
         continue;
       }
       String key = entry.getKey();
-      if (containRegexFilters && (key.equals(default_ip) || key.equals(default_hostname))) {
+      if (containRegexFilters
+          && (key.equals(default_ip) || key.equals(default_hostname) || key.equals(default_app))) {
         Map<String, Object> regexFilters =
             filters.computeIfAbsent(REGEX_FILTERS_KEY, k -> Maps.newHashMap());
         Pattern pattern = J.json2Bean(J.toJson(value), Pattern.class);

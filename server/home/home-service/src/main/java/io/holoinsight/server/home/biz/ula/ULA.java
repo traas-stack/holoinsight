@@ -12,6 +12,7 @@ import io.holoinsight.server.home.common.util.scope.MonitorUser;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.List;
+import java.util.Set;
 
 /**
  *
@@ -59,6 +60,8 @@ public interface ULA {
 
   // 获取租户下所有用户信息信息
   List<MonitorUser> getUsers(MonitorUser user, MonitorScope ms);
+
+  Set<String> getUserIds(MonitorUser user, MonitorScope ms);
 
   // 登陆跳转token
   String authTokenName();

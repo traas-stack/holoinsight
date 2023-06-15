@@ -13,4 +13,7 @@ public interface SSRFHook {
   void start();
 
   void stop();
+
+  Boolean checkUrl(String url);
+
 }

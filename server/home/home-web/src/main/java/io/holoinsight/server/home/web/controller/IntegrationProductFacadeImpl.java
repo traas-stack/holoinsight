@@ -208,8 +208,8 @@ public class IntegrationProductFacadeImpl extends BaseFacade {
         subMetrics.put(metricsDTO.getMetricType(), new ArrayList<>());
       }
       subMetrics.get(metricsDTO.getMetricType())
-          .add(new IntegrationMetricDTO(metricsDTO.getMetric(), metricsDTO.getUnit(),
-              metricsDTO.getDescription(), metricsDTO.getTags().toString(),
+          .add(new IntegrationMetricDTO(metricsDTO.getMetricTable(), metricsDTO.getMetric(),
+              metricsDTO.getUnit(), metricsDTO.getDescription(), metricsDTO.getTags().toString(),
               metricsDTO.getPeriod().toString()));
     });
     integrationMetricsDTO.setSubMetrics(subMetrics);

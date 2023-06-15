@@ -3,6 +3,7 @@
  */
 package io.holoinsight.server.home.biz.service;
 
+import io.holoinsight.server.apm.common.model.specification.sw.Tag;
 import io.holoinsight.server.common.dao.entity.dto.TenantOpsStorage;
 import io.holoinsight.server.home.biz.plugin.config.MetaLabel;
 import io.holoinsight.server.home.dal.model.dto.CloudMonitorRange;
@@ -90,4 +91,8 @@ public interface TenantInitService {
       MetaLabel metaLabel);
 
   Boolean checkCookie(String tenant, String workspace);
+
+  Boolean checkTraceTags(String tenant, String workspace, List<Tag> tags);
+
+  Boolean checkTraceParams(String tenant, String workspace, Map<String, String> paramsMap);
 }

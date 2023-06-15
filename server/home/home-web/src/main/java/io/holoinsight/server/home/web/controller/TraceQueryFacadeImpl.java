@@ -13,11 +13,11 @@ import io.holoinsight.server.apm.common.model.query.TraceBrief;
 import io.holoinsight.server.apm.common.model.query.VirtualComponent;
 import io.holoinsight.server.apm.common.model.specification.sw.Trace;
 import io.holoinsight.server.common.JsonResult;
-import io.holoinsight.server.home.biz.service.AgentConfigurationService;
 import io.holoinsight.server.home.biz.service.TenantInitService;
 import io.holoinsight.server.home.common.service.QueryClientService;
+import io.holoinsight.server.home.common.util.MonitorException;
+import io.holoinsight.server.home.common.util.scope.MonitorScope;
 import io.holoinsight.server.home.common.util.scope.RequestContext;
-import io.holoinsight.server.home.dal.model.AgentConfiguration;
 import io.holoinsight.server.home.web.common.ManageCallback;
 import io.holoinsight.server.home.web.common.ParaCheckUtil;
 import io.holoinsight.server.home.web.common.TokenUrls;
@@ -45,9 +45,6 @@ public class TraceQueryFacadeImpl extends BaseFacade {
   private QueryClientService queryClientService;
 
   @Autowired
-  private AgentConfigurationService agentConfigurationService;
-
-  @Autowired
   private TenantInitService tenantInitService;
 
 
@@ -63,6 +60,12 @@ public class TraceQueryFacadeImpl extends BaseFacade {
         ParaCheckUtil.checkParaNotNull(request.getTenant(), "tenant");
         ParaCheckUtil.checkEquals(request.getTenant(), RequestContext.getContext().ms.getTenant(),
             "tenant is illegal");
+        MonitorScope ms = RequestContext.getContext().ms;
+        Boolean aBoolean =
+            tenantInitService.checkTraceTags(ms.getTenant(), ms.getWorkspace(), request.getTags());
+        if (!aBoolean) {
+          throw new MonitorException("tags params is illegal");
+        }
       }
 
       @Override
@@ -89,6 +92,12 @@ public class TraceQueryFacadeImpl extends BaseFacade {
         ParaCheckUtil.checkParaNotNull(request.getTenant(), "tenant");
         ParaCheckUtil.checkEquals(request.getTenant(), RequestContext.getContext().ms.getTenant(),
             "tenant is illegal");
+        MonitorScope ms = RequestContext.getContext().ms;
+        Boolean aBoolean =
+            tenantInitService.checkTraceTags(ms.getTenant(), ms.getWorkspace(), request.getTags());
+        if (!aBoolean) {
+          throw new MonitorException("tags params is illegal");
+        }
       }
 
       @Override
@@ -116,6 +125,12 @@ public class TraceQueryFacadeImpl extends BaseFacade {
         ParaCheckUtil.checkParaNotNull(request.getTenant(), "tenant");
         ParaCheckUtil.checkEquals(request.getTenant(), RequestContext.getContext().ms.getTenant(),
             "tenant is illegal");
+        MonitorScope ms = RequestContext.getContext().ms;
+        Boolean aBoolean = tenantInitService.checkTraceParams(ms.getTenant(), ms.getWorkspace(),
+            request.getTermParamsMap());
+        if (!aBoolean) {
+          throw new MonitorException("term params is illegal");
+        }
       }
 
       @Override
@@ -156,6 +171,12 @@ public class TraceQueryFacadeImpl extends BaseFacade {
         ParaCheckUtil.checkParaNotNull(request.getServiceName(), "serviceName");
         ParaCheckUtil.checkEquals(request.getTenant(), RequestContext.getContext().ms.getTenant(),
             "tenant is illegal");
+        MonitorScope ms = RequestContext.getContext().ms;
+        Boolean aBoolean = tenantInitService.checkTraceParams(ms.getTenant(), ms.getWorkspace(),
+            request.getTermParamsMap());
+        if (!aBoolean) {
+          throw new MonitorException("term params is illegal");
+        }
       }
 
       @Override
@@ -185,6 +206,12 @@ public class TraceQueryFacadeImpl extends BaseFacade {
         ParaCheckUtil.checkParaNotNull(request.getServiceName(), "serviceName");
         ParaCheckUtil.checkEquals(request.getTenant(), RequestContext.getContext().ms.getTenant(),
             "tenant is illegal");
+        MonitorScope ms = RequestContext.getContext().ms;
+        Boolean aBoolean = tenantInitService.checkTraceParams(ms.getTenant(), ms.getWorkspace(),
+            request.getTermParamsMap());
+        if (!aBoolean) {
+          throw new MonitorException("term params is illegal");
+        }
       }
 
       @Override
@@ -222,6 +249,12 @@ public class TraceQueryFacadeImpl extends BaseFacade {
         ParaCheckUtil.checkParaNotNull(request.getCategory(), "category");
         ParaCheckUtil.checkEquals(request.getTenant(), RequestContext.getContext().ms.getTenant(),
             "tenant is illegal");
+        MonitorScope ms = RequestContext.getContext().ms;
+        Boolean aBoolean = tenantInitService.checkTraceParams(ms.getTenant(), ms.getWorkspace(),
+            request.getTermParamsMap());
+        if (!aBoolean) {
+          throw new MonitorException("term params is illegal");
+        }
       }
 
       @Override
@@ -253,6 +286,12 @@ public class TraceQueryFacadeImpl extends BaseFacade {
         ParaCheckUtil.checkParaNotNull(request.getAddress(), "address");
         ParaCheckUtil.checkEquals(request.getTenant(), RequestContext.getContext().ms.getTenant(),
             "tenant is illegal");
+        MonitorScope ms = RequestContext.getContext().ms;
+        Boolean aBoolean = tenantInitService.checkTraceParams(ms.getTenant(), ms.getWorkspace(),
+            request.getTermParamsMap());
+        if (!aBoolean) {
+          throw new MonitorException("term params is illegal");
+        }
       }
 
       @Override
@@ -288,6 +327,12 @@ public class TraceQueryFacadeImpl extends BaseFacade {
         ParaCheckUtil.checkParaNotNull(request.getCategory(), "category");
         ParaCheckUtil.checkEquals(request.getTenant(), RequestContext.getContext().ms.getTenant(),
             "tenant is illegal");
+        MonitorScope ms = RequestContext.getContext().ms;
+        Boolean aBoolean = tenantInitService.checkTraceParams(ms.getTenant(), ms.getWorkspace(),
+            request.getTermParamsMap());
+        if (!aBoolean) {
+          throw new MonitorException("term params is illegal");
+        }
       }
 
       @Override
@@ -297,84 +342,6 @@ public class TraceQueryFacadeImpl extends BaseFacade {
             tenantInitService.getTraceTenant(RequestContext.getContext().ms.getTenant()));
         Topology topology = queryClientService.queryTopology(builder.build());
         JsonResult.createSuccessResult(result, topology);
-      }
-    });
-
-    return result;
-  }
-
-  /**
-   * agent 配置下发
-   *
-   * @return
-   */
-  @PostMapping(value = "/agent/create/configuration")
-  public JsonResult<Boolean> createAgentConfiguration(
-      @RequestBody AgentConfiguration agentConfiguration) {
-
-    final JsonResult<Boolean> result = new JsonResult<>();
-
-    facadeTemplate.manage(result, new ManageCallback() {
-      @Override
-      public void checkParameter() {
-        ParaCheckUtil.checkParaNotNull(agentConfiguration, "request");
-        ParaCheckUtil.checkParaNotNull(agentConfiguration.getTenant(), "tenant");
-        ParaCheckUtil.checkParaNotNull(agentConfiguration.getService(), "service");
-        ParaCheckUtil.checkEquals(agentConfiguration.getTenant(),
-            RequestContext.getContext().ms.getTenant(), "tenant is illegal");
-      }
-
-      @Override
-      public void doManage() {
-        if (StringUtils.isEmpty(agentConfiguration.getAppId())) {
-          agentConfiguration.setAppId("*");
-        }
-        if (StringUtils.isEmpty(agentConfiguration.getEnvId())) {
-          agentConfiguration.setEnvId("*");
-        }
-        boolean isSuccess = agentConfigurationService.createOrUpdate(agentConfiguration);
-        if (isSuccess) {
-          JsonResult.createSuccessResult(result, isSuccess);
-        } else {
-          JsonResult.fillFailResultTo(result, "Create agent configuration failed!");
-        }
-      }
-    });
-
-    return result;
-  }
-
-  /**
-   * agent 配置获取
-   *
-   * @return
-   */
-  @PostMapping(value = "/agent/query/configuration")
-  public JsonResult<AgentConfiguration> queryAgentConfiguration(
-      @RequestBody AgentConfiguration agentConfiguration) {
-
-    final JsonResult<AgentConfiguration> result = new JsonResult<>();
-
-    facadeTemplate.manage(result, new ManageCallback() {
-      @Override
-      public void checkParameter() {
-        ParaCheckUtil.checkParaNotNull(agentConfiguration, "request");
-        ParaCheckUtil.checkParaNotNull(agentConfiguration.getTenant(), "tenant");
-        ParaCheckUtil.checkParaNotNull(agentConfiguration.getService(), "service");
-        ParaCheckUtil.checkEquals(agentConfiguration.getTenant(),
-            RequestContext.getContext().ms.getTenant(), "tenant is illegal");
-      }
-
-      @Override
-      public void doManage() {
-        if (StringUtils.isEmpty(agentConfiguration.getAppId())) {
-          agentConfiguration.setAppId("*");
-        }
-        if (StringUtils.isEmpty(agentConfiguration.getEnvId())) {
-          agentConfiguration.setEnvId("*");
-        }
-        AgentConfiguration configuration = agentConfigurationService.get(agentConfiguration);
-        JsonResult.createSuccessResult(result, configuration);
       }
     });
 
@@ -401,6 +368,12 @@ public class TraceQueryFacadeImpl extends BaseFacade {
         ParaCheckUtil.checkParaNotNull(request.getTenant(), "tenant");
         ParaCheckUtil.checkEquals(request.getTenant(), RequestContext.getContext().ms.getTenant(),
             "tenant is illegal");
+        MonitorScope ms = RequestContext.getContext().ms;
+        Boolean aBoolean = tenantInitService.checkTraceParams(ms.getTenant(), ms.getWorkspace(),
+            request.getTermParamsMap());
+        if (!aBoolean) {
+          throw new MonitorException("term params is illegal");
+        }
       }
 
       @Override

@@ -302,6 +302,12 @@ public class AlarmWebhookFacadeImpl extends BaseFacade {
       public void doManage() {
 
         try {
+          Boolean aBoolean = SSRFUtils.hookCheckUrl(alarmWebhookDTO.getRequestUrl());
+          if (!aBoolean) {
+            log.error("alarm webhook url check failed");
+            JsonResult.fillFailResultTo(result, "alarm webhook url check failed");
+            return;
+          }
           SSRFUtils.hookStart();
           WebhookResponse response = alertService.webhookTest(alarmWebhookDTO);
           if (response.getCode() == 200) {

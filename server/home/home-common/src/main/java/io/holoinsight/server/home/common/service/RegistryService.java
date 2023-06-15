@@ -3,6 +3,8 @@
  */
 package io.holoinsight.server.home.common.service;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -57,8 +59,8 @@ public class RegistryService {
         // 如果为true, 会显示 home 和 admin 节点
         .setIncludeParents(true) //
         // 支持的扩展名 不传则允许任意
-        // .addAllIncludeExts(Arrays.asList("log"))
-        .setTarget(buildTarget(tenant, dim)).build(); //
+        .addAllIncludeExts(Collections.singletonList("log")).setTarget(buildTarget(tenant, dim))
+        .build(); //
 
     ListFilesResponse listFilesResponse = c.listFiles(req);
 

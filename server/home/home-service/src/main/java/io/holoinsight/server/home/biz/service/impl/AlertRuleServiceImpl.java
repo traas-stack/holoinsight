@@ -226,9 +226,7 @@ public class AlertRuleServiceImpl extends ServiceImpl<AlarmRuleMapper, AlarmRule
     this.requestContextAdapter.queryWrapperTenantAdapte(wrapper, tenant, workspace);
 
     wrapper.like("id", keyword).or().like("rule_name", keyword);
-    Page<AlarmRule> page = new Page<>(1, 20);
-    page = page(page, wrapper);
-
-    return alarmRuleConverter.dosToDTOs(page.getRecords());
+    wrapper.last("LIMIT 10");
+    return alarmRuleConverter.dosToDTOs(baseMapper.selectList(wrapper));
   }
 }
