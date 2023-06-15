@@ -292,6 +292,7 @@ public class DefaultQueryServiceImpl implements QueryService {
       QueryTraceRequest queryTraceRequest = new QueryTraceRequest();
       queryTraceRequest.setTenant(request.getTenant());
       queryTraceRequest.setTraceIds(request.getTraceIdsList());
+      queryTraceRequest.setTags(ApmConvertor.convertTagsMap(request.getTagsMap()));
       Call<Trace> call = apmAPI.queryTrace(queryTraceRequest);
       Response<Trace> traceRsp = call.execute();
       if (!traceRsp.isSuccessful()) {

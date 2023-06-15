@@ -102,13 +102,14 @@ public class SpanEsStorage extends RecordEsStorage<SpanDO> implements SpanStorag
   }
 
   @Override
-  public Trace queryTrace(String tenant, long start, long end, String traceId) throws IOException {
+  public Trace queryTrace(String tenant, long start, long end, String traceId, List<Tag> tags)
+      throws IOException {
     Trace trace = new Trace();
 
     SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
 
     searchSourceBuilder.query(buildQuery(tenant, null, null, null,
-        Collections.singletonList(traceId), 0, 0, null, start, end, null, this.timeSeriesField()));
+        Collections.singletonList(traceId), 0, 0, null, start, end, tags, this.timeSeriesField()));
 
     searchSourceBuilder.size(SPAN_QUERY_MAX_SIZE);
     SearchRequest searchRequest =
