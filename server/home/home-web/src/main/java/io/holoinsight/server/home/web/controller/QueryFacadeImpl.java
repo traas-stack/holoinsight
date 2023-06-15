@@ -460,8 +460,8 @@ public class QueryFacadeImpl extends BaseFacade {
 
       QueryProto.Datasource.Builder datasourceBuilder = QueryProto.Datasource.newBuilder();
       toProtoBean(datasourceBuilder, d);
-      Boolean aBoolean =
-          tenantInitService.checkConditions(ms.getWorkspace(), datasourceBuilder.getFiltersList());
+      Boolean aBoolean = tenantInitService.checkConditions(ms.getWorkspace(),
+          datasourceBuilder.getMetric(), datasourceBuilder.getFiltersList());
       if (!aBoolean) {
         throw new MonitorException("workspace is illegal");
       }
