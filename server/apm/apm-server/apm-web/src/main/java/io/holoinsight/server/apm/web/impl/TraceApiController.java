@@ -72,7 +72,8 @@ public class TraceApiController implements TraceApi {
       start = request.getDuration().getStart();
       end = request.getDuration().getEnd();
     }
-    Trace trace = traceService.queryTrace(request.getTenant(), start, end, traceIds.get(0));
+    Trace trace = traceService.queryTrace(request.getTenant(), start, end, traceIds.get(0),
+        request.getTags());
     return ResponseEntity.ok(trace);
   }
 }
