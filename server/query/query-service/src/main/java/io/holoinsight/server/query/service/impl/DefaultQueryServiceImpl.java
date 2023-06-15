@@ -626,6 +626,58 @@ public class DefaultQueryServiceImpl implements QueryService {
     }, "querySlowSqlList", request);
   }
 
+  @Override
+  public QueryProto.CommonMapTypeData queryServiceErrorList(QueryProto.QueryMetaRequest request) throws QueryException {
+    return wrap(() -> {
+      ApmAPI apmAPI = apmClient.getClient(request.getTenant());
+
+      QueryServiceRequest queryServiceRequest = new QueryServiceRequest();
+      queryServiceRequest.setTenant(request.getTenant());
+      queryServiceRequest.setServiceName(request.getServiceName());
+      queryServiceRequest.setStartTime(request.getStart());
+      queryServiceRequest.setEndTime(request.getEnd());
+      if (request.getTermParamsMap() != null) {
+        queryServiceRequest.setTermParams(request.getTermParamsMap());
+      }
+
+      Call<List<Map<String, Object>>> serviceList = apmAPI.queryServiceErrorList(queryServiceRequest);
+      Response<List<Map<String, Object>>> listResponse = serviceList.execute();
+      if (!listResponse.isSuccessful()) {
+        throw new QueryException(listResponse.errorBody().string());
+      }
+      QueryProto.CommonMapTypeData.Builder builder = QueryProto.CommonMapTypeData.newBuilder();
+      listResponse.body().forEach(data -> {builder.putAllData(data);});
+
+      return builder.build();
+    }, "queryServiceErrorList", request);
+  }
+
+  @Override
+  public QueryProto.CommonMapTypeData queryServiceErrorDetail(QueryProto.QueryMetaRequest request) throws QueryException {
+    return wrap(() -> {
+      ApmAPI apmAPI = apmClient.getClient(request.getTenant());
+
+      QueryServiceRequest queryServiceRequest = new QueryServiceRequest();
+      queryServiceRequest.setTenant(request.getTenant());
+      queryServiceRequest.setServiceName(request.getServiceName());
+      queryServiceRequest.setStartTime(request.getStart());
+      queryServiceRequest.setEndTime(request.getEnd());
+      if (request.getTermParamsMap() != null) {
+        queryServiceRequest.setTermParams(request.getTermParamsMap());
+      }
+
+      Call<List<Map<String, Object>>> serviceList = apmAPI.queryServiceErrorList(queryServiceRequest);
+      Response<List<Map<String, Object>>> listResponse = serviceList.execute();
+      if (!listResponse.isSuccessful()) {
+        throw new QueryException(listResponse.errorBody().string());
+      }
+      QueryProto.CommonMapTypeData.Builder builder = QueryProto.CommonMapTypeData.newBuilder();
+      listResponse.body().forEach(data -> {builder.putAllData(data);});
+
+      return builder.build();
+    }, "queryServiceErrorList", request);
+  }
+
   private QueryProto.QueryResponse simpleQuery(String tenant,
       List<QueryProto.Datasource> datasources) throws QueryException {
     List<QueryProto.QueryResponse> rsps = new ArrayList<>(datasources.size());

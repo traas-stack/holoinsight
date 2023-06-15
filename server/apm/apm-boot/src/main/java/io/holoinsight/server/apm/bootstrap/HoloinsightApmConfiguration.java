@@ -5,7 +5,9 @@ package io.holoinsight.server.apm.bootstrap;
 
 import io.holoinsight.server.apm.core.installer.ModelInstallManager;
 import io.holoinsight.server.apm.engine.elasticsearch.storage.impl.CommonBuilder;
+import io.holoinsight.server.apm.receiver.analysis.ServiceErrorAnalysis;
 import io.holoinsight.server.apm.receiver.analysis.RelationAnalysis;
+import io.holoinsight.server.apm.receiver.analysis.SlowSqlAnalysis;
 import io.holoinsight.server.apm.receiver.common.PublicAttr;
 import io.holoinsight.server.apm.receiver.trace.SpanHandler;
 import io.holoinsight.server.apm.server.service.impl.EndpointRelationServiceImpl;
@@ -124,6 +126,16 @@ public class HoloinsightApmConfiguration {
   @Bean("relationAnalysis")
   public RelationAnalysis relationAnalysis() {
     return new RelationAnalysis();
+  }
+
+  @Bean("errorAnalysis")
+  public ServiceErrorAnalysis errorAnalysis() {
+    return new ServiceErrorAnalysis();
+  }
+
+  @Bean("slowSqlAnalysis")
+  public SlowSqlAnalysis slowSqlAnalysis() {
+    return new SlowSqlAnalysis();
   }
 
 }

@@ -203,4 +203,25 @@ public class QueryController {
       return ResponseEntity.badRequest().body(Collections.singletonMap("message", e.getMessage()));
     }
   }
+
+  @PostMapping(path = "/serviceErrorList", produces = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<?> queryServiceErrorList(@RequestBody QueryProto.QueryMetaRequest request) {
+    try {
+      return ResponseEntity.ok(queryService.queryServiceErrorList(request));
+    } catch (Exception e) {
+      e.printStackTrace();
+      return ResponseEntity.badRequest().body(Collections.singletonMap("message", e.getMessage()));
+    }
+  }
+
+  @PostMapping(path = "/serviceErrorDetail", produces = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<?> queryServiceErrorDetail(@RequestBody QueryProto.QueryMetaRequest request) {
+    try {
+      return ResponseEntity.ok(queryService.queryServiceErrorDetail(request));
+    } catch (Exception e) {
+      e.printStackTrace();
+      return ResponseEntity.badRequest().body(Collections.singletonMap("message", e.getMessage()));
+    }
+  }
+
 }

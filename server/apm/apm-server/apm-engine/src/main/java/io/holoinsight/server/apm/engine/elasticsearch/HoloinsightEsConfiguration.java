@@ -3,12 +3,22 @@
  */
 package io.holoinsight.server.apm.engine.elasticsearch;
 
-import io.holoinsight.server.apm.engine.elasticsearch.installer.ColumnTypeEsMapping;
 import io.holoinsight.server.apm.engine.elasticsearch.installer.EsModelInstaller;
-import io.holoinsight.server.apm.engine.elasticsearch.storage.impl.*;
+import io.holoinsight.server.apm.engine.elasticsearch.storage.impl.EndpointEsStorage;
+import io.holoinsight.server.apm.engine.elasticsearch.storage.impl.EndpointRelationEsStorage;
+import io.holoinsight.server.apm.engine.elasticsearch.storage.impl.NetworkAddressMappingEsStorage;
+import io.holoinsight.server.apm.engine.elasticsearch.storage.impl.ServiceErrorEsStorage;
+import io.holoinsight.server.apm.engine.elasticsearch.storage.impl.ServiceInstanceEsStorage;
+import io.holoinsight.server.apm.engine.elasticsearch.storage.impl.ServiceInstanceRelationEsStorage;
+import io.holoinsight.server.apm.engine.elasticsearch.storage.impl.ServiceOverviewEsStorage;
+import io.holoinsight.server.apm.engine.elasticsearch.storage.impl.ServiceRelationEsStorage;
+import io.holoinsight.server.apm.engine.elasticsearch.storage.impl.SlowSqlEsStorage;
+import io.holoinsight.server.apm.engine.elasticsearch.storage.impl.SpanEsStorage;
+import io.holoinsight.server.apm.engine.elasticsearch.storage.impl.SpanMetricEsStorage;
+import io.holoinsight.server.apm.engine.elasticsearch.storage.impl.TopologyEsStorage;
+import io.holoinsight.server.apm.engine.elasticsearch.storage.impl.VirtualComponentEsStorage;
 import io.holoinsight.server.apm.engine.elasticsearch.ttl.EsDataCleaner;
 import io.holoinsight.server.common.springboot.ConditionalOnFeature;
-import io.holoinsight.server.apm.engine.elasticsearch.storage.impl.*;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -157,4 +167,5 @@ public class HoloinsightEsConfiguration {
   public VirtualComponentEsStorage virtualComponentEsStorage() {
     return new VirtualComponentEsStorage();
   }
+
 }

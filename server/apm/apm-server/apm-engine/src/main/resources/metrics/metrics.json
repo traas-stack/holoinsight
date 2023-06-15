@@ -429,5 +429,32 @@
     ],
     "conditions": {
     }
+  },
+  {
+    "name": "apm_service_error_cpm",
+    "index": "holoinsight-service-error",
+    "field": "trace_id",
+    "function": "count",
+    "groups": [
+      "service_name",
+      "error_kind"
+    ],
+    "conditions": {
+    },
+    "materialized": true
+  },
+  {
+    "name": "apm_service_endpoint_error_cpm",
+    "index": "holoinsight-service-error",
+    "field": "trace_id",
+    "function": "count",
+    "groups": [
+      "service_name",
+      "error_kind",
+      "endpoint_name"
+    ],
+    "conditions": {
+    },
+    "materialized": true
   }
 ]

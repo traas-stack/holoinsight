@@ -3,7 +3,24 @@
  */
 package io.holoinsight.server.query.service.apm;
 
-import io.holoinsight.server.apm.common.model.query.*;
+import io.holoinsight.server.apm.common.model.query.Endpoint;
+import io.holoinsight.server.apm.common.model.query.MetricValues;
+import io.holoinsight.server.apm.common.model.query.QueryComponentRequest;
+import io.holoinsight.server.apm.common.model.query.QueryEndpointRequest;
+import io.holoinsight.server.apm.common.model.query.QueryMetricRequest;
+import io.holoinsight.server.apm.common.model.query.QueryServiceInstanceRequest;
+import io.holoinsight.server.apm.common.model.query.QueryServiceRequest;
+import io.holoinsight.server.apm.common.model.query.QueryTopologyRequest;
+import io.holoinsight.server.apm.common.model.query.QueryTraceRequest;
+import io.holoinsight.server.apm.common.model.query.Service;
+import io.holoinsight.server.apm.common.model.query.ServiceInstance;
+import io.holoinsight.server.apm.common.model.query.SlowSql;
+import io.holoinsight.server.apm.common.model.query.StatisticData;
+import io.holoinsight.server.apm.common.model.query.StatisticDataList;
+import io.holoinsight.server.apm.common.model.query.StatisticRequest;
+import io.holoinsight.server.apm.common.model.query.Topology;
+import io.holoinsight.server.apm.common.model.query.TraceBrief;
+import io.holoinsight.server.apm.common.model.query.VirtualComponent;
 import io.holoinsight.server.apm.common.model.specification.sw.Trace;
 import io.holoinsight.server.apm.engine.postcal.MetricDefine;
 import retrofit2.Call;
@@ -13,6 +30,7 @@ import retrofit2.http.POST;
 import retrofit2.http.Path;
 
 import java.util.List;
+import java.util.Map;
 
 public interface ApmAPI {
 
@@ -87,4 +105,10 @@ public interface ApmAPI {
 
   @POST("/cluster/api/v1/slowSql/query")
   Call<List<SlowSql>> querySlowSqlList(@Body QueryComponentRequest request);
+
+  @POST("/cluster/api/v1/service/query/serviceErrorList")
+  Call<List<Map<String, Object>>> queryServiceErrorList(@Body QueryServiceRequest request);
+
+  @POST("/cluster/api/v1/service/query/serviceErrorDetail")
+  Call<List<Map<String, Object>>> queryServiceErrorDetail(@Body QueryServiceRequest request);
 }

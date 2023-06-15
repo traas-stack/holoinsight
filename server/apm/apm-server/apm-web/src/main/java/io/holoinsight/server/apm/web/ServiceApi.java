@@ -18,8 +18,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import javax.validation.Valid;
-import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 @javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen")
 @Api(value = "service", description = "the service API")
@@ -39,4 +39,27 @@ public interface ServiceApi {
       throws Exception;
 
 
+  @ApiOperation(value = "query service error list", nickname = "queryServiceErrorList", notes = "查询服务异常列表",
+          response = Map.class, authorizations = {@Authorization(value = "APIKeyHeader"),
+          @Authorization(value = "APIKeyQueryParam")},
+          tags = {"serviceErrorList",})
+  @ApiResponses(value = {@ApiResponse(code = 200, message = "请求正常。", response = Service.class),
+          @ApiResponse(code = 400, message = "请求失败。", response = FailResponse.class)})
+  @RequestMapping(value = "/query/serviceErrorList", produces = {"application/json"},
+          consumes = {"application/json"}, method = RequestMethod.POST)
+  ResponseEntity<List<Map<String, Object>>> queryServiceErrorList(
+          @ApiParam(value = "查询条件。", required = true) @Valid @RequestBody QueryServiceRequest request)
+          throws Exception;
+
+  @ApiOperation(value = "query service error datail", nickname = "queryServiceErrorDetail", notes = "查询服务异常详情",
+          response = Map.class, authorizations = {@Authorization(value = "APIKeyHeader"),
+          @Authorization(value = "APIKeyQueryParam")},
+          tags = {"serviceErrorDetail",})
+  @ApiResponses(value = {@ApiResponse(code = 200, message = "请求正常。", response = Service.class),
+          @ApiResponse(code = 400, message = "请求失败。", response = FailResponse.class)})
+  @RequestMapping(value = "/query/serviceErrorDetail", produces = {"application/json"},
+          consumes = {"application/json"}, method = RequestMethod.POST)
+  ResponseEntity<List<Map<String, Object>>> queryServiceErrorDetail(
+          @ApiParam(value = "查询条件。", required = true) @Valid @RequestBody QueryServiceRequest request)
+          throws Exception;
 }

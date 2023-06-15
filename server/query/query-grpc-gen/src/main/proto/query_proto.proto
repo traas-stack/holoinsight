@@ -1,6 +1,7 @@
 syntax = "proto3";
 package io.holoinsight.server.query.grpc;
 option java_package = "io.holoinsight.server.query.grpc";
+import "google/protobuf/any.proto";
 
 message QueryRequest {
   // 租户
@@ -315,6 +316,14 @@ message StatisticDataList {
   repeated StatisticData statisticData = 1;
 }
 
+message CommonMapTypeData{
+  map<string, google.protobuf.Any> data = 1;
+}
+
+message CommonMapTypeDataList {
+  repeated CommonMapTypeData commonMapTypeData = 1;
+}
+
 service QueryService {
   rpc QueryData(QueryRequest) returns (QueryResponse);
 
@@ -351,5 +360,9 @@ service QueryService {
   rpc QuerySlowSqlList(QueryMetaRequest) returns (QuerySlowSqlResponse);
 
   rpc StatisticTrace(StatisticRequest) returns (StatisticDataList);
+
+  rpc QueryServiceErrorList(QueryMetaRequest) returns (CommonMapTypeData);
+
+  rpc QueryServiceErrorDetail(QueryMetaRequest) returns (CommonMapTypeData);
 
 }
