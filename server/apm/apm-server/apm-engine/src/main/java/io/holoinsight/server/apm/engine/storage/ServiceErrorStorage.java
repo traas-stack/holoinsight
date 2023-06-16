@@ -12,9 +12,9 @@ import java.util.Map;
 
 public interface ServiceErrorStorage extends WritableStorage<ServiceErrorDO>, ReadableStorage {
 
-    List<Map<String, Object>> getServiceErrorList(String tenant, String serviceName, long startTime,
-                                               long endTime, Map<String, String> termParams) throws IOException;
+  List<Map<String, String>> getServiceErrorList(String tenant, String serviceName, long startTime,
+      long endTime, Map<String, String> termParams) throws IOException;
 
-    List<Map<String, Object>> getServiceErrorDetail(String tenant, String serviceName, long startTime,
-                                                  long endTime, Map<String, String> termParams) throws IOException;
+  List<Map<String, String>> getServiceErrorDetail(String tenant, String serviceName, long startTime,
+      long endTime, Map<String, String> termParams) throws IOException;
 }

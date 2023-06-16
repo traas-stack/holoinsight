@@ -7,5 +7,5 @@ import lombok.Data;
 
 @Data
 public class QueryServiceRequest extends Request {
-    private String serviceName;
+  private String serviceName;
 }

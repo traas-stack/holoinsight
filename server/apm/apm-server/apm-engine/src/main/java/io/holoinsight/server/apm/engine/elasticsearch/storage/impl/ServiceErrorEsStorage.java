@@ -30,114 +30,117 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class ServiceErrorEsStorage extends RecordEsStorage<ServiceErrorDO> implements ServiceErrorStorage {
-    @Autowired
-    private RestHighLevelClient client;
+public class ServiceErrorEsStorage extends RecordEsStorage<ServiceErrorDO>
+    implements ServiceErrorStorage {
+  @Autowired
+  private RestHighLevelClient client;
 
-    @Autowired
-    private ICommonBuilder commonBuilder;
+  @Autowired
+  private ICommonBuilder commonBuilder;
 
-    protected RestHighLevelClient client() {
-        return client;
+  protected RestHighLevelClient client() {
+    return client;
+  }
+
+  @Override
+  public String timeSeriesField() {
+    return RecordDO.TIMESTAMP;
+  }
+
+  @Override
+  public List<Map<String, String>> getServiceErrorList(String tenant, String serviceName,
+      long startTime, long endTime, Map<String, String> termParams) throws IOException {
+    BoolQueryBuilder queryBuilder =
+        QueryBuilders.boolQuery().must(QueryBuilders.termQuery(ServiceErrorDO.TENANT, tenant))
+            .must(QueryBuilders.rangeQuery(this.timeSeriesField()).gte(startTime).lte(endTime));
+
+    if (!StringUtils.isEmpty(serviceName)) {
+      queryBuilder.must(QueryBuilders.termQuery(ServiceErrorDO.SERVICE_NAME, serviceName));
     }
 
-    @Override
-    public String timeSeriesField() {
-        return RecordDO.TIMESTAMP;
+    commonBuilder.addTermParams(queryBuilder, termParams);
+    SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
+    sourceBuilder.size(0);
+    sourceBuilder.query(queryBuilder);
+
+    TermsAggregationBuilder aggregationBuilder =
+        AggregationBuilders.terms(ServiceErrorDO.ERROR_KIND).field(ServiceErrorDO.ERROR_KIND);
+
+    if (termParams != null && termParams.containsKey(ServiceErrorDO.ERROR_KIND)) {
+      aggregationBuilder = aggregationBuilder.subAggregation(AggregationBuilders
+          .terms(ServiceErrorDO.ENDPOINT_NAME).field(ServiceErrorDO.ENDPOINT_NAME));
     }
 
-    @Override
-    public List<Map<String, Object>> getServiceErrorList(String tenant, String serviceName, long startTime, long endTime, Map<String, String> termParams) throws IOException {
-        BoolQueryBuilder queryBuilder =
-                QueryBuilders.boolQuery().must(QueryBuilders.termQuery(ServiceErrorDO.TENANT, tenant))
-                        .must(QueryBuilders.rangeQuery(this.timeSeriesField()).gte(startTime).lte(endTime));
+    aggregationBuilder
+        .subAggregation(AggregationBuilders.count("total_count").field(ServiceErrorDO.ERROR_KIND))
+        .executionHint("map").collectMode(Aggregator.SubAggCollectionMode.BREADTH_FIRST).size(1000);
+    sourceBuilder.aggregation(aggregationBuilder);
 
-        if (!StringUtils.isEmpty(serviceName)) {
-            queryBuilder.must(QueryBuilders.termQuery(ServiceErrorDO.SERVICE_NAME, serviceName));
+    SearchRequest searchRequest = new SearchRequest(ServiceErrorDO.INDEX_NAME);
+    searchRequest.source(sourceBuilder);
+    SearchResponse response = client().search(searchRequest, RequestOptions.DEFAULT);
+
+    List<Map<String, String>> result = new ArrayList<>();
+    Terms terms = response.getAggregations().get(ServiceErrorDO.ERROR_KIND);
+    for (Terms.Bucket bucket : terms.getBuckets()) {
+      Map<String, String> map = new HashMap<>();
+      map.put("errorKind", bucket.getKey().toString());
+
+      if (termParams != null && termParams.containsKey(ServiceErrorDO.ERROR_KIND)) {
+        Terms endpointTerms = bucket.getAggregations().get(ServiceErrorDO.ENDPOINT_NAME);
+        for (Terms.Bucket endpointBucket : endpointTerms.getBuckets()) {
+          map.put("endpointName", endpointBucket.getKey().toString());
+          ValueCount totalTerm = bucket.getAggregations().get("total_count");
+          map.put("count", String.valueOf(totalTerm.getValue()));
+          result.add(map);
         }
-
-        commonBuilder.addTermParams(queryBuilder, termParams);
-        SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
-        sourceBuilder.size(0);
-        sourceBuilder.query(queryBuilder);
-
-        TermsAggregationBuilder aggregationBuilder = AggregationBuilders.terms(ServiceErrorDO.ERROR_KIND)
-                .field(ServiceErrorDO.ERROR_KIND);
-
-        if (termParams != null && termParams.containsKey(ServiceErrorDO.ERROR_KIND)) {
-            aggregationBuilder = aggregationBuilder.subAggregation(
-                    AggregationBuilders.terms(ServiceErrorDO.ENDPOINT_NAME)
-                    .field(ServiceErrorDO.ENDPOINT_NAME));
-        }
-
-        aggregationBuilder.subAggregation(AggregationBuilders.count("total_count")
-                .field(ServiceErrorDO.ERROR_KIND))
-                .executionHint("map").collectMode(Aggregator.SubAggCollectionMode.BREADTH_FIRST).size(1000);
-        sourceBuilder.aggregation(aggregationBuilder);
-
-        SearchRequest searchRequest = new SearchRequest(ServiceErrorDO.INDEX_NAME);
-        searchRequest.source(sourceBuilder);
-        SearchResponse response = client().search(searchRequest, RequestOptions.DEFAULT);
-
-        List<Map<String, Object>> result = new ArrayList<>();
-        Terms terms = response.getAggregations().get(ServiceErrorDO.ERROR_KIND);
-        for (Terms.Bucket bucket : terms.getBuckets()) {
-            Map<String, Object> map = new HashMap<>();
-            map.put("errorKind", bucket.getKey().toString());
-
-            if (termParams != null && termParams.containsKey(ServiceErrorDO.ERROR_KIND)) {
-                Terms endpointTerms = bucket.getAggregations().get(ServiceErrorDO.ENDPOINT_NAME);
-                for (Terms.Bucket endpointBucket : endpointTerms.getBuckets()) {
-                    map.put("endpointName", endpointBucket.getKey().toString());
-                    ValueCount totalTerm = bucket.getAggregations().get("total_count");
-                    map.put("count", totalTerm.getValue());
-                    result.add(map);
-                }
-            } else {
-                ValueCount totalTerm = bucket.getAggregations().get("total_count");
-                map.put("count", totalTerm.getValue());
-                result.add(map);
-            }
-        }
-
-        return result;
+      } else {
+        ValueCount totalTerm = bucket.getAggregations().get("total_count");
+        map.put("count", String.valueOf(totalTerm.getValue()));
+        result.add(map);
+      }
     }
 
-    @Override
-    public List<Map<String, Object>> getServiceErrorDetail(String tenant, String serviceName, long startTime, long endTime, Map<String, String> termParams) throws IOException {
-        BoolQueryBuilder queryBuilder =
-                QueryBuilders.boolQuery().must(QueryBuilders.termQuery(ServiceErrorDO.TENANT, tenant))
-                        .must(QueryBuilders.rangeQuery(this.timeSeriesField()).gte(startTime).lte(endTime));
+    return result;
+  }
 
-        if (!StringUtils.isEmpty(serviceName)) {
-            queryBuilder.must(QueryBuilders.termQuery(ServiceErrorDO.SERVICE_NAME, serviceName));
-        }
+  @Override
+  public List<Map<String, String>> getServiceErrorDetail(String tenant, String serviceName,
+      long startTime, long endTime, Map<String, String> termParams) throws IOException {
+    BoolQueryBuilder queryBuilder =
+        QueryBuilders.boolQuery().must(QueryBuilders.termQuery(ServiceErrorDO.TENANT, tenant))
+            .must(QueryBuilders.rangeQuery(this.timeSeriesField()).gte(startTime).lte(endTime));
 
-        commonBuilder.addTermParams(queryBuilder, termParams);
-        SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
-        sourceBuilder.size(1000);
-        sourceBuilder.query(queryBuilder);
-
-        SearchRequest searchRequest = new SearchRequest(ServiceErrorDO.INDEX_NAME);
-        searchRequest.source(sourceBuilder);
-        SearchResponse response = client().search(searchRequest, RequestOptions.DEFAULT);
-
-        List<Map<String, Object>> result = new ArrayList<>();
-        for (SearchHit searchHit : response.getHits().getHits()) {
-            String hitJson = searchHit.getSourceAsString();
-            ServiceErrorDO serviceErrorDO = ApmGsonUtils.apmGson().fromJson(hitJson, ServiceErrorDO.class);
-            Map<String, Object> map = new HashMap<>();
-            map.put("errorKind", serviceErrorDO.getErrorKind());
-            map.put("serviceName", serviceErrorDO.getServiceName());
-            map.put("serviceInstanceName", serviceErrorDO.getServiceInstanceName());
-            map.put("endpointName", serviceErrorDO.getEndpointName());
-            map.put("traceId", serviceErrorDO.getTraceId());
-            map.put("spanId", serviceErrorDO.getSpanId());
-            map.put("startTime", serviceErrorDO.getStartTime());
-            map.put("latency", serviceErrorDO.getLatency());
-            result.add(map);
-        }
-
-        return result;
+    if (!StringUtils.isEmpty(serviceName)) {
+      queryBuilder.must(QueryBuilders.termQuery(ServiceErrorDO.SERVICE_NAME, serviceName));
     }
+
+    commonBuilder.addTermParams(queryBuilder, termParams);
+    SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
+    sourceBuilder.size(1000);
+    sourceBuilder.query(queryBuilder);
+
+    SearchRequest searchRequest = new SearchRequest(ServiceErrorDO.INDEX_NAME);
+    searchRequest.source(sourceBuilder);
+    SearchResponse response = client().search(searchRequest, RequestOptions.DEFAULT);
+
+    List<Map<String, String>> result = new ArrayList<>();
+    for (SearchHit searchHit : response.getHits().getHits()) {
+      String hitJson = searchHit.getSourceAsString();
+      ServiceErrorDO serviceErrorDO =
+          ApmGsonUtils.apmGson().fromJson(hitJson, ServiceErrorDO.class);
+      Map<String, String> map = new HashMap<>();
+      map.put("errorKind", serviceErrorDO.getErrorKind());
+      map.put("serviceName", serviceErrorDO.getServiceName());
+      map.put("serviceInstanceName", serviceErrorDO.getServiceInstanceName());
+      map.put("endpointName", serviceErrorDO.getEndpointName());
+      map.put("traceId", serviceErrorDO.getTraceId());
+      map.put("spanId", serviceErrorDO.getSpanId());
+      map.put("startTime", String.valueOf(serviceErrorDO.getStartTime()));
+      map.put("latency", String.valueOf(serviceErrorDO.getLatency()));
+      result.add(map);
+    }
+
+    return result;
+  }
 }

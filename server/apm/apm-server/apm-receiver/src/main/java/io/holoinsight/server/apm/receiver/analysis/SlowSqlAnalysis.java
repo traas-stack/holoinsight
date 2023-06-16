@@ -19,44 +19,48 @@ import java.util.Map;
 
 public class SlowSqlAnalysis {
 
-    public SlowSqlDO slowSqlDO() {
-        return new SlowSqlDO();
+  public SlowSqlDO slowSqlDO() {
+    return new SlowSqlDO();
+  }
+
+  public List<SlowSqlDO> analysis(Span span, Map<String, AnyValue> spanAttrMap,
+      Map<String, AnyValue> resourceAttrMap) {
+    List<SlowSqlDO> result = new ArrayList<>(10);
+
+    AnyValue statement = spanAttrMap.get(SemanticAttributes.DB_STATEMENT.getKey());
+    AnyValue peerName = spanAttrMap.get(SemanticAttributes.NET_PEER_NAME.getKey());
+    AnyValue peerPort = spanAttrMap.get(SemanticAttributes.NET_PEER_PORT.getKey());
+
+    long latency = TimeUtils.unixNano2MS(span.getEndTimeUnixNano())
+        - TimeUtils.unixNano2MS(span.getStartTimeUnixNano());
+    if (peerName == null || StringUtils.isEmpty(peerName.getStringValue()) || statement == null
+        || latency < Const.SLOW_SQL_THRESHOLD) {
+      return result;
     }
 
-    public List<SlowSqlDO> analysis(Span span, Map<String, AnyValue> spanAttrMap, Map<String, AnyValue> resourceAttrMap) {
-        List<SlowSqlDO> result = new ArrayList<>(10);
+    String dbAddress = peerPort == null ? peerName.getStringValue()
+        : peerName.getStringValue() + ":" + peerPort.getStringValue();
 
-        AnyValue statement = spanAttrMap.get(SemanticAttributes.DB_STATEMENT.getKey());
-        AnyValue peerName = spanAttrMap.get(SemanticAttributes.NET_PEER_NAME.getKey());
-        AnyValue peerPort = spanAttrMap.get(SemanticAttributes.NET_PEER_PORT.getKey());
+    SlowSqlDO slowSqlEsDO = slowSqlDO();
+    result.add(setPublicAttrs(slowSqlEsDO, span, spanAttrMap, resourceAttrMap, dbAddress));
+    return result;
+  }
 
-        long latency = TimeUtils.unixNano2MS(span.getEndTimeUnixNano())
-                - TimeUtils.unixNano2MS(span.getStartTimeUnixNano());
-        if (peerName == null || StringUtils.isEmpty(peerName.getStringValue()) || statement == null
-                || latency < Const.SLOW_SQL_THRESHOLD) {
-            return result;
-        }
-
-        String dbAddress = peerPort == null ? peerName.getStringValue()
-                : peerName.getStringValue() + ":" + peerPort.getStringValue();
-
-        SlowSqlDO slowSqlEsDO = slowSqlDO();
-        result.add(setPublicAttrs(slowSqlEsDO, span, spanAttrMap, resourceAttrMap, dbAddress));
-        return result;
-    }
-
-    public SlowSqlDO setPublicAttrs(SlowSqlDO slowSqlDO, Span span, Map<String, AnyValue> spanAttrMap, Map<String, AnyValue> resourceAttrMap, String address) {
-        long latency = TimeUtils.unixNano2MS(span.getEndTimeUnixNano())
-                - TimeUtils.unixNano2MS(span.getStartTimeUnixNano());
-        slowSqlDO.setTenant(resourceAttrMap.get(Const.TENANT).getStringValue());
-        slowSqlDO.setServiceName(resourceAttrMap.get(ResourceAttributes.SERVICE_NAME.getKey()).getStringValue());
-        slowSqlDO.setAddress(address);
-        slowSqlDO.setLatency((int) latency);
-        slowSqlDO.setStartTime(TimeUtils.unixNano2MS(span.getStartTimeUnixNano()));
-        slowSqlDO.setTimestamp(TimeUtils.unixNano2MS(span.getEndTimeUnixNano()));
-        slowSqlDO.setTraceId(Hex.encodeHexString(span.getTraceId().toByteArray()));
-        slowSqlDO.setStatement(spanAttrMap.get(SemanticAttributes.DB_STATEMENT.getKey()).getStringValue());
-        return slowSqlDO;
-    }
+  public SlowSqlDO setPublicAttrs(SlowSqlDO slowSqlDO, Span span, Map<String, AnyValue> spanAttrMap,
+      Map<String, AnyValue> resourceAttrMap, String address) {
+    long latency = TimeUtils.unixNano2MS(span.getEndTimeUnixNano())
+        - TimeUtils.unixNano2MS(span.getStartTimeUnixNano());
+    slowSqlDO.setTenant(resourceAttrMap.get(Const.TENANT).getStringValue());
+    slowSqlDO.setServiceName(
+        resourceAttrMap.get(ResourceAttributes.SERVICE_NAME.getKey()).getStringValue());
+    slowSqlDO.setAddress(address);
+    slowSqlDO.setLatency((int) latency);
+    slowSqlDO.setStartTime(TimeUtils.unixNano2MS(span.getStartTimeUnixNano()));
+    slowSqlDO.setTimestamp(TimeUtils.unixNano2MS(span.getEndTimeUnixNano()));
+    slowSqlDO.setTraceId(Hex.encodeHexString(span.getTraceId().toByteArray()));
+    slowSqlDO
+        .setStatement(spanAttrMap.get(SemanticAttributes.DB_STATEMENT.getKey()).getStringValue());
+    return slowSqlDO;
+  }
 
 }

@@ -18,43 +18,46 @@ import java.util.Map;
 
 public class ServiceErrorAnalysis {
 
-    public ServiceErrorDO serviceErrorDO() {
-        return new ServiceErrorDO();
-    }
+  public ServiceErrorDO serviceErrorDO() {
+    return new ServiceErrorDO();
+  }
 
-    public List<ServiceErrorDO> analysis(Span span, Map<String, AnyValue> spanAttrMap, Map<String, AnyValue> resourceAttrMap) {
-        List<ServiceErrorDO> result = new ArrayList<>();
-        if (span.getEventsList().size() > 0) {
-            ServiceErrorDO errorInfo = serviceErrorDO();
+  public List<ServiceErrorDO> analysis(Span span, Map<String, AnyValue> spanAttrMap,
+      Map<String, AnyValue> resourceAttrMap) {
+    List<ServiceErrorDO> result = new ArrayList<>();
+    if (span.getEventsList().size() > 0) {
+      ServiceErrorDO errorInfo = serviceErrorDO();
 
-            OUT:
-            for (Span.Event event : span.getEventsList()) {
-                for (KeyValue keyValue : event.getAttributesList()) {
-                    if ("error.kind".equals(keyValue.getKey())) {
-                        errorInfo.setErrorKind(keyValue.getValue().getStringValue());
-                        result.add(setPublicAttrs(errorInfo, span, spanAttrMap, resourceAttrMap));
-                        break OUT;
-                    }
-                }
-            }
+      OUT: for (Span.Event event : span.getEventsList()) {
+        for (KeyValue keyValue : event.getAttributesList()) {
+          if ("error.kind".equals(keyValue.getKey())) {
+            errorInfo.setErrorKind(keyValue.getValue().getStringValue());
+            result.add(setPublicAttrs(errorInfo, span, spanAttrMap, resourceAttrMap));
+            break OUT;
+          }
         }
-
-        return result;
+      }
     }
 
-    public ServiceErrorDO setPublicAttrs(ServiceErrorDO errorInfo, Span span, Map<String, AnyValue> spanAttrMap, Map<String, AnyValue> resourceAttrMap) {
-        errorInfo.setTenant(resourceAttrMap.get(Const.TENANT).getStringValue());
-        errorInfo.setServiceName(resourceAttrMap.get(ResourceAttributes.SERVICE_NAME.getKey()).getStringValue());
-        errorInfo.setEndpointName(span.getName());
-        errorInfo.setServiceInstanceName(resourceAttrMap.get(Const.OTLP_RESOURCE_SERVICE_INSTANCE_NAME).getStringValue());
-        errorInfo.setSpanId(Hex.encodeHexString(span.getSpanId().toByteArray()));
-        errorInfo.setTraceId(Hex.encodeHexString(span.getTraceId().toByteArray()));
-        errorInfo.setStartTime(TimeUtils.unixNano2MS(span.getStartTimeUnixNano()));
-        errorInfo.setTimestamp(TimeUtils.unixNano2MS(span.getEndTimeUnixNano()));
-        long latency = TimeUtils.unixNano2MS(span.getEndTimeUnixNano())
-                - TimeUtils.unixNano2MS(span.getStartTimeUnixNano());
-        errorInfo.setLatency((int) latency);
-        return errorInfo;
-    }
+    return result;
+  }
+
+  public ServiceErrorDO setPublicAttrs(ServiceErrorDO errorInfo, Span span,
+      Map<String, AnyValue> spanAttrMap, Map<String, AnyValue> resourceAttrMap) {
+    errorInfo.setTenant(resourceAttrMap.get(Const.TENANT).getStringValue());
+    errorInfo.setServiceName(
+        resourceAttrMap.get(ResourceAttributes.SERVICE_NAME.getKey()).getStringValue());
+    errorInfo.setEndpointName(span.getName());
+    errorInfo.setServiceInstanceName(
+        resourceAttrMap.get(Const.OTLP_RESOURCE_SERVICE_INSTANCE_NAME).getStringValue());
+    errorInfo.setSpanId(Hex.encodeHexString(span.getSpanId().toByteArray()));
+    errorInfo.setTraceId(Hex.encodeHexString(span.getTraceId().toByteArray()));
+    errorInfo.setStartTime(TimeUtils.unixNano2MS(span.getStartTimeUnixNano()));
+    errorInfo.setTimestamp(TimeUtils.unixNano2MS(span.getEndTimeUnixNano()));
+    long latency = TimeUtils.unixNano2MS(span.getEndTimeUnixNano())
+        - TimeUtils.unixNano2MS(span.getStartTimeUnixNano());
+    errorInfo.setLatency((int) latency);
+    return errorInfo;
+  }
 
 }

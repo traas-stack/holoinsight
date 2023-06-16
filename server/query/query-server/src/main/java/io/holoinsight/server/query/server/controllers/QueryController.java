@@ -215,7 +215,8 @@ public class QueryController {
   }
 
   @PostMapping(path = "/serviceErrorDetail", produces = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<?> queryServiceErrorDetail(@RequestBody QueryProto.QueryMetaRequest request) {
+  public ResponseEntity<?> queryServiceErrorDetail(
+      @RequestBody QueryProto.QueryMetaRequest request) {
     try {
       return ResponseEntity.ok(queryService.queryServiceErrorDetail(request));
     } catch (Exception e) {

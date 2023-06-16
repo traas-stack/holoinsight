@@ -8,7 +8,28 @@ import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.google.common.collect.Lists;
 import com.google.protobuf.MessageOrBuilder;
-import io.holoinsight.server.apm.common.model.query.*;
+import io.holoinsight.server.apm.common.model.query.Duration;
+import io.holoinsight.server.apm.common.model.query.Endpoint;
+import io.holoinsight.server.apm.common.model.query.MetricValue;
+import io.holoinsight.server.apm.common.model.query.MetricValues;
+import io.holoinsight.server.apm.common.model.query.Pagination;
+import io.holoinsight.server.apm.common.model.query.QueryComponentRequest;
+import io.holoinsight.server.apm.common.model.query.QueryEndpointRequest;
+import io.holoinsight.server.apm.common.model.query.QueryMetricRequest;
+import io.holoinsight.server.apm.common.model.query.QueryOrder;
+import io.holoinsight.server.apm.common.model.query.QueryServiceInstanceRequest;
+import io.holoinsight.server.apm.common.model.query.QueryServiceRequest;
+import io.holoinsight.server.apm.common.model.query.QueryTopologyRequest;
+import io.holoinsight.server.apm.common.model.query.QueryTraceRequest;
+import io.holoinsight.server.apm.common.model.query.Service;
+import io.holoinsight.server.apm.common.model.query.ServiceInstance;
+import io.holoinsight.server.apm.common.model.query.SlowSql;
+import io.holoinsight.server.apm.common.model.query.StatisticData;
+import io.holoinsight.server.apm.common.model.query.StatisticDataList;
+import io.holoinsight.server.apm.common.model.query.StatisticRequest;
+import io.holoinsight.server.apm.common.model.query.Topology;
+import io.holoinsight.server.apm.common.model.query.TraceBrief;
+import io.holoinsight.server.apm.common.model.query.VirtualComponent;
 import io.holoinsight.server.apm.common.model.specification.OtlpMappings;
 import io.holoinsight.server.apm.common.model.specification.sw.Trace;
 import io.holoinsight.server.apm.common.model.specification.sw.TraceState;
@@ -44,7 +65,16 @@ import org.springframework.util.Assert;
 import retrofit2.Call;
 import retrofit2.Response;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.TreeMap;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
@@ -627,7 +657,8 @@ public class DefaultQueryServiceImpl implements QueryService {
   }
 
   @Override
-  public QueryProto.CommonMapTypeData queryServiceErrorList(QueryProto.QueryMetaRequest request) throws QueryException {
+  public QueryProto.CommonMapTypeDataList queryServiceErrorList(QueryProto.QueryMetaRequest request)
+      throws QueryException {
     return wrap(() -> {
       ApmAPI apmAPI = apmClient.getClient(request.getTenant());
 
@@ -639,21 +670,27 @@ public class DefaultQueryServiceImpl implements QueryService {
       if (request.getTermParamsMap() != null) {
         queryServiceRequest.setTermParams(request.getTermParamsMap());
       }
-
-      Call<List<Map<String, Object>>> serviceList = apmAPI.queryServiceErrorList(queryServiceRequest);
-      Response<List<Map<String, Object>>> listResponse = serviceList.execute();
+      Call<List<Map<String, String>>> serviceList =
+          apmAPI.queryServiceErrorList(queryServiceRequest);
+      Response<List<Map<String, String>>> listResponse = serviceList.execute();
       if (!listResponse.isSuccessful()) {
         throw new QueryException(listResponse.errorBody().string());
       }
-      QueryProto.CommonMapTypeData.Builder builder = QueryProto.CommonMapTypeData.newBuilder();
-      listResponse.body().forEach(data -> {builder.putAllData(data);});
+      QueryProto.CommonMapTypeDataList.Builder builder =
+          QueryProto.CommonMapTypeDataList.newBuilder();
+      listResponse.body().forEach(data -> {
+        QueryProto.CommonMapTypeData.Builder tmpBuilder = QueryProto.CommonMapTypeData.newBuilder();
+        tmpBuilder.putAllData(data);
+        builder.addCommonMapTypeData(tmpBuilder.build());
+      });
 
       return builder.build();
     }, "queryServiceErrorList", request);
   }
 
   @Override
-  public QueryProto.CommonMapTypeData queryServiceErrorDetail(QueryProto.QueryMetaRequest request) throws QueryException {
+  public QueryProto.CommonMapTypeDataList queryServiceErrorDetail(
+      QueryProto.QueryMetaRequest request) throws QueryException {
     return wrap(() -> {
       ApmAPI apmAPI = apmClient.getClient(request.getTenant());
 
@@ -666,16 +703,22 @@ public class DefaultQueryServiceImpl implements QueryService {
         queryServiceRequest.setTermParams(request.getTermParamsMap());
       }
 
-      Call<List<Map<String, Object>>> serviceList = apmAPI.queryServiceErrorList(queryServiceRequest);
-      Response<List<Map<String, Object>>> listResponse = serviceList.execute();
+      Call<List<Map<String, String>>> serviceList =
+          apmAPI.queryServiceErrorDetail(queryServiceRequest);
+      Response<List<Map<String, String>>> listResponse = serviceList.execute();
       if (!listResponse.isSuccessful()) {
         throw new QueryException(listResponse.errorBody().string());
       }
-      QueryProto.CommonMapTypeData.Builder builder = QueryProto.CommonMapTypeData.newBuilder();
-      listResponse.body().forEach(data -> {builder.putAllData(data);});
+      QueryProto.CommonMapTypeDataList.Builder builder =
+          QueryProto.CommonMapTypeDataList.newBuilder();
+      listResponse.body().forEach(data -> {
+        QueryProto.CommonMapTypeData.Builder tmpBuilder = QueryProto.CommonMapTypeData.newBuilder();
+        tmpBuilder.putAllData(data);
+        builder.addCommonMapTypeData(tmpBuilder.build());
+      });
 
       return builder.build();
-    }, "queryServiceErrorList", request);
+    }, "queryServiceErrorDetail", request);
   }
 
   private QueryProto.QueryResponse simpleQuery(String tenant,

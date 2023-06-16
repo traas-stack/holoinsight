@@ -56,9 +56,9 @@ public interface QueryService {
   QueryProto.QuerySlowSqlResponse querySlowSqlList(QueryProto.QueryMetaRequest request)
       throws QueryException;
 
-  QueryProto.CommonMapTypeData queryServiceErrorList(QueryProto.QueryMetaRequest request)
-          throws QueryException;
+  QueryProto.CommonMapTypeDataList queryServiceErrorList(QueryProto.QueryMetaRequest request)
+      throws QueryException;
 
-  QueryProto.CommonMapTypeData queryServiceErrorDetail(QueryProto.QueryMetaRequest request)
-          throws QueryException;
+  QueryProto.CommonMapTypeDataList queryServiceErrorDetail(QueryProto.QueryMetaRequest request)
+      throws QueryException;
 }

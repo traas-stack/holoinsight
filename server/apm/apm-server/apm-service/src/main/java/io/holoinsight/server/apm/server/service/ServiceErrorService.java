@@ -13,9 +13,9 @@ public interface ServiceErrorService {
 
   void insert(List<ServiceErrorDO> serviceErrorEsDOList) throws Exception;
 
-  List<Map<String, Object>> getServiceErrorList(String tenant, String serviceName, long startTime,
-                                             long endTime, Map<String, String> termParams) throws Exception;
+  List<Map<String, String>> getServiceErrorList(String tenant, String serviceName, long startTime,
+      long endTime, Map<String, String> termParams) throws Exception;
 
-  List<Map<String, Object>> getServiceErrorDetail(String tenant, String serviceName, long startTime,
-                                                  long endTime, Map<String, String> termParams) throws Exception;
+  List<Map<String, String>> getServiceErrorDetail(String tenant, String serviceName, long startTime,
+      long endTime, Map<String, String> termParams) throws Exception;
 }

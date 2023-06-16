@@ -60,8 +60,6 @@ public class TraceApiController implements TraceApi {
 
   @Override
   public ResponseEntity<Trace> queryTrace(QueryTraceRequest request) throws Exception {
-
-
     if (CollectionUtils.isEmpty(request.getTraceIds())) {
       throw new IllegalArgumentException("The condition must contains traceIds.");
     }

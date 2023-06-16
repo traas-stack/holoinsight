@@ -22,13 +22,17 @@ public class ServiceErrorServiceImpl implements ServiceErrorService {
   }
 
   @Override
-  public List<Map<String, Object>> getServiceErrorList(String tenant, String serviceName, long startTime, long endTime, Map<String, String> termParams) throws Exception {
-    return serviceErrorStorage.getServiceErrorList(tenant, serviceName, startTime, endTime, termParams);
+  public List<Map<String, String>> getServiceErrorList(String tenant, String serviceName,
+      long startTime, long endTime, Map<String, String> termParams) throws Exception {
+    return serviceErrorStorage.getServiceErrorList(tenant, serviceName, startTime, endTime,
+        termParams);
   }
 
   @Override
-  public List<Map<String, Object>> getServiceErrorDetail(String tenant, String serviceName, long startTime, long endTime, Map<String, String> termParams) throws Exception {
-    return serviceErrorStorage.getServiceErrorDetail(tenant, serviceName, startTime, endTime, termParams);
+  public List<Map<String, String>> getServiceErrorDetail(String tenant, String serviceName,
+      long startTime, long endTime, Map<String, String> termParams) throws Exception {
+    return serviceErrorStorage.getServiceErrorDetail(tenant, serviceName, startTime, endTime,
+        termParams);
   }
 
 }

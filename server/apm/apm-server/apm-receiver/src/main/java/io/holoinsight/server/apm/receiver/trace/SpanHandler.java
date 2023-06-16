@@ -119,8 +119,8 @@ public class SpanHandler {
                         .getKind() == io.opentelemetry.proto.trace.v1.Span.SpanKind.SPAN_KIND_PRODUCER) {
                   relationBuilders.addAll(relationAnalysis.analysisClientSpan(span, spanAttrMap,
                       resourceAttrMap, spanIdEndpointMap));
-                  slowSqlEsDOList.addAll(
-                        slowSqlAnalysis.analysis(span, spanAttrMap, resourceAttrMap));
+                  slowSqlEsDOList
+                      .addAll(slowSqlAnalysis.analysis(span, spanAttrMap, resourceAttrMap));
                 } else if (span
                     .getKind() == io.opentelemetry.proto.trace.v1.Span.SpanKind.SPAN_KIND_INTERNAL) {
                   relationBuilders.addAll(

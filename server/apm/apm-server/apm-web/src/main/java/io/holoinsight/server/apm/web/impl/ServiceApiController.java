@@ -41,28 +41,32 @@ public class ServiceApiController implements ServiceApi {
   }
 
   @Override
-  public ResponseEntity<List<Map<String, Object>>> queryServiceErrorList(QueryServiceRequest request) throws Exception {
+  public ResponseEntity<List<Map<String, String>>> queryServiceErrorList(
+      QueryServiceRequest request) throws Exception {
     String tenant = request.getTenant();
 
     if (Strings.isNullOrEmpty(tenant)) {
       throw new IllegalArgumentException("The condition must contains tenant.");
     }
 
-    List<Map<String, Object>> serviceList = serviceErrorService.getServiceErrorList(tenant, request.getServiceName(),
+    List<Map<String, String>> serviceList =
+        serviceErrorService.getServiceErrorList(tenant, request.getServiceName(),
             request.getStartTime(), request.getEndTime(), request.getTermParams());
 
     return ResponseEntity.ok(serviceList);
   }
 
   @Override
-  public ResponseEntity<List<Map<String, Object>>> queryServiceErrorDetail(QueryServiceRequest request) throws Exception {
+  public ResponseEntity<List<Map<String, String>>> queryServiceErrorDetail(
+      QueryServiceRequest request) throws Exception {
     String tenant = request.getTenant();
 
     if (Strings.isNullOrEmpty(tenant)) {
       throw new IllegalArgumentException("The condition must contains tenant.");
     }
 
-    List<Map<String, Object>> serviceList = serviceErrorService.getServiceErrorDetail(tenant, request.getServiceName(),
+    List<Map<String, String>> serviceList =
+        serviceErrorService.getServiceErrorDetail(tenant, request.getServiceName(),
             request.getStartTime(), request.getEndTime(), request.getTermParams());
 
     return ResponseEntity.ok(serviceList);

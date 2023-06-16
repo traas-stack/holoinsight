@@ -107,8 +107,8 @@ public interface ApmAPI {
   Call<List<SlowSql>> querySlowSqlList(@Body QueryComponentRequest request);
 
   @POST("/cluster/api/v1/service/query/serviceErrorList")
-  Call<List<Map<String, Object>>> queryServiceErrorList(@Body QueryServiceRequest request);
+  Call<List<Map<String, String>>> queryServiceErrorList(@Body QueryServiceRequest request);
 
   @POST("/cluster/api/v1/service/query/serviceErrorDetail")
-  Call<List<Map<String, Object>>> queryServiceErrorDetail(@Body QueryServiceRequest request);
+  Call<List<Map<String, String>>> queryServiceErrorDetail(@Body QueryServiceRequest request);
 }

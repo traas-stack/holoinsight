@@ -39,27 +39,27 @@ public interface ServiceApi {
       throws Exception;
 
 
-  @ApiOperation(value = "query service error list", nickname = "queryServiceErrorList", notes = "查询服务异常列表",
-          response = Map.class, authorizations = {@Authorization(value = "APIKeyHeader"),
-          @Authorization(value = "APIKeyQueryParam")},
-          tags = {"serviceErrorList",})
+  @ApiOperation(value = "query service error list", nickname = "queryServiceErrorList",
+      notes = "查询服务异常列表", response = Map.class, authorizations = {
+          @Authorization(value = "APIKeyHeader"), @Authorization(value = "APIKeyQueryParam")},
+      tags = {"serviceErrorList",})
   @ApiResponses(value = {@ApiResponse(code = 200, message = "请求正常。", response = Service.class),
-          @ApiResponse(code = 400, message = "请求失败。", response = FailResponse.class)})
+      @ApiResponse(code = 400, message = "请求失败。", response = FailResponse.class)})
   @RequestMapping(value = "/query/serviceErrorList", produces = {"application/json"},
-          consumes = {"application/json"}, method = RequestMethod.POST)
-  ResponseEntity<List<Map<String, Object>>> queryServiceErrorList(
-          @ApiParam(value = "查询条件。", required = true) @Valid @RequestBody QueryServiceRequest request)
-          throws Exception;
+      consumes = {"application/json"}, method = RequestMethod.POST)
+  ResponseEntity<List<Map<String, String>>> queryServiceErrorList(
+      @ApiParam(value = "查询条件。", required = true) @Valid @RequestBody QueryServiceRequest request)
+      throws Exception;
 
-  @ApiOperation(value = "query service error datail", nickname = "queryServiceErrorDetail", notes = "查询服务异常详情",
-          response = Map.class, authorizations = {@Authorization(value = "APIKeyHeader"),
-          @Authorization(value = "APIKeyQueryParam")},
-          tags = {"serviceErrorDetail",})
+  @ApiOperation(value = "query service error datail", nickname = "queryServiceErrorDetail",
+      notes = "查询服务异常详情", response = Map.class, authorizations = {
+          @Authorization(value = "APIKeyHeader"), @Authorization(value = "APIKeyQueryParam")},
+      tags = {"serviceErrorDetail",})
   @ApiResponses(value = {@ApiResponse(code = 200, message = "请求正常。", response = Service.class),
-          @ApiResponse(code = 400, message = "请求失败。", response = FailResponse.class)})
+      @ApiResponse(code = 400, message = "请求失败。", response = FailResponse.class)})
   @RequestMapping(value = "/query/serviceErrorDetail", produces = {"application/json"},
-          consumes = {"application/json"}, method = RequestMethod.POST)
-  ResponseEntity<List<Map<String, Object>>> queryServiceErrorDetail(
-          @ApiParam(value = "查询条件。", required = true) @Valid @RequestBody QueryServiceRequest request)
-          throws Exception;
+      consumes = {"application/json"}, method = RequestMethod.POST)
+  ResponseEntity<List<Map<String, String>>> queryServiceErrorDetail(
+      @ApiParam(value = "查询条件。", required = true) @Valid @RequestBody QueryServiceRequest request)
+      throws Exception;
 }

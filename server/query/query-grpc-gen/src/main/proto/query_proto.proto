@@ -317,7 +317,7 @@ message StatisticDataList {
 }
 
 message CommonMapTypeData{
-  map<string, google.protobuf.Any> data = 1;
+  map<string, string> data = 1;
 }
 
 message CommonMapTypeDataList {
@@ -361,8 +361,8 @@ service QueryService {
 
   rpc StatisticTrace(StatisticRequest) returns (StatisticDataList);
 
-  rpc QueryServiceErrorList(QueryMetaRequest) returns (CommonMapTypeData);
+  rpc QueryServiceErrorList(QueryMetaRequest) returns (CommonMapTypeDataList);
 
-  rpc QueryServiceErrorDetail(QueryMetaRequest) returns (CommonMapTypeData);
+  rpc QueryServiceErrorDetail(QueryMetaRequest) returns (CommonMapTypeDataList);
 
 }
