@@ -287,6 +287,28 @@ public class QueryClientService {
     return result;
   }
 
+  public List<Map<String, String>> queryServiceErrorList(QueryProto.QueryMetaRequest request) {
+    QueryProto.CommonMapTypeDataList serviceErrorList =
+        queryServiceBlockingStub.queryServiceErrorList(request);
+    List<Map<String, String>> result =
+        new ArrayList<>(serviceErrorList.getCommonMapTypeDataList().size());
+    serviceErrorList.getCommonMapTypeDataList().forEach(data -> {
+      result.add(data.getDataMap());
+    });
+    return result;
+  }
+
+  public List<Map<String, String>> queryServiceErrorDetail(QueryProto.QueryMetaRequest request) {
+    QueryProto.CommonMapTypeDataList serviceErrorList =
+        queryServiceBlockingStub.queryServiceErrorDetail(request);
+    List<Map<String, String>> result =
+        new ArrayList<>(serviceErrorList.getCommonMapTypeDataList().size());
+    serviceErrorList.getCommonMapTypeDataList().forEach(data -> {
+      result.add(data.getDataMap());
+    });
+    return result;
+  }
+
   private QueryProto.QueryTraceRequest convertRequest(QueryTraceRequest request) {
     QueryProto.QueryTraceRequest.Builder requestBuilder =
         QueryProto.QueryTraceRequest.newBuilder().setTenant(request.getTenant());

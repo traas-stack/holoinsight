@@ -215,6 +215,30 @@ public class QueryGrpcService extends QueryServiceGrpc.QueryServiceImplBase {
   }
 
   @Override
+  public void queryServiceErrorList(QueryProto.QueryMetaRequest request,
+      StreamObserver<QueryProto.CommonMapTypeDataList> responseObserver) {
+    try {
+      responseObserver.onNext(queryService.queryServiceErrorList(request));
+      responseObserver.onCompleted();
+    } catch (Throwable t) {
+      responseObserver.onError(
+          Status.INTERNAL.withCause(t).withDescription(t.getMessage()).asRuntimeException());
+    }
+  }
+
+  @Override
+  public void queryServiceErrorDetail(QueryProto.QueryMetaRequest request,
+      StreamObserver<QueryProto.CommonMapTypeDataList> responseObserver) {
+    try {
+      responseObserver.onNext(queryService.queryServiceErrorDetail(request));
+      responseObserver.onCompleted();
+    } catch (Throwable t) {
+      responseObserver.onError(
+          Status.INTERNAL.withCause(t).withDescription(t.getMessage()).asRuntimeException());
+    }
+  }
+
+  @Override
   public void statisticTrace(QueryProto.StatisticRequest request,
       StreamObserver<QueryProto.StatisticDataList> responseObserver) {
     try {

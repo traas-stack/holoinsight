@@ -46708,6 +46708,1583 @@ public final class QueryProto {
 
   }
 
+  public interface CommonMapTypeDataOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:io.holoinsight.server.query.grpc.CommonMapTypeData)
+      com.google.protobuf.MessageOrBuilder {
+
+    /**
+     * <code>map&lt;string, string&gt; data = 1;</code>
+     */
+    int getDataCount();
+
+    /**
+     * <code>map&lt;string, string&gt; data = 1;</code>
+     */
+    boolean containsData(java.lang.String key);
+
+    /**
+     * Use {@link #getDataMap()} instead.
+     */
+    @java.lang.Deprecated
+    java.util.Map<java.lang.String, java.lang.String> getData();
+
+    /**
+     * <code>map&lt;string, string&gt; data = 1;</code>
+     */
+    java.util.Map<java.lang.String, java.lang.String> getDataMap();
+
+    /**
+     * <code>map&lt;string, string&gt; data = 1;</code>
+     */
+
+    java.lang.String getDataOrDefault(java.lang.String key, java.lang.String defaultValue);
+
+    /**
+     * <code>map&lt;string, string&gt; data = 1;</code>
+     */
+
+    java.lang.String getDataOrThrow(java.lang.String key);
+  }
+  /**
+   * Protobuf type {@code io.holoinsight.server.query.grpc.CommonMapTypeData}
+   */
+  public static final class CommonMapTypeData extends com.google.protobuf.GeneratedMessageV3
+      implements
+      // @@protoc_insertion_point(message_implements:io.holoinsight.server.query.grpc.CommonMapTypeData)
+      CommonMapTypeDataOrBuilder {
+    private static final long serialVersionUID = 0L;
+
+    // Use CommonMapTypeData.newBuilder() to construct.
+    private CommonMapTypeData(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+      super(builder);
+    }
+
+    private CommonMapTypeData() {}
+
+    @java.lang.Override
+    @SuppressWarnings({"unused"})
+    protected java.lang.Object newInstance(UnusedPrivateParameter unused) {
+      return new CommonMapTypeData();
+    }
+
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet getUnknownFields() {
+      return this.unknownFields;
+    }
+
+    private CommonMapTypeData(com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      this();
+      if (extensionRegistry == null) {
+        throw new java.lang.NullPointerException();
+      }
+      int mutable_bitField0_ = 0;
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            case 10: {
+              if (!((mutable_bitField0_ & 0x00000001) != 0)) {
+                data_ =
+                    com.google.protobuf.MapField.newMapField(DataDefaultEntryHolder.defaultEntry);
+                mutable_bitField0_ |= 0x00000001;
+              }
+              com.google.protobuf.MapEntry<java.lang.String, java.lang.String> data__ =
+                  input.readMessage(DataDefaultEntryHolder.defaultEntry.getParserForType(),
+                      extensionRegistry);
+              data_.getMutableMap().put(data__.getKey(), data__.getValue());
+              break;
+            }
+            default: {
+              if (!parseUnknownField(input, unknownFields, extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(e).setUnfinishedMessage(this);
+      } finally {
+        this.unknownFields = unknownFields.build();
+        makeExtensionsImmutable();
+      }
+    }
+
+    public static final com.google.protobuf.Descriptors.Descriptor getDescriptor() {
+      return io.holoinsight.server.query.grpc.QueryProto.internal_static_io_holoinsight_server_query_grpc_CommonMapTypeData_descriptor;
+    }
+
+    @SuppressWarnings({"rawtypes"})
+    @java.lang.Override
+    protected com.google.protobuf.MapField internalGetMapField(int number) {
+      switch (number) {
+        case 1:
+          return internalGetData();
+        default:
+          throw new RuntimeException("Invalid map field number: " + number);
+      }
+    }
+
+    @java.lang.Override
+    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable internalGetFieldAccessorTable() {
+      return io.holoinsight.server.query.grpc.QueryProto.internal_static_io_holoinsight_server_query_grpc_CommonMapTypeData_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              io.holoinsight.server.query.grpc.QueryProto.CommonMapTypeData.class,
+              io.holoinsight.server.query.grpc.QueryProto.CommonMapTypeData.Builder.class);
+    }
+
+    public static final int DATA_FIELD_NUMBER = 1;
+
+    private static final class DataDefaultEntryHolder {
+      static final com.google.protobuf.MapEntry<java.lang.String, java.lang.String> defaultEntry =
+          com.google.protobuf.MapEntry.<java.lang.String, java.lang.String>newDefaultInstance(
+              io.holoinsight.server.query.grpc.QueryProto.internal_static_io_holoinsight_server_query_grpc_CommonMapTypeData_DataEntry_descriptor,
+              com.google.protobuf.WireFormat.FieldType.STRING, "",
+              com.google.protobuf.WireFormat.FieldType.STRING, "");
+    }
+
+    private com.google.protobuf.MapField<java.lang.String, java.lang.String> data_;
+
+    private com.google.protobuf.MapField<java.lang.String, java.lang.String> internalGetData() {
+      if (data_ == null) {
+        return com.google.protobuf.MapField.emptyMapField(DataDefaultEntryHolder.defaultEntry);
+      }
+      return data_;
+    }
+
+    public int getDataCount() {
+      return internalGetData().getMap().size();
+    }
+
+    /**
+     * <code>map&lt;string, string&gt; data = 1;</code>
+     */
+
+    @java.lang.Override
+    public boolean containsData(java.lang.String key) {
+      if (key == null) {
+        throw new java.lang.NullPointerException();
+      }
+      return internalGetData().getMap().containsKey(key);
+    }
+
+    /**
+     * Use {@link #getDataMap()} instead.
+     */
+    @java.lang.Override
+    @java.lang.Deprecated
+    public java.util.Map<java.lang.String, java.lang.String> getData() {
+      return getDataMap();
+    }
+
+    /**
+     * <code>map&lt;string, string&gt; data = 1;</code>
+     */
+    @java.lang.Override
+
+    public java.util.Map<java.lang.String, java.lang.String> getDataMap() {
+      return internalGetData().getMap();
+    }
+
+    /**
+     * <code>map&lt;string, string&gt; data = 1;</code>
+     */
+    @java.lang.Override
+
+    public java.lang.String getDataOrDefault(java.lang.String key, java.lang.String defaultValue) {
+      if (key == null) {
+        throw new java.lang.NullPointerException();
+      }
+      java.util.Map<java.lang.String, java.lang.String> map = internalGetData().getMap();
+      return map.containsKey(key) ? map.get(key) : defaultValue;
+    }
+
+    /**
+     * <code>map&lt;string, string&gt; data = 1;</code>
+     */
+    @java.lang.Override
+
+    public java.lang.String getDataOrThrow(java.lang.String key) {
+      if (key == null) {
+        throw new java.lang.NullPointerException();
+      }
+      java.util.Map<java.lang.String, java.lang.String> map = internalGetData().getMap();
+      if (!map.containsKey(key)) {
+        throw new java.lang.IllegalArgumentException();
+      }
+      return map.get(key);
+    }
+
+    private byte memoizedIsInitialized = -1;
+
+    @java.lang.Override
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized == 1)
+        return true;
+      if (isInitialized == 0)
+        return false;
+
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    @java.lang.Override
+    public void writeTo(com.google.protobuf.CodedOutputStream output) throws java.io.IOException {
+      com.google.protobuf.GeneratedMessageV3.serializeStringMapTo(output, internalGetData(),
+          DataDefaultEntryHolder.defaultEntry, 1);
+      unknownFields.writeTo(output);
+    }
+
+    @java.lang.Override
+    public int getSerializedSize() {
+      int size = memoizedSize;
+      if (size != -1)
+        return size;
+
+      size = 0;
+      for (java.util.Map.Entry<java.lang.String, java.lang.String> entry : internalGetData()
+          .getMap().entrySet()) {
+        com.google.protobuf.MapEntry<java.lang.String, java.lang.String> data__ =
+            DataDefaultEntryHolder.defaultEntry.newBuilderForType().setKey(entry.getKey())
+                .setValue(entry.getValue()).build();
+        size += com.google.protobuf.CodedOutputStream.computeMessageSize(1, data__);
+      }
+      size += unknownFields.getSerializedSize();
+      memoizedSize = size;
+      return size;
+    }
+
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
+      if (obj == this) {
+        return true;
+      }
+      if (!(obj instanceof io.holoinsight.server.query.grpc.QueryProto.CommonMapTypeData)) {
+        return super.equals(obj);
+      }
+      io.holoinsight.server.query.grpc.QueryProto.CommonMapTypeData other =
+          (io.holoinsight.server.query.grpc.QueryProto.CommonMapTypeData) obj;
+
+      if (!internalGetData().equals(other.internalGetData()))
+        return false;
+      if (!unknownFields.equals(other.unknownFields))
+        return false;
+      return true;
+    }
+
+    @java.lang.Override
+    public int hashCode() {
+      if (memoizedHashCode != 0) {
+        return memoizedHashCode;
+      }
+      int hash = 41;
+      hash = (19 * hash) + getDescriptor().hashCode();
+      if (!internalGetData().getMap().isEmpty()) {
+        hash = (37 * hash) + DATA_FIELD_NUMBER;
+        hash = (53 * hash) + internalGetData().hashCode();
+      }
+      hash = (29 * hash) + unknownFields.hashCode();
+      memoizedHashCode = hash;
+      return hash;
+    }
+
+    public static io.holoinsight.server.query.grpc.QueryProto.CommonMapTypeData parseFrom(
+        java.nio.ByteBuffer data) throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+
+    public static io.holoinsight.server.query.grpc.QueryProto.CommonMapTypeData parseFrom(
+        java.nio.ByteBuffer data, com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+
+    public static io.holoinsight.server.query.grpc.QueryProto.CommonMapTypeData parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+
+    public static io.holoinsight.server.query.grpc.QueryProto.CommonMapTypeData parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+
+    public static io.holoinsight.server.query.grpc.QueryProto.CommonMapTypeData parseFrom(
+        byte[] data) throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+
+    public static io.holoinsight.server.query.grpc.QueryProto.CommonMapTypeData parseFrom(
+        byte[] data, com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+
+    public static io.holoinsight.server.query.grpc.QueryProto.CommonMapTypeData parseFrom(
+        java.io.InputStream input) throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3.parseWithIOException(PARSER, input);
+    }
+
+    public static io.holoinsight.server.query.grpc.QueryProto.CommonMapTypeData parseFrom(
+        java.io.InputStream input, com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3.parseWithIOException(PARSER, input,
+          extensionRegistry);
+    }
+
+    public static io.holoinsight.server.query.grpc.QueryProto.CommonMapTypeData parseDelimitedFrom(
+        java.io.InputStream input) throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3.parseDelimitedWithIOException(PARSER, input);
+    }
+
+    public static io.holoinsight.server.query.grpc.QueryProto.CommonMapTypeData parseDelimitedFrom(
+        java.io.InputStream input, com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3.parseDelimitedWithIOException(PARSER, input,
+          extensionRegistry);
+    }
+
+    public static io.holoinsight.server.query.grpc.QueryProto.CommonMapTypeData parseFrom(
+        com.google.protobuf.CodedInputStream input) throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3.parseWithIOException(PARSER, input);
+    }
+
+    public static io.holoinsight.server.query.grpc.QueryProto.CommonMapTypeData parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry) throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3.parseWithIOException(PARSER, input,
+          extensionRegistry);
+    }
+
+    @java.lang.Override
+    public Builder newBuilderForType() {
+      return newBuilder();
+    }
+
+    public static Builder newBuilder() {
+      return DEFAULT_INSTANCE.toBuilder();
+    }
+
+    public static Builder newBuilder(
+        io.holoinsight.server.query.grpc.QueryProto.CommonMapTypeData prototype) {
+      return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+    }
+
+    @java.lang.Override
+    public Builder toBuilder() {
+      return this == DEFAULT_INSTANCE ? new Builder() : new Builder().mergeFrom(this);
+    }
+
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+
+    /**
+     * Protobuf type {@code io.holoinsight.server.query.grpc.CommonMapTypeData}
+     */
+    public static final class Builder
+        extends com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
+        // @@protoc_insertion_point(builder_implements:io.holoinsight.server.query.grpc.CommonMapTypeData)
+        io.holoinsight.server.query.grpc.QueryProto.CommonMapTypeDataOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor getDescriptor() {
+        return io.holoinsight.server.query.grpc.QueryProto.internal_static_io_holoinsight_server_query_grpc_CommonMapTypeData_descriptor;
+      }
+
+      @SuppressWarnings({"rawtypes"})
+      protected com.google.protobuf.MapField internalGetMapField(int number) {
+        switch (number) {
+          case 1:
+            return internalGetData();
+          default:
+            throw new RuntimeException("Invalid map field number: " + number);
+        }
+      }
+
+      @SuppressWarnings({"rawtypes"})
+      protected com.google.protobuf.MapField internalGetMutableMapField(int number) {
+        switch (number) {
+          case 1:
+            return internalGetMutableData();
+          default:
+            throw new RuntimeException("Invalid map field number: " + number);
+        }
+      }
+
+      @java.lang.Override
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable internalGetFieldAccessorTable() {
+        return io.holoinsight.server.query.grpc.QueryProto.internal_static_io_holoinsight_server_query_grpc_CommonMapTypeData_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                io.holoinsight.server.query.grpc.QueryProto.CommonMapTypeData.class,
+                io.holoinsight.server.query.grpc.QueryProto.CommonMapTypeData.Builder.class);
+      }
+
+      // Construct using io.holoinsight.server.query.grpc.QueryProto.CommonMapTypeData.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+
+      private Builder(com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders) {
+        }
+      }
+
+      @java.lang.Override
+      public Builder clear() {
+        super.clear();
+        internalGetMutableData().clear();
+        return this;
+      }
+
+      @java.lang.Override
+      public com.google.protobuf.Descriptors.Descriptor getDescriptorForType() {
+        return io.holoinsight.server.query.grpc.QueryProto.internal_static_io_holoinsight_server_query_grpc_CommonMapTypeData_descriptor;
+      }
+
+      @java.lang.Override
+      public io.holoinsight.server.query.grpc.QueryProto.CommonMapTypeData getDefaultInstanceForType() {
+        return io.holoinsight.server.query.grpc.QueryProto.CommonMapTypeData.getDefaultInstance();
+      }
+
+      @java.lang.Override
+      public io.holoinsight.server.query.grpc.QueryProto.CommonMapTypeData build() {
+        io.holoinsight.server.query.grpc.QueryProto.CommonMapTypeData result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      @java.lang.Override
+      public io.holoinsight.server.query.grpc.QueryProto.CommonMapTypeData buildPartial() {
+        io.holoinsight.server.query.grpc.QueryProto.CommonMapTypeData result =
+            new io.holoinsight.server.query.grpc.QueryProto.CommonMapTypeData(this);
+        int from_bitField0_ = bitField0_;
+        result.data_ = internalGetData();
+        result.data_.makeImmutable();
+        onBuilt();
+        return result;
+      }
+
+      @java.lang.Override
+      public Builder clone() {
+        return super.clone();
+      }
+
+      @java.lang.Override
+      public Builder setField(com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.setField(field, value);
+      }
+
+      @java.lang.Override
+      public Builder clearField(com.google.protobuf.Descriptors.FieldDescriptor field) {
+        return super.clearField(field);
+      }
+
+      @java.lang.Override
+      public Builder clearOneof(com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+        return super.clearOneof(oneof);
+      }
+
+      @java.lang.Override
+      public Builder setRepeatedField(com.google.protobuf.Descriptors.FieldDescriptor field,
+          int index, java.lang.Object value) {
+        return super.setRepeatedField(field, index, value);
+      }
+
+      @java.lang.Override
+      public Builder addRepeatedField(com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.addRepeatedField(field, value);
+      }
+
+      @java.lang.Override
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof io.holoinsight.server.query.grpc.QueryProto.CommonMapTypeData) {
+          return mergeFrom((io.holoinsight.server.query.grpc.QueryProto.CommonMapTypeData) other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(
+          io.holoinsight.server.query.grpc.QueryProto.CommonMapTypeData other) {
+        if (other == io.holoinsight.server.query.grpc.QueryProto.CommonMapTypeData
+            .getDefaultInstance())
+          return this;
+        internalGetMutableData().mergeFrom(other.internalGetData());
+        this.mergeUnknownFields(other.unknownFields);
+        onChanged();
+        return this;
+      }
+
+      @java.lang.Override
+      public final boolean isInitialized() {
+        return true;
+      }
+
+      @java.lang.Override
+      public Builder mergeFrom(com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry) throws java.io.IOException {
+        io.holoinsight.server.query.grpc.QueryProto.CommonMapTypeData parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (io.holoinsight.server.query.grpc.QueryProto.CommonMapTypeData) e
+              .getUnfinishedMessage();
+          throw e.unwrapIOException();
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
+          }
+        }
+        return this;
+      }
+
+      private int bitField0_;
+
+      private com.google.protobuf.MapField<java.lang.String, java.lang.String> data_;
+
+      private com.google.protobuf.MapField<java.lang.String, java.lang.String> internalGetData() {
+        if (data_ == null) {
+          return com.google.protobuf.MapField.emptyMapField(DataDefaultEntryHolder.defaultEntry);
+        }
+        return data_;
+      }
+
+      private com.google.protobuf.MapField<java.lang.String, java.lang.String> internalGetMutableData() {
+        onChanged();;
+        if (data_ == null) {
+          data_ = com.google.protobuf.MapField.newMapField(DataDefaultEntryHolder.defaultEntry);
+        }
+        if (!data_.isMutable()) {
+          data_ = data_.copy();
+        }
+        return data_;
+      }
+
+      public int getDataCount() {
+        return internalGetData().getMap().size();
+      }
+
+      /**
+       * <code>map&lt;string, string&gt; data = 1;</code>
+       */
+
+      @java.lang.Override
+      public boolean containsData(java.lang.String key) {
+        if (key == null) {
+          throw new java.lang.NullPointerException();
+        }
+        return internalGetData().getMap().containsKey(key);
+      }
+
+      /**
+       * Use {@link #getDataMap()} instead.
+       */
+      @java.lang.Override
+      @java.lang.Deprecated
+      public java.util.Map<java.lang.String, java.lang.String> getData() {
+        return getDataMap();
+      }
+
+      /**
+       * <code>map&lt;string, string&gt; data = 1;</code>
+       */
+      @java.lang.Override
+
+      public java.util.Map<java.lang.String, java.lang.String> getDataMap() {
+        return internalGetData().getMap();
+      }
+
+      /**
+       * <code>map&lt;string, string&gt; data = 1;</code>
+       */
+      @java.lang.Override
+
+      public java.lang.String getDataOrDefault(java.lang.String key,
+          java.lang.String defaultValue) {
+        if (key == null) {
+          throw new java.lang.NullPointerException();
+        }
+        java.util.Map<java.lang.String, java.lang.String> map = internalGetData().getMap();
+        return map.containsKey(key) ? map.get(key) : defaultValue;
+      }
+
+      /**
+       * <code>map&lt;string, string&gt; data = 1;</code>
+       */
+      @java.lang.Override
+
+      public java.lang.String getDataOrThrow(java.lang.String key) {
+        if (key == null) {
+          throw new java.lang.NullPointerException();
+        }
+        java.util.Map<java.lang.String, java.lang.String> map = internalGetData().getMap();
+        if (!map.containsKey(key)) {
+          throw new java.lang.IllegalArgumentException();
+        }
+        return map.get(key);
+      }
+
+      public Builder clearData() {
+        internalGetMutableData().getMutableMap().clear();
+        return this;
+      }
+
+      /**
+       * <code>map&lt;string, string&gt; data = 1;</code>
+       */
+
+      public Builder removeData(java.lang.String key) {
+        if (key == null) {
+          throw new java.lang.NullPointerException();
+        }
+        internalGetMutableData().getMutableMap().remove(key);
+        return this;
+      }
+
+      /**
+       * Use alternate mutation accessors instead.
+       */
+      @java.lang.Deprecated
+      public java.util.Map<java.lang.String, java.lang.String> getMutableData() {
+        return internalGetMutableData().getMutableMap();
+      }
+
+      /**
+       * <code>map&lt;string, string&gt; data = 1;</code>
+       */
+      public Builder putData(java.lang.String key, java.lang.String value) {
+        if (key == null) {
+          throw new java.lang.NullPointerException();
+        }
+        if (value == null) {
+          throw new java.lang.NullPointerException();
+        }
+        internalGetMutableData().getMutableMap().put(key, value);
+        return this;
+      }
+
+      /**
+       * <code>map&lt;string, string&gt; data = 1;</code>
+       */
+
+      public Builder putAllData(java.util.Map<java.lang.String, java.lang.String> values) {
+        internalGetMutableData().getMutableMap().putAll(values);
+        return this;
+      }
+
+      @java.lang.Override
+      public final Builder setUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.setUnknownFields(unknownFields);
+      }
+
+      @java.lang.Override
+      public final Builder mergeUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.mergeUnknownFields(unknownFields);
+      }
+
+
+      // @@protoc_insertion_point(builder_scope:io.holoinsight.server.query.grpc.CommonMapTypeData)
+    }
+
+    // @@protoc_insertion_point(class_scope:io.holoinsight.server.query.grpc.CommonMapTypeData)
+    private static final io.holoinsight.server.query.grpc.QueryProto.CommonMapTypeData DEFAULT_INSTANCE;
+    static {
+      DEFAULT_INSTANCE = new io.holoinsight.server.query.grpc.QueryProto.CommonMapTypeData();
+    }
+
+    public static io.holoinsight.server.query.grpc.QueryProto.CommonMapTypeData getDefaultInstance() {
+      return DEFAULT_INSTANCE;
+    }
+
+    private static final com.google.protobuf.Parser<CommonMapTypeData> PARSER =
+        new com.google.protobuf.AbstractParser<CommonMapTypeData>() {
+          @java.lang.Override
+          public CommonMapTypeData parsePartialFrom(com.google.protobuf.CodedInputStream input,
+              com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+              throws com.google.protobuf.InvalidProtocolBufferException {
+            return new CommonMapTypeData(input, extensionRegistry);
+          }
+        };
+
+    public static com.google.protobuf.Parser<CommonMapTypeData> parser() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<CommonMapTypeData> getParserForType() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public io.holoinsight.server.query.grpc.QueryProto.CommonMapTypeData getDefaultInstanceForType() {
+      return DEFAULT_INSTANCE;
+    }
+
+  }
+
+  public interface CommonMapTypeDataListOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:io.holoinsight.server.query.grpc.CommonMapTypeDataList)
+      com.google.protobuf.MessageOrBuilder {
+
+    /**
+     * <code>repeated .io.holoinsight.server.query.grpc.CommonMapTypeData commonMapTypeData = 1;</code>
+     */
+    java.util.List<io.holoinsight.server.query.grpc.QueryProto.CommonMapTypeData> getCommonMapTypeDataList();
+
+    /**
+     * <code>repeated .io.holoinsight.server.query.grpc.CommonMapTypeData commonMapTypeData = 1;</code>
+     */
+    io.holoinsight.server.query.grpc.QueryProto.CommonMapTypeData getCommonMapTypeData(int index);
+
+    /**
+     * <code>repeated .io.holoinsight.server.query.grpc.CommonMapTypeData commonMapTypeData = 1;</code>
+     */
+    int getCommonMapTypeDataCount();
+
+    /**
+     * <code>repeated .io.holoinsight.server.query.grpc.CommonMapTypeData commonMapTypeData = 1;</code>
+     */
+    java.util.List<? extends io.holoinsight.server.query.grpc.QueryProto.CommonMapTypeDataOrBuilder> getCommonMapTypeDataOrBuilderList();
+
+    /**
+     * <code>repeated .io.holoinsight.server.query.grpc.CommonMapTypeData commonMapTypeData = 1;</code>
+     */
+    io.holoinsight.server.query.grpc.QueryProto.CommonMapTypeDataOrBuilder getCommonMapTypeDataOrBuilder(
+        int index);
+  }
+  /**
+   * Protobuf type {@code io.holoinsight.server.query.grpc.CommonMapTypeDataList}
+   */
+  public static final class CommonMapTypeDataList extends com.google.protobuf.GeneratedMessageV3
+      implements
+      // @@protoc_insertion_point(message_implements:io.holoinsight.server.query.grpc.CommonMapTypeDataList)
+      CommonMapTypeDataListOrBuilder {
+    private static final long serialVersionUID = 0L;
+
+    // Use CommonMapTypeDataList.newBuilder() to construct.
+    private CommonMapTypeDataList(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+      super(builder);
+    }
+
+    private CommonMapTypeDataList() {
+      commonMapTypeData_ = java.util.Collections.emptyList();
+    }
+
+    @java.lang.Override
+    @SuppressWarnings({"unused"})
+    protected java.lang.Object newInstance(UnusedPrivateParameter unused) {
+      return new CommonMapTypeDataList();
+    }
+
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet getUnknownFields() {
+      return this.unknownFields;
+    }
+
+    private CommonMapTypeDataList(com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      this();
+      if (extensionRegistry == null) {
+        throw new java.lang.NullPointerException();
+      }
+      int mutable_bitField0_ = 0;
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            case 10: {
+              if (!((mutable_bitField0_ & 0x00000001) != 0)) {
+                commonMapTypeData_ =
+                    new java.util.ArrayList<io.holoinsight.server.query.grpc.QueryProto.CommonMapTypeData>();
+                mutable_bitField0_ |= 0x00000001;
+              }
+              commonMapTypeData_.add(input.readMessage(
+                  io.holoinsight.server.query.grpc.QueryProto.CommonMapTypeData.parser(),
+                  extensionRegistry));
+              break;
+            }
+            default: {
+              if (!parseUnknownField(input, unknownFields, extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(e).setUnfinishedMessage(this);
+      } finally {
+        if (((mutable_bitField0_ & 0x00000001) != 0)) {
+          commonMapTypeData_ = java.util.Collections.unmodifiableList(commonMapTypeData_);
+        }
+        this.unknownFields = unknownFields.build();
+        makeExtensionsImmutable();
+      }
+    }
+
+    public static final com.google.protobuf.Descriptors.Descriptor getDescriptor() {
+      return io.holoinsight.server.query.grpc.QueryProto.internal_static_io_holoinsight_server_query_grpc_CommonMapTypeDataList_descriptor;
+    }
+
+    @java.lang.Override
+    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable internalGetFieldAccessorTable() {
+      return io.holoinsight.server.query.grpc.QueryProto.internal_static_io_holoinsight_server_query_grpc_CommonMapTypeDataList_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              io.holoinsight.server.query.grpc.QueryProto.CommonMapTypeDataList.class,
+              io.holoinsight.server.query.grpc.QueryProto.CommonMapTypeDataList.Builder.class);
+    }
+
+    public static final int COMMONMAPTYPEDATA_FIELD_NUMBER = 1;
+    private java.util.List<io.holoinsight.server.query.grpc.QueryProto.CommonMapTypeData> commonMapTypeData_;
+
+    /**
+     * <code>repeated .io.holoinsight.server.query.grpc.CommonMapTypeData commonMapTypeData = 1;</code>
+     */
+    @java.lang.Override
+    public java.util.List<io.holoinsight.server.query.grpc.QueryProto.CommonMapTypeData> getCommonMapTypeDataList() {
+      return commonMapTypeData_;
+    }
+
+    /**
+     * <code>repeated .io.holoinsight.server.query.grpc.CommonMapTypeData commonMapTypeData = 1;</code>
+     */
+    @java.lang.Override
+    public java.util.List<? extends io.holoinsight.server.query.grpc.QueryProto.CommonMapTypeDataOrBuilder> getCommonMapTypeDataOrBuilderList() {
+      return commonMapTypeData_;
+    }
+
+    /**
+     * <code>repeated .io.holoinsight.server.query.grpc.CommonMapTypeData commonMapTypeData = 1;</code>
+     */
+    @java.lang.Override
+    public int getCommonMapTypeDataCount() {
+      return commonMapTypeData_.size();
+    }
+
+    /**
+     * <code>repeated .io.holoinsight.server.query.grpc.CommonMapTypeData commonMapTypeData = 1;</code>
+     */
+    @java.lang.Override
+    public io.holoinsight.server.query.grpc.QueryProto.CommonMapTypeData getCommonMapTypeData(
+        int index) {
+      return commonMapTypeData_.get(index);
+    }
+
+    /**
+     * <code>repeated .io.holoinsight.server.query.grpc.CommonMapTypeData commonMapTypeData = 1;</code>
+     */
+    @java.lang.Override
+    public io.holoinsight.server.query.grpc.QueryProto.CommonMapTypeDataOrBuilder getCommonMapTypeDataOrBuilder(
+        int index) {
+      return commonMapTypeData_.get(index);
+    }
+
+    private byte memoizedIsInitialized = -1;
+
+    @java.lang.Override
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized == 1)
+        return true;
+      if (isInitialized == 0)
+        return false;
+
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    @java.lang.Override
+    public void writeTo(com.google.protobuf.CodedOutputStream output) throws java.io.IOException {
+      for (int i = 0; i < commonMapTypeData_.size(); i++) {
+        output.writeMessage(1, commonMapTypeData_.get(i));
+      }
+      unknownFields.writeTo(output);
+    }
+
+    @java.lang.Override
+    public int getSerializedSize() {
+      int size = memoizedSize;
+      if (size != -1)
+        return size;
+
+      size = 0;
+      for (int i = 0; i < commonMapTypeData_.size(); i++) {
+        size +=
+            com.google.protobuf.CodedOutputStream.computeMessageSize(1, commonMapTypeData_.get(i));
+      }
+      size += unknownFields.getSerializedSize();
+      memoizedSize = size;
+      return size;
+    }
+
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
+      if (obj == this) {
+        return true;
+      }
+      if (!(obj instanceof io.holoinsight.server.query.grpc.QueryProto.CommonMapTypeDataList)) {
+        return super.equals(obj);
+      }
+      io.holoinsight.server.query.grpc.QueryProto.CommonMapTypeDataList other =
+          (io.holoinsight.server.query.grpc.QueryProto.CommonMapTypeDataList) obj;
+
+      if (!getCommonMapTypeDataList().equals(other.getCommonMapTypeDataList()))
+        return false;
+      if (!unknownFields.equals(other.unknownFields))
+        return false;
+      return true;
+    }
+
+    @java.lang.Override
+    public int hashCode() {
+      if (memoizedHashCode != 0) {
+        return memoizedHashCode;
+      }
+      int hash = 41;
+      hash = (19 * hash) + getDescriptor().hashCode();
+      if (getCommonMapTypeDataCount() > 0) {
+        hash = (37 * hash) + COMMONMAPTYPEDATA_FIELD_NUMBER;
+        hash = (53 * hash) + getCommonMapTypeDataList().hashCode();
+      }
+      hash = (29 * hash) + unknownFields.hashCode();
+      memoizedHashCode = hash;
+      return hash;
+    }
+
+    public static io.holoinsight.server.query.grpc.QueryProto.CommonMapTypeDataList parseFrom(
+        java.nio.ByteBuffer data) throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+
+    public static io.holoinsight.server.query.grpc.QueryProto.CommonMapTypeDataList parseFrom(
+        java.nio.ByteBuffer data, com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+
+    public static io.holoinsight.server.query.grpc.QueryProto.CommonMapTypeDataList parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+
+    public static io.holoinsight.server.query.grpc.QueryProto.CommonMapTypeDataList parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+
+    public static io.holoinsight.server.query.grpc.QueryProto.CommonMapTypeDataList parseFrom(
+        byte[] data) throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+
+    public static io.holoinsight.server.query.grpc.QueryProto.CommonMapTypeDataList parseFrom(
+        byte[] data, com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+
+    public static io.holoinsight.server.query.grpc.QueryProto.CommonMapTypeDataList parseFrom(
+        java.io.InputStream input) throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3.parseWithIOException(PARSER, input);
+    }
+
+    public static io.holoinsight.server.query.grpc.QueryProto.CommonMapTypeDataList parseFrom(
+        java.io.InputStream input, com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3.parseWithIOException(PARSER, input,
+          extensionRegistry);
+    }
+
+    public static io.holoinsight.server.query.grpc.QueryProto.CommonMapTypeDataList parseDelimitedFrom(
+        java.io.InputStream input) throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3.parseDelimitedWithIOException(PARSER, input);
+    }
+
+    public static io.holoinsight.server.query.grpc.QueryProto.CommonMapTypeDataList parseDelimitedFrom(
+        java.io.InputStream input, com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3.parseDelimitedWithIOException(PARSER, input,
+          extensionRegistry);
+    }
+
+    public static io.holoinsight.server.query.grpc.QueryProto.CommonMapTypeDataList parseFrom(
+        com.google.protobuf.CodedInputStream input) throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3.parseWithIOException(PARSER, input);
+    }
+
+    public static io.holoinsight.server.query.grpc.QueryProto.CommonMapTypeDataList parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry) throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3.parseWithIOException(PARSER, input,
+          extensionRegistry);
+    }
+
+    @java.lang.Override
+    public Builder newBuilderForType() {
+      return newBuilder();
+    }
+
+    public static Builder newBuilder() {
+      return DEFAULT_INSTANCE.toBuilder();
+    }
+
+    public static Builder newBuilder(
+        io.holoinsight.server.query.grpc.QueryProto.CommonMapTypeDataList prototype) {
+      return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+    }
+
+    @java.lang.Override
+    public Builder toBuilder() {
+      return this == DEFAULT_INSTANCE ? new Builder() : new Builder().mergeFrom(this);
+    }
+
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+
+    /**
+     * Protobuf type {@code io.holoinsight.server.query.grpc.CommonMapTypeDataList}
+     */
+    public static final class Builder
+        extends com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
+        // @@protoc_insertion_point(builder_implements:io.holoinsight.server.query.grpc.CommonMapTypeDataList)
+        io.holoinsight.server.query.grpc.QueryProto.CommonMapTypeDataListOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor getDescriptor() {
+        return io.holoinsight.server.query.grpc.QueryProto.internal_static_io_holoinsight_server_query_grpc_CommonMapTypeDataList_descriptor;
+      }
+
+      @java.lang.Override
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable internalGetFieldAccessorTable() {
+        return io.holoinsight.server.query.grpc.QueryProto.internal_static_io_holoinsight_server_query_grpc_CommonMapTypeDataList_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                io.holoinsight.server.query.grpc.QueryProto.CommonMapTypeDataList.class,
+                io.holoinsight.server.query.grpc.QueryProto.CommonMapTypeDataList.Builder.class);
+      }
+
+      // Construct using
+      // io.holoinsight.server.query.grpc.QueryProto.CommonMapTypeDataList.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+
+      private Builder(com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders) {
+          getCommonMapTypeDataFieldBuilder();
+        }
+      }
+
+      @java.lang.Override
+      public Builder clear() {
+        super.clear();
+        if (commonMapTypeDataBuilder_ == null) {
+          commonMapTypeData_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00000001);
+        } else {
+          commonMapTypeDataBuilder_.clear();
+        }
+        return this;
+      }
+
+      @java.lang.Override
+      public com.google.protobuf.Descriptors.Descriptor getDescriptorForType() {
+        return io.holoinsight.server.query.grpc.QueryProto.internal_static_io_holoinsight_server_query_grpc_CommonMapTypeDataList_descriptor;
+      }
+
+      @java.lang.Override
+      public io.holoinsight.server.query.grpc.QueryProto.CommonMapTypeDataList getDefaultInstanceForType() {
+        return io.holoinsight.server.query.grpc.QueryProto.CommonMapTypeDataList
+            .getDefaultInstance();
+      }
+
+      @java.lang.Override
+      public io.holoinsight.server.query.grpc.QueryProto.CommonMapTypeDataList build() {
+        io.holoinsight.server.query.grpc.QueryProto.CommonMapTypeDataList result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      @java.lang.Override
+      public io.holoinsight.server.query.grpc.QueryProto.CommonMapTypeDataList buildPartial() {
+        io.holoinsight.server.query.grpc.QueryProto.CommonMapTypeDataList result =
+            new io.holoinsight.server.query.grpc.QueryProto.CommonMapTypeDataList(this);
+        int from_bitField0_ = bitField0_;
+        if (commonMapTypeDataBuilder_ == null) {
+          if (((bitField0_ & 0x00000001) != 0)) {
+            commonMapTypeData_ = java.util.Collections.unmodifiableList(commonMapTypeData_);
+            bitField0_ = (bitField0_ & ~0x00000001);
+          }
+          result.commonMapTypeData_ = commonMapTypeData_;
+        } else {
+          result.commonMapTypeData_ = commonMapTypeDataBuilder_.build();
+        }
+        onBuilt();
+        return result;
+      }
+
+      @java.lang.Override
+      public Builder clone() {
+        return super.clone();
+      }
+
+      @java.lang.Override
+      public Builder setField(com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.setField(field, value);
+      }
+
+      @java.lang.Override
+      public Builder clearField(com.google.protobuf.Descriptors.FieldDescriptor field) {
+        return super.clearField(field);
+      }
+
+      @java.lang.Override
+      public Builder clearOneof(com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+        return super.clearOneof(oneof);
+      }
+
+      @java.lang.Override
+      public Builder setRepeatedField(com.google.protobuf.Descriptors.FieldDescriptor field,
+          int index, java.lang.Object value) {
+        return super.setRepeatedField(field, index, value);
+      }
+
+      @java.lang.Override
+      public Builder addRepeatedField(com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.addRepeatedField(field, value);
+      }
+
+      @java.lang.Override
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof io.holoinsight.server.query.grpc.QueryProto.CommonMapTypeDataList) {
+          return mergeFrom(
+              (io.holoinsight.server.query.grpc.QueryProto.CommonMapTypeDataList) other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(
+          io.holoinsight.server.query.grpc.QueryProto.CommonMapTypeDataList other) {
+        if (other == io.holoinsight.server.query.grpc.QueryProto.CommonMapTypeDataList
+            .getDefaultInstance())
+          return this;
+        if (commonMapTypeDataBuilder_ == null) {
+          if (!other.commonMapTypeData_.isEmpty()) {
+            if (commonMapTypeData_.isEmpty()) {
+              commonMapTypeData_ = other.commonMapTypeData_;
+              bitField0_ = (bitField0_ & ~0x00000001);
+            } else {
+              ensureCommonMapTypeDataIsMutable();
+              commonMapTypeData_.addAll(other.commonMapTypeData_);
+            }
+            onChanged();
+          }
+        } else {
+          if (!other.commonMapTypeData_.isEmpty()) {
+            if (commonMapTypeDataBuilder_.isEmpty()) {
+              commonMapTypeDataBuilder_.dispose();
+              commonMapTypeDataBuilder_ = null;
+              commonMapTypeData_ = other.commonMapTypeData_;
+              bitField0_ = (bitField0_ & ~0x00000001);
+              commonMapTypeDataBuilder_ =
+                  com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders
+                      ? getCommonMapTypeDataFieldBuilder()
+                      : null;
+            } else {
+              commonMapTypeDataBuilder_.addAllMessages(other.commonMapTypeData_);
+            }
+          }
+        }
+        this.mergeUnknownFields(other.unknownFields);
+        onChanged();
+        return this;
+      }
+
+      @java.lang.Override
+      public final boolean isInitialized() {
+        return true;
+      }
+
+      @java.lang.Override
+      public Builder mergeFrom(com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry) throws java.io.IOException {
+        io.holoinsight.server.query.grpc.QueryProto.CommonMapTypeDataList parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (io.holoinsight.server.query.grpc.QueryProto.CommonMapTypeDataList) e
+              .getUnfinishedMessage();
+          throw e.unwrapIOException();
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
+          }
+        }
+        return this;
+      }
+
+      private int bitField0_;
+
+      private java.util.List<io.holoinsight.server.query.grpc.QueryProto.CommonMapTypeData> commonMapTypeData_ =
+          java.util.Collections.emptyList();
+
+      private void ensureCommonMapTypeDataIsMutable() {
+        if (!((bitField0_ & 0x00000001) != 0)) {
+          commonMapTypeData_ =
+              new java.util.ArrayList<io.holoinsight.server.query.grpc.QueryProto.CommonMapTypeData>(
+                  commonMapTypeData_);
+          bitField0_ |= 0x00000001;
+        }
+      }
+
+      private com.google.protobuf.RepeatedFieldBuilderV3<io.holoinsight.server.query.grpc.QueryProto.CommonMapTypeData, io.holoinsight.server.query.grpc.QueryProto.CommonMapTypeData.Builder, io.holoinsight.server.query.grpc.QueryProto.CommonMapTypeDataOrBuilder> commonMapTypeDataBuilder_;
+
+      /**
+       * <code>repeated .io.holoinsight.server.query.grpc.CommonMapTypeData commonMapTypeData = 1;</code>
+       */
+      public java.util.List<io.holoinsight.server.query.grpc.QueryProto.CommonMapTypeData> getCommonMapTypeDataList() {
+        if (commonMapTypeDataBuilder_ == null) {
+          return java.util.Collections.unmodifiableList(commonMapTypeData_);
+        } else {
+          return commonMapTypeDataBuilder_.getMessageList();
+        }
+      }
+
+      /**
+       * <code>repeated .io.holoinsight.server.query.grpc.CommonMapTypeData commonMapTypeData = 1;</code>
+       */
+      public int getCommonMapTypeDataCount() {
+        if (commonMapTypeDataBuilder_ == null) {
+          return commonMapTypeData_.size();
+        } else {
+          return commonMapTypeDataBuilder_.getCount();
+        }
+      }
+
+      /**
+       * <code>repeated .io.holoinsight.server.query.grpc.CommonMapTypeData commonMapTypeData = 1;</code>
+       */
+      public io.holoinsight.server.query.grpc.QueryProto.CommonMapTypeData getCommonMapTypeData(
+          int index) {
+        if (commonMapTypeDataBuilder_ == null) {
+          return commonMapTypeData_.get(index);
+        } else {
+          return commonMapTypeDataBuilder_.getMessage(index);
+        }
+      }
+
+      /**
+       * <code>repeated .io.holoinsight.server.query.grpc.CommonMapTypeData commonMapTypeData = 1;</code>
+       */
+      public Builder setCommonMapTypeData(int index,
+          io.holoinsight.server.query.grpc.QueryProto.CommonMapTypeData value) {
+        if (commonMapTypeDataBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureCommonMapTypeDataIsMutable();
+          commonMapTypeData_.set(index, value);
+          onChanged();
+        } else {
+          commonMapTypeDataBuilder_.setMessage(index, value);
+        }
+        return this;
+      }
+
+      /**
+       * <code>repeated .io.holoinsight.server.query.grpc.CommonMapTypeData commonMapTypeData = 1;</code>
+       */
+      public Builder setCommonMapTypeData(int index,
+          io.holoinsight.server.query.grpc.QueryProto.CommonMapTypeData.Builder builderForValue) {
+        if (commonMapTypeDataBuilder_ == null) {
+          ensureCommonMapTypeDataIsMutable();
+          commonMapTypeData_.set(index, builderForValue.build());
+          onChanged();
+        } else {
+          commonMapTypeDataBuilder_.setMessage(index, builderForValue.build());
+        }
+        return this;
+      }
+
+      /**
+       * <code>repeated .io.holoinsight.server.query.grpc.CommonMapTypeData commonMapTypeData = 1;</code>
+       */
+      public Builder addCommonMapTypeData(
+          io.holoinsight.server.query.grpc.QueryProto.CommonMapTypeData value) {
+        if (commonMapTypeDataBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureCommonMapTypeDataIsMutable();
+          commonMapTypeData_.add(value);
+          onChanged();
+        } else {
+          commonMapTypeDataBuilder_.addMessage(value);
+        }
+        return this;
+      }
+
+      /**
+       * <code>repeated .io.holoinsight.server.query.grpc.CommonMapTypeData commonMapTypeData = 1;</code>
+       */
+      public Builder addCommonMapTypeData(int index,
+          io.holoinsight.server.query.grpc.QueryProto.CommonMapTypeData value) {
+        if (commonMapTypeDataBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureCommonMapTypeDataIsMutable();
+          commonMapTypeData_.add(index, value);
+          onChanged();
+        } else {
+          commonMapTypeDataBuilder_.addMessage(index, value);
+        }
+        return this;
+      }
+
+      /**
+       * <code>repeated .io.holoinsight.server.query.grpc.CommonMapTypeData commonMapTypeData = 1;</code>
+       */
+      public Builder addCommonMapTypeData(
+          io.holoinsight.server.query.grpc.QueryProto.CommonMapTypeData.Builder builderForValue) {
+        if (commonMapTypeDataBuilder_ == null) {
+          ensureCommonMapTypeDataIsMutable();
+          commonMapTypeData_.add(builderForValue.build());
+          onChanged();
+        } else {
+          commonMapTypeDataBuilder_.addMessage(builderForValue.build());
+        }
+        return this;
+      }
+
+      /**
+       * <code>repeated .io.holoinsight.server.query.grpc.CommonMapTypeData commonMapTypeData = 1;</code>
+       */
+      public Builder addCommonMapTypeData(int index,
+          io.holoinsight.server.query.grpc.QueryProto.CommonMapTypeData.Builder builderForValue) {
+        if (commonMapTypeDataBuilder_ == null) {
+          ensureCommonMapTypeDataIsMutable();
+          commonMapTypeData_.add(index, builderForValue.build());
+          onChanged();
+        } else {
+          commonMapTypeDataBuilder_.addMessage(index, builderForValue.build());
+        }
+        return this;
+      }
+
+      /**
+       * <code>repeated .io.holoinsight.server.query.grpc.CommonMapTypeData commonMapTypeData = 1;</code>
+       */
+      public Builder addAllCommonMapTypeData(
+          java.lang.Iterable<? extends io.holoinsight.server.query.grpc.QueryProto.CommonMapTypeData> values) {
+        if (commonMapTypeDataBuilder_ == null) {
+          ensureCommonMapTypeDataIsMutable();
+          com.google.protobuf.AbstractMessageLite.Builder.addAll(values, commonMapTypeData_);
+          onChanged();
+        } else {
+          commonMapTypeDataBuilder_.addAllMessages(values);
+        }
+        return this;
+      }
+
+      /**
+       * <code>repeated .io.holoinsight.server.query.grpc.CommonMapTypeData commonMapTypeData = 1;</code>
+       */
+      public Builder clearCommonMapTypeData() {
+        if (commonMapTypeDataBuilder_ == null) {
+          commonMapTypeData_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00000001);
+          onChanged();
+        } else {
+          commonMapTypeDataBuilder_.clear();
+        }
+        return this;
+      }
+
+      /**
+       * <code>repeated .io.holoinsight.server.query.grpc.CommonMapTypeData commonMapTypeData = 1;</code>
+       */
+      public Builder removeCommonMapTypeData(int index) {
+        if (commonMapTypeDataBuilder_ == null) {
+          ensureCommonMapTypeDataIsMutable();
+          commonMapTypeData_.remove(index);
+          onChanged();
+        } else {
+          commonMapTypeDataBuilder_.remove(index);
+        }
+        return this;
+      }
+
+      /**
+       * <code>repeated .io.holoinsight.server.query.grpc.CommonMapTypeData commonMapTypeData = 1;</code>
+       */
+      public io.holoinsight.server.query.grpc.QueryProto.CommonMapTypeData.Builder getCommonMapTypeDataBuilder(
+          int index) {
+        return getCommonMapTypeDataFieldBuilder().getBuilder(index);
+      }
+
+      /**
+       * <code>repeated .io.holoinsight.server.query.grpc.CommonMapTypeData commonMapTypeData = 1;</code>
+       */
+      public io.holoinsight.server.query.grpc.QueryProto.CommonMapTypeDataOrBuilder getCommonMapTypeDataOrBuilder(
+          int index) {
+        if (commonMapTypeDataBuilder_ == null) {
+          return commonMapTypeData_.get(index);
+        } else {
+          return commonMapTypeDataBuilder_.getMessageOrBuilder(index);
+        }
+      }
+
+      /**
+       * <code>repeated .io.holoinsight.server.query.grpc.CommonMapTypeData commonMapTypeData = 1;</code>
+       */
+      public java.util.List<? extends io.holoinsight.server.query.grpc.QueryProto.CommonMapTypeDataOrBuilder> getCommonMapTypeDataOrBuilderList() {
+        if (commonMapTypeDataBuilder_ != null) {
+          return commonMapTypeDataBuilder_.getMessageOrBuilderList();
+        } else {
+          return java.util.Collections.unmodifiableList(commonMapTypeData_);
+        }
+      }
+
+      /**
+       * <code>repeated .io.holoinsight.server.query.grpc.CommonMapTypeData commonMapTypeData = 1;</code>
+       */
+      public io.holoinsight.server.query.grpc.QueryProto.CommonMapTypeData.Builder addCommonMapTypeDataBuilder() {
+        return getCommonMapTypeDataFieldBuilder().addBuilder(
+            io.holoinsight.server.query.grpc.QueryProto.CommonMapTypeData.getDefaultInstance());
+      }
+
+      /**
+       * <code>repeated .io.holoinsight.server.query.grpc.CommonMapTypeData commonMapTypeData = 1;</code>
+       */
+      public io.holoinsight.server.query.grpc.QueryProto.CommonMapTypeData.Builder addCommonMapTypeDataBuilder(
+          int index) {
+        return getCommonMapTypeDataFieldBuilder().addBuilder(index,
+            io.holoinsight.server.query.grpc.QueryProto.CommonMapTypeData.getDefaultInstance());
+      }
+
+      /**
+       * <code>repeated .io.holoinsight.server.query.grpc.CommonMapTypeData commonMapTypeData = 1;</code>
+       */
+      public java.util.List<io.holoinsight.server.query.grpc.QueryProto.CommonMapTypeData.Builder> getCommonMapTypeDataBuilderList() {
+        return getCommonMapTypeDataFieldBuilder().getBuilderList();
+      }
+
+      private com.google.protobuf.RepeatedFieldBuilderV3<io.holoinsight.server.query.grpc.QueryProto.CommonMapTypeData, io.holoinsight.server.query.grpc.QueryProto.CommonMapTypeData.Builder, io.holoinsight.server.query.grpc.QueryProto.CommonMapTypeDataOrBuilder> getCommonMapTypeDataFieldBuilder() {
+        if (commonMapTypeDataBuilder_ == null) {
+          commonMapTypeDataBuilder_ =
+              new com.google.protobuf.RepeatedFieldBuilderV3<io.holoinsight.server.query.grpc.QueryProto.CommonMapTypeData, io.holoinsight.server.query.grpc.QueryProto.CommonMapTypeData.Builder, io.holoinsight.server.query.grpc.QueryProto.CommonMapTypeDataOrBuilder>(
+                  commonMapTypeData_, ((bitField0_ & 0x00000001) != 0), getParentForChildren(),
+                  isClean());
+          commonMapTypeData_ = null;
+        }
+        return commonMapTypeDataBuilder_;
+      }
+
+      @java.lang.Override
+      public final Builder setUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.setUnknownFields(unknownFields);
+      }
+
+      @java.lang.Override
+      public final Builder mergeUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.mergeUnknownFields(unknownFields);
+      }
+
+
+      // @@protoc_insertion_point(builder_scope:io.holoinsight.server.query.grpc.CommonMapTypeDataList)
+    }
+
+    // @@protoc_insertion_point(class_scope:io.holoinsight.server.query.grpc.CommonMapTypeDataList)
+    private static final io.holoinsight.server.query.grpc.QueryProto.CommonMapTypeDataList DEFAULT_INSTANCE;
+    static {
+      DEFAULT_INSTANCE = new io.holoinsight.server.query.grpc.QueryProto.CommonMapTypeDataList();
+    }
+
+    public static io.holoinsight.server.query.grpc.QueryProto.CommonMapTypeDataList getDefaultInstance() {
+      return DEFAULT_INSTANCE;
+    }
+
+    private static final com.google.protobuf.Parser<CommonMapTypeDataList> PARSER =
+        new com.google.protobuf.AbstractParser<CommonMapTypeDataList>() {
+          @java.lang.Override
+          public CommonMapTypeDataList parsePartialFrom(com.google.protobuf.CodedInputStream input,
+              com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+              throws com.google.protobuf.InvalidProtocolBufferException {
+            return new CommonMapTypeDataList(input, extensionRegistry);
+          }
+        };
+
+    public static com.google.protobuf.Parser<CommonMapTypeDataList> parser() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<CommonMapTypeDataList> getParserForType() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public io.holoinsight.server.query.grpc.QueryProto.CommonMapTypeDataList getDefaultInstanceForType() {
+      return DEFAULT_INSTANCE;
+    }
+
+  }
+
   private static final com.google.protobuf.Descriptors.Descriptor internal_static_io_holoinsight_server_query_grpc_QueryRequest_descriptor;
   private static final com.google.protobuf.GeneratedMessageV3.FieldAccessorTable internal_static_io_holoinsight_server_query_grpc_QueryRequest_fieldAccessorTable;
   private static final com.google.protobuf.Descriptors.Descriptor internal_static_io_holoinsight_server_query_grpc_QueryMetricsRequest_descriptor;
@@ -46796,6 +48373,12 @@ public final class QueryProto {
   private static final com.google.protobuf.GeneratedMessageV3.FieldAccessorTable internal_static_io_holoinsight_server_query_grpc_StatisticData_DatasEntry_fieldAccessorTable;
   private static final com.google.protobuf.Descriptors.Descriptor internal_static_io_holoinsight_server_query_grpc_StatisticDataList_descriptor;
   private static final com.google.protobuf.GeneratedMessageV3.FieldAccessorTable internal_static_io_holoinsight_server_query_grpc_StatisticDataList_fieldAccessorTable;
+  private static final com.google.protobuf.Descriptors.Descriptor internal_static_io_holoinsight_server_query_grpc_CommonMapTypeData_descriptor;
+  private static final com.google.protobuf.GeneratedMessageV3.FieldAccessorTable internal_static_io_holoinsight_server_query_grpc_CommonMapTypeData_fieldAccessorTable;
+  private static final com.google.protobuf.Descriptors.Descriptor internal_static_io_holoinsight_server_query_grpc_CommonMapTypeData_DataEntry_descriptor;
+  private static final com.google.protobuf.GeneratedMessageV3.FieldAccessorTable internal_static_io_holoinsight_server_query_grpc_CommonMapTypeData_DataEntry_fieldAccessorTable;
+  private static final com.google.protobuf.Descriptors.Descriptor internal_static_io_holoinsight_server_query_grpc_CommonMapTypeDataList_descriptor;
+  private static final com.google.protobuf.GeneratedMessageV3.FieldAccessorTable internal_static_io_holoinsight_server_query_grpc_CommonMapTypeDataList_fieldAccessorTable;
 
   public static com.google.protobuf.Descriptors.FileDescriptor getDescriptor() {
     return descriptor;
@@ -46804,200 +48387,211 @@ public final class QueryProto {
   private static com.google.protobuf.Descriptors.FileDescriptor descriptor;
   static {
     java.lang.String[] descriptorData = {"\n\021query_proto.proto\022 io.holoinsight.serv"
-        + "er.query.grpc\"\317\001\n\014QueryRequest\022\016\n\006tenant"
-        + "\030\001 \001(\t\022\022\n\005query\030\002 \001(\tH\000\210\001\001\022A\n\013datasource"
-        + "s\030\003 \003(\0132,.io.holoinsight.server.query.gr"
-        + "pc.Datasource\022\027\n\ndownsample\030\004 \001(\tH\001\210\001\001\022\027"
-        + "\n\nfillPolicy\030\005 \001(\tH\002\210\001\001B\010\n\006_queryB\r\n\013_do"
-        + "wnsampleB\r\n\013_fillPolicy\"T\n\023QueryMetricsR"
-        + "equest\022\016\n\006tenant\030\001 \001(\t\022\014\n\004name\030\002 \001(\t\022\020\n\010"
-        + "explicit\030\003 \001(\010\022\r\n\005limit\030\004 \001(\005\"\352\002\n\nDataso"
-        + "urce\022\021\n\004name\030\001 \001(\tH\000\210\001\001\022\r\n\005start\030\002 \001(\003\022\013"
-        + "\n\003end\030\003 \001(\003\022\016\n\006metric\030\004 \001(\t\022>\n\007filters\030\005"
-        + " \003(\0132-.io.holoinsight.server.query.grpc."
-        + "QueryFilter\022\022\n\naggregator\030\006 \001(\t\022\027\n\ndowns"
-        + "ample\030\007 \001(\tH\001\210\001\001\022F\n\rslidingWindow\030\010 \001(\0132"
-        + "/.io.holoinsight.server.query.grpc.Slidi"
-        + "ngWindow\022\017\n\007groupBy\030\t \003(\t\022\027\n\nfillPolicy\030"
-        + "\n \001(\tH\002\210\001\001\022\027\n\017apmMaterialized\030\013 \001(\010B\007\n\005_"
-        + "nameB\r\n\013_downsampleB\r\n\013_fillPolicy\"5\n\rSl"
-        + "idingWindow\022\020\n\010windowMs\030\001 \001(\003\022\022\n\naggrega"
-        + "tor\030\002 \001(\t\"8\n\013QueryFilter\022\014\n\004type\030\001 \001(\t\022\014"
-        + "\n\004name\030\002 \001(\t\022\r\n\005value\030\003 \001(\t\"J\n\rQueryResp"
-        + "onse\0229\n\007results\030\001 \003(\0132(.io.holoinsight.s"
-        + "erver.query.grpc.Result\"\300\001\n\006Result\022\016\n\006me"
-        + "tric\030\001 \001(\t\022@\n\004tags\030\002 \003(\01322.io.holoinsigh"
-        + "t.server.query.grpc.Result.TagsEntry\0227\n\006"
-        + "points\030\003 \003(\0132\'.io.holoinsight.server.que"
-        + "ry.grpc.Point\032+\n\tTagsEntry\022\013\n\003key\030\001 \001(\t\022"
-        + "\r\n\005value\030\002 \001(\t:\0028\001\";\n\005Point\022\021\n\ttimestamp"
-        + "\030\001 \001(\003\022\r\n\005value\030\002 \001(\001\022\020\n\010strValue\030\003 \001(\t\""
-        + "T\n\023QuerySchemaResponse\022=\n\007results\030\001 \003(\0132"
-        + ",.io.holoinsight.server.query.grpc.KeysR"
-        + "esult\"*\n\nKeysResult\022\016\n\006metric\030\001 \001(\t\022\014\n\004k"
-        + "eys\030\002 \003(\t\"W\n\024QueryMetricsResponse\022?\n\007res"
-        + "ults\030\001 \003(\0132..io.holoinsight.server.query"
-        + ".grpc.MetricResult\"\034\n\014MetricResult\022\014\n\004na"
-        + "me\030\001 \001(\t\"`\n\021PqlInstantRequest\022\016\n\006tenant\030"
-        + "\001 \001(\t\022\r\n\005query\030\002 \001(\t\022\014\n\004time\030\003 \001(\003\022\017\n\007ti"
-        + "meout\030\004 \001(\t\022\r\n\005delta\030\005 \001(\t\"\214\001\n\017PqlRangeR"
-        + "equest\022\016\n\006tenant\030\001 \001(\t\022\r\n\005query\030\002 \001(\t\022\r\n"
-        + "\005start\030\003 \001(\003\022\013\n\003end\030\004 \001(\003\022\014\n\004step\030\005 \001(\003\022"
-        + "\017\n\007timeout\030\006 \001(\t\022\r\n\005delta\030\007 \001(\t\022\020\n\010fillZ"
-        + "ero\030\010 \001(\010\"N\n\020StatisticRequest\022\016\n\006tenant\030"
-        + "\001 \001(\t\022\r\n\005start\030\002 \001(\003\022\013\n\003end\030\003 \001(\003\022\016\n\006gro"
-        + "ups\030\004 \003(\t\"\365\004\n\021QueryTraceRequest\022\016\n\006tenan"
-        + "t\030\001 \001(\t\022\030\n\013serviceName\030\002 \001(\tH\000\210\001\001\022 \n\023ser"
-        + "viceInstanceName\030\003 \001(\tH\001\210\001\001\022\020\n\010traceIds\030"
-        + "\004 \003(\t\022\031\n\014endpointName\030\005 \001(\tH\002\210\001\001\022\022\n\005star"
-        + "t\030\006 \001(\003H\003\210\001\001\022\020\n\003end\030\007 \001(\003H\004\210\001\001\022\035\n\020minTra"
-        + "ceDuration\030\010 \001(\005H\005\210\001\001\022\035\n\020maxTraceDuratio"
-        + "n\030\t \001(\005H\006\210\001\001\022\027\n\ntraceState\030\n \001(\tH\007\210\001\001\022\027\n"
-        + "\nqueryOrder\030\013 \001(\tH\010\210\001\001\022\024\n\007pageNum\030\014 \001(\005H"
-        + "\t\210\001\001\022\025\n\010pageSize\030\r \001(\005H\n\210\001\001\022K\n\004tags\030\016 \003("
-        + "\0132=.io.holoinsight.server.query.grpc.Que"
-        + "ryTraceRequest.TagsEntry\032+\n\tTagsEntry\022\013\n"
-        + "\003key\030\001 \001(\t\022\r\n\005value\030\002 \001(\t:\0028\001B\016\n\014_servic"
-        + "eNameB\026\n\024_serviceInstanceNameB\017\n\r_endpoi"
-        + "ntNameB\010\n\006_startB\006\n\004_endB\023\n\021_minTraceDur"
-        + "ationB\023\n\021_maxTraceDurationB\r\n\013_traceStat"
-        + "eB\r\n\013_queryOrderB\n\n\010_pageNumB\013\n\t_pageSiz"
-        + "e\"J\n\nTraceBrief\022<\n\006traces\030\001 \003(\0132,.io.hol"
-        + "oinsight.server.query.grpc.BasicTrace\"\233\001"
-        + "\n\nBasicTrace\022\024\n\014serviceNames\030\001 \003(\t\022\034\n\024se"
-        + "rviceInstanceNames\030\002 \003(\t\022\025\n\rendpointName"
-        + "s\030\003 \003(\t\022\020\n\010duration\030\004 \001(\005\022\r\n\005start\030\005 \001(\003"
-        + "\022\017\n\007isError\030\006 \001(\010\022\020\n\010traceIds\030\007 \003(\t\">\n\005T"
-        + "race\0225\n\005spans\030\001 \003(\0132&.io.holoinsight.ser"
-        + "ver.query.grpc.Span\"\262\003\n\004Span\022\017\n\007traceId\030"
-        + "\001 \001(\t\022\016\n\006spanId\030\002 \001(\t\022\024\n\014parentSpanId\030\003 "
-        + "\001(\t\0223\n\004refs\030\004 \003(\0132%.io.holoinsight.serve"
-        + "r.query.grpc.Ref\022\023\n\013serviceCode\030\005 \001(\t\022\033\n"
-        + "\023serviceInstanceName\030\006 \001(\t\022\021\n\tstartTime\030"
-        + "\007 \001(\003\022\017\n\007endTime\030\010 \001(\003\022\024\n\014endpointName\030\t"
-        + " \001(\t\022\014\n\004type\030\n \001(\t\022\014\n\004peer\030\013 \001(\t\022\021\n\tcomp"
-        + "onent\030\014 \001(\t\022\017\n\007isError\030\r \001(\010\022\r\n\005layer\030\016 "
-        + "\001(\t\0228\n\004tags\030\017 \003(\0132*.io.holoinsight.serve"
-        + "r.query.grpc.KeyValue\0229\n\004logs\030\020 \003(\0132+.io"
-        + ".holoinsight.server.query.grpc.LogEntity"
-        + "\022\016\n\006isRoot\030\021 \001(\010\"&\n\010KeyValue\022\013\n\003key\030\001 \001("
-        + "\t\022\r\n\005value\030\002 \001(\t\"S\n\tLogEntity\022\014\n\004time\030\001 "
-        + "\001(\003\0228\n\004data\030\002 \003(\0132*.io.holoinsight.serve"
-        + "r.query.grpc.KeyValue\":\n\003Ref\022\017\n\007traceId\030"
-        + "\001 \001(\t\022\024\n\014parentSpanId\030\002 \001(\t\022\014\n\004type\030\004 \001("
-        + "\t\"\212\003\n\020QueryMetaRequest\022\016\n\006tenant\030\001 \001(\t\022\030"
-        + "\n\013serviceName\030\002 \001(\tH\000\210\001\001\022\031\n\014endpointName"
-        + "\030\003 \001(\tH\001\210\001\001\022\024\n\007address\030\004 \001(\tH\002\210\001\001\022\r\n\005sta"
-        + "rt\030\005 \001(\003\022\013\n\003end\030\006 \001(\003\022\024\n\007isEntry\030\007 \001(\010H\003"
-        + "\210\001\001\022\023\n\013traceIdSize\030\010 \001(\003\022\020\n\010category\030\t \001"
-        + "(\t\022V\n\ntermParams\030\n \003(\0132B.io.holoinsight."
-        + "server.query.grpc.QueryMetaRequest.TermP"
-        + "aramsEntry\0321\n\017TermParamsEntry\022\013\n\003key\030\001 \001"
-        + "(\t\022\r\n\005value\030\002 \001(\t:\0028\001B\016\n\014_serviceNameB\017\n"
-        + "\r_endpointNameB\n\n\010_addressB\n\n\010_isEntry\"\263"
-        + "\003\n\024QueryTopologyRequest\022\016\n\006tenant\030\001 \001(\t\022"
-        + "\r\n\005start\030\002 \001(\003\022\013\n\003end\030\003 \001(\003\022\030\n\013serviceNa"
-        + "me\030\004 \001(\tH\000\210\001\001\022 \n\023serviceInstanceName\030\005 \001"
-        + "(\tH\001\210\001\001\022\031\n\014endpointName\030\006 \001(\tH\002\210\001\001\022\024\n\007ad"
-        + "dress\030\007 \001(\tH\003\210\001\001\022\022\n\005depth\030\010 \001(\005H\004\210\001\001\022\020\n\010"
-        + "category\030\t \001(\t\022Z\n\ntermParams\030\n \003(\0132F.io."
-        + "holoinsight.server.query.grpc.QueryTopol"
-        + "ogyRequest.TermParamsEntry\0321\n\017TermParams"
-        + "Entry\022\013\n\003key\030\001 \001(\t\022\r\n\005value\030\002 \001(\t:\0028\001B\016\n"
-        + "\014_serviceNameB\026\n\024_serviceInstanceNameB\017\n"
-        + "\r_endpointNameB\n\n\010_addressB\010\n\006_depth\"\211\001\n"
-        + "\016ResponseMetric\022\022\n\navgLatency\030\001 \001(\001\022\022\n\np"
-        + "95Latency\030\002 \001(\001\022\022\n\np99Latency\030\003 \001(\001\022\022\n\nt"
-        + "otalCount\030\004 \001(\005\022\022\n\nerrorCount\030\005 \001(\005\022\023\n\013s"
-        + "uccessRate\030\006 \001(\001\"V\n\004Meta\022\014\n\004name\030\001 \001(\t\022@"
-        + "\n\006metric\030\002 \001(\01320.io.holoinsight.server.q"
-        + "uery.grpc.ResponseMetric\"I\n\021QueryMetaRes"
-        + "ponse\0224\n\004mata\030\001 \003(\0132&.io.holoinsight.ser"
-        + "ver.query.grpc.Meta\"s\n\020VirtualComponent\022"
-        + "\017\n\007address\030\001 \001(\t\022\014\n\004type\030\002 \001(\t\022@\n\006metric"
-        + "\030\003 \001(\01320.io.holoinsight.server.query.grp"
-        + "c.ResponseMetric\"f\n\035QueryVirtualComponen"
-        + "tResponse\022E\n\tcomponent\030\001 \003(\01322.io.holoin"
-        + "sight.server.query.grpc.VirtualComponent"
-        + "\"w\n\007SlowSql\022\017\n\007address\030\001 \001(\t\022\023\n\013serviceN"
-        + "ame\030\002 \001(\t\022\021\n\tstatement\030\003 \001(\t\022\017\n\007latency\030"
-        + "\004 \001(\005\022\021\n\tstartTime\030\005 \001(\003\022\017\n\007traceId\030\006 \001("
-        + "\t\"R\n\024QuerySlowSqlResponse\022:\n\007slowSql\030\001 \003"
-        + "(\0132).io.holoinsight.server.query.grpc.Sl"
-        + "owSql\"\225\001\n\004Node\022\n\n\002id\030\001 \001(\t\022\014\n\004name\030\002 \001(\t"
-        + "\022\014\n\004type\030\003 \001(\t\022\016\n\006isReal\030\004 \001(\010\022\023\n\013servic"
-        + "eName\030\005 \001(\t\022@\n\006metric\030\006 \001(\01320.io.holoins"
-        + "ight.server.query.grpc.ResponseMetric\"\320\001"
-        + "\n\004Call\022\n\n\002id\030\001 \001(\t\022\020\n\010sourceId\030\002 \001(\t\022\022\n\n"
-        + "sourceName\030\003 \001(\t\022\016\n\006destId\030\004 \001(\t\022\020\n\010dest"
-        + "Name\030\005 \001(\t\022\031\n\021sourceServiceName\030\006 \001(\t\022\027\n"
-        + "\017destServiceName\030\007 \001(\t\022@\n\006metric\030\010 \001(\01320"
-        + ".io.holoinsight.server.query.grpc.Respon"
-        + "seMetric\"v\n\010Topology\0224\n\004node\030\001 \003(\0132&.io."
-        + "holoinsight.server.query.grpc.Node\0224\n\004ca"
-        + "ll\030\002 \003(\0132&.io.holoinsight.server.query.g"
-        + "rpc.Call\"\033\n\010TraceIds\022\017\n\007traceId\030\001 \003(\t\"\215\002"
-        + "\n\rStatisticData\022Q\n\tresources\030\001 \003(\0132>.io."
-        + "holoinsight.server.query.grpc.StatisticD"
-        + "ata.ResourcesEntry\022I\n\005datas\030\002 \003(\0132:.io.h"
-        + "oloinsight.server.query.grpc.StatisticDa"
-        + "ta.DatasEntry\0320\n\016ResourcesEntry\022\013\n\003key\030\001"
-        + " \001(\t\022\r\n\005value\030\002 \001(\t:\0028\001\032,\n\nDatasEntry\022\013\n"
-        + "\003key\030\001 \001(\t\022\r\n\005value\030\002 \001(\001:\0028\001\"[\n\021Statist"
-        + "icDataList\022F\n\rstatisticData\030\001 \003(\0132/.io.h"
-        + "oloinsight.server.query.grpc.StatisticDa"
-        + "ta2\214\021\n\014QueryService\022l\n\tQueryData\022..io.ho"
-        + "loinsight.server.query.grpc.QueryRequest" + "\032/.io.holoinsight.server.query.grpc.Quer"
-        + "yResponse\022l\n\tQueryTags\022..io.holoinsight."
-        + "server.query.grpc.QueryRequest\032/.io.holo"
-        + "insight.server.query.grpc.QueryResponse\022"
-        + "t\n\013QuerySchema\022..io.holoinsight.server.q"
-        + "uery.grpc.QueryRequest\0325.io.holoinsight."
-        + "server.query.grpc.QuerySchemaResponse\022}\n"
-        + "\014QueryMetrics\0225.io.holoinsight.server.qu"
-        + "ery.grpc.QueryMetricsRequest\0326.io.holoin" + "sight.server.query.grpc.QueryMetricsResp"
-        + "onse\022m\n\nDeleteKeys\022..io.holoinsight.serv"
+        + "er.query.grpc\032\031google/protobuf/any.proto"
+        + "\"\317\001\n\014QueryRequest\022\016\n\006tenant\030\001 \001(\t\022\022\n\005que"
+        + "ry\030\002 \001(\tH\000\210\001\001\022A\n\013datasources\030\003 \003(\0132,.io."
+        + "holoinsight.server.query.grpc.Datasource"
+        + "\022\027\n\ndownsample\030\004 \001(\tH\001\210\001\001\022\027\n\nfillPolicy\030"
+        + "\005 \001(\tH\002\210\001\001B\010\n\006_queryB\r\n\013_downsampleB\r\n\013_"
+        + "fillPolicy\"T\n\023QueryMetricsRequest\022\016\n\006ten"
+        + "ant\030\001 \001(\t\022\014\n\004name\030\002 \001(\t\022\020\n\010explicit\030\003 \001("
+        + "\010\022\r\n\005limit\030\004 \001(\005\"\352\002\n\nDatasource\022\021\n\004name\030"
+        + "\001 \001(\tH\000\210\001\001\022\r\n\005start\030\002 \001(\003\022\013\n\003end\030\003 \001(\003\022\016"
+        + "\n\006metric\030\004 \001(\t\022>\n\007filters\030\005 \003(\0132-.io.hol"
+        + "oinsight.server.query.grpc.QueryFilter\022\022"
+        + "\n\naggregator\030\006 \001(\t\022\027\n\ndownsample\030\007 \001(\tH\001"
+        + "\210\001\001\022F\n\rslidingWindow\030\010 \001(\0132/.io.holoinsi"
+        + "ght.server.query.grpc.SlidingWindow\022\017\n\007g"
+        + "roupBy\030\t \003(\t\022\027\n\nfillPolicy\030\n \001(\tH\002\210\001\001\022\027\n"
+        + "\017apmMaterialized\030\013 \001(\010B\007\n\005_nameB\r\n\013_down"
+        + "sampleB\r\n\013_fillPolicy\"5\n\rSlidingWindow\022\020"
+        + "\n\010windowMs\030\001 \001(\003\022\022\n\naggregator\030\002 \001(\t\"8\n\013"
+        + "QueryFilter\022\014\n\004type\030\001 \001(\t\022\014\n\004name\030\002 \001(\t\022"
+        + "\r\n\005value\030\003 \001(\t\"J\n\rQueryResponse\0229\n\007resul"
+        + "ts\030\001 \003(\0132(.io.holoinsight.server.query.g"
+        + "rpc.Result\"\300\001\n\006Result\022\016\n\006metric\030\001 \001(\t\022@\n"
+        + "\004tags\030\002 \003(\01322.io.holoinsight.server.quer"
+        + "y.grpc.Result.TagsEntry\0227\n\006points\030\003 \003(\0132"
+        + "\'.io.holoinsight.server.query.grpc.Point"
+        + "\032+\n\tTagsEntry\022\013\n\003key\030\001 \001(\t\022\r\n\005value\030\002 \001("
+        + "\t:\0028\001\";\n\005Point\022\021\n\ttimestamp\030\001 \001(\003\022\r\n\005val"
+        + "ue\030\002 \001(\001\022\020\n\010strValue\030\003 \001(\t\"T\n\023QuerySchem"
+        + "aResponse\022=\n\007results\030\001 \003(\0132,.io.holoinsi"
+        + "ght.server.query.grpc.KeysResult\"*\n\nKeys"
+        + "Result\022\016\n\006metric\030\001 \001(\t\022\014\n\004keys\030\002 \003(\t\"W\n\024"
+        + "QueryMetricsResponse\022?\n\007results\030\001 \003(\0132.."
+        + "io.holoinsight.server.query.grpc.MetricR"
+        + "esult\"\034\n\014MetricResult\022\014\n\004name\030\001 \001(\t\"`\n\021P"
+        + "qlInstantRequest\022\016\n\006tenant\030\001 \001(\t\022\r\n\005quer"
+        + "y\030\002 \001(\t\022\014\n\004time\030\003 \001(\003\022\017\n\007timeout\030\004 \001(\t\022\r"
+        + "\n\005delta\030\005 \001(\t\"\214\001\n\017PqlRangeRequest\022\016\n\006ten"
+        + "ant\030\001 \001(\t\022\r\n\005query\030\002 \001(\t\022\r\n\005start\030\003 \001(\003\022"
+        + "\013\n\003end\030\004 \001(\003\022\014\n\004step\030\005 \001(\003\022\017\n\007timeout\030\006 "
+        + "\001(\t\022\r\n\005delta\030\007 \001(\t\022\020\n\010fillZero\030\010 \001(\010\"N\n\020"
+        + "StatisticRequest\022\016\n\006tenant\030\001 \001(\t\022\r\n\005star"
+        + "t\030\002 \001(\003\022\013\n\003end\030\003 \001(\003\022\016\n\006groups\030\004 \003(\t\"\365\004\n"
+        + "\021QueryTraceRequest\022\016\n\006tenant\030\001 \001(\t\022\030\n\013se"
+        + "rviceName\030\002 \001(\tH\000\210\001\001\022 \n\023serviceInstanceN"
+        + "ame\030\003 \001(\tH\001\210\001\001\022\020\n\010traceIds\030\004 \003(\t\022\031\n\014endp"
+        + "ointName\030\005 \001(\tH\002\210\001\001\022\022\n\005start\030\006 \001(\003H\003\210\001\001\022"
+        + "\020\n\003end\030\007 \001(\003H\004\210\001\001\022\035\n\020minTraceDuration\030\010 "
+        + "\001(\005H\005\210\001\001\022\035\n\020maxTraceDuration\030\t \001(\005H\006\210\001\001\022"
+        + "\027\n\ntraceState\030\n \001(\tH\007\210\001\001\022\027\n\nqueryOrder\030\013"
+        + " \001(\tH\010\210\001\001\022\024\n\007pageNum\030\014 \001(\005H\t\210\001\001\022\025\n\010pageS"
+        + "ize\030\r \001(\005H\n\210\001\001\022K\n\004tags\030\016 \003(\0132=.io.holoin"
+        + "sight.server.query.grpc.QueryTraceReques"
+        + "t.TagsEntry\032+\n\tTagsEntry\022\013\n\003key\030\001 \001(\t\022\r\n"
+        + "\005value\030\002 \001(\t:\0028\001B\016\n\014_serviceNameB\026\n\024_ser"
+        + "viceInstanceNameB\017\n\r_endpointNameB\010\n\006_st"
+        + "artB\006\n\004_endB\023\n\021_minTraceDurationB\023\n\021_max"
+        + "TraceDurationB\r\n\013_traceStateB\r\n\013_queryOr"
+        + "derB\n\n\010_pageNumB\013\n\t_pageSize\"J\n\nTraceBri"
+        + "ef\022<\n\006traces\030\001 \003(\0132,.io.holoinsight.serv"
+        + "er.query.grpc.BasicTrace\"\233\001\n\nBasicTrace\022"
+        + "\024\n\014serviceNames\030\001 \003(\t\022\034\n\024serviceInstance"
+        + "Names\030\002 \003(\t\022\025\n\rendpointNames\030\003 \003(\t\022\020\n\010du"
+        + "ration\030\004 \001(\005\022\r\n\005start\030\005 \001(\003\022\017\n\007isError\030\006"
+        + " \001(\010\022\020\n\010traceIds\030\007 \003(\t\">\n\005Trace\0225\n\005spans"
+        + "\030\001 \003(\0132&.io.holoinsight.server.query.grp"
+        + "c.Span\"\262\003\n\004Span\022\017\n\007traceId\030\001 \001(\t\022\016\n\006span"
+        + "Id\030\002 \001(\t\022\024\n\014parentSpanId\030\003 \001(\t\0223\n\004refs\030\004"
+        + " \003(\0132%.io.holoinsight.server.query.grpc."
+        + "Ref\022\023\n\013serviceCode\030\005 \001(\t\022\033\n\023serviceInsta"
+        + "nceName\030\006 \001(\t\022\021\n\tstartTime\030\007 \001(\003\022\017\n\007endT"
+        + "ime\030\010 \001(\003\022\024\n\014endpointName\030\t \001(\t\022\014\n\004type\030"
+        + "\n \001(\t\022\014\n\004peer\030\013 \001(\t\022\021\n\tcomponent\030\014 \001(\t\022\017"
+        + "\n\007isError\030\r \001(\010\022\r\n\005layer\030\016 \001(\t\0228\n\004tags\030\017"
+        + " \003(\0132*.io.holoinsight.server.query.grpc."
+        + "KeyValue\0229\n\004logs\030\020 \003(\0132+.io.holoinsight."
+        + "server.query.grpc.LogEntity\022\016\n\006isRoot\030\021 "
+        + "\001(\010\"&\n\010KeyValue\022\013\n\003key\030\001 \001(\t\022\r\n\005value\030\002 "
+        + "\001(\t\"S\n\tLogEntity\022\014\n\004time\030\001 \001(\003\0228\n\004data\030\002"
+        + " \003(\0132*.io.holoinsight.server.query.grpc."
+        + "KeyValue\":\n\003Ref\022\017\n\007traceId\030\001 \001(\t\022\024\n\014pare"
+        + "ntSpanId\030\002 \001(\t\022\014\n\004type\030\004 \001(\t\"\212\003\n\020QueryMe"
+        + "taRequest\022\016\n\006tenant\030\001 \001(\t\022\030\n\013serviceName"
+        + "\030\002 \001(\tH\000\210\001\001\022\031\n\014endpointName\030\003 \001(\tH\001\210\001\001\022\024"
+        + "\n\007address\030\004 \001(\tH\002\210\001\001\022\r\n\005start\030\005 \001(\003\022\013\n\003e"
+        + "nd\030\006 \001(\003\022\024\n\007isEntry\030\007 \001(\010H\003\210\001\001\022\023\n\013traceI"
+        + "dSize\030\010 \001(\003\022\020\n\010category\030\t \001(\t\022V\n\ntermPar"
+        + "ams\030\n \003(\0132B.io.holoinsight.server.query."
+        + "grpc.QueryMetaRequest.TermParamsEntry\0321\n"
+        + "\017TermParamsEntry\022\013\n\003key\030\001 \001(\t\022\r\n\005value\030\002"
+        + " \001(\t:\0028\001B\016\n\014_serviceNameB\017\n\r_endpointNam"
+        + "eB\n\n\010_addressB\n\n\010_isEntry\"\263\003\n\024QueryTopol"
+        + "ogyRequest\022\016\n\006tenant\030\001 \001(\t\022\r\n\005start\030\002 \001("
+        + "\003\022\013\n\003end\030\003 \001(\003\022\030\n\013serviceName\030\004 \001(\tH\000\210\001\001"
+        + "\022 \n\023serviceInstanceName\030\005 \001(\tH\001\210\001\001\022\031\n\014en"
+        + "dpointName\030\006 \001(\tH\002\210\001\001\022\024\n\007address\030\007 \001(\tH\003"
+        + "\210\001\001\022\022\n\005depth\030\010 \001(\005H\004\210\001\001\022\020\n\010category\030\t \001("
+        + "\t\022Z\n\ntermParams\030\n \003(\0132F.io.holoinsight.s"
+        + "erver.query.grpc.QueryTopologyRequest.Te"
+        + "rmParamsEntry\0321\n\017TermParamsEntry\022\013\n\003key\030"
+        + "\001 \001(\t\022\r\n\005value\030\002 \001(\t:\0028\001B\016\n\014_serviceName"
+        + "B\026\n\024_serviceInstanceNameB\017\n\r_endpointNam"
+        + "eB\n\n\010_addressB\010\n\006_depth\"\211\001\n\016ResponseMetr"
+        + "ic\022\022\n\navgLatency\030\001 \001(\001\022\022\n\np95Latency\030\002 \001"
+        + "(\001\022\022\n\np99Latency\030\003 \001(\001\022\022\n\ntotalCount\030\004 \001"
+        + "(\005\022\022\n\nerrorCount\030\005 \001(\005\022\023\n\013successRate\030\006 "
+        + "\001(\001\"V\n\004Meta\022\014\n\004name\030\001 \001(\t\022@\n\006metric\030\002 \001("
+        + "\01320.io.holoinsight.server.query.grpc.Res"
+        + "ponseMetric\"I\n\021QueryMetaResponse\0224\n\004mata"
+        + "\030\001 \003(\0132&.io.holoinsight.server.query.grp"
+        + "c.Meta\"s\n\020VirtualComponent\022\017\n\007address\030\001 "
+        + "\001(\t\022\014\n\004type\030\002 \001(\t\022@\n\006metric\030\003 \001(\01320.io.h"
+        + "oloinsight.server.query.grpc.ResponseMet"
+        + "ric\"f\n\035QueryVirtualComponentResponse\022E\n\t"
+        + "component\030\001 \003(\01322.io.holoinsight.server."
+        + "query.grpc.VirtualComponent\"w\n\007SlowSql\022\017"
+        + "\n\007address\030\001 \001(\t\022\023\n\013serviceName\030\002 \001(\t\022\021\n\t"
+        + "statement\030\003 \001(\t\022\017\n\007latency\030\004 \001(\005\022\021\n\tstar"
+        + "tTime\030\005 \001(\003\022\017\n\007traceId\030\006 \001(\t\"R\n\024QuerySlo"
+        + "wSqlResponse\022:\n\007slowSql\030\001 \003(\0132).io.holoi"
+        + "nsight.server.query.grpc.SlowSql\"\225\001\n\004Nod"
+        + "e\022\n\n\002id\030\001 \001(\t\022\014\n\004name\030\002 \001(\t\022\014\n\004type\030\003 \001("
+        + "\t\022\016\n\006isReal\030\004 \001(\010\022\023\n\013serviceName\030\005 \001(\t\022@"
+        + "\n\006metric\030\006 \001(\01320.io.holoinsight.server.q"
+        + "uery.grpc.ResponseMetric\"\320\001\n\004Call\022\n\n\002id\030"
+        + "\001 \001(\t\022\020\n\010sourceId\030\002 \001(\t\022\022\n\nsourceName\030\003 "
+        + "\001(\t\022\016\n\006destId\030\004 \001(\t\022\020\n\010destName\030\005 \001(\t\022\031\n"
+        + "\021sourceServiceName\030\006 \001(\t\022\027\n\017destServiceN"
+        + "ame\030\007 \001(\t\022@\n\006metric\030\010 \001(\01320.io.holoinsig"
+        + "ht.server.query.grpc.ResponseMetric\"v\n\010T"
+        + "opology\0224\n\004node\030\001 \003(\0132&.io.holoinsight.s"
+        + "erver.query.grpc.Node\0224\n\004call\030\002 \003(\0132&.io"
+        + ".holoinsight.server.query.grpc.Call\"\033\n\010T"
+        + "raceIds\022\017\n\007traceId\030\001 \003(\t\"\215\002\n\rStatisticDa"
+        + "ta\022Q\n\tresources\030\001 \003(\0132>.io.holoinsight.s"
+        + "erver.query.grpc.StatisticData.Resources"
+        + "Entry\022I\n\005datas\030\002 \003(\0132:.io.holoinsight.se"
+        + "rver.query.grpc.StatisticData.DatasEntry"
+        + "\0320\n\016ResourcesEntry\022\013\n\003key\030\001 \001(\t\022\r\n\005value"
+        + "\030\002 \001(\t:\0028\001\032,\n\nDatasEntry\022\013\n\003key\030\001 \001(\t\022\r\n"
+        + "\005value\030\002 \001(\001:\0028\001\"[\n\021StatisticDataList\022F\n"
+        + "\rstatisticData\030\001 \003(\0132/.io.holoinsight.se"
+        + "rver.query.grpc.StatisticData\"\215\001\n\021Common"
+        + "MapTypeData\022K\n\004data\030\001 \003(\0132=.io.holoinsig"
+        + "ht.server.query.grpc.CommonMapTypeData.D"
+        + "ataEntry\032+\n\tDataEntry\022\013\n\003key\030\001 \001(\t\022\r\n\005va"
+        + "lue\030\002 \001(\t:\0028\001\"g\n\025CommonMapTypeDataList\022N"
+        + "\n\021commonMapTypeData\030\001 \003(\01323.io.holoinsig"
+        + "ht.server.query.grpc.CommonMapTypeData2\234"
+        + "\023\n\014QueryService\022l\n\tQueryData\022..io.holoin"
+        + "sight.server.query.grpc.QueryRequest\032/.i" + "o.holoinsight.server.query.grpc.QueryRes"
+        + "ponse\022l\n\tQueryTags\022..io.holoinsight.serv"
         + "er.query.grpc.QueryRequest\032/.io.holoinsi"
-        + "ght.server.query.grpc.QueryResponse\022w\n\017p"
-        + "qlInstantQuery\0223.io.holoinsight.server.q"
-        + "uery.grpc.PqlInstantRequest\032/.io.holoins"
-        + "ight.server.query.grpc.QueryResponse\022s\n\r"
-        + "pqlRangeQuery\0221.io.holoinsight.server.qu"
-        + "ery.grpc.PqlRangeRequest\032/.io.holoinsigh"
-        + "t.server.query.grpc.QueryResponse\022u\n\020Que"
-        + "ryBasicTraces\0223.io.holoinsight.server.qu"
-        + "ery.grpc.QueryTraceRequest\032,.io.holoinsi"
-        + "ght.server.query.grpc.TraceBrief\022j\n\nQuer"
-        + "yTrace\0223.io.holoinsight.server.query.grp"
-        + "c.QueryTraceRequest\032\'.io.holoinsight.ser"
-        + "ver.query.grpc.Trace\022t\n\014BillingTrace\0223.i"
-        + "o.holoinsight.server.query.grpc.QueryTra" + "ceRequest\032/.io.holoinsight.server.query."
-        + "grpc.StatisticData\022{\n\020QueryServiceList\0222"
-        + ".io.holoinsight.server.query.grpc.QueryM" + "etaRequest\0323.io.holoinsight.server.query"
-        + ".grpc.QueryMetaResponse\022|\n\021QueryEndpoint"
-        + "List\0222.io.holoinsight.server.query.grpc."
-        + "QueryMetaRequest\0323.io.holoinsight.server"
-        + ".query.grpc.QueryMetaResponse\022\203\001\n\030QueryS"
-        + "erviceInstanceList\0222.io.holoinsight.serv"
-        + "er.query.grpc.QueryMetaRequest\0323.io.holo" + "insight.server.query.grpc.QueryMetaRespo"
-        + "nse\022\211\001\n\022QueryComponentList\0222.io.holoinsi"
-        + "ght.server.query.grpc.QueryMetaRequest\032?" + ".io.holoinsight.server.query.grpc.QueryV"
-        + "irtualComponentResponse\022x\n\026QueryComponen"
-        + "tTraceIds\0222.io.holoinsight.server.query."
-        + "grpc.QueryMetaRequest\032*.io.holoinsight.s"
-        + "erver.query.grpc.TraceIds\022s\n\rQueryTopolo"
-        + "gy\0226.io.holoinsight.server.query.grpc.Qu"
-        + "eryTopologyRequest\032*.io.holoinsight.serv"
-        + "er.query.grpc.Topology\022~\n\020QuerySlowSqlLi"
-        + "st\0222.io.holoinsight.server.query.grpc.Qu"
-        + "eryMetaRequest\0326.io.holoinsight.server.q"
-        + "uery.grpc.QuerySlowSqlResponse\022y\n\016Statis"
-        + "ticTrace\0222.io.holoinsight.server.query.g"
-        + "rpc.StatisticRequest\0323.io.holoinsight.se"
-        + "rver.query.grpc.StatisticDataListB\"\n io."
-        + "holoinsight.server.query.grpcb\006proto3"};
+        + "ght.server.query.grpc.QueryResponse\022t\n\013Q"
+        + "uerySchema\022..io.holoinsight.server.query"
+        + ".grpc.QueryRequest\0325.io.holoinsight.serv"
+        + "er.query.grpc.QuerySchemaResponse\022}\n\014Que"
+        + "ryMetrics\0225.io.holoinsight.server.query."
+        + "grpc.QueryMetricsRequest\0326.io.holoinsigh" + "t.server.query.grpc.QueryMetricsResponse"
+        + "\022m\n\nDeleteKeys\022..io.holoinsight.server.q"
+        + "uery.grpc.QueryRequest\032/.io.holoinsight."
+        + "server.query.grpc.QueryResponse\022w\n\017pqlIn"
+        + "stantQuery\0223.io.holoinsight.server.query"
+        + ".grpc.PqlInstantRequest\032/.io.holoinsight"
+        + ".server.query.grpc.QueryResponse\022s\n\rpqlR"
+        + "angeQuery\0221.io.holoinsight.server.query."
+        + "grpc.PqlRangeRequest\032/.io.holoinsight.se"
+        + "rver.query.grpc.QueryResponse\022u\n\020QueryBa"
+        + "sicTraces\0223.io.holoinsight.server.query."
+        + "grpc.QueryTraceRequest\032,.io.holoinsight."
+        + "server.query.grpc.TraceBrief\022j\n\nQueryTra"
+        + "ce\0223.io.holoinsight.server.query.grpc.Qu"
+        + "eryTraceRequest\032\'.io.holoinsight.server."
+        + "query.grpc.Trace\022t\n\014BillingTrace\0223.io.ho"
+        + "loinsight.server.query.grpc.QueryTraceRe" + "quest\032/.io.holoinsight.server.query.grpc"
+        + ".StatisticData\022{\n\020QueryServiceList\0222.io."
+        + "holoinsight.server.query.grpc.QueryMetaR" + "equest\0323.io.holoinsight.server.query.grp"
+        + "c.QueryMetaResponse\022|\n\021QueryEndpointList"
+        + "\0222.io.holoinsight.server.query.grpc.Quer"
+        + "yMetaRequest\0323.io.holoinsight.server.que"
+        + "ry.grpc.QueryMetaResponse\022\203\001\n\030QueryServi"
+        + "ceInstanceList\0222.io.holoinsight.server.q"
+        + "uery.grpc.QueryMetaRequest\0323.io.holoinsi"
+        + "ght.server.query.grpc.QueryMetaResponse\022"
+        + "\211\001\n\022QueryComponentList\0222.io.holoinsight."
+        + "server.query.grpc.QueryMetaRequest\032?.io." + "holoinsight.server.query.grpc.QueryVirtu"
+        + "alComponentResponse\022x\n\026QueryComponentTra"
+        + "ceIds\0222.io.holoinsight.server.query.grpc"
+        + ".QueryMetaRequest\032*.io.holoinsight.serve"
+        + "r.query.grpc.TraceIds\022s\n\rQueryTopology\0226"
+        + ".io.holoinsight.server.query.grpc.QueryT" + "opologyRequest\032*.io.holoinsight.server.q"
+        + "uery.grpc.Topology\022~\n\020QuerySlowSqlList\0222"
+        + ".io.holoinsight.server.query.grpc.QueryM" + "etaRequest\0326.io.holoinsight.server.query"
+        + ".grpc.QuerySlowSqlResponse\022y\n\016StatisticT"
+        + "race\0222.io.holoinsight.server.query.grpc."
+        + "StatisticRequest\0323.io.holoinsight.server"
+        + ".query.grpc.StatisticDataList\022\204\001\n\025QueryS"
+        + "erviceErrorList\0222.io.holoinsight.server."
+        + "query.grpc.QueryMetaRequest\0327.io.holoins" + "ight.server.query.grpc.CommonMapTypeData"
+        + "List\022\206\001\n\027QueryServiceErrorDetail\0222.io.ho"
+        + "loinsight.server.query.grpc.QueryMetaReq" + "uest\0327.io.holoinsight.server.query.grpc."
+        + "CommonMapTypeDataListB\"\n io.holoinsight." + "server.query.grpcb\006proto3"};
     descriptor = com.google.protobuf.Descriptors.FileDescriptor.internalBuildGeneratedFileFrom(
-        descriptorData, new com.google.protobuf.Descriptors.FileDescriptor[] {});
+        descriptorData, new com.google.protobuf.Descriptors.FileDescriptor[] {
+            com.google.protobuf.AnyProto.getDescriptor(),});
     internal_static_io_holoinsight_server_query_grpc_QueryRequest_descriptor =
         getDescriptor().getMessageTypes().get(0);
     internal_static_io_holoinsight_server_query_grpc_QueryRequest_fieldAccessorTable =
@@ -47285,6 +48879,26 @@ public final class QueryProto {
         new com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
             internal_static_io_holoinsight_server_query_grpc_StatisticDataList_descriptor,
             new java.lang.String[] {"StatisticData",});
+    internal_static_io_holoinsight_server_query_grpc_CommonMapTypeData_descriptor =
+        getDescriptor().getMessageTypes().get(38);
+    internal_static_io_holoinsight_server_query_grpc_CommonMapTypeData_fieldAccessorTable =
+        new com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+            internal_static_io_holoinsight_server_query_grpc_CommonMapTypeData_descriptor,
+            new java.lang.String[] {"Data",});
+    internal_static_io_holoinsight_server_query_grpc_CommonMapTypeData_DataEntry_descriptor =
+        internal_static_io_holoinsight_server_query_grpc_CommonMapTypeData_descriptor
+            .getNestedTypes().get(0);
+    internal_static_io_holoinsight_server_query_grpc_CommonMapTypeData_DataEntry_fieldAccessorTable =
+        new com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+            internal_static_io_holoinsight_server_query_grpc_CommonMapTypeData_DataEntry_descriptor,
+            new java.lang.String[] {"Key", "Value",});
+    internal_static_io_holoinsight_server_query_grpc_CommonMapTypeDataList_descriptor =
+        getDescriptor().getMessageTypes().get(39);
+    internal_static_io_holoinsight_server_query_grpc_CommonMapTypeDataList_fieldAccessorTable =
+        new com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+            internal_static_io_holoinsight_server_query_grpc_CommonMapTypeDataList_descriptor,
+            new java.lang.String[] {"CommonMapTypeData",});
+    com.google.protobuf.AnyProto.getDescriptor();
   }
 
   // @@protoc_insertion_point(outer_class_scope)

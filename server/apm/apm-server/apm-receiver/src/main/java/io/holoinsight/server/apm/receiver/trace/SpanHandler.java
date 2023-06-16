@@ -16,15 +16,19 @@ import io.holoinsight.server.apm.common.model.specification.sw.ServiceInstanceRe
 import io.holoinsight.server.apm.common.model.specification.sw.ServiceRelation;
 import io.holoinsight.server.apm.engine.model.EndpointRelationDO;
 import io.holoinsight.server.apm.engine.model.NetworkAddressMappingDO;
+import io.holoinsight.server.apm.engine.model.ServiceErrorDO;
 import io.holoinsight.server.apm.engine.model.ServiceInstanceRelationDO;
 import io.holoinsight.server.apm.engine.model.ServiceRelationDO;
 import io.holoinsight.server.apm.engine.model.SlowSqlDO;
 import io.holoinsight.server.apm.engine.model.SpanDO;
+import io.holoinsight.server.apm.receiver.analysis.ServiceErrorAnalysis;
 import io.holoinsight.server.apm.receiver.analysis.RelationAnalysis;
+import io.holoinsight.server.apm.receiver.analysis.SlowSqlAnalysis;
 import io.holoinsight.server.apm.receiver.builder.RPCTrafficSourceBuilder;
 import io.holoinsight.server.apm.receiver.common.TransformAttr;
 import io.holoinsight.server.apm.server.service.EndpointRelationService;
 import io.holoinsight.server.apm.server.service.NetworkAddressMappingService;
+import io.holoinsight.server.apm.server.service.ServiceErrorService;
 import io.holoinsight.server.apm.server.service.ServiceInstanceRelationService;
 import io.holoinsight.server.apm.server.service.ServiceRelationService;
 import io.holoinsight.server.apm.server.service.SlowSqlService;
@@ -58,9 +62,14 @@ public class SpanHandler {
   private RelationAnalysis relationAnalysis;
   @Autowired
   private ServiceInstanceRelationService serviceInstanceRelationService;
-
+  @Autowired
+  private SlowSqlAnalysis slowSqlAnalysis;
   @Autowired
   private SlowSqlService slowSqlService;
+  @Autowired
+  private ServiceErrorAnalysis errorAnalysis;
+  @Autowired
+  private ServiceErrorService serviceErrorService;
 
   public void handleResourceSpans(
       List<io.opentelemetry.proto.trace.v1.ResourceSpans> resourceSpansList) {
@@ -69,6 +78,7 @@ public class SpanHandler {
     List<NetworkAddressMappingDO> networkAddressMappingList = new ArrayList<>();
     List<RPCTrafficSourceBuilder> relationBuilders = new ArrayList<>();
     List<SlowSqlDO> slowSqlEsDOList = new ArrayList<>();
+    List<ServiceErrorDO> errorInfoList = new ArrayList<>();
     boolean success = true;
     try {
       if (CollectionUtils.isEmpty(resourceSpansList)) {
@@ -109,14 +119,15 @@ public class SpanHandler {
                         .getKind() == io.opentelemetry.proto.trace.v1.Span.SpanKind.SPAN_KIND_PRODUCER) {
                   relationBuilders.addAll(relationAnalysis.analysisClientSpan(span, spanAttrMap,
                       resourceAttrMap, spanIdEndpointMap));
-                  slowSqlEsDOList.addAll(
-                      relationAnalysis.analysisClientSpan(span, spanAttrMap, resourceAttrMap));
+                  slowSqlEsDOList
+                      .addAll(slowSqlAnalysis.analysis(span, spanAttrMap, resourceAttrMap));
                 } else if (span
                     .getKind() == io.opentelemetry.proto.trace.v1.Span.SpanKind.SPAN_KIND_INTERNAL) {
                   relationBuilders.addAll(
                       relationAnalysis.analysisInternalSpan(span, spanAttrMap, resourceAttrMap));
                 }
 
+                errorInfoList.addAll(errorAnalysis.analysis(span, spanAttrMap, resourceAttrMap));
                 spanEsDOList.add(SpanDO.fromSpan(transformSpan(span), otelResource));
               });
             }
@@ -126,6 +137,7 @@ public class SpanHandler {
       storageSpan(spanEsDOList);
       storageNetworkMapping(networkAddressMappingList);
       storageSlowSql(slowSqlEsDOList);
+      storageServiceError(errorInfoList);
       buildRelation(relationBuilders);
     } catch (Exception e) {
       success = false;
@@ -207,6 +219,10 @@ public class SpanHandler {
 
   public void storageSlowSql(List<SlowSqlDO> slowSqlEsDOList) throws Exception {
     slowSqlService.insert(slowSqlEsDOList);
+  }
+
+  public void storageServiceError(List<ServiceErrorDO> errorInfoDOList) throws Exception {
+    serviceErrorService.insert(errorInfoDOList);
   }
 
   /**

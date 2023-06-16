@@ -34,6 +34,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/webapi/v1/trace")
@@ -383,6 +384,85 @@ public class TraceQueryFacadeImpl extends BaseFacade {
             tenantInitService.getTraceTenant(RequestContext.getContext().ms.getTenant()));
         List<SlowSql> slowSqlList = queryClientService.querySlowSqlList(builder.build());
         JsonResult.createSuccessResult(result, slowSqlList);
+      }
+    });
+
+    return result;
+  }
+
+  /**
+   * 查询异常列表
+   *
+   * @param request
+   * @return
+   */
+  @PostMapping(value = "/serviceErrorList")
+  public JsonResult<List<Map<String, String>>> queryServiceErrorList(
+      @RequestBody QueryProto.QueryMetaRequest request) {
+
+    final JsonResult<List<Map<String, String>>> result = new JsonResult<>();
+    facadeTemplate.manage(result, new ManageCallback() {
+      @Override
+      public void checkParameter() {
+        ParaCheckUtil.checkParaNotNull(request, "request");
+        ParaCheckUtil.checkParaNotNull(request.getTenant(), "tenant");
+        ParaCheckUtil.checkEquals(request.getTenant(), RequestContext.getContext().ms.getTenant(),
+            "tenant is illegal");
+        MonitorScope ms = RequestContext.getContext().ms;
+        Boolean aBoolean = tenantInitService.checkTraceParams(ms.getTenant(), ms.getWorkspace(),
+            request.getTermParamsMap());
+        if (!aBoolean) {
+          throw new MonitorException("term params is illegal");
+        }
+      }
+
+      @Override
+      public void doManage() {
+        Builder builder = request.toBuilder();
+        builder.setTenant(
+            tenantInitService.getTraceTenant(RequestContext.getContext().ms.getTenant()));
+        List<Map<String, String>> serviceErrorList =
+            queryClientService.queryServiceErrorList(builder.build());
+        JsonResult.createSuccessResult(result, serviceErrorList);
+      }
+    });
+
+    return result;
+  }
+
+  /**
+   * 查询异常详情
+   *
+   * @param request
+   * @return
+   */
+  @PostMapping(value = "/serviceErrorDetail")
+  public JsonResult<List<Map<String, String>>> queryServiceErrorDetail(
+      @RequestBody QueryProto.QueryMetaRequest request) {
+    final JsonResult<List<Map<String, String>>> result = new JsonResult<>();
+    facadeTemplate.manage(result, new ManageCallback() {
+      @Override
+      public void checkParameter() {
+        ParaCheckUtil.checkParaNotNull(request, "request");
+        ParaCheckUtil.checkParaNotNull(request.getTenant(), "tenant");
+        ParaCheckUtil.checkEquals(request.getTenant(), RequestContext.getContext().ms.getTenant(),
+            "tenant is illegal");
+        MonitorScope ms = RequestContext.getContext().ms;
+        Boolean aBoolean = tenantInitService.checkTraceParams(ms.getTenant(), ms.getWorkspace(),
+            request.getTermParamsMap());
+        if (!aBoolean) {
+          throw new MonitorException("term params is illegal");
+        }
+      }
+
+      @Override
+      public void doManage() {
+        Builder builder = request.toBuilder();
+        builder.setTenant(
+            tenantInitService.getTraceTenant(RequestContext.getContext().ms.getTenant()));
+        List<Map<String, String>> serviceErrorDetail =
+            queryClientService.queryServiceErrorDetail(builder.build());
+        JsonResult.createSuccessResult(result, serviceErrorDetail);
       }
     });
 
