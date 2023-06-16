@@ -108,6 +108,15 @@ public class UserFavoriteFacadeImpl extends BaseFacade {
                   userFavorite.type, userFavorite.relateId));
             }
             break;
+          case "infra":
+          case "app":
+          case "integration":
+            // did not need check
+            log.info("can not find record, {}, {}", userFavorite.type, userFavorite.relateId);
+            break;
+          default:
+            throw new MonitorException(String.format("can not find record, %s-%s",
+                userFavorite.type, userFavorite.relateId));
         }
 
       }

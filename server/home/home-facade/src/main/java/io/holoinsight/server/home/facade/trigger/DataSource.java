@@ -19,7 +19,7 @@ public class DataSource implements Serializable {
 
   private String product; // 产品
 
-  private String position;
+  private List<String> position;
 
   private String metric; // 监控项
 
