@@ -102,7 +102,8 @@ public class Step3AuthFilter implements Filter {
         // 用户 cookies 里面拥有该租户权限，此时默认返回 true
         Set<String> tenantMaps = ma.hasTenantViewPowerList();
         Set<String> workspaceMaps = ma.hasWsViewPowerList();
-        if (StringUtils.isBlank(ms.getWorkspace()) && tenantMaps.contains(ms.getTenant())) {
+        if (StringUtils.isBlank(ms.getWorkspace()) && CollectionUtils.isEmpty(workspaceMaps)
+            && tenantMaps.contains(ms.getTenant())) {
           req.setAttribute(MonitorAuth.MONITOR_AUTH, ma);
           return true;
         } else if (StringUtils.isNotBlank(ms.getWorkspace()) && tenantMaps.contains(ms.getTenant())
