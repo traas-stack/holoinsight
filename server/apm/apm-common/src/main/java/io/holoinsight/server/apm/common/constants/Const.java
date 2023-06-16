@@ -41,7 +41,7 @@ public class Const {
   public static final String OTLP_RESOURCE_PREFIX = "resource.";
 
   // slow sql latency threshold
-  public static final long SLOW_SQL_THRESHOLD = 0;
+  public static final long SLOW_SQL_THRESHOLD = 300;
 
   public static final String SOURCE = "source";
   public static final String DEST = "dest";
