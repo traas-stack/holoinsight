@@ -57,7 +57,7 @@ public class ServiceInstanceEsStorage implements ServiceInstanceStorage {
             .must(QueryBuilders.termQuery(SpanDO.resource(SpanDO.SERVICE_NAME), service))
             .must(QueryBuilders.rangeQuery(this.timeSeriesField()).gte(startTime).lte(endTime));
 
-    commonBuilder.addTermParams(queryBuilder, termParams);
+    commonBuilder.addTermParamsWithAttrPrefix(queryBuilder, termParams);
     SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
     sourceBuilder.size(0);
     sourceBuilder.query(queryBuilder);
