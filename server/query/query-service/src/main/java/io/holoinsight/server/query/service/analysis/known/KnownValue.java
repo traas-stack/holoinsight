@@ -3,7 +3,7 @@
  */
 package io.holoinsight.server.query.service.analysis.known;
 
-import io.holoinsight.server.query.service.analysis.Mergable;
+import io.holoinsight.server.query.service.analysis.Mergeable;
 import lombok.Data;
 
 import java.util.HashMap;
@@ -14,7 +14,7 @@ import java.util.Map;
  * @version : EventDetailValue.java, v 0.1 2020年03月05日 14:34 xiangwanpeng Exp $
  */
 @Data
-public class KnownValue implements Mergable, Comparable {
+public class KnownValue implements Mergeable, Comparable {
 
   private static final long serialVersionUID = 1204956131343394884L;
 
@@ -35,7 +35,7 @@ public class KnownValue implements Mergable, Comparable {
   }
 
   @Override
-  public void merge(Mergable other) {
+  public void merge(Mergeable other) {
     if (null == other) {
       return;
     }

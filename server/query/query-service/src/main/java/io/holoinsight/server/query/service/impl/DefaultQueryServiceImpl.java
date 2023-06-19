@@ -50,8 +50,8 @@ import io.holoinsight.server.query.grpc.QueryProto.Point.Builder;
 import io.holoinsight.server.query.grpc.QueryProto.PqlInstantRequest;
 import io.holoinsight.server.query.service.QueryException;
 import io.holoinsight.server.query.service.QueryService;
-import io.holoinsight.server.query.service.analysis.AnalysisCenter;
-import io.holoinsight.server.query.service.analysis.Mergable;
+import io.holoinsight.server.query.service.analysis.AggCenter;
+import io.holoinsight.server.query.service.analysis.Mergeable;
 import io.holoinsight.server.query.service.apm.ApmAPI;
 import io.holoinsight.server.query.service.apm.ApmClient;
 import lombok.extern.slf4j.Slf4j;
@@ -831,7 +831,7 @@ public class DefaultQueryServiceImpl implements QueryService {
     MetricDefine apmMetric = this.apmMetrics.getUnchecked(tenant).get(datasource.getMetric());
     if (apmMetric != null) {
       return queryApm(tenant, datasource, apmMetric);
-    } else if (AnalysisCenter.isAnalysis(datasource.getAggregator())) {
+    } else if (AggCenter.isAggregator(datasource.getAggregator())) {
       return analysis(tenant, datasource);
     } else {
       return queryMetricStore(tenant, datasource);
@@ -1008,7 +1008,7 @@ public class DefaultQueryServiceImpl implements QueryService {
     QueryProto.QueryResponse.Builder builder = QueryProto.QueryResponse.newBuilder();
     Map<Map<String, String>, QueryProto.Result.Builder> tagsResults = new HashMap<>();
 
-    Map<Long, List<Pair<Map<String, String>, Mergable>>> detailMap = new HashMap<>();
+    Map<Long, List<Pair<Map<String, String>, Mergeable>>> detailMap = new HashMap<>();
 
     String aggregator = datasource.getAggregator();
 
@@ -1018,16 +1018,16 @@ public class DefaultQueryServiceImpl implements QueryService {
       for (val point : points) {
         long timestamp = point.getTimestamp();
         String value = point.getStrValue();
-        Mergable mergable = AnalysisCenter.parseAnalysis(tags, value, aggregator);
-        if (mergable != null) {
+        Mergeable mergeable = AggCenter.parseMergeable(tags, value, aggregator);
+        if (mergeable != null) {
           detailMap.computeIfAbsent(timestamp, _0 -> new ArrayList<>())
-              .add(Pair.of(tags, mergable));
+              .add(Pair.of(tags, mergeable));
         }
       }
     }
 
     detailMap.forEach((timestamp, pairs) -> {
-      Map<Map<String, String>, Optional<Pair<Map<String, String>, Mergable>>> reducedByTags =
+      Map<Map<String, String>, Optional<Pair<Map<String, String>, Mergeable>>> reducedByTags =
           pairs.stream().collect(Collectors.groupingBy(pair -> {
             Map resultTags = new HashMap();
             if (CollectionUtils.isNotEmpty(queryParam.getGroupBy())) {
