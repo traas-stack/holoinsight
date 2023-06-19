@@ -113,7 +113,7 @@ public class AlertTaskScheduler {
     }
 
     List<InspectConfig> inspectConfigs = computeTaskPackage.getInspectConfigs().parallelStream()
-        .filter(inspectConfig -> inspectConfig.getTimeFilter().timeInMe(timestamp, "GMT+8"))
+        .filter(inspectConfig -> inspectConfig.getTimeFilter().timeIsInMe(timestamp, "GMT+8"))
         .collect(Collectors.toList());
 
     computeTaskPackage.setTimestamp(timestamp);
