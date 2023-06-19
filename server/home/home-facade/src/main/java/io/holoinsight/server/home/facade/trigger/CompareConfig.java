@@ -3,6 +3,8 @@
  */
 package io.holoinsight.server.home.facade.trigger;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 import lombok.Data;
 
 import java.util.List;
@@ -14,9 +16,15 @@ import java.util.List;
 @Data
 public class CompareConfig {
 
-  private List<CompareParam> compareParam; // 触发条件
+  @JsonIgnore
+  private List<CompareParam> compareParam; // compare parameter composition
+
+  @JsonPropertyDescription("一组告警触发阈值，可以包含一个判断条件，大于10或小于1")
+  private CompareParam singleCompareParam; // single compare parameter
+
+  @JsonPropertyDescription("告警级别")
   private String triggerLevel;
 
-  // trigger summary
+  @JsonIgnore
   private String triggerContent;
 }
