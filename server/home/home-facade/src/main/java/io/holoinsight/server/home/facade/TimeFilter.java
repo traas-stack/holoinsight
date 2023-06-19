@@ -52,18 +52,8 @@ public class TimeFilter implements Serializable {
   }
 
   public boolean timeIsInMe(long term, String timeZone) {
-    // if ("localhost".equalsIgnoreCase(timeZone)) {
-    // timeZone = TimeZone.getDefault().getID();
-    // }
     if (TimeFilterEnum.DAY.getDesc().equalsIgnoreCase(this.model)) {
-      // String periodTime = parseWithTzByFmt(term, timeZone, "yyyy-MM-dd HH:mm:ss");
-      // if (periodTime.compareTo(this.from) >= 0 && periodTime.compareTo(this.to) <= 0) {
-      // return true;
-      // } else {
-      // return false;
-      // }
-      boolean time = timeInMe(term, timeZone);
-      return time;
+      return timeInMe(term, timeZone);
     } else {
       boolean time = timeInMe(term, timeZone);
       boolean weekin = weekInMe(term, timeZone);
