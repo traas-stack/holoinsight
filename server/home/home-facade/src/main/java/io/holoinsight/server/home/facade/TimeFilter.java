@@ -52,16 +52,8 @@ public class TimeFilter implements Serializable {
   }
 
   public boolean timeIsInMe(long term, String timeZone) {
-    if ("localhost".equalsIgnoreCase(timeZone)) {
-      timeZone = TimeZone.getDefault().getID();
-    }
     if (TimeFilterEnum.DAY.getDesc().equalsIgnoreCase(this.model)) {
-      String periodTime = parseWithTzByFmt(term, timeZone, "yyyy-MM-dd HH:mm:ss");
-      if (periodTime.compareTo(this.from) >= 0 && periodTime.compareTo(this.to) <= 0) {
-        return true;
-      } else {
-        return false;
-      }
+      return timeInMe(term, timeZone);
     } else {
       boolean time = timeInMe(term, timeZone);
       boolean weekin = weekInMe(term, timeZone);
@@ -76,11 +68,11 @@ public class TimeFilter implements Serializable {
     Calendar instance = Calendar.getInstance();
     instance.setTimeZone(TimeZone.getTimeZone(timeZone));
     instance.setTimeInMillis(term);
-    int d = instance.get(Calendar.DAY_OF_WEEK);
+    int d = instance.get(Calendar.DAY_OF_WEEK) - 1;
     return this.getWeeks().contains(d);
   }
 
-  public boolean timeInMe(long term, String timeZone) {
+  private boolean timeInMe(long term, String timeZone) {
     String start = this.getFrom();
     String end = this.getTo();
     if (StringUtils.isBlank(start)) {
