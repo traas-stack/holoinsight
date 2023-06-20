@@ -3,6 +3,7 @@
  */
 package io.holoinsight.server.query.service.analysis;
 
+import com.google.gson.reflect.TypeToken;
 import io.holoinsight.server.query.service.analysis.collect.AnalyzedLog;
 import io.holoinsight.server.query.service.analysis.collect.MergeData;
 import io.holoinsight.server.query.service.analysis.known.KnownValue;
@@ -64,7 +65,7 @@ public class AggCenter {
     });
 
     AGGREGATORS.put("sample", (tags, json) -> {
-      LogSamples logSamples = GsonUtils.fromJson(json, LogSamples.class);
+      LogSamples logSamples = GsonUtils.fromJson(json, new TypeToken<LogSamples>() {}.getType());
       if (logSamples != null && CollectionUtils.isNotEmpty(logSamples.getSamples())) {
         List<LogSample> lss = logSamples.getSamples();
         lss.forEach(ls -> ls.setHostname(tags.getOrDefault("hostname", "UNKNOWN")));
