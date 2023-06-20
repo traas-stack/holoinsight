@@ -176,20 +176,19 @@ public class TenantIntegrationGeneratedTask extends AbstractMonitorTask {
 
       String tableName = ops.getTenant() + "_app";
 
-      Map<String, AppModel> dbAppMaps = getDbApps(tableName);
-      if (CollectionUtils.isEmpty(dbAppMaps))
+      List<AppModel> dbApps = getDbApps(tableName);
+      if (CollectionUtils.isEmpty(dbApps))
         continue;
 
-      for (Map.Entry<String, AppModel> entry : dbAppMaps.entrySet()) {
-
-        if (entry.getValue().getMachineType().equalsIgnoreCase("VM")) {
-          generateds.add(generated(ops.getTenant(), entry.getValue().getWorkspace(), entry.getKey(),
+      for (AppModel appModel : dbApps) {
+        if (appModel.getMachineType().equalsIgnoreCase("VM")) {
+          generateds.add(generated(ops.getTenant(), appModel.getWorkspace(), appModel.getApp(),
               "vmsystem", "System", new HashMap<>()));
         } else {
-          generateds.add(generated(ops.getTenant(), entry.getValue().getWorkspace(), entry.getKey(),
+          generateds.add(generated(ops.getTenant(), appModel.getWorkspace(), appModel.getApp(),
               "podsystem", "System", new HashMap<>()));
         }
-        generateds.add(generated(ops.getTenant(), entry.getValue().getWorkspace(), entry.getKey(),
+        generateds.add(generated(ops.getTenant(), appModel.getWorkspace(), appModel.getApp(),
             "portcheck", "PortCheck", new HashMap<>()));
 
         Map<String, String> dictMap = MetaDictUtil.getValue(INTEGRATION_CONFIG,
@@ -197,7 +196,7 @@ public class TenantIntegrationGeneratedTask extends AbstractMonitorTask {
         if (CollectionUtils.isEmpty(dictMap))
           continue;
         for (Map.Entry<String, String> dict : dictMap.entrySet()) {
-          generateds.add(generated(ops.getTenant(), entry.getValue().getWorkspace(), entry.getKey(),
+          generateds.add(generated(ops.getTenant(), appModel.getWorkspace(), appModel.getApp(),
               dict.getValue(), dict.getKey(), new HashMap<>()));
         }
       }
@@ -327,26 +326,21 @@ public class TenantIntegrationGeneratedTask extends AbstractMonitorTask {
     return appSets;
   }
 
-  private Map<String, AppModel> getDbApps(String tableName) {
+  private List<AppModel> getDbApps(String tableName) {
 
-    Object o = CommonLocalCache.get(MD5Hash.getMD5(APP_META_KEY + tableName));
+    Object o = CommonLocalCache.get(MD5Hash.getMD5(APP_META_KEY + "@" + tableName));
     if (null != o) {
-      return (Map<String, AppModel>) o;
+      return (List<AppModel>) o;
     }
 
     List<AppModel> appModels = metaService.getAppModelFromAppTable(tableName);
 
     if (CollectionUtils.isEmpty(appModels))
-      return new HashMap<>();
+      return new ArrayList<>();
 
-    Map<String, AppModel> appMaps = new HashMap<>();
+    CommonLocalCache.put(MD5Hash.getMD5(APP_META_KEY + "@" + tableName), appModels, 10,
+        TimeUnit.MINUTES);
 
-    appModels.forEach(db -> {
-      appMaps.put(db.getApp(), db);
-    });
-
-    CommonLocalCache.put(MD5Hash.getMD5(APP_META_KEY + tableName), appMaps, 10, TimeUnit.MINUTES);
-
-    return appMaps;
+    return appModels;
   }
 }
