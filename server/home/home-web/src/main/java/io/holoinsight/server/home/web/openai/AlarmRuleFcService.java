@@ -101,7 +101,7 @@ public class AlarmRuleFcService {
   private MetricInfo findMetricInfo(String description) {
     QueryWrapper<MetricInfo> queryWrapper = new QueryWrapper<>();
     List<MetricInfo> metricInfos = this.metricInfoMapper.selectList(queryWrapper);
-    StringBuilder prompt = new StringBuilder();
+
     if (StringUtils.isBlank(description)) {
       return null;
     }
@@ -115,31 +115,7 @@ public class AlarmRuleFcService {
       metricMap.put(descKey, metricInfo);
     }
 
-    prompt.append(
-        "Find the combination from the list below that is most similar to the given combination. If none of the combinations are similar, return '[]'.\n"
-            + "Format:\n" + "\"\"\"\n" + "Given combination:[行业访问量@行业访问量告警]\n"
-            + "Candidate list: [行业访问量],[雏形访问量],[雏形2访问量],[老残游记]\n" + "Result:[行业访问量]\n"
-            + "Given combination:[电影@变形金刚]\n"
-            + "Candidate list: [失败率],[spm thing],[刷卡收单总量],[变形金刚5]\n" + "Result:[变形金刚5]\n"
-            + "\"\"\"\n") //
-        .append("Given combination:")//
-        .append(original) //
-        .append("\n Candidate list:") //
-        .append(String.join(",", combinations)) //
-        .append("\n Result:");
-    Message message = Message.builder().role(Message.Role.USER).content(prompt.toString()).build();
-    ChatCompletion chatCompletion = ChatCompletion.builder().messages(Arrays.asList(message))
-        .model(ChatCompletion.Model.GPT_3_5_TURBO.getName()).build();
-    ChatCompletionResponse chatCompletionResponse =
-        OpenAiService.getInstance().getClient().chatCompletion(chatCompletion);
-    List<ChatChoice> list = chatCompletionResponse.getChoices();
-    if (CollectionUtils.isEmpty(list)) {
-      return null;
-    }
-    ChatChoice chatChoice = list.get(0);
-    log.info("find metric prompt: {}", prompt);
-    log.info("find metric result {}", chatChoice.getMessage());
-    String content = chatChoice.getMessage().getContent();
+    String content = OpenAiService.getInstance().getSimilarKey(original, combinations);
     return metricMap.get(content);
   }
 

@@ -48,7 +48,7 @@ public class CustomPluginFcService {
     List<CustomPlugin> customPlugins = this.customPluginMapper.selectList(queryWrapper);
 
     if (StringUtils.isBlank(name)) {
-      return "日志配置名称是空的";
+      return "The name of log monitoring is empty";
     }
     String original = "[" + name + "]";
 

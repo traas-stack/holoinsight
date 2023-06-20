@@ -92,7 +92,7 @@ public class GPTFacadeImpl extends BaseFacade {
         .arguments(arguments) //
         .name(functionName) //
         .build();
-    Message message2 = Message.builder().role(Message.Role.ASSISTANT).content("方法参数")
+    Message message2 = Message.builder().role(Message.Role.ASSISTANT).content("Method arguments")
         .functionCall(functionCall).build();
     Message message3 =
         Message.builder().role(Message.Role.FUNCTION).name(functionName).content(result).build();

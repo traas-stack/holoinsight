@@ -22,17 +22,17 @@ import java.util.Map;
 @Data
 public class AlarmRuleFc {
 
-  @JsonPropertyDescription("告警规则名称")
+  @JsonPropertyDescription("The name of alarm rule")
   private String ruleName;
 
-  @JsonPropertyDescription("告警规则类型，例如：ai代表智能告警、rule代表规则告警、pql代表pql告警，默认为 rule")
+  @JsonPropertyDescription("The type of alarm rule, for example: \"ai\" represents intelligent alarm, \"rule\" represents rule alarm, \"pql\" represents PQL alarm, and the default is \"rule\"")
   private AlertRuleType ruleType;
-  @JsonPropertyDescription("告警规则描述信息")
+  @JsonPropertyDescription("Alarm rule description information")
   private String ruleDescribe;
-  @JsonPropertyDescription("监控指标 metric，例如: k8s_cpu_util")
+  @JsonPropertyDescription("Monitoring metric, for example: \"k8s_cpu_util\"")
   private String metric;
 
-  @JsonPropertyDescription("告警触发阈值列表，可以包含多组告警触发阈值")
+  @JsonPropertyDescription("List of alarm trigger thresholds, which can contain multiple sets of alarm trigger thresholds")
   private List<CompareConfig> compareConfigs;
 
   public static String getJsonSchema() {

@@ -19,10 +19,10 @@ public class CompareConfig {
   @JsonIgnore
   private List<CompareParam> compareParam; // compare parameter composition
 
-  @JsonPropertyDescription("一组告警触发阈值，可以包含一个判断条件，大于10或小于1")
+  @JsonPropertyDescription("A set of alarm trigger thresholds, which can contain a judgment condition, for example, greater than 10 or less than 1")
   private CompareParam singleCompareParam; // single compare parameter
 
-  @JsonPropertyDescription("告警级别")
+  @JsonPropertyDescription("Alarm severity level")
   private String triggerLevel;
 
   @JsonIgnore

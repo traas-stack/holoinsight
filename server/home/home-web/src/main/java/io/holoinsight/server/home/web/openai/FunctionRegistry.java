@@ -43,13 +43,13 @@ public class FunctionRegistry {
   public List<Functions> getFunctions() {
     Functions createAlertRule = Functions.builder() //
         .name("createAlertRule") //
-        .description("创建告警规则") //
+        .description("Create alarm rule") //
         .parameters(J.fromJson(AlarmRuleFc.getJsonSchema(), Parameters.class)) //
         .build();
 
     Functions queryCustomPlugin = Functions.builder() //
         .name("queryCustomPlugin") //
-        .description("查找日志监控配置") //
+        .description("Search for log monitoring configuration") //
         .parameters(J.fromJson(CustomPluginFc.getJsonSchema(), Parameters.class)) //
         .build();
 

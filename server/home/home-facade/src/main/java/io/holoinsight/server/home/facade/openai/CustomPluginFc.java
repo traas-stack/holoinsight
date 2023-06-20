@@ -20,7 +20,7 @@ import java.util.Map;
 @Data
 public class CustomPluginFc {
 
-  @JsonPropertyDescription("日志监控名称")
+  @JsonPropertyDescription("Name of log monitoring")
   private String name;
 
   public static String getJsonSchema() {
