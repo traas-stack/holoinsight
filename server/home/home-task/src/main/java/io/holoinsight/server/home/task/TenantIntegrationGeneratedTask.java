@@ -283,8 +283,9 @@ public class TenantIntegrationGeneratedTask extends AbstractMonitorTask {
 
   private Set<String> getCollectApps(CloudMonitorRange cloudMonitorRange) {
 
-    Set<String> o = CommonLocalCache.get(MD5Hash
-        .getMD5(INTEGRATION_GENERATED_CACHE_KEY + MD5Hash.getMD5(J.toJson(cloudMonitorRange))));
+    String cacheKey =
+        INTEGRATION_GENERATED_CACHE_KEY + "@" + MD5Hash.getMD5(J.toJson(cloudMonitorRange));
+    Set<String> o = CommonLocalCache.get(cacheKey);
 
     if (!CollectionUtils.isEmpty(o)) {
       return o;
@@ -318,17 +319,15 @@ public class TenantIntegrationGeneratedTask extends AbstractMonitorTask {
       appSets.add(app);
     }
 
-    CommonLocalCache.put(
-        MD5Hash
-            .getMD5(INTEGRATION_GENERATED_CACHE_KEY + MD5Hash.getMD5(J.toJson(cloudMonitorRange))),
-        appSets, 10, TimeUnit.MINUTES);
+    CommonLocalCache.put(cacheKey, appSets, 10, TimeUnit.MINUTES);
 
     return appSets;
   }
 
   private List<AppModel> getDbApps(String tableName) {
 
-    Object o = CommonLocalCache.get(MD5Hash.getMD5(APP_META_KEY + "@" + tableName));
+    String cacheKey = APP_META_KEY + "@" + tableName;
+    Object o = CommonLocalCache.get(cacheKey);
     if (null != o) {
       return (List<AppModel>) o;
     }
@@ -338,8 +337,7 @@ public class TenantIntegrationGeneratedTask extends AbstractMonitorTask {
     if (CollectionUtils.isEmpty(appModels))
       return new ArrayList<>();
 
-    CommonLocalCache.put(MD5Hash.getMD5(APP_META_KEY + "@" + tableName), appModels, 10,
-        TimeUnit.MINUTES);
+    CommonLocalCache.put(cacheKey, appModels, 10, TimeUnit.MINUTES);
 
     return appModels;
   }

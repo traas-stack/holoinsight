@@ -30,7 +30,7 @@ public class UserCache {
   public void put(String loginName, String tenantId, MonitorUser mu) {
     if (mu != null) {
       UserCacheKey key = new UserCacheKey(loginName, tenantId);
-      CommonLocalCache.put(MD5Hash.getMD5(USER_CACHE_KEY + "@" + J.toJson(key)), mu, 10,
+      CommonLocalCache.put(USER_CACHE_KEY + "@" + MD5Hash.getMD5(J.toJson(key)), mu, 10,
           TimeUnit.MINUTES);
     }
   }
@@ -44,7 +44,7 @@ public class UserCache {
    */
   public MonitorUser get(String loginName, String tenantId) {
     UserCacheKey key = new UserCacheKey(loginName, tenantId);
-    return CommonLocalCache.get(MD5Hash.getMD5(USER_CACHE_KEY + "@" + J.toJson(key)));
+    return CommonLocalCache.get(USER_CACHE_KEY + "@" + MD5Hash.getMD5(J.toJson(key)));
   }
 
   @Data
