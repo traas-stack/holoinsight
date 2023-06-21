@@ -75,5 +75,11 @@
             <version>${project.version}</version>
         </dependency>
 
+        <!-- openai -->
+        <dependency>
+            <groupId>com.unfbx</groupId>
+            <artifactId>chatgpt-java</artifactId>
+            <version>1.0.14-beta1</version>
+        </dependency>
     </dependencies>
 </project>

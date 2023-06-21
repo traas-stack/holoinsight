@@ -6,6 +6,7 @@ package io.holoinsight.server.home.web.openai;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import io.holoinsight.server.common.J;
 import io.holoinsight.server.home.biz.service.CustomPluginService;
+import io.holoinsight.server.home.biz.service.openai.OpenAiService;
 import io.holoinsight.server.home.common.util.scope.MonitorScope;
 import io.holoinsight.server.home.common.util.scope.RequestContext;
 import io.holoinsight.server.home.dal.mapper.CustomPluginMapper;

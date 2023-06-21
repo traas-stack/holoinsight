@@ -9,6 +9,7 @@ import io.holoinsight.server.common.J;
 import io.holoinsight.server.common.dao.entity.MetricInfo;
 import io.holoinsight.server.common.dao.mapper.MetricInfoMapper;
 import io.holoinsight.server.home.biz.service.AlertRuleService;
+import io.holoinsight.server.home.biz.service.openai.OpenAiService;
 import io.holoinsight.server.home.common.util.scope.MonitorScope;
 import io.holoinsight.server.home.common.util.scope.MonitorUser;
 import io.holoinsight.server.home.common.util.scope.RequestContext;

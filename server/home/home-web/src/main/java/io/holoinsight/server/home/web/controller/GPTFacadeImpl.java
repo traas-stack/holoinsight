@@ -17,7 +17,7 @@ import io.holoinsight.server.home.common.util.scope.PowerConstants;
 import io.holoinsight.server.home.web.common.TokenUrls;
 import io.holoinsight.server.home.web.interceptor.MonitorScopeAuth;
 import io.holoinsight.server.home.web.openai.FunctionRegistry;
-import io.holoinsight.server.home.web.openai.OpenAiService;
+import io.holoinsight.server.home.biz.service.openai.OpenAiService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.MethodInvoker;

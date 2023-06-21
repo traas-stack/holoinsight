@@ -1,7 +1,7 @@
 /*
  * Copyright 2022 Holoinsight Project Authors. Licensed under Apache-2.0.
  */
-package io.holoinsight.server.home.web.openai;
+package io.holoinsight.server.home.biz.service.openai;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.unfbx.chatgpt.OpenAiClient;
@@ -190,5 +190,13 @@ public class OpenAiService {
     ChatChoice chatChoice = list.get(0);
     log.info("{} find similar result {}", requestId, chatChoice.getMessage());
     return chatChoice.getMessage().getContent();
+  }
+
+  public void unload(String tenant) {
+    if (StringUtils.isEmpty(tenant)) {
+      return;
+    }
+    this.clientMap.remove(tenant);
+    this.streamClientMap.remove(tenant);
   }
 }
