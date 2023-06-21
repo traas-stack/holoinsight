@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import io.holoinsight.server.common.J;
 import io.holoinsight.server.common.JsonResult;
 import io.holoinsight.server.home.biz.service.UserOpLogService;
+import io.holoinsight.server.home.biz.ula.ULAFacade;
 import io.holoinsight.server.home.common.util.MonitorException;
 import io.holoinsight.server.home.common.util.scope.AuthTargetType;
 import io.holoinsight.server.home.common.util.scope.MonitorScope;
@@ -19,6 +20,7 @@ import io.holoinsight.server.home.dal.mapper.UserinfoVerificationMapper;
 import io.holoinsight.server.home.dal.model.OpType;
 import io.holoinsight.server.home.dal.model.Userinfo;
 import io.holoinsight.server.home.dal.model.UserinfoVerification;
+import io.holoinsight.server.home.dal.model.dto.AlarmGroupDTO;
 import io.holoinsight.server.home.facade.UserinfoDTO;
 import io.holoinsight.server.home.facade.page.MonitorPageRequest;
 import io.holoinsight.server.home.facade.page.MonitorPageResult;
@@ -41,8 +43,12 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 /**
@@ -66,6 +72,9 @@ public class UserinfoFacadeImpl extends BaseFacade {
   @Autowired
   private UserOpLogService userOpLogService;
 
+  @Autowired
+  private ULAFacade ulaFacade;
+
   @PostMapping("/create")
   @ResponseBody
   @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.EDIT)
@@ -76,10 +85,15 @@ public class UserinfoFacadeImpl extends BaseFacade {
       facadeTemplate.manage(result, new ManageCallback() {
         @Override
         public void checkParameter() {
-          ParaCheckUtil.checkParaNotBlank(userinfoDTO.getNickname(), "nickname");
+          ParaCheckUtil.checkParaNotBlank(userinfoDTO.getNickname(), "nickname can not be blank.");
           if (StringUtils.isNotBlank(userinfoDTO.getNickname())) {
-            ParaCheckUtil.checkInvalidCharacter(userinfoDTO.getNickname(), "invalid nickname");
+            ParaCheckUtil.checkInvalidCharacter(userinfoDTO.getNickname(),
+                "invalid nickname, please use a-z A-Z 0-9 Chinese - _ , . spaces");
           }
+          ParaCheckUtil.checkParaNotBlank(userinfoDTO.getUid(), "uid can not be blank.");
+          ParaCheckUtil.checkParaBoolean(
+              checkMembers(Collections.singletonList(userinfoDTO.getUid())),
+              userinfoDTO.getUid() + " is not in current tenant scope.");
         }
 
         @Override
@@ -164,12 +178,19 @@ public class UserinfoFacadeImpl extends BaseFacade {
                 RequestContext.getContext().ms.getTenant(), "tenant is illegal");
           }
           if (StringUtils.isNotBlank(userinfoDTO.getNickname())) {
-            ParaCheckUtil.checkInvalidCharacter(userinfoDTO.getNickname(), "invalid nickname");
+            ParaCheckUtil.checkInvalidCharacter(userinfoDTO.getNickname(),
+                "invalid nickname, please use a-z A-Z 0-9 Chinese - _ , . spaces");
+          }
+          if (StringUtils.isNotEmpty(userinfoDTO.getUid())) {
+            ParaCheckUtil.checkParaBoolean(
+                checkMembers(Collections.singletonList(userinfoDTO.getUid())),
+                userinfoDTO.getUid() + " is not in current tenant scope.");
           }
         }
 
         @Override
         public void doManage() {
+
           MonitorScope ms = RequestContext.getContext().ms;
           QueryWrapper<Userinfo> queryWrapper = new QueryWrapper<>();
           queryWrapper.eq("id", userinfoDTO.getId());
@@ -407,5 +428,22 @@ public class UserinfoFacadeImpl extends BaseFacade {
       queryWrapper.eq("workspace", target.getWorkspace());
     }
     return queryWrapper;
+  }
+
+  private boolean checkMembers(List<String> uidList) {
+    if (CollectionUtils.isEmpty(uidList)) {
+      return true;
+    }
+    MonitorScope ms = RequestContext.getContext().ms;
+    MonitorUser mu = RequestContext.getContext().mu;
+
+    Set<String> userIds = ulaFacade.getCurrentULA().getUserIds(mu, ms);
+
+    for (String uid : uidList) {
+      if (!userIds.contains(uid)) {
+        return false;
+      }
+    }
+    return true;
   }
 }

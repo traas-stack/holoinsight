@@ -85,6 +85,9 @@ public class Userinfo {
   @Column(name = "workspace")
   private String workspace;
 
+  @Column(name = "uid")
+  private String uid;
+
   public void setPhoneNumber(String phoneNumber) {
     this.phoneNumber = phoneNumber;
     this.phoneNumberAlias = mask(phoneNumber);

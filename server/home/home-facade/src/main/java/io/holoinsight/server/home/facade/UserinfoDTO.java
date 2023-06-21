@@ -38,6 +38,8 @@ public class UserinfoDTO {
 
   private String workspace;
 
+  private String uid;
+
   private Long userinfoVerificationId;
 
   private String userinfoVerificationCode;

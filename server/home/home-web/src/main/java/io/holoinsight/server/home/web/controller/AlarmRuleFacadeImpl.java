@@ -51,6 +51,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -107,7 +108,8 @@ public class AlarmRuleFacadeImpl extends BaseFacade {
         ParaCheckUtil.checkParaNotNull(alarmRuleDTO.getStatus(), "status");
         ParaCheckUtil.checkParaNotNull(alarmRuleDTO.getRecover(), "recover");
         ParaCheckUtil.checkParaNotNull(alarmRuleDTO.getIsMerge(), "isMerge");
-        ParaCheckUtil.checkInvalidCharacter(alarmRuleDTO.getRuleName(), "invalid ruleName");
+        ParaCheckUtil.checkInvalidCharacter(alarmRuleDTO.getRuleName(),
+            "invalid ruleName, please use a-z A-Z 0-9 Chinese - _ , . spaces");
       }
 
       @Override
@@ -171,7 +173,8 @@ public class AlarmRuleFacadeImpl extends BaseFacade {
         ParaCheckUtil.checkEquals(alarmRuleDTO.getTenant(),
             RequestContext.getContext().ms.getTenant(), "tenant is illegal");
         if (StringUtils.isNotBlank(alarmRuleDTO.getRuleName())) {
-          ParaCheckUtil.checkInvalidCharacter(alarmRuleDTO.getRuleName(), "invalid ruleName");
+          ParaCheckUtil.checkInvalidCharacter(alarmRuleDTO.getRuleName(),
+              "invalid ruleName, please use a-z A-Z 0-9 Chinese - _ , . spaces");
         }
       }
 
@@ -407,7 +410,7 @@ public class AlarmRuleFacadeImpl extends BaseFacade {
         alarmGroupService.getListByUserLike(userId, MonitorCookieUtil.getTenantOrException());
 
     if (CollectionUtils.isEmpty(listByUserLike))
-      return null;
+      return Collections.emptyList();
 
     List<AlarmRuleDTO> alarmRuleDTOS = new ArrayList<>();
     for (AlarmGroupDTO alarmGroupDTO : listByUserLike) {
@@ -419,8 +422,9 @@ public class AlarmRuleFacadeImpl extends BaseFacade {
       }
       List<AlarmSubscribeInfo> alarmSubscribeInfos = alarmSubscribeService.queryByMap(conditions);
 
-      if (CollectionUtils.isEmpty(alarmSubscribeInfos))
-        return null;
+      if (CollectionUtils.isEmpty(alarmSubscribeInfos)) {
+        continue;
+      }
 
       List<String> ruleIds = new ArrayList<>();
       for (AlarmSubscribeInfo alarmSubscribeInfo : alarmSubscribeInfos) {
