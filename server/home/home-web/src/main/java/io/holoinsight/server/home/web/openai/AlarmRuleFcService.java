@@ -5,10 +5,6 @@ package io.holoinsight.server.home.web.openai;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.google.gson.reflect.TypeToken;
-import com.unfbx.chatgpt.entity.chat.ChatChoice;
-import com.unfbx.chatgpt.entity.chat.ChatCompletion;
-import com.unfbx.chatgpt.entity.chat.ChatCompletionResponse;
-import com.unfbx.chatgpt.entity.chat.Message;
 import io.holoinsight.server.common.J;
 import io.holoinsight.server.common.dao.entity.MetricInfo;
 import io.holoinsight.server.common.dao.mapper.MetricInfoMapper;
@@ -32,7 +28,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
@@ -56,11 +51,15 @@ public class AlarmRuleFcService {
   @Autowired
   private AlertRuleService alertRuleService;
 
+  @Autowired
+  private OpenAiService openAiService;
+
   public String createAlertRule(Map<String, Object> paramMap) {
-    log.info("paramMap: " + J.toJson(paramMap));
+    String requestId = (String) paramMap.get("requestId");
+    log.info("{} paramMap: {}", requestId, J.toJson(paramMap));
     String ruleName = (String) paramMap.get("ruleName");
     String metric = (String) paramMap.get("metric");
-    MetricInfo metricInfo = findMetricInfo(ruleName);
+    MetricInfo metricInfo = findMetricInfo(requestId, ruleName);
     if (metricInfo == null) {
       return null;
     }
@@ -98,7 +97,7 @@ public class AlarmRuleFcService {
     return J.toJson(alarmRuleDTO);
   }
 
-  private MetricInfo findMetricInfo(String description) {
+  private MetricInfo findMetricInfo(String requestId, String description) {
     QueryWrapper<MetricInfo> queryWrapper = new QueryWrapper<>();
     List<MetricInfo> metricInfos = this.metricInfoMapper.selectList(queryWrapper);
 
@@ -115,7 +114,7 @@ public class AlarmRuleFcService {
       metricMap.put(descKey, metricInfo);
     }
 
-    String content = OpenAiService.getInstance().getSimilarKey(original, combinations);
+    String content = this.openAiService.getSimilarKey(original, combinations, requestId);
     return metricMap.get(content);
   }
 

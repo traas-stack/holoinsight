@@ -35,8 +35,12 @@ public class CustomPluginFcService {
   @Autowired
   private CustomPluginService customPluginService;
 
+  @Autowired
+  private OpenAiService openAiService;
+
   public String queryCustomPlugin(Map<String, Object> paramMap) {
-    log.info("paramMap: " + J.toJson(paramMap));
+    String requestId = (String) paramMap.get("requestId");
+    log.info("{} paramMap: {}", requestId, J.toJson(paramMap));
     String name = (String) paramMap.get("name");
 
     QueryWrapper<CustomPlugin> queryWrapper = new QueryWrapper<>();
@@ -60,7 +64,7 @@ public class CustomPluginFcService {
       map.put(descKey, item);
     }
 
-    String key = OpenAiService.getInstance().getSimilarKey(original, combinations);
+    String key = this.openAiService.getSimilarKey(original, combinations, requestId);
     CustomPlugin customPlugin = map.get(key);
     if (customPlugin == null) {
       return null;
