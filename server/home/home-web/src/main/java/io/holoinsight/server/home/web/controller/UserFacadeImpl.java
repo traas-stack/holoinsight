@@ -85,7 +85,7 @@ public class UserFacadeImpl extends BaseFacade {
       public void doManage() {
         MonitorUser mu = RequestContext.getContext().mu;
         MonitorScope ms = RequestContext.getContext().ms;
-        JsonResult.createSuccessResult(result, ulaFacade.getCurrentULA().getUsers(mu, ms));
+        JsonResult.createSuccessResult(result, ulaFacade.getUsers(mu, ms));
       }
     });
 
@@ -106,7 +106,7 @@ public class UserFacadeImpl extends BaseFacade {
 
       @Override
       public void doManage() {
-        JsonResult.createSuccessResult(result, ulaFacade.getCurrentULA().getByLoginName(loginName));
+        JsonResult.createSuccessResult(result, ulaFacade.getByLoginName(loginName));
       }
     });
 
@@ -127,7 +127,7 @@ public class UserFacadeImpl extends BaseFacade {
 
       @Override
       public void doManage() {
-        JsonResult.createSuccessResult(result, ulaFacade.getCurrentULA().getByUserId(userId));
+        JsonResult.createSuccessResult(result, ulaFacade.getByUserId(userId));
       }
     });
 
