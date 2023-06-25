@@ -159,6 +159,7 @@ public class UserinfoVerificationFacadeImpl extends BaseFacade {
       metaDataDictValue.setCreator("userinfo_verification");
       metaDataDictValue.setModifier("userinfo_verification");
       metaDataDictValue.setGmtCreate(new Date());
+      metaDataDictValue.setGmtModified(new Date());
       metaDataDictValue.setDictDesc(tenant + "day verification count");
       metaDataDictValueMapper.insert(metaDataDictValue);
     } else {
