@@ -216,7 +216,7 @@ public class CustomPluginUpdateListener {
         metricInfoDTO.setMetric(collectMetric.getTableName());
         metricInfoDTO.setMetricTable(collectMetric.getTargetTable());
         metricInfoDTO.setDeleted(customPluginDTO.status == CustomPluginStatus.OFFLINE);
-        metricInfoDTO.setDescription(customPluginDTO.getName() + ", " + collectMetric.tableName);
+        metricInfoDTO.setDescription(customPluginDTO.getName() + "_" + collectMetric.tableName);
         metricInfoDTO.setUnit("number");
         metricInfoDTO.setPeriod(customPluginDTO.getPeriodType().dataUnitMs / 1000);
 
