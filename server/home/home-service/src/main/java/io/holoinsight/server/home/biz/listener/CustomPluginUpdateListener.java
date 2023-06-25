@@ -41,10 +41,10 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * 通知registry
+ * Notify registry
  *
  * @author jsy1001de
- * @version 1.0: CustomPluginUpdateListener.java, v 0.1 2022年03月15日 8:40 下午 jinsong.yjs Exp $
+ * @version 1.0: CustomPluginUpdateListener.java, v 0.1 2022-03-15 8:40 pm jinsong.yjs Exp $
  */
 @Component
 @Slf4j
@@ -71,11 +71,11 @@ public class CustomPluginUpdateListener {
     // 0. save metricInfo
     saveMetricInfo(customPluginDTO);
 
-    // 1. 转换模型
-    // 2. 落库
-    // 3. 通知registry
+    // 1. conversion model
+    // 2. update database
+    // 3. notify registry
     try {
-      // 转成采集模型
+      // convert to Acquisition Model
       CustomPluginConf conf = customPluginDTO.getConf();
 
       List<LogPath> logPaths = conf.logPaths;
@@ -97,10 +97,10 @@ public class CustomPluginUpdateListener {
       if (CollectionUtils.isEmpty(sqlTaskMaps))
         return;
 
-      // 更新
+      // update
       List<Long> upsert = upsert(sqlTaskMaps, customPluginDTO);
 
-      // 通知registry
+      // notify registry
       notify(upsert);
     } catch (Throwable e) {
       log.error("fail to convert customPlugin to gaeaCollectConfig id {} for {}",
@@ -136,7 +136,7 @@ public class CustomPluginUpdateListener {
       gaeaCollectConfigDTO.refId = "custom_" + customPluginDTO.getId();
 
       byMap.remove(entry.getKey());
-      // 下线配置直接置为 deleted=1
+      // The offline configuration is directly set to deleted=1
       if (customPluginDTO.getStatus() == CustomPluginStatus.OFFLINE) {
         Long aLong = gaeaCollectConfigService.updateDeleted(gaeaCollectConfigDTO.tableName);
         if (null != aLong)
@@ -161,7 +161,7 @@ public class CustomPluginUpdateListener {
 
   private void notify(List<Long> upsertList) {
 
-    // grpc 通知id更新
+    // grpc notification id update
   }
 
   private SqlTask buildSqlTask(List<LogPath> logPaths, CollectMetric collectMetric,
