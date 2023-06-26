@@ -63,7 +63,11 @@
     </if>
   </update>
 
-  <select id="selectByUks" resultMap="BaseResultMap">
+    <delete id="cleanMetaData">
+        delete from meta_dim_data where deleted = 1 and  <![CDATA[gmt_modified <= #{end}]]>
+    </delete>
+
+    <select id="selectByUks" resultMap="BaseResultMap">
     select * from meta_dim_data
     where
       table_name = #{tableName}

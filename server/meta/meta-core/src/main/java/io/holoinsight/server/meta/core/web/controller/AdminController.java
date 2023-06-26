@@ -37,10 +37,9 @@ public class AdminController {
     queryExample.getParams().putAll(condition);
     if (condition.containsKey("rowKeys")) {
       Object rowKeys = condition.remove("rowKeys");
-      queryExample.setRowKeys((List)rowKeys);
+      queryExample.setRowKeys((List) rowKeys);
     }
-    return JsonResult
-        .createSuccessResult(coreService.queryByExample(collection, queryExample));
+    return JsonResult.createSuccessResult(coreService.queryByExample(collection, queryExample));
   }
 
 }

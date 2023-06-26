@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
+import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
@@ -67,8 +68,19 @@ public class SqlDataCoreService extends AbstractDataCoreService {
   private AtomicBoolean syncing = new AtomicBoolean(false);
   private static final long SYNC_INTERVAL = PERIOD * 1000;
   private static final long LOG_INTERVAL = 60 * 1000;
+  private static final long DEFAULT_DEL_DURATION = 7 * 24 * 60 * 60 * 1000;
+
   public static final ScheduledThreadPoolExecutor scheduledExecutor =
       new ScheduledThreadPoolExecutor(2, r -> new Thread(r, "meta-sync-scheduler"));
+  public static final ScheduledThreadPoolExecutor cleanMeatExecutor =
+      new ScheduledThreadPoolExecutor(2, r -> new Thread(r, "meta-clean-scheduler"));
+
+  private void cleanMeta() {
+    long cleanMetaDataDuration = getCleanMetaDataDuration();
+    long end = System.currentTimeMillis() - cleanMetaDataDuration;
+    Integer count = metaDataMapper.cleanMetaData(new Date(end));
+    logger.info("[DIM-CLEAN] cleaned up {} pieces of data before {}", count, end);
+  }
 
   public SqlDataCoreService(MetaDataMapper metaDataMapper, SuperCacheService superCacheService) {
     this.metaDataMapper = metaDataMapper;
@@ -79,6 +91,10 @@ public class SqlDataCoreService extends AbstractDataCoreService {
     initMetaConfig();
     sync();
     scheduledExecutor.scheduleAtFixedRate(this::sync, 60 - LocalTime.now().getSecond(), PERIOD,
+        TimeUnit.SECONDS);
+    // cleanMeatExecutor.scheduleAtFixedRate(this::cleanMeta, new Random().nextInt(3600),3600,
+    // TimeUnit.SECONDS);
+    cleanMeatExecutor.scheduleAtFixedRate(this::cleanMeta, 60 - LocalTime.now().getSecond(), PERIOD,
         TimeUnit.SECONDS);
   }
 
@@ -588,4 +604,20 @@ public class SqlDataCoreService extends AbstractDataCoreService {
         stopWatch.getTime());
     return count;
   }
+
+  private long getCleanMetaDataDuration() {
+    Map<String, Map<String, MetaDataDictValue>> metaDataDictValueMap =
+        superCacheService.getSc().metaDataDictValueMap;
+    Map<String, MetaDataDictValue> indexKeyMaps = metaDataDictValueMap.get(ConstModel.META_CONFIG);
+    if (CollectionUtils.isEmpty(indexKeyMaps)) {
+      return DEFAULT_DEL_DURATION;
+    }
+    MetaDataDictValue metaDataDictValue = indexKeyMaps.get(ConstModel.CLEAN_META_DURATION_HOURS);
+    if (Objects.isNull(metaDataDictValue)) {
+      return DEFAULT_DEL_DURATION;
+    }
+    int durationHours = Integer.parseInt(metaDataDictValue.getDictValue());
+    return durationHours * 60L * 60 * 1000L;
+  }
+
 }
