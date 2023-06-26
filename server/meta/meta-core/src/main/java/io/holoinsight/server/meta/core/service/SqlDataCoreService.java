@@ -92,9 +92,7 @@ public class SqlDataCoreService extends AbstractDataCoreService {
     sync();
     scheduledExecutor.scheduleAtFixedRate(this::sync, 60 - LocalTime.now().getSecond(), PERIOD,
         TimeUnit.SECONDS);
-    // cleanMeatExecutor.scheduleAtFixedRate(this::cleanMeta, new Random().nextInt(3600),3600,
-    // TimeUnit.SECONDS);
-    cleanMeatExecutor.scheduleAtFixedRate(this::cleanMeta, 60 - LocalTime.now().getSecond(), PERIOD,
+    cleanMeatExecutor.scheduleAtFixedRate(this::cleanMeta, new Random().nextInt(3600), 3600,
         TimeUnit.SECONDS);
   }
 
