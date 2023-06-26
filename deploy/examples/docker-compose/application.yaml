@@ -4,9 +4,9 @@ spring:
     username: holoinsight
     password: holoinsight
     driver-class-name: com.mysql.cj.jdbc.Driver
-  data:
-    mongodb:
-      uri: mongodb://holoinsight:holoinsight@mongo:27017/holoinsight?keepAlive=true&maxIdleTimeMS=1500000&maxWaitTime=120000&connectTimeout=10000&socketTimeout=10000&socketKeepAlive=true&retryWrites=true
+#  data:
+#    mongodb:
+#      uri: mongodb://holoinsight:holoinsight@mongo:27017/holoinsight?keepAlive=true&maxIdleTimeMS=1500000&maxWaitTime=120000&connectTimeout=10000&socketTimeout=10000&socketKeepAlive=true&retryWrites=true
 
 holoinsight:
   metric:
@@ -16,3 +16,8 @@ holoinsight:
     enabled: false
   meta:
     database: holoinsight
+
+management:
+  health:
+    mongo:
+      enabled: false
