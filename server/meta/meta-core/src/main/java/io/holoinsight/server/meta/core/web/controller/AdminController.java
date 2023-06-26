@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -27,29 +28,19 @@ import java.util.Map;
 public class AdminController {
 
   @Autowired
-  @Qualifier("mongoDataCoreService")
-  private DBCoreService mongoDataCoreService;
+  private DBCoreService coreService;
 
-  @Autowired
-  @Qualifier("sqlDataCoreService")
-  private DBCoreService sqlDataCoreService;
-
-  @PostMapping("/mongodb/query/{collection}")
+  @PostMapping("/meta/query/{collection}")
   public JsonResult<Object> query(@PathVariable("collection") String collection,
       @RequestBody Map<String, Object> condition) {
     QueryExample queryExample = new QueryExample();
     queryExample.getParams().putAll(condition);
+    if (condition.containsKey("rowKeys")) {
+      Object rowKeys = condition.remove("rowKeys");
+      queryExample.setRowKeys((List)rowKeys);
+    }
     return JsonResult
-        .createSuccessResult(mongoDataCoreService.queryByExample(collection, queryExample));
-  }
-
-  @PostMapping("/mysql/query/{collection}")
-  public JsonResult<Object> mysqlQuery(@PathVariable("collection") String collection,
-      @RequestBody Map<String, Object> condition) {
-    QueryExample queryExample = new QueryExample();
-    queryExample.getParams().putAll(condition);
-    return JsonResult
-        .createSuccessResult(sqlDataCoreService.queryByExample(collection, queryExample));
+        .createSuccessResult(coreService.queryByExample(collection, queryExample));
   }
 
 }

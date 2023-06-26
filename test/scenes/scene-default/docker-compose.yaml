@@ -11,17 +11,17 @@ services:
     extends:
       file: ../common/base.yaml
       service: phpmyadmin
-  mongo:
-    extends:
-      file: ../common/base.yaml
-      service: mongo
-  mongo-express:
-    extends:
-      file: ../common/base.yaml
-      service: mongo-express
-    depends_on:
-      mongo:
-        condition: service_healthy
+#  mongo:
+#    extends:
+#      file: ../common/base.yaml
+#      service: mongo
+#  mongo-express:
+#    extends:
+#      file: ../common/base.yaml
+#      service: mongo-express
+#    depends_on:
+#      mongo:
+#        condition: service_healthy
   ceresdb:
     extends:
       file: ../common/base.yaml
@@ -70,8 +70,8 @@ services:
     depends_on:
       mysql-data-init:
         condition: service_completed_successfully
-      mongo:
-        condition: service_healthy
+#      mongo:
+#        condition: service_healthy
       ceresdb:
         condition: service_healthy
       es:

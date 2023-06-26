@@ -119,7 +119,7 @@ public class SqlDataCoreService extends AbstractDataCoreService {
             logger.info("[META-SYNC] sync success, size={}, last={}, now={}, cost={}", count, last,
                 now, stopWatch.getTime());
           }
-          if (now - logLast >= LOG_INTERVAL) {
+          if (now - logLast >= LOG_INTERVAL && now / 1000 % 60 <= PERIOD) {
             ukMetaCache.forEach((tableName, metaData) -> {
               logger.info("[META-INFO] ukMetaCache at {}, table={}, index={}, records={}", now,
                   tableName, ConstModel.default_pk,
