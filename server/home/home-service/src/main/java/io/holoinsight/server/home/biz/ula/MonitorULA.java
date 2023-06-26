@@ -128,7 +128,9 @@ public class MonitorULA implements ULA {
 
   @Override
   public List<MonitorUser> getUsers(MonitorUser user, MonitorScope ms) {
-    return new ArrayList<>();
+    List<MonitorUser> users = new ArrayList<>();
+    users.add(MonitorUser.adminUser);
+    return users;
   }
 
   @Override

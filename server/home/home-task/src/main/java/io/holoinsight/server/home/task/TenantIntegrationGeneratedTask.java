@@ -190,6 +190,8 @@ public class TenantIntegrationGeneratedTask extends AbstractMonitorTask {
         }
         generateds.add(generated(ops.getTenant(), appModel.getWorkspace(), appModel.getApp(),
             "portcheck", "PortCheck", new HashMap<>()));
+        generateds.add(generated(ops.getTenant(), appModel.getWorkspace(), appModel.getApp(),
+            "logpattern", "LogPattern", new HashMap<>()));
 
         Map<String, String> dictMap = MetaDictUtil.getValue(INTEGRATION_CONFIG,
             INTEGRATION_LOCAL_PRODUCT, new TypeToken<Map<String, String>>() {});
