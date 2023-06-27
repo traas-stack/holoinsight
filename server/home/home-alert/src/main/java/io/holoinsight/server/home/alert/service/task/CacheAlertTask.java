@@ -86,33 +86,41 @@ public class CacheAlertTask {
     }
   }
 
-  public ComputeTaskPackage convert(List<AlarmRule> alarmRuleDOS) {
+  public ComputeTaskPackage convert(List<AlarmRule> alarmRules) {
     ComputeTaskPackage computeTaskPackage = new ComputeTaskPackage();
     computeTaskPackage.setTraceId(UUID.randomUUID().toString());
     List<InspectConfig> inspectConfigs = new ArrayList<>();
     Map<String, List<InspectConfig>> logInspectConfigs = new HashMap<>();
     Map<String, InspectConfig> uniqueIdMap = new HashMap<>();
+
     try {
-      alarmRuleDOS.forEach(alarmRuleDO -> {
-        InspectConfig inspectConfig = DoConvert.alarmRuleConverter(alarmRuleDO);
-        if (enableAlert(inspectConfig)) {
-          // cache
-          if (isLogAlert(inspectConfig)) {
-            List<InspectConfig> configs = logInspectConfigs.computeIfAbsent(
-                String.valueOf(inspectConfig.getSourceId()), k -> new ArrayList<>());
-            configs.add(inspectConfig);
+      if (!CollectionUtils.isEmpty(alarmRules)) {
+        for (AlarmRule alarmRule : alarmRules) {
+          try {
+            InspectConfig inspectConfig = DoConvert.alarmRuleConverter(alarmRule);
+            if (enableAlert(inspectConfig)) {
+              // cache
+              if (isLogAlert(inspectConfig)) {
+                List<InspectConfig> configs = logInspectConfigs.computeIfAbsent(
+                    String.valueOf(inspectConfig.getSourceId()), k -> new ArrayList<>());
+                configs.add(inspectConfig);
+              }
+              uniqueIdMap.put(inspectConfig.getUniqueId(), inspectConfig);
+              inspectConfigs.add(inspectConfig);
+            }
+          } catch (Exception e) {
+            LOGGER.error("{} [CRITICAL] rule id {} fail to convert alarmRule",
+                computeTaskPackage.getTraceId(), alarmRule.getId(), e);
           }
-          uniqueIdMap.put(inspectConfig.getUniqueId(), inspectConfig);
-          inspectConfigs.add(inspectConfig);
         }
-      });
+      }
       supplementLogConfig(logInspectConfigs);
       cacheData.setUniqueIdMap(uniqueIdMap);
       if (inspectConfigs.size() != 0) {
         computeTaskPackage.setInspectConfigs(inspectConfigs);
       }
     } catch (Exception e) {
-      LOGGER.error("fail to convert alarmRules for {}", e.getMessage(), e);
+      LOGGER.error("{} [CRITICAL] fail to convert alarmRules", computeTaskPackage.getTraceId(), e);
     }
     return computeTaskPackage;
   }
