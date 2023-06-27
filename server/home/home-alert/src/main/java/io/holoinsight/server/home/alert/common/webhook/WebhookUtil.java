@@ -25,7 +25,7 @@ public class WebhookUtil {
 
   private static Logger LOGGER = LoggerFactory.getLogger(WebhookUtil.class);
 
-  private static final String CONTENT_TYPE_UTF_8 = "application/json; charset=utf-8";
+  public static final String CONTENT_TYPE_UTF_8 = "application/json; charset=utf-8";
 
   /**
    * 发送webhook消息
