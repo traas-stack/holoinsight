@@ -55,6 +55,7 @@ public class SqlDataCoreService extends AbstractDataCoreService {
   public static final int PERIOD = 20;
   public static final int DELETED = 1;
   public static final String EMPTY_VALUE = "NULL";
+  public static final int CLEAN_TASK_PERIOD = 3600;
   private MetaDataMapper metaDataMapper;
   private SuperCacheService superCacheService;
 
@@ -76,10 +77,17 @@ public class SqlDataCoreService extends AbstractDataCoreService {
       new ScheduledThreadPoolExecutor(2, r -> new Thread(r, "meta-clean-scheduler"));
 
   private void cleanMeta() {
-    long cleanMetaDataDuration = getCleanMetaDataDuration();
-    long end = System.currentTimeMillis() - cleanMetaDataDuration;
-    Integer count = metaDataMapper.cleanMetaData(new Date(end));
-    logger.info("[DIM-CLEAN] cleaned up {} pieces of data before {}", count, end);
+    StopWatch stopWatch = StopWatch.createStarted();
+    try {
+      long cleanMetaDataDuration = getCleanMetaDataDuration();
+      long end = System.currentTimeMillis() - cleanMetaDataDuration;
+      logger.info("[DIM-CLEAN] the cleaning task will clean up the data before {}", end);
+      Integer count = metaDataMapper.cleanMetaData(new Date(end));
+      logger.info("[DIM-CLEAN] cleaned up {} pieces of data before {}, cost: {}", count, end,
+          stopWatch.getTime());
+    } catch (Exception e) {
+      logger.error("[DIM-CLEAN] an exception occurred in the cleanup task", e);
+    }
   }
 
   public SqlDataCoreService(MetaDataMapper metaDataMapper, SuperCacheService superCacheService) {
@@ -92,7 +100,9 @@ public class SqlDataCoreService extends AbstractDataCoreService {
     sync();
     scheduledExecutor.scheduleAtFixedRate(this::sync, 60 - LocalTime.now().getSecond(), PERIOD,
         TimeUnit.SECONDS);
-    cleanMeatExecutor.scheduleAtFixedRate(this::cleanMeta, new Random().nextInt(3600), 3600,
+    int initialDelay = new Random().nextInt(CLEAN_TASK_PERIOD);
+    logger.info("[DIM-CLEAN] clean task will scheduled after {}", initialDelay);
+    cleanMeatExecutor.scheduleAtFixedRate(this::cleanMeta, initialDelay, CLEAN_TASK_PERIOD,
         TimeUnit.SECONDS);
   }
 
@@ -129,7 +139,8 @@ public class SqlDataCoreService extends AbstractDataCoreService {
             logger.info("[META-SYNC] init success, size={}, now={}, cost={}", count, now,
                 stopWatch.getTime());
           } else {
-            int count = queryChangedMeta(new Date(last - 2000), new Date(now), true, buildCache());
+            int count =
+                queryChangedMeta(new Date(last - SYNC_INTERVAL), new Date(now), true, buildCache());
             logger.info("[META-SYNC] sync success, size={}, last={}, now={}, cost={}", count, last,
                 now, stopWatch.getTime());
           }
@@ -615,7 +626,7 @@ public class SqlDataCoreService extends AbstractDataCoreService {
       return DEFAULT_DEL_DURATION;
     }
     int durationHours = Integer.parseInt(metaDataDictValue.getDictValue());
-    return durationHours * 60L * 60 * 1000L;
+    return durationHours * 60L * 60 * 1000;
   }
 
 }
