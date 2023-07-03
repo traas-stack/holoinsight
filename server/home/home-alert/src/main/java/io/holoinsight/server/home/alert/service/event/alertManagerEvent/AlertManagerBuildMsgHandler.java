@@ -77,6 +77,7 @@ public class AlertManagerBuildMsgHandler implements AlertHandlerExecutor {
     try {
       // 实体转换为map
       Map<String, String> map = ObjectToMapUtil.generateObjectToStringMap(values);
+      map.put("alarmLevel", values.getAlarmLevel() == null ? "" : values.getAlarmLevel().getDesc());
       content = buildMsgWithMap(template, map);
     } catch (Exception e) {
 

@@ -79,6 +79,7 @@ public abstract class AlertNotifyHandler implements AlertHandlerExecutor {
     alertNotifyRequest.setTenant(getTenant(alertNotify));
     alertNotifyRequest.setWorkspace(getWorkspace(alertNotify));
     alertNotifyRequest.setLogAnalysis(alertNotify.getLogAnalysis());
+    alertNotifyRequest.setLogSample(alertNotify.getLogSample());
 
     if (!CollectionUtils.isEmpty(alertNotify.getNotifyDataInfos())) {
       alertNotifyRequest.setNotifyDataInfos(alertNotify.getNotifyDataInfos());

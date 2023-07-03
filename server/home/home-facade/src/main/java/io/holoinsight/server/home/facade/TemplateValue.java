@@ -126,7 +126,7 @@ public class TemplateValue {
     this.metric = pql;
   }
 
-  public void setLogContent(List<String> logAnalysis) {
+  public void setLogContentFromLogAnalysis(List<String> logAnalysis) {
     if (CollectionUtils.isEmpty(logAnalysis)) {
       this.logContent = StringUtils.EMPTY;
     } else {
@@ -137,6 +137,32 @@ public class TemplateValue {
           (Map<String, Object>) map.getOrDefault("ipCountMap", new HashMap<>());
       sample = sample + " FROM [" + String.join(",", ipCountMap.keySet()) + "]";
       this.logContent = sample;
+    }
+  }
+
+  public void setLogContentFromLogSample(List<String> logSample) {
+    try {
+      if (!CollectionUtils.isEmpty(logSample)) {
+        String json = logSample.get(0);
+        Map<String, Object> map = J.toMap(json);
+        List<Map<String, Object>> samples = (List<Map<String, Object>>) map.get("samples");
+        if (CollectionUtils.isEmpty(samples)) {
+          return;
+        }
+        Map<String, Object> sample = samples.get(0);
+        String hostname = (String) sample.get("hostname");
+        List<List<String>> logs = (List<List<String>>) sample.get("logs");
+        if (CollectionUtils.isEmpty(logs) || CollectionUtils.isEmpty(logs.get(0))) {
+          return;
+        }
+        String sampleLog = logs.get(0).get(0);
+        sampleLog = sampleLog + " FROM [" + hostname + "]";
+        this.logContent = sampleLog;
+      }
+    } finally {
+      if (StringUtils.isEmpty(this.logContent)) {
+        this.logContent = StringUtils.EMPTY;
+      }
     }
   }
 }
