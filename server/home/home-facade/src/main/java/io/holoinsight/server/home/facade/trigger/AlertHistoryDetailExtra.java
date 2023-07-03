@@ -11,4 +11,6 @@ import java.util.List;
  */
 public class AlertHistoryDetailExtra {
   public List<String> logAnalysisContent;
+
+  public List<String> logSampleContent;
 }

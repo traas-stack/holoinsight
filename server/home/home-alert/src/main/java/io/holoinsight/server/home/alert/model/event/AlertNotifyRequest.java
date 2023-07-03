@@ -67,4 +67,6 @@ public class AlertNotifyRequest {
   // log analysis content
   private List<String> logAnalysis;
 
+  private List<String> logSample;
+
 }

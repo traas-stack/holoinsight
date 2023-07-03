@@ -34,10 +34,8 @@ import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -82,6 +80,7 @@ public class AlertSaveHistoryHandler implements AlertHandlerExecutor {
           alertNotifies.stream().filter(AlertNotify::getIsRecover).collect(Collectors.toList());
 
       tryQueryLogAnalysis(alertNotifyList);
+      tryQueryLogSample(alertNotifyList);
       makeAlertHistory(alertHistoryMap, alertNotifyList);
 
       makeAlertRecover(alertHistoryMap, alertNotifyRecover);
@@ -91,6 +90,74 @@ public class AlertSaveHistoryHandler implements AlertHandlerExecutor {
           "[HoloinsightAlertInternalException][AlertSaveHistoryHandler][{}] fail to alert_history_save for {}",
           alertNotifies.size(), e.getMessage(), e);
       FuseProtector.voteCriticalError(CRITICAL_AlertSaveHistoryHandler, e.getMessage());
+    }
+  }
+
+  private void tryQueryLogSample(List<AlertNotify> alertNotifyList) {
+    if (CollectionUtils.isEmpty(alertNotifyList)) {
+      return;
+    }
+    for (AlertNotify alertNotify : alertNotifyList) {
+      InspectConfig ruleConfig = alertNotify.getRuleConfig();
+      if (ruleConfig == null || !ruleConfig.isLogSampleEnable()) {
+        continue;
+      }
+      if (CollectionUtils.isEmpty(ruleConfig.getMetrics())) {
+        continue;
+      }
+      List<QueryProto.QueryRequest> queryRequests = new ArrayList<>();
+      for (Map.Entry<Trigger, List<NotifyDataInfo>> entry : alertNotify.getNotifyDataInfos()
+          .entrySet()) {
+        Trigger trigger = entry.getKey();
+        if (CollectionUtils.isEmpty(trigger.getDatasources())) {
+          continue;
+        }
+        List<QueryProto.Datasource> dsList = new ArrayList<>();
+        for (DataSource dataSource : trigger.getDatasources()) {
+          QueryProto.Datasource ds =
+              buildSampleDatasource(dataSource, trigger, alertNotify.getAlarmTime());
+          dsList.add(ds);
+        }
+        if (!CollectionUtils.isEmpty(dsList)) {
+          QueryProto.QueryRequest request = QueryProto.QueryRequest.newBuilder()
+              .setTenant(alertNotify.getTenant()).addAllDatasources(dsList).build();
+          queryRequests.add(request);
+        }
+      }
+      if (!CollectionUtils.isEmpty(queryRequests)) {
+        List<String> logs = new ArrayList<>();
+        Long alertTime = alertNotify.getAlarmTime();
+        for (QueryProto.QueryRequest queryRequest : queryRequests) {
+          QueryProto.QueryResponse response = this.queryClientService.queryData(queryRequest);
+          if (response != null && !CollectionUtils.isEmpty(response.getResultsList())) {
+            LOGGER.debug("{} log sample result {} request {}", alertNotify.getTraceId(),
+                J.toJson(response.getResultsList()), J.toJson(queryRequest));
+            for (QueryProto.Result result : response.getResultsList()) {
+              Map<String, String> tagMap = result.getTagsMap();
+              List<QueryProto.Point> points = result.getPointsList();
+              if (CollectionUtils.isEmpty(tagMap) || CollectionUtils.isEmpty(points)) {
+                continue;
+              }
+
+              for (QueryProto.Point point : points) {
+                if (point == null || StringUtils.isEmpty(point.getStrValue())) {
+                  continue;
+                }
+                long timestamp = point.getTimestamp();
+                if (alertTime == null || alertTime < timestamp) {
+                  // Logs outside the time window
+                  continue;
+                }
+                logs.add(point.getStrValue());
+                break;
+              }
+            }
+          }
+        }
+        if (!CollectionUtils.isEmpty(logs)) {
+          alertNotify.setLogSample(logs);
+        }
+      }
     }
   }
 
@@ -163,6 +230,18 @@ public class AlertSaveHistoryHandler implements AlertHandlerExecutor {
         }
       }
     }
+  }
+
+  private QueryProto.Datasource buildSampleDatasource(DataSource dataSource, Trigger trigger,
+      Long alarmTime) {
+    long start = TimeRangeUtil.getStartTimestamp(alarmTime, dataSource, trigger);
+    long end = TimeRangeUtil.getEndTimestamp(alarmTime, dataSource);
+    String metric = dataSource.getMetric() + "_logsamples";
+
+    QueryProto.Datasource.Builder builder =
+        QueryProto.Datasource.newBuilder().setStart(start).setEnd(end).setMetric(metric)
+            .setAggregator("sample").addAllGroupBy(Collections.singletonList("app"));
+    return builder.build();
   }
 
   private QueryProto.Datasource buildAnalysisDatasource(DataSource dataSource, Trigger trigger,
@@ -312,11 +391,13 @@ public class AlertSaveHistoryHandler implements AlertHandlerExecutor {
   }
 
   private String buildDetailExtra(AlertNotify alertNotify) {
-    if (CollectionUtils.isEmpty(alertNotify.getLogAnalysis())) {
-      return null;
-    }
     AlertHistoryDetailExtra extra = new AlertHistoryDetailExtra();
-    extra.logAnalysisContent = alertNotify.getLogAnalysis();
+    if (!CollectionUtils.isEmpty(alertNotify.getLogAnalysis())) {
+      extra.logAnalysisContent = alertNotify.getLogAnalysis();
+    }
+    if (!CollectionUtils.isEmpty(alertNotify.getLogSample())) {
+      extra.logSampleContent = alertNotify.getLogSample();
+    }
     return J.toJson(extra);
   }
 

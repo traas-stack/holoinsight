@@ -92,6 +92,8 @@ public class AlertNotify {
   // log analysis content
   private List<String> logAnalysis;
 
+  private List<String> logSample;
+
   public static AlertNotify eventInfoConvert(EventInfo eventInfo, InspectConfig inspectConfig) {
     AlertNotify alertNotify = new AlertNotify();
     BeanUtils.copyProperties(inspectConfig, alertNotify);
