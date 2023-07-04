@@ -5,28 +5,10 @@ package io.holoinsight.server.test.it.bootstrap;
 
 import static org.junit.platform.engine.discovery.DiscoverySelectors.selectClass;
 
-import io.holoinsight.server.test.it.AlertCalculateIT;
-import io.holoinsight.server.test.it.AlertDingDingRobotIT;
-import io.holoinsight.server.test.it.AlertGroupIT;
-import io.holoinsight.server.test.it.AlertLogAnalysisIT;
-import io.holoinsight.server.test.it.AlertRuleIT;
-import io.holoinsight.server.test.it.AlertWebhookIT;
-import io.holoinsight.server.test.it.CeresdbPqlMonitoringIT;
-import io.holoinsight.server.test.it.DashboardIT;
-import io.holoinsight.server.test.it.LogMonitoringAnalysisIT;
-import io.holoinsight.server.test.it.LogMonitoringMultilineIT;
-import io.holoinsight.server.test.it.MetricMonitoringIT;
+import io.holoinsight.server.test.it.*;
 import org.junit.platform.launcher.LauncherDiscoveryRequest;
 import org.junit.platform.launcher.core.LauncherDiscoveryRequestBuilder;
 
-import io.holoinsight.server.test.it.AgentVMIT;
-import io.holoinsight.server.test.it.AppMonitoringIT;
-import io.holoinsight.server.test.it.AuthIT;
-import io.holoinsight.server.test.it.LogMonitoringFolderIT;
-import io.holoinsight.server.test.it.LogMonitoringIT;
-import io.holoinsight.server.test.it.LogMonitoring_1_log_IT;
-import io.holoinsight.server.test.it.MetaVMIT;
-import io.holoinsight.server.test.it.OpenMetricsScraperIT;
 import io.holoinsight.server.test.it.apm.ApmAppMetricStatIT;
 import io.holoinsight.server.test.it.apm.ApmCallLinkDetailIT;
 import io.holoinsight.server.test.it.apm.ApmCallLinkIT;
@@ -69,6 +51,23 @@ public class ITSets {
         .selectors(selectClass(LogMonitoringMultilineIT.class)) //
         .selectors(selectClass(LogMonitoringAnalysisIT.class)) //
         .selectors(selectClass(AlertLogAnalysisIT.class)) //
+        .selectors(selectClass(CustomPluginFacadeIT.class)) //
+        .selectors(selectClass(FolderFacadeIT.class)) //
+        .selectors(selectClass(AlertTemplateFacadeIT.class)) //
+        .selectors(selectClass(AlarmBlockFacadeIT.class)) //
+        .selectors(selectClass(AlarmMetricFacadeIT.class)) //
+        .selectors(selectClass(AlarmSubscribeFacadeIT.class)) //
+        .selectors(selectClass(AlertManagerWebhookIT.class)) //
+        .selectors(selectClass(ApiKeyFacadeIT.class)) //
+        .selectors(selectClass(DefaultTenantFacadeIT.class)) //
+        .selectors(selectClass(DisplayMenuFacadeIT.class)) //
+        .selectors(selectClass(DisplayTemplateFacadeIT.class)) //
+        .selectors(selectClass(InitFacadeIT.class)) //
+        .selectors(selectClass(IntegrationPluginFacadeIT.class)) //
+        .selectors(selectClass(IntegrationGeneratedFacadeIT.class)) //
+        .selectors(selectClass(IntegrationProductFacadeIT.class)) //
+        .selectors(selectClass(UserFavoriteFacadeIT.class)) //
+        .selectors(selectClass(UserinfoVerificationFacadeIT.class)) //
         .build(); //
   }
 }
