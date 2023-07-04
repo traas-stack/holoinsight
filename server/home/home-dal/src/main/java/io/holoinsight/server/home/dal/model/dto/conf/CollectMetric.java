@@ -110,9 +110,6 @@ public class CollectMetric implements Serializable {
   }
 
   public boolean checkLogSample() {
-    if (!CollectionUtils.isEmpty(logSampleRules) && logSample) {
-      return true;
-    }
-    return false;
+    return logSample;
   }
 }

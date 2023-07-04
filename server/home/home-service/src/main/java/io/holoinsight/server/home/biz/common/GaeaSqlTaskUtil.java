@@ -120,8 +120,10 @@ public class GaeaSqlTaskUtil {
       logSamples.setMaxCount(collectMetric.getSampleMaxCount());
       logSamples.setMaxLength(collectMetric.getSampleMaxLength());
 
-      logSamples.setWhere(
-          buildSampleWhere(logParse.splitType, splitColMap, collectMetric.getLogSampleRules()));
+      if (!CollectionUtils.isEmpty(collectMetric.getLogSampleRules())) {
+        logSamples.setWhere(
+            buildSampleWhere(logParse.splitType, splitColMap, collectMetric.getLogSampleRules()));
+      }
       select.setLogSamples(logSamples);
     }
 
