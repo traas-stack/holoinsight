@@ -51,6 +51,7 @@ public class NotificationTemplate {
     template.fieldMap.put("此次评估触发时间", AlertTemplateField.alarmTime);
     // template.fieldMap.put("告警触发条件", AlertTemplateField.ALERT_TRIGGER_CONDITION);
     template.fieldMap.put("告警触发数值", AlertTemplateField.ALERT_VALUE);
+    template.fieldMap.put("日志内容", AlertTemplateField.LOG_CONTENT);
     // template.fieldMap.put("[详情]", AlertTemplateField.LINK);
     // template.fieldMap.put("[设置]", AlertTemplateField.ruleUrl);
 
