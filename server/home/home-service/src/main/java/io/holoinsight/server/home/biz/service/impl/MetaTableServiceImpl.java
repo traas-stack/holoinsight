@@ -4,7 +4,6 @@
 package io.holoinsight.server.home.biz.service.impl;
 
 import io.holoinsight.server.home.biz.service.MetaTableService;
-import io.holoinsight.server.home.common.util.EventBusHolder;
 import io.holoinsight.server.home.common.util.JpaUpdateUtil;
 import io.holoinsight.server.home.dal.converter.MetaTableConverter;
 import io.holoinsight.server.home.dal.mapper.MetaTableMapper;
@@ -77,9 +76,7 @@ public class MetaTableServiceImpl extends ServiceImpl<MetaTableMapper, MetaTable
 
     save(metaTable);
 
-    MetaTableDTO create = metaTableConverter.doToDTO(metaTable);
-    EventBusHolder.post(create);
-    return create;
+    return metaTableConverter.doToDTO(metaTable);
   }
 
   @Override
@@ -100,9 +97,7 @@ public class MetaTableServiceImpl extends ServiceImpl<MetaTableMapper, MetaTable
 
     saveOrUpdate(original);
 
-    MetaTableDTO update = metaTableConverter.doToDTO(original);
-    EventBusHolder.post(update);
-    return update;
+    return metaTableConverter.doToDTO(original);
   }
 
   @Override

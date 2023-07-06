@@ -8,6 +8,7 @@ import io.holoinsight.server.home.dal.model.dto.conf.*;
 import io.holoinsight.server.home.dal.model.dto.conf.CollectMetric.AfterFilter;
 import io.holoinsight.server.home.dal.model.dto.conf.CollectMetric.LogSampleRule;
 import io.holoinsight.server.home.dal.model.dto.conf.CollectMetric.Metric;
+import io.holoinsight.server.home.dal.model.dto.conf.CustomPluginConf.ExtraConfig;
 import io.holoinsight.server.home.dal.model.dto.conf.CustomPluginConf.SplitCol;
 import io.holoinsight.server.home.dal.model.dto.conf.Translate.TranslateTransform;
 import io.holoinsight.server.registry.model.Elect;
@@ -130,8 +131,8 @@ public class GaeaSqlTaskUtil {
     return select;
   }
 
-  public static From buildFrom(List<LogPath> logPaths, LogParse logParse, List<Filter> whiteFilters,
-      List<Filter> blackFilters, List<SplitCol> splitCols) {
+  public static From buildFrom(List<LogPath> logPaths, LogParse logParse, ExtraConfig extraConfig,
+      List<Filter> whiteFilters, List<Filter> blackFilters, List<SplitCol> splitCols) {
 
     Log fromLog = new Log();
     {
@@ -192,7 +193,7 @@ public class GaeaSqlTaskUtil {
         pathList.add(path);
       });
       fromLog.setPath(pathList);
-      fromLog.setCharset(logPaths.get(0).charset);
+      fromLog.setCharset(extraConfig.getCharset());
       fromLog.setParse(parse);
 
       MultiLine multiLine = logParse.multiLine;
@@ -524,9 +525,9 @@ public class GaeaSqlTaskUtil {
     return where;
   }
 
-  public static GroupBy buildLogPatternParse(LogParse logParse) {
+  public static GroupBy buildLogPatternParse(LogParse logParse, ExtraConfig extraConfig) {
     GroupBy groupBy = new GroupBy();
-    groupBy.setMaxKeys(logParse.maxKeySize);
+    groupBy.setMaxKeySize(extraConfig.getMaxKeySize());
 
     LogPattern logPattern = logParse.pattern;
 
@@ -591,11 +592,11 @@ public class GaeaSqlTaskUtil {
     return groupBy;
   }
 
-  public static GroupBy buildGroupBy(LogParse logParse,
+  public static GroupBy buildGroupBy(LogParse logParse, ExtraConfig extraConfig,
       Map<String, Map<String, SplitCol>> splitColMap, CollectMetric collectMetric) {
 
     if (logParse.checkIsPattern() && collectMetric.checkLogPattern()) {
-      return buildLogPatternParse(logParse);
+      return buildLogPatternParse(logParse, extraConfig);
     }
     List<String> tags = collectMetric.getTags();
 
@@ -660,7 +661,7 @@ public class GaeaSqlTaskUtil {
         group.setName(t);
         group.setElect(elect);
       }
-      groupBy.setMaxKeys(logParse.maxKeySize);
+      groupBy.setMaxKeySize(extraConfig.getMaxKeySize());
       groupBy.getGroups().add(group);
     });
 

@@ -172,10 +172,11 @@ public class CustomPluginUpdateListener {
     Map<String, Map<String, SplitCol>> splitColMap =
         GaeaSqlTaskUtil.convertSplitColMap(conf.splitCols);
     Select select = GaeaSqlTaskUtil.buildSelect(conf.logParse, splitColMap, collectMetric);
-    From from = GaeaSqlTaskUtil.buildFrom(logPaths, conf.logParse, conf.whiteFilters,
-        conf.blackFilters, conf.splitCols);
+    From from = GaeaSqlTaskUtil.buildFrom(logPaths, conf.logParse, conf.extraConfig,
+        conf.whiteFilters, conf.blackFilters, conf.splitCols);
     Where where = GaeaSqlTaskUtil.buildWhere(conf.logParse, splitColMap, collectMetric);
-    GroupBy groupBy = GaeaSqlTaskUtil.buildGroupBy(conf.logParse, splitColMap, collectMetric);
+    GroupBy groupBy = GaeaSqlTaskUtil.buildGroupBy(conf.logParse, conf.getExtraConfig(),
+        splitColMap, collectMetric);
     Window window = GaeaSqlTaskUtil.buildWindow(customPluginDTO.periodType.getDataUnitMs());
     Output output = GaeaSqlTaskUtil.buildOutput(collectMetric.getTargetTable());
     ExecuteRule executeRule = GaeaSqlTaskUtil.buildExecuteRule();

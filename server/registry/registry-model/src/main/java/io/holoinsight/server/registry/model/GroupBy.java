@@ -19,7 +19,7 @@ import lombok.ToString;
 @Getter
 @Setter
 public class GroupBy {
-  private int maxKeys;
+  private int maxKeySize;
   private List<Group> groups;
   /**
    * Log analysis conf

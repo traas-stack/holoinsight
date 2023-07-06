@@ -70,6 +70,8 @@ public class CustomPluginConf implements Serializable {
   public static class ExtraConfig {
     public Integer keyCleanInterval = 0;
 
-    public Integer maxKeySize = 1000;
+    public Integer maxKeySize = 20000;
+
+    public String charset = "utf-8";
   }
 }
