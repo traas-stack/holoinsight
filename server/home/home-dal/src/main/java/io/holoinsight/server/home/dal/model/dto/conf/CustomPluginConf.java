@@ -73,5 +73,7 @@ public class CustomPluginConf implements Serializable {
     public Integer maxKeySize = 20000;
 
     public String charset = "utf-8";
+
+    public Integer agentLimitKB = -1;
   }
 }
