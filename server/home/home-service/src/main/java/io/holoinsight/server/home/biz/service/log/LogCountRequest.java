@@ -51,4 +51,9 @@ public class LogCountRequest {
    * query context
    */
   private Map<String, String> context = new HashMap<>();
+
+  /**
+   * type
+   */
+  private String type;
 }
