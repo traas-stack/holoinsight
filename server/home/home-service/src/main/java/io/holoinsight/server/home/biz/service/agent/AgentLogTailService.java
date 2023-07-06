@@ -74,6 +74,7 @@ public class AgentLogTailService {
 
     response.addToDatas("lines", convertContentLines(grpcResp.getContentList()));
     response.addToDatas("charset", grpcResp.getCharset());
+    response.addToDatas("timezone", grpcResp.getTimezone());
     response.addToDatas("agentId", dim.get("agentId"));
     response.addToDatas("ip", dim.get("ip"));
     response.addToDatas("namespace", dim.get("namespace"));

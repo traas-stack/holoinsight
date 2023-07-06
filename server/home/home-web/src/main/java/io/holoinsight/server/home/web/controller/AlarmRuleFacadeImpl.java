@@ -330,19 +330,23 @@ public class AlarmRuleFacadeImpl extends BaseFacade {
       @Override
       public void doManage() {
         boolean myself = StringUtils.equals(req, "true");
-        List<AlarmRuleDTO> alarmRuleDTOS = new ArrayList<>();
+        Map<Long, AlarmRuleDTO> map = new HashMap<>();
 
         List<AlarmRuleDTO> byIds = getRuleListBySubscribe(myself);
         if (!CollectionUtils.isEmpty(byIds)) {
-          alarmRuleDTOS.addAll(byIds);
+          byIds.forEach(byId -> {
+            map.put(byId.getId(), byId);
+          });
         }
 
         List<AlarmRuleDTO> byGroups = getRuleListByGroup(myself);
         if (!CollectionUtils.isEmpty(byGroups)) {
-          alarmRuleDTOS.addAll(byGroups);
+          byGroups.forEach(byGroup -> {
+            map.put(byGroup.getId(), byGroup);
+          });
         }
 
-        JsonResult.createSuccessResult(result, alarmRuleDTOS);
+        JsonResult.createSuccessResult(result, new ArrayList<>(map.values()));
 
       }
     });
