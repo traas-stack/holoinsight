@@ -9,6 +9,7 @@ import io.holoinsight.server.home.dal.model.dto.CustomPluginPeriodType;
 import io.holoinsight.server.home.dal.model.dto.IntegrationPluginDTO;
 import io.holoinsight.server.home.dal.model.dto.conf.CollectMetric;
 import io.holoinsight.server.home.dal.model.dto.conf.CustomPluginConf;
+import io.holoinsight.server.home.dal.model.dto.conf.CustomPluginConf.ExtraConfig;
 import io.holoinsight.server.home.dal.model.dto.conf.Filter;
 import io.holoinsight.server.home.dal.model.dto.conf.LogParse;
 import io.holoinsight.server.home.dal.model.dto.conf.LogPath;
@@ -51,6 +52,8 @@ public class LogPlugin extends AbstractLocalIntegrationPlugin<LogPlugin> {
    */
   public List<Filter> whiteFilters;
 
+  public ExtraConfig extraConfig;
+
   /**
    * 日志切分规则 分隔符切分/左起右至/正则表达式
    */
@@ -76,10 +79,11 @@ public class LogPlugin extends AbstractLocalIntegrationPlugin<LogPlugin> {
     Map<String, Map<String, CustomPluginConf.SplitCol>> splitColMap =
         GaeaSqlTaskUtil.convertSplitColMap(splitCols);
     Select select = GaeaSqlTaskUtil.buildSelect(logParse, splitColMap, collectMetric);
-    From from =
-        GaeaSqlTaskUtil.buildFrom(logPaths, logParse, whiteFilters, blackFilters, splitCols);
+    From from = GaeaSqlTaskUtil.buildFrom(logPaths, logParse, extraConfig, whiteFilters,
+        blackFilters, splitCols);
     Where where = GaeaSqlTaskUtil.buildWhere(logParse, splitColMap, collectMetric);
-    GroupBy groupBy = GaeaSqlTaskUtil.buildGroupBy(logParse, splitColMap, collectMetric);
+    GroupBy groupBy =
+        GaeaSqlTaskUtil.buildGroupBy(logParse, extraConfig, splitColMap, collectMetric);
     Window window = GaeaSqlTaskUtil.buildWindow(periodType.getDataUnitMs());
     Output output = GaeaSqlTaskUtil.buildOutput(metricName);
 
@@ -123,6 +127,7 @@ public class LogPlugin extends AbstractLocalIntegrationPlugin<LogPlugin> {
         logPlugin.logPaths = customPluginConf.logPaths;
         logPlugin.blackFilters = customPluginConf.blackFilters;
         logPlugin.whiteFilters = customPluginConf.whiteFilters;
+        logPlugin.extraConfig = customPluginConf.extraConfig;
         logPlugin.logParse = customPluginConf.logParse;
         logPlugin.splitCols = customPluginConf.splitCols;
         logPlugin.collectMetric = collectMetric;
