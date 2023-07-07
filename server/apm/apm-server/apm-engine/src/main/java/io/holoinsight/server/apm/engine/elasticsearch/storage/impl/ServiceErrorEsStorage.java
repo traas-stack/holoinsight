@@ -83,18 +83,18 @@ public class ServiceErrorEsStorage extends RecordEsStorage<ServiceErrorDO>
     List<Map<String, String>> result = new ArrayList<>();
     Terms terms = response.getAggregations().get(ServiceErrorDO.ERROR_KIND);
     for (Terms.Bucket bucket : terms.getBuckets()) {
-      Map<String, String> map = new HashMap<>();
-      map.put("errorKind", bucket.getKey().toString());
-
       if (termParams != null && termParams.containsKey(ServiceErrorDO.ERROR_KIND)) {
         Terms endpointTerms = bucket.getAggregations().get(ServiceErrorDO.ENDPOINT_NAME);
         for (Terms.Bucket endpointBucket : endpointTerms.getBuckets()) {
+          Map<String, String> map = new HashMap<>();
+          map.put("errorKind", bucket.getKey().toString());
           map.put("endpointName", endpointBucket.getKey().toString());
-          ValueCount totalTerm = bucket.getAggregations().get("total_count");
-          map.put("count", String.valueOf(totalTerm.getValue()));
+          map.put("count", String.valueOf(endpointBucket.getDocCount()));
           result.add(map);
         }
       } else {
+        Map<String, String> map = new HashMap<>();
+        map.put("errorKind", bucket.getKey().toString());
         ValueCount totalTerm = bucket.getAggregations().get("total_count");
         map.put("count", String.valueOf(totalTerm.getValue()));
         result.add(map);
