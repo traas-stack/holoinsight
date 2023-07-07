@@ -62,6 +62,9 @@ public class UserinfoServiceImpl implements UserinfoService {
     if (ms == null || StringUtils.isEmpty(ms.tenant)) {
       return Collections.emptyMap();
     }
+    if (CollectionUtils.isEmpty(uidList)) {
+      return Collections.emptyMap();
+    }
     QueryWrapper<Userinfo> queryWrapper = new QueryWrapper<>();
     queryWrapper.eq("tenant", ms.getTenant());
     queryWrapper.in("uid", uidList);
