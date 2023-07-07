@@ -14,6 +14,9 @@ public interface TopologyStorage extends ReadableStorage {
   List<Call> getTenantCalls(String tenant, long startTime, long endTime,
       Map<String, String> termParams) throws IOException;
 
+  List<Call> getServiceCalls(String tenant, String service, long startTime, long endTime,
+      String sourceOrDest, Map<String, String> termParams) throws IOException;
+
   List<Call.DeepCall> getServiceInstanceCalls(String tenant, String service, String serviceInstance,
       long startTime, long endTime, String sourceOrDest, Map<String, String> termParams)
       throws IOException;
