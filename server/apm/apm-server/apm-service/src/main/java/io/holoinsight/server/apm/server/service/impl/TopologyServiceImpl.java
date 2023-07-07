@@ -51,10 +51,50 @@ public class TopologyServiceImpl implements TopologyService {
   @Override
   public Topology getServiceTopology(String tenant, String service, long startTime, long endTime,
       int depth, Map<String, String> termParams) throws Exception {
-    List<Call> allCalls = topologyStorage.getTenantCalls(tenant, startTime, endTime, termParams);
-    List<Call> result = filterDepend(allCalls, service, depth);
+    List<Call> calls = new ArrayList<>();
+    List<Call> sourceServiceList = new ArrayList<>();
+    Call sourceService = new Call();
+    sourceService.setSourceName(service);
+    sourceServiceList.add(sourceService);
 
-    Topology topology = buildServiceTopo(result);
+    List<Call> destServiceList = new ArrayList<>();
+    Call destService = new Call();
+    destService.setDestName(service);
+    destServiceList.add(destService);
+
+    for (int i = depth; i > 0; i--) {
+      List<Call> newSourceServiceList = new ArrayList<>();
+      for (Call item : sourceServiceList) {
+        // Non-real nodes do not need to be queried again
+        if (!StringUtils.isEmpty(item.getSourceId())
+            && !IDManager.ServiceID.analysisId(item.getSourceId()).isReal()) {
+          continue;
+        }
+        newSourceServiceList.addAll(topologyStorage.getServiceCalls(tenant, item.getSourceName(),
+            startTime, endTime, Const.DEST, termParams));
+      }
+      sourceServiceList.clear();
+      sourceServiceList.addAll(newSourceServiceList);
+
+      List<Call> newDestServiceList = new ArrayList<>();
+      for (Call item : destServiceList) {
+        // Non-real nodes do not need to be queried again
+        if (!StringUtils.isEmpty(item.getDestId())
+            && !IDManager.ServiceID.analysisId(item.getDestId()).isReal()) {
+          continue;
+        }
+        newDestServiceList.addAll(topologyStorage.getServiceCalls(tenant, item.getDestName(),
+            startTime, endTime, Const.SOURCE, termParams));
+      }
+      destServiceList.clear();
+      destServiceList.addAll(newDestServiceList);
+
+      calls.addAll(newSourceServiceList);
+      calls.addAll(newDestServiceList);
+    }
+
+
+    Topology topology = buildServiceTopo(calls);
     setNodeMetric(tenant, topology.getNodes(), startTime, endTime, termParams);
     return topology;
   }

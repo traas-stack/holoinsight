@@ -45,6 +45,27 @@ public class TopologyEsStorage implements TopologyStorage {
   }
 
   @Override
+  public List<Call> getServiceCalls(String tenant, String service, long startTime, long endTime,
+      String sourceOrDest, Map<String, String> termParams) throws IOException {
+    BoolQueryBuilder queryBuilder =
+        QueryBuilders.boolQuery().must(QueryBuilders.termQuery(ServiceRelationDO.TENANT, tenant))
+            .must(QueryBuilders.termQuery(sourceOrDest + "_service_name", service))
+            .must(QueryBuilders.rangeQuery(this.timeSeriesField()).gte(startTime).lte(endTime));
+
+    commonBuilder.addTermParams(queryBuilder, termParams);
+    SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
+    sourceBuilder.size(0);
+    sourceBuilder.query(queryBuilder);
+    sourceBuilder.aggregation(commonBuilder.buildAgg(ServiceRelationDO.ENTITY_ID));
+
+    SearchRequest searchRequest = new SearchRequest(ServiceRelationDO.INDEX_NAME);
+    searchRequest.source(sourceBuilder);
+    SearchResponse response = client().search(searchRequest, RequestOptions.DEFAULT);
+
+    return buildCalls(response);
+  }
+
+  @Override
   public List<Call.DeepCall> getEndpointCalls(String tenant, String service, String endpoint,
       long startTime, long endTime, String sourceOrDest, Map<String, String> termParams)
       throws IOException {
