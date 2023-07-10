@@ -500,17 +500,19 @@ public class CustomPluginFacadeImpl extends BaseFacade {
 
     List<CollectMetric> newCollectMetrics = new ArrayList<>();
     int cols = 0;
-    for (CollectMetric collectMetric : conf.collectMetrics) {
-      if (null == collectMetric.spm || Boolean.FALSE == collectMetric.spm) {
-        newCollectMetrics.add(collectMetric);
-        continue;
-      }
+    if (!CollectionUtils.isEmpty(conf.collectMetrics)) {
+      for (CollectMetric collectMetric : conf.collectMetrics) {
+        if (null == collectMetric.spm || Boolean.FALSE == collectMetric.spm) {
+          newCollectMetrics.add(collectMetric);
+          continue;
+        }
 
-      if (spm == Boolean.FALSE) {
-        continue;
+        if (spm == Boolean.FALSE) {
+          continue;
+        }
+        newCollectMetrics.add(collectMetric);
+        cols++;
       }
-      newCollectMetrics.add(collectMetric);
-      cols++;
     }
 
     // add spm metrics
