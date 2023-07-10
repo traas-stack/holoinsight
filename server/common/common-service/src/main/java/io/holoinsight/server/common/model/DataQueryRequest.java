@@ -1,7 +1,7 @@
 /*
  * Copyright 2022 Holoinsight Project Authors. Licensed under Apache-2.0.
  */
-package io.holoinsight.server.home.web.controller.model;
+package io.holoinsight.server.common.model;
 
 import lombok.Data;
 
@@ -23,6 +23,10 @@ public class DataQueryRequest {
 
   // 查询数据源
   public List<QueryDataSource> datasources;
+
+  public String fillPolicy;
+
+  public String downsample;
 
   @Data
   public static class QueryDataSource {

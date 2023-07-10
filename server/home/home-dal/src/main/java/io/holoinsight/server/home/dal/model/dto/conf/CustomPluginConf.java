@@ -49,6 +49,10 @@ public class CustomPluginConf implements Serializable {
    */
   public List<SplitCol> splitCols;
 
+  public Boolean spm;
+
+  public SpmCols spmCols;
+
   /**
    * 监控指标定义
    */
@@ -75,5 +79,13 @@ public class CustomPluginConf implements Serializable {
     public String charset = "utf-8";
 
     public Integer agentLimitKB = -1;
+  }
+
+  @Data
+  public static class SpmCols {
+    public String countKey;
+    public String costKey;
+    public String resultKey;
+    public List<String> successValue;
   }
 }
