@@ -160,8 +160,8 @@ public class NotificationTemplate {
         return buildAttachments();
       // case LINK:
       // return link;
-      // case ruleUrl:
-      // return templateValue.ruleUrl;
+      case ruleUrl:
+        return templateValue.ruleUrl;
       case TENANT:
       case tenant:
         return templateValue.tenant;

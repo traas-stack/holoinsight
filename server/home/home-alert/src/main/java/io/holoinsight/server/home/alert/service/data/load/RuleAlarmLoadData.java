@@ -116,10 +116,14 @@ public class RuleAlarmLoadData implements AlarmLoadData {
       // If aggregator is not none, which means it is a valid aggregation, then downsample cannot be
       // null, and the default value 1m can be set.
       String aggregator = dataSource.getAggregator();
-      if (StringUtils.isNotEmpty(aggregator) && StringUtils.isBlank(downsample)
-          && !aggregator.equals("none")) {
-        downsample = "1m";
+      if (StringUtils.isNotEmpty(aggregator) && StringUtils.isBlank(downsample)) {
+        if (aggregator.equalsIgnoreCase("none")) {
+          downsample = "1m-none";
+        } else {
+          downsample = "1m";
+        }
       }
+
       long start =
           timestamp - (trigger.getStepNum() - 1) * time * PeriodType.MINUTE.intervalMillis()
               - trigger.getDownsample() * PeriodType.MINUTE.intervalMillis();
