@@ -146,6 +146,7 @@ public class NotificationTemplate {
       case ALERT_START_TIME:
         return calculateStartTime(templateValue);
       case alertTimestamp:
+      case alarmTimestamp:
         return templateValue.alarmTimestamp;
       case EVENT_MSG:
       case alarmContent:
