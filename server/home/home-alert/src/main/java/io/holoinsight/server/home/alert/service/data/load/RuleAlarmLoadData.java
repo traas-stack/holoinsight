@@ -120,10 +120,12 @@ public class RuleAlarmLoadData implements AlarmLoadData {
       if (StringUtils.isNotEmpty(aggregator) && StringUtils.isBlank(downsample)) {
         if (!aggregator.equals("none")) {
           downsample = "1m";
-          slidingWindow =
-              QueryProto.SlidingWindow.newBuilder().setAggregator(trigger.getAggregator())
-                  .setWindowMs(trigger.getDownsample() * 60_000L).build();
         }
+      }
+
+      if (!aggregator.equals("none")) {
+        slidingWindow = QueryProto.SlidingWindow.newBuilder().setAggregator(trigger.getAggregator())
+            .setWindowMs(trigger.getDownsample() * 60_000L).build();
       }
 
       long start =
