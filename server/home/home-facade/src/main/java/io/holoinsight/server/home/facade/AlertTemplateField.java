@@ -29,6 +29,7 @@ public enum AlertTemplateField {
   ALERT_START_TIME("ALERT_START_TIME", "告警首次触发时间(yyyy-MM-dd HH:mm:ss)", "string"), //
   alarmTime("alarmTime", "告警时间(yyyy-MM-dd HH:mm:ss)", "string"), //
   alertTimestamp("alertTimestamp", "告警时间戳(Example: 1406662672000)", "numeric"), //
+  alarmTimestamp("alarmTimestamp", "告警时间戳(Example: 1406662672000)", "numeric"), //
   EVENT_MSG("EVENT_MSG", "告警内容", "string"), //
   alarmContent("alarmContent", "告警内容", "string"), //
   EVENT_TYPE("EVENT_TYPE", "指标类型", "string"), //
