@@ -37,6 +37,8 @@ import io.holoinsight.server.apm.common.utils.GsonUtils;
 import io.holoinsight.server.apm.engine.postcal.MetricDefine;
 import io.holoinsight.server.common.DurationUtil;
 import io.holoinsight.server.common.ProtoJsonUtils;
+import io.holoinsight.server.common.service.SuperCache;
+import io.holoinsight.server.common.service.SuperCacheService;
 import io.holoinsight.server.extension.MetricStorage;
 import io.holoinsight.server.extension.model.PqlParam;
 import io.holoinsight.server.extension.model.QueryMetricsParam;
@@ -89,6 +91,9 @@ public class DefaultQueryServiceImpl implements QueryService {
   @Autowired
   private ApmClient apmClient;
 
+  @Autowired
+  private SuperCacheService superCacheService;
+
   private LoadingCache<String, Map<String, MetricDefine>> apmMetrics =
       CacheBuilder.newBuilder().expireAfterWrite(60, TimeUnit.SECONDS)
           .build(new CacheLoader<String, Map<String, MetricDefine>>() {
@@ -109,9 +114,9 @@ public class DefaultQueryServiceImpl implements QueryService {
       String fillPolicy = request.getFillPolicy();
       if (StringUtils.isBlank(query)
           || datasources.stream().anyMatch(ds -> query.equals(ds.getName()))) {
-        return simpleQuery(tenant, datasources);
+        return simpleQuery(request, tenant, datasources);
       } else {
-        return complexQuery(tenant, query, query, downsample, fillPolicy, datasources);
+        return complexQuery(request, tenant, query, query, downsample, fillPolicy, datasources);
       }
     }, "queryData", request);
   }
@@ -722,11 +727,11 @@ public class DefaultQueryServiceImpl implements QueryService {
     }, "queryServiceErrorDetail", request);
   }
 
-  private QueryProto.QueryResponse simpleQuery(String tenant,
+  private QueryProto.QueryResponse simpleQuery(QueryProto.QueryRequest request, String tenant,
       List<QueryProto.Datasource> datasources) throws QueryException {
     List<QueryProto.QueryResponse> rsps = new ArrayList<>(datasources.size());
     for (QueryProto.Datasource datasource : datasources) {
-      QueryProto.QueryResponse.Builder queryResponseBuilder = queryDs(tenant, datasource);
+      QueryProto.QueryResponse.Builder queryResponseBuilder = queryDs(request, tenant, datasource);
       rsps.add(queryResponseBuilder.build());
     }
     List<QueryProto.Result> results =
@@ -734,9 +739,9 @@ public class DefaultQueryServiceImpl implements QueryService {
     return QueryProto.QueryResponse.newBuilder().addAllResults(results).build();
   }
 
-  private QueryProto.QueryResponse complexQuery(String tenant, String expression, String as,
-      String downsample, String fillPolicy, List<QueryProto.Datasource> datasources)
-      throws QueryException {
+  private QueryProto.QueryResponse complexQuery(QueryProto.QueryRequest request, String tenant,
+      String expression, String as, String downsample, String fillPolicy,
+      List<QueryProto.Datasource> datasources) throws QueryException {
     List<String> queryExprs = Lists.newArrayList(StringUtils.split(expression, ","));
     List<String> queryAs = Lists.newArrayList(StringUtils.split(as, ","));
     Map<String, String> asMap = new HashMap<>();
@@ -753,7 +758,7 @@ public class DefaultQueryServiceImpl implements QueryService {
     Map<String, List<QueryProto.Result>> resultMap = new HashMap<>();
     for (QueryProto.Datasource datasource : datasources) {
       String dsName = datasource.getName();
-      List<QueryProto.Result> rspResults = queryDs(tenant, datasource).getResultsList();
+      List<QueryProto.Result> rspResults = queryDs(request, tenant, datasource).getResultsList();
       resultMap.put(dsName, rspResults);
     }
 
@@ -827,16 +832,42 @@ public class DefaultQueryServiceImpl implements QueryService {
     return results;
   }
 
-  protected QueryProto.QueryResponse.Builder queryDs(String tenant,
+  protected QueryProto.QueryResponse.Builder queryDs(QueryProto.QueryRequest request, String tenant,
       QueryProto.Datasource datasource) throws QueryException {
     MetricDefine apmMetric = this.apmMetrics.getUnchecked(tenant).get(datasource.getMetric());
-    if (apmMetric != null) {
+    // virtual metric
+    if (superCacheService.getSc() != null && superCacheService.getSc().expressionMetricList != null
+        && superCacheService.getSc().expressionMetricList.containsKey(datasource.getMetric())) {
+      QueryProto.QueryRequest.Builder template =
+          superCacheService.getSc().expressionMetricList.get(datasource.getMetric()).toBuilder();
+      return queryVirtual(template, request, tenant, datasource);
+    } else if (apmMetric != null) {
       return queryApm(tenant, datasource, apmMetric);
     } else if (AggCenter.isAggregator(datasource.getAggregator())) {
       return analysis(tenant, datasource);
     } else {
       return queryMetricStore(tenant, datasource);
     }
+  }
+
+  private QueryProto.QueryResponse.Builder queryVirtual(QueryProto.QueryRequest.Builder template,
+      QueryProto.QueryRequest request, String tenant, QueryProto.Datasource datasource)
+      throws QueryException {
+    template.setTenant(tenant);
+    template.setDownsample(request.getDownsample());
+    for (QueryProto.Datasource.Builder dsTemplate : template.getDatasourcesBuilderList()) {
+      dsTemplate.setStart(datasource.getStart());
+      dsTemplate.setEnd(datasource.getEnd());
+      if (CollectionUtils.isNotEmpty(datasource.getFiltersList())) {
+        dsTemplate.clearFilters().addAllFilters(datasource.getFiltersList());
+      }
+      dsTemplate.setDownsample(datasource.getDownsample());
+      dsTemplate.setSlidingWindow(datasource.getSlidingWindow());
+      if (CollectionUtils.isNotEmpty(datasource.getGroupByList())) {
+        dsTemplate.clearGroupBy().addAllGroupBy(datasource.getGroupByList());
+      }
+    }
+    return queryData(template.build()).toBuilder();
   }
 
   private QueryProto.QueryResponse.Builder queryApm(String tenant, QueryProto.Datasource datasource,
