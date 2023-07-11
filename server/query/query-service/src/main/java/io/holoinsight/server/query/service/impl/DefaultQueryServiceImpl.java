@@ -854,7 +854,9 @@ public class DefaultQueryServiceImpl implements QueryService {
       QueryProto.QueryRequest request, String tenant, QueryProto.Datasource datasource)
       throws QueryException {
     template.setTenant(tenant);
-    template.setDownsample(request.getDownsample());
+    if (StringUtils.isNotBlank(datasource.getDownsample())) {
+      template.setDownsample(datasource.getDownsample());
+    }
     for (QueryProto.Datasource.Builder dsTemplate : template.getDatasourcesBuilderList()) {
       dsTemplate.setStart(datasource.getStart());
       dsTemplate.setEnd(datasource.getEnd());
