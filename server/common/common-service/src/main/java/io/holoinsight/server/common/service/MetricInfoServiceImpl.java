@@ -136,16 +136,12 @@ public class MetricInfoServiceImpl extends ServiceImpl<MetricInfoMapper, MetricI
       datasourceBuilderA.setAggregator("sum");
       datasourceBuilderA
           .setMetric(metricInfoDTO.getMetricTable().replace("successPercent", "success"));
-      datasourceBuilderA.setFillPolicy("zero");
-      datasourceBuilderA.setDownsample(downsample);
 
       QueryProto.Datasource.Builder datasourceBuilderB = QueryProto.Datasource.newBuilder();
       datasourceBuilderB.setName("b");
       datasourceBuilderB.setAggregator("sum");
       datasourceBuilderB
           .setMetric(metricInfoDTO.getMetricTable().replace("successPercent", "total"));
-      datasourceBuilderB.setFillPolicy("zero");
-      datasourceBuilderB.setDownsample(downsample);
       builder
           .addAllDatasources(Arrays.asList(datasourceBuilderA.build(), datasourceBuilderB.build()));
       map.put(metricInfoDTO.getMetricTable(), builder.build());

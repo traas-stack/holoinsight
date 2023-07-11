@@ -867,7 +867,11 @@ public class DefaultQueryServiceImpl implements QueryService {
         dsTemplate.clearGroupBy().addAllGroupBy(datasource.getGroupByList());
       }
     }
-    return queryData(template.build()).toBuilder();
+    QueryProto.QueryResponse.Builder rspBuilder = queryData(template.build()).toBuilder();
+    for (QueryProto.Result.Builder resultBuilder : rspBuilder.getResultsBuilderList()) {
+      resultBuilder.setMetric(datasource.getMetric());
+    }
+    return rspBuilder;
   }
 
   private QueryProto.QueryResponse.Builder queryApm(String tenant, QueryProto.Datasource datasource,
