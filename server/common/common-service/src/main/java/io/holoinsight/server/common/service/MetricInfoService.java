@@ -9,6 +9,7 @@ import io.holoinsight.server.common.dao.entity.MetricInfo;
 import io.holoinsight.server.common.dao.entity.dto.MetricInfoDTO;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author jsy1001de
@@ -25,5 +26,7 @@ public interface MetricInfoService extends IService<MetricInfo> {
   List<MetricInfoDTO> queryListByTenantProduct(String tenant, String workspace, String product);
 
   MetricInfoDTO queryByMetric(String tenant, String workspace, String metric);
+
+  Map<String, String> querySpmList();
 
 }

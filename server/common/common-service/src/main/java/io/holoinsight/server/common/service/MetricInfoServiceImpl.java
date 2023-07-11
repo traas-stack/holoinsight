@@ -5,15 +5,19 @@
 package io.holoinsight.server.common.service;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import io.holoinsight.server.common.J;
 import io.holoinsight.server.common.dao.converter.MetricInfoConverter;
 import io.holoinsight.server.common.dao.entity.MetricInfo;
 import io.holoinsight.server.common.dao.entity.dto.MetricInfoDTO;
 import io.holoinsight.server.common.dao.mapper.MetricInfoMapper;
+import io.holoinsight.server.common.model.DataQueryRequest;
+import io.holoinsight.server.common.model.DataQueryRequest.QueryDataSource;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -97,5 +101,57 @@ public class MetricInfoServiceImpl extends ServiceImpl<MetricInfoMapper, MetricI
       return null;
     }
     return metricInfoConverter.doToDTO(metricInfos.get(0));
+  }
+
+  @Override
+  public Map<String, String> querySpmList() {
+    Map<String, Object> columnMap = new HashMap<>();
+    columnMap.put("deleted", 0);
+    columnMap.put("metric_type", "logspm");
+    List<MetricInfo> metricInfos = listByMap(columnMap);
+    if (CollectionUtils.isEmpty(metricInfos)) {
+      return new HashMap<>();
+    }
+
+    List<MetricInfoDTO> metricInfoDTOS = metricInfoConverter.dosToDTOs(metricInfos);
+    Map<String, String> map = new HashMap<>();
+    metricInfoDTOS.forEach(metricInfoDTO -> {
+      DataQueryRequest request = new DataQueryRequest();
+
+      String downsample = "1m";
+      switch (metricInfoDTO.getPeriod()) {
+        case 1:
+          downsample = "1s";
+          break;
+        case 5:
+          downsample = "5s";
+          break;
+      }
+
+      request.setFillPolicy("percent");
+      request.setQuery("a/b");
+      request.setDownsample(downsample);
+      request.setTenant(metricInfoDTO.getTenant());
+      QueryDataSource dataSourceA = new QueryDataSource();
+      dataSourceA.setName("a");
+      dataSourceA.setAggregator("sum");
+      dataSourceA.setMetric(metricInfoDTO.getMetricTable().replace("successPercent", "success"));
+      dataSourceA.setFillPolicy("zero");
+      dataSourceA.setDownsample(downsample);
+
+      QueryDataSource dataSourceB = new QueryDataSource();
+      dataSourceB.setName("b");
+      dataSourceB.setAggregator("sum");
+      dataSourceB.setMetric(metricInfoDTO.getMetricTable().replace("successPercent", "total"));
+      dataSourceB.setFillPolicy("zero");
+      dataSourceB.setDownsample(downsample);
+
+      request.setDatasources(new ArrayList<>());
+      request.getDatasources().add(dataSourceA);
+      request.getDatasources().add(dataSourceB);
+
+      map.put(metricInfoDTO.getMetricTable(), J.toJson(request));
+    });
+    return map;
   }
 }

@@ -84,6 +84,9 @@ public class CustomPluginUpdateListener {
 
       Map<String, SqlTask> sqlTaskMaps = new HashMap<>();
       for (CollectMetric collectMetric : collectMetrics) {
+        if (Boolean.TRUE == conf.spm && collectMetric.tableName.contains("successPercent")) {
+          continue;
+        }
         SqlTask sqlTask = buildSqlTask(logPaths, collectMetric, customPluginDTO);
 
         String name = collectMetric.name;
@@ -209,7 +212,9 @@ public class CustomPluginUpdateListener {
         metricInfoDTO.setProduct("logmonitor");
 
         metricInfoDTO.setMetricType("logdefault");
-        if (collectMetric.checkLogPattern()) {
+        if (Boolean.TRUE == conf.spm && collectMetric.tableName.contains("successPercent")) {
+          metricInfoDTO.setMetricType("logspm");
+        } else if (collectMetric.checkLogPattern()) {
           metricInfoDTO.setMetricType("logpattern");
         } else if (collectMetric.checkLogSample()) {
           metricInfoDTO.setMetricType("logsample");

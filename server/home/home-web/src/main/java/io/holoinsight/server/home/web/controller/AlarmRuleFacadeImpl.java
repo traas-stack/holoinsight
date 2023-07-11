@@ -252,6 +252,8 @@ public class AlarmRuleFacadeImpl extends BaseFacade {
         for (String id : idArray) {
           AlarmRuleDTO alarmRuleDTO =
               alarmRuleService.queryById(Long.parseLong(id), ms.getTenant(), ms.getWorkspace());
+          if (null == alarmRuleDTO)
+            continue;
           alarmRuleDTOS.add(alarmRuleDTO);
         }
         JsonResult.createSuccessResult(result, alarmRuleDTOS);
