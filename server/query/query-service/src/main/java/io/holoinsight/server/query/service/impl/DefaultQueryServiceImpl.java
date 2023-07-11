@@ -320,6 +320,7 @@ public class DefaultQueryServiceImpl implements QueryService {
       Assert.isTrue(!request.getTraceIdsList().isEmpty(), "trace id should be set!");
       ApmAPI apmAPI = apmClient.getClient(request.getTenant());
       QueryTraceRequest queryTraceRequest = new QueryTraceRequest();
+      queryTraceRequest.setDuration(new Duration(request.getStart(), request.getEnd(), null));
       queryTraceRequest.setTenant(request.getTenant());
       queryTraceRequest.setTraceIds(request.getTraceIdsList());
       queryTraceRequest.setTags(ApmConvertor.convertTagsMap(request.getTagsMap()));
