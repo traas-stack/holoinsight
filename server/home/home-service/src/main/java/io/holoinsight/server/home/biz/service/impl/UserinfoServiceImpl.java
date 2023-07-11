@@ -5,8 +5,6 @@ package io.holoinsight.server.home.biz.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import io.holoinsight.server.home.biz.service.UserinfoService;
-import io.holoinsight.server.home.common.util.scope.MonitorScope;
-import io.holoinsight.server.home.common.util.scope.RequestContext;
 import io.holoinsight.server.home.dal.converter.UserinfoConverter;
 import io.holoinsight.server.home.dal.mapper.UserinfoMapper;
 import io.holoinsight.server.home.dal.model.Userinfo;
@@ -35,19 +33,32 @@ public class UserinfoServiceImpl implements UserinfoService {
   private UserinfoConverter userinfoConverter;
 
   @Override
-  public UserinfoDTO queryByUid(String uid) {
+  public Userinfo queryByUid(String uid) {
     if (StringUtils.isBlank(uid)) {
       return null;
     }
-    MonitorScope ms = RequestContext.getContext().ms;
-    if (ms == null || StringUtils.isEmpty(ms.tenant)) {
-      return null;
-    }
-
 
     QueryWrapper<Userinfo> queryWrapper = new QueryWrapper<>();
     queryWrapper.eq("uid", uid);
-    queryWrapper.eq("tenant", ms.getTenant());
+
+    List<Userinfo> userinfoList = this.userinfoMapper.selectList(queryWrapper);
+    if (CollectionUtils.isEmpty(userinfoList)) {
+      return null;
+    }
+    return userinfoList.get(0);
+  }
+
+  @Override
+  public UserinfoDTO queryByUid(String uid, String tenant) {
+    if (StringUtils.isBlank(uid)) {
+      return null;
+    }
+
+    QueryWrapper<Userinfo> queryWrapper = new QueryWrapper<>();
+    queryWrapper.eq("uid", uid);
+    if (StringUtils.isNotBlank(tenant)) {
+      queryWrapper.eq("tenant", tenant);
+    }
     List<Userinfo> userinfoList = this.userinfoMapper.selectList(queryWrapper);
     if (CollectionUtils.isEmpty(userinfoList)) {
       return null;
@@ -57,16 +68,15 @@ public class UserinfoServiceImpl implements UserinfoService {
   }
 
   @Override
-  public Map<String, UserinfoDTO> queryByUid(List<String> uidList) {
-    MonitorScope ms = RequestContext.getContext().ms;
-    if (ms == null || StringUtils.isEmpty(ms.tenant)) {
-      return Collections.emptyMap();
-    }
+  public Map<String, UserinfoDTO> queryByUid(List<String> uidList, String tenant) {
+
     if (CollectionUtils.isEmpty(uidList)) {
       return Collections.emptyMap();
     }
     QueryWrapper<Userinfo> queryWrapper = new QueryWrapper<>();
-    queryWrapper.eq("tenant", ms.getTenant());
+    if (StringUtils.isNotBlank(tenant)) {
+      queryWrapper.eq("tenant", tenant);
+    }
     queryWrapper.in("uid", uidList);
     List<Userinfo> userinfoList = this.userinfoMapper.selectList(queryWrapper);
     if (CollectionUtils.isEmpty(userinfoList)) {

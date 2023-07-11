@@ -7,6 +7,7 @@ package io.holoinsight.server.common.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import io.holoinsight.server.common.dao.entity.MetricInfo;
 import io.holoinsight.server.common.dao.entity.dto.MetricInfoDTO;
+import io.holoinsight.server.query.grpc.QueryProto.QueryRequest;
 
 import java.util.List;
 import java.util.Map;
@@ -27,6 +28,6 @@ public interface MetricInfoService extends IService<MetricInfo> {
 
   MetricInfoDTO queryByMetric(String tenant, String workspace, String metric);
 
-  Map<String, String> querySpmList();
+  Map<String, QueryRequest> querySpmList();
 
 }

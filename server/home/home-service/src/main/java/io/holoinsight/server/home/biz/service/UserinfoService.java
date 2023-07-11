@@ -3,6 +3,7 @@
  */
 package io.holoinsight.server.home.biz.service;
 
+import io.holoinsight.server.home.dal.model.Userinfo;
 import io.holoinsight.server.home.facade.UserinfoDTO;
 
 import java.util.List;
@@ -14,7 +15,9 @@ import java.util.Map;
  */
 public interface UserinfoService {
 
-  UserinfoDTO queryByUid(String uid);
+  Userinfo queryByUid(String uid);
 
-  Map<String/* uid */, UserinfoDTO> queryByUid(List<String> uidList);
+  UserinfoDTO queryByUid(String uid, String tenant);
+
+  Map<String/* uid */, UserinfoDTO> queryByUid(List<String> uidList, String tenant);
 }

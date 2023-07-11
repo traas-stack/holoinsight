@@ -5,19 +5,18 @@
 package io.holoinsight.server.common.service;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import io.holoinsight.server.common.J;
 import io.holoinsight.server.common.dao.converter.MetricInfoConverter;
 import io.holoinsight.server.common.dao.entity.MetricInfo;
 import io.holoinsight.server.common.dao.entity.dto.MetricInfoDTO;
 import io.holoinsight.server.common.dao.mapper.MetricInfoMapper;
-import io.holoinsight.server.common.model.DataQueryRequest;
-import io.holoinsight.server.common.model.DataQueryRequest.QueryDataSource;
+import io.holoinsight.server.query.grpc.QueryProto;
+import io.holoinsight.server.query.grpc.QueryProto.QueryRequest;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -104,7 +103,7 @@ public class MetricInfoServiceImpl extends ServiceImpl<MetricInfoMapper, MetricI
   }
 
   @Override
-  public Map<String, String> querySpmList() {
+  public Map<String, QueryRequest> querySpmList() {
     Map<String, Object> columnMap = new HashMap<>();
     columnMap.put("deleted", 0);
     columnMap.put("metric_type", "logspm");
@@ -114,10 +113,9 @@ public class MetricInfoServiceImpl extends ServiceImpl<MetricInfoMapper, MetricI
     }
 
     List<MetricInfoDTO> metricInfoDTOS = metricInfoConverter.dosToDTOs(metricInfos);
-    Map<String, String> map = new HashMap<>();
+    Map<String, QueryRequest> map = new HashMap<>();
     metricInfoDTOS.forEach(metricInfoDTO -> {
-      DataQueryRequest request = new DataQueryRequest();
-
+      QueryProto.QueryRequest.Builder builder = QueryProto.QueryRequest.newBuilder();
       String downsample = "1m";
       switch (metricInfoDTO.getPeriod()) {
         case 1:
@@ -128,29 +126,29 @@ public class MetricInfoServiceImpl extends ServiceImpl<MetricInfoMapper, MetricI
           break;
       }
 
-      request.setFillPolicy("percent");
-      request.setQuery("a/b");
-      request.setDownsample(downsample);
-      request.setTenant(metricInfoDTO.getTenant());
-      QueryDataSource dataSourceA = new QueryDataSource();
-      dataSourceA.setName("a");
-      dataSourceA.setAggregator("sum");
-      dataSourceA.setMetric(metricInfoDTO.getMetricTable().replace("successPercent", "success"));
-      dataSourceA.setFillPolicy("zero");
-      dataSourceA.setDownsample(downsample);
+      builder.setFillPolicy("percent");
+      builder.setQuery("a/b");
+      builder.setDownsample(downsample);
+      builder.setTenant(metricInfoDTO.getTenant());
 
-      QueryDataSource dataSourceB = new QueryDataSource();
-      dataSourceB.setName("b");
-      dataSourceB.setAggregator("sum");
-      dataSourceB.setMetric(metricInfoDTO.getMetricTable().replace("successPercent", "total"));
-      dataSourceB.setFillPolicy("zero");
-      dataSourceB.setDownsample(downsample);
+      QueryProto.Datasource.Builder datasourceBuilderA = QueryProto.Datasource.newBuilder();
+      datasourceBuilderA.setName("a");
+      datasourceBuilderA.setAggregator("sum");
+      datasourceBuilderA
+          .setMetric(metricInfoDTO.getMetricTable().replace("successPercent", "success"));
+      datasourceBuilderA.setFillPolicy("zero");
+      datasourceBuilderA.setDownsample(downsample);
 
-      request.setDatasources(new ArrayList<>());
-      request.getDatasources().add(dataSourceA);
-      request.getDatasources().add(dataSourceB);
-
-      map.put(metricInfoDTO.getMetricTable(), J.toJson(request));
+      QueryProto.Datasource.Builder datasourceBuilderB = QueryProto.Datasource.newBuilder();
+      datasourceBuilderB.setName("b");
+      datasourceBuilderB.setAggregator("sum");
+      datasourceBuilderB
+          .setMetric(metricInfoDTO.getMetricTable().replace("successPercent", "total"));
+      datasourceBuilderB.setFillPolicy("zero");
+      datasourceBuilderB.setDownsample(downsample);
+      builder
+          .addAllDatasources(Arrays.asList(datasourceBuilderA.build(), datasourceBuilderB.build()));
+      map.put(metricInfoDTO.getMetricTable(), builder.build());
     });
     return map;
   }
