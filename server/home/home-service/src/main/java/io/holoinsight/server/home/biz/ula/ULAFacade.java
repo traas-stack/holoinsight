@@ -70,7 +70,7 @@ public class ULAFacade {
     if (StringUtils.isNotEmpty(mu.getMobile()) && StringUtils.isNotEmpty(mu.getEmail())) {
       return mu;
     }
-    UserinfoDTO dto = this.userinfoService.queryByUid(mu.getUserId());
+    UserinfoDTO dto = this.userinfoService.queryByUid(mu.getUserId(), mu.getLoginTenant());
     if (dto == null) {
       return mu;
     }
@@ -97,7 +97,7 @@ public class ULAFacade {
         .filter(mu -> StringUtils.isEmpty(mu.getMobile()) || StringUtils.isEmpty(mu.getEmail())) //
         .map(MonitorUser::getUserId) //
         .collect(Collectors.toList());
-    Map<String, UserinfoDTO> dtos = this.userinfoService.queryByUid(uidList);
+    Map<String, UserinfoDTO> dtos = this.userinfoService.queryByUid(uidList, ms.getTenant());
 
     for (MonitorUser mu : muList) {
       UserinfoDTO dto = dtos.get(mu.getUserId());
