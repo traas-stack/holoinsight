@@ -871,7 +871,7 @@ public class DefaultQueryServiceImpl implements QueryService {
     }
     QueryProto.QueryResponse.Builder rspBuilder = queryData(template.build()).toBuilder();
     for (QueryProto.Result.Builder resultBuilder : rspBuilder.getResultsBuilderList()) {
-      resultBuilder.setMetric(datasource.getMetric());
+      resultBuilder.setMetric(request.getQuery());
     }
     return rspBuilder;
   }
