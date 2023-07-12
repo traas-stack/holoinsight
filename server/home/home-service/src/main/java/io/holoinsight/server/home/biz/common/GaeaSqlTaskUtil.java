@@ -487,6 +487,16 @@ public class GaeaSqlTaskUtil {
             break;
         }
 
+        if (null != rule.translate && !CollectionUtils.isEmpty(rule.translate.transforms)) {
+          Transform transform = new Transform();
+          transform.setFilters(convertTransFormFilters(rule.translate.transforms));
+          elect.setTransform(transform);
+        }
+
+        if (StringUtils.isNotEmpty(rule.defaultValue)) {
+          elect.setDefaultValue(rule.defaultValue);
+        }
+
         Where and = new Where();
         Where.In in = new In();
 
