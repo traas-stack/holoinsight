@@ -442,6 +442,12 @@ public class QueryFacadeImpl extends BaseFacade {
     if (StringUtil.isNotBlank(request.getQuery())) {
       builder.setQuery(request.getQuery());
     }
+    if (StringUtil.isNotBlank(request.getDownsample())) {
+      builder.setDownsample(request.getDownsample());
+    }
+    if (StringUtil.isNotBlank(request.getFillPolicy())) {
+      builder.setFillPolicy(request.getFillPolicy());
+    }
 
     request.datasources.forEach(d -> {
       // Timeline alignment

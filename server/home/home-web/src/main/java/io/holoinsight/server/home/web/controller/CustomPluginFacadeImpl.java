@@ -523,8 +523,6 @@ public class CustomPluginFacadeImpl extends BaseFacade {
       List<SplitCol> splitCols = conf.splitCols;
       if (!CollectionUtils.isEmpty(splitCols)) {
         splitCols.forEach(splitCol -> {
-          if (splitCol.name.equalsIgnoreCase(spmCols.resultKey))
-            return;
           if (splitCol.colType.equalsIgnoreCase("DIM")) {
             tags.add(splitCol.name);
           }
