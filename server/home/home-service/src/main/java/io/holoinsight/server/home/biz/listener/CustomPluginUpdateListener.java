@@ -84,7 +84,7 @@ public class CustomPluginUpdateListener {
 
       Map<String, SqlTask> sqlTaskMaps = new HashMap<>();
       for (CollectMetric collectMetric : collectMetrics) {
-        if (Boolean.TRUE == conf.spm && collectMetric.tableName.contains("successPercent")) {
+        if (Boolean.TRUE == conf.spm && collectMetric.targetTable.contains("successPercent")) {
           continue;
         }
         SqlTask sqlTask = buildSqlTask(logPaths, collectMetric, customPluginDTO);
@@ -203,6 +203,12 @@ public class CustomPluginUpdateListener {
     List<CollectMetric> collectMetrics = conf.getCollectMetrics();
 
     for (CollectMetric collectMetric : collectMetrics) {
+
+      String tableName = collectMetric.getTableName();
+      if (StringUtil.isNotBlank(collectMetric.name)) {
+        tableName = collectMetric.getName();
+      }
+
       try {
         MetricInfoDTO metricInfoDTO = new MetricInfoDTO();
         metricInfoDTO.setTenant(customPluginDTO.getTenant());
@@ -212,17 +218,17 @@ public class CustomPluginUpdateListener {
         metricInfoDTO.setProduct("logmonitor");
 
         metricInfoDTO.setMetricType("logdefault");
-        if (Boolean.TRUE == conf.spm && collectMetric.tableName.contains("successPercent")) {
+        if (Boolean.TRUE == conf.spm && collectMetric.targetTable.contains("successPercent")) {
           metricInfoDTO.setMetricType("logspm");
         } else if (collectMetric.checkLogPattern()) {
           metricInfoDTO.setMetricType("logpattern");
         } else if (collectMetric.checkLogSample()) {
           metricInfoDTO.setMetricType("logsample");
         }
-        metricInfoDTO.setMetric(collectMetric.getTableName());
+        metricInfoDTO.setMetric(tableName);
         metricInfoDTO.setMetricTable(collectMetric.getTargetTable());
         metricInfoDTO.setDeleted(customPluginDTO.status == CustomPluginStatus.OFFLINE);
-        metricInfoDTO.setDescription(customPluginDTO.getName() + "_" + collectMetric.tableName);
+        metricInfoDTO.setDescription(customPluginDTO.getName() + "_" + tableName);
         metricInfoDTO.setUnit("number");
         metricInfoDTO.setPeriod(customPluginDTO.getPeriodType().dataUnitMs / 1000);
 

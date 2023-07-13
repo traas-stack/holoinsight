@@ -127,7 +127,7 @@ public class MetricInfoServiceImpl extends ServiceImpl<MetricInfoMapper, MetricI
       }
 
       builder.setFillPolicy("percent");
-      builder.setQuery("a/b");
+      builder.setQuery("a/b*100");
       builder.setDownsample(downsample);
       builder.setTenant(metricInfoDTO.getTenant());
 
