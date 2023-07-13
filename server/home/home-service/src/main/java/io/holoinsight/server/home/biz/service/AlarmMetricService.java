@@ -19,5 +19,7 @@ public interface AlarmMetricService extends IService<AlarmMetric> {
 
   List<AlarmMetric> queryByMetric(String metric, String tenant, String workspace);
 
+  List<AlarmMetric> queryByRuleId(Long ruleId, String tenant, String workspace);
+
   List<AlarmMetric> queryByMetric(List<String> metrics, String tenant, String workspace);
 }
