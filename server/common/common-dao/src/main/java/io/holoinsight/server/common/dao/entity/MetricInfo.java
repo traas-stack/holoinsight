@@ -45,6 +45,9 @@ public class MetricInfo {
 
   public String tags;
 
+  public String ref;
+  public String extInfo;
+
   public boolean deleted;
 
   @TableField(value = "`gmt_create`")

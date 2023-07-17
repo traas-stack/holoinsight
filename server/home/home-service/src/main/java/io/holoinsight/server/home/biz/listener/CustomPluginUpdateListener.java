@@ -237,7 +237,7 @@ public class CustomPluginUpdateListener {
           tags.addAll(collectMetric.tags);
         }
         metricInfoDTO.setTags(tags);
-
+        metricInfoDTO.setRef(String.valueOf(customPluginDTO.getId()));
         MetricInfoDTO db = metricInfoService.queryByMetric(metricInfoDTO.getTenant(),
             metricInfoDTO.getWorkspace(), collectMetric.getTargetTable());
         if (null == db) {

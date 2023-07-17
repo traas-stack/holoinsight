@@ -42,6 +42,9 @@ public class MetricInfoDTO {
 
   public boolean deleted;
 
+  public String ref;
+  public String extInfo;
+
   public Date gmtCreate;
 
   public Date gmtModified;
