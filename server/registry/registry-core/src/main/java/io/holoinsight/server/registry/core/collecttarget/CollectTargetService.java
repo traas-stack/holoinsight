@@ -23,6 +23,7 @@ import io.holoinsight.server.registry.core.agent.DaemonsetAgentService;
 import io.holoinsight.server.registry.core.template.CollectRange;
 import io.holoinsight.server.registry.core.template.CollectTemplate;
 import io.holoinsight.server.registry.core.template.ExecutorSelector;
+import lombok.val;
 
 /**
  * <p>
@@ -70,10 +71,17 @@ public class CollectTargetService {
         String tenant = t.getTenant();
         String hostIP = (String) inner.get("hostIP");
         if (StringUtils.isEmpty(hostIP)) {
-          for (TargetHostIPResolver resolver : targetHostIPResolvers) {
-            hostIP = resolver.getHostIP(t, dimRow);
-            if (StringUtils.isNotEmpty(hostIP)) {
-              break;
+          resolverLoop: for (TargetHostIPResolver resolver : targetHostIPResolvers) {
+            val result = resolver.getHostIP(t, dimRow);
+            if (result == null || StringUtils.isEmpty(result.getValue())) {
+              continue;
+            }
+            switch (result.getType()) {
+              case AGENT_ID:
+                return result.getValue();
+              case HOST_IP:
+                hostIP = result.getValue();
+                break resolverLoop;
             }
           }
         }
@@ -85,6 +93,7 @@ public class CollectTargetService {
             return da.getHostAgentId();
           }
         }
+
         return (String) inner.get("agentId");
       case ExecutorSelector.FIXED:
         // 暂未实现
