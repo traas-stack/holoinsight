@@ -44,6 +44,7 @@ public class NetworkAddressMappingDO extends RecordDO {
     NetworkAddressMappingDO networkAddressMappingEsDO = new NetworkAddressMappingDO();
     BeanUtils.copyProperties(networkAddressMapping, networkAddressMappingEsDO);
     networkAddressMappingEsDO.setTimestamp(networkAddressMapping.getEndTime());
+    networkAddressMappingEsDO.setTimestamp2(networkAddressMapping.getEndTime());
     return networkAddressMappingEsDO;
   }
 

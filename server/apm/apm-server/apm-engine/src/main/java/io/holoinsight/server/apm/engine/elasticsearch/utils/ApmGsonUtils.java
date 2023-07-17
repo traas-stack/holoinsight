@@ -123,7 +123,8 @@ public class ApmGsonUtils extends GsonUtils {
             String columnName = column.name();
             JsonElement element = jsonObject.remove(columnName);
             try {
-              if (RecordDO.TIMESTAMP.equals(columnName)) {
+              if (RecordDO.TIMESTAMP.equals(columnName)
+                  || RecordDO.TIMESTAMP_2.equals(columnName)) {
                 try {
                   field.set(instance, element.getAsNumber().longValue());
                 } catch (Exception e) {
