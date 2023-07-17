@@ -111,6 +111,10 @@ public class MetaSyncService {
       req.setCluster(DEFAULT_CLUSTER);
     }
 
+    if (metaConfig.getBasic().isVerbose()) {
+      LOGGER.info("deltaSync {}", JsonUtils.toJson(req));
+    }
+
     String tableName = genTableName(req.getApikey());
     if (StringUtils.isBlank(tableName)) {
       String msg = String.format("apiKey [%s] is not existed", req.getApikey());
