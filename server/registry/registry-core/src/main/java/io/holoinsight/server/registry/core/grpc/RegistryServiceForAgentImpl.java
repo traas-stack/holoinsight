@@ -234,7 +234,7 @@ public class RegistryServiceForAgentImpl
           .stream() //
           .map(RegistryServiceForAgentImpl::convertToResourceModel) //
           .collect(Collectors.toList()));
-      req.setAdd(request.getDelList() //
+      req.setDel(request.getDelList() //
           .stream() //
           .map(RegistryServiceForAgentImpl::convertToResourceModel) //
           .collect(Collectors.toList()));
