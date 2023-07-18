@@ -51,7 +51,10 @@ public class ServiceErrorAnalysis {
     errorInfo.setServiceInstanceName(
         resourceAttrMap.get(Const.OTLP_RESOURCE_SERVICE_INSTANCE_NAME).getStringValue());
     errorInfo.setSpanId(Hex.encodeHexString(span.getSpanId().toByteArray()));
-    errorInfo.setTraceId(Hex.encodeHexString(span.getTraceId().toByteArray()));
+    String realTraceId = resourceAttrMap.containsKey(Const.REAL_TRACE_ID)
+        ? resourceAttrMap.get(Const.REAL_TRACE_ID).getStringValue()
+        : Hex.encodeHexString(span.getTraceId().toByteArray());
+    errorInfo.setTraceId(realTraceId);
     errorInfo.setStartTime(TimeUtils.unixNano2MS(span.getStartTimeUnixNano()));
     errorInfo.setTimestamp(TimeUtils.unixNano2MS(span.getEndTimeUnixNano()));
     errorInfo.setTimestamp2(TimeUtils.unixNano2MS(span.getEndTimeUnixNano()));

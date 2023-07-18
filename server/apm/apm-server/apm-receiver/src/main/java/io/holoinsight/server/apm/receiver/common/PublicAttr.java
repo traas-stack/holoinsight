@@ -23,7 +23,11 @@ public class PublicAttr implements IPublicAttr {
     sourceBuilder.setTenant(resourceAttrMap.get(Const.TENANT).getStringValue());
     long latency = TimeUtils.unixNano2MS(span.getEndTimeUnixNano())
         - TimeUtils.unixNano2MS(span.getStartTimeUnixNano());
-    sourceBuilder.setTraceId(Hex.encodeHexString(span.getTraceId().toByteArray()));
+
+    String realTraceId = resourceAttrMap.containsKey(Const.REAL_TRACE_ID)
+        ? resourceAttrMap.get(Const.REAL_TRACE_ID).getStringValue()
+        : Hex.encodeHexString(span.getTraceId().toByteArray());
+    sourceBuilder.setTraceId(realTraceId);
     sourceBuilder.setStartTime(TimeUtils.unixNano2MS(span.getStartTimeUnixNano()));
     sourceBuilder.setEndTime(TimeUtils.unixNano2MS(span.getEndTimeUnixNano()));
     sourceBuilder.setTimeBucket(
