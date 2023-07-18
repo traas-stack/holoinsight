@@ -22,6 +22,8 @@ public class AlarmGroupDTO {
 
   private String tenant;
 
+  private String workspace;
+
   private String groupName;
 
   private GroupInfoDTO groupInfo;

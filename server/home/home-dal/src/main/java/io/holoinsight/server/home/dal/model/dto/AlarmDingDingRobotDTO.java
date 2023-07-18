@@ -54,6 +54,8 @@ public class AlarmDingDingRobotDTO {
    */
   private String tenant;
 
+  private String workspace;
+
   /**
    * 额外信息
    */
