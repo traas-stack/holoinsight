@@ -9,10 +9,13 @@ import io.holoinsight.server.common.dao.mapper.MetricInfoMapper;
 import io.holoinsight.server.home.alert.model.compute.ComputeTaskPackage;
 import io.holoinsight.server.home.alert.service.converter.DoConvert;
 import io.holoinsight.server.home.alert.service.data.CacheData;
+import io.holoinsight.server.home.alert.service.event.RecordSucOrFailNotify;
 import io.holoinsight.server.home.biz.service.CustomPluginService;
 import io.holoinsight.server.home.dal.mapper.AlarmRuleMapper;
 import io.holoinsight.server.home.dal.model.AlarmRule;
+import io.holoinsight.server.home.facade.AlertNotifyRecordDTO;
 import io.holoinsight.server.home.facade.InspectConfig;
+import io.holoinsight.server.home.facade.NotifyStage;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,9 +26,11 @@ import org.springframework.util.CollectionUtils;
 import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
@@ -63,9 +68,10 @@ public class CacheAlertTask {
 
   @Resource
   private MetricInfoMapper metricInfoMapper;
-
   private Map<String, MetricInfo> logPatternCache = new HashMap<>();
   private Map<String, MetricInfo> logSampleCache = new HashMap<>();
+
+  private static final String ALARM_CONFIG = "CacheAlertTask";
 
   public void start() {
     LOGGER.info("[AlarmConfig] start alarm config syn!");
@@ -127,9 +133,12 @@ public class CacheAlertTask {
     List<InspectConfig> inspectConfigs = new ArrayList<>();
     Map<String /* metricTable */, List<InspectConfig>> logInspectConfigs = new HashMap<>();
     Map<String, InspectConfig> uniqueIdMap = new HashMap<>();
+    buildAlertNotifyRecord(computeTaskPackage);
 
     try {
       if (!CollectionUtils.isEmpty(alarmRules)) {
+        RecordSucOrFailNotify.alertNotifyProcessSuc(ALARM_CONFIG, "query alarmRule",
+            computeTaskPackage.getAlertNotifyRecord());
         for (AlarmRule alarmRule : alarmRules) {
           try {
             InspectConfig inspectConfig = DoConvert.alarmRuleConverter(alarmRule);
@@ -156,10 +165,31 @@ public class CacheAlertTask {
       if (inspectConfigs.size() != 0) {
         computeTaskPackage.setInspectConfigs(inspectConfigs);
       }
+      RecordSucOrFailNotify.alertNotifyProcessSuc(ALARM_CONFIG, "convert alarmRule",
+          computeTaskPackage.getAlertNotifyRecord());
     } catch (Exception e) {
+      RecordSucOrFailNotify.alertNotifyProcess("fail to convert alarmRule", ALARM_CONFIG,
+          "convert alarmRule", computeTaskPackage.getAlertNotifyRecord());
       LOGGER.error("{} [CRITICAL] fail to convert alarmRules", computeTaskPackage.getTraceId(), e);
     }
     return computeTaskPackage;
+  }
+
+  private void buildAlertNotifyRecord(ComputeTaskPackage computeTaskPackage) {
+    if (Objects.nonNull(computeTaskPackage)) {
+      AlertNotifyRecordDTO alertNotifyRecord = new AlertNotifyRecordDTO();
+      alertNotifyRecord.setTraceId(computeTaskPackage.getTraceId());
+      alertNotifyRecord.setGmtCreate(new Date());
+      alertNotifyRecord.setIsSuccess((byte) 1);
+      NotifyStage notifyStage = new NotifyStage();
+      notifyStage.setStage(ALARM_CONFIG);
+      List<NotifyStage> notifyStageList = new ArrayList<>();
+      notifyStageList.add(notifyStage);
+      alertNotifyRecord.setNotifyStage(notifyStageList);
+      computeTaskPackage.setAlertNotifyRecord(alertNotifyRecord);
+      LOGGER.info("build alert notify record ,record data is: {}", alertNotifyRecord);
+    }
+
   }
 
   private void supplementLogConfig(

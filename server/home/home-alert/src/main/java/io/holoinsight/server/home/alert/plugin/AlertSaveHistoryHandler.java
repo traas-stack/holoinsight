@@ -7,7 +7,6 @@ package io.holoinsight.server.home.alert.plugin;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import io.holoinsight.server.common.J;
-import io.holoinsight.server.common.service.FuseProtector;
 import io.holoinsight.server.home.alert.common.AlarmContentGenerator;
 import io.holoinsight.server.home.alert.common.G;
 import io.holoinsight.server.home.alert.common.TimeRangeUtil;
@@ -15,11 +14,13 @@ import io.holoinsight.server.home.alert.model.event.AlertNotify;
 import io.holoinsight.server.home.alert.model.event.NotifyDataInfo;
 import io.holoinsight.server.home.alert.service.converter.DoConvert;
 import io.holoinsight.server.home.alert.service.event.AlertHandlerExecutor;
+import io.holoinsight.server.home.alert.service.event.RecordSucOrFailNotify;
 import io.holoinsight.server.home.common.service.QueryClientService;
 import io.holoinsight.server.home.dal.mapper.AlarmHistoryDetailMapper;
 import io.holoinsight.server.home.dal.mapper.AlarmHistoryMapper;
 import io.holoinsight.server.home.dal.model.AlarmHistory;
 import io.holoinsight.server.home.dal.model.AlarmHistoryDetail;
+import io.holoinsight.server.home.facade.AlertNotifyRecordDTO;
 import io.holoinsight.server.home.facade.DataResult;
 import io.holoinsight.server.home.facade.InspectConfig;
 import io.holoinsight.server.home.facade.trigger.AlertHistoryDetailExtra;
@@ -38,12 +39,9 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
-
-import static io.holoinsight.server.common.service.FuseProtector.CRITICAL_AlertSaveHistoryHandler;
-import static io.holoinsight.server.common.service.FuseProtector.NORMAL_AlertSaveHistoryDetail;
-import static io.holoinsight.server.common.service.FuseProtector.NORMAL_MakeAlertRecover;
 
 /**
  * @author wangsiyuan
@@ -62,6 +60,8 @@ public class AlertSaveHistoryHandler implements AlertHandlerExecutor {
 
   @Resource
   private QueryClientService queryClientService;
+
+  private static final String SAVE_HISTORY = "AlertSaveHistoryHandler";
 
   public void handle(List<AlertNotify> alertNotifies) {
     try {
@@ -84,12 +84,32 @@ public class AlertSaveHistoryHandler implements AlertHandlerExecutor {
       makeAlertHistory(alertHistoryMap, alertNotifyList);
 
       makeAlertRecover(alertHistoryMap, alertNotifyRecover);
+
+      // Get alert histories detail to alert notify record
+      buildAlertNotifyRecord(alertNotifies, alertHistoryMap);
       LOGGER.info("alert_notification_history_step size [{}]", alertNotifies.size());
     } catch (Exception e) {
       LOGGER.error(
           "[HoloinsightAlertInternalException][AlertSaveHistoryHandler][{}] fail to alert_history_save for {}",
           alertNotifies.size(), e.getMessage(), e);
-      FuseProtector.voteCriticalError(CRITICAL_AlertSaveHistoryHandler, e.getMessage());
+    }
+  }
+
+  private void buildAlertNotifyRecord(List<AlertNotify> alertNotifies,
+      Map<String, AlarmHistory> alertHistoryMap) {
+    if (CollectionUtils.isEmpty(alertNotifies)) {
+      return;
+    }
+    for (AlertNotify alertNotify : alertNotifies) {
+      String uniqueId = alertNotify.getUniqueId();
+      AlarmHistory alarmHistory = alertHistoryMap.get(uniqueId);
+      AlertNotifyRecordDTO alertNotifyRecord = alertNotify.getAlertNotifyRecord();
+      alertNotifyRecord.setHistoryDetailId(alertNotify.getAlarmHistoryDetailId());
+      if (Objects.nonNull(alarmHistory)) {
+        alertNotifyRecord.setHistoryId(alarmHistory.getId());
+      } else {
+        alertNotifyRecord.setHistoryId(alertNotify.getAlarmHistoryId());
+      }
     }
   }
 
@@ -331,12 +351,15 @@ public class AlertSaveHistoryHandler implements AlertHandlerExecutor {
           }
           genAlertHistoryDetail(alertNotify, historyId);
         }
-        FuseProtector.voteComplete(NORMAL_AlertSaveHistoryDetail);
+        RecordSucOrFailNotify.alertNotifyProcessSuc(SAVE_HISTORY, "save history",
+            alertNotify.getAlertNotifyRecord());
       } catch (Exception e) {
+        RecordSucOrFailNotify.alertNotifyProcess(
+            alertNotify.getTraceId() + "fail to alert_history_save for" + e.getMessage(),
+            SAVE_HISTORY, "save history", alertNotify.getAlertNotifyRecord());
         LOGGER.error(
             "[HoloinsightAlertInternalException][AlertSaveHistoryHandler][1] {}  fail to alert_history_save for {}",
             alertNotify.getTraceId(), e.getMessage(), e);
-        FuseProtector.voteNormalError(NORMAL_AlertSaveHistoryDetail, e.getMessage());
       }
     }
   }
@@ -436,12 +459,15 @@ public class AlertSaveHistoryHandler implements AlertHandlerExecutor {
         AlarmHistory alertHistory = alertHistoryDOMap.get(alertNotify.getUniqueId());
         alertHistory.setRecoverTime(new Date(alertNotify.getAlarmTime()));
         alarmHistoryDOMapper.updateById(alertHistory);
-        FuseProtector.voteComplete(NORMAL_MakeAlertRecover);
+        RecordSucOrFailNotify.alertNotifyProcessSuc(SAVE_HISTORY, "save history is recover",
+            alertNotify.getAlertNotifyRecord());
       } catch (Exception e) {
+        RecordSucOrFailNotify.alertNotifyProcess(
+            alertNotify.getTraceId() + "fail to alert_recover_update for" + e.getMessage(),
+            SAVE_HISTORY, "save history is recover", alertNotify.getAlertNotifyRecord());
         LOGGER.error(
             "[HoloinsightAlertInternalException][AlertSaveHistoryHandler][1] {}  fail to alert_recover_update for {}",
             alertNotify.getTraceId(), e.getMessage(), e);
-        FuseProtector.voteNormalError(NORMAL_MakeAlertRecover, e.getMessage());
       }
     });
   }

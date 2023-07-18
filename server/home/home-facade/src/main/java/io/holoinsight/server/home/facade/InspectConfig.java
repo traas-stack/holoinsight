@@ -62,4 +62,8 @@ public class InspectConfig {
   private boolean logSampleEnable;
 
   private List<String> metrics;
+
+  private AlertNotifyRecordDTO alertNotifyRecord;
+
+  private boolean alertRecord;
 }
