@@ -74,6 +74,7 @@ public class ServiceInstanceRelationDO extends RecordDO {
     ServiceInstanceRelationDO serviceInstanceRelationEsDO = new ServiceInstanceRelationDO();
     BeanUtils.copyProperties(serviceInstanceRelation, serviceInstanceRelationEsDO);
     serviceInstanceRelationEsDO.setTimestamp(serviceInstanceRelation.getEndTime());
+    serviceInstanceRelationEsDO.setTimestamp2(serviceInstanceRelation.getEndTime());
     return serviceInstanceRelationEsDO;
   }
 }
