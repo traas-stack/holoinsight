@@ -13,6 +13,7 @@ import io.holoinsight.server.home.biz.service.AlertGroupService;
 import io.holoinsight.server.home.biz.service.AlertRuleService;
 import io.holoinsight.server.home.biz.service.AlertSubscribeService;
 import io.holoinsight.server.home.biz.service.UserOpLogService;
+import io.holoinsight.server.home.common.service.RequestContextAdapter;
 import io.holoinsight.server.home.common.util.MonitorException;
 import io.holoinsight.server.home.common.util.scope.AuthTargetType;
 import io.holoinsight.server.home.common.util.scope.MonitorCookieUtil;
@@ -23,6 +24,7 @@ import io.holoinsight.server.home.common.util.scope.RequestContext;
 import io.holoinsight.server.home.dal.converter.AlarmRuleConverter;
 import io.holoinsight.server.home.dal.mapper.CustomPluginMapper;
 import io.holoinsight.server.home.dal.model.AlarmRule;
+import io.holoinsight.server.home.dal.model.AlarmSubscribe;
 import io.holoinsight.server.home.dal.model.CustomPlugin;
 import io.holoinsight.server.home.dal.model.OpType;
 import io.holoinsight.server.home.dal.model.dto.AlarmGroupDTO;
@@ -89,6 +91,9 @@ public class AlarmRuleFacadeImpl extends BaseFacade {
 
   @Resource
   protected AlarmRuleConverter alarmRuleConverter;
+
+  @Autowired
+  private RequestContextAdapter requestContextAdapter;
 
   @Value("${holoinsight.home.domain}")
   private String domain;
@@ -420,13 +425,13 @@ public class AlarmRuleFacadeImpl extends BaseFacade {
 
     List<AlarmRuleDTO> alarmRuleDTOS = new ArrayList<>();
     for (AlarmGroupDTO alarmGroupDTO : listByUserLike) {
-      Map<String, Object> conditions = new HashMap<>();
-      conditions.put("group_id", alarmGroupDTO.getId());
-      conditions.put("tenant", MonitorCookieUtil.getTenantOrException());
-      if (null != ms && !StringUtils.isEmpty(ms.workspace)) {
-        conditions.put("workspace", ms.getWorkspace());
-      }
-      List<AlarmSubscribeInfo> alarmSubscribeInfos = alarmSubscribeService.queryByMap(conditions);
+      QueryWrapper<AlarmSubscribe> alarmSubscribeQueryWrapper = new QueryWrapper<>();
+      alarmSubscribeQueryWrapper.eq("group_id", alarmGroupDTO.getId());
+
+      requestContextAdapter.queryWrapperTenantAdapt(alarmSubscribeQueryWrapper,
+          MonitorCookieUtil.getTenantOrException(), requestContextAdapter.getWorkspace(false));
+      List<AlarmSubscribeInfo> alarmSubscribeInfos =
+          alarmSubscribeService.queryByMap(alarmSubscribeQueryWrapper);
 
       if (CollectionUtils.isEmpty(alarmSubscribeInfos)) {
         continue;
@@ -465,13 +470,13 @@ public class AlarmRuleFacadeImpl extends BaseFacade {
   protected List<AlarmRuleDTO> getRuleListBySubscribe(boolean myself) {
     MonitorScope ms = RequestContext.getContext().ms;
     String userId = RequestContext.getContext().mu.getUserId();
-    Map<String, Object> conditions = new HashMap<>();
-    conditions.put("subscriber", userId);
-    conditions.put("tenant", MonitorCookieUtil.getTenantOrException());
-    if (null != ms && !StringUtils.isEmpty(ms.workspace)) {
-      conditions.put("workspace", ms.getWorkspace());
-    }
-    List<AlarmSubscribeInfo> alarmSubscribeInfos = alarmSubscribeService.queryByMap(conditions);
+    QueryWrapper<AlarmSubscribe> alarmSubscribeQueryWrapper = new QueryWrapper<>();
+    alarmSubscribeQueryWrapper.eq("subscriber", userId);
+
+    requestContextAdapter.queryWrapperTenantAdapt(alarmSubscribeQueryWrapper,
+        MonitorCookieUtil.getTenantOrException(), requestContextAdapter.getWorkspace(false));
+    List<AlarmSubscribeInfo> alarmSubscribeInfos =
+        alarmSubscribeService.queryByMap(alarmSubscribeQueryWrapper);
 
     if (CollectionUtils.isEmpty(alarmSubscribeInfos))
       return null;

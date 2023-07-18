@@ -57,7 +57,7 @@ public class AlarmHistoryDetailServiceImpl extends
       wrapper.eq("alarm_time", alarmHistoryDetail.getAlarmTime());
     }
 
-    this.requestContextAdapter.queryWrapperTenantAdapte(wrapper,
+    this.requestContextAdapter.queryWrapperTenantAdapt(wrapper,
         alarmHistoryDetail.getTenant().trim(), alarmHistoryDetail.getWorkspace());
 
     if (null != pageRequest.getFrom()) {
@@ -105,7 +105,7 @@ public class AlarmHistoryDetailServiceImpl extends
     if (StringUtils.isNotBlank(target.getUniqueId())) {
       queryWrapper.eq("unique_id", target.getUniqueId());
     }
-    this.requestContextAdapter.queryWrapperTenantAdapte(queryWrapper, target.getTenant(),
+    this.requestContextAdapter.queryWrapperTenantAdapt(queryWrapper, target.getTenant(),
         target.getWorkspace());
 
     queryWrapper.between("gmt_create",
