@@ -19,7 +19,7 @@ public class ColumnTypeEsMapping implements DataTypeMapping {
 
   @Override
   public String transform(String field, Class<?> type, Type genericType) {
-    if (RecordDO.TIMESTAMP.equals(field)) {
+    if (RecordDO.TIMESTAMP.equals(field) || RecordDO.TIMESTAMP_2.equals(field)) {
       return "date";
     } else if (Integer.class.equals(type) || int.class.equals(type) || Layer.class.equals(type)) {
       return "integer";

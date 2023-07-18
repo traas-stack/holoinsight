@@ -74,6 +74,7 @@ public class EndpointRelationDO extends RecordDO {
     EndpointRelationDO endpointRelationEsDO = new EndpointRelationDO();
     BeanUtils.copyProperties(endpointRelation, endpointRelationEsDO);
     endpointRelationEsDO.setTimestamp(endpointRelation.getEndTime());
+    endpointRelationEsDO.setTimestamp2(endpointRelation.getEndTime());
     return endpointRelationEsDO;
   }
 }

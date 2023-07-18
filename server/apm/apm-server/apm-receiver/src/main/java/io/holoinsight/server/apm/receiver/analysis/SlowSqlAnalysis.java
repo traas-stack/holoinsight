@@ -57,6 +57,7 @@ public class SlowSqlAnalysis {
     slowSqlDO.setLatency((int) latency);
     slowSqlDO.setStartTime(TimeUtils.unixNano2MS(span.getStartTimeUnixNano()));
     slowSqlDO.setTimestamp(TimeUtils.unixNano2MS(span.getEndTimeUnixNano()));
+    slowSqlDO.setTimestamp2(TimeUtils.unixNano2MS(span.getEndTimeUnixNano()));
     slowSqlDO.setTraceId(Hex.encodeHexString(span.getTraceId().toByteArray()));
     slowSqlDO
         .setStatement(spanAttrMap.get(SemanticAttributes.DB_STATEMENT.getKey()).getStringValue());

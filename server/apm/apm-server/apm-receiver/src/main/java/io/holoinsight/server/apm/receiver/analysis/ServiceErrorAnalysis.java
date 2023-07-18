@@ -54,6 +54,7 @@ public class ServiceErrorAnalysis {
     errorInfo.setTraceId(Hex.encodeHexString(span.getTraceId().toByteArray()));
     errorInfo.setStartTime(TimeUtils.unixNano2MS(span.getStartTimeUnixNano()));
     errorInfo.setTimestamp(TimeUtils.unixNano2MS(span.getEndTimeUnixNano()));
+    errorInfo.setTimestamp2(TimeUtils.unixNano2MS(span.getEndTimeUnixNano()));
     long latency = TimeUtils.unixNano2MS(span.getEndTimeUnixNano())
         - TimeUtils.unixNano2MS(span.getStartTimeUnixNano());
     errorInfo.setLatency((int) latency);
