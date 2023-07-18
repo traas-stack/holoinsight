@@ -181,8 +181,10 @@ public class SpanHandler {
       serverRelationList.add(ServiceRelationDO.fromServiceRelation(serviceRelation));
 
       ServiceInstanceRelation serviceInstanceRelation = callingIn.toServiceInstanceRelation();
-      serverInstanceRelationList
-          .add(ServiceInstanceRelationDO.fromServiceInstanceRelation(serviceInstanceRelation));
+      if (serviceInstanceRelation != null) {
+        serverInstanceRelationList
+            .add(ServiceInstanceRelationDO.fromServiceInstanceRelation(serviceInstanceRelation));
+      }
 
       EndpointRelation endpointRelation = callingIn.toEndpointRelation();
       if (endpointRelation != null) {
