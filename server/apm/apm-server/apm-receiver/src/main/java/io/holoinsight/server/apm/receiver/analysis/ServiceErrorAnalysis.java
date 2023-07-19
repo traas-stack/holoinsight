@@ -44,17 +44,20 @@ public class ServiceErrorAnalysis {
 
   public ServiceErrorDO setPublicAttrs(ServiceErrorDO errorInfo, Span span,
       Map<String, AnyValue> spanAttrMap, Map<String, AnyValue> resourceAttrMap) {
+    String realTraceId = resourceAttrMap.containsKey(Const.REAL_TRACE_ID)
+        ? resourceAttrMap.get(Const.REAL_TRACE_ID).getStringValue()
+        : Hex.encodeHexString(span.getTraceId().toByteArray());
+    String realSpanId = spanAttrMap.containsKey(Const.REAL_SPAN_ID)
+        ? spanAttrMap.get(Const.REAL_SPAN_ID).getStringValue()
+        : Hex.encodeHexString(span.getSpanId().toByteArray());
+    errorInfo.setSpanId(realSpanId);
+    errorInfo.setTraceId(realTraceId);
     errorInfo.setTenant(resourceAttrMap.get(Const.TENANT).getStringValue());
     errorInfo.setServiceName(
         resourceAttrMap.get(ResourceAttributes.SERVICE_NAME.getKey()).getStringValue());
     errorInfo.setEndpointName(span.getName());
     errorInfo.setServiceInstanceName(
         resourceAttrMap.get(Const.OTLP_RESOURCE_SERVICE_INSTANCE_NAME).getStringValue());
-    errorInfo.setSpanId(Hex.encodeHexString(span.getSpanId().toByteArray()));
-    String realTraceId = resourceAttrMap.containsKey(Const.REAL_TRACE_ID)
-        ? resourceAttrMap.get(Const.REAL_TRACE_ID).getStringValue()
-        : Hex.encodeHexString(span.getTraceId().toByteArray());
-    errorInfo.setTraceId(realTraceId);
     errorInfo.setStartTime(TimeUtils.unixNano2MS(span.getStartTimeUnixNano()));
     errorInfo.setTimestamp(TimeUtils.unixNano2MS(span.getEndTimeUnixNano()));
     errorInfo.setTimestamp2(TimeUtils.unixNano2MS(span.getEndTimeUnixNano()));

@@ -59,8 +59,8 @@ public class SlowSqlAnalysis {
     slowSqlDO.setTimestamp(TimeUtils.unixNano2MS(span.getEndTimeUnixNano()));
     slowSqlDO.setTimestamp2(TimeUtils.unixNano2MS(span.getEndTimeUnixNano()));
     String realTraceId = resourceAttrMap.containsKey(Const.REAL_TRACE_ID)
-            ? resourceAttrMap.get(Const.REAL_TRACE_ID).getStringValue()
-            : Hex.encodeHexString(span.getTraceId().toByteArray());
+        ? resourceAttrMap.get(Const.REAL_TRACE_ID).getStringValue()
+        : Hex.encodeHexString(span.getTraceId().toByteArray());
     slowSqlDO.setTraceId(realTraceId);
     slowSqlDO
         .setStatement(spanAttrMap.get(SemanticAttributes.DB_STATEMENT.getKey()).getStringValue());
