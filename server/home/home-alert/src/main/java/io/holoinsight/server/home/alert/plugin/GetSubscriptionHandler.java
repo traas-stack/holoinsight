@@ -151,8 +151,8 @@ public class GetSubscriptionHandler implements AlertHandlerExecutor {
           QueryWrapper<AlarmSubscribe> alertSubscribeQueryWrapper = new QueryWrapper<>();
           alertSubscribeQueryWrapper.eq("unique_id", alertNotify.getUniqueId());
           alertSubscribeQueryWrapper.eq("status", (byte) 1);
-          requestContextAdapter.queryWrapperTenantAdapt(alertSubscribeQueryWrapper,
-              alertNotify.getTenant(), alertNotify.getWorkspace());
+          requestContextAdapter.queryWrapperTenantAdapt(alertSubscribeQueryWrapper, null,
+              alertNotify.getWorkspace());
           addGlobalWebhook(alertNotify, alertWebhookMap);
           List<AlarmSubscribe> alertSubscribeList =
               alarmSubscribeDOMapper.selectList(alertSubscribeQueryWrapper);
