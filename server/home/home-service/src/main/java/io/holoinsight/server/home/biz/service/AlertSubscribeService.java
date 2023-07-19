@@ -3,6 +3,7 @@
  */
 package io.holoinsight.server.home.biz.service;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.IService;
 import io.holoinsight.server.home.dal.model.AlarmSubscribe;
 import io.holoinsight.server.home.dal.model.dto.AlarmSubscribeDTO;
@@ -21,9 +22,9 @@ public interface AlertSubscribeService extends IService<AlarmSubscribe> {
   Boolean saveDataBatch(AlarmSubscribeDTO alarmSubscribeDTO, String creator, String tenant,
       String workspace);
 
-  AlarmSubscribeDTO queryByUniqueId(Map<String, Object> columnMap);
+  AlarmSubscribeDTO queryByUniqueId(QueryWrapper<AlarmSubscribe> queryWrapper, String uniqueId);
 
-  List<AlarmSubscribeInfo> queryByMap(Map<String, Object> columnMap);
+  List<AlarmSubscribeInfo> queryByMap(QueryWrapper<AlarmSubscribe> queryWrapper);
 
   Long save(AlarmSubscribeInfo alarmSubscribeInfo);
 

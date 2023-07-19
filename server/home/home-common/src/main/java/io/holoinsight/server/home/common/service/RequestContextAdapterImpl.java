@@ -4,6 +4,9 @@
 package io.holoinsight.server.home.common.service;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import io.holoinsight.server.home.common.util.scope.MonitorCookieUtil;
+import io.holoinsight.server.home.common.util.scope.MonitorScope;
+import io.holoinsight.server.home.common.util.scope.RequestContext;
 import io.holoinsight.server.query.grpc.QueryProto;
 import org.apache.commons.lang3.StringUtils;
 
@@ -25,7 +28,7 @@ public class RequestContextAdapterImpl implements RequestContextAdapter {
   }
 
   @Override
-  public <T> void queryWrapperTenantAdapte(QueryWrapper<T> queryWrapper, String tenant,
+  public <T> void queryWrapperTenantAdapt(QueryWrapper<T> queryWrapper, String tenant,
       String workspace) {
     if (queryWrapper != null) {
       if (StringUtils.isNotBlank(tenant)) {
@@ -35,5 +38,11 @@ public class RequestContextAdapterImpl implements RequestContextAdapter {
         queryWrapper.eq("workspace", workspace);
       }
     }
+  }
+
+  @Override
+  public String getWorkspace(boolean cross) {
+    MonitorScope ms = RequestContext.getContext().ms;
+    return ms.getWorkspace();
   }
 }
