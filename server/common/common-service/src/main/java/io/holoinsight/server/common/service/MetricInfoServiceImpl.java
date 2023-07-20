@@ -4,6 +4,7 @@
 
 package io.holoinsight.server.common.service;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import io.holoinsight.server.common.dao.converter.MetricInfoConverter;
 import io.holoinsight.server.common.dao.entity.MetricInfo;
@@ -147,5 +148,20 @@ public class MetricInfoServiceImpl extends ServiceImpl<MetricInfoMapper, MetricI
       map.put(metricInfoDTO.getMetricTable(), builder.build());
     });
     return map;
+  }
+
+  @Override
+  public List<MetricInfoDTO> getListByKeyword(String keyword, String tenant, String workspace) {
+    QueryWrapper<MetricInfo> wrapper = new QueryWrapper<>();
+    if (StringUtils.isNotBlank(tenant) || "-".equalsIgnoreCase(tenant)) {
+      wrapper.eq("tenant", tenant);
+    }
+    if (StringUtils.isNotBlank(workspace) || "-".equalsIgnoreCase(workspace)) {
+      wrapper.eq("workspace", workspace);
+    }
+
+    wrapper.like("metric_table", keyword);
+    wrapper.last("LIMIT 10");
+    return metricInfoConverter.dosToDTOs(baseMapper.selectList(wrapper));
   }
 }

@@ -11,6 +11,7 @@ import io.holoinsight.server.home.biz.service.TenantInitService;
 import io.holoinsight.server.home.dal.model.dto.CloudMonitorRange;
 import io.holoinsight.server.query.grpc.QueryProto.QueryFilter;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -62,7 +63,7 @@ public class DefaultTenantInitServiceImpl implements TenantInitService {
 
   @Override
   public List<QueryFilter> getTenantFilters(String workspace) {
-    return null;
+    return new ArrayList<>();
   }
 
   @Override
