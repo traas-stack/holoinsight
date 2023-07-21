@@ -74,7 +74,7 @@ public class AlertRuleServiceImpl extends ServiceImpl<AlarmRuleMapper, AlarmRule
   @Override
   public AlarmRuleDTO queryById(Long id, String tenant, String workspace) {
     QueryWrapper<AlarmRule> wrapper = new QueryWrapper<>();
-    this.requestContextAdapter.queryWrapperTenantAdapte(wrapper, tenant, workspace);
+    this.requestContextAdapter.queryWrapperTenantAdapt(wrapper, tenant, workspace);
 
     wrapper.eq("id", id);
     wrapper.last("LIMIT 1");
@@ -100,7 +100,7 @@ public class AlertRuleServiceImpl extends ServiceImpl<AlarmRuleMapper, AlarmRule
       wrapper.eq("id", alarmRule.getId());
     }
 
-    this.requestContextAdapter.queryWrapperTenantAdapte(wrapper, alarmRule.getTenant(),
+    this.requestContextAdapter.queryWrapperTenantAdapt(wrapper, alarmRule.getTenant(),
         alarmRule.getWorkspace());
 
     if (null != alarmRule.getStatus()) {
@@ -223,7 +223,7 @@ public class AlertRuleServiceImpl extends ServiceImpl<AlarmRuleMapper, AlarmRule
   @Override
   public List<AlarmRuleDTO> getListByKeyword(String keyword, String tenant, String workspace) {
     QueryWrapper<AlarmRule> wrapper = new QueryWrapper<>();
-    this.requestContextAdapter.queryWrapperTenantAdapte(wrapper, tenant, workspace);
+    this.requestContextAdapter.queryWrapperTenantAdapt(wrapper, tenant, workspace);
 
     wrapper.like("id", keyword).or().like("rule_name", keyword);
     wrapper.last("LIMIT 10");

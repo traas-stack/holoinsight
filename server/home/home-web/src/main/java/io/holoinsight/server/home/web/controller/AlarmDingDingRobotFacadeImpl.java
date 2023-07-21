@@ -5,6 +5,7 @@ package io.holoinsight.server.home.web.controller;
 
 import io.holoinsight.server.home.biz.service.AlertDingDingRobotService;
 import io.holoinsight.server.home.biz.service.UserOpLogService;
+import io.holoinsight.server.home.common.service.RequestContextAdapter;
 import io.holoinsight.server.home.common.util.MonitorException;
 import io.holoinsight.server.home.common.util.scope.AuthTargetType;
 import io.holoinsight.server.home.common.util.scope.MonitorScope;
@@ -49,6 +50,9 @@ public class AlarmDingDingRobotFacadeImpl extends BaseFacade {
   @Autowired
   private UserOpLogService userOpLogService;
 
+  @Autowired
+  private RequestContextAdapter requestContextAdapter;
+
   @PostMapping("/create")
   @ResponseBody
   @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.EDIT)
@@ -72,6 +76,7 @@ public class AlarmDingDingRobotFacadeImpl extends BaseFacade {
         if (null != ms && !StringUtils.isEmpty(ms.tenant)) {
           alarmDingDingRobotDTO.setTenant(ms.tenant);
         }
+        alarmDingDingRobotDTO.setWorkspace(requestContextAdapter.getWorkspace(true));
         alarmDingDingRobotDTO.setGmtCreate(new Date());
         alarmDingDingRobotDTO.setGmtModified(new Date());
         Long id = alarmDingDingRobotService.save(alarmDingDingRobotDTO);
@@ -121,9 +126,7 @@ public class AlarmDingDingRobotFacadeImpl extends BaseFacade {
           alarmDingDingRobotDTO.setModifier(mu.getLoginName());
         }
         MonitorScope ms = RequestContext.getContext().ms;
-        if (null != ms && !StringUtils.isEmpty(ms.tenant)) {
-          alarmDingDingRobotDTO.setTenant(ms.tenant);
-        }
+
         alarmDingDingRobotDTO.setGmtModified(new Date());
         boolean save = alarmDingDingRobotService.updateById(alarmDingDingRobotDTO);
 
@@ -177,7 +180,8 @@ public class AlarmDingDingRobotFacadeImpl extends BaseFacade {
         boolean rtn = false;
         AlarmDingDingRobotDTO alarmDingDingRobot =
             alarmDingDingRobotService.queryById(id, ms.getTenant());
-        if (alarmDingDingRobot != null) {
+        if (alarmDingDingRobot != null
+            && StringUtils.equals(alarmDingDingRobot.getTenant(), ms.getTenant())) {
           rtn = alarmDingDingRobotService.removeById(id);
         }
 
@@ -209,6 +213,7 @@ public class AlarmDingDingRobotFacadeImpl extends BaseFacade {
         if (null != ms && !StringUtils.isEmpty(ms.tenant)) {
           pageRequest.getTarget().setTenant(ms.tenant);
         }
+        pageRequest.getTarget().setWorkspace(requestContextAdapter.getWorkspace(true));
         JsonResult.createSuccessResult(result,
             alarmDingDingRobotService.getListByPage(pageRequest));
       }

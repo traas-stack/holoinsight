@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import io.holoinsight.server.home.biz.service.AlertDingDingRobotService;
+import io.holoinsight.server.home.common.service.RequestContextAdapter;
 import io.holoinsight.server.home.common.util.StringUtil;
 import io.holoinsight.server.home.dal.converter.AlarmDingDingRobotConverter;
 import io.holoinsight.server.home.dal.mapper.AlarmDingDingRobotMapper;
@@ -14,6 +15,7 @@ import io.holoinsight.server.home.dal.model.AlarmDingDingRobot;
 import io.holoinsight.server.home.dal.model.dto.AlarmDingDingRobotDTO;
 import io.holoinsight.server.home.facade.page.MonitorPageRequest;
 import io.holoinsight.server.home.facade.page.MonitorPageResult;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -30,6 +32,9 @@ public class AlertDingDingRobotServiceImpl extends
 
   @Resource
   private AlarmDingDingRobotConverter alarmDingDingRobotConverter;
+
+  @Autowired
+  private RequestContextAdapter requestContextAdapter;
 
   @Override
   public Long save(AlarmDingDingRobotDTO alarmDingDingRobotDTO) {
@@ -49,7 +54,8 @@ public class AlertDingDingRobotServiceImpl extends
   @Override
   public AlarmDingDingRobotDTO queryById(Long id, String tenant) {
     QueryWrapper<AlarmDingDingRobot> wrapper = new QueryWrapper<>();
-    wrapper.eq("tenant", tenant);
+    requestContextAdapter.queryWrapperTenantAdapt(wrapper, tenant,
+        requestContextAdapter.getWorkspace(true));
     wrapper.eq("id", id);
     wrapper.last("LIMIT 1");
     AlarmDingDingRobot alarmDingDingRobot = this.getOne(wrapper);
@@ -68,12 +74,11 @@ public class AlertDingDingRobotServiceImpl extends
     AlarmDingDingRobot alarmDingDingRobot =
         alarmDingDingRobotConverter.dtoToDO(pageRequest.getTarget());
 
+    this.requestContextAdapter.queryWrapperTenantAdapt(wrapper, alarmDingDingRobot.getTenant(),
+        alarmDingDingRobot.getWorkspace());
+
     if (null != alarmDingDingRobot.getId()) {
       wrapper.eq("id", alarmDingDingRobot.getId());
-    }
-
-    if (StringUtil.isNotBlank(alarmDingDingRobot.getTenant())) {
-      wrapper.eq("tenant", alarmDingDingRobot.getTenant().trim());
     }
 
     if (StringUtil.isNotBlank(alarmDingDingRobot.getGroupName())) {
