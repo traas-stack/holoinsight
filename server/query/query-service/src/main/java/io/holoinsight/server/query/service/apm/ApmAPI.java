@@ -20,6 +20,7 @@ import io.holoinsight.server.apm.common.model.query.StatisticDataList;
 import io.holoinsight.server.apm.common.model.query.StatisticRequest;
 import io.holoinsight.server.apm.common.model.query.Topology;
 import io.holoinsight.server.apm.common.model.query.TraceBrief;
+import io.holoinsight.server.apm.common.model.query.TraceTree;
 import io.holoinsight.server.apm.common.model.query.VirtualComponent;
 import io.holoinsight.server.apm.common.model.specification.sw.Trace;
 import io.holoinsight.server.apm.engine.postcal.MetricDefine;
@@ -39,6 +40,9 @@ public interface ApmAPI {
 
   @POST("/cluster/api/v1/trace/query")
   Call<Trace> queryTrace(@Body QueryTraceRequest request);
+
+  @POST("/cluster/api/v1/trace/query/traceTree")
+  Call<List<TraceTree>> queryTraceTree(@Body QueryTraceRequest request);
 
   @POST("/cluster/api/v1/metric/billing")
   Call<StatisticData> billing(@Body QueryTraceRequest request);

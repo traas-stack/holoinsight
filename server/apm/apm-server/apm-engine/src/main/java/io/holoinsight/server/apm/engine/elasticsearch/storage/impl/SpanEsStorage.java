@@ -9,6 +9,7 @@ import io.holoinsight.server.apm.common.model.query.BasicTrace;
 import io.holoinsight.server.apm.common.model.query.Pagination;
 import io.holoinsight.server.apm.common.model.query.QueryOrder;
 import io.holoinsight.server.apm.common.model.query.TraceBrief;
+import io.holoinsight.server.apm.common.model.query.TraceTree;
 import io.holoinsight.server.apm.common.model.specification.OtlpMappings;
 import io.holoinsight.server.apm.common.model.specification.otel.Event;
 import io.holoinsight.server.apm.common.model.specification.otel.KeyValue;
@@ -105,30 +106,7 @@ public class SpanEsStorage extends RecordEsStorage<SpanDO> implements SpanStorag
   public Trace queryTrace(String tenant, long start, long end, String traceId, List<Tag> tags)
       throws IOException {
     Trace trace = new Trace();
-
-    SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
-
-    searchSourceBuilder.query(buildQuery(tenant, null, null, null,
-        Collections.singletonList(traceId), 0, 0, null, start, end, tags, this.timeSeriesField()));
-
-    searchSourceBuilder.size(SPAN_QUERY_MAX_SIZE);
-    SearchRequest searchRequest =
-        new SearchRequest(new String[] {SpanDO.INDEX_NAME}, searchSourceBuilder);
-    SearchResponse searchResponse = client().search(searchRequest, RequestOptions.DEFAULT);
-    List<SpanDO> spanRecords = new ArrayList<>();
-    for (org.elasticsearch.search.SearchHit hit : searchResponse.getHits().getHits()) {
-      String hitJson = hit.getSourceAsString();
-      SpanDO spanEsDO = ApmGsonUtils.apmGson().fromJson(hitJson, SpanDO.class);
-      spanRecords.add(spanEsDO);
-    }
-
-    if (!spanRecords.isEmpty()) {
-      for (SpanDO spanEsDO : spanRecords) {
-        if (nonNull(spanEsDO)) {
-          trace.getSpans().add(buildSpan(spanEsDO));
-        }
-      }
-    }
+    trace.setSpans(querySpan(tenant, start, end, traceId, tags));
 
     List<Span> sortedSpans = new LinkedList<>();
     if (CollectionUtils.isNotEmpty(trace.getSpans())) {
@@ -151,6 +129,57 @@ public class SpanEsStorage extends RecordEsStorage<SpanDO> implements SpanStorag
     });
     trace.getSpans().addAll(sortedSpans);
     return trace;
+  }
+
+  @Override
+  public List<TraceTree> queryTraceTree(String tenant, long start, long end, String traceId,
+      List<Tag> tags) throws Exception {
+    List<TraceTree> result = new ArrayList<>();
+    List<Span> spans = querySpan(tenant, start, end, traceId, tags);
+    if (CollectionUtils.isNotEmpty(spans)) {
+      List<Span> rootSpans = findRoot(spans);
+      if (CollectionUtils.isNotEmpty(rootSpans)) {
+        rootSpans.forEach(span -> {
+          TraceTree root = new TraceTree();
+          root.setSpan(span);
+          List<TraceTree> children = new ArrayList<>();
+          root.setChildren(children);
+          findChildren1(spans, span, children);
+          result.add(root);
+        });
+      }
+    }
+    return result;
+  }
+
+  private List<Span> querySpan(String tenant, long start, long end, String traceId, List<Tag> tags)
+      throws IOException {
+    List<Span> spans = new ArrayList<>();
+
+    SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
+
+    searchSourceBuilder.query(buildQuery(tenant, null, null, null,
+        Collections.singletonList(traceId), 0, 0, null, start, end, tags, this.timeSeriesField()));
+
+    searchSourceBuilder.size(SPAN_QUERY_MAX_SIZE);
+    SearchRequest searchRequest =
+        new SearchRequest(new String[] {SpanDO.INDEX_NAME}, searchSourceBuilder);
+    SearchResponse searchResponse = client().search(searchRequest, RequestOptions.DEFAULT);
+    List<SpanDO> spanRecords = new ArrayList<>();
+    for (org.elasticsearch.search.SearchHit hit : searchResponse.getHits().getHits()) {
+      String hitJson = hit.getSourceAsString();
+      SpanDO spanEsDO = ApmGsonUtils.apmGson().fromJson(hitJson, SpanDO.class);
+      spanRecords.add(spanEsDO);
+    }
+
+    if (!spanRecords.isEmpty()) {
+      for (SpanDO spanEsDO : spanRecords) {
+        if (nonNull(spanEsDO)) {
+          spans.add(buildSpan(spanEsDO));
+        }
+      }
+    }
+    return spans;
   }
 
   private Span buildSpan(SpanDO spanEsDO) {
@@ -235,13 +264,15 @@ public class SpanEsStorage extends RecordEsStorage<SpanDO> implements SpanStorag
 
   private List<Span> findRoot(List<Span> spans) {
     List<Span> rootSpans = new ArrayList<>();
-    spans.forEach(span -> {
+    ListIterator<Span> iterator = spans.listIterator(spans.size());
+    while (iterator.hasPrevious()) {
+      Span span = iterator.previous();
       String parentSpanId = span.getParentSpanId();
 
       boolean hasParent = false;
       for (Span subSpan : spans) {
-        if (parentSpanId.equals(subSpan.getSpanId())
-            || CollectionUtils.isNotEmpty(span.getRefs())) {
+        // sofatracer mq/rpc server span(parentSpanId == spanId)
+        if (subSpan.getSpanId().equals(parentSpanId) && !subSpan.getType().equals(span.getType())) {
           hasParent = true;
           // if find parent, quick exit
           break;
@@ -249,10 +280,27 @@ public class SpanEsStorage extends RecordEsStorage<SpanDO> implements SpanStorag
       }
 
       if (!hasParent) {
-        span.setRoot(true);
-        rootSpans.add(span);
+        // rootSpan.parentSpanId == ""
+        if (StringUtils.isEmpty(parentSpanId)) {
+          span.setRoot(true);
+          rootSpans.add(span);
+        } else {
+          // sofatracer may be missing span, supplement the missing span until the root span
+          Span missingSpan = new Span();
+          missingSpan.setSpanId(parentSpanId);
+          missingSpan.setTraceId(span.getTraceId());
+          missingSpan.setEndpointName("UNKNOWN");
+          missingSpan.setParentSpanId("");
+          missingSpan.setType("");
+          // sofatracer spanId -> parentSpanId: 0.1.1 -> 0.1
+          if (parentSpanId.contains(".")) {
+            missingSpan.setParentSpanId(parentSpanId.substring(0, parentSpanId.lastIndexOf(".")));
+          }
+          iterator.add(missingSpan);
+        }
       }
-    });
+    }
+
     rootSpans.sort(Comparator.comparing(Span::getStartTime));
     return rootSpans;
   }
@@ -261,7 +309,26 @@ public class SpanEsStorage extends RecordEsStorage<SpanDO> implements SpanStorag
     spans.forEach(span -> {
       if (span.getParentSpanId().equals(parentSpan.getSpanId())) {
         childrenSpan.add(span);
-        findChildren(spans, span, childrenSpan);
+        if (!span.getParentSpanId().equals(span.getSpanId())) {
+          findChildren(spans, span, childrenSpan);
+        }
+      }
+    });
+  }
+
+  private void findChildren1(List<Span> spans, Span parentSpan, List<TraceTree> children) {
+    spans.forEach(span -> {
+      if (span.getParentSpanId().equals(parentSpan.getSpanId())) {
+        TraceTree child = new TraceTree();
+        child.setSpan(span);
+        children.add(child);
+        List<TraceTree> newChildren = new ArrayList<>();
+        child.setChildren(newChildren);
+        // sofatracer mq/rpc server span(parentSpanId == spanId)
+        // prevent stack overflow
+        if (!span.getParentSpanId().equals(span.getSpanId())) {
+          findChildren1(spans, span, newChildren);
+        }
       }
     });
   }

@@ -132,6 +132,16 @@ public class QueryController {
     }
   }
 
+  @PostMapping(path = "/trace/query/traceTree", produces = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<?> queryTraceTree(@RequestBody QueryProto.QueryTraceRequest request) {
+    try {
+      return ResponseEntity.ok(queryService.queryTraceTree(request));
+    } catch (Exception e) {
+      e.printStackTrace();
+      return ResponseEntity.badRequest().body(Collections.singletonMap("message", e.getMessage()));
+    }
+  }
+
   @PostMapping(path = "/serviceList", produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<?> queryServiceList(@RequestBody QueryProto.QueryMetaRequest request) {
     try {

@@ -9,6 +9,7 @@ import io.holoinsight.server.apm.common.model.query.ServiceInstance;
 import io.holoinsight.server.apm.common.model.query.SlowSql;
 import io.holoinsight.server.apm.common.model.query.Topology;
 import io.holoinsight.server.apm.common.model.query.TraceBrief;
+import io.holoinsight.server.apm.common.model.query.TraceTree;
 import io.holoinsight.server.apm.common.model.query.VirtualComponent;
 import io.holoinsight.server.apm.common.model.specification.sw.Trace;
 import io.holoinsight.server.common.J;
@@ -223,6 +224,12 @@ public class QueryClientService {
   public Trace queryTrace(QueryTraceRequest request) {
     QueryProto.Trace trace = queryServiceBlockingStub.queryTrace(convertRequest(request));
     return ApmConvertor.convertTrace(trace);
+  }
+
+  public List<TraceTree> queryTraceTree(QueryTraceRequest request) {
+    QueryProto.TraceTreeList traceTreeList =
+        queryServiceBlockingStub.queryTraceTree(convertRequest(request));
+    return ApmConvertor.convertTraceTree(traceTreeList);
   }
 
   public List<io.holoinsight.server.apm.common.model.query.Service> queryServiceList(

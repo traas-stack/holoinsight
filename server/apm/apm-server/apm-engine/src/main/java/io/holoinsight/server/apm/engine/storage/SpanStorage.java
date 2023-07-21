@@ -6,6 +6,7 @@ package io.holoinsight.server.apm.engine.storage;
 import io.holoinsight.server.apm.common.model.query.Pagination;
 import io.holoinsight.server.apm.common.model.query.QueryOrder;
 import io.holoinsight.server.apm.common.model.query.TraceBrief;
+import io.holoinsight.server.apm.common.model.query.TraceTree;
 import io.holoinsight.server.apm.common.model.specification.sw.Tag;
 import io.holoinsight.server.apm.common.model.specification.sw.Trace;
 import io.holoinsight.server.apm.common.model.specification.sw.TraceState;
@@ -27,4 +28,7 @@ public interface SpanStorage extends WritableStorage<SpanDO>, ReadableStorage {
 
   Trace queryTrace(final String tenant, final long start, final long end, final String traceId,
       List<Tag> tags) throws Exception;
+
+  List<TraceTree> queryTraceTree(final String tenant, final long start, final long end,
+      final String traceId, List<Tag> tags) throws Exception;
 }

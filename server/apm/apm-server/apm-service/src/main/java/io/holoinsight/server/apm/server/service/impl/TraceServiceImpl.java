@@ -6,6 +6,7 @@ package io.holoinsight.server.apm.server.service.impl;
 import io.holoinsight.server.apm.common.model.query.Pagination;
 import io.holoinsight.server.apm.common.model.query.QueryOrder;
 import io.holoinsight.server.apm.common.model.query.TraceBrief;
+import io.holoinsight.server.apm.common.model.query.TraceTree;
 import io.holoinsight.server.apm.common.model.specification.sw.Tag;
 import io.holoinsight.server.apm.common.model.specification.sw.Trace;
 import io.holoinsight.server.apm.common.model.specification.sw.TraceState;
@@ -38,6 +39,12 @@ public class TraceServiceImpl implements TraceService {
   public Trace queryTrace(String tenant, long start, long end, String traceId, List<Tag> tags)
       throws Exception {
     return spanStorage.queryTrace(tenant, start, end, traceId, tags);
+  }
+
+  @Override
+  public List<TraceTree> queryTraceTree(String tenant, long start, long end, String traceId,
+      List<Tag> tags) throws Exception {
+    return spanStorage.queryTraceTree(tenant, start, end, traceId, tags);
   }
 
   @Override
