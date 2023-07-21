@@ -137,7 +137,7 @@ public class SpanEsStorage extends RecordEsStorage<SpanDO> implements SpanStorag
     List<TraceTree> result = new ArrayList<>();
     List<Span> spans = querySpan(tenant, start, end, traceId, tags);
     if (CollectionUtils.isNotEmpty(spans)) {
-      List<Span> rootSpans = findRoot(spans);
+      List<Span> rootSpans = findRoot1(spans);
       if (CollectionUtils.isNotEmpty(rootSpans)) {
         rootSpans.forEach(span -> {
           TraceTree root = new TraceTree();
@@ -264,6 +264,39 @@ public class SpanEsStorage extends RecordEsStorage<SpanDO> implements SpanStorag
 
   private List<Span> findRoot(List<Span> spans) {
     List<Span> rootSpans = new ArrayList<>();
+    spans.forEach(span -> {
+      String parentSpanId = span.getParentSpanId();
+
+      boolean hasParent = false;
+      for (Span subSpan : spans) {
+        if (parentSpanId.equals(subSpan.getSpanId())
+            || CollectionUtils.isNotEmpty(span.getRefs())) {
+          hasParent = true;
+          // if find parent, quick exit
+          break;
+        }
+      }
+
+      if (!hasParent) {
+        span.setRoot(true);
+        rootSpans.add(span);
+      }
+    });
+    rootSpans.sort(Comparator.comparing(Span::getStartTime));
+    return rootSpans;
+  }
+
+  private void findChildren(List<Span> spans, Span parentSpan, List<Span> childrenSpan) {
+    spans.forEach(span -> {
+      if (span.getParentSpanId().equals(parentSpan.getSpanId())) {
+        childrenSpan.add(span);
+        findChildren(spans, span, childrenSpan);
+      }
+    });
+  }
+
+  private List<Span> findRoot1(List<Span> spans) {
+    List<Span> rootSpans = new ArrayList<>();
     ListIterator<Span> iterator = spans.listIterator(spans.size());
     while (iterator.hasPrevious()) {
       Span span = iterator.previous();
@@ -303,17 +336,6 @@ public class SpanEsStorage extends RecordEsStorage<SpanDO> implements SpanStorag
 
     rootSpans.sort(Comparator.comparing(Span::getStartTime));
     return rootSpans;
-  }
-
-  private void findChildren(List<Span> spans, Span parentSpan, List<Span> childrenSpan) {
-    spans.forEach(span -> {
-      if (span.getParentSpanId().equals(parentSpan.getSpanId())) {
-        childrenSpan.add(span);
-        if (!span.getParentSpanId().equals(span.getSpanId())) {
-          findChildren(spans, span, childrenSpan);
-        }
-      }
-    });
   }
 
   private void findChildren1(List<Span> spans, Span parentSpan, List<TraceTree> children) {
