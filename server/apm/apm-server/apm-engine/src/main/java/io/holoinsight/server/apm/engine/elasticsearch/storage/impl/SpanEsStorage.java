@@ -305,7 +305,10 @@ public class SpanEsStorage extends RecordEsStorage<SpanDO> implements SpanStorag
       boolean hasParent = false;
       for (Span subSpan : spans) {
         // sofatracer mq/rpc server span(parentSpanId == spanId)
-        if (subSpan.getSpanId().equals(parentSpanId) && !subSpan.getType().equals(span.getType())) {
+        // exclude subSpan = parentSpan
+        if (subSpan.getSpanId().equals(parentSpanId)
+            && !subSpan.getSpanId().equals(span.getSpanId())
+            && !subSpan.getParentSpanId().equals(span.getParentSpanId())) {
           hasParent = true;
           // if find parent, quick exit
           break;
