@@ -102,6 +102,17 @@ public class SpanEsStorage extends RecordEsStorage<SpanDO> implements SpanStorag
     return traceBrief;
   }
 
+  /**
+   *
+   * @param tenant
+   * @param start
+   * @param end
+   * @param traceId
+   * @param tags
+   * @return the span list, the front end needs to build a trace tree based on the relationship
+   *         between spanId and parentSpanId
+   * @throws IOException
+   */
   @Override
   public Trace queryTrace(String tenant, long start, long end, String traceId, List<Tag> tags)
       throws IOException {
@@ -131,6 +142,19 @@ public class SpanEsStorage extends RecordEsStorage<SpanDO> implements SpanStorag
     return trace;
   }
 
+  /**
+   * First find the root node of the trace tree (there may be multiple root nodes), and then build
+   * the trace tree from the root node
+   * 
+   * @param tenant
+   * @param start
+   * @param end
+   * @param traceId
+   * @param tags
+   * @return the tree trace structure, the front end only needs to render, no need to build a tree
+   *         relationship
+   * @throws Exception
+   */
   @Override
   public List<TraceTree> queryTraceTree(String tenant, long start, long end, String traceId,
       List<Tag> tags) throws Exception {
@@ -295,6 +319,13 @@ public class SpanEsStorage extends RecordEsStorage<SpanDO> implements SpanStorag
     });
   }
 
+  /**
+   * Find all the root nodes of the trace tree. Since sofatracer may report some special spans
+   * (spanId==parentSpanId), special processing is required
+   * 
+   * @param spans
+   * @return
+   */
   private List<Span> findRoot1(List<Span> spans) {
     List<Span> rootSpans = new ArrayList<>();
     ListIterator<Span> iterator = spans.listIterator(spans.size());
@@ -341,6 +372,13 @@ public class SpanEsStorage extends RecordEsStorage<SpanDO> implements SpanStorag
     return rootSpans;
   }
 
+  /**
+   * Recursively build a trace tree starting from the root node
+   * 
+   * @param spans
+   * @param parentSpan
+   * @param children
+   */
   private void findChildren1(List<Span> spans, Span parentSpan, List<TraceTree> children) {
     spans.forEach(span -> {
       if (span.getParentSpanId().equals(parentSpan.getSpanId())) {
