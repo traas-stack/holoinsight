@@ -15,7 +15,6 @@ import io.holoinsight.server.home.facade.page.MonitorPageResult;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -38,7 +37,7 @@ public class AlarmHistoryServiceImpl extends ServiceImpl<AlarmHistoryMapper, Ala
   public AlarmHistoryDTO queryById(Long id, String tenant, String workspace) {
 
     QueryWrapper<AlarmHistory> wrapper = new QueryWrapper<>();
-    this.requestContextAdapter.queryWrapperTenantAdapte(wrapper, tenant, workspace);
+    this.requestContextAdapter.queryWrapperTenantAdapt(wrapper, tenant, workspace);
 
     wrapper.eq("id", id);
     wrapper.last("LIMIT 1");
@@ -61,7 +60,7 @@ public class AlarmHistoryServiceImpl extends ServiceImpl<AlarmHistoryMapper, Ala
       wrapper.eq("id", alarmHistory.getId());
     }
 
-    this.requestContextAdapter.queryWrapperTenantAdapte(wrapper, alarmHistory.getTenant(),
+    this.requestContextAdapter.queryWrapperTenantAdapt(wrapper, alarmHistory.getTenant(),
         alarmHistory.getWorkspace());
 
     if (null != alarmHistory.getUniqueId()) {

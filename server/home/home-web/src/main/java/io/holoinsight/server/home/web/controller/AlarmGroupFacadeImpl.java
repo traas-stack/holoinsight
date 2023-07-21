@@ -6,8 +6,10 @@ package io.holoinsight.server.home.web.controller;
 import io.holoinsight.server.home.biz.service.AlertGroupService;
 import io.holoinsight.server.home.biz.service.UserOpLogService;
 import io.holoinsight.server.home.biz.ula.ULAFacade;
+import io.holoinsight.server.home.common.service.RequestContextAdapter;
 import io.holoinsight.server.home.common.util.MonitorException;
 import io.holoinsight.server.home.common.util.scope.AuthTargetType;
+import io.holoinsight.server.home.common.util.scope.MonitorCookieUtil;
 import io.holoinsight.server.home.common.util.scope.MonitorScope;
 import io.holoinsight.server.home.common.util.scope.MonitorUser;
 import io.holoinsight.server.home.common.util.scope.PowerConstants;
@@ -58,6 +60,8 @@ public class AlarmGroupFacadeImpl extends BaseFacade {
   @Autowired
   private ULAFacade ulaFacade;
 
+  @Autowired
+  private RequestContextAdapter requestContextAdapter;
 
   @PostMapping("/pageQuery")
   @ResponseBody
@@ -73,10 +77,9 @@ public class AlarmGroupFacadeImpl extends BaseFacade {
 
       @Override
       public void doManage() {
-        MonitorScope ms = RequestContext.getContext().ms;
-        if (null != ms && !StringUtils.isEmpty(ms.tenant)) {
-          pageRequest.getTarget().setTenant(ms.tenant);
-        }
+        String tenant = MonitorCookieUtil.getTenantOrException();
+        pageRequest.getTarget().setTenant(tenant);
+        pageRequest.getTarget().setWorkspace(requestContextAdapter.getWorkspace(true));
         JsonResult.createSuccessResult(result, alarmGroupService.getListByPage(pageRequest));
       }
     });
@@ -118,6 +121,7 @@ public class AlarmGroupFacadeImpl extends BaseFacade {
         if (null != ms && !StringUtils.isEmpty(ms.tenant)) {
           alarmGroup.setTenant(ms.tenant);
         }
+        alarmGroup.setWorkspace(requestContextAdapter.getWorkspace(true));
         alarmGroup.setGmtCreate(new Date());
         alarmGroup.setGmtModified(new Date());
         Long rtn = alarmGroupService.save(alarmGroup);
@@ -231,7 +235,7 @@ public class AlarmGroupFacadeImpl extends BaseFacade {
         MonitorScope ms = RequestContext.getContext().ms;
         boolean rtn = false;
         AlarmGroupDTO alarmGroup = alarmGroupService.queryById(id, ms.getTenant());
-        if (alarmGroup != null) {
+        if (alarmGroup != null && StringUtils.equals(alarmGroup.getTenant(), ms.getTenant())) {
           rtn = alarmGroupService.removeById(id);
         }
 

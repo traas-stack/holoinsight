@@ -30,4 +30,6 @@ public interface MetricInfoService extends IService<MetricInfo> {
 
   Map<String, QueryRequest> querySpmList();
 
+  List<MetricInfoDTO> getListByKeyword(String keyword, String tenant, String workspace);
+
 }

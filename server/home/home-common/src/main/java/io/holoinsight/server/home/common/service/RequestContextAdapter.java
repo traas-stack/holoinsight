@@ -18,6 +18,7 @@ public interface RequestContextAdapter {
 
   QueryProto.PqlRangeRequest requestAdapte(QueryProto.PqlRangeRequest request);
 
-  <T> void queryWrapperTenantAdapte(QueryWrapper<T> queryWrapper, String tenant, String workspace);
+  <T> void queryWrapperTenantAdapt(QueryWrapper<T> queryWrapper, String tenant, String workspace);
 
+  String getWorkspace(boolean cross);
 }
