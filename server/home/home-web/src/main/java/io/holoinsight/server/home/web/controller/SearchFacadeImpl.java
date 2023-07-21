@@ -3,6 +3,8 @@
  */
 package io.holoinsight.server.home.web.controller;
 
+import io.holoinsight.server.common.dao.entity.dto.MetricInfoDTO;
+import io.holoinsight.server.common.service.MetricInfoService;
 import io.holoinsight.server.home.biz.service.AlertRuleService;
 import io.holoinsight.server.home.biz.service.CustomPluginService;
 import io.holoinsight.server.home.biz.service.DashboardService;
@@ -35,6 +37,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Future;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /**
  *
@@ -59,6 +62,9 @@ public class SearchFacadeImpl extends BaseFacade {
 
   @Autowired
   private AlertRuleService alarmRuleService;
+
+  @Autowired
+  private MetricInfoService metricInfoService;
 
   @Autowired
   private DataClientService dataClientService;
@@ -89,7 +95,6 @@ public class SearchFacadeImpl extends BaseFacade {
         List<SearchKeywordRet> ret = new ArrayList<>();
         List<Future<SearchKeywordRet>> futures = new ArrayList<>();
         futures.add(queryThreadPool.submit(() -> {
-          log.info(">>>>>, " + tenant + ", ..... , " + workspace);
           return searchLogEntity(req.keyword, tenant, workspace);
         }));
 
@@ -111,6 +116,10 @@ public class SearchFacadeImpl extends BaseFacade {
 
         futures.add(queryThreadPool.submit(() -> {
           return searchAlarmEntity(req.keyword, tenant, workspace);
+        }));
+
+        futures.add(queryThreadPool.submit(() -> {
+          return searchLogMetricEntity(req.keyword, tenant, workspace);
         }));
 
         // 多线程
@@ -208,8 +217,6 @@ public class SearchFacadeImpl extends BaseFacade {
   public SearchKeywordRet searchInfraEntity(String keyword, String tenant, String workspace) {
 
     QueryExample queryExample = new QueryExample();
-    // queryExample.getParams().put("ip",
-    // Pattern.compile(String.format("^.*%s.*$", keyword), Pattern.CASE_INSENSITIVE));
     queryExample.getParams().put("hostname",
         Pattern.compile(String.format("^.*%s.*$", keyword), Pattern.CASE_INSENSITIVE));
     if (StringUtils.isNotBlank(workspace)) {
@@ -243,6 +250,15 @@ public class SearchFacadeImpl extends BaseFacade {
   public SearchKeywordRet searchAlarmEntity(String keyword, String tenant, String workspace) {
 
     return genSearchResult("alarm", alarmRuleService.getListByKeyword(keyword, tenant, workspace));
+  }
+
+  public SearchKeywordRet searchLogMetricEntity(String keyword, String tenant, String workspace) {
+    List<MetricInfoDTO> listByKeyword =
+        metricInfoService.getListByKeyword(keyword, tenant, workspace);
+    List<MetricInfoDTO> logList =
+        listByKeyword.stream().filter(item -> item.getProduct().equalsIgnoreCase("logmonitor"))
+            .collect(Collectors.toList());
+    return genSearchResult("logMetric", logList);
   }
 
   public SearchKeywordRet genSearchResult(String type, List<?> datas) {

@@ -4,11 +4,12 @@
 package io.holoinsight.server.home.web.controller;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import io.holoinsight.server.home.common.service.RequestContextAdapter;
+import io.holoinsight.server.home.dal.model.AlarmSubscribe;
 import io.holoinsight.server.home.dal.model.dto.AlarmSubscribeInfo;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,6 +50,9 @@ public class AlarmSubscribeFacadeImpl extends BaseFacade {
   @Autowired
   private ULAFacade ulaFacade;
 
+  @Autowired
+  private RequestContextAdapter requestContextAdapter;
+
   @GetMapping(value = "/queryByUniqueId/{uniqueId}")
   @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.VIEW)
   public JsonResult<AlarmSubscribeDTO> queryByUniqueId(@PathVariable("uniqueId") String uniqueId) {
@@ -62,13 +66,12 @@ public class AlarmSubscribeFacadeImpl extends BaseFacade {
       @Override
       public void doManage() {
         MonitorScope ms = RequestContext.getContext().ms;
-        Map<String, Object> conditions = new HashMap<>();
-        conditions.put("unique_id", uniqueId);
-        conditions.put("tenant", MonitorCookieUtil.getTenantOrException());
-        if (StringUtils.isNotBlank(ms.getWorkspace())) {
-          conditions.put("workspace", ms.getWorkspace());
-        }
-        JsonResult.createSuccessResult(result, alarmSubscribeService.queryByUniqueId(conditions));
+        QueryWrapper<AlarmSubscribe> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("unique_id", uniqueId);
+        requestContextAdapter.queryWrapperTenantAdapt(queryWrapper, ms.getTenant(),
+            ms.getWorkspace());
+        JsonResult.createSuccessResult(result,
+            alarmSubscribeService.queryByUniqueId(queryWrapper, uniqueId));
       }
     });
     return result;
@@ -130,13 +133,12 @@ public class AlarmSubscribeFacadeImpl extends BaseFacade {
       @Override
       public void doManage() {
         MonitorScope ms = RequestContext.getContext().ms;
-        Map<String, Object> conditions = new HashMap<>();
-        conditions.put("unique_id", uniqueId);
-        conditions.put("tenant", MonitorCookieUtil.getTenantOrException());
-        if (StringUtils.isNotBlank(ms.getWorkspace())) {
-          conditions.put("workspace", ms.getWorkspace());
-        }
-        AlarmSubscribeDTO alarmSubscribeDTO = alarmSubscribeService.queryByUniqueId(conditions);
+        QueryWrapper<AlarmSubscribe> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("unique_id", uniqueId);
+        requestContextAdapter.queryWrapperTenantAdapt(queryWrapper, ms.getTenant(),
+            ms.getWorkspace());
+        AlarmSubscribeDTO alarmSubscribeDTO =
+            alarmSubscribeService.queryByUniqueId(queryWrapper, uniqueId);
 
         if (null == alarmSubscribeDTO
             || CollectionUtils.isEmpty(alarmSubscribeDTO.getAlarmSubscribe()))

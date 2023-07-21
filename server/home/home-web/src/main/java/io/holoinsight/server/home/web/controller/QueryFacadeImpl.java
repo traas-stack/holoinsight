@@ -298,6 +298,14 @@ public class QueryFacadeImpl extends BaseFacade {
 
         List<QueryProto.QueryFilter> tenantFilters =
             tenantInitService.getTenantFilters(ms.getWorkspace());
+
+        if (!CollectionUtils.isEmpty(tagQueryRequest.getConditions())) {
+          tagQueryRequest.getConditions().forEach((k, v) -> {
+            tenantFilters.add(QueryProto.QueryFilter.newBuilder().setName(k).setType("literal_or")
+                .setValue(v).build());
+          });
+        }
+
         if (!CollectionUtils.isEmpty(tenantFilters)) {
           builder.addAllFilters(tenantFilters);
         }
