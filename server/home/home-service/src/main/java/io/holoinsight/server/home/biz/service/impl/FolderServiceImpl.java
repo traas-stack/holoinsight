@@ -31,10 +31,8 @@ public class FolderServiceImpl extends ServiceImpl<FolderMapper, Folder> impleme
     if (StringUtil.isNotBlank(workspace)) {
       wrapper.eq("workspace", workspace);
     }
-    wrapper.like("id", keyword).or().like("name", keyword);
+    wrapper.and(wa -> wa.like("id", keyword).or().like("name", keyword));
     wrapper.last("LIMIT 10");
-    // Page<Folder> pluginPage = new Page<>(1, 20);
-    // pluginPage = page(pluginPage, wrapper);
 
     return baseMapper.selectList(wrapper);
   }

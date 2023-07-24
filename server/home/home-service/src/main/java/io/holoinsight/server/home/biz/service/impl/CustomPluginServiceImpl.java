@@ -193,11 +193,8 @@ public class CustomPluginServiceImpl extends ServiceImpl<CustomPluginMapper, Cus
     if (StringUtils.isNotBlank(workspace)) {
       wrapper.eq("workspace", workspace);
     }
-    wrapper.like("id", keyword).or().like("name", keyword);
+    wrapper.and(wa -> wa.like("id", keyword).or().like("name", keyword));
     wrapper.last("LIMIT 10");
-    // Page<CustomPlugin> page = new Page<>(1, 20);
-    // page = page(page, wrapper);
-
     return dosToDTOs(baseMapper.selectList(wrapper));
   }
 
