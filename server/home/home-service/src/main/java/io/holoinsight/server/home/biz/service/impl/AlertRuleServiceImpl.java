@@ -182,6 +182,70 @@ public class AlertRuleServiceImpl extends ServiceImpl<AlarmRuleMapper, AlarmRule
     return alarmRules;
   }
 
+  @Override
+  public MonitorPageResult<AlarmRuleDTO> getListByPageWithoutBlock(
+      MonitorPageRequest<AlarmRuleDTO> pageRequest) {
+    QueryWrapper<AlarmRule> wrapper = new QueryWrapper<>();
+    AlarmRule alarmRule = alarmRuleConverter.dtoToDO(pageRequest.getTarget());
+    if (null != alarmRule.getStatus()) {
+      wrapper.like("status", alarmRule.getStatus());
+    }
+
+    if (StringUtils.isNotBlank(alarmRule.getAlarmLevel())) {
+      wrapper.eq("alarm_level", alarmRule.getAlarmLevel().trim());
+    }
+
+    if (StringUtils.isNotBlank(alarmRule.getRuleName())) {
+      wrapper.like("rule_name", alarmRule.getRuleName().trim());
+    }
+
+    if (StringUtils.isNotBlank(alarmRule.getSourceType())) {
+      wrapper.likeRight("source_type", alarmRule.getSourceType().trim());
+    }
+
+    if (null != alarmRule.getSourceId()) {
+      wrapper.eq("source_id", alarmRule.getSourceId());
+    }
+
+    if (StringUtils.isNotBlank(alarmRule.getRuleType())) {
+      wrapper.eq("rule_type", alarmRule.getRuleType().trim());
+    }
+
+    if (null != alarmRule.getEnvType()) {
+      wrapper.eq("env_type", alarmRule.getEnvType());
+    }
+
+    if (StringUtils.isNotBlank(alarmRule.getCreator())) {
+      wrapper.eq("creator", alarmRule.getCreator());
+    }
+
+    if (StringUtils.isNotBlank(alarmRule.getModifier())) {
+      wrapper.eq("modifier", alarmRule.getModifier());
+    }
+
+    wrapper.orderByDesc("id");
+
+    if (null != alarmRule.getGmtCreate()) {
+      wrapper.ge("gmt_create", alarmRule.getGmtCreate());
+    }
+
+    Page<AlarmRule> page = new Page<>(pageRequest.getPageNum(), pageRequest.getPageSize());
+
+    page = page(page, wrapper);
+
+    MonitorPageResult<AlarmRuleDTO> alarmRules = new MonitorPageResult<>();
+
+    List<AlarmRuleDTO> alarmRuleList = alarmRuleConverter.dosToDTOs(page.getRecords());
+    alarmRules.setItems(alarmRuleList);
+    alarmRules.setPageNum(pageRequest.getPageNum());
+    alarmRules.setPageSize(pageRequest.getPageSize());
+    alarmRules.setTotalCount(page.getTotal());
+    alarmRules.setTotalPage(page.getPages());
+
+    return alarmRules;
+
+  }
+
   private void setBlockId(AlarmRuleDTO alarmRuleDTO, Map<String, Long> finalAlarmBlockMap) {
     if (finalAlarmBlockMap != null) {
       Long blockId =

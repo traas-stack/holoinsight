@@ -27,5 +27,8 @@ public interface AlertRuleService extends IService<AlarmRule> {
 
   MonitorPageResult<AlarmRuleDTO> getListByPage(MonitorPageRequest<AlarmRuleDTO> pageRequest);
 
+  MonitorPageResult<AlarmRuleDTO> getListByPageWithoutBlock(
+      MonitorPageRequest<AlarmRuleDTO> pageRequest);
+
   List<AlarmRuleDTO> getListByKeyword(String keyword, String tenant, String workspace);
 }
