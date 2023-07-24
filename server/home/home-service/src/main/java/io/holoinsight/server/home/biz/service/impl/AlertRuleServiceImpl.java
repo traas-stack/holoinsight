@@ -224,8 +224,7 @@ public class AlertRuleServiceImpl extends ServiceImpl<AlarmRuleMapper, AlarmRule
   public List<AlarmRuleDTO> getListByKeyword(String keyword, String tenant, String workspace) {
     QueryWrapper<AlarmRule> wrapper = new QueryWrapper<>();
     this.requestContextAdapter.queryWrapperTenantAdapt(wrapper, tenant, workspace);
-
-    wrapper.like("id", keyword).or().like("rule_name", keyword);
+    wrapper.and(wa -> wa.like("id", keyword).or().like("rule_name", keyword));
     wrapper.last("LIMIT 10");
     return alarmRuleConverter.dosToDTOs(baseMapper.selectList(wrapper));
   }

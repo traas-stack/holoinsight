@@ -60,7 +60,7 @@ public class DashboardServiceImpl extends ServiceImpl<DashboardMapper, Dashboard
     if (StringUtil.isNotBlank(workspace)) {
       wrapper.eq("workspace", workspace);
     }
-    wrapper.like("id", keyword).or().like("title", keyword);
+    wrapper.and(wa -> wa.like("id", keyword).or().like("title", keyword));
     wrapper.last("LIMIT 10");
     // Page<Dashboard> page = new Page<>(1, 20);
     // page = page(page, wrapper);
