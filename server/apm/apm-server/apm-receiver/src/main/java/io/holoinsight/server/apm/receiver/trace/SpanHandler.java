@@ -3,6 +3,7 @@
  */
 package io.holoinsight.server.apm.receiver.trace;
 
+import io.holoinsight.server.apm.common.constants.Const;
 import io.holoinsight.server.apm.common.model.specification.otel.Event;
 import io.holoinsight.server.apm.common.model.specification.otel.KeyValue;
 import io.holoinsight.server.apm.common.model.specification.otel.Link;
@@ -128,7 +129,8 @@ public class SpanHandler {
                 }
 
                 errorInfoList.addAll(errorAnalysis.analysis(span, spanAttrMap, resourceAttrMap));
-                spanEsDOList.add(SpanDO.fromSpan(transformSpan(span), otelResource));
+                spanEsDOList.add(SpanDO.fromSpan(transformSpan(span, resourceAttrMap, spanAttrMap),
+                    otelResource));
               });
             }
           });
@@ -181,8 +183,10 @@ public class SpanHandler {
       serverRelationList.add(ServiceRelationDO.fromServiceRelation(serviceRelation));
 
       ServiceInstanceRelation serviceInstanceRelation = callingIn.toServiceInstanceRelation();
-      serverInstanceRelationList
-          .add(ServiceInstanceRelationDO.fromServiceInstanceRelation(serviceInstanceRelation));
+      if (serviceInstanceRelation != null) {
+        serverInstanceRelationList
+            .add(ServiceInstanceRelationDO.fromServiceInstanceRelation(serviceInstanceRelation));
+      }
 
       EndpointRelation endpointRelation = callingIn.toEndpointRelation();
       if (endpointRelation != null) {
@@ -241,11 +245,21 @@ public class SpanHandler {
     return result;
   }
 
-  protected Span transformSpan(io.opentelemetry.proto.trace.v1.Span span) {
+  protected Span transformSpan(io.opentelemetry.proto.trace.v1.Span span,
+      Map<String, AnyValue> resourceAttrMap, Map<String, AnyValue> spanAttrMap) {
+    String realTraceId = resourceAttrMap.containsKey(Const.REAL_TRACE_ID)
+        ? resourceAttrMap.get(Const.REAL_TRACE_ID).getStringValue()
+        : Hex.encodeHexString(span.getTraceId().toByteArray());
+    String realSpanId = spanAttrMap.containsKey(Const.REAL_SPAN_ID)
+        ? spanAttrMap.get(Const.REAL_SPAN_ID).getStringValue()
+        : Hex.encodeHexString(span.getSpanId().toByteArray());
+    String realParentSpanId = spanAttrMap.containsKey(Const.REAL_PARENT_SPAN_ID)
+        ? spanAttrMap.get(Const.REAL_PARENT_SPAN_ID).getStringValue()
+        : Hex.encodeHexString(span.getParentSpanId().toByteArray());
     Span otelSpan = new Span();
-    otelSpan.setTraceId(Hex.encodeHexString(span.getTraceId().toByteArray()));
-    otelSpan.setSpanId(Hex.encodeHexString(span.getSpanId().toByteArray()));
-    otelSpan.setParentSpanId(Hex.encodeHexString(span.getParentSpanId().toByteArray()));
+    otelSpan.setTraceId(realTraceId);
+    otelSpan.setSpanId(realSpanId);
+    otelSpan.setParentSpanId(realParentSpanId);
     otelSpan.setName(span.getName());
     otelSpan.setTraceState(span.getTraceState());
     otelSpan.setKind(SpanKind.fromProto(span.getKind()));

@@ -3,6 +3,9 @@
  */
 package io.holoinsight.server.apm.common.constants;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Const {
   public static final String NONE = "0";
   public static final String SERVICE_ID_CONNECTOR = ".";
@@ -48,5 +51,29 @@ public class Const {
 
   // custom tags
   public static final String OTLP_SPANLAYER = "spanLayer";
+
+  public static final String REAL_TRACE_ID = "realTraceId";
+  public static final String REAL_SPAN_ID = "realSpanId";
+  public static final String REAL_PARENT_SPAN_ID = "realParentSpanId";
+
+  // Since the otlp protocol traceId requires byte[16],
+  // the otlp traceId is different from the original traceId collected by the agent,
+  // and holoinsight needs to store the original traceId collected by the agent
+  public static final List<String> REAL_TRACE_ID_TAGS = new ArrayList() {
+    {
+      add("sw8.trace_id");
+      add("sofatracer.trace_id");
+    }
+  };
+  public static final List<String> REAL_SPAN_ID_TAGS = new ArrayList() {
+    {
+      add("sofatracer.span_id");
+    }
+  };
+  public static final List<String> REAL_PARENT_SPAN_ID_TAGS = new ArrayList() {
+    {
+      add("sofatracer.parent_span_id");
+    }
+  };
 
 }

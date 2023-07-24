@@ -29,6 +29,7 @@ import io.holoinsight.server.apm.common.model.query.StatisticDataList;
 import io.holoinsight.server.apm.common.model.query.StatisticRequest;
 import io.holoinsight.server.apm.common.model.query.Topology;
 import io.holoinsight.server.apm.common.model.query.TraceBrief;
+import io.holoinsight.server.apm.common.model.query.TraceTree;
 import io.holoinsight.server.apm.common.model.query.VirtualComponent;
 import io.holoinsight.server.apm.common.model.specification.OtlpMappings;
 import io.holoinsight.server.apm.common.model.specification.sw.Trace;
@@ -37,7 +38,6 @@ import io.holoinsight.server.apm.common.utils.GsonUtils;
 import io.holoinsight.server.apm.engine.postcal.MetricDefine;
 import io.holoinsight.server.common.DurationUtil;
 import io.holoinsight.server.common.ProtoJsonUtils;
-import io.holoinsight.server.common.service.SuperCache;
 import io.holoinsight.server.common.service.SuperCacheService;
 import io.holoinsight.server.extension.MetricStorage;
 import io.holoinsight.server.extension.model.PqlParam;
@@ -336,6 +336,26 @@ public class DefaultQueryServiceImpl implements QueryService {
       }
       return ApmConvertor.convertTrace(traceRsp.body());
     }, "queryTrace", request);
+  }
+
+  @Override
+  public QueryProto.TraceTreeList queryTraceTree(QueryProto.QueryTraceRequest request)
+      throws QueryException {
+    return wrap(() -> {
+      Assert.isTrue(!request.getTraceIdsList().isEmpty(), "trace id should be set!");
+      ApmAPI apmAPI = apmClient.getClient(request.getTenant());
+      QueryTraceRequest queryTraceRequest = new QueryTraceRequest();
+      queryTraceRequest.setDuration(new Duration(request.getStart(), request.getEnd(), null));
+      queryTraceRequest.setTenant(request.getTenant());
+      queryTraceRequest.setTraceIds(request.getTraceIdsList());
+      queryTraceRequest.setTags(ApmConvertor.convertTagsMap(request.getTagsMap()));
+      Call<List<TraceTree>> call = apmAPI.queryTraceTree(queryTraceRequest);
+      Response<List<TraceTree>> traceRsp = call.execute();
+      if (!traceRsp.isSuccessful()) {
+        throw new QueryException(traceRsp.errorBody().string());
+      }
+      return ApmConvertor.convertTraceTree(traceRsp.body());
+    }, "queryTraceTree", request);
   }
 
   @Override

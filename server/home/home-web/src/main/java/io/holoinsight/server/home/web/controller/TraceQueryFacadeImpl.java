@@ -10,6 +10,7 @@ import io.holoinsight.server.apm.common.model.query.ServiceInstance;
 import io.holoinsight.server.apm.common.model.query.SlowSql;
 import io.holoinsight.server.apm.common.model.query.Topology;
 import io.holoinsight.server.apm.common.model.query.TraceBrief;
+import io.holoinsight.server.apm.common.model.query.TraceTree;
 import io.holoinsight.server.apm.common.model.query.VirtualComponent;
 import io.holoinsight.server.apm.common.model.specification.sw.Trace;
 import io.holoinsight.server.common.JsonResult;
@@ -107,6 +108,38 @@ public class TraceQueryFacadeImpl extends BaseFacade {
             tenantInitService.getTraceTenant(RequestContext.getContext().ms.getTenant()));
         Trace trace = queryClientService.queryTrace(request);
         JsonResult.createSuccessResult(result, trace);
+      }
+    });
+
+    return result;
+  }
+
+  @PostMapping(value = "/query/traceTree")
+  public JsonResult<List<TraceTree>> queryTraceTree(@RequestBody QueryTraceRequest request) {
+
+    final JsonResult<List<TraceTree>> result = new JsonResult<>();
+
+    facadeTemplate.manage(result, new ManageCallback() {
+      @Override
+      public void checkParameter() {
+        ParaCheckUtil.checkParaNotNull(request, "request");
+        ParaCheckUtil.checkParaNotNull(request.getTenant(), "tenant");
+        ParaCheckUtil.checkEquals(request.getTenant(), RequestContext.getContext().ms.getTenant(),
+            "tenant is illegal");
+        MonitorScope ms = RequestContext.getContext().ms;
+        Boolean aBoolean =
+            tenantInitService.checkTraceTags(ms.getTenant(), ms.getWorkspace(), request.getTags());
+        if (!aBoolean) {
+          throw new MonitorException("tags params is illegal");
+        }
+      }
+
+      @Override
+      public void doManage() {
+        request.setTenant(
+            tenantInitService.getTraceTenant(RequestContext.getContext().ms.getTenant()));
+        List<TraceTree> traceTreeList = queryClientService.queryTraceTree(request);
+        JsonResult.createSuccessResult(result, traceTreeList);
       }
     });
 

@@ -131,6 +131,18 @@ public class QueryGrpcService extends QueryServiceGrpc.QueryServiceImplBase {
   }
 
   @Override
+  public void queryTraceTree(QueryProto.QueryTraceRequest request,
+      StreamObserver<QueryProto.TraceTreeList> responseObserver) {
+    try {
+      responseObserver.onNext(queryService.queryTraceTree(request));
+      responseObserver.onCompleted();
+    } catch (Throwable t) {
+      responseObserver.onError(
+          Status.INTERNAL.withCause(t).withDescription(t.getMessage()).asRuntimeException());
+    }
+  }
+
+  @Override
   public void queryServiceList(QueryProto.QueryMetaRequest request,
       StreamObserver<QueryProto.QueryMetaResponse> responseObserver) {
     try {

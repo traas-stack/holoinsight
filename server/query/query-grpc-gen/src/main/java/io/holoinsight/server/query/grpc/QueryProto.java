@@ -23375,6 +23375,1873 @@ public final class QueryProto {
 
   }
 
+  public interface TraceTreeListOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:io.holoinsight.server.query.grpc.TraceTreeList)
+      com.google.protobuf.MessageOrBuilder {
+
+    /**
+     * <code>repeated .io.holoinsight.server.query.grpc.TraceTree traceTree = 1;</code>
+     */
+    java.util.List<io.holoinsight.server.query.grpc.QueryProto.TraceTree> getTraceTreeList();
+
+    /**
+     * <code>repeated .io.holoinsight.server.query.grpc.TraceTree traceTree = 1;</code>
+     */
+    io.holoinsight.server.query.grpc.QueryProto.TraceTree getTraceTree(int index);
+
+    /**
+     * <code>repeated .io.holoinsight.server.query.grpc.TraceTree traceTree = 1;</code>
+     */
+    int getTraceTreeCount();
+
+    /**
+     * <code>repeated .io.holoinsight.server.query.grpc.TraceTree traceTree = 1;</code>
+     */
+    java.util.List<? extends io.holoinsight.server.query.grpc.QueryProto.TraceTreeOrBuilder> getTraceTreeOrBuilderList();
+
+    /**
+     * <code>repeated .io.holoinsight.server.query.grpc.TraceTree traceTree = 1;</code>
+     */
+    io.holoinsight.server.query.grpc.QueryProto.TraceTreeOrBuilder getTraceTreeOrBuilder(int index);
+  }
+  /**
+   * Protobuf type {@code io.holoinsight.server.query.grpc.TraceTreeList}
+   */
+  public static final class TraceTreeList extends com.google.protobuf.GeneratedMessageV3 implements
+      // @@protoc_insertion_point(message_implements:io.holoinsight.server.query.grpc.TraceTreeList)
+      TraceTreeListOrBuilder {
+    private static final long serialVersionUID = 0L;
+
+    // Use TraceTreeList.newBuilder() to construct.
+    private TraceTreeList(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+      super(builder);
+    }
+
+    private TraceTreeList() {
+      traceTree_ = java.util.Collections.emptyList();
+    }
+
+    @java.lang.Override
+    @SuppressWarnings({"unused"})
+    protected java.lang.Object newInstance(UnusedPrivateParameter unused) {
+      return new TraceTreeList();
+    }
+
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet getUnknownFields() {
+      return this.unknownFields;
+    }
+
+    private TraceTreeList(com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      this();
+      if (extensionRegistry == null) {
+        throw new java.lang.NullPointerException();
+      }
+      int mutable_bitField0_ = 0;
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            case 10: {
+              if (!((mutable_bitField0_ & 0x00000001) != 0)) {
+                traceTree_ =
+                    new java.util.ArrayList<io.holoinsight.server.query.grpc.QueryProto.TraceTree>();
+                mutable_bitField0_ |= 0x00000001;
+              }
+              traceTree_.add(
+                  input.readMessage(io.holoinsight.server.query.grpc.QueryProto.TraceTree.parser(),
+                      extensionRegistry));
+              break;
+            }
+            default: {
+              if (!parseUnknownField(input, unknownFields, extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(e).setUnfinishedMessage(this);
+      } finally {
+        if (((mutable_bitField0_ & 0x00000001) != 0)) {
+          traceTree_ = java.util.Collections.unmodifiableList(traceTree_);
+        }
+        this.unknownFields = unknownFields.build();
+        makeExtensionsImmutable();
+      }
+    }
+
+    public static final com.google.protobuf.Descriptors.Descriptor getDescriptor() {
+      return io.holoinsight.server.query.grpc.QueryProto.internal_static_io_holoinsight_server_query_grpc_TraceTreeList_descriptor;
+    }
+
+    @java.lang.Override
+    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable internalGetFieldAccessorTable() {
+      return io.holoinsight.server.query.grpc.QueryProto.internal_static_io_holoinsight_server_query_grpc_TraceTreeList_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              io.holoinsight.server.query.grpc.QueryProto.TraceTreeList.class,
+              io.holoinsight.server.query.grpc.QueryProto.TraceTreeList.Builder.class);
+    }
+
+    public static final int TRACETREE_FIELD_NUMBER = 1;
+    private java.util.List<io.holoinsight.server.query.grpc.QueryProto.TraceTree> traceTree_;
+
+    /**
+     * <code>repeated .io.holoinsight.server.query.grpc.TraceTree traceTree = 1;</code>
+     */
+    @java.lang.Override
+    public java.util.List<io.holoinsight.server.query.grpc.QueryProto.TraceTree> getTraceTreeList() {
+      return traceTree_;
+    }
+
+    /**
+     * <code>repeated .io.holoinsight.server.query.grpc.TraceTree traceTree = 1;</code>
+     */
+    @java.lang.Override
+    public java.util.List<? extends io.holoinsight.server.query.grpc.QueryProto.TraceTreeOrBuilder> getTraceTreeOrBuilderList() {
+      return traceTree_;
+    }
+
+    /**
+     * <code>repeated .io.holoinsight.server.query.grpc.TraceTree traceTree = 1;</code>
+     */
+    @java.lang.Override
+    public int getTraceTreeCount() {
+      return traceTree_.size();
+    }
+
+    /**
+     * <code>repeated .io.holoinsight.server.query.grpc.TraceTree traceTree = 1;</code>
+     */
+    @java.lang.Override
+    public io.holoinsight.server.query.grpc.QueryProto.TraceTree getTraceTree(int index) {
+      return traceTree_.get(index);
+    }
+
+    /**
+     * <code>repeated .io.holoinsight.server.query.grpc.TraceTree traceTree = 1;</code>
+     */
+    @java.lang.Override
+    public io.holoinsight.server.query.grpc.QueryProto.TraceTreeOrBuilder getTraceTreeOrBuilder(
+        int index) {
+      return traceTree_.get(index);
+    }
+
+    private byte memoizedIsInitialized = -1;
+
+    @java.lang.Override
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized == 1)
+        return true;
+      if (isInitialized == 0)
+        return false;
+
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    @java.lang.Override
+    public void writeTo(com.google.protobuf.CodedOutputStream output) throws java.io.IOException {
+      for (int i = 0; i < traceTree_.size(); i++) {
+        output.writeMessage(1, traceTree_.get(i));
+      }
+      unknownFields.writeTo(output);
+    }
+
+    @java.lang.Override
+    public int getSerializedSize() {
+      int size = memoizedSize;
+      if (size != -1)
+        return size;
+
+      size = 0;
+      for (int i = 0; i < traceTree_.size(); i++) {
+        size += com.google.protobuf.CodedOutputStream.computeMessageSize(1, traceTree_.get(i));
+      }
+      size += unknownFields.getSerializedSize();
+      memoizedSize = size;
+      return size;
+    }
+
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
+      if (obj == this) {
+        return true;
+      }
+      if (!(obj instanceof io.holoinsight.server.query.grpc.QueryProto.TraceTreeList)) {
+        return super.equals(obj);
+      }
+      io.holoinsight.server.query.grpc.QueryProto.TraceTreeList other =
+          (io.holoinsight.server.query.grpc.QueryProto.TraceTreeList) obj;
+
+      if (!getTraceTreeList().equals(other.getTraceTreeList()))
+        return false;
+      if (!unknownFields.equals(other.unknownFields))
+        return false;
+      return true;
+    }
+
+    @java.lang.Override
+    public int hashCode() {
+      if (memoizedHashCode != 0) {
+        return memoizedHashCode;
+      }
+      int hash = 41;
+      hash = (19 * hash) + getDescriptor().hashCode();
+      if (getTraceTreeCount() > 0) {
+        hash = (37 * hash) + TRACETREE_FIELD_NUMBER;
+        hash = (53 * hash) + getTraceTreeList().hashCode();
+      }
+      hash = (29 * hash) + unknownFields.hashCode();
+      memoizedHashCode = hash;
+      return hash;
+    }
+
+    public static io.holoinsight.server.query.grpc.QueryProto.TraceTreeList parseFrom(
+        java.nio.ByteBuffer data) throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+
+    public static io.holoinsight.server.query.grpc.QueryProto.TraceTreeList parseFrom(
+        java.nio.ByteBuffer data, com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+
+    public static io.holoinsight.server.query.grpc.QueryProto.TraceTreeList parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+
+    public static io.holoinsight.server.query.grpc.QueryProto.TraceTreeList parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+
+    public static io.holoinsight.server.query.grpc.QueryProto.TraceTreeList parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+
+    public static io.holoinsight.server.query.grpc.QueryProto.TraceTreeList parseFrom(byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+
+    public static io.holoinsight.server.query.grpc.QueryProto.TraceTreeList parseFrom(
+        java.io.InputStream input) throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3.parseWithIOException(PARSER, input);
+    }
+
+    public static io.holoinsight.server.query.grpc.QueryProto.TraceTreeList parseFrom(
+        java.io.InputStream input, com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3.parseWithIOException(PARSER, input,
+          extensionRegistry);
+    }
+
+    public static io.holoinsight.server.query.grpc.QueryProto.TraceTreeList parseDelimitedFrom(
+        java.io.InputStream input) throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3.parseDelimitedWithIOException(PARSER, input);
+    }
+
+    public static io.holoinsight.server.query.grpc.QueryProto.TraceTreeList parseDelimitedFrom(
+        java.io.InputStream input, com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3.parseDelimitedWithIOException(PARSER, input,
+          extensionRegistry);
+    }
+
+    public static io.holoinsight.server.query.grpc.QueryProto.TraceTreeList parseFrom(
+        com.google.protobuf.CodedInputStream input) throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3.parseWithIOException(PARSER, input);
+    }
+
+    public static io.holoinsight.server.query.grpc.QueryProto.TraceTreeList parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry) throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3.parseWithIOException(PARSER, input,
+          extensionRegistry);
+    }
+
+    @java.lang.Override
+    public Builder newBuilderForType() {
+      return newBuilder();
+    }
+
+    public static Builder newBuilder() {
+      return DEFAULT_INSTANCE.toBuilder();
+    }
+
+    public static Builder newBuilder(
+        io.holoinsight.server.query.grpc.QueryProto.TraceTreeList prototype) {
+      return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+    }
+
+    @java.lang.Override
+    public Builder toBuilder() {
+      return this == DEFAULT_INSTANCE ? new Builder() : new Builder().mergeFrom(this);
+    }
+
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+
+    /**
+     * Protobuf type {@code io.holoinsight.server.query.grpc.TraceTreeList}
+     */
+    public static final class Builder
+        extends com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
+        // @@protoc_insertion_point(builder_implements:io.holoinsight.server.query.grpc.TraceTreeList)
+        io.holoinsight.server.query.grpc.QueryProto.TraceTreeListOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor getDescriptor() {
+        return io.holoinsight.server.query.grpc.QueryProto.internal_static_io_holoinsight_server_query_grpc_TraceTreeList_descriptor;
+      }
+
+      @java.lang.Override
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable internalGetFieldAccessorTable() {
+        return io.holoinsight.server.query.grpc.QueryProto.internal_static_io_holoinsight_server_query_grpc_TraceTreeList_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                io.holoinsight.server.query.grpc.QueryProto.TraceTreeList.class,
+                io.holoinsight.server.query.grpc.QueryProto.TraceTreeList.Builder.class);
+      }
+
+      // Construct using io.holoinsight.server.query.grpc.QueryProto.TraceTreeList.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+
+      private Builder(com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders) {
+          getTraceTreeFieldBuilder();
+        }
+      }
+
+      @java.lang.Override
+      public Builder clear() {
+        super.clear();
+        if (traceTreeBuilder_ == null) {
+          traceTree_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00000001);
+        } else {
+          traceTreeBuilder_.clear();
+        }
+        return this;
+      }
+
+      @java.lang.Override
+      public com.google.protobuf.Descriptors.Descriptor getDescriptorForType() {
+        return io.holoinsight.server.query.grpc.QueryProto.internal_static_io_holoinsight_server_query_grpc_TraceTreeList_descriptor;
+      }
+
+      @java.lang.Override
+      public io.holoinsight.server.query.grpc.QueryProto.TraceTreeList getDefaultInstanceForType() {
+        return io.holoinsight.server.query.grpc.QueryProto.TraceTreeList.getDefaultInstance();
+      }
+
+      @java.lang.Override
+      public io.holoinsight.server.query.grpc.QueryProto.TraceTreeList build() {
+        io.holoinsight.server.query.grpc.QueryProto.TraceTreeList result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      @java.lang.Override
+      public io.holoinsight.server.query.grpc.QueryProto.TraceTreeList buildPartial() {
+        io.holoinsight.server.query.grpc.QueryProto.TraceTreeList result =
+            new io.holoinsight.server.query.grpc.QueryProto.TraceTreeList(this);
+        int from_bitField0_ = bitField0_;
+        if (traceTreeBuilder_ == null) {
+          if (((bitField0_ & 0x00000001) != 0)) {
+            traceTree_ = java.util.Collections.unmodifiableList(traceTree_);
+            bitField0_ = (bitField0_ & ~0x00000001);
+          }
+          result.traceTree_ = traceTree_;
+        } else {
+          result.traceTree_ = traceTreeBuilder_.build();
+        }
+        onBuilt();
+        return result;
+      }
+
+      @java.lang.Override
+      public Builder clone() {
+        return super.clone();
+      }
+
+      @java.lang.Override
+      public Builder setField(com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.setField(field, value);
+      }
+
+      @java.lang.Override
+      public Builder clearField(com.google.protobuf.Descriptors.FieldDescriptor field) {
+        return super.clearField(field);
+      }
+
+      @java.lang.Override
+      public Builder clearOneof(com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+        return super.clearOneof(oneof);
+      }
+
+      @java.lang.Override
+      public Builder setRepeatedField(com.google.protobuf.Descriptors.FieldDescriptor field,
+          int index, java.lang.Object value) {
+        return super.setRepeatedField(field, index, value);
+      }
+
+      @java.lang.Override
+      public Builder addRepeatedField(com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.addRepeatedField(field, value);
+      }
+
+      @java.lang.Override
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof io.holoinsight.server.query.grpc.QueryProto.TraceTreeList) {
+          return mergeFrom((io.holoinsight.server.query.grpc.QueryProto.TraceTreeList) other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(io.holoinsight.server.query.grpc.QueryProto.TraceTreeList other) {
+        if (other == io.holoinsight.server.query.grpc.QueryProto.TraceTreeList.getDefaultInstance())
+          return this;
+        if (traceTreeBuilder_ == null) {
+          if (!other.traceTree_.isEmpty()) {
+            if (traceTree_.isEmpty()) {
+              traceTree_ = other.traceTree_;
+              bitField0_ = (bitField0_ & ~0x00000001);
+            } else {
+              ensureTraceTreeIsMutable();
+              traceTree_.addAll(other.traceTree_);
+            }
+            onChanged();
+          }
+        } else {
+          if (!other.traceTree_.isEmpty()) {
+            if (traceTreeBuilder_.isEmpty()) {
+              traceTreeBuilder_.dispose();
+              traceTreeBuilder_ = null;
+              traceTree_ = other.traceTree_;
+              bitField0_ = (bitField0_ & ~0x00000001);
+              traceTreeBuilder_ = com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders
+                  ? getTraceTreeFieldBuilder()
+                  : null;
+            } else {
+              traceTreeBuilder_.addAllMessages(other.traceTree_);
+            }
+          }
+        }
+        this.mergeUnknownFields(other.unknownFields);
+        onChanged();
+        return this;
+      }
+
+      @java.lang.Override
+      public final boolean isInitialized() {
+        return true;
+      }
+
+      @java.lang.Override
+      public Builder mergeFrom(com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry) throws java.io.IOException {
+        io.holoinsight.server.query.grpc.QueryProto.TraceTreeList parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage =
+              (io.holoinsight.server.query.grpc.QueryProto.TraceTreeList) e.getUnfinishedMessage();
+          throw e.unwrapIOException();
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
+          }
+        }
+        return this;
+      }
+
+      private int bitField0_;
+
+      private java.util.List<io.holoinsight.server.query.grpc.QueryProto.TraceTree> traceTree_ =
+          java.util.Collections.emptyList();
+
+      private void ensureTraceTreeIsMutable() {
+        if (!((bitField0_ & 0x00000001) != 0)) {
+          traceTree_ =
+              new java.util.ArrayList<io.holoinsight.server.query.grpc.QueryProto.TraceTree>(
+                  traceTree_);
+          bitField0_ |= 0x00000001;
+        }
+      }
+
+      private com.google.protobuf.RepeatedFieldBuilderV3<io.holoinsight.server.query.grpc.QueryProto.TraceTree, io.holoinsight.server.query.grpc.QueryProto.TraceTree.Builder, io.holoinsight.server.query.grpc.QueryProto.TraceTreeOrBuilder> traceTreeBuilder_;
+
+      /**
+       * <code>repeated .io.holoinsight.server.query.grpc.TraceTree traceTree = 1;</code>
+       */
+      public java.util.List<io.holoinsight.server.query.grpc.QueryProto.TraceTree> getTraceTreeList() {
+        if (traceTreeBuilder_ == null) {
+          return java.util.Collections.unmodifiableList(traceTree_);
+        } else {
+          return traceTreeBuilder_.getMessageList();
+        }
+      }
+
+      /**
+       * <code>repeated .io.holoinsight.server.query.grpc.TraceTree traceTree = 1;</code>
+       */
+      public int getTraceTreeCount() {
+        if (traceTreeBuilder_ == null) {
+          return traceTree_.size();
+        } else {
+          return traceTreeBuilder_.getCount();
+        }
+      }
+
+      /**
+       * <code>repeated .io.holoinsight.server.query.grpc.TraceTree traceTree = 1;</code>
+       */
+      public io.holoinsight.server.query.grpc.QueryProto.TraceTree getTraceTree(int index) {
+        if (traceTreeBuilder_ == null) {
+          return traceTree_.get(index);
+        } else {
+          return traceTreeBuilder_.getMessage(index);
+        }
+      }
+
+      /**
+       * <code>repeated .io.holoinsight.server.query.grpc.TraceTree traceTree = 1;</code>
+       */
+      public Builder setTraceTree(int index,
+          io.holoinsight.server.query.grpc.QueryProto.TraceTree value) {
+        if (traceTreeBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureTraceTreeIsMutable();
+          traceTree_.set(index, value);
+          onChanged();
+        } else {
+          traceTreeBuilder_.setMessage(index, value);
+        }
+        return this;
+      }
+
+      /**
+       * <code>repeated .io.holoinsight.server.query.grpc.TraceTree traceTree = 1;</code>
+       */
+      public Builder setTraceTree(int index,
+          io.holoinsight.server.query.grpc.QueryProto.TraceTree.Builder builderForValue) {
+        if (traceTreeBuilder_ == null) {
+          ensureTraceTreeIsMutable();
+          traceTree_.set(index, builderForValue.build());
+          onChanged();
+        } else {
+          traceTreeBuilder_.setMessage(index, builderForValue.build());
+        }
+        return this;
+      }
+
+      /**
+       * <code>repeated .io.holoinsight.server.query.grpc.TraceTree traceTree = 1;</code>
+       */
+      public Builder addTraceTree(io.holoinsight.server.query.grpc.QueryProto.TraceTree value) {
+        if (traceTreeBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureTraceTreeIsMutable();
+          traceTree_.add(value);
+          onChanged();
+        } else {
+          traceTreeBuilder_.addMessage(value);
+        }
+        return this;
+      }
+
+      /**
+       * <code>repeated .io.holoinsight.server.query.grpc.TraceTree traceTree = 1;</code>
+       */
+      public Builder addTraceTree(int index,
+          io.holoinsight.server.query.grpc.QueryProto.TraceTree value) {
+        if (traceTreeBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureTraceTreeIsMutable();
+          traceTree_.add(index, value);
+          onChanged();
+        } else {
+          traceTreeBuilder_.addMessage(index, value);
+        }
+        return this;
+      }
+
+      /**
+       * <code>repeated .io.holoinsight.server.query.grpc.TraceTree traceTree = 1;</code>
+       */
+      public Builder addTraceTree(
+          io.holoinsight.server.query.grpc.QueryProto.TraceTree.Builder builderForValue) {
+        if (traceTreeBuilder_ == null) {
+          ensureTraceTreeIsMutable();
+          traceTree_.add(builderForValue.build());
+          onChanged();
+        } else {
+          traceTreeBuilder_.addMessage(builderForValue.build());
+        }
+        return this;
+      }
+
+      /**
+       * <code>repeated .io.holoinsight.server.query.grpc.TraceTree traceTree = 1;</code>
+       */
+      public Builder addTraceTree(int index,
+          io.holoinsight.server.query.grpc.QueryProto.TraceTree.Builder builderForValue) {
+        if (traceTreeBuilder_ == null) {
+          ensureTraceTreeIsMutable();
+          traceTree_.add(index, builderForValue.build());
+          onChanged();
+        } else {
+          traceTreeBuilder_.addMessage(index, builderForValue.build());
+        }
+        return this;
+      }
+
+      /**
+       * <code>repeated .io.holoinsight.server.query.grpc.TraceTree traceTree = 1;</code>
+       */
+      public Builder addAllTraceTree(
+          java.lang.Iterable<? extends io.holoinsight.server.query.grpc.QueryProto.TraceTree> values) {
+        if (traceTreeBuilder_ == null) {
+          ensureTraceTreeIsMutable();
+          com.google.protobuf.AbstractMessageLite.Builder.addAll(values, traceTree_);
+          onChanged();
+        } else {
+          traceTreeBuilder_.addAllMessages(values);
+        }
+        return this;
+      }
+
+      /**
+       * <code>repeated .io.holoinsight.server.query.grpc.TraceTree traceTree = 1;</code>
+       */
+      public Builder clearTraceTree() {
+        if (traceTreeBuilder_ == null) {
+          traceTree_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00000001);
+          onChanged();
+        } else {
+          traceTreeBuilder_.clear();
+        }
+        return this;
+      }
+
+      /**
+       * <code>repeated .io.holoinsight.server.query.grpc.TraceTree traceTree = 1;</code>
+       */
+      public Builder removeTraceTree(int index) {
+        if (traceTreeBuilder_ == null) {
+          ensureTraceTreeIsMutable();
+          traceTree_.remove(index);
+          onChanged();
+        } else {
+          traceTreeBuilder_.remove(index);
+        }
+        return this;
+      }
+
+      /**
+       * <code>repeated .io.holoinsight.server.query.grpc.TraceTree traceTree = 1;</code>
+       */
+      public io.holoinsight.server.query.grpc.QueryProto.TraceTree.Builder getTraceTreeBuilder(
+          int index) {
+        return getTraceTreeFieldBuilder().getBuilder(index);
+      }
+
+      /**
+       * <code>repeated .io.holoinsight.server.query.grpc.TraceTree traceTree = 1;</code>
+       */
+      public io.holoinsight.server.query.grpc.QueryProto.TraceTreeOrBuilder getTraceTreeOrBuilder(
+          int index) {
+        if (traceTreeBuilder_ == null) {
+          return traceTree_.get(index);
+        } else {
+          return traceTreeBuilder_.getMessageOrBuilder(index);
+        }
+      }
+
+      /**
+       * <code>repeated .io.holoinsight.server.query.grpc.TraceTree traceTree = 1;</code>
+       */
+      public java.util.List<? extends io.holoinsight.server.query.grpc.QueryProto.TraceTreeOrBuilder> getTraceTreeOrBuilderList() {
+        if (traceTreeBuilder_ != null) {
+          return traceTreeBuilder_.getMessageOrBuilderList();
+        } else {
+          return java.util.Collections.unmodifiableList(traceTree_);
+        }
+      }
+
+      /**
+       * <code>repeated .io.holoinsight.server.query.grpc.TraceTree traceTree = 1;</code>
+       */
+      public io.holoinsight.server.query.grpc.QueryProto.TraceTree.Builder addTraceTreeBuilder() {
+        return getTraceTreeFieldBuilder()
+            .addBuilder(io.holoinsight.server.query.grpc.QueryProto.TraceTree.getDefaultInstance());
+      }
+
+      /**
+       * <code>repeated .io.holoinsight.server.query.grpc.TraceTree traceTree = 1;</code>
+       */
+      public io.holoinsight.server.query.grpc.QueryProto.TraceTree.Builder addTraceTreeBuilder(
+          int index) {
+        return getTraceTreeFieldBuilder().addBuilder(index,
+            io.holoinsight.server.query.grpc.QueryProto.TraceTree.getDefaultInstance());
+      }
+
+      /**
+       * <code>repeated .io.holoinsight.server.query.grpc.TraceTree traceTree = 1;</code>
+       */
+      public java.util.List<io.holoinsight.server.query.grpc.QueryProto.TraceTree.Builder> getTraceTreeBuilderList() {
+        return getTraceTreeFieldBuilder().getBuilderList();
+      }
+
+      private com.google.protobuf.RepeatedFieldBuilderV3<io.holoinsight.server.query.grpc.QueryProto.TraceTree, io.holoinsight.server.query.grpc.QueryProto.TraceTree.Builder, io.holoinsight.server.query.grpc.QueryProto.TraceTreeOrBuilder> getTraceTreeFieldBuilder() {
+        if (traceTreeBuilder_ == null) {
+          traceTreeBuilder_ =
+              new com.google.protobuf.RepeatedFieldBuilderV3<io.holoinsight.server.query.grpc.QueryProto.TraceTree, io.holoinsight.server.query.grpc.QueryProto.TraceTree.Builder, io.holoinsight.server.query.grpc.QueryProto.TraceTreeOrBuilder>(
+                  traceTree_, ((bitField0_ & 0x00000001) != 0), getParentForChildren(), isClean());
+          traceTree_ = null;
+        }
+        return traceTreeBuilder_;
+      }
+
+      @java.lang.Override
+      public final Builder setUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.setUnknownFields(unknownFields);
+      }
+
+      @java.lang.Override
+      public final Builder mergeUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.mergeUnknownFields(unknownFields);
+      }
+
+
+      // @@protoc_insertion_point(builder_scope:io.holoinsight.server.query.grpc.TraceTreeList)
+    }
+
+    // @@protoc_insertion_point(class_scope:io.holoinsight.server.query.grpc.TraceTreeList)
+    private static final io.holoinsight.server.query.grpc.QueryProto.TraceTreeList DEFAULT_INSTANCE;
+    static {
+      DEFAULT_INSTANCE = new io.holoinsight.server.query.grpc.QueryProto.TraceTreeList();
+    }
+
+    public static io.holoinsight.server.query.grpc.QueryProto.TraceTreeList getDefaultInstance() {
+      return DEFAULT_INSTANCE;
+    }
+
+    private static final com.google.protobuf.Parser<TraceTreeList> PARSER =
+        new com.google.protobuf.AbstractParser<TraceTreeList>() {
+          @java.lang.Override
+          public TraceTreeList parsePartialFrom(com.google.protobuf.CodedInputStream input,
+              com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+              throws com.google.protobuf.InvalidProtocolBufferException {
+            return new TraceTreeList(input, extensionRegistry);
+          }
+        };
+
+    public static com.google.protobuf.Parser<TraceTreeList> parser() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<TraceTreeList> getParserForType() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public io.holoinsight.server.query.grpc.QueryProto.TraceTreeList getDefaultInstanceForType() {
+      return DEFAULT_INSTANCE;
+    }
+
+  }
+
+  public interface TraceTreeOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:io.holoinsight.server.query.grpc.TraceTree)
+      com.google.protobuf.MessageOrBuilder {
+
+    /**
+     * <code>.io.holoinsight.server.query.grpc.Span span = 1;</code>
+     * 
+     * @return Whether the span field is set.
+     */
+    boolean hasSpan();
+
+    /**
+     * <code>.io.holoinsight.server.query.grpc.Span span = 1;</code>
+     * 
+     * @return The span.
+     */
+    io.holoinsight.server.query.grpc.QueryProto.Span getSpan();
+
+    /**
+     * <code>.io.holoinsight.server.query.grpc.Span span = 1;</code>
+     */
+    io.holoinsight.server.query.grpc.QueryProto.SpanOrBuilder getSpanOrBuilder();
+
+    /**
+     * <code>repeated .io.holoinsight.server.query.grpc.TraceTree children = 2;</code>
+     */
+    java.util.List<io.holoinsight.server.query.grpc.QueryProto.TraceTree> getChildrenList();
+
+    /**
+     * <code>repeated .io.holoinsight.server.query.grpc.TraceTree children = 2;</code>
+     */
+    io.holoinsight.server.query.grpc.QueryProto.TraceTree getChildren(int index);
+
+    /**
+     * <code>repeated .io.holoinsight.server.query.grpc.TraceTree children = 2;</code>
+     */
+    int getChildrenCount();
+
+    /**
+     * <code>repeated .io.holoinsight.server.query.grpc.TraceTree children = 2;</code>
+     */
+    java.util.List<? extends io.holoinsight.server.query.grpc.QueryProto.TraceTreeOrBuilder> getChildrenOrBuilderList();
+
+    /**
+     * <code>repeated .io.holoinsight.server.query.grpc.TraceTree children = 2;</code>
+     */
+    io.holoinsight.server.query.grpc.QueryProto.TraceTreeOrBuilder getChildrenOrBuilder(int index);
+  }
+  /**
+   * Protobuf type {@code io.holoinsight.server.query.grpc.TraceTree}
+   */
+  public static final class TraceTree extends com.google.protobuf.GeneratedMessageV3 implements
+      // @@protoc_insertion_point(message_implements:io.holoinsight.server.query.grpc.TraceTree)
+      TraceTreeOrBuilder {
+    private static final long serialVersionUID = 0L;
+
+    // Use TraceTree.newBuilder() to construct.
+    private TraceTree(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+      super(builder);
+    }
+
+    private TraceTree() {
+      children_ = java.util.Collections.emptyList();
+    }
+
+    @java.lang.Override
+    @SuppressWarnings({"unused"})
+    protected java.lang.Object newInstance(UnusedPrivateParameter unused) {
+      return new TraceTree();
+    }
+
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet getUnknownFields() {
+      return this.unknownFields;
+    }
+
+    private TraceTree(com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      this();
+      if (extensionRegistry == null) {
+        throw new java.lang.NullPointerException();
+      }
+      int mutable_bitField0_ = 0;
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            case 10: {
+              io.holoinsight.server.query.grpc.QueryProto.Span.Builder subBuilder = null;
+              if (span_ != null) {
+                subBuilder = span_.toBuilder();
+              }
+              span_ = input.readMessage(io.holoinsight.server.query.grpc.QueryProto.Span.parser(),
+                  extensionRegistry);
+              if (subBuilder != null) {
+                subBuilder.mergeFrom(span_);
+                span_ = subBuilder.buildPartial();
+              }
+
+              break;
+            }
+            case 18: {
+              if (!((mutable_bitField0_ & 0x00000001) != 0)) {
+                children_ =
+                    new java.util.ArrayList<io.holoinsight.server.query.grpc.QueryProto.TraceTree>();
+                mutable_bitField0_ |= 0x00000001;
+              }
+              children_.add(
+                  input.readMessage(io.holoinsight.server.query.grpc.QueryProto.TraceTree.parser(),
+                      extensionRegistry));
+              break;
+            }
+            default: {
+              if (!parseUnknownField(input, unknownFields, extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(e).setUnfinishedMessage(this);
+      } finally {
+        if (((mutable_bitField0_ & 0x00000001) != 0)) {
+          children_ = java.util.Collections.unmodifiableList(children_);
+        }
+        this.unknownFields = unknownFields.build();
+        makeExtensionsImmutable();
+      }
+    }
+
+    public static final com.google.protobuf.Descriptors.Descriptor getDescriptor() {
+      return io.holoinsight.server.query.grpc.QueryProto.internal_static_io_holoinsight_server_query_grpc_TraceTree_descriptor;
+    }
+
+    @java.lang.Override
+    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable internalGetFieldAccessorTable() {
+      return io.holoinsight.server.query.grpc.QueryProto.internal_static_io_holoinsight_server_query_grpc_TraceTree_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              io.holoinsight.server.query.grpc.QueryProto.TraceTree.class,
+              io.holoinsight.server.query.grpc.QueryProto.TraceTree.Builder.class);
+    }
+
+    public static final int SPAN_FIELD_NUMBER = 1;
+    private io.holoinsight.server.query.grpc.QueryProto.Span span_;
+
+    /**
+     * <code>.io.holoinsight.server.query.grpc.Span span = 1;</code>
+     * 
+     * @return Whether the span field is set.
+     */
+    @java.lang.Override
+    public boolean hasSpan() {
+      return span_ != null;
+    }
+
+    /**
+     * <code>.io.holoinsight.server.query.grpc.Span span = 1;</code>
+     * 
+     * @return The span.
+     */
+    @java.lang.Override
+    public io.holoinsight.server.query.grpc.QueryProto.Span getSpan() {
+      return span_ == null ? io.holoinsight.server.query.grpc.QueryProto.Span.getDefaultInstance()
+          : span_;
+    }
+
+    /**
+     * <code>.io.holoinsight.server.query.grpc.Span span = 1;</code>
+     */
+    @java.lang.Override
+    public io.holoinsight.server.query.grpc.QueryProto.SpanOrBuilder getSpanOrBuilder() {
+      return getSpan();
+    }
+
+    public static final int CHILDREN_FIELD_NUMBER = 2;
+    private java.util.List<io.holoinsight.server.query.grpc.QueryProto.TraceTree> children_;
+
+    /**
+     * <code>repeated .io.holoinsight.server.query.grpc.TraceTree children = 2;</code>
+     */
+    @java.lang.Override
+    public java.util.List<io.holoinsight.server.query.grpc.QueryProto.TraceTree> getChildrenList() {
+      return children_;
+    }
+
+    /**
+     * <code>repeated .io.holoinsight.server.query.grpc.TraceTree children = 2;</code>
+     */
+    @java.lang.Override
+    public java.util.List<? extends io.holoinsight.server.query.grpc.QueryProto.TraceTreeOrBuilder> getChildrenOrBuilderList() {
+      return children_;
+    }
+
+    /**
+     * <code>repeated .io.holoinsight.server.query.grpc.TraceTree children = 2;</code>
+     */
+    @java.lang.Override
+    public int getChildrenCount() {
+      return children_.size();
+    }
+
+    /**
+     * <code>repeated .io.holoinsight.server.query.grpc.TraceTree children = 2;</code>
+     */
+    @java.lang.Override
+    public io.holoinsight.server.query.grpc.QueryProto.TraceTree getChildren(int index) {
+      return children_.get(index);
+    }
+
+    /**
+     * <code>repeated .io.holoinsight.server.query.grpc.TraceTree children = 2;</code>
+     */
+    @java.lang.Override
+    public io.holoinsight.server.query.grpc.QueryProto.TraceTreeOrBuilder getChildrenOrBuilder(
+        int index) {
+      return children_.get(index);
+    }
+
+    private byte memoizedIsInitialized = -1;
+
+    @java.lang.Override
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized == 1)
+        return true;
+      if (isInitialized == 0)
+        return false;
+
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    @java.lang.Override
+    public void writeTo(com.google.protobuf.CodedOutputStream output) throws java.io.IOException {
+      if (span_ != null) {
+        output.writeMessage(1, getSpan());
+      }
+      for (int i = 0; i < children_.size(); i++) {
+        output.writeMessage(2, children_.get(i));
+      }
+      unknownFields.writeTo(output);
+    }
+
+    @java.lang.Override
+    public int getSerializedSize() {
+      int size = memoizedSize;
+      if (size != -1)
+        return size;
+
+      size = 0;
+      if (span_ != null) {
+        size += com.google.protobuf.CodedOutputStream.computeMessageSize(1, getSpan());
+      }
+      for (int i = 0; i < children_.size(); i++) {
+        size += com.google.protobuf.CodedOutputStream.computeMessageSize(2, children_.get(i));
+      }
+      size += unknownFields.getSerializedSize();
+      memoizedSize = size;
+      return size;
+    }
+
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
+      if (obj == this) {
+        return true;
+      }
+      if (!(obj instanceof io.holoinsight.server.query.grpc.QueryProto.TraceTree)) {
+        return super.equals(obj);
+      }
+      io.holoinsight.server.query.grpc.QueryProto.TraceTree other =
+          (io.holoinsight.server.query.grpc.QueryProto.TraceTree) obj;
+
+      if (hasSpan() != other.hasSpan())
+        return false;
+      if (hasSpan()) {
+        if (!getSpan().equals(other.getSpan()))
+          return false;
+      }
+      if (!getChildrenList().equals(other.getChildrenList()))
+        return false;
+      if (!unknownFields.equals(other.unknownFields))
+        return false;
+      return true;
+    }
+
+    @java.lang.Override
+    public int hashCode() {
+      if (memoizedHashCode != 0) {
+        return memoizedHashCode;
+      }
+      int hash = 41;
+      hash = (19 * hash) + getDescriptor().hashCode();
+      if (hasSpan()) {
+        hash = (37 * hash) + SPAN_FIELD_NUMBER;
+        hash = (53 * hash) + getSpan().hashCode();
+      }
+      if (getChildrenCount() > 0) {
+        hash = (37 * hash) + CHILDREN_FIELD_NUMBER;
+        hash = (53 * hash) + getChildrenList().hashCode();
+      }
+      hash = (29 * hash) + unknownFields.hashCode();
+      memoizedHashCode = hash;
+      return hash;
+    }
+
+    public static io.holoinsight.server.query.grpc.QueryProto.TraceTree parseFrom(
+        java.nio.ByteBuffer data) throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+
+    public static io.holoinsight.server.query.grpc.QueryProto.TraceTree parseFrom(
+        java.nio.ByteBuffer data, com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+
+    public static io.holoinsight.server.query.grpc.QueryProto.TraceTree parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+
+    public static io.holoinsight.server.query.grpc.QueryProto.TraceTree parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+
+    public static io.holoinsight.server.query.grpc.QueryProto.TraceTree parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+
+    public static io.holoinsight.server.query.grpc.QueryProto.TraceTree parseFrom(byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+
+    public static io.holoinsight.server.query.grpc.QueryProto.TraceTree parseFrom(
+        java.io.InputStream input) throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3.parseWithIOException(PARSER, input);
+    }
+
+    public static io.holoinsight.server.query.grpc.QueryProto.TraceTree parseFrom(
+        java.io.InputStream input, com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3.parseWithIOException(PARSER, input,
+          extensionRegistry);
+    }
+
+    public static io.holoinsight.server.query.grpc.QueryProto.TraceTree parseDelimitedFrom(
+        java.io.InputStream input) throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3.parseDelimitedWithIOException(PARSER, input);
+    }
+
+    public static io.holoinsight.server.query.grpc.QueryProto.TraceTree parseDelimitedFrom(
+        java.io.InputStream input, com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3.parseDelimitedWithIOException(PARSER, input,
+          extensionRegistry);
+    }
+
+    public static io.holoinsight.server.query.grpc.QueryProto.TraceTree parseFrom(
+        com.google.protobuf.CodedInputStream input) throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3.parseWithIOException(PARSER, input);
+    }
+
+    public static io.holoinsight.server.query.grpc.QueryProto.TraceTree parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry) throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3.parseWithIOException(PARSER, input,
+          extensionRegistry);
+    }
+
+    @java.lang.Override
+    public Builder newBuilderForType() {
+      return newBuilder();
+    }
+
+    public static Builder newBuilder() {
+      return DEFAULT_INSTANCE.toBuilder();
+    }
+
+    public static Builder newBuilder(
+        io.holoinsight.server.query.grpc.QueryProto.TraceTree prototype) {
+      return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+    }
+
+    @java.lang.Override
+    public Builder toBuilder() {
+      return this == DEFAULT_INSTANCE ? new Builder() : new Builder().mergeFrom(this);
+    }
+
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+
+    /**
+     * Protobuf type {@code io.holoinsight.server.query.grpc.TraceTree}
+     */
+    public static final class Builder
+        extends com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
+        // @@protoc_insertion_point(builder_implements:io.holoinsight.server.query.grpc.TraceTree)
+        io.holoinsight.server.query.grpc.QueryProto.TraceTreeOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor getDescriptor() {
+        return io.holoinsight.server.query.grpc.QueryProto.internal_static_io_holoinsight_server_query_grpc_TraceTree_descriptor;
+      }
+
+      @java.lang.Override
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable internalGetFieldAccessorTable() {
+        return io.holoinsight.server.query.grpc.QueryProto.internal_static_io_holoinsight_server_query_grpc_TraceTree_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                io.holoinsight.server.query.grpc.QueryProto.TraceTree.class,
+                io.holoinsight.server.query.grpc.QueryProto.TraceTree.Builder.class);
+      }
+
+      // Construct using io.holoinsight.server.query.grpc.QueryProto.TraceTree.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+
+      private Builder(com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders) {
+          getChildrenFieldBuilder();
+        }
+      }
+
+      @java.lang.Override
+      public Builder clear() {
+        super.clear();
+        if (spanBuilder_ == null) {
+          span_ = null;
+        } else {
+          span_ = null;
+          spanBuilder_ = null;
+        }
+        if (childrenBuilder_ == null) {
+          children_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00000001);
+        } else {
+          childrenBuilder_.clear();
+        }
+        return this;
+      }
+
+      @java.lang.Override
+      public com.google.protobuf.Descriptors.Descriptor getDescriptorForType() {
+        return io.holoinsight.server.query.grpc.QueryProto.internal_static_io_holoinsight_server_query_grpc_TraceTree_descriptor;
+      }
+
+      @java.lang.Override
+      public io.holoinsight.server.query.grpc.QueryProto.TraceTree getDefaultInstanceForType() {
+        return io.holoinsight.server.query.grpc.QueryProto.TraceTree.getDefaultInstance();
+      }
+
+      @java.lang.Override
+      public io.holoinsight.server.query.grpc.QueryProto.TraceTree build() {
+        io.holoinsight.server.query.grpc.QueryProto.TraceTree result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      @java.lang.Override
+      public io.holoinsight.server.query.grpc.QueryProto.TraceTree buildPartial() {
+        io.holoinsight.server.query.grpc.QueryProto.TraceTree result =
+            new io.holoinsight.server.query.grpc.QueryProto.TraceTree(this);
+        int from_bitField0_ = bitField0_;
+        if (spanBuilder_ == null) {
+          result.span_ = span_;
+        } else {
+          result.span_ = spanBuilder_.build();
+        }
+        if (childrenBuilder_ == null) {
+          if (((bitField0_ & 0x00000001) != 0)) {
+            children_ = java.util.Collections.unmodifiableList(children_);
+            bitField0_ = (bitField0_ & ~0x00000001);
+          }
+          result.children_ = children_;
+        } else {
+          result.children_ = childrenBuilder_.build();
+        }
+        onBuilt();
+        return result;
+      }
+
+      @java.lang.Override
+      public Builder clone() {
+        return super.clone();
+      }
+
+      @java.lang.Override
+      public Builder setField(com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.setField(field, value);
+      }
+
+      @java.lang.Override
+      public Builder clearField(com.google.protobuf.Descriptors.FieldDescriptor field) {
+        return super.clearField(field);
+      }
+
+      @java.lang.Override
+      public Builder clearOneof(com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+        return super.clearOneof(oneof);
+      }
+
+      @java.lang.Override
+      public Builder setRepeatedField(com.google.protobuf.Descriptors.FieldDescriptor field,
+          int index, java.lang.Object value) {
+        return super.setRepeatedField(field, index, value);
+      }
+
+      @java.lang.Override
+      public Builder addRepeatedField(com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.addRepeatedField(field, value);
+      }
+
+      @java.lang.Override
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof io.holoinsight.server.query.grpc.QueryProto.TraceTree) {
+          return mergeFrom((io.holoinsight.server.query.grpc.QueryProto.TraceTree) other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(io.holoinsight.server.query.grpc.QueryProto.TraceTree other) {
+        if (other == io.holoinsight.server.query.grpc.QueryProto.TraceTree.getDefaultInstance())
+          return this;
+        if (other.hasSpan()) {
+          mergeSpan(other.getSpan());
+        }
+        if (childrenBuilder_ == null) {
+          if (!other.children_.isEmpty()) {
+            if (children_.isEmpty()) {
+              children_ = other.children_;
+              bitField0_ = (bitField0_ & ~0x00000001);
+            } else {
+              ensureChildrenIsMutable();
+              children_.addAll(other.children_);
+            }
+            onChanged();
+          }
+        } else {
+          if (!other.children_.isEmpty()) {
+            if (childrenBuilder_.isEmpty()) {
+              childrenBuilder_.dispose();
+              childrenBuilder_ = null;
+              children_ = other.children_;
+              bitField0_ = (bitField0_ & ~0x00000001);
+              childrenBuilder_ = com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders
+                  ? getChildrenFieldBuilder()
+                  : null;
+            } else {
+              childrenBuilder_.addAllMessages(other.children_);
+            }
+          }
+        }
+        this.mergeUnknownFields(other.unknownFields);
+        onChanged();
+        return this;
+      }
+
+      @java.lang.Override
+      public final boolean isInitialized() {
+        return true;
+      }
+
+      @java.lang.Override
+      public Builder mergeFrom(com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry) throws java.io.IOException {
+        io.holoinsight.server.query.grpc.QueryProto.TraceTree parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage =
+              (io.holoinsight.server.query.grpc.QueryProto.TraceTree) e.getUnfinishedMessage();
+          throw e.unwrapIOException();
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
+          }
+        }
+        return this;
+      }
+
+      private int bitField0_;
+
+      private io.holoinsight.server.query.grpc.QueryProto.Span span_;
+      private com.google.protobuf.SingleFieldBuilderV3<io.holoinsight.server.query.grpc.QueryProto.Span, io.holoinsight.server.query.grpc.QueryProto.Span.Builder, io.holoinsight.server.query.grpc.QueryProto.SpanOrBuilder> spanBuilder_;
+
+      /**
+       * <code>.io.holoinsight.server.query.grpc.Span span = 1;</code>
+       * 
+       * @return Whether the span field is set.
+       */
+      public boolean hasSpan() {
+        return spanBuilder_ != null || span_ != null;
+      }
+
+      /**
+       * <code>.io.holoinsight.server.query.grpc.Span span = 1;</code>
+       * 
+       * @return The span.
+       */
+      public io.holoinsight.server.query.grpc.QueryProto.Span getSpan() {
+        if (spanBuilder_ == null) {
+          return span_ == null
+              ? io.holoinsight.server.query.grpc.QueryProto.Span.getDefaultInstance()
+              : span_;
+        } else {
+          return spanBuilder_.getMessage();
+        }
+      }
+
+      /**
+       * <code>.io.holoinsight.server.query.grpc.Span span = 1;</code>
+       */
+      public Builder setSpan(io.holoinsight.server.query.grpc.QueryProto.Span value) {
+        if (spanBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          span_ = value;
+          onChanged();
+        } else {
+          spanBuilder_.setMessage(value);
+        }
+
+        return this;
+      }
+
+      /**
+       * <code>.io.holoinsight.server.query.grpc.Span span = 1;</code>
+       */
+      public Builder setSpan(
+          io.holoinsight.server.query.grpc.QueryProto.Span.Builder builderForValue) {
+        if (spanBuilder_ == null) {
+          span_ = builderForValue.build();
+          onChanged();
+        } else {
+          spanBuilder_.setMessage(builderForValue.build());
+        }
+
+        return this;
+      }
+
+      /**
+       * <code>.io.holoinsight.server.query.grpc.Span span = 1;</code>
+       */
+      public Builder mergeSpan(io.holoinsight.server.query.grpc.QueryProto.Span value) {
+        if (spanBuilder_ == null) {
+          if (span_ != null) {
+            span_ = io.holoinsight.server.query.grpc.QueryProto.Span.newBuilder(span_)
+                .mergeFrom(value).buildPartial();
+          } else {
+            span_ = value;
+          }
+          onChanged();
+        } else {
+          spanBuilder_.mergeFrom(value);
+        }
+
+        return this;
+      }
+
+      /**
+       * <code>.io.holoinsight.server.query.grpc.Span span = 1;</code>
+       */
+      public Builder clearSpan() {
+        if (spanBuilder_ == null) {
+          span_ = null;
+          onChanged();
+        } else {
+          span_ = null;
+          spanBuilder_ = null;
+        }
+
+        return this;
+      }
+
+      /**
+       * <code>.io.holoinsight.server.query.grpc.Span span = 1;</code>
+       */
+      public io.holoinsight.server.query.grpc.QueryProto.Span.Builder getSpanBuilder() {
+
+        onChanged();
+        return getSpanFieldBuilder().getBuilder();
+      }
+
+      /**
+       * <code>.io.holoinsight.server.query.grpc.Span span = 1;</code>
+       */
+      public io.holoinsight.server.query.grpc.QueryProto.SpanOrBuilder getSpanOrBuilder() {
+        if (spanBuilder_ != null) {
+          return spanBuilder_.getMessageOrBuilder();
+        } else {
+          return span_ == null
+              ? io.holoinsight.server.query.grpc.QueryProto.Span.getDefaultInstance()
+              : span_;
+        }
+      }
+
+      /**
+       * <code>.io.holoinsight.server.query.grpc.Span span = 1;</code>
+       */
+      private com.google.protobuf.SingleFieldBuilderV3<io.holoinsight.server.query.grpc.QueryProto.Span, io.holoinsight.server.query.grpc.QueryProto.Span.Builder, io.holoinsight.server.query.grpc.QueryProto.SpanOrBuilder> getSpanFieldBuilder() {
+        if (spanBuilder_ == null) {
+          spanBuilder_ =
+              new com.google.protobuf.SingleFieldBuilderV3<io.holoinsight.server.query.grpc.QueryProto.Span, io.holoinsight.server.query.grpc.QueryProto.Span.Builder, io.holoinsight.server.query.grpc.QueryProto.SpanOrBuilder>(
+                  getSpan(), getParentForChildren(), isClean());
+          span_ = null;
+        }
+        return spanBuilder_;
+      }
+
+      private java.util.List<io.holoinsight.server.query.grpc.QueryProto.TraceTree> children_ =
+          java.util.Collections.emptyList();
+
+      private void ensureChildrenIsMutable() {
+        if (!((bitField0_ & 0x00000001) != 0)) {
+          children_ =
+              new java.util.ArrayList<io.holoinsight.server.query.grpc.QueryProto.TraceTree>(
+                  children_);
+          bitField0_ |= 0x00000001;
+        }
+      }
+
+      private com.google.protobuf.RepeatedFieldBuilderV3<io.holoinsight.server.query.grpc.QueryProto.TraceTree, io.holoinsight.server.query.grpc.QueryProto.TraceTree.Builder, io.holoinsight.server.query.grpc.QueryProto.TraceTreeOrBuilder> childrenBuilder_;
+
+      /**
+       * <code>repeated .io.holoinsight.server.query.grpc.TraceTree children = 2;</code>
+       */
+      public java.util.List<io.holoinsight.server.query.grpc.QueryProto.TraceTree> getChildrenList() {
+        if (childrenBuilder_ == null) {
+          return java.util.Collections.unmodifiableList(children_);
+        } else {
+          return childrenBuilder_.getMessageList();
+        }
+      }
+
+      /**
+       * <code>repeated .io.holoinsight.server.query.grpc.TraceTree children = 2;</code>
+       */
+      public int getChildrenCount() {
+        if (childrenBuilder_ == null) {
+          return children_.size();
+        } else {
+          return childrenBuilder_.getCount();
+        }
+      }
+
+      /**
+       * <code>repeated .io.holoinsight.server.query.grpc.TraceTree children = 2;</code>
+       */
+      public io.holoinsight.server.query.grpc.QueryProto.TraceTree getChildren(int index) {
+        if (childrenBuilder_ == null) {
+          return children_.get(index);
+        } else {
+          return childrenBuilder_.getMessage(index);
+        }
+      }
+
+      /**
+       * <code>repeated .io.holoinsight.server.query.grpc.TraceTree children = 2;</code>
+       */
+      public Builder setChildren(int index,
+          io.holoinsight.server.query.grpc.QueryProto.TraceTree value) {
+        if (childrenBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureChildrenIsMutable();
+          children_.set(index, value);
+          onChanged();
+        } else {
+          childrenBuilder_.setMessage(index, value);
+        }
+        return this;
+      }
+
+      /**
+       * <code>repeated .io.holoinsight.server.query.grpc.TraceTree children = 2;</code>
+       */
+      public Builder setChildren(int index,
+          io.holoinsight.server.query.grpc.QueryProto.TraceTree.Builder builderForValue) {
+        if (childrenBuilder_ == null) {
+          ensureChildrenIsMutable();
+          children_.set(index, builderForValue.build());
+          onChanged();
+        } else {
+          childrenBuilder_.setMessage(index, builderForValue.build());
+        }
+        return this;
+      }
+
+      /**
+       * <code>repeated .io.holoinsight.server.query.grpc.TraceTree children = 2;</code>
+       */
+      public Builder addChildren(io.holoinsight.server.query.grpc.QueryProto.TraceTree value) {
+        if (childrenBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureChildrenIsMutable();
+          children_.add(value);
+          onChanged();
+        } else {
+          childrenBuilder_.addMessage(value);
+        }
+        return this;
+      }
+
+      /**
+       * <code>repeated .io.holoinsight.server.query.grpc.TraceTree children = 2;</code>
+       */
+      public Builder addChildren(int index,
+          io.holoinsight.server.query.grpc.QueryProto.TraceTree value) {
+        if (childrenBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureChildrenIsMutable();
+          children_.add(index, value);
+          onChanged();
+        } else {
+          childrenBuilder_.addMessage(index, value);
+        }
+        return this;
+      }
+
+      /**
+       * <code>repeated .io.holoinsight.server.query.grpc.TraceTree children = 2;</code>
+       */
+      public Builder addChildren(
+          io.holoinsight.server.query.grpc.QueryProto.TraceTree.Builder builderForValue) {
+        if (childrenBuilder_ == null) {
+          ensureChildrenIsMutable();
+          children_.add(builderForValue.build());
+          onChanged();
+        } else {
+          childrenBuilder_.addMessage(builderForValue.build());
+        }
+        return this;
+      }
+
+      /**
+       * <code>repeated .io.holoinsight.server.query.grpc.TraceTree children = 2;</code>
+       */
+      public Builder addChildren(int index,
+          io.holoinsight.server.query.grpc.QueryProto.TraceTree.Builder builderForValue) {
+        if (childrenBuilder_ == null) {
+          ensureChildrenIsMutable();
+          children_.add(index, builderForValue.build());
+          onChanged();
+        } else {
+          childrenBuilder_.addMessage(index, builderForValue.build());
+        }
+        return this;
+      }
+
+      /**
+       * <code>repeated .io.holoinsight.server.query.grpc.TraceTree children = 2;</code>
+       */
+      public Builder addAllChildren(
+          java.lang.Iterable<? extends io.holoinsight.server.query.grpc.QueryProto.TraceTree> values) {
+        if (childrenBuilder_ == null) {
+          ensureChildrenIsMutable();
+          com.google.protobuf.AbstractMessageLite.Builder.addAll(values, children_);
+          onChanged();
+        } else {
+          childrenBuilder_.addAllMessages(values);
+        }
+        return this;
+      }
+
+      /**
+       * <code>repeated .io.holoinsight.server.query.grpc.TraceTree children = 2;</code>
+       */
+      public Builder clearChildren() {
+        if (childrenBuilder_ == null) {
+          children_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00000001);
+          onChanged();
+        } else {
+          childrenBuilder_.clear();
+        }
+        return this;
+      }
+
+      /**
+       * <code>repeated .io.holoinsight.server.query.grpc.TraceTree children = 2;</code>
+       */
+      public Builder removeChildren(int index) {
+        if (childrenBuilder_ == null) {
+          ensureChildrenIsMutable();
+          children_.remove(index);
+          onChanged();
+        } else {
+          childrenBuilder_.remove(index);
+        }
+        return this;
+      }
+
+      /**
+       * <code>repeated .io.holoinsight.server.query.grpc.TraceTree children = 2;</code>
+       */
+      public io.holoinsight.server.query.grpc.QueryProto.TraceTree.Builder getChildrenBuilder(
+          int index) {
+        return getChildrenFieldBuilder().getBuilder(index);
+      }
+
+      /**
+       * <code>repeated .io.holoinsight.server.query.grpc.TraceTree children = 2;</code>
+       */
+      public io.holoinsight.server.query.grpc.QueryProto.TraceTreeOrBuilder getChildrenOrBuilder(
+          int index) {
+        if (childrenBuilder_ == null) {
+          return children_.get(index);
+        } else {
+          return childrenBuilder_.getMessageOrBuilder(index);
+        }
+      }
+
+      /**
+       * <code>repeated .io.holoinsight.server.query.grpc.TraceTree children = 2;</code>
+       */
+      public java.util.List<? extends io.holoinsight.server.query.grpc.QueryProto.TraceTreeOrBuilder> getChildrenOrBuilderList() {
+        if (childrenBuilder_ != null) {
+          return childrenBuilder_.getMessageOrBuilderList();
+        } else {
+          return java.util.Collections.unmodifiableList(children_);
+        }
+      }
+
+      /**
+       * <code>repeated .io.holoinsight.server.query.grpc.TraceTree children = 2;</code>
+       */
+      public io.holoinsight.server.query.grpc.QueryProto.TraceTree.Builder addChildrenBuilder() {
+        return getChildrenFieldBuilder()
+            .addBuilder(io.holoinsight.server.query.grpc.QueryProto.TraceTree.getDefaultInstance());
+      }
+
+      /**
+       * <code>repeated .io.holoinsight.server.query.grpc.TraceTree children = 2;</code>
+       */
+      public io.holoinsight.server.query.grpc.QueryProto.TraceTree.Builder addChildrenBuilder(
+          int index) {
+        return getChildrenFieldBuilder().addBuilder(index,
+            io.holoinsight.server.query.grpc.QueryProto.TraceTree.getDefaultInstance());
+      }
+
+      /**
+       * <code>repeated .io.holoinsight.server.query.grpc.TraceTree children = 2;</code>
+       */
+      public java.util.List<io.holoinsight.server.query.grpc.QueryProto.TraceTree.Builder> getChildrenBuilderList() {
+        return getChildrenFieldBuilder().getBuilderList();
+      }
+
+      private com.google.protobuf.RepeatedFieldBuilderV3<io.holoinsight.server.query.grpc.QueryProto.TraceTree, io.holoinsight.server.query.grpc.QueryProto.TraceTree.Builder, io.holoinsight.server.query.grpc.QueryProto.TraceTreeOrBuilder> getChildrenFieldBuilder() {
+        if (childrenBuilder_ == null) {
+          childrenBuilder_ =
+              new com.google.protobuf.RepeatedFieldBuilderV3<io.holoinsight.server.query.grpc.QueryProto.TraceTree, io.holoinsight.server.query.grpc.QueryProto.TraceTree.Builder, io.holoinsight.server.query.grpc.QueryProto.TraceTreeOrBuilder>(
+                  children_, ((bitField0_ & 0x00000001) != 0), getParentForChildren(), isClean());
+          children_ = null;
+        }
+        return childrenBuilder_;
+      }
+
+      @java.lang.Override
+      public final Builder setUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.setUnknownFields(unknownFields);
+      }
+
+      @java.lang.Override
+      public final Builder mergeUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.mergeUnknownFields(unknownFields);
+      }
+
+
+      // @@protoc_insertion_point(builder_scope:io.holoinsight.server.query.grpc.TraceTree)
+    }
+
+    // @@protoc_insertion_point(class_scope:io.holoinsight.server.query.grpc.TraceTree)
+    private static final io.holoinsight.server.query.grpc.QueryProto.TraceTree DEFAULT_INSTANCE;
+    static {
+      DEFAULT_INSTANCE = new io.holoinsight.server.query.grpc.QueryProto.TraceTree();
+    }
+
+    public static io.holoinsight.server.query.grpc.QueryProto.TraceTree getDefaultInstance() {
+      return DEFAULT_INSTANCE;
+    }
+
+    private static final com.google.protobuf.Parser<TraceTree> PARSER =
+        new com.google.protobuf.AbstractParser<TraceTree>() {
+          @java.lang.Override
+          public TraceTree parsePartialFrom(com.google.protobuf.CodedInputStream input,
+              com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+              throws com.google.protobuf.InvalidProtocolBufferException {
+            return new TraceTree(input, extensionRegistry);
+          }
+        };
+
+    public static com.google.protobuf.Parser<TraceTree> parser() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<TraceTree> getParserForType() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public io.holoinsight.server.query.grpc.QueryProto.TraceTree getDefaultInstanceForType() {
+      return DEFAULT_INSTANCE;
+    }
+
+  }
+
   public interface SpanOrBuilder extends
       // @@protoc_insertion_point(interface_extends:io.holoinsight.server.query.grpc.Span)
       com.google.protobuf.MessageOrBuilder {
@@ -48327,6 +50194,10 @@ public final class QueryProto {
   private static final com.google.protobuf.GeneratedMessageV3.FieldAccessorTable internal_static_io_holoinsight_server_query_grpc_BasicTrace_fieldAccessorTable;
   private static final com.google.protobuf.Descriptors.Descriptor internal_static_io_holoinsight_server_query_grpc_Trace_descriptor;
   private static final com.google.protobuf.GeneratedMessageV3.FieldAccessorTable internal_static_io_holoinsight_server_query_grpc_Trace_fieldAccessorTable;
+  private static final com.google.protobuf.Descriptors.Descriptor internal_static_io_holoinsight_server_query_grpc_TraceTreeList_descriptor;
+  private static final com.google.protobuf.GeneratedMessageV3.FieldAccessorTable internal_static_io_holoinsight_server_query_grpc_TraceTreeList_fieldAccessorTable;
+  private static final com.google.protobuf.Descriptors.Descriptor internal_static_io_holoinsight_server_query_grpc_TraceTree_descriptor;
+  private static final com.google.protobuf.GeneratedMessageV3.FieldAccessorTable internal_static_io_holoinsight_server_query_grpc_TraceTree_fieldAccessorTable;
   private static final com.google.protobuf.Descriptors.Descriptor internal_static_io_holoinsight_server_query_grpc_Span_descriptor;
   private static final com.google.protobuf.GeneratedMessageV3.FieldAccessorTable internal_static_io_holoinsight_server_query_grpc_Span_fieldAccessorTable;
   private static final com.google.protobuf.Descriptors.Descriptor internal_static_io_holoinsight_server_query_grpc_KeyValue_descriptor;
@@ -48453,142 +50324,149 @@ public final class QueryProto {
         + "ration\030\004 \001(\005\022\r\n\005start\030\005 \001(\003\022\017\n\007isError\030\006"
         + " \001(\010\022\020\n\010traceIds\030\007 \003(\t\">\n\005Trace\0225\n\005spans"
         + "\030\001 \003(\0132&.io.holoinsight.server.query.grp"
-        + "c.Span\"\262\003\n\004Span\022\017\n\007traceId\030\001 \001(\t\022\016\n\006span"
-        + "Id\030\002 \001(\t\022\024\n\014parentSpanId\030\003 \001(\t\0223\n\004refs\030\004"
-        + " \003(\0132%.io.holoinsight.server.query.grpc."
-        + "Ref\022\023\n\013serviceCode\030\005 \001(\t\022\033\n\023serviceInsta"
-        + "nceName\030\006 \001(\t\022\021\n\tstartTime\030\007 \001(\003\022\017\n\007endT"
-        + "ime\030\010 \001(\003\022\024\n\014endpointName\030\t \001(\t\022\014\n\004type\030"
-        + "\n \001(\t\022\014\n\004peer\030\013 \001(\t\022\021\n\tcomponent\030\014 \001(\t\022\017"
-        + "\n\007isError\030\r \001(\010\022\r\n\005layer\030\016 \001(\t\0228\n\004tags\030\017"
-        + " \003(\0132*.io.holoinsight.server.query.grpc."
-        + "KeyValue\0229\n\004logs\030\020 \003(\0132+.io.holoinsight."
-        + "server.query.grpc.LogEntity\022\016\n\006isRoot\030\021 "
-        + "\001(\010\"&\n\010KeyValue\022\013\n\003key\030\001 \001(\t\022\r\n\005value\030\002 "
-        + "\001(\t\"S\n\tLogEntity\022\014\n\004time\030\001 \001(\003\0228\n\004data\030\002"
-        + " \003(\0132*.io.holoinsight.server.query.grpc."
-        + "KeyValue\":\n\003Ref\022\017\n\007traceId\030\001 \001(\t\022\024\n\014pare"
-        + "ntSpanId\030\002 \001(\t\022\014\n\004type\030\004 \001(\t\"\212\003\n\020QueryMe"
-        + "taRequest\022\016\n\006tenant\030\001 \001(\t\022\030\n\013serviceName"
-        + "\030\002 \001(\tH\000\210\001\001\022\031\n\014endpointName\030\003 \001(\tH\001\210\001\001\022\024"
-        + "\n\007address\030\004 \001(\tH\002\210\001\001\022\r\n\005start\030\005 \001(\003\022\013\n\003e"
-        + "nd\030\006 \001(\003\022\024\n\007isEntry\030\007 \001(\010H\003\210\001\001\022\023\n\013traceI"
-        + "dSize\030\010 \001(\003\022\020\n\010category\030\t \001(\t\022V\n\ntermPar"
-        + "ams\030\n \003(\0132B.io.holoinsight.server.query."
-        + "grpc.QueryMetaRequest.TermParamsEntry\0321\n"
-        + "\017TermParamsEntry\022\013\n\003key\030\001 \001(\t\022\r\n\005value\030\002"
-        + " \001(\t:\0028\001B\016\n\014_serviceNameB\017\n\r_endpointNam"
-        + "eB\n\n\010_addressB\n\n\010_isEntry\"\263\003\n\024QueryTopol"
-        + "ogyRequest\022\016\n\006tenant\030\001 \001(\t\022\r\n\005start\030\002 \001("
-        + "\003\022\013\n\003end\030\003 \001(\003\022\030\n\013serviceName\030\004 \001(\tH\000\210\001\001"
-        + "\022 \n\023serviceInstanceName\030\005 \001(\tH\001\210\001\001\022\031\n\014en"
-        + "dpointName\030\006 \001(\tH\002\210\001\001\022\024\n\007address\030\007 \001(\tH\003"
-        + "\210\001\001\022\022\n\005depth\030\010 \001(\005H\004\210\001\001\022\020\n\010category\030\t \001("
-        + "\t\022Z\n\ntermParams\030\n \003(\0132F.io.holoinsight.s"
-        + "erver.query.grpc.QueryTopologyRequest.Te"
-        + "rmParamsEntry\0321\n\017TermParamsEntry\022\013\n\003key\030"
-        + "\001 \001(\t\022\r\n\005value\030\002 \001(\t:\0028\001B\016\n\014_serviceName"
-        + "B\026\n\024_serviceInstanceNameB\017\n\r_endpointNam"
-        + "eB\n\n\010_addressB\010\n\006_depth\"\211\001\n\016ResponseMetr"
-        + "ic\022\022\n\navgLatency\030\001 \001(\001\022\022\n\np95Latency\030\002 \001"
-        + "(\001\022\022\n\np99Latency\030\003 \001(\001\022\022\n\ntotalCount\030\004 \001"
-        + "(\005\022\022\n\nerrorCount\030\005 \001(\005\022\023\n\013successRate\030\006 "
-        + "\001(\001\"V\n\004Meta\022\014\n\004name\030\001 \001(\t\022@\n\006metric\030\002 \001("
-        + "\01320.io.holoinsight.server.query.grpc.Res"
-        + "ponseMetric\"I\n\021QueryMetaResponse\0224\n\004mata"
-        + "\030\001 \003(\0132&.io.holoinsight.server.query.grp"
-        + "c.Meta\"s\n\020VirtualComponent\022\017\n\007address\030\001 "
-        + "\001(\t\022\014\n\004type\030\002 \001(\t\022@\n\006metric\030\003 \001(\01320.io.h"
-        + "oloinsight.server.query.grpc.ResponseMet"
-        + "ric\"f\n\035QueryVirtualComponentResponse\022E\n\t"
-        + "component\030\001 \003(\01322.io.holoinsight.server."
-        + "query.grpc.VirtualComponent\"w\n\007SlowSql\022\017"
-        + "\n\007address\030\001 \001(\t\022\023\n\013serviceName\030\002 \001(\t\022\021\n\t"
-        + "statement\030\003 \001(\t\022\017\n\007latency\030\004 \001(\005\022\021\n\tstar"
-        + "tTime\030\005 \001(\003\022\017\n\007traceId\030\006 \001(\t\"R\n\024QuerySlo"
-        + "wSqlResponse\022:\n\007slowSql\030\001 \003(\0132).io.holoi"
-        + "nsight.server.query.grpc.SlowSql\"\225\001\n\004Nod"
-        + "e\022\n\n\002id\030\001 \001(\t\022\014\n\004name\030\002 \001(\t\022\014\n\004type\030\003 \001("
-        + "\t\022\016\n\006isReal\030\004 \001(\010\022\023\n\013serviceName\030\005 \001(\t\022@"
-        + "\n\006metric\030\006 \001(\01320.io.holoinsight.server.q"
-        + "uery.grpc.ResponseMetric\"\320\001\n\004Call\022\n\n\002id\030"
-        + "\001 \001(\t\022\020\n\010sourceId\030\002 \001(\t\022\022\n\nsourceName\030\003 "
-        + "\001(\t\022\016\n\006destId\030\004 \001(\t\022\020\n\010destName\030\005 \001(\t\022\031\n"
-        + "\021sourceServiceName\030\006 \001(\t\022\027\n\017destServiceN"
-        + "ame\030\007 \001(\t\022@\n\006metric\030\010 \001(\01320.io.holoinsig"
-        + "ht.server.query.grpc.ResponseMetric\"v\n\010T"
-        + "opology\0224\n\004node\030\001 \003(\0132&.io.holoinsight.s"
-        + "erver.query.grpc.Node\0224\n\004call\030\002 \003(\0132&.io"
-        + ".holoinsight.server.query.grpc.Call\"\033\n\010T"
-        + "raceIds\022\017\n\007traceId\030\001 \003(\t\"\215\002\n\rStatisticDa"
-        + "ta\022Q\n\tresources\030\001 \003(\0132>.io.holoinsight.s"
-        + "erver.query.grpc.StatisticData.Resources"
-        + "Entry\022I\n\005datas\030\002 \003(\0132:.io.holoinsight.se"
-        + "rver.query.grpc.StatisticData.DatasEntry"
-        + "\0320\n\016ResourcesEntry\022\013\n\003key\030\001 \001(\t\022\r\n\005value"
-        + "\030\002 \001(\t:\0028\001\032,\n\nDatasEntry\022\013\n\003key\030\001 \001(\t\022\r\n"
-        + "\005value\030\002 \001(\001:\0028\001\"[\n\021StatisticDataList\022F\n"
-        + "\rstatisticData\030\001 \003(\0132/.io.holoinsight.se"
-        + "rver.query.grpc.StatisticData\"\215\001\n\021Common"
-        + "MapTypeData\022K\n\004data\030\001 \003(\0132=.io.holoinsig"
-        + "ht.server.query.grpc.CommonMapTypeData.D"
-        + "ataEntry\032+\n\tDataEntry\022\013\n\003key\030\001 \001(\t\022\r\n\005va"
-        + "lue\030\002 \001(\t:\0028\001\"g\n\025CommonMapTypeDataList\022N"
-        + "\n\021commonMapTypeData\030\001 \003(\01323.io.holoinsig"
-        + "ht.server.query.grpc.CommonMapTypeData2\234"
-        + "\023\n\014QueryService\022l\n\tQueryData\022..io.holoin"
-        + "sight.server.query.grpc.QueryRequest\032/.i" + "o.holoinsight.server.query.grpc.QueryRes"
-        + "ponse\022l\n\tQueryTags\022..io.holoinsight.serv"
-        + "er.query.grpc.QueryRequest\032/.io.holoinsi"
-        + "ght.server.query.grpc.QueryResponse\022t\n\013Q"
-        + "uerySchema\022..io.holoinsight.server.query"
-        + ".grpc.QueryRequest\0325.io.holoinsight.serv"
-        + "er.query.grpc.QuerySchemaResponse\022}\n\014Que"
-        + "ryMetrics\0225.io.holoinsight.server.query."
-        + "grpc.QueryMetricsRequest\0326.io.holoinsigh" + "t.server.query.grpc.QueryMetricsResponse"
-        + "\022m\n\nDeleteKeys\022..io.holoinsight.server.q"
-        + "uery.grpc.QueryRequest\032/.io.holoinsight."
-        + "server.query.grpc.QueryResponse\022w\n\017pqlIn"
-        + "stantQuery\0223.io.holoinsight.server.query"
-        + ".grpc.PqlInstantRequest\032/.io.holoinsight"
-        + ".server.query.grpc.QueryResponse\022s\n\rpqlR"
-        + "angeQuery\0221.io.holoinsight.server.query."
-        + "grpc.PqlRangeRequest\032/.io.holoinsight.se"
-        + "rver.query.grpc.QueryResponse\022u\n\020QueryBa"
-        + "sicTraces\0223.io.holoinsight.server.query."
-        + "grpc.QueryTraceRequest\032,.io.holoinsight."
-        + "server.query.grpc.TraceBrief\022j\n\nQueryTra"
-        + "ce\0223.io.holoinsight.server.query.grpc.Qu"
-        + "eryTraceRequest\032\'.io.holoinsight.server."
-        + "query.grpc.Trace\022t\n\014BillingTrace\0223.io.ho"
-        + "loinsight.server.query.grpc.QueryTraceRe" + "quest\032/.io.holoinsight.server.query.grpc"
-        + ".StatisticData\022{\n\020QueryServiceList\0222.io."
-        + "holoinsight.server.query.grpc.QueryMetaR" + "equest\0323.io.holoinsight.server.query.grp"
-        + "c.QueryMetaResponse\022|\n\021QueryEndpointList"
-        + "\0222.io.holoinsight.server.query.grpc.Quer"
-        + "yMetaRequest\0323.io.holoinsight.server.que"
-        + "ry.grpc.QueryMetaResponse\022\203\001\n\030QueryServi"
-        + "ceInstanceList\0222.io.holoinsight.server.q"
-        + "uery.grpc.QueryMetaRequest\0323.io.holoinsi"
-        + "ght.server.query.grpc.QueryMetaResponse\022"
-        + "\211\001\n\022QueryComponentList\0222.io.holoinsight."
-        + "server.query.grpc.QueryMetaRequest\032?.io." + "holoinsight.server.query.grpc.QueryVirtu"
-        + "alComponentResponse\022x\n\026QueryComponentTra"
-        + "ceIds\0222.io.holoinsight.server.query.grpc"
-        + ".QueryMetaRequest\032*.io.holoinsight.serve"
-        + "r.query.grpc.TraceIds\022s\n\rQueryTopology\0226"
-        + ".io.holoinsight.server.query.grpc.QueryT" + "opologyRequest\032*.io.holoinsight.server.q"
-        + "uery.grpc.Topology\022~\n\020QuerySlowSqlList\0222"
-        + ".io.holoinsight.server.query.grpc.QueryM" + "etaRequest\0326.io.holoinsight.server.query"
-        + ".grpc.QuerySlowSqlResponse\022y\n\016StatisticT"
-        + "race\0222.io.holoinsight.server.query.grpc."
-        + "StatisticRequest\0323.io.holoinsight.server"
-        + ".query.grpc.StatisticDataList\022\204\001\n\025QueryS"
-        + "erviceErrorList\0222.io.holoinsight.server."
-        + "query.grpc.QueryMetaRequest\0327.io.holoins" + "ight.server.query.grpc.CommonMapTypeData"
-        + "List\022\206\001\n\027QueryServiceErrorDetail\0222.io.ho"
-        + "loinsight.server.query.grpc.QueryMetaReq" + "uest\0327.io.holoinsight.server.query.grpc."
-        + "CommonMapTypeDataListB\"\n io.holoinsight." + "server.query.grpcb\006proto3"};
+        + "c.Span\"O\n\rTraceTreeList\022>\n\ttraceTree\030\001 \003"
+        + "(\0132+.io.holoinsight.server.query.grpc.Tr"
+        + "aceTree\"\200\001\n\tTraceTree\0224\n\004span\030\001 \001(\0132&.io"
+        + ".holoinsight.server.query.grpc.Span\022=\n\010c"
+        + "hildren\030\002 \003(\0132+.io.holoinsight.server.qu"
+        + "ery.grpc.TraceTree\"\262\003\n\004Span\022\017\n\007traceId\030\001"
+        + " \001(\t\022\016\n\006spanId\030\002 \001(\t\022\024\n\014parentSpanId\030\003 \001"
+        + "(\t\0223\n\004refs\030\004 \003(\0132%.io.holoinsight.server"
+        + ".query.grpc.Ref\022\023\n\013serviceCode\030\005 \001(\t\022\033\n\023"
+        + "serviceInstanceName\030\006 \001(\t\022\021\n\tstartTime\030\007"
+        + " \001(\003\022\017\n\007endTime\030\010 \001(\003\022\024\n\014endpointName\030\t "
+        + "\001(\t\022\014\n\004type\030\n \001(\t\022\014\n\004peer\030\013 \001(\t\022\021\n\tcompo"
+        + "nent\030\014 \001(\t\022\017\n\007isError\030\r \001(\010\022\r\n\005layer\030\016 \001"
+        + "(\t\0228\n\004tags\030\017 \003(\0132*.io.holoinsight.server"
+        + ".query.grpc.KeyValue\0229\n\004logs\030\020 \003(\0132+.io."
+        + "holoinsight.server.query.grpc.LogEntity\022"
+        + "\016\n\006isRoot\030\021 \001(\010\"&\n\010KeyValue\022\013\n\003key\030\001 \001(\t"
+        + "\022\r\n\005value\030\002 \001(\t\"S\n\tLogEntity\022\014\n\004time\030\001 \001"
+        + "(\003\0228\n\004data\030\002 \003(\0132*.io.holoinsight.server"
+        + ".query.grpc.KeyValue\":\n\003Ref\022\017\n\007traceId\030\001"
+        + " \001(\t\022\024\n\014parentSpanId\030\002 \001(\t\022\014\n\004type\030\004 \001(\t"
+        + "\"\212\003\n\020QueryMetaRequest\022\016\n\006tenant\030\001 \001(\t\022\030\n"
+        + "\013serviceName\030\002 \001(\tH\000\210\001\001\022\031\n\014endpointName\030"
+        + "\003 \001(\tH\001\210\001\001\022\024\n\007address\030\004 \001(\tH\002\210\001\001\022\r\n\005star"
+        + "t\030\005 \001(\003\022\013\n\003end\030\006 \001(\003\022\024\n\007isEntry\030\007 \001(\010H\003\210"
+        + "\001\001\022\023\n\013traceIdSize\030\010 \001(\003\022\020\n\010category\030\t \001("
+        + "\t\022V\n\ntermParams\030\n \003(\0132B.io.holoinsight.s"
+        + "erver.query.grpc.QueryMetaRequest.TermPa"
+        + "ramsEntry\0321\n\017TermParamsEntry\022\013\n\003key\030\001 \001("
+        + "\t\022\r\n\005value\030\002 \001(\t:\0028\001B\016\n\014_serviceNameB\017\n\r"
+        + "_endpointNameB\n\n\010_addressB\n\n\010_isEntry\"\263\003"
+        + "\n\024QueryTopologyRequest\022\016\n\006tenant\030\001 \001(\t\022\r"
+        + "\n\005start\030\002 \001(\003\022\013\n\003end\030\003 \001(\003\022\030\n\013serviceNam"
+        + "e\030\004 \001(\tH\000\210\001\001\022 \n\023serviceInstanceName\030\005 \001("
+        + "\tH\001\210\001\001\022\031\n\014endpointName\030\006 \001(\tH\002\210\001\001\022\024\n\007add"
+        + "ress\030\007 \001(\tH\003\210\001\001\022\022\n\005depth\030\010 \001(\005H\004\210\001\001\022\020\n\010c"
+        + "ategory\030\t \001(\t\022Z\n\ntermParams\030\n \003(\0132F.io.h"
+        + "oloinsight.server.query.grpc.QueryTopolo"
+        + "gyRequest.TermParamsEntry\0321\n\017TermParamsE"
+        + "ntry\022\013\n\003key\030\001 \001(\t\022\r\n\005value\030\002 \001(\t:\0028\001B\016\n\014"
+        + "_serviceNameB\026\n\024_serviceInstanceNameB\017\n\r"
+        + "_endpointNameB\n\n\010_addressB\010\n\006_depth\"\211\001\n\016"
+        + "ResponseMetric\022\022\n\navgLatency\030\001 \001(\001\022\022\n\np9"
+        + "5Latency\030\002 \001(\001\022\022\n\np99Latency\030\003 \001(\001\022\022\n\nto"
+        + "talCount\030\004 \001(\005\022\022\n\nerrorCount\030\005 \001(\005\022\023\n\013su"
+        + "ccessRate\030\006 \001(\001\"V\n\004Meta\022\014\n\004name\030\001 \001(\t\022@\n"
+        + "\006metric\030\002 \001(\01320.io.holoinsight.server.qu"
+        + "ery.grpc.ResponseMetric\"I\n\021QueryMetaResp"
+        + "onse\0224\n\004mata\030\001 \003(\0132&.io.holoinsight.serv"
+        + "er.query.grpc.Meta\"s\n\020VirtualComponent\022\017"
+        + "\n\007address\030\001 \001(\t\022\014\n\004type\030\002 \001(\t\022@\n\006metric\030"
+        + "\003 \001(\01320.io.holoinsight.server.query.grpc"
+        + ".ResponseMetric\"f\n\035QueryVirtualComponent"
+        + "Response\022E\n\tcomponent\030\001 \003(\01322.io.holoins"
+        + "ight.server.query.grpc.VirtualComponent\""
+        + "w\n\007SlowSql\022\017\n\007address\030\001 \001(\t\022\023\n\013serviceNa"
+        + "me\030\002 \001(\t\022\021\n\tstatement\030\003 \001(\t\022\017\n\007latency\030\004"
+        + " \001(\005\022\021\n\tstartTime\030\005 \001(\003\022\017\n\007traceId\030\006 \001(\t"
+        + "\"R\n\024QuerySlowSqlResponse\022:\n\007slowSql\030\001 \003("
+        + "\0132).io.holoinsight.server.query.grpc.Slo"
+        + "wSql\"\225\001\n\004Node\022\n\n\002id\030\001 \001(\t\022\014\n\004name\030\002 \001(\t\022"
+        + "\014\n\004type\030\003 \001(\t\022\016\n\006isReal\030\004 \001(\010\022\023\n\013service"
+        + "Name\030\005 \001(\t\022@\n\006metric\030\006 \001(\01320.io.holoinsi"
+        + "ght.server.query.grpc.ResponseMetric\"\320\001\n"
+        + "\004Call\022\n\n\002id\030\001 \001(\t\022\020\n\010sourceId\030\002 \001(\t\022\022\n\ns"
+        + "ourceName\030\003 \001(\t\022\016\n\006destId\030\004 \001(\t\022\020\n\010destN"
+        + "ame\030\005 \001(\t\022\031\n\021sourceServiceName\030\006 \001(\t\022\027\n\017"
+        + "destServiceName\030\007 \001(\t\022@\n\006metric\030\010 \001(\01320."
+        + "io.holoinsight.server.query.grpc.Respons"
+        + "eMetric\"v\n\010Topology\0224\n\004node\030\001 \003(\0132&.io.h"
+        + "oloinsight.server.query.grpc.Node\0224\n\004cal"
+        + "l\030\002 \003(\0132&.io.holoinsight.server.query.gr"
+        + "pc.Call\"\033\n\010TraceIds\022\017\n\007traceId\030\001 \003(\t\"\215\002\n"
+        + "\rStatisticData\022Q\n\tresources\030\001 \003(\0132>.io.h"
+        + "oloinsight.server.query.grpc.StatisticDa"
+        + "ta.ResourcesEntry\022I\n\005datas\030\002 \003(\0132:.io.ho"
+        + "loinsight.server.query.grpc.StatisticDat"
+        + "a.DatasEntry\0320\n\016ResourcesEntry\022\013\n\003key\030\001 "
+        + "\001(\t\022\r\n\005value\030\002 \001(\t:\0028\001\032,\n\nDatasEntry\022\013\n\003"
+        + "key\030\001 \001(\t\022\r\n\005value\030\002 \001(\001:\0028\001\"[\n\021Statisti"
+        + "cDataList\022F\n\rstatisticData\030\001 \003(\0132/.io.ho"
+        + "loinsight.server.query.grpc.StatisticDat"
+        + "a\"\215\001\n\021CommonMapTypeData\022K\n\004data\030\001 \003(\0132=."
+        + "io.holoinsight.server.query.grpc.CommonM"
+        + "apTypeData.DataEntry\032+\n\tDataEntry\022\013\n\003key"
+        + "\030\001 \001(\t\022\r\n\005value\030\002 \001(\t:\0028\001\"g\n\025CommonMapTy"
+        + "peDataList\022N\n\021commonMapTypeData\030\001 \003(\01323."
+        + "io.holoinsight.server.query.grpc.CommonM"
+        + "apTypeData2\224\024\n\014QueryService\022l\n\tQueryData"
+        + "\022..io.holoinsight.server.query.grpc.Quer"
+        + "yRequest\032/.io.holoinsight.server.query.g"
+        + "rpc.QueryResponse\022l\n\tQueryTags\022..io.holo"
+        + "insight.server.query.grpc.QueryRequest\032/" + ".io.holoinsight.server.query.grpc.QueryR"
+        + "esponse\022t\n\013QuerySchema\022..io.holoinsight."
+        + "server.query.grpc.QueryRequest\0325.io.holo" + "insight.server.query.grpc.QuerySchemaRes"
+        + "ponse\022}\n\014QueryMetrics\0225.io.holoinsight.s"
+        + "erver.query.grpc.QueryMetricsRequest\0326.i" + "o.holoinsight.server.query.grpc.QueryMet"
+        + "ricsResponse\022m\n\nDeleteKeys\022..io.holoinsi"
+        + "ght.server.query.grpc.QueryRequest\032/.io." + "holoinsight.server.query.grpc.QueryRespo"
+        + "nse\022w\n\017pqlInstantQuery\0223.io.holoinsight."
+        + "server.query.grpc.PqlInstantRequest\032/.io" + ".holoinsight.server.query.grpc.QueryResp"
+        + "onse\022s\n\rpqlRangeQuery\0221.io.holoinsight.s"
+        + "erver.query.grpc.PqlRangeRequest\032/.io.ho" + "loinsight.server.query.grpc.QueryRespons"
+        + "e\022u\n\020QueryBasicTraces\0223.io.holoinsight.s"
+        + "erver.query.grpc.QueryTraceRequest\032,.io." + "holoinsight.server.query.grpc.TraceBrief"
+        + "\022j\n\nQueryTrace\0223.io.holoinsight.server.q"
+        + "uery.grpc.QueryTraceRequest\032\'.io.holoins"
+        + "ight.server.query.grpc.Trace\022v\n\016QueryTra"
+        + "ceTree\0223.io.holoinsight.server.query.grp"
+        + "c.QueryTraceRequest\032/.io.holoinsight.ser"
+        + "ver.query.grpc.TraceTreeList\022t\n\014BillingT"
+        + "race\0223.io.holoinsight.server.query.grpc."
+        + "QueryTraceRequest\032/.io.holoinsight.serve"
+        + "r.query.grpc.StatisticData\022{\n\020QueryServi"
+        + "ceList\0222.io.holoinsight.server.query.grp"
+        + "c.QueryMetaRequest\0323.io.holoinsight.serv"
+        + "er.query.grpc.QueryMetaResponse\022|\n\021Query"
+        + "EndpointList\0222.io.holoinsight.server.que"
+        + "ry.grpc.QueryMetaRequest\0323.io.holoinsigh"
+        + "t.server.query.grpc.QueryMetaResponse\022\203\001"
+        + "\n\030QueryServiceInstanceList\0222.io.holoinsi"
+        + "ght.server.query.grpc.QueryMetaRequest\0323" + ".io.holoinsight.server.query.grpc.QueryM"
+        + "etaResponse\022\211\001\n\022QueryComponentList\0222.io."
+        + "holoinsight.server.query.grpc.QueryMetaR" + "equest\032?.io.holoinsight.server.query.grp"
+        + "c.QueryVirtualComponentResponse\022x\n\026Query"
+        + "ComponentTraceIds\0222.io.holoinsight.serve"
+        + "r.query.grpc.QueryMetaRequest\032*.io.holoi"
+        + "nsight.server.query.grpc.TraceIds\022s\n\rQue"
+        + "ryTopology\0226.io.holoinsight.server.query"
+        + ".grpc.QueryTopologyRequest\032*.io.holoinsi"
+        + "ght.server.query.grpc.Topology\022~\n\020QueryS"
+        + "lowSqlList\0222.io.holoinsight.server.query"
+        + ".grpc.QueryMetaRequest\0326.io.holoinsight."
+        + "server.query.grpc.QuerySlowSqlResponse\022y"
+        + "\n\016StatisticTrace\0222.io.holoinsight.server"
+        + ".query.grpc.StatisticRequest\0323.io.holoin" + "sight.server.query.grpc.StatisticDataLis"
+        + "t\022\204\001\n\025QueryServiceErrorList\0222.io.holoins"
+        + "ight.server.query.grpc.QueryMetaRequest\032" + "7.io.holoinsight.server.query.grpc.Commo"
+        + "nMapTypeDataList\022\206\001\n\027QueryServiceErrorDe"
+        + "tail\0222.io.holoinsight.server.query.grpc."
+        + "QueryMetaRequest\0327.io.holoinsight.server"
+        + ".query.grpc.CommonMapTypeDataListB\"\n io."
+        + "holoinsight.server.query.grpcb\006proto3"};
     descriptor = com.google.protobuf.Descriptors.FileDescriptor.internalBuildGeneratedFileFrom(
         descriptorData, new com.google.protobuf.Descriptors.FileDescriptor[] {
             com.google.protobuf.AnyProto.getDescriptor(),});
@@ -48728,8 +50606,20 @@ public final class QueryProto {
         new com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
             internal_static_io_holoinsight_server_query_grpc_Trace_descriptor,
             new java.lang.String[] {"Spans",});
-    internal_static_io_holoinsight_server_query_grpc_Span_descriptor =
+    internal_static_io_holoinsight_server_query_grpc_TraceTreeList_descriptor =
         getDescriptor().getMessageTypes().get(19);
+    internal_static_io_holoinsight_server_query_grpc_TraceTreeList_fieldAccessorTable =
+        new com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+            internal_static_io_holoinsight_server_query_grpc_TraceTreeList_descriptor,
+            new java.lang.String[] {"TraceTree",});
+    internal_static_io_holoinsight_server_query_grpc_TraceTree_descriptor =
+        getDescriptor().getMessageTypes().get(20);
+    internal_static_io_holoinsight_server_query_grpc_TraceTree_fieldAccessorTable =
+        new com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+            internal_static_io_holoinsight_server_query_grpc_TraceTree_descriptor,
+            new java.lang.String[] {"Span", "Children",});
+    internal_static_io_holoinsight_server_query_grpc_Span_descriptor =
+        getDescriptor().getMessageTypes().get(21);
     internal_static_io_holoinsight_server_query_grpc_Span_fieldAccessorTable =
         new com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
             internal_static_io_holoinsight_server_query_grpc_Span_descriptor,
@@ -48737,25 +50627,25 @@ public final class QueryProto {
                 "ServiceInstanceName", "StartTime", "EndTime", "EndpointName", "Type", "Peer",
                 "Component", "IsError", "Layer", "Tags", "Logs", "IsRoot",});
     internal_static_io_holoinsight_server_query_grpc_KeyValue_descriptor =
-        getDescriptor().getMessageTypes().get(20);
+        getDescriptor().getMessageTypes().get(22);
     internal_static_io_holoinsight_server_query_grpc_KeyValue_fieldAccessorTable =
         new com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
             internal_static_io_holoinsight_server_query_grpc_KeyValue_descriptor,
             new java.lang.String[] {"Key", "Value",});
     internal_static_io_holoinsight_server_query_grpc_LogEntity_descriptor =
-        getDescriptor().getMessageTypes().get(21);
+        getDescriptor().getMessageTypes().get(23);
     internal_static_io_holoinsight_server_query_grpc_LogEntity_fieldAccessorTable =
         new com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
             internal_static_io_holoinsight_server_query_grpc_LogEntity_descriptor,
             new java.lang.String[] {"Time", "Data",});
     internal_static_io_holoinsight_server_query_grpc_Ref_descriptor =
-        getDescriptor().getMessageTypes().get(22);
+        getDescriptor().getMessageTypes().get(24);
     internal_static_io_holoinsight_server_query_grpc_Ref_fieldAccessorTable =
         new com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
             internal_static_io_holoinsight_server_query_grpc_Ref_descriptor,
             new java.lang.String[] {"TraceId", "ParentSpanId", "Type",});
     internal_static_io_holoinsight_server_query_grpc_QueryMetaRequest_descriptor =
-        getDescriptor().getMessageTypes().get(23);
+        getDescriptor().getMessageTypes().get(25);
     internal_static_io_holoinsight_server_query_grpc_QueryMetaRequest_fieldAccessorTable =
         new com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
             internal_static_io_holoinsight_server_query_grpc_QueryMetaRequest_descriptor,
@@ -48770,7 +50660,7 @@ public final class QueryProto {
             internal_static_io_holoinsight_server_query_grpc_QueryMetaRequest_TermParamsEntry_descriptor,
             new java.lang.String[] {"Key", "Value",});
     internal_static_io_holoinsight_server_query_grpc_QueryTopologyRequest_descriptor =
-        getDescriptor().getMessageTypes().get(24);
+        getDescriptor().getMessageTypes().get(26);
     internal_static_io_holoinsight_server_query_grpc_QueryTopologyRequest_fieldAccessorTable =
         new com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
             internal_static_io_holoinsight_server_query_grpc_QueryTopologyRequest_descriptor,
@@ -48785,76 +50675,76 @@ public final class QueryProto {
             internal_static_io_holoinsight_server_query_grpc_QueryTopologyRequest_TermParamsEntry_descriptor,
             new java.lang.String[] {"Key", "Value",});
     internal_static_io_holoinsight_server_query_grpc_ResponseMetric_descriptor =
-        getDescriptor().getMessageTypes().get(25);
+        getDescriptor().getMessageTypes().get(27);
     internal_static_io_holoinsight_server_query_grpc_ResponseMetric_fieldAccessorTable =
         new com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
             internal_static_io_holoinsight_server_query_grpc_ResponseMetric_descriptor,
             new java.lang.String[] {"AvgLatency", "P95Latency", "P99Latency", "TotalCount",
                 "ErrorCount", "SuccessRate",});
     internal_static_io_holoinsight_server_query_grpc_Meta_descriptor =
-        getDescriptor().getMessageTypes().get(26);
+        getDescriptor().getMessageTypes().get(28);
     internal_static_io_holoinsight_server_query_grpc_Meta_fieldAccessorTable =
         new com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
             internal_static_io_holoinsight_server_query_grpc_Meta_descriptor,
             new java.lang.String[] {"Name", "Metric",});
     internal_static_io_holoinsight_server_query_grpc_QueryMetaResponse_descriptor =
-        getDescriptor().getMessageTypes().get(27);
+        getDescriptor().getMessageTypes().get(29);
     internal_static_io_holoinsight_server_query_grpc_QueryMetaResponse_fieldAccessorTable =
         new com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
             internal_static_io_holoinsight_server_query_grpc_QueryMetaResponse_descriptor,
             new java.lang.String[] {"Mata",});
     internal_static_io_holoinsight_server_query_grpc_VirtualComponent_descriptor =
-        getDescriptor().getMessageTypes().get(28);
+        getDescriptor().getMessageTypes().get(30);
     internal_static_io_holoinsight_server_query_grpc_VirtualComponent_fieldAccessorTable =
         new com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
             internal_static_io_holoinsight_server_query_grpc_VirtualComponent_descriptor,
             new java.lang.String[] {"Address", "Type", "Metric",});
     internal_static_io_holoinsight_server_query_grpc_QueryVirtualComponentResponse_descriptor =
-        getDescriptor().getMessageTypes().get(29);
+        getDescriptor().getMessageTypes().get(31);
     internal_static_io_holoinsight_server_query_grpc_QueryVirtualComponentResponse_fieldAccessorTable =
         new com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
             internal_static_io_holoinsight_server_query_grpc_QueryVirtualComponentResponse_descriptor,
             new java.lang.String[] {"Component",});
     internal_static_io_holoinsight_server_query_grpc_SlowSql_descriptor =
-        getDescriptor().getMessageTypes().get(30);
+        getDescriptor().getMessageTypes().get(32);
     internal_static_io_holoinsight_server_query_grpc_SlowSql_fieldAccessorTable =
         new com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
             internal_static_io_holoinsight_server_query_grpc_SlowSql_descriptor,
             new java.lang.String[] {"Address", "ServiceName", "Statement", "Latency", "StartTime",
                 "TraceId",});
     internal_static_io_holoinsight_server_query_grpc_QuerySlowSqlResponse_descriptor =
-        getDescriptor().getMessageTypes().get(31);
+        getDescriptor().getMessageTypes().get(33);
     internal_static_io_holoinsight_server_query_grpc_QuerySlowSqlResponse_fieldAccessorTable =
         new com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
             internal_static_io_holoinsight_server_query_grpc_QuerySlowSqlResponse_descriptor,
             new java.lang.String[] {"SlowSql",});
     internal_static_io_holoinsight_server_query_grpc_Node_descriptor =
-        getDescriptor().getMessageTypes().get(32);
+        getDescriptor().getMessageTypes().get(34);
     internal_static_io_holoinsight_server_query_grpc_Node_fieldAccessorTable =
         new com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
             internal_static_io_holoinsight_server_query_grpc_Node_descriptor,
             new java.lang.String[] {"Id", "Name", "Type", "IsReal", "ServiceName", "Metric",});
     internal_static_io_holoinsight_server_query_grpc_Call_descriptor =
-        getDescriptor().getMessageTypes().get(33);
+        getDescriptor().getMessageTypes().get(35);
     internal_static_io_holoinsight_server_query_grpc_Call_fieldAccessorTable =
         new com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
             internal_static_io_holoinsight_server_query_grpc_Call_descriptor,
             new java.lang.String[] {"Id", "SourceId", "SourceName", "DestId", "DestName",
                 "SourceServiceName", "DestServiceName", "Metric",});
     internal_static_io_holoinsight_server_query_grpc_Topology_descriptor =
-        getDescriptor().getMessageTypes().get(34);
+        getDescriptor().getMessageTypes().get(36);
     internal_static_io_holoinsight_server_query_grpc_Topology_fieldAccessorTable =
         new com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
             internal_static_io_holoinsight_server_query_grpc_Topology_descriptor,
             new java.lang.String[] {"Node", "Call",});
     internal_static_io_holoinsight_server_query_grpc_TraceIds_descriptor =
-        getDescriptor().getMessageTypes().get(35);
+        getDescriptor().getMessageTypes().get(37);
     internal_static_io_holoinsight_server_query_grpc_TraceIds_fieldAccessorTable =
         new com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
             internal_static_io_holoinsight_server_query_grpc_TraceIds_descriptor,
             new java.lang.String[] {"TraceId",});
     internal_static_io_holoinsight_server_query_grpc_StatisticData_descriptor =
-        getDescriptor().getMessageTypes().get(36);
+        getDescriptor().getMessageTypes().get(38);
     internal_static_io_holoinsight_server_query_grpc_StatisticData_fieldAccessorTable =
         new com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
             internal_static_io_holoinsight_server_query_grpc_StatisticData_descriptor,
@@ -48874,13 +50764,13 @@ public final class QueryProto {
             internal_static_io_holoinsight_server_query_grpc_StatisticData_DatasEntry_descriptor,
             new java.lang.String[] {"Key", "Value",});
     internal_static_io_holoinsight_server_query_grpc_StatisticDataList_descriptor =
-        getDescriptor().getMessageTypes().get(37);
+        getDescriptor().getMessageTypes().get(39);
     internal_static_io_holoinsight_server_query_grpc_StatisticDataList_fieldAccessorTable =
         new com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
             internal_static_io_holoinsight_server_query_grpc_StatisticDataList_descriptor,
             new java.lang.String[] {"StatisticData",});
     internal_static_io_holoinsight_server_query_grpc_CommonMapTypeData_descriptor =
-        getDescriptor().getMessageTypes().get(38);
+        getDescriptor().getMessageTypes().get(40);
     internal_static_io_holoinsight_server_query_grpc_CommonMapTypeData_fieldAccessorTable =
         new com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
             internal_static_io_holoinsight_server_query_grpc_CommonMapTypeData_descriptor,
@@ -48893,7 +50783,7 @@ public final class QueryProto {
             internal_static_io_holoinsight_server_query_grpc_CommonMapTypeData_DataEntry_descriptor,
             new java.lang.String[] {"Key", "Value",});
     internal_static_io_holoinsight_server_query_grpc_CommonMapTypeDataList_descriptor =
-        getDescriptor().getMessageTypes().get(39);
+        getDescriptor().getMessageTypes().get(41);
     internal_static_io_holoinsight_server_query_grpc_CommonMapTypeDataList_fieldAccessorTable =
         new com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
             internal_static_io_holoinsight_server_query_grpc_CommonMapTypeDataList_descriptor,
