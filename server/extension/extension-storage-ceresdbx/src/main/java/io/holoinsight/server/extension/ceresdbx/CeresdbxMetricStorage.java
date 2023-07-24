@@ -16,6 +16,8 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import io.ceresdb.common.parser.SqlParser;
+import io.ceresdb.common.parser.SqlParserFactoryProvider;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -104,16 +106,28 @@ public class CeresdbxMetricStorage implements MetricStorage {
 
   @Override
   public List<Result> queryData(QueryParam queryParam) {
-    String whereStatement = parseWhere(queryParam);
-    String fromStatement = parseFrom(queryParam);
-    if (StringUtils.isBlank(fromStatement)) {
-      LOGGER.warn("fromStatement is empty, queryParam:{}", queryParam);
-      return Lists.newArrayList();
+    String sql = queryParam.getQl();
+    String[] tableNames;
+    if (StringUtils.isNotBlank(sql)) {
+      SqlParser parser = SqlParserFactoryProvider.getSqlParserFactory().getParser(sql);
+      List<String> tables = parser.tableNames();
+      tableNames = tables.stream().map(this::fixName).collect(Collectors.toList())
+          .toArray(new String[tables.size()]);
+      sql = StringUtils.replaceEach(sql, tables.toArray(new String[tables.size()]), tableNames);
+    } else {
+      String whereStatement = parseWhere(queryParam);
+      String fromStatement = parseFrom(queryParam);
+      if (StringUtils.isBlank(fromStatement)) {
+        LOGGER.warn("fromStatement is empty, queryParam:{}", queryParam);
+        return Lists.newArrayList();
+      }
+      tableNames = new String[] {fixName(queryParam.getMetric())};
+      sql = genSqlWithGroupBy(queryParam, fromStatement, whereStatement);
+
     }
-    String sql = genSqlWithGroupBy(queryParam, fromStatement, whereStatement);
     LOGGER.info("queryData queryparam:{}, sql:{}", queryParam, sql);
     final SqlQueryRequest queryRequest =
-        SqlQueryRequest.newBuilder().forTables(fixName(queryParam.getMetric())).sql(sql).build();
+        SqlQueryRequest.newBuilder().forTables(tableNames).sql(sql).build();
     long begin = System.currentTimeMillis();
     try {
       CompletableFuture<io.ceresdb.models.Result<SqlQueryOk, Err>> qf = Context.ROOT.call(
