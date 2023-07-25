@@ -60,7 +60,6 @@ public class ServiceErrorAnalysis {
         resourceAttrMap.get(Const.OTLP_RESOURCE_SERVICE_INSTANCE_NAME).getStringValue());
     errorInfo.setStartTime(TimeUtils.unixNano2MS(span.getStartTimeUnixNano()));
     errorInfo.setTimestamp(TimeUtils.unixNano2MS(span.getEndTimeUnixNano()));
-    errorInfo.setTimestamp2(TimeUtils.unixNano2MS(span.getEndTimeUnixNano()));
     long latency = TimeUtils.unixNano2MS(span.getEndTimeUnixNano())
         - TimeUtils.unixNano2MS(span.getStartTimeUnixNano());
     errorInfo.setLatency((int) latency);
