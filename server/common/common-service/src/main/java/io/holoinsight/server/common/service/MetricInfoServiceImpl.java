@@ -159,7 +159,7 @@ public class MetricInfoServiceImpl extends ServiceImpl<MetricInfoMapper, MetricI
     if (StringUtils.isNotBlank(workspace) || "-".equalsIgnoreCase(workspace)) {
       wrapper.eq("workspace", workspace);
     }
-
+    wrapper.eq("deleted", 0);
     wrapper.like("metric_table", keyword);
     wrapper.last("LIMIT 10");
     return metricInfoConverter.dosToDTOs(baseMapper.selectList(wrapper));
