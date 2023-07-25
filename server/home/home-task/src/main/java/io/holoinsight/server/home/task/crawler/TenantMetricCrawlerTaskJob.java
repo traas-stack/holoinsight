@@ -43,6 +43,8 @@ public class TenantMetricCrawlerTaskJob extends MonitorTaskJob {
       startCompare(jobArgs.tenant, jobArgs.workspace, jobArgs.product.getName(),
           jobArgs.metricInfoList);
     } catch (Exception e) {
+      log.error("TenantMetricCrawlerTaskJob error, " + jobArgs.product.getName() + ", "
+          + jobArgs.tenant + ", " + jobArgs.workspace + ", " + e.getMessage());
       throw new RuntimeException("TenantMetricCrawlerTaskJob error, " + jobArgs.product.getName()
           + ", " + jobArgs.tenant + ", " + jobArgs.workspace + ", " + e.getMessage(), e);
     }
@@ -55,8 +57,10 @@ public class TenantMetricCrawlerTaskJob extends MonitorTaskJob {
     if (CollectionUtils.isEmpty(outerList)) {
       return;
     }
+    log.info("[crawlerTask][{}] [{}], outerList [{}]", product, tenant, outerList.size());
     StopWatch stopWatch = new StopWatch();
     Map<String, Pair<Long, MetricInfo>> fromDbMap = getFromDb(tenant, workspace, product);
+    log.info("[crawlerTask][{}] [{}], fromDbMap [{}]", product, tenant, fromDbMap.size());
 
     List<MetricInfo> createList = new ArrayList<>();
     Set<Long> existed = new HashSet<>();

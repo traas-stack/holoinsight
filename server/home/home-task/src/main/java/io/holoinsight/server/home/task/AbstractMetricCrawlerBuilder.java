@@ -28,6 +28,7 @@ public abstract class AbstractMetricCrawlerBuilder implements MetricCrawlerBuild
   @Override
   public List<MetricInfo> buildEntity(IntegrationProductDTO integrationProduct) {
     List<MetricInfo> metricInfoList = new ArrayList<>();
+    log.info("[crawlerTask][{}], outer start", integrationProduct.getName());
     List<MetricInfoModel> metricInfoModels = getMetricInfoModel(integrationProduct.getName());
     if (CollectionUtils.isEmpty(metricInfoModels))
       return metricInfoList;
@@ -44,6 +45,8 @@ public abstract class AbstractMetricCrawlerBuilder implements MetricCrawlerBuild
         metricInfoList.addAll(list);
       }
     }
+    log.info("[crawlerTask][{}][{}], outer end", integrationProduct.getName(),
+        metricInfoList.size());
     return metricInfoList;
   }
 
