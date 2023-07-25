@@ -22,17 +22,11 @@ public abstract class RecordDO implements Serializable {
 
   private static final long serialVersionUID = -2175475836786269673L;
 
-  public static final String TIMESTAMP = "_timestamp";
-
-  public static final String TIMESTAMP_2 = "@timestamp";
+  public static final String TIMESTAMP = "@timestamp";
 
   @Column(name = TIMESTAMP)
   @JsonProperty(TIMESTAMP)
   private long timestamp;
-
-  @Column(name = TIMESTAMP_2)
-  @JsonProperty(TIMESTAMP_2)
-  private long timestamp2;
 
   public abstract String indexName();
 }
