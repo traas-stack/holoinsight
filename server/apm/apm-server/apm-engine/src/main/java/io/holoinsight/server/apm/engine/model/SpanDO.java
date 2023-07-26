@@ -103,7 +103,6 @@ public class SpanDO extends RecordDO {
   public static SpanDO fromSpan(Span span, Resource resource) {
     SpanDO spanEsDO = new SpanDO();
     spanEsDO.setTimestamp(TimeUtils.unixNano2MS(span.getEndTimeUnixNano()));
-    spanEsDO.setTimestamp2(TimeUtils.unixNano2MS(span.getEndTimeUnixNano()));
     spanEsDO.setStartTime(TimeUtils.unixNano2MS(span.getStartTimeUnixNano()));
     spanEsDO.setEndTime(TimeUtils.unixNano2MS(span.getEndTimeUnixNano()));
     spanEsDO.setTraceId(span.getTraceId());
