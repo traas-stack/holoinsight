@@ -4,6 +4,7 @@
 package io.holoinsight.server.home.biz.service.impl;
 
 import io.holoinsight.server.home.biz.service.IntegrationGeneratedService;
+import io.holoinsight.server.home.common.util.EventBusHolder;
 import io.holoinsight.server.home.common.util.StringUtil;
 import io.holoinsight.server.home.dal.converter.IntegrationGeneratedConverter;
 import io.holoinsight.server.home.dal.mapper.IntegrationGeneratedMapper;
@@ -15,6 +16,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -40,6 +42,7 @@ public class IntegrationGeneratedServiceImpl
   @Override
   public void update(IntegrationGeneratedDTO integrationGeneratedDTO) {
     updateById(integrationGeneratedConverter.dtoToDO(integrationGeneratedDTO));
+    EventBusHolder.post(integrationGeneratedDTO);
   }
 
   @Override
@@ -83,5 +86,29 @@ public class IntegrationGeneratedServiceImpl
     }
     map.put("name", name);
     return integrationGeneratedConverter.dosToDTOs(listByMap(map));
+  }
+
+  @Override
+  public IntegrationGeneratedDTO generated(String tenant, String workspace, String name,
+      String item, String product, Map<String, Object> config) {
+    IntegrationGeneratedDTO integrationGenerated = new IntegrationGeneratedDTO();
+    {
+      integrationGenerated.setTenant(tenant);
+      integrationGenerated.setWorkspace(workspace);
+      integrationGenerated.setName(name);
+      integrationGenerated.setProduct(product);
+      integrationGenerated.setItem(item);
+      integrationGenerated.setConfig(config);
+
+      integrationGenerated.setDeleted(false);
+      integrationGenerated.setCustom(false);
+      integrationGenerated.setGmtCreate(new Date());
+      integrationGenerated.setGmtModified(new Date());
+      integrationGenerated.setCreator("system");
+      integrationGenerated.setModifier("system");
+
+    }
+
+    return integrationGenerated;
   }
 }

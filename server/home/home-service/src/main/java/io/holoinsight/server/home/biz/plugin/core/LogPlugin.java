@@ -126,7 +126,7 @@ public class LogPlugin extends AbstractLocalIntegrationPlugin<LogPlugin> {
       if (CollectionUtils.isEmpty(customPluginConf.collectMetrics))
         continue;
 
-      saveMetricInfo(customPluginConf, config.getPeriodType(), integrationPluginDTO.getName(),
+      saveMetricInfo(customPluginConf, config.getPeriodType(), integrationPluginDTO.tenant,
           integrationPluginDTO.workspace, integrationPluginDTO.product, config.name,
           integrationPluginDTO.status);
 

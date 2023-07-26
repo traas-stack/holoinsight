@@ -4,7 +4,6 @@
 package io.holoinsight.server.home.task;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -25,6 +24,7 @@ import io.holoinsight.server.home.biz.service.IntegrationGeneratedService;
 import io.holoinsight.server.home.biz.service.IntegrationPluginService;
 import io.holoinsight.server.home.biz.service.MetaService;
 import io.holoinsight.server.home.biz.service.MetaService.AppModel;
+import io.holoinsight.server.home.biz.service.TenantInitService;
 import io.holoinsight.server.home.biz.service.TenantOpsService;
 import io.holoinsight.server.home.common.model.TaskEnum;
 import io.holoinsight.server.home.common.util.cache.local.CommonLocalCache;
@@ -72,6 +72,9 @@ public class TenantIntegrationGeneratedTask extends AbstractMonitorTask {
 
   @Autowired
   private TenantOpsService tenantOpsService;
+
+  @Autowired
+  private TenantInitService tenantInitService;
 
   @Autowired
   private MetaService metaService;
@@ -182,24 +185,26 @@ public class TenantIntegrationGeneratedTask extends AbstractMonitorTask {
 
       for (AppModel appModel : dbApps) {
         if (appModel.getMachineType().equalsIgnoreCase("VM")) {
-          generateds.add(generated(ops.getTenant(), appModel.getWorkspace(), appModel.getApp(),
-              "vmsystem", "System", new HashMap<>()));
+          generateds.add(integrationGeneratedService.generated(ops.getTenant(),
+              appModel.getWorkspace(), appModel.getApp(), "vmsystem", "System", new HashMap<>()));
         } else {
-          generateds.add(generated(ops.getTenant(), appModel.getWorkspace(), appModel.getApp(),
-              "podsystem", "System", new HashMap<>()));
+          generateds.add(integrationGeneratedService.generated(ops.getTenant(),
+              appModel.getWorkspace(), appModel.getApp(), "podsystem", "System", new HashMap<>()));
         }
-        generateds.add(generated(ops.getTenant(), appModel.getWorkspace(), appModel.getApp(),
-            "portcheck", "PortCheck", new HashMap<>()));
-        generateds.add(generated(ops.getTenant(), appModel.getWorkspace(), appModel.getApp(),
-            "logpattern", "LogPattern", new HashMap<>()));
+        generateds.add(integrationGeneratedService.generated(ops.getTenant(),
+            appModel.getWorkspace(), appModel.getApp(), "portcheck", "PortCheck", new HashMap<>()));
+        generateds
+            .add(integrationGeneratedService.generated(ops.getTenant(), appModel.getWorkspace(),
+                appModel.getApp(), "logpattern", "LogPattern", new HashMap<>()));
 
         Map<String, String> dictMap = MetaDictUtil.getValue(INTEGRATION_CONFIG,
             INTEGRATION_LOCAL_PRODUCT, new TypeToken<Map<String, String>>() {});
         if (CollectionUtils.isEmpty(dictMap))
           continue;
         for (Map.Entry<String, String> dict : dictMap.entrySet()) {
-          generateds.add(generated(ops.getTenant(), appModel.getWorkspace(), appModel.getApp(),
-              dict.getValue(), dict.getKey(), new HashMap<>()));
+          generateds
+              .add(integrationGeneratedService.generated(ops.getTenant(), appModel.getWorkspace(),
+                  appModel.getApp(), dict.getValue(), dict.getKey(), new HashMap<>()));
         }
       }
 
@@ -243,8 +248,9 @@ public class TenantIntegrationGeneratedTask extends AbstractMonitorTask {
             if (appItemSets.contains(uk))
               continue;
 
-            generateds.add(generated(ops.getTenant(), integrationPluginDTO.getWorkspace(), app,
-                integrationPlugin.name, integrationPluginDTO.getProduct(), new HashMap<>()));
+            generateds.add(integrationGeneratedService.generated(ops.getTenant(),
+                integrationPluginDTO.getWorkspace(), app, integrationPlugin.name,
+                integrationPluginDTO.getProduct(), new HashMap<>()));
 
             appItemSets.add(uk);
           }
@@ -253,35 +259,21 @@ public class TenantIntegrationGeneratedTask extends AbstractMonitorTask {
       }
     }
 
+    List<IntegrationGeneratedDTO> extraGeneratedLists = tenantInitService.getExtraGeneratedLists();
+    if (!CollectionUtils.isEmpty(extraGeneratedLists)) {
+      generateds.addAll(extraGeneratedLists);
+    }
+
     for (IntegrationGeneratedDTO generated : generateds) {
+      if (!tenantInitService.checkIntegrationWorkspace(generated.workspace)) {
+        continue;
+      }
       dtoMap.put(String.format("%s_%s_%s_%s_%s", generated.getTenant(), generated.getWorkspace(),
           generated.getProduct(), generated.getItem(), generated.getName()), generated);
     }
     return dtoMap;
   }
 
-  private IntegrationGeneratedDTO generated(String tenant, String workspace, String name,
-      String item, String product, Map<String, Object> config) {
-    IntegrationGeneratedDTO integrationGenerated = new IntegrationGeneratedDTO();
-    {
-      integrationGenerated.setTenant(tenant);
-      integrationGenerated.setWorkspace(workspace);
-      integrationGenerated.setName(name);
-      integrationGenerated.setProduct(product);
-      integrationGenerated.setItem(item);
-      integrationGenerated.setConfig(config);
-
-      integrationGenerated.setDeleted(false);
-      integrationGenerated.setCustom(false);
-      integrationGenerated.setGmtCreate(new Date());
-      integrationGenerated.setGmtModified(new Date());
-      integrationGenerated.setCreator("system");
-      integrationGenerated.setModifier("system");
-
-    }
-
-    return integrationGenerated;
-  }
 
   private Set<String> getCollectApps(CloudMonitorRange cloudMonitorRange) {
 

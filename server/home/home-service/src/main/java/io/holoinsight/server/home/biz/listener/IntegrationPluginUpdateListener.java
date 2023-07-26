@@ -70,7 +70,7 @@ public class IntegrationPluginUpdateListener {
     }
   }
 
-  private List<Long> upsertGaea(IntegrationPluginDTO integrationPluginDTO) {
+  public List<Long> upsertGaea(IntegrationPluginDTO integrationPluginDTO) {
     GaeaCollectConfigDTO gaeaCollectConfigDTO = new GaeaCollectConfigDTO();
     gaeaCollectConfigDTO.tenant = tenantInitService.getTsdbTenant(integrationPluginDTO.tenant);
     gaeaCollectConfigDTO.workspace = integrationPluginDTO.workspace;
