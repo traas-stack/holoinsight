@@ -5,7 +5,6 @@ package io.holoinsight.server.home.biz.common;
 
 import io.holoinsight.server.home.biz.plugin.config.MetaLabel;
 import io.holoinsight.server.home.dal.model.dto.CloudMonitorRange;
-import io.holoinsight.server.home.dal.model.dto.GaeaCollectConfigDTO;
 import io.holoinsight.server.home.dal.model.dto.GaeaCollectConfigDTO.GaeaCollectRange;
 import org.springframework.util.CollectionUtils;
 
@@ -31,6 +30,18 @@ public class GaeaConvertUtil {
   public static GaeaCollectRange convertCentralCollectRange(CloudMonitorRange cloudMonitorRange) {
     GaeaCollectRange gaeaCollectRange = new GaeaCollectRange();
     gaeaCollectRange.setType("central");
+    gaeaCollectRange.setCloudmonitor(cloudMonitorRange);
+    return gaeaCollectRange;
+  }
+
+  public static GaeaCollectRange convertCollectRange(String tableName, List<String> appList) {
+    GaeaCollectRange gaeaCollectRange = new GaeaCollectRange();
+    gaeaCollectRange.setType("cloudmonitor");
+    CloudMonitorRange cloudMonitorRange = new CloudMonitorRange();
+    cloudMonitorRange.setTable(tableName);
+    Map<String, List<String>> conditionMap = new HashMap<>();
+    conditionMap.put("app", appList);
+    cloudMonitorRange.setCondition(Collections.singletonList(conditionMap));
     gaeaCollectRange.setCloudmonitor(cloudMonitorRange);
     return gaeaCollectRange;
   }
