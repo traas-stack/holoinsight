@@ -356,7 +356,7 @@ public class SpanEsStorage extends RecordEsStorage<SpanDO> implements SpanStorag
           Span missingSpan = new Span();
           missingSpan.setSpanId(parentSpanId);
           missingSpan.setTraceId(span.getTraceId());
-          missingSpan.setEndpointName("UNKNOWN");
+          missingSpan.setEndpointName(Const.NOT_APPLICABLE);
           missingSpan.setParentSpanId("");
           missingSpan.setType("");
           // sofatracer spanId -> parentSpanId: 0.1.1 -> 0.1
@@ -380,7 +380,10 @@ public class SpanEsStorage extends RecordEsStorage<SpanDO> implements SpanStorag
    * @param children
    */
   private void findChildren1(List<Span> spans, Span parentSpan, List<TraceTree> children) {
-    spans.forEach(span -> {
+    long parentStartTime = Long.MAX_VALUE;
+    long parentEndTime = Long.MIN_VALUE;
+
+    for (Span span : spans) {
       if (span.getParentSpanId().equals(parentSpan.getSpanId())) {
         TraceTree child = new TraceTree();
         child.setSpan(span);
@@ -392,8 +395,17 @@ public class SpanEsStorage extends RecordEsStorage<SpanDO> implements SpanStorag
         if (!span.getParentSpanId().equals(span.getSpanId())) {
           findChildren1(spans, span, newChildren);
         }
+        parentStartTime = Math.min(parentStartTime, span.getStartTime());
+        parentEndTime = Math.max(parentEndTime, span.getEndTime());
       }
-    });
+    }
+
+    // The missing span needs to fill in the start and end time,
+    // and the front-end drawing time axis depends on the time field
+    if (Const.NOT_APPLICABLE.equals(parentSpan.getEndpointName())) {
+      parentSpan.setStartTime(parentStartTime);
+      parentSpan.setEndTime(parentEndTime);
+    }
   }
 
   public static BoolQueryBuilder buildQuery(final String tenant, String serviceName,

@@ -234,13 +234,17 @@ public class RelationAnalysis {
       if (!RefType.CrossProcess.name().equals(refType)) {
         continue;
       }
+      AnyValue networkAddress = linkAttrMap.get(Const.SW_REF_NETWORK_ADDRESSUSEDATPEER);
+      AnyValue serviceInstance = resourceAttrMap.get(Const.OTLP_RESOURCE_SERVICE_INSTANCE_NAME);
 
-      String networkAddressUsedAtPeer =
-          linkAttrMap.get(Const.SW_REF_NETWORK_ADDRESSUSEDATPEER).getStringValue();
+      if (networkAddress == null || serviceInstance == null) {
+        continue;
+      }
+      String networkAddressUsedAtPeer = networkAddress.getStringValue();
+      String instanceName = serviceInstance.getStringValue();
       String serviceName =
           resourceAttrMap.get(ResourceAttributes.SERVICE_NAME.getKey()).getStringValue();
-      String instanceName =
-          resourceAttrMap.get(Const.OTLP_RESOURCE_SERVICE_INSTANCE_NAME).getStringValue();
+
 
       final NetworkAddressMapping networkAddressMapping = new NetworkAddressMapping();
       networkAddressMapping.setAddress(networkAddressUsedAtPeer);
