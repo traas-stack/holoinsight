@@ -64,6 +64,14 @@ public class RPCTrafficSourceBuilder extends EndpointSourceBuilder {
   }
 
   public ServiceRelation toServiceRelation() {
+    if (StringUtils.isEmpty(sourceServiceName) || StringUtils.isEmpty(destServiceName)) {
+      log.warn(
+          "[apm] build service relation error, sourceServiceName or destServiceName is empty, traceId: {},"
+              + " sourceServiceName: {}, destServiceName: {}",
+          traceId, sourceServiceName, destServiceName);
+      return null;
+    }
+
     ServiceRelation serviceRelation = serviceRelation();
     setServiceRelation(serviceRelation);
     serviceRelation.prepare();
