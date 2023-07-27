@@ -59,9 +59,6 @@ public class CacheAlertTask {
   private CacheData cacheData;
 
   @Autowired
-  private CacheAlertConfig cacheAlertConfig;
-
-  @Autowired
   private CustomPluginService customPluginService;
 
   @Resource
@@ -79,14 +76,18 @@ public class CacheAlertTask {
 
   private void getAlarmTaskCache() {
     try {
-      if (!"false".equals(this.cacheAlertConfig.getConfig("alarm_switch"))) {
-        loadLogMetric();
-        // Get alert detection tasks
-        List<AlarmRule> alarmRuleDOS = getAlarmRuleListByPage();
-        ComputeTaskPackage computeTaskPackage = convert(alarmRuleDOS);
-        TaskQueueManager.getInstance().offer(computeTaskPackage);
-      }
-
+      loadLogMetric();
+      LOGGER.info("complete to loadLogMetric, logPatternCache size {} logSampleCache size {}",
+          logPatternCache.size(), logSampleCache.size());
+      // Get alert detection tasks
+      List<AlarmRule> alarmRuleDOS = getAlarmRuleListByPage();
+      LOGGER.info("complete to getAlarmRuleListByPage, AlarmRule size {} ", alarmRuleDOS.size());
+      ComputeTaskPackage computeTaskPackage = convert(alarmRuleDOS);
+      LOGGER.info("complete to convert, computeTaskPackage inspectConfigs size {} ",
+          CollectionUtils.isEmpty(computeTaskPackage.getInspectConfigs()) ? 0
+              : computeTaskPackage.getInspectConfigs().size());
+      TaskQueueManager.getInstance().offer(computeTaskPackage);
+      LOGGER.info("complete to offer TaskQueueManager");
     } catch (Exception e) {
       LOGGER.error("InspectCtlParam Sync Exception", e);
     }
