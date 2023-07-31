@@ -6,6 +6,8 @@ package io.holoinsight.server.home.web.controller;
 import io.holoinsight.server.home.biz.service.CustomPluginService;
 import io.holoinsight.server.home.biz.service.DashboardService;
 import io.holoinsight.server.home.biz.service.FolderService;
+import io.holoinsight.server.home.biz.service.IntegrationProductService;
+import io.holoinsight.server.home.biz.service.TenantInitService;
 import io.holoinsight.server.home.biz.service.UserFavoriteService;
 import io.holoinsight.server.home.biz.service.UserOpLogService;
 import io.holoinsight.server.home.common.util.MonitorException;
@@ -21,6 +23,7 @@ import io.holoinsight.server.home.dal.model.Folder;
 import io.holoinsight.server.home.dal.model.OpType;
 import io.holoinsight.server.home.dal.model.UserFavorite;
 import io.holoinsight.server.home.dal.model.dto.CustomPluginDTO;
+import io.holoinsight.server.home.dal.model.dto.IntegrationProductDTO;
 import io.holoinsight.server.home.facade.page.MonitorPageRequest;
 import io.holoinsight.server.home.facade.page.MonitorPageResult;
 import io.holoinsight.server.home.web.common.ManageCallback;
@@ -29,7 +32,10 @@ import io.holoinsight.server.home.web.controller.model.FavRequest;
 import io.holoinsight.server.home.web.interceptor.MonitorScopeAuth;
 import io.holoinsight.server.common.J;
 import io.holoinsight.server.common.JsonResult;
+import io.holoinsight.server.meta.common.model.QueryExample;
+import io.holoinsight.server.meta.facade.service.DataClientService;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -59,6 +65,15 @@ public class UserFavoriteFacadeImpl extends BaseFacade {
 
   @Autowired
   private UserFavoriteService userFavoriteService;
+
+  @Autowired
+  private DataClientService dataClientService;
+
+  @Autowired
+  private TenantInitService tenantInitService;
+
+  @Autowired
+  private IntegrationProductService integrationProductService;
 
   @Autowired
   private CustomPluginService customPluginService;
@@ -110,9 +125,41 @@ public class UserFavoriteFacadeImpl extends BaseFacade {
             break;
           case "infra":
           case "app":
+            QueryExample queryExample = new QueryExample();
+            Map<String, Object> map = new HashMap<>();
+            if (userFavorite.type.equalsIgnoreCase("infra")) {
+              map.put("hostname", userFavorite.name);
+              queryExample.setParams(map);
+              Map<String, String> conditions = tenantInitService
+                  .getTenantWorkspaceMetaConditions(RequestContext.getContext().ms.getWorkspace());
+              if (!CollectionUtils.isEmpty(conditions)) {
+                queryExample.getParams().putAll(conditions);
+              }
+              List<Map<String, Object>> list = dataClientService.queryByExample(
+                  tenantInitService.getTenantServerTable(ms.getTenant()), queryExample);
+              if (CollectionUtils.isEmpty(list)) {
+                throw new MonitorException(String.format("can not find record, %s-%s",
+                    userFavorite.type, userFavorite.relateId));
+              }
+            } else {
+              map.put("app", userFavorite.name);
+              if (StringUtils.isNotBlank(ms.getWorkspace())) {
+                queryExample.getParams().put("_workspace", ms.getWorkspace());
+              }
+              List<Map<String, Object>> list = dataClientService.queryByExample(
+                  tenantInitService.getTenantAppTable(ms.getTenant()), queryExample);
+              if (CollectionUtils.isEmpty(list)) {
+                throw new MonitorException(String.format("can not find record, %s-%s",
+                    userFavorite.type, userFavorite.relateId));
+              }
+            }
+            break;
           case "integration":
-            // did not need check
-            log.info("can not find record, {}, {}", userFavorite.type, userFavorite.relateId);
+            IntegrationProductDTO byName = integrationProductService.findByName(userFavorite.name);
+            if (null == byName) {
+              throw new MonitorException(String.format("can not find record, %s-%s",
+                  userFavorite.type, userFavorite.relateId));
+            }
             break;
           default:
             throw new MonitorException(String.format("can not find record, %s-%s",

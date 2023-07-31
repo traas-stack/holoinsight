@@ -52,7 +52,7 @@ public class SqlDataCoreService extends AbstractDataCoreService {
 
   public static final int BATCH_INSERT_SIZE = 5;
   public static final int LIMIT = 1000;
-  public static final int PERIOD = 20;
+  public static final int PERIOD = 10;
   public static final int DELETED = 1;
   public static final String EMPTY_VALUE = "NULL";
   public static final int CLEAN_TASK_PERIOD = 3600;
@@ -69,7 +69,7 @@ public class SqlDataCoreService extends AbstractDataCoreService {
   private AtomicBoolean syncing = new AtomicBoolean(false);
   private static final long SYNC_INTERVAL = PERIOD * 1000;
   private static final long LOG_INTERVAL = 60 * 1000;
-  private static final long DEFAULT_DEL_DURATION = 7 * 24 * 60 * 60 * 1000;
+  private static final long DEFAULT_DEL_DURATION = 3 * 24 * 60 * 60 * 1000;
 
   public static final ScheduledThreadPoolExecutor scheduledExecutor =
       new ScheduledThreadPoolExecutor(2, r -> new Thread(r, "meta-sync-scheduler"));

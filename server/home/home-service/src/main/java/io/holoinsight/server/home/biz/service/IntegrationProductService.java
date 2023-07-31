@@ -16,6 +16,8 @@ public interface IntegrationProductService extends IService<IntegrationProduct> 
 
   IntegrationProductDTO findById(Long id);
 
+  IntegrationProductDTO findByName(String name);
+
   List<IntegrationProductDTO> findByMap(Map<String, Object> columnMap);
 
   IntegrationProductDTO create(IntegrationProductDTO IntegrationProductDTO);
