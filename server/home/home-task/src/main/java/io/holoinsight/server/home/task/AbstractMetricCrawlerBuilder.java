@@ -40,7 +40,8 @@ public abstract class AbstractMetricCrawlerBuilder implements MetricCrawlerBuild
       if (!CollectionUtils.isEmpty(model.getMetricInfoList())) {
         metricInfoList.addAll(model.getMetricInfoList());
       }
-      List<MetricInfo> list = getMetricInfoList(model.getMetric(), model.getTags());
+      List<MetricInfo> list =
+          getMetricInfoList(model.getMetric(), model.getTags(), model.getMetricInfoTemplate());
       if (!CollectionUtils.isEmpty(list)) {
         metricInfoList.addAll(list);
       }
@@ -50,7 +51,8 @@ public abstract class AbstractMetricCrawlerBuilder implements MetricCrawlerBuild
     return metricInfoList;
   }
 
-  protected abstract List<MetricInfo> getMetricInfoList(String metric, List<String> tags);
+  protected abstract List<MetricInfo> getMetricInfoList(String metric, List<String> tags,
+      MetricInfo metricInfoTemplate);
 
 
   public List<MetricInfoModel> getMetricInfoModel(String product) {
@@ -68,6 +70,7 @@ public abstract class AbstractMetricCrawlerBuilder implements MetricCrawlerBuild
     public String metric;
     public List<String> tags = new ArrayList<>();
     public List<MetricInfo> metricInfoList = new ArrayList<>();
+    public MetricInfo metricInfoTemplate;
   }
 
   public MetricInfo genMetricInfo(String tenant, String workspace, String organization,

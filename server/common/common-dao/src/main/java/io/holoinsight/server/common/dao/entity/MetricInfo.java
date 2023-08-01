@@ -50,6 +50,8 @@ public class MetricInfo {
 
   public boolean deleted;
 
+  public String storageTenant;
+
   @TableField(value = "`gmt_create`")
   public Date gmtCreate;
 

@@ -25,7 +25,8 @@ import static io.holoinsight.server.home.task.MetricCrawlerConstant.*;
 public class SystemMetricCrawlerBuilder extends AbstractMetricCrawlerBuilder {
 
   @Override
-  protected List<MetricInfo> getMetricInfoList(String metric, List<String> tags) {
+  protected List<MetricInfo> getMetricInfoList(String metric, List<String> tags,
+      MetricInfo metricInfoTemplate) {
     List<MetricInfo> metricInfoList = new ArrayList<>();
     metricInfoList.add(genMetricInfo(GLOBAL_TENANT, GLOBAL_WORKSPACE, GLOBAL_ORGANIZATION, "system",
         "CPU", "cpu_util", "k8s_pod_cpu_util", "cpu 使用率", PERCENT_UNIT, 60, tags));
