@@ -94,13 +94,14 @@ public class EsModelInstaller implements ModelInstaller {
     IndicesClient indicesClient = client().indices();
     try {
       Mappings mappings = createMapping(model);
+      Settings settings = createSettings(model);
       boolean shouldUpdateTemplate = !isExists(model);
       shouldUpdateTemplate =
-          shouldUpdateTemplate || !structures.containsStructure(tableName, mappings);
+          shouldUpdateTemplate || !structures.containsStructure(tableName, mappings)
+              || !settings.equals(structures.getSettings(tableName));
       log.info("[apm] model={}, shouldUpdateTemplate={}", model.getName(), shouldUpdateTemplate);
       if (shouldUpdateTemplate) {
         structures.putStructure(tableName, mappings);
-        Settings settings = createSettings(model);
         CompressedXContent mappingCompressedXContent =
             new CompressedXContent(ApmGsonUtils.apmGson().toJson(mappings));
         PutComposableIndexTemplateRequest putComposableIndexTemplateRequest =
@@ -147,7 +148,10 @@ public class EsModelInstaller implements ModelInstaller {
     // for different versions of elasticsearch
     Settings settings = Settings.builder().put("index.number_of_replicas", 1)
         .put("number_of_replicas", 1).put("index.number_of_shards", 5).put("number_of_shards", 5)
-        .put("index.refresh_interval", "10s").put("refresh_interval", "10s").build();
+        .put("index.refresh_interval", "10s").put("refresh_interval", "10s")
+        .put("index.translog.durability", "async").put("index.translog.sync_interval", "5s")
+        .build();
+    log.info("[apm] model settings, model={}, settings={}", model.getName(), settings.toString());
     return settings;
   }
 
