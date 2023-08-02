@@ -131,7 +131,7 @@ public class UserFavoriteFacadeImpl extends BaseFacade {
               map.put("hostname", userFavorite.name);
               queryExample.setParams(map);
               Map<String, String> conditions = tenantInitService
-                  .getTenantWorkspaceMetaConditions(RequestContext.getContext().ms.getWorkspace());
+                  .getTenantWorkspaceMetaConditions(ms.getTenant(), ms.getWorkspace());
               if (!CollectionUtils.isEmpty(conditions)) {
                 queryExample.getParams().putAll(conditions);
               }

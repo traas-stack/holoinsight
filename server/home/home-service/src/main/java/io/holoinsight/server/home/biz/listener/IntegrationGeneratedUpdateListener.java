@@ -13,6 +13,7 @@ import io.holoinsight.server.home.common.util.EventBusHolder;
 import io.holoinsight.server.home.dal.model.dto.IntegrationGeneratedDTO;
 import io.holoinsight.server.home.dal.model.dto.IntegrationPluginDTO;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
@@ -27,7 +28,10 @@ import java.util.Map;
  * @version 1.0: IntegrationGeneratedUpdateListener.java, Date: 2023-07-26 Time: 10:57
  */
 @Component
-public class IntegrationGeneratedUpdateListener extends IntegrationPluginUpdateListener {
+public class IntegrationGeneratedUpdateListener {
+
+  @Autowired
+  private IntegrationPluginUpdateListener integrationPluginUpdateListener;
 
   @PostConstruct
   void register() {
@@ -44,7 +48,7 @@ public class IntegrationGeneratedUpdateListener extends IntegrationPluginUpdateL
     if (StringUtils.isBlank(integrationPluginDTO.json)
         || StringUtils.isBlank(integrationPluginDTO.type))
       return;
-    List<Long> upsert = upsertGaea(integrationPluginDTO);
+    List<Long> upsert = integrationPluginUpdateListener.upsertGaea(integrationPluginDTO);
     notify(upsert);
   }
 
