@@ -45,6 +45,8 @@ public class MetricInfoDTO {
   public String ref;
   public String extInfo;
 
+  public String storageTenant;
+
   public Date gmtCreate;
 
   public Date gmtModified;
