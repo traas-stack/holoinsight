@@ -105,10 +105,7 @@ public class IntegrationPluginServiceImpl extends
     IntegrationPlugin model = integrationPluginConverter.dtoToDO(integrationPluginDTO);
     save(model);
     IntegrationPluginDTO integrationPlugin = integrationPluginConverter.doToDTO(model);
-
     EventBusHolder.post(integrationPlugin);
-
-
     return integrationPlugin;
   }
 

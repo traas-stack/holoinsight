@@ -221,7 +221,7 @@ public class SearchFacadeImpl extends BaseFacade {
         Pattern.compile(String.format("^.*%s.*$", keyword), Pattern.CASE_INSENSITIVE));
     if (StringUtils.isNotBlank(workspace)) {
       Map<String, String> conditions =
-          tenantInitService.getTenantWorkspaceMetaConditions(workspace);
+          tenantInitService.getTenantWorkspaceMetaConditions(tenant, workspace);
       if (!CollectionUtils.isEmpty(conditions)) {
         conditions.forEach((k, v) -> queryExample.getParams().put(k, v));
       }

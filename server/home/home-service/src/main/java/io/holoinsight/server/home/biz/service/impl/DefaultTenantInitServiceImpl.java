@@ -53,17 +53,18 @@ public class DefaultTenantInitServiceImpl implements TenantInitService {
   }
 
   @Override
-  public Boolean checkConditions(String workspace, String metric, List<QueryFilter> filters) {
+  public Boolean checkConditions(String tenant, String workspace, String metric,
+      List<QueryFilter> filters) {
     return true;
   }
 
   @Override
-  public Map<String, String> getTenantWorkspaceMetaConditions(String workspace) {
+  public Map<String, String> getTenantWorkspaceMetaConditions(String tenant, String workspace) {
     return new HashMap<>();
   }
 
   @Override
-  public List<QueryFilter> getTenantFilters(String workspace) {
+  public List<QueryFilter> getTenantFilters(String tenant, String workspace) {
     return new ArrayList<>();
   }
 
@@ -73,7 +74,7 @@ public class DefaultTenantInitServiceImpl implements TenantInitService {
   }
 
   @Override
-  public CloudMonitorRange getCollectMonitorRange(String table, String workspace,
+  public CloudMonitorRange getCollectMonitorRange(String table, String tenant, String workspace,
       List<String> strings, MetaLabel metaLabel) {
     return GaeaConvertUtil.convertCloudMonitorRange(table, metaLabel, strings);
   }
