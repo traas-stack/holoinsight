@@ -6,4 +6,4 @@
 -- Table structure for metric_info
 -- ----------------------------
 ALTER TABLE `metric_info`
-    ADD COLUMN `storage_tenant` VARCHAR(200) NULL AFTER `ext_info`;
+    ADD COLUMN `storage_tenant` VARCHAR(200) NULL DEFAULT NULL COMMENT 'storage tenant' AFTER `ext_info`;
