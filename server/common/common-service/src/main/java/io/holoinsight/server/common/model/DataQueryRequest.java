@@ -54,6 +54,7 @@ public class DataQueryRequest {
     // whether the APM metrics is obtained by materializing them to the metric storage in advance
     // instead of post-calculation
     public boolean apmMaterialized;
+    public String ql;
   }
 
   @Data

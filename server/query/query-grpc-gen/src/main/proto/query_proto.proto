@@ -49,6 +49,8 @@ message Datasource {
   optional string fillPolicy = 10;
   // whether the APM metrics is obtained by materializing them to the metric storage in advance instead of post-calculation
   bool apmMaterialized = 11;
+  // query language
+  optional string ql = 12;
 }
 
 message SlidingWindow{
