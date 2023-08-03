@@ -3,6 +3,22 @@
  */
 package io.holoinsight.server.home.biz.service.impl;
 
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.google.gson.reflect.TypeToken;
+
+import io.holoinsight.server.common.J;
 import io.holoinsight.server.home.biz.service.OpenmetricsScraperService;
 import io.holoinsight.server.home.common.util.EventBusHolder;
 import io.holoinsight.server.home.common.util.StringUtil;
@@ -13,22 +29,14 @@ import io.holoinsight.server.home.dal.model.dto.CloudMonitorRange;
 import io.holoinsight.server.home.dal.model.dto.OpenmetricsScraperDTO;
 import io.holoinsight.server.home.facade.page.MonitorPageRequest;
 import io.holoinsight.server.home.facade.page.MonitorPageResult;
-import io.holoinsight.server.common.J;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.google.gson.reflect.TypeToken;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import io.holoinsight.server.registry.model.OpenmetricsScraperTask;
 
 @Service
 public class OpenmetricsScraperServiceImpl extends
     ServiceImpl<OpenmetricsScraperMapper, OpenmetricsScraper> implements OpenmetricsScraperService {
+
+  private static final Type RELABEL_CONFIG_LIST_TYPE =
+      new TypeToken<List<OpenmetricsScraperTask.RelabelConfig>>() {}.getType();
 
   @Autowired
   private OpenmetricsScraperConverter openmetricsScraperConverter;
@@ -70,18 +78,25 @@ public class OpenmetricsScraperServiceImpl extends
 
   @Override
   public OpenmetricsScraperDTO toDTO(OpenmetricsScraper model) {
-    if (model.getConf() == null) {
-      model.setConf(new HashMap<>());
+    Map<String, String> conf = model.getConf();
+    if (conf == null) {
+      conf = new HashMap<>();
+      model.setConf(conf);
     }
 
     OpenmetricsScraperDTO dto = openmetricsScraperConverter.doToDTO(model);
-    dto.setMetricsPath(model.getConf().get("metricsPath"));
-    dto.setSchema(model.getConf().get("schema"));
-    dto.setScrapeInterval(model.getConf().get("scrapeInterval"));
-    dto.setScrapeTimeout(model.getConf().get("scrapeTimeout"));
-    dto.setPort(model.getConf().get("port"));
-    dto.setCollectRanges(J.fromJson(model.getConf().get("collectRanges"),
-        (new TypeToken<CloudMonitorRange>() {}).getType()));
+    dto.setMetricsPath(conf.get("metricsPath"));
+    dto.setSchema(conf.get("schema"));
+    dto.setScrapeInterval(conf.get("scrapeInterval"));
+    dto.setScrapeTimeout(conf.get("scrapeTimeout"));
+    dto.setPort(conf.get("port"));
+
+    dto.setRelabelConfigs(J.fromJson(conf.get("relabelConfigs"), RELABEL_CONFIG_LIST_TYPE));
+    dto.setMetricRelabelConfigs(
+        J.fromJson(conf.get("metricRelabelConfigs"), RELABEL_CONFIG_LIST_TYPE));
+
+    dto.setCollectRanges(
+        J.fromJson(conf.get("collectRanges"), (new TypeToken<CloudMonitorRange>() {}).getType()));
     return dto;
   }
 
@@ -97,6 +112,8 @@ public class OpenmetricsScraperServiceImpl extends
     model.getConf().put("scrapeTimeout", dto.getScrapeTimeout());
     model.getConf().put("port", dto.getPort());
     model.getConf().put("collectRanges", J.toJson(dto.getCollectRanges()));
+    model.getConf().put("relabelConfigs", J.toJson(dto.getRelabelConfigs()));
+    model.getConf().put("metricRelabelConfigs", J.toJson(dto.getMetricRelabelConfigs()));
     return model;
   }
 
