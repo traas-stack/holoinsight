@@ -28,67 +28,67 @@ public class AlertNotifyRecord {
   private Long id;
 
   /**
-   * 创建时间
+   * gmtCreate
    */
   @Column(name = "gmt_create")
   private Date gmtCreate;
 
   /**
-   * 修改时间
+   * gmtModified
    */
   @Column(name = "gmt_modified")
   private Date gmtModified;
 
   /**
-   * 历史详情id
+   * alert history detail id
    */
   @Column(name = "history_detail_id")
   private Long historyDetailId;
 
   /**
-   * 历史id
+   * alert history id
    */
   @Column(name = "history_id")
   private Long historyId;
 
   /**
-   * 告警通知异常时间
+   * alert exception time
    */
   @Column(name = "notify_error_time")
   private Date notifyErrorTime;
 
   /**
-   * 告警是否成功
+   * alert success
    */
   @Column(name = "is_success")
   private Byte isSuccess;
 
   /**
-   * 通知渠道
+   * notify channel
    */
   @Column(name = "notify_channel")
   private String notifyChannel;
 
   /**
-   * 通知异常节点
+   * exception node
    */
   @Column(name = "notify_error_node")
   private String notifyErrorNode;
 
   /**
-   * 租户
+   * tenant
    */
   @Column(name = "tenant")
   private String tenant;
 
   /**
-   * 额外信息
+   * alert compute detail
    */
   @Column(name = "extra")
   private String extra;
 
   /**
-   * 运行环境
+   * envType
    */
   @Column(name = "env_type")
   private String envType;
@@ -98,7 +98,7 @@ public class AlertNotifyRecord {
   private String workspace;
 
   /**
-   * 告警规则名称
+   * alert rule name
    */
   @Column(name = "rule_name")
   private String ruleName;
@@ -106,6 +106,9 @@ public class AlertNotifyRecord {
   @Column(name = "unique_id")
   private String uniqueId;
 
+  /**
+   * notify target detail
+   */
   @Column(name = "notify_user")
   private String notifyUser;
 

@@ -116,18 +116,18 @@ public class AlertNotifyRecordServiceImpl extends
 
     page = page(page, wrapper);
 
-    MonitorPageResult<AlertNotifyRecordDTO> alertNotifyRecordDTO = new MonitorPageResult<>();
+    MonitorPageResult<AlertNotifyRecordDTO> pageResult = new MonitorPageResult<>();
 
     List<AlertNotifyRecordDTO> alertNotifyRecordDTOList = recordConverter(page.getRecords());
 
 
-    alertNotifyRecordDTO.setItems(alertNotifyRecordDTOList);
-    alertNotifyRecordDTO.setPageNum(pageRequest.getPageNum());
-    alertNotifyRecordDTO.setPageSize(pageRequest.getPageSize());
-    alertNotifyRecordDTO.setTotalCount(page.getTotal());
-    alertNotifyRecordDTO.setTotalPage(page.getPages());
+    pageResult.setItems(alertNotifyRecordDTOList);
+    pageResult.setPageNum(pageRequest.getPageNum());
+    pageResult.setPageSize(pageRequest.getPageSize());
+    pageResult.setTotalCount(page.getTotal());
+    pageResult.setTotalPage(page.getPages());
 
-    return alertNotifyRecordDTO;
+    return pageResult;
   }
 
   private List<AlertNotifyRecordDTO> recordConverter(List<AlertNotifyRecord> records) {

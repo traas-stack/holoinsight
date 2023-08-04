@@ -25,59 +25,59 @@ public class AlertNotifyRecordDTO {
   private String traceId;
 
   /**
-   * 创建时间
+   * gmtCreate
    */
   private Date gmtCreate;
 
   private Date gmtModified;
 
   /**
-   * 历史详情id
+   * alert history detail id
    */
   private Long historyDetailId;
 
   /**
-   * 历史id
+   * alert history id
    */
   private Long historyId;
 
   /**
-   * 告警通知异常时间
+   * alert exception time
    */
   private Date notifyErrorTime;
 
   /**
-   * 告警是否成功
+   * alert success
    */
   private Byte isSuccess;
 
   /**
-   * 通知渠道
+   * notify channel
    */
   private String notifyChannel;
 
   /**
-   * 通知渠道
+   * notify target detail
    */
   private String notifyUser;
 
   /**
-   * 通知异常节点
+   * exception node
    */
   private String notifyErrorNode;
 
   /**
-   * 租户
+   * tenant
    */
   private String tenant;
 
   /**
-   * 额外信息
+   * alert compute detail
    */
   private String extra;
 
   /**
-   * 运行环境
+   * env type
    */
   private String envType;
 
