@@ -258,7 +258,8 @@ public class GaeaSqlTaskUtil {
         }
         fromLog.setTime(timeParse);
       }
-      if (logParse.splitType.equalsIgnoreCase(json) && !jsonTimeSelect) {
+      if (StringUtils.isNotBlank(logParse.splitType) && logParse.splitType.equalsIgnoreCase(json)
+          && !jsonTimeSelect) {
         timeParse.setType("processTime");
         fromLog.setTime(timeParse);
       }
