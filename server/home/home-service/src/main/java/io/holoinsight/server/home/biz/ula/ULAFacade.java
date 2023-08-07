@@ -116,8 +116,9 @@ public class ULAFacade {
   }
 
   // 取某个scope的最高权限
-  public MonitorAuth getUserPowerPkg(MonitorUser user, MonitorScope ms) throws Throwable {
-    return getCurrentULA().getUserPowerPkg(user, ms);
+  public MonitorAuth getUserPowerPkg(HttpServletRequest req, MonitorUser user, MonitorScope ms)
+      throws Throwable {
+    return getCurrentULA().getUserPowerPkg(req, user, ms);
   }
 
   // 分析好cookie, 取回监控 user, 优先走本地校验

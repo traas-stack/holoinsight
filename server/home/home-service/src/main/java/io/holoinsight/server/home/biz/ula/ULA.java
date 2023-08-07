@@ -53,7 +53,7 @@ public interface ULA {
    * AUTH
    */
   // 查看一个租户下的权限
-  MonitorAuth getUserPowerPkg(MonitorUser user, MonitorScope ms);
+  MonitorAuth getUserPowerPkg(HttpServletRequest req, MonitorUser user, MonitorScope ms);
 
   // 是否是super用户
   void checkSuper(MonitorUser user) throws Throwable;

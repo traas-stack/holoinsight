@@ -61,6 +61,7 @@ public class GaeaSqlTaskUtil {
   private static final String leftRight = "LR";
   private static final String separator = "SEP";
   private static final String regexp = "REGEXP";
+  private static final String json = "JSON";
   private static final String dimColType = "DIM";
   private static final String valColType = "VALUE";
 
@@ -155,6 +156,9 @@ public class GaeaSqlTaskUtil {
             parse.setRegexp(new Log.Regexp());
             parse.getRegexp().setExpression(logParse.regexp.expression);
             break;
+          case json:
+            parse.setType("json");
+            break;
           default:
             parse.setType("none");
         }
@@ -225,6 +229,7 @@ public class GaeaSqlTaskUtil {
       timeParse.setType("auto");
       fromLog.setTime(timeParse);
 
+      boolean jsonTimeSelect = false;
       if (!CollectionUtils.isEmpty(splitCols)) {
         for (CustomPluginConf.SplitCol splitCol : splitCols) {
           if ("TIME".equals(splitCol.colType)) {
@@ -248,8 +253,13 @@ public class GaeaSqlTaskUtil {
             timeParse.setElect(buildElect(splitCol.rule, logParse.splitType));
             timeParse.setType("elect");
             timeParse.setFormat("golangLayout");
+            jsonTimeSelect = true;
           }
         }
+        fromLog.setTime(timeParse);
+      }
+      if (logParse.splitType.equalsIgnoreCase(json) && !jsonTimeSelect) {
+        timeParse.setType("processTime");
         fromLog.setTime(timeParse);
       }
     }
@@ -271,6 +281,7 @@ public class GaeaSqlTaskUtil {
 
         Where and = new Where();
         Elect elect = new Elect();
+        Where.In in = new Where.In();
         switch (w.type) {
           case leftRight:
             Elect.LeftRight leftRight = new Elect.LeftRight();
@@ -281,7 +292,6 @@ public class GaeaSqlTaskUtil {
             elect.setType("leftRight");
             elect.setLeftRight(leftRight);
 
-            Where.In in = new Where.In();
             in.setValues(w.values);
             in.setElect(elect);
             and.setIn(in);
@@ -293,6 +303,17 @@ public class GaeaSqlTaskUtil {
             contains.setElect(elect);
             contains.setValues(w.values);
             and.setContainsAny(contains);
+            break;
+
+          case json:
+            Elect.RefName refName = new Elect.RefName();
+            refName.setName(w.rule.jsonPathSyntax);
+            elect.setRefName(refName);
+            elect.setType("refName");
+
+            in.setValues(w.values);
+            in.setElect(elect);
+            and.setIn(in);
             break;
 
           default:
@@ -307,6 +328,7 @@ public class GaeaSqlTaskUtil {
       blackFilters.forEach(w -> {
         Where and = new Where();
         Where not = new Where();
+        Where.In in = new Where.In();
 
         Elect elect = new Elect();
         switch (w.getType()) {
@@ -317,7 +339,6 @@ public class GaeaSqlTaskUtil {
             leftRight.setRight(w.rule.right);
             elect.setType("leftRight");
             elect.setLeftRight(leftRight);
-            Where.In in = new Where.In();
             in.setValues(w.values);
             in.setElect(elect);
 
@@ -331,6 +352,18 @@ public class GaeaSqlTaskUtil {
             contains.setValues(w.values);
 
             not.setContainsAny(contains);
+            and.setNot(not);
+            break;
+          case json:
+            Elect.RefName refName = new Elect.RefName();
+            refName.setName(w.rule.jsonPathSyntax);
+            elect.setType("refName");
+            elect.setRefName(refName);
+
+            in.setValues(w.values);
+            in.setElect(elect);
+
+            not.setIn(in);
             and.setNot(not);
             break;
           default:
@@ -387,6 +420,11 @@ public class GaeaSqlTaskUtil {
             elect.setRefIndex(new RefIndex());
             elect.getRefIndex().setIndex(rule.pos);
           }
+          break;
+        case json:
+          elect.setType("refName");
+          elect.setRefName(new RefName());
+          elect.getRefName().setName(rule.jsonPathSyntax);
           break;
         default:
           break;
@@ -482,6 +520,11 @@ public class GaeaSqlTaskUtil {
               elect.setRefIndex(new RefIndex());
               elect.getRefIndex().setIndex(rule.pos);
             }
+            break;
+          case json:
+            elect.setType("refName");
+            elect.setRefName(new RefName());
+            elect.getRefName().setName(rule.jsonPathSyntax);
             break;
           default:
             break;
@@ -652,6 +695,11 @@ public class GaeaSqlTaskUtil {
             elect.getRefIndex().setIndex(rule.pos);
           }
           break;
+        case json:
+          elect.setType("refName");
+          elect.setRefName(new RefName());
+          elect.getRefName().setName(rule.jsonPathSyntax);
+          break;
         default:
           break;
       }
@@ -732,6 +780,11 @@ public class GaeaSqlTaskUtil {
           elect.setRefIndex(new RefIndex());
           elect.getRefIndex().setIndex(rule.pos);
         }
+        break;
+      case json:
+        elect.setType("refName");
+        elect.setRefName(new RefName());
+        elect.getRefName().setName(rule.jsonPathSyntax);
         break;
       default:
         break;

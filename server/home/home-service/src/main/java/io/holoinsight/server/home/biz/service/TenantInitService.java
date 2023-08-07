@@ -72,6 +72,8 @@ public interface TenantInitService {
    */
   Map<String, String> getTenantWorkspaceMetaConditions(String tenant, String workspace);
 
+  Map<String, String> getTenantServerWorkspaceMetaConditions(String tenant, String workspace);
+
   /**
    * add query filters by workspace
    * 

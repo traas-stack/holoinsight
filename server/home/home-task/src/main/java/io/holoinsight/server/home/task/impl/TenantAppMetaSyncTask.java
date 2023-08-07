@@ -120,6 +120,7 @@ public class TenantAppMetaSyncTask extends AbstractMonitorTask {
       map.put("_type", meta_app);
       map.put("_workspace", appModel.getWorkspace());
       map.put("app", appModel.getApp());
+      map.put("tenant", appModel.getTenant());
 
       Map<String, Object> labelMap = new HashMap<>();
       labelMap.put("machineType", appModel.getMachineType());

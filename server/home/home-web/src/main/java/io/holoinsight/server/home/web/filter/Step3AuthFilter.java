@@ -112,7 +112,7 @@ public class Step3AuthFilter implements Filter {
           return true;
         }
       }
-      ma = ulaFacade.getUserPowerPkg(mu, ms);
+      ma = ulaFacade.getUserPowerPkg(req, mu, ms);
       ulaFacade.checkWorkspace(req, mu, ms);
       if (null == ma || CollectionUtils.isEmpty(ma.powerConstants)
           || CollectionUtils.isEmpty(ma.getTenantViewPowerList())) {
