@@ -12,6 +12,7 @@ import io.holoinsight.server.home.dal.model.AlarmHistory;
 import io.holoinsight.server.home.dal.model.AlarmRule;
 import io.holoinsight.server.home.dal.model.AlarmWebhook;
 import io.holoinsight.server.home.dal.model.AlertmanagerWebhook;
+import io.holoinsight.server.home.facade.AlertRuleExtra;
 import io.holoinsight.server.home.facade.InspectConfig;
 import io.holoinsight.server.home.facade.PqlRule;
 import io.holoinsight.server.home.facade.Rule;
@@ -61,6 +62,10 @@ public class DoConvert {
       inspectConfig.setIsMerge(alarmRuleDO.getIsMerge() != 0);
       inspectConfig.setRecover(alarmRuleDO.getRecover() != 0);
       inspectConfig.setEnvType(alarmRuleDO.getEnvType());
+      if (StringUtils.isNotBlank(alarmRuleDO.getExtra())) {
+        AlertRuleExtra alertRuleExtra = J.fromJson(alarmRuleDO.getExtra(), AlertRuleExtra.class);
+        inspectConfig.setAlertRecord(alertRuleExtra.isRecord);
+      }
     } catch (Exception e) {
       LOGGER.error("fail to convert alarmRule {}", G.get().toJson(alarmRuleDO), e);
     }

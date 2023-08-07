@@ -17,4 +17,6 @@ public class AlertRuleExtra {
   public String sourceLink;
   public List<String> alertTags;
   public Map<String, String> tagAlias;
+
+  public boolean isRecord;
 }
