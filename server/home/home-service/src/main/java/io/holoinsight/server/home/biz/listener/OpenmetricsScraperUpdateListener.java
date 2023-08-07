@@ -48,7 +48,7 @@ public class OpenmetricsScraperUpdateListener {
     task.setScrapeTimeout(openmetricsScraperDTO.getScrapeTimeout());
     task.setScrapePort(openmetricsScraperDTO.getPort());
     task.setRelabelConfigs(openmetricsScraperDTO.getRelabelConfigs());
-    task.setRelabelConfigs(openmetricsScraperDTO.getMetricRelabelConfigs());
+    task.setMetricRelabelConfigs(openmetricsScraperDTO.getMetricRelabelConfigs());
 
     // List<String> targets = new ArrayList<>();
     //// 暂时 mock 一下
