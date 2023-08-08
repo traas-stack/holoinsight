@@ -31,8 +31,8 @@ holoinsight:
   storage:
     elasticsearch:
       enable: true
-      hosts: tatris
-      port: 6060
+      hosts: es
+      port: 9200
   security:
     whiteHosts: server
 
