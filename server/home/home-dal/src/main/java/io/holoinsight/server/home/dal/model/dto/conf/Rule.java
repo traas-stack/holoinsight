@@ -57,4 +57,10 @@ public class Rule implements Serializable {
    * 默认值
    */
   public String defaultValue;
+
+  /** ------------------JSON PATH 字段--------------------- */
+  /**
+   * 表达式
+   */
+  public String jsonPathSyntax;
 }

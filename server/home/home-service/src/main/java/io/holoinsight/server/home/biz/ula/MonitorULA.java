@@ -102,7 +102,7 @@ public class MonitorULA implements ULA {
   }
 
   @Override
-  public MonitorAuth getUserPowerPkg(MonitorUser user, MonitorScope ms) {
+  public MonitorAuth getUserPowerPkg(HttpServletRequest req, MonitorUser user, MonitorScope ms) {
 
     String tenant = ms.getTenant();
     if (null == tenant) {

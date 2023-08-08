@@ -84,6 +84,7 @@ services:
     - ../common/logwriter.py:/home/admin/test/logwriter.py:ro
     - ../common/log-generator.py:/home/admin/test/log-generator.py:ro
     - ../common/log-alert-generator.py:/home/admin/test/log-alert-generator.py:ro
+    - ../common/log-json-generator.py:/home/admin/test/log-json-generator.py:ro
   collector:
     extends:
       file: ../common/base.yaml
