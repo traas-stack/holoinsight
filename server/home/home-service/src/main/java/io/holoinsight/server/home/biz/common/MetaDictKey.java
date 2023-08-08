@@ -22,6 +22,7 @@ public class MetaDictKey {
   public static final String K8S_AGENT_INSTALL_DOCUMENT = "k8sInstallDocument";
 
   public static final String COLLECTOR_HOST = "collectorHost";
+  public static final String SKYWALKING_JAVA_AGENT_VERSION = "skywalkingJavaAgentVersion";
   public static final String TRACE_INSTALL_DOCUMENT = "traceInstallDocument";
 
   public static final String IGNORE_TASK_LIST = "ignore_task_list";
