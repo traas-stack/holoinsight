@@ -105,6 +105,7 @@ services:
     - ./collector-config.yml:/config/config.yml
   agent-image:
     image: ${agent_image:-holoinsight/agent:latest}
+    pull_policy: always
     volumes:
     - ./agent.yaml:/temp/agent.yaml
     entrypoint: [ "true" ]
