@@ -100,6 +100,11 @@ public class MetaFacadeImpl extends BaseFacade {
         if (StringUtils.isNotBlank(ms.getWorkspace())) {
           queryExample.getParams().put("_workspace", ms.getWorkspace());
         }
+        Map<String, String> conditions = tenantInitService
+            .getTenantServerWorkspaceMetaConditions(ms.getTenant(), ms.getWorkspace());
+        if (!CollectionUtils.isEmpty(conditions)) {
+          queryExample.getParams().putAll(conditions);
+        }
 
         List<Map<String, Object>> list = dataClientService
             .queryByExample(tenantInitService.getTenantAppTable(ms.getTenant()), queryExample);

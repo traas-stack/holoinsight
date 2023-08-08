@@ -11,6 +11,7 @@ import io.holoinsight.server.home.common.util.Debugger;
 import io.holoinsight.server.home.common.util.StringUtil;
 import io.holoinsight.server.meta.facade.service.DataClientService;
 import lombok.Data;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -35,6 +36,7 @@ public class MetaService {
   private static final String meta_type = "_type";
   private static final String MACHINE_TYPE = "machineType";
   private static final String meta_workspace = "_workspace";
+  private static final String meta_tenant = "tenant";
   private static final String meta_workspace_default = "default";
   @Autowired
   private DataClientService dataClientService;
@@ -52,6 +54,7 @@ public class MetaService {
     if (CollectionUtils.isEmpty(mapList)) {
       return new ArrayList<>();
     }
+    String[] s = StringUtils.split(serverTableName, "_");
 
     List<AppModel> appModels = new ArrayList<>();
     for (Map<String, Object> map : mapList) {
@@ -72,6 +75,7 @@ public class MetaService {
       }
       appModel.setApp(app);
       appModel.setWorkspace(workspace);
+      appModel.setTenant(map.getOrDefault(meta_tenant, s[0]).toString());
 
       if (map.containsKey(meta_type) && null != map.get(meta_type)) {
         appModel.setMachineType(map.get(meta_type).toString());
@@ -90,6 +94,8 @@ public class MetaService {
       return appModels;
     }
 
+    String[] s = StringUtils.split(appTableName, "_");
+
     dbLists.forEach(db -> {
       if (null == db.get(meta_app)) {
         return;
@@ -97,6 +103,7 @@ public class MetaService {
       AppModel appModel = new AppModel();
       appModel.setApp(db.get(meta_app).toString());
       appModel.setWorkspace(db.getOrDefault(meta_workspace, meta_workspace_default).toString());
+      appModel.setTenant(db.getOrDefault(meta_tenant, s[0]).toString());
 
       if (null == db.get("_label"))
         return;

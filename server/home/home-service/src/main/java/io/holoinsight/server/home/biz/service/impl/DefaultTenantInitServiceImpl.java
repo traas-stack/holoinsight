@@ -64,6 +64,12 @@ public class DefaultTenantInitServiceImpl implements TenantInitService {
   }
 
   @Override
+  public Map<String, String> getTenantServerWorkspaceMetaConditions(String tenant,
+      String workspace) {
+    return new HashMap<>();
+  }
+
+  @Override
   public List<QueryFilter> getTenantFilters(String tenant, String workspace) {
     return new ArrayList<>();
   }
