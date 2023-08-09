@@ -180,7 +180,9 @@ public class SpanHandler {
 
     relationBuilders.forEach(callingIn -> {
       ServiceRelation serviceRelation = callingIn.toServiceRelation();
-      serverRelationList.add(ServiceRelationDO.fromServiceRelation(serviceRelation));
+      if (serviceRelation != null) {
+        serverRelationList.add(ServiceRelationDO.fromServiceRelation(serviceRelation));
+      }
 
       ServiceInstanceRelation serviceInstanceRelation = callingIn.toServiceInstanceRelation();
       if (serviceInstanceRelation != null) {
