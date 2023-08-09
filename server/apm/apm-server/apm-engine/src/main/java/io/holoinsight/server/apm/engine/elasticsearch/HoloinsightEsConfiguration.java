@@ -58,6 +58,8 @@ public class HoloinsightEsConfiguration {
 
   private String user;
   private String password;
+  private int shards = 5;
+  private int replicas = 1;
 
   @Bean("elasticsearchClient")
   @Primary

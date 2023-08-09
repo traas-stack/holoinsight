@@ -11,6 +11,7 @@ import io.holoinsight.server.apm.common.utils.GsonUtils;
 import io.holoinsight.server.apm.common.utils.TimeBucket;
 import io.holoinsight.server.apm.core.installer.DataTypeMapping;
 import io.holoinsight.server.apm.core.installer.ModelInstaller;
+import io.holoinsight.server.apm.engine.elasticsearch.HoloinsightEsConfiguration;
 import io.holoinsight.server.apm.engine.elasticsearch.utils.ApmGsonUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.elasticsearch.ElasticsearchStatusException;
@@ -40,6 +41,9 @@ public class EsModelInstaller implements ModelInstaller {
 
   @Resource
   DataTypeMapping dataTypeMapping;
+
+  @Autowired
+  private HoloinsightEsConfiguration esConfiguration;
 
   private IndexStructures structures = new IndexStructures();
 
@@ -146,11 +150,13 @@ public class EsModelInstaller implements ModelInstaller {
 
   protected Settings createSettings(Model model) {
     // for different versions of elasticsearch
-    Settings settings = Settings.builder().put("index.number_of_replicas", 1)
-        .put("number_of_replicas", 1).put("index.number_of_shards", 5).put("number_of_shards", 5)
-        .put("index.refresh_interval", "10s").put("refresh_interval", "10s")
-        .put("index.translog.durability", "async").put("index.translog.sync_interval", "5s")
-        .build();
+    Settings settings = Settings.builder()
+        .put("index.number_of_replicas", esConfiguration.getReplicas())
+        .put("number_of_replicas", esConfiguration.getReplicas())
+        .put("index.number_of_shards", esConfiguration.getShards())
+        .put("number_of_shards", esConfiguration.getShards()).put("index.refresh_interval", "10s")
+        .put("refresh_interval", "10s").put("index.translog.durability", "async")
+        .put("index.translog.sync_interval", "5s").build();
     log.info("[apm] model settings, model={}, settings={}", model.getName(), settings.toString());
     return settings;
   }
