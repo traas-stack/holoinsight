@@ -118,7 +118,7 @@ public abstract class GatewayService {
     PluginContext pluginContext = buildNotifyContext(traceId, notify);
     RecordSucOrFailNotify.alertNotifyProcessSuc(GATEWAY, "send alert notify",
         notify.getAlertNotifyRecord());
-    if (extra.isRecord) {
+    if (extra != null && extra.isRecord) {
       pluginContext.latch = new CountDownLatch(notifyChainList.size());
     }
 
