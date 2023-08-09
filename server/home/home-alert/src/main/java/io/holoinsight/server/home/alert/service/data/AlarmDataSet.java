@@ -5,6 +5,7 @@ package io.holoinsight.server.home.alert.service.data;
 
 import io.holoinsight.server.home.alert.model.compute.ComputeTaskPackage;
 import io.holoinsight.server.home.alert.service.data.load.PqlAlarmLoadData;
+import io.holoinsight.server.home.alert.service.event.RecordSucOrFailNotify;
 import io.holoinsight.server.home.facade.DataResult;
 import io.holoinsight.server.home.facade.PqlRule;
 import io.holoinsight.server.home.facade.Rule;
@@ -35,6 +36,8 @@ public class AlarmDataSet {
   @Resource
   private PqlAlarmLoadData pqlAlarmLoadData;
 
+  private static final String ALERT_TASK_COMPUTE = "AlertTaskCompute";
+
   public void loadData(ComputeTaskPackage computeTaskPackage) {
 
     if (computeTaskPackage == null
@@ -53,7 +56,11 @@ public class AlarmDataSet {
             pqlRule.setDataResult(result);
             inspectConfig.setPqlRule(pqlRule);
           }
+          RecordSucOrFailNotify.alertNotifyProcessSuc(ALERT_TASK_COMPUTE, "Pql query",
+              inspectConfig.getAlertNotifyRecord());
         } catch (Exception exception) {
+          RecordSucOrFailNotify.alertNotifyProcess("Pql query Exception: " + exception,
+              ALERT_TASK_COMPUTE, "Pql query", inspectConfig.getAlertNotifyRecord());
           LOGGER.error("Pql query Exception", exception);
         }
       }
@@ -72,11 +79,16 @@ public class AlarmDataSet {
             trigger.setDataResult(dataResults);
           } catch (Exception exception) {
             LOGGER.error("AlarmLoadData Exception", exception);
+            RecordSucOrFailNotify.alertNotifyProcess("alarm load data Exception: " + exception,
+                ALERT_TASK_COMPUTE, "alarm load data", inspectConfig.getAlertNotifyRecord());
           }
         }
+        RecordSucOrFailNotify.alertNotifyProcessSuc(ALERT_TASK_COMPUTE, "alarm load data",
+            inspectConfig.getAlertNotifyRecord());
       }
 
     });
 
   }
+
 }

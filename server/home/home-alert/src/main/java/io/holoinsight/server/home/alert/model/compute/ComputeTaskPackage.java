@@ -3,6 +3,8 @@
  */
 package io.holoinsight.server.home.alert.model.compute;
 
+import io.holoinsight.server.home.dal.model.AlertNotifyRecord;
+import io.holoinsight.server.home.facade.AlertNotifyRecordDTO;
 import io.holoinsight.server.home.facade.InspectConfig;
 import lombok.Data;
 
@@ -33,5 +35,10 @@ public class ComputeTaskPackage {
   public List<InspectConfig> inspectConfigs;
 
   // 后续可以考虑聚合数据源查询
+
+  /**
+   * 告警通知记录
+   */
+  public AlertNotifyRecordDTO alertNotifyRecord;
 
 }

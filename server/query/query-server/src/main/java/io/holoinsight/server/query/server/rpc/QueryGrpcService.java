@@ -131,6 +131,18 @@ public class QueryGrpcService extends QueryServiceGrpc.QueryServiceImplBase {
   }
 
   @Override
+  public void queryTraceTree(QueryProto.QueryTraceRequest request,
+      StreamObserver<QueryProto.TraceTreeList> responseObserver) {
+    try {
+      responseObserver.onNext(queryService.queryTraceTree(request));
+      responseObserver.onCompleted();
+    } catch (Throwable t) {
+      responseObserver.onError(
+          Status.INTERNAL.withCause(t).withDescription(t.getMessage()).asRuntimeException());
+    }
+  }
+
+  @Override
   public void queryServiceList(QueryProto.QueryMetaRequest request,
       StreamObserver<QueryProto.QueryMetaResponse> responseObserver) {
     try {
@@ -207,6 +219,30 @@ public class QueryGrpcService extends QueryServiceGrpc.QueryServiceImplBase {
       StreamObserver<QueryProto.QuerySlowSqlResponse> responseObserver) {
     try {
       responseObserver.onNext(queryService.querySlowSqlList(request));
+      responseObserver.onCompleted();
+    } catch (Throwable t) {
+      responseObserver.onError(
+          Status.INTERNAL.withCause(t).withDescription(t.getMessage()).asRuntimeException());
+    }
+  }
+
+  @Override
+  public void queryServiceErrorList(QueryProto.QueryMetaRequest request,
+      StreamObserver<QueryProto.CommonMapTypeDataList> responseObserver) {
+    try {
+      responseObserver.onNext(queryService.queryServiceErrorList(request));
+      responseObserver.onCompleted();
+    } catch (Throwable t) {
+      responseObserver.onError(
+          Status.INTERNAL.withCause(t).withDescription(t.getMessage()).asRuntimeException());
+    }
+  }
+
+  @Override
+  public void queryServiceErrorDetail(QueryProto.QueryMetaRequest request,
+      StreamObserver<QueryProto.CommonMapTypeDataList> responseObserver) {
+    try {
+      responseObserver.onNext(queryService.queryServiceErrorDetail(request));
       responseObserver.onCompleted();
     } catch (Throwable t) {
       responseObserver.onError(

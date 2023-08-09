@@ -84,7 +84,8 @@ public class ApmMetricCrawlerBuilder extends AbstractMetricCrawlerBuilder {
   }
 
   @Override
-  protected List<MetricInfo> getMetricInfoList(String metric, List<String> tags) {
+  protected List<MetricInfo> getMetricInfoList(String metric, List<String> tags,
+      MetricInfo metricInfoTemplate) {
     return null;
   }
 }

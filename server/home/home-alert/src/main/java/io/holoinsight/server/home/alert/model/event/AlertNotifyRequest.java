@@ -4,6 +4,7 @@
 
 package io.holoinsight.server.home.alert.model.event;
 
+import io.holoinsight.server.home.facade.AlertNotifyRecordDTO;
 import io.holoinsight.server.home.facade.AlertRuleExtra;
 import io.holoinsight.server.home.facade.InspectConfig;
 import io.holoinsight.server.home.facade.trigger.Trigger;
@@ -66,5 +67,9 @@ public class AlertNotifyRequest {
 
   // log analysis content
   private List<String> logAnalysis;
+
+  private List<String> logSample;
+
+  private AlertNotifyRecordDTO alertNotifyRecord;
 
 }

@@ -11,7 +11,6 @@ import io.holoinsight.server.apm.common.model.specification.sw.NetworkAddressMap
 import io.holoinsight.server.apm.common.utils.TimeBucket;
 import io.holoinsight.server.apm.common.utils.TimeUtils;
 import io.holoinsight.server.apm.engine.model.NetworkAddressMappingDO;
-import io.holoinsight.server.apm.engine.model.SlowSqlDO;
 import io.holoinsight.server.apm.grpc.trace.RefType;
 import io.holoinsight.server.apm.receiver.builder.RPCTrafficSourceBuilder;
 import io.holoinsight.server.apm.receiver.common.IPublicAttr;
@@ -163,39 +162,6 @@ public class RelationAnalysis {
   }
 
 
-  public List<SlowSqlDO> analysisClientSpan(Span span, Map<String, AnyValue> spanAttrMap,
-      Map<String, AnyValue> resourceAttrMap) {
-    List<SlowSqlDO> result = new ArrayList<>(10);
-
-    String serviceName =
-        resourceAttrMap.get(ResourceAttributes.SERVICE_NAME.getKey()).getStringValue();
-    AnyValue statement = spanAttrMap.get(SemanticAttributes.DB_STATEMENT.getKey());
-    AnyValue peerName = spanAttrMap.get(SemanticAttributes.NET_PEER_NAME.getKey());
-    AnyValue peerPort = spanAttrMap.get(SemanticAttributes.NET_PEER_PORT.getKey());
-    long latency = TimeUtils.unixNano2MS(span.getEndTimeUnixNano())
-        - TimeUtils.unixNano2MS(span.getStartTimeUnixNano());
-
-    if (peerName == null || StringUtils.isEmpty(peerName.getStringValue()) || statement == null
-        || latency < Const.SLOW_SQL_THRESHOLD) {
-      return result;
-    }
-
-    String dbAddress = peerPort == null ? peerName.getStringValue()
-        : peerName.getStringValue() + ":" + peerPort.getStringValue();
-    SlowSqlDO slowSqlEsDO = new SlowSqlDO();
-    slowSqlEsDO.setTenant(resourceAttrMap.get(Const.TENANT).getStringValue());
-    slowSqlEsDO.setServiceName(serviceName);
-    slowSqlEsDO.setAddress(dbAddress);
-    slowSqlEsDO.setLatency((int) latency);
-    slowSqlEsDO.setStartTime(TimeUtils.unixNano2MS(span.getStartTimeUnixNano()));
-    slowSqlEsDO.setTimestamp(TimeUtils.unixNano2MS(span.getEndTimeUnixNano()));
-    slowSqlEsDO.setTraceId(Hex.encodeHexString(span.getTraceId().toByteArray()));
-    slowSqlEsDO.setStatement(statement.getStringValue());
-
-    result.add(slowSqlEsDO);
-    return result;
-  }
-
   public List<RPCTrafficSourceBuilder> analysisInternalSpan(Span span,
       Map<String, AnyValue> spanAttrMap, Map<String, AnyValue> resourceAttrMap) {
     List<RPCTrafficSourceBuilder> result = new ArrayList<>(10);
@@ -268,13 +234,17 @@ public class RelationAnalysis {
       if (!RefType.CrossProcess.name().equals(refType)) {
         continue;
       }
+      AnyValue networkAddress = linkAttrMap.get(Const.SW_REF_NETWORK_ADDRESSUSEDATPEER);
+      AnyValue serviceInstance = resourceAttrMap.get(Const.OTLP_RESOURCE_SERVICE_INSTANCE_NAME);
 
-      String networkAddressUsedAtPeer =
-          linkAttrMap.get(Const.SW_REF_NETWORK_ADDRESSUSEDATPEER).getStringValue();
+      if (networkAddress == null || serviceInstance == null) {
+        continue;
+      }
+      String networkAddressUsedAtPeer = networkAddress.getStringValue();
+      String instanceName = serviceInstance.getStringValue();
       String serviceName =
           resourceAttrMap.get(ResourceAttributes.SERVICE_NAME.getKey()).getStringValue();
-      String instanceName =
-          resourceAttrMap.get(Const.OTLP_RESOURCE_SERVICE_INSTANCE_NAME).getStringValue();
+
 
       final NetworkAddressMapping networkAddressMapping = new NetworkAddressMapping();
       networkAddressMapping.setAddress(networkAddressUsedAtPeer);

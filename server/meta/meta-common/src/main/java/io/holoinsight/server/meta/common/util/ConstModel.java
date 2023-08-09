@@ -28,5 +28,6 @@ public class ConstModel {
   public static final String META_CONFIG = "meta_config";
   public static final String ANNOTATIONS = "annotations";
   public static final String META_INDEX_CONFIG = "meta_index_config";
+  public static final String CLEAN_META_DURATION_HOURS = "clean_meta_duration_hours";
 
 }

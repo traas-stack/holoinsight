@@ -9,6 +9,7 @@ import io.holoinsight.server.apm.common.model.query.ServiceInstance;
 import io.holoinsight.server.apm.common.model.query.SlowSql;
 import io.holoinsight.server.apm.common.model.query.Topology;
 import io.holoinsight.server.apm.common.model.query.TraceBrief;
+import io.holoinsight.server.apm.common.model.query.TraceTree;
 import io.holoinsight.server.apm.common.model.query.VirtualComponent;
 import io.holoinsight.server.apm.common.model.specification.sw.Trace;
 import io.holoinsight.server.common.J;
@@ -225,6 +226,12 @@ public class QueryClientService {
     return ApmConvertor.convertTrace(trace);
   }
 
+  public List<TraceTree> queryTraceTree(QueryTraceRequest request) {
+    QueryProto.TraceTreeList traceTreeList =
+        queryServiceBlockingStub.queryTraceTree(convertRequest(request));
+    return ApmConvertor.convertTraceTree(traceTreeList);
+  }
+
   public List<io.holoinsight.server.apm.common.model.query.Service> queryServiceList(
       QueryProto.QueryMetaRequest request) {
     QueryProto.QueryMetaResponse queryMetaResponse =
@@ -283,6 +290,28 @@ public class QueryClientService {
     List<SlowSql> result = new ArrayList<>(querySlowSqlList.getSlowSqlCount());
     querySlowSqlList.getSlowSqlList().forEach(sql -> {
       result.add(ApmConvertor.deConvertSlowSql(sql));
+    });
+    return result;
+  }
+
+  public List<Map<String, String>> queryServiceErrorList(QueryProto.QueryMetaRequest request) {
+    QueryProto.CommonMapTypeDataList serviceErrorList =
+        queryServiceBlockingStub.queryServiceErrorList(request);
+    List<Map<String, String>> result =
+        new ArrayList<>(serviceErrorList.getCommonMapTypeDataList().size());
+    serviceErrorList.getCommonMapTypeDataList().forEach(data -> {
+      result.add(data.getDataMap());
+    });
+    return result;
+  }
+
+  public List<Map<String, String>> queryServiceErrorDetail(QueryProto.QueryMetaRequest request) {
+    QueryProto.CommonMapTypeDataList serviceErrorList =
+        queryServiceBlockingStub.queryServiceErrorDetail(request);
+    List<Map<String, String>> result =
+        new ArrayList<>(serviceErrorList.getCommonMapTypeDataList().size());
+    serviceErrorList.getCommonMapTypeDataList().forEach(data -> {
+      result.add(data.getDataMap());
     });
     return result;
   }

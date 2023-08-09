@@ -35,4 +35,6 @@ public interface MetaDataMapper {
   List<MetaData> queryChangedMeta(@Param("start") Date start, @Param("end") Date end,
       @Param("containDeleted") Boolean containDeleted, @Param("offset") int offset,
       @Param("limit") int limit);
+
+  Integer cleanMetaData(@Param("end") Date end);
 }

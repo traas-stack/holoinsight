@@ -26,3 +26,6 @@ docker-compose exec -w /home/admin/logs/holoinsight-server -d -T server bash -c 
 
 echo copy log-alert-generator.py to $server_container_name
 docker-compose exec -w /home/admin/logs/holoinsight-server -d -T server bash -c ' python /home/admin/test/log-alert-generator.py & '
+
+echo copy log-json-generator.py to $server_container_name
+docker-compose exec -w /home/admin/logs/holoinsight-server -d -T server bash -c ' python /home/admin/test/log-json-generator.py & '

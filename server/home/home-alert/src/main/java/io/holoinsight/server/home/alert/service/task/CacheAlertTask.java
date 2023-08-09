@@ -4,16 +4,18 @@
 package io.holoinsight.server.home.alert.service.task;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import io.holoinsight.server.common.dao.entity.MetricInfo;
+import io.holoinsight.server.common.dao.mapper.MetricInfoMapper;
 import io.holoinsight.server.home.alert.model.compute.ComputeTaskPackage;
 import io.holoinsight.server.home.alert.service.converter.DoConvert;
 import io.holoinsight.server.home.alert.service.data.CacheData;
+import io.holoinsight.server.home.alert.service.event.RecordSucOrFailNotify;
 import io.holoinsight.server.home.biz.service.CustomPluginService;
 import io.holoinsight.server.home.dal.mapper.AlarmRuleMapper;
 import io.holoinsight.server.home.dal.model.AlarmRule;
-import io.holoinsight.server.home.dal.model.dto.CustomPluginDTO;
-import io.holoinsight.server.home.dal.model.dto.conf.CustomPluginConf;
-import io.holoinsight.server.home.dal.model.dto.conf.LogPattern;
+import io.holoinsight.server.home.facade.AlertNotifyRecordDTO;
 import io.holoinsight.server.home.facade.InspectConfig;
+import io.holoinsight.server.home.facade.NotifyStage;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,9 +26,11 @@ import org.springframework.util.CollectionUtils;
 import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
@@ -60,10 +64,14 @@ public class CacheAlertTask {
   private CacheData cacheData;
 
   @Autowired
-  private CacheAlertConfig cacheAlertConfig;
-
-  @Autowired
   private CustomPluginService customPluginService;
+
+  @Resource
+  private MetricInfoMapper metricInfoMapper;
+  private Map<String, MetricInfo> logPatternCache = new HashMap<>();
+  private Map<String, MetricInfo> logSampleCache = new HashMap<>();
+
+  private static final String ALARM_CONFIG = "CacheAlertTask";
 
   public void start() {
     LOGGER.info("[AlarmConfig] start alarm config syn!");
@@ -74,77 +82,136 @@ public class CacheAlertTask {
 
   private void getAlarmTaskCache() {
     try {
-      if (!"false".equals(this.cacheAlertConfig.getConfig("alarm_switch"))) {
-        // Get alert detection tasks
-        List<AlarmRule> alarmRuleDOS = getAlarmRuleListByPage();
-        ComputeTaskPackage computeTaskPackage = convert(alarmRuleDOS);
-        TaskQueueManager.getInstance().offer(computeTaskPackage);
-      }
-
+      loadLogMetric();
+      LOGGER.info("complete to loadLogMetric, logPatternCache size {} logSampleCache size {}",
+          logPatternCache.size(), logSampleCache.size());
+      // Get alert detection tasks
+      List<AlarmRule> alarmRuleDOS = getAlarmRuleListByPage();
+      LOGGER.info("complete to getAlarmRuleListByPage, AlarmRule size {} ", alarmRuleDOS.size());
+      ComputeTaskPackage computeTaskPackage = convert(alarmRuleDOS);
+      LOGGER.info("complete to convert, computeTaskPackage inspectConfigs size {} ",
+          CollectionUtils.isEmpty(computeTaskPackage.getInspectConfigs()) ? 0
+              : computeTaskPackage.getInspectConfigs().size());
+      TaskQueueManager.getInstance().offer(computeTaskPackage);
+      LOGGER.info("complete to offer TaskQueueManager");
     } catch (Exception e) {
       LOGGER.error("InspectCtlParam Sync Exception", e);
     }
   }
 
-  public ComputeTaskPackage convert(List<AlarmRule> alarmRuleDOS) {
+  private void loadLogMetric() {
+    QueryWrapper<MetricInfo> logPatternQuery = new QueryWrapper<>();
+    logPatternQuery.eq("metric_type", "logpattern");
+    logPatternQuery.eq("deleted", false);
+    List<MetricInfo> metricInfos = this.metricInfoMapper.selectList(logPatternQuery);
+    if (!CollectionUtils.isEmpty(metricInfos)) {
+      for (MetricInfo metricInfo : metricInfos) {
+        if (StringUtils.isEmpty(metricInfo.metricTable)) {
+          continue;
+        }
+        logPatternCache.put(metricInfo.metricTable, metricInfo);
+      }
+    }
+
+    QueryWrapper<MetricInfo> logSampleQuery = new QueryWrapper<>();
+    logSampleQuery.eq("metric_type", "logsample");
+    logSampleQuery.eq("deleted", false);
+    metricInfos = this.metricInfoMapper.selectList(logSampleQuery);
+    if (!CollectionUtils.isEmpty(metricInfos)) {
+      for (MetricInfo metricInfo : metricInfos) {
+        if (StringUtils.isEmpty(metricInfo.metricTable)) {
+          continue;
+        }
+        logSampleCache.put(metricInfo.metricTable, metricInfo);
+      }
+    }
+  }
+
+  public ComputeTaskPackage convert(List<AlarmRule> alarmRules) {
     ComputeTaskPackage computeTaskPackage = new ComputeTaskPackage();
     computeTaskPackage.setTraceId(UUID.randomUUID().toString());
     List<InspectConfig> inspectConfigs = new ArrayList<>();
-    Map<String, List<InspectConfig>> logInspectConfigs = new HashMap<>();
+    Map<String /* metricTable */, List<InspectConfig>> logInspectConfigs = new HashMap<>();
     Map<String, InspectConfig> uniqueIdMap = new HashMap<>();
+    buildAlertNotifyRecord(computeTaskPackage);
+
     try {
-      alarmRuleDOS.forEach(alarmRuleDO -> {
-        InspectConfig inspectConfig = DoConvert.alarmRuleConverter(alarmRuleDO);
-        if (enableAlert(inspectConfig)) {
-          // cache
-          if (isLogAlert(inspectConfig)) {
-            List<InspectConfig> configs = logInspectConfigs.computeIfAbsent(
-                String.valueOf(inspectConfig.getSourceId()), k -> new ArrayList<>());
-            configs.add(inspectConfig);
+      if (!CollectionUtils.isEmpty(alarmRules)) {
+        RecordSucOrFailNotify.alertNotifyProcessSuc(ALARM_CONFIG, "query alarmRule",
+            computeTaskPackage.getAlertNotifyRecord());
+        for (AlarmRule alarmRule : alarmRules) {
+          try {
+            InspectConfig inspectConfig = DoConvert.alarmRuleConverter(alarmRule);
+            if (enableAlert(inspectConfig)) {
+              // cache
+              if (!CollectionUtils.isEmpty(inspectConfig.getMetrics())) {
+                for (String metric : inspectConfig.getMetrics()) {
+                  List<InspectConfig> configs =
+                      logInspectConfigs.computeIfAbsent(metric, k -> new ArrayList<>());
+                  configs.add(inspectConfig);
+                }
+              }
+              uniqueIdMap.put(inspectConfig.getUniqueId(), inspectConfig);
+              inspectConfigs.add(inspectConfig);
+            }
+          } catch (Exception e) {
+            LOGGER.error("{} [CRITICAL] rule id {} fail to convert alarmRule",
+                computeTaskPackage.getTraceId(), alarmRule.getId(), e);
           }
-          uniqueIdMap.put(inspectConfig.getUniqueId(), inspectConfig);
-          inspectConfigs.add(inspectConfig);
         }
-      });
+      }
       supplementLogConfig(logInspectConfigs);
       cacheData.setUniqueIdMap(uniqueIdMap);
       if (inspectConfigs.size() != 0) {
         computeTaskPackage.setInspectConfigs(inspectConfigs);
       }
+      RecordSucOrFailNotify.alertNotifyProcessSuc(ALARM_CONFIG, "convert alarmRule",
+          computeTaskPackage.getAlertNotifyRecord());
     } catch (Exception e) {
-      LOGGER.error("fail to convert alarmRules for {}", e.getMessage(), e);
+      RecordSucOrFailNotify.alertNotifyProcess("fail to convert alarmRule", ALARM_CONFIG,
+          "convert alarmRule", computeTaskPackage.getAlertNotifyRecord());
+      LOGGER.error("{} [CRITICAL] fail to convert alarmRules", computeTaskPackage.getTraceId(), e);
     }
     return computeTaskPackage;
   }
 
-  private void supplementLogConfig(Map<String, List<InspectConfig>> logInspectConfigs) {
+  private void buildAlertNotifyRecord(ComputeTaskPackage computeTaskPackage) {
+    if (Objects.nonNull(computeTaskPackage)) {
+      AlertNotifyRecordDTO alertNotifyRecord = new AlertNotifyRecordDTO();
+      alertNotifyRecord.setTraceId(computeTaskPackage.getTraceId());
+      alertNotifyRecord.setGmtCreate(new Date());
+      alertNotifyRecord.setIsSuccess((byte) 1);
+      NotifyStage notifyStage = new NotifyStage();
+      notifyStage.setStage(ALARM_CONFIG);
+      List<NotifyStage> notifyStageList = new ArrayList<>();
+      notifyStageList.add(notifyStage);
+      alertNotifyRecord.setNotifyStage(notifyStageList);
+      computeTaskPackage.setAlertNotifyRecord(alertNotifyRecord);
+      LOGGER.info("build alert notify record ,record data is: {}", alertNotifyRecord);
+    }
+
+  }
+
+  private void supplementLogConfig(
+      Map<String /* metricTable */, List<InspectConfig>> logInspectConfigs) {
     if (CollectionUtils.isEmpty(logInspectConfigs)) {
       return;
     }
-    List<CustomPluginDTO> cps =
-        this.customPluginService.findByIds(new ArrayList<>(logInspectConfigs.keySet()));
-    if (CollectionUtils.isEmpty(cps)) {
-      return;
-    }
-    for (CustomPluginDTO customPluginDTO : cps) {
-      CustomPluginConf conf = customPluginDTO.getConf();
-      if (conf == null || conf.logParse == null || conf.logParse.pattern == null) {
-        continue;
-      }
-      LogPattern pattern = conf.logParse.pattern;
-      if (pattern.logPattern != null && pattern.logPattern) {
-        List<InspectConfig> configs = logInspectConfigs.get(String.valueOf(customPluginDTO.id));
-        for (InspectConfig inspectConfig : configs) {
+    for (Map.Entry<String /* metricTable */, List<InspectConfig>> entry : logInspectConfigs
+        .entrySet()) {
+      String metricTable = entry.getKey();
+      List<InspectConfig> list = entry.getValue();
+      if (this.logPatternCache.containsKey(metricTable)) {
+        for (InspectConfig inspectConfig : list) {
           inspectConfig.setLogPatternEnable(true);
         }
       }
+      if (this.logSampleCache.containsKey(metricTable)) {
+        for (InspectConfig inspectConfig : list) {
+          inspectConfig.setLogSampleEnable(true);
+        }
+      }
     }
-  }
-
-  private boolean isLogAlert(InspectConfig inspectConfig) {
-    return StringUtils.isNotEmpty(inspectConfig.getSourceType())
-        && inspectConfig.getSourceType().equals("log") && inspectConfig.getSourceId() != null
-        && inspectConfig.getSourceId() > 0;
   }
 
   private boolean enableAlert(InspectConfig inspectConfig) {

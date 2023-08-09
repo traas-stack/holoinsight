@@ -4,7 +4,6 @@
 package io.holoinsight.server.home.biz.service;
 
 import io.holoinsight.server.home.dal.model.Dashboard;
-import io.holoinsight.server.home.dal.model.dto.DashboardDTO;
 import io.holoinsight.server.home.facade.page.MonitorPageRequest;
 import io.holoinsight.server.home.facade.page.MonitorPageResult;
 import com.baomidou.mybatisplus.extension.service.IService;
@@ -16,8 +15,6 @@ public interface DashboardService extends IService<Dashboard> {
   Dashboard queryById(Long id, String tenant, String workspace);
 
   Dashboard queryById(Long id, String tenant);
-
-  DashboardDTO save(DashboardDTO dashboardDTO);
 
   List<Dashboard> findByIds(List<String> ids);
 

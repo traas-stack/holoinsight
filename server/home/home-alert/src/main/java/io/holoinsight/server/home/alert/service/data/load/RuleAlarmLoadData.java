@@ -115,23 +115,32 @@ public class RuleAlarmLoadData implements AlarmLoadData {
       }
       // If aggregator is not none, which means it is a valid aggregation, then downsample cannot be
       // null, and the default value 1m can be set.
+      QueryProto.SlidingWindow slidingWindow = null;
       String aggregator = dataSource.getAggregator();
-      if (StringUtils.isNotEmpty(aggregator) && StringUtils.isBlank(downsample)
-          && !aggregator.equals("none")) {
-        downsample = "1m";
+      if (StringUtils.isNotEmpty(aggregator) && StringUtils.isBlank(downsample)) {
+        if (!aggregator.equals("none")) {
+          downsample = "1m";
+        }
       }
+
+      if (!aggregator.equals("none")) {
+        slidingWindow = QueryProto.SlidingWindow.newBuilder().setAggregator(trigger.getAggregator())
+            .setWindowMs(trigger.getDownsample() * 60_000L).build();
+      }
+
       long start =
           timestamp - (trigger.getStepNum() - 1) * time * PeriodType.MINUTE.intervalMillis()
               - trigger.getDownsample() * PeriodType.MINUTE.intervalMillis();
       long end = timestamp + time * PeriodType.MINUTE.intervalMillis();
-      QueryProto.SlidingWindow slidingWindow =
-          QueryProto.SlidingWindow.newBuilder().setAggregator(trigger.getAggregator())
-              .setWindowMs(trigger.getDownsample() * 60_000L).build();
 
       QueryProto.Datasource.Builder builder = QueryProto.Datasource.newBuilder()
           .setName(dataSource.getName()).setStart(start).setEnd(end)
           .setMetric(dataSource.getMetric()).addAllFilters(filterConvert(dataSource.getFilters()))
-          .setAggregator(dataSource.getAggregator()).setSlidingWindow(slidingWindow);
+          .setAggregator(dataSource.getAggregator());
+
+      if (slidingWindow != null) {
+        builder.setSlidingWindow(slidingWindow);
+      }
 
       if (dataSource.getGroupBy() != null) {
         builder.addAllGroupBy(dataSource.getGroupBy());

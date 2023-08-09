@@ -132,6 +132,16 @@ public class QueryController {
     }
   }
 
+  @PostMapping(path = "/trace/query/traceTree", produces = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<?> queryTraceTree(@RequestBody QueryProto.QueryTraceRequest request) {
+    try {
+      return ResponseEntity.ok(queryService.queryTraceTree(request));
+    } catch (Exception e) {
+      e.printStackTrace();
+      return ResponseEntity.badRequest().body(Collections.singletonMap("message", e.getMessage()));
+    }
+  }
+
   @PostMapping(path = "/serviceList", produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<?> queryServiceList(@RequestBody QueryProto.QueryMetaRequest request) {
     try {
@@ -203,4 +213,26 @@ public class QueryController {
       return ResponseEntity.badRequest().body(Collections.singletonMap("message", e.getMessage()));
     }
   }
+
+  @PostMapping(path = "/serviceErrorList", produces = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<?> queryServiceErrorList(@RequestBody QueryProto.QueryMetaRequest request) {
+    try {
+      return ResponseEntity.ok(queryService.queryServiceErrorList(request));
+    } catch (Exception e) {
+      e.printStackTrace();
+      return ResponseEntity.badRequest().body(Collections.singletonMap("message", e.getMessage()));
+    }
+  }
+
+  @PostMapping(path = "/serviceErrorDetail", produces = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<?> queryServiceErrorDetail(
+      @RequestBody QueryProto.QueryMetaRequest request) {
+    try {
+      return ResponseEntity.ok(queryService.queryServiceErrorDetail(request));
+    } catch (Exception e) {
+      e.printStackTrace();
+      return ResponseEntity.badRequest().body(Collections.singletonMap("message", e.getMessage()));
+    }
+  }
+
 }

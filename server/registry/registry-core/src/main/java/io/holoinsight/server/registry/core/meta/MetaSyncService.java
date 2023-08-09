@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import io.holoinsight.server.common.J;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -109,6 +110,10 @@ public class MetaSyncService {
     }
     if (StringUtils.isEmpty(req.getCluster())) {
       req.setCluster(DEFAULT_CLUSTER);
+    }
+
+    if (metaConfig.getBasic().isVerbose()) {
+      LOGGER.info("deltaSync {}", JsonUtils.toJson(req));
     }
 
     String tableName = genTableName(req.getApikey());
@@ -269,6 +274,7 @@ public class MetaSyncService {
       return new HashMap<>();
     }
 
+    LOGGER.info("curd detail, [getFromDB], size: {}, {}", mapList.size(), J.toJson(example));
     Map<String, Map<String, Object>> uks = new HashMap<>();
     mapList.forEach(row -> {
       if (row.get("_uk") == null) {

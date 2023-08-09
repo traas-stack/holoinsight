@@ -8,6 +8,7 @@ import io.holoinsight.server.home.dal.model.dto.conf.*;
 import io.holoinsight.server.home.dal.model.dto.conf.CollectMetric.AfterFilter;
 import io.holoinsight.server.home.dal.model.dto.conf.CollectMetric.LogSampleRule;
 import io.holoinsight.server.home.dal.model.dto.conf.CollectMetric.Metric;
+import io.holoinsight.server.home.dal.model.dto.conf.CustomPluginConf.ExtraConfig;
 import io.holoinsight.server.home.dal.model.dto.conf.CustomPluginConf.SplitCol;
 import io.holoinsight.server.home.dal.model.dto.conf.Translate.TranslateTransform;
 import io.holoinsight.server.registry.model.Elect;
@@ -60,6 +61,7 @@ public class GaeaSqlTaskUtil {
   private static final String leftRight = "LR";
   private static final String separator = "SEP";
   private static final String regexp = "REGEXP";
+  private static final String json = "JSON";
   private static final String dimColType = "DIM";
   private static final String valColType = "VALUE";
 
@@ -120,16 +122,18 @@ public class GaeaSqlTaskUtil {
       logSamples.setMaxCount(collectMetric.getSampleMaxCount());
       logSamples.setMaxLength(collectMetric.getSampleMaxLength());
 
-      logSamples.setWhere(
-          buildSampleWhere(logParse.splitType, splitColMap, collectMetric.getLogSampleRules()));
+      if (!CollectionUtils.isEmpty(collectMetric.getLogSampleRules())) {
+        logSamples.setWhere(
+            buildSampleWhere(logParse.splitType, splitColMap, collectMetric.getLogSampleRules()));
+      }
       select.setLogSamples(logSamples);
     }
 
     return select;
   }
 
-  public static From buildFrom(List<LogPath> logPaths, LogParse logParse, List<Filter> whiteFilters,
-      List<Filter> blackFilters, List<SplitCol> splitCols) {
+  public static From buildFrom(List<LogPath> logPaths, LogParse logParse, ExtraConfig extraConfig,
+      List<Filter> whiteFilters, List<Filter> blackFilters, List<SplitCol> splitCols) {
 
     Log fromLog = new Log();
     {
@@ -151,6 +155,9 @@ public class GaeaSqlTaskUtil {
             parse.setType("regexp");
             parse.setRegexp(new Log.Regexp());
             parse.getRegexp().setExpression(logParse.regexp.expression);
+            break;
+          case json:
+            parse.setType("json");
             break;
           default:
             parse.setType("none");
@@ -190,7 +197,7 @@ public class GaeaSqlTaskUtil {
         pathList.add(path);
       });
       fromLog.setPath(pathList);
-      fromLog.setCharset(logPaths.get(0).charset);
+      fromLog.setCharset(extraConfig.getCharset());
       fromLog.setParse(parse);
 
       MultiLine multiLine = logParse.multiLine;
@@ -222,6 +229,7 @@ public class GaeaSqlTaskUtil {
       timeParse.setType("auto");
       fromLog.setTime(timeParse);
 
+      boolean jsonTimeSelect = false;
       if (!CollectionUtils.isEmpty(splitCols)) {
         for (CustomPluginConf.SplitCol splitCol : splitCols) {
           if ("TIME".equals(splitCol.colType)) {
@@ -245,8 +253,14 @@ public class GaeaSqlTaskUtil {
             timeParse.setElect(buildElect(splitCol.rule, logParse.splitType));
             timeParse.setType("elect");
             timeParse.setFormat("golangLayout");
+            jsonTimeSelect = true;
           }
         }
+        fromLog.setTime(timeParse);
+      }
+      if (StringUtils.isNotBlank(logParse.splitType) && logParse.splitType.equalsIgnoreCase(json)
+          && !jsonTimeSelect) {
+        timeParse.setType("processTime");
         fromLog.setTime(timeParse);
       }
     }
@@ -268,6 +282,7 @@ public class GaeaSqlTaskUtil {
 
         Where and = new Where();
         Elect elect = new Elect();
+        Where.In in = new Where.In();
         switch (w.type) {
           case leftRight:
             Elect.LeftRight leftRight = new Elect.LeftRight();
@@ -278,7 +293,6 @@ public class GaeaSqlTaskUtil {
             elect.setType("leftRight");
             elect.setLeftRight(leftRight);
 
-            Where.In in = new Where.In();
             in.setValues(w.values);
             in.setElect(elect);
             and.setIn(in);
@@ -290,6 +304,17 @@ public class GaeaSqlTaskUtil {
             contains.setElect(elect);
             contains.setValues(w.values);
             and.setContainsAny(contains);
+            break;
+
+          case json:
+            Elect.RefName refName = new Elect.RefName();
+            refName.setName(w.rule.jsonPathSyntax);
+            elect.setRefName(refName);
+            elect.setType("refName");
+
+            in.setValues(w.values);
+            in.setElect(elect);
+            and.setIn(in);
             break;
 
           default:
@@ -304,6 +329,7 @@ public class GaeaSqlTaskUtil {
       blackFilters.forEach(w -> {
         Where and = new Where();
         Where not = new Where();
+        Where.In in = new Where.In();
 
         Elect elect = new Elect();
         switch (w.getType()) {
@@ -314,7 +340,6 @@ public class GaeaSqlTaskUtil {
             leftRight.setRight(w.rule.right);
             elect.setType("leftRight");
             elect.setLeftRight(leftRight);
-            Where.In in = new Where.In();
             in.setValues(w.values);
             in.setElect(elect);
 
@@ -328,6 +353,18 @@ public class GaeaSqlTaskUtil {
             contains.setValues(w.values);
 
             not.setContainsAny(contains);
+            and.setNot(not);
+            break;
+          case json:
+            Elect.RefName refName = new Elect.RefName();
+            refName.setName(w.rule.jsonPathSyntax);
+            elect.setType("refName");
+            elect.setRefName(refName);
+
+            in.setValues(w.values);
+            in.setElect(elect);
+
+            not.setIn(in);
             and.setNot(not);
             break;
           default:
@@ -384,6 +421,11 @@ public class GaeaSqlTaskUtil {
             elect.setRefIndex(new RefIndex());
             elect.getRefIndex().setIndex(rule.pos);
           }
+          break;
+        case json:
+          elect.setType("refName");
+          elect.setRefName(new RefName());
+          elect.getRefName().setName(rule.jsonPathSyntax);
           break;
         default:
           break;
@@ -480,8 +522,23 @@ public class GaeaSqlTaskUtil {
               elect.getRefIndex().setIndex(rule.pos);
             }
             break;
+          case json:
+            elect.setType("refName");
+            elect.setRefName(new RefName());
+            elect.getRefName().setName(rule.jsonPathSyntax);
+            break;
           default:
             break;
+        }
+
+        if (null != rule.translate && !CollectionUtils.isEmpty(rule.translate.transforms)) {
+          Transform transform = new Transform();
+          transform.setFilters(convertTransFormFilters(rule.translate.transforms));
+          elect.setTransform(transform);
+        }
+
+        if (StringUtils.isNotEmpty(rule.defaultValue)) {
+          elect.setDefaultValue(rule.defaultValue);
         }
 
         Where and = new Where();
@@ -522,9 +579,9 @@ public class GaeaSqlTaskUtil {
     return where;
   }
 
-  public static GroupBy buildLogPatternParse(LogParse logParse) {
+  public static GroupBy buildLogPatternParse(LogParse logParse, ExtraConfig extraConfig) {
     GroupBy groupBy = new GroupBy();
-    groupBy.setMaxKeys(logParse.maxKeySize);
+    groupBy.setMaxKeySize(extraConfig.getMaxKeySize());
 
     LogPattern logPattern = logParse.pattern;
 
@@ -589,11 +646,11 @@ public class GaeaSqlTaskUtil {
     return groupBy;
   }
 
-  public static GroupBy buildGroupBy(LogParse logParse,
+  public static GroupBy buildGroupBy(LogParse logParse, ExtraConfig extraConfig,
       Map<String, Map<String, SplitCol>> splitColMap, CollectMetric collectMetric) {
 
     if (logParse.checkIsPattern() && collectMetric.checkLogPattern()) {
-      return buildLogPatternParse(logParse);
+      return buildLogPatternParse(logParse, extraConfig);
     }
     List<String> tags = collectMetric.getTags();
 
@@ -639,6 +696,11 @@ public class GaeaSqlTaskUtil {
             elect.getRefIndex().setIndex(rule.pos);
           }
           break;
+        case json:
+          elect.setType("refName");
+          elect.setRefName(new RefName());
+          elect.getRefName().setName(rule.jsonPathSyntax);
+          break;
         default:
           break;
       }
@@ -658,7 +720,7 @@ public class GaeaSqlTaskUtil {
         group.setName(t);
         group.setElect(elect);
       }
-      groupBy.setMaxKeys(logParse.maxKeySize);
+      groupBy.setMaxKeySize(extraConfig.getMaxKeySize());
       groupBy.getGroups().add(group);
     });
 
@@ -719,6 +781,11 @@ public class GaeaSqlTaskUtil {
           elect.setRefIndex(new RefIndex());
           elect.getRefIndex().setIndex(rule.pos);
         }
+        break;
+      case json:
+        elect.setType("refName");
+        elect.setRefName(new RefName());
+        elect.getRefName().setName(rule.jsonPathSyntax);
         break;
       default:
         break;

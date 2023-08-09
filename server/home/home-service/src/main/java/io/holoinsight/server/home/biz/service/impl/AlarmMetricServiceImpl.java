@@ -49,6 +49,18 @@ public class AlarmMetricServiceImpl extends ServiceImpl<AlarmMetricMapper, Alarm
   }
 
   @Override
+  public List<AlarmMetric> queryByRuleId(Long ruleId, String tenant, String workspace) {
+    QueryWrapper<AlarmMetric> wrapper = new QueryWrapper<>();
+    wrapper.eq("deleted", 0);
+    wrapper.eq("tenant", tenant);
+    if (StringUtils.isNotBlank(workspace)) {
+      wrapper.eq("workspace", workspace);
+    }
+    wrapper.eq("rule_id", ruleId);
+    return baseMapper.selectList(wrapper);
+  }
+
+  @Override
   public List<AlarmMetric> queryByMetric(List<String> metrics, String tenant, String workspace) {
     QueryWrapper<AlarmMetric> wrapper = new QueryWrapper<>();
     wrapper.eq("deleted", 0);

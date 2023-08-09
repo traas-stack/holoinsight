@@ -37,6 +37,15 @@ public enum AlertLevel {
     return null;
   }
 
+  public static AlertLevel getByDesc(String desc) {
+    for (AlertLevel a : AlertLevel.values()) {
+      if (a.getDesc().equals(desc)) {
+        return a;
+      }
+    }
+    return null;
+  }
+
   public String getDesc() {
     return desc;
   }

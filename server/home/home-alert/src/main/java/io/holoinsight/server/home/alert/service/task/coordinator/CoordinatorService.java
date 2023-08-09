@@ -4,22 +4,29 @@
 package io.holoinsight.server.home.alert.service.task.coordinator;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.google.common.reflect.TypeToken;
 import io.holoinsight.server.common.AddressUtil;
 import io.holoinsight.server.common.J;
 import io.holoinsight.server.home.alert.service.task.CacheAlertTask;
 import io.holoinsight.server.home.alert.service.task.coordinator.server.NettyServer;
+import io.holoinsight.server.home.biz.common.MetaDictUtil;
 import io.holoinsight.server.home.common.util.CLUSTER_ROLE_CONST;
 import io.holoinsight.server.home.dal.mapper.ClusterMapper;
 import io.holoinsight.server.home.dal.model.Cluster;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+
+import static io.holoinsight.server.home.biz.common.MetaDictType.GLOBAL_CONFIG;
 
 /**
  * 用来协调 alarm 集群的任务分配，主要分为两步： order 阶段： 1. 通过心跳记录，获取任务分布的预方案； 2. index * 2s 进行报数，确认能参与任务计算的节点； 3.
@@ -61,6 +68,10 @@ public class CoordinatorService {
     LOGGER.info("get order by my ip {} in {}", myIp, J.toJson(clusters));
     this.otherMembers = new ArrayList<>();
     int order = -1;
+    List<String> blackList = getBlackServerList();
+    if (!CollectionUtils.isEmpty(blackList) && blackList.contains(myIp)) {
+      return order;
+    }
     for (int i = 0; i < clusters.size(); i++) {
       Cluster cluster = clusters.get(i);
       if (myIp.equals(cluster.getIp())) {
@@ -70,6 +81,14 @@ public class CoordinatorService {
       }
     }
     return order;
+  }
+
+  private List<String> getBlackServerList() {
+    String listStr = MetaDictUtil.getStringValue(GLOBAL_CONFIG, "alert_server_black_list");
+    if (StringUtils.isBlank(listStr)) {
+      return Collections.emptyList();
+    }
+    return J.fromJson(listStr, new TypeToken<List<String>>() {}.getType());
   }
 
   public void spread(long heartbeat) {

@@ -5,6 +5,8 @@ package io.holoinsight.server.home.facade;
 
 import lombok.Data;
 
+import java.util.List;
+
 
 /**
  * @author wangsiyuan
@@ -56,4 +58,12 @@ public class InspectConfig {
   private Long sourceId;
 
   private boolean logPatternEnable;
+
+  private boolean logSampleEnable;
+
+  private List<String> metrics;
+
+  private AlertNotifyRecordDTO alertNotifyRecord;
+
+  private boolean alertRecord;
 }

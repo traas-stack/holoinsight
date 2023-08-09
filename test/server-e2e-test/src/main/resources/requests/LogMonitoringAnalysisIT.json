@@ -15,12 +15,15 @@
         }
       ]
     },
+    "extraConfig": {
+      "keyCleanInterval": 0,
+      "maxKeySize": 20000,
+      "charset": "utf-8"
+    },
     "logPaths": [
       {
         "path": "/home/admin/logs/holoinsight-server/test/loganalysis.log",
-        "type": "path",
-        "charset": "utf-8",
-        "agentLimitKB": -1
+        "type": "path"
       }
     ],
     "logParse": {

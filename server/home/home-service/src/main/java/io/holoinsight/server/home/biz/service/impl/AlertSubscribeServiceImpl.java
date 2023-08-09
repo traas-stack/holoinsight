@@ -3,6 +3,7 @@
  */
 package io.holoinsight.server.home.biz.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import io.holoinsight.server.home.biz.service.AlertSubscribeService;
 import io.holoinsight.server.home.dal.converter.AlarmSubscribeConverter;
@@ -33,6 +34,9 @@ public class AlertSubscribeServiceImpl extends ServiceImpl<AlarmSubscribeMapper,
 
   @Resource
   private AlarmSubscribeConverter alarmSubscribeConverter;
+
+  @Resource
+  private AlarmSubscribeMapper alarmSubscribeMapper;
 
   public Boolean saveDataBatch(AlarmSubscribeDTO alarmSubscribeDTO, String creator, String tenant,
       String workspace) {
@@ -80,10 +84,11 @@ public class AlertSubscribeServiceImpl extends ServiceImpl<AlarmSubscribeMapper,
   }
 
   @Override
-  public AlarmSubscribeDTO queryByUniqueId(Map<String, Object> columnMap) {
+  public AlarmSubscribeDTO queryByUniqueId(QueryWrapper<AlarmSubscribe> queryWrapper,
+      String uniqueId) {
     AlarmSubscribeDTO alarmSubscribeDTO = new AlarmSubscribeDTO();
-    alarmSubscribeDTO.setUniqueId((String) columnMap.get("unique_id"));
-    List<AlarmSubscribe> list = this.listByMap(columnMap);
+    alarmSubscribeDTO.setUniqueId(uniqueId);
+    List<AlarmSubscribe> list = this.alarmSubscribeMapper.selectList(queryWrapper);
     if (!CollectionUtils.isEmpty(list)) {
       alarmSubscribeDTO.setEnvType(list.get(0).getEnvType());
     }
@@ -92,8 +97,9 @@ public class AlertSubscribeServiceImpl extends ServiceImpl<AlarmSubscribeMapper,
   }
 
   @Override
-  public List<AlarmSubscribeInfo> queryByMap(Map<String, Object> columnMap) {
-    return alarmSubscribeConverter.dosToDTOs(this.listByMap(columnMap));
+  public List<AlarmSubscribeInfo> queryByMap(QueryWrapper<AlarmSubscribe> queryWrapper) {
+    List<AlarmSubscribe> list = this.alarmSubscribeMapper.selectList(queryWrapper);
+    return alarmSubscribeConverter.dosToDTOs(list);
   }
 
   @Override

@@ -87,6 +87,13 @@ public class MetaDictUtil {
     return meta.getDictValue();
   }
 
+  public static List<String> getList(String type, String key) {
+    List<String> value = MetaDictUtil.getValue(type, key, new TypeToken<List<String>>() {});
+    if (CollectionUtils.isEmpty(value))
+      return new ArrayList<>();
+    return value;
+  }
+
   public static String getUlaType() {
 
     String value = MetaDictUtil.getStringValue(MetaDictType.GLOBAL_CONFIG, MetaDictKey.ULA);

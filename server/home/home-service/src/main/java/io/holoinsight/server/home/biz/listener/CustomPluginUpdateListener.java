@@ -41,10 +41,10 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * 通知registry
+ * Notify registry
  *
  * @author jsy1001de
- * @version 1.0: CustomPluginUpdateListener.java, v 0.1 2022年03月15日 8:40 下午 jinsong.yjs Exp $
+ * @version 1.0: CustomPluginUpdateListener.java, v 0.1 2022-03-15 8:40 pm jinsong.yjs Exp $
  */
 @Component
 @Slf4j
@@ -71,11 +71,11 @@ public class CustomPluginUpdateListener {
     // 0. save metricInfo
     saveMetricInfo(customPluginDTO);
 
-    // 1. 转换模型
-    // 2. 落库
-    // 3. 通知registry
+    // 1. conversion model
+    // 2. update database
+    // 3. notify registry
     try {
-      // 转成采集模型
+      // convert to Acquisition Model
       CustomPluginConf conf = customPluginDTO.getConf();
 
       List<LogPath> logPaths = conf.logPaths;
@@ -84,6 +84,9 @@ public class CustomPluginUpdateListener {
 
       Map<String, SqlTask> sqlTaskMaps = new HashMap<>();
       for (CollectMetric collectMetric : collectMetrics) {
+        if (Boolean.TRUE == conf.spm && collectMetric.targetTable.contains("successPercent")) {
+          continue;
+        }
         SqlTask sqlTask = buildSqlTask(logPaths, collectMetric, customPluginDTO);
 
         String name = collectMetric.name;
@@ -97,10 +100,10 @@ public class CustomPluginUpdateListener {
       if (CollectionUtils.isEmpty(sqlTaskMaps))
         return;
 
-      // 更新
+      // update
       List<Long> upsert = upsert(sqlTaskMaps, customPluginDTO);
 
-      // 通知registry
+      // notify registry
       notify(upsert);
     } catch (Throwable e) {
       log.error("fail to convert customPlugin to gaeaCollectConfig id {} for {}",
@@ -136,7 +139,7 @@ public class CustomPluginUpdateListener {
       gaeaCollectConfigDTO.refId = "custom_" + customPluginDTO.getId();
 
       byMap.remove(entry.getKey());
-      // 下线配置直接置为 deleted=1
+      // The offline configuration is directly set to deleted=1
       if (customPluginDTO.getStatus() == CustomPluginStatus.OFFLINE) {
         Long aLong = gaeaCollectConfigService.updateDeleted(gaeaCollectConfigDTO.tableName);
         if (null != aLong)
@@ -161,7 +164,7 @@ public class CustomPluginUpdateListener {
 
   private void notify(List<Long> upsertList) {
 
-    // grpc 通知id更新
+    // grpc notification id update
   }
 
   private SqlTask buildSqlTask(List<LogPath> logPaths, CollectMetric collectMetric,
@@ -172,10 +175,11 @@ public class CustomPluginUpdateListener {
     Map<String, Map<String, SplitCol>> splitColMap =
         GaeaSqlTaskUtil.convertSplitColMap(conf.splitCols);
     Select select = GaeaSqlTaskUtil.buildSelect(conf.logParse, splitColMap, collectMetric);
-    From from = GaeaSqlTaskUtil.buildFrom(logPaths, conf.logParse, conf.whiteFilters,
-        conf.blackFilters, conf.splitCols);
+    From from = GaeaSqlTaskUtil.buildFrom(logPaths, conf.logParse, conf.extraConfig,
+        conf.whiteFilters, conf.blackFilters, conf.splitCols);
     Where where = GaeaSqlTaskUtil.buildWhere(conf.logParse, splitColMap, collectMetric);
-    GroupBy groupBy = GaeaSqlTaskUtil.buildGroupBy(conf.logParse, splitColMap, collectMetric);
+    GroupBy groupBy = GaeaSqlTaskUtil.buildGroupBy(conf.logParse, conf.getExtraConfig(),
+        splitColMap, collectMetric);
     Window window = GaeaSqlTaskUtil.buildWindow(customPluginDTO.periodType.getDataUnitMs());
     Output output = GaeaSqlTaskUtil.buildOutput(collectMetric.getTargetTable());
     ExecuteRule executeRule = GaeaSqlTaskUtil.buildExecuteRule();
@@ -199,6 +203,12 @@ public class CustomPluginUpdateListener {
     List<CollectMetric> collectMetrics = conf.getCollectMetrics();
 
     for (CollectMetric collectMetric : collectMetrics) {
+
+      String tableName = collectMetric.getTableName();
+      if (StringUtil.isNotBlank(collectMetric.name)) {
+        tableName = collectMetric.getName();
+      }
+
       try {
         MetricInfoDTO metricInfoDTO = new MetricInfoDTO();
         metricInfoDTO.setTenant(customPluginDTO.getTenant());
@@ -208,15 +218,17 @@ public class CustomPluginUpdateListener {
         metricInfoDTO.setProduct("logmonitor");
 
         metricInfoDTO.setMetricType("logdefault");
-        if (collectMetric.checkLogPattern()) {
+        if (Boolean.TRUE == conf.spm && collectMetric.targetTable.contains("successPercent")) {
+          metricInfoDTO.setMetricType("logspm");
+        } else if (collectMetric.checkLogPattern()) {
           metricInfoDTO.setMetricType("logpattern");
         } else if (collectMetric.checkLogSample()) {
           metricInfoDTO.setMetricType("logsample");
         }
-        metricInfoDTO.setMetric(collectMetric.getTableName());
+        metricInfoDTO.setMetric(tableName);
         metricInfoDTO.setMetricTable(collectMetric.getTargetTable());
         metricInfoDTO.setDeleted(customPluginDTO.status == CustomPluginStatus.OFFLINE);
-        metricInfoDTO.setDescription(customPluginDTO.getName() + ", " + collectMetric.tableName);
+        metricInfoDTO.setDescription(customPluginDTO.getName() + "_" + tableName);
         metricInfoDTO.setUnit("number");
         metricInfoDTO.setPeriod(customPluginDTO.getPeriodType().dataUnitMs / 1000);
 
@@ -225,7 +237,7 @@ public class CustomPluginUpdateListener {
           tags.addAll(collectMetric.tags);
         }
         metricInfoDTO.setTags(tags);
-
+        metricInfoDTO.setRef(String.valueOf(customPluginDTO.getId()));
         MetricInfoDTO db = metricInfoService.queryByMetric(metricInfoDTO.getTenant(),
             metricInfoDTO.getWorkspace(), collectMetric.getTargetTable());
         if (null == db) {

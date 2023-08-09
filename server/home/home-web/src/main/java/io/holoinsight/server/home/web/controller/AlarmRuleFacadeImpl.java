@@ -13,6 +13,7 @@ import io.holoinsight.server.home.biz.service.AlertGroupService;
 import io.holoinsight.server.home.biz.service.AlertRuleService;
 import io.holoinsight.server.home.biz.service.AlertSubscribeService;
 import io.holoinsight.server.home.biz.service.UserOpLogService;
+import io.holoinsight.server.home.common.service.RequestContextAdapter;
 import io.holoinsight.server.home.common.util.MonitorException;
 import io.holoinsight.server.home.common.util.scope.AuthTargetType;
 import io.holoinsight.server.home.common.util.scope.MonitorCookieUtil;
@@ -23,6 +24,7 @@ import io.holoinsight.server.home.common.util.scope.RequestContext;
 import io.holoinsight.server.home.dal.converter.AlarmRuleConverter;
 import io.holoinsight.server.home.dal.mapper.CustomPluginMapper;
 import io.holoinsight.server.home.dal.model.AlarmRule;
+import io.holoinsight.server.home.dal.model.AlarmSubscribe;
 import io.holoinsight.server.home.dal.model.CustomPlugin;
 import io.holoinsight.server.home.dal.model.OpType;
 import io.holoinsight.server.home.dal.model.dto.AlarmGroupDTO;
@@ -51,6 +53,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -89,6 +92,9 @@ public class AlarmRuleFacadeImpl extends BaseFacade {
   @Resource
   protected AlarmRuleConverter alarmRuleConverter;
 
+  @Autowired
+  private RequestContextAdapter requestContextAdapter;
+
   @Value("${holoinsight.home.domain}")
   private String domain;
 
@@ -107,7 +113,8 @@ public class AlarmRuleFacadeImpl extends BaseFacade {
         ParaCheckUtil.checkParaNotNull(alarmRuleDTO.getStatus(), "status");
         ParaCheckUtil.checkParaNotNull(alarmRuleDTO.getRecover(), "recover");
         ParaCheckUtil.checkParaNotNull(alarmRuleDTO.getIsMerge(), "isMerge");
-        ParaCheckUtil.checkInvalidCharacter(alarmRuleDTO.getRuleName(), "invalid ruleName");
+        ParaCheckUtil.checkInvalidCharacter(alarmRuleDTO.getRuleName(),
+            "invalid ruleName, please use a-z A-Z 0-9 Chinese - _ , . spaces");
       }
 
       @Override
@@ -171,7 +178,8 @@ public class AlarmRuleFacadeImpl extends BaseFacade {
         ParaCheckUtil.checkEquals(alarmRuleDTO.getTenant(),
             RequestContext.getContext().ms.getTenant(), "tenant is illegal");
         if (StringUtils.isNotBlank(alarmRuleDTO.getRuleName())) {
-          ParaCheckUtil.checkInvalidCharacter(alarmRuleDTO.getRuleName(), "invalid ruleName");
+          ParaCheckUtil.checkInvalidCharacter(alarmRuleDTO.getRuleName(),
+              "invalid ruleName, please use a-z A-Z 0-9 Chinese - _ , . spaces");
         }
       }
 
@@ -249,6 +257,8 @@ public class AlarmRuleFacadeImpl extends BaseFacade {
         for (String id : idArray) {
           AlarmRuleDTO alarmRuleDTO =
               alarmRuleService.queryById(Long.parseLong(id), ms.getTenant(), ms.getWorkspace());
+          if (null == alarmRuleDTO)
+            continue;
           alarmRuleDTOS.add(alarmRuleDTO);
         }
         JsonResult.createSuccessResult(result, alarmRuleDTOS);
@@ -327,19 +337,23 @@ public class AlarmRuleFacadeImpl extends BaseFacade {
       @Override
       public void doManage() {
         boolean myself = StringUtils.equals(req, "true");
-        List<AlarmRuleDTO> alarmRuleDTOS = new ArrayList<>();
+        Map<Long, AlarmRuleDTO> map = new HashMap<>();
 
         List<AlarmRuleDTO> byIds = getRuleListBySubscribe(myself);
         if (!CollectionUtils.isEmpty(byIds)) {
-          alarmRuleDTOS.addAll(byIds);
+          byIds.forEach(byId -> {
+            map.put(byId.getId(), byId);
+          });
         }
 
         List<AlarmRuleDTO> byGroups = getRuleListByGroup(myself);
         if (!CollectionUtils.isEmpty(byGroups)) {
-          alarmRuleDTOS.addAll(byGroups);
+          byGroups.forEach(byGroup -> {
+            map.put(byGroup.getId(), byGroup);
+          });
         }
 
-        JsonResult.createSuccessResult(result, alarmRuleDTOS);
+        JsonResult.createSuccessResult(result, new ArrayList<>(map.values()));
 
       }
     });
@@ -407,20 +421,21 @@ public class AlarmRuleFacadeImpl extends BaseFacade {
         alarmGroupService.getListByUserLike(userId, MonitorCookieUtil.getTenantOrException());
 
     if (CollectionUtils.isEmpty(listByUserLike))
-      return null;
+      return Collections.emptyList();
 
     List<AlarmRuleDTO> alarmRuleDTOS = new ArrayList<>();
     for (AlarmGroupDTO alarmGroupDTO : listByUserLike) {
-      Map<String, Object> conditions = new HashMap<>();
-      conditions.put("group_id", alarmGroupDTO.getId());
-      conditions.put("tenant", MonitorCookieUtil.getTenantOrException());
-      if (null != ms && !StringUtils.isEmpty(ms.workspace)) {
-        conditions.put("workspace", ms.getWorkspace());
-      }
-      List<AlarmSubscribeInfo> alarmSubscribeInfos = alarmSubscribeService.queryByMap(conditions);
+      QueryWrapper<AlarmSubscribe> alarmSubscribeQueryWrapper = new QueryWrapper<>();
+      alarmSubscribeQueryWrapper.eq("group_id", alarmGroupDTO.getId());
 
-      if (CollectionUtils.isEmpty(alarmSubscribeInfos))
-        return null;
+      requestContextAdapter.queryWrapperTenantAdapt(alarmSubscribeQueryWrapper,
+          MonitorCookieUtil.getTenantOrException(), requestContextAdapter.getWorkspace(false));
+      List<AlarmSubscribeInfo> alarmSubscribeInfos =
+          alarmSubscribeService.queryByMap(alarmSubscribeQueryWrapper);
+
+      if (CollectionUtils.isEmpty(alarmSubscribeInfos)) {
+        continue;
+      }
 
       List<String> ruleIds = new ArrayList<>();
       for (AlarmSubscribeInfo alarmSubscribeInfo : alarmSubscribeInfos) {
@@ -455,13 +470,13 @@ public class AlarmRuleFacadeImpl extends BaseFacade {
   protected List<AlarmRuleDTO> getRuleListBySubscribe(boolean myself) {
     MonitorScope ms = RequestContext.getContext().ms;
     String userId = RequestContext.getContext().mu.getUserId();
-    Map<String, Object> conditions = new HashMap<>();
-    conditions.put("subscriber", userId);
-    conditions.put("tenant", MonitorCookieUtil.getTenantOrException());
-    if (null != ms && !StringUtils.isEmpty(ms.workspace)) {
-      conditions.put("workspace", ms.getWorkspace());
-    }
-    List<AlarmSubscribeInfo> alarmSubscribeInfos = alarmSubscribeService.queryByMap(conditions);
+    QueryWrapper<AlarmSubscribe> alarmSubscribeQueryWrapper = new QueryWrapper<>();
+    alarmSubscribeQueryWrapper.eq("subscriber", userId);
+
+    requestContextAdapter.queryWrapperTenantAdapt(alarmSubscribeQueryWrapper,
+        MonitorCookieUtil.getTenantOrException(), requestContextAdapter.getWorkspace(false));
+    List<AlarmSubscribeInfo> alarmSubscribeInfos =
+        alarmSubscribeService.queryByMap(alarmSubscribeQueryWrapper);
 
     if (CollectionUtils.isEmpty(alarmSubscribeInfos))
       return null;

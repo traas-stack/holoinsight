@@ -28,7 +28,8 @@ import static io.holoinsight.server.home.task.MetricCrawlerConstant.NUMBER_UNIT;
 public class PortCheckMetricCrawlerBuilder extends AbstractMetricCrawlerBuilder {
 
   @Override
-  protected List<MetricInfo> getMetricInfoList(String metric, List<String> tags) {
+  protected List<MetricInfo> getMetricInfoList(String metric, List<String> tags,
+      MetricInfo metricInfoTemplate) {
     List<MetricInfo> metricInfoList = new ArrayList<>();
 
     metricInfoList.add(genMetricInfo(GLOBAL_TENANT, GLOBAL_WORKSPACE, GLOBAL_ORGANIZATION,

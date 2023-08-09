@@ -107,10 +107,8 @@ public class AlarmHistoryDetailFacadeImpl extends BaseFacade {
         }
         List<Map<String, Object>> countMap = alarmHistoryDetailService.count(pageRequest);
         QueryResponse response = new QueryResponse();
-        if (!CollectionUtils.isEmpty(countMap)) {
-          convertQueryResponse(response, countMap, pageRequest.getFrom(), pageRequest.getTo(),
-              pageRequest.getTarget());
-        }
+        convertQueryResponse(response, countMap, pageRequest.getFrom(), pageRequest.getTo(),
+            pageRequest.getTarget());
         result.setData(response);
       }
     });
@@ -120,22 +118,24 @@ public class AlarmHistoryDetailFacadeImpl extends BaseFacade {
   private void convertQueryResponse(QueryResponse response, List<Map<String, Object>> countMap,
       Long from, Long to, AlarmHistoryDetailDTO target) {
     Map<Long, Double> values = new HashMap<>();
-    for (Map<String, Object> point : countMap) {
-      try {
-        Double value = ((Number) point.getOrDefault("c", 0d)).doubleValue();
-        Object alarmTimeObj = point.get("alarm_time");
-        Date alarmTime;
-        if (alarmTimeObj instanceof String) {
-          alarmTime = DateUtil.parseDate((String) alarmTimeObj, "yyyy-MM-dd HH:mm:ss");
-        } else if (alarmTimeObj instanceof Date) {
-          alarmTime = (Date) alarmTimeObj;
-        } else {
-          log.error("unknow case for alarmTimeObj {}", alarmTimeObj);
-          continue;
+    if (!CollectionUtils.isEmpty(countMap)) {
+      for (Map<String, Object> point : countMap) {
+        try {
+          Double value = ((Number) point.getOrDefault("c", 0d)).doubleValue();
+          Object alarmTimeObj = point.get("alarm_time");
+          Date alarmTime;
+          if (alarmTimeObj instanceof String) {
+            alarmTime = DateUtil.parseDate((String) alarmTimeObj, "yyyy-MM-dd HH:mm:ss");
+          } else if (alarmTimeObj instanceof Date) {
+            alarmTime = (Date) alarmTimeObj;
+          } else {
+            log.error("unknown case for alarmTimeObj {}", alarmTimeObj);
+            continue;
+          }
+          values.put(alarmTime.getTime(), value);
+        } catch (Exception e) {
+          log.error("fail to convert countMap {}", J.toJson(countMap), e);
         }
-        values.put(alarmTime.getTime(), value);
-      } catch (Exception e) {
-        log.error("fail to convert countMap {}", J.toJson(countMap), e);
       }
     }
     Result result = new Result();

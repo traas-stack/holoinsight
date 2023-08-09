@@ -28,6 +28,7 @@ public abstract class AbstractMetricCrawlerBuilder implements MetricCrawlerBuild
   @Override
   public List<MetricInfo> buildEntity(IntegrationProductDTO integrationProduct) {
     List<MetricInfo> metricInfoList = new ArrayList<>();
+    log.info("[crawlerTask][{}], outer start", integrationProduct.getName());
     List<MetricInfoModel> metricInfoModels = getMetricInfoModel(integrationProduct.getName());
     if (CollectionUtils.isEmpty(metricInfoModels))
       return metricInfoList;
@@ -39,15 +40,19 @@ public abstract class AbstractMetricCrawlerBuilder implements MetricCrawlerBuild
       if (!CollectionUtils.isEmpty(model.getMetricInfoList())) {
         metricInfoList.addAll(model.getMetricInfoList());
       }
-      List<MetricInfo> list = getMetricInfoList(model.getMetric(), model.getTags());
+      List<MetricInfo> list =
+          getMetricInfoList(model.getMetric(), model.getTags(), model.getMetricInfoTemplate());
       if (!CollectionUtils.isEmpty(list)) {
         metricInfoList.addAll(list);
       }
     }
+    log.info("[crawlerTask][{}][{}], outer end", integrationProduct.getName(),
+        metricInfoList.size());
     return metricInfoList;
   }
 
-  protected abstract List<MetricInfo> getMetricInfoList(String metric, List<String> tags);
+  protected abstract List<MetricInfo> getMetricInfoList(String metric, List<String> tags,
+      MetricInfo metricInfoTemplate);
 
 
   public List<MetricInfoModel> getMetricInfoModel(String product) {
@@ -65,6 +70,7 @@ public abstract class AbstractMetricCrawlerBuilder implements MetricCrawlerBuild
     public String metric;
     public List<String> tags = new ArrayList<>();
     public List<MetricInfo> metricInfoList = new ArrayList<>();
+    public MetricInfo metricInfoTemplate;
   }
 
   public MetricInfo genMetricInfo(String tenant, String workspace, String organization,

@@ -74,6 +74,7 @@ public class AgentLogTailService {
 
     response.addToDatas("lines", convertContentLines(grpcResp.getContentList()));
     response.addToDatas("charset", grpcResp.getCharset());
+    response.addToDatas("timezone", grpcResp.getTimezone());
     response.addToDatas("agentId", dim.get("agentId"));
     response.addToDatas("ip", dim.get("ip"));
     response.addToDatas("namespace", dim.get("namespace"));
@@ -137,7 +138,8 @@ public class AgentLogTailService {
     }
 
 
-    Map<String, String> conditions = tenantInitService.getTenantWorkspaceMetaConditions(workspace);
+    Map<String, String> conditions =
+        tenantInitService.getTenantWorkspaceMetaConditions(tenant, workspace);
     if (!CollectionUtils.isEmpty(conditions)) {
       queryExample.getParams().putAll(conditions);
     }

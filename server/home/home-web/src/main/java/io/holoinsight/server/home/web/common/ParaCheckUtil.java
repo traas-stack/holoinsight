@@ -106,6 +106,16 @@ public class ParaCheckUtil {
     }
   }
 
+  public static void checkParaSpecialChar(String str, String errorMsg) {
+    String regEx = "[ `~!@#$%^&*()+=|{}':;',\\[\\].<>/?~！@#￥%……&*（）——+|{}【】‘；：”“’。，、？]|\n|\r|\t";
+    Pattern p = Pattern.compile(regEx);
+    Matcher m = p.matcher(str);
+    if (m.find()) {
+      throw new MonitorException(ResultCodeEnum.PARAMETER_ILLEGAL, errorMsg);
+    }
+  }
+
+
   /**
    * Check whether the array param is empty.
    */

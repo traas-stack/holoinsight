@@ -1,6 +1,7 @@
 syntax = "proto3";
 package io.holoinsight.server.query.grpc;
 option java_package = "io.holoinsight.server.query.grpc";
+import "google/protobuf/any.proto";
 
 message QueryRequest {
   // 租户
@@ -48,6 +49,8 @@ message Datasource {
   optional string fillPolicy = 10;
   // whether the APM metrics is obtained by materializing them to the metric storage in advance instead of post-calculation
   bool apmMaterialized = 11;
+  // query language
+  optional string ql = 12;
 }
 
 message SlidingWindow{
@@ -173,6 +176,14 @@ message Trace{
   repeated Span spans = 1;
 }
 
+message TraceTreeList{
+  repeated TraceTree traceTree = 1;
+}
+
+message TraceTree{
+  Span span = 1;
+  repeated TraceTree children = 2;
+}
 
 message Span {
   string traceId = 1;
@@ -315,6 +326,14 @@ message StatisticDataList {
   repeated StatisticData statisticData = 1;
 }
 
+message CommonMapTypeData{
+  map<string, string> data = 1;
+}
+
+message CommonMapTypeDataList {
+  repeated CommonMapTypeData commonMapTypeData = 1;
+}
+
 service QueryService {
   rpc QueryData(QueryRequest) returns (QueryResponse);
 
@@ -334,6 +353,8 @@ service QueryService {
 
   rpc QueryTrace(QueryTraceRequest) returns (Trace);
 
+  rpc QueryTraceTree(QueryTraceRequest) returns (TraceTreeList);
+
   rpc BillingTrace(QueryTraceRequest) returns (StatisticData);
 
   rpc QueryServiceList(QueryMetaRequest) returns (QueryMetaResponse);
@@ -351,5 +372,9 @@ service QueryService {
   rpc QuerySlowSqlList(QueryMetaRequest) returns (QuerySlowSqlResponse);
 
   rpc StatisticTrace(StatisticRequest) returns (StatisticDataList);
+
+  rpc QueryServiceErrorList(QueryMetaRequest) returns (CommonMapTypeDataList);
+
+  rpc QueryServiceErrorDetail(QueryMetaRequest) returns (CommonMapTypeDataList);
 
 }

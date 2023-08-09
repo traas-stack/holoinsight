@@ -43,6 +43,19 @@ public class IntegrationProductServiceImpl extends
   }
 
   @Override
+  public IntegrationProductDTO findByName(String name) {
+    QueryWrapper<IntegrationProduct> wrapper = new QueryWrapper<>();
+    wrapper.eq("name", name);
+    wrapper.last("LIMIT 1");
+
+    IntegrationProduct model = this.getOne(wrapper);
+    if (model == null) {
+      return null;
+    }
+    return IntegrationProductConverter.doToDTO(model);
+  }
+
+  @Override
   public List<IntegrationProductDTO> findByMap(Map<String, Object> columnMap) {
     List<IntegrationProduct> models = listByMap(columnMap);
 

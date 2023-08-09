@@ -5,13 +5,14 @@
 package io.holoinsight.server.home.alert.plugin;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import io.holoinsight.server.common.service.FuseProtector;
 import io.holoinsight.server.home.alert.common.G;
 import io.holoinsight.server.home.alert.model.event.AlertNotify;
 import io.holoinsight.server.home.alert.model.event.NotifyDataInfo;
 import io.holoinsight.server.home.alert.model.event.WebhookInfo;
 import io.holoinsight.server.home.alert.service.converter.DoConvert;
 import io.holoinsight.server.home.alert.service.event.AlertHandlerExecutor;
+import io.holoinsight.server.home.alert.service.event.RecordSucOrFailNotify;
+import io.holoinsight.server.home.common.service.RequestContextAdapter;
 import io.holoinsight.server.home.dal.mapper.AlarmBlockMapper;
 import io.holoinsight.server.home.dal.mapper.AlarmDingDingRobotMapper;
 import io.holoinsight.server.home.dal.mapper.AlarmGroupMapper;
@@ -27,6 +28,7 @@ import io.holoinsight.server.home.facade.trigger.Trigger;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
@@ -39,13 +41,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-
-import static io.holoinsight.server.common.service.FuseProtector.CRITICAL_GetSubscription;
-import static io.holoinsight.server.common.service.FuseProtector.NORMAL_GetSubscriptionDetail;
 
 /**
  * @author masaimu
@@ -71,6 +69,10 @@ public class GetSubscriptionHandler implements AlertHandlerExecutor {
   @Resource
   private AlarmBlockMapper alarmBlockDOMapper;
 
+  @Autowired
+  private RequestContextAdapter requestContextAdapter;
+  private static final String GET_SUBSCRIPTION = "GetSubscriptionHandler";
+
   @Override
   public void handle(List<AlertNotify> alertNotifies) {
     try {
@@ -86,6 +88,8 @@ public class GetSubscriptionHandler implements AlertHandlerExecutor {
         AlarmBlock alertBlock = alertBlockMap.get(alertNotify.getUniqueId());
         if (alertBlock != null) {
           if (alertNotify.getIsRecover()) {
+            RecordSucOrFailNotify.alertNotifyProcess("alertNotify is recover", GET_SUBSCRIPTION,
+                "remove block subscription", alertNotify.getAlertNotifyRecord());
             iterator.remove();
           } else {
             Map<String, String> tagMap = G.get().fromJson(alertBlock.getTags(), Map.class);
@@ -139,6 +143,8 @@ public class GetSubscriptionHandler implements AlertHandlerExecutor {
             }
           }
         }
+        RecordSucOrFailNotify.alertNotifyProcessSuc(GET_SUBSCRIPTION, "remove block subscription",
+            alertNotify.getAlertNotifyRecord());
       }
 
       // 查询消息通知订阅关系
@@ -147,7 +153,8 @@ public class GetSubscriptionHandler implements AlertHandlerExecutor {
           QueryWrapper<AlarmSubscribe> alertSubscribeQueryWrapper = new QueryWrapper<>();
           alertSubscribeQueryWrapper.eq("unique_id", alertNotify.getUniqueId());
           alertSubscribeQueryWrapper.eq("status", (byte) 1);
-          alertSubscribeQueryWrapper.eq("tenant", alertNotify.getTenant());
+          requestContextAdapter.queryWrapperTenantAdapt(alertSubscribeQueryWrapper, null,
+              alertNotify.getWorkspace());
           addGlobalWebhook(alertNotify, alertWebhookMap);
           List<AlarmSubscribe> alertSubscribeList =
               alarmSubscribeDOMapper.selectList(alertSubscribeQueryWrapper);
@@ -175,7 +182,6 @@ public class GetSubscriptionHandler implements AlertHandlerExecutor {
                     if (isNotifyGroup(alertSubscribe.getGroupId())) {
                       QueryWrapper<AlarmGroup> wrapper = new QueryWrapper<>();
                       wrapper.eq("id", alertSubscribe.getGroupId());
-                      wrapper.eq("tenant", alertNotify.getTenant());
                       AlarmGroup alarmGroup = alarmGroupDOMapper.selectOne(wrapper);
                       Map<String, List<String>> map =
                           G.get().fromJson(alarmGroup.getGroupInfo(), Map.class);
@@ -197,7 +203,6 @@ public class GetSubscriptionHandler implements AlertHandlerExecutor {
                     if (isNotifyGroup(alertSubscribe.getGroupId())) {
                       QueryWrapper<AlarmGroup> wrapper = new QueryWrapper<>();
                       wrapper.eq("id", alertSubscribe.getGroupId());
-                      wrapper.eq("tenant", alertNotify.getTenant());
                       AlarmGroup alarmGroup = alarmGroupDOMapper.selectOne(wrapper);
                       if (StringUtils.isNotBlank(alarmGroup.getGroupInfo())) {
                         Map<String, List<String>> map =
@@ -235,7 +240,6 @@ public class GetSubscriptionHandler implements AlertHandlerExecutor {
             if (!CollectionUtils.isEmpty(dingDingGroupIdList)) {
               QueryWrapper<AlarmDingDingRobot> wrapper = new QueryWrapper<>();
               wrapper.in("id", new ArrayList<>(dingDingGroupIdList));
-              wrapper.eq("tenant", alertNotify.getTenant());
               List<AlarmDingDingRobot> alertDingDingRobotList =
                   alarmDingDingRobotDOMapper.selectList(wrapper);
               List<WebhookInfo> dingdingUrls = new ArrayList<>();
@@ -248,12 +252,14 @@ public class GetSubscriptionHandler implements AlertHandlerExecutor {
               alertNotify.setDingdingUrl(dingdingUrls);
             }
           }
-          FuseProtector.voteComplete(NORMAL_GetSubscriptionDetail);
+          RecordSucOrFailNotify.alertNotifyProcessSuc(GET_SUBSCRIPTION, "query subscription",
+              alertNotify.getAlertNotifyRecord());
         } catch (Throwable e) {
           LOGGER.error(
               "[HoloinsightAlertInternalException][GetSubscriptionHandler][1] {}  fail to get_subscription for {}",
               alertNotify.getTraceId(), e.getMessage(), e);
-          FuseProtector.voteNormalError(NORMAL_GetSubscriptionDetail, e.getMessage());
+          RecordSucOrFailNotify.alertNotifyProcess("fail to get_subscription for " + e.getMessage(),
+              GET_SUBSCRIPTION, "query subscription", alertNotify.getAlertNotifyRecord());
         }
       });
       LOGGER.info("[GetSubscriptionHandler][{}] finish to get_subscription.", alertNotifies.size());
@@ -261,7 +267,6 @@ public class GetSubscriptionHandler implements AlertHandlerExecutor {
       LOGGER.error(
           "[HoloinsightAlertInternalException][GetSubscriptionHandler][{}] fail to get_subscription for {}",
           alertNotifies.size(), e.getMessage(), e);
-      FuseProtector.voteCriticalError(CRITICAL_GetSubscription, e.getMessage());
     }
   }
 

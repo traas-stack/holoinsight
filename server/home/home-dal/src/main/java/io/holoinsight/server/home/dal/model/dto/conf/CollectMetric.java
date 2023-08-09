@@ -36,6 +36,7 @@ public class CollectMetric implements Serializable {
   // 关键字统计，数值提取，日志流量
   // contains/select/count
   public String metricType;
+  public Boolean spm;
 
   // 关键字统计
   public String containValue;
@@ -110,9 +111,6 @@ public class CollectMetric implements Serializable {
   }
 
   public boolean checkLogSample() {
-    if (!CollectionUtils.isEmpty(logSampleRules) && logSample) {
-      return true;
-    }
-    return false;
+    return null != logSample && Boolean.TRUE == logSample;
   }
 }

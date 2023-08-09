@@ -7,6 +7,7 @@ import io.holoinsight.server.apm.common.model.query.Pagination;
 import io.holoinsight.server.apm.common.model.query.QueryOrder;
 import io.holoinsight.server.apm.common.model.query.QueryTraceRequest;
 import io.holoinsight.server.apm.common.model.query.TraceBrief;
+import io.holoinsight.server.apm.common.model.query.TraceTree;
 import io.holoinsight.server.apm.common.model.specification.sw.Trace;
 import io.holoinsight.server.apm.common.model.specification.sw.TraceState;
 import io.holoinsight.server.apm.server.service.TraceService;
@@ -60,8 +61,6 @@ public class TraceApiController implements TraceApi {
 
   @Override
   public ResponseEntity<Trace> queryTrace(QueryTraceRequest request) throws Exception {
-
-
     if (CollectionUtils.isEmpty(request.getTraceIds())) {
       throw new IllegalArgumentException("The condition must contains traceIds.");
     }
@@ -72,7 +71,26 @@ public class TraceApiController implements TraceApi {
       start = request.getDuration().getStart();
       end = request.getDuration().getEnd();
     }
-    Trace trace = traceService.queryTrace(request.getTenant(), start, end, traceIds.get(0));
+    Trace trace = traceService.queryTrace(request.getTenant(), start, end, traceIds.get(0),
+        request.getTags());
+    return ResponseEntity.ok(trace);
+  }
+
+  @Override
+  public ResponseEntity<List<TraceTree>> queryTraceTree(QueryTraceRequest request)
+      throws Exception {
+    if (CollectionUtils.isEmpty(request.getTraceIds())) {
+      throw new IllegalArgumentException("The condition must contains traceIds.");
+    }
+    List<String> traceIds = request.getTraceIds();
+    long start = 0;
+    long end = 0;
+    if (nonNull(request.getDuration())) {
+      start = request.getDuration().getStart();
+      end = request.getDuration().getEnd();
+    }
+    List<TraceTree> trace = traceService.queryTraceTree(request.getTenant(), start, end,
+        traceIds.get(0), request.getTags());
     return ResponseEntity.ok(trace);
   }
 }

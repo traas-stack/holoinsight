@@ -7,6 +7,8 @@ import lombok.Data;
 
 @Data
 public class ErrorInfo extends Source {
+
+  private String spanId;
   private String errorKind;
   private String serviceName;
   private String serviceInstanceName;

@@ -4,6 +4,7 @@
 package io.holoinsight.server.registry.core.collecttarget;
 
 import io.holoinsight.server.registry.core.template.CollectTemplate;
+import lombok.Data;
 
 /**
  * 
@@ -20,5 +21,15 @@ public interface TargetHostIPResolver {
    * @param target
    * @return
    */
-  String getHostIP(CollectTemplate t, Target target);
+  Result getHostIP(CollectTemplate t, Target target);
+
+  enum Type {
+    AGENT_ID, HOST_IP
+  }
+
+  @Data
+  class Result {
+    private final Type type;
+    private final String value;
+  }
 }

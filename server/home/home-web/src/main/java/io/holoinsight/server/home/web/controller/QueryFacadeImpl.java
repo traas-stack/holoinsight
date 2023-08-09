@@ -30,9 +30,9 @@ import io.holoinsight.server.home.web.common.ParaCheckUtil;
 import io.holoinsight.server.home.web.common.PqlParser;
 import io.holoinsight.server.home.web.common.TokenUrls;
 import io.holoinsight.server.home.web.common.pql.PqlException;
-import io.holoinsight.server.home.web.controller.model.DataQueryRequest;
-import io.holoinsight.server.home.web.controller.model.DataQueryRequest.QueryDataSource;
-import io.holoinsight.server.home.web.controller.model.DataQueryRequest.QueryFilter;
+import io.holoinsight.server.common.model.DataQueryRequest;
+import io.holoinsight.server.common.model.DataQueryRequest.QueryDataSource;
+import io.holoinsight.server.common.model.DataQueryRequest.QueryFilter;
 import io.holoinsight.server.home.web.controller.model.DelTagReq;
 import io.holoinsight.server.home.web.controller.model.PqlInstanceRequest;
 import io.holoinsight.server.home.web.controller.model.PqlParseRequest;
@@ -211,7 +211,7 @@ public class QueryFacadeImpl extends BaseFacade {
             .setEnd(System.currentTimeMillis() - 60000 * 5);
 
         List<QueryProto.QueryFilter> tenantFilters =
-            tenantInitService.getTenantFilters(ms.getWorkspace());
+            tenantInitService.getTenantFilters(ms.getTenant(), ms.getWorkspace());
         if (!CollectionUtils.isEmpty(tenantFilters)) {
           builder.addAllFilters(tenantFilters);
         }
@@ -297,7 +297,15 @@ public class QueryFacadeImpl extends BaseFacade {
             .addAllGroupBy(Collections.singletonList(tagQueryRequest.getKey()));
 
         List<QueryProto.QueryFilter> tenantFilters =
-            tenantInitService.getTenantFilters(ms.getWorkspace());
+            tenantInitService.getTenantFilters(ms.getTenant(), ms.getWorkspace());
+
+        if (!CollectionUtils.isEmpty(tagQueryRequest.getConditions())) {
+          tagQueryRequest.getConditions().forEach((k, v) -> {
+            tenantFilters.add(QueryProto.QueryFilter.newBuilder().setName(k).setType("literal_or")
+                .setValue(v).build());
+          });
+        }
+
         if (!CollectionUtils.isEmpty(tenantFilters)) {
           builder.addAllFilters(tenantFilters);
         }
@@ -442,6 +450,12 @@ public class QueryFacadeImpl extends BaseFacade {
     if (StringUtil.isNotBlank(request.getQuery())) {
       builder.setQuery(request.getQuery());
     }
+    if (StringUtil.isNotBlank(request.getDownsample())) {
+      builder.setDownsample(request.getDownsample());
+    }
+    if (StringUtil.isNotBlank(request.getFillPolicy())) {
+      builder.setFillPolicy(request.getFillPolicy());
+    }
 
     request.datasources.forEach(d -> {
       // Timeline alignment
@@ -460,7 +474,7 @@ public class QueryFacadeImpl extends BaseFacade {
 
       QueryProto.Datasource.Builder datasourceBuilder = QueryProto.Datasource.newBuilder();
       toProtoBean(datasourceBuilder, d);
-      Boolean aBoolean = tenantInitService.checkConditions(ms.getWorkspace(),
+      Boolean aBoolean = tenantInitService.checkConditions(ms.getTenant(), ms.getWorkspace(),
           datasourceBuilder.getMetric(), datasourceBuilder.getFiltersList());
       if (!aBoolean) {
         throw new MonitorException("workspace is illegal");

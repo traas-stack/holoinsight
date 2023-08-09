@@ -33,7 +33,8 @@ import static io.holoinsight.server.home.task.MetricCrawlerConstant.NUMBER_UNIT;
 @MetricCrawler(code = "io.holoinsight.plugin.MysqlPlugin")
 public class MysqlMetricCrawlerBuilder extends AbstractMetricCrawlerBuilder {
   @Override
-  protected List<MetricInfo> getMetricInfoList(String metric, List<String> tags) {
+  protected List<MetricInfo> getMetricInfoList(String metric, List<String> tags,
+      MetricInfo metricInfoTemplate) {
 
     List<MetricInfo> metricInfoList = new ArrayList<>();
     Map<String, List<IntegrationMetricDTO>> listMap = J.fromJson(metricData,

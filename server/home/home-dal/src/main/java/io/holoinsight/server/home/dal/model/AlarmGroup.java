@@ -24,6 +24,8 @@ public class AlarmGroup {
   public Long id;
   public String tenant;
 
+  public String workspace;
+
   public String groupName;
 
   public String groupInfo;

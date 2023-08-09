@@ -4,9 +4,8 @@
 package io.holoinsight.server.common.service;
 
 import io.holoinsight.server.common.dao.entity.MetaDataDictValue;
-import io.holoinsight.server.common.dao.entity.Tenant;
+import io.holoinsight.server.query.grpc.QueryProto.QueryRequest;
 
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -17,8 +16,5 @@ import java.util.Map;
 public class SuperCache {
 
   public Map<String /* type */, Map<String /* k */, MetaDataDictValue>> metaDataDictValueMap;
-
-  public Map<String, List<String>> tenantWorkspaceMaps;
-
-  public Map<String, Tenant> tenantMap;
+  public Map<String, QueryRequest> expressionMetricList;
 }

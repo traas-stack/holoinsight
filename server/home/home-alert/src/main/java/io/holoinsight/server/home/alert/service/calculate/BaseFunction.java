@@ -48,7 +48,11 @@ public abstract class BaseFunction implements FunctionLogic {
 
     long delta = getDelta(functionConfigParam.getPeriodType());
     Map<Long, Double> points = dataResult.getPoints();
-    result.setCurrentValue(points.get(functionConfigParam.getPeriod()));
+    Double currentValue = points.get(functionConfigParam.getPeriod());
+    if (currentValue == null && functionConfigParam.isZeroFill()) {
+      currentValue = 0d;
+    }
+    result.setCurrentValue(currentValue);
     long duration = functionConfigParam.getDuration();
     for (long i = 0; i < duration; i++) {
       long time = functionConfigParam.getPeriod() - i * 60000L;

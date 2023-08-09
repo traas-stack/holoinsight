@@ -3,6 +3,7 @@
  */
 package io.holoinsight.server.home.common.util.cache.local;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import java.util.concurrent.ConcurrentHashMap;
@@ -15,6 +16,7 @@ import java.util.concurrent.TimeUnit;
  * @version $Id: CommonLocalCache.java, v 0.1 2020年03月18日 08:00 jinsong.yjs Exp $
  */
 @Component
+@Slf4j
 public class CommonLocalCache implements LocalCache {
 
   private static ConcurrentHashMap<String, LocalCacheItem> cache = new ConcurrentHashMap<>();
@@ -58,8 +60,10 @@ public class CommonLocalCache implements LocalCache {
   public static <T> T get(String key) {
     LocalCacheItem item = cache.get(key);
     if (item == null) {
+      log.info("[CommonLocalCache],[{}],[N]", key);
       return null;
     }
+    log.info("[CommonLocalCache],[{}],[Y]", key);
     return (T) item.getValue();
   }
 

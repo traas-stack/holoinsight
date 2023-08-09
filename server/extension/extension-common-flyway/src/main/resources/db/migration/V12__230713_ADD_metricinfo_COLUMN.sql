@@ -1,0 +1,10 @@
+/*
+ * Copyright 2022 Holoinsight Project Authors. Licensed under Apache-2.0.
+ */
+
+-- ----------------------------
+-- Table structure for metric_info
+-- ----------------------------
+ALTER TABLE `metric_info`
+    ADD COLUMN `ref` VARCHAR(200) NULL AFTER `tags`,
+    ADD COLUMN `ext_info` MEDIUMTEXT NULL AFTER `ref`;
