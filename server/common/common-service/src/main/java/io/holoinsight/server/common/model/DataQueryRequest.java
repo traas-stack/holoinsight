@@ -6,6 +6,7 @@ package io.holoinsight.server.common.model;
 import lombok.Data;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  *
@@ -55,6 +56,8 @@ public class DataQueryRequest {
     // instead of post-calculation
     public boolean apmMaterialized;
     public String ql;
+
+    public Map<String /* column name */, String /* expression */> select;
   }
 
   @Data
