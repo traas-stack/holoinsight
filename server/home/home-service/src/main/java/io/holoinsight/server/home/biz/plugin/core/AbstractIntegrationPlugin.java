@@ -6,6 +6,8 @@ package io.holoinsight.server.home.biz.plugin.core;
 import io.holoinsight.server.home.biz.plugin.model.Plugin;
 import io.holoinsight.server.home.biz.plugin.model.PluginType;
 import io.holoinsight.server.home.biz.service.IntegrationProductService;
+import io.holoinsight.server.home.biz.service.MetaService;
+import io.holoinsight.server.home.biz.service.TenantInitService;
 import io.holoinsight.server.home.dal.model.dto.CloudMonitorRange;
 import io.holoinsight.server.home.dal.model.dto.GaeaCollectConfigDTO.GaeaCollectRange;
 import io.holoinsight.server.home.dal.model.dto.IntegrationPluginDTO;
@@ -26,6 +28,12 @@ public abstract class AbstractIntegrationPlugin<T> extends Plugin {
 
   @Autowired
   public IntegrationProductService integrationProductService;
+
+  @Autowired
+  public MetaService metaService;
+
+  @Autowired
+  public TenantInitService tenantInitService;
 
   public String tenant;
 

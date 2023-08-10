@@ -11,14 +11,18 @@ import io.holoinsight.server.home.common.util.Debugger;
 import io.holoinsight.server.home.common.util.StringUtil;
 import io.holoinsight.server.meta.facade.service.DataClientService;
 import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.function.Function;
 
 /**
  * <p>
@@ -30,6 +34,7 @@ import java.util.Map;
  * @author jsy1001de
  */
 @Service
+@Slf4j
 public class MetaService {
 
   private static final String meta_app = "app";
@@ -43,6 +48,60 @@ public class MetaService {
   @Autowired
   private WorkspaceService workspaceService;
 
+
+  public <T, V> void syncCompare(String tableName, T param, Function<T, V> func) {
+
+    // from db
+    List<Map<String, Object>> dbList = dataClientService.queryAll(tableName);
+    log.info("{} compare, dbList={}", tableName, dbList.size());
+    // from out
+    List<Map<String, Object>> outList = (List<Map<String, Object>>) func.apply(param);
+    log.info("{} compare, outList={}", tableName, dbList.size());
+    List<Map<String, Object>> upsert = new ArrayList<>();
+    List<String> delete = new ArrayList<>();
+
+    compare(dbList, outList, upsert, delete);
+
+    log.info("{} compare, upsert={}, delete={}", tableName, upsert.size(), delete.size());
+
+    if (!CollectionUtils.isEmpty(upsert)) {
+      dataClientService.insertOrUpdate(tableName, upsert);
+    }
+
+    if (!CollectionUtils.isEmpty(delete)) {
+      dataClientService.delete(tableName, delete);
+    }
+
+  }
+
+  private void compare(List<Map<String, Object>> dbList, List<Map<String, Object>> outList,
+      List<Map<String, Object>> upsert, List<String> delete) {
+
+    Map<String, Map<String, Object>> fromDB = new HashMap<>();
+
+    dbList.forEach(row -> {
+      if (row.get("_uk") == null) {
+        return;
+      }
+      fromDB.put(row.get("_uk").toString(), row);
+    });
+
+    Set<String> dbUks = fromDB.keySet();
+
+    if (CollectionUtils.isEmpty(outList)) {
+      return;
+    }
+
+    outList.forEach(resource -> {
+      upsert.add(resource);
+      String uk = resource.get("_uk").toString();
+      dbUks.remove(uk);
+    });
+
+    if (!CollectionUtils.isEmpty(dbUks)) {
+      delete.addAll(dbUks);
+    }
+  }
 
   public List<AppModel> getAppModelFromServerTable(String tenant, String serverTableName) {
 

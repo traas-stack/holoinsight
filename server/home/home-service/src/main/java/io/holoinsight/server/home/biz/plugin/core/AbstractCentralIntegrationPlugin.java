@@ -28,12 +28,7 @@ public abstract class AbstractCentralIntegrationPlugin<T> extends AbstractIntegr
   }
 
   public Map<String, Object> getExecutorSelector() {
-
-    Map<String, Object> executorSelector = new HashMap<>();
-    executorSelector.put("type", "central");
-    // executorSelector.put("sidecar", new HashMap<>());
-
-    return executorSelector;
+    return GaeaConvertUtil.getCenterExecutorSelector();
   }
 
   public GaeaCollectRange getGaeaCollectRange() {

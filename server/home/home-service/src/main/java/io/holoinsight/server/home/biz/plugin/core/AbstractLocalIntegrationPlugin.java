@@ -33,12 +33,7 @@ public abstract class AbstractLocalIntegrationPlugin<T> extends AbstractIntegrat
   }
 
   public Map<String, Object> getExecutorSelector() {
-
-    Map<String, Object> executorSelector = new HashMap<>();
-    executorSelector.put("type", "sidecar");
-    executorSelector.put("sidecar", new HashMap<>());
-
-    return executorSelector;
+    return GaeaConvertUtil.getLocalExecutorSelector();
   }
 
   public GaeaCollectRange getGaeaCollectRange() {
