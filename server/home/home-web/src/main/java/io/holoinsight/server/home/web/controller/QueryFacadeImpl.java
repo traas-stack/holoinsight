@@ -485,7 +485,9 @@ public class QueryFacadeImpl extends BaseFacade {
       }
 
       QueryProto.Datasource.Builder datasourceBuilder = QueryProto.Datasource.newBuilder();
-      toProtoBean(datasourceBuilder, d);
+      Map<String, Object> objMap = J.toMap(J.toJson(d));
+      objMap.remove("select");
+      toProtoBean(datasourceBuilder, objMap);
       Boolean aBoolean = tenantInitService.checkConditions(ms.getTenant(), ms.getWorkspace(),
           datasourceBuilder.getMetric(), datasourceBuilder.getFiltersList());
       if (!aBoolean) {
@@ -515,10 +517,11 @@ public class QueryFacadeImpl extends BaseFacade {
         if (StringUtils.isEmpty(expression)) {
           selects.add("`" + columnName + "`");
         } else {
-          selects.add(expression + " as " + "`" + columnName + "`");
+          selects.add(expression + " as " + columnName);
         }
       }
     }
+    selects.add("`period`");
     select.append(String.join(" , ", selects));
     select.append(" from ").append(d.metric);
     select.append(" where `period` <= ") //
@@ -562,22 +565,20 @@ public class QueryFacadeImpl extends BaseFacade {
         }
       }
     }
+    List<String> gbList = new ArrayList<>();
+    gbList.add("period");
     if (!CollectionUtils.isEmpty(d.groupBy)) {
-      List<String> gbList = new ArrayList<>();
       for (String gb : d.groupBy) {
         if (!tags.contains(gb)) {
           continue;
         }
         gbList.add(gb);
       }
-      if (!CollectionUtils.isEmpty(gbList)) {
-        select.append(" group by `")//
-            .append(String.join("` , `", gbList)) //
-            .append("`");
-      }
-
     }
-    select.append(" order by `period` acs");
+    select.append(" group by `")//
+        .append(String.join("` , `", gbList)) //
+        .append("`");
+    select.append(" order by `period` asc");
     log.info("parse sql {}", select);
     d.setQl(select.toString());
   }

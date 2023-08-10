@@ -289,7 +289,7 @@ public class CeresdbxMetricStorage implements MetricStorage {
         if ("tsid".equals(name)) {
           continue;
         }
-        if ("timestamp".equals(name)) {
+        if ("timestamp".equals(name) || value.getDataType() == Value.DataType.Timestamp) {
           point.setTimestamp(value.getTimestamp());
           continue;
         }
