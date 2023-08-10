@@ -1,7 +1,6 @@
 /*
- * Alipay.com Inc. Copyright (c) 2004-2018 All Rights Reserved.
+ * Copyright 2022 Holoinsight Project Authors. Licensed under Apache-2.0.
  */
-
 package io.holoinsight.server.home.web.controller;
 
 import io.holoinsight.server.common.J;
@@ -33,7 +32,7 @@ public class QueryFacadeImplTest {
     queryFacade.parseQl(queryDataSource, metricInfo);
     System.out.println(queryDataSource.ql);
     Assert.assertTrue(StringUtils.equals(
-        "select  count(1) as value  from k8s_pod_mem_util where `period` <= 1691647903000 and `period` >= 1691644303000 and `app` in ('holoinsight-server','aaaaa') and `应用ID` = '111111111' group by `app` order by `period` acs",
+        "select  count(1) as value  , `period` from k8s_pod_mem_util where `period` <= 1691647903000 and `period` >= 1691644303000 and `app` in ('holoinsight-server','aaaaa') and `应用ID` = '111111111' group by `period` , `app` order by `period` asc",
         queryDataSource.ql));
 
     json =
@@ -45,7 +44,7 @@ public class QueryFacadeImplTest {
     queryFacade.parseQl(queryDataSource, metricInfo);
     System.out.println(queryDataSource.ql);
     Assert.assertTrue(StringUtils.equals(
-        "select `app` , distinct(`aaa`) as `dd` from k8s_pod_mem_util where `period` <= 1691647903000 and `period` >= 1691644303000 and `app` in ('holoinsight-server','aaaaa') and `应用ID` = '111111111' group by `app` order by `period` acs",
+        "select `app` , distinct(`aaa`) as dd , `period` from k8s_pod_mem_util where `period` <= 1691647903000 and `period` >= 1691644303000 and `app` in ('holoinsight-server','aaaaa') and `应用ID` = '111111111' group by `period` , `app` order by `period` asc",
         queryDataSource.ql));
   }
 }
