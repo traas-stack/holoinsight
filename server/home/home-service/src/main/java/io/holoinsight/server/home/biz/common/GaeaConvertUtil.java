@@ -34,7 +34,7 @@ public class GaeaConvertUtil {
     return gaeaCollectRange;
   }
 
-  public static GaeaCollectRange convertCollectRange(String tableName, List<String> appList) {
+  public static GaeaCollectRange convertAppsCollectRange(String tableName, List<String> appList) {
     GaeaCollectRange gaeaCollectRange = new GaeaCollectRange();
     gaeaCollectRange.setType("cloudmonitor");
     CloudMonitorRange cloudMonitorRange = new CloudMonitorRange();
@@ -44,6 +44,15 @@ public class GaeaConvertUtil {
     cloudMonitorRange.setCondition(Collections.singletonList(conditionMap));
     gaeaCollectRange.setCloudmonitor(cloudMonitorRange);
     return gaeaCollectRange;
+  }
+
+  public static CloudMonitorRange convertIpsCollectRange(String tableName, List<String> ipList) {
+    CloudMonitorRange cloudMonitorRange = new CloudMonitorRange();
+    cloudMonitorRange.setTable(tableName);
+    Map<String, List<String>> conditionMap = new HashMap<>();
+    conditionMap.put("ip", ipList);
+    cloudMonitorRange.setCondition(Collections.singletonList(conditionMap));
+    return cloudMonitorRange;
   }
 
   public static CloudMonitorRange convertCloudMonitorRange(String tableName, MetaLabel metaLabel,
@@ -67,5 +76,22 @@ public class GaeaConvertUtil {
     cloudMonitorRange.setTable(tableName);
     cloudMonitorRange.setCondition(Collections.singletonList(conditionMap));
     return cloudMonitorRange;
+  }
+
+  public static Map<String, Object> getCenterExecutorSelector() {
+
+    Map<String, Object> executorSelector = new HashMap<>();
+    executorSelector.put("type", "central");
+
+    return executorSelector;
+  }
+
+  public static Map<String, Object> getLocalExecutorSelector() {
+
+    Map<String, Object> executorSelector = new HashMap<>();
+    executorSelector.put("type", "sidecar");
+    executorSelector.put("sidecar", new HashMap<>());
+
+    return executorSelector;
   }
 }

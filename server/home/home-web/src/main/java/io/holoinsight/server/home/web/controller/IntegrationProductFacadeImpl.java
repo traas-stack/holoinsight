@@ -121,8 +121,11 @@ public class IntegrationProductFacadeImpl extends BaseFacade {
   @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.VIEW)
   public JsonResult<Map<String, Boolean>> dataReceived() {
     final JsonResult<Map<String, Boolean>> result = new JsonResult<>();
-    List<IntegrationPluginDTO> integrationPluginDTOs = integrationPluginService
-        .findByMap(Collections.singletonMap("tenant", MonitorCookieUtil.getTenantOrException()));
+    Map<String, Object> columnMap = new HashMap<>();
+    columnMap.put("status", 1);
+    columnMap.put("tenant", MonitorCookieUtil.getTenantOrException());
+    List<IntegrationPluginDTO> integrationPluginDTOs =
+        integrationPluginService.findByMap(columnMap);
     facadeTemplate.manage(result, new ManageCallback() {
       @Override
       public void checkParameter() {}
@@ -181,8 +184,10 @@ public class IntegrationProductFacadeImpl extends BaseFacade {
 
       @Override
       public void doManage() {
+        Map<String, Object> columnMap = new HashMap<>();
+        columnMap.put("status", 1);
         List<IntegrationProductDTO> integrationProductDTOs =
-            integrationProductService.findByMap(Collections.emptyMap());
+            integrationProductService.findByMap(columnMap);
 
         if (!CollectionUtils.isEmpty(integrationProductDTOs)) {
           integrationProductDTOs.forEach(integrationProductDTO -> {
