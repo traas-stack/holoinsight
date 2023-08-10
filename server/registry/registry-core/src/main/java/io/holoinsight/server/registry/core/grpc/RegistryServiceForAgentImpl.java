@@ -395,7 +395,12 @@ public class RegistryServiceForAgentImpl
                 });
                 break;
               default:
-                builder.putMeta("target", JsonUtils.toJson(dim));
+                builder.setType(dimType);
+                dim.forEach((k, v) -> {
+                  if (!k.startsWith("_") && v != null) {
+                    builder.putMeta(k, v.toString());
+                  }
+                });
                 break;
             }
           }
