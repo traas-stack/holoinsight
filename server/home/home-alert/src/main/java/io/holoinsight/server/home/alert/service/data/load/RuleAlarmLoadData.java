@@ -22,13 +22,9 @@ import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * @author wangsiyuan
@@ -166,7 +162,7 @@ public class RuleAlarmLoadData implements AlarmLoadData {
     return Long.parseLong(timeStr.substring(0, timeStr.length() - 1));
   }
 
-  private List<QueryProto.QueryFilter> filterConvert(List<Filter> filters) {
+  public static List<QueryProto.QueryFilter> filterConvert(List<Filter> filters) {
     if (filters == null) {
       return new ArrayList<>();
     }

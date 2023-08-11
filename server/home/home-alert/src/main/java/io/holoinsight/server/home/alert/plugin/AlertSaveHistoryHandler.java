@@ -43,6 +43,8 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static io.holoinsight.server.home.alert.service.data.load.RuleAlarmLoadData.filterConvert;
+
 /**
  * @author wangsiyuan
  * @date 2022/3/28 9:32 下午
@@ -258,9 +260,9 @@ public class AlertSaveHistoryHandler implements AlertHandlerExecutor {
     long end = TimeRangeUtil.getEndTimestamp(alarmTime, dataSource);
     String metric = dataSource.getMetric() + "_logsamples";
 
-    QueryProto.Datasource.Builder builder =
-        QueryProto.Datasource.newBuilder().setStart(start).setEnd(end).setMetric(metric)
-            .setAggregator("sample").addAllGroupBy(Collections.singletonList("app"));
+    QueryProto.Datasource.Builder builder = QueryProto.Datasource.newBuilder().setStart(start)
+        .setEnd(end).setMetric(metric).addAllFilters(filterConvert(dataSource.getFilters()))
+        .setAggregator("sample").addAllGroupBy(Collections.singletonList("app"));
     return builder.build();
   }
 
