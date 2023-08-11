@@ -166,7 +166,7 @@ public class RuleAlarmLoadData implements AlarmLoadData {
     return Long.parseLong(timeStr.substring(0, timeStr.length() - 1));
   }
 
-  private List<QueryProto.QueryFilter> filterConvert(List<Filter> filters) {
+  public static List<QueryProto.QueryFilter> filterConvert(List<Filter> filters) {
     if (filters == null) {
       return new ArrayList<>();
     }
