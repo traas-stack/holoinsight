@@ -10,6 +10,8 @@ import com.google.protobuf.Message;
 import com.google.protobuf.util.JsonFormat;
 import io.holoinsight.server.common.LatchWork;
 import io.holoinsight.server.common.UtilMisc;
+import io.holoinsight.server.common.dao.entity.MetricInfo;
+import io.holoinsight.server.common.service.SuperCacheService;
 import io.holoinsight.server.common.threadpool.CommonThreadPools;
 import io.holoinsight.server.home.biz.common.MetaDictUtil;
 import io.holoinsight.server.home.biz.service.TenantInitService;
@@ -59,10 +61,13 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
@@ -83,6 +88,9 @@ public class QueryFacadeImpl extends BaseFacade {
 
   @Autowired
   private TenantInitService tenantInitService;
+
+  @Autowired
+  private SuperCacheService superCacheService;
 
   @PostMapping
   public JsonResult<QueryResponse> query(@RequestBody DataQueryRequest request) {
@@ -471,9 +479,15 @@ public class QueryFacadeImpl extends BaseFacade {
       if ((System.currentTimeMillis() - d.start) < 80000L) {
         d.start -= 60000L;
       }
+      MetricInfo metricInfo = getMetricInfo(d.getMetric());
+      if (isCeresdb4Storage(metricInfo)) {
+        parseQl(d, metricInfo);
+      }
 
       QueryProto.Datasource.Builder datasourceBuilder = QueryProto.Datasource.newBuilder();
-      toProtoBean(datasourceBuilder, d);
+      Map<String, Object> objMap = J.toMap(J.toJson(d));
+      objMap.remove("select");
+      toProtoBean(datasourceBuilder, objMap);
       Boolean aBoolean = tenantInitService.checkConditions(ms.getTenant(), ms.getWorkspace(),
           datasourceBuilder.getMetric(), datasourceBuilder.getFiltersList());
       if (!aBoolean) {
@@ -485,6 +499,107 @@ public class QueryFacadeImpl extends BaseFacade {
     });
 
     return builder.build();
+  }
+
+
+
+  protected void parseQl(QueryDataSource d, MetricInfo metricInfo) {
+    Set<String> tags = new HashSet<>(J.toList(metricInfo.getTags()));
+    StringBuilder select = new StringBuilder("select ");
+    List<String> selects = new ArrayList<>();
+    if (CollectionUtils.isEmpty(d.select)) {
+      selects.add(" count(1) as value ");
+    } else {
+      for (Map.Entry<String /* column name */, String /* expression */> entry : d.select
+          .entrySet()) {
+        String columnName = entry.getKey();
+        String expression = entry.getValue();
+        if (StringUtils.isEmpty(expression)) {
+          selects.add("`" + columnName + "`");
+        } else {
+          selects.add(expression + " as " + columnName);
+        }
+      }
+    }
+    selects.add("`period`");
+    select.append(String.join(" , ", selects));
+    select.append(" from ").append(d.metric);
+    select.append(" where `period` <= ") //
+        .append(d.end) //
+        .append(" and `period` >= ") //
+        .append(d.start);
+    if (!CollectionUtils.isEmpty(d.filters)) {
+      for (QueryFilter filter : d.filters) {
+        if (!tags.contains(filter.name)) {
+          continue;
+        }
+        switch (filter.type) {
+          case "literal_or":
+            select.append(" and `").append(filter.name).append("` in ('")
+                .append(String.join("','", Arrays.asList(filter.value.split("\\|")))).append("')");
+            break;
+          case "not_literal_or":
+            select.append(" and ").append(filter.name).append(" not in ('")
+                .append(String.join("','", Arrays.asList(filter.value.split("\\|")))).append("')");
+            break;
+          case "wildcard":
+            select.append(" and `").append(filter.name).append("` like '").append(filter.value)
+                .append("'");
+            break;
+          case "regexp":
+            select.append(" and `").append(filter.name).append("` REGEXP '").append(filter.value)
+                .append("'");
+            break;
+          case "not_regexp_match":
+            select.append(" and `").append(filter.name).append("` NOT REGEXP '")
+                .append(filter.value).append("'");
+            break;
+          case "literal":
+            select.append(" and `").append(filter.name).append("` = '").append(filter.value)
+                .append("'");
+            break;
+          case "not_literal":
+            select.append(" and `").append(filter.name).append("` <> '").append(filter.value)
+                .append("'");
+            break;
+        }
+      }
+    }
+    List<String> gbList = new ArrayList<>();
+    gbList.add("period");
+    if (!CollectionUtils.isEmpty(d.groupBy)) {
+      for (String gb : d.groupBy) {
+        if (!tags.contains(gb)) {
+          continue;
+        }
+        gbList.add(gb);
+      }
+    }
+    select.append(" group by `")//
+        .append(String.join("` , `", gbList)) //
+        .append("`");
+    select.append(" order by `period` asc");
+    log.info("parse sql {}", select);
+    d.setQl(select.toString());
+  }
+
+  private MetricInfo getMetricInfo(String metric) {
+    if (CollectionUtils.isEmpty(this.superCacheService.getSc().metricInfoMap)
+        || StringUtils.isEmpty(metric)) {
+      return null;
+    }
+    return this.superCacheService.getSc().metricInfoMap.get(metric);
+  }
+
+  private boolean isCeresdb4Storage(MetricInfo metricInfo) {
+    if (metricInfo == null) {
+      return false;
+    }
+    if (StringUtils.isNotEmpty(metricInfo.getStorageTenant())
+        && StringUtils.equals(metricInfo.getStorageTenant(), "ceresdb4")) {
+      return true;
+    }
+    return false;
   }
 
   private long getInterval(String downsample) {
