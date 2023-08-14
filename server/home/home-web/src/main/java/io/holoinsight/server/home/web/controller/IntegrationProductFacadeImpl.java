@@ -100,8 +100,11 @@ public class IntegrationProductFacadeImpl extends BaseFacade {
 
       @Override
       public void doManage() {
+        Map<String, Object> columnMap = new HashMap<>();
+        columnMap.put("status", 1);
+        columnMap.put("name", name);
         List<IntegrationProductDTO> integrationProductDTOs =
-            integrationProductService.findByMap(Collections.singletonMap("name", name));
+            integrationProductService.findByMap(columnMap);
         if (!CollectionUtils.isEmpty(integrationProductDTOs)) {
           integrationProductDTOs.forEach(integrationProductDTO -> {
             List<MetricInfoDTO> metricInfoDTOS = metricInfoService.queryListByTenantProduct(null,

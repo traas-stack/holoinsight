@@ -35,8 +35,13 @@ public class IntegrationGeneratedServiceImpl
   private IntegrationGeneratedConverter integrationGeneratedConverter;
 
   @Override
-  public void insert(IntegrationGeneratedDTO integrationGeneratedDTO) {
-    save(integrationGeneratedConverter.dtoToDO(integrationGeneratedDTO));
+  public IntegrationGeneratedDTO insert(IntegrationGeneratedDTO integrationGeneratedDTO) {
+    IntegrationGenerated integrationGenerated =
+        integrationGeneratedConverter.dtoToDO(integrationGeneratedDTO);
+    save(integrationGenerated);
+    IntegrationGeneratedDTO dto = integrationGeneratedConverter.doToDTO(integrationGenerated);
+    EventBusHolder.post(dto);
+    return dto;
   }
 
   @Override

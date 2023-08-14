@@ -17,7 +17,7 @@ import java.util.Map;
  */
 public interface IntegrationGeneratedService extends IService<IntegrationGenerated> {
 
-  void insert(IntegrationGeneratedDTO integrationGeneratedDTO);
+  IntegrationGeneratedDTO insert(IntegrationGeneratedDTO integrationGeneratedDTO);
 
   void update(IntegrationGeneratedDTO integrationGeneratedDTO);
 

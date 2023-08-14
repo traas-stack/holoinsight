@@ -88,6 +88,44 @@ public class IntegrationGeneratedFacadeImpl extends BaseFacade {
     return JsonResult.createSuccessResult(true);
   }
 
+  @PostMapping("/create")
+  @ResponseBody
+  @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.EDIT)
+  public JsonResult<Boolean> create(@RequestBody IntegrationGeneratedDTO generatedDTO) {
+    final JsonResult<Boolean> result = new JsonResult<>();
+    facadeTemplate.manage(result, new ManageCallback() {
+      @Override
+      public void checkParameter() {
+        ParaCheckUtil.checkParaNotNull(generatedDTO.name, "name");
+        ParaCheckUtil.checkParaNotNull(generatedDTO.item, "item");
+        ParaCheckUtil.checkParaNotNull(generatedDTO.product, "product");
+        ParaCheckUtil.checkParaNotNull(generatedDTO.config, "config");
+        ParaCheckUtil.checkParaNotNull(generatedDTO.custom, "custom");
+
+      }
+
+      @Override
+      public void doManage() {
+
+        MonitorUser mu = RequestContext.getContext().mu;
+        MonitorScope ms = RequestContext.getContext().ms;
+        generatedDTO.setWorkspace(ms.getWorkspace());
+        generatedDTO.setTenant(ms.getTenant());
+        generatedDTO.setCreator(mu.getLoginName());
+        generatedDTO.setModifier(mu.getLoginName());
+        generatedDTO.setGmtCreate(new Date());
+        generatedDTO.setGmtModified(new Date());
+        generatedDTO.setDeleted(false);
+        IntegrationGeneratedDTO insert = integrationGeneratedService.insert(generatedDTO);
+        userOpLogService.append("integration_generated", insert.getId(), OpType.CREATE,
+            mu.getLoginName(), ms.getTenant(), ms.getWorkspace(), J.toJson(insert), null, null,
+            "integration_generated_create");
+      }
+    });
+
+    return JsonResult.createSuccessResult(true);
+  }
+
   @GetMapping("/query/{name}")
   @ResponseBody
   @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.EDIT)
