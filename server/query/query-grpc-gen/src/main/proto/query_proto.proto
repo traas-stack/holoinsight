@@ -183,6 +183,7 @@ message TraceTreeList{
 message TraceTree{
   Span span = 1;
   repeated TraceTree children = 2;
+  Span mesh = 3;
 }
 
 message Span {
@@ -203,6 +204,7 @@ message Span {
   repeated  KeyValue tags = 15;
   repeated  LogEntity logs = 16;
   bool  isRoot = 17;
+  bool  isMesh = 18;
 }
 
 message KeyValue{

@@ -24486,6 +24486,25 @@ public final class QueryProto {
      * <code>repeated .io.holoinsight.server.query.grpc.TraceTree children = 2;</code>
      */
     io.holoinsight.server.query.grpc.QueryProto.TraceTreeOrBuilder getChildrenOrBuilder(int index);
+
+    /**
+     * <code>.io.holoinsight.server.query.grpc.Span mesh = 3;</code>
+     * 
+     * @return Whether the mesh field is set.
+     */
+    boolean hasMesh();
+
+    /**
+     * <code>.io.holoinsight.server.query.grpc.Span mesh = 3;</code>
+     * 
+     * @return The mesh.
+     */
+    io.holoinsight.server.query.grpc.QueryProto.Span getMesh();
+
+    /**
+     * <code>.io.holoinsight.server.query.grpc.Span mesh = 3;</code>
+     */
+    io.holoinsight.server.query.grpc.QueryProto.SpanOrBuilder getMeshOrBuilder();
   }
   /**
    * Protobuf type {@code io.holoinsight.server.query.grpc.TraceTree}
@@ -24556,6 +24575,20 @@ public final class QueryProto {
               children_.add(
                   input.readMessage(io.holoinsight.server.query.grpc.QueryProto.TraceTree.parser(),
                       extensionRegistry));
+              break;
+            }
+            case 26: {
+              io.holoinsight.server.query.grpc.QueryProto.Span.Builder subBuilder = null;
+              if (mesh_ != null) {
+                subBuilder = mesh_.toBuilder();
+              }
+              mesh_ = input.readMessage(io.holoinsight.server.query.grpc.QueryProto.Span.parser(),
+                  extensionRegistry);
+              if (subBuilder != null) {
+                subBuilder.mergeFrom(mesh_);
+                mesh_ = subBuilder.buildPartial();
+              }
+
               break;
             }
             default: {
@@ -24667,6 +24700,38 @@ public final class QueryProto {
       return children_.get(index);
     }
 
+    public static final int MESH_FIELD_NUMBER = 3;
+    private io.holoinsight.server.query.grpc.QueryProto.Span mesh_;
+
+    /**
+     * <code>.io.holoinsight.server.query.grpc.Span mesh = 3;</code>
+     * 
+     * @return Whether the mesh field is set.
+     */
+    @java.lang.Override
+    public boolean hasMesh() {
+      return mesh_ != null;
+    }
+
+    /**
+     * <code>.io.holoinsight.server.query.grpc.Span mesh = 3;</code>
+     * 
+     * @return The mesh.
+     */
+    @java.lang.Override
+    public io.holoinsight.server.query.grpc.QueryProto.Span getMesh() {
+      return mesh_ == null ? io.holoinsight.server.query.grpc.QueryProto.Span.getDefaultInstance()
+          : mesh_;
+    }
+
+    /**
+     * <code>.io.holoinsight.server.query.grpc.Span mesh = 3;</code>
+     */
+    @java.lang.Override
+    public io.holoinsight.server.query.grpc.QueryProto.SpanOrBuilder getMeshOrBuilder() {
+      return getMesh();
+    }
+
     private byte memoizedIsInitialized = -1;
 
     @java.lang.Override
@@ -24689,6 +24754,9 @@ public final class QueryProto {
       for (int i = 0; i < children_.size(); i++) {
         output.writeMessage(2, children_.get(i));
       }
+      if (mesh_ != null) {
+        output.writeMessage(3, getMesh());
+      }
       unknownFields.writeTo(output);
     }
 
@@ -24704,6 +24772,9 @@ public final class QueryProto {
       }
       for (int i = 0; i < children_.size(); i++) {
         size += com.google.protobuf.CodedOutputStream.computeMessageSize(2, children_.get(i));
+      }
+      if (mesh_ != null) {
+        size += com.google.protobuf.CodedOutputStream.computeMessageSize(3, getMesh());
       }
       size += unknownFields.getSerializedSize();
       memoizedSize = size;
@@ -24729,6 +24800,12 @@ public final class QueryProto {
       }
       if (!getChildrenList().equals(other.getChildrenList()))
         return false;
+      if (hasMesh() != other.hasMesh())
+        return false;
+      if (hasMesh()) {
+        if (!getMesh().equals(other.getMesh()))
+          return false;
+      }
       if (!unknownFields.equals(other.unknownFields))
         return false;
       return true;
@@ -24748,6 +24825,10 @@ public final class QueryProto {
       if (getChildrenCount() > 0) {
         hash = (37 * hash) + CHILDREN_FIELD_NUMBER;
         hash = (53 * hash) + getChildrenList().hashCode();
+      }
+      if (hasMesh()) {
+        hash = (37 * hash) + MESH_FIELD_NUMBER;
+        hash = (53 * hash) + getMesh().hashCode();
       }
       hash = (29 * hash) + unknownFields.hashCode();
       memoizedHashCode = hash;
@@ -24901,6 +24982,12 @@ public final class QueryProto {
         } else {
           childrenBuilder_.clear();
         }
+        if (meshBuilder_ == null) {
+          mesh_ = null;
+        } else {
+          mesh_ = null;
+          meshBuilder_ = null;
+        }
         return this;
       }
 
@@ -24941,6 +25028,11 @@ public final class QueryProto {
           result.children_ = children_;
         } else {
           result.children_ = childrenBuilder_.build();
+        }
+        if (meshBuilder_ == null) {
+          result.mesh_ = mesh_;
+        } else {
+          result.mesh_ = meshBuilder_.build();
         }
         onBuilt();
         return result;
@@ -25020,6 +25112,9 @@ public final class QueryProto {
               childrenBuilder_.addAllMessages(other.children_);
             }
           }
+        }
+        if (other.hasMesh()) {
+          mergeMesh(other.getMesh());
         }
         this.mergeUnknownFields(other.unknownFields);
         onChanged();
@@ -25432,6 +25527,134 @@ public final class QueryProto {
         return childrenBuilder_;
       }
 
+      private io.holoinsight.server.query.grpc.QueryProto.Span mesh_;
+      private com.google.protobuf.SingleFieldBuilderV3<io.holoinsight.server.query.grpc.QueryProto.Span, io.holoinsight.server.query.grpc.QueryProto.Span.Builder, io.holoinsight.server.query.grpc.QueryProto.SpanOrBuilder> meshBuilder_;
+
+      /**
+       * <code>.io.holoinsight.server.query.grpc.Span mesh = 3;</code>
+       * 
+       * @return Whether the mesh field is set.
+       */
+      public boolean hasMesh() {
+        return meshBuilder_ != null || mesh_ != null;
+      }
+
+      /**
+       * <code>.io.holoinsight.server.query.grpc.Span mesh = 3;</code>
+       * 
+       * @return The mesh.
+       */
+      public io.holoinsight.server.query.grpc.QueryProto.Span getMesh() {
+        if (meshBuilder_ == null) {
+          return mesh_ == null
+              ? io.holoinsight.server.query.grpc.QueryProto.Span.getDefaultInstance()
+              : mesh_;
+        } else {
+          return meshBuilder_.getMessage();
+        }
+      }
+
+      /**
+       * <code>.io.holoinsight.server.query.grpc.Span mesh = 3;</code>
+       */
+      public Builder setMesh(io.holoinsight.server.query.grpc.QueryProto.Span value) {
+        if (meshBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          mesh_ = value;
+          onChanged();
+        } else {
+          meshBuilder_.setMessage(value);
+        }
+
+        return this;
+      }
+
+      /**
+       * <code>.io.holoinsight.server.query.grpc.Span mesh = 3;</code>
+       */
+      public Builder setMesh(
+          io.holoinsight.server.query.grpc.QueryProto.Span.Builder builderForValue) {
+        if (meshBuilder_ == null) {
+          mesh_ = builderForValue.build();
+          onChanged();
+        } else {
+          meshBuilder_.setMessage(builderForValue.build());
+        }
+
+        return this;
+      }
+
+      /**
+       * <code>.io.holoinsight.server.query.grpc.Span mesh = 3;</code>
+       */
+      public Builder mergeMesh(io.holoinsight.server.query.grpc.QueryProto.Span value) {
+        if (meshBuilder_ == null) {
+          if (mesh_ != null) {
+            mesh_ = io.holoinsight.server.query.grpc.QueryProto.Span.newBuilder(mesh_)
+                .mergeFrom(value).buildPartial();
+          } else {
+            mesh_ = value;
+          }
+          onChanged();
+        } else {
+          meshBuilder_.mergeFrom(value);
+        }
+
+        return this;
+      }
+
+      /**
+       * <code>.io.holoinsight.server.query.grpc.Span mesh = 3;</code>
+       */
+      public Builder clearMesh() {
+        if (meshBuilder_ == null) {
+          mesh_ = null;
+          onChanged();
+        } else {
+          mesh_ = null;
+          meshBuilder_ = null;
+        }
+
+        return this;
+      }
+
+      /**
+       * <code>.io.holoinsight.server.query.grpc.Span mesh = 3;</code>
+       */
+      public io.holoinsight.server.query.grpc.QueryProto.Span.Builder getMeshBuilder() {
+
+        onChanged();
+        return getMeshFieldBuilder().getBuilder();
+      }
+
+      /**
+       * <code>.io.holoinsight.server.query.grpc.Span mesh = 3;</code>
+       */
+      public io.holoinsight.server.query.grpc.QueryProto.SpanOrBuilder getMeshOrBuilder() {
+        if (meshBuilder_ != null) {
+          return meshBuilder_.getMessageOrBuilder();
+        } else {
+          return mesh_ == null
+              ? io.holoinsight.server.query.grpc.QueryProto.Span.getDefaultInstance()
+              : mesh_;
+        }
+      }
+
+      /**
+       * <code>.io.holoinsight.server.query.grpc.Span mesh = 3;</code>
+       */
+      private com.google.protobuf.SingleFieldBuilderV3<io.holoinsight.server.query.grpc.QueryProto.Span, io.holoinsight.server.query.grpc.QueryProto.Span.Builder, io.holoinsight.server.query.grpc.QueryProto.SpanOrBuilder> getMeshFieldBuilder() {
+        if (meshBuilder_ == null) {
+          meshBuilder_ =
+              new com.google.protobuf.SingleFieldBuilderV3<io.holoinsight.server.query.grpc.QueryProto.Span, io.holoinsight.server.query.grpc.QueryProto.Span.Builder, io.holoinsight.server.query.grpc.QueryProto.SpanOrBuilder>(
+                  getMesh(), getParentForChildren(), isClean());
+          mesh_ = null;
+        }
+        return meshBuilder_;
+      }
+
       @java.lang.Override
       public final Builder setUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
@@ -25730,6 +25953,13 @@ public final class QueryProto {
      * @return The isRoot.
      */
     boolean getIsRoot();
+
+    /**
+     * <code>bool isMesh = 18;</code>
+     * 
+     * @return The isMesh.
+     */
+    boolean getIsMesh();
   }
   /**
    * Protobuf type {@code io.holoinsight.server.query.grpc.Span}
@@ -25898,6 +26128,11 @@ public final class QueryProto {
             case 136: {
 
               isRoot_ = input.readBool();
+              break;
+            }
+            case 144: {
+
+              isMesh_ = input.readBool();
               break;
             }
             default: {
@@ -26511,6 +26746,19 @@ public final class QueryProto {
       return isRoot_;
     }
 
+    public static final int ISMESH_FIELD_NUMBER = 18;
+    private boolean isMesh_;
+
+    /**
+     * <code>bool isMesh = 18;</code>
+     * 
+     * @return The isMesh.
+     */
+    @java.lang.Override
+    public boolean getIsMesh() {
+      return isMesh_;
+    }
+
     private byte memoizedIsInitialized = -1;
 
     @java.lang.Override
@@ -26578,6 +26826,9 @@ public final class QueryProto {
       if (isRoot_ != false) {
         output.writeBool(17, isRoot_);
       }
+      if (isMesh_ != false) {
+        output.writeBool(18, isMesh_);
+      }
       unknownFields.writeTo(output);
     }
 
@@ -26639,6 +26890,9 @@ public final class QueryProto {
       if (isRoot_ != false) {
         size += com.google.protobuf.CodedOutputStream.computeBoolSize(17, isRoot_);
       }
+      if (isMesh_ != false) {
+        size += com.google.protobuf.CodedOutputStream.computeBoolSize(18, isMesh_);
+      }
       size += unknownFields.getSerializedSize();
       memoizedSize = size;
       return size;
@@ -26688,6 +26942,8 @@ public final class QueryProto {
       if (!getLogsList().equals(other.getLogsList()))
         return false;
       if (getIsRoot() != other.getIsRoot())
+        return false;
+      if (getIsMesh() != other.getIsMesh())
         return false;
       if (!unknownFields.equals(other.unknownFields))
         return false;
@@ -26741,6 +26997,8 @@ public final class QueryProto {
       }
       hash = (37 * hash) + ISROOT_FIELD_NUMBER;
       hash = (53 * hash) + com.google.protobuf.Internal.hashBoolean(getIsRoot());
+      hash = (37 * hash) + ISMESH_FIELD_NUMBER;
+      hash = (53 * hash) + com.google.protobuf.Internal.hashBoolean(getIsMesh());
       hash = (29 * hash) + unknownFields.hashCode();
       memoizedHashCode = hash;
       return hash;
@@ -26927,6 +27185,8 @@ public final class QueryProto {
         }
         isRoot_ = false;
 
+        isMesh_ = false;
+
         return this;
       }
 
@@ -26995,6 +27255,7 @@ public final class QueryProto {
           result.logs_ = logsBuilder_.build();
         }
         result.isRoot_ = isRoot_;
+        result.isMesh_ = isMesh_;
         onBuilt();
         return result;
       }
@@ -27174,6 +27435,9 @@ public final class QueryProto {
         }
         if (other.getIsRoot() != false) {
           setIsRoot(other.getIsRoot());
+        }
+        if (other.getIsMesh() != false) {
+          setIsMesh(other.getIsMesh());
         }
         this.mergeUnknownFields(other.unknownFields);
         onChanged();
@@ -28909,6 +29173,43 @@ public final class QueryProto {
       public Builder clearIsRoot() {
 
         isRoot_ = false;
+        onChanged();
+        return this;
+      }
+
+      private boolean isMesh_;
+
+      /**
+       * <code>bool isMesh = 18;</code>
+       * 
+       * @return The isMesh.
+       */
+      @java.lang.Override
+      public boolean getIsMesh() {
+        return isMesh_;
+      }
+
+      /**
+       * <code>bool isMesh = 18;</code>
+       * 
+       * @param value The isMesh to set.
+       * @return This builder for chaining.
+       */
+      public Builder setIsMesh(boolean value) {
+
+        isMesh_ = value;
+        onChanged();
+        return this;
+      }
+
+      /**
+       * <code>bool isMesh = 18;</code>
+       * 
+       * @return This builder for chaining.
+       */
+      public Builder clearIsMesh() {
+
+        isMesh_ = false;
         onChanged();
         return this;
       }
@@ -50568,148 +50869,145 @@ public final class QueryProto {
         + "\030\007 \003(\t\">\n\005Trace\0225\n\005spans\030\001 \003(\0132&.io.holo"
         + "insight.server.query.grpc.Span\"O\n\rTraceT"
         + "reeList\022>\n\ttraceTree\030\001 \003(\0132+.io.holoinsi"
-        + "ght.server.query.grpc.TraceTree\"\200\001\n\tTrac"
+        + "ght.server.query.grpc.TraceTree\"\266\001\n\tTrac"
         + "eTree\0224\n\004span\030\001 \001(\0132&.io.holoinsight.ser"
         + "ver.query.grpc.Span\022=\n\010children\030\002 \003(\0132+."
         + "io.holoinsight.server.query.grpc.TraceTr"
-        + "ee\"\262\003\n\004Span\022\017\n\007traceId\030\001 \001(\t\022\016\n\006spanId\030\002"
-        + " \001(\t\022\024\n\014parentSpanId\030\003 \001(\t\0223\n\004refs\030\004 \003(\013"
-        + "2%.io.holoinsight.server.query.grpc.Ref\022"
-        + "\023\n\013serviceCode\030\005 \001(\t\022\033\n\023serviceInstanceN"
-        + "ame\030\006 \001(\t\022\021\n\tstartTime\030\007 \001(\003\022\017\n\007endTime\030"
-        + "\010 \001(\003\022\024\n\014endpointName\030\t \001(\t\022\014\n\004type\030\n \001("
-        + "\t\022\014\n\004peer\030\013 \001(\t\022\021\n\tcomponent\030\014 \001(\t\022\017\n\007is"
-        + "Error\030\r \001(\010\022\r\n\005layer\030\016 \001(\t\0228\n\004tags\030\017 \003(\013"
-        + "2*.io.holoinsight.server.query.grpc.KeyV"
-        + "alue\0229\n\004logs\030\020 \003(\0132+.io.holoinsight.serv"
-        + "er.query.grpc.LogEntity\022\016\n\006isRoot\030\021 \001(\010\""
-        + "&\n\010KeyValue\022\013\n\003key\030\001 \001(\t\022\r\n\005value\030\002 \001(\t\""
-        + "S\n\tLogEntity\022\014\n\004time\030\001 \001(\003\0228\n\004data\030\002 \003(\013"
-        + "2*.io.holoinsight.server.query.grpc.KeyV"
-        + "alue\":\n\003Ref\022\017\n\007traceId\030\001 \001(\t\022\024\n\014parentSp"
-        + "anId\030\002 \001(\t\022\014\n\004type\030\004 \001(\t\"\212\003\n\020QueryMetaRe"
-        + "quest\022\016\n\006tenant\030\001 \001(\t\022\030\n\013serviceName\030\002 \001"
-        + "(\tH\000\210\001\001\022\031\n\014endpointName\030\003 \001(\tH\001\210\001\001\022\024\n\007ad"
-        + "dress\030\004 \001(\tH\002\210\001\001\022\r\n\005start\030\005 \001(\003\022\013\n\003end\030\006"
-        + " \001(\003\022\024\n\007isEntry\030\007 \001(\010H\003\210\001\001\022\023\n\013traceIdSiz"
-        + "e\030\010 \001(\003\022\020\n\010category\030\t \001(\t\022V\n\ntermParams\030"
-        + "\n \003(\0132B.io.holoinsight.server.query.grpc"
-        + ".QueryMetaRequest.TermParamsEntry\0321\n\017Ter"
-        + "mParamsEntry\022\013\n\003key\030\001 \001(\t\022\r\n\005value\030\002 \001(\t"
-        + ":\0028\001B\016\n\014_serviceNameB\017\n\r_endpointNameB\n\n"
-        + "\010_addressB\n\n\010_isEntry\"\263\003\n\024QueryTopologyR"
-        + "equest\022\016\n\006tenant\030\001 \001(\t\022\r\n\005start\030\002 \001(\003\022\013\n"
-        + "\003end\030\003 \001(\003\022\030\n\013serviceName\030\004 \001(\tH\000\210\001\001\022 \n\023"
-        + "serviceInstanceName\030\005 \001(\tH\001\210\001\001\022\031\n\014endpoi"
-        + "ntName\030\006 \001(\tH\002\210\001\001\022\024\n\007address\030\007 \001(\tH\003\210\001\001\022"
-        + "\022\n\005depth\030\010 \001(\005H\004\210\001\001\022\020\n\010category\030\t \001(\t\022Z\n"
-        + "\ntermParams\030\n \003(\0132F.io.holoinsight.serve"
-        + "r.query.grpc.QueryTopologyRequest.TermPa"
-        + "ramsEntry\0321\n\017TermParamsEntry\022\013\n\003key\030\001 \001("
-        + "\t\022\r\n\005value\030\002 \001(\t:\0028\001B\016\n\014_serviceNameB\026\n\024"
-        + "_serviceInstanceNameB\017\n\r_endpointNameB\n\n"
-        + "\010_addressB\010\n\006_depth\"\211\001\n\016ResponseMetric\022\022"
-        + "\n\navgLatency\030\001 \001(\001\022\022\n\np95Latency\030\002 \001(\001\022\022"
-        + "\n\np99Latency\030\003 \001(\001\022\022\n\ntotalCount\030\004 \001(\005\022\022"
-        + "\n\nerrorCount\030\005 \001(\005\022\023\n\013successRate\030\006 \001(\001\""
-        + "V\n\004Meta\022\014\n\004name\030\001 \001(\t\022@\n\006metric\030\002 \001(\01320."
-        + "io.holoinsight.server.query.grpc.Respons"
-        + "eMetric\"I\n\021QueryMetaResponse\0224\n\004mata\030\001 \003"
-        + "(\0132&.io.holoinsight.server.query.grpc.Me"
-        + "ta\"s\n\020VirtualComponent\022\017\n\007address\030\001 \001(\t\022"
-        + "\014\n\004type\030\002 \001(\t\022@\n\006metric\030\003 \001(\01320.io.holoi"
-        + "nsight.server.query.grpc.ResponseMetric\""
-        + "f\n\035QueryVirtualComponentResponse\022E\n\tcomp"
-        + "onent\030\001 \003(\01322.io.holoinsight.server.quer"
-        + "y.grpc.VirtualComponent\"w\n\007SlowSql\022\017\n\007ad"
-        + "dress\030\001 \001(\t\022\023\n\013serviceName\030\002 \001(\t\022\021\n\tstat"
-        + "ement\030\003 \001(\t\022\017\n\007latency\030\004 \001(\005\022\021\n\tstartTim"
-        + "e\030\005 \001(\003\022\017\n\007traceId\030\006 \001(\t\"R\n\024QuerySlowSql"
-        + "Response\022:\n\007slowSql\030\001 \003(\0132).io.holoinsig"
-        + "ht.server.query.grpc.SlowSql\"\225\001\n\004Node\022\n\n"
-        + "\002id\030\001 \001(\t\022\014\n\004name\030\002 \001(\t\022\014\n\004type\030\003 \001(\t\022\016\n"
-        + "\006isReal\030\004 \001(\010\022\023\n\013serviceName\030\005 \001(\t\022@\n\006me"
-        + "tric\030\006 \001(\01320.io.holoinsight.server.query"
-        + ".grpc.ResponseMetric\"\320\001\n\004Call\022\n\n\002id\030\001 \001("
-        + "\t\022\020\n\010sourceId\030\002 \001(\t\022\022\n\nsourceName\030\003 \001(\t\022"
-        + "\016\n\006destId\030\004 \001(\t\022\020\n\010destName\030\005 \001(\t\022\031\n\021sou"
-        + "rceServiceName\030\006 \001(\t\022\027\n\017destServiceName\030"
-        + "\007 \001(\t\022@\n\006metric\030\010 \001(\01320.io.holoinsight.s"
-        + "erver.query.grpc.ResponseMetric\"v\n\010Topol"
-        + "ogy\0224\n\004node\030\001 \003(\0132&.io.holoinsight.serve"
-        + "r.query.grpc.Node\0224\n\004call\030\002 \003(\0132&.io.hol"
-        + "oinsight.server.query.grpc.Call\"\033\n\010Trace"
-        + "Ids\022\017\n\007traceId\030\001 \003(\t\"\215\002\n\rStatisticData\022Q"
-        + "\n\tresources\030\001 \003(\0132>.io.holoinsight.serve"
-        + "r.query.grpc.StatisticData.ResourcesEntr"
-        + "y\022I\n\005datas\030\002 \003(\0132:.io.holoinsight.server"
-        + ".query.grpc.StatisticData.DatasEntry\0320\n\016"
-        + "ResourcesEntry\022\013\n\003key\030\001 \001(\t\022\r\n\005value\030\002 \001"
-        + "(\t:\0028\001\032,\n\nDatasEntry\022\013\n\003key\030\001 \001(\t\022\r\n\005val"
-        + "ue\030\002 \001(\001:\0028\001\"[\n\021StatisticDataList\022F\n\rsta"
-        + "tisticData\030\001 \003(\0132/.io.holoinsight.server"
-        + ".query.grpc.StatisticData\"\215\001\n\021CommonMapT"
-        + "ypeData\022K\n\004data\030\001 \003(\0132=.io.holoinsight.s"
-        + "erver.query.grpc.CommonMapTypeData.DataE"
-        + "ntry\032+\n\tDataEntry\022\013\n\003key\030\001 \001(\t\022\r\n\005value\030"
-        + "\002 \001(\t:\0028\001\"g\n\025CommonMapTypeDataList\022N\n\021co"
-        + "mmonMapTypeData\030\001 \003(\01323.io.holoinsight.s"
-        + "erver.query.grpc.CommonMapTypeData2\224\024\n\014Q"
-        + "ueryService\022l\n\tQueryData\022..io.holoinsigh"
-        + "t.server.query.grpc.QueryRequest\032/.io.ho" + "loinsight.server.query.grpc.QueryRespons"
-        + "e\022l\n\tQueryTags\022..io.holoinsight.server.q"
+        + "ee\0224\n\004mesh\030\003 \001(\0132&.io.holoinsight.server"
+        + ".query.grpc.Span\"\302\003\n\004Span\022\017\n\007traceId\030\001 \001"
+        + "(\t\022\016\n\006spanId\030\002 \001(\t\022\024\n\014parentSpanId\030\003 \001(\t"
+        + "\0223\n\004refs\030\004 \003(\0132%.io.holoinsight.server.q"
+        + "uery.grpc.Ref\022\023\n\013serviceCode\030\005 \001(\t\022\033\n\023se"
+        + "rviceInstanceName\030\006 \001(\t\022\021\n\tstartTime\030\007 \001"
+        + "(\003\022\017\n\007endTime\030\010 \001(\003\022\024\n\014endpointName\030\t \001("
+        + "\t\022\014\n\004type\030\n \001(\t\022\014\n\004peer\030\013 \001(\t\022\021\n\tcompone"
+        + "nt\030\014 \001(\t\022\017\n\007isError\030\r \001(\010\022\r\n\005layer\030\016 \001(\t"
+        + "\0228\n\004tags\030\017 \003(\0132*.io.holoinsight.server.q"
+        + "uery.grpc.KeyValue\0229\n\004logs\030\020 \003(\0132+.io.ho"
+        + "loinsight.server.query.grpc.LogEntity\022\016\n"
+        + "\006isRoot\030\021 \001(\010\022\016\n\006isMesh\030\022 \001(\010\"&\n\010KeyValu"
+        + "e\022\013\n\003key\030\001 \001(\t\022\r\n\005value\030\002 \001(\t\"S\n\tLogEnti"
+        + "ty\022\014\n\004time\030\001 \001(\003\0228\n\004data\030\002 \003(\0132*.io.holo"
+        + "insight.server.query.grpc.KeyValue\":\n\003Re"
+        + "f\022\017\n\007traceId\030\001 \001(\t\022\024\n\014parentSpanId\030\002 \001(\t"
+        + "\022\014\n\004type\030\004 \001(\t\"\212\003\n\020QueryMetaRequest\022\016\n\006t"
+        + "enant\030\001 \001(\t\022\030\n\013serviceName\030\002 \001(\tH\000\210\001\001\022\031\n"
+        + "\014endpointName\030\003 \001(\tH\001\210\001\001\022\024\n\007address\030\004 \001("
+        + "\tH\002\210\001\001\022\r\n\005start\030\005 \001(\003\022\013\n\003end\030\006 \001(\003\022\024\n\007is"
+        + "Entry\030\007 \001(\010H\003\210\001\001\022\023\n\013traceIdSize\030\010 \001(\003\022\020\n"
+        + "\010category\030\t \001(\t\022V\n\ntermParams\030\n \003(\0132B.io"
+        + ".holoinsight.server.query.grpc.QueryMeta"
+        + "Request.TermParamsEntry\0321\n\017TermParamsEnt"
+        + "ry\022\013\n\003key\030\001 \001(\t\022\r\n\005value\030\002 \001(\t:\0028\001B\016\n\014_s"
+        + "erviceNameB\017\n\r_endpointNameB\n\n\010_addressB"
+        + "\n\n\010_isEntry\"\263\003\n\024QueryTopologyRequest\022\016\n\006"
+        + "tenant\030\001 \001(\t\022\r\n\005start\030\002 \001(\003\022\013\n\003end\030\003 \001(\003"
+        + "\022\030\n\013serviceName\030\004 \001(\tH\000\210\001\001\022 \n\023serviceIns"
+        + "tanceName\030\005 \001(\tH\001\210\001\001\022\031\n\014endpointName\030\006 \001"
+        + "(\tH\002\210\001\001\022\024\n\007address\030\007 \001(\tH\003\210\001\001\022\022\n\005depth\030\010"
+        + " \001(\005H\004\210\001\001\022\020\n\010category\030\t \001(\t\022Z\n\ntermParam"
+        + "s\030\n \003(\0132F.io.holoinsight.server.query.gr"
+        + "pc.QueryTopologyRequest.TermParamsEntry\032"
+        + "1\n\017TermParamsEntry\022\013\n\003key\030\001 \001(\t\022\r\n\005value"
+        + "\030\002 \001(\t:\0028\001B\016\n\014_serviceNameB\026\n\024_serviceIn"
+        + "stanceNameB\017\n\r_endpointNameB\n\n\010_addressB"
+        + "\010\n\006_depth\"\211\001\n\016ResponseMetric\022\022\n\navgLaten"
+        + "cy\030\001 \001(\001\022\022\n\np95Latency\030\002 \001(\001\022\022\n\np99Laten"
+        + "cy\030\003 \001(\001\022\022\n\ntotalCount\030\004 \001(\005\022\022\n\nerrorCou"
+        + "nt\030\005 \001(\005\022\023\n\013successRate\030\006 \001(\001\"V\n\004Meta\022\014\n"
+        + "\004name\030\001 \001(\t\022@\n\006metric\030\002 \001(\01320.io.holoins"
+        + "ight.server.query.grpc.ResponseMetric\"I\n"
+        + "\021QueryMetaResponse\0224\n\004mata\030\001 \003(\0132&.io.ho"
+        + "loinsight.server.query.grpc.Meta\"s\n\020Virt"
+        + "ualComponent\022\017\n\007address\030\001 \001(\t\022\014\n\004type\030\002 "
+        + "\001(\t\022@\n\006metric\030\003 \001(\01320.io.holoinsight.ser"
+        + "ver.query.grpc.ResponseMetric\"f\n\035QueryVi"
+        + "rtualComponentResponse\022E\n\tcomponent\030\001 \003("
+        + "\01322.io.holoinsight.server.query.grpc.Vir"
+        + "tualComponent\"w\n\007SlowSql\022\017\n\007address\030\001 \001("
+        + "\t\022\023\n\013serviceName\030\002 \001(\t\022\021\n\tstatement\030\003 \001("
+        + "\t\022\017\n\007latency\030\004 \001(\005\022\021\n\tstartTime\030\005 \001(\003\022\017\n"
+        + "\007traceId\030\006 \001(\t\"R\n\024QuerySlowSqlResponse\022:"
+        + "\n\007slowSql\030\001 \003(\0132).io.holoinsight.server."
+        + "query.grpc.SlowSql\"\225\001\n\004Node\022\n\n\002id\030\001 \001(\t\022"
+        + "\014\n\004name\030\002 \001(\t\022\014\n\004type\030\003 \001(\t\022\016\n\006isReal\030\004 "
+        + "\001(\010\022\023\n\013serviceName\030\005 \001(\t\022@\n\006metric\030\006 \001(\013"
+        + "20.io.holoinsight.server.query.grpc.Resp"
+        + "onseMetric\"\320\001\n\004Call\022\n\n\002id\030\001 \001(\t\022\020\n\010sourc"
+        + "eId\030\002 \001(\t\022\022\n\nsourceName\030\003 \001(\t\022\016\n\006destId\030"
+        + "\004 \001(\t\022\020\n\010destName\030\005 \001(\t\022\031\n\021sourceService"
+        + "Name\030\006 \001(\t\022\027\n\017destServiceName\030\007 \001(\t\022@\n\006m"
+        + "etric\030\010 \001(\01320.io.holoinsight.server.quer"
+        + "y.grpc.ResponseMetric\"v\n\010Topology\0224\n\004nod"
+        + "e\030\001 \003(\0132&.io.holoinsight.server.query.gr"
+        + "pc.Node\0224\n\004call\030\002 \003(\0132&.io.holoinsight.s"
+        + "erver.query.grpc.Call\"\033\n\010TraceIds\022\017\n\007tra"
+        + "ceId\030\001 \003(\t\"\215\002\n\rStatisticData\022Q\n\tresource"
+        + "s\030\001 \003(\0132>.io.holoinsight.server.query.gr"
+        + "pc.StatisticData.ResourcesEntry\022I\n\005datas"
+        + "\030\002 \003(\0132:.io.holoinsight.server.query.grp"
+        + "c.StatisticData.DatasEntry\0320\n\016ResourcesE"
+        + "ntry\022\013\n\003key\030\001 \001(\t\022\r\n\005value\030\002 \001(\t:\0028\001\032,\n\n"
+        + "DatasEntry\022\013\n\003key\030\001 \001(\t\022\r\n\005value\030\002 \001(\001:\002"
+        + "8\001\"[\n\021StatisticDataList\022F\n\rstatisticData"
+        + "\030\001 \003(\0132/.io.holoinsight.server.query.grp"
+        + "c.StatisticData\"\215\001\n\021CommonMapTypeData\022K\n"
+        + "\004data\030\001 \003(\0132=.io.holoinsight.server.quer"
+        + "y.grpc.CommonMapTypeData.DataEntry\032+\n\tDa"
+        + "taEntry\022\013\n\003key\030\001 \001(\t\022\r\n\005value\030\002 \001(\t:\0028\001\""
+        + "g\n\025CommonMapTypeDataList\022N\n\021commonMapTyp"
+        + "eData\030\001 \003(\01323.io.holoinsight.server.quer"
+        + "y.grpc.CommonMapTypeData2\224\024\n\014QueryServic"
+        + "e\022l\n\tQueryData\022..io.holoinsight.server.q"
         + "uery.grpc.QueryRequest\032/.io.holoinsight."
-        + "server.query.grpc.QueryResponse\022t\n\013Query"
-        + "Schema\022..io.holoinsight.server.query.grp"
-        + "c.QueryRequest\0325.io.holoinsight.server.q"
-        + "uery.grpc.QuerySchemaResponse\022}\n\014QueryMe"
-        + "trics\0225.io.holoinsight.server.query.grpc"
-        + ".QueryMetricsRequest\0326.io.holoinsight.se"
-        + "rver.query.grpc.QueryMetricsResponse\022m\n\n"
-        + "DeleteKeys\022..io.holoinsight.server.query"
-        + ".grpc.QueryRequest\032/.io.holoinsight.serv"
-        + "er.query.grpc.QueryResponse\022w\n\017pqlInstan"
-        + "tQuery\0223.io.holoinsight.server.query.grp"
-        + "c.PqlInstantRequest\032/.io.holoinsight.ser"
-        + "ver.query.grpc.QueryResponse\022s\n\rpqlRange"
-        + "Query\0221.io.holoinsight.server.query.grpc"
-        + ".PqlRangeRequest\032/.io.holoinsight.server"
-        + ".query.grpc.QueryResponse\022u\n\020QueryBasicT"
-        + "races\0223.io.holoinsight.server.query.grpc"
-        + ".QueryTraceRequest\032,.io.holoinsight.serv"
-        + "er.query.grpc.TraceBrief\022j\n\nQueryTrace\0223"
-        + ".io.holoinsight.server.query.grpc.QueryT"
-        + "raceRequest\032\'.io.holoinsight.server.quer"
-        + "y.grpc.Trace\022v\n\016QueryTraceTree\0223.io.holo"
-        + "insight.server.query.grpc.QueryTraceRequ" + "est\032/.io.holoinsight.server.query.grpc.T"
-        + "raceTreeList\022t\n\014BillingTrace\0223.io.holoin"
-        + "sight.server.query.grpc.QueryTraceReques" + "t\032/.io.holoinsight.server.query.grpc.Sta"
-        + "tisticData\022{\n\020QueryServiceList\0222.io.holo"
-        + "insight.server.query.grpc.QueryMetaReque" + "st\0323.io.holoinsight.server.query.grpc.Qu"
-        + "eryMetaResponse\022|\n\021QueryEndpointList\0222.i"
-        + "o.holoinsight.server.query.grpc.QueryMet" + "aRequest\0323.io.holoinsight.server.query.g"
-        + "rpc.QueryMetaResponse\022\203\001\n\030QueryServiceIn"
-        + "stanceList\0222.io.holoinsight.server.query"
-        + ".grpc.QueryMetaRequest\0323.io.holoinsight."
-        + "server.query.grpc.QueryMetaResponse\022\211\001\n\022"
-        + "QueryComponentList\0222.io.holoinsight.serv"
-        + "er.query.grpc.QueryMetaRequest\032?.io.holo" + "insight.server.query.grpc.QueryVirtualCo"
-        + "mponentResponse\022x\n\026QueryComponentTraceId"
-        + "s\0222.io.holoinsight.server.query.grpc.Que"
-        + "ryMetaRequest\032*.io.holoinsight.server.qu"
-        + "ery.grpc.TraceIds\022s\n\rQueryTopology\0226.io."
-        + "holoinsight.server.query.grpc.QueryTopol" + "ogyRequest\032*.io.holoinsight.server.query"
-        + ".grpc.Topology\022~\n\020QuerySlowSqlList\0222.io."
-        + "holoinsight.server.query.grpc.QueryMetaR" + "equest\0326.io.holoinsight.server.query.grp"
-        + "c.QuerySlowSqlResponse\022y\n\016StatisticTrace"
-        + "\0222.io.holoinsight.server.query.grpc.Stat"
-        + "isticRequest\0323.io.holoinsight.server.que"
-        + "ry.grpc.StatisticDataList\022\204\001\n\025QueryServi"
-        + "ceErrorList\0222.io.holoinsight.server.quer"
-        + "y.grpc.QueryMetaRequest\0327.io.holoinsight" + ".server.query.grpc.CommonMapTypeDataList"
-        + "\022\206\001\n\027QueryServiceErrorDetail\0222.io.holoin"
-        + "sight.server.query.grpc.QueryMetaRequest" + "\0327.io.holoinsight.server.query.grpc.Comm"
-        + "onMapTypeDataListB\"\n io.holoinsight.serv" + "er.query.grpcb\006proto3"};
+        + "server.query.grpc.QueryResponse\022l\n\tQuery"
+        + "Tags\022..io.holoinsight.server.query.grpc."
+        + "QueryRequest\032/.io.holoinsight.server.que"
+        + "ry.grpc.QueryResponse\022t\n\013QuerySchema\022..i"
+        + "o.holoinsight.server.query.grpc.QueryReq" + "uest\0325.io.holoinsight.server.query.grpc."
+        + "QuerySchemaResponse\022}\n\014QueryMetrics\0225.io"
+        + ".holoinsight.server.query.grpc.QueryMetr" + "icsRequest\0326.io.holoinsight.server.query"
+        + ".grpc.QueryMetricsResponse\022m\n\nDeleteKeys"
+        + "\022..io.holoinsight.server.query.grpc.Quer"
+        + "yRequest\032/.io.holoinsight.server.query.g"
+        + "rpc.QueryResponse\022w\n\017pqlInstantQuery\0223.i"
+        + "o.holoinsight.server.query.grpc.PqlInsta" + "ntRequest\032/.io.holoinsight.server.query."
+        + "grpc.QueryResponse\022s\n\rpqlRangeQuery\0221.io"
+        + ".holoinsight.server.query.grpc.PqlRangeR" + "equest\032/.io.holoinsight.server.query.grp"
+        + "c.QueryResponse\022u\n\020QueryBasicTraces\0223.io"
+        + ".holoinsight.server.query.grpc.QueryTrac" + "eRequest\032,.io.holoinsight.server.query.g"
+        + "rpc.TraceBrief\022j\n\nQueryTrace\0223.io.holoin"
+        + "sight.server.query.grpc.QueryTraceReques"
+        + "t\032\'.io.holoinsight.server.query.grpc.Tra"
+        + "ce\022v\n\016QueryTraceTree\0223.io.holoinsight.se"
+        + "rver.query.grpc.QueryTraceRequest\032/.io.h" + "oloinsight.server.query.grpc.TraceTreeLi"
+        + "st\022t\n\014BillingTrace\0223.io.holoinsight.serv"
+        + "er.query.grpc.QueryTraceRequest\032/.io.hol" + "oinsight.server.query.grpc.StatisticData"
+        + "\022{\n\020QueryServiceList\0222.io.holoinsight.se"
+        + "rver.query.grpc.QueryMetaRequest\0323.io.ho" + "loinsight.server.query.grpc.QueryMetaRes"
+        + "ponse\022|\n\021QueryEndpointList\0222.io.holoinsi"
+        + "ght.server.query.grpc.QueryMetaRequest\0323" + ".io.holoinsight.server.query.grpc.QueryM"
+        + "etaResponse\022\203\001\n\030QueryServiceInstanceList"
+        + "\0222.io.holoinsight.server.query.grpc.Quer"
+        + "yMetaRequest\0323.io.holoinsight.server.que"
+        + "ry.grpc.QueryMetaResponse\022\211\001\n\022QueryCompo"
+        + "nentList\0222.io.holoinsight.server.query.g"
+        + "rpc.QueryMetaRequest\032?.io.holoinsight.se" + "rver.query.grpc.QueryVirtualComponentRes"
+        + "ponse\022x\n\026QueryComponentTraceIds\0222.io.hol"
+        + "oinsight.server.query.grpc.QueryMetaRequ" + "est\032*.io.holoinsight.server.query.grpc.T"
+        + "raceIds\022s\n\rQueryTopology\0226.io.holoinsigh"
+        + "t.server.query.grpc.QueryTopologyRequest" + "\032*.io.holoinsight.server.query.grpc.Topo"
+        + "logy\022~\n\020QuerySlowSqlList\0222.io.holoinsigh"
+        + "t.server.query.grpc.QueryMetaRequest\0326.i" + "o.holoinsight.server.query.grpc.QuerySlo"
+        + "wSqlResponse\022y\n\016StatisticTrace\0222.io.holo"
+        + "insight.server.query.grpc.StatisticReque" + "st\0323.io.holoinsight.server.query.grpc.St"
+        + "atisticDataList\022\204\001\n\025QueryServiceErrorLis"
+        + "t\0222.io.holoinsight.server.query.grpc.Que"
+        + "ryMetaRequest\0327.io.holoinsight.server.qu"
+        + "ery.grpc.CommonMapTypeDataList\022\206\001\n\027Query"
+        + "ServiceErrorDetail\0222.io.holoinsight.serv"
+        + "er.query.grpc.QueryMetaRequest\0327.io.holo" + "insight.server.query.grpc.CommonMapTypeD"
+        + "ataListB\"\n io.holoinsight.server.query.g" + "rpcb\006proto3"};
     descriptor = com.google.protobuf.Descriptors.FileDescriptor.internalBuildGeneratedFileFrom(
         descriptorData, new com.google.protobuf.Descriptors.FileDescriptor[] {
             com.google.protobuf.AnyProto.getDescriptor(),});
@@ -50860,7 +51158,7 @@ public final class QueryProto {
     internal_static_io_holoinsight_server_query_grpc_TraceTree_fieldAccessorTable =
         new com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
             internal_static_io_holoinsight_server_query_grpc_TraceTree_descriptor,
-            new java.lang.String[] {"Span", "Children",});
+            new java.lang.String[] {"Span", "Children", "Mesh",});
     internal_static_io_holoinsight_server_query_grpc_Span_descriptor =
         getDescriptor().getMessageTypes().get(21);
     internal_static_io_holoinsight_server_query_grpc_Span_fieldAccessorTable =
@@ -50868,7 +51166,7 @@ public final class QueryProto {
             internal_static_io_holoinsight_server_query_grpc_Span_descriptor,
             new java.lang.String[] {"TraceId", "SpanId", "ParentSpanId", "Refs", "ServiceCode",
                 "ServiceInstanceName", "StartTime", "EndTime", "EndpointName", "Type", "Peer",
-                "Component", "IsError", "Layer", "Tags", "Logs", "IsRoot",});
+                "Component", "IsError", "Layer", "Tags", "Logs", "IsRoot", "IsMesh",});
     internal_static_io_holoinsight_server_query_grpc_KeyValue_descriptor =
         getDescriptor().getMessageTypes().get(22);
     internal_static_io_holoinsight_server_query_grpc_KeyValue_fieldAccessorTable =

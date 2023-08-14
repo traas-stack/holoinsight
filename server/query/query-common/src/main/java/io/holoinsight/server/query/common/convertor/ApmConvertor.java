@@ -77,6 +77,9 @@ public class ApmConvertor {
       if (childList != null) {
         traceTreeBuilder.addAllChildren(childList.getTraceTreeList());
       }
+      if (traceTree.getMesh() != null) {
+        traceTreeBuilder.setMesh(convertSpan(traceTree.getMesh()));
+      }
       traceTreeListBuilder.addTraceTree(traceTreeBuilder.build());
     });
     return traceTreeListBuilder.build();
@@ -89,6 +92,9 @@ public class ApmConvertor {
     List<TraceTree> result = new ArrayList<>();
     traceTreeList.getTraceTreeList().forEach(traceTree -> {
       TraceTree root = new TraceTree();
+      if (traceTree.hasMesh()) {
+        root.setMesh(convertSpan(traceTree.getMesh()));
+      }
       root.setSpan(convertSpan(traceTree.getSpan()));
       List<QueryProto.TraceTree> childrenList = traceTree.getChildrenList();
       if (CollectionUtils.isNotEmpty(childrenList)) {
@@ -219,7 +225,7 @@ public class ApmConvertor {
             .collect(Collectors.toList()),
         spanProto.getLogsList().stream().map(ApmConvertor::convertLogEntity)
             .collect(Collectors.toList()),
-        spanProto.getIsRoot());
+        spanProto.getIsRoot(), spanProto.getIsMesh());
     return span;
   }
 
