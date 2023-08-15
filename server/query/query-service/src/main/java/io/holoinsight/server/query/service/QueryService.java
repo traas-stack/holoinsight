@@ -64,4 +64,7 @@ public interface QueryService {
 
   QueryProto.CommonMapTypeDataList queryServiceErrorDetail(QueryProto.QueryMetaRequest request)
       throws QueryException;
+
+  QueryProto.QueryDetailResponse queryDetailData(QueryProto.QueryRequest request)
+      throws QueryException;
 }

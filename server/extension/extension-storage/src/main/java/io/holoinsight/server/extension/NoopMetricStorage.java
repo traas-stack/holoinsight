@@ -7,6 +7,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import io.holoinsight.server.extension.model.DetailResult;
 import io.holoinsight.server.extension.model.PqlParam;
 import io.holoinsight.server.extension.model.QueryMetricsParam;
 import io.holoinsight.server.extension.model.QueryParam;
@@ -59,5 +60,10 @@ public class NoopMetricStorage implements MetricStorage {
   @Override
   public List<QueryResult.Result> pqlRangeQuery(PqlParam pqlParam) {
     return Collections.emptyList();
+  }
+
+  @Override
+  public DetailResult queryDetail(QueryParam queryParam) {
+    return DetailResult.empty();
   }
 }
