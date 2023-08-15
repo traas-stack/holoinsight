@@ -9,6 +9,7 @@ import io.holoinsight.server.home.biz.common.MetaDictKey;
 import io.holoinsight.server.home.biz.common.MetaDictType;
 import io.holoinsight.server.home.biz.common.MetaDictUtil;
 import io.holoinsight.server.home.biz.service.ApiKeyService;
+import io.holoinsight.server.home.biz.service.TenantInitService;
 import io.holoinsight.server.home.common.util.scope.RequestContext;
 import io.holoinsight.server.home.dal.model.ApiKey;
 import io.holoinsight.server.home.web.common.AesUtil;
@@ -40,6 +41,10 @@ public class TraceAgentFacadeImpl extends BaseFacade {
   private ApiKeyService apiKeyService;
 
   @Autowired
+  private TenantInitService tenantInitService;
+
+
+  @Autowired
   private TraceAuthEncryptConfiguration traceAuthEncryptConfiguration;
 
   /**
@@ -55,10 +60,7 @@ public class TraceAgentFacadeImpl extends BaseFacade {
     final JsonResult<Map<String, Object>> result = new JsonResult<>();
     try {
       String tenant = RequestContext.getContext().ms.getTenant();
-      Map<String, Object> conditions = new HashMap<>();
-      conditions.put("tenant", tenant);
-      conditions.put("status", true);
-      List<ApiKey> apiKeys = apiKeyService.listByMap(conditions);
+      List<ApiKey> apiKeys = apiKeyService.listByMap(apikeyConditions(tenant, extendInfo));
 
       Map<String, Object> sysMap = new HashMap<>();
       String apikey = "";
@@ -96,6 +98,13 @@ public class TraceAgentFacadeImpl extends BaseFacade {
       JsonResult.fillFailResultTo(result, e.getMessage());
     }
     return result;
+  }
+
+  public Map<String, Object> apikeyConditions(String tenant, Map<String, String> extendInfo) {
+    Map<String, Object> conditions = new HashMap<>();
+    conditions.put("tenant", tenantInitService.getTsdbTenant(tenant));
+    conditions.put("status", true);
+    return conditions;
   }
 
   public String getCollectorAddress(Map<String, String> extendInfo) {
