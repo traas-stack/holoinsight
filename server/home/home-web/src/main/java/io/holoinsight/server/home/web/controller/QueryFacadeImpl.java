@@ -17,6 +17,7 @@ import io.holoinsight.server.home.biz.common.MetaDictUtil;
 import io.holoinsight.server.home.biz.service.TenantInitService;
 import io.holoinsight.server.home.common.service.QueryClientService;
 import io.holoinsight.server.home.common.service.query.KeyResult;
+import io.holoinsight.server.home.common.service.query.QueryDetailResponse;
 import io.holoinsight.server.home.common.service.query.QueryResponse;
 import io.holoinsight.server.home.common.service.query.QuerySchemaResponse;
 import io.holoinsight.server.home.common.service.query.Result;
@@ -114,6 +115,36 @@ public class QueryFacadeImpl extends BaseFacade {
       @Override
       public void doManage() {
         QueryResponse response = queryClientService.query(convertRequest(request));
+        JsonResult.createSuccessResult(result, response);
+      }
+    });
+
+    return result;
+  }
+
+  @PostMapping("/detail")
+  public JsonResult<QueryDetailResponse> queryDetail(@RequestBody DataQueryRequest request) {
+
+    final JsonResult<QueryDetailResponse> result = new JsonResult<>();
+
+    facadeTemplate.manage(result, new ManageCallback() {
+      @Override
+      public void checkParameter() {
+        ParaCheckUtil.checkParaNotNull(request, "request");
+        ParaCheckUtil.checkParaNotEmpty(request.datasources, "datasources");
+        ParaCheckUtil.checkParaNotBlank(request.datasources.get(0).metric, "metric");
+        ParaCheckUtil.checkTimeRange(request.datasources.get(0).start,
+            request.datasources.get(0).end, "start time must less than end time");
+        if (StringUtils.isNotBlank(request.getTenant())) {
+          ParaCheckUtil.checkEquals(request.getTenant(), RequestContext.getContext().ms.getTenant(),
+              "tenant is illegal");
+        }
+      }
+
+      @Override
+      public void doManage() {
+        QueryDetailResponse response =
+            queryClientService.queryDetail(convertDetailRequest(request));
         JsonResult.createSuccessResult(result, response);
       }
     });
@@ -479,6 +510,7 @@ public class QueryFacadeImpl extends BaseFacade {
       if ((System.currentTimeMillis() - d.start) < 80000L) {
         d.start -= 60000L;
       }
+      d.setQl(null);
       MetricInfo metricInfo = getMetricInfo(d.getMetric());
       if (isCeresdb4Storage(metricInfo)) {
         parseQl(d, metricInfo);
@@ -486,7 +518,9 @@ public class QueryFacadeImpl extends BaseFacade {
 
       QueryProto.Datasource.Builder datasourceBuilder = QueryProto.Datasource.newBuilder();
       Map<String, Object> objMap = J.toMap(J.toJson(d));
-      objMap.remove("select");
+      if (objMap != null) {
+        objMap.remove("select");
+      }
       toProtoBean(datasourceBuilder, objMap);
       Boolean aBoolean = tenantInitService.checkConditions(ms.getTenant(), ms.getWorkspace(),
           datasourceBuilder.getMetric(), datasourceBuilder.getFiltersList());
@@ -506,12 +540,48 @@ public class QueryFacadeImpl extends BaseFacade {
   protected void parseQl(QueryDataSource d, MetricInfo metricInfo) {
     Set<String> tags = new HashSet<>(J.toList(metricInfo.getTags()));
     StringBuilder select = new StringBuilder("select ");
+
     List<String> selects = new ArrayList<>();
+    selects.add("`period`");
+    parseSelect(selects, select, d);
+
+    select.append(" from ").append(d.metric);
+
+    parseFilters(select, d, tags);
+
+    List<String> gbList = new ArrayList<>();
+    gbList.add("period");
+    parseGroupby(select, d, gbList, tags);
+
+    select.append(" order by `period` asc");
+
+    log.info("parse sql {}", select);
+    d.setQl(select.toString());
+  }
+
+  private void parseGroupby(StringBuilder select, QueryDataSource d, List<String> gbList,
+      Set<String> tags) {
+    if (!CollectionUtils.isEmpty(d.groupBy)) {
+      for (String gb : d.groupBy) {
+        if (!StringUtils.equals("period", gb) && !tags.contains(gb)) {
+          continue;
+        }
+        gbList.add(gb);
+      }
+    }
+
+    if (!CollectionUtils.isEmpty(gbList)) {
+      select.append(" group by `")//
+          .append(String.join("` , `", gbList)) //
+          .append("`");
+    }
+  }
+
+  private void parseSelect(List<String> selects, StringBuilder select, QueryDataSource d) {
     if (CollectionUtils.isEmpty(d.select)) {
       selects.add(" count(1) as value ");
     } else {
-      for (Map.Entry<String /* column name */, String /* expression */> entry : d.select
-          .entrySet()) {
+      for (Entry<String /* column name */, String /* expression */> entry : d.select.entrySet()) {
         String columnName = entry.getKey();
         String expression = entry.getValue();
         if (StringUtils.isEmpty(expression)) {
@@ -521,9 +591,11 @@ public class QueryFacadeImpl extends BaseFacade {
         }
       }
     }
-    selects.add("`period`");
+
     select.append(String.join(" , ", selects));
-    select.append(" from ").append(d.metric);
+  }
+
+  private void parseFilters(StringBuilder select, QueryDataSource d, Set<String> tags) {
     select.append(" where `period` <= ") //
         .append(d.end) //
         .append(" and `period` >= ") //
@@ -565,22 +637,6 @@ public class QueryFacadeImpl extends BaseFacade {
         }
       }
     }
-    List<String> gbList = new ArrayList<>();
-    gbList.add("period");
-    if (!CollectionUtils.isEmpty(d.groupBy)) {
-      for (String gb : d.groupBy) {
-        if (!tags.contains(gb)) {
-          continue;
-        }
-        gbList.add(gb);
-      }
-    }
-    select.append(" group by `")//
-        .append(String.join("` , `", gbList)) //
-        .append("`");
-    select.append(" order by `period` asc");
-    log.info("parse sql {}", select);
-    d.setQl(select.toString());
   }
 
   private MetricInfo getMetricInfo(String metric) {
@@ -654,5 +710,66 @@ public class QueryFacadeImpl extends BaseFacade {
       JsonResult.fillFailResultTo(result, e.getMessage());
     }
     return result;
+  }
+
+  public QueryRequest convertDetailRequest(DataQueryRequest request) {
+    MonitorScope ms = RequestContext.getContext().ms;
+    QueryRequest.Builder builder = QueryRequest.newBuilder();
+    builder.setTenant(tenantInitService.getTsdbTenant(ms.getTenant()));
+    if (StringUtil.isNotBlank(request.getQuery())) {
+      builder.setQuery(request.getQuery());
+    }
+
+
+    request.datasources.forEach(d -> {
+      // wait data collect
+      if ((System.currentTimeMillis() - d.end) < 80000L) {
+        d.end -= 60000L;
+      }
+      if ((System.currentTimeMillis() - d.start) < 80000L) {
+        d.start -= 60000L;
+      }
+      d.setQl(null);
+      MetricInfo metricInfo = getMetricInfo(d.getMetric());
+      if (isCeresdb4Storage(metricInfo)) {
+        parseAnalysisQl(d, metricInfo);
+      }
+
+      Builder datasourceBuilder = Datasource.newBuilder();
+      Map<String, Object> objMap = J.toMap(J.toJson(d));
+      if (objMap != null) {
+        objMap.remove("select");
+      }
+      toProtoBean(datasourceBuilder, objMap);
+
+      datasourceBuilder.setApmMaterialized(false);
+      builder.addDatasources(datasourceBuilder);
+    });
+
+    return builder.build();
+  }
+
+
+
+  protected void parseAnalysisQl(QueryDataSource d, MetricInfo metricInfo) {
+    Set<String> tags = new HashSet<>(J.toList(metricInfo.getTags()));
+    StringBuilder select = new StringBuilder("select ");
+    List<String> selects = new ArrayList<>();
+
+    parseSelect(selects, select, d);
+
+    select.append(" from ").append(d.metric);
+
+    parseFilters(select, d, tags);
+
+    List<String> gbList = new ArrayList<>();
+    parseGroupby(select, d, gbList, tags);
+
+    if (selects.contains("`period`")) {
+      select.append(" order by `period` desc");
+    }
+
+    log.info("parse analysis sql {}", select);
+    d.setQl(select.toString());
   }
 }

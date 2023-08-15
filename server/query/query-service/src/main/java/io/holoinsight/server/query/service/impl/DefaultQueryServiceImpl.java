@@ -37,9 +37,11 @@ import io.holoinsight.server.apm.common.model.specification.sw.TraceState;
 import io.holoinsight.server.apm.common.utils.GsonUtils;
 import io.holoinsight.server.apm.engine.postcal.MetricDefine;
 import io.holoinsight.server.common.DurationUtil;
+import io.holoinsight.server.common.J;
 import io.holoinsight.server.common.ProtoJsonUtils;
 import io.holoinsight.server.common.service.SuperCacheService;
 import io.holoinsight.server.extension.MetricStorage;
+import io.holoinsight.server.extension.model.DetailResult;
 import io.holoinsight.server.extension.model.PqlParam;
 import io.holoinsight.server.extension.model.QueryMetricsParam;
 import io.holoinsight.server.extension.model.QueryParam;
@@ -218,8 +220,7 @@ public class DefaultQueryServiceImpl implements QueryService {
   }
 
   @Override
-  public QueryProto.QueryResponse pqlInstantQuery(QueryProto.PqlInstantRequest request)
-      throws QueryException {
+  public QueryProto.QueryResponse pqlInstantQuery(PqlInstantRequest request) throws QueryException {
     QueryProto.QueryResponse.Builder builder = QueryProto.QueryResponse.newBuilder();
     List<Result> pqlResult = metricStorage.pqlInstantQuery(transToPqlParam(request));
     QueryProto.Result.Builder resultBuilder = QueryProto.Result.newBuilder();
@@ -747,6 +748,26 @@ public class DefaultQueryServiceImpl implements QueryService {
     }, "queryServiceErrorDetail", request);
   }
 
+  @Override
+  public QueryProto.QueryDetailResponse queryDetailData(QueryProto.QueryRequest request)
+      throws QueryException {
+    return wrap(() -> {
+      List<QueryProto.Datasource> datasources = request.getDatasourcesList();
+      Assert.notEmpty(datasources, "datasources are empty");
+      String tenant = request.getTenant();
+
+      List<QueryProto.QueryDetailResponse> rsps = new ArrayList<>(datasources.size());
+      for (QueryProto.Datasource datasource : datasources) {
+        QueryProto.QueryDetailResponse.Builder queryResponseBuilder =
+            queryDetail(tenant, datasource);
+        rsps.add(queryResponseBuilder.build());
+      }
+      List<QueryProto.DetailResult> results =
+          rsps.stream().flatMap(rsp -> rsp.getResultsList().stream()).collect(Collectors.toList());
+      return QueryProto.QueryDetailResponse.newBuilder().addAllResults(results).build();
+    }, "queryDetailData", request);
+  }
+
   private QueryProto.QueryResponse simpleQuery(QueryProto.QueryRequest request, String tenant,
       List<QueryProto.Datasource> datasources) throws QueryException {
     List<QueryProto.QueryResponse> rsps = new ArrayList<>(datasources.size());
@@ -838,7 +859,7 @@ public class DefaultQueryServiceImpl implements QueryService {
         }).collect(Collectors.toList());
         try {
           Double rpnResult = rpnResolver.calByInfix(rpnArgs);
-          QueryProto.Point.Builder pointBuilder = QueryProto.Point.newBuilder();
+          Builder pointBuilder = QueryProto.Point.newBuilder();
           pointBuilder.setTimestamp(timestamp).setValue(rpnResult);
           QueryProto.Point point = pointBuilder.build();
           resultBuilder.addPoints(point);
@@ -1022,18 +1043,16 @@ public class DefaultQueryServiceImpl implements QueryService {
   private QueryProto.QueryResponse.Builder queryMetricStore(String tenant,
       QueryProto.Datasource datasource) {
     QueryParam param = QueryStorageUtils.convertToQueryParam(tenant, datasource);
-    List<io.holoinsight.server.extension.model.QueryResult.Result> results =
-        metricStorage.queryData(param);
+    List<Result> results = metricStorage.queryData(param);
 
     QueryProto.QueryResponse.Builder builder = QueryProto.QueryResponse.newBuilder();
-    for (io.holoinsight.server.extension.model.QueryResult.Result result : results) {
+    for (Result result : results) {
       QueryProto.Result.Builder resultBuilder = QueryProto.Result.newBuilder();
       resultBuilder.setMetric(
           StringUtils.isNotEmpty(datasource.getName()) ? datasource.getName() : result.getMetric())
           .putAllTags(result.getTags());
-      for (io.holoinsight.server.extension.model.QueryResult.Point point : result.getPoints()) {
-        QueryProto.Point.Builder pointBuilder =
-            QueryProto.Point.newBuilder().setTimestamp(point.getTimestamp());
+      for (Point point : result.getPoints()) {
+        Builder pointBuilder = QueryProto.Point.newBuilder().setTimestamp(point.getTimestamp());
 
         if (point.getStrValue() != null) {
           pointBuilder.setStrValue(String.valueOf(point.getStrValue()));
@@ -1054,14 +1073,56 @@ public class DefaultQueryServiceImpl implements QueryService {
     return builder;
   }
 
+  private QueryProto.QueryDetailResponse.Builder queryDetail(String tenant,
+      QueryProto.Datasource datasource) {
+    QueryParam param = QueryStorageUtils.convertToQueryParam(tenant, datasource);
+    DetailResult detailResult = metricStorage.queryDetail(param);
+    QueryProto.QueryDetailResponse.Builder builder = QueryProto.QueryDetailResponse.newBuilder();
+    QueryProto.DetailResult.Builder detailResultBuilder = QueryProto.DetailResult.newBuilder();
+    if (detailResult == null || detailResult.isEmpty()) {
+      log.info("detailResult is empty for {}", J.toJson(datasource));
+      return builder;
+    }
+    detailResultBuilder.addAllHeaders(detailResult.getHeaders()) //
+        .addAllTables(detailResult.getTables()) //
+        .setSql(detailResult.getSql());
+    for (DetailResult.DetailRow detailRow : detailResult.getPoints()) {
+      if (CollectionUtils.isEmpty(detailRow.getValues())) {
+        continue;
+      }
+      QueryProto.DetailRow.Builder resultBuilder = QueryProto.DetailRow.newBuilder();
+      for (DetailResult.Value value : detailRow.getValues()) {
+        QueryProto.DetailValue.Builder valueBuilder = QueryProto.DetailValue.newBuilder();
+        valueBuilder.setType(value.getType().name());
+        switch (value.getType()) {
+          case String:
+            valueBuilder.setStrValue((String) value.getValue());
+            break;
+          case Timestamp:
+            valueBuilder.setTimestampValue(((Number) value.getValue()).longValue());
+            break;
+          case Double:
+            valueBuilder.setDoubleValue(((Number) value.getValue()).doubleValue());
+            break;
+          case Boolean:
+            valueBuilder.setBoolValue((Boolean) value.getValue());
+            break;
+        }
+        resultBuilder.addValues(valueBuilder.build());
+      }
+      detailResultBuilder.addRows(resultBuilder.build());
+    }
+    builder.addResults(detailResultBuilder.build());
+    return builder;
+  }
+
   private QueryProto.QueryResponse.Builder analysis(String tenant,
       QueryProto.Datasource datasource) {
 
     QueryParam queryParam = QueryStorageUtils.convertToQueryParam(tenant, datasource);
     queryParam.setAggregator("none");
 
-    List<io.holoinsight.server.extension.model.QueryResult.Result> results =
-        metricStorage.queryData(queryParam);
+    List<Result> results = metricStorage.queryData(queryParam);
 
     QueryProto.QueryResponse.Builder builder = QueryProto.QueryResponse.newBuilder();
     Map<Map<String, String>, QueryProto.Result.Builder> tagsResults = new HashMap<>();
@@ -1102,8 +1163,8 @@ public class DefaultQueryServiceImpl implements QueryService {
                 .setMetric(StringUtils.isNotEmpty(datasource.getName()) ? datasource.getName()
                     : datasource.getMetric())
                 .putAllTags(tags));
-        QueryProto.Point.Builder pointBuilder = QueryProto.Point.newBuilder()
-            .setTimestamp(timestamp).setStrValue(GsonUtils.toJson(vals.get().getRight()));
+        Builder pointBuilder = QueryProto.Point.newBuilder().setTimestamp(timestamp)
+            .setStrValue(GsonUtils.toJson(vals.get().getRight()));
         resultBuilder.addPoints(pointBuilder);
       });
     });
@@ -1114,15 +1175,15 @@ public class DefaultQueryServiceImpl implements QueryService {
   private void fillData(QueryProto.QueryResponse.Builder rspBuilder, long start, long end,
       String downsample, String fillPolicy) {
     rspBuilder.getResultsBuilderList().forEach(resultBuilder -> {
-      List<QueryProto.Point.Builder> pointBuilders = resultBuilder.getPointsBuilderList();
-      Map<Long, QueryProto.Point.Builder> timePointMap = new TreeMap<>(pointBuilders.stream()
-          .collect(Collectors.toMap(QueryProto.Point.Builder::getTimestamp, Function.identity())));
+      List<Builder> pointBuilders = resultBuilder.getPointsBuilderList();
+      Map<Long, Builder> timePointMap = new TreeMap<>(pointBuilders.stream()
+          .collect(Collectors.toMap(Builder::getTimestamp, Function.identity())));
       long sample = DurationUtil.parse(downsample).toMillis();
       for (long period =
           start % sample == 0 ? start : start / sample * sample + sample; period <= end; period +=
               sample) {
         if (!timePointMap.containsKey(period)) {
-          QueryProto.Point.Builder builder = QueryProto.Point.newBuilder().setTimestamp(period);
+          Builder builder = QueryProto.Point.newBuilder().setTimestamp(period);
           Object filledVal = QueryStorageUtils.convertFillPolocy(fillPolicy);
           if (filledVal instanceof Number) {
             builder.setValue(((Number) filledVal).doubleValue());
@@ -1142,9 +1203,8 @@ public class DefaultQueryServiceImpl implements QueryService {
     try {
       List<QueryProto.Result> pbResults = new ArrayList<>();
       QueryParam param = QueryStorageUtils.convertToQueryParam(tenant, datasource);
-      List<io.holoinsight.server.extension.model.QueryResult.Result> results =
-          metricStorage.queryTags(param);
-      for (io.holoinsight.server.extension.model.QueryResult.Result result : results) {
+      List<Result> results = metricStorage.queryTags(param);
+      for (Result result : results) {
         pbResults.add(QueryStorageUtils.convertToPb(result));
       }
       return pbResults;

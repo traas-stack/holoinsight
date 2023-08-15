@@ -35,6 +35,18 @@ public class QueryGrpcService extends QueryServiceGrpc.QueryServiceImplBase {
   }
 
   @Override
+  public void queryDetailData(QueryProto.QueryRequest request,
+      StreamObserver<QueryProto.QueryDetailResponse> responseObserver) {
+    try {
+      responseObserver.onNext(queryService.queryDetailData(request));
+      responseObserver.onCompleted();
+    } catch (Throwable t) {
+      responseObserver.onError(
+          Status.INTERNAL.withCause(t).withDescription(t.getMessage()).asRuntimeException());
+    }
+  }
+
+  @Override
   public void queryTags(QueryProto.QueryRequest request,
       StreamObserver<QueryProto.QueryResponse> responseObserver) {
     try {

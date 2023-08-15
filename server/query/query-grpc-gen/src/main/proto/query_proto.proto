@@ -336,6 +336,29 @@ message CommonMapTypeDataList {
   repeated CommonMapTypeData commonMapTypeData = 1;
 }
 
+message QueryDetailResponse {
+  repeated DetailResult results = 1;
+}
+
+message DetailResult {
+  repeated string tables = 1;
+  string sql = 2;
+  repeated string headers = 3;
+  repeated DetailRow rows = 4;
+}
+
+message DetailRow {
+  repeated DetailValue values = 1;
+}
+
+message DetailValue {
+  string type = 1;
+  optional string strValue = 2;
+  optional bool boolValue = 3;
+  optional double doubleValue = 4;
+  optional int64 timestampValue = 5;
+}
+
 service QueryService {
   rpc QueryData(QueryRequest) returns (QueryResponse);
 
@@ -378,5 +401,7 @@ service QueryService {
   rpc QueryServiceErrorList(QueryMetaRequest) returns (CommonMapTypeDataList);
 
   rpc QueryServiceErrorDetail(QueryMetaRequest) returns (CommonMapTypeDataList);
+
+  rpc QueryDetailData(QueryRequest) returns (QueryDetailResponse);
 
 }

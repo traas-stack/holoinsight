@@ -32,7 +32,7 @@ public class QueryFacadeImplTest {
     queryFacade.parseQl(queryDataSource, metricInfo);
     System.out.println(queryDataSource.ql);
     Assert.assertTrue(StringUtils.equals(
-        "select  count(1) as value  , `period` from k8s_pod_mem_util where `period` <= 1691647903000 and `period` >= 1691644303000 and `app` in ('holoinsight-server','aaaaa') and `应用ID` = '111111111' group by `period` , `app` order by `period` asc",
+        "select `period` ,  count(1) as value  from k8s_pod_mem_util where `period` <= 1691647903000 and `period` >= 1691644303000 and `app` in ('holoinsight-server','aaaaa') and `应用ID` = '111111111' group by `period` , `app` order by `period` asc",
         queryDataSource.ql));
 
     json =
@@ -44,7 +44,25 @@ public class QueryFacadeImplTest {
     queryFacade.parseQl(queryDataSource, metricInfo);
     System.out.println(queryDataSource.ql);
     Assert.assertTrue(StringUtils.equals(
-        "select `app` , distinct(`aaa`) as dd , `period` from k8s_pod_mem_util where `period` <= 1691647903000 and `period` >= 1691644303000 and `app` in ('holoinsight-server','aaaaa') and `应用ID` = '111111111' group by `period` , `app` order by `period` asc",
+        "select `period` , `app` , distinct(`aaa`) as dd from k8s_pod_mem_util where `period` <= 1691647903000 and `period` >= 1691644303000 and `app` in ('holoinsight-server','aaaaa') and `应用ID` = '111111111' group by `period` , `app` order by `period` asc",
+        queryDataSource.ql));
+
+    queryFacade.parseAnalysisQl(queryDataSource, metricInfo);
+    System.out.println(queryDataSource.ql);
+    Assert.assertTrue(StringUtils.equals(
+        "select `app` , distinct(`aaa`) as dd from k8s_pod_mem_util where `period` <= 1691647903000 and `period` >= 1691644303000 and `app` in ('holoinsight-server','aaaaa') and `应用ID` = '111111111' group by `app`",
+        queryDataSource.ql));
+
+    json =
+        "{\"start\":1691644303000,\"end\":1691647903000,\"name\":\"a\",\"metric\":\"k8s_pod_mem_util\",\"groupBy\":[\"app\",\"hostname\",\"workspace\",\"pod\",\"ip\",\"namespace\"],\"filters\":[{\"type\":\"literal_or\",\"name\":\"app\",\"value\":\"holoinsight-server|aaaaa\"},{\"type\":\"literal\",\"name\":\"应用ID\",\"value\":\"111111111\"},{\"type\":\"literal\",\"name\":\"fake应用ID\",\"value\":\"22222222\"}],\"select\":{\"app\":null,\"dd\":\"distinct(`aaa`)\", \"period\":null}}";
+    queryDataSource = J.fromJson(json, DataQueryRequest.QueryDataSource.class);
+    metricInfo = new MetricInfo();
+    metricInfo.setTags(J.toJson(Arrays.asList("app", "应用ID")));
+    queryFacade = new QueryFacadeImpl();
+    queryFacade.parseAnalysisQl(queryDataSource, metricInfo);
+    System.out.println(queryDataSource.ql);
+    Assert.assertTrue(StringUtils.equals(
+        "select `app` , distinct(`aaa`) as dd , `period` from k8s_pod_mem_util where `period` <= 1691647903000 and `period` >= 1691644303000 and `app` in ('holoinsight-server','aaaaa') and `应用ID` = '111111111' group by `app` order by `period` desc",
         queryDataSource.ql));
   }
 }
