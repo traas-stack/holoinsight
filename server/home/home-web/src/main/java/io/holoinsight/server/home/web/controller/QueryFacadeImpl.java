@@ -219,7 +219,7 @@ public class QueryFacadeImpl extends BaseFacade {
             .setEnd(System.currentTimeMillis() - 60000 * 5);
 
         List<QueryProto.QueryFilter> tenantFilters =
-            tenantInitService.getTenantFilters(ms.getTenant(), ms.getWorkspace());
+            tenantInitService.getTenantFilters(ms.getTenant(), ms.getWorkspace(), metric);
         if (!CollectionUtils.isEmpty(tenantFilters)) {
           builder.addAllFilters(tenantFilters);
         }
@@ -304,8 +304,8 @@ public class QueryFacadeImpl extends BaseFacade {
             .setEnd(System.currentTimeMillis()).setAggregator("count")
             .addAllGroupBy(Collections.singletonList(tagQueryRequest.getKey()));
 
-        List<QueryProto.QueryFilter> tenantFilters =
-            tenantInitService.getTenantFilters(ms.getTenant(), ms.getWorkspace());
+        List<QueryProto.QueryFilter> tenantFilters = tenantInitService
+            .getTenantFilters(ms.getTenant(), ms.getWorkspace(), tagQueryRequest.getMetric());
 
         if (!CollectionUtils.isEmpty(tagQueryRequest.getConditions())) {
           tagQueryRequest.getConditions().forEach((k, v) -> {

@@ -80,7 +80,7 @@ public interface TenantInitService {
    * @param workspace
    * @return
    */
-  List<QueryFilter> getTenantFilters(String tenant, String workspace);
+  List<QueryFilter> getTenantFilters(String tenant, String workspace, String metric);
 
   /**
    * logmonitor metric table

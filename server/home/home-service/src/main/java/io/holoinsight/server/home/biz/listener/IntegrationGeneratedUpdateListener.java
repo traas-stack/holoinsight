@@ -7,9 +7,13 @@ package io.holoinsight.server.home.biz.listener;
 import com.google.common.eventbus.AllowConcurrentEvents;
 import com.google.common.eventbus.Subscribe;
 import io.holoinsight.server.common.J;
+import io.holoinsight.server.home.biz.common.GaeaConvertUtil;
 import io.holoinsight.server.home.biz.plugin.config.MetaLabel;
 import io.holoinsight.server.home.biz.plugin.config.PortCheckPluginConfig;
+import io.holoinsight.server.home.biz.service.TenantInitService;
 import io.holoinsight.server.home.common.util.EventBusHolder;
+import io.holoinsight.server.home.dal.model.dto.CloudMonitorRange;
+import io.holoinsight.server.home.dal.model.dto.GaeaCollectConfigDTO.GaeaCollectRange;
 import io.holoinsight.server.home.dal.model.dto.IntegrationGeneratedDTO;
 import io.holoinsight.server.home.dal.model.dto.IntegrationPluginDTO;
 import org.apache.commons.lang3.StringUtils;
@@ -19,6 +23,7 @@ import org.springframework.util.CollectionUtils;
 
 import javax.annotation.PostConstruct;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -32,6 +37,9 @@ public class IntegrationGeneratedUpdateListener {
 
   @Autowired
   private IntegrationPluginUpdateListener integrationPluginUpdateListener;
+
+  @Autowired
+  private TenantInitService tenantInitService;
 
   @PostConstruct
   void register() {
@@ -62,11 +70,19 @@ public class IntegrationGeneratedUpdateListener {
     integrationPluginDTO.name = generatedDTO.id + "_" + generatedDTO.getProduct() + "_"
         + generatedDTO.getItem() + "_" + generatedDTO.getName();
     integrationPluginDTO.status = !CollectionUtils.isEmpty(generatedDTO.getConfig());
+    integrationPluginDTO.collectRange = new HashMap<>();
+
+    GaeaCollectRange gaeaCollectRange = convertAppRange(generatedDTO);
+    integrationPluginDTO.collectRange = J.toMap(J.toJson(gaeaCollectRange));
 
     switch (generatedDTO.getProduct().toLowerCase()) {
       case "portcheck":
         integrationPluginDTO.type = "io.holoinsight.plugin.PortCheckPlugin";
         integrationPluginDTO.json = convertPortCheck(generatedDTO);
+        break;
+      case "jvm":
+        integrationPluginDTO.type = "io.holoinsight.plugin.JvmPlugin";
+        integrationPluginDTO.json = convertJvm(generatedDTO);
         break;
       case "logpattern":
         integrationPluginDTO.type = "io.holoinsight.server.plugin.LogPatternPlugin";
@@ -74,10 +90,17 @@ public class IntegrationGeneratedUpdateListener {
         break;
     }
 
-    integrationPluginDTO.collectRange = new HashMap<>();
     integrationPluginDTO.version = "1";
 
     return integrationPluginDTO;
+  }
+
+  private GaeaCollectRange convertAppRange(IntegrationGeneratedDTO generatedDTO) {
+    CloudMonitorRange cloudMonitorRange = tenantInitService.getCollectMonitorRange(
+        tenantInitService.getTenantServerTable(generatedDTO.getTenant()), generatedDTO.getTenant(),
+        generatedDTO.getWorkspace(), Collections.singletonList(generatedDTO.getName()),
+        MetaLabel.partApp);
+    return GaeaConvertUtil.convertCentralCollectRange(cloudMonitorRange);
   }
 
   private String convertLogPattern(IntegrationGeneratedDTO generatedDTO) {
@@ -102,10 +125,20 @@ public class IntegrationGeneratedUpdateListener {
       portCheckPluginConfig.port = Integer.parseInt(port);
       portCheckPluginConfig.metaLabel = MetaLabel.partApp;
       portCheckPluginConfig.range = new ArrayList<>();
+      portCheckPluginConfig.networkMode = "POD";
       portCheckPluginConfig.range.add(generatedDTO.getName());
       portCheckPluginConfigs.add(portCheckPluginConfig);
     });
     map.put("confs", portCheckPluginConfigs);
+    return J.toJson(map);
+  }
+
+  private String convertJvm(IntegrationGeneratedDTO generatedDTO) {
+
+    Map<String, Object> map = new HashMap<>();
+    map.put("confs", new ArrayList<>());
+    map.put("name", "JVM");
+    map.put("type", "io.holoinsight.plugin.JvmPlugin");
     return J.toJson(map);
   }
 

@@ -70,7 +70,7 @@ public class DefaultTenantInitServiceImpl implements TenantInitService {
   }
 
   @Override
-  public List<QueryFilter> getTenantFilters(String tenant, String workspace) {
+  public List<QueryFilter> getTenantFilters(String tenant, String workspace, String metric) {
     return new ArrayList<>();
   }
 
