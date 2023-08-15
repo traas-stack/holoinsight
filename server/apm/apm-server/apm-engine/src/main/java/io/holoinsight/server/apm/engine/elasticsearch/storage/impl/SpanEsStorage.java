@@ -168,7 +168,7 @@ public class SpanEsStorage extends RecordEsStorage<SpanDO> implements SpanStorag
           root.setSpan(span);
           List<TraceTree> children = new ArrayList<>();
           root.setChildren(children);
-          findChildren1(spans, span, children);
+          findChildren1(spans, span, root, children);
           result.add(root);
         });
       }
@@ -265,6 +265,11 @@ public class SpanEsStorage extends RecordEsStorage<SpanDO> implements SpanStorag
       io.holoinsight.server.apm.common.model.specification.sw.KeyValue keyValue =
           new io.holoinsight.server.apm.common.model.specification.sw.KeyValue(tagk, tagv);
       span.getTags().add(keyValue);
+      // mesh span
+      if (SpanDO.attributes(Const.MOSN_ATTR).equals(keyValue.getKey())
+          && "true".equals(keyValue.getValue())) {
+        span.setMesh(true);
+      }
     });
     Collections.sort(span.getTags(), (o1, o2) -> StringUtils.compare(o1.getKey(), o2.getKey()));
 
@@ -331,22 +336,33 @@ public class SpanEsStorage extends RecordEsStorage<SpanDO> implements SpanStorag
     ListIterator<Span> iterator = spans.listIterator(spans.size());
     while (iterator.hasPrevious()) {
       Span span = iterator.previous();
+      if (span.isMesh()) {
+        continue;
+      }
+      String spanId = span.getSpanId();
       String parentSpanId = span.getParentSpanId();
 
       boolean hasParent = false;
-      for (Span subSpan : spans) {
-        // sofatracer mq/rpc server span(parentSpanId == spanId)
-        // exclude subSpan = parentSpan
-        if (subSpan.getSpanId().equals(parentSpanId)
-            && !subSpan.getSpanId().equals(span.getSpanId())
-            && !subSpan.getParentSpanId().equals(span.getParentSpanId())) {
-          hasParent = true;
-          // if find parent, quick exit
-          break;
+      if (!StringUtils.isEmpty(parentSpanId)) {
+        for (Span subSpan : spans) {
+          if (!subSpan.isMesh() && subSpan.getSpanId().equals(parentSpanId)
+              && !subSpan.equals(span)) {
+            hasParent = true;
+            // if find parent, quick exit
+            break;
+          }
         }
       }
 
       if (!hasParent) {
+        // sofatracer mq/rpc server span(parentSpanId == spanId)
+        if (spanId.equals(parentSpanId) && parentSpanId.contains(".")) {
+          parentSpanId = parentSpanId.substring(0, parentSpanId.lastIndexOf("."));
+          span.setParentSpanId(parentSpanId);
+          iterator.remove();
+          iterator.add(span);
+          continue;
+        }
         // rootSpan.parentSpanId == ""
         if (StringUtils.isEmpty(parentSpanId)) {
           span.setRoot(true);
@@ -379,22 +395,31 @@ public class SpanEsStorage extends RecordEsStorage<SpanDO> implements SpanStorag
    * @param parentSpan
    * @param children
    */
-  private void findChildren1(List<Span> spans, Span parentSpan, List<TraceTree> children) {
+  private void findChildren1(List<Span> spans, Span parentSpan, TraceTree parentTree,
+      List<TraceTree> children) {
     long parentStartTime = Long.MAX_VALUE;
     long parentEndTime = Long.MIN_VALUE;
 
-    for (Span span : spans) {
-      if (span.getParentSpanId().equals(parentSpan.getSpanId())) {
+    ListIterator<Span> iterator = spans.listIterator(spans.size());
+    while (iterator.hasPrevious()) {
+      Span span = iterator.previous();
+      // find mesh span
+      if (span.isMesh() && parentSpan.getSpanId().equals(span.getSpanId())
+          && parentSpan.getParentSpanId().equals(span.getParentSpanId())
+          && parentSpan.getType().equals(span.getType())) {
+        parentTree.setMesh(span);
+      }
+
+      if (!span.isMesh() && !span.equals(parentSpan)
+          && span.getParentSpanId().equals(parentSpan.getSpanId())) {
         TraceTree child = new TraceTree();
         child.setSpan(span);
         children.add(child);
         List<TraceTree> newChildren = new ArrayList<>();
         child.setChildren(newChildren);
-        // sofatracer mq/rpc server span(parentSpanId == spanId)
-        // prevent stack overflow
-        if (!span.getParentSpanId().equals(span.getSpanId())) {
-          findChildren1(spans, span, newChildren);
-        }
+
+        findChildren1(spans, span, child, newChildren);
+
         parentStartTime = Math.min(parentStartTime, span.getStartTime());
         parentEndTime = Math.max(parentEndTime, span.getEndTime());
       }

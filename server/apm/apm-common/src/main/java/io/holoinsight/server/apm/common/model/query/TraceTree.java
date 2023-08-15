@@ -24,5 +24,6 @@ public class TraceTree implements Serializable {
   private static final long serialVersionUID = 3436393920339302223L;
 
   private Span span;
+  private Span mesh;
   private List<TraceTree> children = new ArrayList<>();
 }
