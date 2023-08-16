@@ -39,12 +39,12 @@ public class LogQueryRequest {
   /**
    * log path
    */
-  private String path;
+  private String logPath;
 
   /**
    * hostname or podname list
    */
-  private ArrayList<String> hosts;
+  private ArrayList<String> instances;
 
   /**
    * query context
