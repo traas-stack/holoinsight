@@ -30,6 +30,7 @@ public class Log {
    * log detail
    */
   private String content;
+  private Map<String, Object> contentMap;
 
   /**
    * log collected time
@@ -40,4 +41,5 @@ public class Log {
    * log tags
    */
   private Map<String, String> tags = new HashMap<>();
+  private Map<String, String> packs = new HashMap<>();
 }
