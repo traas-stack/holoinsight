@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public class AgentConfigurationDOExample {
+public class TraceAgentConfigurationDOExample {
   protected String orderByClause;
 
   protected boolean distinct;
@@ -18,7 +18,7 @@ public class AgentConfigurationDOExample {
 
   protected Integer rows;
 
-  public AgentConfigurationDOExample() {
+  public TraceAgentConfigurationDOExample() {
     oredCriteria = new ArrayList<Criteria>();
   }
 
@@ -52,12 +52,12 @@ public class AgentConfigurationDOExample {
     return criteria;
   }
 
-  public AgentConfigurationDOExample orderBy(String orderByClause) {
+  public TraceAgentConfigurationDOExample orderBy(String orderByClause) {
     this.setOrderByClause(orderByClause);
     return this;
   }
 
-  public AgentConfigurationDOExample orderBy(String... orderByClauses) {
+  public TraceAgentConfigurationDOExample orderBy(String... orderByClauses) {
     StringBuffer sb = new StringBuffer();
     for (int i = 0; i < orderByClauses.length; i++) {
       sb.append(orderByClauses[i]);
@@ -106,36 +106,36 @@ public class AgentConfigurationDOExample {
     return this.rows;
   }
 
-  public AgentConfigurationDOExample limit(Integer rows) {
+  public TraceAgentConfigurationDOExample limit(Integer rows) {
     this.rows = rows;
     return this;
   }
 
-  public AgentConfigurationDOExample limit(Integer offset, Integer rows) {
+  public TraceAgentConfigurationDOExample limit(Integer offset, Integer rows) {
     this.offset = offset;
     this.rows = rows;
     return this;
   }
 
-  public AgentConfigurationDOExample page(Integer page, Integer pageSize) {
+  public TraceAgentConfigurationDOExample page(Integer page, Integer pageSize) {
     this.offset = page * pageSize;
     this.rows = pageSize;
     return this;
   }
 
   public static Criteria newAndCreateCriteria() {
-    AgentConfigurationDOExample example = new AgentConfigurationDOExample();
+    TraceAgentConfigurationDOExample example = new TraceAgentConfigurationDOExample();
     return example.createCriteria();
   }
 
-  public AgentConfigurationDOExample when(boolean condition, IExampleWhen then) {
+  public TraceAgentConfigurationDOExample when(boolean condition, IExampleWhen then) {
     if (condition) {
       then.example(this);
     }
     return this;
   }
 
-  public AgentConfigurationDOExample when(boolean condition, IExampleWhen then,
+  public TraceAgentConfigurationDOExample when(boolean condition, IExampleWhen then,
       IExampleWhen otherwise) {
     if (condition) {
       then.example(this);
@@ -186,6 +186,96 @@ public class AgentConfigurationDOExample {
       criteria.add(new Criterion(condition, value1, value2));
     }
 
+    public Criteria andIdIsNull() {
+      addCriterion("id is null");
+      return (Criteria) this;
+    }
+
+    public Criteria andIdIsNotNull() {
+      addCriterion("id is not null");
+      return (Criteria) this;
+    }
+
+    public Criteria andIdEqualTo(Long value) {
+      addCriterion("id =", value, "id");
+      return (Criteria) this;
+    }
+
+    public Criteria andIdEqualToColumn(TraceAgentConfigurationDO.Column column) {
+      addCriterion(new StringBuilder("id = ").append(column.getEscapedColumnName()).toString());
+      return (Criteria) this;
+    }
+
+    public Criteria andIdNotEqualTo(Long value) {
+      addCriterion("id <>", value, "id");
+      return (Criteria) this;
+    }
+
+    public Criteria andIdNotEqualToColumn(TraceAgentConfigurationDO.Column column) {
+      addCriterion(new StringBuilder("id <> ").append(column.getEscapedColumnName()).toString());
+      return (Criteria) this;
+    }
+
+    public Criteria andIdGreaterThan(Long value) {
+      addCriterion("id >", value, "id");
+      return (Criteria) this;
+    }
+
+    public Criteria andIdGreaterThanColumn(TraceAgentConfigurationDO.Column column) {
+      addCriterion(new StringBuilder("id > ").append(column.getEscapedColumnName()).toString());
+      return (Criteria) this;
+    }
+
+    public Criteria andIdGreaterThanOrEqualTo(Long value) {
+      addCriterion("id >=", value, "id");
+      return (Criteria) this;
+    }
+
+    public Criteria andIdGreaterThanOrEqualToColumn(TraceAgentConfigurationDO.Column column) {
+      addCriterion(new StringBuilder("id >= ").append(column.getEscapedColumnName()).toString());
+      return (Criteria) this;
+    }
+
+    public Criteria andIdLessThan(Long value) {
+      addCriterion("id <", value, "id");
+      return (Criteria) this;
+    }
+
+    public Criteria andIdLessThanColumn(TraceAgentConfigurationDO.Column column) {
+      addCriterion(new StringBuilder("id < ").append(column.getEscapedColumnName()).toString());
+      return (Criteria) this;
+    }
+
+    public Criteria andIdLessThanOrEqualTo(Long value) {
+      addCriterion("id <=", value, "id");
+      return (Criteria) this;
+    }
+
+    public Criteria andIdLessThanOrEqualToColumn(TraceAgentConfigurationDO.Column column) {
+      addCriterion(new StringBuilder("id <= ").append(column.getEscapedColumnName()).toString());
+      return (Criteria) this;
+    }
+
+    public Criteria andIdIn(List<Long> values) {
+      addCriterion("id in", values, "id");
+      return (Criteria) this;
+    }
+
+    public Criteria andIdNotIn(List<Long> values) {
+      addCriterion("id not in", values, "id");
+      return (Criteria) this;
+    }
+
+    public Criteria andIdBetween(Long value1, Long value2) {
+      addCriterion("id between", value1, value2, "id");
+      return (Criteria) this;
+    }
+
+    public Criteria andIdNotBetween(Long value1, Long value2) {
+      addCriterion("id not between", value1, value2, "id");
+      return (Criteria) this;
+    }
+
     public Criteria andTenantIsNull() {
       addCriterion("tenant is null");
       return (Criteria) this;
@@ -201,7 +291,7 @@ public class AgentConfigurationDOExample {
       return (Criteria) this;
     }
 
-    public Criteria andTenantEqualToColumn(AgentConfigurationDO.Column column) {
+    public Criteria andTenantEqualToColumn(TraceAgentConfigurationDO.Column column) {
       addCriterion(new StringBuilder("tenant = ").append(column.getEscapedColumnName()).toString());
       return (Criteria) this;
     }
@@ -211,7 +301,7 @@ public class AgentConfigurationDOExample {
       return (Criteria) this;
     }
 
-    public Criteria andTenantNotEqualToColumn(AgentConfigurationDO.Column column) {
+    public Criteria andTenantNotEqualToColumn(TraceAgentConfigurationDO.Column column) {
       addCriterion(
           new StringBuilder("tenant <> ").append(column.getEscapedColumnName()).toString());
       return (Criteria) this;
@@ -222,7 +312,7 @@ public class AgentConfigurationDOExample {
       return (Criteria) this;
     }
 
-    public Criteria andTenantGreaterThanColumn(AgentConfigurationDO.Column column) {
+    public Criteria andTenantGreaterThanColumn(TraceAgentConfigurationDO.Column column) {
       addCriterion(new StringBuilder("tenant > ").append(column.getEscapedColumnName()).toString());
       return (Criteria) this;
     }
@@ -232,7 +322,7 @@ public class AgentConfigurationDOExample {
       return (Criteria) this;
     }
 
-    public Criteria andTenantGreaterThanOrEqualToColumn(AgentConfigurationDO.Column column) {
+    public Criteria andTenantGreaterThanOrEqualToColumn(TraceAgentConfigurationDO.Column column) {
       addCriterion(
           new StringBuilder("tenant >= ").append(column.getEscapedColumnName()).toString());
       return (Criteria) this;
@@ -243,7 +333,7 @@ public class AgentConfigurationDOExample {
       return (Criteria) this;
     }
 
-    public Criteria andTenantLessThanColumn(AgentConfigurationDO.Column column) {
+    public Criteria andTenantLessThanColumn(TraceAgentConfigurationDO.Column column) {
       addCriterion(new StringBuilder("tenant < ").append(column.getEscapedColumnName()).toString());
       return (Criteria) this;
     }
@@ -253,7 +343,7 @@ public class AgentConfigurationDOExample {
       return (Criteria) this;
     }
 
-    public Criteria andTenantLessThanOrEqualToColumn(AgentConfigurationDO.Column column) {
+    public Criteria andTenantLessThanOrEqualToColumn(TraceAgentConfigurationDO.Column column) {
       addCriterion(
           new StringBuilder("tenant <= ").append(column.getEscapedColumnName()).toString());
       return (Criteria) this;
@@ -304,7 +394,7 @@ public class AgentConfigurationDOExample {
       return (Criteria) this;
     }
 
-    public Criteria andServiceEqualToColumn(AgentConfigurationDO.Column column) {
+    public Criteria andServiceEqualToColumn(TraceAgentConfigurationDO.Column column) {
       addCriterion(
           new StringBuilder("service = ").append(column.getEscapedColumnName()).toString());
       return (Criteria) this;
@@ -315,7 +405,7 @@ public class AgentConfigurationDOExample {
       return (Criteria) this;
     }
 
-    public Criteria andServiceNotEqualToColumn(AgentConfigurationDO.Column column) {
+    public Criteria andServiceNotEqualToColumn(TraceAgentConfigurationDO.Column column) {
       addCriterion(
           new StringBuilder("service <> ").append(column.getEscapedColumnName()).toString());
       return (Criteria) this;
@@ -326,7 +416,7 @@ public class AgentConfigurationDOExample {
       return (Criteria) this;
     }
 
-    public Criteria andServiceGreaterThanColumn(AgentConfigurationDO.Column column) {
+    public Criteria andServiceGreaterThanColumn(TraceAgentConfigurationDO.Column column) {
       addCriterion(
           new StringBuilder("service > ").append(column.getEscapedColumnName()).toString());
       return (Criteria) this;
@@ -337,7 +427,7 @@ public class AgentConfigurationDOExample {
       return (Criteria) this;
     }
 
-    public Criteria andServiceGreaterThanOrEqualToColumn(AgentConfigurationDO.Column column) {
+    public Criteria andServiceGreaterThanOrEqualToColumn(TraceAgentConfigurationDO.Column column) {
       addCriterion(
           new StringBuilder("service >= ").append(column.getEscapedColumnName()).toString());
       return (Criteria) this;
@@ -348,7 +438,7 @@ public class AgentConfigurationDOExample {
       return (Criteria) this;
     }
 
-    public Criteria andServiceLessThanColumn(AgentConfigurationDO.Column column) {
+    public Criteria andServiceLessThanColumn(TraceAgentConfigurationDO.Column column) {
       addCriterion(
           new StringBuilder("service < ").append(column.getEscapedColumnName()).toString());
       return (Criteria) this;
@@ -359,7 +449,7 @@ public class AgentConfigurationDOExample {
       return (Criteria) this;
     }
 
-    public Criteria andServiceLessThanOrEqualToColumn(AgentConfigurationDO.Column column) {
+    public Criteria andServiceLessThanOrEqualToColumn(TraceAgentConfigurationDO.Column column) {
       addCriterion(
           new StringBuilder("service <= ").append(column.getEscapedColumnName()).toString());
       return (Criteria) this;
@@ -395,209 +485,212 @@ public class AgentConfigurationDOExample {
       return (Criteria) this;
     }
 
-    public Criteria andAppIdIsNull() {
-      addCriterion("app_id is null");
+    public Criteria andTypeIsNull() {
+      addCriterion("`type` is null");
       return (Criteria) this;
     }
 
-    public Criteria andAppIdIsNotNull() {
-      addCriterion("app_id is not null");
+    public Criteria andTypeIsNotNull() {
+      addCriterion("`type` is not null");
       return (Criteria) this;
     }
 
-    public Criteria andAppIdEqualTo(String value) {
-      addCriterion("app_id =", value, "appId");
+    public Criteria andTypeEqualTo(String value) {
+      addCriterion("`type` =", value, "type");
       return (Criteria) this;
     }
 
-    public Criteria andAppIdEqualToColumn(AgentConfigurationDO.Column column) {
-      addCriterion(new StringBuilder("app_id = ").append(column.getEscapedColumnName()).toString());
+    public Criteria andTypeEqualToColumn(TraceAgentConfigurationDO.Column column) {
+      addCriterion(new StringBuilder("`type` = ").append(column.getEscapedColumnName()).toString());
       return (Criteria) this;
     }
 
-    public Criteria andAppIdNotEqualTo(String value) {
-      addCriterion("app_id <>", value, "appId");
+    public Criteria andTypeNotEqualTo(String value) {
+      addCriterion("`type` <>", value, "type");
       return (Criteria) this;
     }
 
-    public Criteria andAppIdNotEqualToColumn(AgentConfigurationDO.Column column) {
+    public Criteria andTypeNotEqualToColumn(TraceAgentConfigurationDO.Column column) {
       addCriterion(
-          new StringBuilder("app_id <> ").append(column.getEscapedColumnName()).toString());
+          new StringBuilder("`type` <> ").append(column.getEscapedColumnName()).toString());
       return (Criteria) this;
     }
 
-    public Criteria andAppIdGreaterThan(String value) {
-      addCriterion("app_id >", value, "appId");
+    public Criteria andTypeGreaterThan(String value) {
+      addCriterion("`type` >", value, "type");
       return (Criteria) this;
     }
 
-    public Criteria andAppIdGreaterThanColumn(AgentConfigurationDO.Column column) {
-      addCriterion(new StringBuilder("app_id > ").append(column.getEscapedColumnName()).toString());
+    public Criteria andTypeGreaterThanColumn(TraceAgentConfigurationDO.Column column) {
+      addCriterion(new StringBuilder("`type` > ").append(column.getEscapedColumnName()).toString());
       return (Criteria) this;
     }
 
-    public Criteria andAppIdGreaterThanOrEqualTo(String value) {
-      addCriterion("app_id >=", value, "appId");
+    public Criteria andTypeGreaterThanOrEqualTo(String value) {
+      addCriterion("`type` >=", value, "type");
       return (Criteria) this;
     }
 
-    public Criteria andAppIdGreaterThanOrEqualToColumn(AgentConfigurationDO.Column column) {
+    public Criteria andTypeGreaterThanOrEqualToColumn(TraceAgentConfigurationDO.Column column) {
       addCriterion(
-          new StringBuilder("app_id >= ").append(column.getEscapedColumnName()).toString());
+          new StringBuilder("`type` >= ").append(column.getEscapedColumnName()).toString());
       return (Criteria) this;
     }
 
-    public Criteria andAppIdLessThan(String value) {
-      addCriterion("app_id <", value, "appId");
+    public Criteria andTypeLessThan(String value) {
+      addCriterion("`type` <", value, "type");
       return (Criteria) this;
     }
 
-    public Criteria andAppIdLessThanColumn(AgentConfigurationDO.Column column) {
-      addCriterion(new StringBuilder("app_id < ").append(column.getEscapedColumnName()).toString());
+    public Criteria andTypeLessThanColumn(TraceAgentConfigurationDO.Column column) {
+      addCriterion(new StringBuilder("`type` < ").append(column.getEscapedColumnName()).toString());
       return (Criteria) this;
     }
 
-    public Criteria andAppIdLessThanOrEqualTo(String value) {
-      addCriterion("app_id <=", value, "appId");
+    public Criteria andTypeLessThanOrEqualTo(String value) {
+      addCriterion("`type` <=", value, "type");
       return (Criteria) this;
     }
 
-    public Criteria andAppIdLessThanOrEqualToColumn(AgentConfigurationDO.Column column) {
+    public Criteria andTypeLessThanOrEqualToColumn(TraceAgentConfigurationDO.Column column) {
       addCriterion(
-          new StringBuilder("app_id <= ").append(column.getEscapedColumnName()).toString());
+          new StringBuilder("`type` <= ").append(column.getEscapedColumnName()).toString());
       return (Criteria) this;
     }
 
-    public Criteria andAppIdLike(String value) {
-      addCriterion("app_id like", value, "appId");
+    public Criteria andTypeLike(String value) {
+      addCriterion("`type` like", value, "type");
       return (Criteria) this;
     }
 
-    public Criteria andAppIdNotLike(String value) {
-      addCriterion("app_id not like", value, "appId");
+    public Criteria andTypeNotLike(String value) {
+      addCriterion("`type` not like", value, "type");
       return (Criteria) this;
     }
 
-    public Criteria andAppIdIn(List<String> values) {
-      addCriterion("app_id in", values, "appId");
+    public Criteria andTypeIn(List<String> values) {
+      addCriterion("`type` in", values, "type");
       return (Criteria) this;
     }
 
-    public Criteria andAppIdNotIn(List<String> values) {
-      addCriterion("app_id not in", values, "appId");
+    public Criteria andTypeNotIn(List<String> values) {
+      addCriterion("`type` not in", values, "type");
       return (Criteria) this;
     }
 
-    public Criteria andAppIdBetween(String value1, String value2) {
-      addCriterion("app_id between", value1, value2, "appId");
+    public Criteria andTypeBetween(String value1, String value2) {
+      addCriterion("`type` between", value1, value2, "type");
       return (Criteria) this;
     }
 
-    public Criteria andAppIdNotBetween(String value1, String value2) {
-      addCriterion("app_id not between", value1, value2, "appId");
+    public Criteria andTypeNotBetween(String value1, String value2) {
+      addCriterion("`type` not between", value1, value2, "type");
       return (Criteria) this;
     }
 
-    public Criteria andEnvIdIsNull() {
-      addCriterion("env_id is null");
+    public Criteria andLanguageIsNull() {
+      addCriterion("`language` is null");
       return (Criteria) this;
     }
 
-    public Criteria andEnvIdIsNotNull() {
-      addCriterion("env_id is not null");
+    public Criteria andLanguageIsNotNull() {
+      addCriterion("`language` is not null");
       return (Criteria) this;
     }
 
-    public Criteria andEnvIdEqualTo(String value) {
-      addCriterion("env_id =", value, "envId");
+    public Criteria andLanguageEqualTo(String value) {
+      addCriterion("`language` =", value, "language");
       return (Criteria) this;
     }
 
-    public Criteria andEnvIdEqualToColumn(AgentConfigurationDO.Column column) {
-      addCriterion(new StringBuilder("env_id = ").append(column.getEscapedColumnName()).toString());
-      return (Criteria) this;
-    }
-
-    public Criteria andEnvIdNotEqualTo(String value) {
-      addCriterion("env_id <>", value, "envId");
-      return (Criteria) this;
-    }
-
-    public Criteria andEnvIdNotEqualToColumn(AgentConfigurationDO.Column column) {
+    public Criteria andLanguageEqualToColumn(TraceAgentConfigurationDO.Column column) {
       addCriterion(
-          new StringBuilder("env_id <> ").append(column.getEscapedColumnName()).toString());
+          new StringBuilder("`language` = ").append(column.getEscapedColumnName()).toString());
       return (Criteria) this;
     }
 
-    public Criteria andEnvIdGreaterThan(String value) {
-      addCriterion("env_id >", value, "envId");
+    public Criteria andLanguageNotEqualTo(String value) {
+      addCriterion("`language` <>", value, "language");
       return (Criteria) this;
     }
 
-    public Criteria andEnvIdGreaterThanColumn(AgentConfigurationDO.Column column) {
-      addCriterion(new StringBuilder("env_id > ").append(column.getEscapedColumnName()).toString());
-      return (Criteria) this;
-    }
-
-    public Criteria andEnvIdGreaterThanOrEqualTo(String value) {
-      addCriterion("env_id >=", value, "envId");
-      return (Criteria) this;
-    }
-
-    public Criteria andEnvIdGreaterThanOrEqualToColumn(AgentConfigurationDO.Column column) {
+    public Criteria andLanguageNotEqualToColumn(TraceAgentConfigurationDO.Column column) {
       addCriterion(
-          new StringBuilder("env_id >= ").append(column.getEscapedColumnName()).toString());
+          new StringBuilder("`language` <> ").append(column.getEscapedColumnName()).toString());
       return (Criteria) this;
     }
 
-    public Criteria andEnvIdLessThan(String value) {
-      addCriterion("env_id <", value, "envId");
+    public Criteria andLanguageGreaterThan(String value) {
+      addCriterion("`language` >", value, "language");
       return (Criteria) this;
     }
 
-    public Criteria andEnvIdLessThanColumn(AgentConfigurationDO.Column column) {
-      addCriterion(new StringBuilder("env_id < ").append(column.getEscapedColumnName()).toString());
-      return (Criteria) this;
-    }
-
-    public Criteria andEnvIdLessThanOrEqualTo(String value) {
-      addCriterion("env_id <=", value, "envId");
-      return (Criteria) this;
-    }
-
-    public Criteria andEnvIdLessThanOrEqualToColumn(AgentConfigurationDO.Column column) {
+    public Criteria andLanguageGreaterThanColumn(TraceAgentConfigurationDO.Column column) {
       addCriterion(
-          new StringBuilder("env_id <= ").append(column.getEscapedColumnName()).toString());
+          new StringBuilder("`language` > ").append(column.getEscapedColumnName()).toString());
       return (Criteria) this;
     }
 
-    public Criteria andEnvIdLike(String value) {
-      addCriterion("env_id like", value, "envId");
+    public Criteria andLanguageGreaterThanOrEqualTo(String value) {
+      addCriterion("`language` >=", value, "language");
       return (Criteria) this;
     }
 
-    public Criteria andEnvIdNotLike(String value) {
-      addCriterion("env_id not like", value, "envId");
+    public Criteria andLanguageGreaterThanOrEqualToColumn(TraceAgentConfigurationDO.Column column) {
+      addCriterion(
+          new StringBuilder("`language` >= ").append(column.getEscapedColumnName()).toString());
       return (Criteria) this;
     }
 
-    public Criteria andEnvIdIn(List<String> values) {
-      addCriterion("env_id in", values, "envId");
+    public Criteria andLanguageLessThan(String value) {
+      addCriterion("`language` <", value, "language");
       return (Criteria) this;
     }
 
-    public Criteria andEnvIdNotIn(List<String> values) {
-      addCriterion("env_id not in", values, "envId");
+    public Criteria andLanguageLessThanColumn(TraceAgentConfigurationDO.Column column) {
+      addCriterion(
+          new StringBuilder("`language` < ").append(column.getEscapedColumnName()).toString());
       return (Criteria) this;
     }
 
-    public Criteria andEnvIdBetween(String value1, String value2) {
-      addCriterion("env_id between", value1, value2, "envId");
+    public Criteria andLanguageLessThanOrEqualTo(String value) {
+      addCriterion("`language` <=", value, "language");
       return (Criteria) this;
     }
 
-    public Criteria andEnvIdNotBetween(String value1, String value2) {
-      addCriterion("env_id not between", value1, value2, "envId");
+    public Criteria andLanguageLessThanOrEqualToColumn(TraceAgentConfigurationDO.Column column) {
+      addCriterion(
+          new StringBuilder("`language` <= ").append(column.getEscapedColumnName()).toString());
+      return (Criteria) this;
+    }
+
+    public Criteria andLanguageLike(String value) {
+      addCriterion("`language` like", value, "language");
+      return (Criteria) this;
+    }
+
+    public Criteria andLanguageNotLike(String value) {
+      addCriterion("`language` not like", value, "language");
+      return (Criteria) this;
+    }
+
+    public Criteria andLanguageIn(List<String> values) {
+      addCriterion("`language` in", values, "language");
+      return (Criteria) this;
+    }
+
+    public Criteria andLanguageNotIn(List<String> values) {
+      addCriterion("`language` not in", values, "language");
+      return (Criteria) this;
+    }
+
+    public Criteria andLanguageBetween(String value1, String value2) {
+      addCriterion("`language` between", value1, value2, "language");
+      return (Criteria) this;
+    }
+
+    public Criteria andLanguageNotBetween(String value1, String value2) {
+      addCriterion("`language` not between", value1, value2, "language");
       return (Criteria) this;
     }
 
@@ -616,7 +709,7 @@ public class AgentConfigurationDOExample {
       return (Criteria) this;
     }
 
-    public Criteria andGmtCreateEqualToColumn(AgentConfigurationDO.Column column) {
+    public Criteria andGmtCreateEqualToColumn(TraceAgentConfigurationDO.Column column) {
       addCriterion(
           new StringBuilder("gmt_create = ").append(column.getEscapedColumnName()).toString());
       return (Criteria) this;
@@ -627,7 +720,7 @@ public class AgentConfigurationDOExample {
       return (Criteria) this;
     }
 
-    public Criteria andGmtCreateNotEqualToColumn(AgentConfigurationDO.Column column) {
+    public Criteria andGmtCreateNotEqualToColumn(TraceAgentConfigurationDO.Column column) {
       addCriterion(
           new StringBuilder("gmt_create <> ").append(column.getEscapedColumnName()).toString());
       return (Criteria) this;
@@ -638,7 +731,7 @@ public class AgentConfigurationDOExample {
       return (Criteria) this;
     }
 
-    public Criteria andGmtCreateGreaterThanColumn(AgentConfigurationDO.Column column) {
+    public Criteria andGmtCreateGreaterThanColumn(TraceAgentConfigurationDO.Column column) {
       addCriterion(
           new StringBuilder("gmt_create > ").append(column.getEscapedColumnName()).toString());
       return (Criteria) this;
@@ -649,7 +742,8 @@ public class AgentConfigurationDOExample {
       return (Criteria) this;
     }
 
-    public Criteria andGmtCreateGreaterThanOrEqualToColumn(AgentConfigurationDO.Column column) {
+    public Criteria andGmtCreateGreaterThanOrEqualToColumn(
+        TraceAgentConfigurationDO.Column column) {
       addCriterion(
           new StringBuilder("gmt_create >= ").append(column.getEscapedColumnName()).toString());
       return (Criteria) this;
@@ -660,7 +754,7 @@ public class AgentConfigurationDOExample {
       return (Criteria) this;
     }
 
-    public Criteria andGmtCreateLessThanColumn(AgentConfigurationDO.Column column) {
+    public Criteria andGmtCreateLessThanColumn(TraceAgentConfigurationDO.Column column) {
       addCriterion(
           new StringBuilder("gmt_create < ").append(column.getEscapedColumnName()).toString());
       return (Criteria) this;
@@ -671,7 +765,7 @@ public class AgentConfigurationDOExample {
       return (Criteria) this;
     }
 
-    public Criteria andGmtCreateLessThanOrEqualToColumn(AgentConfigurationDO.Column column) {
+    public Criteria andGmtCreateLessThanOrEqualToColumn(TraceAgentConfigurationDO.Column column) {
       addCriterion(
           new StringBuilder("gmt_create <= ").append(column.getEscapedColumnName()).toString());
       return (Criteria) this;
@@ -712,7 +806,7 @@ public class AgentConfigurationDOExample {
       return (Criteria) this;
     }
 
-    public Criteria andGmtModifiedEqualToColumn(AgentConfigurationDO.Column column) {
+    public Criteria andGmtModifiedEqualToColumn(TraceAgentConfigurationDO.Column column) {
       addCriterion(
           new StringBuilder("gmt_modified = ").append(column.getEscapedColumnName()).toString());
       return (Criteria) this;
@@ -723,7 +817,7 @@ public class AgentConfigurationDOExample {
       return (Criteria) this;
     }
 
-    public Criteria andGmtModifiedNotEqualToColumn(AgentConfigurationDO.Column column) {
+    public Criteria andGmtModifiedNotEqualToColumn(TraceAgentConfigurationDO.Column column) {
       addCriterion(
           new StringBuilder("gmt_modified <> ").append(column.getEscapedColumnName()).toString());
       return (Criteria) this;
@@ -734,7 +828,7 @@ public class AgentConfigurationDOExample {
       return (Criteria) this;
     }
 
-    public Criteria andGmtModifiedGreaterThanColumn(AgentConfigurationDO.Column column) {
+    public Criteria andGmtModifiedGreaterThanColumn(TraceAgentConfigurationDO.Column column) {
       addCriterion(
           new StringBuilder("gmt_modified > ").append(column.getEscapedColumnName()).toString());
       return (Criteria) this;
@@ -745,7 +839,8 @@ public class AgentConfigurationDOExample {
       return (Criteria) this;
     }
 
-    public Criteria andGmtModifiedGreaterThanOrEqualToColumn(AgentConfigurationDO.Column column) {
+    public Criteria andGmtModifiedGreaterThanOrEqualToColumn(
+        TraceAgentConfigurationDO.Column column) {
       addCriterion(
           new StringBuilder("gmt_modified >= ").append(column.getEscapedColumnName()).toString());
       return (Criteria) this;
@@ -756,7 +851,7 @@ public class AgentConfigurationDOExample {
       return (Criteria) this;
     }
 
-    public Criteria andGmtModifiedLessThanColumn(AgentConfigurationDO.Column column) {
+    public Criteria andGmtModifiedLessThanColumn(TraceAgentConfigurationDO.Column column) {
       addCriterion(
           new StringBuilder("gmt_modified < ").append(column.getEscapedColumnName()).toString());
       return (Criteria) this;
@@ -767,7 +862,7 @@ public class AgentConfigurationDOExample {
       return (Criteria) this;
     }
 
-    public Criteria andGmtModifiedLessThanOrEqualToColumn(AgentConfigurationDO.Column column) {
+    public Criteria andGmtModifiedLessThanOrEqualToColumn(TraceAgentConfigurationDO.Column column) {
       addCriterion(
           new StringBuilder("gmt_modified <= ").append(column.getEscapedColumnName()).toString());
       return (Criteria) this;
@@ -795,14 +890,14 @@ public class AgentConfigurationDOExample {
   }
 
   public static class Criteria extends GeneratedCriteria {
-    private AgentConfigurationDOExample example;
+    private TraceAgentConfigurationDOExample example;
 
-    protected Criteria(AgentConfigurationDOExample example) {
+    protected Criteria(TraceAgentConfigurationDOExample example) {
       super();
       this.example = example;
     }
 
-    public AgentConfigurationDOExample example() {
+    public TraceAgentConfigurationDOExample example() {
       return this.example;
     }
 
@@ -927,6 +1022,6 @@ public class AgentConfigurationDOExample {
   }
 
   public interface IExampleWhen {
-    void example(io.holoinsight.server.common.dao.entity.AgentConfigurationDOExample example);
+    void example(io.holoinsight.server.common.dao.entity.TraceAgentConfigurationDOExample example);
   }
 }

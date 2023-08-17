@@ -3,10 +3,14 @@
  */
 package io.holoinsight.server.gateway.core.trace.config;
 
+import io.holoinsight.server.common.Const;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.apache.commons.lang3.StringUtils;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -18,28 +22,23 @@ import java.util.Map;
 @Setter
 @Getter
 @ToString
-public class AgentConfiguration {
+public class TraceAgentConfiguration {
   private String tenant;
   private String service;
-  private String appId;
-  private String envId;
+  private String type;
+  private String language;
   private Map<String, String> configuration;
   /**
    * The uuid is calculated by the dynamic configuration of the service.
    */
   private volatile String uuid;
 
-  /**
-   * <p>
-   * Constructor for AgentConfiguration.
-   * </p>
-   */
-  public AgentConfiguration(final String tenant, final String service, final String appId,
-      final String envId, final Map<String, String> configuration, final String uuid) {
+  public TraceAgentConfiguration(String tenant, String service, String type, String language,
+      Map<String, String> configuration, String uuid) {
     this.tenant = tenant;
     this.service = service;
-    this.appId = appId;
-    this.envId = envId;
+    this.type = type;
+    this.language = language;
     this.configuration = configuration;
     this.uuid = uuid;
   }
@@ -50,6 +49,18 @@ public class AgentConfiguration {
    * </p>
    */
   public String getCacheKey() {
-    return this.tenant + "_" + this.service + "_" + this.appId + "_" + this.envId;
+    List<String> cacheKeys = new ArrayList() {
+      {
+        add(tenant);
+        add(service);
+      }
+    };
+    if (!StringUtils.isEmpty(type)) {
+      cacheKeys.add(type);
+    }
+    if (!StringUtils.isEmpty(language)) {
+      cacheKeys.add(language);
+    }
+    return StringUtils.join(cacheKeys, Const.TRACE_AGENT_CONFIG_KEY_JOINER);
   }
 }

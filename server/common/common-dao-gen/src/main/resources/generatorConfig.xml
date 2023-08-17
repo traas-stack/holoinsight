@@ -96,7 +96,10 @@
 		<table tableName="tenant_ops" domainObjectName="TenantOpsDO" enableSelectByExample="true">
 		</table>
 
-		<table tableName="agent_configuration" domainObjectName="AgentConfigurationDO" enableSelectByExample="true">
+		<table tableName="trace_agent_configuration" domainObjectName="TraceAgentConfigurationDO" enableSelectByExample="true">
+		</table>
+
+		<table tableName="trace_agent_configuration_properties" domainObjectName="TraceAgentConfPropDO" enableSelectByExample="true">
 		</table>
 
 	</context>

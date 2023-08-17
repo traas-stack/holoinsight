@@ -28,15 +28,15 @@ CREATE TABLE IF NOT EXISTS `alarm_block` (
 -- Table structure for agent_configuration
 -- ----------------------------
 CREATE TABLE IF NOT EXISTS `agent_configuration` (
-  `tenant` varchar(255) NOT NULL COMMENT 'Tenant',
-  `service` varchar(100) NOT NULL COMMENT 'Name of the service that trace agent collects',
-  `app_id` varchar(100) NOT NULL COMMENT 'Cloudrun app Id',
-  `env_id` varchar(100) NOT NULL COMMENT 'Cloudrun env Id',
-  `value` longtext NOT NULL COMMENT 'To send the configuration to the trace agent',
-  `gmt_create` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'Data creation time',
-  `gmt_modified` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'Data modification time',
-  PRIMARY KEY (`tenant`,`service`,`app_id`,`env_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+    `tenant` varchar(255) NOT NULL COMMENT 'Tenant',
+    `service` varchar(100) NOT NULL COMMENT 'Name of the service that trace agent collects',
+    `app_id` varchar(100) NOT NULL COMMENT 'Cloudrun app Id',
+    `env_id` varchar(100) NOT NULL COMMENT 'Cloudrun env Id',
+    `value` longtext NOT NULL COMMENT 'To send the configuration to the trace agent',
+    `gmt_create` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'Data creation time',
+    `gmt_modified` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'Data modification time',
+    PRIMARY KEY (`tenant`,`service`,`app_id`,`env_id`)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ----------------------------
 -- Table structure for alarm_ding_ding_robot
