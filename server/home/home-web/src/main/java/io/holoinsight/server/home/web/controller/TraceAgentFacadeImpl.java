@@ -10,16 +10,26 @@ import io.holoinsight.server.home.biz.common.MetaDictType;
 import io.holoinsight.server.home.biz.common.MetaDictUtil;
 import io.holoinsight.server.home.biz.service.ApiKeyService;
 import io.holoinsight.server.home.biz.service.TenantInitService;
+import io.holoinsight.server.home.biz.service.TraceAgentConfPropService;
+import io.holoinsight.server.home.biz.service.TraceAgentConfigurationService;
+import io.holoinsight.server.home.common.util.MonitorException;
+import io.holoinsight.server.home.common.util.scope.MonitorScope;
 import io.holoinsight.server.home.common.util.scope.RequestContext;
 import io.holoinsight.server.home.dal.model.ApiKey;
+import io.holoinsight.server.home.dal.model.TraceAgentConfProp;
+import io.holoinsight.server.home.dal.model.TraceAgentConfiguration;
 import io.holoinsight.server.home.web.common.AesUtil;
+import io.holoinsight.server.home.web.common.ManageCallback;
+import io.holoinsight.server.home.web.common.ParaCheckUtil;
 import io.holoinsight.server.home.web.config.TraceAuthEncryptConfiguration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.util.HashMap;
@@ -43,6 +53,10 @@ public class TraceAgentFacadeImpl extends BaseFacade {
   @Autowired
   private TenantInitService tenantInitService;
 
+  @Autowired
+  private TraceAgentConfigurationService agentConfigurationService;
+  @Autowired
+  private TraceAgentConfPropService traceAgentConfPropService;
 
   @Autowired
   private TraceAuthEncryptConfiguration traceAuthEncryptConfiguration;
@@ -99,6 +113,111 @@ public class TraceAgentFacadeImpl extends BaseFacade {
     }
     return result;
   }
+
+  @PostMapping(value = "/create/configuration")
+  @ResponseBody
+  public JsonResult<Boolean> createAgentConfiguration(@RequestBody Map<String, String> request) {
+    final JsonResult<Boolean> result = new JsonResult<>();
+    facadeTemplate.manage(result, new ManageCallback() {
+      @Override
+      public void checkParameter() {
+        ParaCheckUtil.checkParaNotNull(request, "request");
+        ParaCheckUtil.checkParaNotNull(request.get("tenant"), "tenant");
+        ParaCheckUtil.checkEquals(request.get("tenant"), RequestContext.getContext().ms.getTenant(),
+            "tenant is illegal");
+        MonitorScope ms = RequestContext.getContext().ms;
+        Boolean aBoolean =
+            tenantInitService.checkTraceParams(ms.getTenant(), ms.getWorkspace(), request);
+        if (!aBoolean) {
+          throw new MonitorException("term params is illegal");
+        }
+      }
+
+      @Override
+      public void doManage() {
+        TraceAgentConfiguration traceAgentConfiguration = new TraceAgentConfiguration();
+        traceAgentConfiguration.setTenant(agentConfigurationTenant(request));
+        traceAgentConfiguration.setService(request.get("service"));
+        traceAgentConfiguration.setType(request.get("type"));
+        traceAgentConfiguration.setLanguage(request.get("language"));
+        traceAgentConfiguration.setValue(request.get("value"));
+        boolean isSuccess = agentConfigurationService.createOrUpdate(traceAgentConfiguration);
+        if (isSuccess) {
+          JsonResult.createSuccessResult(result, isSuccess);
+        } else {
+          JsonResult.fillFailResultTo(result, "Create agent configuration failed!");
+        }
+      }
+    });
+
+    return result;
+  }
+
+  @PostMapping(value = "/query/configuration")
+  @ResponseBody
+  public JsonResult<TraceAgentConfiguration> queryAgentConfiguration(
+      @RequestBody Map<String, String> request) {
+    final JsonResult<TraceAgentConfiguration> result = new JsonResult<>();
+    facadeTemplate.manage(result, new ManageCallback() {
+      @Override
+      public void checkParameter() {
+        ParaCheckUtil.checkParaNotNull(request, "request");
+        ParaCheckUtil.checkParaNotNull(request.get("tenant"), "tenant");
+        ParaCheckUtil.checkEquals(request.get("tenant"), RequestContext.getContext().ms.getTenant(),
+            "tenant is illegal");
+        MonitorScope ms = RequestContext.getContext().ms;
+        Boolean aBoolean =
+            tenantInitService.checkTraceParams(ms.getTenant(), ms.getWorkspace(), request);
+        if (!aBoolean) {
+          throw new MonitorException("term params is illegal");
+        }
+      }
+
+      @Override
+      public void doManage() {
+        TraceAgentConfiguration traceAgentConfiguration = new TraceAgentConfiguration();
+        traceAgentConfiguration.setTenant(agentConfigurationTenant(request));
+        traceAgentConfiguration.setService(request.get("service"));
+        traceAgentConfiguration.setValue(request.get("value"));
+        traceAgentConfiguration.setType(request.get("type"));
+        traceAgentConfiguration.setLanguage(request.get("language"));
+        TraceAgentConfiguration configuration =
+            agentConfigurationService.get(traceAgentConfiguration);
+        JsonResult.createSuccessResult(result, configuration);
+
+      }
+    });
+
+    return result;
+  }
+
+  @GetMapping(value = "/query/configuration/properties")
+  @ResponseBody
+  public JsonResult<List<TraceAgentConfProp>> queryAgentConfProperties(@RequestParam String type,
+      @RequestParam String language) {
+    final JsonResult<List<TraceAgentConfProp>> result = new JsonResult<>();
+    facadeTemplate.manage(result, new ManageCallback() {
+      @Override
+      public void checkParameter() {
+        ParaCheckUtil.checkParaNotNull(type, "type");
+        ParaCheckUtil.checkParaNotNull(language, "language");
+      }
+
+      @Override
+      public void doManage() {
+        List<TraceAgentConfProp> traceAgentConfProps =
+            traceAgentConfPropService.get(type, language);
+        JsonResult.createSuccessResult(result, traceAgentConfProps);
+      }
+    });
+
+    return result;
+  }
+
+  public String agentConfigurationTenant(Map<String, String> request) {
+    return request.get("tenant");
+  }
+
 
   public Map<String, Object> apikeyConditions(String tenant, Map<String, String> extendInfo) {
     Map<String, Object> conditions = new HashMap<>();

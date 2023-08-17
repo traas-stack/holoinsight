@@ -3,10 +3,10 @@
  */
 package io.holoinsight.server.gateway.core.trace.scheduler;
 
-import io.holoinsight.server.gateway.core.trace.config.AgentConfiguration;
-import io.holoinsight.server.gateway.core.trace.config.GetAgentConfigurationService;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
+import io.holoinsight.server.gateway.core.trace.config.TraceAgentConfiguration;
+import io.holoinsight.server.gateway.core.trace.config.TraceAgentConfigurationService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,13 +23,14 @@ import java.util.concurrent.TimeUnit;
  *
  * @author sw1136562366
  */
-public class AgentConfigurationScheduler {
+public class TraceAgentConfigurationScheduler {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(AgentConfigurationScheduler.class);
+  private static final Logger LOGGER =
+      LoggerFactory.getLogger(TraceAgentConfigurationScheduler.class);
   @Autowired
-  private GetAgentConfigurationService getAgentConfigurations;
+  private TraceAgentConfigurationService traceAgentConfigurationService;
 
-  public Cache<String, AgentConfiguration> cache;
+  public Cache<String, TraceAgentConfiguration> cache;
 
   /**
    * <p>
@@ -49,9 +50,9 @@ public class AgentConfigurationScheduler {
   @Scheduled(cron = "*/30 * * * * *")
   private void updateCache() {
     try {
-      List<AgentConfiguration> allFromDB = getAgentConfigurations.getALLFromDB();
+      List<TraceAgentConfiguration> allFromDB = traceAgentConfigurationService.getALLFromDB();
       cache.cleanUp();
-      for (AgentConfiguration agentConfiguration : allFromDB) {
+      for (TraceAgentConfiguration agentConfiguration : allFromDB) {
         cache.put(agentConfiguration.getCacheKey(), agentConfiguration);
       }
     } catch (Exception e) {
@@ -64,7 +65,7 @@ public class AgentConfigurationScheduler {
    * getValue.
    * </p>
    */
-  public AgentConfiguration getValue(String cacheKey) {
+  public TraceAgentConfiguration getValue(String cacheKey) {
     return cache.getIfPresent(cacheKey);
   }
 
@@ -73,7 +74,7 @@ public class AgentConfigurationScheduler {
    * Getter for the field <code>cache</code>.
    * </p>
    */
-  public Cache<String, AgentConfiguration> getCache() {
+  public Cache<String, TraceAgentConfiguration> getCache() {
     return cache;
   }
 }
