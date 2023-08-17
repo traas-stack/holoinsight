@@ -10,18 +10,12 @@ import javax.persistence.Column;
 import java.util.Date;
 
 @Data
-@TableName("agent_configuration")
-public class AgentConfiguration {
+@TableName("trace_agent_configuration")
+public class TraceAgentConfiguration {
   private String tenant;
-
   private String service;
-
-  @Column(name = "app_id")
-  private String appId;
-
-  @Column(name = "env_id")
-  private String envId;
-
+  private String type;
+  private String language;
   private String value;
 
   @Column(name = "gmt_create")
