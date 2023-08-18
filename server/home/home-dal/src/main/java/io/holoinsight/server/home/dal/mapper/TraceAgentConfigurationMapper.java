@@ -3,8 +3,8 @@
  */
 package io.holoinsight.server.home.dal.mapper;
 
+import io.holoinsight.server.home.dal.model.TraceAgentConfiguration;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import io.holoinsight.server.home.dal.model.AgentConfiguration;
 
-public interface AgentConfigurationMapper extends BaseMapper<AgentConfiguration> {
+public interface TraceAgentConfigurationMapper extends BaseMapper<TraceAgentConfiguration> {
 }

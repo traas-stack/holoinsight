@@ -5,13 +5,12 @@ package io.holoinsight.server.gateway.core.trace;
 
 import io.holoinsight.server.common.springboot.ConditionalOnFeature;
 import io.holoinsight.server.common.springboot.HoloinsightProperties;
-import io.holoinsight.server.gateway.core.trace.config.GetAgentConfigurationService;
-import io.holoinsight.server.gateway.core.trace.controller.AgentConfigurationController;
+import io.holoinsight.server.gateway.core.trace.config.TraceAgentConfigurationService;
 import io.holoinsight.server.gateway.core.trace.exporter.LocalTraceExporter;
 import io.holoinsight.server.gateway.core.trace.exporter.RelayTraceExporter;
 import io.holoinsight.server.gateway.core.trace.exporter.TraceExporter;
 import io.holoinsight.server.gateway.core.trace.receiver.opentelemetry.TraceServiceImpl;
-import io.holoinsight.server.gateway.core.trace.scheduler.AgentConfigurationScheduler;
+import io.holoinsight.server.gateway.core.trace.scheduler.TraceAgentConfigurationScheduler;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -66,27 +65,17 @@ public class GatewayTraceConfiguration {
    * </p>
    */
   @Bean
-  public AgentConfigurationScheduler agentConfigurationScheduler() {
-    return new AgentConfigurationScheduler();
+  public TraceAgentConfigurationScheduler agentConfigurationScheduler() {
+    return new TraceAgentConfigurationScheduler();
   }
 
   /**
    * <p>
-   * agentConfigurationController.
+   * traceAgentConfigurationService.
    * </p>
    */
   @Bean
-  public AgentConfigurationController agentConfigurationController() {
-    return new AgentConfigurationController();
-  }
-
-  /**
-   * <p>
-   * getAgentConfigurationService.
-   * </p>
-   */
-  @Bean
-  public GetAgentConfigurationService getAgentConfigurationService() {
-    return new GetAgentConfigurationService();
+  public TraceAgentConfigurationService traceAgentConfigurationService() {
+    return new TraceAgentConfigurationService();
   }
 }

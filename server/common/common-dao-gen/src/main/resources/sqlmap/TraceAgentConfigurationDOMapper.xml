@@ -1,15 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="io.holoinsight.server.common.dao.mapper.AgentConfigurationDOMapper">
-  <resultMap id="BaseResultMap" type="io.holoinsight.server.common.dao.entity.AgentConfigurationDO">
-    <id column="tenant" jdbcType="VARCHAR" property="tenant" />
-    <id column="service" jdbcType="VARCHAR" property="service" />
-    <id column="app_id" jdbcType="VARCHAR" property="appId" />
-    <id column="env_id" jdbcType="VARCHAR" property="envId" />
+<mapper namespace="io.holoinsight.server.common.dao.mapper.TraceAgentConfigurationDOMapper">
+  <resultMap id="BaseResultMap" type="io.holoinsight.server.common.dao.entity.TraceAgentConfigurationDO">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="tenant" jdbcType="VARCHAR" property="tenant" />
+    <result column="service" jdbcType="VARCHAR" property="service" />
+    <result column="type" jdbcType="VARCHAR" property="type" />
+    <result column="language" jdbcType="VARCHAR" property="language" />
     <result column="gmt_create" jdbcType="TIMESTAMP" property="gmtCreate" />
     <result column="gmt_modified" jdbcType="TIMESTAMP" property="gmtModified" />
   </resultMap>
-  <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="io.holoinsight.server.common.dao.entity.AgentConfigurationDO">
+  <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="io.holoinsight.server.common.dao.entity.TraceAgentConfigurationDO">
     <result column="value" jdbcType="LONGVARCHAR" property="value" />
   </resultMap>
   <sql id="Example_Where_Clause">
@@ -71,12 +72,12 @@
     </where>
   </sql>
   <sql id="Base_Column_List">
-    tenant, service, app_id, env_id, gmt_create, gmt_modified
+    id, tenant, service, `type`, `language`, gmt_create, gmt_modified
   </sql>
   <sql id="Blob_Column_List">
     `value`
   </sql>
-  <select id="selectByExampleWithBLOBs" parameterType="io.holoinsight.server.common.dao.entity.AgentConfigurationDOExample" resultMap="ResultMapWithBLOBs">
+  <select id="selectByExampleWithBLOBs" parameterType="io.holoinsight.server.common.dao.entity.TraceAgentConfigurationDOExample" resultMap="ResultMapWithBLOBs">
     select
     <if test="distinct">
       distinct
@@ -84,7 +85,7 @@
     <include refid="Base_Column_List" />
     ,
     <include refid="Blob_Column_List" />
-    from agent_configuration
+    from trace_agent_configuration
     <if test="_parameter != null">
       <include refid="Example_Where_Clause" />
     </if>
@@ -100,13 +101,13 @@
       </if>
     </if>
   </select>
-  <select id="selectByExample" parameterType="io.holoinsight.server.common.dao.entity.AgentConfigurationDOExample" resultMap="BaseResultMap">
+  <select id="selectByExample" parameterType="io.holoinsight.server.common.dao.entity.TraceAgentConfigurationDOExample" resultMap="BaseResultMap">
     select
     <if test="distinct">
       distinct
     </if>
     <include refid="Base_Column_List" />
-    from agent_configuration
+    from trace_agent_configuration
     <if test="_parameter != null">
       <include refid="Example_Where_Clause" />
     </if>
@@ -139,7 +140,7 @@
         <include refid="Blob_Column_List" />
       </otherwise>
     </choose>
-    from agent_configuration
+    from trace_agent_configuration
     <if test="example != null">
       <include refid="Update_By_Example_Where_Clause" />
     </if>
@@ -155,16 +156,13 @@
       </if>
     </if>
   </select>
-  <select id="selectByPrimaryKey" parameterType="map" resultMap="ResultMapWithBLOBs">
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="ResultMapWithBLOBs">
     select 
     <include refid="Base_Column_List" />
     ,
     <include refid="Blob_Column_List" />
-    from agent_configuration
-    where tenant = #{tenant,jdbcType=VARCHAR}
-      and service = #{service,jdbcType=VARCHAR}
-      and app_id = #{appId,jdbcType=VARCHAR}
-      and env_id = #{envId,jdbcType=VARCHAR}
+    from trace_agent_configuration
+    where id = #{id,jdbcType=BIGINT}
   </select>
   <select id="selectByPrimaryKeySelective" parameterType="map" resultMap="ResultMapWithBLOBs">
     select
@@ -180,35 +178,29 @@
         <include refid="Blob_Column_List" />
       </otherwise>
     </choose>
-    from agent_configuration
-    where tenant = #{tenant,jdbcType=VARCHAR}
-      and service = #{service,jdbcType=VARCHAR}
-      and app_id = #{appId,jdbcType=VARCHAR}
-      and env_id = #{envId,jdbcType=VARCHAR}
+    from trace_agent_configuration
+    where id = #{id,jdbcType=BIGINT}
   </select>
-  <delete id="deleteByPrimaryKey" parameterType="map">
-    delete from agent_configuration
-    where tenant = #{tenant,jdbcType=VARCHAR}
-      and service = #{service,jdbcType=VARCHAR}
-      and app_id = #{appId,jdbcType=VARCHAR}
-      and env_id = #{envId,jdbcType=VARCHAR}
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from trace_agent_configuration
+    where id = #{id,jdbcType=BIGINT}
   </delete>
-  <delete id="deleteByExample" parameterType="io.holoinsight.server.common.dao.entity.AgentConfigurationDOExample">
-    delete from agent_configuration
+  <delete id="deleteByExample" parameterType="io.holoinsight.server.common.dao.entity.TraceAgentConfigurationDOExample">
+    delete from trace_agent_configuration
     <if test="_parameter != null">
       <include refid="Example_Where_Clause" />
     </if>
   </delete>
-  <insert id="insert" parameterType="io.holoinsight.server.common.dao.entity.AgentConfigurationDO">
-    insert into agent_configuration (tenant, service, app_id, 
-      env_id, gmt_create, gmt_modified, 
-      `value`)
-    values (#{tenant,jdbcType=VARCHAR}, #{service,jdbcType=VARCHAR}, #{appId,jdbcType=VARCHAR}, 
-      #{envId,jdbcType=VARCHAR}, #{gmtCreate,jdbcType=TIMESTAMP}, #{gmtModified,jdbcType=TIMESTAMP}, 
-      #{value,jdbcType=LONGVARCHAR})
+  <insert id="insert" parameterType="io.holoinsight.server.common.dao.entity.TraceAgentConfigurationDO">
+    insert into trace_agent_configuration (id, tenant, service, 
+      `type`, `language`, gmt_create, 
+      gmt_modified, `value`)
+    values (#{id,jdbcType=BIGINT}, #{tenant,jdbcType=VARCHAR}, #{service,jdbcType=VARCHAR}, 
+      #{type,jdbcType=VARCHAR}, #{language,jdbcType=VARCHAR}, #{gmtCreate,jdbcType=TIMESTAMP}, 
+      #{gmtModified,jdbcType=TIMESTAMP}, #{value,jdbcType=LONGVARCHAR})
   </insert>
   <insert id="insertSelective" parameterType="map">
-    insert into agent_configuration
+    insert into trace_agent_configuration
     <choose>
       <when test="selective != null and selective.length > 0">
         <foreach close=")" collection="selective" item="column" open="(" separator=",">
@@ -217,17 +209,20 @@
       </when>
       <otherwise>
         <trim prefix="(" suffix=")" suffixOverrides=",">
+          <if test="record.id != null">
+            id,
+          </if>
           <if test="record.tenant != null">
             tenant,
           </if>
           <if test="record.service != null">
             service,
           </if>
-          <if test="record.appId != null">
-            app_id,
+          <if test="record.type != null">
+            `type`,
           </if>
-          <if test="record.envId != null">
-            env_id,
+          <if test="record.language != null">
+            `language`,
           </if>
           <if test="record.gmtCreate != null">
             gmt_create,
@@ -251,17 +246,20 @@
       </when>
       <otherwise>
         <trim prefix="(" suffix=")" suffixOverrides=",">
+          <if test="record.id != null">
+            #{record.id,jdbcType=BIGINT},
+          </if>
           <if test="record.tenant != null">
             #{record.tenant,jdbcType=VARCHAR},
           </if>
           <if test="record.service != null">
             #{record.service,jdbcType=VARCHAR},
           </if>
-          <if test="record.appId != null">
-            #{record.appId,jdbcType=VARCHAR},
+          <if test="record.type != null">
+            #{record.type,jdbcType=VARCHAR},
           </if>
-          <if test="record.envId != null">
-            #{record.envId,jdbcType=VARCHAR},
+          <if test="record.language != null">
+            #{record.language,jdbcType=VARCHAR},
           </if>
           <if test="record.gmtCreate != null">
             #{record.gmtCreate,jdbcType=TIMESTAMP},
@@ -276,14 +274,14 @@
       </otherwise>
     </choose>
   </insert>
-  <select id="countByExample" parameterType="io.holoinsight.server.common.dao.entity.AgentConfigurationDOExample" resultType="java.lang.Long">
-    select count(*) from agent_configuration
+  <select id="countByExample" parameterType="io.holoinsight.server.common.dao.entity.TraceAgentConfigurationDOExample" resultType="java.lang.Long">
+    select count(*) from trace_agent_configuration
     <if test="_parameter != null">
       <include refid="Example_Where_Clause" />
     </if>
   </select>
   <update id="updateByExampleSelective" parameterType="map">
-    update agent_configuration
+    update trace_agent_configuration
     SET
     <choose>
       <when test="selective != null and selective.length > 0">
@@ -293,17 +291,20 @@
       </when>
       <otherwise>
         <trim suffixOverrides=",">
+          <if test="record.id != null">
+            id = #{record.id,jdbcType=BIGINT},
+          </if>
           <if test="record.tenant != null">
             tenant = #{record.tenant,jdbcType=VARCHAR},
           </if>
           <if test="record.service != null">
             service = #{record.service,jdbcType=VARCHAR},
           </if>
-          <if test="record.appId != null">
-            app_id = #{record.appId,jdbcType=VARCHAR},
+          <if test="record.type != null">
+            `type` = #{record.type,jdbcType=VARCHAR},
           </if>
-          <if test="record.envId != null">
-            env_id = #{record.envId,jdbcType=VARCHAR},
+          <if test="record.language != null">
+            `language` = #{record.language,jdbcType=VARCHAR},
           </if>
           <if test="record.gmtCreate != null">
             gmt_create = #{record.gmtCreate,jdbcType=TIMESTAMP},
@@ -322,11 +323,12 @@
     </if>
   </update>
   <update id="updateByExampleWithBLOBs" parameterType="map">
-    update agent_configuration
-    set tenant = #{record.tenant,jdbcType=VARCHAR},
+    update trace_agent_configuration
+    set id = #{record.id,jdbcType=BIGINT},
+      tenant = #{record.tenant,jdbcType=VARCHAR},
       service = #{record.service,jdbcType=VARCHAR},
-      app_id = #{record.appId,jdbcType=VARCHAR},
-      env_id = #{record.envId,jdbcType=VARCHAR},
+      `type` = #{record.type,jdbcType=VARCHAR},
+      `language` = #{record.language,jdbcType=VARCHAR},
       gmt_create = #{record.gmtCreate,jdbcType=TIMESTAMP},
       gmt_modified = #{record.gmtModified,jdbcType=TIMESTAMP},
       `value` = #{record.value,jdbcType=LONGVARCHAR}
@@ -335,11 +337,12 @@
     </if>
   </update>
   <update id="updateByExample" parameterType="map">
-    update agent_configuration
-    set tenant = #{record.tenant,jdbcType=VARCHAR},
+    update trace_agent_configuration
+    set id = #{record.id,jdbcType=BIGINT},
+      tenant = #{record.tenant,jdbcType=VARCHAR},
       service = #{record.service,jdbcType=VARCHAR},
-      app_id = #{record.appId,jdbcType=VARCHAR},
-      env_id = #{record.envId,jdbcType=VARCHAR},
+      `type` = #{record.type,jdbcType=VARCHAR},
+      `language` = #{record.language,jdbcType=VARCHAR},
       gmt_create = #{record.gmtCreate,jdbcType=TIMESTAMP},
       gmt_modified = #{record.gmtModified,jdbcType=TIMESTAMP}
     <if test="_parameter != null">
@@ -347,7 +350,7 @@
     </if>
   </update>
   <update id="updateByPrimaryKeySelective" parameterType="map">
-    update agent_configuration
+    update trace_agent_configuration
     SET
     <choose>
       <when test="selective != null and selective.length > 0">
@@ -357,6 +360,18 @@
       </when>
       <otherwise>
         <trim suffixOverrides=",">
+          <if test="record.tenant != null">
+            tenant = #{record.tenant,jdbcType=VARCHAR},
+          </if>
+          <if test="record.service != null">
+            service = #{record.service,jdbcType=VARCHAR},
+          </if>
+          <if test="record.type != null">
+            `type` = #{record.type,jdbcType=VARCHAR},
+          </if>
+          <if test="record.language != null">
+            `language` = #{record.language,jdbcType=VARCHAR},
+          </if>
           <if test="record.gmtCreate != null">
             gmt_create = #{record.gmtCreate,jdbcType=TIMESTAMP},
           </if>
@@ -369,34 +384,33 @@
         </trim>
       </otherwise>
     </choose>
-    where tenant = #{record.tenant,jdbcType=VARCHAR}
-      and service = #{record.service,jdbcType=VARCHAR}
-      and app_id = #{record.appId,jdbcType=VARCHAR}
-      and env_id = #{record.envId,jdbcType=VARCHAR}
+    where id = #{record.id,jdbcType=BIGINT}
   </update>
-  <update id="updateByPrimaryKeyWithBLOBs" parameterType="io.holoinsight.server.common.dao.entity.AgentConfigurationDO">
-    update agent_configuration
-    set gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
+  <update id="updateByPrimaryKeyWithBLOBs" parameterType="io.holoinsight.server.common.dao.entity.TraceAgentConfigurationDO">
+    update trace_agent_configuration
+    set tenant = #{tenant,jdbcType=VARCHAR},
+      service = #{service,jdbcType=VARCHAR},
+      `type` = #{type,jdbcType=VARCHAR},
+      `language` = #{language,jdbcType=VARCHAR},
+      gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
       gmt_modified = #{gmtModified,jdbcType=TIMESTAMP},
       `value` = #{value,jdbcType=LONGVARCHAR}
-    where tenant = #{tenant,jdbcType=VARCHAR}
-      and service = #{service,jdbcType=VARCHAR}
-      and app_id = #{appId,jdbcType=VARCHAR}
-      and env_id = #{envId,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=BIGINT}
   </update>
-  <update id="updateByPrimaryKey" parameterType="io.holoinsight.server.common.dao.entity.AgentConfigurationDO">
-    update agent_configuration
-    set gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
+  <update id="updateByPrimaryKey" parameterType="io.holoinsight.server.common.dao.entity.TraceAgentConfigurationDO">
+    update trace_agent_configuration
+    set tenant = #{tenant,jdbcType=VARCHAR},
+      service = #{service,jdbcType=VARCHAR},
+      `type` = #{type,jdbcType=VARCHAR},
+      `language` = #{language,jdbcType=VARCHAR},
+      gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
       gmt_modified = #{gmtModified,jdbcType=TIMESTAMP}
-    where tenant = #{tenant,jdbcType=VARCHAR}
-      and service = #{service,jdbcType=VARCHAR}
-      and app_id = #{appId,jdbcType=VARCHAR}
-      and env_id = #{envId,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=BIGINT}
   </update>
-  <select id="selectOneByExample" parameterType="io.holoinsight.server.common.dao.entity.AgentConfigurationDOExample" resultMap="BaseResultMap">
+  <select id="selectOneByExample" parameterType="io.holoinsight.server.common.dao.entity.TraceAgentConfigurationDOExample" resultMap="BaseResultMap">
     select
     <include refid="Base_Column_List" />
-    from agent_configuration
+    from trace_agent_configuration
     <if test="_parameter != null">
       <include refid="Example_Where_Clause" />
     </if>
@@ -405,12 +419,12 @@
     </if>
     limit 1
   </select>
-  <select id="selectOneByExampleWithBLOBs" parameterType="io.holoinsight.server.common.dao.entity.AgentConfigurationDOExample" resultMap="ResultMapWithBLOBs">
+  <select id="selectOneByExampleWithBLOBs" parameterType="io.holoinsight.server.common.dao.entity.TraceAgentConfigurationDOExample" resultMap="ResultMapWithBLOBs">
     select
     <include refid="Base_Column_List" />
     ,
     <include refid="Blob_Column_List" />
-    from agent_configuration
+    from trace_agent_configuration
     <if test="_parameter != null">
       <include refid="Example_Where_Clause" />
     </if>
@@ -433,7 +447,7 @@
         <include refid="Blob_Column_List" />
       </otherwise>
     </choose>
-    from agent_configuration
+    from trace_agent_configuration
     <if test="example != null">
       <include refid="Update_By_Example_Where_Clause" />
     </if>
@@ -443,17 +457,17 @@
     limit 1
   </select>
   <insert id="batchInsert" parameterType="map">
-    insert into agent_configuration
-    (tenant, service, app_id, env_id, gmt_create, gmt_modified, `value`)
+    insert into trace_agent_configuration
+    (id, tenant, service, `type`, `language`, gmt_create, gmt_modified, `value`)
     values
     <foreach collection="list" item="item" separator=",">
-      (#{item.tenant,jdbcType=VARCHAR}, #{item.service,jdbcType=VARCHAR}, #{item.appId,jdbcType=VARCHAR}, 
-        #{item.envId,jdbcType=VARCHAR}, #{item.gmtCreate,jdbcType=TIMESTAMP}, #{item.gmtModified,jdbcType=TIMESTAMP}, 
-        #{item.value,jdbcType=LONGVARCHAR})
+      (#{item.id,jdbcType=BIGINT}, #{item.tenant,jdbcType=VARCHAR}, #{item.service,jdbcType=VARCHAR}, 
+        #{item.type,jdbcType=VARCHAR}, #{item.language,jdbcType=VARCHAR}, #{item.gmtCreate,jdbcType=TIMESTAMP}, 
+        #{item.gmtModified,jdbcType=TIMESTAMP}, #{item.value,jdbcType=LONGVARCHAR})
     </foreach>
   </insert>
   <insert id="batchInsertSelective" parameterType="map">
-    insert into agent_configuration (
+    insert into trace_agent_configuration (
     <foreach collection="selective" item="column" separator=",">
       ${column.escapedColumnName}
     </foreach>
@@ -462,17 +476,20 @@
     <foreach collection="list" item="item" separator=",">
       (
       <foreach collection="selective" item="column" separator=",">
+        <if test="'id'.toString() == column.value">
+          #{item.id,jdbcType=BIGINT}
+        </if>
         <if test="'tenant'.toString() == column.value">
           #{item.tenant,jdbcType=VARCHAR}
         </if>
         <if test="'service'.toString() == column.value">
           #{item.service,jdbcType=VARCHAR}
         </if>
-        <if test="'app_id'.toString() == column.value">
-          #{item.appId,jdbcType=VARCHAR}
+        <if test="'type'.toString() == column.value">
+          #{item.type,jdbcType=VARCHAR}
         </if>
-        <if test="'env_id'.toString() == column.value">
-          #{item.envId,jdbcType=VARCHAR}
+        <if test="'language'.toString() == column.value">
+          #{item.language,jdbcType=VARCHAR}
         </if>
         <if test="'gmt_create'.toString() == column.value">
           #{item.gmtCreate,jdbcType=TIMESTAMP}
@@ -488,7 +505,7 @@
     </foreach>
   </insert>
   <insert id="upsertSelective" parameterType="map">
-    insert into agent_configuration
+    insert into trace_agent_configuration
     <choose>
       <when test="selective != null and selective.length > 0">
         <foreach close=")" collection="selective" item="column" open="(" separator=",">
@@ -497,17 +514,20 @@
       </when>
       <otherwise>
         <trim prefix="(" suffix=")" suffixOverrides=",">
+          <if test="record.id != null">
+            id,
+          </if>
           <if test="record.tenant != null">
             tenant,
           </if>
           <if test="record.service != null">
             service,
           </if>
-          <if test="record.appId != null">
-            app_id,
+          <if test="record.type != null">
+            `type`,
           </if>
-          <if test="record.envId != null">
-            env_id,
+          <if test="record.language != null">
+            `language`,
           </if>
           <if test="record.gmtCreate != null">
             gmt_create,
@@ -531,17 +551,20 @@
       </when>
       <otherwise>
         <trim prefix="(" suffix=")" suffixOverrides=",">
+          <if test="record.id != null">
+            #{record.id,jdbcType=BIGINT},
+          </if>
           <if test="record.tenant != null">
             #{record.tenant,jdbcType=VARCHAR},
           </if>
           <if test="record.service != null">
             #{record.service,jdbcType=VARCHAR},
           </if>
-          <if test="record.appId != null">
-            #{record.appId,jdbcType=VARCHAR},
+          <if test="record.type != null">
+            #{record.type,jdbcType=VARCHAR},
           </if>
-          <if test="record.envId != null">
-            #{record.envId,jdbcType=VARCHAR},
+          <if test="record.language != null">
+            #{record.language,jdbcType=VARCHAR},
           </if>
           <if test="record.gmtCreate != null">
             #{record.gmtCreate,jdbcType=TIMESTAMP},
@@ -564,17 +587,20 @@
       </when>
       <otherwise>
         <trim suffixOverrides=",">
+          <if test="record.id != null">
+            id = #{record.id,jdbcType=BIGINT},
+          </if>
           <if test="record.tenant != null">
             tenant = #{record.tenant,jdbcType=VARCHAR},
           </if>
           <if test="record.service != null">
             service = #{record.service,jdbcType=VARCHAR},
           </if>
-          <if test="record.appId != null">
-            app_id = #{record.appId,jdbcType=VARCHAR},
+          <if test="record.type != null">
+            `type` = #{record.type,jdbcType=VARCHAR},
           </if>
-          <if test="record.envId != null">
-            env_id = #{record.envId,jdbcType=VARCHAR},
+          <if test="record.language != null">
+            `language` = #{record.language,jdbcType=VARCHAR},
           </if>
           <if test="record.gmtCreate != null">
             gmt_create = #{record.gmtCreate,jdbcType=TIMESTAMP},
@@ -589,33 +615,35 @@
       </otherwise>
     </choose>
   </insert>
-  <insert id="upsert" parameterType="io.holoinsight.server.common.dao.entity.AgentConfigurationDO">
-    insert into agent_configuration
-    (tenant, service, app_id, env_id, gmt_create, gmt_modified)
+  <insert id="upsert" parameterType="io.holoinsight.server.common.dao.entity.TraceAgentConfigurationDO">
+    insert into trace_agent_configuration
+    (id, tenant, service, `type`, `language`, gmt_create, gmt_modified)
     values
-    (#{tenant,jdbcType=VARCHAR}, #{service,jdbcType=VARCHAR}, #{appId,jdbcType=VARCHAR}, 
-      #{envId,jdbcType=VARCHAR}, #{gmtCreate,jdbcType=TIMESTAMP}, #{gmtModified,jdbcType=TIMESTAMP}
-      )
+    (#{id,jdbcType=BIGINT}, #{tenant,jdbcType=VARCHAR}, #{service,jdbcType=VARCHAR}, 
+      #{type,jdbcType=VARCHAR}, #{language,jdbcType=VARCHAR}, #{gmtCreate,jdbcType=TIMESTAMP}, 
+      #{gmtModified,jdbcType=TIMESTAMP})
     on duplicate key update 
+    id = #{id,jdbcType=BIGINT}, 
     tenant = #{tenant,jdbcType=VARCHAR}, 
     service = #{service,jdbcType=VARCHAR}, 
-    app_id = #{appId,jdbcType=VARCHAR}, 
-    env_id = #{envId,jdbcType=VARCHAR}, 
+    `type` = #{type,jdbcType=VARCHAR}, 
+    `language` = #{language,jdbcType=VARCHAR}, 
     gmt_create = #{gmtCreate,jdbcType=TIMESTAMP}, 
     gmt_modified = #{gmtModified,jdbcType=TIMESTAMP}
   </insert>
-  <insert id="upsertWithBLOBs" parameterType="io.holoinsight.server.common.dao.entity.AgentConfigurationDO">
-    insert into agent_configuration
-    (tenant, service, app_id, env_id, gmt_create, gmt_modified, `value`)
+  <insert id="upsertWithBLOBs" parameterType="io.holoinsight.server.common.dao.entity.TraceAgentConfigurationDO">
+    insert into trace_agent_configuration
+    (id, tenant, service, `type`, `language`, gmt_create, gmt_modified, `value`)
     values
-    (#{tenant,jdbcType=VARCHAR}, #{service,jdbcType=VARCHAR}, #{appId,jdbcType=VARCHAR}, 
-      #{envId,jdbcType=VARCHAR}, #{gmtCreate,jdbcType=TIMESTAMP}, #{gmtModified,jdbcType=TIMESTAMP}, 
-      #{value,jdbcType=LONGVARCHAR})
+    (#{id,jdbcType=BIGINT}, #{tenant,jdbcType=VARCHAR}, #{service,jdbcType=VARCHAR}, 
+      #{type,jdbcType=VARCHAR}, #{language,jdbcType=VARCHAR}, #{gmtCreate,jdbcType=TIMESTAMP}, 
+      #{gmtModified,jdbcType=TIMESTAMP}, #{value,jdbcType=LONGVARCHAR})
     on duplicate key update 
+    id = #{id,jdbcType=BIGINT}, 
     tenant = #{tenant,jdbcType=VARCHAR}, 
     service = #{service,jdbcType=VARCHAR}, 
-    app_id = #{appId,jdbcType=VARCHAR}, 
-    env_id = #{envId,jdbcType=VARCHAR}, 
+    `type` = #{type,jdbcType=VARCHAR}, 
+    `language` = #{language,jdbcType=VARCHAR}, 
     gmt_create = #{gmtCreate,jdbcType=TIMESTAMP}, 
     gmt_modified = #{gmtModified,jdbcType=TIMESTAMP}, 
     `value` = #{value,jdbcType=LONGVARCHAR}
