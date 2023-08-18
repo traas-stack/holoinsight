@@ -7,20 +7,30 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 
-public class AgentConfigurationDO {
+public class TraceAgentConfigurationDO {
+  private Long id;
+
   private String tenant;
 
   private String service;
 
-  private String appId;
+  private String type;
 
-  private String envId;
+  private String language;
 
   private Date gmtCreate;
 
   private Date gmtModified;
 
   private String value;
+
+  public Long getId() {
+    return id;
+  }
+
+  public void setId(Long id) {
+    this.id = id;
+  }
 
   public String getTenant() {
     return tenant;
@@ -38,20 +48,20 @@ public class AgentConfigurationDO {
     this.service = service == null ? null : service.trim();
   }
 
-  public String getAppId() {
-    return appId;
+  public String getType() {
+    return type;
   }
 
-  public void setAppId(String appId) {
-    this.appId = appId == null ? null : appId.trim();
+  public void setType(String type) {
+    this.type = type == null ? null : type.trim();
   }
 
-  public String getEnvId() {
-    return envId;
+  public String getLanguage() {
+    return language;
   }
 
-  public void setEnvId(String envId) {
-    this.envId = envId == null ? null : envId.trim();
+  public void setLanguage(String language) {
+    this.language = language == null ? null : language.trim();
   }
 
   public Date getGmtCreate() {
@@ -84,10 +94,11 @@ public class AgentConfigurationDO {
     sb.append(getClass().getSimpleName());
     sb.append(" [");
     sb.append("Hash = ").append(hashCode());
+    sb.append(", id=").append(id);
     sb.append(", tenant=").append(tenant);
     sb.append(", service=").append(service);
-    sb.append(", appId=").append(appId);
-    sb.append(", envId=").append(envId);
+    sb.append(", type=").append(type);
+    sb.append(", language=").append(language);
     sb.append(", gmtCreate=").append(gmtCreate);
     sb.append(", gmtModified=").append(gmtModified);
     sb.append(", value=").append(value);
@@ -106,15 +117,16 @@ public class AgentConfigurationDO {
     if (getClass() != that.getClass()) {
       return false;
     }
-    AgentConfigurationDO other = (AgentConfigurationDO) that;
-    return (this.getTenant() == null ? other.getTenant() == null
-        : this.getTenant().equals(other.getTenant()))
+    TraceAgentConfigurationDO other = (TraceAgentConfigurationDO) that;
+    return (this.getId() == null ? other.getId() == null : this.getId().equals(other.getId()))
+        && (this.getTenant() == null ? other.getTenant() == null
+            : this.getTenant().equals(other.getTenant()))
         && (this.getService() == null ? other.getService() == null
             : this.getService().equals(other.getService()))
-        && (this.getAppId() == null ? other.getAppId() == null
-            : this.getAppId().equals(other.getAppId()))
-        && (this.getEnvId() == null ? other.getEnvId() == null
-            : this.getEnvId().equals(other.getEnvId()))
+        && (this.getType() == null ? other.getType() == null
+            : this.getType().equals(other.getType()))
+        && (this.getLanguage() == null ? other.getLanguage() == null
+            : this.getLanguage().equals(other.getLanguage()))
         && (this.getGmtCreate() == null ? other.getGmtCreate() == null
             : this.getGmtCreate().equals(other.getGmtCreate()))
         && (this.getGmtModified() == null ? other.getGmtModified() == null
@@ -127,25 +139,31 @@ public class AgentConfigurationDO {
   public int hashCode() {
     final int prime = 31;
     int result = 1;
+    result = prime * result + ((getId() == null) ? 0 : getId().hashCode());
     result = prime * result + ((getTenant() == null) ? 0 : getTenant().hashCode());
     result = prime * result + ((getService() == null) ? 0 : getService().hashCode());
-    result = prime * result + ((getAppId() == null) ? 0 : getAppId().hashCode());
-    result = prime * result + ((getEnvId() == null) ? 0 : getEnvId().hashCode());
+    result = prime * result + ((getType() == null) ? 0 : getType().hashCode());
+    result = prime * result + ((getLanguage() == null) ? 0 : getLanguage().hashCode());
     result = prime * result + ((getGmtCreate() == null) ? 0 : getGmtCreate().hashCode());
     result = prime * result + ((getGmtModified() == null) ? 0 : getGmtModified().hashCode());
     result = prime * result + ((getValue() == null) ? 0 : getValue().hashCode());
     return result;
   }
 
-  public static AgentConfigurationDO.Builder builder() {
-    return new AgentConfigurationDO.Builder();
+  public static TraceAgentConfigurationDO.Builder builder() {
+    return new TraceAgentConfigurationDO.Builder();
   }
 
   public static class Builder {
-    private AgentConfigurationDO obj;
+    private TraceAgentConfigurationDO obj;
 
     public Builder() {
-      this.obj = new AgentConfigurationDO();
+      this.obj = new TraceAgentConfigurationDO();
+    }
+
+    public Builder id(Long id) {
+      obj.setId(id);
+      return this;
     }
 
     public Builder tenant(String tenant) {
@@ -158,13 +176,13 @@ public class AgentConfigurationDO {
       return this;
     }
 
-    public Builder appId(String appId) {
-      obj.setAppId(appId);
+    public Builder type(String type) {
+      obj.setType(type);
       return this;
     }
 
-    public Builder envId(String envId) {
-      obj.setEnvId(envId);
+    public Builder language(String language) {
+      obj.setLanguage(language);
       return this;
     }
 
@@ -183,17 +201,17 @@ public class AgentConfigurationDO {
       return this;
     }
 
-    public AgentConfigurationDO build() {
+    public TraceAgentConfigurationDO build() {
       return this.obj;
     }
   }
 
   public enum Column {
-    tenant("tenant", "tenant", "VARCHAR", false), service("service", "service", "VARCHAR",
-        false), appId("app_id", "appId", "VARCHAR", false), envId("env_id", "envId", "VARCHAR",
-            false), gmtCreate("gmt_create", "gmtCreate", "TIMESTAMP", false), gmtModified(
-                "gmt_modified", "gmtModified", "TIMESTAMP",
-                false), value("value", "value", "LONGVARCHAR", true);
+    id("id", "id", "BIGINT", false), tenant("tenant", "tenant", "VARCHAR", false), service(
+        "service", "service", "VARCHAR", false), type("type", "type", "VARCHAR",
+            true), language("language", "language", "VARCHAR", true), gmtCreate("gmt_create",
+                "gmtCreate", "TIMESTAMP", false), gmtModified("gmt_modified", "gmtModified",
+                    "TIMESTAMP", false), value("value", "value", "LONGVARCHAR", true);
 
     private static final String BEGINNING_DELIMITER = "`";
 

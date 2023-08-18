@@ -3,12 +3,12 @@
  */
 package io.holoinsight.server.home.biz.service.impl;
 
+import io.holoinsight.server.home.biz.service.TraceAgentConfigurationService;
+import io.holoinsight.server.home.dal.mapper.TraceAgentConfigurationMapper;
+import io.holoinsight.server.home.dal.model.TraceAgentConfiguration;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import io.holoinsight.server.home.biz.service.AgentConfigurationService;
-import io.holoinsight.server.home.dal.mapper.AgentConfigurationMapper;
-import io.holoinsight.server.home.dal.model.AgentConfiguration;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -19,36 +19,37 @@ import java.util.Date;
  * @version 1.0: AgentConfigurationServiceImpl.java, v 0.1 2022年06月21日 3:17 下午 jinsong.yjs Exp $
  */
 @Service
-public class AgentConfigurationServiceImpl extends
-    ServiceImpl<AgentConfigurationMapper, AgentConfiguration> implements AgentConfigurationService {
+public class TraceAgentConfigurationServiceImpl
+    extends ServiceImpl<TraceAgentConfigurationMapper, TraceAgentConfiguration>
+    implements TraceAgentConfigurationService {
 
   @Override
-  public AgentConfiguration get(AgentConfiguration agentConfiguration) {
-    QueryWrapper<AgentConfiguration> queryWrapper = new QueryWrapper<>();
+  public TraceAgentConfiguration get(TraceAgentConfiguration agentConfiguration) {
+    QueryWrapper<TraceAgentConfiguration> queryWrapper = new QueryWrapper<>();
     queryWrapper.eq("tenant", agentConfiguration.getTenant());
     queryWrapper.eq("service", agentConfiguration.getService());
-    queryWrapper.eq("app_id", agentConfiguration.getAppId());
-    queryWrapper.eq("env_id", agentConfiguration.getEnvId());
+    queryWrapper.eq("type", agentConfiguration.getType());
+    queryWrapper.eq("language", agentConfiguration.getLanguage());
 
     return getOne(queryWrapper);
   }
 
   @Override
-  public boolean createOrUpdate(AgentConfiguration agentConfiguration) {
-    AgentConfiguration query = get(agentConfiguration);
+  public boolean createOrUpdate(TraceAgentConfiguration agentConfiguration) {
+    TraceAgentConfiguration query = get(agentConfiguration);
     agentConfiguration.setGmtModified(new Date());
     boolean result;
     if (query == null) {
       agentConfiguration.setGmtCreate(new Date());
       result = save(agentConfiguration);
     } else {
-      UpdateWrapper<AgentConfiguration> updateWrapper = new UpdateWrapper<>();
+      UpdateWrapper<TraceAgentConfiguration> updateWrapper = new UpdateWrapper<>();
       updateWrapper.eq("tenant", agentConfiguration.getTenant());
       updateWrapper.eq("service", agentConfiguration.getService());
-      updateWrapper.eq("app_id", agentConfiguration.getAppId());
-      updateWrapper.eq("env_id", agentConfiguration.getEnvId());
+      updateWrapper.eq("type", agentConfiguration.getType());
+      updateWrapper.eq("language", agentConfiguration.getLanguage());
       updateWrapper.set("value", agentConfiguration.getValue());
-      updateWrapper.set("gmt_modified", agentConfiguration.getGmtModified());
+      updateWrapper.set("gmt_modified", new Date());
 
       result = update(updateWrapper);
     }
