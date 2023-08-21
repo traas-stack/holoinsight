@@ -256,7 +256,11 @@ public class QueryFacadeImpl extends BaseFacade {
         }
 
         QueryProto.QueryRequest.Builder requestBuilder = QueryProto.QueryRequest.newBuilder();
-        requestBuilder.setTenant(tenantInitService.getTsdbTenant(ms.getTenant()));
+        MetricInfo metricInfo = getMetricInfo(metric);
+        requestBuilder.setTenant(tenantInitService.getTsdbTenant(ms.getTenant(), metricInfo));
+        if (isCeresdb4Storage(metricInfo)) {
+          builder.setQl("DESCRIBE " + metric);
+        }
 
         QueryProto.QueryRequest request =
             requestBuilder.addAllDatasources(Collections.singletonList(builder.build())).build();
@@ -514,6 +518,7 @@ public class QueryFacadeImpl extends BaseFacade {
       MetricInfo metricInfo = getMetricInfo(d.getMetric());
       if (isCeresdb4Storage(metricInfo)) {
         parseQl(d, metricInfo);
+        builder.setTenant(tenantInitService.getTsdbTenant(ms.getTenant(), metricInfo));
       }
 
       QueryProto.Datasource.Builder datasourceBuilder = QueryProto.Datasource.newBuilder();

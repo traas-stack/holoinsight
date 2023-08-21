@@ -111,6 +111,10 @@ public class MonitorCookieUtil {
     if (StringUtil.isNotBlank(loginWorkspace)) {
       ms.workspace = loginWorkspace;
     }
+    String loginEnvironment = CookieUtils.getCookie(req, ENVIRONMENT);
+    if (StringUtil.isNotBlank(loginEnvironment)) {
+      ms.environment = loginEnvironment;
+    }
     return ms;
   }
 

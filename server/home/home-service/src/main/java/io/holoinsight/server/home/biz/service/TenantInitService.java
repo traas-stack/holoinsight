@@ -4,6 +4,7 @@
 package io.holoinsight.server.home.biz.service;
 
 import io.holoinsight.server.apm.common.model.specification.sw.Tag;
+import io.holoinsight.server.common.dao.entity.MetricInfo;
 import io.holoinsight.server.common.dao.entity.dto.TenantOpsStorage;
 import io.holoinsight.server.home.biz.plugin.config.MetaLabel;
 import io.holoinsight.server.home.dal.model.dto.CloudMonitorRange;
@@ -54,11 +55,13 @@ public interface TenantInitService {
 
   /**
    * get actual tsdb tenant for request tenant and metric
-   * 
+   *
    * @param tenant
    * @return
    */
   String getTsdbTenant(String tenant);
+
+  String getTsdbTenant(String tenant, MetricInfo metricInfo);
 
   Boolean checkConditions(String tenant, String workspace, String environment, String metric,
       List<QueryFilter> filters);
