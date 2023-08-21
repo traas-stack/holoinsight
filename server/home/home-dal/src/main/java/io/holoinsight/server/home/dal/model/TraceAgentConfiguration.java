@@ -17,6 +17,8 @@ public class TraceAgentConfiguration {
   private String type;
   private String language;
   private String value;
+  private String creator;
+  private String modifier;
 
   @Column(name = "gmt_create")
   private Date gmtCreate;

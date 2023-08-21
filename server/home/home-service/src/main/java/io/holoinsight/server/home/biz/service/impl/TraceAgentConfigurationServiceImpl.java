@@ -50,6 +50,7 @@ public class TraceAgentConfigurationServiceImpl
       updateWrapper.eq("language", agentConfiguration.getLanguage());
       updateWrapper.set("value", agentConfiguration.getValue());
       updateWrapper.set("gmt_modified", new Date());
+      updateWrapper.set("modifier", agentConfiguration.getModifier());
 
       result = update(updateWrapper);
     }

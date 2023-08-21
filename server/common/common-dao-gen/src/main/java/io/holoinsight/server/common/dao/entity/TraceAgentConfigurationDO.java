@@ -22,6 +22,10 @@ public class TraceAgentConfigurationDO {
 
   private Date gmtModified;
 
+  private String creator;
+
+  private String modifier;
+
   private String value;
 
   public Long getId() {
@@ -80,6 +84,22 @@ public class TraceAgentConfigurationDO {
     this.gmtModified = gmtModified;
   }
 
+  public String getCreator() {
+    return creator;
+  }
+
+  public void setCreator(String creator) {
+    this.creator = creator == null ? null : creator.trim();
+  }
+
+  public String getModifier() {
+    return modifier;
+  }
+
+  public void setModifier(String modifier) {
+    this.modifier = modifier == null ? null : modifier.trim();
+  }
+
   public String getValue() {
     return value;
   }
@@ -101,6 +121,8 @@ public class TraceAgentConfigurationDO {
     sb.append(", language=").append(language);
     sb.append(", gmtCreate=").append(gmtCreate);
     sb.append(", gmtModified=").append(gmtModified);
+    sb.append(", creator=").append(creator);
+    sb.append(", modifier=").append(modifier);
     sb.append(", value=").append(value);
     sb.append("]");
     return sb.toString();
@@ -131,6 +153,10 @@ public class TraceAgentConfigurationDO {
             : this.getGmtCreate().equals(other.getGmtCreate()))
         && (this.getGmtModified() == null ? other.getGmtModified() == null
             : this.getGmtModified().equals(other.getGmtModified()))
+        && (this.getCreator() == null ? other.getCreator() == null
+            : this.getCreator().equals(other.getCreator()))
+        && (this.getModifier() == null ? other.getModifier() == null
+            : this.getModifier().equals(other.getModifier()))
         && (this.getValue() == null ? other.getValue() == null
             : this.getValue().equals(other.getValue()));
   }
@@ -146,6 +172,8 @@ public class TraceAgentConfigurationDO {
     result = prime * result + ((getLanguage() == null) ? 0 : getLanguage().hashCode());
     result = prime * result + ((getGmtCreate() == null) ? 0 : getGmtCreate().hashCode());
     result = prime * result + ((getGmtModified() == null) ? 0 : getGmtModified().hashCode());
+    result = prime * result + ((getCreator() == null) ? 0 : getCreator().hashCode());
+    result = prime * result + ((getModifier() == null) ? 0 : getModifier().hashCode());
     result = prime * result + ((getValue() == null) ? 0 : getValue().hashCode());
     return result;
   }
@@ -196,6 +224,16 @@ public class TraceAgentConfigurationDO {
       return this;
     }
 
+    public Builder creator(String creator) {
+      obj.setCreator(creator);
+      return this;
+    }
+
+    public Builder modifier(String modifier) {
+      obj.setModifier(modifier);
+      return this;
+    }
+
     public Builder value(String value) {
       obj.setValue(value);
       return this;
@@ -208,10 +246,11 @@ public class TraceAgentConfigurationDO {
 
   public enum Column {
     id("id", "id", "BIGINT", false), tenant("tenant", "tenant", "VARCHAR", false), service(
-        "service", "service", "VARCHAR", false), type("type", "type", "VARCHAR",
-            true), language("language", "language", "VARCHAR", true), gmtCreate("gmt_create",
-                "gmtCreate", "TIMESTAMP", false), gmtModified("gmt_modified", "gmtModified",
-                    "TIMESTAMP", false), value("value", "value", "LONGVARCHAR", true);
+        "service", "service", "VARCHAR", false), type("type", "type", "VARCHAR", true), language(
+            "language", "language", "VARCHAR", true), gmtCreate("gmt_create", "gmtCreate",
+                "TIMESTAMP", false), gmtModified("gmt_modified", "gmtModified", "TIMESTAMP",
+                    false), creator("creator", "creator", "VARCHAR", false), modifier("modifier",
+                        "modifier", "VARCHAR", false), value("value", "value", "LONGVARCHAR", true);
 
     private static final String BEGINNING_DELIMITER = "`";
 
