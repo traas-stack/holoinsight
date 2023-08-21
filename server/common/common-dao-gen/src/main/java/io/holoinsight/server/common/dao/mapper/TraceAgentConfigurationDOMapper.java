@@ -5,11 +5,10 @@ package io.holoinsight.server.common.dao.mapper;
 
 import io.holoinsight.server.common.dao.entity.TraceAgentConfigurationDO;
 import io.holoinsight.server.common.dao.entity.TraceAgentConfigurationDOExample;
+import java.util.List;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
-
-import java.util.List;
 
 @Mapper
 @Repository

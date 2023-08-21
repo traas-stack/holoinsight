@@ -9,6 +9,8 @@
     <result column="language" jdbcType="VARCHAR" property="language" />
     <result column="gmt_create" jdbcType="TIMESTAMP" property="gmtCreate" />
     <result column="gmt_modified" jdbcType="TIMESTAMP" property="gmtModified" />
+    <result column="creator" jdbcType="VARCHAR" property="creator" />
+    <result column="modifier" jdbcType="VARCHAR" property="modifier" />
   </resultMap>
   <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="io.holoinsight.server.common.dao.entity.TraceAgentConfigurationDO">
     <result column="value" jdbcType="LONGVARCHAR" property="value" />
@@ -72,7 +74,7 @@
     </where>
   </sql>
   <sql id="Base_Column_List">
-    id, tenant, service, `type`, `language`, gmt_create, gmt_modified
+    id, tenant, service, `type`, `language`, gmt_create, gmt_modified, creator, modifier
   </sql>
   <sql id="Blob_Column_List">
     `value`
@@ -194,10 +196,12 @@
   <insert id="insert" parameterType="io.holoinsight.server.common.dao.entity.TraceAgentConfigurationDO">
     insert into trace_agent_configuration (id, tenant, service, 
       `type`, `language`, gmt_create, 
-      gmt_modified, `value`)
+      gmt_modified, creator, modifier, 
+      `value`)
     values (#{id,jdbcType=BIGINT}, #{tenant,jdbcType=VARCHAR}, #{service,jdbcType=VARCHAR}, 
       #{type,jdbcType=VARCHAR}, #{language,jdbcType=VARCHAR}, #{gmtCreate,jdbcType=TIMESTAMP}, 
-      #{gmtModified,jdbcType=TIMESTAMP}, #{value,jdbcType=LONGVARCHAR})
+      #{gmtModified,jdbcType=TIMESTAMP}, #{creator,jdbcType=VARCHAR}, #{modifier,jdbcType=VARCHAR}, 
+      #{value,jdbcType=LONGVARCHAR})
   </insert>
   <insert id="insertSelective" parameterType="map">
     insert into trace_agent_configuration
@@ -229,6 +233,12 @@
           </if>
           <if test="record.gmtModified != null">
             gmt_modified,
+          </if>
+          <if test="record.creator != null">
+            creator,
+          </if>
+          <if test="record.modifier != null">
+            modifier,
           </if>
           <if test="record.value != null">
             `value`,
@@ -266,6 +276,12 @@
           </if>
           <if test="record.gmtModified != null">
             #{record.gmtModified,jdbcType=TIMESTAMP},
+          </if>
+          <if test="record.creator != null">
+            #{record.creator,jdbcType=VARCHAR},
+          </if>
+          <if test="record.modifier != null">
+            #{record.modifier,jdbcType=VARCHAR},
           </if>
           <if test="record.value != null">
             #{record.value,jdbcType=LONGVARCHAR},
@@ -312,6 +328,12 @@
           <if test="record.gmtModified != null">
             gmt_modified = #{record.gmtModified,jdbcType=TIMESTAMP},
           </if>
+          <if test="record.creator != null">
+            creator = #{record.creator,jdbcType=VARCHAR},
+          </if>
+          <if test="record.modifier != null">
+            modifier = #{record.modifier,jdbcType=VARCHAR},
+          </if>
           <if test="record.value != null">
             `value` = #{record.value,jdbcType=LONGVARCHAR},
           </if>
@@ -331,6 +353,8 @@
       `language` = #{record.language,jdbcType=VARCHAR},
       gmt_create = #{record.gmtCreate,jdbcType=TIMESTAMP},
       gmt_modified = #{record.gmtModified,jdbcType=TIMESTAMP},
+      creator = #{record.creator,jdbcType=VARCHAR},
+      modifier = #{record.modifier,jdbcType=VARCHAR},
       `value` = #{record.value,jdbcType=LONGVARCHAR}
     <if test="_parameter != null">
       <include refid="Update_By_Example_Where_Clause" />
@@ -344,7 +368,9 @@
       `type` = #{record.type,jdbcType=VARCHAR},
       `language` = #{record.language,jdbcType=VARCHAR},
       gmt_create = #{record.gmtCreate,jdbcType=TIMESTAMP},
-      gmt_modified = #{record.gmtModified,jdbcType=TIMESTAMP}
+      gmt_modified = #{record.gmtModified,jdbcType=TIMESTAMP},
+      creator = #{record.creator,jdbcType=VARCHAR},
+      modifier = #{record.modifier,jdbcType=VARCHAR}
     <if test="_parameter != null">
       <include refid="Update_By_Example_Where_Clause" />
     </if>
@@ -378,6 +404,12 @@
           <if test="record.gmtModified != null">
             gmt_modified = #{record.gmtModified,jdbcType=TIMESTAMP},
           </if>
+          <if test="record.creator != null">
+            creator = #{record.creator,jdbcType=VARCHAR},
+          </if>
+          <if test="record.modifier != null">
+            modifier = #{record.modifier,jdbcType=VARCHAR},
+          </if>
           <if test="record.value != null">
             `value` = #{record.value,jdbcType=LONGVARCHAR},
           </if>
@@ -394,6 +426,8 @@
       `language` = #{language,jdbcType=VARCHAR},
       gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
       gmt_modified = #{gmtModified,jdbcType=TIMESTAMP},
+      creator = #{creator,jdbcType=VARCHAR},
+      modifier = #{modifier,jdbcType=VARCHAR},
       `value` = #{value,jdbcType=LONGVARCHAR}
     where id = #{id,jdbcType=BIGINT}
   </update>
@@ -404,7 +438,9 @@
       `type` = #{type,jdbcType=VARCHAR},
       `language` = #{language,jdbcType=VARCHAR},
       gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
-      gmt_modified = #{gmtModified,jdbcType=TIMESTAMP}
+      gmt_modified = #{gmtModified,jdbcType=TIMESTAMP},
+      creator = #{creator,jdbcType=VARCHAR},
+      modifier = #{modifier,jdbcType=VARCHAR}
     where id = #{id,jdbcType=BIGINT}
   </update>
   <select id="selectOneByExample" parameterType="io.holoinsight.server.common.dao.entity.TraceAgentConfigurationDOExample" resultMap="BaseResultMap">
@@ -458,12 +494,14 @@
   </select>
   <insert id="batchInsert" parameterType="map">
     insert into trace_agent_configuration
-    (id, tenant, service, `type`, `language`, gmt_create, gmt_modified, `value`)
+    (id, tenant, service, `type`, `language`, gmt_create, gmt_modified, creator, modifier, 
+      `value`)
     values
     <foreach collection="list" item="item" separator=",">
       (#{item.id,jdbcType=BIGINT}, #{item.tenant,jdbcType=VARCHAR}, #{item.service,jdbcType=VARCHAR}, 
         #{item.type,jdbcType=VARCHAR}, #{item.language,jdbcType=VARCHAR}, #{item.gmtCreate,jdbcType=TIMESTAMP}, 
-        #{item.gmtModified,jdbcType=TIMESTAMP}, #{item.value,jdbcType=LONGVARCHAR})
+        #{item.gmtModified,jdbcType=TIMESTAMP}, #{item.creator,jdbcType=VARCHAR}, #{item.modifier,jdbcType=VARCHAR}, 
+        #{item.value,jdbcType=LONGVARCHAR})
     </foreach>
   </insert>
   <insert id="batchInsertSelective" parameterType="map">
@@ -496,6 +534,12 @@
         </if>
         <if test="'gmt_modified'.toString() == column.value">
           #{item.gmtModified,jdbcType=TIMESTAMP}
+        </if>
+        <if test="'creator'.toString() == column.value">
+          #{item.creator,jdbcType=VARCHAR}
+        </if>
+        <if test="'modifier'.toString() == column.value">
+          #{item.modifier,jdbcType=VARCHAR}
         </if>
         <if test="'value'.toString() == column.value">
           #{item.value,jdbcType=LONGVARCHAR}
@@ -535,6 +579,12 @@
           <if test="record.gmtModified != null">
             gmt_modified,
           </if>
+          <if test="record.creator != null">
+            creator,
+          </if>
+          <if test="record.modifier != null">
+            modifier,
+          </if>
           <if test="record.value != null">
             `value`,
           </if>
@@ -572,6 +622,12 @@
           <if test="record.gmtModified != null">
             #{record.gmtModified,jdbcType=TIMESTAMP},
           </if>
+          <if test="record.creator != null">
+            #{record.creator,jdbcType=VARCHAR},
+          </if>
+          <if test="record.modifier != null">
+            #{record.modifier,jdbcType=VARCHAR},
+          </if>
           <if test="record.value != null">
             #{record.value,jdbcType=LONGVARCHAR},
           </if>
@@ -608,6 +664,12 @@
           <if test="record.gmtModified != null">
             gmt_modified = #{record.gmtModified,jdbcType=TIMESTAMP},
           </if>
+          <if test="record.creator != null">
+            creator = #{record.creator,jdbcType=VARCHAR},
+          </if>
+          <if test="record.modifier != null">
+            modifier = #{record.modifier,jdbcType=VARCHAR},
+          </if>
           <if test="record.value != null">
             `value` = #{record.value,jdbcType=LONGVARCHAR},
           </if>
@@ -617,27 +679,13 @@
   </insert>
   <insert id="upsert" parameterType="io.holoinsight.server.common.dao.entity.TraceAgentConfigurationDO">
     insert into trace_agent_configuration
-    (id, tenant, service, `type`, `language`, gmt_create, gmt_modified)
+    (id, tenant, service, `type`, `language`, gmt_create, gmt_modified, creator, modifier
+      )
     values
     (#{id,jdbcType=BIGINT}, #{tenant,jdbcType=VARCHAR}, #{service,jdbcType=VARCHAR}, 
       #{type,jdbcType=VARCHAR}, #{language,jdbcType=VARCHAR}, #{gmtCreate,jdbcType=TIMESTAMP}, 
-      #{gmtModified,jdbcType=TIMESTAMP})
-    on duplicate key update 
-    id = #{id,jdbcType=BIGINT}, 
-    tenant = #{tenant,jdbcType=VARCHAR}, 
-    service = #{service,jdbcType=VARCHAR}, 
-    `type` = #{type,jdbcType=VARCHAR}, 
-    `language` = #{language,jdbcType=VARCHAR}, 
-    gmt_create = #{gmtCreate,jdbcType=TIMESTAMP}, 
-    gmt_modified = #{gmtModified,jdbcType=TIMESTAMP}
-  </insert>
-  <insert id="upsertWithBLOBs" parameterType="io.holoinsight.server.common.dao.entity.TraceAgentConfigurationDO">
-    insert into trace_agent_configuration
-    (id, tenant, service, `type`, `language`, gmt_create, gmt_modified, `value`)
-    values
-    (#{id,jdbcType=BIGINT}, #{tenant,jdbcType=VARCHAR}, #{service,jdbcType=VARCHAR}, 
-      #{type,jdbcType=VARCHAR}, #{language,jdbcType=VARCHAR}, #{gmtCreate,jdbcType=TIMESTAMP}, 
-      #{gmtModified,jdbcType=TIMESTAMP}, #{value,jdbcType=LONGVARCHAR})
+      #{gmtModified,jdbcType=TIMESTAMP}, #{creator,jdbcType=VARCHAR}, #{modifier,jdbcType=VARCHAR}
+      )
     on duplicate key update 
     id = #{id,jdbcType=BIGINT}, 
     tenant = #{tenant,jdbcType=VARCHAR}, 
@@ -646,6 +694,28 @@
     `language` = #{language,jdbcType=VARCHAR}, 
     gmt_create = #{gmtCreate,jdbcType=TIMESTAMP}, 
     gmt_modified = #{gmtModified,jdbcType=TIMESTAMP}, 
+    creator = #{creator,jdbcType=VARCHAR}, 
+    modifier = #{modifier,jdbcType=VARCHAR}
+  </insert>
+  <insert id="upsertWithBLOBs" parameterType="io.holoinsight.server.common.dao.entity.TraceAgentConfigurationDO">
+    insert into trace_agent_configuration
+    (id, tenant, service, `type`, `language`, gmt_create, gmt_modified, creator, modifier, 
+      `value`)
+    values
+    (#{id,jdbcType=BIGINT}, #{tenant,jdbcType=VARCHAR}, #{service,jdbcType=VARCHAR}, 
+      #{type,jdbcType=VARCHAR}, #{language,jdbcType=VARCHAR}, #{gmtCreate,jdbcType=TIMESTAMP}, 
+      #{gmtModified,jdbcType=TIMESTAMP}, #{creator,jdbcType=VARCHAR}, #{modifier,jdbcType=VARCHAR}, 
+      #{value,jdbcType=LONGVARCHAR})
+    on duplicate key update 
+    id = #{id,jdbcType=BIGINT}, 
+    tenant = #{tenant,jdbcType=VARCHAR}, 
+    service = #{service,jdbcType=VARCHAR}, 
+    `type` = #{type,jdbcType=VARCHAR}, 
+    `language` = #{language,jdbcType=VARCHAR}, 
+    gmt_create = #{gmtCreate,jdbcType=TIMESTAMP}, 
+    gmt_modified = #{gmtModified,jdbcType=TIMESTAMP}, 
+    creator = #{creator,jdbcType=VARCHAR}, 
+    modifier = #{modifier,jdbcType=VARCHAR}, 
     `value` = #{value,jdbcType=LONGVARCHAR}
   </insert>
 </mapper>

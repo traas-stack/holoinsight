@@ -14,6 +14,7 @@ import io.holoinsight.server.home.biz.service.TraceAgentConfPropService;
 import io.holoinsight.server.home.biz.service.TraceAgentConfigurationService;
 import io.holoinsight.server.home.common.util.MonitorException;
 import io.holoinsight.server.home.common.util.scope.MonitorScope;
+import io.holoinsight.server.home.common.util.scope.MonitorUser;
 import io.holoinsight.server.home.common.util.scope.RequestContext;
 import io.holoinsight.server.home.dal.model.ApiKey;
 import io.holoinsight.server.home.dal.model.TraceAgentConfProp;
@@ -117,6 +118,7 @@ public class TraceAgentFacadeImpl extends BaseFacade {
   @PostMapping(value = "/create/configuration")
   @ResponseBody
   public JsonResult<Boolean> createAgentConfiguration(@RequestBody Map<String, String> request) {
+    MonitorUser mu = RequestContext.getContext().mu;
     final JsonResult<Boolean> result = new JsonResult<>();
     facadeTemplate.manage(result, new ManageCallback() {
       @Override
@@ -141,6 +143,10 @@ public class TraceAgentFacadeImpl extends BaseFacade {
         traceAgentConfiguration.setType(request.get("type"));
         traceAgentConfiguration.setLanguage(request.get("language"));
         traceAgentConfiguration.setValue(request.get("value"));
+        if (mu != null) {
+          traceAgentConfiguration.setCreator(mu.getLoginName());
+          traceAgentConfiguration.setModifier(mu.getLoginName());
+        }
         boolean isSuccess = agentConfigurationService.createOrUpdate(traceAgentConfiguration);
         if (isSuccess) {
           JsonResult.createSuccessResult(result, isSuccess);
