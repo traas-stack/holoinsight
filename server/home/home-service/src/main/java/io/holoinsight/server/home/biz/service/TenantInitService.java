@@ -60,7 +60,7 @@ public interface TenantInitService {
    */
   String getTsdbTenant(String tenant);
 
-  Boolean checkConditions(String tenant, String workspace, String metric,
+  Boolean checkConditions(String tenant, String workspace, String environment, String metric,
       List<QueryFilter> filters);
 
 
@@ -70,7 +70,8 @@ public interface TenantInitService {
    * @param workspace
    * @return
    */
-  Map<String, String> getTenantWorkspaceMetaConditions(String tenant, String workspace);
+  Map<String, String> getTenantWorkspaceMetaConditions(String tenant, String workspace,
+      String environment);
 
   Map<String, String> getTenantServerWorkspaceMetaConditions(String tenant, String workspace);
 
@@ -80,7 +81,8 @@ public interface TenantInitService {
    * @param workspace
    * @return
    */
-  List<QueryFilter> getTenantFilters(String tenant, String workspace, String metric);
+  List<QueryFilter> getTenantFilters(String tenant, String workspace, String environment,
+      String metric);
 
   /**
    * logmonitor metric table
@@ -94,7 +96,7 @@ public interface TenantInitService {
   CloudMonitorRange getCollectMonitorRange(String table, String tenant, String workspace,
       List<String> strings, MetaLabel metaLabel);
 
-  Boolean checkCookie(String tenant, String workspace);
+  Boolean checkCookie(String tenant, String workspace, String environment);
 
   Boolean checkTraceTags(String tenant, String workspace, List<Tag> tags);
 
@@ -103,4 +105,6 @@ public interface TenantInitService {
   List<IntegrationGeneratedDTO> getExtraGeneratedLists();
 
   Boolean checkIntegrationWorkspace(String workspace);
+
+  Boolean checkEnvironment(String environment);
 }

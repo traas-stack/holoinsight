@@ -30,6 +30,7 @@ public class MonitorCookieUtil {
   static String AUTH = APPNAME + "_AUTH_COOKIE";
   static String TENANT = "loginTenant";
   static String WORKSPACE = "loginWorkspace";
+  static String ENVIRONMENT = "loginEnvironment";
 
   /**
    * 用户身份cookie
@@ -56,6 +57,12 @@ public class MonitorCookieUtil {
   public static void addTenantWorkspaceCookie(String workspace, HttpServletResponse resp) {
     if (StringUtil.isNotBlank(workspace)) {
       CookieUtils.addCookie(resp, WORKSPACE, workspace);
+    }
+  }
+
+  public static void addTenantEnvironmentCookie(String environment, HttpServletResponse resp) {
+    if (StringUtil.isNotBlank(environment)) {
+      CookieUtils.addCookie(resp, ENVIRONMENT, environment);
     }
   }
 
@@ -109,7 +116,7 @@ public class MonitorCookieUtil {
 
   public static String getTenantOrException() {
     MonitorScope ms = RequestContext.getContext().ms;
-    return ms.getTenantIdOrException();
+    return ms.getTenant();
   }
 
   /**

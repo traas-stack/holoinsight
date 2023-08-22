@@ -53,13 +53,14 @@ public class DefaultTenantInitServiceImpl implements TenantInitService {
   }
 
   @Override
-  public Boolean checkConditions(String tenant, String workspace, String metric,
+  public Boolean checkConditions(String tenant, String workspace, String environment, String metric,
       List<QueryFilter> filters) {
     return true;
   }
 
   @Override
-  public Map<String, String> getTenantWorkspaceMetaConditions(String tenant, String workspace) {
+  public Map<String, String> getTenantWorkspaceMetaConditions(String tenant, String workspace,
+      String environment) {
     return new HashMap<>();
   }
 
@@ -70,7 +71,8 @@ public class DefaultTenantInitServiceImpl implements TenantInitService {
   }
 
   @Override
-  public List<QueryFilter> getTenantFilters(String tenant, String workspace, String metric) {
+  public List<QueryFilter> getTenantFilters(String tenant, String workspace, String environment,
+      String metric) {
     return new ArrayList<>();
   }
 
@@ -86,7 +88,7 @@ public class DefaultTenantInitServiceImpl implements TenantInitService {
   }
 
   @Override
-  public Boolean checkCookie(String tenant, String workspace) {
+  public Boolean checkCookie(String tenant, String workspace, String environment) {
     return Boolean.TRUE;
   }
 
@@ -107,6 +109,11 @@ public class DefaultTenantInitServiceImpl implements TenantInitService {
 
   @Override
   public Boolean checkIntegrationWorkspace(String workspace) {
+    return Boolean.TRUE;
+  }
+
+  @Override
+  public Boolean checkEnvironment(String environment) {
     return Boolean.TRUE;
   }
 
