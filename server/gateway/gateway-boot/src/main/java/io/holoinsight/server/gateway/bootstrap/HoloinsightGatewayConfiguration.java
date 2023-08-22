@@ -8,6 +8,7 @@ import io.holoinsight.server.common.config.ConfigConfiguration;
 import io.holoinsight.server.common.dao.CommonDaoConfiguration;
 import io.holoinsight.server.common.groovy.GroovyConfiguration;
 import io.holoinsight.server.common.security.InternalWebApiSecurityConfiguration;
+import io.holoinsight.server.common.springboot.ConditionalOnFeature;
 import io.holoinsight.server.common.springboot.ConditionalOnRole;
 import io.holoinsight.server.common.springboot.HoloinsightProperties;
 import io.holoinsight.server.common.threadpool.ThreadPoolConfiguration;
@@ -49,6 +50,7 @@ public class HoloinsightGatewayConfiguration {
    * </p>
    */
   @Bean
+  @ConditionalOnFeature("trace")
   public TraceAgentConfigurationController agentConfigurationController() {
     return new TraceAgentConfigurationController();
   }
