@@ -64,8 +64,8 @@ public class MetaFacadeImpl extends BaseFacade {
         queryExample.setParams(new HashMap<>());
         queryExample.getParams().putAll(condition);
         MonitorScope ms = RequestContext.getContext().ms;
-        Map<String, String> conditions =
-            tenantInitService.getTenantWorkspaceMetaConditions(ms.getTenant(), ms.getWorkspace());
+        Map<String, String> conditions = tenantInitService.getTenantWorkspaceMetaConditions(
+            ms.getTenant(), ms.getWorkspace(), ms.getEnvironment());
         if (!CollectionUtils.isEmpty(conditions)) {
           queryExample.getParams().putAll(conditions);
         }
@@ -140,8 +140,8 @@ public class MetaFacadeImpl extends BaseFacade {
           }
         }
         MonitorScope ms = RequestContext.getContext().ms;
-        Map<String, String> conditions =
-            tenantInitService.getTenantWorkspaceMetaConditions(ms.getTenant(), ms.getWorkspace());
+        Map<String, String> conditions = tenantInitService.getTenantWorkspaceMetaConditions(
+            ms.getTenant(), ms.getWorkspace(), ms.getEnvironment());
         if (!CollectionUtils.isEmpty(conditions)) {
           conditions.forEach((k, v) -> queryExample.getParams().put(k, v));
         }

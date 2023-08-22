@@ -57,8 +57,10 @@ public class UserFacadeImpl extends BaseFacade {
 
         MonitorUser mu = RequestContext.getContext().mu;
         MonitorAuth ma = RequestContext.getContext().ma;
+        MonitorScope ms = RequestContext.getContext().ms;
         Map<String, Object> resultObj = new HashMap<>();
         resultObj.put("user", mu);
+        resultObj.put("scope", ms);
         resultObj.put("tPowers", ma.getTenantViewPowerList());
         resultObj.put("tenants", ulaFacade.getCurrentULA().getUserTenants(mu));
         Debugger.print("UserFacadeImpl", "getCurrentUser: " + J.toJson(resultObj));

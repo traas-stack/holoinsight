@@ -139,7 +139,7 @@ public class AgentLogTailService {
 
 
     Map<String, String> conditions =
-        tenantInitService.getTenantWorkspaceMetaConditions(tenant, workspace);
+        tenantInitService.getTenantWorkspaceMetaConditions(tenant, workspace, null);
     if (!CollectionUtils.isEmpty(conditions)) {
       queryExample.getParams().putAll(conditions);
     }

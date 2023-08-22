@@ -908,11 +908,23 @@ public class GaeaSqlTaskUtil {
   }
 
   public static String convertTimeLayout(String time) {
+
+    Map<String, String> logTimeLayoutMap = MetaDictUtil.getLogTimeLayoutMap();
+    if (!CollectionUtils.isEmpty(logTimeLayoutMap) && logTimeLayoutMap.containsKey(time)) {
+      return logTimeLayoutMap.get(time);
+    }
+
     switch (time) {
       case "yyyy-MM-dd HH:mm:ss":
         return "2006-01-02 15:04:05";
       case "yyyy-MM-ddTHH:mm:ss":
         return "2006-01-02T15:04:05";
+      case "dd/MMM/yyyy:HH:mm:ss Z":
+        return "02/Jan/2006:15:04:05 Z0700";
+      case "MM-dd-yyyy HH:mm:ss":
+        return "01-02-2006 15:04:05";
+      case "MMM dd yyyy HH:mm:ss":
+        return "Jan 02 2006 15:04:05";
       default:
         return StringUtils.EMPTY;
     }

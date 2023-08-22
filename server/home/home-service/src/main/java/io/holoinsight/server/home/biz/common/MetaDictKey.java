@@ -11,6 +11,7 @@ public class MetaDictKey {
   public static final String ULA = "ula";
   public static final String ULA_CLOSE = "ula_close";
   public static final String ULA_HOST = "ula_host";
+  public static final String LOG_TIME_LAYOUT = "log_time_layout";
   public static final String TOKEN_URL_WRITE_LIST = "token_url_write_list";
   public static final String IS_APM_MATERIALIZED = "is_apm_materialized";
 
@@ -39,8 +40,6 @@ public class MetaDictKey {
   public static final String SYSTEM_NOTICE = "system_notice";
 
   public static final String METERING_LOG_OPEN = "metering_log_open";
-  public static final String METERING_CLOUDRUN_LOG_SUBMIT_OPEN =
-      "metering_cloudrun_log_submit_open";
   public static final String METERING_HOLOINSIGHT_SUBMIT_OPEN = "metering_holoinsight_submit_open";
   public static final String INTEGRATION_LOCAL_PRODUCT = "integration_local_product";
 }

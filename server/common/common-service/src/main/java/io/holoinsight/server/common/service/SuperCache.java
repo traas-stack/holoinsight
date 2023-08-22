@@ -20,4 +20,20 @@ public class SuperCache {
   public Map<String, QueryRequest> expressionMetricList;
 
   public Map<String /* metric table */, MetricInfo> metricInfoMap;
+
+  public String getStringValue(String type, String k) {
+
+    Map<String, MetaDataDictValue> kMap = this.metaDataDictValueMap.get(type);
+
+    if (null == kMap) {
+      return null;
+    }
+
+    MetaDataDictValue meta = kMap.get(k);
+
+    if (null == meta) {
+      return null;
+    }
+    return meta.getDictValue();
+  }
 }

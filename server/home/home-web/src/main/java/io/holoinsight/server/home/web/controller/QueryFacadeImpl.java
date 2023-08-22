@@ -249,8 +249,8 @@ public class QueryFacadeImpl extends BaseFacade {
             .setStart(System.currentTimeMillis() - 60000 * 60 * 5)
             .setEnd(System.currentTimeMillis() - 60000 * 5);
 
-        List<QueryProto.QueryFilter> tenantFilters =
-            tenantInitService.getTenantFilters(ms.getTenant(), ms.getWorkspace(), metric);
+        List<QueryProto.QueryFilter> tenantFilters = tenantInitService
+            .getTenantFilters(ms.getTenant(), ms.getWorkspace(), ms.getEnvironment(), metric);
         if (!CollectionUtils.isEmpty(tenantFilters)) {
           builder.addAllFilters(tenantFilters);
         }
@@ -335,8 +335,8 @@ public class QueryFacadeImpl extends BaseFacade {
             .setEnd(System.currentTimeMillis()).setAggregator("count")
             .addAllGroupBy(Collections.singletonList(tagQueryRequest.getKey()));
 
-        List<QueryProto.QueryFilter> tenantFilters = tenantInitService
-            .getTenantFilters(ms.getTenant(), ms.getWorkspace(), tagQueryRequest.getMetric());
+        List<QueryProto.QueryFilter> tenantFilters = tenantInitService.getTenantFilters(
+            ms.getTenant(), ms.getWorkspace(), ms.getEnvironment(), tagQueryRequest.getMetric());
 
         if (!CollectionUtils.isEmpty(tagQueryRequest.getConditions())) {
           tagQueryRequest.getConditions().forEach((k, v) -> {
@@ -523,7 +523,7 @@ public class QueryFacadeImpl extends BaseFacade {
       }
       toProtoBean(datasourceBuilder, objMap);
       Boolean aBoolean = tenantInitService.checkConditions(ms.getTenant(), ms.getWorkspace(),
-          datasourceBuilder.getMetric(), datasourceBuilder.getFiltersList());
+          ms.getEnvironment(), datasourceBuilder.getMetric(), datasourceBuilder.getFiltersList());
       if (!aBoolean) {
         throw new MonitorException("workspace is illegal");
       }

@@ -114,6 +114,7 @@ public class InitFacadeImpl extends BaseFacade {
   @GetMapping(value = "/tenantSwitch/{tenant}")
   public JsonResult<Boolean> tenantSwitch(@PathVariable("tenant") String tenant,
       @RequestParam(value = "workspace", required = false) String workspace,
+      @RequestParam(value = "environment", required = false) String environment,
       HttpServletResponse response) {
 
     final JsonResult<Boolean> result = new JsonResult<>();
@@ -121,13 +122,14 @@ public class InitFacadeImpl extends BaseFacade {
       @Override
       public void checkParameter() {
         ParaCheckUtil.checkParaNotNull(tenant, "tenant");
-        tenantInitService.checkCookie(tenant, workspace);
+        tenantInitService.checkCookie(tenant, workspace, environment);
       }
 
       @Override
       public void doManage() {
         MonitorCookieUtil.addTenantCookie(tenant, response);
         MonitorCookieUtil.addTenantWorkspaceCookie(workspace, response);
+        MonitorCookieUtil.addTenantEnvironmentCookie(environment, response);
         JsonResult.createSuccessResult(result, true);
       }
     });
