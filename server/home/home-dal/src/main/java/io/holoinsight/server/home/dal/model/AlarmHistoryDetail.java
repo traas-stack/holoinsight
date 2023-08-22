@@ -3,13 +3,13 @@
  */
 package io.holoinsight.server.home.dal.model;
 
-import javax.persistence.Id;
-import javax.persistence.Table;
-
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import lombok.Data;
+
 import javax.persistence.Column;
+import javax.persistence.Id;
+import javax.persistence.Table;
 import java.util.Date;
 
 
@@ -89,5 +89,11 @@ public class AlarmHistoryDetail {
    */
   @Column(name = "env_type")
   private String envType;
+
+  /**
+   * app
+   */
+  @Column(name = "app")
+  private String app;
 
 }

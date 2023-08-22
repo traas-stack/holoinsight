@@ -103,6 +103,10 @@ public class AlarmHistoryServiceImpl extends ServiceImpl<AlarmHistoryMapper, Ala
       wrapper.le("gmt_create", new Date(pageRequest.getTo()));
     }
 
+    if (null != alarmHistory.getApp()) {
+      wrapper.like("app", "," + alarmHistory.getApp() + ",");
+    }
+
     if (alarmHistory.getRecoverTime() == null) {
       if (alarmHistory.getDuration() != null && alarmHistory.getDuration() == 0) {
         wrapper.isNull("recover_time");

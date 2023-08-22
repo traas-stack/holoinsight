@@ -145,4 +145,6 @@ public abstract class AlertNotifyHandler implements AlertHandlerExecutor {
   protected abstract String getWorkspace(AlertNotify alertNotify);
 
   protected abstract String getTenant(AlertNotify alertNotify);
+
+  protected abstract String getAppKey();
 }

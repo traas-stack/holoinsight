@@ -7,6 +7,7 @@ import io.holoinsight.server.home.facade.trigger.AlertHistoryDetailExtra;
 import lombok.Data;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * @author wangsiyuan
@@ -43,4 +44,6 @@ public class AlarmHistoryDetailDTO {
   private String envType;
 
   private AlertHistoryDetailExtra extra;
+
+  private List<String> app;
 }

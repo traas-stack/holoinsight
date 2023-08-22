@@ -76,6 +76,10 @@ public class AlarmHistoryDetailServiceImpl extends
       wrapper.eq("unique_id", alarmHistoryDetail.getUniqueId());
     }
 
+    if (null != alarmHistoryDetail.getApp()) {
+      wrapper.like("app", "," + alarmHistoryDetail.getApp() + ",");
+    }
+
     wrapper.orderByDesc("id");
 
     Page<AlarmHistoryDetail> page = new Page<>(pageRequest.getPageNum(), pageRequest.getPageSize());
