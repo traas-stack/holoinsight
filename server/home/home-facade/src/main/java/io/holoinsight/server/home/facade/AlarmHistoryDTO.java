@@ -93,4 +93,6 @@ public class AlarmHistoryDTO {
    * 环境类型
    */
   private String envType;
+
+  private List<String> app;
 }

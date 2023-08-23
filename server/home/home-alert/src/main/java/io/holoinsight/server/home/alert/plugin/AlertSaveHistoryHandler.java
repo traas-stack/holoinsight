@@ -30,6 +30,7 @@ import io.holoinsight.server.query.grpc.QueryProto;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
@@ -37,6 +38,7 @@ import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -62,6 +64,9 @@ public class AlertSaveHistoryHandler implements AlertHandlerExecutor {
 
   @Resource
   private QueryClientService queryClientService;
+
+  @Autowired
+  private AlertNotifyHandler alertNotifyHandler;
 
   private static final String SAVE_HISTORY = "AlertSaveHistoryHandler";
 
@@ -334,6 +339,7 @@ public class AlertSaveHistoryHandler implements AlertHandlerExecutor {
           // insert new alert history
           AlarmHistory alertHistoryNew = DoConvert.alertHistoryConverter(alertNotify);
           alertHistoryNew.setDuration(0L);
+          alertHistoryNew.setApp(getApps(alertNotify));
           alertNotify.setDuration(alertHistoryNew.getDuration());
           alarmHistoryDOMapper.insert(alertHistoryNew);
           historyId = alertHistoryNew.getId();
@@ -364,6 +370,53 @@ public class AlertSaveHistoryHandler implements AlertHandlerExecutor {
             alertNotify.getTraceId(), e.getMessage(), e);
       }
     }
+  }
+
+  private String getApps(AlertNotify alertNotify) {
+    if (CollectionUtils.isEmpty(alertNotify.getNotifyDataInfos())) {
+      return null;
+    }
+    Set<String> apps = new HashSet<>();
+    for (List<NotifyDataInfo> list : alertNotify.getNotifyDataInfos().values()) {
+      for (NotifyDataInfo notifyDataInfo : list) {
+        if (CollectionUtils.isEmpty(notifyDataInfo.getTags())) {
+          continue;
+        }
+        String app = notifyDataInfo.getTags().get(this.alertNotifyHandler.getAppKey());
+        if (StringUtils.isNotBlank(app)) {
+          apps.add(app);
+        }
+      }
+    }
+    if (CollectionUtils.isEmpty(apps)) {
+      return null;
+    }
+    String appStr = "," + String.join(",", apps) + ",";
+    if (appStr.length() > 1000) {
+      return null;
+    }
+    return appStr;
+  }
+
+  private String getApps(List<Map<String, String>> tagList) {
+    if (CollectionUtils.isEmpty(tagList)) {
+      return null;
+    }
+    Set<String> apps = new HashSet<>();
+    for (Map<String, String> tag : tagList) {
+      String app = tag.get(this.alertNotifyHandler.getAppKey());
+      if (StringUtils.isNotBlank(app)) {
+        apps.add(app);
+      }
+    }
+    if (CollectionUtils.isEmpty(apps)) {
+      return null;
+    }
+    String appStr = "," + String.join(",", apps) + ",";
+    if (appStr.length() > 1000) {
+      return null;
+    }
+    return appStr;
   }
 
   private void genPqlAlertHistoryDetail(AlertNotify alertNotify, Long historyId) {
@@ -407,6 +460,7 @@ public class AlertSaveHistoryHandler implements AlertHandlerExecutor {
       String alarmContentJson = getAlertContentJsonList(notifyDataInfoList);
       alarmHistoryDetail.setAlarmContent(alarmContentJson);
       alarmHistoryDetail.setExtra(buildDetailExtra(alertNotify));
+      alarmHistoryDetail.setApp(getApps(tagList));
       alarmHistoryDetailDOMapper.insert(alarmHistoryDetail);
       LOGGER.info("AlarmSaveHistoryDetail {} {} {} ", alertNotify.getTraceId(), historyId,
           alertNotify.getUniqueId());
