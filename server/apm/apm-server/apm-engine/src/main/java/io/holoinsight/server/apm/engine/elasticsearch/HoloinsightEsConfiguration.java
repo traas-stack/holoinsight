@@ -6,6 +6,7 @@ package io.holoinsight.server.apm.engine.elasticsearch;
 import io.holoinsight.server.apm.engine.elasticsearch.installer.EsModelInstaller;
 import io.holoinsight.server.apm.engine.elasticsearch.storage.impl.EndpointEsStorage;
 import io.holoinsight.server.apm.engine.elasticsearch.storage.impl.EndpointRelationEsStorage;
+import io.holoinsight.server.apm.engine.elasticsearch.storage.impl.EventEsStorage;
 import io.holoinsight.server.apm.engine.elasticsearch.storage.impl.NetworkAddressMappingEsStorage;
 import io.holoinsight.server.apm.engine.elasticsearch.storage.impl.ServiceErrorEsStorage;
 import io.holoinsight.server.apm.engine.elasticsearch.storage.impl.ServiceInstanceEsStorage;
@@ -170,4 +171,9 @@ public class HoloinsightEsConfiguration {
     return new VirtualComponentEsStorage();
   }
 
+  @Bean("eventEsStorage")
+  @Primary
+  public EventEsStorage eventEsStorage() {
+    return new EventEsStorage();
+  }
 }
