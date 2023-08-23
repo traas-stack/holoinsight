@@ -388,6 +388,9 @@ public class AlertSaveHistoryHandler implements AlertHandlerExecutor {
         }
       }
     }
+    if (CollectionUtils.isEmpty(apps)) {
+      return null;
+    }
     String appStr = "," + String.join(",", apps) + ",";
     if (appStr.length() > 1000) {
       return null;
