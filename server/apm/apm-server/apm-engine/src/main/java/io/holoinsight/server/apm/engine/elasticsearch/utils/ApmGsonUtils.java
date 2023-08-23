@@ -41,6 +41,7 @@ public class ApmGsonUtils extends GsonUtils {
                   new RecordTypeAdapter(ServiceErrorDO.class))
               .registerTypeHierarchyAdapter(NetworkAddressMappingDO.class,
                   new RecordTypeAdapter(NetworkAddressMappingDO.class))
+              .registerTypeHierarchyAdapter(EventDO.class, new RecordTypeAdapter(EventDO.class))
               .create();
         }
       }

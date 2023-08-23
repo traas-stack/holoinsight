@@ -5,13 +5,14 @@ package io.holoinsight.server.apm.bootstrap;
 
 import io.holoinsight.server.apm.core.installer.ModelInstallManager;
 import io.holoinsight.server.apm.engine.elasticsearch.storage.impl.CommonBuilder;
-import io.holoinsight.server.apm.receiver.analysis.ServiceErrorAnalysis;
 import io.holoinsight.server.apm.receiver.analysis.RelationAnalysis;
+import io.holoinsight.server.apm.receiver.analysis.ServiceErrorAnalysis;
 import io.holoinsight.server.apm.receiver.analysis.SlowSqlAnalysis;
 import io.holoinsight.server.apm.receiver.common.PublicAttr;
 import io.holoinsight.server.apm.receiver.trace.SpanHandler;
 import io.holoinsight.server.apm.server.service.impl.EndpointRelationServiceImpl;
 import io.holoinsight.server.apm.server.service.impl.EndpointServiceImpl;
+import io.holoinsight.server.apm.server.service.impl.EventServiceImpl;
 import io.holoinsight.server.apm.server.service.impl.MetricServiceImpl;
 import io.holoinsight.server.apm.server.service.impl.NetworkAddressMappingServiceImpl;
 import io.holoinsight.server.apm.server.service.impl.ServiceErrorServiceImpl;
@@ -138,4 +139,8 @@ public class HoloinsightApmConfiguration {
     return new SlowSqlAnalysis();
   }
 
+  @Bean("eventService")
+  public EventServiceImpl eventService() {
+    return new EventServiceImpl();
+  }
 }
