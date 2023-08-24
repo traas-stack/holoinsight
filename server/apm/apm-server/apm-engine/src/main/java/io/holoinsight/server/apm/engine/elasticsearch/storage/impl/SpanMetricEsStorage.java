@@ -56,7 +56,7 @@ public class SpanMetricEsStorage extends PostCalMetricStorage {
 
   @Override
   protected MetricValues query(MetricDefine metricDefine, String tenant, Duration duration,
-      Map<String, Object> conditions, Collection<String> groups) throws IOException {
+                               Map<String, Object> conditions, Collection<String> groups) throws IOException {
     List<MetricValue> values = new ArrayList<>();
     MetricValues metricValues = new MetricValues(values);
     SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
@@ -64,10 +64,10 @@ public class SpanMetricEsStorage extends PostCalMetricStorage {
 
 
     boolQueryBuilder
-        .filter(new TermQueryBuilder(OtlpMappings.toOtlp(metricDefine.getIndex(), Const.TENANT),
-            tenant))
-        .filter(new RangeQueryBuilder(timeSeriesField()).gte(duration.getStart())
-            .lte(duration.getEnd()));
+            .filter(new TermQueryBuilder(OtlpMappings.toOtlp(metricDefine.getIndex(), Const.TENANT),
+                    tenant))
+            .filter(new RangeQueryBuilder(timeSeriesField()).gte(duration.getStart())
+                    .lte(duration.getEnd()));
 
     if (conditions != null) {
       conditions.forEach((conditionKey, conditionVal) -> {
@@ -80,25 +80,25 @@ public class SpanMetricEsStorage extends PostCalMetricStorage {
     }
 
     DateHistogramAggregationBuilder dateHistogramAggregationBuilder =
-        AggregationBuilders.dateHistogram(timeSeriesField()).field(timeSeriesField())
-            .fixedInterval(new DateHistogramInterval(duration.getStep())).minDocCount(1)
-            .extendedBounds(new ExtendedBounds(duration.getStart(), duration.getEnd()));
+            AggregationBuilders.dateHistogram(timeSeriesField()).field(timeSeriesField())
+                    .fixedInterval(new DateHistogramInterval(duration.getStep())).minDocCount(1)
+                    .extendedBounds(new ExtendedBounds(duration.getStart(), duration.getEnd()));
     AggregationBuilder parentAggregationBuilder = dateHistogramAggregationBuilder;
     if (groups != null) {
       for (String group : groups) {
         AggregationBuilder subAggregationBuilder =
-            AggregationBuilders.terms(group).size(AGG_TERM_MAX_SIZE).field(group);
+                AggregationBuilders.terms(group).size(AGG_TERM_MAX_SIZE).field(group);
         parentAggregationBuilder.subAggregation(subAggregationBuilder);
         parentAggregationBuilder = subAggregationBuilder;
       }
     }
     parentAggregationBuilder
-        .subAggregation(statBuilder(metricDefine.getField(), metricDefine.getFunction()));
+            .subAggregation(statBuilder(metricDefine.getField(), metricDefine.getFunction()));
 
     searchSourceBuilder.size(0).query(boolQueryBuilder)
-        .aggregation(dateHistogramAggregationBuilder);
+            .aggregation(dateHistogramAggregationBuilder);
     SearchRequest searchRequest =
-        new SearchRequest(new String[] {metricDefine.getIndex()}, searchSourceBuilder);
+            new SearchRequest(new String[] {metricDefine.getIndex()}, searchSourceBuilder);
     SearchResponse searchResponse = client().search(searchRequest, RequestOptions.DEFAULT);
     Aggregations aggregations = searchResponse.getAggregations();
     Aggregation aggregation = aggregations.get(timeSeriesField());
@@ -114,9 +114,10 @@ public class SpanMetricEsStorage extends PostCalMetricStorage {
         Map<Map<String, String>, Map<String, Double>> valuesMap = new HashMap<>();
         Aggregations timeAggregations = parsedBucket.getAggregations();
         Aggregation timeAggregation = timeAggregations.iterator().next();
-        backtrackExtract(metricDefine.getIndex(), timeAggregation, valuesMap, new HashMap<>());
+        backtrackExtract(metricDefine.getIndex(), timeAggregation, valuesMap, new HashMap<>(),
+                false);
         valuesMap.forEach((tags, value) -> resultMap.computeIfAbsent(tags, k -> new HashMap<>())
-            .put(time, value.values().iterator().next()));
+                .put(time, value.values().iterator().next()));
       }
     }
     resultMap.forEach((tags, timeVals) -> {
@@ -128,27 +129,27 @@ public class SpanMetricEsStorage extends PostCalMetricStorage {
 
   @Override
   public StatisticData billing(final String tenant, String serviceName, String serviceInstanceName,
-      String endpointName, List<String> traceIds, int minTraceDuration, int maxTraceDuration,
-      TraceState traceState, long start, long end, List<Tag> tags) throws Exception {
+                               String endpointName, List<String> traceIds, int minTraceDuration, int maxTraceDuration,
+                               TraceState traceState, long start, long end, List<Tag> tags) throws Exception {
 
     BoolQueryBuilder queryBuilder =
-        SpanEsStorage.buildQuery(tenant, serviceName, serviceInstanceName, endpointName, traceIds,
-            minTraceDuration, maxTraceDuration, traceState, start, end, tags, timeSeriesField());
+            SpanEsStorage.buildQuery(tenant, serviceName, serviceInstanceName, endpointName, traceIds,
+                    minTraceDuration, maxTraceDuration, traceState, start, end, tags, timeSeriesField());
 
     SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
     sourceBuilder.size(0);
     sourceBuilder.query(queryBuilder);
     sourceBuilder
-        .aggregation(AggregationBuilders.cardinality("service_count")
-            .field(SpanDO.resource(SpanDO.SERVICE_NAME)))
-        .aggregation(AggregationBuilders.cardinality("service_instance_count")
-            .field(SpanDO.resource(SpanDO.SERVICE_INSTANCE_NAME)))
-        .aggregation(AggregationBuilders.cardinality("endpoint_count").field(SpanDO.NAME))
-        .aggregation(AggregationBuilders.cardinality("trace_count").field(SpanDO.TRACE_ID))
-        .aggregation(AggregationBuilders.filter(SpanDO.TRACE_STATUS,
-            QueryBuilders.termQuery(SpanDO.TRACE_STATUS, Status.StatusCode.STATUS_CODE_ERROR_VALUE))
-            .subAggregation(AggregationBuilders.cardinality("error_count").field(SpanDO.TRACE_ID)))
-        .aggregation(AggregationBuilders.avg("avg_latency").field(SpanDO.LATENCY));
+            .aggregation(AggregationBuilders.cardinality("service_count")
+                    .field(SpanDO.resource(SpanDO.SERVICE_NAME)))
+            .aggregation(AggregationBuilders.cardinality("service_instance_count")
+                    .field(SpanDO.resource(SpanDO.SERVICE_INSTANCE_NAME)))
+            .aggregation(AggregationBuilders.cardinality("endpoint_count").field(SpanDO.NAME))
+            .aggregation(AggregationBuilders.cardinality("trace_count").field(SpanDO.TRACE_ID))
+            .aggregation(AggregationBuilders.filter(SpanDO.TRACE_STATUS,
+                            QueryBuilders.termQuery(SpanDO.TRACE_STATUS, Status.StatusCode.STATUS_CODE_ERROR_VALUE))
+                    .subAggregation(AggregationBuilders.cardinality("error_count").field(SpanDO.TRACE_ID)))
+            .aggregation(AggregationBuilders.avg("avg_latency").field(SpanDO.LATENCY));
     sourceBuilder.trackTotalHits(true);
 
     SearchRequest searchRequest = new SearchRequest(SpanDO.INDEX_NAME);
@@ -157,59 +158,54 @@ public class SpanMetricEsStorage extends PostCalMetricStorage {
 
     Map<Map<String, String>, Map<String, Double>> valuesMap = new HashMap<>();
     backtrackExtract(SpanDO.INDEX_NAME, response.getAggregations().iterator().next(), valuesMap,
-        new HashMap<>());
+            new HashMap<>(), true);
 
     Map.Entry<Map<String, String>, Map<String, Double>> tagsValue =
-        valuesMap.entrySet().iterator().next();
+            valuesMap.entrySet().iterator().next();
     Map<String, Double> values = new TreeMap<>(tagsValue.getValue());
-    values.put("span_count", (double) response.getHits().getTotalHits().value);
     return new StatisticData(tagsValue.getKey(), values);
 
   }
 
   public StatisticDataList statistic(long startTime, long endTime, List<String> groups,
-      List<AggregationBuilder> aggregations) throws IOException {
+                                     List<AggregationBuilder> aggregations) throws IOException {
 
     Assert.notEmpty(groups, "statistic groups must be specified");
 
     List<StatisticData> result = new ArrayList<>();
 
     BoolQueryBuilder queryBuilder = QueryBuilders.boolQuery()
-        .must(QueryBuilders.rangeQuery(timeSeriesField()).gte(startTime).lte(endTime));
+            .must(QueryBuilders.rangeQuery(timeSeriesField()).gte(startTime).lte(endTime));
 
-    TermsAggregationBuilder aggregationBuilder = null;
-    for (String group : groups) {
-      if (aggregationBuilder == null) {
-        aggregationBuilder = AggregationBuilders.terms(group).field(group);
-      } else {
-        aggregationBuilder =
-            aggregationBuilder.subAggregation(AggregationBuilders.terms(group).field(group));
-      }
+    TermsAggregationBuilder aggregationBuilder =
+            AggregationBuilders.terms(groups.get(0)).field(groups.get(0)).size(10000);
+    TermsAggregationBuilder parentAggregationBuilder = aggregationBuilder;
+    for (int i = 1; i < groups.size(); i++) {
+      String group = groups.get(i);
+      TermsAggregationBuilder subAggregationBuilder =
+              AggregationBuilders.terms(group).field(group).size(10000);
+      parentAggregationBuilder.subAggregation(subAggregationBuilder);
+      parentAggregationBuilder = subAggregationBuilder;
     }
-    aggregationBuilder =
-        aggregationBuilder
+    parentAggregationBuilder
             .subAggregation(AggregationBuilders.cardinality("service_count")
-                .field(SpanDO.resource(SpanDO.SERVICE_NAME)))
+                    .field(SpanDO.resource(SpanDO.SERVICE_NAME)))
             .subAggregation(AggregationBuilders.cardinality("service_instance_count")
-                .field(SpanDO.resource(SpanDO.SERVICE_INSTANCE_NAME)))
+                    .field(SpanDO.resource(SpanDO.SERVICE_INSTANCE_NAME)))
             .subAggregation(AggregationBuilders.cardinality("endpoint_count").field(SpanDO.NAME))
             .subAggregation(AggregationBuilders.cardinality("trace_count").field(SpanDO.TRACE_ID))
-            .subAggregation(
-                AggregationBuilders
-                    .filter(SpanDO.TRACE_STATUS,
-                        QueryBuilders.termQuery(SpanDO.TRACE_STATUS,
-                            Status.StatusCode.STATUS_CODE_ERROR_VALUE))
-                    .subAggregation(
-                        AggregationBuilders.cardinality("error_count").field(SpanDO.TRACE_ID)))
+            .subAggregation(AggregationBuilders.filter(SpanDO.TRACE_STATUS,
+                            QueryBuilders.termQuery(SpanDO.TRACE_STATUS, Status.StatusCode.STATUS_CODE_ERROR_VALUE))
+                    .subAggregation(AggregationBuilders.cardinality("error_count").field(SpanDO.TRACE_ID)))
             .subAggregation(AggregationBuilders.avg("avg_latency").field(SpanDO.LATENCY));
 
     if (aggregations != null) {
       for (AggregationBuilder subAggregation : aggregations) {
-        aggregationBuilder = aggregationBuilder.subAggregation(subAggregation);
+        parentAggregationBuilder.subAggregation(subAggregation);
       }
     }
-    aggregationBuilder = aggregationBuilder.executionHint("map")
-        .collectMode(Aggregator.SubAggCollectionMode.BREADTH_FIRST).size(1000);
+    aggregationBuilder.executionHint("map")
+            .collectMode(Aggregator.SubAggCollectionMode.BREADTH_FIRST).size(1000);
 
     SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
     sourceBuilder.size(0);
@@ -223,12 +219,11 @@ public class SpanMetricEsStorage extends PostCalMetricStorage {
 
     Map<Map<String, String>, Map<String, Double>> valuesMap = new HashMap<>();
     backtrackExtract(SpanDO.INDEX_NAME, response.getAggregations().iterator().next(), valuesMap,
-        new HashMap<>());
+            new HashMap<>(), true);
 
     valuesMap.forEach((tags, vals) -> {
 
       Map<String, Double> values = new TreeMap<>(vals);
-      values.put("span_count", (double) response.getHits().getTotalHits().value);
 
       StatisticData statisticData = new StatisticData();
       statisticData.setResources(tags);
@@ -262,10 +257,11 @@ public class SpanMetricEsStorage extends PostCalMetricStorage {
   }
 
   private void backtrackExtract(String index, Aggregation aggregation,
-      Map<Map<String, String>, Map<String, Double>> tagsValues, Map<String, String> tags) {
+                                Map<Map<String, String>, Map<String, Double>> tagsValues, Map<String, String> tags,
+                                boolean includeDocCount) {
     if (aggregation instanceof NumericMetricsAggregation.SingleValue) {
       NumericMetricsAggregation.SingleValue singleValue =
-          (NumericMetricsAggregation.SingleValue) aggregation;
+              (NumericMetricsAggregation.SingleValue) aggregation;
       double value = singleValue.value();
       Map<String, String> newTags = new HashMap<>(tags);
       tagsValues.computeIfAbsent(newTags, k -> new HashMap<>()).put(singleValue.getName(), value);
@@ -278,13 +274,13 @@ public class SpanMetricEsStorage extends PostCalMetricStorage {
         Map<String, String> newTags = new HashMap<>(tags);
         newTags.put("percent", String.valueOf(percent));
         tagsValues.computeIfAbsent(newTags, k -> new HashMap<>()).put(parsedPercentiles.getName(),
-            value);
+                value);
       }
       return;
     } else if (aggregation instanceof Filter) {
       Filter filter = (Filter) aggregation;
       for (Aggregation subAggregation : filter.getAggregations()) {
-        backtrackExtract(index, subAggregation, tagsValues, tags);
+        backtrackExtract(index, subAggregation, tagsValues, tags, includeDocCount);
       }
       return;
     }
@@ -296,15 +292,21 @@ public class SpanMetricEsStorage extends PostCalMetricStorage {
         for (Terms.Bucket bucket : buckets) {
           String tagV = bucket.getKeyAsString();
           tags.put(OtlpMappings.fromOtlp(index, tagK), tagV);
+          boolean docCountAdded = false;
           for (Aggregation subAggregation : bucket.getAggregations()) {
-            backtrackExtract(index, subAggregation, tagsValues, tags);
+            if (includeDocCount && !(subAggregation instanceof ParsedTerms) && !docCountAdded) {
+              tagsValues.computeIfAbsent(new HashMap<>(tags), k -> new HashMap<>())
+                      .put("span_count", (double) bucket.getDocCount());
+              docCountAdded = true;
+            }
+            backtrackExtract(index, subAggregation, tagsValues, tags, includeDocCount);
           }
           tags.remove(tagK);
         }
       }
     } else {
       throw new UnsupportedOperationException(
-          "unsupported aggregation type: " + aggregation.getClass().getName());
+              "unsupported aggregation type: " + aggregation.getClass().getName());
     }
   }
 }
