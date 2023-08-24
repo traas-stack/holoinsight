@@ -4,6 +4,7 @@
 package io.holoinsight.server.home.biz.service.impl;
 
 import io.holoinsight.server.apm.common.model.specification.sw.Tag;
+import io.holoinsight.server.common.dao.entity.MetricInfo;
 import io.holoinsight.server.common.dao.entity.dto.TenantOpsStorage;
 import io.holoinsight.server.home.biz.common.GaeaConvertUtil;
 import io.holoinsight.server.home.biz.plugin.config.MetaLabel;
@@ -49,6 +50,11 @@ public class DefaultTenantInitServiceImpl implements TenantInitService {
 
   @Override
   public String getTsdbTenant(String tenant) {
+    return getTsdbTenant(tenant, null);
+  }
+
+  @Override
+  public String getTsdbTenant(String tenant, MetricInfo metricInfo) {
     return tenant;
   }
 

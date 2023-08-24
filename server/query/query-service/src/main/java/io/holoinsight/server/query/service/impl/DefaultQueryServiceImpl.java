@@ -170,6 +170,9 @@ public class DefaultQueryServiceImpl implements QueryService {
           QueryParam queryParam = new QueryParam();
           queryParam.setMetric(ds.getMetric());
           queryParam.setTenant(request.getTenant());
+          if (StringUtils.isNotEmpty(ds.getQl())) {
+            queryParam.setQl(ds.getQl());
+          }
           Result result = metricStorage.querySchema(queryParam);
           Map<String, String> tags = result.getTags();
           keys.put(ds.getMetric(), tags.keySet());
