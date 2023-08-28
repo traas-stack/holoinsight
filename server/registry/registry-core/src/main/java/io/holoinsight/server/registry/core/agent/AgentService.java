@@ -43,7 +43,7 @@ import io.holoinsight.server.meta.common.model.QueryExample;
 import io.holoinsight.server.meta.facade.model.MetaType;
 import io.holoinsight.server.meta.facade.service.AgentHeartBeatService;
 import io.holoinsight.server.meta.facade.service.DataClientService;
-import io.holoinsight.server.registry.core.utils.EventBusHolder;
+import io.holoinsight.server.common.event.EventBusHolder;
 import io.holoinsight.server.common.MetricsUtils;
 import io.holoinsight.server.registry.grpc.agent.AgentK8sInfo;
 import io.holoinsight.server.registry.grpc.agent.RegisterAgentRequest;
