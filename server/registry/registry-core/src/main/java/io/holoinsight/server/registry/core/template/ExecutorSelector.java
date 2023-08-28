@@ -3,12 +3,11 @@
  */
 package io.holoinsight.server.registry.core.template;
 
+import io.holoinsight.server.registry.core.utils.Dict;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-
-import io.holoinsight.server.registry.core.utils.Dict;
 
 /**
  * <p>
@@ -57,9 +56,7 @@ public class ExecutorSelector {
 
   @Data
   public static class Fixed {
-    // 固定到一台上
-    // 如何引用一台?
-    // 可以用dim表达式, 用户必须自己保证只有一台
+    private String agentId;
   }
 
   @Data

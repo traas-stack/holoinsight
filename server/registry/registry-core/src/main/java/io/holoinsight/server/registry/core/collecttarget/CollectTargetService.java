@@ -96,8 +96,7 @@ public class CollectTargetService {
 
         return (String) inner.get("agentId");
       case ExecutorSelector.FIXED:
-        // 暂未实现
-        throw new IllegalArgumentException("unsupported ExecutorSelector " + es.getType());
+        return es.getFixed().getAgentId();
       case ExecutorSelector.DIM:
         throw new IllegalStateException("");
       case ExecutorSelector.CENTRAL:

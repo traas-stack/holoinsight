@@ -23,11 +23,11 @@ while getopts 'q' OPT; do
 done
 
 mvn_goals="clean package"
-if [ -n "$flag_quick" ] || [ -n "$HOLOINSIGHT_DEV" ]; then
+if [ -n "$flag_quick" ]; then
   mvn_goals="package"
 fi
 
-rm $project_root/server/all-in-one/all-in-one-bootstrap/target/holoinsight-server.jar || true
+rm $project_root/server/all-in-one/all-in-one-bootstrap/target/holoinsight-server.jar >/dev/null 2>&1 || true
 
 mvn -f $project_root/server/server-parent/pom.xml \
   $mvn_goals \
