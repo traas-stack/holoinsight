@@ -1,7 +1,7 @@
 /*
  * Copyright 2022 Holoinsight Project Authors. Licensed under Apache-2.0.
  */
-package io.holoinsight.server.gateway.core.trace.config;
+package io.holoinsight.server.common.trace;
 
 import io.holoinsight.server.common.Const;
 import lombok.Getter;

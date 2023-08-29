@@ -47,6 +47,7 @@ public class Const {
 
   // slow sql latency threshold
   public static final long SLOW_SQL_THRESHOLD = 300;
+  public static final String SLOW_SQL_THRESHOLD_CONFIG = "holoinsight.slow.sql.threshold";
 
   public static final String SOURCE = "source";
   public static final String DEST = "dest";
