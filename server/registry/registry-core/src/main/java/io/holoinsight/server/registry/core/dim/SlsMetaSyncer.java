@@ -30,12 +30,16 @@ import com.google.common.eventbus.Subscribe;
 import com.google.common.hash.Hasher;
 import com.google.common.hash.Hashing;
 
+import io.holoinsight.server.common.NetUtils;
 import io.holoinsight.server.common.event.EventBusHolder;
 import io.holoinsight.server.common.event.ModuleInitEvent;
 import io.holoinsight.server.common.threadpool.CommonThreadPools;
 import io.holoinsight.server.meta.common.model.QueryExample;
 import io.holoinsight.server.meta.common.util.ConstModel;
 import io.holoinsight.server.meta.facade.service.DataClientService;
+import io.holoinsight.server.registry.core.master.MasterJson;
+import io.holoinsight.server.registry.core.master.MasterListener;
+import io.holoinsight.server.registry.core.master.MasterService;
 import io.holoinsight.server.registry.core.template.CollectRange;
 import io.holoinsight.server.registry.core.template.CollectTemplate;
 import io.holoinsight.server.registry.core.template.TemplateStorage;
@@ -60,6 +64,9 @@ public class SlsMetaSyncer implements InitializingBean, DisposableBean {
   private TemplateStorage templateStorage;
   @Autowired
   private SlsConfig slsConfig;
+  @Autowired
+  private MasterService masterService;
+  private MasterService.RegisterRecord registerRecord;
 
   @Override
   public void afterPropertiesSet() throws Exception {
@@ -69,13 +76,27 @@ public class SlsMetaSyncer implements InitializingBean, DisposableBean {
     clientConfig.setSocketTimeout(Consts.HTTP_SEND_TIME_OUT);
     serviceClient = new DefaultServiceClient(clientConfig);
 
+    registerRecord = masterService.register("registry", "SlsMetaSyncer", NetUtils.getLocalIp(), "",
+        new MasterListener() {
+          @Override
+          public void onChange(MasterJson oldMj, MasterJson newMj) {
+
+          }
+
+          @Override
+          public void onEnter(MasterJson mj) {}
+
+          @Override
+          public void onLeave(MasterJson mj) {}
+        });
+
     EventBusHolder.INSTANCE.register(this);
   }
 
   @Subscribe
   public void onEvent(ModuleInitEvent event) {
     if ("registry".equals(event.getSource())) {
-      commonThreadPools.getIo().execute(() -> syncOnce());
+      commonThreadPools.getIo().execute(this::syncOnce);
     }
   }
 
@@ -88,19 +109,20 @@ public class SlsMetaSyncer implements InitializingBean, DisposableBean {
   private void syncOnce() {
     lock.lock();
     try {
-      long begin = System.currentTimeMillis();
-      try {
-        syncOnce0();
-        long cost = System.currentTimeMillis() - begin;
-        log.info("[sls] [meta] sync once cost=[{}]", cost);
-      } catch (Exception e) {
-        log.info("[sls] [meta] sync once, error", e);
+      if (registerRecord.isMaster()) {
+        long begin = System.currentTimeMillis();
+        try {
+          syncOnce0();
+          long cost = System.currentTimeMillis() - begin;
+          log.info("[sls] [meta] sync once cost=[{}]", cost);
+        } catch (Exception e) {
+          log.info("[sls] [meta] sync once, error", e);
+        }
       }
 
       try {
-        commonThreadPools.getScheduler().schedule(() -> {
-          commonThreadPools.getIo().execute(() -> syncOnce());
-        }, 1, TimeUnit.MINUTES);
+        commonThreadPools.getScheduler().schedule(this::syncOnce,
+            slsConfig.getBasic().getSyncInterval(), TimeUnit.SECONDS);
       } catch (Exception e) {
         log.error("[sls] [meta] scheduler error", e);
       }
