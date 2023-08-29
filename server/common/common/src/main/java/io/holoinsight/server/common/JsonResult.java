@@ -39,8 +39,8 @@ public class JsonResult<T> implements Serializable {
    * createFailResult.
    * </p>
    */
-  public static JsonResult<Object> createFailResult(String message) {
-    JsonResult<Object> result = new JsonResult<>();
+  public static <T> JsonResult<T> createFailResult(String message) {
+    JsonResult<T> result = new JsonResult<>();
     result.setSuccess(false);
     result.setMessage(message);
     result.setRequestId(AESEncrypt.encrypt(AddressUtil.getLocalHostIPV4()));
