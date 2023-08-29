@@ -41,6 +41,8 @@ public class IntegrationPluginDTO {
 
   public String json;
 
+  public Map<String, Object> config;
+
   public Boolean status;
 
   public String creator;

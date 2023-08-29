@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import com.google.gson.reflect.TypeToken;
 import io.holoinsight.server.common.J;
@@ -250,7 +251,7 @@ public class TenantIntegrationGeneratedTask extends AbstractMonitorTask {
 
             generateds.add(integrationGeneratedService.generated(ops.getTenant(),
                 integrationPluginDTO.getWorkspace(), app, integrationPlugin.name,
-                integrationPluginDTO.getProduct(), new HashMap<>()));
+                integrationPluginDTO.getProduct(), J.toMap(integrationPluginDTO.json)));
 
             appItemSets.add(uk);
           }

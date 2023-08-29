@@ -89,6 +89,7 @@ public class IntegrationGeneratedServiceImpl
     if (StringUtil.isNotBlank(workspace)) {
       map.put("workspace", workspace);
     }
+    map.put("deleted", 0);
     map.put("name", name);
     return integrationGeneratedConverter.dosToDTOs(listByMap(map));
   }

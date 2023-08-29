@@ -12,6 +12,7 @@ import io.holoinsight.server.home.common.util.EventBusHolder;
 import io.holoinsight.server.home.dal.converter.IntegrationPluginConverter;
 import io.holoinsight.server.home.dal.mapper.IntegrationPluginMapper;
 import io.holoinsight.server.home.dal.model.IntegrationPlugin;
+import io.holoinsight.server.home.dal.model.IntegrationProduct;
 import io.holoinsight.server.home.dal.model.dto.IntegrationPluginDTO;
 import io.holoinsight.server.home.facade.page.MonitorPageRequest;
 import io.holoinsight.server.home.facade.page.MonitorPageResult;
@@ -280,5 +281,19 @@ public class IntegrationPluginServiceImpl extends
     }
     List<IntegrationPlugin> customPlugins = baseMapper.selectList(wrapper);
     return integrationPluginConverter.dosToDTOs(customPlugins);
+  }
+
+  @Override
+  public List<IntegrationPluginDTO> queryByRows(String tenant, String workspace) {
+    QueryWrapper<IntegrationPlugin> queryWrapper = new QueryWrapper<>();
+    if (StringUtils.isNotBlank(tenant)) {
+      queryWrapper.eq("tenant", tenant);
+    }
+
+    if (StringUtils.isNotBlank(workspace)) {
+      queryWrapper.eq("workspace", workspace);
+    }
+    queryWrapper.select("id", "name", "product", "type", "config", "json", "version");
+    return integrationPluginConverter.dosToDTOs(baseMapper.selectList(queryWrapper));
   }
 }

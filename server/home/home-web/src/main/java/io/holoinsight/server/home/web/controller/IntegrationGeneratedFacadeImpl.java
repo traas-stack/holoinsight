@@ -6,22 +6,41 @@ package io.holoinsight.server.home.web.controller;
 
 import io.holoinsight.server.common.J;
 import io.holoinsight.server.common.JsonResult;
+import io.holoinsight.server.home.biz.plugin.PluginRepository;
+import io.holoinsight.server.home.biz.plugin.core.AbstractIntegrationPlugin;
+import io.holoinsight.server.home.biz.plugin.model.Plugin;
+import io.holoinsight.server.home.biz.plugin.model.PluginType;
 import io.holoinsight.server.home.biz.service.IntegrationGeneratedService;
+import io.holoinsight.server.home.biz.service.IntegrationPluginService;
+import io.holoinsight.server.home.biz.service.IntegrationProductService;
 import io.holoinsight.server.home.biz.service.UserOpLogService;
 import io.holoinsight.server.home.common.util.MonitorException;
 import io.holoinsight.server.home.common.util.scope.*;
 import io.holoinsight.server.home.dal.model.IntegrationGenerated;
 import io.holoinsight.server.home.dal.model.OpType;
+import io.holoinsight.server.home.dal.model.dto.GaeaCollectConfigDTO.GaeaCollectRange;
+import io.holoinsight.server.home.dal.model.dto.IntegrationFormDTO;
 import io.holoinsight.server.home.dal.model.dto.IntegrationGeneratedDTO;
+import io.holoinsight.server.home.dal.model.dto.IntegrationPluginDTO;
+import io.holoinsight.server.home.dal.model.dto.IntegrationProductDTO;
 import io.holoinsight.server.home.web.common.ManageCallback;
 import io.holoinsight.server.home.web.common.ParaCheckUtil;
 import io.holoinsight.server.home.web.interceptor.MonitorScopeAuth;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * <p>
@@ -37,6 +56,15 @@ public class IntegrationGeneratedFacadeImpl extends BaseFacade {
 
   @Autowired
   private IntegrationGeneratedService integrationGeneratedService;
+
+  @Autowired
+  private IntegrationPluginService integrationPluginService;
+
+  @Autowired
+  private IntegrationProductService integrationProductService;
+
+  @Autowired
+  private PluginRepository pluginRepository;
 
   @Autowired
   private UserOpLogService userOpLogService;
@@ -129,8 +157,9 @@ public class IntegrationGeneratedFacadeImpl extends BaseFacade {
   @GetMapping("/query/{name}")
   @ResponseBody
   @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.EDIT)
-  public JsonResult<List<IntegrationGeneratedDTO>> queryByName(@PathVariable("name") String name) {
-    final JsonResult<List<IntegrationGeneratedDTO>> result = new JsonResult<>();
+  public JsonResult<List<IntegrationAppProductModel>> queryByName(
+      @PathVariable("name") String name) {
+    final JsonResult<List<IntegrationAppProductModel>> result = new JsonResult<>();
     facadeTemplate.manage(result, new ManageCallback() {
       @Override
       public void checkParameter() {
@@ -139,14 +168,118 @@ public class IntegrationGeneratedFacadeImpl extends BaseFacade {
 
       @Override
       public void doManage() {
+        List<IntegrationAppProductModel> integrationAppProductModels = new ArrayList<>();
+
+        List<IntegrationProductDTO> integrationProductDTOS =
+            integrationProductService.queryByRows();
+        if (CollectionUtils.isEmpty(integrationProductDTOS)) {
+          JsonResult.createSuccessResult(result, integrationAppProductModels);
+          return;
+        }
+
         MonitorScope ms = RequestContext.getContext().ms;
         List<IntegrationGeneratedDTO> integrationGeneratedDTOS =
             integrationGeneratedService.queryByName(ms.getTenant(), ms.getWorkspace(), name);
-        JsonResult.createSuccessResult(result, integrationGeneratedDTOS);
+
+        Map<String, List<IntegrationGeneratedDTO>> listMap = new HashMap<>();
+        if (!CollectionUtils.isEmpty(integrationGeneratedDTOS)) {
+          integrationGeneratedDTOS.forEach(integrationGeneratedDTO -> {
+            if (!listMap.containsKey(integrationGeneratedDTO.product)) {
+              listMap.put(integrationGeneratedDTO.product, new ArrayList<>());
+            }
+            listMap.get(integrationGeneratedDTO.product).add(integrationGeneratedDTO);
+          });
+        }
+        Map<String, IntegrationPluginDTO> pluginMap = new HashMap<>();
+        List<IntegrationPluginDTO> integrationPluginDTOS =
+            integrationPluginService.queryByRows(ms.getTenant(), ms.getWorkspace());
+        if (!CollectionUtils.isEmpty(integrationPluginDTOS)) {
+          integrationPluginDTOS.forEach(pluginDTO -> {
+            pluginMap.put(pluginDTO.product, pluginDTO);
+          });
+        }
+
+        for (IntegrationProductDTO integrationProductDTO : integrationProductDTOS) {
+          List<IntegrationAppModel> appModels = new ArrayList<>();
+          Set<String> itemMap = new HashSet<>();
+          if (listMap.containsKey(integrationProductDTO.getName())) {
+            listMap.get(integrationProductDTO.getName()).forEach(generatedDTO -> {
+              itemMap.add(generatedDTO.product + "_" + generatedDTO.item);
+              appModels.add(new IntegrationAppModel(generatedDTO.id, generatedDTO.item, "ONLINE",
+                  generatedDTO.custom, generatedDTO.config));
+            });
+          }
+
+          if (pluginMap.containsKey(integrationProductDTO.getName())) {
+            IntegrationPluginDTO integrationPluginDTO =
+                pluginMap.get(integrationProductDTO.getName());
+            Plugin plugin = pluginRepository.getTemplate(integrationPluginDTO.type,
+                integrationPluginDTO.version);
+            if (null == plugin || plugin.getPluginType().equals(PluginType.hosting)) {
+              continue;
+            }
+
+            AbstractIntegrationPlugin abstractIntegrationPlugin =
+                (AbstractIntegrationPlugin) plugin;
+            List<AbstractIntegrationPlugin> abstractIntegrationPlugins =
+                abstractIntegrationPlugin.genPluginList(integrationPluginDTO);
+            if (CollectionUtils.isEmpty(abstractIntegrationPlugins))
+              continue;
+
+            for (AbstractIntegrationPlugin integrationPlugin : abstractIntegrationPlugins) {
+              GaeaCollectRange gaeaCollectRange = integrationPlugin.getGaeaCollectRange();
+
+              if (gaeaCollectRange.getType().equalsIgnoreCase("central")
+                  || null == gaeaCollectRange.getCloudmonitor()
+                  || StringUtils.isBlank(gaeaCollectRange.getCloudmonitor().table)) {
+                continue;
+              }
+
+              if (itemMap.contains(integrationPluginDTO.product + "_" + integrationPlugin.name)) {
+                continue;
+              }
+
+              appModels.add(new IntegrationAppModel(null, integrationPlugin.name, "OFFLINE", false,
+                  J.toMap(integrationPluginDTO.json)));
+            }
+          }
+          integrationAppProductModels.add(new IntegrationAppProductModel(
+              integrationProductDTO.getName(), name, integrationProductDTO.getForm(), appModels));
+        }
+
+        JsonResult.createSuccessResult(result, integrationAppProductModels);
       }
     });
 
     return result;
+  }
+
+  @Data
+  @AllArgsConstructor
+  public static class IntegrationAppProductModel {
+
+    private String product;
+
+    private String app;
+
+    private IntegrationFormDTO form;
+
+    private List<IntegrationAppModel> appModels;
+  }
+
+  @Data
+  @AllArgsConstructor
+  public static class IntegrationAppModel {
+
+    private Long id;
+
+    private String item;
+
+    private String status;
+
+    private Boolean custom;
+
+    private Map<String, Object> config;
   }
 
 }
