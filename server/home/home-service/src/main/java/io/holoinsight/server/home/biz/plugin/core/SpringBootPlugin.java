@@ -56,7 +56,7 @@ public class SpringBootPlugin extends AbstractLocalIntegrationPlugin<SpringBootP
           springBootConf.setBaseUrl(springBootConfig.getBaseUrl());
           springBootTask.setConf(springBootConf);
           springBootTask.setName(integrationPluginDTO.getProduct());
-          springBootTask.setType(integrationPluginDTO.getType());
+          springBootTask.setType(SpringBootTask.class.getName());
           springBootTask.setExecuteRule(getExecuteRule());
           springBootTask.setRefMetas(getRefMeta());
         }

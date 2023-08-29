@@ -47,7 +47,7 @@ public abstract class AbstractLocalIntegrationPlugin<T> extends AbstractIntegrat
   public CloudMonitorRange getGaeaCollectRange(IntegrationPluginDTO integrationPluginDTO,
       List<String> appList, MetaLabel metaLabel) {
     return tenantInitService.getCollectMonitorRange(
-        tenantInitService.getTenantServerTable(integrationPluginDTO.getTenant() + "_server"),
+        tenantInitService.getTenantServerTable(integrationPluginDTO.getTenant()),
         integrationPluginDTO.getTenant(), integrationPluginDTO.getWorkspace(), appList, metaLabel);
   }
 }
