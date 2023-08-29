@@ -8,6 +8,7 @@ import com.google.common.eventbus.AllowConcurrentEvents;
 import com.google.common.eventbus.Subscribe;
 import io.holoinsight.server.common.J;
 import io.holoinsight.server.home.biz.common.GaeaConvertUtil;
+import io.holoinsight.server.home.biz.plugin.config.BasePluginConfig;
 import io.holoinsight.server.home.biz.plugin.config.MetaLabel;
 import io.holoinsight.server.home.biz.plugin.config.PortCheckPluginConfig;
 import io.holoinsight.server.home.biz.service.TenantInitService;
@@ -136,7 +137,13 @@ public class IntegrationGeneratedUpdateListener {
   private String convertJvm(IntegrationGeneratedDTO generatedDTO) {
 
     Map<String, Object> map = new HashMap<>();
-    map.put("confs", new ArrayList<>());
+    List<BasePluginConfig> basePluginConfigs = new ArrayList<>();
+    BasePluginConfig basePluginConfig = new BasePluginConfig();
+    basePluginConfig.metaLabel = MetaLabel.partApp;
+    basePluginConfig.range = new ArrayList<>();
+    basePluginConfig.range.add(generatedDTO.getName());
+    basePluginConfigs.add(basePluginConfig);
+    map.put("confs", basePluginConfig);
     map.put("name", "JVM");
     map.put("type", "io.holoinsight.plugin.JvmPlugin");
     return J.toJson(map);

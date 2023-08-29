@@ -3,9 +3,10 @@
  */
 package io.holoinsight.server.home.biz.plugin.core;
 
+import io.holoinsight.server.home.biz.plugin.config.SpringBootConfig;
 import io.holoinsight.server.home.biz.plugin.model.PluginModel;
-import io.holoinsight.server.home.dal.model.dto.GaeaCollectConfigDTO.GaeaCollectRange;
 import io.holoinsight.server.home.dal.model.dto.IntegrationPluginDTO;
+import io.holoinsight.server.registry.model.integration.springboot.SpringBootConf;
 import io.holoinsight.server.registry.model.integration.springboot.SpringBootTask;
 import io.holoinsight.server.common.J;
 import com.google.gson.reflect.TypeToken;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  *
@@ -34,28 +36,45 @@ public class SpringBootPlugin extends AbstractLocalIntegrationPlugin<SpringBootP
   public List<SpringBootPlugin> genPluginList(IntegrationPluginDTO integrationPluginDTO) {
 
     List<SpringBootPlugin> springBootPlugins = new ArrayList<>();
-    SpringBootPlugin springBootPlugin = new SpringBootPlugin();
-    {
-      SpringBootTask springBootTask =
-          J.fromJson(integrationPluginDTO.json, new TypeToken<SpringBootTask>() {}.getType());
 
-      springBootTask.setExecuteRule(getExecuteRule());
+    String json = integrationPluginDTO.json;
 
-      springBootTask.setRefMetas(getRefMeta());
+    Map<String, Object> map = J.toMap(json);
+    if (!map.containsKey("confs"))
+      return springBootPlugins;
+    List<SpringBootConfig> springBootConfigs = J.fromJson(J.toJson(map.get("confs")),
+        new TypeToken<List<SpringBootConfig>>() {}.getType());
 
-      springBootPlugin.springBootTask = springBootTask;
-      springBootPlugin.name = integrationPluginDTO.product.toLowerCase();
-      springBootPlugin.gaeaTableName = integrationPluginDTO.name;
-      GaeaCollectRange gaeaCollectRange =
-          J.fromJson(J.toJson(integrationPluginDTO.collectRange), GaeaCollectRange.class);
-      springBootPlugin.collectRange = gaeaCollectRange.cloudmonitor;
-      springBootPlugin.collectPlugin = SpringBootTask.class.getName();
+    int i = 0;
+    for (SpringBootConfig springBootConfig : springBootConfigs) {
+      SpringBootPlugin springBootPlugin = new SpringBootPlugin();
+      {
+        SpringBootTask springBootTask = new SpringBootTask();
+        {
+          SpringBootConf springBootConf = new SpringBootConf();
+          springBootConf.setPort(Integer.parseInt(springBootConfig.getPort()));
+          springBootConf.setBaseUrl(springBootConfig.getBaseUrl());
+          springBootTask.setConf(springBootConf);
+          springBootTask.setName(integrationPluginDTO.getProduct());
+          springBootTask.setType(integrationPluginDTO.getType());
+          springBootTask.setExecuteRule(getExecuteRule());
+          springBootTask.setRefMetas(getRefMeta());
+        }
+        springBootPlugin.springBootTask = springBootTask;
+        springBootPlugin.tenant = integrationPluginDTO.tenant;
+        springBootPlugin.name = integrationPluginDTO.product.toLowerCase();
+        springBootPlugin.gaeaTableName = integrationPluginDTO.name + "_" + i++;
+
+        springBootPlugin.collectRange = getGaeaCollectRange(integrationPluginDTO,
+            springBootConfig.range, springBootConfig.metaLabel);
+
+        springBootPlugin.collectPlugin = SpringBootTask.class.getName();
+      }
+
+      springBootPlugins.add(springBootPlugin);
     }
 
-    springBootPlugins.add(springBootPlugin);
-
     return springBootPlugins;
-
   }
 
 }

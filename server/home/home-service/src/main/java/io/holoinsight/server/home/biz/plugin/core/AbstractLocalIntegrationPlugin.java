@@ -4,11 +4,15 @@
 package io.holoinsight.server.home.biz.plugin.core;
 
 import io.holoinsight.server.home.biz.common.GaeaConvertUtil;
+import io.holoinsight.server.home.biz.plugin.config.MetaLabel;
+import io.holoinsight.server.home.dal.model.dto.CloudMonitorRange;
 import io.holoinsight.server.home.dal.model.dto.GaeaCollectConfigDTO.GaeaCollectRange;
+import io.holoinsight.server.home.dal.model.dto.IntegrationPluginDTO;
 import io.holoinsight.server.registry.model.Elect;
 import io.holoinsight.server.registry.model.ExecuteRule;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -38,5 +42,12 @@ public abstract class AbstractLocalIntegrationPlugin<T> extends AbstractIntegrat
 
   public GaeaCollectRange getGaeaCollectRange() {
     return GaeaConvertUtil.convertCollectRange(this.collectRange);
+  }
+
+  public CloudMonitorRange getGaeaCollectRange(IntegrationPluginDTO integrationPluginDTO,
+      List<String> appList, MetaLabel metaLabel) {
+    return tenantInitService.getCollectMonitorRange(
+        tenantInitService.getTenantServerTable(integrationPluginDTO.getTenant() + "_server"),
+        integrationPluginDTO.getTenant(), integrationPluginDTO.getWorkspace(), appList, metaLabel);
   }
 }

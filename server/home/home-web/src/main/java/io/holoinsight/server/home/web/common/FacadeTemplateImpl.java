@@ -3,7 +3,6 @@
  */
 package io.holoinsight.server.home.web.common;
 
-import io.holoinsight.server.home.web.controller.model.open.GrafanaJsonResult;
 import io.holoinsight.server.common.JsonResult;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.time.StopWatch;
@@ -42,15 +41,5 @@ public class FacadeTemplateImpl implements FacadeTemplate {
       log.info(trace + ", clientResult=[" + result.isSuccess() + "], clientCost=["
           + stopWatch.getTime() + "]");
     }
-  }
-
-  @Override
-  @SuppressWarnings("unchecked")
-  public void manage(GrafanaJsonResult result, ManageCallback callback) {
-    // 检验参数
-    callback.checkParameter();
-    // 执行管理方法
-    callback.doManage();
-
   }
 }

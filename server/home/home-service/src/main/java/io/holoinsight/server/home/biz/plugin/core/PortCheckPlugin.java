@@ -88,22 +88,13 @@ public class PortCheckPlugin extends AbstractLocalIntegrationPlugin<PortCheckPlu
       {
         portCheckPlugin.tenant = integrationPluginDTO.tenant;
         portCheckPlugin.name = integrationPluginDTO.product.toLowerCase();
-        portCheckPlugin.metricName =
-            String.join("_", integrationPluginDTO.product.toLowerCase(), "tcp_ping");
         portCheckPlugin.gaeaTableName = integrationPluginDTO.name + "_" + i++;
-
         portCheckPlugin.collectRange =
-            tenantInitService.getCollectMonitorRange(
-                tenantInitService.getTenantServerTable(
-                    integrationPluginDTO.getTenant() + "_server"),
-                integrationPluginDTO.getTenant(), integrationPluginDTO.getWorkspace(), config.range,
-                config.getMetaLabel());
-
+            getGaeaCollectRange(integrationPluginDTO, config.range, config.metaLabel);
         portCheckPlugin.portCheckTask = portCheckTask;
         portCheckPlugin.collectPlugin = "dialcheck";
 
       }
-
 
       portCheckPlugins.add(portCheckPlugin);
     }

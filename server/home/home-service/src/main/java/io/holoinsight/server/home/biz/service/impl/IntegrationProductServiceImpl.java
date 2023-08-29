@@ -156,6 +156,7 @@ public class IntegrationProductServiceImpl extends
     if (StringUtil.isNotBlank(tenant)) {
       wrapper.eq("tenant", tenant);
     }
+    wrapper.eq("status", 1);
     wrapper.like("id", keyword).or().like("name", keyword);
     Page<IntegrationProduct> page = new Page<>(1, 20);
     page = page(page, wrapper);
@@ -167,6 +168,7 @@ public class IntegrationProductServiceImpl extends
   public List<IntegrationProductDTO> getListByNameLike(String name, String tenant) {
     QueryWrapper<IntegrationProduct> wrapper = new QueryWrapper<>();
     wrapper.select().like("name", name);
+    wrapper.eq("status", 1);
     List<IntegrationProduct> customPlugins = baseMapper.selectList(wrapper);
     return IntegrationProductConverter.dosToDTOs(customPlugins);
   }
@@ -174,13 +176,15 @@ public class IntegrationProductServiceImpl extends
   @Override
   public List<IntegrationProductDTO> queryByRows() {
     QueryWrapper<IntegrationProduct> queryWrapper = new QueryWrapper<>();
-    queryWrapper.select("id", "name", "type", "version");
+    queryWrapper.eq("status", 1);
+    queryWrapper.select("id", "name", "type", "version", "form", "configuration");
     return IntegrationProductConverter.dosToDTOs(baseMapper.selectList(queryWrapper));
   }
 
   @Override
   public List<IntegrationProductDTO> queryNames() {
     QueryWrapper<IntegrationProduct> queryWrapper = new QueryWrapper<>();
+    queryWrapper.eq("status", 1);
     queryWrapper.select("name", "profile");
     return IntegrationProductConverter.dosToDTOs(baseMapper.selectList(queryWrapper));
   }

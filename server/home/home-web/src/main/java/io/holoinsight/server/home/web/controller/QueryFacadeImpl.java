@@ -42,7 +42,6 @@ import io.holoinsight.server.home.web.controller.model.PqlParseRequest;
 import io.holoinsight.server.home.web.controller.model.PqlParseResult;
 import io.holoinsight.server.home.web.controller.model.PqlRangeQueryRequest;
 import io.holoinsight.server.home.web.controller.model.TagQueryRequest;
-import io.holoinsight.server.home.web.controller.model.open.GrafanaJsonResult;
 import io.holoinsight.server.home.web.interceptor.MonitorScopeAuth;
 import io.holoinsight.server.query.grpc.QueryProto;
 import io.holoinsight.server.query.grpc.QueryProto.Datasource;
@@ -368,9 +367,9 @@ public class QueryFacadeImpl extends BaseFacade {
   }
 
   @PostMapping(value = "/pql/range")
-  public GrafanaJsonResult<List<Result>> pqlRangeQuery(@RequestBody PqlRangeQueryRequest request) {
+  public JsonResult<List<Result>> pqlRangeQuery(@RequestBody PqlRangeQueryRequest request) {
 
-    final GrafanaJsonResult<List<Result>> result = new GrafanaJsonResult<>();
+    final JsonResult<List<Result>> result = new JsonResult<>();
 
     facadeTemplate.manage(result, new ManageCallback() {
       @Override
@@ -390,7 +389,7 @@ public class QueryFacadeImpl extends BaseFacade {
             .setTimeout(request.getTimeout()).setStart(request.getStart()).setEnd(request.getEnd())
             .setFillZero(request.getFillZero()).setStep(request.getStep()).build();
         QueryResponse response = queryClientService.pqlRangeQuery(rangeRequest);
-        GrafanaJsonResult.createSuccessResult(result, response.getResults());
+        JsonResult.createSuccessResult(result, response.getResults());
       }
     });
 
@@ -398,8 +397,8 @@ public class QueryFacadeImpl extends BaseFacade {
   }
 
   @PostMapping(value = "/pql/instant")
-  public GrafanaJsonResult<List<Result>> pqlInstanceQuery(@RequestBody PqlInstanceRequest request) {
-    final GrafanaJsonResult<List<Result>> result = new GrafanaJsonResult<>();
+  public JsonResult<List<Result>> pqlInstanceQuery(@RequestBody PqlInstanceRequest request) {
+    final JsonResult<List<Result>> result = new JsonResult<>();
     RequestContext.Context ctx = RequestContext.getContext();
 
     facadeTemplate.manage(result, new ManageCallback() {
@@ -420,7 +419,7 @@ public class QueryFacadeImpl extends BaseFacade {
             .setDelta(request.getDelta()).setTimeout(request.getTimeout())
             .setTime(request.getTime()).build();
         QueryResponse response = queryClientService.pqlInstantQuery(instantRequest);
-        GrafanaJsonResult.createSuccessResult(result, response.getResults());
+        JsonResult.createSuccessResult(result, response.getResults());
       }
     });
 

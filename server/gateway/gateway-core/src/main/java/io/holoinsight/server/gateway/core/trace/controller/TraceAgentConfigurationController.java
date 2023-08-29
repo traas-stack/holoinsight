@@ -29,7 +29,6 @@ import java.util.Map;
  *
  * @author sw1136562366
  */
-
 @RequestMapping({"/api/agent/configuration", "/internal/api/gateway/agent/configuration"})
 public class TraceAgentConfigurationController {
 

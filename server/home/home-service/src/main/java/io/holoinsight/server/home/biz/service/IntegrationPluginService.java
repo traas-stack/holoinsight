@@ -37,4 +37,6 @@ public interface IntegrationPluginService extends IService<IntegrationPlugin> {
 
   List<IntegrationPluginDTO> getListByNameLike(String name, String tenant, String workspace);
 
+  List<IntegrationPluginDTO> queryByRows(String tenant, String workspace);
+
 }
