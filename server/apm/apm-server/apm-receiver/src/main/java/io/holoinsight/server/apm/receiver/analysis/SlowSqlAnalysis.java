@@ -6,18 +6,24 @@ package io.holoinsight.server.apm.receiver.analysis;
 import io.holoinsight.server.apm.common.constants.Const;
 import io.holoinsight.server.apm.common.utils.TimeUtils;
 import io.holoinsight.server.apm.engine.model.SlowSqlDO;
+import io.holoinsight.server.common.trace.TraceAgentConfiguration;
+import io.holoinsight.server.common.trace.TraceAgentConfigurationScheduler;
 import io.opentelemetry.proto.common.v1.AnyValue;
 import io.opentelemetry.proto.trace.v1.Span;
 import io.opentelemetry.semconv.resource.attributes.ResourceAttributes;
 import io.opentelemetry.semconv.trace.attributes.SemanticAttributes;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class SlowSqlAnalysis {
+  @Autowired
+  private TraceAgentConfigurationScheduler agentConfigurationScheduler;
 
   public SlowSqlDO slowSqlDO() {
     return new SlowSqlDO();
@@ -30,11 +36,24 @@ public class SlowSqlAnalysis {
     AnyValue statement = spanAttrMap.get(SemanticAttributes.DB_STATEMENT.getKey());
     AnyValue peerName = spanAttrMap.get(SemanticAttributes.NET_PEER_NAME.getKey());
     AnyValue peerPort = spanAttrMap.get(SemanticAttributes.NET_PEER_PORT.getKey());
+    String tenant = resourceAttrMap.get(Const.TENANT).getStringValue();
+    String service = resourceAttrMap.get(ResourceAttributes.SERVICE_NAME.getKey()).getStringValue();
+
+    if (peerName == null || StringUtils.isEmpty(peerName.getStringValue()) || statement == null) {
+      return result;
+    }
 
     long latency = TimeUtils.unixNano2MS(span.getEndTimeUnixNano())
         - TimeUtils.unixNano2MS(span.getStartTimeUnixNano());
-    if (peerName == null || StringUtils.isEmpty(peerName.getStringValue()) || statement == null
-        || latency < Const.SLOW_SQL_THRESHOLD) {
+    long slowSqlThreshold = Const.SLOW_SQL_THRESHOLD;
+    // Get slow sql dynamic threshold from cache
+    TraceAgentConfiguration configuration =
+        agentConfigurationScheduler.getValue(tenant, service, getExtendInfo(spanAttrMap));
+    if (configuration != null) {
+      slowSqlThreshold = Long.parseLong(configuration.getConfiguration()
+          .getOrDefault(Const.SLOW_SQL_THRESHOLD_CONFIG, String.valueOf(slowSqlThreshold)));
+    }
+    if (latency < slowSqlThreshold) {
       return result;
     }
 
@@ -64,6 +83,16 @@ public class SlowSqlAnalysis {
     slowSqlDO
         .setStatement(spanAttrMap.get(SemanticAttributes.DB_STATEMENT.getKey()).getStringValue());
     return slowSqlDO;
+  }
+
+  public Map<String, String> getExtendInfo(Map<String, AnyValue> spanAttrMap) {
+    Map<String, String> extendInfo = new HashMap<>(spanAttrMap.size());
+    spanAttrMap.forEach((k, v) -> {
+      extendInfo.put(k, v.getStringValue());
+    });
+    extendInfo.put("type", "*");
+    extendInfo.put("language", "*");
+    return extendInfo;
   }
 
 }

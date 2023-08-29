@@ -12,11 +12,11 @@ import io.holoinsight.server.common.springboot.ConditionalOnFeature;
 import io.holoinsight.server.common.springboot.ConditionalOnRole;
 import io.holoinsight.server.common.springboot.HoloinsightProperties;
 import io.holoinsight.server.common.threadpool.ThreadPoolConfiguration;
+import io.holoinsight.server.common.trace.TraceAgentConfigurationScheduler;
 import io.holoinsight.server.extension.MetricStorage;
 import io.holoinsight.server.extension.NoopMetricStorage;
 import io.holoinsight.server.extension.ceresdbx.HoloinsightCeresdbxConfiguration;
 import io.holoinsight.server.gateway.core.grpc.GatewayProperties;
-import io.holoinsight.server.gateway.core.trace.controller.TraceAgentConfigurationController;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -46,13 +46,13 @@ public class HoloinsightGatewayConfiguration {
 
   /**
    * <p>
-   * agentConfigurationController.
+   * agentConfigurationScheduler.
    * </p>
    */
   @Bean
   @ConditionalOnFeature("trace")
-  public TraceAgentConfigurationController agentConfigurationController() {
-    return new TraceAgentConfigurationController();
+  public TraceAgentConfigurationScheduler agentConfigurationScheduler() {
+    return new TraceAgentConfigurationScheduler();
   }
 
 }
