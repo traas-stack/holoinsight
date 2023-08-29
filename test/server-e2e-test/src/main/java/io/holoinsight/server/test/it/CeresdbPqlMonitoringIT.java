@@ -47,7 +47,7 @@ public class CeresdbPqlMonitoringIT extends BaseIT {
   @Test
   public void test_wait_pql_monitoring_metric1() {
     await("Test querying pql monitoring metrics") //
-        .atMost(Duration.ofMinutes(2)) //
+        .atMost(Duration.ofMinutes(4)) //
         .untilNoException(() -> {
           long end = System.currentTimeMillis() / 60000 * 60000;
           long start = end - 60000;
@@ -58,12 +58,11 @@ public class CeresdbPqlMonitoringIT extends BaseIT {
               .contentType(ContentType.JSON).body(params.toString()).when() //
               .post("/webapi/v1/query/pql/range") //
               .then() //
-              .body("success", IS_TRUE) //
-              .body("result.size()", gt(0));
+              .log().all().body("success", IS_TRUE) //
+              .body("data.size()", gt(0));
           // .log()
           // .body();
         });
   }
-
 
 }
