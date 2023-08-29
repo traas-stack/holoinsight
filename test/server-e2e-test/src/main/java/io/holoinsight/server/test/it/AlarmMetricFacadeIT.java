@@ -3,6 +3,15 @@
  */
 package io.holoinsight.server.test.it;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Map;
+import java.util.function.Supplier;
+
+import org.apache.commons.lang3.RandomStringUtils;
+import org.junit.jupiter.api.Order;
+import org.junit.jupiter.api.Test;
+
 import cn.hutool.json.JSONObject;
 import io.holoinsight.server.common.J;
 import io.holoinsight.server.home.facade.AlarmRuleDTO;
@@ -18,14 +27,6 @@ import io.holoinsight.server.home.facade.trigger.DataSource;
 import io.holoinsight.server.home.facade.trigger.Filter;
 import io.holoinsight.server.home.facade.trigger.Trigger;
 import io.restassured.response.Response;
-import org.apache.commons.lang3.RandomStringUtils;
-import org.junit.jupiter.api.Order;
-import org.junit.jupiter.api.Test;
-
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Map;
-import java.util.function.Supplier;
 
 public class AlarmMetricFacadeIT extends BaseIT {
 
@@ -46,25 +47,26 @@ public class AlarmMetricFacadeIT extends BaseIT {
   @Order(1)
   @Test
   public void test_rule_create() {
-    name = RandomStringUtils.randomAlphabetic(10) + "_alarm_metric_test";
-    AlarmRuleDTO alarmRuleDTO = new AlarmRuleDTO();
-    alarmRuleDTO.setRuleName(name);
-    alarmRuleDTO.setSourceType("apm_holoinsight");
-    alarmRuleDTO.setAlarmLevel("5");
-    alarmRuleDTO.setRuleDescribe("测试告警规则");
-    alarmRuleDTO.setStatus((byte) 1);
-    alarmRuleDTO.setIsMerge((byte) 0);
-    alarmRuleDTO.setRecover((byte) 0);
-    alarmRuleDTO.setRuleType("rule");
-    alarmRuleDTO.setTimeFilter(buildTimeFilter());
-    alarmRuleDTO.setRule(buildRule());
+    await().untilNoException(() -> {
+      name = RandomStringUtils.randomAlphabetic(10) + "_alarm_metric_test";
+      AlarmRuleDTO alarmRuleDTO = new AlarmRuleDTO();
+      alarmRuleDTO.setRuleName(name);
+      alarmRuleDTO.setSourceType("apm_holoinsight");
+      alarmRuleDTO.setAlarmLevel("5");
+      alarmRuleDTO.setRuleDescribe("测试告警规则");
+      alarmRuleDTO.setStatus((byte) 1);
+      alarmRuleDTO.setIsMerge((byte) 0);
+      alarmRuleDTO.setRecover((byte) 0);
+      alarmRuleDTO.setRuleType("rule");
+      alarmRuleDTO.setTimeFilter(buildTimeFilter());
+      alarmRuleDTO.setRule(buildRule());
 
-    Response response = given() //
-        .body(new JSONObject(J.toMap(J.toJson(alarmRuleDTO)))) //
-        .when() //
-        .post("/webapi/alarmRule/create"); //
-    System.out.println(response);
-
+      Response response = given() //
+          .body(new JSONObject(J.toMap(J.toJson(alarmRuleDTO)))) //
+          .when() //
+          .post("/webapi/alarmRule/create"); //
+      System.out.println(response);
+    });
   }
 
   @Order(2)
