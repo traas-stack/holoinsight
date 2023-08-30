@@ -273,4 +273,16 @@ public class QueryGrpcService extends QueryServiceGrpc.QueryServiceImplBase {
           Status.INTERNAL.withCause(t).withDescription(t.getMessage()).asRuntimeException());
     }
   }
+
+  @Override
+  public void queryEvents(QueryProto.QueryEventRequest request,
+      StreamObserver<QueryProto.QueryEventResponse> responseObserver) {
+    try {
+      responseObserver.onNext(queryService.queryEvents(request));
+      responseObserver.onCompleted();
+    } catch (Throwable t) {
+      responseObserver.onError(
+          Status.INTERNAL.withCause(t).withDescription(t.getMessage()).asRuntimeException());
+    }
+  }
 }

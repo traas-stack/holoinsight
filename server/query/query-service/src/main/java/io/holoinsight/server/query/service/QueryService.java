@@ -67,4 +67,7 @@ public interface QueryService {
 
   QueryProto.QueryDetailResponse queryDetailData(QueryProto.QueryRequest request)
       throws QueryException;
+
+  QueryProto.QueryEventResponse queryEvents(QueryProto.QueryEventRequest request)
+      throws QueryException;
 }

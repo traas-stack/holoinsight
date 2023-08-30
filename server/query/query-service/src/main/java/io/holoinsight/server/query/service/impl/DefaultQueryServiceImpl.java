@@ -10,6 +10,7 @@ import com.google.common.collect.Lists;
 import com.google.protobuf.MessageOrBuilder;
 import io.holoinsight.server.apm.common.model.query.Duration;
 import io.holoinsight.server.apm.common.model.query.Endpoint;
+import io.holoinsight.server.apm.common.model.query.Event;
 import io.holoinsight.server.apm.common.model.query.MetricValue;
 import io.holoinsight.server.apm.common.model.query.MetricValues;
 import io.holoinsight.server.apm.common.model.query.Pagination;
@@ -21,6 +22,7 @@ import io.holoinsight.server.apm.common.model.query.QueryServiceInstanceRequest;
 import io.holoinsight.server.apm.common.model.query.QueryServiceRequest;
 import io.holoinsight.server.apm.common.model.query.QueryTopologyRequest;
 import io.holoinsight.server.apm.common.model.query.QueryTraceRequest;
+import io.holoinsight.server.apm.common.model.query.Request;
 import io.holoinsight.server.apm.common.model.query.Service;
 import io.holoinsight.server.apm.common.model.query.ServiceInstance;
 import io.holoinsight.server.apm.common.model.query.SlowSql;
@@ -769,6 +771,34 @@ public class DefaultQueryServiceImpl implements QueryService {
           rsps.stream().flatMap(rsp -> rsp.getResultsList().stream()).collect(Collectors.toList());
       return QueryProto.QueryDetailResponse.newBuilder().addAllResults(results).build();
     }, "queryDetailData", request);
+  }
+
+  @Override
+  public QueryProto.QueryEventResponse queryEvents(QueryProto.QueryEventRequest request)
+      throws QueryException {
+    return wrap(() -> {
+      ApmAPI apmAPI = apmClient.getClient(request.getTenant());
+
+      Request queryRequest = new Request();
+      queryRequest.setTenant(request.getTenant());
+      queryRequest.setStartTime(request.getStart());
+      queryRequest.setEndTime(request.getEnd());
+      if (request.getTermParamsMap() != null) {
+        queryRequest.setTermParams(request.getTermParamsMap());
+      }
+
+      Call<List<Event>> events = apmAPI.queryEvents(queryRequest);
+      Response<List<Event>> listResponse = events.execute();
+      if (!listResponse.isSuccessful()) {
+        throw new QueryException(listResponse.errorBody().string());
+      }
+      QueryProto.QueryEventResponse.Builder builder = QueryProto.QueryEventResponse.newBuilder();
+      listResponse.body().forEach(data -> {
+        builder.addEvent(ApmConvertor.convertEvent(data));
+      });
+
+      return builder.build();
+    }, "queryEvents", request);
   }
 
   private QueryProto.QueryResponse simpleQuery(QueryProto.QueryRequest request, String tenant,

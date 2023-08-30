@@ -54935,6 +54935,3333 @@ public final class QueryProto {
 
   }
 
+  public interface QueryEventRequestOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:io.holoinsight.server.query.grpc.QueryEventRequest)
+      com.google.protobuf.MessageOrBuilder {
+
+    /**
+     * <code>string tenant = 1;</code>
+     * 
+     * @return The tenant.
+     */
+    java.lang.String getTenant();
+
+    /**
+     * <code>string tenant = 1;</code>
+     * 
+     * @return The bytes for tenant.
+     */
+    com.google.protobuf.ByteString getTenantBytes();
+
+    /**
+     * <code>int64 start = 2;</code>
+     * 
+     * @return The start.
+     */
+    long getStart();
+
+    /**
+     * <code>int64 end = 3;</code>
+     * 
+     * @return The end.
+     */
+    long getEnd();
+
+    /**
+     * <code>map&lt;string, string&gt; termParams = 4;</code>
+     */
+    int getTermParamsCount();
+
+    /**
+     * <code>map&lt;string, string&gt; termParams = 4;</code>
+     */
+    boolean containsTermParams(java.lang.String key);
+
+    /**
+     * Use {@link #getTermParamsMap()} instead.
+     */
+    @java.lang.Deprecated
+    java.util.Map<java.lang.String, java.lang.String> getTermParams();
+
+    /**
+     * <code>map&lt;string, string&gt; termParams = 4;</code>
+     */
+    java.util.Map<java.lang.String, java.lang.String> getTermParamsMap();
+
+    /**
+     * <code>map&lt;string, string&gt; termParams = 4;</code>
+     */
+
+    java.lang.String getTermParamsOrDefault(java.lang.String key, java.lang.String defaultValue);
+
+    /**
+     * <code>map&lt;string, string&gt; termParams = 4;</code>
+     */
+
+    java.lang.String getTermParamsOrThrow(java.lang.String key);
+  }
+  /**
+   * Protobuf type {@code io.holoinsight.server.query.grpc.QueryEventRequest}
+   */
+  public static final class QueryEventRequest extends com.google.protobuf.GeneratedMessageV3
+      implements
+      // @@protoc_insertion_point(message_implements:io.holoinsight.server.query.grpc.QueryEventRequest)
+      QueryEventRequestOrBuilder {
+    private static final long serialVersionUID = 0L;
+
+    // Use QueryEventRequest.newBuilder() to construct.
+    private QueryEventRequest(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+      super(builder);
+    }
+
+    private QueryEventRequest() {
+      tenant_ = "";
+    }
+
+    @java.lang.Override
+    @SuppressWarnings({"unused"})
+    protected java.lang.Object newInstance(UnusedPrivateParameter unused) {
+      return new QueryEventRequest();
+    }
+
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet getUnknownFields() {
+      return this.unknownFields;
+    }
+
+    private QueryEventRequest(com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      this();
+      if (extensionRegistry == null) {
+        throw new java.lang.NullPointerException();
+      }
+      int mutable_bitField0_ = 0;
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            case 10: {
+              java.lang.String s = input.readStringRequireUtf8();
+
+              tenant_ = s;
+              break;
+            }
+            case 16: {
+
+              start_ = input.readInt64();
+              break;
+            }
+            case 24: {
+
+              end_ = input.readInt64();
+              break;
+            }
+            case 34: {
+              if (!((mutable_bitField0_ & 0x00000001) != 0)) {
+                termParams_ = com.google.protobuf.MapField
+                    .newMapField(TermParamsDefaultEntryHolder.defaultEntry);
+                mutable_bitField0_ |= 0x00000001;
+              }
+              com.google.protobuf.MapEntry<java.lang.String, java.lang.String> termParams__ =
+                  input.readMessage(TermParamsDefaultEntryHolder.defaultEntry.getParserForType(),
+                      extensionRegistry);
+              termParams_.getMutableMap().put(termParams__.getKey(), termParams__.getValue());
+              break;
+            }
+            default: {
+              if (!parseUnknownField(input, unknownFields, extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(e).setUnfinishedMessage(this);
+      } finally {
+        this.unknownFields = unknownFields.build();
+        makeExtensionsImmutable();
+      }
+    }
+
+    public static final com.google.protobuf.Descriptors.Descriptor getDescriptor() {
+      return io.holoinsight.server.query.grpc.QueryProto.internal_static_io_holoinsight_server_query_grpc_QueryEventRequest_descriptor;
+    }
+
+    @SuppressWarnings({"rawtypes"})
+    @java.lang.Override
+    protected com.google.protobuf.MapField internalGetMapField(int number) {
+      switch (number) {
+        case 4:
+          return internalGetTermParams();
+        default:
+          throw new RuntimeException("Invalid map field number: " + number);
+      }
+    }
+
+    @java.lang.Override
+    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable internalGetFieldAccessorTable() {
+      return io.holoinsight.server.query.grpc.QueryProto.internal_static_io_holoinsight_server_query_grpc_QueryEventRequest_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              io.holoinsight.server.query.grpc.QueryProto.QueryEventRequest.class,
+              io.holoinsight.server.query.grpc.QueryProto.QueryEventRequest.Builder.class);
+    }
+
+    public static final int TENANT_FIELD_NUMBER = 1;
+    private volatile java.lang.Object tenant_;
+
+    /**
+     * <code>string tenant = 1;</code>
+     * 
+     * @return The tenant.
+     */
+    @java.lang.Override
+    public java.lang.String getTenant() {
+      java.lang.Object ref = tenant_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        tenant_ = s;
+        return s;
+      }
+    }
+
+    /**
+     * <code>string tenant = 1;</code>
+     * 
+     * @return The bytes for tenant.
+     */
+    @java.lang.Override
+    public com.google.protobuf.ByteString getTenantBytes() {
+      java.lang.Object ref = tenant_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b =
+            com.google.protobuf.ByteString.copyFromUtf8((java.lang.String) ref);
+        tenant_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    public static final int START_FIELD_NUMBER = 2;
+    private long start_;
+
+    /**
+     * <code>int64 start = 2;</code>
+     * 
+     * @return The start.
+     */
+    @java.lang.Override
+    public long getStart() {
+      return start_;
+    }
+
+    public static final int END_FIELD_NUMBER = 3;
+    private long end_;
+
+    /**
+     * <code>int64 end = 3;</code>
+     * 
+     * @return The end.
+     */
+    @java.lang.Override
+    public long getEnd() {
+      return end_;
+    }
+
+    public static final int TERMPARAMS_FIELD_NUMBER = 4;
+
+    private static final class TermParamsDefaultEntryHolder {
+      static final com.google.protobuf.MapEntry<java.lang.String, java.lang.String> defaultEntry =
+          com.google.protobuf.MapEntry.<java.lang.String, java.lang.String>newDefaultInstance(
+              io.holoinsight.server.query.grpc.QueryProto.internal_static_io_holoinsight_server_query_grpc_QueryEventRequest_TermParamsEntry_descriptor,
+              com.google.protobuf.WireFormat.FieldType.STRING, "",
+              com.google.protobuf.WireFormat.FieldType.STRING, "");
+    }
+
+    private com.google.protobuf.MapField<java.lang.String, java.lang.String> termParams_;
+
+    private com.google.protobuf.MapField<java.lang.String, java.lang.String> internalGetTermParams() {
+      if (termParams_ == null) {
+        return com.google.protobuf.MapField
+            .emptyMapField(TermParamsDefaultEntryHolder.defaultEntry);
+      }
+      return termParams_;
+    }
+
+    public int getTermParamsCount() {
+      return internalGetTermParams().getMap().size();
+    }
+
+    /**
+     * <code>map&lt;string, string&gt; termParams = 4;</code>
+     */
+
+    @java.lang.Override
+    public boolean containsTermParams(java.lang.String key) {
+      if (key == null) {
+        throw new java.lang.NullPointerException();
+      }
+      return internalGetTermParams().getMap().containsKey(key);
+    }
+
+    /**
+     * Use {@link #getTermParamsMap()} instead.
+     */
+    @java.lang.Override
+    @java.lang.Deprecated
+    public java.util.Map<java.lang.String, java.lang.String> getTermParams() {
+      return getTermParamsMap();
+    }
+
+    /**
+     * <code>map&lt;string, string&gt; termParams = 4;</code>
+     */
+    @java.lang.Override
+
+    public java.util.Map<java.lang.String, java.lang.String> getTermParamsMap() {
+      return internalGetTermParams().getMap();
+    }
+
+    /**
+     * <code>map&lt;string, string&gt; termParams = 4;</code>
+     */
+    @java.lang.Override
+
+    public java.lang.String getTermParamsOrDefault(java.lang.String key,
+        java.lang.String defaultValue) {
+      if (key == null) {
+        throw new java.lang.NullPointerException();
+      }
+      java.util.Map<java.lang.String, java.lang.String> map = internalGetTermParams().getMap();
+      return map.containsKey(key) ? map.get(key) : defaultValue;
+    }
+
+    /**
+     * <code>map&lt;string, string&gt; termParams = 4;</code>
+     */
+    @java.lang.Override
+
+    public java.lang.String getTermParamsOrThrow(java.lang.String key) {
+      if (key == null) {
+        throw new java.lang.NullPointerException();
+      }
+      java.util.Map<java.lang.String, java.lang.String> map = internalGetTermParams().getMap();
+      if (!map.containsKey(key)) {
+        throw new java.lang.IllegalArgumentException();
+      }
+      return map.get(key);
+    }
+
+    private byte memoizedIsInitialized = -1;
+
+    @java.lang.Override
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized == 1)
+        return true;
+      if (isInitialized == 0)
+        return false;
+
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    @java.lang.Override
+    public void writeTo(com.google.protobuf.CodedOutputStream output) throws java.io.IOException {
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(tenant_)) {
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 1, tenant_);
+      }
+      if (start_ != 0L) {
+        output.writeInt64(2, start_);
+      }
+      if (end_ != 0L) {
+        output.writeInt64(3, end_);
+      }
+      com.google.protobuf.GeneratedMessageV3.serializeStringMapTo(output, internalGetTermParams(),
+          TermParamsDefaultEntryHolder.defaultEntry, 4);
+      unknownFields.writeTo(output);
+    }
+
+    @java.lang.Override
+    public int getSerializedSize() {
+      int size = memoizedSize;
+      if (size != -1)
+        return size;
+
+      size = 0;
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(tenant_)) {
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, tenant_);
+      }
+      if (start_ != 0L) {
+        size += com.google.protobuf.CodedOutputStream.computeInt64Size(2, start_);
+      }
+      if (end_ != 0L) {
+        size += com.google.protobuf.CodedOutputStream.computeInt64Size(3, end_);
+      }
+      for (java.util.Map.Entry<java.lang.String, java.lang.String> entry : internalGetTermParams()
+          .getMap().entrySet()) {
+        com.google.protobuf.MapEntry<java.lang.String, java.lang.String> termParams__ =
+            TermParamsDefaultEntryHolder.defaultEntry.newBuilderForType().setKey(entry.getKey())
+                .setValue(entry.getValue()).build();
+        size += com.google.protobuf.CodedOutputStream.computeMessageSize(4, termParams__);
+      }
+      size += unknownFields.getSerializedSize();
+      memoizedSize = size;
+      return size;
+    }
+
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
+      if (obj == this) {
+        return true;
+      }
+      if (!(obj instanceof io.holoinsight.server.query.grpc.QueryProto.QueryEventRequest)) {
+        return super.equals(obj);
+      }
+      io.holoinsight.server.query.grpc.QueryProto.QueryEventRequest other =
+          (io.holoinsight.server.query.grpc.QueryProto.QueryEventRequest) obj;
+
+      if (!getTenant().equals(other.getTenant()))
+        return false;
+      if (getStart() != other.getStart())
+        return false;
+      if (getEnd() != other.getEnd())
+        return false;
+      if (!internalGetTermParams().equals(other.internalGetTermParams()))
+        return false;
+      if (!unknownFields.equals(other.unknownFields))
+        return false;
+      return true;
+    }
+
+    @java.lang.Override
+    public int hashCode() {
+      if (memoizedHashCode != 0) {
+        return memoizedHashCode;
+      }
+      int hash = 41;
+      hash = (19 * hash) + getDescriptor().hashCode();
+      hash = (37 * hash) + TENANT_FIELD_NUMBER;
+      hash = (53 * hash) + getTenant().hashCode();
+      hash = (37 * hash) + START_FIELD_NUMBER;
+      hash = (53 * hash) + com.google.protobuf.Internal.hashLong(getStart());
+      hash = (37 * hash) + END_FIELD_NUMBER;
+      hash = (53 * hash) + com.google.protobuf.Internal.hashLong(getEnd());
+      if (!internalGetTermParams().getMap().isEmpty()) {
+        hash = (37 * hash) + TERMPARAMS_FIELD_NUMBER;
+        hash = (53 * hash) + internalGetTermParams().hashCode();
+      }
+      hash = (29 * hash) + unknownFields.hashCode();
+      memoizedHashCode = hash;
+      return hash;
+    }
+
+    public static io.holoinsight.server.query.grpc.QueryProto.QueryEventRequest parseFrom(
+        java.nio.ByteBuffer data) throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+
+    public static io.holoinsight.server.query.grpc.QueryProto.QueryEventRequest parseFrom(
+        java.nio.ByteBuffer data, com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+
+    public static io.holoinsight.server.query.grpc.QueryProto.QueryEventRequest parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+
+    public static io.holoinsight.server.query.grpc.QueryProto.QueryEventRequest parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+
+    public static io.holoinsight.server.query.grpc.QueryProto.QueryEventRequest parseFrom(
+        byte[] data) throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+
+    public static io.holoinsight.server.query.grpc.QueryProto.QueryEventRequest parseFrom(
+        byte[] data, com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+
+    public static io.holoinsight.server.query.grpc.QueryProto.QueryEventRequest parseFrom(
+        java.io.InputStream input) throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3.parseWithIOException(PARSER, input);
+    }
+
+    public static io.holoinsight.server.query.grpc.QueryProto.QueryEventRequest parseFrom(
+        java.io.InputStream input, com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3.parseWithIOException(PARSER, input,
+          extensionRegistry);
+    }
+
+    public static io.holoinsight.server.query.grpc.QueryProto.QueryEventRequest parseDelimitedFrom(
+        java.io.InputStream input) throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3.parseDelimitedWithIOException(PARSER, input);
+    }
+
+    public static io.holoinsight.server.query.grpc.QueryProto.QueryEventRequest parseDelimitedFrom(
+        java.io.InputStream input, com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3.parseDelimitedWithIOException(PARSER, input,
+          extensionRegistry);
+    }
+
+    public static io.holoinsight.server.query.grpc.QueryProto.QueryEventRequest parseFrom(
+        com.google.protobuf.CodedInputStream input) throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3.parseWithIOException(PARSER, input);
+    }
+
+    public static io.holoinsight.server.query.grpc.QueryProto.QueryEventRequest parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry) throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3.parseWithIOException(PARSER, input,
+          extensionRegistry);
+    }
+
+    @java.lang.Override
+    public Builder newBuilderForType() {
+      return newBuilder();
+    }
+
+    public static Builder newBuilder() {
+      return DEFAULT_INSTANCE.toBuilder();
+    }
+
+    public static Builder newBuilder(
+        io.holoinsight.server.query.grpc.QueryProto.QueryEventRequest prototype) {
+      return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+    }
+
+    @java.lang.Override
+    public Builder toBuilder() {
+      return this == DEFAULT_INSTANCE ? new Builder() : new Builder().mergeFrom(this);
+    }
+
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+
+    /**
+     * Protobuf type {@code io.holoinsight.server.query.grpc.QueryEventRequest}
+     */
+    public static final class Builder
+        extends com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
+        // @@protoc_insertion_point(builder_implements:io.holoinsight.server.query.grpc.QueryEventRequest)
+        io.holoinsight.server.query.grpc.QueryProto.QueryEventRequestOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor getDescriptor() {
+        return io.holoinsight.server.query.grpc.QueryProto.internal_static_io_holoinsight_server_query_grpc_QueryEventRequest_descriptor;
+      }
+
+      @SuppressWarnings({"rawtypes"})
+      protected com.google.protobuf.MapField internalGetMapField(int number) {
+        switch (number) {
+          case 4:
+            return internalGetTermParams();
+          default:
+            throw new RuntimeException("Invalid map field number: " + number);
+        }
+      }
+
+      @SuppressWarnings({"rawtypes"})
+      protected com.google.protobuf.MapField internalGetMutableMapField(int number) {
+        switch (number) {
+          case 4:
+            return internalGetMutableTermParams();
+          default:
+            throw new RuntimeException("Invalid map field number: " + number);
+        }
+      }
+
+      @java.lang.Override
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable internalGetFieldAccessorTable() {
+        return io.holoinsight.server.query.grpc.QueryProto.internal_static_io_holoinsight_server_query_grpc_QueryEventRequest_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                io.holoinsight.server.query.grpc.QueryProto.QueryEventRequest.class,
+                io.holoinsight.server.query.grpc.QueryProto.QueryEventRequest.Builder.class);
+      }
+
+      // Construct using io.holoinsight.server.query.grpc.QueryProto.QueryEventRequest.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+
+      private Builder(com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders) {
+        }
+      }
+
+      @java.lang.Override
+      public Builder clear() {
+        super.clear();
+        tenant_ = "";
+
+        start_ = 0L;
+
+        end_ = 0L;
+
+        internalGetMutableTermParams().clear();
+        return this;
+      }
+
+      @java.lang.Override
+      public com.google.protobuf.Descriptors.Descriptor getDescriptorForType() {
+        return io.holoinsight.server.query.grpc.QueryProto.internal_static_io_holoinsight_server_query_grpc_QueryEventRequest_descriptor;
+      }
+
+      @java.lang.Override
+      public io.holoinsight.server.query.grpc.QueryProto.QueryEventRequest getDefaultInstanceForType() {
+        return io.holoinsight.server.query.grpc.QueryProto.QueryEventRequest.getDefaultInstance();
+      }
+
+      @java.lang.Override
+      public io.holoinsight.server.query.grpc.QueryProto.QueryEventRequest build() {
+        io.holoinsight.server.query.grpc.QueryProto.QueryEventRequest result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      @java.lang.Override
+      public io.holoinsight.server.query.grpc.QueryProto.QueryEventRequest buildPartial() {
+        io.holoinsight.server.query.grpc.QueryProto.QueryEventRequest result =
+            new io.holoinsight.server.query.grpc.QueryProto.QueryEventRequest(this);
+        int from_bitField0_ = bitField0_;
+        result.tenant_ = tenant_;
+        result.start_ = start_;
+        result.end_ = end_;
+        result.termParams_ = internalGetTermParams();
+        result.termParams_.makeImmutable();
+        onBuilt();
+        return result;
+      }
+
+      @java.lang.Override
+      public Builder clone() {
+        return super.clone();
+      }
+
+      @java.lang.Override
+      public Builder setField(com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.setField(field, value);
+      }
+
+      @java.lang.Override
+      public Builder clearField(com.google.protobuf.Descriptors.FieldDescriptor field) {
+        return super.clearField(field);
+      }
+
+      @java.lang.Override
+      public Builder clearOneof(com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+        return super.clearOneof(oneof);
+      }
+
+      @java.lang.Override
+      public Builder setRepeatedField(com.google.protobuf.Descriptors.FieldDescriptor field,
+          int index, java.lang.Object value) {
+        return super.setRepeatedField(field, index, value);
+      }
+
+      @java.lang.Override
+      public Builder addRepeatedField(com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.addRepeatedField(field, value);
+      }
+
+      @java.lang.Override
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof io.holoinsight.server.query.grpc.QueryProto.QueryEventRequest) {
+          return mergeFrom((io.holoinsight.server.query.grpc.QueryProto.QueryEventRequest) other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(
+          io.holoinsight.server.query.grpc.QueryProto.QueryEventRequest other) {
+        if (other == io.holoinsight.server.query.grpc.QueryProto.QueryEventRequest
+            .getDefaultInstance())
+          return this;
+        if (!other.getTenant().isEmpty()) {
+          tenant_ = other.tenant_;
+          onChanged();
+        }
+        if (other.getStart() != 0L) {
+          setStart(other.getStart());
+        }
+        if (other.getEnd() != 0L) {
+          setEnd(other.getEnd());
+        }
+        internalGetMutableTermParams().mergeFrom(other.internalGetTermParams());
+        this.mergeUnknownFields(other.unknownFields);
+        onChanged();
+        return this;
+      }
+
+      @java.lang.Override
+      public final boolean isInitialized() {
+        return true;
+      }
+
+      @java.lang.Override
+      public Builder mergeFrom(com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry) throws java.io.IOException {
+        io.holoinsight.server.query.grpc.QueryProto.QueryEventRequest parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (io.holoinsight.server.query.grpc.QueryProto.QueryEventRequest) e
+              .getUnfinishedMessage();
+          throw e.unwrapIOException();
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
+          }
+        }
+        return this;
+      }
+
+      private int bitField0_;
+
+      private java.lang.Object tenant_ = "";
+
+      /**
+       * <code>string tenant = 1;</code>
+       * 
+       * @return The tenant.
+       */
+      public java.lang.String getTenant() {
+        java.lang.Object ref = tenant_;
+        if (!(ref instanceof java.lang.String)) {
+          com.google.protobuf.ByteString bs = (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          tenant_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+
+      /**
+       * <code>string tenant = 1;</code>
+       * 
+       * @return The bytes for tenant.
+       */
+      public com.google.protobuf.ByteString getTenantBytes() {
+        java.lang.Object ref = tenant_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b =
+              com.google.protobuf.ByteString.copyFromUtf8((java.lang.String) ref);
+          tenant_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+
+      /**
+       * <code>string tenant = 1;</code>
+       * 
+       * @param value The tenant to set.
+       * @return This builder for chaining.
+       */
+      public Builder setTenant(java.lang.String value) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+
+        tenant_ = value;
+        onChanged();
+        return this;
+      }
+
+      /**
+       * <code>string tenant = 1;</code>
+       * 
+       * @return This builder for chaining.
+       */
+      public Builder clearTenant() {
+
+        tenant_ = getDefaultInstance().getTenant();
+        onChanged();
+        return this;
+      }
+
+      /**
+       * <code>string tenant = 1;</code>
+       * 
+       * @param value The bytes for tenant to set.
+       * @return This builder for chaining.
+       */
+      public Builder setTenantBytes(com.google.protobuf.ByteString value) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        checkByteStringIsUtf8(value);
+
+        tenant_ = value;
+        onChanged();
+        return this;
+      }
+
+      private long start_;
+
+      /**
+       * <code>int64 start = 2;</code>
+       * 
+       * @return The start.
+       */
+      @java.lang.Override
+      public long getStart() {
+        return start_;
+      }
+
+      /**
+       * <code>int64 start = 2;</code>
+       * 
+       * @param value The start to set.
+       * @return This builder for chaining.
+       */
+      public Builder setStart(long value) {
+
+        start_ = value;
+        onChanged();
+        return this;
+      }
+
+      /**
+       * <code>int64 start = 2;</code>
+       * 
+       * @return This builder for chaining.
+       */
+      public Builder clearStart() {
+
+        start_ = 0L;
+        onChanged();
+        return this;
+      }
+
+      private long end_;
+
+      /**
+       * <code>int64 end = 3;</code>
+       * 
+       * @return The end.
+       */
+      @java.lang.Override
+      public long getEnd() {
+        return end_;
+      }
+
+      /**
+       * <code>int64 end = 3;</code>
+       * 
+       * @param value The end to set.
+       * @return This builder for chaining.
+       */
+      public Builder setEnd(long value) {
+
+        end_ = value;
+        onChanged();
+        return this;
+      }
+
+      /**
+       * <code>int64 end = 3;</code>
+       * 
+       * @return This builder for chaining.
+       */
+      public Builder clearEnd() {
+
+        end_ = 0L;
+        onChanged();
+        return this;
+      }
+
+      private com.google.protobuf.MapField<java.lang.String, java.lang.String> termParams_;
+
+      private com.google.protobuf.MapField<java.lang.String, java.lang.String> internalGetTermParams() {
+        if (termParams_ == null) {
+          return com.google.protobuf.MapField
+              .emptyMapField(TermParamsDefaultEntryHolder.defaultEntry);
+        }
+        return termParams_;
+      }
+
+      private com.google.protobuf.MapField<java.lang.String, java.lang.String> internalGetMutableTermParams() {
+        onChanged();;
+        if (termParams_ == null) {
+          termParams_ =
+              com.google.protobuf.MapField.newMapField(TermParamsDefaultEntryHolder.defaultEntry);
+        }
+        if (!termParams_.isMutable()) {
+          termParams_ = termParams_.copy();
+        }
+        return termParams_;
+      }
+
+      public int getTermParamsCount() {
+        return internalGetTermParams().getMap().size();
+      }
+
+      /**
+       * <code>map&lt;string, string&gt; termParams = 4;</code>
+       */
+
+      @java.lang.Override
+      public boolean containsTermParams(java.lang.String key) {
+        if (key == null) {
+          throw new java.lang.NullPointerException();
+        }
+        return internalGetTermParams().getMap().containsKey(key);
+      }
+
+      /**
+       * Use {@link #getTermParamsMap()} instead.
+       */
+      @java.lang.Override
+      @java.lang.Deprecated
+      public java.util.Map<java.lang.String, java.lang.String> getTermParams() {
+        return getTermParamsMap();
+      }
+
+      /**
+       * <code>map&lt;string, string&gt; termParams = 4;</code>
+       */
+      @java.lang.Override
+
+      public java.util.Map<java.lang.String, java.lang.String> getTermParamsMap() {
+        return internalGetTermParams().getMap();
+      }
+
+      /**
+       * <code>map&lt;string, string&gt; termParams = 4;</code>
+       */
+      @java.lang.Override
+
+      public java.lang.String getTermParamsOrDefault(java.lang.String key,
+          java.lang.String defaultValue) {
+        if (key == null) {
+          throw new java.lang.NullPointerException();
+        }
+        java.util.Map<java.lang.String, java.lang.String> map = internalGetTermParams().getMap();
+        return map.containsKey(key) ? map.get(key) : defaultValue;
+      }
+
+      /**
+       * <code>map&lt;string, string&gt; termParams = 4;</code>
+       */
+      @java.lang.Override
+
+      public java.lang.String getTermParamsOrThrow(java.lang.String key) {
+        if (key == null) {
+          throw new java.lang.NullPointerException();
+        }
+        java.util.Map<java.lang.String, java.lang.String> map = internalGetTermParams().getMap();
+        if (!map.containsKey(key)) {
+          throw new java.lang.IllegalArgumentException();
+        }
+        return map.get(key);
+      }
+
+      public Builder clearTermParams() {
+        internalGetMutableTermParams().getMutableMap().clear();
+        return this;
+      }
+
+      /**
+       * <code>map&lt;string, string&gt; termParams = 4;</code>
+       */
+
+      public Builder removeTermParams(java.lang.String key) {
+        if (key == null) {
+          throw new java.lang.NullPointerException();
+        }
+        internalGetMutableTermParams().getMutableMap().remove(key);
+        return this;
+      }
+
+      /**
+       * Use alternate mutation accessors instead.
+       */
+      @java.lang.Deprecated
+      public java.util.Map<java.lang.String, java.lang.String> getMutableTermParams() {
+        return internalGetMutableTermParams().getMutableMap();
+      }
+
+      /**
+       * <code>map&lt;string, string&gt; termParams = 4;</code>
+       */
+      public Builder putTermParams(java.lang.String key, java.lang.String value) {
+        if (key == null) {
+          throw new java.lang.NullPointerException();
+        }
+        if (value == null) {
+          throw new java.lang.NullPointerException();
+        }
+        internalGetMutableTermParams().getMutableMap().put(key, value);
+        return this;
+      }
+
+      /**
+       * <code>map&lt;string, string&gt; termParams = 4;</code>
+       */
+
+      public Builder putAllTermParams(java.util.Map<java.lang.String, java.lang.String> values) {
+        internalGetMutableTermParams().getMutableMap().putAll(values);
+        return this;
+      }
+
+      @java.lang.Override
+      public final Builder setUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.setUnknownFields(unknownFields);
+      }
+
+      @java.lang.Override
+      public final Builder mergeUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.mergeUnknownFields(unknownFields);
+      }
+
+
+      // @@protoc_insertion_point(builder_scope:io.holoinsight.server.query.grpc.QueryEventRequest)
+    }
+
+    // @@protoc_insertion_point(class_scope:io.holoinsight.server.query.grpc.QueryEventRequest)
+    private static final io.holoinsight.server.query.grpc.QueryProto.QueryEventRequest DEFAULT_INSTANCE;
+    static {
+      DEFAULT_INSTANCE = new io.holoinsight.server.query.grpc.QueryProto.QueryEventRequest();
+    }
+
+    public static io.holoinsight.server.query.grpc.QueryProto.QueryEventRequest getDefaultInstance() {
+      return DEFAULT_INSTANCE;
+    }
+
+    private static final com.google.protobuf.Parser<QueryEventRequest> PARSER =
+        new com.google.protobuf.AbstractParser<QueryEventRequest>() {
+          @java.lang.Override
+          public QueryEventRequest parsePartialFrom(com.google.protobuf.CodedInputStream input,
+              com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+              throws com.google.protobuf.InvalidProtocolBufferException {
+            return new QueryEventRequest(input, extensionRegistry);
+          }
+        };
+
+    public static com.google.protobuf.Parser<QueryEventRequest> parser() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<QueryEventRequest> getParserForType() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public io.holoinsight.server.query.grpc.QueryProto.QueryEventRequest getDefaultInstanceForType() {
+      return DEFAULT_INSTANCE;
+    }
+
+  }
+
+  public interface QueryEventResponseOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:io.holoinsight.server.query.grpc.QueryEventResponse)
+      com.google.protobuf.MessageOrBuilder {
+
+    /**
+     * <code>repeated .io.holoinsight.server.query.grpc.Event event = 1;</code>
+     */
+    java.util.List<io.holoinsight.server.query.grpc.QueryProto.Event> getEventList();
+
+    /**
+     * <code>repeated .io.holoinsight.server.query.grpc.Event event = 1;</code>
+     */
+    io.holoinsight.server.query.grpc.QueryProto.Event getEvent(int index);
+
+    /**
+     * <code>repeated .io.holoinsight.server.query.grpc.Event event = 1;</code>
+     */
+    int getEventCount();
+
+    /**
+     * <code>repeated .io.holoinsight.server.query.grpc.Event event = 1;</code>
+     */
+    java.util.List<? extends io.holoinsight.server.query.grpc.QueryProto.EventOrBuilder> getEventOrBuilderList();
+
+    /**
+     * <code>repeated .io.holoinsight.server.query.grpc.Event event = 1;</code>
+     */
+    io.holoinsight.server.query.grpc.QueryProto.EventOrBuilder getEventOrBuilder(int index);
+  }
+  /**
+   * Protobuf type {@code io.holoinsight.server.query.grpc.QueryEventResponse}
+   */
+  public static final class QueryEventResponse extends com.google.protobuf.GeneratedMessageV3
+      implements
+      // @@protoc_insertion_point(message_implements:io.holoinsight.server.query.grpc.QueryEventResponse)
+      QueryEventResponseOrBuilder {
+    private static final long serialVersionUID = 0L;
+
+    // Use QueryEventResponse.newBuilder() to construct.
+    private QueryEventResponse(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+      super(builder);
+    }
+
+    private QueryEventResponse() {
+      event_ = java.util.Collections.emptyList();
+    }
+
+    @java.lang.Override
+    @SuppressWarnings({"unused"})
+    protected java.lang.Object newInstance(UnusedPrivateParameter unused) {
+      return new QueryEventResponse();
+    }
+
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet getUnknownFields() {
+      return this.unknownFields;
+    }
+
+    private QueryEventResponse(com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      this();
+      if (extensionRegistry == null) {
+        throw new java.lang.NullPointerException();
+      }
+      int mutable_bitField0_ = 0;
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            case 10: {
+              if (!((mutable_bitField0_ & 0x00000001) != 0)) {
+                event_ =
+                    new java.util.ArrayList<io.holoinsight.server.query.grpc.QueryProto.Event>();
+                mutable_bitField0_ |= 0x00000001;
+              }
+              event_.add(input.readMessage(
+                  io.holoinsight.server.query.grpc.QueryProto.Event.parser(), extensionRegistry));
+              break;
+            }
+            default: {
+              if (!parseUnknownField(input, unknownFields, extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(e).setUnfinishedMessage(this);
+      } finally {
+        if (((mutable_bitField0_ & 0x00000001) != 0)) {
+          event_ = java.util.Collections.unmodifiableList(event_);
+        }
+        this.unknownFields = unknownFields.build();
+        makeExtensionsImmutable();
+      }
+    }
+
+    public static final com.google.protobuf.Descriptors.Descriptor getDescriptor() {
+      return io.holoinsight.server.query.grpc.QueryProto.internal_static_io_holoinsight_server_query_grpc_QueryEventResponse_descriptor;
+    }
+
+    @java.lang.Override
+    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable internalGetFieldAccessorTable() {
+      return io.holoinsight.server.query.grpc.QueryProto.internal_static_io_holoinsight_server_query_grpc_QueryEventResponse_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              io.holoinsight.server.query.grpc.QueryProto.QueryEventResponse.class,
+              io.holoinsight.server.query.grpc.QueryProto.QueryEventResponse.Builder.class);
+    }
+
+    public static final int EVENT_FIELD_NUMBER = 1;
+    private java.util.List<io.holoinsight.server.query.grpc.QueryProto.Event> event_;
+
+    /**
+     * <code>repeated .io.holoinsight.server.query.grpc.Event event = 1;</code>
+     */
+    @java.lang.Override
+    public java.util.List<io.holoinsight.server.query.grpc.QueryProto.Event> getEventList() {
+      return event_;
+    }
+
+    /**
+     * <code>repeated .io.holoinsight.server.query.grpc.Event event = 1;</code>
+     */
+    @java.lang.Override
+    public java.util.List<? extends io.holoinsight.server.query.grpc.QueryProto.EventOrBuilder> getEventOrBuilderList() {
+      return event_;
+    }
+
+    /**
+     * <code>repeated .io.holoinsight.server.query.grpc.Event event = 1;</code>
+     */
+    @java.lang.Override
+    public int getEventCount() {
+      return event_.size();
+    }
+
+    /**
+     * <code>repeated .io.holoinsight.server.query.grpc.Event event = 1;</code>
+     */
+    @java.lang.Override
+    public io.holoinsight.server.query.grpc.QueryProto.Event getEvent(int index) {
+      return event_.get(index);
+    }
+
+    /**
+     * <code>repeated .io.holoinsight.server.query.grpc.Event event = 1;</code>
+     */
+    @java.lang.Override
+    public io.holoinsight.server.query.grpc.QueryProto.EventOrBuilder getEventOrBuilder(int index) {
+      return event_.get(index);
+    }
+
+    private byte memoizedIsInitialized = -1;
+
+    @java.lang.Override
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized == 1)
+        return true;
+      if (isInitialized == 0)
+        return false;
+
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    @java.lang.Override
+    public void writeTo(com.google.protobuf.CodedOutputStream output) throws java.io.IOException {
+      for (int i = 0; i < event_.size(); i++) {
+        output.writeMessage(1, event_.get(i));
+      }
+      unknownFields.writeTo(output);
+    }
+
+    @java.lang.Override
+    public int getSerializedSize() {
+      int size = memoizedSize;
+      if (size != -1)
+        return size;
+
+      size = 0;
+      for (int i = 0; i < event_.size(); i++) {
+        size += com.google.protobuf.CodedOutputStream.computeMessageSize(1, event_.get(i));
+      }
+      size += unknownFields.getSerializedSize();
+      memoizedSize = size;
+      return size;
+    }
+
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
+      if (obj == this) {
+        return true;
+      }
+      if (!(obj instanceof io.holoinsight.server.query.grpc.QueryProto.QueryEventResponse)) {
+        return super.equals(obj);
+      }
+      io.holoinsight.server.query.grpc.QueryProto.QueryEventResponse other =
+          (io.holoinsight.server.query.grpc.QueryProto.QueryEventResponse) obj;
+
+      if (!getEventList().equals(other.getEventList()))
+        return false;
+      if (!unknownFields.equals(other.unknownFields))
+        return false;
+      return true;
+    }
+
+    @java.lang.Override
+    public int hashCode() {
+      if (memoizedHashCode != 0) {
+        return memoizedHashCode;
+      }
+      int hash = 41;
+      hash = (19 * hash) + getDescriptor().hashCode();
+      if (getEventCount() > 0) {
+        hash = (37 * hash) + EVENT_FIELD_NUMBER;
+        hash = (53 * hash) + getEventList().hashCode();
+      }
+      hash = (29 * hash) + unknownFields.hashCode();
+      memoizedHashCode = hash;
+      return hash;
+    }
+
+    public static io.holoinsight.server.query.grpc.QueryProto.QueryEventResponse parseFrom(
+        java.nio.ByteBuffer data) throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+
+    public static io.holoinsight.server.query.grpc.QueryProto.QueryEventResponse parseFrom(
+        java.nio.ByteBuffer data, com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+
+    public static io.holoinsight.server.query.grpc.QueryProto.QueryEventResponse parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+
+    public static io.holoinsight.server.query.grpc.QueryProto.QueryEventResponse parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+
+    public static io.holoinsight.server.query.grpc.QueryProto.QueryEventResponse parseFrom(
+        byte[] data) throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+
+    public static io.holoinsight.server.query.grpc.QueryProto.QueryEventResponse parseFrom(
+        byte[] data, com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+
+    public static io.holoinsight.server.query.grpc.QueryProto.QueryEventResponse parseFrom(
+        java.io.InputStream input) throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3.parseWithIOException(PARSER, input);
+    }
+
+    public static io.holoinsight.server.query.grpc.QueryProto.QueryEventResponse parseFrom(
+        java.io.InputStream input, com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3.parseWithIOException(PARSER, input,
+          extensionRegistry);
+    }
+
+    public static io.holoinsight.server.query.grpc.QueryProto.QueryEventResponse parseDelimitedFrom(
+        java.io.InputStream input) throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3.parseDelimitedWithIOException(PARSER, input);
+    }
+
+    public static io.holoinsight.server.query.grpc.QueryProto.QueryEventResponse parseDelimitedFrom(
+        java.io.InputStream input, com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3.parseDelimitedWithIOException(PARSER, input,
+          extensionRegistry);
+    }
+
+    public static io.holoinsight.server.query.grpc.QueryProto.QueryEventResponse parseFrom(
+        com.google.protobuf.CodedInputStream input) throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3.parseWithIOException(PARSER, input);
+    }
+
+    public static io.holoinsight.server.query.grpc.QueryProto.QueryEventResponse parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry) throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3.parseWithIOException(PARSER, input,
+          extensionRegistry);
+    }
+
+    @java.lang.Override
+    public Builder newBuilderForType() {
+      return newBuilder();
+    }
+
+    public static Builder newBuilder() {
+      return DEFAULT_INSTANCE.toBuilder();
+    }
+
+    public static Builder newBuilder(
+        io.holoinsight.server.query.grpc.QueryProto.QueryEventResponse prototype) {
+      return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+    }
+
+    @java.lang.Override
+    public Builder toBuilder() {
+      return this == DEFAULT_INSTANCE ? new Builder() : new Builder().mergeFrom(this);
+    }
+
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+
+    /**
+     * Protobuf type {@code io.holoinsight.server.query.grpc.QueryEventResponse}
+     */
+    public static final class Builder
+        extends com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
+        // @@protoc_insertion_point(builder_implements:io.holoinsight.server.query.grpc.QueryEventResponse)
+        io.holoinsight.server.query.grpc.QueryProto.QueryEventResponseOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor getDescriptor() {
+        return io.holoinsight.server.query.grpc.QueryProto.internal_static_io_holoinsight_server_query_grpc_QueryEventResponse_descriptor;
+      }
+
+      @java.lang.Override
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable internalGetFieldAccessorTable() {
+        return io.holoinsight.server.query.grpc.QueryProto.internal_static_io_holoinsight_server_query_grpc_QueryEventResponse_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                io.holoinsight.server.query.grpc.QueryProto.QueryEventResponse.class,
+                io.holoinsight.server.query.grpc.QueryProto.QueryEventResponse.Builder.class);
+      }
+
+      // Construct using io.holoinsight.server.query.grpc.QueryProto.QueryEventResponse.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+
+      private Builder(com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders) {
+          getEventFieldBuilder();
+        }
+      }
+
+      @java.lang.Override
+      public Builder clear() {
+        super.clear();
+        if (eventBuilder_ == null) {
+          event_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00000001);
+        } else {
+          eventBuilder_.clear();
+        }
+        return this;
+      }
+
+      @java.lang.Override
+      public com.google.protobuf.Descriptors.Descriptor getDescriptorForType() {
+        return io.holoinsight.server.query.grpc.QueryProto.internal_static_io_holoinsight_server_query_grpc_QueryEventResponse_descriptor;
+      }
+
+      @java.lang.Override
+      public io.holoinsight.server.query.grpc.QueryProto.QueryEventResponse getDefaultInstanceForType() {
+        return io.holoinsight.server.query.grpc.QueryProto.QueryEventResponse.getDefaultInstance();
+      }
+
+      @java.lang.Override
+      public io.holoinsight.server.query.grpc.QueryProto.QueryEventResponse build() {
+        io.holoinsight.server.query.grpc.QueryProto.QueryEventResponse result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      @java.lang.Override
+      public io.holoinsight.server.query.grpc.QueryProto.QueryEventResponse buildPartial() {
+        io.holoinsight.server.query.grpc.QueryProto.QueryEventResponse result =
+            new io.holoinsight.server.query.grpc.QueryProto.QueryEventResponse(this);
+        int from_bitField0_ = bitField0_;
+        if (eventBuilder_ == null) {
+          if (((bitField0_ & 0x00000001) != 0)) {
+            event_ = java.util.Collections.unmodifiableList(event_);
+            bitField0_ = (bitField0_ & ~0x00000001);
+          }
+          result.event_ = event_;
+        } else {
+          result.event_ = eventBuilder_.build();
+        }
+        onBuilt();
+        return result;
+      }
+
+      @java.lang.Override
+      public Builder clone() {
+        return super.clone();
+      }
+
+      @java.lang.Override
+      public Builder setField(com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.setField(field, value);
+      }
+
+      @java.lang.Override
+      public Builder clearField(com.google.protobuf.Descriptors.FieldDescriptor field) {
+        return super.clearField(field);
+      }
+
+      @java.lang.Override
+      public Builder clearOneof(com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+        return super.clearOneof(oneof);
+      }
+
+      @java.lang.Override
+      public Builder setRepeatedField(com.google.protobuf.Descriptors.FieldDescriptor field,
+          int index, java.lang.Object value) {
+        return super.setRepeatedField(field, index, value);
+      }
+
+      @java.lang.Override
+      public Builder addRepeatedField(com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.addRepeatedField(field, value);
+      }
+
+      @java.lang.Override
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof io.holoinsight.server.query.grpc.QueryProto.QueryEventResponse) {
+          return mergeFrom((io.holoinsight.server.query.grpc.QueryProto.QueryEventResponse) other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(
+          io.holoinsight.server.query.grpc.QueryProto.QueryEventResponse other) {
+        if (other == io.holoinsight.server.query.grpc.QueryProto.QueryEventResponse
+            .getDefaultInstance())
+          return this;
+        if (eventBuilder_ == null) {
+          if (!other.event_.isEmpty()) {
+            if (event_.isEmpty()) {
+              event_ = other.event_;
+              bitField0_ = (bitField0_ & ~0x00000001);
+            } else {
+              ensureEventIsMutable();
+              event_.addAll(other.event_);
+            }
+            onChanged();
+          }
+        } else {
+          if (!other.event_.isEmpty()) {
+            if (eventBuilder_.isEmpty()) {
+              eventBuilder_.dispose();
+              eventBuilder_ = null;
+              event_ = other.event_;
+              bitField0_ = (bitField0_ & ~0x00000001);
+              eventBuilder_ = com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders
+                  ? getEventFieldBuilder()
+                  : null;
+            } else {
+              eventBuilder_.addAllMessages(other.event_);
+            }
+          }
+        }
+        this.mergeUnknownFields(other.unknownFields);
+        onChanged();
+        return this;
+      }
+
+      @java.lang.Override
+      public final boolean isInitialized() {
+        return true;
+      }
+
+      @java.lang.Override
+      public Builder mergeFrom(com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry) throws java.io.IOException {
+        io.holoinsight.server.query.grpc.QueryProto.QueryEventResponse parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (io.holoinsight.server.query.grpc.QueryProto.QueryEventResponse) e
+              .getUnfinishedMessage();
+          throw e.unwrapIOException();
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
+          }
+        }
+        return this;
+      }
+
+      private int bitField0_;
+
+      private java.util.List<io.holoinsight.server.query.grpc.QueryProto.Event> event_ =
+          java.util.Collections.emptyList();
+
+      private void ensureEventIsMutable() {
+        if (!((bitField0_ & 0x00000001) != 0)) {
+          event_ =
+              new java.util.ArrayList<io.holoinsight.server.query.grpc.QueryProto.Event>(event_);
+          bitField0_ |= 0x00000001;
+        }
+      }
+
+      private com.google.protobuf.RepeatedFieldBuilderV3<io.holoinsight.server.query.grpc.QueryProto.Event, io.holoinsight.server.query.grpc.QueryProto.Event.Builder, io.holoinsight.server.query.grpc.QueryProto.EventOrBuilder> eventBuilder_;
+
+      /**
+       * <code>repeated .io.holoinsight.server.query.grpc.Event event = 1;</code>
+       */
+      public java.util.List<io.holoinsight.server.query.grpc.QueryProto.Event> getEventList() {
+        if (eventBuilder_ == null) {
+          return java.util.Collections.unmodifiableList(event_);
+        } else {
+          return eventBuilder_.getMessageList();
+        }
+      }
+
+      /**
+       * <code>repeated .io.holoinsight.server.query.grpc.Event event = 1;</code>
+       */
+      public int getEventCount() {
+        if (eventBuilder_ == null) {
+          return event_.size();
+        } else {
+          return eventBuilder_.getCount();
+        }
+      }
+
+      /**
+       * <code>repeated .io.holoinsight.server.query.grpc.Event event = 1;</code>
+       */
+      public io.holoinsight.server.query.grpc.QueryProto.Event getEvent(int index) {
+        if (eventBuilder_ == null) {
+          return event_.get(index);
+        } else {
+          return eventBuilder_.getMessage(index);
+        }
+      }
+
+      /**
+       * <code>repeated .io.holoinsight.server.query.grpc.Event event = 1;</code>
+       */
+      public Builder setEvent(int index, io.holoinsight.server.query.grpc.QueryProto.Event value) {
+        if (eventBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureEventIsMutable();
+          event_.set(index, value);
+          onChanged();
+        } else {
+          eventBuilder_.setMessage(index, value);
+        }
+        return this;
+      }
+
+      /**
+       * <code>repeated .io.holoinsight.server.query.grpc.Event event = 1;</code>
+       */
+      public Builder setEvent(int index,
+          io.holoinsight.server.query.grpc.QueryProto.Event.Builder builderForValue) {
+        if (eventBuilder_ == null) {
+          ensureEventIsMutable();
+          event_.set(index, builderForValue.build());
+          onChanged();
+        } else {
+          eventBuilder_.setMessage(index, builderForValue.build());
+        }
+        return this;
+      }
+
+      /**
+       * <code>repeated .io.holoinsight.server.query.grpc.Event event = 1;</code>
+       */
+      public Builder addEvent(io.holoinsight.server.query.grpc.QueryProto.Event value) {
+        if (eventBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureEventIsMutable();
+          event_.add(value);
+          onChanged();
+        } else {
+          eventBuilder_.addMessage(value);
+        }
+        return this;
+      }
+
+      /**
+       * <code>repeated .io.holoinsight.server.query.grpc.Event event = 1;</code>
+       */
+      public Builder addEvent(int index, io.holoinsight.server.query.grpc.QueryProto.Event value) {
+        if (eventBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureEventIsMutable();
+          event_.add(index, value);
+          onChanged();
+        } else {
+          eventBuilder_.addMessage(index, value);
+        }
+        return this;
+      }
+
+      /**
+       * <code>repeated .io.holoinsight.server.query.grpc.Event event = 1;</code>
+       */
+      public Builder addEvent(
+          io.holoinsight.server.query.grpc.QueryProto.Event.Builder builderForValue) {
+        if (eventBuilder_ == null) {
+          ensureEventIsMutable();
+          event_.add(builderForValue.build());
+          onChanged();
+        } else {
+          eventBuilder_.addMessage(builderForValue.build());
+        }
+        return this;
+      }
+
+      /**
+       * <code>repeated .io.holoinsight.server.query.grpc.Event event = 1;</code>
+       */
+      public Builder addEvent(int index,
+          io.holoinsight.server.query.grpc.QueryProto.Event.Builder builderForValue) {
+        if (eventBuilder_ == null) {
+          ensureEventIsMutable();
+          event_.add(index, builderForValue.build());
+          onChanged();
+        } else {
+          eventBuilder_.addMessage(index, builderForValue.build());
+        }
+        return this;
+      }
+
+      /**
+       * <code>repeated .io.holoinsight.server.query.grpc.Event event = 1;</code>
+       */
+      public Builder addAllEvent(
+          java.lang.Iterable<? extends io.holoinsight.server.query.grpc.QueryProto.Event> values) {
+        if (eventBuilder_ == null) {
+          ensureEventIsMutable();
+          com.google.protobuf.AbstractMessageLite.Builder.addAll(values, event_);
+          onChanged();
+        } else {
+          eventBuilder_.addAllMessages(values);
+        }
+        return this;
+      }
+
+      /**
+       * <code>repeated .io.holoinsight.server.query.grpc.Event event = 1;</code>
+       */
+      public Builder clearEvent() {
+        if (eventBuilder_ == null) {
+          event_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00000001);
+          onChanged();
+        } else {
+          eventBuilder_.clear();
+        }
+        return this;
+      }
+
+      /**
+       * <code>repeated .io.holoinsight.server.query.grpc.Event event = 1;</code>
+       */
+      public Builder removeEvent(int index) {
+        if (eventBuilder_ == null) {
+          ensureEventIsMutable();
+          event_.remove(index);
+          onChanged();
+        } else {
+          eventBuilder_.remove(index);
+        }
+        return this;
+      }
+
+      /**
+       * <code>repeated .io.holoinsight.server.query.grpc.Event event = 1;</code>
+       */
+      public io.holoinsight.server.query.grpc.QueryProto.Event.Builder getEventBuilder(int index) {
+        return getEventFieldBuilder().getBuilder(index);
+      }
+
+      /**
+       * <code>repeated .io.holoinsight.server.query.grpc.Event event = 1;</code>
+       */
+      public io.holoinsight.server.query.grpc.QueryProto.EventOrBuilder getEventOrBuilder(
+          int index) {
+        if (eventBuilder_ == null) {
+          return event_.get(index);
+        } else {
+          return eventBuilder_.getMessageOrBuilder(index);
+        }
+      }
+
+      /**
+       * <code>repeated .io.holoinsight.server.query.grpc.Event event = 1;</code>
+       */
+      public java.util.List<? extends io.holoinsight.server.query.grpc.QueryProto.EventOrBuilder> getEventOrBuilderList() {
+        if (eventBuilder_ != null) {
+          return eventBuilder_.getMessageOrBuilderList();
+        } else {
+          return java.util.Collections.unmodifiableList(event_);
+        }
+      }
+
+      /**
+       * <code>repeated .io.holoinsight.server.query.grpc.Event event = 1;</code>
+       */
+      public io.holoinsight.server.query.grpc.QueryProto.Event.Builder addEventBuilder() {
+        return getEventFieldBuilder()
+            .addBuilder(io.holoinsight.server.query.grpc.QueryProto.Event.getDefaultInstance());
+      }
+
+      /**
+       * <code>repeated .io.holoinsight.server.query.grpc.Event event = 1;</code>
+       */
+      public io.holoinsight.server.query.grpc.QueryProto.Event.Builder addEventBuilder(int index) {
+        return getEventFieldBuilder().addBuilder(index,
+            io.holoinsight.server.query.grpc.QueryProto.Event.getDefaultInstance());
+      }
+
+      /**
+       * <code>repeated .io.holoinsight.server.query.grpc.Event event = 1;</code>
+       */
+      public java.util.List<io.holoinsight.server.query.grpc.QueryProto.Event.Builder> getEventBuilderList() {
+        return getEventFieldBuilder().getBuilderList();
+      }
+
+      private com.google.protobuf.RepeatedFieldBuilderV3<io.holoinsight.server.query.grpc.QueryProto.Event, io.holoinsight.server.query.grpc.QueryProto.Event.Builder, io.holoinsight.server.query.grpc.QueryProto.EventOrBuilder> getEventFieldBuilder() {
+        if (eventBuilder_ == null) {
+          eventBuilder_ =
+              new com.google.protobuf.RepeatedFieldBuilderV3<io.holoinsight.server.query.grpc.QueryProto.Event, io.holoinsight.server.query.grpc.QueryProto.Event.Builder, io.holoinsight.server.query.grpc.QueryProto.EventOrBuilder>(
+                  event_, ((bitField0_ & 0x00000001) != 0), getParentForChildren(), isClean());
+          event_ = null;
+        }
+        return eventBuilder_;
+      }
+
+      @java.lang.Override
+      public final Builder setUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.setUnknownFields(unknownFields);
+      }
+
+      @java.lang.Override
+      public final Builder mergeUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.mergeUnknownFields(unknownFields);
+      }
+
+
+      // @@protoc_insertion_point(builder_scope:io.holoinsight.server.query.grpc.QueryEventResponse)
+    }
+
+    // @@protoc_insertion_point(class_scope:io.holoinsight.server.query.grpc.QueryEventResponse)
+    private static final io.holoinsight.server.query.grpc.QueryProto.QueryEventResponse DEFAULT_INSTANCE;
+    static {
+      DEFAULT_INSTANCE = new io.holoinsight.server.query.grpc.QueryProto.QueryEventResponse();
+    }
+
+    public static io.holoinsight.server.query.grpc.QueryProto.QueryEventResponse getDefaultInstance() {
+      return DEFAULT_INSTANCE;
+    }
+
+    private static final com.google.protobuf.Parser<QueryEventResponse> PARSER =
+        new com.google.protobuf.AbstractParser<QueryEventResponse>() {
+          @java.lang.Override
+          public QueryEventResponse parsePartialFrom(com.google.protobuf.CodedInputStream input,
+              com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+              throws com.google.protobuf.InvalidProtocolBufferException {
+            return new QueryEventResponse(input, extensionRegistry);
+          }
+        };
+
+    public static com.google.protobuf.Parser<QueryEventResponse> parser() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<QueryEventResponse> getParserForType() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public io.holoinsight.server.query.grpc.QueryProto.QueryEventResponse getDefaultInstanceForType() {
+      return DEFAULT_INSTANCE;
+    }
+
+  }
+
+  public interface EventOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:io.holoinsight.server.query.grpc.Event)
+      com.google.protobuf.MessageOrBuilder {
+
+    /**
+     * <code>string tenant = 1;</code>
+     * 
+     * @return The tenant.
+     */
+    java.lang.String getTenant();
+
+    /**
+     * <code>string tenant = 1;</code>
+     * 
+     * @return The bytes for tenant.
+     */
+    com.google.protobuf.ByteString getTenantBytes();
+
+    /**
+     * <code>string id = 2;</code>
+     * 
+     * @return The id.
+     */
+    java.lang.String getId();
+
+    /**
+     * <code>string id = 2;</code>
+     * 
+     * @return The bytes for id.
+     */
+    com.google.protobuf.ByteString getIdBytes();
+
+    /**
+     * <code>string name = 3;</code>
+     * 
+     * @return The name.
+     */
+    java.lang.String getName();
+
+    /**
+     * <code>string name = 3;</code>
+     * 
+     * @return The bytes for name.
+     */
+    com.google.protobuf.ByteString getNameBytes();
+
+    /**
+     * <code>string type = 4;</code>
+     * 
+     * @return The type.
+     */
+    java.lang.String getType();
+
+    /**
+     * <code>string type = 4;</code>
+     * 
+     * @return The bytes for type.
+     */
+    com.google.protobuf.ByteString getTypeBytes();
+
+    /**
+     * <code>int64 timestamp = 5;</code>
+     * 
+     * @return The timestamp.
+     */
+    long getTimestamp();
+
+    /**
+     * <code>map&lt;string, string&gt; tags = 6;</code>
+     */
+    int getTagsCount();
+
+    /**
+     * <code>map&lt;string, string&gt; tags = 6;</code>
+     */
+    boolean containsTags(java.lang.String key);
+
+    /**
+     * Use {@link #getTagsMap()} instead.
+     */
+    @java.lang.Deprecated
+    java.util.Map<java.lang.String, java.lang.String> getTags();
+
+    /**
+     * <code>map&lt;string, string&gt; tags = 6;</code>
+     */
+    java.util.Map<java.lang.String, java.lang.String> getTagsMap();
+
+    /**
+     * <code>map&lt;string, string&gt; tags = 6;</code>
+     */
+
+    java.lang.String getTagsOrDefault(java.lang.String key, java.lang.String defaultValue);
+
+    /**
+     * <code>map&lt;string, string&gt; tags = 6;</code>
+     */
+
+    java.lang.String getTagsOrThrow(java.lang.String key);
+  }
+  /**
+   * Protobuf type {@code io.holoinsight.server.query.grpc.Event}
+   */
+  public static final class Event extends com.google.protobuf.GeneratedMessageV3 implements
+      // @@protoc_insertion_point(message_implements:io.holoinsight.server.query.grpc.Event)
+      EventOrBuilder {
+    private static final long serialVersionUID = 0L;
+
+    // Use Event.newBuilder() to construct.
+    private Event(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+      super(builder);
+    }
+
+    private Event() {
+      tenant_ = "";
+      id_ = "";
+      name_ = "";
+      type_ = "";
+    }
+
+    @java.lang.Override
+    @SuppressWarnings({"unused"})
+    protected java.lang.Object newInstance(UnusedPrivateParameter unused) {
+      return new Event();
+    }
+
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet getUnknownFields() {
+      return this.unknownFields;
+    }
+
+    private Event(com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      this();
+      if (extensionRegistry == null) {
+        throw new java.lang.NullPointerException();
+      }
+      int mutable_bitField0_ = 0;
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            case 10: {
+              java.lang.String s = input.readStringRequireUtf8();
+
+              tenant_ = s;
+              break;
+            }
+            case 18: {
+              java.lang.String s = input.readStringRequireUtf8();
+
+              id_ = s;
+              break;
+            }
+            case 26: {
+              java.lang.String s = input.readStringRequireUtf8();
+
+              name_ = s;
+              break;
+            }
+            case 34: {
+              java.lang.String s = input.readStringRequireUtf8();
+
+              type_ = s;
+              break;
+            }
+            case 40: {
+
+              timestamp_ = input.readInt64();
+              break;
+            }
+            case 50: {
+              if (!((mutable_bitField0_ & 0x00000001) != 0)) {
+                tags_ =
+                    com.google.protobuf.MapField.newMapField(TagsDefaultEntryHolder.defaultEntry);
+                mutable_bitField0_ |= 0x00000001;
+              }
+              com.google.protobuf.MapEntry<java.lang.String, java.lang.String> tags__ =
+                  input.readMessage(TagsDefaultEntryHolder.defaultEntry.getParserForType(),
+                      extensionRegistry);
+              tags_.getMutableMap().put(tags__.getKey(), tags__.getValue());
+              break;
+            }
+            default: {
+              if (!parseUnknownField(input, unknownFields, extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(e).setUnfinishedMessage(this);
+      } finally {
+        this.unknownFields = unknownFields.build();
+        makeExtensionsImmutable();
+      }
+    }
+
+    public static final com.google.protobuf.Descriptors.Descriptor getDescriptor() {
+      return io.holoinsight.server.query.grpc.QueryProto.internal_static_io_holoinsight_server_query_grpc_Event_descriptor;
+    }
+
+    @SuppressWarnings({"rawtypes"})
+    @java.lang.Override
+    protected com.google.protobuf.MapField internalGetMapField(int number) {
+      switch (number) {
+        case 6:
+          return internalGetTags();
+        default:
+          throw new RuntimeException("Invalid map field number: " + number);
+      }
+    }
+
+    @java.lang.Override
+    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable internalGetFieldAccessorTable() {
+      return io.holoinsight.server.query.grpc.QueryProto.internal_static_io_holoinsight_server_query_grpc_Event_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(io.holoinsight.server.query.grpc.QueryProto.Event.class,
+              io.holoinsight.server.query.grpc.QueryProto.Event.Builder.class);
+    }
+
+    public static final int TENANT_FIELD_NUMBER = 1;
+    private volatile java.lang.Object tenant_;
+
+    /**
+     * <code>string tenant = 1;</code>
+     * 
+     * @return The tenant.
+     */
+    @java.lang.Override
+    public java.lang.String getTenant() {
+      java.lang.Object ref = tenant_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        tenant_ = s;
+        return s;
+      }
+    }
+
+    /**
+     * <code>string tenant = 1;</code>
+     * 
+     * @return The bytes for tenant.
+     */
+    @java.lang.Override
+    public com.google.protobuf.ByteString getTenantBytes() {
+      java.lang.Object ref = tenant_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b =
+            com.google.protobuf.ByteString.copyFromUtf8((java.lang.String) ref);
+        tenant_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    public static final int ID_FIELD_NUMBER = 2;
+    private volatile java.lang.Object id_;
+
+    /**
+     * <code>string id = 2;</code>
+     * 
+     * @return The id.
+     */
+    @java.lang.Override
+    public java.lang.String getId() {
+      java.lang.Object ref = id_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        id_ = s;
+        return s;
+      }
+    }
+
+    /**
+     * <code>string id = 2;</code>
+     * 
+     * @return The bytes for id.
+     */
+    @java.lang.Override
+    public com.google.protobuf.ByteString getIdBytes() {
+      java.lang.Object ref = id_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b =
+            com.google.protobuf.ByteString.copyFromUtf8((java.lang.String) ref);
+        id_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    public static final int NAME_FIELD_NUMBER = 3;
+    private volatile java.lang.Object name_;
+
+    /**
+     * <code>string name = 3;</code>
+     * 
+     * @return The name.
+     */
+    @java.lang.Override
+    public java.lang.String getName() {
+      java.lang.Object ref = name_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        name_ = s;
+        return s;
+      }
+    }
+
+    /**
+     * <code>string name = 3;</code>
+     * 
+     * @return The bytes for name.
+     */
+    @java.lang.Override
+    public com.google.protobuf.ByteString getNameBytes() {
+      java.lang.Object ref = name_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b =
+            com.google.protobuf.ByteString.copyFromUtf8((java.lang.String) ref);
+        name_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    public static final int TYPE_FIELD_NUMBER = 4;
+    private volatile java.lang.Object type_;
+
+    /**
+     * <code>string type = 4;</code>
+     * 
+     * @return The type.
+     */
+    @java.lang.Override
+    public java.lang.String getType() {
+      java.lang.Object ref = type_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        type_ = s;
+        return s;
+      }
+    }
+
+    /**
+     * <code>string type = 4;</code>
+     * 
+     * @return The bytes for type.
+     */
+    @java.lang.Override
+    public com.google.protobuf.ByteString getTypeBytes() {
+      java.lang.Object ref = type_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b =
+            com.google.protobuf.ByteString.copyFromUtf8((java.lang.String) ref);
+        type_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    public static final int TIMESTAMP_FIELD_NUMBER = 5;
+    private long timestamp_;
+
+    /**
+     * <code>int64 timestamp = 5;</code>
+     * 
+     * @return The timestamp.
+     */
+    @java.lang.Override
+    public long getTimestamp() {
+      return timestamp_;
+    }
+
+    public static final int TAGS_FIELD_NUMBER = 6;
+
+    private static final class TagsDefaultEntryHolder {
+      static final com.google.protobuf.MapEntry<java.lang.String, java.lang.String> defaultEntry =
+          com.google.protobuf.MapEntry.<java.lang.String, java.lang.String>newDefaultInstance(
+              io.holoinsight.server.query.grpc.QueryProto.internal_static_io_holoinsight_server_query_grpc_Event_TagsEntry_descriptor,
+              com.google.protobuf.WireFormat.FieldType.STRING, "",
+              com.google.protobuf.WireFormat.FieldType.STRING, "");
+    }
+
+    private com.google.protobuf.MapField<java.lang.String, java.lang.String> tags_;
+
+    private com.google.protobuf.MapField<java.lang.String, java.lang.String> internalGetTags() {
+      if (tags_ == null) {
+        return com.google.protobuf.MapField.emptyMapField(TagsDefaultEntryHolder.defaultEntry);
+      }
+      return tags_;
+    }
+
+    public int getTagsCount() {
+      return internalGetTags().getMap().size();
+    }
+
+    /**
+     * <code>map&lt;string, string&gt; tags = 6;</code>
+     */
+
+    @java.lang.Override
+    public boolean containsTags(java.lang.String key) {
+      if (key == null) {
+        throw new java.lang.NullPointerException();
+      }
+      return internalGetTags().getMap().containsKey(key);
+    }
+
+    /**
+     * Use {@link #getTagsMap()} instead.
+     */
+    @java.lang.Override
+    @java.lang.Deprecated
+    public java.util.Map<java.lang.String, java.lang.String> getTags() {
+      return getTagsMap();
+    }
+
+    /**
+     * <code>map&lt;string, string&gt; tags = 6;</code>
+     */
+    @java.lang.Override
+
+    public java.util.Map<java.lang.String, java.lang.String> getTagsMap() {
+      return internalGetTags().getMap();
+    }
+
+    /**
+     * <code>map&lt;string, string&gt; tags = 6;</code>
+     */
+    @java.lang.Override
+
+    public java.lang.String getTagsOrDefault(java.lang.String key, java.lang.String defaultValue) {
+      if (key == null) {
+        throw new java.lang.NullPointerException();
+      }
+      java.util.Map<java.lang.String, java.lang.String> map = internalGetTags().getMap();
+      return map.containsKey(key) ? map.get(key) : defaultValue;
+    }
+
+    /**
+     * <code>map&lt;string, string&gt; tags = 6;</code>
+     */
+    @java.lang.Override
+
+    public java.lang.String getTagsOrThrow(java.lang.String key) {
+      if (key == null) {
+        throw new java.lang.NullPointerException();
+      }
+      java.util.Map<java.lang.String, java.lang.String> map = internalGetTags().getMap();
+      if (!map.containsKey(key)) {
+        throw new java.lang.IllegalArgumentException();
+      }
+      return map.get(key);
+    }
+
+    private byte memoizedIsInitialized = -1;
+
+    @java.lang.Override
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized == 1)
+        return true;
+      if (isInitialized == 0)
+        return false;
+
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    @java.lang.Override
+    public void writeTo(com.google.protobuf.CodedOutputStream output) throws java.io.IOException {
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(tenant_)) {
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 1, tenant_);
+      }
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(id_)) {
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 2, id_);
+      }
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(name_)) {
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 3, name_);
+      }
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(type_)) {
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 4, type_);
+      }
+      if (timestamp_ != 0L) {
+        output.writeInt64(5, timestamp_);
+      }
+      com.google.protobuf.GeneratedMessageV3.serializeStringMapTo(output, internalGetTags(),
+          TagsDefaultEntryHolder.defaultEntry, 6);
+      unknownFields.writeTo(output);
+    }
+
+    @java.lang.Override
+    public int getSerializedSize() {
+      int size = memoizedSize;
+      if (size != -1)
+        return size;
+
+      size = 0;
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(tenant_)) {
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, tenant_);
+      }
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(id_)) {
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(2, id_);
+      }
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(name_)) {
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(3, name_);
+      }
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(type_)) {
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(4, type_);
+      }
+      if (timestamp_ != 0L) {
+        size += com.google.protobuf.CodedOutputStream.computeInt64Size(5, timestamp_);
+      }
+      for (java.util.Map.Entry<java.lang.String, java.lang.String> entry : internalGetTags()
+          .getMap().entrySet()) {
+        com.google.protobuf.MapEntry<java.lang.String, java.lang.String> tags__ =
+            TagsDefaultEntryHolder.defaultEntry.newBuilderForType().setKey(entry.getKey())
+                .setValue(entry.getValue()).build();
+        size += com.google.protobuf.CodedOutputStream.computeMessageSize(6, tags__);
+      }
+      size += unknownFields.getSerializedSize();
+      memoizedSize = size;
+      return size;
+    }
+
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
+      if (obj == this) {
+        return true;
+      }
+      if (!(obj instanceof io.holoinsight.server.query.grpc.QueryProto.Event)) {
+        return super.equals(obj);
+      }
+      io.holoinsight.server.query.grpc.QueryProto.Event other =
+          (io.holoinsight.server.query.grpc.QueryProto.Event) obj;
+
+      if (!getTenant().equals(other.getTenant()))
+        return false;
+      if (!getId().equals(other.getId()))
+        return false;
+      if (!getName().equals(other.getName()))
+        return false;
+      if (!getType().equals(other.getType()))
+        return false;
+      if (getTimestamp() != other.getTimestamp())
+        return false;
+      if (!internalGetTags().equals(other.internalGetTags()))
+        return false;
+      if (!unknownFields.equals(other.unknownFields))
+        return false;
+      return true;
+    }
+
+    @java.lang.Override
+    public int hashCode() {
+      if (memoizedHashCode != 0) {
+        return memoizedHashCode;
+      }
+      int hash = 41;
+      hash = (19 * hash) + getDescriptor().hashCode();
+      hash = (37 * hash) + TENANT_FIELD_NUMBER;
+      hash = (53 * hash) + getTenant().hashCode();
+      hash = (37 * hash) + ID_FIELD_NUMBER;
+      hash = (53 * hash) + getId().hashCode();
+      hash = (37 * hash) + NAME_FIELD_NUMBER;
+      hash = (53 * hash) + getName().hashCode();
+      hash = (37 * hash) + TYPE_FIELD_NUMBER;
+      hash = (53 * hash) + getType().hashCode();
+      hash = (37 * hash) + TIMESTAMP_FIELD_NUMBER;
+      hash = (53 * hash) + com.google.protobuf.Internal.hashLong(getTimestamp());
+      if (!internalGetTags().getMap().isEmpty()) {
+        hash = (37 * hash) + TAGS_FIELD_NUMBER;
+        hash = (53 * hash) + internalGetTags().hashCode();
+      }
+      hash = (29 * hash) + unknownFields.hashCode();
+      memoizedHashCode = hash;
+      return hash;
+    }
+
+    public static io.holoinsight.server.query.grpc.QueryProto.Event parseFrom(
+        java.nio.ByteBuffer data) throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+
+    public static io.holoinsight.server.query.grpc.QueryProto.Event parseFrom(
+        java.nio.ByteBuffer data, com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+
+    public static io.holoinsight.server.query.grpc.QueryProto.Event parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+
+    public static io.holoinsight.server.query.grpc.QueryProto.Event parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+
+    public static io.holoinsight.server.query.grpc.QueryProto.Event parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+
+    public static io.holoinsight.server.query.grpc.QueryProto.Event parseFrom(byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+
+    public static io.holoinsight.server.query.grpc.QueryProto.Event parseFrom(
+        java.io.InputStream input) throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3.parseWithIOException(PARSER, input);
+    }
+
+    public static io.holoinsight.server.query.grpc.QueryProto.Event parseFrom(
+        java.io.InputStream input, com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3.parseWithIOException(PARSER, input,
+          extensionRegistry);
+    }
+
+    public static io.holoinsight.server.query.grpc.QueryProto.Event parseDelimitedFrom(
+        java.io.InputStream input) throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3.parseDelimitedWithIOException(PARSER, input);
+    }
+
+    public static io.holoinsight.server.query.grpc.QueryProto.Event parseDelimitedFrom(
+        java.io.InputStream input, com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3.parseDelimitedWithIOException(PARSER, input,
+          extensionRegistry);
+    }
+
+    public static io.holoinsight.server.query.grpc.QueryProto.Event parseFrom(
+        com.google.protobuf.CodedInputStream input) throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3.parseWithIOException(PARSER, input);
+    }
+
+    public static io.holoinsight.server.query.grpc.QueryProto.Event parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry) throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3.parseWithIOException(PARSER, input,
+          extensionRegistry);
+    }
+
+    @java.lang.Override
+    public Builder newBuilderForType() {
+      return newBuilder();
+    }
+
+    public static Builder newBuilder() {
+      return DEFAULT_INSTANCE.toBuilder();
+    }
+
+    public static Builder newBuilder(io.holoinsight.server.query.grpc.QueryProto.Event prototype) {
+      return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+    }
+
+    @java.lang.Override
+    public Builder toBuilder() {
+      return this == DEFAULT_INSTANCE ? new Builder() : new Builder().mergeFrom(this);
+    }
+
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+
+    /**
+     * Protobuf type {@code io.holoinsight.server.query.grpc.Event}
+     */
+    public static final class Builder
+        extends com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
+        // @@protoc_insertion_point(builder_implements:io.holoinsight.server.query.grpc.Event)
+        io.holoinsight.server.query.grpc.QueryProto.EventOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor getDescriptor() {
+        return io.holoinsight.server.query.grpc.QueryProto.internal_static_io_holoinsight_server_query_grpc_Event_descriptor;
+      }
+
+      @SuppressWarnings({"rawtypes"})
+      protected com.google.protobuf.MapField internalGetMapField(int number) {
+        switch (number) {
+          case 6:
+            return internalGetTags();
+          default:
+            throw new RuntimeException("Invalid map field number: " + number);
+        }
+      }
+
+      @SuppressWarnings({"rawtypes"})
+      protected com.google.protobuf.MapField internalGetMutableMapField(int number) {
+        switch (number) {
+          case 6:
+            return internalGetMutableTags();
+          default:
+            throw new RuntimeException("Invalid map field number: " + number);
+        }
+      }
+
+      @java.lang.Override
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable internalGetFieldAccessorTable() {
+        return io.holoinsight.server.query.grpc.QueryProto.internal_static_io_holoinsight_server_query_grpc_Event_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                io.holoinsight.server.query.grpc.QueryProto.Event.class,
+                io.holoinsight.server.query.grpc.QueryProto.Event.Builder.class);
+      }
+
+      // Construct using io.holoinsight.server.query.grpc.QueryProto.Event.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+
+      private Builder(com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders) {
+        }
+      }
+
+      @java.lang.Override
+      public Builder clear() {
+        super.clear();
+        tenant_ = "";
+
+        id_ = "";
+
+        name_ = "";
+
+        type_ = "";
+
+        timestamp_ = 0L;
+
+        internalGetMutableTags().clear();
+        return this;
+      }
+
+      @java.lang.Override
+      public com.google.protobuf.Descriptors.Descriptor getDescriptorForType() {
+        return io.holoinsight.server.query.grpc.QueryProto.internal_static_io_holoinsight_server_query_grpc_Event_descriptor;
+      }
+
+      @java.lang.Override
+      public io.holoinsight.server.query.grpc.QueryProto.Event getDefaultInstanceForType() {
+        return io.holoinsight.server.query.grpc.QueryProto.Event.getDefaultInstance();
+      }
+
+      @java.lang.Override
+      public io.holoinsight.server.query.grpc.QueryProto.Event build() {
+        io.holoinsight.server.query.grpc.QueryProto.Event result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      @java.lang.Override
+      public io.holoinsight.server.query.grpc.QueryProto.Event buildPartial() {
+        io.holoinsight.server.query.grpc.QueryProto.Event result =
+            new io.holoinsight.server.query.grpc.QueryProto.Event(this);
+        int from_bitField0_ = bitField0_;
+        result.tenant_ = tenant_;
+        result.id_ = id_;
+        result.name_ = name_;
+        result.type_ = type_;
+        result.timestamp_ = timestamp_;
+        result.tags_ = internalGetTags();
+        result.tags_.makeImmutable();
+        onBuilt();
+        return result;
+      }
+
+      @java.lang.Override
+      public Builder clone() {
+        return super.clone();
+      }
+
+      @java.lang.Override
+      public Builder setField(com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.setField(field, value);
+      }
+
+      @java.lang.Override
+      public Builder clearField(com.google.protobuf.Descriptors.FieldDescriptor field) {
+        return super.clearField(field);
+      }
+
+      @java.lang.Override
+      public Builder clearOneof(com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+        return super.clearOneof(oneof);
+      }
+
+      @java.lang.Override
+      public Builder setRepeatedField(com.google.protobuf.Descriptors.FieldDescriptor field,
+          int index, java.lang.Object value) {
+        return super.setRepeatedField(field, index, value);
+      }
+
+      @java.lang.Override
+      public Builder addRepeatedField(com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.addRepeatedField(field, value);
+      }
+
+      @java.lang.Override
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof io.holoinsight.server.query.grpc.QueryProto.Event) {
+          return mergeFrom((io.holoinsight.server.query.grpc.QueryProto.Event) other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(io.holoinsight.server.query.grpc.QueryProto.Event other) {
+        if (other == io.holoinsight.server.query.grpc.QueryProto.Event.getDefaultInstance())
+          return this;
+        if (!other.getTenant().isEmpty()) {
+          tenant_ = other.tenant_;
+          onChanged();
+        }
+        if (!other.getId().isEmpty()) {
+          id_ = other.id_;
+          onChanged();
+        }
+        if (!other.getName().isEmpty()) {
+          name_ = other.name_;
+          onChanged();
+        }
+        if (!other.getType().isEmpty()) {
+          type_ = other.type_;
+          onChanged();
+        }
+        if (other.getTimestamp() != 0L) {
+          setTimestamp(other.getTimestamp());
+        }
+        internalGetMutableTags().mergeFrom(other.internalGetTags());
+        this.mergeUnknownFields(other.unknownFields);
+        onChanged();
+        return this;
+      }
+
+      @java.lang.Override
+      public final boolean isInitialized() {
+        return true;
+      }
+
+      @java.lang.Override
+      public Builder mergeFrom(com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry) throws java.io.IOException {
+        io.holoinsight.server.query.grpc.QueryProto.Event parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage =
+              (io.holoinsight.server.query.grpc.QueryProto.Event) e.getUnfinishedMessage();
+          throw e.unwrapIOException();
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
+          }
+        }
+        return this;
+      }
+
+      private int bitField0_;
+
+      private java.lang.Object tenant_ = "";
+
+      /**
+       * <code>string tenant = 1;</code>
+       * 
+       * @return The tenant.
+       */
+      public java.lang.String getTenant() {
+        java.lang.Object ref = tenant_;
+        if (!(ref instanceof java.lang.String)) {
+          com.google.protobuf.ByteString bs = (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          tenant_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+
+      /**
+       * <code>string tenant = 1;</code>
+       * 
+       * @return The bytes for tenant.
+       */
+      public com.google.protobuf.ByteString getTenantBytes() {
+        java.lang.Object ref = tenant_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b =
+              com.google.protobuf.ByteString.copyFromUtf8((java.lang.String) ref);
+          tenant_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+
+      /**
+       * <code>string tenant = 1;</code>
+       * 
+       * @param value The tenant to set.
+       * @return This builder for chaining.
+       */
+      public Builder setTenant(java.lang.String value) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+
+        tenant_ = value;
+        onChanged();
+        return this;
+      }
+
+      /**
+       * <code>string tenant = 1;</code>
+       * 
+       * @return This builder for chaining.
+       */
+      public Builder clearTenant() {
+
+        tenant_ = getDefaultInstance().getTenant();
+        onChanged();
+        return this;
+      }
+
+      /**
+       * <code>string tenant = 1;</code>
+       * 
+       * @param value The bytes for tenant to set.
+       * @return This builder for chaining.
+       */
+      public Builder setTenantBytes(com.google.protobuf.ByteString value) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        checkByteStringIsUtf8(value);
+
+        tenant_ = value;
+        onChanged();
+        return this;
+      }
+
+      private java.lang.Object id_ = "";
+
+      /**
+       * <code>string id = 2;</code>
+       * 
+       * @return The id.
+       */
+      public java.lang.String getId() {
+        java.lang.Object ref = id_;
+        if (!(ref instanceof java.lang.String)) {
+          com.google.protobuf.ByteString bs = (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          id_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+
+      /**
+       * <code>string id = 2;</code>
+       * 
+       * @return The bytes for id.
+       */
+      public com.google.protobuf.ByteString getIdBytes() {
+        java.lang.Object ref = id_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b =
+              com.google.protobuf.ByteString.copyFromUtf8((java.lang.String) ref);
+          id_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+
+      /**
+       * <code>string id = 2;</code>
+       * 
+       * @param value The id to set.
+       * @return This builder for chaining.
+       */
+      public Builder setId(java.lang.String value) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+
+        id_ = value;
+        onChanged();
+        return this;
+      }
+
+      /**
+       * <code>string id = 2;</code>
+       * 
+       * @return This builder for chaining.
+       */
+      public Builder clearId() {
+
+        id_ = getDefaultInstance().getId();
+        onChanged();
+        return this;
+      }
+
+      /**
+       * <code>string id = 2;</code>
+       * 
+       * @param value The bytes for id to set.
+       * @return This builder for chaining.
+       */
+      public Builder setIdBytes(com.google.protobuf.ByteString value) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        checkByteStringIsUtf8(value);
+
+        id_ = value;
+        onChanged();
+        return this;
+      }
+
+      private java.lang.Object name_ = "";
+
+      /**
+       * <code>string name = 3;</code>
+       * 
+       * @return The name.
+       */
+      public java.lang.String getName() {
+        java.lang.Object ref = name_;
+        if (!(ref instanceof java.lang.String)) {
+          com.google.protobuf.ByteString bs = (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          name_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+
+      /**
+       * <code>string name = 3;</code>
+       * 
+       * @return The bytes for name.
+       */
+      public com.google.protobuf.ByteString getNameBytes() {
+        java.lang.Object ref = name_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b =
+              com.google.protobuf.ByteString.copyFromUtf8((java.lang.String) ref);
+          name_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+
+      /**
+       * <code>string name = 3;</code>
+       * 
+       * @param value The name to set.
+       * @return This builder for chaining.
+       */
+      public Builder setName(java.lang.String value) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+
+        name_ = value;
+        onChanged();
+        return this;
+      }
+
+      /**
+       * <code>string name = 3;</code>
+       * 
+       * @return This builder for chaining.
+       */
+      public Builder clearName() {
+
+        name_ = getDefaultInstance().getName();
+        onChanged();
+        return this;
+      }
+
+      /**
+       * <code>string name = 3;</code>
+       * 
+       * @param value The bytes for name to set.
+       * @return This builder for chaining.
+       */
+      public Builder setNameBytes(com.google.protobuf.ByteString value) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        checkByteStringIsUtf8(value);
+
+        name_ = value;
+        onChanged();
+        return this;
+      }
+
+      private java.lang.Object type_ = "";
+
+      /**
+       * <code>string type = 4;</code>
+       * 
+       * @return The type.
+       */
+      public java.lang.String getType() {
+        java.lang.Object ref = type_;
+        if (!(ref instanceof java.lang.String)) {
+          com.google.protobuf.ByteString bs = (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          type_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+
+      /**
+       * <code>string type = 4;</code>
+       * 
+       * @return The bytes for type.
+       */
+      public com.google.protobuf.ByteString getTypeBytes() {
+        java.lang.Object ref = type_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b =
+              com.google.protobuf.ByteString.copyFromUtf8((java.lang.String) ref);
+          type_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+
+      /**
+       * <code>string type = 4;</code>
+       * 
+       * @param value The type to set.
+       * @return This builder for chaining.
+       */
+      public Builder setType(java.lang.String value) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+
+        type_ = value;
+        onChanged();
+        return this;
+      }
+
+      /**
+       * <code>string type = 4;</code>
+       * 
+       * @return This builder for chaining.
+       */
+      public Builder clearType() {
+
+        type_ = getDefaultInstance().getType();
+        onChanged();
+        return this;
+      }
+
+      /**
+       * <code>string type = 4;</code>
+       * 
+       * @param value The bytes for type to set.
+       * @return This builder for chaining.
+       */
+      public Builder setTypeBytes(com.google.protobuf.ByteString value) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        checkByteStringIsUtf8(value);
+
+        type_ = value;
+        onChanged();
+        return this;
+      }
+
+      private long timestamp_;
+
+      /**
+       * <code>int64 timestamp = 5;</code>
+       * 
+       * @return The timestamp.
+       */
+      @java.lang.Override
+      public long getTimestamp() {
+        return timestamp_;
+      }
+
+      /**
+       * <code>int64 timestamp = 5;</code>
+       * 
+       * @param value The timestamp to set.
+       * @return This builder for chaining.
+       */
+      public Builder setTimestamp(long value) {
+
+        timestamp_ = value;
+        onChanged();
+        return this;
+      }
+
+      /**
+       * <code>int64 timestamp = 5;</code>
+       * 
+       * @return This builder for chaining.
+       */
+      public Builder clearTimestamp() {
+
+        timestamp_ = 0L;
+        onChanged();
+        return this;
+      }
+
+      private com.google.protobuf.MapField<java.lang.String, java.lang.String> tags_;
+
+      private com.google.protobuf.MapField<java.lang.String, java.lang.String> internalGetTags() {
+        if (tags_ == null) {
+          return com.google.protobuf.MapField.emptyMapField(TagsDefaultEntryHolder.defaultEntry);
+        }
+        return tags_;
+      }
+
+      private com.google.protobuf.MapField<java.lang.String, java.lang.String> internalGetMutableTags() {
+        onChanged();;
+        if (tags_ == null) {
+          tags_ = com.google.protobuf.MapField.newMapField(TagsDefaultEntryHolder.defaultEntry);
+        }
+        if (!tags_.isMutable()) {
+          tags_ = tags_.copy();
+        }
+        return tags_;
+      }
+
+      public int getTagsCount() {
+        return internalGetTags().getMap().size();
+      }
+
+      /**
+       * <code>map&lt;string, string&gt; tags = 6;</code>
+       */
+
+      @java.lang.Override
+      public boolean containsTags(java.lang.String key) {
+        if (key == null) {
+          throw new java.lang.NullPointerException();
+        }
+        return internalGetTags().getMap().containsKey(key);
+      }
+
+      /**
+       * Use {@link #getTagsMap()} instead.
+       */
+      @java.lang.Override
+      @java.lang.Deprecated
+      public java.util.Map<java.lang.String, java.lang.String> getTags() {
+        return getTagsMap();
+      }
+
+      /**
+       * <code>map&lt;string, string&gt; tags = 6;</code>
+       */
+      @java.lang.Override
+
+      public java.util.Map<java.lang.String, java.lang.String> getTagsMap() {
+        return internalGetTags().getMap();
+      }
+
+      /**
+       * <code>map&lt;string, string&gt; tags = 6;</code>
+       */
+      @java.lang.Override
+
+      public java.lang.String getTagsOrDefault(java.lang.String key,
+          java.lang.String defaultValue) {
+        if (key == null) {
+          throw new java.lang.NullPointerException();
+        }
+        java.util.Map<java.lang.String, java.lang.String> map = internalGetTags().getMap();
+        return map.containsKey(key) ? map.get(key) : defaultValue;
+      }
+
+      /**
+       * <code>map&lt;string, string&gt; tags = 6;</code>
+       */
+      @java.lang.Override
+
+      public java.lang.String getTagsOrThrow(java.lang.String key) {
+        if (key == null) {
+          throw new java.lang.NullPointerException();
+        }
+        java.util.Map<java.lang.String, java.lang.String> map = internalGetTags().getMap();
+        if (!map.containsKey(key)) {
+          throw new java.lang.IllegalArgumentException();
+        }
+        return map.get(key);
+      }
+
+      public Builder clearTags() {
+        internalGetMutableTags().getMutableMap().clear();
+        return this;
+      }
+
+      /**
+       * <code>map&lt;string, string&gt; tags = 6;</code>
+       */
+
+      public Builder removeTags(java.lang.String key) {
+        if (key == null) {
+          throw new java.lang.NullPointerException();
+        }
+        internalGetMutableTags().getMutableMap().remove(key);
+        return this;
+      }
+
+      /**
+       * Use alternate mutation accessors instead.
+       */
+      @java.lang.Deprecated
+      public java.util.Map<java.lang.String, java.lang.String> getMutableTags() {
+        return internalGetMutableTags().getMutableMap();
+      }
+
+      /**
+       * <code>map&lt;string, string&gt; tags = 6;</code>
+       */
+      public Builder putTags(java.lang.String key, java.lang.String value) {
+        if (key == null) {
+          throw new java.lang.NullPointerException();
+        }
+        if (value == null) {
+          throw new java.lang.NullPointerException();
+        }
+        internalGetMutableTags().getMutableMap().put(key, value);
+        return this;
+      }
+
+      /**
+       * <code>map&lt;string, string&gt; tags = 6;</code>
+       */
+
+      public Builder putAllTags(java.util.Map<java.lang.String, java.lang.String> values) {
+        internalGetMutableTags().getMutableMap().putAll(values);
+        return this;
+      }
+
+      @java.lang.Override
+      public final Builder setUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.setUnknownFields(unknownFields);
+      }
+
+      @java.lang.Override
+      public final Builder mergeUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.mergeUnknownFields(unknownFields);
+      }
+
+
+      // @@protoc_insertion_point(builder_scope:io.holoinsight.server.query.grpc.Event)
+    }
+
+    // @@protoc_insertion_point(class_scope:io.holoinsight.server.query.grpc.Event)
+    private static final io.holoinsight.server.query.grpc.QueryProto.Event DEFAULT_INSTANCE;
+    static {
+      DEFAULT_INSTANCE = new io.holoinsight.server.query.grpc.QueryProto.Event();
+    }
+
+    public static io.holoinsight.server.query.grpc.QueryProto.Event getDefaultInstance() {
+      return DEFAULT_INSTANCE;
+    }
+
+    private static final com.google.protobuf.Parser<Event> PARSER =
+        new com.google.protobuf.AbstractParser<Event>() {
+          @java.lang.Override
+          public Event parsePartialFrom(com.google.protobuf.CodedInputStream input,
+              com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+              throws com.google.protobuf.InvalidProtocolBufferException {
+            return new Event(input, extensionRegistry);
+          }
+        };
+
+    public static com.google.protobuf.Parser<Event> parser() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<Event> getParserForType() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public io.holoinsight.server.query.grpc.QueryProto.Event getDefaultInstanceForType() {
+      return DEFAULT_INSTANCE;
+    }
+
+  }
+
   private static final com.google.protobuf.Descriptors.Descriptor internal_static_io_holoinsight_server_query_grpc_QueryRequest_descriptor;
   private static final com.google.protobuf.GeneratedMessageV3.FieldAccessorTable internal_static_io_holoinsight_server_query_grpc_QueryRequest_fieldAccessorTable;
   private static final com.google.protobuf.Descriptors.Descriptor internal_static_io_holoinsight_server_query_grpc_QueryMetricsRequest_descriptor;
@@ -55041,6 +58368,16 @@ public final class QueryProto {
   private static final com.google.protobuf.GeneratedMessageV3.FieldAccessorTable internal_static_io_holoinsight_server_query_grpc_DetailRow_fieldAccessorTable;
   private static final com.google.protobuf.Descriptors.Descriptor internal_static_io_holoinsight_server_query_grpc_DetailValue_descriptor;
   private static final com.google.protobuf.GeneratedMessageV3.FieldAccessorTable internal_static_io_holoinsight_server_query_grpc_DetailValue_fieldAccessorTable;
+  private static final com.google.protobuf.Descriptors.Descriptor internal_static_io_holoinsight_server_query_grpc_QueryEventRequest_descriptor;
+  private static final com.google.protobuf.GeneratedMessageV3.FieldAccessorTable internal_static_io_holoinsight_server_query_grpc_QueryEventRequest_fieldAccessorTable;
+  private static final com.google.protobuf.Descriptors.Descriptor internal_static_io_holoinsight_server_query_grpc_QueryEventRequest_TermParamsEntry_descriptor;
+  private static final com.google.protobuf.GeneratedMessageV3.FieldAccessorTable internal_static_io_holoinsight_server_query_grpc_QueryEventRequest_TermParamsEntry_fieldAccessorTable;
+  private static final com.google.protobuf.Descriptors.Descriptor internal_static_io_holoinsight_server_query_grpc_QueryEventResponse_descriptor;
+  private static final com.google.protobuf.GeneratedMessageV3.FieldAccessorTable internal_static_io_holoinsight_server_query_grpc_QueryEventResponse_fieldAccessorTable;
+  private static final com.google.protobuf.Descriptors.Descriptor internal_static_io_holoinsight_server_query_grpc_Event_descriptor;
+  private static final com.google.protobuf.GeneratedMessageV3.FieldAccessorTable internal_static_io_holoinsight_server_query_grpc_Event_fieldAccessorTable;
+  private static final com.google.protobuf.Descriptors.Descriptor internal_static_io_holoinsight_server_query_grpc_Event_TagsEntry_descriptor;
+  private static final com.google.protobuf.GeneratedMessageV3.FieldAccessorTable internal_static_io_holoinsight_server_query_grpc_Event_TagsEntry_fieldAccessorTable;
 
   public static com.google.protobuf.Descriptors.FileDescriptor getDescriptor() {
     return descriptor;
@@ -55217,58 +58554,71 @@ public final class QueryProto {
         + "\001\001\022\026\n\tboolValue\030\003 \001(\010H\001\210\001\001\022\030\n\013doubleValu"
         + "e\030\004 \001(\001H\002\210\001\001\022\033\n\016timestampValue\030\005 \001(\003H\003\210\001"
         + "\001B\013\n\t_strValueB\014\n\n_boolValueB\016\n\014_doubleV"
-        + "alueB\021\n\017_timestampValue2\216\025\n\014QueryService"
-        + "\022l\n\tQueryData\022..io.holoinsight.server.qu"
-        + "ery.grpc.QueryRequest\032/.io.holoinsight.s"
-        + "erver.query.grpc.QueryResponse\022l\n\tQueryT"
-        + "ags\022..io.holoinsight.server.query.grpc.Q"
-        + "ueryRequest\032/.io.holoinsight.server.quer"
-        + "y.grpc.QueryResponse\022t\n\013QuerySchema\022..io"
-        + ".holoinsight.server.query.grpc.QueryRequ" + "est\0325.io.holoinsight.server.query.grpc.Q"
-        + "uerySchemaResponse\022}\n\014QueryMetrics\0225.io."
-        + "holoinsight.server.query.grpc.QueryMetri" + "csRequest\0326.io.holoinsight.server.query."
-        + "grpc.QueryMetricsResponse\022m\n\nDeleteKeys\022"
-        + "..io.holoinsight.server.query.grpc.Query" + "Request\032/.io.holoinsight.server.query.gr"
-        + "pc.QueryResponse\022w\n\017pqlInstantQuery\0223.io"
-        + ".holoinsight.server.query.grpc.PqlInstan" + "tRequest\032/.io.holoinsight.server.query.g"
-        + "rpc.QueryResponse\022s\n\rpqlRangeQuery\0221.io."
-        + "holoinsight.server.query.grpc.PqlRangeRe" + "quest\032/.io.holoinsight.server.query.grpc"
-        + ".QueryResponse\022u\n\020QueryBasicTraces\0223.io."
-        + "holoinsight.server.query.grpc.QueryTrace" + "Request\032,.io.holoinsight.server.query.gr"
-        + "pc.TraceBrief\022j\n\nQueryTrace\0223.io.holoins"
-        + "ight.server.query.grpc.QueryTraceRequest"
-        + "\032\'.io.holoinsight.server.query.grpc.Trac"
-        + "e\022v\n\016QueryTraceTree\0223.io.holoinsight.ser"
-        + "ver.query.grpc.QueryTraceRequest\032/.io.ho" + "loinsight.server.query.grpc.TraceTreeLis"
-        + "t\022t\n\014BillingTrace\0223.io.holoinsight.serve"
-        + "r.query.grpc.QueryTraceRequest\032/.io.holo"
-        + "insight.server.query.grpc.StatisticData\022"
-        + "{\n\020QueryServiceList\0222.io.holoinsight.ser"
-        + "ver.query.grpc.QueryMetaRequest\0323.io.hol" + "oinsight.server.query.grpc.QueryMetaResp"
-        + "onse\022|\n\021QueryEndpointList\0222.io.holoinsig"
-        + "ht.server.query.grpc.QueryMetaRequest\0323." + "io.holoinsight.server.query.grpc.QueryMe"
-        + "taResponse\022\203\001\n\030QueryServiceInstanceList\022"
-        + "2.io.holoinsight.server.query.grpc.Query" + "MetaRequest\0323.io.holoinsight.server.quer"
-        + "y.grpc.QueryMetaResponse\022\211\001\n\022QueryCompon"
-        + "entList\0222.io.holoinsight.server.query.gr"
-        + "pc.QueryMetaRequest\032?.io.holoinsight.ser" + "ver.query.grpc.QueryVirtualComponentResp"
-        + "onse\022x\n\026QueryComponentTraceIds\0222.io.holo"
-        + "insight.server.query.grpc.QueryMetaReque" + "st\032*.io.holoinsight.server.query.grpc.Tr"
-        + "aceIds\022s\n\rQueryTopology\0226.io.holoinsight"
-        + ".server.query.grpc.QueryTopologyRequest\032" + "*.io.holoinsight.server.query.grpc.Topol"
-        + "ogy\022~\n\020QuerySlowSqlList\0222.io.holoinsight"
-        + ".server.query.grpc.QueryMetaRequest\0326.io" + ".holoinsight.server.query.grpc.QuerySlow"
-        + "SqlResponse\022y\n\016StatisticTrace\0222.io.holoi"
-        + "nsight.server.query.grpc.StatisticReques" + "t\0323.io.holoinsight.server.query.grpc.Sta"
-        + "tisticDataList\022\204\001\n\025QueryServiceErrorList"
-        + "\0222.io.holoinsight.server.query.grpc.Quer"
-        + "yMetaRequest\0327.io.holoinsight.server.que"
-        + "ry.grpc.CommonMapTypeDataList\022\206\001\n\027QueryS"
-        + "erviceErrorDetail\0222.io.holoinsight.serve"
-        + "r.query.grpc.QueryMetaRequest\0327.io.holoi" + "nsight.server.query.grpc.CommonMapTypeDa"
-        + "taList\022x\n\017QueryDetailData\022..io.holoinsig"
-        + "ht.server.query.grpc.QueryRequest\0325.io.h" + "oloinsight.server.query.grpc.QueryDetail"
-        + "ResponseB\"\n io.holoinsight.server.query." + "grpcb\006proto3"};
+        + "alueB\021\n\017_timestampValue\"\313\001\n\021QueryEventRe"
+        + "quest\022\016\n\006tenant\030\001 \001(\t\022\r\n\005start\030\002 \001(\003\022\013\n\003"
+        + "end\030\003 \001(\003\022W\n\ntermParams\030\004 \003(\0132C.io.holoi"
+        + "nsight.server.query.grpc.QueryEventReque"
+        + "st.TermParamsEntry\0321\n\017TermParamsEntry\022\013\n"
+        + "\003key\030\001 \001(\t\022\r\n\005value\030\002 \001(\t:\0028\001\"L\n\022QueryEv"
+        + "entResponse\0226\n\005event\030\001 \003(\0132\'.io.holoinsi"
+        + "ght.server.query.grpc.Event\"\300\001\n\005Event\022\016\n"
+        + "\006tenant\030\001 \001(\t\022\n\n\002id\030\002 \001(\t\022\014\n\004name\030\003 \001(\t\022"
+        + "\014\n\004type\030\004 \001(\t\022\021\n\ttimestamp\030\005 \001(\003\022?\n\004tags"
+        + "\030\006 \003(\01321.io.holoinsight.server.query.grp"
+        + "c.Event.TagsEntry\032+\n\tTagsEntry\022\013\n\003key\030\001 "
+        + "\001(\t\022\r\n\005value\030\002 \001(\t:\0028\0012\210\026\n\014QueryService\022"
+        + "l\n\tQueryData\022..io.holoinsight.server.que"
+        + "ry.grpc.QueryRequest\032/.io.holoinsight.se"
+        + "rver.query.grpc.QueryResponse\022l\n\tQueryTa"
+        + "gs\022..io.holoinsight.server.query.grpc.Qu"
+        + "eryRequest\032/.io.holoinsight.server.query"
+        + ".grpc.QueryResponse\022t\n\013QuerySchema\022..io."
+        + "holoinsight.server.query.grpc.QueryReque" + "st\0325.io.holoinsight.server.query.grpc.Qu"
+        + "erySchemaResponse\022}\n\014QueryMetrics\0225.io.h"
+        + "oloinsight.server.query.grpc.QueryMetric" + "sRequest\0326.io.holoinsight.server.query.g"
+        + "rpc.QueryMetricsResponse\022m\n\nDeleteKeys\022."
+        + ".io.holoinsight.server.query.grpc.QueryR" + "equest\032/.io.holoinsight.server.query.grp"
+        + "c.QueryResponse\022w\n\017pqlInstantQuery\0223.io."
+        + "holoinsight.server.query.grpc.PqlInstant" + "Request\032/.io.holoinsight.server.query.gr"
+        + "pc.QueryResponse\022s\n\rpqlRangeQuery\0221.io.h"
+        + "oloinsight.server.query.grpc.PqlRangeReq" + "uest\032/.io.holoinsight.server.query.grpc."
+        + "QueryResponse\022u\n\020QueryBasicTraces\0223.io.h"
+        + "oloinsight.server.query.grpc.QueryTraceR" + "equest\032,.io.holoinsight.server.query.grp"
+        + "c.TraceBrief\022j\n\nQueryTrace\0223.io.holoinsi"
+        + "ght.server.query.grpc.QueryTraceRequest\032"
+        + "\'.io.holoinsight.server.query.grpc.Trace"
+        + "\022v\n\016QueryTraceTree\0223.io.holoinsight.serv"
+        + "er.query.grpc.QueryTraceRequest\032/.io.hol" + "oinsight.server.query.grpc.TraceTreeList"
+        + "\022t\n\014BillingTrace\0223.io.holoinsight.server"
+        + ".query.grpc.QueryTraceRequest\032/.io.holoi"
+        + "nsight.server.query.grpc.StatisticData\022{"
+        + "\n\020QueryServiceList\0222.io.holoinsight.serv"
+        + "er.query.grpc.QueryMetaRequest\0323.io.holo" + "insight.server.query.grpc.QueryMetaRespo"
+        + "nse\022|\n\021QueryEndpointList\0222.io.holoinsigh"
+        + "t.server.query.grpc.QueryMetaRequest\0323.i" + "o.holoinsight.server.query.grpc.QueryMet"
+        + "aResponse\022\203\001\n\030QueryServiceInstanceList\0222"
+        + ".io.holoinsight.server.query.grpc.QueryM" + "etaRequest\0323.io.holoinsight.server.query"
+        + ".grpc.QueryMetaResponse\022\211\001\n\022QueryCompone"
+        + "ntList\0222.io.holoinsight.server.query.grp"
+        + "c.QueryMetaRequest\032?.io.holoinsight.serv" + "er.query.grpc.QueryVirtualComponentRespo"
+        + "nse\022x\n\026QueryComponentTraceIds\0222.io.holoi"
+        + "nsight.server.query.grpc.QueryMetaReques" + "t\032*.io.holoinsight.server.query.grpc.Tra"
+        + "ceIds\022s\n\rQueryTopology\0226.io.holoinsight."
+        + "server.query.grpc.QueryTopologyRequest\032*" + ".io.holoinsight.server.query.grpc.Topolo"
+        + "gy\022~\n\020QuerySlowSqlList\0222.io.holoinsight."
+        + "server.query.grpc.QueryMetaRequest\0326.io." + "holoinsight.server.query.grpc.QuerySlowS"
+        + "qlResponse\022y\n\016StatisticTrace\0222.io.holoin"
+        + "sight.server.query.grpc.StatisticRequest" + "\0323.io.holoinsight.server.query.grpc.Stat"
+        + "isticDataList\022\204\001\n\025QueryServiceErrorList\022"
+        + "2.io.holoinsight.server.query.grpc.Query" + "MetaRequest\0327.io.holoinsight.server.quer"
+        + "y.grpc.CommonMapTypeDataList\022\206\001\n\027QuerySe"
+        + "rviceErrorDetail\0222.io.holoinsight.server"
+        + ".query.grpc.QueryMetaRequest\0327.io.holoin" + "sight.server.query.grpc.CommonMapTypeDat"
+        + "aList\022x\n\017QueryDetailData\022..io.holoinsigh"
+        + "t.server.query.grpc.QueryRequest\0325.io.ho" + "loinsight.server.query.grpc.QueryDetailR"
+        + "esponse\022x\n\013QueryEvents\0223.io.holoinsight."
+        + "server.query.grpc.QueryEventRequest\0324.io" + ".holoinsight.server.query.grpc.QueryEven"
+        + "tResponseB\"\n io.holoinsight.server.query" + ".grpcb\006proto3"};
     descriptor = com.google.protobuf.Descriptors.FileDescriptor.internalBuildGeneratedFileFrom(
         descriptorData, new com.google.protobuf.Descriptors.FileDescriptor[] {
             com.google.protobuf.AnyProto.getDescriptor(),});
@@ -55615,6 +58965,37 @@ public final class QueryProto {
             internal_static_io_holoinsight_server_query_grpc_DetailValue_descriptor,
             new java.lang.String[] {"Type", "StrValue", "BoolValue", "DoubleValue",
                 "TimestampValue", "StrValue", "BoolValue", "DoubleValue", "TimestampValue",});
+    internal_static_io_holoinsight_server_query_grpc_QueryEventRequest_descriptor =
+        getDescriptor().getMessageTypes().get(46);
+    internal_static_io_holoinsight_server_query_grpc_QueryEventRequest_fieldAccessorTable =
+        new com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+            internal_static_io_holoinsight_server_query_grpc_QueryEventRequest_descriptor,
+            new java.lang.String[] {"Tenant", "Start", "End", "TermParams",});
+    internal_static_io_holoinsight_server_query_grpc_QueryEventRequest_TermParamsEntry_descriptor =
+        internal_static_io_holoinsight_server_query_grpc_QueryEventRequest_descriptor
+            .getNestedTypes().get(0);
+    internal_static_io_holoinsight_server_query_grpc_QueryEventRequest_TermParamsEntry_fieldAccessorTable =
+        new com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+            internal_static_io_holoinsight_server_query_grpc_QueryEventRequest_TermParamsEntry_descriptor,
+            new java.lang.String[] {"Key", "Value",});
+    internal_static_io_holoinsight_server_query_grpc_QueryEventResponse_descriptor =
+        getDescriptor().getMessageTypes().get(47);
+    internal_static_io_holoinsight_server_query_grpc_QueryEventResponse_fieldAccessorTable =
+        new com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+            internal_static_io_holoinsight_server_query_grpc_QueryEventResponse_descriptor,
+            new java.lang.String[] {"Event",});
+    internal_static_io_holoinsight_server_query_grpc_Event_descriptor =
+        getDescriptor().getMessageTypes().get(48);
+    internal_static_io_holoinsight_server_query_grpc_Event_fieldAccessorTable =
+        new com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+            internal_static_io_holoinsight_server_query_grpc_Event_descriptor,
+            new java.lang.String[] {"Tenant", "Id", "Name", "Type", "Timestamp", "Tags",});
+    internal_static_io_holoinsight_server_query_grpc_Event_TagsEntry_descriptor =
+        internal_static_io_holoinsight_server_query_grpc_Event_descriptor.getNestedTypes().get(0);
+    internal_static_io_holoinsight_server_query_grpc_Event_TagsEntry_fieldAccessorTable =
+        new com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+            internal_static_io_holoinsight_server_query_grpc_Event_TagsEntry_descriptor,
+            new java.lang.String[] {"Key", "Value",});
     com.google.protobuf.AnyProto.getDescriptor();
   }
 

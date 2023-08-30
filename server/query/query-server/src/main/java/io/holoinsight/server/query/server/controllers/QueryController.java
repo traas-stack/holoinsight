@@ -235,4 +235,14 @@ public class QueryController {
     }
   }
 
+  @PostMapping(path = "/events", produces = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<?> queryEvents(@RequestBody QueryProto.QueryEventRequest request) {
+    try {
+      return ResponseEntity.ok(queryService.queryEvents(request));
+    } catch (Exception e) {
+      e.printStackTrace();
+      return ResponseEntity.badRequest().body(Collections.singletonMap("message", e.getMessage()));
+    }
+  }
+
 }

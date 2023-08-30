@@ -7,6 +7,7 @@ import com.google.common.collect.Iterables;
 import io.holoinsight.server.apm.common.model.query.BasicTrace;
 import io.holoinsight.server.apm.common.model.query.Call;
 import io.holoinsight.server.apm.common.model.query.Endpoint;
+import io.holoinsight.server.apm.common.model.query.Event;
 import io.holoinsight.server.apm.common.model.query.Node;
 import io.holoinsight.server.apm.common.model.query.ResponseMetric;
 import io.holoinsight.server.apm.common.model.query.Service;
@@ -544,6 +545,29 @@ public class ApmConvertor {
     result.setAddress(slowSql.getAddress());
     result.setStartTime(slowSql.getStartTime());
 
+    return result;
+  }
+
+  public static QueryProto.Event convertEvent(Event event) {
+    QueryProto.Event.Builder builder = QueryProto.Event.newBuilder();
+    builder.setTenant(event.getTenant());
+    builder.setName(event.getName());
+    builder.setId(event.getId());
+    builder.setTimestamp(event.getTimestamp());
+    builder.setType(event.getType());
+    if (event.getTags() != null) {
+      builder.putAllTags(event.getTags());
+    }
+    return builder.build();
+  }
+
+  public static Event deConvertEvent(QueryProto.Event event) {
+    Event result = new Event();
+    result.setId(event.getId());
+    result.setName(event.getName());
+    result.setTimestamp(event.getTimestamp());
+    result.setType(event.getType());
+    result.setTags(event.getTagsMap());
     return result;
   }
 
