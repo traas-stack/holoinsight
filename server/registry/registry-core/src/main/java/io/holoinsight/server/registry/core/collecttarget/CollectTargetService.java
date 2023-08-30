@@ -101,8 +101,10 @@ public class CollectTargetService {
         throw new IllegalStateException("");
       case ExecutorSelector.CENTRAL:
         CentralAgentService.State state = centralAgentService.getState();
-        // TODO 选择哪个集群?
-        String requiredClusterName = "global0";
+        String requiredClusterName = es.getCentral().getName();
+        if (StringUtils.isEmpty(requiredClusterName)) {
+          requiredClusterName = "global0";
+        }
         CentralAgentService.ClusterState cluster = state.getClusters().get(requiredClusterName);
         if (cluster == null) {
           throw new IllegalStateException("no central agent cluster " + requiredClusterName);
@@ -111,8 +113,8 @@ public class CollectTargetService {
           throw new IllegalStateException(
               "central agent cluster " + requiredClusterName + " is empty");
         }
-        // TODO 使用一致性哈希
-        Agent agent = cluster.getRing().select(t.getTableName().hashCode());
+        // use consistent hashing
+        Agent agent = cluster.getRing().select(dimRow.getId().hashCode());
         if (agent == null) {
           throw new IllegalStateException(
               "central agent cluster " + requiredClusterName + " hash ring select null");
