@@ -4,6 +4,7 @@
 package io.holoinsight.server.home.common.service;
 
 import io.holoinsight.server.apm.common.model.query.Endpoint;
+import io.holoinsight.server.apm.common.model.query.Event;
 import io.holoinsight.server.apm.common.model.query.QueryTraceRequest;
 import io.holoinsight.server.apm.common.model.query.ServiceInstance;
 import io.holoinsight.server.apm.common.model.query.SlowSql;
@@ -378,6 +379,16 @@ public class QueryClientService {
         new ArrayList<>(serviceErrorList.getCommonMapTypeDataList().size());
     serviceErrorList.getCommonMapTypeDataList().forEach(data -> {
       result.add(data.getDataMap());
+    });
+    return result;
+  }
+
+  public List<Event> queryEvents(QueryProto.QueryEventRequest request) {
+    QueryProto.QueryEventResponse queryEventResponse =
+        queryServiceBlockingStub.queryEvents(request);
+    List<Event> result = new ArrayList<>(queryEventResponse.getEventCount());
+    queryEventResponse.getEventList().forEach(event -> {
+      result.add(ApmConvertor.deConvertEvent(event));
     });
     return result;
   }

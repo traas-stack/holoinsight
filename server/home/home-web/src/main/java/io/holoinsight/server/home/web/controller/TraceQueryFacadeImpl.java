@@ -4,6 +4,7 @@
 package io.holoinsight.server.home.web.controller;
 
 import io.holoinsight.server.apm.common.model.query.Endpoint;
+import io.holoinsight.server.apm.common.model.query.Event;
 import io.holoinsight.server.apm.common.model.query.QueryTraceRequest;
 import io.holoinsight.server.apm.common.model.query.Service;
 import io.holoinsight.server.apm.common.model.query.ServiceInstance;
@@ -496,6 +497,37 @@ public class TraceQueryFacadeImpl extends BaseFacade {
         List<Map<String, String>> serviceErrorDetail =
             queryClientService.queryServiceErrorDetail(builder.build());
         JsonResult.createSuccessResult(result, serviceErrorDetail);
+      }
+    });
+
+    return result;
+  }
+
+  @PostMapping(value = "/events")
+  public JsonResult<List<Event>> queryEvents(@RequestBody QueryProto.QueryEventRequest request) {
+    final JsonResult<List<Event>> result = new JsonResult<>();
+    facadeTemplate.manage(result, new ManageCallback() {
+      @Override
+      public void checkParameter() {
+        ParaCheckUtil.checkParaNotNull(request, "request");
+        ParaCheckUtil.checkParaNotNull(request.getTenant(), "tenant");
+        ParaCheckUtil.checkEquals(request.getTenant(), RequestContext.getContext().ms.getTenant(),
+            "tenant is illegal");
+        MonitorScope ms = RequestContext.getContext().ms;
+        Boolean aBoolean = tenantInitService.checkTraceParams(ms.getTenant(), ms.getWorkspace(),
+            request.getTermParamsMap());
+        if (!aBoolean) {
+          throw new MonitorException("term params is illegal");
+        }
+      }
+
+      @Override
+      public void doManage() {
+        QueryProto.QueryEventRequest.Builder builder = request.toBuilder();
+        builder.setTenant(
+            tenantInitService.getTraceTenant(RequestContext.getContext().ms.getTenant()));
+        List<Event> events = queryClientService.queryEvents(builder.build());
+        JsonResult.createSuccessResult(result, events);
       }
     });
 

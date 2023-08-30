@@ -359,6 +359,26 @@ message DetailValue {
   optional int64 timestampValue = 5;
 }
 
+message QueryEventRequest {
+  string tenant = 1;
+  int64 start = 2;
+  int64 end = 3;
+  map<string, string> termParams = 4;
+}
+
+message QueryEventResponse {
+  repeated Event event = 1;
+}
+
+message Event {
+  string tenant = 1;
+  string id = 2;
+  string name = 3;
+  string type = 4;
+  int64 timestamp = 5;
+  map<string, string> tags = 6;
+}
+
 service QueryService {
   rpc QueryData(QueryRequest) returns (QueryResponse);
 
@@ -403,5 +423,7 @@ service QueryService {
   rpc QueryServiceErrorDetail(QueryMetaRequest) returns (CommonMapTypeDataList);
 
   rpc QueryDetailData(QueryRequest) returns (QueryDetailResponse);
+
+  rpc QueryEvents(QueryEventRequest) returns (QueryEventResponse);
 
 }
