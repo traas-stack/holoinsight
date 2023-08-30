@@ -10,4 +10,9 @@ package io.holoinsight.server.registry.core.master;
  * @author zzhb101
  */
 public interface MasterListener {
+  void onChange(MasterJson oldMj, MasterJson newMj);
+
+  void onEnter(MasterJson mj);
+
+  void onLeave(MasterJson mj);
 }

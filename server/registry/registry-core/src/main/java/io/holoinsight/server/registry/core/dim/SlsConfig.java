@@ -40,5 +40,6 @@ public class SlsConfig extends AbstractConfig {
      */
     private String sk;
     private String slsDimTable = "sls_shard";
+    private int syncInterval = 60;
   }
 }

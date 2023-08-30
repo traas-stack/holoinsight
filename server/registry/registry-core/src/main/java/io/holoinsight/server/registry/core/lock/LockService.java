@@ -3,10 +3,9 @@
  */
 package io.holoinsight.server.registry.core.lock;
 
-import io.holoinsight.server.common.dao.entity.GaeaLockDO;
-import io.holoinsight.server.common.dao.entity.GaeaLockDOExample;
-import io.holoinsight.server.common.dao.mapper.GaeaLockDOMapper;
+import java.util.Date;
 
+import org.apache.commons.beanutils.BeanUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,10 +13,13 @@ import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
-import java.util.Date;
-import java.util.function.Consumer;
+import io.holoinsight.server.common.dao.entity.GaeaLockDO;
+import io.holoinsight.server.common.dao.entity.GaeaLockDOExample;
+import io.holoinsight.server.common.dao.mapper.GaeaLockDOMapper;
+import lombok.SneakyThrows;
 
 /**
  * 分布式锁
@@ -28,29 +30,27 @@ import java.util.function.Consumer;
  */
 @Service
 public class LockService {
+  public static final int STATUS_FREE = 0;
+  public static final int STATUS_LOCKED = 1;
   private static final Logger LOGGER = LoggerFactory.getLogger(LockService.class);
-
-  private static final int STATUS_FREE = 0;
-  private static final int STATUS_LOCKED = 1;
-
   @Autowired
   private GaeaLockDOMapper mapper;
   @Autowired
   private TransactionTemplate transactionTemplate;
 
   @Transactional
+  public GaeaLockDO getLockDO(String tenant, String name) {
+    // need an unique index on (tenant, name)
+    GaeaLockDOExample example = GaeaLockDOExample.newAndCreateCriteria() //
+        .andTenantEqualTo(tenant) //
+        .andNameEqualTo(name) //
+        .example(); //
+    return mapper.selectOneByExample(example);
+  }
+
+  @Transactional
   public Lock tryLock(String tenant, String name, String json, long expireMs) {
-    // gmt_create 被用作锁的过期时间
-
-    GaeaLockDO lockDO;
-
-    {
-      GaeaLockDOExample example = GaeaLockDOExample.newAndCreateCriteria() //
-          .andTenantEqualTo(tenant) //
-          .andNameEqualTo(name) //
-          .example(); //
-      lockDO = mapper.selectOneByExample(example);
-    }
+    GaeaLockDO lockDO = getLockDO(tenant, name);
 
     if (lockDO == null) {
       lockDO = new GaeaLockDO();
@@ -64,9 +64,8 @@ public class LockService {
       lockDO.setStatus(1);
       try {
         mapper.insert(lockDO);
-        return new Lock(lockDO);
+        return new Lock(lockDO, expireMs);
       } catch (DuplicateKeyException e) {
-        // 锁被人抢了 此时肯定失败
         return null;
       }
     }
@@ -75,8 +74,8 @@ public class LockService {
       long expiredAt = lockDO.getGmtCreate().getTime();
       if (expiredAt >= System.currentTimeMillis()) {
         return null;
-      }
-    }
+      } // else this lock is locked by others but is already expired
+    } // else this lock is not locked by others
 
     int version = lockDO.getVersion();
     Date now = new Date();
@@ -97,17 +96,22 @@ public class LockService {
         GaeaLockDO.Column.status, //
         GaeaLockDO.Column.json, //
         GaeaLockDO.Column.version); //
+
+    // cas success
     if (count == 1) {
-      return new Lock(lockDO);
+      return new Lock(lockDO, expireMs);
     }
+
+    // cas error
     return null;
   }
 
-  private void unlock(Lock lock) {
-    transactionTemplate.executeWithoutResult(new Consumer<TransactionStatus>() {
+  private boolean unlock(Lock lock) {
+    return transactionTemplate.execute(new TransactionCallback<Boolean>() {
       @Override
-      public void accept(TransactionStatus transactionStatus) {
-        GaeaLockDO lockDO = lock.lockDO;
+      public Boolean doInTransaction(TransactionStatus status) {
+        GaeaLockDO lockDO = copy(lock.lockDO);
+
         GaeaLockDOExample cas = GaeaLockDOExample.newAndCreateCriteria() //
             .andIdEqualTo(lockDO.getId()) //
             .andVersionEqualTo(lockDO.getVersion()) //
@@ -122,23 +126,69 @@ public class LockService {
             GaeaLockDO.Column.json, //
             GaeaLockDO.Column.version); //
 
-        if (count == 0) {
-          LOGGER.error("分布式锁被意外释放 {}", lockDO);
-          // 被其他线程意外释放了
+        if (count == 1) {
+          lock.lockDO = lockDO;
         }
+        return count == 1;
       }
     });
   }
 
-  public class Lock {
-    private final GaeaLockDO lockDO;
+  private boolean touch(Lock lock) {
+    return transactionTemplate.execute(new TransactionCallback<Boolean>() {
+      @Override
+      public Boolean doInTransaction(TransactionStatus status) {
+        GaeaLockDO lockDO = copy(lock.lockDO);
 
-    public Lock(GaeaLockDO lockDO) {
+        GaeaLockDOExample cas = GaeaLockDOExample.newAndCreateCriteria() //
+            .andIdEqualTo(lockDO.getId()) //
+            .andVersionEqualTo(lockDO.getVersion()) //
+            .example();
+
+        lockDO.setGmtCreate(new Date(System.currentTimeMillis() + lock.expireMs));
+        lockDO.setGmtModified(new Date());
+        lockDO.setVersion(lockDO.getVersion() + 1);
+
+        int count = mapper.updateByExampleSelective(lockDO, cas, //
+            GaeaLockDO.Column.status, //
+            GaeaLockDO.Column.json, //
+            GaeaLockDO.Column.version); //
+
+        if (count == 1) {
+          lock.lockDO = lockDO;
+        }
+
+        return count == 1;
+      }
+    });
+  }
+
+  @SneakyThrows
+  private static GaeaLockDO copy(GaeaLockDO lockDO) {
+    return (GaeaLockDO) BeanUtils.cloneBean(lockDO);
+  }
+
+  public class Lock {
+    private final long expireMs;
+    private GaeaLockDO lockDO;
+
+    private Lock(GaeaLockDO lockDO, long expireMs) {
       this.lockDO = lockDO;
+      this.expireMs = expireMs;
     }
 
-    public void unlock() {
-      LockService.this.unlock(this);
+    /**
+     * Unlock
+     * 
+     * @return true if unlock successfully. Returns false if the status of lock is changed before
+     *         unlock.
+     */
+    public boolean unlock() {
+      return LockService.this.unlock(this);
+    }
+
+    public boolean touch() {
+      return LockService.this.touch(this);
     }
   }
 }
