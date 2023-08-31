@@ -62,8 +62,10 @@ public class GaeaSqlTaskUtil {
   private static final String separator = "SEP";
   private static final String regexp = "REGEXP";
   private static final String json = "JSON";
+  private static final String sls = "sls";
   private static final String dimColType = "DIM";
   private static final String valColType = "VALUE";
+  private static final String extendColType = "EXTEND";
 
   private static List<String> timeZones =
       Arrays.asList("UTC", "Asia/Shanghai", "America/Los_Angeles");
@@ -189,13 +191,22 @@ public class GaeaSqlTaskUtil {
       parse.setWhere(buildFrontFilterWhere(whiteFilters, blackFilters));
 
       List<Log.LogPath> pathList = new ArrayList<>();
-      logPaths.forEach(logPath -> {
-        Log.LogPath path = new Log.LogPath();
-        path.setPattern(logPath.path);
-        path.setType(logPath.type);
-        path.setDir(logPath.dir);
-        pathList.add(path);
-      });
+      if (!CollectionUtils.isEmpty(logPaths)) {
+        logPaths.forEach(logPath -> {
+          Log.LogPath path = new Log.LogPath();
+          if (StringUtils.isNotBlank(logPath.path) && logPath.path.equalsIgnoreCase(sls)) {
+            path.setType("sls");
+            pathList.add(path);
+            return;
+          }
+
+          path.setPattern(logPath.path);
+          path.setType(logPath.type);
+          path.setDir(logPath.dir);
+          pathList.add(path);
+        });
+      }
+
       fromLog.setPath(pathList);
       fromLog.setCharset(extraConfig.getCharset());
       fromLog.setParse(parse);
@@ -233,6 +244,7 @@ public class GaeaSqlTaskUtil {
       if (!CollectionUtils.isEmpty(splitCols)) {
         for (CustomPluginConf.SplitCol splitCol : splitCols) {
           if ("TIME".equals(splitCol.colType)) {
+            timeParse.setFormat("auto");
             if (!StringUtils.isEmpty(splitCol.name)) {
               String timeAndZone = splitCol.name.substring(3, splitCol.name.length() - 1);
               String[] cols = timeAndZone.split("##");
@@ -249,10 +261,10 @@ public class GaeaSqlTaskUtil {
                 continue;
               }
               timeParse.setLayout(layout);
+              timeParse.setFormat("golangLayout");
             }
             timeParse.setElect(buildElect(splitCol.rule, logParse.splitType));
             timeParse.setType("elect");
-            timeParse.setFormat("golangLayout");
             jsonTimeSelect = true;
           }
         }
@@ -723,6 +735,22 @@ public class GaeaSqlTaskUtil {
       groupBy.setMaxKeySize(extraConfig.getMaxKeySize());
       groupBy.getGroups().add(group);
     });
+
+    Map<String, SplitCol> extendColTypes = splitColMap.get(extendColType);
+    if (!CollectionUtils.isEmpty(extendColTypes)) {
+      extendColTypes.values().forEach(splitCol -> {
+        GroupBy.Group group = new GroupBy.Group();
+        {
+          group.setName(splitCol.name);
+          Elect elect = new Elect();
+          elect.setType("refName");
+          elect.setRefName(new RefName());
+          elect.getRefName().setName(splitCol.rule.refName);
+          group.setElect(elect);
+        }
+        groupBy.getGroups().add(group);
+      });
+    }
 
     return groupBy;
   }

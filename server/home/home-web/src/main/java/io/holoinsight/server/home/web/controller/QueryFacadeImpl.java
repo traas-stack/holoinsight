@@ -502,7 +502,7 @@ public class QueryFacadeImpl extends BaseFacade {
     request.datasources.forEach(d -> {
       // Timeline alignment
       if (StringUtils.isNotBlank(d.downsample)) {
-        long interval = getInterval(d.downsample);
+        long interval = UtilMisc.getInterval(d.downsample);
         d.end -= d.end % interval;
         d.start = d.start % interval > 0 ? (d.start + interval - d.start % interval) : d.start;
       }
@@ -662,31 +662,6 @@ public class QueryFacadeImpl extends BaseFacade {
     return false;
   }
 
-  private long getInterval(String downsample) {
-    long interval = 60000L;
-    switch (downsample) {
-      case "1m":
-        interval = 60000L;
-        break;
-      case "1s":
-        interval = 1000L;
-        break;
-      case "5s":
-        interval = 5000L;
-        break;
-      case "15s":
-        interval = 15000L;
-        break;
-      case "30s":
-        interval = 30000L;
-        break;
-      case "10m":
-        interval = 10 * 60000L;
-        break;
-      default:
-    }
-    return interval;
-  }
 
   public static void toProtoBean(Message.Builder destPojoClass, Object source) {
     String json = J.toJson(source);
