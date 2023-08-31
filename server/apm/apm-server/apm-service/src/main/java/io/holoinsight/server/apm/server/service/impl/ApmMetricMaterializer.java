@@ -49,7 +49,7 @@ public class ApmMetricMaterializer {
 
   private static final long INTERVAL = 60000;
 
-  private static final long DELAY = 10000;
+  private static final long DELAY = 30000;
 
   private static final String STEP = "1m";
 
@@ -57,7 +57,7 @@ public class ApmMetricMaterializer {
   // inaccuracy problem caused by trace recording delay.
   // Notice that the repaired data will be repeatedly written to the MetricStore, so it is necessary
   // to ensure that the MetricStore's policy for repeated data is OVERWRITE instead of APPEND.
-  private static final int REPAIR_PERIODS = 3;
+  private static final int REPAIR_PERIODS = 0;
 
   private static final ScheduledExecutorService SCHEDULER = new ScheduledThreadPoolExecutor(1,
       new BasicThreadFactory.Builder().namingPattern("apm-materialize-scheduler-%d").build());

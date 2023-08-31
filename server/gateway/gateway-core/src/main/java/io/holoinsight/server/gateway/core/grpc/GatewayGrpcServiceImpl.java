@@ -7,6 +7,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import io.holoinsight.server.common.ctl.MonitorProductCode;
+import io.holoinsight.server.common.ctl.ProductCtlService;
+import io.holoinsight.server.common.dao.entity.MetaDataDictValue;
+import io.holoinsight.server.common.service.MetaDataDictValueService;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,6 +55,12 @@ public class GatewayGrpcServiceImpl extends GatewayServiceGrpc.GatewayServiceImp
 
   @Autowired
   private ApikeyAuthService apikeyAuthService;
+
+  @Autowired
+  private ProductCtlService productCtlService;
+
+  @Autowired
+  private MetaDataDictValueService metaDataDictValueService;
 
   /** {@inheritDoc} */
   @Override
@@ -177,7 +188,7 @@ public class GatewayGrpcServiceImpl extends GatewayServiceGrpc.GatewayServiceImp
     return param;
   }
 
-  private static WriteMetricsParam convertToWriteMetricsParam(AuthInfo authInfo,
+  private WriteMetricsParam convertToWriteMetricsParam(AuthInfo authInfo,
       WriteMetricsRequestV4 request) {
     // 类型转换
     WriteMetricsParam param = new WriteMetricsParam();
@@ -199,6 +210,9 @@ public class GatewayGrpcServiceImpl extends GatewayServiceGrpc.GatewayServiceImp
         for (int i = 0; i < header.getTagKeysCount(); i++) {
           tags.put(header.getTagKeys(i), row.getTagValues(i));
         }
+        if (productCtlService.productClosed(MonitorProductCode.METRIC, tags.get(resourceKey()))) {
+          continue;
+        }
         wmpp.setTimeStamp(row.getTimestamp());
         wmpp.setTags(tags);
         for (DataNode dataNode : row.getValueValuesList()) {
@@ -215,5 +229,13 @@ public class GatewayGrpcServiceImpl extends GatewayServiceGrpc.GatewayServiceImp
       }
     }
     return param;
+  }
+
+  private String resourceKey() {
+    QueryWrapper<MetaDataDictValue> queryWrapper = new QueryWrapper<>();
+    queryWrapper.eq("type", "global_config");
+    queryWrapper.eq("dict_key", "metric_resource_key");
+    MetaDataDictValue metaDataDictValue = metaDataDictValueService.getOne(queryWrapper);
+    return metaDataDictValue == null ? null : metaDataDictValue.getDictValue();
   }
 }
