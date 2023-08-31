@@ -8,10 +8,6 @@ import lombok.Getter;
 
 import java.util.Map;
 
-/**
- * @author zanghaibo
- * @time 2023-05-31 6:56 上午
- */
 @Getter
 public enum MonitorProductCode {
   LOG("public_log_base_cn"), METRIC("public_index_spec_cn"), TRACE("public_link_spec_cn"), ALERT(
