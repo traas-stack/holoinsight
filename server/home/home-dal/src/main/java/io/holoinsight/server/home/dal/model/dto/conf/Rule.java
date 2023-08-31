@@ -63,4 +63,10 @@ public class Rule implements Serializable {
    * 表达式
    */
   public String jsonPathSyntax;
+
+  /** ------------------RefName--------------------- */
+  /**
+   * refName
+   */
+  public String refName;
 }

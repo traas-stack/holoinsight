@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 
 import com.google.gson.reflect.TypeToken;
 import io.holoinsight.server.common.J;
@@ -184,6 +183,57 @@ public class TenantIntegrationGeneratedTask extends AbstractMonitorTask {
       if (CollectionUtils.isEmpty(dbApps))
         continue;
 
+      List<IntegrationPluginDTO> integrationPluginDTOS =
+          integrationPluginService.queryByTenant(ops.getTenant());
+
+      Set<String> uks = new HashSet<>();
+      if (!CollectionUtils.isEmpty(integrationPluginDTOS)) {
+        for (IntegrationPluginDTO integrationPluginDTO : integrationPluginDTOS) {
+          Plugin plugin = this.pluginRepository.getTemplate(integrationPluginDTO.type,
+              integrationPluginDTO.version);
+          if (null == plugin || plugin.getPluginType().equals(PluginType.hosting)) {
+            continue;
+          }
+
+          AbstractIntegrationPlugin abstractIntegrationPlugin = (AbstractIntegrationPlugin) plugin;
+          List<AbstractIntegrationPlugin> abstractIntegrationPlugins =
+              abstractIntegrationPlugin.genPluginList(integrationPluginDTO);
+          if (CollectionUtils.isEmpty(abstractIntegrationPlugins))
+            continue;
+
+          Set<String> appItemSets = new HashSet<>();
+          for (AbstractIntegrationPlugin integrationPlugin : abstractIntegrationPlugins) {
+            GaeaCollectRange gaeaCollectRange = integrationPlugin.getGaeaCollectRange();
+
+            if (gaeaCollectRange.getType().equalsIgnoreCase("central")
+                || null == gaeaCollectRange.getCloudmonitor()
+                || StringUtils.isBlank(gaeaCollectRange.getCloudmonitor().table))
+              continue;
+
+            Set<String> collectApps = getCollectApps(gaeaCollectRange.getCloudmonitor());
+
+            if (CollectionUtils.isEmpty(collectApps))
+              continue;
+
+            for (String app : collectApps) {
+              if (StringUtils.isBlank(integrationPlugin.name))
+                continue;
+              String uk = app + "#" + integrationPluginDTO.product + "#" + integrationPlugin.name;
+              if (appItemSets.contains(uk))
+                continue;
+
+              generateds.add(integrationGeneratedService.generated(ops.getTenant(),
+                  integrationPluginDTO.getWorkspace(), app, integrationPlugin.name,
+                  integrationPluginDTO.getProduct(), J.toMap(integrationPluginDTO.json)));
+
+              appItemSets.add(uk);
+              uks.add(uk);
+            }
+          }
+          log.info("outList: " + tableName + ", generated size: " + generateds.size());
+        }
+      }
+
       for (AppModel appModel : dbApps) {
         if (appModel.getMachineType().equalsIgnoreCase("VM")) {
           generateds.add(integrationGeneratedService.generated(ops.getTenant(),
@@ -192,11 +242,13 @@ public class TenantIntegrationGeneratedTask extends AbstractMonitorTask {
           generateds.add(integrationGeneratedService.generated(ops.getTenant(),
               appModel.getWorkspace(), appModel.getApp(), "podsystem", "System", new HashMap<>()));
         }
-        generateds.add(integrationGeneratedService.generated(ops.getTenant(),
-            appModel.getWorkspace(), appModel.getApp(), "portcheck", "PortCheck", new HashMap<>()));
-        generateds
-            .add(integrationGeneratedService.generated(ops.getTenant(), appModel.getWorkspace(),
-                appModel.getApp(), "logpattern", "LogPattern", new HashMap<>()));
+
+        String portCheckUk = appModel.getApp() + "#PortCheck#portcheck";
+        if (!uks.contains(portCheckUk)) {
+          generateds
+              .add(integrationGeneratedService.generated(ops.getTenant(), appModel.getWorkspace(),
+                  appModel.getApp(), "portcheck", "PortCheck", new HashMap<>()));
+        }
 
         Map<String, String> dictMap = MetaDictUtil.getValue(INTEGRATION_CONFIG,
             INTEGRATION_LOCAL_PRODUCT, new TypeToken<Map<String, String>>() {});
@@ -207,56 +259,6 @@ public class TenantIntegrationGeneratedTask extends AbstractMonitorTask {
               .add(integrationGeneratedService.generated(ops.getTenant(), appModel.getWorkspace(),
                   appModel.getApp(), dict.getValue(), dict.getKey(), new HashMap<>()));
         }
-      }
-
-      List<IntegrationPluginDTO> integrationPluginDTOS =
-          integrationPluginService.queryByTenant(ops.getTenant());
-
-      if (CollectionUtils.isEmpty(integrationPluginDTOS))
-        continue;
-
-      for (IntegrationPluginDTO integrationPluginDTO : integrationPluginDTOS) {
-        Plugin plugin = this.pluginRepository.getTemplate(integrationPluginDTO.type,
-            integrationPluginDTO.version);
-        if (null == plugin || plugin.getPluginType().equals(PluginType.hosting)) {
-          continue;
-        }
-
-        AbstractIntegrationPlugin abstractIntegrationPlugin = (AbstractIntegrationPlugin) plugin;
-        List<AbstractIntegrationPlugin> abstractIntegrationPlugins =
-            abstractIntegrationPlugin.genPluginList(integrationPluginDTO);
-        if (CollectionUtils.isEmpty(abstractIntegrationPlugins))
-          continue;
-
-        Set<String> appItemSets = new HashSet<>();
-        for (AbstractIntegrationPlugin integrationPlugin : abstractIntegrationPlugins) {
-          GaeaCollectRange gaeaCollectRange = integrationPlugin.getGaeaCollectRange();
-
-          if (gaeaCollectRange.getType().equalsIgnoreCase("central")
-              || null == gaeaCollectRange.getCloudmonitor()
-              || StringUtils.isBlank(gaeaCollectRange.getCloudmonitor().table))
-            continue;
-
-          Set<String> collectApps = getCollectApps(gaeaCollectRange.getCloudmonitor());
-
-          if (CollectionUtils.isEmpty(collectApps))
-            continue;
-
-          for (String app : collectApps) {
-            if (StringUtils.isBlank(integrationPlugin.name))
-              continue;
-            String uk = app + "#" + integrationPlugin.name;
-            if (appItemSets.contains(uk))
-              continue;
-
-            generateds.add(integrationGeneratedService.generated(ops.getTenant(),
-                integrationPluginDTO.getWorkspace(), app, integrationPlugin.name,
-                integrationPluginDTO.getProduct(), J.toMap(integrationPluginDTO.json)));
-
-            appItemSets.add(uk);
-          }
-        }
-        log.info("outList: " + tableName + ", generated size: " + generateds.size());
       }
     }
 

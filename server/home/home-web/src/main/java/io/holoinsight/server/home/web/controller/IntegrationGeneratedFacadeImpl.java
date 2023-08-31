@@ -4,6 +4,7 @@
 
 package io.holoinsight.server.home.web.controller;
 
+import com.google.gson.reflect.TypeToken;
 import io.holoinsight.server.common.J;
 import io.holoinsight.server.common.JsonResult;
 import io.holoinsight.server.home.biz.plugin.PluginRepository;
@@ -19,6 +20,7 @@ import io.holoinsight.server.home.common.util.scope.*;
 import io.holoinsight.server.home.dal.model.IntegrationGenerated;
 import io.holoinsight.server.home.dal.model.OpType;
 import io.holoinsight.server.home.dal.model.dto.GaeaCollectConfigDTO.GaeaCollectRange;
+import io.holoinsight.server.home.dal.model.dto.IntegrationConfigDTO;
 import io.holoinsight.server.home.dal.model.dto.IntegrationFormDTO;
 import io.holoinsight.server.home.dal.model.dto.IntegrationGeneratedDTO;
 import io.holoinsight.server.home.dal.model.dto.IntegrationPluginDTO;
@@ -200,13 +202,23 @@ public class IntegrationGeneratedFacadeImpl extends BaseFacade {
         }
 
         for (IntegrationProductDTO integrationProductDTO : integrationProductDTOS) {
+          if (StringUtils.isBlank(integrationProductDTO.getConfiguration()))
+            continue;
+          IntegrationConfigDTO configDTO = J.fromJson(integrationProductDTO.getConfiguration(),
+              new TypeToken<IntegrationConfigDTO>() {}.getType());
+          if (null == configDTO || Boolean.FALSE == configDTO.getUseInApp()) {
+            continue;
+          }
+
+          Boolean canCustom = configDTO.getCanCustom();
+
           List<IntegrationAppModel> appModels = new ArrayList<>();
           Set<String> itemMap = new HashSet<>();
           if (listMap.containsKey(integrationProductDTO.getName())) {
             listMap.get(integrationProductDTO.getName()).forEach(generatedDTO -> {
               itemMap.add(generatedDTO.product + "_" + generatedDTO.item);
               appModels.add(new IntegrationAppModel(generatedDTO.id, generatedDTO.item, "ONLINE",
-                  generatedDTO.custom, generatedDTO.config));
+                  generatedDTO.custom, canCustom, generatedDTO.config));
             });
           }
 
@@ -240,8 +252,11 @@ public class IntegrationGeneratedFacadeImpl extends BaseFacade {
               }
 
               appModels.add(new IntegrationAppModel(null, integrationPlugin.name, "OFFLINE", false,
-                  J.toMap(integrationPluginDTO.json)));
+                  canCustom, new HashMap<>()));
             }
+          }
+          if (CollectionUtils.isEmpty(appModels) && Boolean.FALSE == canCustom) {
+            continue;
           }
           integrationAppProductModels.add(new IntegrationAppProductModel(
               integrationProductDTO.getName(), name, integrationProductDTO.getForm(), appModels));
@@ -278,6 +293,8 @@ public class IntegrationGeneratedFacadeImpl extends BaseFacade {
     private String status;
 
     private Boolean custom;
+
+    private Boolean canCustom;
 
     private Map<String, Object> config;
   }

@@ -79,7 +79,7 @@ management:
     web:
       base-path: /internal/api/actuator
       exposure:
-        include: prometheus,health
+        include: prometheus,health,metrics
   endpoint:
     health:
       show-details: always
