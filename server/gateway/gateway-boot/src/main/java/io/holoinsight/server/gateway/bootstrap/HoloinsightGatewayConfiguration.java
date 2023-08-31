@@ -5,6 +5,7 @@ package io.holoinsight.server.gateway.bootstrap;
 
 import io.holoinsight.server.common.auth.ApiKeyAutoConfiguration;
 import io.holoinsight.server.common.config.ConfigConfiguration;
+import io.holoinsight.server.common.ctl.ProductCtlConfiguration;
 import io.holoinsight.server.common.dao.CommonDaoConfiguration;
 import io.holoinsight.server.common.groovy.GroovyConfiguration;
 import io.holoinsight.server.common.security.InternalWebApiSecurityConfiguration;
@@ -36,7 +37,8 @@ import org.springframework.context.annotation.Import;
 @EnableConfigurationProperties({HoloinsightProperties.class, GatewayProperties.class})
 @Import({ConfigConfiguration.class, GroovyConfiguration.class, ThreadPoolConfiguration.class,
     InternalWebApiSecurityConfiguration.class, ApiKeyAutoConfiguration.class,
-    CommonDaoConfiguration.class, HoloinsightCeresdbxConfiguration.class})
+    ProductCtlConfiguration.class, CommonDaoConfiguration.class,
+    HoloinsightCeresdbxConfiguration.class})
 public class HoloinsightGatewayConfiguration {
   @Bean
   @ConditionalOnMissingBean
