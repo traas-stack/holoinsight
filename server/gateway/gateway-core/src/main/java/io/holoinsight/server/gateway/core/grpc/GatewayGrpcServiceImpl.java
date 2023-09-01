@@ -164,7 +164,7 @@ public class GatewayGrpcServiceImpl extends GatewayServiceGrpc.GatewayServiceImp
     }
   }
 
-  private static WriteMetricsParam convertToWriteMetricsParam(AuthInfo authInfo,
+  private WriteMetricsParam convertToWriteMetricsParam(AuthInfo authInfo,
       WriteMetricsRequestV1 request) {
     // 类型转换
     WriteMetricsParam param = new WriteMetricsParam();
@@ -172,6 +172,11 @@ public class GatewayGrpcServiceImpl extends GatewayServiceGrpc.GatewayServiceImp
 
     List<WriteMetricsParam.Point> points = new ArrayList<>(request.getPointCount());
     for (Point p : request.getPointList()) {
+
+      if (productCtlService.productClosed(MonitorProductCode.METRIC, p.getTagsMap())) {
+        continue;
+      }
+
       WriteMetricsParam.Point wmpp = new WriteMetricsParam.Point();
       wmpp.setMetricName(p.getMetricName());
       wmpp.setTimeStamp(p.getTimestamp());
@@ -210,7 +215,7 @@ public class GatewayGrpcServiceImpl extends GatewayServiceGrpc.GatewayServiceImp
         for (int i = 0; i < header.getTagKeysCount(); i++) {
           tags.put(header.getTagKeys(i), row.getTagValues(i));
         }
-        if (productCtlService.productClosed(MonitorProductCode.METRIC, tags.get(resourceKey()))) {
+        if (productCtlService.productClosed(MonitorProductCode.METRIC, tags)) {
           continue;
         }
         wmpp.setTimeStamp(row.getTimestamp());
@@ -229,13 +234,5 @@ public class GatewayGrpcServiceImpl extends GatewayServiceGrpc.GatewayServiceImp
       }
     }
     return param;
-  }
-
-  private String resourceKey() {
-    QueryWrapper<MetaDataDictValue> queryWrapper = new QueryWrapper<>();
-    queryWrapper.eq("type", "global_config");
-    queryWrapper.eq("dict_key", "metric_resource_key");
-    MetaDataDictValue metaDataDictValue = metaDataDictValueService.getOne(queryWrapper);
-    return metaDataDictValue == null ? null : metaDataDictValue.getDictValue();
   }
 }
