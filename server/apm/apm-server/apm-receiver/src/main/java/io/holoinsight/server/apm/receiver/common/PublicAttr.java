@@ -7,7 +7,6 @@ import io.holoinsight.server.apm.common.constants.Const;
 import io.holoinsight.server.apm.common.utils.TimeBucket;
 import io.holoinsight.server.apm.common.utils.TimeUtils;
 import io.holoinsight.server.apm.receiver.builder.RPCTrafficSourceBuilder;
-import io.opentelemetry.proto.common.v1.AnyValue;
 import io.opentelemetry.proto.trace.v1.Span;
 import io.opentelemetry.semconv.trace.attributes.SemanticAttributes;
 import org.apache.commons.codec.binary.Hex;
@@ -19,14 +18,14 @@ public class PublicAttr implements IPublicAttr {
 
   @Override
   public RPCTrafficSourceBuilder setPublicAttrs(RPCTrafficSourceBuilder sourceBuilder, Span span,
-      Map<String, AnyValue> spanAttrMap, Map<String, AnyValue> resourceAttrMap) {
-    sourceBuilder.setTenant(resourceAttrMap.get(Const.TENANT).getStringValue());
+      Map<String, String> spanAttrMap, Map<String, String> resourceAttrMap) {
+    sourceBuilder.setTenant(resourceAttrMap.get(Const.TENANT));
     long latency = TimeUtils.unixNano2MS(span.getEndTimeUnixNano())
         - TimeUtils.unixNano2MS(span.getStartTimeUnixNano());
 
-    String realTraceId = resourceAttrMap.containsKey(Const.REAL_TRACE_ID)
-        ? resourceAttrMap.get(Const.REAL_TRACE_ID).getStringValue()
-        : Hex.encodeHexString(span.getTraceId().toByteArray());
+    String realTraceId =
+        resourceAttrMap.containsKey(Const.REAL_TRACE_ID) ? resourceAttrMap.get(Const.REAL_TRACE_ID)
+            : Hex.encodeHexString(span.getTraceId().toByteArray());
     sourceBuilder.setTraceId(realTraceId);
     sourceBuilder.setStartTime(TimeUtils.unixNano2MS(span.getStartTimeUnixNano()));
     sourceBuilder.setEndTime(TimeUtils.unixNano2MS(span.getEndTimeUnixNano()));
@@ -36,24 +35,24 @@ public class PublicAttr implements IPublicAttr {
     sourceBuilder.setHttpResponseStatusCode(Const.NONE);
     sourceBuilder.setTraceStatus(span.getStatus().getCodeValue());
 
-    AnyValue component = spanAttrMap.get(Const.SW_ATTR_COMPONENT);
+    String component = spanAttrMap.get(Const.SW_ATTR_COMPONENT);
     if (component != null) {
-      sourceBuilder.setComponent(component.getStringValue());
+      sourceBuilder.setComponent(component);
     }
 
-    AnyValue spanLayer = spanAttrMap.get(Const.OTLP_SPANLAYER);
+    String spanLayer = spanAttrMap.get(Const.OTLP_SPANLAYER);
     if (spanLayer != null) {
-      sourceBuilder.setType(spanLayer.getStringValue().toUpperCase());
+      sourceBuilder.setType(spanLayer.toUpperCase());
     }
 
-    AnyValue httpCode = spanAttrMap.get(SemanticAttributes.HTTP_STATUS_CODE.getKey());
+    String httpCode = spanAttrMap.get(SemanticAttributes.HTTP_STATUS_CODE.getKey());
     if (httpCode != null) {
-      sourceBuilder.setHttpResponseStatusCode(httpCode.getStringValue());
+      sourceBuilder.setHttpResponseStatusCode(httpCode);
     }
 
-    AnyValue grpcCode = spanAttrMap.get(SemanticAttributes.RPC_GRPC_STATUS_CODE.getKey());
+    String grpcCode = spanAttrMap.get(SemanticAttributes.RPC_GRPC_STATUS_CODE.getKey());
     if (grpcCode != null) {
-      sourceBuilder.setRpcStatusCode(grpcCode.getStringValue());
+      sourceBuilder.setRpcStatusCode(grpcCode);
     }
 
     return sourceBuilder;

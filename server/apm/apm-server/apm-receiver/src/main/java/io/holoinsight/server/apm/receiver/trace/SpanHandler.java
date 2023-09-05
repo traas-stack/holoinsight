@@ -22,8 +22,8 @@ import io.holoinsight.server.apm.engine.model.ServiceInstanceRelationDO;
 import io.holoinsight.server.apm.engine.model.ServiceRelationDO;
 import io.holoinsight.server.apm.engine.model.SlowSqlDO;
 import io.holoinsight.server.apm.engine.model.SpanDO;
-import io.holoinsight.server.apm.receiver.analysis.ServiceErrorAnalysis;
 import io.holoinsight.server.apm.receiver.analysis.RelationAnalysis;
+import io.holoinsight.server.apm.receiver.analysis.ServiceErrorAnalysis;
 import io.holoinsight.server.apm.receiver.analysis.SlowSqlAnalysis;
 import io.holoinsight.server.apm.receiver.builder.RPCTrafficSourceBuilder;
 import io.holoinsight.server.apm.receiver.common.TransformAttr;
@@ -34,7 +34,8 @@ import io.holoinsight.server.apm.server.service.ServiceInstanceRelationService;
 import io.holoinsight.server.apm.server.service.ServiceRelationService;
 import io.holoinsight.server.apm.server.service.SlowSqlService;
 import io.holoinsight.server.apm.server.service.TraceService;
-import io.opentelemetry.proto.common.v1.AnyValue;
+import io.holoinsight.server.common.ctl.MonitorProductCode;
+import io.holoinsight.server.common.ctl.ProductCtlService;
 import io.opentelemetry.proto.trace.v1.ScopeSpans;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.binary.Hex;
@@ -47,6 +48,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+
+import static io.holoinsight.server.apm.receiver.common.TransformAttr.anyValueToString;
 
 @Slf4j
 public class SpanHandler {
@@ -71,6 +74,8 @@ public class SpanHandler {
   private ServiceErrorAnalysis errorAnalysis;
   @Autowired
   private ServiceErrorService serviceErrorService;
+  @Autowired
+  private ProductCtlService productCtlService;
 
   public void handleResourceSpans(
       List<io.opentelemetry.proto.trace.v1.ResourceSpans> resourceSpansList) {
@@ -92,7 +97,7 @@ public class SpanHandler {
         otelResource.setAttributes(resource.getAttributesList().stream()
             .map(attr -> new KeyValue(attr.getKey(), anyValueToString(attr.getValue())))
             .collect(Collectors.toList()));
-        Map<String, AnyValue> resourceAttrMap =
+        Map<String, String> resourceAttrMap =
             TransformAttr.attList2Map(resource.getAttributesList());
 
         List<ScopeSpans> scopeSpans = resourceSpans.getScopeSpansList();
@@ -101,9 +106,13 @@ public class SpanHandler {
           scopeSpans.forEach(scopeSpan -> {
             List<io.opentelemetry.proto.trace.v1.Span> spans = scopeSpan.getSpansList();
             if (CollectionUtils.isNotEmpty(spans)) {
-              spans.forEach(span -> {
-                Map<String, AnyValue> spanAttrMap =
+              for (io.opentelemetry.proto.trace.v1.Span span : spans) {
+                Map<String, String> spanAttrMap =
                     TransformAttr.attList2Map(span.getAttributesList());
+                if (productCtlService.productClosed(MonitorProductCode.TRACE, spanAttrMap)) {
+                  continue;
+                }
+
                 if (span
                     .getKind() == io.opentelemetry.proto.trace.v1.Span.SpanKind.SPAN_KIND_SERVER) {
                   networkAddressMappingList.addAll(relationAnalysis
@@ -131,7 +140,7 @@ public class SpanHandler {
                 errorInfoList.addAll(errorAnalysis.analysis(span, spanAttrMap, resourceAttrMap));
                 spanEsDOList.add(SpanDO.fromSpan(transformSpan(span, resourceAttrMap, spanAttrMap),
                     otelResource));
-              });
+              }
             }
           });
         }
@@ -149,27 +158,6 @@ public class SpanHandler {
         "[apm] handle span finish, result={}, spans={}, networks={}, slowSqls={}, relations={}, cost={}",
         success, spanEsDOList.size(), networkAddressMappingList.size(), slowSqlEsDOList.size(),
         relationBuilders.size(), stopWatch.getTime());
-  }
-
-  private String anyValueToString(AnyValue anyValue) {
-    switch (anyValue.getValueCase().getNumber()) {
-      case AnyValue.STRING_VALUE_FIELD_NUMBER:
-        return anyValue.getStringValue();
-      case AnyValue.BOOL_VALUE_FIELD_NUMBER:
-        return String.valueOf(anyValue.getBoolValue());
-      case AnyValue.INT_VALUE_FIELD_NUMBER:
-        return String.valueOf(anyValue.getIntValue());
-      case AnyValue.DOUBLE_VALUE_FIELD_NUMBER:
-        return String.valueOf(anyValue.getDoubleValue());
-      case AnyValue.ARRAY_VALUE_FIELD_NUMBER:
-        return String.valueOf(anyValue.getArrayValue());
-      case AnyValue.KVLIST_VALUE_FIELD_NUMBER:
-        return String.valueOf(anyValue.getKvlistValue());
-      case AnyValue.BYTES_VALUE_FIELD_NUMBER:
-        return String.valueOf(anyValue.getBytesValue());
-      default:
-        throw new UnsupportedOperationException("unsupported value type: " + anyValue);
-    }
   }
 
   public void buildRelation(List<RPCTrafficSourceBuilder> relationBuilders) throws Exception {
@@ -248,15 +236,15 @@ public class SpanHandler {
   }
 
   protected Span transformSpan(io.opentelemetry.proto.trace.v1.Span span,
-      Map<String, AnyValue> resourceAttrMap, Map<String, AnyValue> spanAttrMap) {
-    String realTraceId = resourceAttrMap.containsKey(Const.REAL_TRACE_ID)
-        ? resourceAttrMap.get(Const.REAL_TRACE_ID).getStringValue()
-        : Hex.encodeHexString(span.getTraceId().toByteArray());
-    String realSpanId = spanAttrMap.containsKey(Const.REAL_SPAN_ID)
-        ? spanAttrMap.get(Const.REAL_SPAN_ID).getStringValue()
-        : Hex.encodeHexString(span.getSpanId().toByteArray());
+      Map<String, String> resourceAttrMap, Map<String, String> spanAttrMap) {
+    String realTraceId =
+        resourceAttrMap.containsKey(Const.REAL_TRACE_ID) ? resourceAttrMap.get(Const.REAL_TRACE_ID)
+            : Hex.encodeHexString(span.getTraceId().toByteArray());
+    String realSpanId =
+        spanAttrMap.containsKey(Const.REAL_SPAN_ID) ? spanAttrMap.get(Const.REAL_SPAN_ID)
+            : Hex.encodeHexString(span.getSpanId().toByteArray());
     String realParentSpanId = spanAttrMap.containsKey(Const.REAL_PARENT_SPAN_ID)
-        ? spanAttrMap.get(Const.REAL_PARENT_SPAN_ID).getStringValue()
+        ? spanAttrMap.get(Const.REAL_PARENT_SPAN_ID)
         : Hex.encodeHexString(span.getParentSpanId().toByteArray());
     Span otelSpan = new Span();
     otelSpan.setTraceId(realTraceId);

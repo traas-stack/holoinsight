@@ -4,7 +4,6 @@
 package io.holoinsight.server.apm.receiver.common;
 
 import io.holoinsight.server.apm.receiver.builder.RPCTrafficSourceBuilder;
-import io.opentelemetry.proto.common.v1.AnyValue;
 import io.opentelemetry.proto.trace.v1.Span;
 
 import java.util.Map;
@@ -12,5 +11,5 @@ import java.util.Map;
 public interface IPublicAttr {
 
   RPCTrafficSourceBuilder setPublicAttrs(RPCTrafficSourceBuilder sourceBuilder, Span span,
-      Map<String, AnyValue> spanAttrMap, Map<String, AnyValue> resourceAttrMap);
+      Map<String, String> spanAttrMap, Map<String, String> resourceAttrMap);
 }
