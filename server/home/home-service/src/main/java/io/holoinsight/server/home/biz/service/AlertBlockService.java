@@ -23,6 +23,8 @@ public interface AlertBlockService extends IService<AlarmBlock> {
 
   AlarmBlockDTO queryById(Long id, String tenant, String workspace);
 
+  AlarmBlockDTO queryByRuleId(String uniqueId, String tenant, String workspace);
+
   MonitorPageResult<AlarmBlockDTO> getListByPage(MonitorPageRequest<AlarmBlockDTO> pageRequest);
 
   List<AlarmBlockDTO> getListByKeyword(String keyword, String tenant, String workspace);

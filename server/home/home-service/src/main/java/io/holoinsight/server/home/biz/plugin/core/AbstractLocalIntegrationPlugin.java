@@ -4,6 +4,7 @@
 package io.holoinsight.server.home.biz.plugin.core;
 
 import io.holoinsight.server.home.biz.common.GaeaConvertUtil;
+import io.holoinsight.server.home.biz.plugin.config.CollectType;
 import io.holoinsight.server.home.biz.plugin.config.MetaLabel;
 import io.holoinsight.server.home.dal.model.dto.CloudMonitorRange;
 import io.holoinsight.server.home.dal.model.dto.GaeaCollectConfigDTO.GaeaCollectRange;
@@ -49,5 +50,9 @@ public abstract class AbstractLocalIntegrationPlugin<T> extends AbstractIntegrat
     return tenantInitService.getCollectMonitorRange(
         tenantInitService.getTenantServerTable(integrationPluginDTO.getTenant()),
         integrationPluginDTO.getTenant(), integrationPluginDTO.getWorkspace(), appList, metaLabel);
+  }
+
+  public CollectType getCollectType() {
+    return CollectType.LOCAL;
   }
 }

@@ -122,4 +122,8 @@ public class MysqlPluginV2 extends AbstractIntegrationPlugin<MysqlPluginV2> {
 
     return outList;
   }
+
+  public CollectType getCollectType() {
+    return collectType;
+  }
 }

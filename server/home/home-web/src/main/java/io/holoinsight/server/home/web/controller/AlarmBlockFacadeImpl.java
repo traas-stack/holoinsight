@@ -212,4 +212,25 @@ public class AlarmBlockFacadeImpl extends BaseFacade {
     return result;
   }
 
+  @GetMapping("/queryByRuleId/{ruleId}")
+  @ResponseBody
+  @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.EDIT)
+  public JsonResult<AlarmBlockDTO> queryByRuleId(@PathVariable("ruleId") String ruleId) {
+    final JsonResult<AlarmBlockDTO> result = new JsonResult<>();
+    facadeTemplate.manage(result, new ManageCallback() {
+      @Override
+      public void checkParameter() {
+        ParaCheckUtil.checkParaNotNull(ruleId, "ruleId");
+      }
+
+      @Override
+      public void doManage() {
+        MonitorScope ms = RequestContext.getContext().ms;
+        AlarmBlockDTO save = alarmBlockService.queryByRuleId(ruleId, ms.getTenant(), ms.getWorkspace());
+        JsonResult.createSuccessResult(result, save);
+      }
+    });
+
+    return result;
+  }
 }
