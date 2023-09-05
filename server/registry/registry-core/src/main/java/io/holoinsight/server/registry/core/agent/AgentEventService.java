@@ -77,12 +77,13 @@ public class AgentEventService {
     }
     appendOne(sb, "ptype", event.getPayloadType());
 
+    event.getTagsMap().keySet().stream().sorted()
+        .forEach(k -> appendOne(sb, k, event.getTagsOrThrow(k)));
+
     if (!event.getJson().isEmpty()) {
       // Indicates this is a json event
       sb.append(event.getJson()).append(' ');
     } else {
-      event.getTagsMap().keySet().stream().sorted()
-          .forEach(k -> appendOne(sb, k, event.getTagsOrThrow(k)));
       event.getNumbersMap().keySet().stream().sorted()
           .forEach(k -> appendOne(sb, k, event.getNumbersOrThrow(k)));
       event.getStringsMap().keySet().stream().sorted()

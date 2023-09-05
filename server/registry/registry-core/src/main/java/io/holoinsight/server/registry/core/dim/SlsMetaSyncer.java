@@ -146,12 +146,12 @@ public class SlsMetaSyncer implements InitializingBean, DisposableBean {
       for (QueryExample qe : cm.getRanges()) {
         Map<String, Object> params = qe.getParams();
 
-        String endpoint = (String) params.get("endpoint");
+        String endpoint = ((List<String>) params.get("endpoint")).get(0);
         if (StringUtils.isEmpty(endpoint)) {
           endpoint = slsConfig.getBasic().getEndpoint();
         }
-        String project = (String) params.get("project");
-        String logstore = (String) params.get("logstore");
+        String project = ((List<String>) params.get("project")).get(0);
+        String logstore = ((List<String>) params.get("logstore")).get(0);
         if (StringUtils.isAnyEmpty(endpoint, project, logstore)) {
           log.warn("[sls] [meta] skip invalid condition {}", qe.getParams());
           continue;
@@ -159,8 +159,8 @@ public class SlsMetaSyncer implements InitializingBean, DisposableBean {
 
         String key = String.format("%s/%s/%s", endpoint, project, logstore);
         if (!logstores.containsKey(key)) {
-          String ak = (String) params.get("ak");
-          String sk = (String) params.get("sk");
+          String ak = ((List<String>) params.get("ak")).get(0);
+          String sk = ((List<String>) params.get("sk")).get(0);
           logstores.put(key, new SlsLogstore(endpoint, project, logstore, ak, sk));
         }
       }

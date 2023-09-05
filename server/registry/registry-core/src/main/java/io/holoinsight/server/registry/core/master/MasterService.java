@@ -78,7 +78,6 @@ public class MasterService {
     for (RegisterRecord rr : records) {
       try {
         refresh0(rr, 0);
-        log.info("[master] refresh done {} {} {}", rr.tenant, rr.name, rr.myId);
       } catch (Exception e) {
         log.error("[master] refresh error, tenant=[{}] master=[{}] id=[{}]", rr.tenant, rr.name,
             rr.myId, e);
