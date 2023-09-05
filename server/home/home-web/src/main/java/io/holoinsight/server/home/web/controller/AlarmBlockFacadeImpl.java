@@ -226,7 +226,8 @@ public class AlarmBlockFacadeImpl extends BaseFacade {
       @Override
       public void doManage() {
         MonitorScope ms = RequestContext.getContext().ms;
-        AlarmBlockDTO save = alarmBlockService.queryByRuleId(ruleId, ms.getTenant(), ms.getWorkspace());
+        AlarmBlockDTO save =
+            alarmBlockService.queryByRuleId(ruleId, ms.getTenant(), ms.getWorkspace());
         JsonResult.createSuccessResult(result, save);
       }
     });
