@@ -4,6 +4,7 @@
 package io.holoinsight.server.home.biz.plugin.core;
 
 import io.holoinsight.server.home.biz.common.GaeaConvertUtil;
+import io.holoinsight.server.home.biz.plugin.config.CollectType;
 import io.holoinsight.server.home.dal.model.dto.GaeaCollectConfigDTO.GaeaCollectRange;
 import io.holoinsight.server.registry.model.ExecuteRule;
 
@@ -34,4 +35,9 @@ public abstract class AbstractCentralIntegrationPlugin<T> extends AbstractIntegr
   public GaeaCollectRange getGaeaCollectRange() {
     return GaeaConvertUtil.convertCentralCollectRange(this.collectRange);
   }
+
+  public CollectType getCollectType() {
+    return CollectType.CENTER;
+  }
+
 }

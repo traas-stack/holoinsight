@@ -64,6 +64,20 @@ public class AlertBlockServiceImpl extends ServiceImpl<AlarmBlockMapper, AlarmBl
   }
 
   @Override
+  public AlarmBlockDTO queryByRuleId(String uniqueId, String tenant, String workspace) {
+    QueryWrapper<AlarmBlock> wrapper = new QueryWrapper<>();
+    wrapper.eq("tenant", tenant);
+    wrapper.eq("unique_id", uniqueId);
+    wrapper.ge("end_time", new Date());
+    wrapper.last("LIMIT 1");
+    if (StringUtils.isNotBlank(workspace)) {
+      wrapper.eq("workspace", workspace);
+    }
+    AlarmBlock alarmBlock = this.getOne(wrapper);
+    return alarmBlockConverter.doToDTO(alarmBlock);
+  }
+
+  @Override
   public MonitorPageResult<AlarmBlockDTO> getListByPage(
       MonitorPageRequest<AlarmBlockDTO> pageRequest) {
     if (pageRequest.getTarget() == null) {

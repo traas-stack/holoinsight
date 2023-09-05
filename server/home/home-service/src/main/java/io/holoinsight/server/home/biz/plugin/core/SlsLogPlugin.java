@@ -5,6 +5,7 @@
 package io.holoinsight.server.home.biz.plugin.core;
 
 import io.holoinsight.server.home.biz.common.GaeaConvertUtil;
+import io.holoinsight.server.home.biz.plugin.config.CollectType;
 import io.holoinsight.server.home.biz.plugin.model.PluginModel;
 import org.springframework.stereotype.Component;
 
@@ -21,5 +22,9 @@ public class SlsLogPlugin extends LogPlugin {
   @Override
   public Map<String, Object> getExecutorSelector() {
     return GaeaConvertUtil.getCenterExecutorSelector();
+  }
+
+  public CollectType getCollectType() {
+    return CollectType.CENTER;
   }
 }
