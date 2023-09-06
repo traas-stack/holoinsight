@@ -161,32 +161,36 @@ public class SpanHandler {
   }
 
   public void buildRelation(List<RPCTrafficSourceBuilder> relationBuilders) throws Exception {
-    List<ServiceRelationDO> serverRelationList = new ArrayList<>(relationBuilders.size());
-    List<ServiceInstanceRelationDO> serverInstanceRelationList =
-        new ArrayList<>(relationBuilders.size());
-    List<EndpointRelationDO> endpointRelationList = new ArrayList<>(relationBuilders.size());
+    try {
+      List<ServiceRelationDO> serverRelationList = new ArrayList<>(relationBuilders.size());
+      List<ServiceInstanceRelationDO> serverInstanceRelationList =
+          new ArrayList<>(relationBuilders.size());
+      List<EndpointRelationDO> endpointRelationList = new ArrayList<>(relationBuilders.size());
 
-    relationBuilders.forEach(callingIn -> {
-      ServiceRelation serviceRelation = callingIn.toServiceRelation();
-      if (serviceRelation != null) {
-        serverRelationList.add(ServiceRelationDO.fromServiceRelation(serviceRelation));
-      }
+      relationBuilders.forEach(callingIn -> {
+        ServiceRelation serviceRelation = callingIn.toServiceRelation();
+        if (serviceRelation != null) {
+          serverRelationList.add(ServiceRelationDO.fromServiceRelation(serviceRelation));
+        }
 
-      ServiceInstanceRelation serviceInstanceRelation = callingIn.toServiceInstanceRelation();
-      if (serviceInstanceRelation != null) {
-        serverInstanceRelationList
-            .add(ServiceInstanceRelationDO.fromServiceInstanceRelation(serviceInstanceRelation));
-      }
+        ServiceInstanceRelation serviceInstanceRelation = callingIn.toServiceInstanceRelation();
+        if (serviceInstanceRelation != null) {
+          serverInstanceRelationList
+              .add(ServiceInstanceRelationDO.fromServiceInstanceRelation(serviceInstanceRelation));
+        }
 
-      EndpointRelation endpointRelation = callingIn.toEndpointRelation();
-      if (endpointRelation != null) {
-        endpointRelationList.add(EndpointRelationDO.fromEndpointRelation(endpointRelation));
-      }
-    });
+        EndpointRelation endpointRelation = callingIn.toEndpointRelation();
+        if (endpointRelation != null) {
+          endpointRelationList.add(EndpointRelationDO.fromEndpointRelation(endpointRelation));
+        }
+      });
 
-    storageServiceRelation(serverRelationList);
-    storageServiceInstanceRelation(serverInstanceRelationList);
-    storageEndpointRelation(endpointRelationList);
+      storageServiceRelation(serverRelationList);
+      storageServiceInstanceRelation(serverInstanceRelationList);
+      storageEndpointRelation(endpointRelationList);
+    } catch (Exception e) {
+      log.error("[apm] build relation error", e);
+    }
   }
 
   private void storageSpan(List<SpanDO> spans) throws Exception {
