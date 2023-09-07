@@ -15,7 +15,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -46,7 +48,7 @@ public class SuperCacheService extends ScheduleLoadTask {
     SuperCache sc = new SuperCache();
     sc.metaDataDictValueMap = metaDictValueService.getMetaDictValue();
     sc.expressionMetricList = metricInfoService.querySpmList();
-    sc.metricInfoMap = queryMetricInfoByPage();
+    queryMetricInfoByPage(sc);
     this.sc = sc;
     ProdLog.info("[SuperCache] load end");
   }
@@ -62,12 +64,13 @@ public class SuperCacheService extends ScheduleLoadTask {
   }
 
 
-  private Map<String, MetricInfo> queryMetricInfoByPage() {
+  private void queryMetricInfoByPage(SuperCache sc) {
     QueryWrapper<MetricInfo> queryWrapper = new QueryWrapper<>();
     queryWrapper.eq("deleted", 0);
 
     int current = 1;
     Map<String /* metric table */, MetricInfo> map = new HashMap<>();
+    Map<String /* ref */, List<MetricInfo>> workspaceMap = new HashMap<>();
     int size = 1000;
     do {
       Page<MetricInfo> page = new Page<>(current++, size);
@@ -82,8 +85,15 @@ public class SuperCacheService extends ScheduleLoadTask {
           continue;
         }
         map.put(metricInfo.getMetricTable(), metricInfo);
+        if (StringUtils.isNotBlank(metricInfo.getWorkspace())
+            && !StringUtils.equals(metricInfo.getWorkspace(), "-")) {
+          List<MetricInfo> list =
+              workspaceMap.computeIfAbsent(metricInfo.getWorkspace(), k -> new ArrayList<>());
+          list.add(metricInfo);
+        }
       }
     } while (current < 1000);
-    return map;
+    sc.metricInfoMap = map;
+    sc.workspaceMetricInfoMap = workspaceMap;
   }
 }
