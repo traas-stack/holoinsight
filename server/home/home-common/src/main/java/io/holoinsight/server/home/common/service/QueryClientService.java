@@ -109,11 +109,6 @@ public class QueryClientService {
     QueryDetailResponse response = new QueryDetailResponse();
     List<DetailResult> results = new ArrayList<>();
 
-    Map<String, Datasource> map = new HashMap<>();
-    for (Datasource datasource : request.getDatasourcesList()) {
-      map.put(datasource.getMetric(), datasource);
-    }
-
     for (QueryProto.DetailResult result : res.getResultsList()) {
       DetailResult r = new DetailResult();
       r.setTables(result.getTablesList());

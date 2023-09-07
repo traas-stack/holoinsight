@@ -7,6 +7,7 @@ import io.holoinsight.server.common.dao.entity.MetaDataDictValue;
 import io.holoinsight.server.common.dao.entity.MetricInfo;
 import io.holoinsight.server.query.grpc.QueryProto.QueryRequest;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -20,6 +21,7 @@ public class SuperCache {
   public Map<String, QueryRequest> expressionMetricList;
 
   public Map<String /* metric table */, MetricInfo> metricInfoMap;
+  public Map<String /* workspace */, List<MetricInfo>> workspaceMetricInfoMap;
 
   public String getStringValue(String type, String k) {
 
