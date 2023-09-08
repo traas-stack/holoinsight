@@ -244,12 +244,13 @@ public class DashboardFacadeImpl extends BaseFacade {
         DashboardType dashboardType = DashboardType.valueOf(type);
         switch (dashboardType) {
           case iot:
+          case miniapp:
             target.setType(dashboardType.code());
-            if (StringUtils.equals(title, "app")) {
-              target.setTitle(title);
-            } else if (StringUtils.equals(title, "biz")) {
+            if (StringUtils.equals(title, "biz")) {
               target
                   .setTitle(String.join("_", title, RequestContext.getContext().ms.getWorkspace()));
+            } else {
+              target.setTitle(title);
             }
             break;
           default:
