@@ -90,9 +90,9 @@ public class SpanEsStorage extends RecordEsStorage<SpanDO> implements SpanStorag
       BasicTrace basicTrace = new BasicTrace();
       basicTrace.setStart(spanEsDO.getStartTime());
       basicTrace.getServiceNames()
-          .add(spanEsDO.getTags().get(SpanDO.resource(SpanDO.SERVICE_NAME)));
+          .add(spanEsDO.getTags().get(SpanDO.resource(SpanDO.SERVICE_NAME)).toString());
       basicTrace.getServiceInstanceNames().add(spanEsDO.getTags()
-          .getOrDefault(SpanDO.resource(SpanDO.SERVICE_INSTANCE_NAME), Const.UNKNOWN));
+          .getOrDefault(SpanDO.resource(SpanDO.SERVICE_INSTANCE_NAME), Const.UNKNOWN).toString());
       basicTrace.getEndpointNames().add(spanEsDO.getName());
       basicTrace.setDuration(spanEsDO.getLatency());
       basicTrace.setError(spanEsDO.getTraceStatus() == StatusCode.ERROR.getCode());
@@ -214,7 +214,7 @@ public class SpanEsStorage extends RecordEsStorage<SpanDO> implements SpanStorag
     span.setStartTime(spanEsDO.getStartTime());
     span.setEndTime(spanEsDO.getEndTime());
     span.setError(spanEsDO.getTraceStatus() == StatusCode.ERROR.getCode());
-    span.setLayer(spanEsDO.getTags().get(SpanDO.attributes(SpanDO.SPANLAYER)));
+    span.setLayer(spanEsDO.getTags().get(SpanDO.attributes(SpanDO.SPANLAYER)).toString());
     String kind = spanEsDO.getKind();
     if (StringUtils.equals(kind, SpanKind.SERVER.name())
         || StringUtils.equals(kind, SpanKind.CONSUMER.name())) {
@@ -226,13 +226,13 @@ public class SpanEsStorage extends RecordEsStorage<SpanDO> implements SpanStorag
       span.setType("Local");
     }
 
-    span.setPeer(spanEsDO.getTags().get(SpanDO.attributes(SpanDO.NET_PEER_NAME)));
+    span.setPeer(spanEsDO.getTags().get(SpanDO.attributes(SpanDO.NET_PEER_NAME)).toString());
 
     span.setEndpointName(spanEsDO.getName());
 
-    span.setServiceCode(spanEsDO.getTags().get(SpanDO.resource(SpanDO.SERVICE_NAME)));
+    span.setServiceCode(spanEsDO.getTags().get(SpanDO.resource(SpanDO.SERVICE_NAME)).toString());
     span.setServiceInstanceName(
-        spanEsDO.getTags().get(SpanDO.resource(SpanDO.SERVICE_INSTANCE_NAME)));
+        spanEsDO.getTags().get(SpanDO.resource(SpanDO.SERVICE_INSTANCE_NAME)).toString());
 
     // TODO: 2022/9/20
     // span.setComponent(getComponentLibraryCatalogService().getComponentName(spanObject.getComponentId()));
@@ -263,7 +263,8 @@ public class SpanEsStorage extends RecordEsStorage<SpanDO> implements SpanStorag
 
     spanEsDO.getTags().forEach((tagk, tagv) -> {
       io.holoinsight.server.apm.common.model.specification.sw.KeyValue keyValue =
-          new io.holoinsight.server.apm.common.model.specification.sw.KeyValue(tagk, tagv);
+          new io.holoinsight.server.apm.common.model.specification.sw.KeyValue(tagk,
+              tagv.toString());
       span.getTags().add(keyValue);
       // mesh span
       if (SpanDO.attributes(Const.MOSN_ATTR).equals(keyValue.getKey())

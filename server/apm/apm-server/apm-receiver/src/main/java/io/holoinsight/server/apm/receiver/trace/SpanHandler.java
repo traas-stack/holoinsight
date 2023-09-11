@@ -50,6 +50,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import static io.holoinsight.server.apm.receiver.common.TransformAttr.anyValueToString;
+import static io.holoinsight.server.apm.receiver.common.TransformAttr.convertKeyValue;
 
 @Slf4j
 public class SpanHandler {
@@ -259,8 +260,7 @@ public class SpanHandler {
     otelSpan.setKind(SpanKind.fromProto(span.getKind()));
     otelSpan.setStartTimeUnixNano(span.getStartTimeUnixNano());
     otelSpan.setEndTimeUnixNano(span.getEndTimeUnixNano());
-    otelSpan.setAttributes(span.getAttributesList().stream()
-        .map(attr -> new KeyValue(attr.getKey(), anyValueToString(attr.getValue())))
+    otelSpan.setAttributes(span.getAttributesList().stream().map(attr -> convertKeyValue(attr))
         .collect(Collectors.toList()));
     otelSpan.setDroppedAttributesCount(span.getDroppedAttributesCount());
     otelSpan.setEvents(span.getEventsList().stream().map(event -> {

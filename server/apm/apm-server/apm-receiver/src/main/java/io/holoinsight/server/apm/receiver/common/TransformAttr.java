@@ -50,4 +50,43 @@ public class TransformAttr {
     }
   }
 
+  public static io.holoinsight.server.apm.common.model.specification.otel.KeyValue convertKeyValue(
+      KeyValue keyValue) {
+    AnyValue anyValue = keyValue.getValue();
+    io.holoinsight.server.apm.common.model.specification.otel.KeyValue result;
+    switch (anyValue.getValueCase().getNumber()) {
+      case AnyValue.STRING_VALUE_FIELD_NUMBER:
+        result = new io.holoinsight.server.apm.common.model.specification.otel.KeyValue(
+            keyValue.getKey(), anyValue.getStringValue());
+        break;
+      case AnyValue.BOOL_VALUE_FIELD_NUMBER:
+        result = new io.holoinsight.server.apm.common.model.specification.otel.KeyValue(
+            keyValue.getKey(), anyValue.getBoolValue());
+        break;
+      case AnyValue.INT_VALUE_FIELD_NUMBER:
+        result = new io.holoinsight.server.apm.common.model.specification.otel.KeyValue(
+            keyValue.getKey(), anyValue.getIntValue());
+        break;
+      case AnyValue.DOUBLE_VALUE_FIELD_NUMBER:
+        result = new io.holoinsight.server.apm.common.model.specification.otel.KeyValue(
+            keyValue.getKey(), anyValue.getDoubleValue());
+        break;
+      case AnyValue.ARRAY_VALUE_FIELD_NUMBER:
+        result = new io.holoinsight.server.apm.common.model.specification.otel.KeyValue(
+            keyValue.getKey(), anyValue.getArrayValue());
+        break;
+      case AnyValue.KVLIST_VALUE_FIELD_NUMBER:
+        result = new io.holoinsight.server.apm.common.model.specification.otel.KeyValue(
+            keyValue.getKey(), anyValue.getKvlistValue());
+        break;
+      case AnyValue.BYTES_VALUE_FIELD_NUMBER:
+        result = new io.holoinsight.server.apm.common.model.specification.otel.KeyValue(
+            keyValue.getKey(), anyValue.getBytesValue());
+        break;
+      default:
+        throw new UnsupportedOperationException("unsupported value type: " + anyValue);
+    }
+    return result;
+  }
+
 }

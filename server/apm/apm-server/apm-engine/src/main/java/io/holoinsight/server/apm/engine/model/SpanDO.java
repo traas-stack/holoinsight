@@ -9,9 +9,7 @@ import io.holoinsight.server.apm.common.model.specification.otel.Span;
 import io.holoinsight.server.apm.common.model.storage.annotation.Column;
 import io.holoinsight.server.apm.common.model.storage.annotation.FlatColumn;
 import io.holoinsight.server.apm.common.model.storage.annotation.ModelAnnotation;
-import io.holoinsight.server.apm.common.utils.DownSampling;
 import io.holoinsight.server.apm.common.utils.GsonUtils;
-import io.holoinsight.server.apm.common.utils.TimeBucket;
 import io.holoinsight.server.apm.common.utils.TimeUtils;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -93,7 +91,7 @@ public class SpanDO extends RecordDO {
   @Column(name = LATENCY)
   private int latency;
   @FlatColumn
-  private Map<String, String> tags;
+  private Map<String, Object> tags;
 
   @Override
   public String indexName() {
@@ -115,17 +113,17 @@ public class SpanDO extends RecordDO {
     spanEsDO.setTraceStatus(span.getStatus().getStatusCode().getCode());
     spanEsDO.setLatency(
         (int) (TimeUtils.unixNano2MS((span.getEndTimeUnixNano() - span.getStartTimeUnixNano()))));
-    Map<String, String> tags = new HashMap<>();
+    Map<String, Object> tags = new HashMap<>();
     spanEsDO.setTags(tags);
     List<KeyValue> spanAttrKvs = span.getAttributes();
     if (CollectionUtils.isNotEmpty(spanAttrKvs)) {
       for (KeyValue kv : spanAttrKvs) {
-        tags.put(SpanDO.attributes(kv.getKey()), String.valueOf(kv.getValue()));
+        tags.put(SpanDO.attributes(kv.getKey()), kv.getValue());
       }
     }
     if (resource != null && CollectionUtils.isNotEmpty(resource.getAttributes())) {
       for (KeyValue kv : resource.getAttributes()) {
-        tags.put(SpanDO.resource(kv.getKey()), String.valueOf(kv.getValue()));
+        tags.put(SpanDO.resource(kv.getKey()), kv.getValue());
       }
     }
     return spanEsDO;
