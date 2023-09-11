@@ -185,31 +185,37 @@ public class ApmGsonUtils extends GsonUtils {
           field.setAccessible(true);
           Object value = field.get(src);
           if (field.isAnnotationPresent(FlatColumn.class)) {
-            Map map = (Map) value;
-            map.forEach((k, v) -> jsonObject.addProperty(String.valueOf(k), String.valueOf(v)));
+            Map<String, Object> map = (Map) value;
+            map.forEach((k, v) -> {
+              addJsonProperty(jsonObject, v.getClass(), k, v);
+            });
           } else if (field.isAnnotationPresent(Column.class)) {
             Column column = field.getAnnotation(Column.class);
             String columnName = column.name();
-            if (Number.class.isAssignableFrom(fieldType) || fieldType == int.class
-                || fieldType == long.class || fieldType == short.class || fieldType == byte.class
-                || fieldType == float.class || fieldType == double.class) {
-              jsonObject.addProperty(columnName, (Number) value);
-            } else if (fieldType == Boolean.class || fieldType == boolean.class) {
-              jsonObject.addProperty(columnName, (Boolean) value);
-            } else if (fieldType == Character.class || fieldType == char.class) {
-              jsonObject.addProperty(columnName, (Character) value);
-            } else if (fieldType == String.class) {
-              jsonObject.addProperty(columnName, (String) value);
-            } else {
-              throw new IllegalArgumentException(
-                  String.format("unsupported field type, %s:%s", fieldName, fieldType.getName()));
-            }
+            addJsonProperty(jsonObject, fieldType, columnName, value);
           }
         }
       } catch (Exception e) {
         throw new RuntimeException(e);
       }
       return jsonObject;
+    }
+  }
+
+  private static void addJsonProperty(JsonObject jsonObject, Class<?> fieldType, String columnName,
+      Object value) {
+    if (Number.class.isAssignableFrom(fieldType) || fieldType == int.class
+        || fieldType == long.class || fieldType == short.class || fieldType == byte.class
+        || fieldType == float.class || fieldType == double.class) {
+      jsonObject.addProperty(columnName, (Number) value);
+    } else if (fieldType == Boolean.class || fieldType == boolean.class) {
+      jsonObject.addProperty(columnName, (Boolean) value);
+    } else if (fieldType == Character.class || fieldType == char.class) {
+      jsonObject.addProperty(columnName, (Character) value);
+    } else if (fieldType == String.class) {
+      jsonObject.addProperty(columnName, (String) value);
+    } else {
+      jsonObject.addProperty(columnName, (String) value);
     }
   }
 }
