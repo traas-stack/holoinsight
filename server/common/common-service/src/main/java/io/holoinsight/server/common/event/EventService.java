@@ -1,9 +1,9 @@
 /*
  * Copyright 2022 Holoinsight Project Authors. Licensed under Apache-2.0.
  */
-package io.holoinsight.server.apm.server.service;
+package io.holoinsight.server.common.event;
 
-import io.holoinsight.server.apm.common.model.query.Event;
+import io.holoinsight.server.common.event.Event;
 
 import java.util.List;
 import java.util.Map;

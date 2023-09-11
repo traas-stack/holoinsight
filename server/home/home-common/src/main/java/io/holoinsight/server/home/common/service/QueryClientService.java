@@ -4,7 +4,7 @@
 package io.holoinsight.server.home.common.service;
 
 import io.holoinsight.server.apm.common.model.query.Endpoint;
-import io.holoinsight.server.apm.common.model.query.Event;
+import io.holoinsight.server.common.event.Event;
 import io.holoinsight.server.apm.common.model.query.QueryTraceRequest;
 import io.holoinsight.server.apm.common.model.query.ServiceInstance;
 import io.holoinsight.server.apm.common.model.query.SlowSql;

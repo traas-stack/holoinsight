@@ -10,7 +10,7 @@ import com.google.common.collect.Lists;
 import com.google.protobuf.MessageOrBuilder;
 import io.holoinsight.server.apm.common.model.query.Duration;
 import io.holoinsight.server.apm.common.model.query.Endpoint;
-import io.holoinsight.server.apm.common.model.query.Event;
+import io.holoinsight.server.common.event.Event;
 import io.holoinsight.server.apm.common.model.query.MetricValue;
 import io.holoinsight.server.apm.common.model.query.MetricValues;
 import io.holoinsight.server.apm.common.model.query.Pagination;
