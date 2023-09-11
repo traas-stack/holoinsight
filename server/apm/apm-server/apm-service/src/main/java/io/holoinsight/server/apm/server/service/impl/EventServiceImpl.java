@@ -3,10 +3,10 @@
  */
 package io.holoinsight.server.apm.server.service.impl;
 
-import io.holoinsight.server.apm.common.model.query.Event;
+import io.holoinsight.server.common.event.Event;
 import io.holoinsight.server.apm.engine.model.EventDO;
 import io.holoinsight.server.apm.engine.storage.EventStorage;
-import io.holoinsight.server.apm.server.service.EventService;
+import io.holoinsight.server.common.event.EventService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 

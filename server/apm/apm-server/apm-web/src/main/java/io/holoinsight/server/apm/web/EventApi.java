@@ -3,7 +3,7 @@
  */
 package io.holoinsight.server.apm.web;
 
-import io.holoinsight.server.apm.common.model.query.Event;
+import io.holoinsight.server.common.event.Event;
 import io.holoinsight.server.apm.common.model.query.Request;
 import io.holoinsight.server.apm.web.model.FailResponse;
 import io.swagger.annotations.Api;

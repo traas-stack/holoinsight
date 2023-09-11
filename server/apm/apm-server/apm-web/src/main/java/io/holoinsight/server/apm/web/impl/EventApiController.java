@@ -4,9 +4,9 @@
 package io.holoinsight.server.apm.web.impl;
 
 import com.google.common.base.Strings;
-import io.holoinsight.server.apm.common.model.query.Event;
+import io.holoinsight.server.common.event.Event;
 import io.holoinsight.server.apm.common.model.query.Request;
-import io.holoinsight.server.apm.server.service.EventService;
+import io.holoinsight.server.common.event.EventService;
 import io.holoinsight.server.apm.web.EventApi;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

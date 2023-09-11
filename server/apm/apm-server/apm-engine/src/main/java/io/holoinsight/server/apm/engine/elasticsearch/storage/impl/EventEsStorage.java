@@ -3,7 +3,7 @@
  */
 package io.holoinsight.server.apm.engine.elasticsearch.storage.impl;
 
-import io.holoinsight.server.apm.common.model.query.Event;
+import io.holoinsight.server.common.event.Event;
 import io.holoinsight.server.apm.engine.elasticsearch.utils.ApmGsonUtils;
 import io.holoinsight.server.apm.engine.model.EventDO;
 import io.holoinsight.server.apm.engine.model.RecordDO;
