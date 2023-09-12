@@ -8,7 +8,9 @@ import com.google.gson.reflect.TypeToken;
 import io.holoinsight.server.common.J;
 import io.holoinsight.server.common.JsonResult;
 import io.holoinsight.server.home.biz.plugin.PluginRepository;
+import io.holoinsight.server.home.biz.plugin.config.LogPluginConfig;
 import io.holoinsight.server.home.biz.plugin.core.AbstractIntegrationPlugin;
+import io.holoinsight.server.home.biz.plugin.core.LogPlugin;
 import io.holoinsight.server.home.biz.plugin.model.Plugin;
 import io.holoinsight.server.home.biz.plugin.model.PluginType;
 import io.holoinsight.server.home.biz.service.IntegrationGeneratedService;
@@ -37,6 +39,7 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -237,6 +240,29 @@ public class IntegrationGeneratedFacadeImpl extends BaseFacade {
                 abstractIntegrationPlugin.genPluginList(integrationPluginDTO);
             if (CollectionUtils.isEmpty(abstractIntegrationPlugins))
               continue;
+
+            if (abstractIntegrationPlugin instanceof LogPlugin) {
+              String json = integrationPluginDTO.json;
+
+              Map<String, Object> map = J.toMap(json);
+              if (!map.containsKey("confs")) {
+                continue;
+              }
+              List<LogPluginConfig> multiLogPluginConfigs = J.fromJson(J.toJson(map.get("confs")),
+                  new TypeToken<List<LogPluginConfig>>() {}.getType());
+
+              multiLogPluginConfigs.forEach(logPluginConfig -> {
+                if (itemMap.contains(integrationPluginDTO.product + "_" + logPluginConfig.name)) {
+                  return;
+                }
+                Map<String, Object> configMap = new HashMap<>();
+                configMap.put("confs", Collections.singletonList(logPluginConfig));
+                appModels.add(new IntegrationAppModel(null, logPluginConfig.name, "OFFLINE", false,
+                    canCustom, configMap));
+              });
+
+              continue;
+            }
 
             for (AbstractIntegrationPlugin integrationPlugin : abstractIntegrationPlugins) {
               GaeaCollectRange gaeaCollectRange = integrationPlugin.getGaeaCollectRange();

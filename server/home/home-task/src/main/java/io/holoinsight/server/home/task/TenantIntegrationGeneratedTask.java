@@ -4,6 +4,8 @@
 package io.holoinsight.server.home.task;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -17,8 +19,11 @@ import io.holoinsight.server.common.MD5Hash;
 import io.holoinsight.server.common.dao.entity.TenantOps;
 import io.holoinsight.server.home.biz.common.MetaDictUtil;
 import io.holoinsight.server.home.biz.plugin.PluginRepository;
+import io.holoinsight.server.home.biz.plugin.config.LogPluginConfig;
 import io.holoinsight.server.home.biz.plugin.core.AbstractIntegrationPlugin;
+import io.holoinsight.server.home.biz.plugin.core.LogPlugin;
 import io.holoinsight.server.home.biz.plugin.model.Plugin;
+import io.holoinsight.server.home.biz.plugin.model.PluginModel;
 import io.holoinsight.server.home.biz.plugin.model.PluginType;
 import io.holoinsight.server.home.biz.service.IntegrationGeneratedService;
 import io.holoinsight.server.home.biz.service.IntegrationPluginService;
@@ -121,10 +126,12 @@ public class TenantIntegrationGeneratedTask extends AbstractMonitorTask {
     log.info("outMaps: " + outMaps.size());
     List<IntegrationGeneratedDTO> newList = new ArrayList<>();
     for (String outKeys : outMaps.keySet()) {
-      if (fromDbKeys.contains(outKeys)) {
+      IntegrationGeneratedDTO integrationGeneratedDTO = outMaps.get(outKeys);
+      // exclude custom config from front page
+      if (fromDbKeys.contains(outKeys) || integrationGeneratedDTO.custom) {
         fromDbKeys.remove(outKeys);
       } else {
-        newList.add(outMaps.get(outKeys));
+        newList.add(integrationGeneratedDTO);
       }
     }
 
@@ -200,6 +207,23 @@ public class TenantIntegrationGeneratedTask extends AbstractMonitorTask {
               abstractIntegrationPlugin.genPluginList(integrationPluginDTO);
           if (CollectionUtils.isEmpty(abstractIntegrationPlugins))
             continue;
+          Map<String, LogPluginConfig> logPluginConfigMap = new HashMap<>();
+
+          if (abstractIntegrationPlugin instanceof LogPlugin) {
+            String json = integrationPluginDTO.json;
+
+            Map<String, Object> map = J.toMap(json);
+            if (!map.containsKey("confs")) {
+              continue;
+            }
+            List<LogPluginConfig> multiLogPluginConfigs = J.fromJson(J.toJson(map.get("confs")),
+                new TypeToken<List<LogPluginConfig>>() {}.getType());
+
+            multiLogPluginConfigs.forEach(logPluginConfig -> {
+              logPluginConfigMap.put(logPluginConfig.name, logPluginConfig);
+            });
+          }
+
 
           Set<String> appItemSets = new HashSet<>();
           for (AbstractIntegrationPlugin integrationPlugin : abstractIntegrationPlugins) {
@@ -215,16 +239,23 @@ public class TenantIntegrationGeneratedTask extends AbstractMonitorTask {
             if (CollectionUtils.isEmpty(collectApps))
               continue;
 
+            Map<String, Object> configMap = new HashMap<>();
+            if (!CollectionUtils.isEmpty(logPluginConfigMap)) {
+              configMap.put("confs",
+                  Collections.singletonList(logPluginConfigMap.get(integrationPlugin.name)));
+            } else {
+              configMap = J.toMap(integrationPluginDTO.json);
+            }
+
             for (String app : collectApps) {
               if (StringUtils.isBlank(integrationPlugin.name))
                 continue;
               String uk = app + "#" + integrationPluginDTO.product + "#" + integrationPlugin.name;
               if (appItemSets.contains(uk))
                 continue;
-
               generateds.add(integrationGeneratedService.generated(ops.getTenant(),
                   integrationPluginDTO.getWorkspace(), app, integrationPlugin.name,
-                  integrationPluginDTO.getProduct(), J.toMap(integrationPluginDTO.json)));
+                  integrationPluginDTO.getProduct(), configMap));
 
               appItemSets.add(uk);
               uks.add(uk);

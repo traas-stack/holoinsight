@@ -6,6 +6,7 @@ package io.holoinsight.server.home.biz.listener;
 
 import com.google.common.eventbus.AllowConcurrentEvents;
 import com.google.common.eventbus.Subscribe;
+import com.google.gson.reflect.TypeToken;
 import io.holoinsight.server.common.J;
 import io.holoinsight.server.home.biz.common.GaeaConvertUtil;
 import io.holoinsight.server.home.biz.plugin.config.BasePluginConfig;
@@ -68,8 +69,10 @@ public class IntegrationGeneratedUpdateListener {
     integrationPluginDTO.tenant = generatedDTO.tenant;
     integrationPluginDTO.workspace = generatedDTO.workspace;
     integrationPluginDTO.product = generatedDTO.getProduct();
-    integrationPluginDTO.name = generatedDTO.id + "_" + generatedDTO.getProduct() + "_"
-        + generatedDTO.getItem() + "_" + generatedDTO.getName();
+    integrationPluginDTO.name = generatedDTO.tenant + "_"
+        + (StringUtils.isNotBlank(generatedDTO.getWorkspace()) ? generatedDTO.getWorkspace() : "_")
+        + "_" + generatedDTO.getProduct() + "_" + generatedDTO.getItem() + "_"
+        + generatedDTO.getName();
     integrationPluginDTO.status = !CollectionUtils.isEmpty(generatedDTO.getConfig());
     integrationPluginDTO.collectRange = new HashMap<>();
 
@@ -85,9 +88,13 @@ public class IntegrationGeneratedUpdateListener {
         integrationPluginDTO.type = "io.holoinsight.plugin.JvmPlugin";
         integrationPluginDTO.json = convertJvm(generatedDTO);
         break;
+      case "springboot":
+        integrationPluginDTO.type = "io.holoinsight.plugin.SpringBootPlugin";
+        integrationPluginDTO.json = convertPluginJson(generatedDTO);
+        break;
       case "logpattern":
         integrationPluginDTO.type = "io.holoinsight.server.plugin.LogPatternPlugin";
-        integrationPluginDTO.json = convertLogPattern(generatedDTO);
+        integrationPluginDTO.json = convertPluginJson(generatedDTO);
         break;
     }
 
@@ -104,32 +111,31 @@ public class IntegrationGeneratedUpdateListener {
     return GaeaConvertUtil.convertCentralCollectRange(cloudMonitorRange);
   }
 
-  private String convertLogPattern(IntegrationGeneratedDTO generatedDTO) {
+  private String convertPortCheck(IntegrationGeneratedDTO generatedDTO) {
     Map<String, Object> config = generatedDTO.getConfig();
     if (!config.containsKey("confs"))
       return null;
-    // List<LogPluginConfig> == confs
-    return J.toJson(config);
-  }
 
-  private String convertPortCheck(IntegrationGeneratedDTO generatedDTO) {
-    Map<String, Object> config = generatedDTO.getConfig();
-    if (!config.containsKey("ports"))
+    List<PortCheckPluginConfig> confs = J.fromJson(J.toJson(config.get("confs")),
+        new TypeToken<List<PortCheckPluginConfig>>() {}.getType());
+    if (CollectionUtils.isEmpty(confs))
       return null;
 
-    List<String> ports = (List<String>) config.get("ports");
-    Map<String, Object> map = new HashMap<>();
+    List<Integer> ports = new ArrayList<>();
+    confs.forEach(portCheckPluginConfig -> {
+      ports.add(portCheckPluginConfig.getPort());
+    });
 
     List<PortCheckPluginConfig> portCheckPluginConfigs = new ArrayList<>();
-    ports.forEach(port -> {
-      PortCheckPluginConfig portCheckPluginConfig = new PortCheckPluginConfig();
-      portCheckPluginConfig.port = Integer.parseInt(port);
-      portCheckPluginConfig.metaLabel = MetaLabel.partApp;
-      portCheckPluginConfig.range = new ArrayList<>();
-      portCheckPluginConfig.networkMode = "POD";
-      portCheckPluginConfig.range.add(generatedDTO.getName());
-      portCheckPluginConfigs.add(portCheckPluginConfig);
-    });
+    PortCheckPluginConfig portCheckPluginConfig = new PortCheckPluginConfig();
+    portCheckPluginConfig.ports = ports;
+    portCheckPluginConfig.metaLabel = MetaLabel.partApp;
+    portCheckPluginConfig.range = new ArrayList<>();
+    portCheckPluginConfig.networkMode = "AGENT";
+    portCheckPluginConfig.range.add(generatedDTO.getName());
+    portCheckPluginConfigs.add(portCheckPluginConfig);
+
+    Map<String, Object> map = new HashMap<>();
     map.put("confs", portCheckPluginConfigs);
     return J.toJson(map);
   }
@@ -144,9 +150,15 @@ public class IntegrationGeneratedUpdateListener {
     basePluginConfig.range.add(generatedDTO.getName());
     basePluginConfigs.add(basePluginConfig);
     map.put("confs", basePluginConfig);
-    map.put("name", "JVM");
-    map.put("type", "io.holoinsight.plugin.JvmPlugin");
     return J.toJson(map);
+  }
+
+  private String convertPluginJson(IntegrationGeneratedDTO generatedDTO) {
+
+    Map<String, Object> config = generatedDTO.getConfig();
+    if (!config.containsKey("confs"))
+      return null;
+    return J.toJson(config);
   }
 
   private void notify(List<Long> upsertList) {

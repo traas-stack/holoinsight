@@ -3,6 +3,9 @@
  */
 package io.holoinsight.server.home.biz.plugin.core;
 
+import io.holoinsight.server.home.biz.common.MetaDictKey;
+import io.holoinsight.server.home.biz.common.MetaDictType;
+import io.holoinsight.server.home.biz.common.MetaDictUtil;
 import io.holoinsight.server.home.biz.plugin.config.PortCheckPluginConfig;
 import io.holoinsight.server.home.biz.plugin.model.PluginModel;
 import io.holoinsight.server.home.biz.plugin.model.PluginType;
@@ -73,6 +76,12 @@ public class PortCheckPlugin extends AbstractLocalIntegrationPlugin<PortCheckPlu
         portCheckTask.networkMode = "AGENT";
         if (StringUtils.isNotBlank(config.getNetworkMode())) {
           portCheckTask.networkMode = config.getNetworkMode();
+        }
+
+        if (StringUtils.isNotBlank(
+            MetaDictUtil.getStringValue(MetaDictType.GLOBAL_CONFIG, MetaDictKey.NETWORK_MODE))) {
+          portCheckTask.networkMode =
+              MetaDictUtil.getStringValue(MetaDictType.GLOBAL_CONFIG, MetaDictKey.NETWORK_MODE);
         }
 
         ExecuteRule executeRule = new ExecuteRule();

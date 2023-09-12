@@ -42,4 +42,5 @@ public class MetaDictKey {
   public static final String METERING_LOG_OPEN = "metering_log_open";
   public static final String METERING_HOLOINSIGHT_SUBMIT_OPEN = "metering_holoinsight_submit_open";
   public static final String INTEGRATION_LOCAL_PRODUCT = "integration_local_product";
+  public static final String NETWORK_MODE = "networkMode";
 }
