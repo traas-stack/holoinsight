@@ -245,6 +245,8 @@ public class GaeaSqlTaskUtil {
         for (CustomPluginConf.SplitCol splitCol : splitCols) {
           if ("TIME".equals(splitCol.colType)) {
             timeParse.setFormat("auto");
+            timeParse.setElect(buildElect(splitCol.rule, logParse.splitType));
+            timeParse.setType("elect");
             if (!StringUtils.isEmpty(splitCol.name)) {
               String timeAndZone = splitCol.name.substring(3, splitCol.name.length() - 1);
               String[] cols = timeAndZone.split("##");
@@ -263,8 +265,6 @@ public class GaeaSqlTaskUtil {
               timeParse.setLayout(layout);
               timeParse.setFormat("golangLayout");
             }
-            timeParse.setElect(buildElect(splitCol.rule, logParse.splitType));
-            timeParse.setType("elect");
             jsonTimeSelect = true;
           }
         }

@@ -220,7 +220,13 @@ public class IntegrationGeneratedFacadeImpl extends BaseFacade {
           if (listMap.containsKey(integrationProductDTO.getName())) {
             listMap.get(integrationProductDTO.getName()).forEach(generatedDTO -> {
               itemMap.add(generatedDTO.product + "_" + generatedDTO.item);
-              appModels.add(new IntegrationAppModel(generatedDTO.id, generatedDTO.item, "ONLINE",
+              String status = "OFFLINE";
+              if (!CollectionUtils.isEmpty(generatedDTO.config)
+                  && generatedDTO.getConfig().containsKey("status")) {
+                status = generatedDTO.getConfig().get("status").toString();
+              }
+
+              appModels.add(new IntegrationAppModel(generatedDTO.id, generatedDTO.item, status,
                   generatedDTO.custom, canCustom, generatedDTO.config));
             });
           }
@@ -260,25 +266,23 @@ public class IntegrationGeneratedFacadeImpl extends BaseFacade {
                 appModels.add(new IntegrationAppModel(null, logPluginConfig.name, "OFFLINE", false,
                     canCustom, configMap));
               });
+            } else {
+              for (AbstractIntegrationPlugin integrationPlugin : abstractIntegrationPlugins) {
+                GaeaCollectRange gaeaCollectRange = integrationPlugin.getGaeaCollectRange();
 
-              continue;
-            }
+                if (gaeaCollectRange.getType().equalsIgnoreCase("central")
+                    || null == gaeaCollectRange.getCloudmonitor()
+                    || StringUtils.isBlank(gaeaCollectRange.getCloudmonitor().table)) {
+                  continue;
+                }
 
-            for (AbstractIntegrationPlugin integrationPlugin : abstractIntegrationPlugins) {
-              GaeaCollectRange gaeaCollectRange = integrationPlugin.getGaeaCollectRange();
+                if (itemMap.contains(integrationPluginDTO.product + "_" + integrationPlugin.name)) {
+                  continue;
+                }
 
-              if (gaeaCollectRange.getType().equalsIgnoreCase("central")
-                  || null == gaeaCollectRange.getCloudmonitor()
-                  || StringUtils.isBlank(gaeaCollectRange.getCloudmonitor().table)) {
-                continue;
+                appModels.add(new IntegrationAppModel(null, integrationPlugin.name, "OFFLINE",
+                    false, canCustom, new HashMap<>()));
               }
-
-              if (itemMap.contains(integrationPluginDTO.product + "_" + integrationPlugin.name)) {
-                continue;
-              }
-
-              appModels.add(new IntegrationAppModel(null, integrationPlugin.name, "OFFLINE", false,
-                  canCustom, new HashMap<>()));
             }
           }
           if (CollectionUtils.isEmpty(appModels) && Boolean.FALSE == canCustom) {

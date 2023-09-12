@@ -73,29 +73,40 @@ public class IntegrationGeneratedUpdateListener {
         + (StringUtils.isNotBlank(generatedDTO.getWorkspace()) ? generatedDTO.getWorkspace() : "_")
         + "_" + generatedDTO.getProduct() + "_" + generatedDTO.getItem() + "_"
         + generatedDTO.getName();
-    integrationPluginDTO.status = !CollectionUtils.isEmpty(generatedDTO.getConfig());
+    integrationPluginDTO.status = true;
+    if (!CollectionUtils.isEmpty(generatedDTO.getConfig())
+        && generatedDTO.getConfig().containsKey("status")) {
+      integrationPluginDTO.status =
+          generatedDTO.getConfig().get("status").toString().equalsIgnoreCase("ONLINE");
+    }
     integrationPluginDTO.collectRange = new HashMap<>();
 
     GaeaCollectRange gaeaCollectRange = convertAppRange(generatedDTO);
     integrationPluginDTO.collectRange = J.toMap(J.toJson(gaeaCollectRange));
 
-    switch (generatedDTO.getProduct().toLowerCase()) {
-      case "portcheck":
-        integrationPluginDTO.type = "io.holoinsight.plugin.PortCheckPlugin";
-        integrationPluginDTO.json = convertPortCheck(generatedDTO);
-        break;
-      case "jvm":
-        integrationPluginDTO.type = "io.holoinsight.plugin.JvmPlugin";
-        integrationPluginDTO.json = convertJvm(generatedDTO);
-        break;
-      case "springboot":
-        integrationPluginDTO.type = "io.holoinsight.plugin.SpringBootPlugin";
-        integrationPluginDTO.json = convertPluginJson(generatedDTO);
-        break;
-      case "logpattern":
-        integrationPluginDTO.type = "io.holoinsight.server.plugin.LogPatternPlugin";
-        integrationPluginDTO.json = convertPluginJson(generatedDTO);
-        break;
+    if (!CollectionUtils.isEmpty(generatedDTO.getConfig())) {
+      switch (generatedDTO.getProduct().toLowerCase()) {
+        case "portcheck":
+          integrationPluginDTO.type = "io.holoinsight.plugin.PortCheckPlugin";
+          integrationPluginDTO.json = convertPortCheck(generatedDTO);
+          break;
+        case "jvm":
+          integrationPluginDTO.type = "io.holoinsight.plugin.JvmPlugin";
+          integrationPluginDTO.json = convertJvm(generatedDTO);
+          break;
+        case "springboot":
+          integrationPluginDTO.type = "io.holoinsight.plugin.SpringBootPlugin";
+          integrationPluginDTO.json = convertPluginJson(generatedDTO);
+          break;
+        case "logpattern":
+          integrationPluginDTO.type = "io.holoinsight.server.plugin.LogPatternPlugin";
+          integrationPluginDTO.json = convertPluginJson(generatedDTO);
+          break;
+        case "multilog":
+          integrationPluginDTO.type = "io.holoinsight.server.plugin.MultiLogPlugin";
+          integrationPluginDTO.json = convertPluginJson(generatedDTO);
+          break;
+      }
     }
 
     integrationPluginDTO.version = "1";
