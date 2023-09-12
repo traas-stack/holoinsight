@@ -14,6 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static io.holoinsight.server.home.biz.common.MetaDictType.METRIC_CONFIG;
@@ -73,7 +74,7 @@ public abstract class AbstractMetricCrawlerBuilder implements MetricCrawlerBuild
     public MetricInfo metricInfoTemplate;
   }
 
-  public MetricInfo genMetricInfo(String tenant, String workspace, String organization,
+  public static MetricInfo genMetricInfo(String tenant, String workspace, String organization,
       String product, String metricType, String metric, String metricTable, String description,
       String unit, Integer period, List<String> tags) {
 

@@ -112,7 +112,6 @@ public class QueryClientService {
     for (QueryProto.DetailResult result : res.getResultsList()) {
       DetailResult r = new DetailResult();
       r.setTables(result.getTablesList());
-      r.setSql(result.getSql());
       r.setHeaders(result.getHeadersList());
 
       List<Object[]> values = new ArrayList<>();
