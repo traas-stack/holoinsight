@@ -116,8 +116,12 @@ public class SpanMetricEsStorage extends PostCalMetricStorage {
         Aggregation timeAggregation = timeAggregations.iterator().next();
         backtrackExtract(metricDefine.getIndex(), timeAggregation, valuesMap, new HashMap<>(),
             false);
-        valuesMap.forEach((tags, value) -> resultMap.computeIfAbsent(tags, k -> new HashMap<>())
-            .put(time, value.values().iterator().next()));
+        valuesMap.forEach((tags, value) -> {
+          Double v = value.values().iterator().next();
+          resultMap.computeIfAbsent(tags, k -> new HashMap<>()).put(time,
+              (v == null || v == Double.POSITIVE_INFINITY || v == Double.NEGATIVE_INFINITY) ? 0
+                  : v);
+        });
       }
     }
     resultMap.forEach((tags, timeVals) -> {
