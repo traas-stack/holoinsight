@@ -288,8 +288,9 @@ public class IntegrationGeneratedFacadeImpl extends BaseFacade {
           if (CollectionUtils.isEmpty(appModels) && Boolean.FALSE == canCustom) {
             continue;
           }
-          integrationAppProductModels.add(new IntegrationAppProductModel(
-              integrationProductDTO.getName(), name, integrationProductDTO.getForm(), appModels));
+          integrationAppProductModels
+              .add(new IntegrationAppProductModel(integrationProductDTO.getName(),
+                  integrationProductDTO.profile, name, integrationProductDTO.getForm(), appModels));
         }
 
         JsonResult.createSuccessResult(result, integrationAppProductModels);
@@ -304,6 +305,8 @@ public class IntegrationGeneratedFacadeImpl extends BaseFacade {
   public static class IntegrationAppProductModel {
 
     private String product;
+
+    private String description;
 
     private String app;
 
