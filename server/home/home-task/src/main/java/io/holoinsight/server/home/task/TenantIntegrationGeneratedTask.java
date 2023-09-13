@@ -4,7 +4,6 @@
 package io.holoinsight.server.home.task;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -23,7 +22,6 @@ import io.holoinsight.server.home.biz.plugin.config.LogPluginConfig;
 import io.holoinsight.server.home.biz.plugin.core.AbstractIntegrationPlugin;
 import io.holoinsight.server.home.biz.plugin.core.LogPlugin;
 import io.holoinsight.server.home.biz.plugin.model.Plugin;
-import io.holoinsight.server.home.biz.plugin.model.PluginModel;
 import io.holoinsight.server.home.biz.plugin.model.PluginType;
 import io.holoinsight.server.home.biz.service.IntegrationGeneratedService;
 import io.holoinsight.server.home.biz.service.IntegrationPluginService;
@@ -119,7 +117,7 @@ public class TenantIntegrationGeneratedTask extends AbstractMonitorTask {
 
   private void syncAoAction() {
 
-    Map<String, Long> fromDb = getFromDb();
+    Map<String, IntegrationGenerated> fromDb = getFromDb();
     Set<String> fromDbKeys = fromDb.keySet();
     log.info("fromDb: " + fromDbKeys.size());
     Map<String, IntegrationGeneratedDTO> outMaps = getIntegrationGeneratedList();
@@ -145,19 +143,25 @@ public class TenantIntegrationGeneratedTask extends AbstractMonitorTask {
 
     // delete
     if (!CollectionUtils.isEmpty(fromDbKeys)) {
-      log.info("deleteList: " + fromDbKeys.size());
+      int deleteSize = 0;
       for (String dbkey : fromDbKeys) {
+        IntegrationGenerated dbGenerated = fromDb.get(dbkey);
+        if (dbGenerated.custom) {
+          continue;
+        }
         IntegrationGenerated integrationGenerated = new IntegrationGenerated();
         integrationGenerated.setDeleted(true);
-        integrationGenerated.setId(fromDb.get(dbkey));
+        integrationGenerated.setId(dbGenerated.getId());
         integrationGeneratedService.updateById(integrationGenerated);
+        deleteSize++;
       }
+      log.info("deleteList: " + deleteSize);
     }
   }
 
-  private Map<String, Long> getFromDb() {
+  private Map<String, IntegrationGenerated> getFromDb() {
     List<TenantOps> tenantOps = tenantOpsService.list();
-    Map<String, Long> dbUks = new HashMap<>();
+    Map<String, IntegrationGenerated> dbUks = new HashMap<>();
 
     for (TenantOps ops : tenantOps) {
       List<IntegrationGenerated> dblist =
@@ -167,10 +171,8 @@ public class TenantIntegrationGeneratedTask extends AbstractMonitorTask {
       }
 
       for (IntegrationGenerated generated : dblist) {
-        dbUks.put(
-            String.format("%s_%s_%s_%s_%s", generated.getTenant(), generated.getWorkspace(),
-                generated.getProduct(), generated.getItem(), generated.getName()),
-            generated.getId());
+        dbUks.put(String.format("%s_%s_%s_%s_%s", generated.getTenant(), generated.getWorkspace(),
+            generated.getProduct(), generated.getItem(), generated.getName()), generated);
       }
     }
 
