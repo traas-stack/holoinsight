@@ -18,7 +18,7 @@ import java.util.Map;
 import java.util.Set;
 
 @Slf4j
-public class ProductCtlServiceImpl implements ProductCtlService {
+public class ProductStatusServiceImpl implements ProductStatusService {
 
   @Autowired
   private SuperCacheService superCacheService;

@@ -7,10 +7,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import io.holoinsight.server.common.ctl.MonitorProductCode;
-import io.holoinsight.server.common.ctl.ProductCtlService;
-import io.holoinsight.server.common.dao.entity.MetaDataDictValue;
+import io.holoinsight.server.common.ctl.ProductStatusService;
 import io.holoinsight.server.common.service.MetaDataDictValueService;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -57,7 +55,7 @@ public class GatewayGrpcServiceImpl extends GatewayServiceGrpc.GatewayServiceImp
   private ApikeyAuthService apikeyAuthService;
 
   @Autowired
-  private ProductCtlService productCtlService;
+  private ProductStatusService productStatusService;
 
   @Autowired
   private MetaDataDictValueService metaDataDictValueService;
@@ -173,7 +171,7 @@ public class GatewayGrpcServiceImpl extends GatewayServiceGrpc.GatewayServiceImp
     List<WriteMetricsParam.Point> points = new ArrayList<>(request.getPointCount());
     for (Point p : request.getPointList()) {
 
-      if (productCtlService.productClosed(MonitorProductCode.METRIC, p.getTagsMap())) {
+      if (productStatusService.productClosed(MonitorProductCode.METRIC, p.getTagsMap())) {
         continue;
       }
 
@@ -215,7 +213,7 @@ public class GatewayGrpcServiceImpl extends GatewayServiceGrpc.GatewayServiceImp
         for (int i = 0; i < header.getTagKeysCount(); i++) {
           tags.put(header.getTagKeys(i), row.getTagValues(i));
         }
-        if (productCtlService.productClosed(MonitorProductCode.METRIC, tags)) {
+        if (productStatusService.productClosed(MonitorProductCode.METRIC, tags)) {
           continue;
         }
         wmpp.setTimeStamp(row.getTimestamp());

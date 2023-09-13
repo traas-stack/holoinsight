@@ -12,8 +12,8 @@ public class ProductCtlConfiguration {
 
   @Bean
   @ConditionalOnMissingBean
-  public ProductCtlService productCtlService() {
-    return new ProductCtlServiceImpl();
+  public ProductStatusService productCtlService() {
+    return new ProductStatusServiceImpl();
   }
 
 }
