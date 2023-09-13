@@ -7,7 +7,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.holoinsight.server.common.auth.ApikeyAuthService;
 import io.holoinsight.server.common.auth.AuthInfo;
 import io.holoinsight.server.common.ctl.MonitorProductCode;
-import io.holoinsight.server.common.ctl.ProductCtlService;
+import io.holoinsight.server.common.ctl.ProductStatusService;
 import io.holoinsight.server.common.web.InternalWebApi;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -34,7 +34,7 @@ public class ApikeyWebController {
   @Autowired
   private ApikeyAuthService apikeyAuthService;
   @Autowired
-  private ProductCtlService productCtlService;
+  private ProductStatusService productStatusService;
 
   /**
    * <p>
@@ -67,7 +67,7 @@ public class ApikeyWebController {
         Map<String, String> extendInfo = mapper.readValue(extendInfoSplit[1], Map.class);
         apikey = extendInfo.get("authentication");
 
-        if (productCtlService.productClosed(MonitorProductCode.TRACE, extendInfo)) {
+        if (productStatusService.productClosed(MonitorProductCode.TRACE, extendInfo)) {
           result.put("traceStatus", "false");
         }
       }

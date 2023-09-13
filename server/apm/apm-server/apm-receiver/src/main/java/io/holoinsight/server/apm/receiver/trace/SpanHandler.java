@@ -35,7 +35,7 @@ import io.holoinsight.server.apm.server.service.ServiceRelationService;
 import io.holoinsight.server.apm.server.service.SlowSqlService;
 import io.holoinsight.server.apm.server.service.TraceService;
 import io.holoinsight.server.common.ctl.MonitorProductCode;
-import io.holoinsight.server.common.ctl.ProductCtlService;
+import io.holoinsight.server.common.ctl.ProductStatusService;
 import io.opentelemetry.proto.trace.v1.ScopeSpans;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.binary.Hex;
@@ -76,7 +76,7 @@ public class SpanHandler {
   @Autowired
   private ServiceErrorService serviceErrorService;
   @Autowired
-  private ProductCtlService productCtlService;
+  private ProductStatusService productStatusService;
 
   public void handleResourceSpans(
       List<io.opentelemetry.proto.trace.v1.ResourceSpans> resourceSpansList) {
@@ -110,7 +110,7 @@ public class SpanHandler {
               for (io.opentelemetry.proto.trace.v1.Span span : spans) {
                 Map<String, String> spanAttrMap =
                     TransformAttr.attList2Map(span.getAttributesList());
-                if (productCtlService.productClosed(MonitorProductCode.TRACE, spanAttrMap)) {
+                if (productStatusService.productClosed(MonitorProductCode.TRACE, spanAttrMap)) {
                   continue;
                 }
 

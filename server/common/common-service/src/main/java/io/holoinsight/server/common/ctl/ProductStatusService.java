@@ -5,7 +5,7 @@ package io.holoinsight.server.common.ctl;
 
 import java.util.Map;
 
-public interface ProductCtlService {
+public interface ProductStatusService {
 
   boolean switchOn();
 
