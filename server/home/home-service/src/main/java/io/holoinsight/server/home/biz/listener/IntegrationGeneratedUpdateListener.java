@@ -160,7 +160,7 @@ public class IntegrationGeneratedUpdateListener {
     basePluginConfig.range = new ArrayList<>();
     basePluginConfig.range.add(generatedDTO.getName());
     basePluginConfigs.add(basePluginConfig);
-    map.put("confs", basePluginConfig);
+    map.put("confs", basePluginConfigs);
     return J.toJson(map);
   }
 

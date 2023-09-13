@@ -82,6 +82,9 @@ public class MonitorTaskManager extends ScheduleLoadTask {
     try {
 
       for (AbstractMonitorTask task : TaskFactoryHolder.taskFactoryMap.values()) {
+        if (!task.needRun()) {
+          continue;
+        }
         String taskId = task.getTaskId();
         long taskPeriod = task.getTaskPeriod(); // 任务周期
 

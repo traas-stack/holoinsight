@@ -66,8 +66,8 @@ public class IntegrationGeneratedServiceImpl
   @Override
   public List<IntegrationGenerated> queryByTenant(String tenant) {
     QueryWrapper<IntegrationGenerated> queryWrapper = new QueryWrapper<>();
-    queryWrapper.select("name", "product", "tenant", "workspace", "item", "id").eq("deleted", 0)
-        .eq("tenant", tenant);
+    queryWrapper.select("name", "product", "tenant", "workspace", "item", "id", "custom")
+        .eq("deleted", 0).eq("tenant", tenant);
     return baseMapper.selectList(queryWrapper);
   }
 
