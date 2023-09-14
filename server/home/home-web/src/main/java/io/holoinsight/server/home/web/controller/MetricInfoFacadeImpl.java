@@ -7,6 +7,7 @@ package io.holoinsight.server.home.web.controller;
 import io.holoinsight.server.common.JsonResult;
 import io.holoinsight.server.common.dao.entity.dto.MetricInfoDTO;
 import io.holoinsight.server.common.service.MetricInfoService;
+import io.holoinsight.server.home.biz.plugin.MetricInfoCheckService;
 import io.holoinsight.server.home.biz.service.IntegrationProductService;
 import io.holoinsight.server.home.common.util.scope.AuthTargetType;
 import io.holoinsight.server.home.common.util.scope.MonitorScope;
@@ -41,6 +42,9 @@ public class MetricInfoFacadeImpl extends BaseFacade {
   @Autowired
   private IntegrationProductService integrationProductService;
 
+  @Autowired
+  private MetricInfoCheckService metricInfoCheckService;
+
   @GetMapping(value = "/query/products")
   @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.VIEW)
   public JsonResult<List<IntegrationProductDTO>> products() {
@@ -72,8 +76,12 @@ public class MetricInfoFacadeImpl extends BaseFacade {
       @Override
       public void doManage() {
         MonitorScope ms = RequestContext.getContext().ms;
+        String workspace = null;
+        if (metricInfoCheckService.needWorkspace(product)) {
+          workspace = ms.getWorkspace();
+        }
         JsonResult.createSuccessResult(result,
-            metricInfoService.queryListByTenantProduct(null, null, product.toLowerCase()));
+            metricInfoService.queryListByTenantProduct(null, workspace, product.toLowerCase()));
       }
     });
     return result;
