@@ -80,8 +80,6 @@ public class TraceAgentFacadeImpl extends BaseFacade {
       Map<String, Object> sysMap = new HashMap<>();
       String apikey = "";
       String collectorHost = getCollectorAddress(extendInfo);
-      String skywalkingJavaAgentVersion = MetaDictUtil.getStringValue(
-          MetaDictType.TRACE_AGENT_CONFIG, MetaDictKey.SKYWALKING_JAVA_AGENT_VERSION);
 
       if (!CollectionUtils.isEmpty(apiKeys)) {
         apikey = apiKeys.get(0).getApiKey();
@@ -100,10 +98,7 @@ public class TraceAgentFacadeImpl extends BaseFacade {
         }
       }
 
-      if (StringUtils.isEmpty(skywalkingJavaAgentVersion)) {
-        skywalkingJavaAgentVersion = "8.11.0";
-      }
-      sysMap.put("skywalkingJavaAgentVersion", skywalkingJavaAgentVersion);
+      getTraceAgentVersion(sysMap);
       sysMap.put("apikey", apikey);
       sysMap.put("collectorHost", collectorHost);
       sysMap.put("traceInstallDocument", MetaDictUtil
@@ -234,6 +229,47 @@ public class TraceAgentFacadeImpl extends BaseFacade {
 
   public String getCollectorAddress(Map<String, String> extendInfo) {
     return MetaDictUtil.getStringValue(MetaDictType.TRACE_AGENT_CONFIG, MetaDictKey.COLLECTOR_HOST);
+  }
+
+  private void getTraceAgentVersion(Map<String, Object> sysMap) {
+    String skywalkingJavaAgentVersion = MetaDictUtil.getStringValue(MetaDictType.TRACE_AGENT_CONFIG,
+        MetaDictKey.SKYWALKING_JAVA_AGENT_VERSION);
+    String skywalkingPythonAgentVersion = MetaDictUtil.getStringValue(
+        MetaDictType.TRACE_AGENT_CONFIG, MetaDictKey.SKYWALKING_PYTHON_AGENT_VERSION);
+    String skywalkingPHPAgentVersion = MetaDictUtil.getStringValue(MetaDictType.TRACE_AGENT_CONFIG,
+        MetaDictKey.SKYWALKING_PHP_AGENT_VERSION);
+    String skywalkingDotnetAgentVersion = MetaDictUtil.getStringValue(
+        MetaDictType.TRACE_AGENT_CONFIG, MetaDictKey.SKYWALKING_DOTNET_AGENT_VERSION);
+    String skywalkingNodejsAgentVersion = MetaDictUtil.getStringValue(
+        MetaDictType.TRACE_AGENT_CONFIG, MetaDictKey.SKYWALKING_NODEJS_AGENT_VERSION);
+    String skywalkingGOAgentVersion = MetaDictUtil.getStringValue(MetaDictType.TRACE_AGENT_CONFIG,
+        MetaDictKey.SKYWALKING_GO_AGENT_VERSION);
+
+    if (StringUtils.isEmpty(skywalkingJavaAgentVersion)) {
+      skywalkingJavaAgentVersion = MetaDictKey.DEFAULT_SKYWALKING_JAVA_AGENT_VERSION;
+    }
+    if (StringUtils.isEmpty(skywalkingPythonAgentVersion)) {
+      skywalkingPythonAgentVersion = MetaDictKey.DEFAULT_SKYWALKING_PYTHON_AGENT_VERSION;
+    }
+    if (StringUtils.isEmpty(skywalkingPHPAgentVersion)) {
+      skywalkingPHPAgentVersion = MetaDictKey.DEFAULT_SKYWALKING_PHP_AGENT_VERSION;
+    }
+    if (StringUtils.isEmpty(skywalkingDotnetAgentVersion)) {
+      skywalkingDotnetAgentVersion = MetaDictKey.DEFAULT_SKYWALKING_DOTNET_AGENT_VERSION;
+    }
+    if (StringUtils.isEmpty(skywalkingNodejsAgentVersion)) {
+      skywalkingNodejsAgentVersion = MetaDictKey.DEFAULT_SKYWALKING_NODEJS_AGENT_VERSION;
+    }
+    if (StringUtils.isEmpty(skywalkingGOAgentVersion)) {
+      skywalkingGOAgentVersion = MetaDictKey.DEFAULT_SKYWALKING_GO_AGENT_VERSION;
+    }
+
+    sysMap.put(MetaDictKey.SKYWALKING_JAVA_AGENT_VERSION, skywalkingJavaAgentVersion);
+    sysMap.put(MetaDictKey.SKYWALKING_PYTHON_AGENT_VERSION, skywalkingPythonAgentVersion);
+    sysMap.put(MetaDictKey.SKYWALKING_PHP_AGENT_VERSION, skywalkingPHPAgentVersion);
+    sysMap.put(MetaDictKey.SKYWALKING_DOTNET_AGENT_VERSION, skywalkingDotnetAgentVersion);
+    sysMap.put(MetaDictKey.SKYWALKING_NODEJS_AGENT_VERSION, skywalkingNodejsAgentVersion);
+    sysMap.put(MetaDictKey.SKYWALKING_GO_AGENT_VERSION, skywalkingGOAgentVersion);
   }
 
 }

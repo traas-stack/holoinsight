@@ -24,6 +24,17 @@ public class MetaDictKey {
 
   public static final String COLLECTOR_HOST = "collectorHost";
   public static final String SKYWALKING_JAVA_AGENT_VERSION = "skywalkingJavaAgentVersion";
+  public static final String DEFAULT_SKYWALKING_JAVA_AGENT_VERSION = "8.11.0";
+  public static final String SKYWALKING_PYTHON_AGENT_VERSION = "skywalkingPythonAgentVersion";
+  public static final String DEFAULT_SKYWALKING_PYTHON_AGENT_VERSION = "1.0.1";
+  public static final String SKYWALKING_PHP_AGENT_VERSION = "skywalkingPHPAgentVersion";
+  public static final String DEFAULT_SKYWALKING_PHP_AGENT_VERSION = "0.6.0";
+  public static final String SKYWALKING_DOTNET_AGENT_VERSION = "skywalkingDotnetAgentVersion";
+  public static final String DEFAULT_SKYWALKING_DOTNET_AGENT_VERSION = "2.1.0";
+  public static final String SKYWALKING_NODEJS_AGENT_VERSION = "skywalkingNodejsAgentVersion";
+  public static final String DEFAULT_SKYWALKING_NODEJS_AGENT_VERSION = "0.6.0";
+  public static final String SKYWALKING_GO_AGENT_VERSION = "skywalkingGOAgentVersion";
+  public static final String DEFAULT_SKYWALKING_GO_AGENT_VERSION = "0.2.0";
   public static final String TRACE_INSTALL_DOCUMENT = "traceInstallDocument";
 
   public static final String IGNORE_TASK_LIST = "ignore_task_list";
