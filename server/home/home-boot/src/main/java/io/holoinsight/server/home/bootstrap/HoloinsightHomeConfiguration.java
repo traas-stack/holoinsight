@@ -15,6 +15,8 @@ import io.holoinsight.server.home.alert.service.event.AlertNotifyChainBuilder;
 import io.holoinsight.server.home.alert.service.event.DefaultAlertNotifyChainBuilder;
 import io.holoinsight.server.home.biz.plugin.DefaultMarketplaceProductHandler;
 import io.holoinsight.server.home.biz.plugin.MarketplaceProductHandler;
+import io.holoinsight.server.home.biz.plugin.MetricInfoCheckService;
+import io.holoinsight.server.home.biz.plugin.MetricInfoCheckServiceImpl;
 import io.holoinsight.server.home.biz.service.EnvironmentService;
 import io.holoinsight.server.home.biz.service.TenantInitService;
 import io.holoinsight.server.home.biz.service.UserinfoVerificationService;
@@ -89,5 +91,10 @@ public class HoloinsightHomeConfiguration {
   @Bean
   public TraceAgentFacadeImpl traceAgentFacadeImpl() {
     return new TraceAgentFacadeImpl();
+  }
+
+  @Bean
+  public MetricInfoCheckService metricInfoCheckService() {
+    return new MetricInfoCheckServiceImpl();
   }
 }
