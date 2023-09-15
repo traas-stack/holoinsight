@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 import io.holoinsight.server.common.ctl.MonitorProductCode;
-import io.holoinsight.server.common.ctl.ProductStatusService;
+import io.holoinsight.server.common.ctl.ProductCtlService;
 import io.holoinsight.server.common.service.MetaDataDictValueService;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -55,7 +55,7 @@ public class GatewayGrpcServiceImpl extends GatewayServiceGrpc.GatewayServiceImp
   private ApikeyAuthService apikeyAuthService;
 
   @Autowired
-  private ProductStatusService productStatusService;
+  private ProductCtlService productCtlService;
 
   @Autowired
   private MetaDataDictValueService metaDataDictValueService;
@@ -171,7 +171,7 @@ public class GatewayGrpcServiceImpl extends GatewayServiceGrpc.GatewayServiceImp
     List<WriteMetricsParam.Point> points = new ArrayList<>(request.getPointCount());
     for (Point p : request.getPointList()) {
 
-      if (productStatusService.productClosed(MonitorProductCode.METRIC, p.getTagsMap())) {
+      if (productCtlService.productClosed(MonitorProductCode.METRIC, p.getTagsMap())) {
         continue;
       }
 
@@ -213,7 +213,7 @@ public class GatewayGrpcServiceImpl extends GatewayServiceGrpc.GatewayServiceImp
         for (int i = 0; i < header.getTagKeysCount(); i++) {
           tags.put(header.getTagKeys(i), row.getTagValues(i));
         }
-        if (productStatusService.productClosed(MonitorProductCode.METRIC, tags)) {
+        if (productCtlService.productClosed(MonitorProductCode.METRIC, tags)) {
           continue;
         }
         wmpp.setTimeStamp(row.getTimestamp());
