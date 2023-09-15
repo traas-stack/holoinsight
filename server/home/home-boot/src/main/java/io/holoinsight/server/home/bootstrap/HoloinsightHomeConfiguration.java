@@ -4,6 +4,8 @@
 package io.holoinsight.server.home.bootstrap;
 
 import io.holoinsight.server.common.config.EnvironmentProperties;
+import io.holoinsight.server.common.ctl.ProductCtlService;
+import io.holoinsight.server.common.ctl.ProductCtlServiceImpl;
 import io.holoinsight.server.common.dao.CommonDaoConfiguration;
 import io.holoinsight.server.common.service.CommonServiceAutoConfiguration;
 import io.holoinsight.server.common.springboot.ConditionalOnRole;
@@ -27,6 +29,7 @@ import io.holoinsight.server.home.common.service.RequestContextAdapter;
 import io.holoinsight.server.home.common.service.RequestContextAdapterImpl;
 import io.holoinsight.server.home.web.controller.TraceAgentFacadeImpl;
 import org.mybatis.spring.annotation.MapperScan;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -96,5 +99,10 @@ public class HoloinsightHomeConfiguration {
   @Bean
   public MetricInfoCheckService metricInfoCheckService() {
     return new MetricInfoCheckServiceImpl();
+  }
+
+  @Bean
+  public ProductCtlService productCtlService() {
+    return new ProductCtlServiceImpl();
   }
 }
