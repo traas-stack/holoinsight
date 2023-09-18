@@ -71,6 +71,8 @@ public abstract class AbstractIntegrationPlugin<T> extends Plugin {
 
   public abstract List<T> genPluginList(IntegrationPluginDTO integrationPluginDTO);
 
+  public abstract void afterAction(IntegrationPluginDTO integrationPluginDTO);
+
   public abstract Map<String, Object> getExecutorSelector();
 
   public abstract GaeaCollectRange getGaeaCollectRange();

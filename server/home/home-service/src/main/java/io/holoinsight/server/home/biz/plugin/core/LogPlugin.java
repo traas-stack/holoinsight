@@ -120,15 +120,23 @@ public class LogPlugin extends AbstractLocalIntegrationPlugin<LogPlugin> {
         J.fromJson(J.toJson(map.get("confs")), new TypeToken<List<LogPluginConfig>>() {}.getType());
 
     for (LogPluginConfig config : multiLogPluginConfigs) {
+      if (null == config.conf)
+        continue;
+
       CustomPluginConf customPluginConf =
           J.fromJson(J.toJson(config.conf), new TypeToken<CustomPluginConf>() {}.getType());
 
       if (CollectionUtils.isEmpty(customPluginConf.collectMetrics))
         continue;
-
-      // saveMetricInfo(customPluginConf, config.getPeriodType(), integrationPluginDTO.tenant,
-      // integrationPluginDTO.workspace, integrationPluginDTO.product, config.name,
-      // integrationPluginDTO.status);
+      CustomPluginPeriodType periodType = config.periodType;
+      Map<String, Object> confMap = J.toMap(J.toJson(config.conf));
+      try {
+        if (null != confMap && confMap.containsKey("period")) {
+          periodType = CustomPluginPeriodType.valueOf((String) confMap.get("period"));
+        }
+      } catch (Exception e) {
+        log.warn("parse period error");
+      }
 
       for (CollectMetric collectMetric : customPluginConf.getCollectMetrics()) {
         if (Boolean.TRUE == customPluginConf.spm
@@ -145,7 +153,7 @@ public class LogPlugin extends AbstractLocalIntegrationPlugin<LogPlugin> {
         logPlugin.logParse = customPluginConf.logParse;
         logPlugin.splitCols = customPluginConf.splitCols;
         logPlugin.collectMetric = collectMetric;
-        logPlugin.periodType = config.periodType;
+        logPlugin.periodType = periodType;
         logPlugin.name = config.name;
         logPlugin.metricName = getMetricName(integrationPluginDTO.product.toLowerCase(),
             config.getName(), collectMetric.tableName);
@@ -224,6 +232,29 @@ public class LogPlugin extends AbstractLocalIntegrationPlugin<LogPlugin> {
         log.error("saveLogPluginMetricInfo error, {}, {}", collectMetric.getTargetTable(),
             e.getMessage(), e);
       }
+    }
+  }
+
+  public void afterAction(IntegrationPluginDTO integrationPluginDTO) {
+
+    String json = integrationPluginDTO.json;
+    Map<String, Object> map = J.toMap(json);
+    if (!map.containsKey("confs"))
+      return;
+
+    List<LogPluginConfig> multiLogPluginConfigs =
+        J.fromJson(J.toJson(map.get("confs")), new TypeToken<List<LogPluginConfig>>() {}.getType());
+
+    for (LogPluginConfig config : multiLogPluginConfigs) {
+      CustomPluginConf customPluginConf =
+          J.fromJson(J.toJson(config.conf), new TypeToken<CustomPluginConf>() {}.getType());
+
+      if (CollectionUtils.isEmpty(customPluginConf.collectMetrics))
+        continue;
+
+      saveMetricInfo(customPluginConf, config.getPeriodType(), integrationPluginDTO.tenant,
+          integrationPluginDTO.workspace, integrationPluginDTO.product, config.name,
+          integrationPluginDTO.status);
     }
   }
 }

@@ -126,4 +126,8 @@ public class MysqlPluginV2 extends AbstractIntegrationPlugin<MysqlPluginV2> {
   public CollectType getCollectType() {
     return collectType;
   }
+
+  public void afterAction(IntegrationPluginDTO integrationPluginDTO) {
+
+  }
 }

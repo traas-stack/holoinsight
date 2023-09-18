@@ -107,6 +107,8 @@ public class IntegrationPluginUpdateListener {
           }
         }
       }
+
+      plugin.afterAction(integrationPluginDTO);
     }
     return upsertList;
   }
