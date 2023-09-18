@@ -5,6 +5,7 @@
 package io.holoinsight.server.home.alert.plugin;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.google.common.reflect.TypeToken;
 import io.holoinsight.server.home.alert.common.G;
 import io.holoinsight.server.home.alert.model.event.AlertNotify;
 import io.holoinsight.server.home.alert.model.event.NotifyDataInfo;
@@ -24,6 +25,7 @@ import io.holoinsight.server.home.dal.model.AlarmGroup;
 import io.holoinsight.server.home.dal.model.AlarmSubscribe;
 import io.holoinsight.server.home.dal.model.AlarmWebhook;
 import io.holoinsight.server.home.facade.DataResult;
+import io.holoinsight.server.home.facade.PqlRule;
 import io.holoinsight.server.home.facade.trigger.Trigger;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -79,73 +81,8 @@ public class GetSubscriptionHandler implements AlertHandlerExecutor {
 
       Map<String, List<AlarmWebhook>> alertWebhookMap = getWebhookMap(alertNotifies);
       LOGGER.info("AlertWebhookMap SUCCESS {} ", G.get().toJson(alertWebhookMap));
-      Map<String, AlarmBlock> alertBlockMap = getBlockMap(alertNotifies);
 
-      // 过滤被暂停的告警
-      Iterator<AlertNotify> iterator = alertNotifies.iterator();
-      while (iterator.hasNext()) {
-        AlertNotify alertNotify = iterator.next();
-        AlarmBlock alertBlock = alertBlockMap.get(alertNotify.getUniqueId());
-        if (alertBlock != null) {
-          if (alertNotify.getIsRecover()) {
-            RecordSucOrFailNotify.alertNotifyProcess("alertNotify is recover", GET_SUBSCRIPTION,
-                "remove block subscription", alertNotify.getAlertNotifyRecord());
-            iterator.remove();
-          } else {
-            Map<String, String> tagMap = G.get().fromJson(alertBlock.getTags(), Map.class);
-            if (tagMap != null) {
-              if (alertNotify.isPqlNotify()) {
-                Iterator<DataResult> it = alertNotify.getPqlRule().getDataResult().iterator();
-                while (it.hasNext()) {
-                  DataResult dataResult = it.next();
-                  Map<String, String> notifyTags = dataResult.getTags();
-                  notifyTags.forEach((key, value) -> {
-                    if (tagMap.containsKey(key)) {
-                      Pattern pattern = Pattern.compile(tagMap.get(key));
-                      Matcher matcher = pattern.matcher(value);
-                      if (matcher.find()) {
-                        it.remove();
-                      }
-                    }
-                  });
-                }
-                if (alertNotify.getPqlRule().getDataResult().isEmpty()) {
-                  iterator.remove();
-                }
-              } else {
-                Map<Trigger, List<NotifyDataInfo>> notifyDataInfos = new HashMap<>();
-                alertNotify.getNotifyDataInfos().forEach((trigger, notifyDataInfoList) -> {
-                  Iterator<NotifyDataInfo> it = notifyDataInfoList.iterator();
-                  // Remove NotifyDataInfo that need be blocked
-                  while (it.hasNext()) {
-                    NotifyDataInfo notifyDataInfo = it.next();
-                    Map<String, String> notifyTags = notifyDataInfo.getTags();
-                    notifyTags.forEach((key, value) -> {
-                      if (tagMap.containsKey(key)) {
-                        Pattern pattern = Pattern.compile(tagMap.get(key));
-                        Matcher matcher = pattern.matcher(value);
-                        if (matcher.find()) {
-                          it.remove();
-                        }
-                      }
-                    });
-                  }
-                  if (!notifyDataInfoList.isEmpty()) {
-                    notifyDataInfos.put(trigger, notifyDataInfoList);
-                  }
-                });
-                if (notifyDataInfos.isEmpty()) {
-                  iterator.remove();
-                } else {
-                  alertNotify.setNotifyDataInfos(notifyDataInfos);
-                }
-              }
-            }
-          }
-        }
-        RecordSucOrFailNotify.alertNotifyProcessSuc(GET_SUBSCRIPTION, "remove block subscription",
-            alertNotify.getAlertNotifyRecord());
-      }
+      handleBlock(alertNotifies);
 
       // 查询消息通知订阅关系
       alertNotifies.parallelStream().forEach(alertNotify -> {
@@ -270,6 +207,104 @@ public class GetSubscriptionHandler implements AlertHandlerExecutor {
     }
   }
 
+  private void handleBlock(List<AlertNotify> alertNotifies) {
+    Map<String, AlarmBlock> alertBlockMap = getBlockMap(alertNotifies);
+
+    LOGGER.info("alert block size {}", alertBlockMap.size());
+
+    Iterator<AlertNotify> iterator = alertNotifies.iterator();
+    while (iterator.hasNext()) {
+      AlertNotify alertNotify = iterator.next();
+
+      if (alertNotify.getIsRecover()) {
+        RecordSucOrFailNotify.alertNotifyProcess("alertNotify is recover", GET_SUBSCRIPTION,
+            "remove block subscription", alertNotify.getAlertNotifyRecord());
+        iterator.remove();
+        LOGGER.info("{} alert rule {} has recovered.", alertNotify.getTraceId(),
+            alertNotify.getUniqueId());
+        continue;
+      }
+
+      AlarmBlock alertBlock = alertBlockMap.get(alertNotify.getUniqueId());
+      if (alertBlock == null) {
+        continue;
+      }
+
+      if (StringUtils.isEmpty(alertBlock.getTags()) || alertBlock.getTags().equals("{}")) {
+        RecordSucOrFailNotify.alertNotifyProcess("alertNotify is blocked", GET_SUBSCRIPTION,
+            "remove block subscription", alertNotify.getAlertNotifyRecord());
+        iterator.remove();
+        LOGGER.info("{} alert rule {} has been blocked.", alertNotify.getTraceId(),
+            alertNotify.getUniqueId());
+        continue;
+      }
+
+      Map<String, String> tagMap =
+          G.get().fromJson(alertBlock.getTags(), new TypeToken<Map<String, String>>() {}.getType());
+
+      if (!CollectionUtils.isEmpty(tagMap)) {
+        if (alertNotify.isPqlNotify()) {
+          PqlRule pqlRule = alertNotify.getPqlRule();
+          Iterator<DataResult> it = pqlRule.getDataResult().iterator();
+          while (it.hasNext()) {
+            DataResult dataResult = it.next();
+            Map<String, String> notifyTags = dataResult.getTags();
+            notifyTags.forEach((key, value) -> {
+              if (tagMap.containsKey(key)) {
+                Pattern pattern = Pattern.compile(tagMap.get(key));
+                Matcher matcher = pattern.matcher(value);
+                if (matcher.find()) {
+                  LOGGER.info("{} pql alert rule {} tag {} {} has been blocked.",
+                      alertNotify.getTraceId(), alertNotify.getUniqueId(), key, value);
+                  it.remove();
+                }
+              }
+            });
+          }
+          if (CollectionUtils.isEmpty(pqlRule.getDataResult())) {
+            LOGGER.info("{} pql alert rule {} has been blocked because all tags have been blocked.",
+                alertNotify.getTraceId(), alertNotify.getUniqueId());
+            iterator.remove();
+          }
+        } else {
+          Map<Trigger, List<NotifyDataInfo>> notifyDataInfos = new HashMap<>();
+          alertNotify.getNotifyDataInfos().forEach((trigger, notifyDataInfoList) -> {
+            Iterator<NotifyDataInfo> it = notifyDataInfoList.iterator();
+            // Remove NotifyDataInfo that need be blocked
+            while (it.hasNext()) {
+              NotifyDataInfo notifyDataInfo = it.next();
+              Map<String, String> notifyTags = notifyDataInfo.getTags();
+              notifyTags.forEach((key, value) -> {
+                if (tagMap.containsKey(key)) {
+                  Pattern pattern = Pattern.compile(tagMap.get(key));
+                  Matcher matcher = pattern.matcher(value);
+                  if (matcher.find()) {
+                    LOGGER.info("{} alert rule {} tag {} {} has been blocked.",
+                        alertNotify.getTraceId(), alertNotify.getUniqueId(), key, value);
+                    it.remove();
+                  }
+                }
+              });
+            }
+            if (!CollectionUtils.isEmpty(notifyDataInfoList)) {
+              notifyDataInfos.put(trigger, notifyDataInfoList);
+            }
+          });
+          if (CollectionUtils.isEmpty(notifyDataInfos)) {
+            LOGGER.info("{} alert rule {} has been blocked because all tags have been blocked.",
+                alertNotify.getTraceId(), alertNotify.getUniqueId());
+            iterator.remove();
+          } else {
+            alertNotify.setNotifyDataInfos(notifyDataInfos);
+          }
+        }
+      }
+
+      RecordSucOrFailNotify.alertNotifyProcessSuc(GET_SUBSCRIPTION, "remove block subscription",
+          alertNotify.getAlertNotifyRecord());
+    }
+  }
+
   private void addGlobalWebhook(AlertNotify alertNotify,
       Map<String, List<AlarmWebhook>> alertWebhookMap) {
     List<WebhookInfo> webhookInfos = new ArrayList<>();
@@ -300,8 +335,13 @@ public class GetSubscriptionHandler implements AlertHandlerExecutor {
     wrapper.in("unique_id", uniqueIds);
     wrapper.ge("end_time", new Date());
     List<AlarmBlock> alertBlockList = alarmBlockDOMapper.selectList(wrapper);
-    Map<String, AlarmBlock> alertBlockMap = alertBlockList.stream()
-        .collect(Collectors.toMap(AlarmBlock::getUniqueId, AlarmBlock -> AlarmBlock));
+    Map<String, AlarmBlock> alertBlockMap = new HashMap<>();
+    if (CollectionUtils.isEmpty(alertBlockList)) {
+      return alertBlockMap;
+    }
+    for (AlarmBlock block : alertBlockList) {
+      alertBlockMap.put(block.getUniqueId(), block);
+    }
     return alertBlockMap;
   }
 
@@ -316,7 +356,7 @@ public class GetSubscriptionHandler implements AlertHandlerExecutor {
         alertNotifies.stream().filter(alertNotify -> !alertNotify.getIsRecover())
             .map(AlertNotify::getTenant).collect(Collectors.toList());
     Map<String, List<AlarmWebhook>> alertWebhookMap = new HashMap<>();
-    if (!tenantList.isEmpty()) {
+    if (!CollectionUtils.isEmpty(tenantList)) {
       QueryWrapper<AlarmWebhook> wrapper = new QueryWrapper<>();
       wrapper.in("tenant", tenantList);
       wrapper.eq("type", (byte) 1);
