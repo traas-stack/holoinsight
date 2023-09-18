@@ -9,6 +9,7 @@ import io.holoinsight.server.common.dao.entity.dto.TenantOpsStorage;
 import io.holoinsight.server.home.biz.plugin.config.MetaLabel;
 import io.holoinsight.server.home.dal.model.dto.CloudMonitorRange;
 import io.holoinsight.server.home.dal.model.dto.IntegrationGeneratedDTO;
+import io.holoinsight.server.home.facade.AlarmRuleDTO;
 import io.holoinsight.server.query.grpc.QueryProto.QueryFilter;
 
 import java.util.List;
@@ -104,6 +105,8 @@ public interface TenantInitService {
   Boolean checkTraceTags(String tenant, String workspace, List<Tag> tags);
 
   Boolean checkTraceParams(String tenant, String workspace, Map<String, String> paramsMap);
+
+  Boolean checkAlarmRuleParams(String tenant, String workspace, AlarmRuleDTO alarmRuleDTO);
 
   List<IntegrationGeneratedDTO> getExtraGeneratedLists();
 
