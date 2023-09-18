@@ -55,4 +55,8 @@ public abstract class AbstractLocalIntegrationPlugin<T> extends AbstractIntegrat
   public CollectType getCollectType() {
     return CollectType.LOCAL;
   }
+
+  public void afterAction(IntegrationPluginDTO integrationPluginDTO) {
+
+  }
 }

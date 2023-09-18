@@ -12,6 +12,7 @@ import io.holoinsight.server.home.biz.service.AlarmHistoryService;
 import io.holoinsight.server.home.biz.service.AlertGroupService;
 import io.holoinsight.server.home.biz.service.AlertRuleService;
 import io.holoinsight.server.home.biz.service.AlertSubscribeService;
+import io.holoinsight.server.home.biz.service.TenantInitService;
 import io.holoinsight.server.home.biz.service.UserOpLogService;
 import io.holoinsight.server.home.common.service.RequestContextAdapter;
 import io.holoinsight.server.home.common.util.MonitorException;
@@ -95,6 +96,9 @@ public class AlarmRuleFacadeImpl extends BaseFacade {
   @Autowired
   private RequestContextAdapter requestContextAdapter;
 
+  @Autowired
+  private TenantInitService tenantInitService;
+
   @Value("${holoinsight.home.domain}")
   private String domain;
 
@@ -115,6 +119,12 @@ public class AlarmRuleFacadeImpl extends BaseFacade {
         ParaCheckUtil.checkParaNotNull(alarmRuleDTO.getIsMerge(), "isMerge");
         ParaCheckUtil.checkInvalidCharacter(alarmRuleDTO.getRuleName(),
             "invalid ruleName, please use a-z A-Z 0-9 Chinese - _ , . spaces");
+        MonitorScope ms = RequestContext.getContext().ms;
+        Boolean aBoolean =
+            tenantInitService.checkAlarmRuleParams(ms.getTenant(), ms.getWorkspace(), alarmRuleDTO);
+        if (aBoolean == Boolean.FALSE) {
+          throw new MonitorException("alarm rule params is illegal");
+        }
       }
 
       @Override
@@ -180,6 +190,12 @@ public class AlarmRuleFacadeImpl extends BaseFacade {
         if (StringUtils.isNotBlank(alarmRuleDTO.getRuleName())) {
           ParaCheckUtil.checkInvalidCharacter(alarmRuleDTO.getRuleName(),
               "invalid ruleName, please use a-z A-Z 0-9 Chinese - _ , . spaces");
+        }
+        MonitorScope ms = RequestContext.getContext().ms;
+        Boolean aBoolean =
+            tenantInitService.checkAlarmRuleParams(ms.getTenant(), ms.getWorkspace(), alarmRuleDTO);
+        if (aBoolean == Boolean.FALSE) {
+          throw new MonitorException("alarm rule params is illegal");
         }
       }
 

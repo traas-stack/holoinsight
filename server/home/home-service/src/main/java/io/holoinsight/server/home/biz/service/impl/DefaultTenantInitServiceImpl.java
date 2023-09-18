@@ -11,6 +11,7 @@ import io.holoinsight.server.home.biz.plugin.config.MetaLabel;
 import io.holoinsight.server.home.biz.service.TenantInitService;
 import io.holoinsight.server.home.dal.model.dto.CloudMonitorRange;
 import io.holoinsight.server.home.dal.model.dto.IntegrationGeneratedDTO;
+import io.holoinsight.server.home.facade.AlarmRuleDTO;
 import io.holoinsight.server.query.grpc.QueryProto.QueryFilter;
 
 import java.util.ArrayList;
@@ -105,6 +106,11 @@ public class DefaultTenantInitServiceImpl implements TenantInitService {
 
   @Override
   public Boolean checkTraceParams(String tenant, String workspace, Map<String, String> paramsMap) {
+    return Boolean.TRUE;
+  }
+
+  @Override
+  public Boolean checkAlarmRuleParams(String tenant, String workspace, AlarmRuleDTO alarmRuleDTO) {
     return Boolean.TRUE;
   }
 
