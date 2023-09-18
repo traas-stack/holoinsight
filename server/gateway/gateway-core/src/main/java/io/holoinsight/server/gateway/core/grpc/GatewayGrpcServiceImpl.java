@@ -7,9 +7,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import io.holoinsight.server.common.ctl.MonitorProductCode;
-import io.holoinsight.server.common.ctl.ProductCtlService;
-import io.holoinsight.server.common.service.MetaDataDictValueService;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,6 +21,9 @@ import io.grpc.stub.StreamObserver;
 import io.holoinsight.server.common.TrafficTracer;
 import io.holoinsight.server.common.auth.ApikeyAuthService;
 import io.holoinsight.server.common.auth.AuthInfo;
+import io.holoinsight.server.common.ctl.MonitorProductCode;
+import io.holoinsight.server.common.ctl.ProductCtlService;
+import io.holoinsight.server.common.service.MetaDataDictValueService;
 import io.holoinsight.server.extension.MetricStorage;
 import io.holoinsight.server.extension.model.WriteMetricsParam;
 import io.holoinsight.server.gateway.core.utils.StatUtils;
@@ -60,6 +60,9 @@ public class GatewayGrpcServiceImpl extends GatewayServiceGrpc.GatewayServiceImp
   @Autowired
   private MetaDataDictValueService metaDataDictValueService;
 
+  @Autowired
+  private GatewayHookManager gatewayHookManager;
+
   /** {@inheritDoc} */
   @Override
   public void ping(Empty request, StreamObserver<Empty> o) {
@@ -95,6 +98,7 @@ public class GatewayGrpcServiceImpl extends GatewayServiceGrpc.GatewayServiceImp
           }
           return authInfo;
         }).flatMap(authInfo -> { //
+          gatewayHookManager.writeMetricsV1(authInfo, request);
           return metricStorage.write(convertToWriteMetricsParam(authInfo, request));
         }).subscribe(null, error -> handleError(error, o), () -> handleSuccess(o));
   }
@@ -113,53 +117,9 @@ public class GatewayGrpcServiceImpl extends GatewayServiceGrpc.GatewayServiceImp
     apikeyAuthService.get(request.getHeader().getApikey(), true) //
         .doOnNext(authInfo -> recordTraffic(authInfo, tt)) //
         .flatMap(authInfo -> { //
+          gatewayHookManager.writeMetricsV4(authInfo, request);
           return metricStorage.write(convertToWriteMetricsParam(authInfo, request));
         }).subscribe(null, error -> handleError(error, o), () -> handleSuccess(o));
-  }
-
-  private static void recordTraffic(AuthInfo authInfo, TrafficTracer tt) {
-    if (tt == null) {
-      return;
-    }
-    tt.setTenant(authInfo.getTenant());
-    StatUtils.GRPC_TRAFFIC.add(StringsKey.of(authInfo.getTenant()), //
-        new long[] {1, //
-            tt.getInboundWireSize(), // TCP入流量
-            tt.getInboundUncompressedSize() // 解压后入流量
-        });
-  }
-
-  private static void handleSuccess(StreamObserver<WriteMetricsResponse> o) {
-    o.onNext(WriteMetricsResponse.newBuilder() //
-        .setHeader(CommonResponseHeader.newBuilder() //
-            .setCode(Codes.OK) //
-            .setMessage("OK") //
-            .build())
-        .build());
-    o.onCompleted();
-  }
-
-  private static void handleError(Throwable error, StreamObserver<WriteMetricsResponse> o) {
-    LOGGER.error("write error", error);
-    if (StringUtils.contains(error.getMessage(), "apikey")) {
-      WriteMetricsResponse resp = WriteMetricsResponse.newBuilder() //
-          .setHeader(CommonResponseHeader.newBuilder() //
-              .setCode(Codes.UNAUTHENTICATED) //
-              .setMessage(error.getMessage()) //
-              .build())
-          .build();
-      o.onNext(resp);
-      o.onCompleted();
-    } else {
-      WriteMetricsResponse resp = WriteMetricsResponse.newBuilder() //
-          .setHeader(CommonResponseHeader.newBuilder() //
-              .setCode(Codes.INTERNAL_ERROR) //
-              .setMessage(error.getMessage()) //
-              .build())
-          .build();
-      o.onNext(resp);
-      o.onCompleted();
-    }
   }
 
   private WriteMetricsParam convertToWriteMetricsParam(AuthInfo authInfo,
@@ -232,5 +192,50 @@ public class GatewayGrpcServiceImpl extends GatewayServiceGrpc.GatewayServiceImp
       }
     }
     return param;
+  }
+
+  private static void recordTraffic(AuthInfo authInfo, TrafficTracer tt) {
+    if (tt == null) {
+      return;
+    }
+    tt.setTenant(authInfo.getTenant());
+    StatUtils.GRPC_TRAFFIC.add(StringsKey.of(authInfo.getTenant()), //
+        new long[] {1, //
+            tt.getInboundWireSize(), // TCP入流量
+            tt.getInboundUncompressedSize() // 解压后入流量
+        });
+  }
+
+  private static void handleSuccess(StreamObserver<WriteMetricsResponse> o) {
+    o.onNext(WriteMetricsResponse.newBuilder() //
+        .setHeader(CommonResponseHeader.newBuilder() //
+            .setCode(Codes.OK) //
+            .setMessage("OK") //
+            .build())
+        .build());
+    o.onCompleted();
+  }
+
+  private static void handleError(Throwable error, StreamObserver<WriteMetricsResponse> o) {
+    LOGGER.error("write error", error);
+    if (StringUtils.contains(error.getMessage(), "apikey")) {
+      WriteMetricsResponse resp = WriteMetricsResponse.newBuilder() //
+          .setHeader(CommonResponseHeader.newBuilder() //
+              .setCode(Codes.UNAUTHENTICATED) //
+              .setMessage(error.getMessage()) //
+              .build())
+          .build();
+      o.onNext(resp);
+      o.onCompleted();
+    } else {
+      WriteMetricsResponse resp = WriteMetricsResponse.newBuilder() //
+          .setHeader(CommonResponseHeader.newBuilder() //
+              .setCode(Codes.INTERNAL_ERROR) //
+              .setMessage(error.getMessage()) //
+              .build())
+          .build();
+      o.onNext(resp);
+      o.onCompleted();
+    }
   }
 }
