@@ -91,36 +91,40 @@ public class SearchFacadeImpl extends BaseFacade {
         MonitorScope ms = RequestContext.getContext().ms;
         final String tenant = ms.tenant;
         final String workspace = ms.workspace;
+        final String environment = ms.getEnvironment();
 
         List<SearchKeywordRet> ret = new ArrayList<>();
         List<Future<SearchKeywordRet>> futures = new ArrayList<>();
-        futures.add(queryThreadPool.submit(() -> {
-          return searchLogEntity(req.keyword, tenant, workspace);
-        }));
-
-        futures.add(queryThreadPool.submit(() -> {
-          return searchFolderEntity(req.keyword, tenant, workspace);
-        }));
 
         futures.add(queryThreadPool.submit(() -> {
           return searchDashboardEntity(req.keyword, tenant, workspace);
         }));
 
         futures.add(queryThreadPool.submit(() -> {
-          return searchInfraEntity(req.keyword, tenant, workspace);
-        }));
-
-        futures.add(queryThreadPool.submit(() -> {
-          return searchAppEntity(req.keyword, tenant, workspace);
-        }));
-
-        futures.add(queryThreadPool.submit(() -> {
           return searchAlarmEntity(req.keyword, tenant, workspace);
         }));
 
-        futures.add(queryThreadPool.submit(() -> {
-          return searchLogMetricEntity(req.keyword, tenant, workspace);
-        }));
+        if (environment.equalsIgnoreCase("SERVER")) {
+          futures.add(queryThreadPool.submit(() -> {
+            return searchLogEntity(req.keyword, tenant, workspace);
+          }));
+
+          futures.add(queryThreadPool.submit(() -> {
+            return searchFolderEntity(req.keyword, tenant, workspace);
+          }));
+
+          futures.add(queryThreadPool.submit(() -> {
+            return searchInfraEntity(req.keyword, tenant, workspace);
+          }));
+
+          futures.add(queryThreadPool.submit(() -> {
+            return searchAppEntity(req.keyword, tenant, workspace);
+          }));
+
+          futures.add(queryThreadPool.submit(() -> {
+            return searchLogMetricEntity(req.keyword, tenant, workspace);
+          }));
+        }
 
         // 多线程
         for (Future<SearchKeywordRet> future : futures) {
@@ -221,7 +225,7 @@ public class SearchFacadeImpl extends BaseFacade {
         Pattern.compile(String.format("^.*%s.*$", keyword), Pattern.CASE_INSENSITIVE));
     if (StringUtils.isNotBlank(workspace)) {
       Map<String, String> conditions =
-          tenantInitService.getTenantWorkspaceMetaConditions(tenant, workspace, null);
+          tenantInitService.getTenantWorkspaceMetaConditions(tenant, workspace);
       if (!CollectionUtils.isEmpty(conditions)) {
         conditions.forEach((k, v) -> queryExample.getParams().put(k, v));
       }

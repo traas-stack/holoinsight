@@ -120,8 +120,8 @@ public class AlarmRuleFacadeImpl extends BaseFacade {
         ParaCheckUtil.checkInvalidCharacter(alarmRuleDTO.getRuleName(),
             "invalid ruleName, please use a-z A-Z 0-9 Chinese - _ , . spaces");
         MonitorScope ms = RequestContext.getContext().ms;
-        Boolean aBoolean =
-            tenantInitService.checkAlarmRuleParams(ms.getTenant(), ms.getWorkspace(), alarmRuleDTO);
+        Boolean aBoolean = tenantInitService.checkAlarmRuleParams(ms.getTenant(), ms.getWorkspace(),
+            ms.getEnvironment(), alarmRuleDTO);
         if (aBoolean == Boolean.FALSE) {
           throw new MonitorException("alarm rule params is illegal");
         }
@@ -192,8 +192,8 @@ public class AlarmRuleFacadeImpl extends BaseFacade {
               "invalid ruleName, please use a-z A-Z 0-9 Chinese - _ , . spaces");
         }
         MonitorScope ms = RequestContext.getContext().ms;
-        Boolean aBoolean =
-            tenantInitService.checkAlarmRuleParams(ms.getTenant(), ms.getWorkspace(), alarmRuleDTO);
+        Boolean aBoolean = tenantInitService.checkAlarmRuleParams(ms.getTenant(), ms.getWorkspace(),
+            ms.getEnvironment(), alarmRuleDTO);
         if (aBoolean == Boolean.FALSE) {
           throw new MonitorException("alarm rule params is illegal");
         }

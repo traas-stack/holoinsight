@@ -130,8 +130,8 @@ public class UserFavoriteFacadeImpl extends BaseFacade {
             if (userFavorite.type.equalsIgnoreCase("infra")) {
               map.put("hostname", userFavorite.name);
               queryExample.setParams(map);
-              Map<String, String> conditions = tenantInitService.getTenantWorkspaceMetaConditions(
-                  ms.getTenant(), ms.getWorkspace(), ms.getEnvironment());
+              Map<String, String> conditions = tenantInitService
+                  .getTenantWorkspaceMetaConditions(ms.getTenant(), ms.getWorkspace());
               if (!CollectionUtils.isEmpty(conditions)) {
                 queryExample.getParams().putAll(conditions);
               }

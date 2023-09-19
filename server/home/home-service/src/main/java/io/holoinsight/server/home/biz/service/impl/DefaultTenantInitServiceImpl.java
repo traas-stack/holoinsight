@@ -66,8 +66,7 @@ public class DefaultTenantInitServiceImpl implements TenantInitService {
   }
 
   @Override
-  public Map<String, String> getTenantWorkspaceMetaConditions(String tenant, String workspace,
-      String environment) {
+  public Map<String, String> getTenantWorkspaceMetaConditions(String tenant, String workspace) {
     return new HashMap<>();
   }
 
@@ -110,7 +109,8 @@ public class DefaultTenantInitServiceImpl implements TenantInitService {
   }
 
   @Override
-  public Boolean checkAlarmRuleParams(String tenant, String workspace, AlarmRuleDTO alarmRuleDTO) {
+  public Boolean checkAlarmRuleParams(String tenant, String workspace, String environment,
+      AlarmRuleDTO alarmRuleDTO) {
     return Boolean.TRUE;
   }
 
@@ -121,11 +121,6 @@ public class DefaultTenantInitServiceImpl implements TenantInitService {
 
   @Override
   public Boolean checkIntegrationWorkspace(String workspace) {
-    return Boolean.TRUE;
-  }
-
-  @Override
-  public Boolean checkEnvironment(String environment) {
     return Boolean.TRUE;
   }
 
