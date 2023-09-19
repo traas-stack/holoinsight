@@ -74,8 +74,7 @@ public interface TenantInitService {
    * @param workspace
    * @return
    */
-  Map<String, String> getTenantWorkspaceMetaConditions(String tenant, String workspace,
-      String environment);
+  Map<String, String> getTenantWorkspaceMetaConditions(String tenant, String workspace);
 
   Map<String, String> getTenantServerWorkspaceMetaConditions(String tenant, String workspace);
 
@@ -106,11 +105,11 @@ public interface TenantInitService {
 
   Boolean checkTraceParams(String tenant, String workspace, Map<String, String> paramsMap);
 
-  Boolean checkAlarmRuleParams(String tenant, String workspace, AlarmRuleDTO alarmRuleDTO);
+  Boolean checkAlarmRuleParams(String tenant, String workspace, String environment,
+      AlarmRuleDTO alarmRuleDTO);
 
   List<IntegrationGeneratedDTO> getExtraGeneratedLists();
 
   Boolean checkIntegrationWorkspace(String workspace);
 
-  Boolean checkEnvironment(String environment);
 }
