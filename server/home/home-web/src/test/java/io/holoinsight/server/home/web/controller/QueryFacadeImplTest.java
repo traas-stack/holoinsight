@@ -47,7 +47,6 @@ public class QueryFacadeImplTest {
         "select `period` , `app` , distinct(`aaa`) as dd from k8s_pod_mem_util where `period` <= 1691647903000 and `period` >= 1691644303000 and `app` in ('holoinsight-server','aaaaa') and `应用ID` = '111111111' group by `period` , `app` order by `period` asc",
         queryDataSource.ql));
 
-    queryFacade.parseAnalysisQl(queryDataSource, metricInfo);
     System.out.println(queryDataSource.ql);
     Assert.assertTrue(StringUtils.equals(
         "select `app` , distinct(`aaa`) as dd from k8s_pod_mem_util where `period` <= 1691647903000 and `period` >= 1691644303000 and `app` in ('holoinsight-server','aaaaa') and `应用ID` = '111111111' group by `app`",
@@ -59,7 +58,6 @@ public class QueryFacadeImplTest {
     metricInfo = new MetricInfo();
     metricInfo.setTags(J.toJson(Arrays.asList("app", "应用ID")));
     queryFacade = new QueryFacadeImpl();
-    queryFacade.parseAnalysisQl(queryDataSource, metricInfo);
     System.out.println(queryDataSource.ql);
     Assert.assertTrue(StringUtils.equals(
         "select `app` , distinct(`aaa`) as dd , `period` from k8s_pod_mem_util where `period` <= 1691647903000 and `period` >= 1691644303000 and `app` in ('holoinsight-server','aaaaa') and `应用ID` = '111111111' group by `app` order by `period` desc",

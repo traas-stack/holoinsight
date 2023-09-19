@@ -121,36 +121,6 @@ public class QueryFacadeImpl extends BaseFacade {
     return result;
   }
 
-  @PostMapping("/detail")
-  public JsonResult<QueryDetailResponse> queryDetail(@RequestBody DataQueryRequest request) {
-
-    final JsonResult<QueryDetailResponse> result = new JsonResult<>();
-
-    facadeTemplate.manage(result, new ManageCallback() {
-      @Override
-      public void checkParameter() {
-        ParaCheckUtil.checkParaNotNull(request, "request");
-        ParaCheckUtil.checkParaNotEmpty(request.datasources, "datasources");
-        ParaCheckUtil.checkParaNotBlank(request.datasources.get(0).metric, "metric");
-        ParaCheckUtil.checkTimeRange(request.datasources.get(0).start,
-            request.datasources.get(0).end, "start time must less than end time");
-        if (StringUtils.isNotBlank(request.getTenant())) {
-          ParaCheckUtil.checkEquals(request.getTenant(), RequestContext.getContext().ms.getTenant(),
-              "tenant is illegal");
-        }
-      }
-
-      @Override
-      public void doManage() {
-        QueryDetailResponse response =
-            queryClientService.queryDetail(convertDetailRequest(request));
-        JsonResult.createSuccessResult(result, response);
-      }
-    });
-
-    return result;
-  }
-
   @PostMapping("/tags")
   public JsonResult<?> queryTags(@RequestBody DataQueryRequest request) {
 
@@ -547,7 +517,7 @@ public class QueryFacadeImpl extends BaseFacade {
 
     List<String> selects = new ArrayList<>();
     selects.add("`period`");
-    parseSelect(selects, select, d);
+    parseSelect(selects, select, d, tags);
 
     select.append(" from ").append(d.metric);
 
@@ -581,17 +551,21 @@ public class QueryFacadeImpl extends BaseFacade {
     }
   }
 
-  private void parseSelect(List<String> selects, StringBuilder select, QueryDataSource d) {
+  private void parseSelect(List<String> selects, StringBuilder select, QueryDataSource d,
+      Set<String> tags) {
     if (CollectionUtils.isEmpty(d.select)) {
       selects.add(" count(1) as value ");
     } else {
       for (Entry<String /* column name */, String /* expression */> entry : d.select.entrySet()) {
         String columnName = entry.getKey();
         String expression = entry.getValue();
-        if (StringUtils.isEmpty(expression)) {
-          selects.add("`" + columnName + "`");
+        if (!tags.contains(columnName)) {
+          continue;
+        }
+        if (expression.equals("approx_distinct")) {
+          selects.add(" approx_distinct(`" + columnName + "`) as value ");
         } else {
-          selects.add(expression + " as " + columnName);
+          selects.add(" count(1) as value ");
         }
       }
     }
@@ -689,66 +663,5 @@ public class QueryFacadeImpl extends BaseFacade {
       JsonResult.fillFailResultTo(result, e.getMessage());
     }
     return result;
-  }
-
-  public QueryRequest convertDetailRequest(DataQueryRequest request) {
-    MonitorScope ms = RequestContext.getContext().ms;
-    QueryRequest.Builder builder = QueryRequest.newBuilder();
-    builder.setTenant(tenantInitService.getTsdbTenant(ms.getTenant()));
-    if (StringUtil.isNotBlank(request.getQuery())) {
-      builder.setQuery(request.getQuery());
-    }
-
-
-    request.datasources.forEach(d -> {
-      // wait data collect
-      if ((System.currentTimeMillis() - d.end) < 80000L) {
-        d.end -= 60000L;
-      }
-      if ((System.currentTimeMillis() - d.start) < 80000L) {
-        d.start -= 60000L;
-      }
-      d.setQl(null);
-      MetricInfo metricInfo = getMetricInfo(d.getMetric());
-      if (isCeresdb4Storage(metricInfo)) {
-        parseAnalysisQl(d, metricInfo);
-      }
-
-      Builder datasourceBuilder = Datasource.newBuilder();
-      Map<String, Object> objMap = J.toMap(J.toJson(d));
-      if (objMap != null) {
-        objMap.remove("select");
-      }
-      toProtoBean(datasourceBuilder, objMap);
-
-      datasourceBuilder.setApmMaterialized(false);
-      builder.addDatasources(datasourceBuilder);
-    });
-
-    return builder.build();
-  }
-
-
-
-  protected void parseAnalysisQl(QueryDataSource d, MetricInfo metricInfo) {
-    Set<String> tags = new HashSet<>(J.toList(metricInfo.getTags()));
-    StringBuilder select = new StringBuilder("select ");
-    List<String> selects = new ArrayList<>();
-
-    parseSelect(selects, select, d);
-
-    select.append(" from ").append(d.metric);
-
-    parseFilters(select, d, tags);
-
-    List<String> gbList = new ArrayList<>();
-    parseGroupby(select, d, gbList, tags);
-
-    if (selects.contains("`period`")) {
-      select.append(" order by `period` desc");
-    }
-
-    log.info("parse analysis sql {}", select);
-    d.setQl(select.toString());
   }
 }

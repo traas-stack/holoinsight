@@ -80,8 +80,18 @@ public class MetricInfoFacadeImpl extends BaseFacade {
         if (metricInfoCheckService.needWorkspace(product)) {
           workspace = ms.getWorkspace();
         }
-        JsonResult.createSuccessResult(result,
-            metricInfoService.queryListByTenantProduct(null, workspace, product.toLowerCase()));
+        List<MetricInfoDTO> list = new ArrayList<>();
+        List<MetricInfoDTO> r1 =
+            metricInfoService.queryListByTenantProduct(null, workspace, product.toLowerCase());
+        List<MetricInfoDTO> r2 =
+            metricInfoCheckService.queryMetricInfoByMetricType(product.toLowerCase());
+        if (!CollectionUtils.isEmpty(r1)) {
+          list.addAll(r1);
+        }
+        if (!CollectionUtils.isEmpty(r2)) {
+          list.addAll(r2);
+        }
+        JsonResult.createSuccessResult(result, list);
       }
     });
     return result;
