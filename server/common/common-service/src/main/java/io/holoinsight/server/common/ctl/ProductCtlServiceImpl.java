@@ -3,6 +3,7 @@
  */
 package io.holoinsight.server.common.ctl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.google.gson.reflect.TypeToken;
 import io.holoinsight.server.common.J;
@@ -130,8 +131,10 @@ public class ProductCtlServiceImpl implements ProductCtlService {
   public Map<String, Boolean> productStatus(Map<String, String> tags) throws Exception {
     Map<String, Boolean> status = new HashMap<>();
     Map<String, Set<String>> productClosed = new HashMap<>();
-    MetaDataDictValue metricDefineDictVal = superCacheService.getSc().metaDataDictValueMap
-        .getOrDefault("global_config", new HashMap<>()).get("product_closed");
+    QueryWrapper<MetaDataDictValue> queryWrapper = new QueryWrapper<>();
+    queryWrapper.eq("type", "global_config");
+    queryWrapper.eq("dict_key", "product_closed");
+    MetaDataDictValue metricDefineDictVal = metaDataDictValueService.getOne(queryWrapper);
     if (metricDefineDictVal != null) {
       productClosed = J.get().fromJson(metricDefineDictVal.getDictValue(),
           new TypeToken<Map<String, Set<String>>>() {}.getType());
