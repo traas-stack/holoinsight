@@ -296,6 +296,7 @@ public class SpanMetricEsStorage extends PostCalMetricStorage {
         for (Terms.Bucket bucket : buckets) {
           String tagV = bucket.getKeyAsString();
           tags.put(OtlpMappings.fromOtlp(index, tagK), tagV);
+          extend(tags);
           boolean docCountAdded = false;
           for (Aggregation subAggregation : bucket.getAggregations()) {
             if (includeDocCount && !(subAggregation instanceof ParsedTerms) && !docCountAdded) {
@@ -313,4 +314,7 @@ public class SpanMetricEsStorage extends PostCalMetricStorage {
           "unsupported aggregation type: " + aggregation.getClass().getName());
     }
   }
+
+  public void extend(Map<String, String> tags) {}
+
 }

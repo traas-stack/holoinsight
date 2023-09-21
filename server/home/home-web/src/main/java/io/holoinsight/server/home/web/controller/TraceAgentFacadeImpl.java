@@ -72,41 +72,59 @@ public class TraceAgentFacadeImpl extends BaseFacade {
   @PostMapping(value = "/traceAgent")
   public JsonResult<Map<String, Object>> traceAgent(
       @RequestBody(required = false) Map<String, String> extendInfo) {
+    String tenant = RequestContext.getContext().ms.getTenant();
     final JsonResult<Map<String, Object>> result = new JsonResult<>();
-    try {
-      String tenant = RequestContext.getContext().ms.getTenant();
-      List<ApiKey> apiKeys = apiKeyService.listByMap(apikeyConditions(tenant, extendInfo));
-
-      Map<String, Object> sysMap = new HashMap<>();
-      String apikey = "";
-      String collectorHost = getCollectorAddress(extendInfo);
-
-      if (!CollectionUtils.isEmpty(apiKeys)) {
-        apikey = apiKeys.get(0).getApiKey();
-      }
-      if (!CollectionUtils.isEmpty(extendInfo)) {
-        extendInfo.put(TRACE_AUTHENTICATION, apikey);
-        ObjectMapper objectMapper = new ObjectMapper();
-        // extend{"authentication":"xx", "custom_tag1":"xx", "custom_tag2":"xx"}
-        // This is an extension scheme to add a custom tag to the span, which must be prefixed with
-        // extend, and holoinsight collector will add the custom tag to the span
-        apikey = TRACE_EXTEND_AUTHENTICATION_PREFIX + objectMapper.writeValueAsString(extendInfo);
-        if (traceAuthEncryptConfiguration.isEnable()
-            && !StringUtils.isEmpty(traceAuthEncryptConfiguration.getSecretKey())) {
-          apikey = AesUtil.aesEncrypt(apikey, traceAuthEncryptConfiguration.getSecretKey(),
-              traceAuthEncryptConfiguration.getIv());
+    facadeTemplate.manage(result, new ManageCallback() {
+      @Override
+      public void checkParameter() {
+        MonitorScope ms = RequestContext.getContext().ms;
+        Boolean aBoolean =
+            tenantInitService.checkTraceParams(ms.getTenant(), ms.getWorkspace(), extendInfo);
+        if (!aBoolean) {
+          throw new MonitorException("term params is illegal");
         }
       }
 
-      getTraceAgentVersion(sysMap);
-      sysMap.put("apikey", apikey);
-      sysMap.put("collectorHost", collectorHost);
-      sysMap.put("traceInstallDocument", MetaDictUtil
-          .getStringValue(MetaDictType.TRACE_AGENT_CONFIG, MetaDictKey.TRACE_INSTALL_DOCUMENT));
-      JsonResult.createSuccessResult(result, sysMap);
-    } catch (Exception e) {
-      JsonResult.fillFailResultTo(result, e.getMessage());
-    }
+      @Override
+      public void doManage() {
+        try {
+          List<ApiKey> apiKeys = apiKeyService.listByMap(apikeyConditions(tenant, extendInfo));
+
+          Map<String, Object> sysMap = new HashMap<>();
+          String apikey = "";
+          String collectorHost = getCollectorAddress(extendInfo);
+
+          if (!CollectionUtils.isEmpty(apiKeys)) {
+            apikey = apiKeys.get(0).getApiKey();
+          }
+          if (!CollectionUtils.isEmpty(extendInfo)) {
+            extendInfo.put(TRACE_AUTHENTICATION, apikey);
+            ObjectMapper objectMapper = new ObjectMapper();
+            // extend{"authentication":"xx", "custom_tag1":"xx", "custom_tag2":"xx"}
+            // This is an extension scheme to add a custom tag to the span, which must be prefixed
+            // with
+            // extend, and holoinsight collector will add the custom tag to the span
+            apikey =
+                TRACE_EXTEND_AUTHENTICATION_PREFIX + objectMapper.writeValueAsString(extendInfo);
+            if (traceAuthEncryptConfiguration.isEnable()
+                && !StringUtils.isEmpty(traceAuthEncryptConfiguration.getSecretKey())) {
+              apikey = AesUtil.aesEncrypt(apikey, traceAuthEncryptConfiguration.getSecretKey(),
+                  traceAuthEncryptConfiguration.getIv());
+            }
+          }
+
+          getTraceAgentVersion(sysMap);
+          sysMap.put("apikey", apikey);
+          sysMap.put("collectorHost", collectorHost);
+          sysMap.put("traceInstallDocument", MetaDictUtil
+              .getStringValue(MetaDictType.TRACE_AGENT_CONFIG, MetaDictKey.TRACE_INSTALL_DOCUMENT));
+          JsonResult.createSuccessResult(result, sysMap);
+        } catch (Exception e) {
+          JsonResult.fillFailResultTo(result, e.getMessage());
+        }
+      }
+    });
+
     return result;
   }
 
