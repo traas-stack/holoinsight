@@ -5,6 +5,7 @@ package io.holoinsight.server.apm.bootstrap;
 
 import io.holoinsight.server.apm.core.installer.ModelInstallManager;
 import io.holoinsight.server.apm.engine.elasticsearch.storage.impl.CommonBuilder;
+import io.holoinsight.server.apm.engine.elasticsearch.storage.impl.SpanMetricEsStorage;
 import io.holoinsight.server.apm.receiver.analysis.RelationAnalysis;
 import io.holoinsight.server.apm.receiver.analysis.ServiceErrorAnalysis;
 import io.holoinsight.server.apm.receiver.analysis.SlowSqlAnalysis;
@@ -29,6 +30,7 @@ import io.holoinsight.server.common.springboot.ConditionalOnRole;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.context.annotation.Primary;
 
 @ConditionalOnRole("apm")
 @ConditionalOnFeature("trace")
@@ -142,5 +144,11 @@ public class HoloinsightApmConfiguration {
   @Bean("eventService")
   public EventServiceImpl eventService() {
     return new EventServiceImpl();
+  }
+
+  @Bean("spanMetricEsStorage")
+  @Primary
+  public SpanMetricEsStorage spanMetricEsStorage() {
+    return new SpanMetricEsStorage();
   }
 }

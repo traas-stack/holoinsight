@@ -15,7 +15,6 @@ import io.holoinsight.server.apm.engine.elasticsearch.storage.impl.ServiceOvervi
 import io.holoinsight.server.apm.engine.elasticsearch.storage.impl.ServiceRelationEsStorage;
 import io.holoinsight.server.apm.engine.elasticsearch.storage.impl.SlowSqlEsStorage;
 import io.holoinsight.server.apm.engine.elasticsearch.storage.impl.SpanEsStorage;
-import io.holoinsight.server.apm.engine.elasticsearch.storage.impl.SpanMetricEsStorage;
 import io.holoinsight.server.apm.engine.elasticsearch.storage.impl.TopologyEsStorage;
 import io.holoinsight.server.apm.engine.elasticsearch.storage.impl.VirtualComponentEsStorage;
 import io.holoinsight.server.apm.engine.elasticsearch.ttl.EsDataCleaner;
@@ -97,12 +96,6 @@ public class HoloinsightEsConfiguration {
   @Primary
   public SpanEsStorage spanEsStorage() {
     return new SpanEsStorage();
-  }
-
-  @Bean("spanMetricEsStorage")
-  @Primary
-  public SpanMetricEsStorage spanMetricEsStorage() {
-    return new SpanMetricEsStorage();
   }
 
   @Bean("endpointRelationEsStorage")
