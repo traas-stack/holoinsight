@@ -1,0 +1,43 @@
+.tooltip {
+  max-width: 360px;
+  border: 1px solid #e2e2e2;
+  border-radius: 4px;
+  font-size: 14px;
+  color: #545454;
+  background-color: rgba(255, 255, 255, 0.9);
+  padding: 10px 8px;
+  box-shadow: #aeaeae 0px 0px 10px;
+  white-space: pre-line;
+  word-break: break-all;
+  .box {
+    display: flex;
+    color: #545454;
+    //     white-space: pre-line;
+    //   word-wrap: break-word;
+    .name {
+    }
+ 
+    .nameValue {
+      color: #545454;
+      word-break: break-all;
+      width: 100%;
+    }
+    .label {
+      width: 100px;
+    }
+    .value {
+      width: 100%;
+      flex: 1;
+    }
+  }
+  .empty{
+    color: #545454;
+    word-break: break-all;
+    width: 100%;
+  }
+  :global{
+      .ant-typography{
+          margin-bottom: 0;
+      }
+  }
+}

@@ -4,6 +4,7 @@
 package io.holoinsight.server.home.biz.service.impl;
 
 import io.holoinsight.server.home.biz.service.AlarmHistoryService;
+import io.holoinsight.server.home.common.service.RequestContextAdapter;
 import io.holoinsight.server.home.common.util.StringUtil;
 import io.holoinsight.server.home.dal.converter.AlarmHistoryConverter;
 import io.holoinsight.server.home.dal.mapper.AlarmHistoryMapper;
@@ -14,16 +15,13 @@ import io.holoinsight.server.home.facade.page.MonitorPageResult;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
-import java.util.Map;
 
 @Service
 public class AlarmHistoryServiceImpl extends ServiceImpl<AlarmHistoryMapper, AlarmHistory>
@@ -32,14 +30,15 @@ public class AlarmHistoryServiceImpl extends ServiceImpl<AlarmHistoryMapper, Ala
   @Resource
   private AlarmHistoryConverter alarmHistoryConverter;
 
+  @Autowired
+  private RequestContextAdapter requestContextAdapter;
+
   @Override
   public AlarmHistoryDTO queryById(Long id, String tenant, String workspace) {
 
     QueryWrapper<AlarmHistory> wrapper = new QueryWrapper<>();
-    wrapper.eq("tenant", tenant);
-    if (StringUtils.isNotBlank(workspace)) {
-      wrapper.eq("workspace", workspace);
-    }
+    this.requestContextAdapter.queryWrapperTenantAdapt(wrapper, tenant, workspace);
+
     wrapper.eq("id", id);
     wrapper.last("LIMIT 1");
     AlarmHistory alarmHistory = this.getOne(wrapper);
@@ -61,13 +60,8 @@ public class AlarmHistoryServiceImpl extends ServiceImpl<AlarmHistoryMapper, Ala
       wrapper.eq("id", alarmHistory.getId());
     }
 
-    if (StringUtil.isNotBlank(alarmHistory.getTenant())) {
-      wrapper.eq("tenant", alarmHistory.getTenant().trim());
-    }
-
-    if (StringUtils.isNotBlank(alarmHistory.getWorkspace())) {
-      wrapper.eq("workspace", alarmHistory.getWorkspace());
-    }
+    this.requestContextAdapter.queryWrapperTenantAdapt(wrapper, alarmHistory.getTenant(),
+        alarmHistory.getWorkspace());
 
     if (null != alarmHistory.getUniqueId()) {
       wrapper.eq("unique_id", alarmHistory.getUniqueId());
@@ -109,6 +103,10 @@ public class AlarmHistoryServiceImpl extends ServiceImpl<AlarmHistoryMapper, Ala
       wrapper.le("gmt_create", new Date(pageRequest.getTo()));
     }
 
+    if (null != alarmHistory.getApp()) {
+      wrapper.like("app", "," + alarmHistory.getApp() + ",");
+    }
+
     if (alarmHistory.getRecoverTime() == null) {
       if (alarmHistory.getDuration() != null && alarmHistory.getDuration() == 0) {
         wrapper.isNull("recover_time");
@@ -117,16 +115,7 @@ public class AlarmHistoryServiceImpl extends ServiceImpl<AlarmHistoryMapper, Ala
       wrapper.isNotNull("recover_time");
     }
 
-    if (StringUtil.isNotBlank(pageRequest.getSortBy())
-        && StringUtil.isNotBlank(pageRequest.getSortRule())) {
-      if (pageRequest.getSortRule().toLowerCase(Locale.ROOT).equals("desc")) {
-        wrapper.orderByDesc(pageRequest.getSortBy());
-      } else {
-        wrapper.orderByAsc(pageRequest.getSortBy());
-      }
-    } else {
-      wrapper.orderByDesc("id");
-    }
+    wrapper.orderByDesc("id");
 
     Page<AlarmHistory> page = new Page<>(pageRequest.getPageNum(), pageRequest.getPageSize());
 

@@ -7,20 +7,21 @@ import com.google.gson.JsonObject;
 import io.holoinsight.server.apm.common.model.specification.sw.Layer;
 import io.holoinsight.server.apm.common.model.specification.sw.RequestType;
 import io.holoinsight.server.apm.core.installer.DataTypeMapping;
+import io.holoinsight.server.apm.engine.model.RecordDO;
+import org.springframework.stereotype.Component;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.List;
 
-/**
- * @author jiwliu
- * @version : ColumnTypeEsMapping.java, v 0.1 2022年10月11日 22:27 xiangwanpeng Exp $
- */
+@Component
 public class ColumnTypeEsMapping implements DataTypeMapping {
 
   @Override
-  public String transform(Class<?> type, Type genericType) {
-    if (Integer.class.equals(type) || int.class.equals(type) || Layer.class.equals(type)) {
+  public String transform(String field, Class<?> type, Type genericType) {
+    if (RecordDO.TIMESTAMP.equals(field)) {
+      return "date";
+    } else if (Integer.class.equals(type) || int.class.equals(type) || Layer.class.equals(type)) {
       return "integer";
     } else if (Long.class.equals(type) || long.class.equals(type)) {
       return "long";
@@ -34,7 +35,7 @@ public class ColumnTypeEsMapping implements DataTypeMapping {
       return "text";
     } else if (List.class.isAssignableFrom(type)) {
       final Type elementType = ((ParameterizedType) genericType).getActualTypeArguments()[0];
-      return transform((Class<?>) elementType, elementType);
+      return transform(field, (Class<?>) elementType, elementType);
     } else {
       throw new IllegalArgumentException("Unsupported data type: " + type.getName());
     }

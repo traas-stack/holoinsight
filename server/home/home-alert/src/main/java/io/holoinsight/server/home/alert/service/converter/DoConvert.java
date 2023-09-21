@@ -12,13 +12,18 @@ import io.holoinsight.server.home.dal.model.AlarmHistory;
 import io.holoinsight.server.home.dal.model.AlarmRule;
 import io.holoinsight.server.home.dal.model.AlarmWebhook;
 import io.holoinsight.server.home.dal.model.AlertmanagerWebhook;
+import io.holoinsight.server.home.facade.AlertRuleExtra;
 import io.holoinsight.server.home.facade.InspectConfig;
 import io.holoinsight.server.home.facade.PqlRule;
 import io.holoinsight.server.home.facade.Rule;
 import io.holoinsight.server.home.facade.TimeFilter;
+import io.holoinsight.server.home.facade.trigger.DataSource;
+import io.holoinsight.server.home.facade.trigger.Trigger;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
+import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -50,16 +55,39 @@ public class DoConvert {
       } else {
         inspectConfig.setRule(G.get().fromJson(alarmRuleDO.getRule(), Rule.class));
         inspectConfig.setIsPql(false);
+        inspectConfig.setMetrics(getMetricsFromRule(inspectConfig.getRule()));
       }
       inspectConfig.setTimeFilter(G.get().fromJson(alarmRuleDO.getTimeFilter(), TimeFilter.class));
       inspectConfig.setStatus(alarmRuleDO.getStatus() != 0);
       inspectConfig.setIsMerge(alarmRuleDO.getIsMerge() != 0);
       inspectConfig.setRecover(alarmRuleDO.getRecover() != 0);
       inspectConfig.setEnvType(alarmRuleDO.getEnvType());
+      if (StringUtils.isNotBlank(alarmRuleDO.getExtra())) {
+        AlertRuleExtra alertRuleExtra = J.fromJson(alarmRuleDO.getExtra(), AlertRuleExtra.class);
+        inspectConfig.setAlertRecord(alertRuleExtra.isRecord);
+      }
     } catch (Exception e) {
       LOGGER.error("fail to convert alarmRule {}", G.get().toJson(alarmRuleDO), e);
     }
     return inspectConfig;
+  }
+
+  private static List<String> getMetricsFromRule(Rule rule) {
+    List<String> metrics = new ArrayList<>();
+    if (rule == null || CollectionUtils.isEmpty(rule.getTriggers())) {
+      return metrics;
+    }
+    for (Trigger trigger : rule.getTriggers()) {
+      if (CollectionUtils.isEmpty(trigger.getDatasources())) {
+        continue;
+      }
+      for (DataSource dataSource : trigger.getDatasources()) {
+        if (StringUtils.isNotEmpty(dataSource.getMetric())) {
+          metrics.add(dataSource.getMetric());
+        }
+      }
+    }
+    return metrics;
   }
 
   public static WebhookInfo alertWebhookDoConverter(AlarmWebhook alertWebhook) {

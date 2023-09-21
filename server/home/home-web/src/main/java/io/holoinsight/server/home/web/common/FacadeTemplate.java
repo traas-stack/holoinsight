@@ -3,7 +3,6 @@
  */
 package io.holoinsight.server.home.web.common;
 
-import io.holoinsight.server.home.web.controller.model.open.GrafanaJsonResult;
 import io.holoinsight.server.common.JsonResult;
 
 /**
@@ -17,6 +16,4 @@ public interface FacadeTemplate {
 
   void manage(JsonResult result, ManageCallback callback, String trace);
 
-  void manage(GrafanaJsonResult result, ManageCallback callback);
-  // TODO: 2022/3/21 增加事务 处理接口
 }

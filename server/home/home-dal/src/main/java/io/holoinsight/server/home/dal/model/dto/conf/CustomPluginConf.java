@@ -18,6 +18,7 @@ import java.util.List;
 public class CustomPluginConf implements Serializable {
   private static final long serialVersionUID = 7595849765231492514L;
 
+  public ExtraConfig extraConfig;
   /**
    * 日志路径
    */
@@ -48,6 +49,10 @@ public class CustomPluginConf implements Serializable {
    */
   public List<SplitCol> splitCols;
 
+  public Boolean spm;
+
+  public SpmCols spmCols;
+
   /**
    * 监控指标定义
    */
@@ -65,4 +70,22 @@ public class CustomPluginConf implements Serializable {
     public String colType;
   }
 
+  @Data
+  public static class ExtraConfig {
+    public Integer keyCleanInterval = 0;
+
+    public Integer maxKeySize = 20000;
+
+    public String charset = "utf-8";
+
+    public Integer agentLimitKB = -1;
+  }
+
+  @Data
+  public static class SpmCols {
+    public String countKey;
+    public String costKey;
+    public String resultKey;
+    public List<String> successValue;
+  }
 }

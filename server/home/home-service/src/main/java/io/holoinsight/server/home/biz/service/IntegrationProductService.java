@@ -16,6 +16,8 @@ public interface IntegrationProductService extends IService<IntegrationProduct> 
 
   IntegrationProductDTO findById(Long id);
 
+  IntegrationProductDTO findByName(String name);
+
   List<IntegrationProductDTO> findByMap(Map<String, Object> columnMap);
 
   IntegrationProductDTO create(IntegrationProductDTO IntegrationProductDTO);
@@ -30,5 +32,9 @@ public interface IntegrationProductService extends IService<IntegrationProduct> 
   List<IntegrationProductDTO> getListByKeyword(String keyword, String tenant);
 
   List<IntegrationProductDTO> getListByNameLike(String name, String tenant);
+
+  List<IntegrationProductDTO> queryByRows();
+
+  List<IntegrationProductDTO> queryNames();
 
 }

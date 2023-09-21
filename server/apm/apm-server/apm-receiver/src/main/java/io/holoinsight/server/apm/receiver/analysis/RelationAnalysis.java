@@ -11,19 +11,18 @@ import io.holoinsight.server.apm.common.model.specification.sw.NetworkAddressMap
 import io.holoinsight.server.apm.common.utils.TimeBucket;
 import io.holoinsight.server.apm.common.utils.TimeUtils;
 import io.holoinsight.server.apm.engine.model.NetworkAddressMappingDO;
-import io.holoinsight.server.apm.engine.model.SlowSqlDO;
 import io.holoinsight.server.apm.grpc.trace.RefType;
 import io.holoinsight.server.apm.receiver.builder.RPCTrafficSourceBuilder;
 import io.holoinsight.server.apm.receiver.common.IPublicAttr;
 import io.holoinsight.server.apm.receiver.common.TransformAttr;
 import io.holoinsight.server.apm.server.cache.NetworkAddressAliasCache;
-import io.opentelemetry.proto.common.v1.AnyValue;
 import io.opentelemetry.proto.common.v1.KeyValue;
 import io.opentelemetry.proto.trace.v1.Span;
 import io.opentelemetry.semconv.resource.attributes.ResourceAttributes;
 import io.opentelemetry.semconv.trace.attributes.SemanticAttributes;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.binary.Hex;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.ArrayList;
@@ -44,13 +43,11 @@ public class RelationAnalysis {
   }
 
   public List<RPCTrafficSourceBuilder> analysisServerSpan(Span span,
-      Map<String, AnyValue> spanAttrMap, Map<String, AnyValue> resourceAttrMap) {
+      Map<String, String> spanAttrMap, Map<String, String> resourceAttrMap) {
     List<RPCTrafficSourceBuilder> callingInTraffic = new ArrayList<>(10);
 
-    String serviceName =
-        resourceAttrMap.get(ResourceAttributes.SERVICE_NAME.getKey()).getStringValue();
-    String instanceName =
-        resourceAttrMap.get(Const.OTLP_RESOURCE_SERVICE_INSTANCE_NAME).getStringValue();
+    String serviceName = resourceAttrMap.get(ResourceAttributes.SERVICE_NAME.getKey());
+    String instanceName = resourceAttrMap.get(Const.OTLP_RESOURCE_SERVICE_INSTANCE_NAME);
 
     if (span.getLinksCount() > 0) {
       for (Span.Link link : span.getLinksList()) {
@@ -114,29 +111,26 @@ public class RelationAnalysis {
   }
 
   public List<RPCTrafficSourceBuilder> analysisClientSpan(Span span,
-      Map<String, AnyValue> spanAttrMap, Map<String, AnyValue> resourceAttrMap,
+      Map<String, String> spanAttrMap, Map<String, String> resourceAttrMap,
       Map<String, String> endpointMap) {
     List<RPCTrafficSourceBuilder> callingOutTraffic = new ArrayList<>(10);
     RPCTrafficSourceBuilder sourceBuilder = relationBuilder();
 
-    AnyValue peerName = spanAttrMap.get(SemanticAttributes.NET_PEER_NAME.getKey());
-    AnyValue peerPort = spanAttrMap.get(SemanticAttributes.NET_PEER_PORT.getKey());
+    String peerName = spanAttrMap.get(SemanticAttributes.NET_PEER_NAME.getKey());
+    String peerPort = spanAttrMap.get(SemanticAttributes.NET_PEER_PORT.getKey());
 
-    if (peerName == null && peerPort == null) {
+    if (peerName == null || StringUtils.isEmpty(peerName)) {
       return callingOutTraffic;
     }
 
     String spanLayer = "Unknown";
     if (spanAttrMap.get(Const.OTLP_SPANLAYER) != null) {
-      spanLayer = spanAttrMap.get(Const.OTLP_SPANLAYER).getStringValue();
+      spanLayer = spanAttrMap.get(Const.OTLP_SPANLAYER);
     }
-    String serviceName =
-        resourceAttrMap.get(ResourceAttributes.SERVICE_NAME.getKey()).getStringValue();
-    String instanceName =
-        resourceAttrMap.get(Const.OTLP_RESOURCE_SERVICE_INSTANCE_NAME).getStringValue();;
+    String serviceName = resourceAttrMap.get(ResourceAttributes.SERVICE_NAME.getKey());
+    String instanceName = resourceAttrMap.get(Const.OTLP_RESOURCE_SERVICE_INSTANCE_NAME);
 
-    String networkAddress = peerPort == null ? peerName.getStringValue()
-        : peerName.getStringValue() + ":" + peerPort.getStringValue();
+    String networkAddress = peerPort == null ? peerName : peerName + ":" + peerPort;
     sourceBuilder.setSourceServiceName(serviceName);
     sourceBuilder.setSourceServiceInstanceName(instanceName);
     sourceBuilder.setSourceLayer(Layer.GENERAL);
@@ -162,42 +156,8 @@ public class RelationAnalysis {
   }
 
 
-  public List<SlowSqlDO> analysisClientSpan(Span span, Map<String, AnyValue> spanAttrMap,
-      Map<String, AnyValue> resourceAttrMap) {
-    List<SlowSqlDO> result = new ArrayList<>(10);
-
-    String serviceName =
-        resourceAttrMap.get(ResourceAttributes.SERVICE_NAME.getKey()).getStringValue();
-    AnyValue statement = spanAttrMap.get(SemanticAttributes.DB_STATEMENT.getKey());
-    AnyValue peerName = spanAttrMap.get(SemanticAttributes.NET_PEER_NAME.getKey());
-    AnyValue peerPort = spanAttrMap.get(SemanticAttributes.NET_PEER_PORT.getKey());
-    long latency = TimeUtils.unixNano2MS(span.getEndTimeUnixNano())
-        - TimeUtils.unixNano2MS(span.getStartTimeUnixNano());
-
-    if ((peerName == null && peerPort == null) || statement == null
-        || latency < Const.SLOW_SQL_THRESHOLD) {
-      return result;
-    }
-
-    String dbAddress = peerPort == null ? peerName.getStringValue()
-        : peerName.getStringValue() + ":" + peerPort.getStringValue();
-    SlowSqlDO slowSqlEsDO = new SlowSqlDO();
-    slowSqlEsDO.setTenant(resourceAttrMap.get(Const.TENANT).getStringValue());
-    slowSqlEsDO.setServiceName(serviceName);
-    slowSqlEsDO.setAddress(dbAddress);
-    slowSqlEsDO.setLatency((int) latency);
-    slowSqlEsDO.setStartTime(TimeUtils.unixNano2MS(span.getStartTimeUnixNano()));
-    slowSqlEsDO.setTimeBucket(
-        TimeBucket.getRecordTimeBucket(TimeUtils.unixNano2MS(span.getEndTimeUnixNano())));
-    slowSqlEsDO.setTraceId(Hex.encodeHexString(span.getTraceId().toByteArray()));
-    slowSqlEsDO.setStatement(statement.getStringValue());
-
-    result.add(slowSqlEsDO);
-    return result;
-  }
-
   public List<RPCTrafficSourceBuilder> analysisInternalSpan(Span span,
-      Map<String, AnyValue> spanAttrMap, Map<String, AnyValue> resourceAttrMap) {
+      Map<String, String> spanAttrMap, Map<String, String> resourceAttrMap) {
     List<RPCTrafficSourceBuilder> result = new ArrayList<>(10);
 
     if (span.getLinksCount() > 0) {
@@ -205,10 +165,8 @@ public class RelationAnalysis {
         Span.Link link = span.getLinks(i);
         RPCTrafficSourceBuilder sourceBuilder = relationBuilder();
 
-        String serviceName =
-            resourceAttrMap.get(ResourceAttributes.SERVICE_NAME.getKey()).getStringValue();
-        String instanceName =
-            resourceAttrMap.get(Const.OTLP_RESOURCE_SERVICE_INSTANCE_NAME).getStringValue();
+        String serviceName = resourceAttrMap.get(ResourceAttributes.SERVICE_NAME.getKey());
+        String instanceName = resourceAttrMap.get(Const.OTLP_RESOURCE_SERVICE_INSTANCE_NAME);
         String networkAddressUsedAtPeer = null;
         String parentServiceName = null;
         String parentInstanceName = null;
@@ -259,22 +217,25 @@ public class RelationAnalysis {
    * @return
    */
   public List<NetworkAddressMappingDO> generateNetworkAddressMapping(Span span,
-      Map<String, AnyValue> spanAttrMap, Map<String, AnyValue> resourceAttrMap) {
+      Map<String, String> spanAttrMap, Map<String, String> resourceAttrMap) {
     List<NetworkAddressMappingDO> networkAddressMappings = new ArrayList<>(10);
 
     for (Span.Link link : span.getLinksList()) {
-      Map<String, AnyValue> linkAttrMap = TransformAttr.attList2Map(link.getAttributesList());
-      String refType = linkAttrMap.get(Const.SW_REF_REFTYPE).getStringValue();
+      Map<String, String> linkAttrMap = TransformAttr.attList2Map(link.getAttributesList());
+      String refType = linkAttrMap.get(Const.SW_REF_REFTYPE);
       if (!RefType.CrossProcess.name().equals(refType)) {
         continue;
       }
+      String networkAddress = linkAttrMap.get(Const.SW_REF_NETWORK_ADDRESSUSEDATPEER);
+      String serviceInstance = resourceAttrMap.get(Const.OTLP_RESOURCE_SERVICE_INSTANCE_NAME);
 
-      String networkAddressUsedAtPeer =
-          linkAttrMap.get(Const.SW_REF_NETWORK_ADDRESSUSEDATPEER).getStringValue();
-      String serviceName =
-          resourceAttrMap.get(ResourceAttributes.SERVICE_NAME.getKey()).getStringValue();
-      String instanceName =
-          resourceAttrMap.get(Const.OTLP_RESOURCE_SERVICE_INSTANCE_NAME).getStringValue();
+      if (networkAddress == null || serviceInstance == null) {
+        continue;
+      }
+      String networkAddressUsedAtPeer = networkAddress;
+      String instanceName = serviceInstance;
+      String serviceName = resourceAttrMap.get(ResourceAttributes.SERVICE_NAME.getKey());
+
 
       final NetworkAddressMapping networkAddressMapping = new NetworkAddressMapping();
       networkAddressMapping.setAddress(networkAddressUsedAtPeer);
@@ -282,7 +243,9 @@ public class RelationAnalysis {
       networkAddressMapping.setServiceNormal(true);
       networkAddressMapping.setServiceInstanceName(instanceName);
       networkAddressMapping.setTimeBucket(
-          TimeBucket.getRecordTimeBucket(TimeUtils.unixNano2MS(span.getStartTimeUnixNano())));
+          TimeBucket.getRecordTimeBucket(TimeUtils.unixNano2MS(span.getEndTimeUnixNano())));
+      networkAddressMapping.setStartTime(TimeUtils.unixNano2MS(span.getStartTimeUnixNano()));
+      networkAddressMapping.setEndTime(TimeUtils.unixNano2MS(span.getEndTimeUnixNano()));
       networkAddressMapping.prepare();
 
       // address mapping has existed

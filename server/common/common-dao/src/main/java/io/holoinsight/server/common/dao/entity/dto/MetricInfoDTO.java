@@ -25,6 +25,8 @@ public class MetricInfoDTO {
 
   public String product;
 
+  public String metricType;
+
   public String metric;
 
   public String metricTable;
@@ -39,6 +41,11 @@ public class MetricInfoDTO {
   public List<String> tags;
 
   public boolean deleted;
+
+  public String ref;
+  public String extInfo;
+
+  public String storageTenant;
 
   public Date gmtCreate;
 

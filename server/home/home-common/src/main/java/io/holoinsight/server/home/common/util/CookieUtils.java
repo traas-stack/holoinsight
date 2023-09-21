@@ -28,6 +28,11 @@ public class CookieUtils {
     CommonCookieUtils.addCookie(name, value.toString(), MAXAGE, path, null, true, true, resp);
   }
 
+  public static void addCookie(HttpServletResponse resp, String name, String path, Integer age,
+      Object value) {
+    CommonCookieUtils.addCookie(name, value.toString(), age, path, null, true, true, resp);
+  }
+
   public static String getCookie(HttpServletRequest req, String name) {
     return CommonCookieUtils.getCookieValue(name, req);
   }

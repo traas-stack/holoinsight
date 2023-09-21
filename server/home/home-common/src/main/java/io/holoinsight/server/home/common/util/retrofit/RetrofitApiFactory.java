@@ -32,9 +32,9 @@ public class RetrofitApiFactory {
           mOkHttpClient = new OkHttpClient.Builder()//
               // .authenticator(new Authenticator(token))//
               // .addInterceptor
-              .readTimeout(5, TimeUnit.SECONDS) //
-              .connectTimeout(5, TimeUnit.SECONDS) //
-              .writeTimeout(5, TimeUnit.SECONDS)
+              .readTimeout(10, TimeUnit.SECONDS) //
+              .connectTimeout(10, TimeUnit.SECONDS) //
+              .writeTimeout(10, TimeUnit.SECONDS)
               .connectionPool(new ConnectionPool(10, 30, TimeUnit.SECONDS))
               .sslSocketFactory(SSLSocketClient.getSSLSocketFactory(),
                   SSLSocketClient.getX509TrustManager())

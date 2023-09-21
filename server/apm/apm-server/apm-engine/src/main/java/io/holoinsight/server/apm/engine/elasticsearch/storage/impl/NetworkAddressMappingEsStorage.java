@@ -3,9 +3,9 @@
  */
 package io.holoinsight.server.apm.engine.elasticsearch.storage.impl;
 
-import io.holoinsight.server.apm.common.utils.TimeBucket;
-import io.holoinsight.server.apm.engine.elasticsearch.utils.EsGsonUtils;
+import io.holoinsight.server.apm.engine.elasticsearch.utils.ApmGsonUtils;
 import io.holoinsight.server.apm.engine.model.NetworkAddressMappingDO;
+import io.holoinsight.server.apm.engine.model.RecordDO;
 import io.holoinsight.server.apm.engine.storage.NetworkAddressMappingStorage;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
@@ -26,17 +26,13 @@ public class NetworkAddressMappingEsStorage extends RecordEsStorage<NetworkAddre
   @Autowired
   private RestHighLevelClient client;
 
-  protected RestHighLevelClient esClient() {
+  protected RestHighLevelClient client() {
     return client;
   }
 
   @Override
-  public String timeField() {
-    return NetworkAddressMappingDO.TIME_BUCKET;
-  }
-
-  protected long getTime(long timestamp) {
-    return TimeBucket.getRecordTimeBucket(timestamp);
+  public String timeSeriesField() {
+    return RecordDO.TIMESTAMP;
   }
 
   @Override
@@ -44,17 +40,17 @@ public class NetworkAddressMappingEsStorage extends RecordEsStorage<NetworkAddre
     List<NetworkAddressMappingDO> networkAddressMapping = new ArrayList<>();
     SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
     searchSourceBuilder.size(1000);
-    searchSourceBuilder.query(new RangeQueryBuilder(timeField()).gte(getTime(startTime))
-        .lte(getTime(System.currentTimeMillis())));
+    searchSourceBuilder.query(new RangeQueryBuilder(this.timeSeriesField()).gte(startTime)
+        .lte(System.currentTimeMillis()));
     SearchRequest searchRequest =
         new SearchRequest(new String[] {NetworkAddressMappingDO.INDEX_NAME}, searchSourceBuilder);
 
-    SearchResponse searchResponse = esClient().search(searchRequest, RequestOptions.DEFAULT);
+    SearchResponse searchResponse = client().search(searchRequest, RequestOptions.DEFAULT);
 
     for (SearchHit searchHit : searchResponse.getHits().getHits()) {
       String hitJson = searchHit.getSourceAsString();
       NetworkAddressMappingDO networkAddressMappingEsDO =
-          EsGsonUtils.esGson().fromJson(hitJson, NetworkAddressMappingDO.class);
+          ApmGsonUtils.apmGson().fromJson(hitJson, NetworkAddressMappingDO.class);
       networkAddressMapping.add(networkAddressMappingEsDO);
     }
 

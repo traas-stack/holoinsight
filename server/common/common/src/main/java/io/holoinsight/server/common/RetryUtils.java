@@ -4,7 +4,7 @@
 package io.holoinsight.server.common;
 
 import java.util.List;
-import java.util.function.Consumer;
+import java.util.function.Predicate;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -20,18 +20,18 @@ public abstract class RetryUtils {
    * 重试调度方法
    *
    * @param dataSupplier 返回数据方法执行体
-   * @param exceptionCaught 出错异常处理(包括第一次执行和重试错误)
+   * @param canRetry can retry predicate
    * @param retryCount 重试次数
    * @param sleepTime 重试间隔睡眠时间(注意：阻塞当前线程)
-   * @param expectExceptions 期待异常(抛出符合相应异常时候重试),空或者空容器默认进行重试 当匹配到异常，此时返回为空null
+   * @param expectedExceptions 期待异常(抛出符合相应异常时候重试),空或者空容器默认进行重试 当匹配到异常，此时返回为空null
    * @param <R> 数据类型
    * @return R 当最后一次失败，返回异常
    */
-  public static <R> R invoke(Supplier<R> dataSupplier, Consumer<Throwable> exceptionCaught,
-      int retryCount, long sleepTime, List<Class<? extends Throwable>> expectExceptions) {
+  public static <R> R invoke(Supplier<R> dataSupplier, Predicate<Throwable> canRetry,
+      int retryCount, long sleepTime, List<Class<? extends Throwable>> expectedExceptions) {
 
     // 匹配期待异常或者允许任何异常重试
-    Throwable ex = null;
+    Throwable lastEx = null;
     for (int i = 0; i < retryCount; i++) {
       try {
         // i>0: only sleep when retry
@@ -45,32 +45,46 @@ public abstract class RetryUtils {
         Thread.currentThread().interrupt();
         // 线程中断直接退出重试
         break;
-      } catch (Throwable throwable) {
-        catchException(exceptionCaught, throwable);
-        ex = throwable;
-      }
+      } catch (Exception e) {
+        // If e matches expectedExceptions return null result.
+        if (expectedExceptions != null && !expectedExceptions.isEmpty()) {
+          Class<? extends Throwable> exClass = e.getClass();
+          boolean match = expectedExceptions.stream().anyMatch(clazz -> clazz == exClass);
+          if (!match) {
+            return null;
+          }
+        }
 
-      if (expectExceptions != null && !expectExceptions.isEmpty()) {
-        // 校验异常是否匹配期待异常
-        Class<? extends Throwable> exClass = ex.getClass();
-        boolean match = expectExceptions.stream().anyMatch(clazz -> clazz == exClass);
-        if (!match) {
-          return null;
+        try {
+          if (canRetry == null || canRetry.test(e)) {
+            lastEx = e;
+          } else {
+            wrapAndThrows(e);
+          }
+        } catch (RuntimeException testE) {
+          log.error("testPredicate error", testE);
         }
       }
     }
 
-    throw new RuntimeException(ex);
+    wrapAndThrows(lastEx);
+    return null;
   }
 
-  private static void catchException(Consumer<Throwable> exceptionCaught, Throwable throwable) {
-    try {
-      if (exceptionCaught != null) {
-        exceptionCaught.accept(throwable);
-      }
-    } catch (Throwable e) {
-      log.error("retry exception caught throw error, ", e);
+  /**
+   * Wrap e as {@link RuntimeException} and throw it.
+   * 
+   * @param e
+   */
+  private static void wrapAndThrows(Throwable e) {
+    if (e == null) {
+      throw new RuntimeException("thread interrupted");
     }
+    if (e instanceof RuntimeException) {
+      throw (RuntimeException) e;
+    }
+
+    throw new RuntimeException(e);
   }
 
   /**

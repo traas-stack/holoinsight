@@ -3,8 +3,10 @@
  */
 package io.holoinsight.server.query.server.controllers;
 
+import io.holoinsight.server.common.SSRFUtils;
 import io.holoinsight.server.query.grpc.QueryProto;
 import io.holoinsight.server.common.dao.mapper.TenantOpsMapper;
+import io.holoinsight.server.query.grpc.QueryProto.QueryResponse;
 import io.holoinsight.server.query.service.QueryException;
 import io.holoinsight.server.query.service.QueryService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -88,8 +90,12 @@ public class QueryController {
   @PostMapping(path = "/pql/instant", produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<?> pqlInstantQuery(@RequestBody QueryProto.PqlInstantRequest request) {
     try {
-      return ResponseEntity.ok(queryService.pqlInstantQuery(request));
+      SSRFUtils.hookStart();
+      ResponseEntity<QueryResponse> ok = ResponseEntity.ok(queryService.pqlInstantQuery(request));
+      SSRFUtils.hookStop();
+      return ok;
     } catch (QueryException e) {
+      SSRFUtils.hookStop();
       return ResponseEntity.badRequest().body(Collections.singletonMap("message", e.getMessage()));
     }
   }
@@ -97,8 +103,12 @@ public class QueryController {
   @PostMapping(path = "/pql/range", produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<?> pqlRangeQuery(@RequestBody QueryProto.PqlRangeRequest request) {
     try {
-      return ResponseEntity.ok(queryService.pqlRangeQuery(request));
+      SSRFUtils.hookStart();
+      ResponseEntity<QueryResponse> ok = ResponseEntity.ok(queryService.pqlRangeQuery(request));
+      SSRFUtils.hookStop();
+      return ok;
     } catch (QueryException e) {
+      SSRFUtils.hookStop();
       return ResponseEntity.badRequest().body(Collections.singletonMap("message", e.getMessage()));
     }
   }
@@ -116,6 +126,16 @@ public class QueryController {
   public ResponseEntity<?> queryTrace(@RequestBody QueryProto.QueryTraceRequest request) {
     try {
       return ResponseEntity.ok(queryService.queryTrace(request));
+    } catch (Exception e) {
+      e.printStackTrace();
+      return ResponseEntity.badRequest().body(Collections.singletonMap("message", e.getMessage()));
+    }
+  }
+
+  @PostMapping(path = "/trace/query/traceTree", produces = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<?> queryTraceTree(@RequestBody QueryProto.QueryTraceRequest request) {
+    try {
+      return ResponseEntity.ok(queryService.queryTraceTree(request));
     } catch (Exception e) {
       e.printStackTrace();
       return ResponseEntity.badRequest().body(Collections.singletonMap("message", e.getMessage()));
@@ -193,4 +213,36 @@ public class QueryController {
       return ResponseEntity.badRequest().body(Collections.singletonMap("message", e.getMessage()));
     }
   }
+
+  @PostMapping(path = "/serviceErrorList", produces = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<?> queryServiceErrorList(@RequestBody QueryProto.QueryMetaRequest request) {
+    try {
+      return ResponseEntity.ok(queryService.queryServiceErrorList(request));
+    } catch (Exception e) {
+      e.printStackTrace();
+      return ResponseEntity.badRequest().body(Collections.singletonMap("message", e.getMessage()));
+    }
+  }
+
+  @PostMapping(path = "/serviceErrorDetail", produces = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<?> queryServiceErrorDetail(
+      @RequestBody QueryProto.QueryMetaRequest request) {
+    try {
+      return ResponseEntity.ok(queryService.queryServiceErrorDetail(request));
+    } catch (Exception e) {
+      e.printStackTrace();
+      return ResponseEntity.badRequest().body(Collections.singletonMap("message", e.getMessage()));
+    }
+  }
+
+  @PostMapping(path = "/events", produces = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<?> queryEvents(@RequestBody QueryProto.QueryEventRequest request) {
+    try {
+      return ResponseEntity.ok(queryService.queryEvents(request));
+    } catch (Exception e) {
+      e.printStackTrace();
+      return ResponseEntity.badRequest().body(Collections.singletonMap("message", e.getMessage()));
+    }
+  }
+
 }

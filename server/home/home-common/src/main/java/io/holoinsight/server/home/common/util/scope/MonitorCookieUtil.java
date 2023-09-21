@@ -30,6 +30,7 @@ public class MonitorCookieUtil {
   static String AUTH = APPNAME + "_AUTH_COOKIE";
   static String TENANT = "loginTenant";
   static String WORKSPACE = "loginWorkspace";
+  static String ENVIRONMENT = "loginEnvironment";
 
   /**
    * 用户身份cookie
@@ -59,10 +60,17 @@ public class MonitorCookieUtil {
     }
   }
 
+  public static void addTenantEnvironmentCookie(String environment, HttpServletResponse resp) {
+    if (StringUtil.isNotBlank(environment)) {
+      CookieUtils.addCookie(resp, ENVIRONMENT, environment);
+    }
+  }
+
   public static void removeUserCookie(HttpServletResponse resp) {
     CookieUtils.removeCookie(resp, USER);
     CookieUtils.removeCookie(resp, AUTH);
     CookieUtils.removeCookie(resp, TENANT);
+    CookieUtils.removeCookie(resp, WORKSPACE);
     resp.setHeader("P3P",
         "CP=\"CURa ADMa DEVa PSAo PSDo OUR BUS UNI PUR INT DEM STA PRE COM NAV OTC NOI DSP COR\"");
   }
@@ -95,24 +103,24 @@ public class MonitorCookieUtil {
   public static MonitorScope getScope(HttpServletRequest req, MonitorUser mu) {
     MonitorScope ms = new MonitorScope();
 
-    String loginTenant = CookieUtils.getCookie(req, TENANT);
-    String loginWorkspace = CookieUtils.getCookie(req, WORKSPACE);
-    if (StringUtil.isNotBlank(loginTenant)) {
-      ms.tenant = loginTenant;
-      mu.setLoginTenant(loginTenant);
-    } else if (StringUtil.isNotBlank(mu.getLoginTenant())) {
+    // String loginTenant = CookieUtils.getCookie(req, TENANT);
+    if (StringUtil.isNotBlank(mu.getLoginTenant())) {
       ms.tenant = mu.getLoginTenant();
     }
-
+    String loginWorkspace = CookieUtils.getCookie(req, WORKSPACE);
     if (StringUtil.isNotBlank(loginWorkspace)) {
       ms.workspace = loginWorkspace;
+    }
+    String loginEnvironment = CookieUtils.getCookie(req, ENVIRONMENT);
+    if (StringUtil.isNotBlank(loginEnvironment)) {
+      ms.environment = loginEnvironment;
     }
     return ms;
   }
 
   public static String getTenantOrException() {
     MonitorScope ms = RequestContext.getContext().ms;
-    return ms.getTenantIdOrException();
+    return ms.getTenant();
   }
 
   /**

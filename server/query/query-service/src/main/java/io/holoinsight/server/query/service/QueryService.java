@@ -31,6 +31,14 @@ public interface QueryService {
 
   QueryProto.Trace queryTrace(QueryProto.QueryTraceRequest request) throws QueryException;
 
+  QueryProto.TraceTreeList queryTraceTree(QueryProto.QueryTraceRequest request)
+      throws QueryException;
+
+  QueryProto.StatisticData billingTrace(QueryProto.QueryTraceRequest request) throws QueryException;
+
+  QueryProto.StatisticDataList statisticTrace(QueryProto.StatisticRequest request)
+      throws QueryException;
+
   QueryProto.QueryMetaResponse queryServiceList(QueryProto.QueryMetaRequest request)
       throws QueryException;
 
@@ -51,4 +59,15 @@ public interface QueryService {
   QueryProto.QuerySlowSqlResponse querySlowSqlList(QueryProto.QueryMetaRequest request)
       throws QueryException;
 
+  QueryProto.CommonMapTypeDataList queryServiceErrorList(QueryProto.QueryMetaRequest request)
+      throws QueryException;
+
+  QueryProto.CommonMapTypeDataList queryServiceErrorDetail(QueryProto.QueryMetaRequest request)
+      throws QueryException;
+
+  QueryProto.QueryDetailResponse queryDetailData(QueryProto.QueryRequest request)
+      throws QueryException;
+
+  QueryProto.QueryEventResponse queryEvents(QueryProto.QueryEventRequest request)
+      throws QueryException;
 }

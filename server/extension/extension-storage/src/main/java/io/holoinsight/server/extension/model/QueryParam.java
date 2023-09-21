@@ -22,6 +22,7 @@ public class QueryParam {
   String downsample;
   SlidingWindow slidingWindow;
   List<String> groupBy;
+  String ql;
 
   @Data
   public static class SlidingWindow {

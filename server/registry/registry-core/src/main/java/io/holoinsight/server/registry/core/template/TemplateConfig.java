@@ -5,13 +5,13 @@ package io.holoinsight.server.registry.core.template;
 
 import java.time.Duration;
 
-import lombok.Data;
-import lombok.Getter;
-
 import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.stereotype.Component;
 
 import com.xzchaoo.commons.basic.config.spring.AbstractConfig;
+
+import lombok.Data;
+import lombok.Getter;
 
 /**
  * <p>
@@ -50,5 +50,7 @@ public class TemplateConfig extends AbstractConfig {
   @Data
   public static class Build {
     private Duration interval = Duration.ofMinutes(1);
+    // Timeout for build template
+    private Duration timeout = Duration.ofSeconds(30);
   }
 }

@@ -8,6 +8,7 @@ import io.holoinsight.server.apm.common.model.query.Duration;
 import io.holoinsight.server.apm.common.model.query.MetricValues;
 import io.holoinsight.server.apm.engine.postcal.MetricsManager;
 import io.holoinsight.server.apm.engine.storage.MetricStorage;
+import io.holoinsight.server.apm.server.service.MetricService;
 import io.holoinsight.server.common.dao.entity.TenantOps;
 import io.holoinsight.server.common.dao.mapper.TenantOpsMapper;
 import io.holoinsight.server.extension.model.WriteMetricsParam;
@@ -36,8 +37,9 @@ public class ApmMetricMaterializer {
   @Autowired
   protected io.holoinsight.server.extension.MetricStorage metricStorage;
 
+
   @Autowired
-  private MetricStorage apmMetricStorage;
+  private MetricService apmMetricService;
 
   @Autowired
   private MetricsManager metricsManager;
@@ -47,7 +49,7 @@ public class ApmMetricMaterializer {
 
   private static final long INTERVAL = 60000;
 
-  private static final long DELAY = 10000;
+  private static final long DELAY = 30000;
 
   private static final String STEP = "1m";
 
@@ -55,13 +57,13 @@ public class ApmMetricMaterializer {
   // inaccuracy problem caused by trace recording delay.
   // Notice that the repaired data will be repeatedly written to the MetricStore, so it is necessary
   // to ensure that the MetricStore's policy for repeated data is OVERWRITE instead of APPEND.
-  private static final int REPAIR_PERIODS = 3;
+  private static final int REPAIR_PERIODS = 0;
 
   private static final ScheduledExecutorService SCHEDULER = new ScheduledThreadPoolExecutor(1,
       new BasicThreadFactory.Builder().namingPattern("apm-materialize-scheduler-%d").build());
 
   private static final ThreadPoolExecutor EXECUTOR =
-      new ThreadPoolExecutor(4, 4, 60, TimeUnit.SECONDS, new LinkedBlockingQueue<>(),
+      new ThreadPoolExecutor(4, 4, 60, TimeUnit.SECONDS, new LinkedBlockingQueue<>(4096),
           new BasicThreadFactory.Builder().namingPattern("apm-materialize-executor-%d").build());
 
   @PostConstruct
@@ -88,7 +90,7 @@ public class ApmMetricMaterializer {
               log.info(
                   "[apm] ready to materialize metric, tenant={}, metric={}, start={}, end={}, step={}",
                   tenant, metric, start, end, STEP);
-              MetricValues metricValues = apmMetricStorage.queryMetric(tenant, metric,
+              MetricValues metricValues = apmMetricService.queryMetric(tenant, metric,
                   new Duration(start, end, STEP), null);
               log.info(
                   "[apm] query metric success, tenant={}, metric={}, start={}, end={}, step={}, series={}",

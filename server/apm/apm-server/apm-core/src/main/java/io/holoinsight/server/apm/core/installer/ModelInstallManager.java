@@ -16,7 +16,9 @@ import org.springframework.context.annotation.Lazy;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 
 /**
@@ -26,10 +28,10 @@ import java.util.List;
 @Slf4j
 public class ModelInstallManager implements IModelInstallManager {
 
-  private static final String MODEL_PATH = "io.holoinsight.server.apm";
+  protected static final String MODEL_PATH = "io.holoinsight.server.apm";
 
-  public String getModelPath() {
-    return MODEL_PATH;
+  public String[] getModelPath() {
+    return new String[] {MODEL_PATH};
   }
 
 
@@ -50,29 +52,38 @@ public class ModelInstallManager implements IModelInstallManager {
     }
   }
 
-  private List<Model> scanModels() throws IOException {
+  protected List<Model> scanModels() throws IOException {
     List<Model> models = new ArrayList<>();
-    Collection<Class<?>> modelPathClasses = ClassUtil.getClasses(getModelPath());
-    log.info("[apm] load {} models, path={}",
-        modelPathClasses == null ? 0 : modelPathClasses.size(), getModelPath());
+    Collection<Class<?>> modelPathClasses = new HashSet<>();
+    for (String modelPath : getModelPath()) {
+      modelPathClasses.addAll(ClassUtil.getClasses(modelPath));
+    }
+    log.info("[apm] load {} models, path={}", modelPathClasses.size(), getModelPath());
     for (Class<?> cls : modelPathClasses) {
       if (cls.isAnnotationPresent(ModelAnnotation.class)) {
-        ModelAnnotation modelAnnotation = cls.getAnnotation(ModelAnnotation.class);
-        List<ModelColumn> modelColumns = new ArrayList<>();
-        Field[] fields = cls.getDeclaredFields();
-        for (Field field : fields) {
-          if (field.isAnnotationPresent(Column.class)) {
-            Column column = field.getAnnotation(Column.class);
-            ModelColumn modelColumn =
-                new ModelColumn(column.name(), field.getType(), field.getGenericType());
-            modelColumns.add(modelColumn);
-          }
-        }
-        Model model = new Model(modelAnnotation.name(), modelColumns, true, modelAnnotation.ttl());
-        models.add(model);
+        models.add(scanModel(cls));
       }
     }
     return models;
+  }
+
+  protected Model scanModel(Class<?> cls) {
+    ModelAnnotation modelAnnotation = cls.getAnnotation(ModelAnnotation.class);
+    List<Field> fields = new ArrayList<>();
+    while (cls != null) {
+      fields.addAll(Arrays.asList(cls.getDeclaredFields()));
+      cls = cls.getSuperclass();
+    }
+    List<ModelColumn> modelColumns = new ArrayList<>();
+    for (Field field : fields) {
+      if (field.isAnnotationPresent(Column.class)) {
+        Column column = field.getAnnotation(Column.class);
+        ModelColumn modelColumn =
+            new ModelColumn(column.name(), field.getType(), field.getGenericType());
+        modelColumns.add(modelColumn);
+      }
+    }
+    return new Model(modelAnnotation.name(), modelColumns, true, modelAnnotation.ttl());
   }
 
   private void installModel(Model model) {

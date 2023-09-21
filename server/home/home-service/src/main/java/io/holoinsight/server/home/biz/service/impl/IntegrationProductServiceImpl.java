@@ -20,7 +20,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -37,6 +36,19 @@ public class IntegrationProductServiceImpl extends
   @Override
   public IntegrationProductDTO findById(Long id) {
     IntegrationProduct model = getById(id);
+    if (model == null) {
+      return null;
+    }
+    return IntegrationProductConverter.doToDTO(model);
+  }
+
+  @Override
+  public IntegrationProductDTO findByName(String name) {
+    QueryWrapper<IntegrationProduct> wrapper = new QueryWrapper<>();
+    wrapper.eq("name", name);
+    wrapper.last("LIMIT 1");
+
+    IntegrationProduct model = this.getOne(wrapper);
     if (model == null) {
       return null;
     }
@@ -115,16 +127,7 @@ public class IntegrationProductServiceImpl extends
       wrapper.like("name", integrationProductDTO.getName().trim());
     }
 
-    if (StringUtil.isNotBlank(pageRequest.getSortBy())
-        && StringUtil.isNotBlank(pageRequest.getSortRule())) {
-      if (pageRequest.getSortRule().toLowerCase(Locale.ROOT).equals("desc")) {
-        wrapper.orderByDesc(pageRequest.getSortBy());
-      } else {
-        wrapper.orderByAsc(pageRequest.getSortBy());
-      }
-    } else {
-      wrapper.orderByDesc("gmt_modified");
-    }
+    wrapper.orderByDesc("gmt_modified");
 
     if (null != integrationProductDTO.getStatus()) {
       wrapper.eq("status", integrationProductDTO.getStatus());
@@ -153,6 +156,7 @@ public class IntegrationProductServiceImpl extends
     if (StringUtil.isNotBlank(tenant)) {
       wrapper.eq("tenant", tenant);
     }
+    wrapper.eq("status", 1);
     wrapper.like("id", keyword).or().like("name", keyword);
     Page<IntegrationProduct> page = new Page<>(1, 20);
     page = page(page, wrapper);
@@ -164,7 +168,24 @@ public class IntegrationProductServiceImpl extends
   public List<IntegrationProductDTO> getListByNameLike(String name, String tenant) {
     QueryWrapper<IntegrationProduct> wrapper = new QueryWrapper<>();
     wrapper.select().like("name", name);
+    wrapper.eq("status", 1);
     List<IntegrationProduct> customPlugins = baseMapper.selectList(wrapper);
     return IntegrationProductConverter.dosToDTOs(customPlugins);
+  }
+
+  @Override
+  public List<IntegrationProductDTO> queryByRows() {
+    QueryWrapper<IntegrationProduct> queryWrapper = new QueryWrapper<>();
+    queryWrapper.eq("status", 1);
+    queryWrapper.select("id", "name", "type", "version", "form", "configuration");
+    return IntegrationProductConverter.dosToDTOs(baseMapper.selectList(queryWrapper));
+  }
+
+  @Override
+  public List<IntegrationProductDTO> queryNames() {
+    QueryWrapper<IntegrationProduct> queryWrapper = new QueryWrapper<>();
+    queryWrapper.eq("status", 1);
+    queryWrapper.select("name", "profile");
+    return IntegrationProductConverter.dosToDTOs(baseMapper.selectList(queryWrapper));
   }
 }

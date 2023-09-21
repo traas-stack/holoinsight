@@ -12,6 +12,7 @@ import io.holoinsight.server.home.common.util.scope.MonitorUser;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.List;
+import java.util.Set;
 
 /**
  *
@@ -52,7 +53,7 @@ public interface ULA {
    * AUTH
    */
   // 查看一个租户下的权限
-  MonitorAuth getUserPowerPkg(MonitorUser user, MonitorScope ms);
+  MonitorAuth getUserPowerPkg(HttpServletRequest req, MonitorUser user, MonitorScope ms);
 
   // 是否是super用户
   void checkSuper(MonitorUser user) throws Throwable;
@@ -60,13 +61,19 @@ public interface ULA {
   // 获取租户下所有用户信息信息
   List<MonitorUser> getUsers(MonitorUser user, MonitorScope ms);
 
+  Set<String> getUserIds(MonitorUser user, MonitorScope ms);
+
   // 登陆跳转token
   String authTokenName();
 
   // 权限
+  Boolean checkWorkspace(HttpServletRequest request, MonitorUser user, MonitorScope ms);
+
   Boolean authFunc(HttpServletRequest request);
 
   // 权限申请跳转链接
   String authApplyUrl();
+
+  MonitorScope getMonitorScope(HttpServletRequest req, MonitorUser mu);
 
 }

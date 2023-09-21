@@ -3,29 +3,33 @@
  */
 package io.holoinsight.server.registry.core.collecttarget;
 
+import static io.holoinsight.server.registry.core.lock.TargetProtector.executeInWriteLock;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
-
-import reactor.core.publisher.Mono;
-import reactor.core.publisher.Sinks;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import io.holoinsight.server.registry.core.template.CollectTemplate;
-import io.holoinsight.server.registry.core.template.CollectTemplateDelta;
-import io.holoinsight.server.common.MetricsUtils;
 import com.xzchaoo.commons.hashedeventloop.DisruptorEventLoopManager;
 import com.xzchaoo.commons.hashedeventloop.EventLoopManagerConfig;
 import com.xzchaoo.commons.stat.StringsKey;
 
-import static io.holoinsight.server.registry.core.lock.TargetProtector.executeInWriteLock;
+import io.holoinsight.server.common.MetricsUtils;
+import io.holoinsight.server.common.threadpool.CommonThreadPools;
+import io.holoinsight.server.registry.core.template.CollectTemplate;
+import io.holoinsight.server.registry.core.template.CollectTemplateDelta;
+import io.holoinsight.server.registry.core.template.TemplateConfig;
+import reactor.core.publisher.Mono;
+import reactor.core.publisher.Sinks;
 
 /**
  * <p>
@@ -45,6 +49,10 @@ public class CollectTargetMaintainer {
   @Autowired
   private CollectTargetService collectTargetService;
   private DisruptorEventLoopManager m;
+  @Autowired
+  private CommonThreadPools commonThreadPools;
+  @Autowired
+  private TemplateConfig templateConfig;
 
   @PostConstruct
   public void postConstruct() {
@@ -72,11 +80,18 @@ public class CollectTargetMaintainer {
    * @param t
    */
   public void maintainTemplateNow(CollectTemplate t) {
+    long seconds = templateConfig.getBuild().getTimeout().getSeconds();
+    ScheduledFuture<?> future = commonThreadPools.getScheduler().schedule(() -> {
+      LOGGER.error("maintainTemplateNow timeout [{}/{}]", t.getId(), t.getTableName());
+    }, seconds, TimeUnit.SECONDS);
+
     MaintainStat stat = new MaintainStat();
     try {
       maintainTemplate1(t, stat);
     } catch (Throwable e) {
       LOGGER.error("maintain template error {}", t.getId(), e);
+    } finally {
+      future.cancel(true);
     }
     LOGGER.info("mt [{}/{}] stat={}", t.getId(), t.getTableName(), stat);
   }
@@ -112,12 +127,18 @@ public class CollectTargetMaintainer {
   }
 
   public void maintainTemplateDelta0(CollectTemplateDelta d) {
+    long seconds = templateConfig.getBuild().getTimeout().getSeconds();
+    ScheduledFuture<?> future = commonThreadPools.getScheduler().schedule(() -> {
+      LOGGER.error("maintainTemplateDelta timeout [{}]", d.getTableName());
+    }, seconds, TimeUnit.SECONDS);
+
     List<Runnable> pending = new ArrayList<>();
     try {
       maintainTemplateDelta1(d, pending);
     } catch (Throwable e) {
       LOGGER.error("fail to maintain template {}", d.getTableName(), e);
     } finally {
+      future.cancel(true);
       executePending(pending, true);
     }
   }
@@ -167,7 +188,8 @@ public class CollectTargetMaintainer {
         CollectTarget ct = build(add0, target);
         needAdd.add(ct);
       } catch (Throwable e) {
-        LOGGER.error("build collect collecttarget error [{}/{}]", add0.getId(), target.getId(), e);
+        LOGGER.error("build collect collecttarget error [{}/{}/{}]", add0.getId(),
+            add0.getTableName(), target.getId(), e);
       }
     }
 

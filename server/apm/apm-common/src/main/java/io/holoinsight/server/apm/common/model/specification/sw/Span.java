@@ -53,4 +53,6 @@ public class Span implements Serializable {
   private List<LogEntity> logs = new ArrayList<>();
 
   private boolean isRoot;
+  private boolean isMesh;
+
 }

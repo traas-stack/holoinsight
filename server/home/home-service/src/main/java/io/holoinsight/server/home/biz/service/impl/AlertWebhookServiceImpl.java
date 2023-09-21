@@ -7,7 +7,6 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import io.holoinsight.server.home.biz.service.AlertWebhookService;
-import io.holoinsight.server.home.common.util.StringUtil;
 import io.holoinsight.server.home.dal.converter.AlarmWebhookConverter;
 import io.holoinsight.server.home.dal.mapper.AlarmWebhookMapper;
 import io.holoinsight.server.home.dal.model.AlarmWebhook;
@@ -80,19 +79,8 @@ public class AlertWebhookServiceImpl extends ServiceImpl<AlarmWebhookMapper, Ala
       wrapper.like("webhook_name", alarmWebhook.getWebhookName());
     }
 
-    if (StringUtil.isNotBlank(pageRequest.getSortBy())
-        && StringUtil.isNotBlank(pageRequest.getSortRule())) {
-      if (pageRequest.getSortRule().toLowerCase(Locale.ROOT).equals("desc")) {
-        wrapper.orderByDesc(pageRequest.getSortBy());
-      } else {
-        wrapper.orderByAsc(pageRequest.getSortBy());
-      }
-    } else {
-      wrapper.orderByDesc("gmt_modified");
-    }
+    wrapper.orderByDesc("id");
 
-    wrapper.select(AlarmWebhook.class,
-        info -> !info.getColumn().equals("creator") && !info.getColumn().equals("modifier"));
     Page<AlarmWebhook> page = new Page<>(pageRequest.getPageNum(), pageRequest.getPageSize());
 
     page = page(page, wrapper);

@@ -102,7 +102,7 @@ public class MonitorULA implements ULA {
   }
 
   @Override
-  public MonitorAuth getUserPowerPkg(MonitorUser user, MonitorScope ms) {
+  public MonitorAuth getUserPowerPkg(HttpServletRequest req, MonitorUser user, MonitorScope ms) {
 
     String tenant = ms.getTenant();
     if (null == tenant) {
@@ -128,12 +128,24 @@ public class MonitorULA implements ULA {
 
   @Override
   public List<MonitorUser> getUsers(MonitorUser user, MonitorScope ms) {
-    return new ArrayList<>();
+    List<MonitorUser> users = new ArrayList<>();
+    users.add(MonitorUser.adminUser);
+    return users;
+  }
+
+  @Override
+  public Set<String> getUserIds(MonitorUser user, MonitorScope ms) {
+    return null;
   }
 
   @Override
   public String authTokenName() {
     return "authToken";
+  }
+
+  @Override
+  public Boolean checkWorkspace(HttpServletRequest request, MonitorUser user, MonitorScope ms) {
+    return true;
   }
 
   @Override
@@ -144,5 +156,10 @@ public class MonitorULA implements ULA {
   @Override
   public String authApplyUrl() {
     return "";
+  }
+
+  @Override
+  public MonitorScope getMonitorScope(HttpServletRequest req, MonitorUser mu) {
+    return MonitorCookieUtil.getScope(req, mu);
   }
 }

@@ -60,4 +60,30 @@ public class UtilMisc {
   public static int getRandom(int max) {
     return Math.abs(seed.nextInt() % max);
   }
+
+  public static long getInterval(String downsample) {
+    long interval = 60000L;
+    switch (downsample) {
+      case "1m":
+        interval = 60000L;
+        break;
+      case "1s":
+        interval = 1000L;
+        break;
+      case "5s":
+        interval = 5000L;
+        break;
+      case "15s":
+        interval = 15000L;
+        break;
+      case "30s":
+        interval = 30000L;
+        break;
+      case "10m":
+        interval = 10 * 60000L;
+        break;
+      default:
+    }
+    return interval;
+  }
 }

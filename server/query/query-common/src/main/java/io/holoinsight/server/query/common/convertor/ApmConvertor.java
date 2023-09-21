@@ -12,8 +12,11 @@ import io.holoinsight.server.apm.common.model.query.ResponseMetric;
 import io.holoinsight.server.apm.common.model.query.Service;
 import io.holoinsight.server.apm.common.model.query.ServiceInstance;
 import io.holoinsight.server.apm.common.model.query.SlowSql;
+import io.holoinsight.server.apm.common.model.query.StatisticData;
+import io.holoinsight.server.apm.common.model.query.StatisticDataList;
 import io.holoinsight.server.apm.common.model.query.Topology;
 import io.holoinsight.server.apm.common.model.query.TraceBrief;
+import io.holoinsight.server.apm.common.model.query.TraceTree;
 import io.holoinsight.server.apm.common.model.query.VirtualComponent;
 import io.holoinsight.server.apm.common.model.specification.sw.KeyValue;
 import io.holoinsight.server.apm.common.model.specification.sw.LogEntity;
@@ -22,10 +25,13 @@ import io.holoinsight.server.apm.common.model.specification.sw.RefType;
 import io.holoinsight.server.apm.common.model.specification.sw.Span;
 import io.holoinsight.server.apm.common.model.specification.sw.Tag;
 import io.holoinsight.server.apm.common.model.specification.sw.Trace;
+import io.holoinsight.server.common.event.Event;
 import io.holoinsight.server.query.grpc.QueryProto;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -60,6 +66,52 @@ public class ApmConvertor {
     return trace;
   }
 
+  public static QueryProto.TraceTreeList convertTraceTree(List<TraceTree> traceTreeList) {
+    if (CollectionUtils.isEmpty(traceTreeList)) {
+      return null;
+    }
+    QueryProto.TraceTreeList.Builder traceTreeListBuilder = QueryProto.TraceTreeList.newBuilder();
+    traceTreeList.forEach(traceTree -> {
+      QueryProto.TraceTree.Builder traceTreeBuilder = QueryProto.TraceTree.newBuilder();
+      traceTreeBuilder.setSpan(convertSpan(traceTree.getSpan()));
+      QueryProto.TraceTreeList childList = convertTraceTree(traceTree.getChildren());
+      if (childList != null) {
+        traceTreeBuilder.addAllChildren(childList.getTraceTreeList());
+      }
+      if (traceTree.getMesh() != null) {
+        traceTreeBuilder.setMesh(convertSpan(traceTree.getMesh()));
+      }
+      traceTreeListBuilder.addTraceTree(traceTreeBuilder.build());
+    });
+    return traceTreeListBuilder.build();
+  }
+
+  public static List<TraceTree> convertTraceTree(QueryProto.TraceTreeList traceTreeList) {
+    if (traceTreeList == null) {
+      return null;
+    }
+    List<TraceTree> result = new ArrayList<>();
+    traceTreeList.getTraceTreeList().forEach(traceTree -> {
+      TraceTree root = new TraceTree();
+      if (traceTree.hasMesh()) {
+        root.setMesh(convertSpan(traceTree.getMesh()));
+      }
+      root.setSpan(convertSpan(traceTree.getSpan()));
+      List<QueryProto.TraceTree> childrenList = traceTree.getChildrenList();
+      if (CollectionUtils.isNotEmpty(childrenList)) {
+        QueryProto.TraceTreeList.Builder builder = QueryProto.TraceTreeList.newBuilder();
+        List<TraceTree> children = convertTraceTree(builder.addAllTraceTree(childrenList).build());
+        Collections.sort(children,
+            (o1, o2) -> (StringUtils.compare(String.valueOf(o1.getSpan().getStartTime()),
+                String.valueOf(o2.getSpan().getStartTime()))));
+        root.setChildren(children);
+      }
+      result.add(root);
+    });
+
+    return result;
+  }
+
   public static QueryProto.TraceBrief convertTraceBrief(TraceBrief traceBrief) {
     if (traceBrief == null) {
       return null;
@@ -81,6 +133,26 @@ public class ApmConvertor {
     return new TraceBrief(traceBriefProto.getTracesList().stream()
         .map(ApmConvertor::convertBasicTrace).collect(Collectors.toList()));
   }
+
+  public static QueryProto.StatisticData convertStatisticData(StatisticData statisticData) {
+    if (statisticData == null) {
+      return null;
+    }
+    QueryProto.StatisticData.Builder statisticDataBuilder = QueryProto.StatisticData.newBuilder();
+    if (statisticData.getResources() != null) {
+      statisticDataBuilder.putAllResources(statisticData.getResources());
+    }
+    if (statisticData.getDatas() != null) {
+      statisticDataBuilder.putAllDatas(statisticData.getDatas());
+    }
+    return statisticDataBuilder.build();
+  }
+
+  public static StatisticData convertStatisticData(QueryProto.StatisticData statisticDataProto) {
+    return new StatisticData(statisticDataProto.getResourcesMap(),
+        statisticDataProto.getDatasMap());
+  }
+
 
   public static QueryProto.BasicTrace convertBasicTrace(BasicTrace basicTrace) {
     return QueryProto.BasicTrace.newBuilder().addAllServiceNames(basicTrace.getServiceNames())
@@ -154,7 +226,7 @@ public class ApmConvertor {
             .collect(Collectors.toList()),
         spanProto.getLogsList().stream().map(ApmConvertor::convertLogEntity)
             .collect(Collectors.toList()),
-        spanProto.getIsRoot());
+        spanProto.getIsRoot(), spanProto.getIsMesh());
     return span;
   }
 
@@ -474,5 +546,38 @@ public class ApmConvertor {
     result.setStartTime(slowSql.getStartTime());
 
     return result;
+  }
+
+  public static QueryProto.Event convertEvent(Event event) {
+    QueryProto.Event.Builder builder = QueryProto.Event.newBuilder();
+    builder.setTenant(event.getTenant());
+    builder.setName(event.getName());
+    builder.setId(event.getId());
+    builder.setTimestamp(event.getTimestamp());
+    builder.setType(event.getType());
+    if (event.getTags() != null) {
+      builder.putAllTags(event.getTags());
+    }
+    return builder.build();
+  }
+
+  public static Event deConvertEvent(QueryProto.Event event) {
+    Event result = new Event();
+    result.setId(event.getId());
+    result.setName(event.getName());
+    result.setTimestamp(event.getTimestamp());
+    result.setType(event.getType());
+    result.setTags(event.getTagsMap());
+    return result;
+  }
+
+  public static QueryProto.StatisticDataList convert(StatisticDataList statisticDataList) {
+    QueryProto.StatisticDataList.Builder builder = QueryProto.StatisticDataList.newBuilder();
+    if (!CollectionUtils.isEmpty(statisticDataList.getStatisticDataList())) {
+      for (StatisticData data : statisticDataList.getStatisticDataList()) {
+        builder.addStatisticData(convertStatisticData(data));
+      }
+    }
+    return builder.build();
   }
 }

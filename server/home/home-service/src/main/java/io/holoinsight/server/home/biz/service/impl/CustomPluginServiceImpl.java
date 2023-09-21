@@ -23,7 +23,6 @@ import org.springframework.util.CollectionUtils;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -163,16 +162,7 @@ public class CustomPluginServiceImpl extends ServiceImpl<CustomPluginMapper, Cus
       wrapper.eq("parent_folder_id", customPluginDTO.getParentFolderId());
     }
 
-    if (StringUtil.isNotBlank(customPluginDTORequest.getSortBy())
-        && StringUtil.isNotBlank(customPluginDTORequest.getSortRule())) {
-      if (customPluginDTORequest.getSortRule().toLowerCase(Locale.ROOT).equals("desc")) {
-        wrapper.orderByDesc(customPluginDTORequest.getSortBy());
-      } else {
-        wrapper.orderByAsc(customPluginDTORequest.getSortBy());
-      }
-    } else {
-      wrapper.orderByDesc("gmt_modified");
-    }
+    wrapper.orderByDesc("id");
 
     wrapper.select(CustomPlugin.class,
         info -> !info.getColumn().equals("creator") && !info.getColumn().equals("modifier"));
@@ -203,11 +193,9 @@ public class CustomPluginServiceImpl extends ServiceImpl<CustomPluginMapper, Cus
     if (StringUtils.isNotBlank(workspace)) {
       wrapper.eq("workspace", workspace);
     }
-    wrapper.like("id", keyword).or().like("name", keyword);
-    Page<CustomPlugin> page = new Page<>(1, 20);
-    page = page(page, wrapper);
-
-    return dosToDTOs(page.getRecords());
+    wrapper.and(wa -> wa.like("id", keyword).or().like("name", keyword));
+    wrapper.last("LIMIT 10");
+    return dosToDTOs(baseMapper.selectList(wrapper));
   }
 
   @Override
@@ -230,11 +218,11 @@ public class CustomPluginServiceImpl extends ServiceImpl<CustomPluginMapper, Cus
     if (null != customPluginDTO.getConf()
         && !CollectionUtils.isEmpty(customPluginDTO.getConf().collectMetrics)) {
       customPluginDTO.getConf().collectMetrics.forEach(collectMetric -> {
+        String tableName = collectMetric.tableName + "_" + customPluginDTO.id;
         if (StringUtil.isNotBlank(collectMetric.name)) {
-          collectMetric.targetTable = collectMetric.name;
-        } else {
-          collectMetric.targetTable = collectMetric.tableName + "_" + customPlugin.id;
+          tableName = collectMetric.name;
         }
+        collectMetric.targetTable = tenantInitService.getLogMonitorMetricTable(tableName);
       });
     }
     return customPluginDTO;

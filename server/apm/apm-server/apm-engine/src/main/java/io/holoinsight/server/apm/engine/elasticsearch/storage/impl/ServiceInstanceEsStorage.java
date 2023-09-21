@@ -5,6 +5,7 @@ package io.holoinsight.server.apm.engine.elasticsearch.storage.impl;
 
 import io.holoinsight.server.apm.common.model.query.ServiceInstance;
 import io.holoinsight.server.apm.common.model.specification.otel.SpanKind;
+import io.holoinsight.server.apm.engine.model.RecordDO;
 import io.holoinsight.server.apm.engine.model.SpanDO;
 import io.holoinsight.server.apm.engine.storage.ICommonBuilder;
 import io.holoinsight.server.apm.engine.storage.ServiceInstanceStorage;
@@ -33,13 +34,13 @@ public class ServiceInstanceEsStorage implements ServiceInstanceStorage {
   @Autowired
   private ICommonBuilder commonBuilder;
 
-  protected RestHighLevelClient esClient() {
+  protected RestHighLevelClient client() {
     return client;
   }
 
   @Override
-  public String timeField() {
-    return SpanDO.END_TIME;
+  public String timeSeriesField() {
+    return RecordDO.TIMESTAMP;
   }
 
   @Override
@@ -54,18 +55,18 @@ public class ServiceInstanceEsStorage implements ServiceInstanceStorage {
                 .should(QueryBuilders.termQuery(SpanDO.KIND, SpanKind.SERVER))
                 .should(QueryBuilders.termQuery(SpanDO.KIND, SpanKind.CONSUMER)))
             .must(QueryBuilders.termQuery(SpanDO.resource(SpanDO.SERVICE_NAME), service))
-            .must(QueryBuilders.rangeQuery(timeField()).gte(startTime).lte(endTime));
+            .must(QueryBuilders.rangeQuery(this.timeSeriesField()).gte(startTime).lte(endTime));
 
-    commonBuilder.addTermParams(queryBuilder, termParams);
+    commonBuilder.addTermParamsWithAttrPrefix(queryBuilder, termParams);
     SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
-    sourceBuilder.size(1000);
+    sourceBuilder.size(0);
     sourceBuilder.query(queryBuilder);
     sourceBuilder
         .aggregation(commonBuilder.buildAgg(SpanDO.resource(SpanDO.SERVICE_INSTANCE_NAME)));
 
     SearchRequest searchRequest = new SearchRequest(SpanDO.INDEX_NAME);
     searchRequest.source(sourceBuilder);
-    SearchResponse response = esClient().search(searchRequest, RequestOptions.DEFAULT);
+    SearchResponse response = client().search(searchRequest, RequestOptions.DEFAULT);
 
     Terms terms = response.getAggregations().get(SpanDO.resource(SpanDO.SERVICE_INSTANCE_NAME));
     for (Terms.Bucket bucket : terms.getBuckets()) {

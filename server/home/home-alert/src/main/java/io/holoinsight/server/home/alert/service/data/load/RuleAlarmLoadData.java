@@ -22,13 +22,9 @@ import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * @author wangsiyuan
@@ -52,6 +48,7 @@ public class RuleAlarmLoadData implements AlarmLoadData {
     QueryProto.QueryResponse deltaResponse = null;
     try {
       request = buildRequest(computeTask.getTimestamp(), inspectConfig.getTenant(), trigger);
+      LOGGER.debug("{} alert query request {}", inspectConfig.getTraceId(), request.toString());
       response = queryClientService.queryData(request);
       dataResults = merge(dataResults, response);
       long deltaTimestamp = getDeltaTimestamp(trigger.getPeriodType());
@@ -102,7 +99,7 @@ public class RuleAlarmLoadData implements AlarmLoadData {
     return new ArrayList<>(map.values());
   }
 
-  protected QueryProto.QueryRequest buildRequest(long timestamp, String tenant, Trigger trigger) {
+  public QueryProto.QueryRequest buildRequest(long timestamp, String tenant, Trigger trigger) {
     QueryProto.QueryRequest request = null;
     List<QueryProto.Datasource> datasources = new ArrayList<>();
     for (DataSource dataSource : trigger.getDatasources()) {
@@ -114,23 +111,32 @@ public class RuleAlarmLoadData implements AlarmLoadData {
       }
       // If aggregator is not none, which means it is a valid aggregation, then downsample cannot be
       // null, and the default value 1m can be set.
+      QueryProto.SlidingWindow slidingWindow = null;
       String aggregator = dataSource.getAggregator();
-      if (StringUtils.isNotEmpty(aggregator) && StringUtils.isBlank(downsample)
-          && !aggregator.equals("none")) {
-        downsample = "1m";
+      if (StringUtils.isNotEmpty(aggregator) && StringUtils.isBlank(downsample)) {
+        if (!aggregator.equals("none")) {
+          downsample = "1m";
+        }
       }
+
+      if (!aggregator.equals("none")) {
+        slidingWindow = QueryProto.SlidingWindow.newBuilder().setAggregator(trigger.getAggregator())
+            .setWindowMs(trigger.getDownsample() * 60_000L).build();
+      }
+
       long start =
           timestamp - (trigger.getStepNum() - 1) * time * PeriodType.MINUTE.intervalMillis()
               - trigger.getDownsample() * PeriodType.MINUTE.intervalMillis();
       long end = timestamp + time * PeriodType.MINUTE.intervalMillis();
-      QueryProto.SlidingWindow slidingWindow =
-          QueryProto.SlidingWindow.newBuilder().setAggregator(trigger.getAggregator())
-              .setWindowMs(trigger.getDownsample() * 60_000L).build();
 
       QueryProto.Datasource.Builder builder = QueryProto.Datasource.newBuilder()
           .setName(dataSource.getName()).setStart(start).setEnd(end)
           .setMetric(dataSource.getMetric()).addAllFilters(filterConvert(dataSource.getFilters()))
-          .setAggregator(dataSource.getAggregator()).setSlidingWindow(slidingWindow);
+          .setAggregator(dataSource.getAggregator());
+
+      if (slidingWindow != null) {
+        builder.setSlidingWindow(slidingWindow);
+      }
 
       if (dataSource.getGroupBy() != null) {
         builder.addAllGroupBy(dataSource.getGroupBy());
@@ -156,7 +162,7 @@ public class RuleAlarmLoadData implements AlarmLoadData {
     return Long.parseLong(timeStr.substring(0, timeStr.length() - 1));
   }
 
-  private List<QueryProto.QueryFilter> filterConvert(List<Filter> filters) {
+  public static List<QueryProto.QueryFilter> filterConvert(List<Filter> filters) {
     if (filters == null) {
       return new ArrayList<>();
     }

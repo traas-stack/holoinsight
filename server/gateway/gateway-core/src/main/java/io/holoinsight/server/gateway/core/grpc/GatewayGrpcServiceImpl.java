@@ -21,6 +21,9 @@ import io.grpc.stub.StreamObserver;
 import io.holoinsight.server.common.TrafficTracer;
 import io.holoinsight.server.common.auth.ApikeyAuthService;
 import io.holoinsight.server.common.auth.AuthInfo;
+import io.holoinsight.server.common.ctl.MonitorProductCode;
+import io.holoinsight.server.common.ctl.ProductCtlService;
+import io.holoinsight.server.common.service.MetaDataDictValueService;
 import io.holoinsight.server.extension.MetricStorage;
 import io.holoinsight.server.extension.model.WriteMetricsParam;
 import io.holoinsight.server.gateway.core.utils.StatUtils;
@@ -50,6 +53,15 @@ public class GatewayGrpcServiceImpl extends GatewayServiceGrpc.GatewayServiceImp
 
   @Autowired
   private ApikeyAuthService apikeyAuthService;
+
+  @Autowired
+  private ProductCtlService productCtlService;
+
+  @Autowired
+  private MetaDataDictValueService metaDataDictValueService;
+
+  @Autowired
+  private GatewayHookManager gatewayHookManager;
 
   /** {@inheritDoc} */
   @Override
@@ -86,6 +98,7 @@ public class GatewayGrpcServiceImpl extends GatewayServiceGrpc.GatewayServiceImp
           }
           return authInfo;
         }).flatMap(authInfo -> { //
+          gatewayHookManager.writeMetricsV1(authInfo, request);
           return metricStorage.write(convertToWriteMetricsParam(authInfo, request));
         }).subscribe(null, error -> handleError(error, o), () -> handleSuccess(o));
   }
@@ -104,8 +117,81 @@ public class GatewayGrpcServiceImpl extends GatewayServiceGrpc.GatewayServiceImp
     apikeyAuthService.get(request.getHeader().getApikey(), true) //
         .doOnNext(authInfo -> recordTraffic(authInfo, tt)) //
         .flatMap(authInfo -> { //
+          gatewayHookManager.writeMetricsV4(authInfo, request);
           return metricStorage.write(convertToWriteMetricsParam(authInfo, request));
         }).subscribe(null, error -> handleError(error, o), () -> handleSuccess(o));
+  }
+
+  private WriteMetricsParam convertToWriteMetricsParam(AuthInfo authInfo,
+      WriteMetricsRequestV1 request) {
+    // 类型转换
+    WriteMetricsParam param = new WriteMetricsParam();
+    param.setTenant(authInfo.getTenant());
+
+    List<WriteMetricsParam.Point> points = new ArrayList<>(request.getPointCount());
+    for (Point p : request.getPointList()) {
+
+      if (productCtlService.productClosed(MonitorProductCode.METRIC, p.getTagsMap())) {
+        continue;
+      }
+
+      WriteMetricsParam.Point wmpp = new WriteMetricsParam.Point();
+      wmpp.setMetricName(p.getMetricName());
+      wmpp.setTimeStamp(p.getTimestamp());
+      wmpp.setTags(p.getTagsMap());
+
+      if (p.getNumberValuesCount() > 0) {
+        wmpp.setValue(p.getNumberValuesOrThrow("value"));
+      } else if (p.getStringValuesCount() > 0) {
+        wmpp.setStrValue(p.getStringValuesOrThrow("value"));
+      }
+      points.add(wmpp);
+    }
+    param.setPoints(points);
+    return param;
+  }
+
+  private WriteMetricsParam convertToWriteMetricsParam(AuthInfo authInfo,
+      WriteMetricsRequestV4 request) {
+    // 类型转换
+    WriteMetricsParam param = new WriteMetricsParam();
+    param.setTenant(authInfo.getTenant());
+
+    int totalPointCount =
+        request.getResultsList().stream().mapToInt(x -> x.getTable().getRowsCount()).sum();
+    List<WriteMetricsParam.Point> points = new ArrayList<>(totalPointCount);
+    param.setPoints(points);
+
+    for (WriteMetricsRequestV4.TaskResult tr : request.getResultsList()) {
+      WriteMetricsRequestV4.Table table = tr.getTable();
+      WriteMetricsRequestV4.Header header = table.getHeader();
+
+      for (WriteMetricsRequestV4.Row row : table.getRowsList()) {
+        WriteMetricsParam.Point wmpp = new WriteMetricsParam.Point();
+        wmpp.setMetricName(header.getMetricName());
+        Map<String, String> tags = Maps.newHashMapWithExpectedSize(header.getTagKeysCount());
+        for (int i = 0; i < header.getTagKeysCount(); i++) {
+          tags.put(header.getTagKeys(i), row.getTagValues(i));
+        }
+        if (productCtlService.productClosed(MonitorProductCode.METRIC, tags)) {
+          continue;
+        }
+        wmpp.setTimeStamp(row.getTimestamp());
+        wmpp.setTags(tags);
+        for (DataNode dataNode : row.getValueValuesList()) {
+          switch (dataNode.getType()) {
+            case 2:
+              wmpp.setStrValue(dataNode.getBytes().toStringUtf8());
+              break;
+            default:
+              wmpp.setValue(dataNode.getValue());
+              break;
+          }
+        }
+        points.add(wmpp);
+      }
+    }
+    return param;
   }
 
   private static void recordTraffic(AuthInfo authInfo, TrafficTracer tt) {
@@ -151,69 +237,5 @@ public class GatewayGrpcServiceImpl extends GatewayServiceGrpc.GatewayServiceImp
       o.onNext(resp);
       o.onCompleted();
     }
-  }
-
-  private static WriteMetricsParam convertToWriteMetricsParam(AuthInfo authInfo,
-      WriteMetricsRequestV1 request) {
-    // 类型转换
-    WriteMetricsParam param = new WriteMetricsParam();
-    param.setTenant(authInfo.getTenant());
-
-    List<WriteMetricsParam.Point> points = new ArrayList<>(request.getPointCount());
-    for (Point p : request.getPointList()) {
-      WriteMetricsParam.Point wmpp = new WriteMetricsParam.Point();
-      wmpp.setMetricName(p.getMetricName());
-      wmpp.setTimeStamp(p.getTimestamp());
-      wmpp.setTags(p.getTagsMap());
-
-      if (p.getNumberValuesCount() > 0) {
-        wmpp.setValue(p.getNumberValuesOrThrow("value"));
-      } else if (p.getStringValuesCount() > 0) {
-        wmpp.setStrValue(p.getStringValuesOrThrow("value"));
-      }
-      points.add(wmpp);
-    }
-    param.setPoints(points);
-    return param;
-  }
-
-  private static WriteMetricsParam convertToWriteMetricsParam(AuthInfo authInfo,
-      WriteMetricsRequestV4 request) {
-    // 类型转换
-    WriteMetricsParam param = new WriteMetricsParam();
-    param.setTenant(authInfo.getTenant());
-
-    int totalPointCount =
-        request.getResultsList().stream().mapToInt(x -> x.getTable().getRowsCount()).sum();
-    List<WriteMetricsParam.Point> points = new ArrayList<>(totalPointCount);
-    param.setPoints(points);
-
-    for (WriteMetricsRequestV4.TaskResult tr : request.getResultsList()) {
-      WriteMetricsRequestV4.Table table = tr.getTable();
-      WriteMetricsRequestV4.Header header = table.getHeader();
-
-      for (WriteMetricsRequestV4.Row row : table.getRowsList()) {
-        WriteMetricsParam.Point wmpp = new WriteMetricsParam.Point();
-        wmpp.setMetricName(header.getMetricName());
-        Map<String, String> tags = Maps.newHashMapWithExpectedSize(header.getTagKeysCount());
-        for (int i = 0; i < header.getTagKeysCount(); i++) {
-          tags.put(header.getTagKeys(i), row.getTagValues(i));
-        }
-        wmpp.setTimeStamp(row.getTimestamp());
-        wmpp.setTags(tags);
-        for (DataNode dataNode : row.getValueValuesList()) {
-          switch (dataNode.getType()) {
-            case 2:
-              wmpp.setStrValue(dataNode.getBytes().toStringUtf8());
-              break;
-            default:
-              wmpp.setValue(dataNode.getValue());
-              break;
-          }
-        }
-        points.add(wmpp);
-      }
-    }
-    return param;
   }
 }

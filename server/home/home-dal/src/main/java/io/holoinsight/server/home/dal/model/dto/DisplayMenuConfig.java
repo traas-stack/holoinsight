@@ -15,6 +15,7 @@ import java.util.List;
 @Data
 public class DisplayMenuConfig {
   private String name;
+  private String enName;
   private String url;
   private String type;
   private String templateId;

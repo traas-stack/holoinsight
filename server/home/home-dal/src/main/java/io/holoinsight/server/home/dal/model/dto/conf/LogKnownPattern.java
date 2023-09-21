@@ -18,5 +18,5 @@ public class LogKnownPattern extends Filter {
   // pattern name
   public String eventName;
   // max Count of log Snapshots apply to all known&unknown patterns stat
-  public Integer maxSnapshots;
+  public Integer maxSnapshots = 3;
 }

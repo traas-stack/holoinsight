@@ -9,9 +9,8 @@ import io.holoinsight.server.apm.common.model.specification.otel.Span;
 import io.holoinsight.server.apm.common.model.storage.annotation.Column;
 import io.holoinsight.server.apm.common.model.storage.annotation.FlatColumn;
 import io.holoinsight.server.apm.common.model.storage.annotation.ModelAnnotation;
-import io.holoinsight.server.apm.common.utils.DownSampling;
 import io.holoinsight.server.apm.common.utils.GsonUtils;
-import io.holoinsight.server.apm.common.utils.TimeBucket;
+import io.holoinsight.server.apm.common.utils.TimeUtils;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -92,7 +91,7 @@ public class SpanDO extends RecordDO {
   @Column(name = LATENCY)
   private int latency;
   @FlatColumn
-  private Map<String, String> tags;
+  private Map<String, Object> tags;
 
   @Override
   public String indexName() {
@@ -101,10 +100,9 @@ public class SpanDO extends RecordDO {
 
   public static SpanDO fromSpan(Span span, Resource resource) {
     SpanDO spanEsDO = new SpanDO();
-    spanEsDO.setTimeBucket(
-        TimeBucket.getTimeBucket(span.getEndTimeUnixNano() / 1000000, DownSampling.Second));
-    spanEsDO.setStartTime(span.getStartTimeUnixNano() / 1000000);
-    spanEsDO.setEndTime(span.getEndTimeUnixNano() / 1000000);
+    spanEsDO.setTimestamp(TimeUtils.unixNano2MS(span.getEndTimeUnixNano()));
+    spanEsDO.setStartTime(TimeUtils.unixNano2MS(span.getStartTimeUnixNano()));
+    spanEsDO.setEndTime(TimeUtils.unixNano2MS(span.getEndTimeUnixNano()));
     spanEsDO.setTraceId(span.getTraceId());
     spanEsDO.setParentSpanId(span.getParentSpanId());
     spanEsDO.setSpanId(span.getSpanId());
@@ -113,19 +111,19 @@ public class SpanDO extends RecordDO {
     spanEsDO.setLinks(GsonUtils.get().toJson(span.getLinks()));
     spanEsDO.setEvents(GsonUtils.get().toJson(span.getEvents()));
     spanEsDO.setTraceStatus(span.getStatus().getStatusCode().getCode());
-    spanEsDO
-        .setLatency((int) ((span.getEndTimeUnixNano() - span.getStartTimeUnixNano()) / 1000000));
-    Map<String, String> tags = new HashMap<>();
+    spanEsDO.setLatency(
+        (int) (TimeUtils.unixNano2MS((span.getEndTimeUnixNano() - span.getStartTimeUnixNano()))));
+    Map<String, Object> tags = new HashMap<>();
     spanEsDO.setTags(tags);
     List<KeyValue> spanAttrKvs = span.getAttributes();
     if (CollectionUtils.isNotEmpty(spanAttrKvs)) {
       for (KeyValue kv : spanAttrKvs) {
-        tags.put(SpanDO.attributes(kv.getKey()), String.valueOf(kv.getValue()));
+        tags.put(SpanDO.attributes(kv.getKey()), kv.getValue());
       }
     }
     if (resource != null && CollectionUtils.isNotEmpty(resource.getAttributes())) {
       for (KeyValue kv : resource.getAttributes()) {
-        tags.put(SpanDO.resource(kv.getKey()), String.valueOf(kv.getValue()));
+        tags.put(SpanDO.resource(kv.getKey()), kv.getValue());
       }
     }
     return spanEsDO;

@@ -4,6 +4,7 @@
 package io.holoinsight.server.home.dal.model.dto.conf;
 
 import lombok.Data;
+import org.springframework.util.CollectionUtils;
 
 import java.io.Serializable;
 import java.util.List;
@@ -35,6 +36,7 @@ public class CollectMetric implements Serializable {
   // 关键字统计，数值提取，日志流量
   // contains/select/count
   public String metricType;
+  public Boolean spm;
 
   // 关键字统计
   public String containValue;
@@ -47,6 +49,15 @@ public class CollectMetric implements Serializable {
    * after filters
    */
   public List<AfterFilter> afterFilters;
+
+  public Boolean logSample;
+  public List<LogSampleRule> logSampleRules;
+
+  // The maximum sample size of a single machine is 10, the default setting is 1
+  public Integer sampleMaxCount = 1;
+
+  // Logs that exceed 4096 are truncated
+  public Integer sampleMaxLength = 4096;
 
   @Data
   public static class Metric implements Serializable {
@@ -70,5 +81,36 @@ public class CollectMetric implements Serializable {
     public FilterType filterType;
 
     public List<String> values;
+  }
+
+  @Data
+  public static class LogSampleRule implements Serializable {
+    private static final long serialVersionUID = 6526193106427818978L;
+
+    public String name;
+
+    // "DIM" / "VALUE"
+    public String keyType = "DIM";
+    public FilterType filterType;
+    // keyType = DIM
+    public List<String> values;
+
+    // keyType = VALUE
+    public Double value;
+
+  }
+
+  public boolean checkLogPattern() {
+    if (!CollectionUtils.isEmpty(metrics)) {
+      for (Metric metric : metrics) {
+        if (metric.getFunc().equals("loganalysis"))
+          return true;
+      }
+    }
+    return false;
+  }
+
+  public boolean checkLogSample() {
+    return null != logSample && Boolean.TRUE == logSample;
   }
 }

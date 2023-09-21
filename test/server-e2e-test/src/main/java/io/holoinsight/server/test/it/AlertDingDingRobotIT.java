@@ -136,8 +136,6 @@ public class AlertDingDingRobotIT extends BaseIT {
     pageRequest.setTarget(condition);
     pageRequest.setPageNum(0);
     pageRequest.setPageSize(3);
-    pageRequest.setSortRule("desc");
-    pageRequest.setSortBy("id");
     given() //
         .body(new JSONObject(J.toMap(J.toJson(pageRequest)))) //
         .when() //

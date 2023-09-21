@@ -7,7 +7,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import io.holoinsight.server.home.biz.service.AlertGroupService;
-import io.holoinsight.server.home.common.util.StringUtil;
+import io.holoinsight.server.home.common.service.RequestContextAdapter;
 import io.holoinsight.server.home.dal.converter.AlarmGroupConverter;
 import io.holoinsight.server.home.dal.mapper.AlarmGroupMapper;
 import io.holoinsight.server.home.dal.model.AlarmGroup;
@@ -15,11 +15,11 @@ import io.holoinsight.server.home.dal.model.dto.AlarmGroupDTO;
 import io.holoinsight.server.home.facade.page.MonitorPageRequest;
 import io.holoinsight.server.home.facade.page.MonitorPageResult;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.List;
-import java.util.Locale;
 
 @Service
 public class AlertGroupServiceImpl extends ServiceImpl<AlarmGroupMapper, AlarmGroup>
@@ -27,6 +27,9 @@ public class AlertGroupServiceImpl extends ServiceImpl<AlarmGroupMapper, AlarmGr
 
   @Resource
   private AlarmGroupConverter alarmGroupConverter;
+
+  @Autowired
+  private RequestContextAdapter requestContextAdapter;
 
   @Override
   public Long save(AlarmGroupDTO alarmGroupDTO) {
@@ -44,7 +47,8 @@ public class AlertGroupServiceImpl extends ServiceImpl<AlarmGroupMapper, AlarmGr
   @Override
   public AlarmGroupDTO queryById(Long id, String tenant) {
     QueryWrapper<AlarmGroup> wrapper = new QueryWrapper<>();
-    wrapper.eq("tenant", tenant);
+    requestContextAdapter.queryWrapperTenantAdapt(wrapper, tenant,
+        requestContextAdapter.getWorkspace(true));
     wrapper.eq("id", id);
     wrapper.last("LIMIT 1");
     AlarmGroup alarmGroup = this.getOne(wrapper);
@@ -69,44 +73,31 @@ public class AlertGroupServiceImpl extends ServiceImpl<AlarmGroupMapper, AlarmGr
 
     QueryWrapper<AlarmGroup> wrapper = new QueryWrapper<>();
 
-    AlarmGroup alarmHistory = alarmGroupConverter.dtoToDO(pageRequest.getTarget());
+    AlarmGroup alarmGroup = alarmGroupConverter.dtoToDO(pageRequest.getTarget());
 
-    if (null != alarmHistory.getId()) {
-      wrapper.eq("id", alarmHistory.getId());
+    this.requestContextAdapter.queryWrapperTenantAdapt(wrapper, alarmGroup.getTenant(),
+        alarmGroup.getWorkspace());
+
+    if (null != alarmGroup.getId()) {
+      wrapper.eq("id", alarmGroup.getId());
     }
 
-    if (StringUtils.isNotBlank(alarmHistory.getTenant())) {
-      wrapper.eq("tenant", alarmHistory.getTenant().trim());
+    if (null != alarmGroup.getEnvType()) {
+      wrapper.eq("env_type", alarmGroup.getEnvType());
     }
 
-    if (null != alarmHistory.getEnvType()) {
-      wrapper.eq("env_type", alarmHistory.getEnvType());
+    if (StringUtils.isNotBlank(alarmGroup.getGroupName())) {
+      wrapper.like("group_name", alarmGroup.getGroupName().trim());
     }
 
-    if (StringUtils.isNotBlank(alarmHistory.getGroupName())) {
-      wrapper.like("group_name", alarmHistory.getGroupName().trim());
+    if (StringUtils.isNotBlank(alarmGroup.getCreator())) {
+      wrapper.like("creator", alarmGroup.getCreator().trim());
+    }
+    if (StringUtils.isNotBlank(alarmGroup.getModifier())) {
+      wrapper.like("modifier", alarmGroup.getModifier().trim());
     }
 
-    if (StringUtils.isNotBlank(alarmHistory.getCreator())) {
-      wrapper.like("creator", alarmHistory.getCreator().trim());
-    }
-    if (StringUtils.isNotBlank(alarmHistory.getModifier())) {
-      wrapper.like("modifior", alarmHistory.getModifier().trim());
-    }
-
-    if (StringUtil.isNotBlank(pageRequest.getSortBy())
-        && StringUtil.isNotBlank(pageRequest.getSortRule())) {
-      if (pageRequest.getSortRule().toLowerCase(Locale.ROOT).equals("desc")) {
-        wrapper.orderByDesc(pageRequest.getSortBy());
-      } else {
-        wrapper.orderByAsc(pageRequest.getSortBy());
-      }
-    } else {
-      wrapper.orderByDesc("gmt_modified");
-    }
-
-    wrapper.select(AlarmGroup.class,
-        info -> !info.getColumn().equals("creator") && !info.getColumn().equals("modifier"));
+    wrapper.orderByDesc("id");
 
     Page<AlarmGroup> page = new Page<>(pageRequest.getPageNum(), pageRequest.getPageSize());
 

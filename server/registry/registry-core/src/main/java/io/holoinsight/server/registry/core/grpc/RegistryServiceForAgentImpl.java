@@ -148,6 +148,9 @@ public class RegistryServiceForAgentImpl
     maybeEnableCompression(o);
 
     authAndMap(request, request.getHeader(), o, a -> {
+      if (agentStorage.get(request.getAgentId()) == null) {
+        throw Status.UNAUTHENTICATED.withDescription("agent not found").asRuntimeException();
+      }
       SendAgentHeartbeatResponse resp = SendAgentHeartbeatResponse.newBuilder() //
           .setHeader(CommonResponseHeader.newBuilder() //
               .setCode(0) //
@@ -231,7 +234,7 @@ public class RegistryServiceForAgentImpl
           .stream() //
           .map(RegistryServiceForAgentImpl::convertToResourceModel) //
           .collect(Collectors.toList()));
-      req.setAdd(request.getDelList() //
+      req.setDel(request.getDelList() //
           .stream() //
           .map(RegistryServiceForAgentImpl::convertToResourceModel) //
           .collect(Collectors.toList()));
@@ -392,7 +395,12 @@ public class RegistryServiceForAgentImpl
                 });
                 break;
               default:
-                builder.putMeta("target", JsonUtils.toJson(dim));
+                builder.setType(dimType);
+                dim.forEach((k, v) -> {
+                  if (!k.startsWith("_") && v != null) {
+                    builder.putMeta(k, v.toString());
+                  }
+                });
                 break;
             }
           }
@@ -405,6 +413,7 @@ public class RegistryServiceForAgentImpl
           // TODO 把版本号放进去
           // TODO 考虑到商业化版本没有那么多配置, 可以把配置ids带在请求头里
           h.putLong(key.getTemplateId());
+          h.putString(t.getVersion(), StandardCharsets.UTF_8);
           h.putString(key.getDimId(), StandardCharsets.UTF_8);
 
           bb.addCollectTasks(CollectTask.newBuilder() //

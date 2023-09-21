@@ -57,8 +57,9 @@ holoinsight:
     apm:
       address: http://127.0.0.1:8080
   meta:
+    database: holoinsight
     domain: 127.0.0.1
-    db_data_mode: mongodb
+    db_data_mode: mysql
     mongodb_config:
       key-need-convert: false
   registry:
@@ -78,10 +79,12 @@ management:
     web:
       base-path: /internal/api/actuator
       exposure:
-        include: prometheus,health
+        include: prometheus,health,metrics
   endpoint:
     health:
       show-details: always
+      mongo:
+        enabled: false
 
 crypto:
   client:

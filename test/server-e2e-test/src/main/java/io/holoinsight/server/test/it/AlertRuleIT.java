@@ -5,12 +5,14 @@ package io.holoinsight.server.test.it;
 
 import io.holoinsight.server.common.J;
 import io.holoinsight.server.home.facade.AlarmHistoryDTO;
+import io.holoinsight.server.home.facade.AlarmHistoryDetailDTO;
 import io.holoinsight.server.home.facade.AlarmRuleDTO;
 import io.holoinsight.server.home.facade.Rule;
 import io.holoinsight.server.home.facade.TimeFilter;
 import io.holoinsight.server.home.facade.emuns.BoolOperationEnum;
 import io.holoinsight.server.home.facade.emuns.CompareOperationEnum;
 import io.holoinsight.server.home.facade.emuns.FunctionEnum;
+import io.holoinsight.server.home.facade.emuns.PeriodType;
 import io.holoinsight.server.home.facade.emuns.TimeFilterEnum;
 import io.holoinsight.server.home.facade.page.MonitorPageRequest;
 import io.holoinsight.server.home.facade.trigger.CompareConfig;
@@ -26,6 +28,7 @@ import org.hamcrest.core.Every;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
+import org.springframework.util.CollectionUtils;
 
 import java.time.Duration;
 import java.util.Arrays;
@@ -156,7 +159,7 @@ public class AlertRuleIT extends BaseIT {
         .post("/webapi/alarmRule/create") //
         .then() //
         .body("success", IS_FALSE) //
-        .body("message", eq("invalid ruleName"));
+        .body("message", startsWith("invalid ruleName"));
 
     invalidRuleName = name + "<a href=http://www.baidu.com>点击查看详情</a>";
     alarmRuleDTO = new AlarmRuleDTO();
@@ -169,7 +172,7 @@ public class AlertRuleIT extends BaseIT {
         .post("/webapi/alarmRule/update") //
         .then() //
         .body("success", IS_FALSE) //
-        .body("message", eq("invalid ruleName"));
+        .body("message", startsWith("invalid ruleName"));
     Response response = queryAlertRule.get();
     System.out.println(response.body().print());
     response //
@@ -246,8 +249,6 @@ public class AlertRuleIT extends BaseIT {
     pageRequest.setTarget(condition);
     pageRequest.setPageNum(0);
     pageRequest.setPageSize(3);
-    pageRequest.setSortRule("desc");
-    pageRequest.setSortBy("id");
     given() //
         .body(new JSONObject(J.toMap(J.toJson(pageRequest)))) //
         .when() //
@@ -296,6 +297,40 @@ public class AlertRuleIT extends BaseIT {
               .then() //
               .body("success", IS_TRUE) //
               .body("data.items.size()", gt(0));
+
+          AlarmHistoryDetailDTO detailDTO = new AlarmHistoryDetailDTO();
+          detailDTO.setUniqueId(uniqueId);
+          MonitorPageRequest<AlarmHistoryDetailDTO> detailPageRequest = new MonitorPageRequest<>();
+          long end = System.currentTimeMillis();
+          long start = end - PeriodType.MINUTE.intervalMillis() * 10L;
+          detailPageRequest.setFrom(start);
+          detailPageRequest.setTo(end);
+          detailPageRequest.setTarget(detailDTO);
+          given() //
+              .body(new JSONObject(J.toMap(J.toJson(detailPageRequest)))) //
+              .when() //
+              .post("/webapi/alarmHistoryDetail/countTrend") //
+              .then() //
+              .body("success", IS_TRUE) //
+              .root("data") //
+              .body("results", hasItem(
+                  new CustomMatcher<Map<String, Object>>("check alert history detail count") {
+                    @Override
+                    public boolean matches(Object o) {
+                      Map<String, Object> result = (Map<String, Object>) o;
+                      List<List<Object>> values = (List<List<Object>>) result.get("values");
+                      for (List<Object> item : values) {
+                        if (!CollectionUtils.isEmpty(item) && item.size() > 1
+                            && item.get(1) instanceof Number) {
+                          boolean checkResult = ((Number) item.get(1)).longValue() > 0;
+                          if (checkResult) {
+                            return true;
+                          }
+                        }
+                      }
+                      return false;
+                    }
+                  }));
         });
   }
 

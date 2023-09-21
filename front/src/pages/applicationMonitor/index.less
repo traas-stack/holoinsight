@@ -1,0 +1,107 @@
+.applicationPage {
+  background-color: rgab(255, 255, 255, 0);
+  border-radius: 8px;
+}
+
+.container {
+  display: flex;
+  flex-direction: row;
+}
+.all {
+  :global(.ant-breadcrumb) {
+    margin-bottom: 12px;
+  }
+}
+body[theme='holoLight']{
+  .title {
+      color: #000;
+    }
+    
+}
+.title{
+  color:#fff
+}
+.appContainer{
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  .title{
+      line-height: 32px;
+      font-family:  PingFangSC;
+      font-weight: 500;
+      font-size: 16px;
+  }
+  .right{
+    display: flex;
+    flex-direction: row;
+    width: 530px;
+    justify-content: space-between;
+  }
+  .changeView{
+    margin-left: 12px;
+    width: 120px;
+  }
+}
+
+.skyContent{
+  .skyContentCard{
+    margin-top: 20px;
+    margin-bottom: 20px;
+    display: flex;
+    .skyContentCardItem{
+      width: 330px;
+      cursor: pointer;
+    }
+    .active{
+      background-color: rgba(24,144,255,0.12);
+      border: 1px solid #1890FF;
+      border-radius: 6px;
+    }
+    .contentCardTitle{
+      height: 22px;
+      font-weight: 500;
+      font-size: 14px;
+      // color: rgba(2,19,42,0.92);
+      line-height: 22px;
+    }
+    .contentCardText{
+      font-weight: 400;
+      font-size: 12px;
+      // color: rgba(5,25,53,0.44);
+      line-height: 20px;
+    }
+  }
+}
+.panelCardCopy{
+  color: rgba(20,130,255,1);
+}
+
+.left {
+  width: 120px;
+  height: calc(100vh - 134px);
+  margin-right: 12px;
+  background-color: rgba(31, 45, 61, 1);
+  border-radius: 8px;
+  ul {
+    padding: 2px;
+  }
+  li {
+    padding: 12px;
+    font-size: 15px;
+    text-align: center;
+    cursor: pointer;
+  }
+}
+.activeTabli {
+  color: rgba(26, 106, 237);
+  border-right: 2px solid rgba(26, 106, 237);
+}
+
+.right {
+  width: calc(100% - 134px);
+}
+
+.mgr20{
+  margin-right: 20px;
+}

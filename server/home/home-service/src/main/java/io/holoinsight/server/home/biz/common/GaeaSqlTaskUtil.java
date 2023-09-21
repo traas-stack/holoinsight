@@ -6,13 +6,23 @@ package io.holoinsight.server.home.biz.common;
 import io.holoinsight.server.home.common.util.StringUtil;
 import io.holoinsight.server.home.dal.model.dto.conf.*;
 import io.holoinsight.server.home.dal.model.dto.conf.CollectMetric.AfterFilter;
+import io.holoinsight.server.home.dal.model.dto.conf.CollectMetric.LogSampleRule;
 import io.holoinsight.server.home.dal.model.dto.conf.CollectMetric.Metric;
+import io.holoinsight.server.home.dal.model.dto.conf.CustomPluginConf.ExtraConfig;
 import io.holoinsight.server.home.dal.model.dto.conf.CustomPluginConf.SplitCol;
+import io.holoinsight.server.home.dal.model.dto.conf.Translate.TranslateTransform;
 import io.holoinsight.server.registry.model.Elect;
 import io.holoinsight.server.registry.model.Elect.RefIndex;
 import io.holoinsight.server.registry.model.Elect.RefName;
+import io.holoinsight.server.registry.model.Elect.TransFormFilter;
+import io.holoinsight.server.registry.model.Elect.TransFormFilterAppend;
+import io.holoinsight.server.registry.model.Elect.TransFormFilterConst;
+import io.holoinsight.server.registry.model.Elect.TransFormFilterMapping;
+import io.holoinsight.server.registry.model.Elect.TransFormFilterRegexpReplace;
+import io.holoinsight.server.registry.model.Elect.TransFormFilterSubstring;
+import io.holoinsight.server.registry.model.Elect.TransFormFilterSwitch;
+import io.holoinsight.server.registry.model.Elect.TransFormFilterSwitchCase;
 import io.holoinsight.server.registry.model.Elect.Transform;
-import io.holoinsight.server.registry.model.Elect.TransformItem;
 import io.holoinsight.server.registry.model.ExecuteRule;
 import io.holoinsight.server.registry.model.From;
 import io.holoinsight.server.registry.model.From.Log;
@@ -25,12 +35,14 @@ import io.holoinsight.server.registry.model.GroupBy.LogAnalysisPattern;
 import io.holoinsight.server.registry.model.Output;
 import io.holoinsight.server.registry.model.Output.Gateway;
 import io.holoinsight.server.registry.model.Select;
+import io.holoinsight.server.registry.model.Select.LogSamples;
 import io.holoinsight.server.registry.model.Select.SelectItem;
 import io.holoinsight.server.registry.model.TimeParse;
 import io.holoinsight.server.registry.model.Where;
 import io.holoinsight.server.registry.model.Where.Contains;
 import io.holoinsight.server.registry.model.Where.ContainsAny;
 import io.holoinsight.server.registry.model.Where.In;
+import io.holoinsight.server.registry.model.Where.NumberOp;
 import io.holoinsight.server.registry.model.Where.Regexp;
 import io.holoinsight.server.registry.model.Window;
 import org.apache.commons.lang3.StringUtils;
@@ -49,8 +61,11 @@ public class GaeaSqlTaskUtil {
   private static final String leftRight = "LR";
   private static final String separator = "SEP";
   private static final String regexp = "REGEXP";
+  private static final String json = "JSON";
+  private static final String sls = "sls";
   private static final String dimColType = "DIM";
   private static final String valColType = "VALUE";
+  private static final String extendColType = "EXTEND";
 
   private static List<String> timeZones =
       Arrays.asList("UTC", "Asia/Shanghai", "America/Los_Angeles");
@@ -103,11 +118,24 @@ public class GaeaSqlTaskUtil {
       select.getValues().add(selectItem);
     });
 
+    if (collectMetric.checkLogSample()) {
+      LogSamples logSamples = new LogSamples();
+      logSamples.setEnabled(true);
+      logSamples.setMaxCount(collectMetric.getSampleMaxCount());
+      logSamples.setMaxLength(collectMetric.getSampleMaxLength());
+
+      if (!CollectionUtils.isEmpty(collectMetric.getLogSampleRules())) {
+        logSamples.setWhere(
+            buildSampleWhere(logParse.splitType, splitColMap, collectMetric.getLogSampleRules()));
+      }
+      select.setLogSamples(logSamples);
+    }
+
     return select;
   }
 
-  public static From buildFrom(List<LogPath> logPaths, LogParse logParse, List<Filter> whiteFilters,
-      List<Filter> blackFilters, List<SplitCol> splitCols) {
+  public static From buildFrom(List<LogPath> logPaths, LogParse logParse, ExtraConfig extraConfig,
+      List<Filter> whiteFilters, List<Filter> blackFilters, List<SplitCol> splitCols) {
 
     Log fromLog = new Log();
     {
@@ -129,6 +157,9 @@ public class GaeaSqlTaskUtil {
             parse.setType("regexp");
             parse.setRegexp(new Log.Regexp());
             parse.getRegexp().setExpression(logParse.regexp.expression);
+            break;
+          case json:
+            parse.setType("json");
             break;
           default:
             parse.setType("none");
@@ -160,15 +191,24 @@ public class GaeaSqlTaskUtil {
       parse.setWhere(buildFrontFilterWhere(whiteFilters, blackFilters));
 
       List<Log.LogPath> pathList = new ArrayList<>();
-      logPaths.forEach(logPath -> {
-        Log.LogPath path = new Log.LogPath();
-        path.setPattern(logPath.path);
-        path.setType(logPath.type);
-        path.setDir(logPath.dir);
-        pathList.add(path);
-      });
+      if (!CollectionUtils.isEmpty(logPaths)) {
+        logPaths.forEach(logPath -> {
+          Log.LogPath path = new Log.LogPath();
+          if (StringUtils.isNotBlank(logPath.path) && logPath.path.equalsIgnoreCase(sls)) {
+            path.setType("sls");
+            pathList.add(path);
+            return;
+          }
+
+          path.setPattern(logPath.path);
+          path.setType(logPath.type);
+          path.setDir(logPath.dir);
+          pathList.add(path);
+        });
+      }
+
       fromLog.setPath(pathList);
-      fromLog.setCharset(logPaths.get(0).charset);
+      fromLog.setCharset(extraConfig.getCharset());
       fromLog.setParse(parse);
 
       MultiLine multiLine = logParse.multiLine;
@@ -198,9 +238,15 @@ public class GaeaSqlTaskUtil {
 
       TimeParse timeParse = new TimeParse();
       timeParse.setType("auto");
+      fromLog.setTime(timeParse);
+
+      boolean jsonTimeSelect = false;
       if (!CollectionUtils.isEmpty(splitCols)) {
         for (CustomPluginConf.SplitCol splitCol : splitCols) {
           if ("TIME".equals(splitCol.colType)) {
+            timeParse.setFormat("auto");
+            timeParse.setElect(buildElect(splitCol.rule, logParse.splitType));
+            timeParse.setType("elect");
             if (!StringUtils.isEmpty(splitCol.name)) {
               String timeAndZone = splitCol.name.substring(3, splitCol.name.length() - 1);
               String[] cols = timeAndZone.split("##");
@@ -217,13 +263,16 @@ public class GaeaSqlTaskUtil {
                 continue;
               }
               timeParse.setLayout(layout);
+              timeParse.setFormat("golangLayout");
             }
-            timeParse.setElect(buildElect(splitCol.rule, logParse.splitType));
-            timeParse.setType("elect");
-            timeParse.setFormat("golangLayout");
-            fromLog.setTime(timeParse);
+            jsonTimeSelect = true;
           }
         }
+        fromLog.setTime(timeParse);
+      }
+      if (StringUtils.isNotBlank(logParse.splitType) && logParse.splitType.equalsIgnoreCase(json)
+          && !jsonTimeSelect) {
+        timeParse.setType("processTime");
         fromLog.setTime(timeParse);
       }
     }
@@ -245,6 +294,7 @@ public class GaeaSqlTaskUtil {
 
         Where and = new Where();
         Elect elect = new Elect();
+        Where.In in = new Where.In();
         switch (w.type) {
           case leftRight:
             Elect.LeftRight leftRight = new Elect.LeftRight();
@@ -255,7 +305,6 @@ public class GaeaSqlTaskUtil {
             elect.setType("leftRight");
             elect.setLeftRight(leftRight);
 
-            Where.In in = new Where.In();
             in.setValues(w.values);
             in.setElect(elect);
             and.setIn(in);
@@ -267,6 +316,17 @@ public class GaeaSqlTaskUtil {
             contains.setElect(elect);
             contains.setValues(w.values);
             and.setContainsAny(contains);
+            break;
+
+          case json:
+            Elect.RefName refName = new Elect.RefName();
+            refName.setName(w.rule.jsonPathSyntax);
+            elect.setRefName(refName);
+            elect.setType("refName");
+
+            in.setValues(w.values);
+            in.setElect(elect);
+            and.setIn(in);
             break;
 
           default:
@@ -281,6 +341,7 @@ public class GaeaSqlTaskUtil {
       blackFilters.forEach(w -> {
         Where and = new Where();
         Where not = new Where();
+        Where.In in = new Where.In();
 
         Elect elect = new Elect();
         switch (w.getType()) {
@@ -291,7 +352,6 @@ public class GaeaSqlTaskUtil {
             leftRight.setRight(w.rule.right);
             elect.setType("leftRight");
             elect.setLeftRight(leftRight);
-            Where.In in = new Where.In();
             in.setValues(w.values);
             in.setElect(elect);
 
@@ -307,6 +367,18 @@ public class GaeaSqlTaskUtil {
             not.setContainsAny(contains);
             and.setNot(not);
             break;
+          case json:
+            Elect.RefName refName = new Elect.RefName();
+            refName.setName(w.rule.jsonPathSyntax);
+            elect.setType("refName");
+            elect.setRefName(refName);
+
+            in.setValues(w.values);
+            in.setElect(elect);
+
+            not.setIn(in);
+            and.setNot(not);
+            break;
           default:
             break;
         }
@@ -315,6 +387,105 @@ public class GaeaSqlTaskUtil {
       });
     }
 
+    where.setAnd(ands);
+    return where;
+  }
+
+  public static Where buildSampleWhere(String splitType,
+      Map<String, Map<String, SplitCol>> splitColMap, List<LogSampleRule> logSampleRules) {
+
+    Where where = new Where();
+    List<Where> ands = new ArrayList<>();
+
+    for (LogSampleRule logSampleRule : logSampleRules) {
+      Map<String, SplitCol> colMap = splitColMap.get(dimColType);
+      if (logSampleRule.keyType.equals(valColType)) {
+        colMap = splitColMap.get(valColType);
+      }
+      SplitCol splitCol = colMap.get(logSampleRule.getName());
+
+      Rule rule = splitCol.rule;
+      Elect elect = new Elect();
+
+      switch (splitType) {
+        case leftRight:
+          Elect.LeftRight leftRight = new Elect.LeftRight();
+          leftRight.setLeft(rule.left);
+          leftRight.setLeftIndex(rule.leftIndex);
+          leftRight.setRight(rule.right);
+
+          elect.setType("leftRight");
+          elect.setLeftRight(leftRight);
+          break;
+
+        case separator:
+          elect.setType("refIndex");
+          elect.setRefIndex(new RefIndex());
+          elect.getRefIndex().setIndex(rule.pos);
+          break;
+        case regexp:
+          if (StringUtils.isNotEmpty(rule.regexpName)) {
+            elect.setType("refName");
+            elect.setRefName(new RefName());
+            elect.getRefName().setName(rule.regexpName);
+          } else if (rule.pos != null) {
+            elect.setType("refIndex");
+            elect.setRefIndex(new RefIndex());
+            elect.getRefIndex().setIndex(rule.pos);
+          }
+          break;
+        case json:
+          elect.setType("refName");
+          elect.setRefName(new RefName());
+          elect.getRefName().setName(rule.jsonPathSyntax);
+          break;
+        default:
+          break;
+      }
+
+      Where and = new Where();
+
+      Where.In in = new In();
+      Where.NumberOp numberOp = new NumberOp();
+
+      switch (logSampleRule.filterType) {
+        case IN:
+          in.setElect(elect);
+          in.setValues(logSampleRule.getValues());
+          and.setIn(in);
+          break;
+        case NOT_IN:
+          Where not = new Where();
+          in.setValues(logSampleRule.getValues());
+          in.setElect(elect);
+          not.setIn(in);
+          and.setNot(not);
+          break;
+        case GT:
+          numberOp.setElect(elect);
+          numberOp.setGt(logSampleRule.getValue());
+          and.setNumberOp(numberOp);
+          break;
+        case GTE:
+          numberOp.setElect(elect);
+          numberOp.setGte(logSampleRule.getValue());
+          and.setNumberOp(numberOp);
+          break;
+        case LT:
+          numberOp.setElect(elect);
+          numberOp.setLt(logSampleRule.getValue());
+          and.setNumberOp(numberOp);
+          break;
+        case LTE:
+          numberOp.setElect(elect);
+          numberOp.setLte(logSampleRule.getValue());
+          and.setNumberOp(numberOp);
+          break;
+        default:
+          break;
+      }
+      ands.add(and);
+    }
     where.setAnd(ands);
     return where;
   }
@@ -363,8 +534,23 @@ public class GaeaSqlTaskUtil {
               elect.getRefIndex().setIndex(rule.pos);
             }
             break;
+          case json:
+            elect.setType("refName");
+            elect.setRefName(new RefName());
+            elect.getRefName().setName(rule.jsonPathSyntax);
+            break;
           default:
             break;
+        }
+
+        if (null != rule.translate && !CollectionUtils.isEmpty(rule.translate.transforms)) {
+          Transform transform = new Transform();
+          transform.setFilters(convertTransFormFilters(rule.translate.transforms));
+          elect.setTransform(transform);
+        }
+
+        if (StringUtils.isNotEmpty(rule.defaultValue)) {
+          elect.setDefaultValue(rule.defaultValue);
         }
 
         Where and = new Where();
@@ -405,9 +591,9 @@ public class GaeaSqlTaskUtil {
     return where;
   }
 
-  public static GroupBy buildLogPatternParse(LogParse logParse) {
+  public static GroupBy buildLogPatternParse(LogParse logParse, ExtraConfig extraConfig) {
     GroupBy groupBy = new GroupBy();
-    groupBy.setMaxKeys(logParse.maxKeySize);
+    groupBy.setMaxKeySize(extraConfig.getMaxKeySize());
 
     LogPattern logPattern = logParse.pattern;
 
@@ -472,11 +658,11 @@ public class GaeaSqlTaskUtil {
     return groupBy;
   }
 
-  public static GroupBy buildGroupBy(LogParse logParse,
+  public static GroupBy buildGroupBy(LogParse logParse, ExtraConfig extraConfig,
       Map<String, Map<String, SplitCol>> splitColMap, CollectMetric collectMetric) {
 
-    if (null != logParse.pattern && logParse.pattern.logPattern) {
-      return buildLogPatternParse(logParse);
+    if (logParse.checkIsPattern() && collectMetric.checkLogPattern()) {
+      return buildLogPatternParse(logParse, extraConfig);
     }
     List<String> tags = collectMetric.getTags();
 
@@ -522,26 +708,18 @@ public class GaeaSqlTaskUtil {
             elect.getRefIndex().setIndex(rule.pos);
           }
           break;
+        case json:
+          elect.setType("refName");
+          elect.setRefName(new RefName());
+          elect.getRefName().setName(rule.jsonPathSyntax);
+          break;
         default:
           break;
       }
 
-      if (null != rule.translate) {
-        Translate translate = rule.translate;
-        List<ColumnCalExpr> exprs = translate.exprs;
-
+      if (null != rule.translate && !CollectionUtils.isEmpty(rule.translate.transforms)) {
         Transform transform = new Transform();
-        List<TransformItem> transformItems = new ArrayList<>();
-        if (!CollectionUtils.isEmpty(exprs)) {
-          exprs.forEach(expr -> {
-            TransformItem transformItem = new TransformItem();
-            transformItem.setArg(expr.getParams());
-            transformItem.setFunc(expr.getFunc());
-            transformItems.add(transformItem);
-          });
-        }
-
-        transform.setTransforms(transformItems);
+        transform.setFilters(convertTransFormFilters(rule.translate.transforms));
         elect.setTransform(transform);
       }
 
@@ -554,9 +732,25 @@ public class GaeaSqlTaskUtil {
         group.setName(t);
         group.setElect(elect);
       }
-      groupBy.setMaxKeys(logParse.maxKeySize);
+      groupBy.setMaxKeySize(extraConfig.getMaxKeySize());
       groupBy.getGroups().add(group);
     });
+
+    Map<String, SplitCol> extendColTypes = splitColMap.get(extendColType);
+    if (!CollectionUtils.isEmpty(extendColTypes)) {
+      extendColTypes.values().forEach(splitCol -> {
+        GroupBy.Group group = new GroupBy.Group();
+        {
+          group.setName(splitCol.name);
+          Elect elect = new Elect();
+          elect.setType("refName");
+          elect.setRefName(new RefName());
+          elect.getRefName().setName(splitCol.rule.refName);
+          group.setElect(elect);
+        }
+        groupBy.getGroups().add(group);
+      });
+    }
 
     return groupBy;
   }
@@ -616,23 +810,17 @@ public class GaeaSqlTaskUtil {
           elect.getRefIndex().setIndex(rule.pos);
         }
         break;
+      case json:
+        elect.setType("refName");
+        elect.setRefName(new RefName());
+        elect.getRefName().setName(rule.jsonPathSyntax);
+        break;
       default:
         break;
     }
-    if (null != rule.translate) {
-      Translate translate = rule.translate;
-      List<ColumnCalExpr> exprs = translate.exprs;
+    if (null != rule.translate && !CollectionUtils.isEmpty(rule.translate.transforms)) {
       Transform transform = new Transform();
-      List<TransformItem> transformItems = new ArrayList<>();
-      if (!CollectionUtils.isEmpty(exprs)) {
-        exprs.forEach(expr -> {
-          TransformItem transformItem = new TransformItem();
-          transformItem.setArg(expr.getParams());
-          transformItem.setFunc(expr.getFunc());
-          transformItems.add(transformItem);
-        });
-      }
-      transform.setTransforms(transformItems);
+      transform.setFilters(convertTransFormFilters(rule.translate.transforms));
       elect.setTransform(transform);
     }
     if (StringUtils.isNotEmpty(rule.defaultValue)) {
@@ -641,12 +829,130 @@ public class GaeaSqlTaskUtil {
     return elect;
   }
 
+  private static List<TransFormFilter> convertTransFormFilters(
+      List<TranslateTransform> transforms) {
+    List<TransFormFilter> filters = new ArrayList<>();
+    transforms.forEach(transform -> {
+      TransFormFilter transFormFilter = new TransFormFilter();
+
+      switch (transform.getType().toLowerCase()) {
+        case "append":
+          if (StringUtils.isBlank(transform.getDefaultValue())) {
+            break;
+          }
+          TransFormFilterAppend append = new TransFormFilterAppend();
+          append.setValue(transform.getDefaultValue());
+          append.setAppendIfMissing(false);
+          transFormFilter.setAppendV1(append);
+          break;
+        case "substring":
+          if (StringUtils.isBlank(transform.getDefaultValue())) {
+            break;
+          }
+          String[] array = StringUtils.split(transform.getDefaultValue(), ",");
+          if (array.length < 2) {
+            break;
+          }
+          TransFormFilterSubstring substring = new TransFormFilterSubstring();
+          substring.setBegin(Integer.parseInt(array[0]));
+          substring.setEnd(Integer.parseInt(array[1]));
+          substring.setEmptyIfError(true);
+          transFormFilter.setSubstringV1(substring);
+          break;
+        case "mapping":
+          if (CollectionUtils.isEmpty(transform.getMappings())) {
+            break;
+          }
+          TransFormFilterMapping mapping = new TransFormFilterMapping();
+          mapping.setMappings(transform.getMappings());
+          mapping.setDefaultValue(transform.getDefaultValue());
+          transFormFilter.setMappingV1(mapping);
+          break;
+        case "const":
+          TransFormFilterConst aConst = new TransFormFilterConst();
+          aConst.setValue(transform.getDefaultValue());
+          transFormFilter.setConstV1(aConst);
+          break;
+        case "contains":
+        case "regexp":
+          if (CollectionUtils.isEmpty(transform.getMappings())) {
+            break;
+          }
+
+          if (transform.getMappings().size() == 1 && transform.getType().equalsIgnoreCase("regexp")
+              && StringUtils.isBlank(transform.getDefaultValue())) {
+            TransFormFilterRegexpReplace regexpReplace = new TransFormFilterRegexpReplace();
+            Map<String, String> mappings = transform.getMappings();
+            regexpReplace.setExpression(mappings.keySet().iterator().next());
+            regexpReplace.setReplacement(mappings.values().iterator().next());
+            transFormFilter.setRegexpReplaceV1(regexpReplace);
+            break;
+          }
+
+          TransFormFilterSwitch aSwitch = new TransFormFilterSwitch(); {
+          TransFormFilterConst defaultConst = new TransFormFilterConst();
+          defaultConst.setValue(transform.getDefaultValue());
+          TransFormFilter defaultFilter = new TransFormFilter();
+          defaultFilter.setConstV1(defaultConst);
+          aSwitch.setDefaultAction(defaultFilter);
+        }
+          List<TransFormFilterSwitchCase> switchCases = new ArrayList<>();
+
+          transform.getMappings().forEach((k, v) -> {
+            TransFormFilterSwitchCase switchCase = new TransFormFilterSwitchCase();
+            TransFormFilter filter = new TransFormFilter();
+
+            Where caseWhere = new Where();
+            if (transform.getType().equalsIgnoreCase("regexp")) {
+              Regexp regexp = new Regexp();
+              regexp.setExpression(k);
+              regexp.setCatchGroups(true);
+              caseWhere.setRegexp(regexp);
+              TransFormFilterRegexpReplace regexpReplace = new TransFormFilterRegexpReplace();
+              regexpReplace.setReplacement(v);
+              filter.setRegexpReplaceV1(regexpReplace);
+            } else if (transform.getType().equalsIgnoreCase("contains")) {
+              Contains contains = new Contains();
+              contains.setValue(k);
+              caseWhere.setContains(contains);
+              TransFormFilterConst vConst = new TransFormFilterConst();
+              vConst.setValue(v);
+              filter.setConstV1(vConst);
+            }
+
+            switchCase.setCaseWhere(caseWhere);
+            switchCase.setAction(filter);
+            switchCases.add(switchCase);
+          });
+
+          aSwitch.setCases(switchCases);
+          transFormFilter.setSwitchCaseV1(aSwitch);
+          break;
+      }
+
+      filters.add(transFormFilter);
+    });
+    return filters;
+  }
+
   public static String convertTimeLayout(String time) {
+
+    Map<String, String> logTimeLayoutMap = MetaDictUtil.getLogTimeLayoutMap();
+    if (!CollectionUtils.isEmpty(logTimeLayoutMap) && logTimeLayoutMap.containsKey(time)) {
+      return logTimeLayoutMap.get(time);
+    }
+
     switch (time) {
       case "yyyy-MM-dd HH:mm:ss":
         return "2006-01-02 15:04:05";
       case "yyyy-MM-ddTHH:mm:ss":
         return "2006-01-02T15:04:05";
+      case "dd/MMM/yyyy:HH:mm:ss Z":
+        return "02/Jan/2006:15:04:05 Z0700";
+      case "MM-dd-yyyy HH:mm:ss":
+        return "01-02-2006 15:04:05";
+      case "MMM dd yyyy HH:mm:ss":
+        return "Jan 02 2006 15:04:05";
       default:
         return StringUtils.EMPTY;
     }

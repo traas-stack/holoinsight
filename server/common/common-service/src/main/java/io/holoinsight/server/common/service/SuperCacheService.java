@@ -3,14 +3,18 @@
  */
 package io.holoinsight.server.common.service;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.holoinsight.server.common.config.ProdLog;
 import io.holoinsight.server.common.config.ScheduleLoadTask;
-import io.holoinsight.server.common.dao.entity.Tenant;
-import io.holoinsight.server.common.dao.entity.Workspace;
+import io.holoinsight.server.common.dao.entity.MetricInfo;
+import io.holoinsight.server.common.dao.mapper.MetricInfoMapper;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
 
+import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -29,10 +33,10 @@ public class SuperCacheService extends ScheduleLoadTask {
   private MetaDictValueService metaDictValueService;
 
   @Autowired
-  private TenantService tenantService;
+  private MetricInfoService metricInfoService;
 
-  @Autowired
-  private WorkspaceService workspaceService;
+  @Resource
+  private MetricInfoMapper metricInfoMapper;
 
   public SuperCache getSc() {
     return sc;
@@ -43,44 +47,10 @@ public class SuperCacheService extends ScheduleLoadTask {
     ProdLog.info("[SuperCache] load start");
     SuperCache sc = new SuperCache();
     sc.metaDataDictValueMap = metaDictValueService.getMetaDictValue();
-    sc.tenantMap = genTenantMaps();
-    sc.tenantWorkspaceMaps = genTenantWorkspaceMaps();
+    sc.expressionMetricList = metricInfoService.querySpmList();
+    queryMetricInfoByPage(sc);
     this.sc = sc;
     ProdLog.info("[SuperCache] load end");
-  }
-
-  private Map<String, Tenant> genTenantMaps() {
-    Map<String, Tenant> map = new HashMap<>();
-    List<Tenant> tenants = tenantService.list();
-
-    if (CollectionUtils.isEmpty(tenants)) {
-      return map;
-    }
-
-    tenants.forEach(tenant -> {
-      map.put(tenant.getCode(), tenant);
-    });
-
-    return map;
-  }
-
-  private Map<String, List<String>> genTenantWorkspaceMaps() {
-    Map<String, List<String>> listMap = new HashMap<>();
-    List<Workspace> workspaces = workspaceService.list();
-
-    if (CollectionUtils.isEmpty(workspaces)) {
-      return listMap;
-    }
-
-    workspaces.forEach(workspace -> {
-      if (!listMap.containsKey(workspace.getTenant())) {
-        listMap.put(workspace.getTenant(), new ArrayList<>());
-      }
-
-      listMap.get(workspace.getTenant()).add(workspace.getName());
-    });
-
-    return listMap;
   }
 
   @Override
@@ -91,5 +61,39 @@ public class SuperCacheService extends ScheduleLoadTask {
   @Override
   public String getTaskName() {
     return "SuperCacheService";
+  }
+
+
+  private void queryMetricInfoByPage(SuperCache sc) {
+    QueryWrapper<MetricInfo> queryWrapper = new QueryWrapper<>();
+    queryWrapper.eq("deleted", 0);
+
+    int current = 1;
+    Map<String /* metric table */, MetricInfo> map = new HashMap<>();
+    Map<String /* ref */, List<MetricInfo>> workspaceMap = new HashMap<>();
+    int size = 1000;
+    do {
+      Page<MetricInfo> page = new Page<>(current++, size);
+      Page<MetricInfo> result = this.metricInfoMapper.selectPage(page, queryWrapper);
+
+      if (result == null || CollectionUtils.isEmpty(result.getRecords())) {
+        break;
+      }
+
+      for (MetricInfo metricInfo : result.getRecords()) {
+        if (StringUtils.isEmpty(metricInfo.getMetricTable())) {
+          continue;
+        }
+        map.put(metricInfo.getMetricTable(), metricInfo);
+        if (StringUtils.isNotBlank(metricInfo.getWorkspace())
+            && !StringUtils.equals(metricInfo.getWorkspace(), "-")) {
+          List<MetricInfo> list =
+              workspaceMap.computeIfAbsent(metricInfo.getWorkspace(), k -> new ArrayList<>());
+          list.add(metricInfo);
+        }
+      }
+    } while (current < 1000);
+    sc.metricInfoMap = map;
+    sc.workspaceMetricInfoMap = workspaceMap;
   }
 }

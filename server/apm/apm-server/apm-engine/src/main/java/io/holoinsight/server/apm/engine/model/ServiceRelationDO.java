@@ -25,6 +25,7 @@ public class ServiceRelationDO extends RecordDO {
   public static final String START_TIME = "start_time";
   public static final String END_TIME = "end_time";
   public static final String SOURCE_SERVICE_NAME = "source_service_name";
+
   public static final String DEST_SERVICE_NAME = "dest_service_name";
   public static final String COMPONENT = "component";
   public static final String TRACE_STATUS = "trace_status";
@@ -66,6 +67,7 @@ public class ServiceRelationDO extends RecordDO {
   public static ServiceRelationDO fromServiceRelation(ServiceRelation serviceRelation) {
     ServiceRelationDO serviceRelationEsDO = new ServiceRelationDO();
     BeanUtils.copyProperties(serviceRelation, serviceRelationEsDO);
+    serviceRelationEsDO.setTimestamp(serviceRelation.getEndTime());
     return serviceRelationEsDO;
   }
 }

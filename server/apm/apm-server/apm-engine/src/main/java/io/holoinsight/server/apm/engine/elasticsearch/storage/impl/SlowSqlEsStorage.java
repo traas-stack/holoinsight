@@ -4,9 +4,9 @@
 package io.holoinsight.server.apm.engine.elasticsearch.storage.impl;
 
 import io.holoinsight.server.apm.common.model.query.SlowSql;
-import io.holoinsight.server.apm.engine.elasticsearch.utils.EsGsonUtils;
+import io.holoinsight.server.apm.engine.elasticsearch.utils.ApmGsonUtils;
+import io.holoinsight.server.apm.engine.model.RecordDO;
 import io.holoinsight.server.apm.engine.model.SlowSqlDO;
-import io.holoinsight.server.apm.engine.model.SpanDO;
 import io.holoinsight.server.apm.engine.storage.ICommonBuilder;
 import io.holoinsight.server.apm.engine.storage.SlowSqlStorage;
 import lombok.extern.slf4j.Slf4j;
@@ -35,13 +35,13 @@ public class SlowSqlEsStorage extends RecordEsStorage<SlowSqlDO> implements Slow
   @Autowired
   private ICommonBuilder commonBuilder;
 
-  protected RestHighLevelClient esClient() {
+  protected RestHighLevelClient client() {
     return client;
   }
 
   @Override
-  public String timeField() {
-    return SpanDO.END_TIME;
+  public String timeSeriesField() {
+    return RecordDO.TIMESTAMP;
   }
 
   @Override
@@ -50,7 +50,7 @@ public class SlowSqlEsStorage extends RecordEsStorage<SlowSqlDO> implements Slow
 
     BoolQueryBuilder queryBuilder =
         QueryBuilders.boolQuery().must(QueryBuilders.termQuery(SlowSqlDO.TENANT, tenant))
-            .must(QueryBuilders.rangeQuery(timeField()).gte(startTime).lte(endTime));
+            .must(QueryBuilders.rangeQuery(this.timeSeriesField()).gte(startTime).lte(endTime));
 
     if (!StringUtils.isEmpty(serviceName)) {
       queryBuilder.must(QueryBuilders.termQuery(SlowSqlDO.SERVICE_NAME, serviceName));
@@ -66,12 +66,12 @@ public class SlowSqlEsStorage extends RecordEsStorage<SlowSqlDO> implements Slow
 
     SearchRequest searchRequest = new SearchRequest(SlowSqlDO.INDEX_NAME);
     searchRequest.source(sourceBuilder);
-    SearchResponse response = esClient().search(searchRequest, RequestOptions.DEFAULT);
+    SearchResponse response = client().search(searchRequest, RequestOptions.DEFAULT);
 
     List<SlowSql> result = new ArrayList<>();
     for (SearchHit searchHit : response.getHits().getHits()) {
       String hitJson = searchHit.getSourceAsString();
-      SlowSql slowSql = EsGsonUtils.esGson().fromJson(hitJson, SlowSql.class);
+      SlowSql slowSql = ApmGsonUtils.apmGson().fromJson(hitJson, SlowSql.class);
       result.add(slowSql);
     }
 

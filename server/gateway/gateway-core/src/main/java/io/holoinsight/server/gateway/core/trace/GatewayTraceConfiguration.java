@@ -5,13 +5,12 @@ package io.holoinsight.server.gateway.core.trace;
 
 import io.holoinsight.server.common.springboot.ConditionalOnFeature;
 import io.holoinsight.server.common.springboot.HoloinsightProperties;
-import io.holoinsight.server.gateway.core.trace.config.GetAgentConfigurationService;
-import io.holoinsight.server.gateway.core.trace.controller.AgentConfigurationController;
+import io.holoinsight.server.common.trace.TraceAgentConfigurationService;
+import io.holoinsight.server.gateway.core.trace.controller.TraceAgentConfigurationController;
 import io.holoinsight.server.gateway.core.trace.exporter.LocalTraceExporter;
 import io.holoinsight.server.gateway.core.trace.exporter.RelayTraceExporter;
 import io.holoinsight.server.gateway.core.trace.exporter.TraceExporter;
 import io.holoinsight.server.gateway.core.trace.receiver.opentelemetry.TraceServiceImpl;
-import io.holoinsight.server.gateway.core.trace.scheduler.AgentConfigurationScheduler;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -60,33 +59,18 @@ public class GatewayTraceConfiguration {
     return new TraceServiceImpl();
   }
 
-  /**
-   * <p>
-   * agentConfigurationScheduler.
-   * </p>
-   */
   @Bean
-  public AgentConfigurationScheduler agentConfigurationScheduler() {
-    return new AgentConfigurationScheduler();
+  public TraceAgentConfigurationController agentConfigurationController() {
+    return new TraceAgentConfigurationController();
   }
 
   /**
    * <p>
-   * agentConfigurationController.
+   * traceAgentConfigurationService.
    * </p>
    */
   @Bean
-  public AgentConfigurationController agentConfigurationController() {
-    return new AgentConfigurationController();
-  }
-
-  /**
-   * <p>
-   * getAgentConfigurationService.
-   * </p>
-   */
-  @Bean
-  public GetAgentConfigurationService getAgentConfigurationService() {
-    return new GetAgentConfigurationService();
+  public TraceAgentConfigurationService traceAgentConfigurationService() {
+    return new TraceAgentConfigurationService();
   }
 }

@@ -6,6 +6,7 @@ package io.holoinsight.server.home.alert.service.calculate;
 import io.holoinsight.server.home.alert.model.compute.ComputeTaskPackage;
 import io.holoinsight.server.home.alert.model.event.EventInfo;
 import io.holoinsight.server.home.dal.mapper.AlarmHistoryMapper;
+import io.holoinsight.server.home.facade.AlertNotifyRecordDTO;
 import io.holoinsight.server.home.facade.InspectConfig;
 import org.junit.Before;
 import org.junit.Test;
@@ -29,7 +30,9 @@ public class AlertTaskComputeTest {
     AlarmHistoryMapper alertHistoryDOMapper = Mockito.mock(AlarmHistoryMapper.class);
     AbstractUniformInspectRunningRule abstractUniformInspectRunningRule =
         Mockito.mock(AbstractUniformInspectRunningRule.class);
-    Mockito.when(abstractUniformInspectRunningRule.eval(Mockito.any())).thenReturn(new EventInfo());
+    List<AlertNotifyRecordDTO> alertNotifyRecordDTOList = new ArrayList<>();
+    Mockito.when(abstractUniformInspectRunningRule.eval(Mockito.any(), alertNotifyRecordDTOList))
+        .thenReturn(new EventInfo());
     alertTaskCompute.abstractUniformInspectRunningRule = abstractUniformInspectRunningRule;
     alertTaskCompute.alertHistoryDOMapper = alertHistoryDOMapper;
   }

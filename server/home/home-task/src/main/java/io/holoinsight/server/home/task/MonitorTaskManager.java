@@ -46,7 +46,7 @@ public class MonitorTaskManager extends ScheduleLoadTask {
       long current = System.currentTimeMillis();
       current = current - current % 1000;
       // 强制执行时间比下发时间延后一秒，避免任务来不及执行
-      long period = current + 1000L;
+      long period = current;
 
       List<ClusterDTO> clusters =
           clusterService.getClusterAliveSortedByRole(CLUSTER_ROLE_CONST.PROD);
@@ -82,6 +82,9 @@ public class MonitorTaskManager extends ScheduleLoadTask {
     try {
 
       for (AbstractMonitorTask task : TaskFactoryHolder.taskFactoryMap.values()) {
+        if (!task.needRun()) {
+          continue;
+        }
         String taskId = task.getTaskId();
         long taskPeriod = task.getTaskPeriod(); // 任务周期
 

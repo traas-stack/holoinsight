@@ -4,6 +4,7 @@
 package io.holoinsight.server.registry.model;
 
 import java.util.List;
+import java.util.Map;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -100,22 +101,79 @@ public class Elect {
   @Getter
   @Setter
   public static class Transform {
-    private List<TransformItem> transforms;
+    private List<TransFormFilter> filters;
   }
+
 
 
   @ToString
   @Getter
   @Setter
-  public static class TransformItem {
-    /**
-     * 转换函数名称, 可以参考现有lego
-     */
-    private String func;
-    /**
-     * arg的内容要根据func来解释
-     */
-    private String arg;
+  public static class TransFormFilter {
+
+    private TransFormFilterSubstring substringV1;
+    private TransFormFilterAppend appendV1;
+    private TransFormFilterMapping mappingV1;
+    private TransFormFilterConst constV1;
+    private TransFormFilterRegexpReplace regexpReplaceV1;
+    private TransFormFilterSwitch switchCaseV1;
   }
 
+  @ToString
+  @Getter
+  @Setter
+  public static class TransFormFilterAppend {
+    private String value;
+
+    private Boolean appendIfMissing;
+  }
+
+  @ToString
+  @Getter
+  @Setter
+  public static class TransFormFilterSubstring {
+    private int begin;
+    private int end;
+
+    private Boolean emptyIfError;
+  }
+
+  @ToString
+  @Getter
+  @Setter
+  public static class TransFormFilterMapping {
+    private Map<String, String> mappings;
+    private String defaultValue;
+  }
+
+  @ToString
+  @Getter
+  @Setter
+  public static class TransFormFilterConst {
+    private String value;
+  }
+
+  @ToString
+  @Getter
+  @Setter
+  public static class TransFormFilterRegexpReplace {
+    private String expression;
+    private String replacement;
+  }
+
+  @ToString
+  @Getter
+  @Setter
+  public static class TransFormFilterSwitch {
+    private List<TransFormFilterSwitchCase> cases;
+    private TransFormFilter defaultAction;
+  }
+
+  @ToString
+  @Getter
+  @Setter
+  public static class TransFormFilterSwitchCase {
+    private Where caseWhere;
+    private TransFormFilter action;
+  }
 }

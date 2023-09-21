@@ -8,7 +8,6 @@ import io.holoinsight.server.home.common.util.StringUtil;
 import io.holoinsight.server.home.dal.mapper.FolderMapper;
 import io.holoinsight.server.home.dal.model.Folder;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
 
@@ -32,11 +31,10 @@ public class FolderServiceImpl extends ServiceImpl<FolderMapper, Folder> impleme
     if (StringUtil.isNotBlank(workspace)) {
       wrapper.eq("workspace", workspace);
     }
-    wrapper.like("id", keyword).or().like("name", keyword);
-    Page<Folder> pluginPage = new Page<>(1, 20);
-    pluginPage = page(pluginPage, wrapper);
+    wrapper.and(wa -> wa.like("id", keyword).or().like("name", keyword));
+    wrapper.last("LIMIT 10");
 
-    return pluginPage.getRecords();
+    return baseMapper.selectList(wrapper);
   }
 
   @Override

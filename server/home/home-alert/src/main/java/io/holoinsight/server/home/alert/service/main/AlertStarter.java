@@ -9,7 +9,6 @@ import io.holoinsight.server.home.alert.plugin.GetSubscriptionHandler;
 import io.holoinsight.server.home.alert.service.event.AlertHandlerExecutor;
 import io.holoinsight.server.home.alert.service.event.AlertServiceRegistry;
 import io.holoinsight.server.home.alert.service.task.AlertTaskScheduler;
-import io.holoinsight.server.home.alert.service.task.CacheAlertConfig;
 import io.holoinsight.server.home.alert.service.task.CacheAlertTask;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,9 +28,6 @@ import java.util.List;
 public class AlertStarter implements InitializingBean {
 
   private static Logger LOGGER = LoggerFactory.getLogger(AlertStarter.class);
-
-  @Resource
-  private CacheAlertConfig cacheAlertConfig;
 
   @Resource
   private CacheAlertTask cacheAlertTask;
@@ -60,10 +56,6 @@ public class AlertStarter implements InitializingBean {
       executorList.add(this.getSubscriptionHandler);
       executorList.add(this.alertNotifyHandler);
       this.alertServiceRegistry.setAlertEventHanderList(executorList);
-
-
-      // 启动获取告警配置缓存
-      cacheAlertConfig.start();
 
       // 启动获取告警任务缓存
       cacheAlertTask.start();

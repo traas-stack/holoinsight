@@ -3,7 +3,12 @@
  */
 package io.holoinsight.server.home.bootstrap;
 
+import io.holoinsight.server.common.config.EnvironmentProperties;
+import io.holoinsight.server.common.ctl.ProductCtlService;
+import io.holoinsight.server.common.ctl.ProductCtlServiceImpl;
+import io.holoinsight.server.common.dao.CommonDaoConfiguration;
 import io.holoinsight.server.common.service.CommonServiceAutoConfiguration;
+import io.holoinsight.server.common.springboot.ConditionalOnRole;
 import io.holoinsight.server.home.alert.plugin.AlertNotifyHandler;
 import io.holoinsight.server.home.alert.plugin.DefaultAlertNotifyHandler;
 import io.holoinsight.server.home.alert.plugin.DefaultGatewayService;
@@ -12,9 +17,19 @@ import io.holoinsight.server.home.alert.service.event.AlertNotifyChainBuilder;
 import io.holoinsight.server.home.alert.service.event.DefaultAlertNotifyChainBuilder;
 import io.holoinsight.server.home.biz.plugin.DefaultMarketplaceProductHandler;
 import io.holoinsight.server.home.biz.plugin.MarketplaceProductHandler;
+import io.holoinsight.server.home.biz.plugin.MetricInfoCheckService;
+import io.holoinsight.server.home.biz.plugin.MetricInfoCheckServiceImpl;
 import io.holoinsight.server.home.biz.service.EnvironmentService;
+import io.holoinsight.server.home.biz.service.TenantInitService;
+import io.holoinsight.server.home.biz.service.UserinfoVerificationService;
 import io.holoinsight.server.home.biz.service.impl.DefaultEnvironmentServiceImpl;
+import io.holoinsight.server.home.biz.service.impl.DefaultTenantInitServiceImpl;
+import io.holoinsight.server.home.biz.service.impl.UserinfoVerificationServiceImpl;
+import io.holoinsight.server.home.common.service.RequestContextAdapter;
+import io.holoinsight.server.home.common.service.RequestContextAdapterImpl;
+import io.holoinsight.server.home.web.controller.TraceAgentFacadeImpl;
 import org.mybatis.spring.annotation.MapperScan;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -22,12 +37,6 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Import;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
-
-import io.holoinsight.server.common.config.EnvironmentProperties;
-import io.holoinsight.server.common.dao.CommonDaoConfiguration;
-import io.holoinsight.server.common.springboot.ConditionalOnRole;
-import io.holoinsight.server.home.biz.service.TenantInitService;
-import io.holoinsight.server.home.biz.service.impl.DefaultTenantInitServiceImpl;
 
 /**
  * @author masaimu
@@ -70,5 +79,30 @@ public class HoloinsightHomeConfiguration {
   @Bean
   public AlertNotifyChainBuilder alertNotifyChainBuilder() {
     return new DefaultAlertNotifyChainBuilder();
+  }
+
+  @Bean
+  public UserinfoVerificationService userinfoVerificationService() {
+    return new UserinfoVerificationServiceImpl();
+  }
+
+  @Bean
+  public RequestContextAdapter requestContextAdapter() {
+    return new RequestContextAdapterImpl();
+  }
+
+  @Bean
+  public TraceAgentFacadeImpl traceAgentFacadeImpl() {
+    return new TraceAgentFacadeImpl();
+  }
+
+  @Bean
+  public MetricInfoCheckService metricInfoCheckService() {
+    return new MetricInfoCheckServiceImpl();
+  }
+
+  @Bean
+  public ProductCtlService productCtlService() {
+    return new ProductCtlServiceImpl();
   }
 }

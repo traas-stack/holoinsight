@@ -8,6 +8,8 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import io.holoinsight.server.home.biz.service.AlertBlockService;
 import io.holoinsight.server.home.biz.service.AlertRuleService;
+import io.holoinsight.server.home.common.service.RequestContextAdapter;
+import io.holoinsight.server.home.common.util.EventBusHolder;
 import io.holoinsight.server.home.dal.converter.AlarmRuleConverter;
 import io.holoinsight.server.home.dal.mapper.AlarmRuleMapper;
 import io.holoinsight.server.home.dal.model.AlarmBlock;
@@ -16,13 +18,13 @@ import io.holoinsight.server.home.facade.AlarmRuleDTO;
 import io.holoinsight.server.home.facade.page.MonitorPageRequest;
 import io.holoinsight.server.home.facade.page.MonitorPageResult;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -40,26 +42,40 @@ public class AlertRuleServiceImpl extends ServiceImpl<AlarmRuleMapper, AlarmRule
   @Resource
   private AlertBlockService alertBlockService;
 
+  @Autowired
+  private RequestContextAdapter requestContextAdapter;
+
   @Override
   public Long save(AlarmRuleDTO alarmRuleDTO) {
     AlarmRule alarmRule = alarmRuleConverter.dtoToDO(alarmRuleDTO);
     this.save(alarmRule);
+    EventBusHolder.post(alarmRuleConverter.doToDTO(alarmRule));
     return alarmRule.getId();
   }
 
   @Override
   public Boolean updateById(AlarmRuleDTO alarmRuleDTO) {
     AlarmRule alarmRule = alarmRuleConverter.dtoToDO(alarmRuleDTO);
+    EventBusHolder.post(alarmRuleDTO);
     return this.updateById(alarmRule);
+  }
+
+  @Override
+  public Boolean deleteById(Long id) {
+    AlarmRule alarmRule = getById(id);
+    if (null == alarmRule) {
+      return true;
+    }
+    alarmRule.setStatus((byte) 0);
+    EventBusHolder.post(alarmRuleConverter.doToDTO(alarmRule));
+    return this.removeById(id);
   }
 
   @Override
   public AlarmRuleDTO queryById(Long id, String tenant, String workspace) {
     QueryWrapper<AlarmRule> wrapper = new QueryWrapper<>();
-    wrapper.eq("tenant", tenant);
-    if (StringUtils.isNotBlank(workspace)) {
-      wrapper.eq("workspace", workspace);
-    }
+    this.requestContextAdapter.queryWrapperTenantAdapt(wrapper, tenant, workspace);
+
     wrapper.eq("id", id);
     wrapper.last("LIMIT 1");
     AlarmRule alarmRule = this.getOne(wrapper);
@@ -68,10 +84,6 @@ public class AlertRuleServiceImpl extends ServiceImpl<AlarmRuleMapper, AlarmRule
     return alarmRuleDTO;
   }
 
-  @Override
-  public AlarmRuleDTO queryById(Long id, String tenant) {
-    return queryById(id, tenant, null);
-  }
 
   @Override
   public MonitorPageResult<AlarmRuleDTO> getListByPage(
@@ -88,13 +100,8 @@ public class AlertRuleServiceImpl extends ServiceImpl<AlarmRuleMapper, AlarmRule
       wrapper.eq("id", alarmRule.getId());
     }
 
-    if (StringUtils.isNotBlank(alarmRule.getTenant())) {
-      wrapper.eq("tenant", alarmRule.getTenant().trim());
-    }
-
-    if (StringUtils.isNotBlank(alarmRule.getWorkspace())) {
-      wrapper.eq("workspace", alarmRule.getWorkspace());
-    }
+    this.requestContextAdapter.queryWrapperTenantAdapt(wrapper, alarmRule.getTenant(),
+        alarmRule.getWorkspace());
 
     if (null != alarmRule.getStatus()) {
       wrapper.like("status", alarmRule.getStatus());
@@ -132,23 +139,11 @@ public class AlertRuleServiceImpl extends ServiceImpl<AlarmRuleMapper, AlarmRule
       wrapper.eq("modifier", alarmRule.getModifier());
     }
 
-    if (StringUtils.isNotBlank(pageRequest.getSortBy())
-        && StringUtils.isNotBlank(pageRequest.getSortRule())) {
-      if (pageRequest.getSortRule().toLowerCase(Locale.ROOT).equals("desc")) {
-        wrapper.orderByDesc(pageRequest.getSortBy());
-      } else {
-        wrapper.orderByAsc(pageRequest.getSortBy());
-      }
-    } else {
-      wrapper.orderByDesc("gmt_modified");
-    }
+    wrapper.orderByDesc("id");
 
     if (null != alarmRule.getGmtCreate()) {
       wrapper.ge("gmt_create", alarmRule.getGmtCreate());
     }
-
-    wrapper.select(AlarmRule.class,
-        info -> !info.getColumn().equals("creator") && !info.getColumn().equals("modifier"));
 
     Page<AlarmRule> page = new Page<>(pageRequest.getPageNum(), pageRequest.getPageSize());
 
@@ -228,24 +223,9 @@ public class AlertRuleServiceImpl extends ServiceImpl<AlarmRuleMapper, AlarmRule
   @Override
   public List<AlarmRuleDTO> getListByKeyword(String keyword, String tenant, String workspace) {
     QueryWrapper<AlarmRule> wrapper = new QueryWrapper<>();
-    if (StringUtils.isNotBlank(tenant)) {
-      wrapper.eq("tenant", tenant);
-    }
-    if (StringUtils.isNotBlank(workspace)) {
-      wrapper.eq("workspace", workspace);
-    }
-    wrapper.like("id", keyword).or().like("rule_name", keyword);
-    Page<AlarmRule> page = new Page<>(1, 20);
-    page = page(page, wrapper);
-
-    return alarmRuleConverter.dosToDTOs(page.getRecords());
-  }
-
-  @Override
-  public List<AlarmRuleDTO> findByIds(List<String> ids) {
-    QueryWrapper<AlarmRule> wrapper = new QueryWrapper<>();
-    wrapper.in("id", ids);
-    List<AlarmRule> alarmRules = baseMapper.selectList(wrapper);
-    return alarmRuleConverter.dosToDTOs(alarmRules);
+    this.requestContextAdapter.queryWrapperTenantAdapt(wrapper, tenant, workspace);
+    wrapper.and(wa -> wa.like("id", keyword).or().like("rule_name", keyword));
+    wrapper.last("LIMIT 10");
+    return alarmRuleConverter.dosToDTOs(baseMapper.selectList(wrapper));
   }
 }

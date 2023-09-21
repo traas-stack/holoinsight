@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="2160px" height="221px" viewBox="0 0 2160 221" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>欢迎使用</title>
+    <defs>
+        <linearGradient x1="50%" y1="0%" x2="50%" y2="100%" id="linearGradient-1">
+            <stop stop-color="#4AB6FF" offset="0%"></stop>
+            <stop stop-color="#247FFF" offset="100%"></stop>
+        </linearGradient>
+        <path d="M2,0.0864746347 L2158,0.0864746347 C2159.10457,0.0864746347 2160,0.981905135 2160,2.08647463 L2160,146.766315 L2160,146.766315 C1920.8079,194.426991 1544.97295,218.257329 1032.49518,218.257329 C520.017396,218.257329 175.852337,194.426991 0,146.766315 L0,2.08647463 C-1.3527075e-16,0.981905135 0.8954305,0.0864746347 2,0.0864746347 Z" id="path-2"></path>
+        <radialGradient cx="50%" cy="50%" fx="50%" fy="50%" r="71.3309741%" gradientTransform="translate(0.500000,0.500000),rotate(90.000000),scale(1.000000,0.983049),translate(-0.500000,-0.500000)" id="radialGradient-4">
+            <stop stop-color="#FFFFFF" stop-opacity="0" offset="0%"></stop>
+            <stop stop-color="#EBFFFF" stop-opacity="0.0209638477" offset="36.750585%"></stop>
+            <stop stop-color="#68FFFF" stop-opacity="0.16" offset="100%"></stop>
+        </radialGradient>
+        <radialGradient cx="50%" cy="50%" fx="50%" fy="50%" r="68.3429029%" gradientTransform="translate(0.500000,0.500000),rotate(90.000000),scale(1.000000,0.983049),translate(-0.500000,-0.500000)" id="radialGradient-5">
+            <stop stop-color="#3187FF" offset="0%"></stop>
+            <stop stop-color="#338FFF" offset="100%"></stop>
+        </radialGradient>
+    </defs>
+    <g id="总览页优化" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Group-17-Copy" transform="translate(0.000000, 0.920331)">
+            <mask id="mask-3" fill="white">
+                <use xlink:href="#path-2"></use>
+            </mask>
+            <use id="Mask" fill="url(#linearGradient-1)" xlink:href="#path-2"></use>
+            <line x1="1407.79899" y1="89.0914998" x2="1336.1608" y2="99.9457711" id="Path-6" stroke="#60ACFF" opacity="0.200000003" mask="url(#mask-3)"></line>
+            <polyline id="Path-3" stroke="#60ACFF" opacity="0.200000003" mask="url(#mask-3)" points="238.79397 122.739741 682.352957 29.3930073 835.843639 94.7346597 895.477387 52.4915286"></polyline>
+            <line x1="830.351759" y1="94.5186354" x2="62.9547739" y2="-11.8532239" id="Path-3" stroke="#60ACFF" opacity="0.200000003" mask="url(#mask-3)"></line>
+            <g id="Group-2" mask="url(#mask-3)">
+                <g transform="translate(1246.445531, 114.038562) rotate(-345.000000) translate(-1246.445531, -114.038562) translate(1156.355079, 23.948110)">
+                    <circle id="Oval" stroke="#60ACFF" stroke-width="1" fill="none" opacity="0.200000003" cx="90.0513992" cy="90.0513992" r="90.0513992"></circle>
+                    <path d="M24.6716162,136.92747 C35.4066146,151.865427 50.9997886,162.95046 69.0805254,167.76699" id="Path" stroke="#60ACFF" stroke-width="1" fill="none" opacity="0.400000006"></path>
+                    <path d="M11.1022273,103.620788 C14.1111309,120.929144 22.5346241,136.350058 34.5402627,148.029697" id="Path" stroke="#60ACFF" stroke-width="2.5" fill="none" opacity="0.400000006"></path>
+                    <path d="M127.058824,161.599086 C145.868599,151.626337 160.267058,134.339462 166.533409,113.489435" id="Path" stroke="#60ACFF" stroke-width="1.5" fill="none" opacity="0.400000006"></path>
+                    <path d="M149.263278,38.2410051 C144.899126,33.105697 139.925648,28.541912 134.460308,24.6716162" id="Shape" stroke="#60ACFF" stroke-width="2.5" fill="none" opacity="0.2"></path>
+                    <path d="M148.029697,20.9708738 C142.073009,16.0687031 135.442993,11.907571 128.292404,8.63506568" id="Path" stroke="#60ACFF" stroke-width="2.5" fill="none" opacity="0.400000006"></path>
+                    <circle id="Oval" stroke="none" fill="url(#radialGradient-4)" fill-rule="evenodd" cx="90.0513992" cy="90.0513992" r="69.0805254"></circle>
+                    <circle id="Oval" stroke="#60ACFF" stroke-width="1" fill="none" opacity="0.400000006" cx="90.6681896" cy="90.6681896" r="49.9600228"></circle>
+                    <path d="M80.1827527,143.388822 C83.425592,144.006129 86.7704682,144.328955 90.1895036,144.328955 L90.1895036,144.328955 C105.692797,144.328955 119.671316,137.69139 129.525985,127.058824" id="Path" stroke="#60ACFF" stroke-width="3.5" fill="none" opacity="0.400000006"></path>
+                    <path d="M41.9417476,55.5111365 C38.1115175,61.0583258 35.1628114,67.2988439 33.3066819,74.0148487" id="Path" stroke="#60ACFF" stroke-width="2.5" fill="none" opacity="0.400000006"></path>
+                    <circle id="Oval" stroke="#60ACFF" stroke-width="0.5" fill="none" opacity="0.400000006" cx="90.6681896" cy="90.6681896" r="28.9891491"></circle>
+                    <line x1="91.28498" y1="0" x2="91.28498" y2="70.3141062" id="Line" stroke="#60ACFF" stroke-width="1" fill="none" opacity="0.400000006" stroke-dasharray="1,1"></line>
+                    <line x1="35.1570531" y1="55.5111365" x2="35.1570531" y2="125.825243" id="Line-Copy-2" stroke="#60ACFF" stroke-width="1" fill="none" opacity="0.400000006" stroke-dasharray="1,1" transform="translate(35.157053, 90.668190) rotate(-90.000000) translate(-35.157053, -90.668190) "></line>
+                    <line x1="144.945745" y1="55.5111365" x2="144.945745" y2="125.825243" id="Line-Copy-3" stroke="#60ACFF" stroke-width="1" fill="none" opacity="0.400000006" stroke-dasharray="1,1" transform="translate(144.945745, 90.668190) rotate(-90.000000) translate(-144.945745, -90.668190) "></line>
+                    <line x1="91.28498" y1="109.788692" x2="91.28498" y2="180.102798" id="Line-Copy" stroke="#60ACFF" stroke-width="1" fill="none" opacity="0.400000006" stroke-dasharray="1,1"></line>
+                </g>
+            </g>
+            <g id="Group-2-Copy-2" mask="url(#mask-3)">
+                <g transform="translate(939.120231, 20.967427) rotate(-376.000000) translate(-939.120231, -20.967427) translate(884.848874, -32.761216)">
+                    <circle id="Oval" stroke="#60ACFF" stroke-width="1" fill="none" opacity="0.200000003" cx="53.9338542" cy="53.6575017" r="53.0439749"></circle>
+                    <path d="M8.24087884,62.2721154 C9.98287566,72.3686566 14.8596349,81.3641893 21.8102678,88.1773125" id="Path" stroke="#60ACFF" stroke-width="2.5" fill="none" opacity="0.200000003"></path>
+                    <path d="M75.8228371,96.0883747 C86.991141,90.2070097 95.5402261,80.0121862 99.2608725,67.7160161" id="Path" stroke="#60ACFF" stroke-width="1.5" fill="none" opacity="0.200000003"></path>
+                    <circle id="Oval" stroke="none" fill="url(#radialGradient-4)" fill-rule="evenodd" opacity="0.600000024" cx="53.9338542" cy="53.6575017" r="40.7081668"></circle>
+                    <circle id="Oval" stroke="#60ACFF" stroke-width="1" fill="none" opacity="0.200000003" cx="54.7796272" cy="55.1833166" r="29.6059395"></circle>
+                    <path d="M25.9146725,33.5897494 C23.7259696,36.918063 22.0409947,40.6623739 20.9803493,44.6919767" id="Path" stroke="#60ACFF" stroke-width="2.5" fill="none" opacity="0.200000003"></path>
+                    <circle id="Oval" stroke="#60ACFF" stroke-width="0.5" fill="none" opacity="0.200000003" cx="54.7796272" cy="55.1833166" r="17.2701314"></circle>
+                    <line x1="54.7267171" y1="0.831642164" x2="54.7267171" y2="42.7733897" id="Line" stroke="#60ACFF" stroke-width="1" fill="none" opacity="0.300000012" stroke-dasharray="1,1"></line>
+                    <line x1="22.161734" y1="33.8424664" x2="22.161734" y2="75.784214" id="Line-Copy-2" stroke="#60ACFF" stroke-width="1" fill="none" opacity="0.300000012" stroke-dasharray="1,1" transform="translate(22.161734, 54.813340) rotate(-90.000000) translate(-22.161734, -54.813340) "></line>
+                    <line x1="86.5517474" y1="33.0566043" x2="86.5517474" y2="74.9983519" id="Line-Copy-3" stroke="#60ACFF" stroke-width="1" fill="none" opacity="0.300000012" stroke-dasharray="1,1" transform="translate(86.551747, 54.027478) rotate(-90.000000) translate(-86.551747, -54.027478) "></line>
+                    <line x1="55.5125792" y1="65.2216556" x2="55.5125792" y2="107.163403" id="Line-Copy" stroke="#60ACFF" stroke-width="1" fill="none" opacity="0.300000012" stroke-dasharray="1,1"></line>
+                </g>
+            </g>
+            <circle id="Oval" fill="#FFFFFF" opacity="0.08" mask="url(#mask-3)" cx="684.904523" cy="35.9055701" r="8.68341709"></circle>
+            <circle id="Oval-Copy-7" fill="url(#radialGradient-5)" opacity="0.600000024" mask="url(#mask-3)" cx="1416.48241" cy="88.0060726" r="8.68341709"></circle>
+            <circle id="Oval-Copy-5" fill="#FFFFFF" opacity="0.08" mask="url(#mask-3)" cx="834.693467" cy="93.4332083" r="8.68341709"></circle>
+            <circle id="Oval-Copy-6" fill="url(#radialGradient-5)" mask="url(#mask-3)" cx="236.623116" cy="121.654314" r="8.68341709"></circle>
+            <line x1="781.507538" y1="-11.8532239" x2="651.256281" y2="122.739741" id="Path-4" stroke="#60ACFF" opacity="0.200000003" mask="url(#mask-3)"></line>
+            <line x1="1050.69347" y1="-10.7677967" x2="1170.09045" y2="66.2975299" id="Path-5" stroke="#60ACFF" opacity="0.200000003" mask="url(#mask-3)"></line>
+        </g>
+    </g>
+</svg>

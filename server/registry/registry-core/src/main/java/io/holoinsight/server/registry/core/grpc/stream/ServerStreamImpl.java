@@ -337,5 +337,6 @@ public class ServerStreamImpl implements ServerStream {
     }
   }
 
+  @Getter
   private final SafeWriter writer = new SafeWriter((t, e) -> onUnexpectedError(e));
 }

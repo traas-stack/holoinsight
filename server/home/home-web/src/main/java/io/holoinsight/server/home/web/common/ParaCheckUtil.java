@@ -32,7 +32,8 @@ public class ParaCheckUtil {
 
   private static final Pattern PATTERN_APPLICATION = Pattern.compile("^[a-z]{1,20}");
 
-  private static Pattern PATTERN_SQL = Pattern.compile("^[A-Za-z0-9\\u4e00-\\u9fa5\\-_,\\.]*$");
+  private static Pattern PATTERN_SQL =
+      Pattern.compile("^[\\u00b7A-Za-z0-9\\u4e00-\\u9fa5\\-_ ,\\.]*$");
 
   private static final Pattern PATTERN_AIG_NAME =
       Pattern.compile("^[a-z]{1,20}-[a-z][a-z0-9]{0,27}");
@@ -106,6 +107,16 @@ public class ParaCheckUtil {
     }
   }
 
+  public static void checkParaSpecialChar(String str, String errorMsg) {
+    String regEx = "[ `~!@#$%^&*()+=|{}':;',\\[\\].<>/?~！@#￥%……&*（）——+|{}【】‘；：”“’。，、？]|\n|\r|\t";
+    Pattern p = Pattern.compile(regEx);
+    Matcher m = p.matcher(str);
+    if (m.find()) {
+      throw new MonitorException(ResultCodeEnum.PARAMETER_ILLEGAL, errorMsg);
+    }
+  }
+
+
   /**
    * Check whether the array param is empty.
    */
@@ -140,6 +151,11 @@ public class ParaCheckUtil {
    */
   public static void checkInvalidCharacter(String param, String errorMsg) {
     checkParaBoolean(commonCheck(param), errorMsg);
+  }
+
+  public static void checkInvalidUserinfoVerificationContentType(String param, String errorMsg) {
+    checkParaBoolean(StringUtils.equals(param, "email") || StringUtils.equals(param, "phone"),
+        errorMsg);
   }
 
   private static boolean commonCheck(String param) {

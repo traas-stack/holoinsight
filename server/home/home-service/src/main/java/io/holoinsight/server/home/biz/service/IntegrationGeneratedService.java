@@ -8,6 +8,7 @@ import io.holoinsight.server.home.dal.model.dto.IntegrationGeneratedDTO;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  *
@@ -16,13 +17,18 @@ import java.util.List;
  */
 public interface IntegrationGeneratedService extends IService<IntegrationGenerated> {
 
-  void insert(IntegrationGeneratedDTO integrationGeneratedDTO);
+  IntegrationGeneratedDTO insert(IntegrationGeneratedDTO integrationGeneratedDTO);
 
   void update(IntegrationGeneratedDTO integrationGeneratedDTO);
+
+  IntegrationGeneratedDTO queryById(Long id, String tenant, String workspace);
 
   List<IntegrationGenerated> queryByTenant(String tenant);
 
   List<IntegrationGenerated> queryByTenant(String tenant, String workspace);
 
   List<IntegrationGeneratedDTO> queryByName(String tenant, String workspace, String name);
+
+  IntegrationGeneratedDTO generated(String tenant, String workspace, String name, String item,
+      String product, Map<String, Object> config);
 }

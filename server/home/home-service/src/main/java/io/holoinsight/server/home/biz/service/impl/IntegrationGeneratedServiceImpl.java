@@ -4,6 +4,7 @@
 package io.holoinsight.server.home.biz.service.impl;
 
 import io.holoinsight.server.home.biz.service.IntegrationGeneratedService;
+import io.holoinsight.server.home.common.util.EventBusHolder;
 import io.holoinsight.server.home.common.util.StringUtil;
 import io.holoinsight.server.home.dal.converter.IntegrationGeneratedConverter;
 import io.holoinsight.server.home.dal.mapper.IntegrationGeneratedMapper;
@@ -15,6 +16,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -33,20 +35,39 @@ public class IntegrationGeneratedServiceImpl
   private IntegrationGeneratedConverter integrationGeneratedConverter;
 
   @Override
-  public void insert(IntegrationGeneratedDTO integrationGeneratedDTO) {
-    save(integrationGeneratedConverter.dtoToDO(integrationGeneratedDTO));
+  public IntegrationGeneratedDTO insert(IntegrationGeneratedDTO integrationGeneratedDTO) {
+    IntegrationGenerated integrationGenerated =
+        integrationGeneratedConverter.dtoToDO(integrationGeneratedDTO);
+    save(integrationGenerated);
+    IntegrationGeneratedDTO dto = integrationGeneratedConverter.doToDTO(integrationGenerated);
+    EventBusHolder.post(dto);
+    return dto;
   }
 
   @Override
   public void update(IntegrationGeneratedDTO integrationGeneratedDTO) {
     updateById(integrationGeneratedConverter.dtoToDO(integrationGeneratedDTO));
+    EventBusHolder.post(integrationGeneratedDTO);
+  }
+
+  @Override
+  public IntegrationGeneratedDTO queryById(Long id, String tenant, String workspace) {
+    QueryWrapper<IntegrationGenerated> wrapper = new QueryWrapper<>();
+    wrapper.eq("tenant", tenant);
+    if (StringUtil.isNotBlank(workspace)) {
+      wrapper.eq("workspace", workspace);
+    }
+    wrapper.eq("id", id);
+    wrapper.last("LIMIT 1");
+
+    return integrationGeneratedConverter.doToDTO(this.getOne(wrapper));
   }
 
   @Override
   public List<IntegrationGenerated> queryByTenant(String tenant) {
     QueryWrapper<IntegrationGenerated> queryWrapper = new QueryWrapper<>();
-    queryWrapper.select("name", "product", "tenant", "workspace", "item", "id").eq("deleted", 0)
-        .eq("tenant", tenant);
+    queryWrapper.select("name", "product", "tenant", "workspace", "item", "id", "custom")
+        .eq("deleted", 0).eq("tenant", tenant);
     return baseMapper.selectList(queryWrapper);
   }
 
@@ -68,7 +89,32 @@ public class IntegrationGeneratedServiceImpl
     if (StringUtil.isNotBlank(workspace)) {
       map.put("workspace", workspace);
     }
+    map.put("deleted", 0);
     map.put("name", name);
     return integrationGeneratedConverter.dosToDTOs(listByMap(map));
+  }
+
+  @Override
+  public IntegrationGeneratedDTO generated(String tenant, String workspace, String name,
+      String item, String product, Map<String, Object> config) {
+    IntegrationGeneratedDTO integrationGenerated = new IntegrationGeneratedDTO();
+    {
+      integrationGenerated.setTenant(tenant);
+      integrationGenerated.setWorkspace(workspace);
+      integrationGenerated.setName(name);
+      integrationGenerated.setProduct(product);
+      integrationGenerated.setItem(item);
+      integrationGenerated.setConfig(config);
+
+      integrationGenerated.setDeleted(false);
+      integrationGenerated.setCustom(false);
+      integrationGenerated.setGmtCreate(new Date());
+      integrationGenerated.setGmtModified(new Date());
+      integrationGenerated.setCreator("system");
+      integrationGenerated.setModifier("system");
+
+    }
+
+    return integrationGenerated;
   }
 }

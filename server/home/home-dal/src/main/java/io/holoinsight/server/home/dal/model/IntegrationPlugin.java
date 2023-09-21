@@ -29,6 +29,8 @@ public class IntegrationPlugin {
 
   public String json;
 
+  public String config;
+
   public String collectRange;
 
   public String template;

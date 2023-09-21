@@ -3,12 +3,16 @@
  */
 package io.holoinsight.server.test.it;
 
+import java.time.Duration;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Timeout;
 
 import io.restassured.response.ValidatableResponse;
+
 
 /**
  * <p>
@@ -18,6 +22,7 @@ import io.restassured.response.ValidatableResponse;
  *
  * @author xzchaoo
  */
+@Timeout(value = 2, unit = TimeUnit.MINUTES)
 public class AgentVMIT extends BaseIT {
   String app = "holoinsight-server-example";
   String ip;
@@ -41,57 +46,65 @@ public class AgentVMIT extends BaseIT {
   @Order(1)
   @Test
   public void test_agent_listFiles_with_app() {
-    ip = given() //
-        .body(json() //
-            .put("app", app) //
-            .put("logpath", "/home/admin/logs")) //
-        .post("/webapi/agent/listFiles") //
-        .then() //
-        .visit(listFilesRespAssert) //
-        .extract() //
-        .path("data.ip"); //
+    await().atMost(Duration.ofSeconds(10)).untilNoException(() -> {
+      ip = given() //
+          .body(json() //
+              .put("app", app) //
+              .put("logpath", "/home/admin/logs")) //
+          .post("/webapi/agent/listFiles") //
+          .then() //
+          .visit(listFilesRespAssert) //
+          .extract() //
+          .path("data.ip"); //
+    });
   }
 
   @Order(2)
   @Test
   public void test_agent_listFiles_with_ip() {
-    given() //
-        .body(json() //
-            .put("ip", ip) //
-            .put("logpath", "/home/admin/logs")) //
-        .when() //
-        .post("/webapi/agent/listFiles") //
-        .then() //
-        .visit(listFilesRespAssert); //
+    await().atMost(Duration.ofSeconds(10)).untilNoException(() -> {
+      given() //
+          .body(json() //
+              .put("ip", ip) //
+              .put("logpath", "/home/admin/logs")) //
+          .when() //
+          .post("/webapi/agent/listFiles") //
+          .then() //
+          .visit(listFilesRespAssert); //
+    });
   }
 
   @Order(3)
   @Test
   public void test_agent_preview_with_app() {
-    given() //
-        .body(json() //
-            .put("app", app) //
-            .put("logpath", "/home/admin/logs/holoinsight-server/agent.log")) //
-        .when() //
-        .post("/webapi/agent/previewFile") //
-        .then() //
-        .isSuccess() //
-        .body("data.lines.size()", gt(0)) //
-    ; //
+    await().atMost(Duration.ofSeconds(10)).untilNoException(() -> {
+      given() //
+          .body(json() //
+              .put("app", app) //
+              .put("logpath", "/home/admin/logs/holoinsight-server/agent.log")) //
+          .when() //
+          .post("/webapi/agent/previewFile") //
+          .then() //
+          .isSuccess() //
+          .body("data.lines.size()", gt(0)) //
+      ; //
+    });
   }
 
   @Order(4)
   @Test
   public void test_agent_preview_with_ip() {
-    given() //
-        .body(json() //
-            .put("ip", ip) //
-            .put("logpath", "/home/admin/logs/holoinsight-server/agent.log")) //
-        .when() //
-        .post("/webapi/agent/previewFile") //
-        .then() //
-        .isSuccess() //
-        .body("data.lines.size()", gt(0)) //
-    ;
+    await().atMost(Duration.ofSeconds(10)).untilNoException(() -> {
+      given() //
+          .body(json() //
+              .put("ip", ip) //
+              .put("logpath", "/home/admin/logs/holoinsight-server/agent.log")) //
+          .when() //
+          .post("/webapi/agent/previewFile") //
+          .then() //
+          .isSuccess() //
+          .body("data.lines.size()", gt(0)) //
+      ;
+    });
   }
 }

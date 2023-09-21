@@ -1,6 +1,7 @@
 syntax = "proto3";
 package io.holoinsight.server.query.grpc;
 option java_package = "io.holoinsight.server.query.grpc";
+import "google/protobuf/any.proto";
 
 message QueryRequest {
   // 租户
@@ -48,6 +49,8 @@ message Datasource {
   optional string fillPolicy = 10;
   // whether the APM metrics is obtained by materializing them to the metric storage in advance instead of post-calculation
   bool apmMaterialized = 11;
+  // query language
+  optional string ql = 12;
 }
 
 message SlidingWindow{
@@ -131,6 +134,13 @@ message PqlRangeRequest {
   bool fillZero = 8;
 }
 
+message StatisticRequest {
+  string tenant = 1;
+  int64 start = 2;
+  int64 end = 3;
+  repeated string groups = 4;
+}
+
 message QueryTraceRequest {
   string tenant = 1;
   optional string serviceName = 2;
@@ -166,6 +176,15 @@ message Trace{
   repeated Span spans = 1;
 }
 
+message TraceTreeList{
+  repeated TraceTree traceTree = 1;
+}
+
+message TraceTree{
+  Span span = 1;
+  repeated TraceTree children = 2;
+  Span mesh = 3;
+}
 
 message Span {
   string traceId = 1;
@@ -185,6 +204,7 @@ message Span {
   repeated  KeyValue tags = 15;
   repeated  LogEntity logs = 16;
   bool  isRoot = 17;
+  bool  isMesh = 18;
 }
 
 message KeyValue{
@@ -299,6 +319,66 @@ message TraceIds {
   repeated string traceId = 1;
 }
 
+message StatisticData{
+  map<string, string> resources = 1;
+  map<string, double> datas = 2;
+}
+
+message StatisticDataList {
+  repeated StatisticData statisticData = 1;
+}
+
+message CommonMapTypeData{
+  map<string, string> data = 1;
+}
+
+message CommonMapTypeDataList {
+  repeated CommonMapTypeData commonMapTypeData = 1;
+}
+
+message QueryDetailResponse {
+  repeated DetailResult results = 1;
+}
+
+message DetailResult {
+  repeated string tables = 1;
+  string sql = 2;
+  repeated string headers = 3;
+  repeated DetailRow rows = 4;
+}
+
+message DetailRow {
+  repeated DetailValue values = 1;
+}
+
+message DetailValue {
+  string type = 1;
+  optional string strValue = 2;
+  optional bool boolValue = 3;
+  optional double doubleValue = 4;
+  optional int64 timestampValue = 5;
+}
+
+message QueryEventRequest {
+  string tenant = 1;
+  int64 start = 2;
+  int64 end = 3;
+  map<string, string> termParams = 4;
+}
+
+message QueryEventResponse {
+  repeated Event event = 1;
+}
+
+message Event {
+  string tenant = 1;
+  string id = 2;
+  string name = 3;
+  string type = 4;
+  int64 timestamp = 5;
+  map<string, string> tags = 6;
+}
+
 service QueryService {
   rpc QueryData(QueryRequest) returns (QueryResponse);
 
@@ -318,6 +398,10 @@ service QueryService {
 
   rpc QueryTrace(QueryTraceRequest) returns (Trace);
 
+  rpc QueryTraceTree(QueryTraceRequest) returns (TraceTreeList);
+
+  rpc BillingTrace(QueryTraceRequest) returns (StatisticData);
+
   rpc QueryServiceList(QueryMetaRequest) returns (QueryMetaResponse);
 
   rpc QueryEndpointList(QueryMetaRequest) returns (QueryMetaResponse);
@@ -331,5 +415,15 @@ service QueryService {
   rpc QueryTopology(QueryTopologyRequest) returns (Topology);
 
   rpc QuerySlowSqlList(QueryMetaRequest) returns (QuerySlowSqlResponse);
+
+  rpc StatisticTrace(StatisticRequest) returns (StatisticDataList);
+
+  rpc QueryServiceErrorList(QueryMetaRequest) returns (CommonMapTypeDataList);
+
+  rpc QueryServiceErrorDetail(QueryMetaRequest) returns (CommonMapTypeDataList);
+
+  rpc QueryDetailData(QueryRequest) returns (QueryDetailResponse);
+
+  rpc QueryEvents(QueryEventRequest) returns (QueryEventResponse);
 
 }

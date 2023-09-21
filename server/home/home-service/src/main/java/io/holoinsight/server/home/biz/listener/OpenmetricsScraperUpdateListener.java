@@ -5,6 +5,7 @@ package io.holoinsight.server.home.biz.listener;
 
 import io.holoinsight.server.home.biz.common.GaeaConvertUtil;
 import io.holoinsight.server.home.biz.service.GaeaCollectConfigService;
+import io.holoinsight.server.home.biz.service.TenantInitService;
 import io.holoinsight.server.home.common.util.EventBusHolder;
 import io.holoinsight.server.home.dal.model.dto.GaeaCollectConfigDTO;
 import io.holoinsight.server.home.dal.model.dto.OpenmetricsScraperDTO;
@@ -23,6 +24,9 @@ public class OpenmetricsScraperUpdateListener {
 
   @Autowired
   private GaeaCollectConfigService gaeaCollectConfigService;
+
+  @Autowired
+  private TenantInitService tenantInitService;
 
   @PostConstruct
   void register() {
@@ -43,6 +47,8 @@ public class OpenmetricsScraperUpdateListener {
     task.setScrapeInterval(openmetricsScraperDTO.getScrapeInterval());
     task.setScrapeTimeout(openmetricsScraperDTO.getScrapeTimeout());
     task.setScrapePort(openmetricsScraperDTO.getPort());
+    task.setRelabelConfigs(openmetricsScraperDTO.getRelabelConfigs());
+    task.setMetricRelabelConfigs(openmetricsScraperDTO.getMetricRelabelConfigs());
 
     // List<String> targets = new ArrayList<>();
     //// 暂时 mock 一下
@@ -50,7 +56,8 @@ public class OpenmetricsScraperUpdateListener {
     // task.setTargets(targets);
 
     GaeaCollectConfigDTO gaeaCollectConfigDTO = new GaeaCollectConfigDTO();
-    gaeaCollectConfigDTO.tenant = openmetricsScraperDTO.getTenant();
+    gaeaCollectConfigDTO.tenant =
+        tenantInitService.getTsdbTenant(openmetricsScraperDTO.getTenant());
     gaeaCollectConfigDTO.workspace = openmetricsScraperDTO.getWorkspace();
     gaeaCollectConfigDTO.deleted = false;
     gaeaCollectConfigDTO.type = openmetricsScraperDTO.getClass().getName();

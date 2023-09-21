@@ -62,7 +62,7 @@ public class MonitorScopeAuthInterceptor implements MethodInterceptor {
 
       if (authType == AuthTargetType.SRE && mu.getIdentityType() != IdentityType.OUTTOKEN) {
         JsonResult<Object> resp = new JsonResult<Object>();
-        JsonResult.createFailResult(resp, ResultCodeEnum.NO_AUTH.name(), "no auth");
+        JsonResult.fillFailResultTo(resp, ResultCodeEnum.NO_AUTH.name(), "no auth");
         return resp;
       }
 

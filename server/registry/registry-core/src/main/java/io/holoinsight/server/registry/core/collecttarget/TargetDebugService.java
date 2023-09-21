@@ -6,15 +6,15 @@ package io.holoinsight.server.registry.core.collecttarget;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import io.holoinsight.server.meta.common.model.QueryExample;
 import io.holoinsight.server.meta.facade.service.DataClientService;
 import io.holoinsight.server.registry.core.agent.Agent;
 import io.holoinsight.server.registry.core.agent.AgentStorage;
 import io.holoinsight.server.registry.core.template.CollectTemplate;
 import io.holoinsight.server.registry.core.template.TemplateService;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 /**
  * <p>
@@ -70,21 +70,21 @@ public class TargetDebugService {
     i.addCmd("# 请先将 kubectl 切换到对应的上下文后再执行如下命令");
 
     if (agent != null) {
-      i.addCmd("# 登录agent");
+      i.addCmd("# Login to agent");
       if (agent.getJson().getK8s() != null) {
         i.addCmd("kubectl -n %s exec -it %s -- bash", //
             agent.getJson().getK8s().getNamespace(), //
             agent.getJson().getK8s().getPod()); //
-        i.addCmd("# 执行 g 命令可以 cd 到 agent 的 logs 目录");
+        i.addCmd("# 'g' is aliased to cd /usr/local/holoinsight/agent/logs");
       } else {
         i.addCmd("agent=%s", agent.getJson().getIp());
       }
     }
 
-    i.addCmd("# 查询下发记录");
+    i.addCmd("# Query config records");
     i.addCmd("tail -99999 config.log | grep %s | grep %s", ct.getTableName(), ctk.getDimId());
 
-    i.addCmd("# 查询执行记录");
+    i.addCmd("# Query executing records");
     i.addCmd("tail -99999 info.log | grep '%s/%s'", ct.getTableName(), ctk.getDimId());
 
     if (dim.getRaw() != null) {

@@ -1,0 +1,136 @@
+
+body[theme='holoLight'] {
+  .title {
+    color: #000;
+  }
+  .cards {
+    background-color: #fff;
+  }
+}
+.cards {
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  box-shadow: 0 6px 16px -8px rgba(0, 10, 26, 0.08);
+  padding: 0 24px 12px 24px;
+}
+
+.title {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.componentRow {
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: row;
+}
+
+.card {
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  box-shadow: 0 6px 16px -8px rgba(0, 10, 26, 0.08);
+  padding: 0 24px;
+}
+.card {
+  margin: 0px 0px 10px 0px;
+}
+
+.mgr20{
+  margin-right: 20px;
+}
+
+.componentRowItem {
+  width: calc((100% - 80px) / 5);
+  margin-bottom: 12px;
+  border: 1px solid rgba(204, 204, 220, 0.1);
+  border-radius: 3px;
+  cursor: pointer;
+ 
+}
+.hasNotAgent {
+  font-size: 14px;
+  text-align: center;
+}
+
+.componentRowItem:hover {
+  z-index: 2;
+  box-shadow: 0 7px 20px rgba(0, 0, 0, 0.35);
+}
+
+.item {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  width: 100%;
+  height: 60px;
+  margin-bottom: 10px;
+  padding: 12px;
+  background-color: #fff;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.itemLeft {
+  display: flex;
+  flex-direction: row;
+  span {
+    display: inline-block;
+  }
+  div {
+    display: flex;
+    flex-direction: column;
+    vertical-align: middle;
+  }
+}
+
+.itemRight {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  width: 480px;
+  margin-right: 160px;
+}
+
+.itemRightTag {
+  display: flex;
+  flex-direction: column;
+  span {
+    display: inline-block;
+    text-align: center;
+  }
+}
+
+.border {
+  border: 1px solid rgba(238, 193, 77, 1);
+}
+
+.statusTag {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  margin: 8px 10px 8px 2px;
+  vertical-align: middle;
+  border-radius: 10px;
+}
+
+.hasData {
+  background-color: rgba(238, 193, 77, 1);
+}
+
+.noData {
+  background-color: rgba(25, 171, 62, 1);
+}
+
+.warningColor {
+  color: rgba(226, 44, 90, 1);
+}
+
+.tagColor {
+  color: rgba(41, 135, 251, 1);
+}
+
+.configFooter {
+  display: flex;
+  flex-direction: row-reverse;
+}

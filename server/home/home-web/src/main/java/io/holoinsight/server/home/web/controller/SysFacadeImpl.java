@@ -7,11 +7,9 @@ import io.holoinsight.server.common.JsonResult;
 import io.holoinsight.server.common.config.EnvironmentProperties;
 import io.holoinsight.server.home.biz.ula.ULAFacade;
 import io.holoinsight.server.home.biz.common.MetaDictUtil;
-import io.holoinsight.server.common.service.TenantService;
 import io.holoinsight.server.home.common.util.GlobalFlag;
 import io.holoinsight.server.home.common.util.scope.AuthTargetType;
 import io.holoinsight.server.home.common.util.scope.PowerConstants;
-import io.holoinsight.server.common.dao.entity.dto.TenantDTO;
 import io.holoinsight.server.home.web.common.TokenUrls;
 import io.holoinsight.server.home.web.interceptor.MonitorScopeAuth;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +21,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -40,25 +37,12 @@ public class SysFacadeImpl extends BaseFacade {
   @Autowired
   private ULAFacade ulaFacade;
   @Autowired
-  private TenantService tenantService;
-  @Autowired
   private EnvironmentProperties environmentProperties;
 
   @GetMapping(value = "/time")
   @ResponseBody
   public JsonResult time() {
     return JsonResult.createSuccessResult(System.currentTimeMillis());
-  }
-
-  @GetMapping(value = "/tenants")
-  @ResponseBody
-  public JsonResult<List<TenantDTO>> tenants() {
-    return JsonResult.createSuccessResult(tenantService.queryAll());
-  }
-
-  @RequestMapping("/checkservice")
-  public JsonResult<Object> test() {
-    return JsonResult.createSuccessResult("I am ok");
   }
 
   @ResponseBody
@@ -71,6 +55,7 @@ public class SysFacadeImpl extends BaseFacade {
     sysMap.put("site", this.environmentProperties.getDeploymentSite());
     sysMap.put("authApplyUrl", ulaFacade.getCurrentULA().authApplyUrl());
     sysMap.put("systemNotice", MetaDictUtil.getSystemNotice());
+    sysMap.put("logTimeLayout", MetaDictUtil.getLogTimeLayoutMap());
     return JsonResult.createSuccessResult(sysMap);
   }
 

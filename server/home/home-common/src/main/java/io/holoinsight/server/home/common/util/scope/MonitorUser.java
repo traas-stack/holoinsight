@@ -37,6 +37,8 @@ public class MonitorUser {
 
   String sourceIp; // 源用户ip，用户校验
 
+  String headImgUrl;
+
   Set<PowerConstants> powerConstants;
 
   public boolean isSuper() {

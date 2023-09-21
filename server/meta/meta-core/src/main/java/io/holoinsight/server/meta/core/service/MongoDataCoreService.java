@@ -3,43 +3,52 @@
  */
 package io.holoinsight.server.meta.core.service;
 
-import com.mongodb.client.FindIterable;
-import com.mongodb.client.MongoDatabase;
-import com.mongodb.client.model.Filters;
-import com.mongodb.client.model.Sorts;
-import com.mongodb.client.model.UpdateOptions;
-import com.mongodb.client.result.DeleteResult;
-import com.mongodb.client.result.UpdateResult;
-import io.holoinsight.server.common.Pair;
-import io.holoinsight.server.meta.common.model.QueryExample;
-import io.holoinsight.server.meta.core.common.DocumentUtil;
-import io.holoinsight.server.common.J;
-import com.google.gson.reflect.TypeToken;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.time.StopWatch;
-import org.bson.Document;
-import org.bson.conversions.Bson;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.util.CollectionUtils;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
-import static io.holoinsight.server.meta.common.util.ConstModel.*;
+import com.google.gson.reflect.TypeToken;
+import com.mongodb.client.FindIterable;
+import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.model.Filters;
+import com.mongodb.client.model.Projections;
+import com.mongodb.client.model.Sorts;
+import com.mongodb.client.model.UpdateOptions;
+import com.mongodb.client.result.DeleteResult;
+import com.mongodb.client.result.UpdateResult;
+import io.holoinsight.server.common.J;
+import io.holoinsight.server.common.Pair;
+import io.holoinsight.server.meta.common.model.QueryExample;
+import io.holoinsight.server.meta.core.common.DocumentUtil;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.time.StopWatch;
+import org.bson.Document;
+import org.bson.conversions.Bson;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.util.CollectionUtils;
+
+import static io.holoinsight.server.meta.common.util.ConstModel.default_app;
+import static io.holoinsight.server.meta.common.util.ConstModel.default_hostname;
+import static io.holoinsight.server.meta.common.util.ConstModel.default_ip;
+import static io.holoinsight.server.meta.common.util.ConstModel.default_modified;
+import static io.holoinsight.server.meta.common.util.ConstModel.default_pk;
 
 /**
  *
  * @author jsy1001de
  * @version 1.0: MongoDataService.java, v 0.1 2022年03月07日 9:13 下午 jinsong.yjs Exp $
  */
-@Service
 public class MongoDataCoreService extends AbstractDataCoreService {
 
-  @Autowired
+  public static final Logger logger = LoggerFactory.getLogger(MongoDataCoreService.class);
+
   private MongoDatabase mongoDatabase;
+
+  public MongoDataCoreService(MongoDatabase mongoDatabase) {
+    this.mongoDatabase = mongoDatabase;
+  }
 
   @Override
   public Pair<Integer, Integer> insertOrUpdate(String tableName, List<Map<String, Object>> rows) {
@@ -78,35 +87,11 @@ public class MongoDataCoreService extends AbstractDataCoreService {
   }
 
   @Override
-  public List<Map<String, Object>> updateByExample(String tableName, QueryExample queryExample,
-      Map<String, Object> row) {
-    logger.info("[updateByExample] finish, table={}, queryExample={}, row={}.", tableName,
-        J.toJson(queryExample), J.toJson(row));
-    StopWatch stopWatch = StopWatch.createStarted();
-    List<Map<String, Object>> list = queryByExample(tableName, queryExample);
-
-    if (CollectionUtils.isEmpty(list)) {
-      return new ArrayList<>();
-    }
-    List<Document> documents = new ArrayList<>();
-    list.forEach(l -> {
-      l.putAll(row);
-      Bson filter = Filters.eq(default_pk, l.get(default_pk).toString());
-      Document update = Document.parse(J.toJson(row));
-      UpdateResult updateResult = mongoDatabase.getCollection(tableName).updateOne(filter, update);
-      documents.add(update);
-      logger.info("[update] finish, table={}, record={}, cost={}.", tableName,
-          updateResult.getMatchedCount(), stopWatch.getTime());
-    });
-    logger.info("[updateByExample] finish, table={}, cost={}.", tableName, stopWatch.getTime());
-    return DocumentUtil.toMapList(new ArrayList<>(documents));
-  }
-
-  @Override
   public List<Map<String, Object>> queryByTable(String tableName) {
     logger.info("[queryByTable] finish, table={}.", tableName);
     StopWatch stopWatch = StopWatch.createStarted();
-    FindIterable<Document> documents = mongoDatabase.getCollection(tableName).find();
+    FindIterable<Document> documents = mongoDatabase.getCollection(tableName).find()
+        .projection(Projections.exclude("annotations"));
     List<Document> rows = new ArrayList<>();
     documents.into(rows);
     logger.info("[queryByTable] finish, table={}, records={}, cost={}.", tableName, rows.size(),
@@ -143,7 +128,8 @@ public class MongoDataCoreService extends AbstractDataCoreService {
     StopWatch stopWatch = StopWatch.createStarted();
     Bson filter = Filters.eq(default_pk, pkValList);
 
-    FindIterable<Document> documents = mongoDatabase.getCollection(tableName).find(filter);
+    FindIterable<Document> documents = mongoDatabase.getCollection(tableName).find(filter)
+        .projection(Projections.exclude("annotations"));
     List<Document> rows = new ArrayList<>();
     documents.sort(Sorts.descending(default_modified)).into(rows);
 
@@ -179,11 +165,18 @@ public class MongoDataCoreService extends AbstractDataCoreService {
       }
     }
 
+    Bson projection =
+        Projections.fields(Projections.excludeId(), Projections.exclude("annotations"));
+    if (!CollectionUtils.isEmpty(queryExample.getRowKeys())) {
+      projection = Projections.fields(Projections.include(queryExample.getRowKeys()));
+    }
+
     FindIterable<Document> documents;
     if (!CollectionUtils.isEmpty(filters)) {
-      documents = mongoDatabase.getCollection(tableName).find(Filters.and(filters));
+      documents =
+          mongoDatabase.getCollection(tableName).find(Filters.and(filters)).projection(projection);
     } else {
-      documents = mongoDatabase.getCollection(tableName).find();
+      documents = mongoDatabase.getCollection(tableName).find().projection(projection);
     }
 
     List<Document> rows = new ArrayList<>();
@@ -203,7 +196,8 @@ public class MongoDataCoreService extends AbstractDataCoreService {
     List<Bson> filters = new ArrayList<>();
     if (!CollectionUtils.isEmpty(queryExample.getParams())) {
       for (Map.Entry<String, Object> entry : queryExample.getParams().entrySet()) {
-        if (entry.getKey().equals(default_ip) || entry.getKey().equals(default_hostname)) {
+        if (entry.getKey().equals(default_ip) || entry.getKey().equals(default_hostname)
+            || entry.getKey().equals(default_app)) {
           Pattern pattern = J.json2Bean(J.toJson(entry.getValue()), Pattern.class);
           filters.add(new Document(entry.getKey(), new Document("$regex", pattern.pattern())));
           continue;
@@ -220,9 +214,11 @@ public class MongoDataCoreService extends AbstractDataCoreService {
     }
     FindIterable<Document> documents;
     if (!CollectionUtils.isEmpty(filters)) {
-      documents = mongoDatabase.getCollection(tableName).find(Filters.and(filters));
+      documents = mongoDatabase.getCollection(tableName).find(Filters.and(filters))
+          .projection(Projections.exclude("annotations"));
     } else {
-      documents = mongoDatabase.getCollection(tableName).find();
+      documents = mongoDatabase.getCollection(tableName).find()
+          .projection(Projections.exclude("annotations"));
     }
     List<Document> rows = new ArrayList<>();
     documents.sort(Sorts.descending(default_modified)).into(rows);

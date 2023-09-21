@@ -11,6 +11,7 @@ public class MetaDictKey {
   public static final String ULA = "ula";
   public static final String ULA_CLOSE = "ula_close";
   public static final String ULA_HOST = "ula_host";
+  public static final String LOG_TIME_LAYOUT = "s";
   public static final String TOKEN_URL_WRITE_LIST = "token_url_write_list";
   public static final String IS_APM_MATERIALIZED = "is_apm_materialized";
 
@@ -22,6 +23,18 @@ public class MetaDictKey {
   public static final String K8S_AGENT_INSTALL_DOCUMENT = "k8sInstallDocument";
 
   public static final String COLLECTOR_HOST = "collectorHost";
+  public static final String SKYWALKING_JAVA_AGENT_VERSION = "skywalkingJavaAgentVersion";
+  public static final String DEFAULT_SKYWALKING_JAVA_AGENT_VERSION = "8.11.0";
+  public static final String SKYWALKING_PYTHON_AGENT_VERSION = "skywalkingPythonAgentVersion";
+  public static final String DEFAULT_SKYWALKING_PYTHON_AGENT_VERSION = "1.0.1";
+  public static final String SKYWALKING_PHP_AGENT_VERSION = "skywalkingPHPAgentVersion";
+  public static final String DEFAULT_SKYWALKING_PHP_AGENT_VERSION = "0.6.0";
+  public static final String SKYWALKING_DOTNET_AGENT_VERSION = "skywalkingDotnetAgentVersion";
+  public static final String DEFAULT_SKYWALKING_DOTNET_AGENT_VERSION = "2.1.0";
+  public static final String SKYWALKING_NODEJS_AGENT_VERSION = "skywalkingNodejsAgentVersion";
+  public static final String DEFAULT_SKYWALKING_NODEJS_AGENT_VERSION = "0.6.0";
+  public static final String SKYWALKING_GO_AGENT_VERSION = "skywalkingGOAgentVersion";
+  public static final String DEFAULT_SKYWALKING_GO_AGENT_VERSION = "0.2.0";
   public static final String TRACE_INSTALL_DOCUMENT = "traceInstallDocument";
 
   public static final String IGNORE_TASK_LIST = "ignore_task_list";
@@ -38,4 +51,7 @@ public class MetaDictKey {
   public static final String SYSTEM_NOTICE = "system_notice";
 
   public static final String METERING_LOG_OPEN = "metering_log_open";
+  public static final String METERING_HOLOINSIGHT_SUBMIT_OPEN = "metering_holoinsight_submit_open";
+  public static final String INTEGRATION_LOCAL_PRODUCT = "integration_local_product";
+  public static final String NETWORK_MODE = "networkMode";
 }

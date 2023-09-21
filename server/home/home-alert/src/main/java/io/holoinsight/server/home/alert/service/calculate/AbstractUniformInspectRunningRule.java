@@ -10,6 +10,8 @@ import io.holoinsight.server.home.alert.model.event.EventInfo;
 import io.holoinsight.server.home.alert.model.function.FunctionConfigAIParam;
 import io.holoinsight.server.home.alert.model.function.FunctionConfigParam;
 import io.holoinsight.server.home.alert.model.function.FunctionLogic;
+import io.holoinsight.server.home.alert.service.event.RecordSucOrFailNotify;
+import io.holoinsight.server.home.facade.AlertNotifyRecordDTO;
 import io.holoinsight.server.home.facade.DataResult;
 import io.holoinsight.server.home.facade.InspectConfig;
 import io.holoinsight.server.home.facade.PqlRule;
@@ -22,15 +24,16 @@ import io.holoinsight.server.home.facade.trigger.TriggerResult;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CountDownLatch;
@@ -50,7 +53,13 @@ public class AbstractUniformInspectRunningRule {
   ThreadPoolExecutor ruleRunner = new ThreadPoolExecutor(20, 100, 10, TimeUnit.SECONDS,
       new ArrayBlockingQueue<>(1000), r -> new Thread(r, "RuleRunner"));
 
-  public EventInfo eval(ComputeContext context) {
+  @Autowired
+  private NullValueTracker nullValueTracker;
+
+  private static String ALERT_TASK_COMPUTE = "AlertTaskCompute";
+
+  public EventInfo eval(ComputeContext context,
+      List<AlertNotifyRecordDTO> alertNotifyRecordDTOList) {
     long period = context.getTimestamp();
     InspectConfig inspectConfig = context.getInspectConfig();
     String traceId = inspectConfig.getTraceId();
@@ -58,18 +67,21 @@ public class AbstractUniformInspectRunningRule {
     EventInfo events = null;
     try {
       if (inspectConfig.getIsPql()) {
-        events = runPqlRule(inspectConfig, period);
+        events = runPqlRule(inspectConfig, period, alertNotifyRecordDTOList);
       } else {
-        events = runRule(inspectConfig, period);
+        events = runRule(inspectConfig, period, alertNotifyRecordDTOList);
       }
     } catch (Throwable ex) {
+      RecordSucOrFailNotify.alertNotifyProcess("AlertTaskCompute Exception: " + ex,
+          ALERT_TASK_COMPUTE, "alert task compute", inspectConfig.getAlertNotifyRecord());
       logger.error("fail to eval inspectConfig {}, traceId: {} ", G.get().toJson(inspectConfig),
           traceId, ex);
     }
     return events;
   }
 
-  public EventInfo runPqlRule(InspectConfig inspectConfig, long period) {
+  public EventInfo runPqlRule(InspectConfig inspectConfig, long period,
+      List<AlertNotifyRecordDTO> alertNotifyRecordDTOList) {
     if (inspectConfig.getIsPql()
         && !CollectionUtils.isEmpty(inspectConfig.getPqlRule().getDataResult())) {
       EventInfo eventInfo = new EventInfo();
@@ -83,6 +95,13 @@ public class AbstractUniformInspectRunningRule {
           convertFromPql(inspectConfig.getPqlRule(), period, inspectConfig);
       eventInfo.setAlarmTriggerResults(triggerMap);
       return eventInfo;
+    }
+    // record pql rule alert
+    AlertNotifyRecordDTO alertNotifyRecordDTO = inspectConfig.getAlertNotifyRecord();
+    if (Objects.nonNull(alertNotifyRecordDTO)) {
+      RecordSucOrFailNotify.alertNotifyNoEventGenerated("pql rule is empty", ALERT_TASK_COMPUTE,
+          "run pql rule", alertNotifyRecordDTO, null);
+      alertNotifyRecordDTOList.add(alertNotifyRecordDTO);
     }
     // 恢复时这里返回null
     return null;
@@ -121,9 +140,11 @@ public class AbstractUniformInspectRunningRule {
     return map;
   }
 
-  public EventInfo runRule(InspectConfig inspectConfig, long period) throws InterruptedException {
+  public EventInfo runRule(InspectConfig inspectConfig, long period,
+      List<AlertNotifyRecordDTO> alertNotifyRecordDTOList) throws InterruptedException {
 
     Map<Trigger, List<TriggerResult>> triggerMap = new HashMap<>();// 告警
+    List<TriggerResult> noEventGeneratedList = new ArrayList<>();// 不告警
     for (Trigger trigger : inspectConfig.getRule().getTriggers()) {
       // 后续考虑增加tags比较
       List<DataResult> dataResultList = trigger.getDataResult();
@@ -142,6 +163,9 @@ public class AbstractUniformInspectRunningRule {
               if (ruleResult.isHit()) {
                 triggerResults.add(ruleResult);
               }
+            }
+            if (!CollectionUtils.isEmpty(ruleResults)) {
+              noEventGeneratedList.addAll(ruleResults);
             }
           } finally {
             latch.countDown();
@@ -166,6 +190,13 @@ public class AbstractUniformInspectRunningRule {
       eventInfo.setEnvType(inspectConfig.getEnvType());
       return eventInfo;
     }
+    // record no alarm event generated data
+    AlertNotifyRecordDTO alertNotifyRecordDTO = inspectConfig.getAlertNotifyRecord();
+    if (Objects.nonNull(alertNotifyRecordDTO)) {
+      RecordSucOrFailNotify.alertNotifyNoEventGenerated("no alarm event generated",
+          ALERT_TASK_COMPUTE, "run rule", alertNotifyRecordDTO, noEventGeneratedList);
+      alertNotifyRecordDTOList.add(alertNotifyRecordDTO);
+    }
     return null;
   }
 
@@ -177,7 +208,7 @@ public class AbstractUniformInspectRunningRule {
    * @param trigger 触发
    * @return {@link TriggerResult}
    */
-  public static List<TriggerResult> apply(DataResult dataResult, ComputeInfo computeInfo,
+  public List<TriggerResult> apply(DataResult dataResult, ComputeInfo computeInfo,
       Trigger trigger) {
     FunctionLogic inspectFunction = FunctionManager.functionMap.get(trigger.getType());
     // 增加智能告警算法执行
@@ -197,6 +228,10 @@ public class AbstractUniformInspectRunningRule {
       if (ruleResult.isHit()) {
         break;
       }
+    }
+    List<Long> nullValTimes = this.nullValueTracker.hasNullValue(dataResult, functionConfigParams);
+    if (!CollectionUtils.isEmpty(nullValTimes)) {
+      this.nullValueTracker.record(dataResult, trigger, nullValTimes, computeInfo);
     }
 
     return triggerResults;

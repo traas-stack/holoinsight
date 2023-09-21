@@ -14,6 +14,7 @@ import java.util.UUID;
 
 import javax.servlet.http.HttpServletResponse;
 
+import io.holoinsight.server.home.web.common.ParaCheckUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
@@ -113,19 +114,22 @@ public class InitFacadeImpl extends BaseFacade {
   @GetMapping(value = "/tenantSwitch/{tenant}")
   public JsonResult<Boolean> tenantSwitch(@PathVariable("tenant") String tenant,
       @RequestParam(value = "workspace", required = false) String workspace,
+      @RequestParam(value = "environment", required = false) String environment,
       HttpServletResponse response) {
 
     final JsonResult<Boolean> result = new JsonResult<>();
     facadeTemplate.manage(result, new ManageCallback() {
       @Override
       public void checkParameter() {
-
+        ParaCheckUtil.checkParaNotNull(tenant, "tenant");
+        tenantInitService.checkCookie(tenant, workspace, environment);
       }
 
       @Override
       public void doManage() {
         MonitorCookieUtil.addTenantCookie(tenant, response);
         MonitorCookieUtil.addTenantWorkspaceCookie(workspace, response);
+        MonitorCookieUtil.addTenantEnvironmentCookie(environment, response);
         JsonResult.createSuccessResult(result, true);
       }
     });

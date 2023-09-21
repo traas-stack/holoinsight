@@ -23,7 +23,7 @@
     "logPaths":
     [
       {
-        "path": "/home/admin/logs/holoinsight-server/increase_value.log",
+        "path": "/home/admin/logs/holoinsight-server/test/increase_value.log",
         "type": "path",
         "charset": "utf-8",
         "agentLimitKB": -1

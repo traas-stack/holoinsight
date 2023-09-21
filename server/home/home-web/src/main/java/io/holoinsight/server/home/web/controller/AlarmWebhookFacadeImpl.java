@@ -29,7 +29,7 @@ import io.holoinsight.server.home.biz.service.AlertWebhookService;
 import io.holoinsight.server.home.biz.service.UserOpLogService;
 import io.holoinsight.server.home.common.service.query.WebhookResponse;
 import io.holoinsight.server.home.common.util.MonitorException;
-import io.holoinsight.server.home.common.util.SSRFUtils;
+import io.holoinsight.server.common.SSRFUtils;
 import io.holoinsight.server.home.common.util.scope.AuthTargetType;
 import io.holoinsight.server.home.common.util.scope.MonitorScope;
 import io.holoinsight.server.home.common.util.scope.MonitorUser;
@@ -302,16 +302,22 @@ public class AlarmWebhookFacadeImpl extends BaseFacade {
       public void doManage() {
 
         try {
+          Boolean aBoolean = SSRFUtils.hookCheckUrl(alarmWebhookDTO.getRequestUrl());
+          if (!aBoolean) {
+            log.error("alarm webhook url check failed");
+            JsonResult.fillFailResultTo(result, "alarm webhook url check failed");
+            return;
+          }
           SSRFUtils.hookStart();
           WebhookResponse response = alertService.webhookTest(alarmWebhookDTO);
           if (response.getCode() == 200) {
             JsonResult.createSuccessResult(result, response);
           } else {
-            JsonResult.createFailResult(result, J.toJson(response));
+            JsonResult.fillFailResultTo(result, J.toJson(response));
           }
         } catch (Throwable t) {
           log.error("alarm webhook test error", t);
-          JsonResult.createFailResult(result, t.getMessage());
+          JsonResult.fillFailResultTo(result, t.getMessage());
         } finally {
           SSRFUtils.hookStop();
         }

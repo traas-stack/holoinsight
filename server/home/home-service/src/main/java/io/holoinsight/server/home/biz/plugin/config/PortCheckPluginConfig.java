@@ -6,6 +6,8 @@ package io.holoinsight.server.home.biz.plugin.config;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
+import java.util.List;
+
 /**
  *
  * @author jsy1001de
@@ -15,4 +17,6 @@ import lombok.EqualsAndHashCode;
 @Data
 public class PortCheckPluginConfig extends BasePluginConfig {
   public Integer port;
+  public List<Integer> ports;
+  public String networkMode;
 }

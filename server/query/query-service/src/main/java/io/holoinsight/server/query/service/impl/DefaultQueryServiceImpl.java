@@ -8,15 +8,42 @@ import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.google.common.collect.Lists;
 import com.google.protobuf.MessageOrBuilder;
-import io.holoinsight.server.apm.common.model.query.*;
+import io.holoinsight.server.apm.common.model.query.Duration;
+import io.holoinsight.server.apm.common.model.query.Endpoint;
+import io.holoinsight.server.common.event.Event;
+import io.holoinsight.server.apm.common.model.query.MetricValue;
+import io.holoinsight.server.apm.common.model.query.MetricValues;
+import io.holoinsight.server.apm.common.model.query.Pagination;
+import io.holoinsight.server.apm.common.model.query.QueryComponentRequest;
+import io.holoinsight.server.apm.common.model.query.QueryEndpointRequest;
+import io.holoinsight.server.apm.common.model.query.QueryMetricRequest;
+import io.holoinsight.server.apm.common.model.query.QueryOrder;
+import io.holoinsight.server.apm.common.model.query.QueryServiceInstanceRequest;
+import io.holoinsight.server.apm.common.model.query.QueryServiceRequest;
+import io.holoinsight.server.apm.common.model.query.QueryTopologyRequest;
+import io.holoinsight.server.apm.common.model.query.QueryTraceRequest;
+import io.holoinsight.server.apm.common.model.query.Request;
+import io.holoinsight.server.apm.common.model.query.Service;
+import io.holoinsight.server.apm.common.model.query.ServiceInstance;
+import io.holoinsight.server.apm.common.model.query.SlowSql;
+import io.holoinsight.server.apm.common.model.query.StatisticData;
+import io.holoinsight.server.apm.common.model.query.StatisticDataList;
+import io.holoinsight.server.apm.common.model.query.StatisticRequest;
+import io.holoinsight.server.apm.common.model.query.Topology;
+import io.holoinsight.server.apm.common.model.query.TraceBrief;
+import io.holoinsight.server.apm.common.model.query.TraceTree;
+import io.holoinsight.server.apm.common.model.query.VirtualComponent;
 import io.holoinsight.server.apm.common.model.specification.OtlpMappings;
 import io.holoinsight.server.apm.common.model.specification.sw.Trace;
 import io.holoinsight.server.apm.common.model.specification.sw.TraceState;
 import io.holoinsight.server.apm.common.utils.GsonUtils;
 import io.holoinsight.server.apm.engine.postcal.MetricDefine;
 import io.holoinsight.server.common.DurationUtil;
+import io.holoinsight.server.common.J;
 import io.holoinsight.server.common.ProtoJsonUtils;
+import io.holoinsight.server.common.service.SuperCacheService;
 import io.holoinsight.server.extension.MetricStorage;
+import io.holoinsight.server.extension.model.DetailResult;
 import io.holoinsight.server.extension.model.PqlParam;
 import io.holoinsight.server.extension.model.QueryMetricsParam;
 import io.holoinsight.server.extension.model.QueryParam;
@@ -29,8 +56,8 @@ import io.holoinsight.server.query.grpc.QueryProto.Point.Builder;
 import io.holoinsight.server.query.grpc.QueryProto.PqlInstantRequest;
 import io.holoinsight.server.query.service.QueryException;
 import io.holoinsight.server.query.service.QueryService;
-import io.holoinsight.server.query.service.analysis.AnalysisCenter;
-import io.holoinsight.server.query.service.analysis.Mergable;
+import io.holoinsight.server.query.service.analysis.AggCenter;
+import io.holoinsight.server.query.service.analysis.Mergeable;
 import io.holoinsight.server.query.service.apm.ApmAPI;
 import io.holoinsight.server.query.service.apm.ApmClient;
 import lombok.extern.slf4j.Slf4j;
@@ -44,7 +71,16 @@ import org.springframework.util.Assert;
 import retrofit2.Call;
 import retrofit2.Response;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.TreeMap;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
@@ -58,6 +94,9 @@ public class DefaultQueryServiceImpl implements QueryService {
 
   @Autowired
   private ApmClient apmClient;
+
+  @Autowired
+  private SuperCacheService superCacheService;
 
   private LoadingCache<String, Map<String, MetricDefine>> apmMetrics =
       CacheBuilder.newBuilder().expireAfterWrite(60, TimeUnit.SECONDS)
@@ -79,9 +118,9 @@ public class DefaultQueryServiceImpl implements QueryService {
       String fillPolicy = request.getFillPolicy();
       if (StringUtils.isBlank(query)
           || datasources.stream().anyMatch(ds -> query.equals(ds.getName()))) {
-        return simpleQuery(tenant, datasources);
+        return simpleQuery(request, tenant, datasources);
       } else {
-        return complexQuery(tenant, query, query, downsample, fillPolicy, datasources);
+        return complexQuery(request, tenant, query, query, downsample, fillPolicy, datasources);
       }
     }, "queryData", request);
   }
@@ -120,12 +159,26 @@ public class DefaultQueryServiceImpl implements QueryService {
       Map<String, Set<String>> keys = new HashMap<>();
       List<QueryProto.Datasource> datasources = request.getDatasourcesList();
       for (QueryProto.Datasource ds : datasources) {
-        QueryParam queryParam = new QueryParam();
-        queryParam.setMetric(ds.getMetric());
-        queryParam.setTenant(request.getTenant());
-        Result result = metricStorage.querySchema(queryParam);
-        Map<String, String> tags = result.getTags();
-        keys.put(ds.getMetric(), tags.keySet());
+        if (this.apmMetrics.getUnchecked(request.getTenant()).containsKey(ds.getMetric())) {
+          Response<List<String>> schemaRsp = apmClient.getClient(request.getTenant())
+              .querySchema(new QueryMetricRequest(request.getTenant(), ds.getMetric(), null, null))
+              .execute();
+          if (!schemaRsp.isSuccessful()) {
+            throw new QueryException(schemaRsp.errorBody().string());
+          }
+          builder.addResults(QueryProto.KeysResult.newBuilder().setMetric(ds.getMetric())
+              .addAllKeys(schemaRsp.body()).build());
+        } else {
+          QueryParam queryParam = new QueryParam();
+          queryParam.setMetric(ds.getMetric());
+          queryParam.setTenant(request.getTenant());
+          if (StringUtils.isNotEmpty(ds.getQl())) {
+            queryParam.setQl(ds.getQl());
+          }
+          Result result = metricStorage.querySchema(queryParam);
+          Map<String, String> tags = result.getTags();
+          keys.put(ds.getMetric(), tags.keySet());
+        }
       }
       keys.forEach((m, ks) -> builder
           .addResults(QueryProto.KeysResult.newBuilder().setMetric(m).addAllKeys(ks)).build());
@@ -137,23 +190,42 @@ public class DefaultQueryServiceImpl implements QueryService {
   public QueryProto.QueryMetricsResponse queryMetrics(QueryProto.QueryMetricsRequest request)
       throws QueryException {
     return wrap(() -> {
+
+      QueryProto.QueryMetricsResponse.Builder b = QueryProto.QueryMetricsResponse.newBuilder();
+
+      Set<String> metrics = new HashSet<>();
+
       QueryMetricsParam param = QueryStorageUtils.convertToQueryMetricsParam(request);
       List<String> suggestRsp = metricStorage.queryMetrics(param);
 
-      QueryProto.QueryMetricsResponse.Builder b = QueryProto.QueryMetricsResponse.newBuilder();
       if (CollectionUtils.isNotEmpty(suggestRsp)) {
         for (String metric : suggestRsp) {
-          QueryProto.MetricResult mr = QueryProto.MetricResult.newBuilder().setName(metric).build();
-          b.addResults(mr);
+          metrics.add(metric);
         }
       }
+
+      Map<String, MetricDefine> apmMetrics = this.apmMetrics.getUnchecked(request.getTenant());
+      if (apmMetrics != null) {
+        for (String apmMetric : apmMetrics.keySet()) {
+          if (StringUtils.isBlank(request.getName())
+              || request.getExplicit() && StringUtils.equals(apmMetric, request.getName())
+              || !request.getExplicit() && StringUtils.contains(apmMetric, request.getName())) {
+            metrics.add(apmMetric);
+          }
+        }
+      }
+
+      metrics.forEach(metric -> {
+        QueryProto.MetricResult mr = QueryProto.MetricResult.newBuilder().setName(metric).build();
+        b.addResults(mr);
+      });
+
       return b.build();
     }, "queryMetrics", request);
   }
 
   @Override
-  public QueryProto.QueryResponse pqlInstantQuery(QueryProto.PqlInstantRequest request)
-      throws QueryException {
+  public QueryProto.QueryResponse pqlInstantQuery(PqlInstantRequest request) throws QueryException {
     QueryProto.QueryResponse.Builder builder = QueryProto.QueryResponse.newBuilder();
     List<Result> pqlResult = metricStorage.pqlInstantQuery(transToPqlParam(request));
     QueryProto.Result.Builder resultBuilder = QueryProto.Result.newBuilder();
@@ -259,8 +331,10 @@ public class DefaultQueryServiceImpl implements QueryService {
       Assert.isTrue(!request.getTraceIdsList().isEmpty(), "trace id should be set!");
       ApmAPI apmAPI = apmClient.getClient(request.getTenant());
       QueryTraceRequest queryTraceRequest = new QueryTraceRequest();
+      queryTraceRequest.setDuration(new Duration(request.getStart(), request.getEnd(), null));
       queryTraceRequest.setTenant(request.getTenant());
       queryTraceRequest.setTraceIds(request.getTraceIdsList());
+      queryTraceRequest.setTags(ApmConvertor.convertTagsMap(request.getTagsMap()));
       Call<Trace> call = apmAPI.queryTrace(queryTraceRequest);
       Response<Trace> traceRsp = call.execute();
       if (!traceRsp.isSuccessful()) {
@@ -268,6 +342,85 @@ public class DefaultQueryServiceImpl implements QueryService {
       }
       return ApmConvertor.convertTrace(traceRsp.body());
     }, "queryTrace", request);
+  }
+
+  @Override
+  public QueryProto.TraceTreeList queryTraceTree(QueryProto.QueryTraceRequest request)
+      throws QueryException {
+    return wrap(() -> {
+      Assert.isTrue(!request.getTraceIdsList().isEmpty(), "trace id should be set!");
+      ApmAPI apmAPI = apmClient.getClient(request.getTenant());
+      QueryTraceRequest queryTraceRequest = new QueryTraceRequest();
+      queryTraceRequest.setDuration(new Duration(request.getStart(), request.getEnd(), null));
+      queryTraceRequest.setTenant(request.getTenant());
+      queryTraceRequest.setTraceIds(request.getTraceIdsList());
+      queryTraceRequest.setTags(ApmConvertor.convertTagsMap(request.getTagsMap()));
+      Call<List<TraceTree>> call = apmAPI.queryTraceTree(queryTraceRequest);
+      Response<List<TraceTree>> traceRsp = call.execute();
+      if (!traceRsp.isSuccessful()) {
+        throw new QueryException(traceRsp.errorBody().string());
+      }
+      return ApmConvertor.convertTraceTree(traceRsp.body());
+    }, "queryTraceTree", request);
+  }
+
+  @Override
+  public QueryProto.StatisticData billingTrace(QueryProto.QueryTraceRequest request)
+      throws QueryException {
+    return wrap(() -> {
+      Assert.isTrue(
+          !request.getTraceIdsList().isEmpty()
+              || (request.getStart() != 0 && request.getEnd() != 0),
+          "traceId or timeRange should be set!");
+
+      ApmAPI apmAPI = apmClient.getClient(request.getTenant());
+      QueryTraceRequest queryTraceRequest = new QueryTraceRequest();
+      queryTraceRequest.setTenant(request.getTenant());
+      queryTraceRequest.setServiceName(request.getServiceName());
+      queryTraceRequest.setServiceInstanceName(request.getServiceInstanceName());
+      queryTraceRequest.setTraceIds(request.getTraceIdsList());
+      queryTraceRequest.setEndpointName(request.getEndpointName());
+      queryTraceRequest.setDuration(new Duration(request.getStart(), request.getEnd(), null));
+
+      queryTraceRequest.setMinTraceDuration(request.getMinTraceDuration());
+      queryTraceRequest.setMaxTraceDuration(request.getMaxTraceDuration());
+      if (StringUtils.isEmpty(request.getTraceState())) {
+        queryTraceRequest.setTraceState(TraceState.ALL);
+      } else {
+        queryTraceRequest.setTraceState(TraceState.valueOf(request.getTraceState()));
+      }
+      queryTraceRequest.setTags(ApmConvertor.convertTagsMap(request.getTagsMap()));
+      Call<StatisticData> call = apmAPI.billing(queryTraceRequest);
+      Response<StatisticData> statisticDataRsp = call.execute();
+      if (!statisticDataRsp.isSuccessful()) {
+        throw new QueryException(statisticDataRsp.errorBody().string());
+      }
+      return ApmConvertor.convertStatisticData(statisticDataRsp.body());
+    }, "billingTrace", request);
+  }
+
+  @Override
+  public QueryProto.StatisticDataList statisticTrace(QueryProto.StatisticRequest request)
+      throws QueryException {
+    return wrap(() -> {
+      Assert.isTrue((request.getStart() != 0 && request.getEnd() != 0), "timeRange should be set!");
+
+      Assert.notEmpty((request.getGroupsList()),
+          "groups should be set, or you should use billing API!");
+
+      ApmAPI apmAPI = apmClient.getClient(request.getTenant());
+      StatisticRequest queryTraceRequest = new StatisticRequest();
+      queryTraceRequest.setTenant(request.getTenant());
+      queryTraceRequest.setStart(request.getStart());
+      queryTraceRequest.setEnd(request.getEnd());
+      queryTraceRequest.setGroups(request.getGroupsList());
+      Call<StatisticDataList> call = apmAPI.statistic(queryTraceRequest);
+      Response<StatisticDataList> statisticDataRsp = call.execute();
+      if (!statisticDataRsp.isSuccessful()) {
+        throw new QueryException(statisticDataRsp.errorBody().string());
+      }
+      return ApmConvertor.convert(statisticDataRsp.body());
+    }, "statisticTrace", request);
   }
 
   @Override
@@ -535,11 +688,124 @@ public class DefaultQueryServiceImpl implements QueryService {
     }, "querySlowSqlList", request);
   }
 
-  private QueryProto.QueryResponse simpleQuery(String tenant,
+  @Override
+  public QueryProto.CommonMapTypeDataList queryServiceErrorList(QueryProto.QueryMetaRequest request)
+      throws QueryException {
+    return wrap(() -> {
+      ApmAPI apmAPI = apmClient.getClient(request.getTenant());
+
+      QueryServiceRequest queryServiceRequest = new QueryServiceRequest();
+      queryServiceRequest.setTenant(request.getTenant());
+      queryServiceRequest.setServiceName(request.getServiceName());
+      queryServiceRequest.setStartTime(request.getStart());
+      queryServiceRequest.setEndTime(request.getEnd());
+      if (request.getTermParamsMap() != null) {
+        queryServiceRequest.setTermParams(request.getTermParamsMap());
+      }
+      Call<List<Map<String, String>>> serviceList =
+          apmAPI.queryServiceErrorList(queryServiceRequest);
+      Response<List<Map<String, String>>> listResponse = serviceList.execute();
+      if (!listResponse.isSuccessful()) {
+        throw new QueryException(listResponse.errorBody().string());
+      }
+      QueryProto.CommonMapTypeDataList.Builder builder =
+          QueryProto.CommonMapTypeDataList.newBuilder();
+      listResponse.body().forEach(data -> {
+        QueryProto.CommonMapTypeData.Builder tmpBuilder = QueryProto.CommonMapTypeData.newBuilder();
+        tmpBuilder.putAllData(data);
+        builder.addCommonMapTypeData(tmpBuilder.build());
+      });
+
+      return builder.build();
+    }, "queryServiceErrorList", request);
+  }
+
+  @Override
+  public QueryProto.CommonMapTypeDataList queryServiceErrorDetail(
+      QueryProto.QueryMetaRequest request) throws QueryException {
+    return wrap(() -> {
+      ApmAPI apmAPI = apmClient.getClient(request.getTenant());
+
+      QueryServiceRequest queryServiceRequest = new QueryServiceRequest();
+      queryServiceRequest.setTenant(request.getTenant());
+      queryServiceRequest.setServiceName(request.getServiceName());
+      queryServiceRequest.setStartTime(request.getStart());
+      queryServiceRequest.setEndTime(request.getEnd());
+      if (request.getTermParamsMap() != null) {
+        queryServiceRequest.setTermParams(request.getTermParamsMap());
+      }
+
+      Call<List<Map<String, String>>> serviceList =
+          apmAPI.queryServiceErrorDetail(queryServiceRequest);
+      Response<List<Map<String, String>>> listResponse = serviceList.execute();
+      if (!listResponse.isSuccessful()) {
+        throw new QueryException(listResponse.errorBody().string());
+      }
+      QueryProto.CommonMapTypeDataList.Builder builder =
+          QueryProto.CommonMapTypeDataList.newBuilder();
+      listResponse.body().forEach(data -> {
+        QueryProto.CommonMapTypeData.Builder tmpBuilder = QueryProto.CommonMapTypeData.newBuilder();
+        tmpBuilder.putAllData(data);
+        builder.addCommonMapTypeData(tmpBuilder.build());
+      });
+
+      return builder.build();
+    }, "queryServiceErrorDetail", request);
+  }
+
+  @Override
+  public QueryProto.QueryDetailResponse queryDetailData(QueryProto.QueryRequest request)
+      throws QueryException {
+    return wrap(() -> {
+      List<QueryProto.Datasource> datasources = request.getDatasourcesList();
+      Assert.notEmpty(datasources, "datasources are empty");
+      String tenant = request.getTenant();
+
+      List<QueryProto.QueryDetailResponse> rsps = new ArrayList<>(datasources.size());
+      for (QueryProto.Datasource datasource : datasources) {
+        QueryProto.QueryDetailResponse.Builder queryResponseBuilder =
+            queryDetail(tenant, datasource);
+        rsps.add(queryResponseBuilder.build());
+      }
+      List<QueryProto.DetailResult> results =
+          rsps.stream().flatMap(rsp -> rsp.getResultsList().stream()).collect(Collectors.toList());
+      return QueryProto.QueryDetailResponse.newBuilder().addAllResults(results).build();
+    }, "queryDetailData", request);
+  }
+
+  @Override
+  public QueryProto.QueryEventResponse queryEvents(QueryProto.QueryEventRequest request)
+      throws QueryException {
+    return wrap(() -> {
+      ApmAPI apmAPI = apmClient.getClient(request.getTenant());
+
+      Request queryRequest = new Request();
+      queryRequest.setTenant(request.getTenant());
+      queryRequest.setStartTime(request.getStart());
+      queryRequest.setEndTime(request.getEnd());
+      if (request.getTermParamsMap() != null) {
+        queryRequest.setTermParams(request.getTermParamsMap());
+      }
+
+      Call<List<Event>> events = apmAPI.queryEvents(queryRequest);
+      Response<List<Event>> listResponse = events.execute();
+      if (!listResponse.isSuccessful()) {
+        throw new QueryException(listResponse.errorBody().string());
+      }
+      QueryProto.QueryEventResponse.Builder builder = QueryProto.QueryEventResponse.newBuilder();
+      listResponse.body().forEach(data -> {
+        builder.addEvent(ApmConvertor.convertEvent(data));
+      });
+
+      return builder.build();
+    }, "queryEvents", request);
+  }
+
+  private QueryProto.QueryResponse simpleQuery(QueryProto.QueryRequest request, String tenant,
       List<QueryProto.Datasource> datasources) throws QueryException {
     List<QueryProto.QueryResponse> rsps = new ArrayList<>(datasources.size());
     for (QueryProto.Datasource datasource : datasources) {
-      QueryProto.QueryResponse.Builder queryResponseBuilder = queryDs(tenant, datasource);
+      QueryProto.QueryResponse.Builder queryResponseBuilder = queryDs(request, tenant, datasource);
       rsps.add(queryResponseBuilder.build());
     }
     List<QueryProto.Result> results =
@@ -547,9 +813,9 @@ public class DefaultQueryServiceImpl implements QueryService {
     return QueryProto.QueryResponse.newBuilder().addAllResults(results).build();
   }
 
-  private QueryProto.QueryResponse complexQuery(String tenant, String expression, String as,
-      String downsample, String fillPolicy, List<QueryProto.Datasource> datasources)
-      throws QueryException {
+  private QueryProto.QueryResponse complexQuery(QueryProto.QueryRequest request, String tenant,
+      String expression, String as, String downsample, String fillPolicy,
+      List<QueryProto.Datasource> datasources) throws QueryException {
     List<String> queryExprs = Lists.newArrayList(StringUtils.split(expression, ","));
     List<String> queryAs = Lists.newArrayList(StringUtils.split(as, ","));
     Map<String, String> asMap = new HashMap<>();
@@ -566,7 +832,7 @@ public class DefaultQueryServiceImpl implements QueryService {
     Map<String, List<QueryProto.Result>> resultMap = new HashMap<>();
     for (QueryProto.Datasource datasource : datasources) {
       String dsName = datasource.getName();
-      List<QueryProto.Result> rspResults = queryDs(tenant, datasource).getResultsList();
+      List<QueryProto.Result> rspResults = queryDs(request, tenant, datasource).getResultsList();
       resultMap.put(dsName, rspResults);
     }
 
@@ -626,7 +892,7 @@ public class DefaultQueryServiceImpl implements QueryService {
         }).collect(Collectors.toList());
         try {
           Double rpnResult = rpnResolver.calByInfix(rpnArgs);
-          QueryProto.Point.Builder pointBuilder = QueryProto.Point.newBuilder();
+          Builder pointBuilder = QueryProto.Point.newBuilder();
           pointBuilder.setTimestamp(timestamp).setValue(rpnResult);
           QueryProto.Point point = pointBuilder.build();
           resultBuilder.addPoints(point);
@@ -640,16 +906,48 @@ public class DefaultQueryServiceImpl implements QueryService {
     return results;
   }
 
-  protected QueryProto.QueryResponse.Builder queryDs(String tenant,
+  protected QueryProto.QueryResponse.Builder queryDs(QueryProto.QueryRequest request, String tenant,
       QueryProto.Datasource datasource) throws QueryException {
     MetricDefine apmMetric = this.apmMetrics.getUnchecked(tenant).get(datasource.getMetric());
-    if (apmMetric != null) {
+    // virtual metric
+    if (superCacheService.getSc() != null && superCacheService.getSc().expressionMetricList != null
+        && superCacheService.getSc().expressionMetricList.containsKey(datasource.getMetric())) {
+      QueryProto.QueryRequest.Builder template =
+          superCacheService.getSc().expressionMetricList.get(datasource.getMetric()).toBuilder();
+      return queryVirtual(template, request, tenant, datasource);
+    } else if (apmMetric != null) {
       return queryApm(tenant, datasource, apmMetric);
-    } else if (AnalysisCenter.isAnalysis(datasource.getAggregator())) {
+    } else if (AggCenter.isAggregator(datasource.getAggregator())) {
       return analysis(tenant, datasource);
     } else {
       return queryMetricStore(tenant, datasource);
     }
+  }
+
+  private QueryProto.QueryResponse.Builder queryVirtual(QueryProto.QueryRequest.Builder template,
+      QueryProto.QueryRequest request, String tenant, QueryProto.Datasource datasource)
+      throws QueryException {
+    template.setTenant(tenant);
+    if (StringUtils.isNotBlank(datasource.getDownsample())) {
+      template.setDownsample(datasource.getDownsample());
+    }
+    for (QueryProto.Datasource.Builder dsTemplate : template.getDatasourcesBuilderList()) {
+      dsTemplate.setStart(datasource.getStart());
+      dsTemplate.setEnd(datasource.getEnd());
+      if (CollectionUtils.isNotEmpty(datasource.getFiltersList())) {
+        dsTemplate.clearFilters().addAllFilters(datasource.getFiltersList());
+      }
+      dsTemplate.setDownsample(datasource.getDownsample());
+      dsTemplate.setSlidingWindow(datasource.getSlidingWindow());
+      if (CollectionUtils.isNotEmpty(datasource.getGroupByList())) {
+        dsTemplate.clearGroupBy().addAllGroupBy(datasource.getGroupByList());
+      }
+    }
+    QueryProto.QueryResponse.Builder rspBuilder = queryData(template.build()).toBuilder();
+    for (QueryProto.Result.Builder resultBuilder : rspBuilder.getResultsBuilderList()) {
+      resultBuilder.setMetric(request.getQuery());
+    }
+    return rspBuilder;
   }
 
   private QueryProto.QueryResponse.Builder queryApm(String tenant, QueryProto.Datasource datasource,
@@ -778,18 +1076,16 @@ public class DefaultQueryServiceImpl implements QueryService {
   private QueryProto.QueryResponse.Builder queryMetricStore(String tenant,
       QueryProto.Datasource datasource) {
     QueryParam param = QueryStorageUtils.convertToQueryParam(tenant, datasource);
-    List<io.holoinsight.server.extension.model.QueryResult.Result> results =
-        metricStorage.queryData(param);
+    List<Result> results = metricStorage.queryData(param);
 
     QueryProto.QueryResponse.Builder builder = QueryProto.QueryResponse.newBuilder();
-    for (io.holoinsight.server.extension.model.QueryResult.Result result : results) {
+    for (Result result : results) {
       QueryProto.Result.Builder resultBuilder = QueryProto.Result.newBuilder();
       resultBuilder.setMetric(
           StringUtils.isNotEmpty(datasource.getName()) ? datasource.getName() : result.getMetric())
           .putAllTags(result.getTags());
-      for (io.holoinsight.server.extension.model.QueryResult.Point point : result.getPoints()) {
-        QueryProto.Point.Builder pointBuilder =
-            QueryProto.Point.newBuilder().setTimestamp(point.getTimestamp());
+      for (Point point : result.getPoints()) {
+        Builder pointBuilder = QueryProto.Point.newBuilder().setTimestamp(point.getTimestamp());
 
         if (point.getStrValue() != null) {
           pointBuilder.setStrValue(String.valueOf(point.getStrValue()));
@@ -810,18 +1106,61 @@ public class DefaultQueryServiceImpl implements QueryService {
     return builder;
   }
 
+  private QueryProto.QueryDetailResponse.Builder queryDetail(String tenant,
+      QueryProto.Datasource datasource) {
+    QueryParam param = QueryStorageUtils.convertToQueryParam(tenant, datasource);
+    DetailResult detailResult = metricStorage.queryDetail(param);
+    QueryProto.QueryDetailResponse.Builder builder = QueryProto.QueryDetailResponse.newBuilder();
+    QueryProto.DetailResult.Builder detailResultBuilder = QueryProto.DetailResult.newBuilder();
+    if (detailResult == null || detailResult.isEmpty()) {
+      log.info("detailResult is empty for {}", J.toJson(datasource));
+      return builder;
+    }
+    detailResultBuilder.addAllHeaders(detailResult.getHeaders()) //
+        .addAllTables(detailResult.getTables()) //
+        .setSql(detailResult.getSql());
+    for (DetailResult.DetailRow detailRow : detailResult.getPoints()) {
+      if (CollectionUtils.isEmpty(detailRow.getValues())) {
+        continue;
+      }
+      QueryProto.DetailRow.Builder resultBuilder = QueryProto.DetailRow.newBuilder();
+      for (DetailResult.Value value : detailRow.getValues()) {
+        QueryProto.DetailValue.Builder valueBuilder = QueryProto.DetailValue.newBuilder();
+        valueBuilder.setType(value.getType().name());
+        switch (value.getType()) {
+          case String:
+            valueBuilder.setStrValue((String) value.getValue());
+            break;
+          case Timestamp:
+            valueBuilder.setTimestampValue(((Number) value.getValue()).longValue());
+            break;
+          case Double:
+            valueBuilder.setDoubleValue(((Number) value.getValue()).doubleValue());
+            break;
+          case Boolean:
+            valueBuilder.setBoolValue((Boolean) value.getValue());
+            break;
+        }
+        resultBuilder.addValues(valueBuilder.build());
+      }
+      detailResultBuilder.addRows(resultBuilder.build());
+    }
+    builder.addResults(detailResultBuilder.build());
+    return builder;
+  }
+
   private QueryProto.QueryResponse.Builder analysis(String tenant,
       QueryProto.Datasource datasource) {
 
     QueryParam queryParam = QueryStorageUtils.convertToQueryParam(tenant, datasource);
     queryParam.setAggregator("none");
 
-    List<io.holoinsight.server.extension.model.QueryResult.Result> results =
-        metricStorage.queryData(queryParam);
+    List<Result> results = metricStorage.queryData(queryParam);
 
     QueryProto.QueryResponse.Builder builder = QueryProto.QueryResponse.newBuilder();
+    Map<Map<String, String>, QueryProto.Result.Builder> tagsResults = new HashMap<>();
 
-    Map<Long, List<Pair<Map<String, String>, Mergable>>> detailMap = new HashMap<>();
+    Map<Long, List<Pair<Map<String, String>, Mergeable>>> detailMap = new HashMap<>();
 
     String aggregator = datasource.getAggregator();
 
@@ -831,16 +1170,16 @@ public class DefaultQueryServiceImpl implements QueryService {
       for (val point : points) {
         long timestamp = point.getTimestamp();
         String value = point.getStrValue();
-        Mergable mergable = AnalysisCenter.parseAnalysis(tags, value, aggregator);
-        if (mergable != null) {
+        Mergeable mergeable = AggCenter.parseMergeable(tags, value, aggregator);
+        if (mergeable != null) {
           detailMap.computeIfAbsent(timestamp, _0 -> new ArrayList<>())
-              .add(Pair.of(tags, mergable));
+              .add(Pair.of(tags, mergeable));
         }
       }
     }
 
     detailMap.forEach((timestamp, pairs) -> {
-      Map<Map<String, String>, Optional<Pair<Map<String, String>, Mergable>>> reducedByTags =
+      Map<Map<String, String>, Optional<Pair<Map<String, String>, Mergeable>>> reducedByTags =
           pairs.stream().collect(Collectors.groupingBy(pair -> {
             Map resultTags = new HashMap();
             if (CollectionUtils.isNotEmpty(queryParam.getGroupBy())) {
@@ -852,31 +1191,32 @@ public class DefaultQueryServiceImpl implements QueryService {
             return pair1;
           })));
       reducedByTags.forEach((tags, vals) -> {
-        QueryProto.Result.Builder resultBuilder = QueryProto.Result.newBuilder();
-        resultBuilder.setMetric(StringUtils.isNotEmpty(datasource.getName()) ? datasource.getName()
-            : datasource.getMetric()).putAllTags(tags);
-        QueryProto.Point.Builder pointBuilder = QueryProto.Point.newBuilder()
-            .setTimestamp(timestamp).setStrValue(GsonUtils.toJson(vals.get().getRight()));
+        QueryProto.Result.Builder resultBuilder = tagsResults.computeIfAbsent(tags,
+            k -> QueryProto.Result.newBuilder()
+                .setMetric(StringUtils.isNotEmpty(datasource.getName()) ? datasource.getName()
+                    : datasource.getMetric())
+                .putAllTags(tags));
+        Builder pointBuilder = QueryProto.Point.newBuilder().setTimestamp(timestamp)
+            .setStrValue(GsonUtils.toJson(vals.get().getRight()));
         resultBuilder.addPoints(pointBuilder);
-        builder.addResults(resultBuilder);
       });
     });
-
+    tagsResults.values().forEach(builder::addResults);
     return builder;
   }
 
   private void fillData(QueryProto.QueryResponse.Builder rspBuilder, long start, long end,
       String downsample, String fillPolicy) {
     rspBuilder.getResultsBuilderList().forEach(resultBuilder -> {
-      List<QueryProto.Point.Builder> pointBuilders = resultBuilder.getPointsBuilderList();
-      Map<Long, QueryProto.Point.Builder> timePointMap = new TreeMap<>(pointBuilders.stream()
-          .collect(Collectors.toMap(QueryProto.Point.Builder::getTimestamp, Function.identity())));
+      List<Builder> pointBuilders = resultBuilder.getPointsBuilderList();
+      Map<Long, Builder> timePointMap = new TreeMap<>(pointBuilders.stream()
+          .collect(Collectors.toMap(Builder::getTimestamp, Function.identity())));
       long sample = DurationUtil.parse(downsample).toMillis();
       for (long period =
           start % sample == 0 ? start : start / sample * sample + sample; period <= end; period +=
               sample) {
         if (!timePointMap.containsKey(period)) {
-          QueryProto.Point.Builder builder = QueryProto.Point.newBuilder().setTimestamp(period);
+          Builder builder = QueryProto.Point.newBuilder().setTimestamp(period);
           Object filledVal = QueryStorageUtils.convertFillPolocy(fillPolicy);
           if (filledVal instanceof Number) {
             builder.setValue(((Number) filledVal).doubleValue());
@@ -896,9 +1236,8 @@ public class DefaultQueryServiceImpl implements QueryService {
     try {
       List<QueryProto.Result> pbResults = new ArrayList<>();
       QueryParam param = QueryStorageUtils.convertToQueryParam(tenant, datasource);
-      List<io.holoinsight.server.extension.model.QueryResult.Result> results =
-          metricStorage.queryTags(param);
-      for (io.holoinsight.server.extension.model.QueryResult.Result result : results) {
+      List<Result> results = metricStorage.queryTags(param);
+      for (Result result : results) {
         pbResults.add(QueryStorageUtils.convertToPb(result));
       }
       return pbResults;

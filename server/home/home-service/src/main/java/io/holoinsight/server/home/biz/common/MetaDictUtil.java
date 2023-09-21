@@ -13,6 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -54,20 +55,6 @@ public class MetaDictUtil {
     return convertValue(meta.getDictValue(), resultClass);
   }
 
-  public static MetaDataDictValue getMetaData(String type, String k) {
-
-    SuperCacheService superCacheService = SpringContext.getBean(SuperCacheService.class);
-    Map<String, Map<String, MetaDataDictValue>> metaDataDictValueMap =
-        superCacheService.getSc().metaDataDictValueMap;
-    Map<String, MetaDataDictValue> kMap = metaDataDictValueMap.get(type);
-
-    if (null == kMap) {
-      return null;
-    }
-    return kMap.get(k);
-  }
-
-
   public static String getStringValue(String type, String k) {
 
     SuperCacheService superCacheService = SpringContext.getBean(SuperCacheService.class);
@@ -85,6 +72,13 @@ public class MetaDictUtil {
       return null;
     }
     return meta.getDictValue();
+  }
+
+  public static List<String> getList(String type, String key) {
+    List<String> value = MetaDictUtil.getValue(type, key, new TypeToken<List<String>>() {});
+    if (CollectionUtils.isEmpty(value))
+      return new ArrayList<>();
+    return value;
   }
 
   public static String getUlaType() {
@@ -145,6 +139,23 @@ public class MetaDictUtil {
     if (null == value) {
       return false;
     }
+    return value;
+  }
+
+  public static Boolean isMeteringHoloinsightSubmitOpen() {
+    Boolean value = MetaDictUtil.getValue(MetaDictType.GLOBAL_CONFIG,
+        MetaDictKey.METERING_HOLOINSIGHT_SUBMIT_OPEN, new TypeToken<Boolean>() {});
+    if (null == value) {
+      return false;
+    }
+    return value;
+  }
+
+  public static Map<String, String> getLogTimeLayoutMap() {
+    Map<String, String> value = MetaDictUtil.getValue(MetaDictType.GLOBAL_CONFIG,
+        MetaDictKey.LOG_TIME_LAYOUT, new TypeToken<Map<String, String>>() {});
+    if (CollectionUtils.isEmpty(value))
+      return new HashMap<>();
     return value;
   }
 }

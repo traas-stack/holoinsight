@@ -4,6 +4,9 @@
 package io.holoinsight.server.home.alert.model.event;
 
 import io.holoinsight.server.common.AddressUtil;
+import io.holoinsight.server.common.J;
+import io.holoinsight.server.home.alert.service.event.RecordSucOrFailNotify;
+import io.holoinsight.server.home.facade.AlertNotifyRecordDTO;
 import io.holoinsight.server.home.facade.InspectConfig;
 import io.holoinsight.server.home.facade.PqlRule;
 import io.holoinsight.server.home.facade.TemplateValue;
@@ -23,6 +26,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * @author wangsiyuan
@@ -38,80 +42,109 @@ public class AlertNotify {
 
   private String workspace;
 
-  private String uniqueId; // 告警id
+  private String uniqueId;
 
-  private String ruleName; // 告警名称
+  private String ruleName;
 
-  private Long alarmTime; // 告警时间
+  private Long alarmTime;
 
-  private String alarmLevel; // 告警级别
+  private String alarmLevel;
 
-  private Map<Trigger, List<NotifyDataInfo>> notifyDataInfos; // 数据信息
+  // data info
+  private Map<Trigger, List<NotifyDataInfo>> notifyDataInfos;
 
-  private List<String> msgList; // 告警消息
+  // alert msg
+  private List<String> msgList;
 
-  private int aggregationNum; // 聚合告警数
+  private int aggregationNum;
 
-  private Boolean isRecover; // 恢复通知
+  private Boolean isRecover;
 
-  private List<SubscriptionInfo> subscriptionInfos; // 订阅信息
+  private List<SubscriptionInfo> subscriptionInfos;
 
-  private List<UserInfo> userInfos; // 用户信息
+  private List<UserInfo> userInfos;
 
-  private Map<String/* notify type */, List<String>> userNotifyMap; // 用户信息和通知渠道
+  private Map<String/* notify type */, List<String>> userNotifyMap;
 
-  private List<WebhookInfo> dingdingUrl; // 钉钉群
+  private List<WebhookInfo> dingdingUrl;
 
-  private List<WebhookInfo> webhookInfos; // 告警相关webhook消息
+  private List<WebhookInfo> webhookInfos = new ArrayList<>();
 
-  private NotifyConfig notifyConfig; // 通知增加的信息
+  private NotifyConfig notifyConfig;
 
-  private InspectConfig ruleConfig; // 告警规则配置
+  // alert rule config
+  private InspectConfig ruleConfig;
 
-  private PqlRule pqlRule; // pql告警规则+结果
+  private PqlRule pqlRule;
 
-  private Boolean isPql; // 是否属于pql告警通知
+  private Boolean isPql;
 
-  private String alarmTraceId; // 告警唯一id
+  private String alarmTraceId;
 
-  public Long alarmHistoryId; // 告警历史 id
+  public Long alarmHistoryId;
 
-  public Long alarmHistoryDetailId; // 告警历史明细 id
+  public Long alarmHistoryDetailId;
 
-  private Long duration; // 持续时间
+  private Long duration;
 
   private String alertServer;
 
-  private String envType; // 环境类型
+  private String envType;
 
-  private String sourceType; // 来源类型
+  private String sourceType;
 
-  public static AlertNotify eventInfoConvert(EventInfo eventInfo, InspectConfig inspectConfig) {
+  // log analysis content
+  private List<String> logAnalysis;
+
+  private List<String> logSample;
+
+  private AlertNotifyRecordDTO alertNotifyRecord;
+
+  private boolean alertRecord;
+
+  public static AlertNotify eventInfoConvert(EventInfo eventInfo, InspectConfig inspectConfig,
+      List<AlertNotifyRecordDTO> alertNotifyRecordDTOS) {
     AlertNotify alertNotify = new AlertNotify();
-    BeanUtils.copyProperties(inspectConfig, alertNotify);
-    BeanUtils.copyProperties(eventInfo, alertNotify);
-    if (!eventInfo.getIsRecover()) {
-      alertNotify.setIsPql(inspectConfig.getIsPql() != null && inspectConfig.getIsPql());
-      Map<Trigger, List<NotifyDataInfo>> notifyDataInfoMap = new HashMap<>();
-      eventInfo.getAlarmTriggerResults().forEach((trigger, resultList) -> {
-        List<NotifyDataInfo> notifyDataInfos = new ArrayList<>();
-        resultList.forEach(result -> {
-          NotifyDataInfo notifyDataInfo = new NotifyDataInfo();
-          notifyDataInfo.setMetric(result.getMetric());
-          notifyDataInfo.setTags(result.getTags());
-          notifyDataInfo.setCurrentValue(result.getCurrentValue());
-          notifyDataInfo.setTriggerContent(result.getTriggerContent());
-          notifyDataInfos.add(notifyDataInfo);
+    try {
+      BeanUtils.copyProperties(inspectConfig, alertNotify);
+      BeanUtils.copyProperties(eventInfo, alertNotify);
+      if (!eventInfo.getIsRecover()) {
+        alertNotify.setIsPql(inspectConfig.getIsPql() != null && inspectConfig.getIsPql());
+        Map<Trigger, List<NotifyDataInfo>> notifyDataInfoMap = new HashMap<>();
+        eventInfo.getAlarmTriggerResults().forEach((trigger, resultList) -> {
+          List<NotifyDataInfo> notifyDataInfos = new ArrayList<>();
+          resultList.forEach(result -> {
+            NotifyDataInfo notifyDataInfo = new NotifyDataInfo();
+            notifyDataInfo.setMetric(result.getMetric());
+            notifyDataInfo.setTags(result.getTags());
+            notifyDataInfo.setCurrentValue(result.getCurrentValue());
+            notifyDataInfo.setTriggerContent(result.getTriggerContent());
+            notifyDataInfos.add(notifyDataInfo);
+          });
+          notifyDataInfoMap.put(trigger, notifyDataInfos);
         });
-        notifyDataInfoMap.put(trigger, notifyDataInfos);
-      });
-      alertNotify.setNotifyDataInfos(notifyDataInfoMap);
-      alertNotify.setAggregationNum(notifyDataInfoMap.size());
-      alertNotify.setEnvType(eventInfo.getEnvType());
-      // 对于平台消费侧，可能需要知道完整的告警规则
-      alertNotify.setRuleConfig(inspectConfig);
-      tryFixAlertLevel(alertNotify, eventInfo.getAlarmTriggerResults());
-      alertNotify.setAlertServer(AddressUtil.getHostAddress());
+        // add alert trigger result for record
+        if (!CollectionUtils.isEmpty(alertNotifyRecordDTOS)) {
+          for (AlertNotifyRecordDTO alertNotifyRecord : alertNotifyRecordDTOS) {
+            if (Objects.equals(alertNotifyRecord.getUniqueId(), alertNotify.getUniqueId())) {
+              alertNotifyRecord.setTriggerResult(J.toJson(notifyDataInfoMap.values()));
+              alertNotify.setAlertNotifyRecord(alertNotifyRecord);
+              break;
+            }
+          }
+        }
+        alertNotify.setNotifyDataInfos(notifyDataInfoMap);
+        alertNotify.setAggregationNum(notifyDataInfoMap.size());
+        alertNotify.setEnvType(eventInfo.getEnvType());
+        // 对于平台消费侧，可能需要知道完整的告警规则
+        alertNotify.setRuleConfig(inspectConfig);
+        tryFixAlertLevel(alertNotify, eventInfo.getAlarmTriggerResults());
+        alertNotify.setAlertServer(AddressUtil.getHostAddress());
+      }
+    } catch (Exception e) {
+      RecordSucOrFailNotify.alertNotifyProcess("event convert alert notify exception" + e,
+          "alert task compute", "event convert alert notify", alertNotify.getAlertNotifyRecord());
+      throw e;
     }
     return alertNotify;
   }

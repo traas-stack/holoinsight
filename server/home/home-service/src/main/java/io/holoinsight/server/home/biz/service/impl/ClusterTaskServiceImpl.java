@@ -8,6 +8,7 @@ import io.holoinsight.server.home.biz.service.ClusterTaskService;
 import io.holoinsight.server.home.dal.mapper.ClusterTaskMapper;
 import io.holoinsight.server.home.dal.model.ClusterTask;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import io.holoinsight.server.home.facade.emuns.PeriodType;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -46,11 +47,11 @@ public class ClusterTaskServiceImpl extends ServiceImpl<ClusterTaskMapper, Clust
 
   // 获取我的undone任务, 并标注为doing
   public List<ClusterTask> getMyTask(long period) {
-
+    long scheduleTime = period - (5L * PeriodType.SECOND.intervalMillis());
     Map<String, Object> columnMap = new HashMap<>();
     columnMap.put("status", TASK_UNDONE);
     columnMap.put("cluster_ip", AddressUtil.getLocalHostIPV4());
-    columnMap.put("period", period);
+    columnMap.put("period", scheduleTime);
 
     List<ClusterTask> res = listByMap(columnMap);
     for (ClusterTask ct : res) {

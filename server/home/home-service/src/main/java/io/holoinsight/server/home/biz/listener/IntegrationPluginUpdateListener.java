@@ -7,6 +7,8 @@ import io.holoinsight.server.home.biz.plugin.PluginRepository;
 import io.holoinsight.server.home.biz.plugin.core.AbstractIntegrationPlugin;
 import io.holoinsight.server.home.biz.plugin.model.HostingPlugin;
 import io.holoinsight.server.home.biz.service.GaeaCollectConfigService;
+import io.holoinsight.server.home.biz.service.TenantInitService;
+import io.holoinsight.server.home.biz.service.openai.OpenAiService;
 import io.holoinsight.server.home.common.util.EventBusHolder;
 import io.holoinsight.server.home.dal.model.dto.GaeaCollectConfigDTO;
 import io.holoinsight.server.home.dal.model.dto.IntegrationPluginDTO;
@@ -34,6 +36,12 @@ public class IntegrationPluginUpdateListener {
   @Autowired
   private PluginRepository pluginRepository;
 
+  @Autowired
+  private TenantInitService tenantInitService;
+
+  @Autowired
+  private OpenAiService openAiService;
+
   @PostConstruct
   void register() {
     EventBusHolder.register(this);
@@ -55,13 +63,16 @@ public class IntegrationPluginUpdateListener {
       } else {
         hostingPlugin.disable(integrationPluginDTO);
       }
-
+    } else if ("OpenAiPlugin".equals(integrationPluginDTO.getProduct())) {
+      if (!integrationPluginDTO.status) {
+        this.openAiService.unload(integrationPluginDTO.tenant);
+      }
     }
   }
 
-  private List<Long> upsertGaea(IntegrationPluginDTO integrationPluginDTO) {
+  public List<Long> upsertGaea(IntegrationPluginDTO integrationPluginDTO) {
     GaeaCollectConfigDTO gaeaCollectConfigDTO = new GaeaCollectConfigDTO();
-    gaeaCollectConfigDTO.tenant = integrationPluginDTO.tenant;
+    gaeaCollectConfigDTO.tenant = tenantInitService.getTsdbTenant(integrationPluginDTO.tenant);
     gaeaCollectConfigDTO.workspace = integrationPluginDTO.workspace;
     gaeaCollectConfigDTO.deleted = false;
     if (!integrationPluginDTO.status) {
@@ -96,6 +107,8 @@ public class IntegrationPluginUpdateListener {
           }
         }
       }
+
+      plugin.afterAction(integrationPluginDTO);
     }
     return upsertList;
   }

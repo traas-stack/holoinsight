@@ -11,17 +11,6 @@ services:
     extends:
       file: ../common/base.yaml
       service: phpmyadmin
-  mongo:
-    extends:
-      file: ../common/base.yaml
-      service: mongo
-  mongo-express:
-    extends:
-      file: ../common/base.yaml
-      service: mongo-express
-    depends_on:
-      mongo:
-        condition: service_healthy
   ceresdb:
     extends:
       file: ../common/base.yaml
@@ -65,8 +54,6 @@ services:
     depends_on:
       mysql-data-init:
         condition: service_completed_successfully
-      mongo:
-        condition: service_healthy
       ceresdb:
         condition: service_healthy
       es:
@@ -74,8 +61,10 @@ services:
     volumes:
     - ./application.yaml:/home/admin/application.yaml:ro
     - share:/share
+    - ../common/logwriter.py:/home/admin/test/logwriter.py:ro
     - ../common/log-generator.py:/home/admin/test/log-generator.py:ro
     - ../common/log-alert-generator.py:/home/admin/test/log-alert-generator.py:ro
+    - ../common/log-json-generator.py:/home/admin/test/log-json-generator.py:ro
   collector:
     extends:
       file: ../common/base.yaml
@@ -87,6 +76,7 @@ services:
     extends:
       file: ../common/base.yaml
       service: agent-image
+    pull_policy: always
     volumes:
     - share:/share
     entrypoint:

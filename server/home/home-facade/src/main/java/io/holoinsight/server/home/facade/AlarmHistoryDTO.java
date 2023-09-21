@@ -47,6 +47,8 @@ public class AlarmHistoryDTO {
    */
   private String uniqueId;
 
+  private List<String> uniqueIds;
+
   /**
    * 规则名称
    */
@@ -91,4 +93,6 @@ public class AlarmHistoryDTO {
    * 环境类型
    */
   private String envType;
+
+  private List<String> app;
 }

@@ -7,14 +7,11 @@ import io.holoinsight.server.home.biz.service.TenantInitService;
 import io.holoinsight.server.home.common.util.MonitorException;
 import io.holoinsight.server.home.common.util.scope.AuthTargetType;
 import io.holoinsight.server.home.common.util.scope.MonitorScope;
-import io.holoinsight.server.home.common.util.scope.MonitorUser;
 import io.holoinsight.server.home.common.util.scope.PowerConstants;
 import io.holoinsight.server.home.common.util.scope.RequestContext;
-import io.holoinsight.server.home.common.util.scope.RequestContext.Context;
 import io.holoinsight.server.home.web.common.ManageCallback;
 import io.holoinsight.server.home.web.common.ParaCheckUtil;
 import io.holoinsight.server.home.web.interceptor.MonitorScopeAuth;
-import io.holoinsight.server.common.J;
 import io.holoinsight.server.common.JsonResult;
 import io.holoinsight.server.meta.common.model.QueryExample;
 import io.holoinsight.server.meta.facade.service.DataClientService;
@@ -28,10 +25,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -70,7 +65,7 @@ public class MetaFacadeImpl extends BaseFacade {
         queryExample.getParams().putAll(condition);
         MonitorScope ms = RequestContext.getContext().ms;
         Map<String, String> conditions =
-            tenantInitService.getTenantWorkspaceMetaConditions(ms.getWorkspace());
+            tenantInitService.getTenantWorkspaceMetaConditions(ms.getTenant(), ms.getWorkspace());
         if (!CollectionUtils.isEmpty(conditions)) {
           queryExample.getParams().putAll(conditions);
         }
@@ -104,6 +99,11 @@ public class MetaFacadeImpl extends BaseFacade {
         MonitorScope ms = RequestContext.getContext().ms;
         if (StringUtils.isNotBlank(ms.getWorkspace())) {
           queryExample.getParams().put("_workspace", ms.getWorkspace());
+        }
+        Map<String, String> conditions = tenantInitService
+            .getTenantServerWorkspaceMetaConditions(ms.getTenant(), ms.getWorkspace());
+        if (!CollectionUtils.isEmpty(conditions)) {
+          queryExample.getParams().putAll(conditions);
         }
 
         List<Map<String, Object>> list = dataClientService
@@ -141,59 +141,13 @@ public class MetaFacadeImpl extends BaseFacade {
         }
         MonitorScope ms = RequestContext.getContext().ms;
         Map<String, String> conditions =
-            tenantInitService.getTenantWorkspaceMetaConditions(ms.getWorkspace());
+            tenantInitService.getTenantWorkspaceMetaConditions(ms.getTenant(), ms.getWorkspace());
         if (!CollectionUtils.isEmpty(conditions)) {
           conditions.forEach((k, v) -> queryExample.getParams().put(k, v));
         }
         List<Map<String, Object>> list = dataClientService
             .fuzzyByExample(tenantInitService.getTenantServerTable(ms.getTenant()), queryExample);
         JsonResult.createSuccessResult(result, list);
-      }
-    });
-
-    return result;
-  }
-
-  /**
-   * 批量导入
-   */
-  @PostMapping("/{table}/create")
-  @ResponseBody
-  @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.EDIT)
-  public JsonResult<Object> save(@PathVariable("table") String table,
-      @RequestBody List<Map<String, Object>> metaList) {
-    final JsonResult<Object> result = new JsonResult<>();
-    facadeTemplate.manage(result, new ManageCallback() {
-      @Override
-      public void checkParameter() {
-        ParaCheckUtil.checkParaNotBlank(table, "table");
-        ParaCheckUtil.checkParaNotEmpty(metaList, "metaList");
-
-        if (!table.startsWith(RequestContext.getContext().ms.getTenant())) {
-          throw new MonitorException("table is illegal");
-        }
-      }
-
-      @Override
-      public void doManage() {
-        Context context = RequestContext.getContext();
-        MonitorUser mu = context.mu;
-
-        List<Map<String, Object>> list = new ArrayList<>();
-
-        for (Map<String, Object> meta : metaList) {
-          if (!meta.containsKey("_type"))
-            continue;
-
-          Map<String, Object> map = new HashMap<>();
-          map.put("_modifier", mu.getLoginName());
-          map.put("_modified", System.currentTimeMillis());
-          map.putAll(meta);
-          list.add(map);
-        }
-
-        dataClientService.insertOrUpdate(table, J.toMapList(J.toJson(list)));
-        JsonResult.createSuccessResult(result, true);
       }
     });
 
@@ -216,31 +170,6 @@ public class MetaFacadeImpl extends BaseFacade {
       @Override
       public void doManage() {
         List<Map<String, Object>> list = dataClientService.queryAll(table);
-        JsonResult.createSuccessResult(result, list);
-      }
-    });
-
-    return result;
-  }
-
-  @PostMapping("/{table}/queryByRows")
-  @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.VIEW)
-  public JsonResult<List<Map<String, Object>>> queryByRows(@PathVariable("table") String table,
-      @RequestBody List<String> rowKeys) {
-    final JsonResult<List<Map<String, Object>>> result = new JsonResult<>();
-    facadeTemplate.manage(result, new ManageCallback() {
-      @Override
-      public void checkParameter() {
-        ParaCheckUtil.checkParaNotEmpty(rowKeys, "rowKeys");
-        ParaCheckUtil.checkParaNotBlank(table, "table");
-        if (!table.startsWith(RequestContext.getContext().ms.getTenant())) {
-          throw new MonitorException("table is illegal");
-        }
-      }
-
-      @Override
-      public void doManage() {
-        List<Map<String, Object>> list = dataClientService.queryAll(table, rowKeys);
         JsonResult.createSuccessResult(result, list);
       }
     });

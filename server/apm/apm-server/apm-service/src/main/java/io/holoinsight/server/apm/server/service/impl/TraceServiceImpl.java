@@ -5,8 +5,8 @@ package io.holoinsight.server.apm.server.service.impl;
 
 import io.holoinsight.server.apm.common.model.query.Pagination;
 import io.holoinsight.server.apm.common.model.query.QueryOrder;
-import io.holoinsight.server.apm.common.model.query.StatisticData;
 import io.holoinsight.server.apm.common.model.query.TraceBrief;
+import io.holoinsight.server.apm.common.model.query.TraceTree;
 import io.holoinsight.server.apm.common.model.specification.sw.Tag;
 import io.holoinsight.server.apm.common.model.specification.sw.Trace;
 import io.holoinsight.server.apm.common.model.specification.sw.TraceState;
@@ -17,7 +17,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
-
 
 @Slf4j
 public class TraceServiceImpl implements TraceService {
@@ -37,17 +36,19 @@ public class TraceServiceImpl implements TraceService {
   }
 
   @Override
-  public Trace queryTrace(String traceId) throws Exception {
-    return spanStorage.queryTrace(traceId);
+  public Trace queryTrace(String tenant, long start, long end, String traceId, List<Tag> tags)
+      throws Exception {
+    return spanStorage.queryTrace(tenant, start, end, traceId, tags);
+  }
+
+  @Override
+  public List<TraceTree> queryTraceTree(String tenant, long start, long end, String traceId,
+      List<Tag> tags) throws Exception {
+    return spanStorage.queryTraceTree(tenant, start, end, traceId, tags);
   }
 
   @Override
   public void insertSpans(List<SpanDO> spans) throws Exception {
     spanStorage.insert(spans);
-  }
-
-  @Override
-  public List<StatisticData> statisticTrace(long startTime, long endTime) throws Exception {
-    return spanStorage.statisticTrace(startTime, endTime);
   }
 }

@@ -17,6 +17,8 @@ public class WriteMetricsParam {
 
   private String tenant;
   private List<Point> points;
+  // whether this writing is not included in the fee
+  private boolean isFree;
 
   @Data
   public static class Point {

@@ -4,7 +4,7 @@
 package io.holoinsight.server.extension.ceresdbx;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -17,14 +17,11 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import io.ceresdb.models.Point.PointBuilder;
-import io.ceresdb.models.Row;
-import io.ceresdb.models.Row.Column;
-import io.ceresdb.models.SqlQueryOk;
-import io.ceresdb.models.SqlQueryRequest;
-import io.ceresdb.models.Value;
-import io.ceresdb.models.WriteRequest;
-import io.holoinsight.server.extension.promql.PqlQueryService;
+import io.ceresdb.common.parser.SqlParser;
+import io.ceresdb.common.parser.SqlParserFactoryProvider;
+import io.holoinsight.server.common.J;
+import io.holoinsight.server.extension.model.DetailResult;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,7 +34,14 @@ import com.xzchaoo.commons.stat.StringsKey;
 
 import io.ceresdb.CeresDBClient;
 import io.ceresdb.models.Err;
+import io.ceresdb.models.Point.PointBuilder;
+import io.ceresdb.models.Row;
+import io.ceresdb.models.Row.Column;
+import io.ceresdb.models.SqlQueryOk;
+import io.ceresdb.models.SqlQueryRequest;
+import io.ceresdb.models.Value;
 import io.ceresdb.models.WriteOk;
+import io.ceresdb.models.WriteRequest;
 import io.grpc.Context;
 import io.holoinsight.server.extension.MetricStorage;
 import io.holoinsight.server.extension.ceresdbx.utils.StatUtils;
@@ -50,12 +54,14 @@ import io.holoinsight.server.extension.model.QueryResult;
 import io.holoinsight.server.extension.model.QueryResult.Result;
 import io.holoinsight.server.extension.model.WriteMetricsParam;
 import io.holoinsight.server.extension.model.WriteMetricsParam.Point;
+import io.holoinsight.server.extension.promql.PqlQueryService;
 import reactor.core.publisher.Mono;
 
 /**
  * @author jiwliu
  * @date 2023/1/13
  */
+@Slf4j
 public class CeresdbxMetricStorage implements MetricStorage {
 
   public static final int DEFAULT_BATCH_RECORDS = 200;
@@ -105,16 +111,28 @@ public class CeresdbxMetricStorage implements MetricStorage {
 
   @Override
   public List<Result> queryData(QueryParam queryParam) {
-    String whereStatement = parseWhere(queryParam);
-    String fromStatement = parseFrom(queryParam);
-    if (StringUtils.isBlank(fromStatement)) {
-      LOGGER.warn("fromStatement is empty, queryParam:{}", queryParam);
-      return Lists.newArrayList();
+    String sql = queryParam.getQl();
+    String[] tableNames;
+    if (StringUtils.isNotBlank(sql)) {
+      SqlParser parser = SqlParserFactoryProvider.getSqlParserFactory().getParser(sql);
+      List<String> tables = parser.tableNames();
+      tableNames = tables.stream().map(this::fixName).collect(Collectors.toList())
+          .toArray(new String[tables.size()]);
+      sql = StringUtils.replaceEach(sql, tables.toArray(new String[tables.size()]), tableNames);
+    } else {
+      String whereStatement = parseWhere(queryParam);
+      String fromStatement = parseFrom(queryParam);
+      if (StringUtils.isBlank(fromStatement)) {
+        LOGGER.warn("fromStatement is empty, queryParam:{}", queryParam);
+        return Lists.newArrayList();
+      }
+      tableNames = new String[] {fixName(queryParam.getMetric())};
+      sql = genSqlWithGroupBy(queryParam, fromStatement, whereStatement);
+
     }
-    String sql = genSqlWithGroupBy(queryParam, fromStatement, whereStatement);
     LOGGER.info("queryData queryparam:{}, sql:{}", queryParam, sql);
     final SqlQueryRequest queryRequest =
-        SqlQueryRequest.newBuilder().forTables(fixName(queryParam.getMetric())).sql(sql).build();
+        SqlQueryRequest.newBuilder().forTables(tableNames).sql(sql).build();
     long begin = System.currentTimeMillis();
     try {
       CompletableFuture<io.ceresdb.models.Result<SqlQueryOk, Err>> qf = Context.ROOT.call(
@@ -201,6 +219,85 @@ public class CeresdbxMetricStorage implements MetricStorage {
     return pqlQueryService.queryRange(pqlParam);
   }
 
+  @Override
+  public DetailResult queryDetail(QueryParam queryParam) {
+    String sql = queryParam.getQl();
+    List<String> tables = null;
+    if (StringUtils.isNotBlank(sql)) {
+      SqlParser parser = SqlParserFactoryProvider.getSqlParserFactory().getParser(sql);
+      tables = parser.tableNames();
+    } else {
+      log.warn("sql is empty for {}", J.toJson(queryParam));
+      return DetailResult.empty();
+    }
+    if (CollectionUtils.isEmpty(tables)) {
+      log.warn("tables is empty for {}", J.toJson(queryParam));
+      return DetailResult.empty();
+    }
+    LOGGER.info("queryDetail queryParam:{}, sql:{}", J.toJson(queryParam), sql);
+    final SqlQueryRequest queryRequest =
+        SqlQueryRequest.newBuilder().forTables(tables.toArray(new String[0])).sql(sql).build();
+    long begin = System.currentTimeMillis();
+    try {
+      CompletableFuture<io.ceresdb.models.Result<SqlQueryOk, Err>> qf = Context.ROOT.call(
+          () -> ceresdbxClientManager.getClient(queryParam.getTenant()).sqlQuery(queryRequest));
+      final io.ceresdb.models.Result<SqlQueryOk, Err> qr = qf.get();
+      if (!qr.isOk()) {
+        LOGGER.error("[CERESDBX_QUERY_DETAIL] failed to exec sql:{}, qr:{}, error:{}", sql, qr,
+            qr.getErr().getError());
+        throw new RuntimeException(qr.getErr().getError());
+      }
+      final List<Row> rows = qr.getOk().getRowList();
+      if (CollectionUtils.isEmpty(rows)) {
+        return DetailResult.empty();
+      }
+      String[] header = getHeader(rows.get(0));
+      return transToDetailResult(queryParam, header, rows, tables);
+    } catch (Exception e) {
+      LOGGER.error("[CERESDBX_QUERY_DETAIL] failed to exec sql:{}, cost:{}", sql,
+          System.currentTimeMillis() - begin, e);
+      return DetailResult.empty();
+    }
+  }
+
+  private DetailResult transToDetailResult(QueryParam queryParam, String[] header, List<Row> rows,
+      List<String> tables) {
+    DetailResult detailResult = DetailResult.empty();
+    if (header == null || header.length == 0) {
+      return detailResult;
+    }
+    detailResult.setHeaders(Arrays.asList(header));
+    detailResult.setSql(queryParam.getQl());
+    detailResult.setTables(tables);
+    for (Row row : rows) {
+      DetailResult.DetailRow detailRow = new DetailResult.DetailRow();
+      for (String name : header) {
+        Column column = row.getColumn(name);
+        Value value = column.getValue();
+        switch (value.getDataType()) {
+          case String:
+            detailRow.addStringValue(value.getString());
+            break;
+          case Timestamp:
+            detailRow.addTimestampValue(value.getTimestamp());
+            break;
+          case Boolean:
+            detailRow.addBooleanValue(value.getBoolean());
+            break;
+          case Varbinary:
+            log.info("reject unknown data type {}", value.getObject());
+            break;
+          default:
+            detailRow.addNumValue(value.getObject());
+            break;
+        }
+      }
+      detailResult.add(detailRow);
+    }
+    log.info("detailResult result {} rows {}", J.toJson(detailResult), J.toJson(rows));
+    return detailResult;
+  }
+
   private void doBatchInsert(Set<String> metrics, String tenant,
       List<io.ceresdb.models.Point> oneBatch) {
     long start = System.currentTimeMillis();
@@ -216,11 +313,11 @@ public class CeresdbxMetricStorage implements MetricStorage {
           StatUtils.STORAGE_WRITE.add(StringsKey.of("CeresDBx", tenant, "N"),
               new long[] {1, oneBatch.size(), System.currentTimeMillis() - start});
           if (result != null && null != result.getErr()) {
-            LOGGER.error("save metrics:{} to CeresDBx result:{}, error msg:{}", metrics, result,
+            LOGGER.error("save metrics:{} to CeresDBx error msg:{}", metrics,
                 result.getErr().getError());
           } else if (null != throwable) {
-            LOGGER.error("save metrics:{} to CeresDBx result:{}, error msg:{}", metrics, result,
-                throwable);
+            LOGGER.error("save metrics:{} to CeresDBx error msg:{}", metrics,
+                throwable.getMessage(), throwable);
           } else {
             LOGGER.error("save metrics:{} to CeresDBx error", metrics);
           }
@@ -242,7 +339,11 @@ public class CeresdbxMetricStorage implements MetricStorage {
     final PointBuilder builder =
         io.ceresdb.models.Point.newPointBuilder(metric).setTimestamp(point.getTimeStamp());
     tags.forEach(builder::addTag);
-    builder.addField("value", Value.withDouble(point.getValue()));
+    if (point.getStrValue() != null) {
+      builder.addField("value", Value.withString(point.getStrValue()));
+    } else {
+      builder.addField("value", Value.withDouble(point.getValue()));
+    }
     oneBatch.add(builder.build());
     return tags.size();
   }
@@ -272,19 +373,26 @@ public class CeresdbxMetricStorage implements MetricStorage {
         if ("tsid".equals(name)) {
           continue;
         }
-        if ("timestamp".equals(name)) {
+        if ("timestamp".equals(name) || value.getDataType() == Value.DataType.Timestamp) {
           point.setTimestamp(value.getTimestamp());
           continue;
         }
         if ("value".equals(name)) {
-          try {
-            point.setValue(Double.parseDouble(value.getObject().toString()));
-          } catch (Exception e) {
-            point.setValue(0D);
+          if (value.getObject() instanceof String) {
+            point.setStrValue(value.getString());
+          } else {
+            try {
+              point.setValue(Double.parseDouble(value.getObject().toString()));
+            } catch (Exception e) {
+              point.setValue(0D);
+            }
           }
           continue;
         }
         tags.put(name, column.getValue().getString());
+      }
+      if (point.getTimestamp() == null) {
+        point.setTimestamp(0L);
       }
       Result existResult = tagsToResult.get(tags);
       if (existResult != null) {
@@ -402,7 +510,7 @@ public class CeresdbxMetricStorage implements MetricStorage {
     if (!isNestedQuery) {
       long start = queryParam.getStart();
       long end = queryParam.getEnd();
-      whereSqlBuilder.append("timestamp >= ").append(start).append(" AND ").append(" timestamp < ")
+      whereSqlBuilder.append("timestamp >= ").append(start).append(" AND ").append(" timestamp <= ")
           .append(end);
     }
     List<QueryFilter> filters = queryParam.getFilters();
@@ -444,7 +552,7 @@ public class CeresdbxMetricStorage implements MetricStorage {
     if (StringUtils.isNotBlank(downsample) && StringUtils.isNotBlank(aggregator)
         && !StringUtils.equalsIgnoreCase(aggregator, "none")) {
       String downsampleSql = "(SELECT time_bucket(`%s`, '%s') as timestamp, %s,"
-          + " %s(value) as value FROM %s WHERE timestamp >= %s AND timestamp < %s group by time_bucket(`%s`, '%s'),%s)";
+          + " %s(value) as value FROM %s WHERE timestamp >= %s AND timestamp <= %s group by time_bucket(`%s`, '%s'),%s)";
       String interval = getInterval(downsample);
       if (StringUtils.isNotBlank(interval)) {
         String tagNames;

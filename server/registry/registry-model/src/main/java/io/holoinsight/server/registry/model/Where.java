@@ -29,6 +29,7 @@ public class Where {
   private Contains contains;
   private ContainsAny containsAny;
   private Regexp regexp;
+  private NumberOp numberOp;
 
   @ToString
   @Getter
@@ -77,6 +78,21 @@ public class Where {
      * 正则表达式
      */
     private String expression;
+
+    private Boolean catchGroups;
   }
 
+  @ToString
+  @Getter
+  @Setter
+  public static class NumberOp {
+    /**
+     * 定义字段如何提取
+     */
+    private Elect elect;
+    private Double gt;
+    private Double gte;
+    private Double lt;
+    private Double lte;
+  }
 }

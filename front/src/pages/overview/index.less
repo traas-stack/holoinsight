@@ -1,0 +1,325 @@
+@import (reference) '~antd/es/style/themes/index';
+
+.pre {
+  margin: 12px 0;
+  padding: 12px 20px;
+}
+
+.container {
+  width: 100%;
+
+  .intro {
+    min-height: 177px;
+    margin-bottom: 16px;
+    padding: 16px 24px 0 24px;
+    background-image: url('../../assets/da7ebcf2938e.svg');
+    background-repeat: no-repeat;
+    background-size: contain;
+
+    .header {
+      margin-bottom: 4px;
+      color: white;
+      font-weight: 500;
+      font-size: 20px;
+    }
+
+    .headerContent {
+      color: white;
+      font-size: 14px;
+    }
+
+    .noticeContent {
+      margin-top: 16px;
+      margin-bottom: -16px;
+    }
+  }
+
+  .collection {
+    margin-bottom: 16px;
+    padding: 0 24px;
+
+    .header {
+      :global(.amo-tabs-nav-wrap) {
+        padding-left: 24px;
+      }
+
+      .showMore {
+        margin-right: 24px;
+      }
+
+      .tabIcon {
+        > span {
+          margin-right: 0;
+        }
+
+        margin-left: 4px;
+      }
+
+      .body {
+        padding: 16px 24px;
+        padding-top: 0;
+
+        .subTab {
+          .singleTab {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+
+            .label {
+              margin-right: 8px;
+              color: rgba(0, 0, 0, 0.85);
+              font-weight: 500;
+              font-size: 12px;
+            }
+
+            .badge {
+              :global(.amo-badge-count) {
+                color: rgba(0, 0, 0, 0.65);
+                background: rgba(140, 140, 140, 0.1);
+              }
+            }
+          }
+        }
+
+        .overview {
+          display: flex;
+          flex-direction: row;
+          margin-top: 8px;
+          margin-bottom: 16px;
+          padding-bottom: 20px;
+          border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+
+          > div {
+            display: flex;
+            flex-direction: row;
+            width: 25%;
+
+            > div {
+              display: flex;
+              flex-direction: column;
+              margin-left: 16px;
+
+              .label {
+                margin-bottom: 4px;
+                color: rgba(0, 0, 0, 0.65);
+                font-size: 12px;
+              }
+
+              .value {
+                color: rgba(0, 0, 0, 0.85);
+                font-size: 28px;
+              }
+            }
+          }
+        }
+
+        .title {
+          margin-bottom: 16px;
+          color: rgba(0, 0, 0, 0.85);
+          font-weight: 500;
+          font-size: 12px;
+        }
+
+        .appItem {
+          .icon {
+            margin-right: 8px;
+            font-size: 12px;
+          }
+
+          .name {
+            display: inline-block;
+            width: 200px;
+            font-size: 12px;
+          }
+        }
+
+        .appItem ~ .appItem {
+          margin-top: 16px;
+        }
+
+        .pagination {
+          margin-top: 8px;
+          text-align: right;
+        }
+
+        .badge {
+          margin-left: 8px;
+          padding: 4px 8px;
+          border-radius: 12px;
+        }
+      }
+    }
+
+    .loading {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      height: 120px;
+    }
+
+    .favList {
+      display: flex;
+      flex-flow: row wrap;
+      margin-top: 16px;
+      margin-right: -16px;
+      margin-bottom: -16px;
+    }
+  }
+
+  .gallery {
+    margin-bottom: 32px;
+    padding: 0 24px;
+
+    .card {
+      .card();
+
+      padding: 16px 24px;
+
+      .title {
+        margin-bottom: 16px;
+        color: rgba(0, 0, 0, 0.85);
+        font-weight: 500;
+        font-size: 12px;
+      }
+
+      .content {
+        display: flex;
+        flex-direction: row;
+
+        .ring {
+          position: relative;
+          width: 300px;
+          padding: 40px;
+          transform: scale(1.2);
+
+          .centerImage {
+            position: absolute;
+            top: 86px;
+            left: 86px;
+            width: 110px;
+          }
+
+          .leftArc {
+            position: absolute;
+            left: 40px;
+            width: 100px;
+            cursor: pointer;
+          }
+
+          .rightArc {
+            position: absolute;
+            top: 40px;
+            right: 59px;
+            width: 102px;
+            cursor: pointer;
+          }
+
+          .bottomArc {
+            position: absolute;
+            bottom: 40px;
+            left: 58px;
+            width: 164px;
+            cursor: pointer;
+          }
+
+          .circle {
+            position: absolute;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            font-size: 12px;
+            text-align: center;
+            background: #fff;
+            border-radius: 50%;
+            box-shadow: 0 2px 8px 0 rgba(20, 49, 76, 0.2);
+            cursor: pointer;
+
+            > span {
+              display: block;
+              color: rgba(0, 0, 0, 0.45);
+              transform: scale(0.67);
+            }
+          }
+
+          .whiteCircle {
+            .circle();
+
+            background-color: #fff;
+          }
+
+          .blueCircle {
+            .circle();
+
+            background-color: #1890ff;
+
+            > span {
+              color: white;
+            }
+          }
+        }
+
+        .description {
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          width: calc(100% - 462px);
+          margin-left: 162px;
+
+          .categoryName {
+            margin-bottom: 16px;
+            color: rgba(0, 0, 0, 0.85);
+            font-weight: 500;
+            font-size: 24px;
+          }
+
+          .introduction {
+            color: rgba(0, 0, 0, 0.45);
+            font-size: 16px;
+          }
+
+          .links {
+            margin-top: 32px;
+          }
+
+          :global(.amo-tabs-tab) {
+            font-size: 16px;
+          }
+        }
+      }
+    }
+  }
+
+  .card {
+    background-color: #fff;
+    border-radius: 2px;
+    box-shadow: 0 4px 12px 0 rgba(0, 0, 0, 0.05);
+  }
+
+  .empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    padding-bottom: 56px;
+
+    :global(.amo-empty-normal) {
+      margin-bottom: 8px;
+    }
+
+    .emptyTitle {
+      color: rgba(0, 0, 0, 0.85);
+      font-weight: 500;
+    }
+
+    .description {
+      margin-top: 8px;
+      margin-bottom: 16px;
+      color: rgba(0, 0, 0, 0.65);
+    }
+  }
+}

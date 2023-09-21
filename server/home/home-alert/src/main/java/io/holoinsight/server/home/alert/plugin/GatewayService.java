@@ -3,10 +3,13 @@
  */
 package io.holoinsight.server.home.alert.plugin;
 
+import io.holoinsight.server.common.J;
 import io.holoinsight.server.common.config.EnvironmentProperties;
+import io.holoinsight.server.home.alert.model.event.AlertNotifyRecordLatch;
 import io.holoinsight.server.home.alert.model.event.AlertNotifyRequest;
 import io.holoinsight.server.home.alert.model.event.NotifyDataInfo;
 import io.holoinsight.server.home.alert.service.event.AlertNotifyChainBuilder;
+import io.holoinsight.server.home.alert.service.event.RecordSucOrFailNotify;
 import io.holoinsight.server.home.biz.plugin.model.PluginContext;
 import io.holoinsight.server.home.biz.service.IntegrationPluginService;
 import io.holoinsight.server.home.dal.converter.AlarmRuleConverter;
@@ -14,6 +17,7 @@ import io.holoinsight.server.home.dal.mapper.AlarmRuleMapper;
 import io.holoinsight.server.home.dal.model.AlarmRule;
 import io.holoinsight.server.home.dal.model.dto.IntegrationPluginDTO;
 import io.holoinsight.server.home.facade.AlarmRuleDTO;
+import io.holoinsight.server.home.facade.AlertNotifyRecordDTO;
 import io.holoinsight.server.home.facade.AlertRuleExtra;
 import io.holoinsight.server.home.facade.trigger.Trigger;
 import org.apache.commons.lang3.StringUtils;
@@ -28,6 +32,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -54,7 +60,9 @@ public abstract class GatewayService {
   @Resource
   private AlarmRuleConverter alarmRuleConverter;
 
-  public boolean sendAlertNotifyV3(AlertNotifyRequest notify) {
+  private static final String GATEWAY = "GatewayService";
+
+  public boolean sendAlertNotifyV3(AlertNotifyRequest notify, AlertNotifyRecordLatch recordLatch) {
     String traceId = notify.getTraceId();
     LOGGER.info("{} receive_alarm_notify_request at {}", traceId,
         this.environmentProperties.getDeploymentSite());
@@ -65,12 +73,16 @@ public abstract class GatewayService {
     String type = defaultNotifyChain.name;
     if (CollectionUtils.isEmpty(notify.getNotifyDataInfos())) {
       LOGGER.info("{} notify data info is empty.", traceId);
+      RecordSucOrFailNotify.alertNotifyProcess(traceId + ": notify data info is empty ", GATEWAY,
+          "check notify data info", notify.getAlertNotifyRecord());
       return true;
     }
 
     String ruleId = notify.getRuleId();
     if (!StringUtils.isNumeric(ruleId)) {
       LOGGER.warn("{} invalid rule {}", traceId, ruleId);
+      RecordSucOrFailNotify.alertNotifyProcess(traceId + ": invalid rule fail; ruleId is " + ruleId,
+          GATEWAY, "invalid rule", notify.getAlertNotifyRecord());
       return true;
     }
 
@@ -84,8 +96,11 @@ public abstract class GatewayService {
     List<NotifyChain> notifyChainList =
         this.alertNotifyChainBuilder.buildNotifyChains(traceId, integrationPlugins);
 
+
     if (CollectionUtils.isEmpty(notifyChainList)) {
       LOGGER.info("{} {} notifyChainList is empty, skip.", traceId, ruleId);
+      RecordSucOrFailNotify.alertNotifyProcess(traceId + ": notifyChainList is empty, skip ",
+          GATEWAY, " get notify chainList", notify.getAlertNotifyRecord());
       return true;
     }
 
@@ -93,16 +108,42 @@ public abstract class GatewayService {
     AlarmRuleDTO alertRule = this.alarmRuleConverter.doToDTO(rawRule);
     if (alertRule == null) {
       LOGGER.warn("{} can not find alarmRule by {}", traceId, ruleId);
+      RecordSucOrFailNotify.alertNotifyProcess(traceId + ": can not find alarmRule by " + ruleId,
+          GATEWAY, "find alarmRule", notify.getAlertNotifyRecord());
       return true;
     }
 
     AlertRuleExtra extra = alertRule.getExtra();
     notify.setAlertRuleExtra(extra);
-
     PluginContext pluginContext = buildNotifyContext(traceId, notify);
+    RecordSucOrFailNotify.alertNotifyProcessSuc(GATEWAY, "send alert notify",
+        notify.getAlertNotifyRecord());
+    if (extra != null && extra.isRecord) {
+      pluginContext.latch = new CountDownLatch(notifyChainList.size());
+    }
+
     for (NotifyChain notifyChain : notifyChainList) {
       notifyChain.input(inputDatas, pluginContext);
       this.executorService.execute(notifyChain);
+    }
+
+    boolean status = true;
+    try {
+      if (pluginContext.latch != null) {
+        status = pluginContext.latch.await(30, TimeUnit.SECONDS);
+        if (!status) {
+          throw new RuntimeException("the GatewayService waiting time elapsed");
+        }
+      }
+    } catch (Exception e) {
+      LOGGER.error("[ALERT_CountDownLatch][GatewayService] error {}", e.getMessage(), e);
+    }
+    if (status) {
+      AlertNotifyRecordDTO alertNotifyRecord = pluginContext.getAlertNotifyRecord();
+      LOGGER.info("plugin record data {} .", J.toJson(alertNotifyRecord));
+      if (Objects.nonNull(recordLatch)) {
+        recordLatch.add(alertNotifyRecord);
+      }
     }
 
     return true;

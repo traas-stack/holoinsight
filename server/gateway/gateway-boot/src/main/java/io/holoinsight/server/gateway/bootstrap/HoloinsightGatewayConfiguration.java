@@ -6,18 +6,17 @@ package io.holoinsight.server.gateway.bootstrap;
 import io.holoinsight.server.common.auth.ApiKeyAutoConfiguration;
 import io.holoinsight.server.common.config.ConfigConfiguration;
 import io.holoinsight.server.common.dao.CommonDaoConfiguration;
-import io.holoinsight.server.common.dao.mapper.AgentConfigurationDOMapper;
 import io.holoinsight.server.common.groovy.GroovyConfiguration;
 import io.holoinsight.server.common.security.InternalWebApiSecurityConfiguration;
+import io.holoinsight.server.common.springboot.ConditionalOnFeature;
 import io.holoinsight.server.common.springboot.ConditionalOnRole;
 import io.holoinsight.server.common.springboot.HoloinsightProperties;
 import io.holoinsight.server.common.threadpool.ThreadPoolConfiguration;
+import io.holoinsight.server.common.trace.TraceAgentConfigurationScheduler;
 import io.holoinsight.server.extension.MetricStorage;
 import io.holoinsight.server.extension.NoopMetricStorage;
 import io.holoinsight.server.extension.ceresdbx.HoloinsightCeresdbxConfiguration;
 import io.holoinsight.server.gateway.core.grpc.GatewayProperties;
-
-import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -44,4 +43,16 @@ public class HoloinsightGatewayConfiguration {
   public MetricStorage metricStorage() {
     return new NoopMetricStorage();
   }
+
+  /**
+   * <p>
+   * agentConfigurationScheduler.
+   * </p>
+   */
+  @Bean
+  @ConditionalOnFeature("trace")
+  public TraceAgentConfigurationScheduler agentConfigurationScheduler() {
+    return new TraceAgentConfigurationScheduler();
+  }
+
 }

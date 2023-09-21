@@ -30,6 +30,8 @@ public class MetricInfo {
 
   public String product;
 
+  public String metricType;
+
   public String metric;
 
   public String metricTable;
@@ -43,7 +45,12 @@ public class MetricInfo {
 
   public String tags;
 
+  public String ref;
+  public String extInfo;
+
   public boolean deleted;
+
+  public String storageTenant;
 
   @TableField(value = "`gmt_create`")
   public Date gmtCreate;

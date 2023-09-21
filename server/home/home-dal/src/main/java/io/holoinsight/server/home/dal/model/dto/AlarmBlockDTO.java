@@ -80,4 +80,14 @@ public class AlarmBlockDTO {
    * 额外信息
    */
   private String extra;
+
+  /**
+   * 开始时间
+   */
+  private Date startTime;
+
+  /**
+   * 结束时间
+   */
+  private Date endTime;
 }

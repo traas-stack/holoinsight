@@ -10,15 +10,19 @@ import com.google.protobuf.Message;
 import com.google.protobuf.util.JsonFormat;
 import io.holoinsight.server.common.LatchWork;
 import io.holoinsight.server.common.UtilMisc;
+import io.holoinsight.server.common.dao.entity.MetricInfo;
+import io.holoinsight.server.common.service.SuperCacheService;
 import io.holoinsight.server.common.threadpool.CommonThreadPools;
 import io.holoinsight.server.home.biz.common.MetaDictUtil;
 import io.holoinsight.server.home.biz.service.TenantInitService;
 import io.holoinsight.server.home.common.service.QueryClientService;
 import io.holoinsight.server.home.common.service.query.KeyResult;
+import io.holoinsight.server.home.common.service.query.QueryDetailResponse;
 import io.holoinsight.server.home.common.service.query.QueryResponse;
 import io.holoinsight.server.home.common.service.query.QuerySchemaResponse;
 import io.holoinsight.server.home.common.service.query.Result;
 import io.holoinsight.server.home.common.service.query.ValueResult;
+import io.holoinsight.server.home.common.util.MonitorException;
 import io.holoinsight.server.home.common.util.StringUtil;
 import io.holoinsight.server.home.common.util.scope.AuthTargetType;
 import io.holoinsight.server.home.common.util.scope.MonitorScope;
@@ -29,16 +33,15 @@ import io.holoinsight.server.home.web.common.ParaCheckUtil;
 import io.holoinsight.server.home.web.common.PqlParser;
 import io.holoinsight.server.home.web.common.TokenUrls;
 import io.holoinsight.server.home.web.common.pql.PqlException;
-import io.holoinsight.server.home.web.controller.model.DataQueryRequest;
-import io.holoinsight.server.home.web.controller.model.DataQueryRequest.QueryDataSource;
-import io.holoinsight.server.home.web.controller.model.DataQueryRequest.QueryFilter;
+import io.holoinsight.server.common.model.DataQueryRequest;
+import io.holoinsight.server.common.model.DataQueryRequest.QueryDataSource;
+import io.holoinsight.server.common.model.DataQueryRequest.QueryFilter;
 import io.holoinsight.server.home.web.controller.model.DelTagReq;
 import io.holoinsight.server.home.web.controller.model.PqlInstanceRequest;
 import io.holoinsight.server.home.web.controller.model.PqlParseRequest;
 import io.holoinsight.server.home.web.controller.model.PqlParseResult;
 import io.holoinsight.server.home.web.controller.model.PqlRangeQueryRequest;
 import io.holoinsight.server.home.web.controller.model.TagQueryRequest;
-import io.holoinsight.server.home.web.controller.model.open.GrafanaJsonResult;
 import io.holoinsight.server.home.web.interceptor.MonitorScopeAuth;
 import io.holoinsight.server.query.grpc.QueryProto;
 import io.holoinsight.server.query.grpc.QueryProto.Datasource;
@@ -58,10 +61,13 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
@@ -82,6 +88,9 @@ public class QueryFacadeImpl extends BaseFacade {
 
   @Autowired
   private TenantInitService tenantInitService;
+
+  @Autowired
+  private SuperCacheService superCacheService;
 
   @PostMapping
   public JsonResult<QueryResponse> query(@RequestBody DataQueryRequest request) {
@@ -184,7 +193,7 @@ public class QueryFacadeImpl extends BaseFacade {
           latch.await(30L, TimeUnit.SECONDS);
         } catch (InterruptedException e) {
           log.info("delTags timeout {}", e.getMessage());
-          JsonResult.createFailResult(result, "delTags timeout " + e.getMessage());
+          JsonResult.fillFailResultTo(result, "delTags timeout " + e.getMessage());
           return;
         }
         JsonResult.createSuccessResult(result, true);
@@ -209,14 +218,18 @@ public class QueryFacadeImpl extends BaseFacade {
             .setStart(System.currentTimeMillis() - 60000 * 60 * 5)
             .setEnd(System.currentTimeMillis() - 60000 * 5);
 
-        List<QueryProto.QueryFilter> tenantFilters =
-            tenantInitService.getTenantFilters(ms.getWorkspace());
+        List<QueryProto.QueryFilter> tenantFilters = tenantInitService
+            .getTenantFilters(ms.getTenant(), ms.getWorkspace(), ms.getEnvironment(), metric);
         if (!CollectionUtils.isEmpty(tenantFilters)) {
           builder.addAllFilters(tenantFilters);
         }
 
         QueryProto.QueryRequest.Builder requestBuilder = QueryProto.QueryRequest.newBuilder();
-        requestBuilder.setTenant(tenantInitService.getTsdbTenant(metric, ms.getTenant()));
+        MetricInfo metricInfo = getMetricInfo(metric);
+        requestBuilder.setTenant(tenantInitService.getTsdbTenant(ms.getTenant(), metricInfo));
+        if (isCeresdb4Storage(metricInfo)) {
+          builder.setQl("DESCRIBE " + metric);
+        }
 
         QueryProto.QueryRequest request =
             requestBuilder.addAllDatasources(Collections.singletonList(builder.build())).build();
@@ -254,7 +267,7 @@ public class QueryFacadeImpl extends BaseFacade {
         QueryProto.QueryMetricsRequest.Builder builder =
             QueryProto.QueryMetricsRequest.newBuilder();
         if (null != ms) {
-          builder.setTenant(ms.getTenant());
+          builder.setTenant(tenantInitService.getTsdbTenant(ms.getTenant()));
         }
         builder.setName(name);
         builder.setLimit(3000);
@@ -295,8 +308,16 @@ public class QueryFacadeImpl extends BaseFacade {
             .setEnd(System.currentTimeMillis()).setAggregator("count")
             .addAllGroupBy(Collections.singletonList(tagQueryRequest.getKey()));
 
-        List<QueryProto.QueryFilter> tenantFilters =
-            tenantInitService.getTenantFilters(ms.getWorkspace());
+        List<QueryProto.QueryFilter> tenantFilters = tenantInitService.getTenantFilters(
+            ms.getTenant(), ms.getWorkspace(), ms.getEnvironment(), tagQueryRequest.getMetric());
+
+        if (!CollectionUtils.isEmpty(tagQueryRequest.getConditions())) {
+          tagQueryRequest.getConditions().forEach((k, v) -> {
+            tenantFilters.add(QueryProto.QueryFilter.newBuilder().setName(k).setType("literal_or")
+                .setValue(v).build());
+          });
+        }
+
         if (!CollectionUtils.isEmpty(tenantFilters)) {
           builder.addAllFilters(tenantFilters);
         }
@@ -304,8 +325,7 @@ public class QueryFacadeImpl extends BaseFacade {
         QueryProto.Datasource datasource = builder.build();
         QueryProto.QueryRequest.Builder requestBuilder = QueryProto.QueryRequest.newBuilder()
             .addAllDatasources(Collections.singletonList(datasource));
-        requestBuilder.setTenant(
-            tenantInitService.getTsdbTenant(tagQueryRequest.getMetric(), ms.getTenant()));
+        requestBuilder.setTenant(tenantInitService.getTsdbTenant(ms.getTenant()));
 
         ValueResult response =
             queryClientService.queryTagValues(requestBuilder.build(), tagQueryRequest.getKey());
@@ -317,9 +337,9 @@ public class QueryFacadeImpl extends BaseFacade {
   }
 
   @PostMapping(value = "/pql/range")
-  public GrafanaJsonResult<List<Result>> pqlRangeQuery(@RequestBody PqlRangeQueryRequest request) {
+  public JsonResult<List<Result>> pqlRangeQuery(@RequestBody PqlRangeQueryRequest request) {
 
-    final GrafanaJsonResult<List<Result>> result = new GrafanaJsonResult<>();
+    final JsonResult<List<Result>> result = new JsonResult<>();
 
     facadeTemplate.manage(result, new ManageCallback() {
       @Override
@@ -334,11 +354,12 @@ public class QueryFacadeImpl extends BaseFacade {
       @Override
       public void doManage() {
         QueryProto.PqlRangeRequest rangeRequest = QueryProto.PqlRangeRequest.newBuilder()
-            .setQuery(request.getQuery()).setTenant(RequestContext.getContext().ms.getTenant())
+            .setQuery(request.getQuery())
+            .setTenant(tenantInitService.getTsdbTenant(RequestContext.getContext().ms.getTenant()))
             .setTimeout(request.getTimeout()).setStart(request.getStart()).setEnd(request.getEnd())
             .setFillZero(request.getFillZero()).setStep(request.getStep()).build();
         QueryResponse response = queryClientService.pqlRangeQuery(rangeRequest);
-        GrafanaJsonResult.createSuccessResult(result, response.getResults());
+        JsonResult.createSuccessResult(result, response.getResults());
       }
     });
 
@@ -346,8 +367,8 @@ public class QueryFacadeImpl extends BaseFacade {
   }
 
   @PostMapping(value = "/pql/instant")
-  public GrafanaJsonResult<List<Result>> pqlInstanceQuery(@RequestBody PqlInstanceRequest request) {
-    final GrafanaJsonResult<List<Result>> result = new GrafanaJsonResult<>();
+  public JsonResult<List<Result>> pqlInstanceQuery(@RequestBody PqlInstanceRequest request) {
+    final JsonResult<List<Result>> result = new JsonResult<>();
     RequestContext.Context ctx = RequestContext.getContext();
 
     facadeTemplate.manage(result, new ManageCallback() {
@@ -362,12 +383,13 @@ public class QueryFacadeImpl extends BaseFacade {
 
       @Override
       public void doManage() {
-        QueryProto.PqlInstantRequest instantRequest =
-            QueryProto.PqlInstantRequest.newBuilder().setQuery(request.getQuery())
-                .setTenant(RequestContext.getContext().ms.getTenant()).setDelta(request.getDelta())
-                .setTimeout(request.getTimeout()).setTime(request.getTime()).build();
+        QueryProto.PqlInstantRequest instantRequest = QueryProto.PqlInstantRequest.newBuilder()
+            .setQuery(request.getQuery())
+            .setTenant(tenantInitService.getTsdbTenant(RequestContext.getContext().ms.getTenant()))
+            .setDelta(request.getDelta()).setTimeout(request.getTimeout())
+            .setTime(request.getTime()).build();
         QueryResponse response = queryClientService.pqlInstantQuery(instantRequest);
-        GrafanaJsonResult.createSuccessResult(result, response.getResults());
+        JsonResult.createSuccessResult(result, response.getResults());
       }
     });
 
@@ -425,7 +447,7 @@ public class QueryFacadeImpl extends BaseFacade {
       if (CollectionUtils.isEmpty(list))
         return;
       DataQueryRequest queryRequest = new DataQueryRequest();
-      queryRequest.setTenant(tenantInitService.getTsdbTenant(list.get(0).metric, ms.getTenant()));
+      queryRequest.setTenant(tenantInitService.getTsdbTenant(ms.getTenant()));
       queryRequest.setDatasources(list);
       queryRequests.add(queryRequest);
     });
@@ -436,16 +458,21 @@ public class QueryFacadeImpl extends BaseFacade {
   public QueryProto.QueryRequest convertRequest(DataQueryRequest request) {
     MonitorScope ms = RequestContext.getContext().ms;
     QueryProto.QueryRequest.Builder builder = QueryProto.QueryRequest.newBuilder();
-    builder.setTenant(
-        tenantInitService.getTsdbTenant(request.getDatasources().get(0).metric, ms.getTenant()));
+    builder.setTenant(tenantInitService.getTsdbTenant(ms.getTenant()));
     if (StringUtil.isNotBlank(request.getQuery())) {
       builder.setQuery(request.getQuery());
+    }
+    if (StringUtil.isNotBlank(request.getDownsample())) {
+      builder.setDownsample(request.getDownsample());
+    }
+    if (StringUtil.isNotBlank(request.getFillPolicy())) {
+      builder.setFillPolicy(request.getFillPolicy());
     }
 
     request.datasources.forEach(d -> {
       // Timeline alignment
       if (StringUtils.isNotBlank(d.downsample)) {
-        long interval = getInterval(d.downsample);
+        long interval = UtilMisc.getInterval(d.downsample);
         d.end -= d.end % interval;
         d.start = d.start % interval > 0 ? (d.start + interval - d.start % interval) : d.start;
       }
@@ -456,9 +483,24 @@ public class QueryFacadeImpl extends BaseFacade {
       if ((System.currentTimeMillis() - d.start) < 80000L) {
         d.start -= 60000L;
       }
+      d.setQl(null);
+      MetricInfo metricInfo = getMetricInfo(d.getMetric());
+      if (isCeresdb4Storage(metricInfo)) {
+        parseQl(d, metricInfo);
+        builder.setTenant(tenantInitService.getTsdbTenant(ms.getTenant(), metricInfo));
+      }
 
       QueryProto.Datasource.Builder datasourceBuilder = QueryProto.Datasource.newBuilder();
-      toProtoBean(datasourceBuilder, d);
+      Map<String, Object> objMap = J.toMap(J.toJson(d));
+      if (objMap != null) {
+        objMap.remove("select");
+      }
+      toProtoBean(datasourceBuilder, objMap);
+      Boolean aBoolean = tenantInitService.checkConditions(ms.getTenant(), ms.getWorkspace(),
+          ms.getEnvironment(), datasourceBuilder.getMetric(), datasourceBuilder.getFiltersList());
+      if (!aBoolean) {
+        throw new MonitorException("workspace is illegal");
+      }
       datasourceBuilder
           .setApmMaterialized(d.isApmMaterialized() || MetaDictUtil.isApmMaterialized());
       builder.addDatasources(datasourceBuilder);
@@ -467,31 +509,133 @@ public class QueryFacadeImpl extends BaseFacade {
     return builder.build();
   }
 
-  private long getInterval(String downsample) {
-    long interval = 60000L;
-    switch (downsample) {
-      case "1m":
-        interval = 60000L;
-        break;
-      case "1s":
-        interval = 1000L;
-        break;
-      case "5s":
-        interval = 5000L;
-        break;
-      case "15s":
-        interval = 15000L;
-        break;
-      case "30s":
-        interval = 30000L;
-        break;
-      case "10m":
-        interval = 10 * 60000L;
-        break;
-      default:
-    }
-    return interval;
+
+
+  protected void parseQl(QueryDataSource d, MetricInfo metricInfo) {
+    Set<String> tags = new HashSet<>(J.toList(metricInfo.getTags()));
+    StringBuilder select = new StringBuilder("select ");
+
+    List<String> selects = new ArrayList<>();
+    selects.add("`period`");
+    parseSelect(selects, select, d, tags);
+
+    select.append(" from ").append(d.metric);
+
+    parseFilters(select, d, tags);
+
+    List<String> gbList = new ArrayList<>();
+    gbList.add("period");
+    parseGroupby(select, d, gbList, tags);
+
+    select.append(" order by `period` asc");
+
+    log.info("parse sql {}", select);
+    d.setQl(select.toString());
   }
+
+  private void parseGroupby(StringBuilder select, QueryDataSource d, List<String> gbList,
+      Set<String> tags) {
+    if (!CollectionUtils.isEmpty(d.groupBy)) {
+      for (String gb : d.groupBy) {
+        if (!StringUtils.equals("period", gb) && !tags.contains(gb)) {
+          continue;
+        }
+        gbList.add(gb);
+      }
+    }
+
+    if (!CollectionUtils.isEmpty(gbList)) {
+      select.append(" group by `")//
+          .append(String.join("` , `", gbList)) //
+          .append("`");
+    }
+  }
+
+  private void parseSelect(List<String> selects, StringBuilder select, QueryDataSource d,
+      Set<String> tags) {
+    if (CollectionUtils.isEmpty(d.select)) {
+      selects.add(" count(1) as value ");
+    } else {
+      for (Entry<String /* column name */, String /* expression */> entry : d.select.entrySet()) {
+        String columnName = entry.getKey();
+        String expression = entry.getValue();
+        if (!tags.contains(columnName)) {
+          continue;
+        }
+        if (expression.equals("approx_distinct")) {
+          selects.add(" approx_distinct(`" + columnName + "`) as value ");
+        } else {
+          selects.add(" count(1) as value ");
+        }
+      }
+    }
+
+    select.append(String.join(" , ", selects));
+  }
+
+  private void parseFilters(StringBuilder select, QueryDataSource d, Set<String> tags) {
+    select.append(" where `period` <= ") //
+        .append(d.end) //
+        .append(" and `period` >= ") //
+        .append(d.start);
+    if (!CollectionUtils.isEmpty(d.filters)) {
+      for (QueryFilter filter : d.filters) {
+        if (!tags.contains(filter.name)) {
+          continue;
+        }
+        switch (filter.type) {
+          case "literal_or":
+            select.append(" and `").append(filter.name).append("` in ('")
+                .append(String.join("','", Arrays.asList(filter.value.split("\\|")))).append("')");
+            break;
+          case "not_literal_or":
+            select.append(" and ").append(filter.name).append(" not in ('")
+                .append(String.join("','", Arrays.asList(filter.value.split("\\|")))).append("')");
+            break;
+          case "wildcard":
+            select.append(" and `").append(filter.name).append("` like '").append(filter.value)
+                .append("'");
+            break;
+          case "regexp":
+            select.append(" and `").append(filter.name).append("` REGEXP '").append(filter.value)
+                .append("'");
+            break;
+          case "not_regexp_match":
+            select.append(" and `").append(filter.name).append("` NOT REGEXP '")
+                .append(filter.value).append("'");
+            break;
+          case "literal":
+            select.append(" and `").append(filter.name).append("` = '").append(filter.value)
+                .append("'");
+            break;
+          case "not_literal":
+            select.append(" and `").append(filter.name).append("` <> '").append(filter.value)
+                .append("'");
+            break;
+        }
+      }
+    }
+  }
+
+  private MetricInfo getMetricInfo(String metric) {
+    if (CollectionUtils.isEmpty(this.superCacheService.getSc().metricInfoMap)
+        || StringUtils.isEmpty(metric)) {
+      return null;
+    }
+    return this.superCacheService.getSc().metricInfoMap.get(metric);
+  }
+
+  private boolean isCeresdb4Storage(MetricInfo metricInfo) {
+    if (metricInfo == null) {
+      return false;
+    }
+    if (StringUtils.isNotEmpty(metricInfo.getStorageTenant())
+        && StringUtils.equals(metricInfo.getStorageTenant(), "ceresdb4")) {
+      return true;
+    }
+    return false;
+  }
+
 
   public static void toProtoBean(Message.Builder destPojoClass, Object source) {
     String json = J.toJson(source);
@@ -513,10 +657,10 @@ public class QueryFacadeImpl extends BaseFacade {
         pqlParseResult.setExprs(exprs);
         JsonResult.createSuccessResult(result, pqlParseResult);
       } else {
-        JsonResult.createFailResult(result, "parse failed or pql is empty");
+        JsonResult.fillFailResultTo(result, "parse failed or pql is empty");
       }
     } catch (PqlException e) {
-      JsonResult.createFailResult(result, e.getMessage());
+      JsonResult.fillFailResultTo(result, e.getMessage());
     }
     return result;
   }

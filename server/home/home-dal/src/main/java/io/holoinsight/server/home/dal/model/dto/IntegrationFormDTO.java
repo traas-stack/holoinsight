@@ -18,5 +18,6 @@ public class IntegrationFormDTO {
   private List<String> filters;
 
   private List<IntegrationConfig> configList;
+  private Object extraConfig;
 
 }

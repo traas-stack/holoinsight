@@ -3,19 +3,19 @@
  */
 package io.holoinsight.server.home.web.controller;
 
+import io.holoinsight.server.common.JsonResult;
 import io.holoinsight.server.home.biz.common.MetaDictKey;
 import io.holoinsight.server.home.biz.common.MetaDictType;
 import io.holoinsight.server.home.biz.common.MetaDictUtil;
 import io.holoinsight.server.home.biz.service.ApiKeyService;
 import io.holoinsight.server.home.biz.service.agent.AgentLogTailService;
 import io.holoinsight.server.home.biz.service.agent.AgentParamRequest;
-import io.holoinsight.server.home.common.util.scope.MonitorCookieUtil;
+import io.holoinsight.server.home.common.util.MonitorException;
 import io.holoinsight.server.home.common.util.scope.MonitorScope;
 import io.holoinsight.server.home.common.util.scope.RequestContext;
 import io.holoinsight.server.home.dal.model.ApiKey;
 import io.holoinsight.server.home.web.common.ManageCallback;
 import io.holoinsight.server.home.web.common.ParaCheckUtil;
-import io.holoinsight.server.common.JsonResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -78,29 +78,6 @@ public class AgentFacadeImpl extends BaseFacade {
     return JsonResult.createSuccessResult(sysMap);
   }
 
-  @ResponseBody
-  @GetMapping(value = "/traceAgent")
-  public JsonResult<Map<String, Object>> traceAgent() {
-    String tenant = RequestContext.getContext().ms.getTenant();
-    Map<String, Object> conditions = new HashMap<>();
-    conditions.put("tenant", tenant);
-    conditions.put("status", true);
-    List<ApiKey> apiKeys = apiKeyService.listByMap(conditions);
-
-    Map<String, Object> sysMap = new HashMap<>();
-
-    if (CollectionUtils.isEmpty(apiKeys)) {
-      sysMap.put("apiKey", "");
-    } else {
-      sysMap.put("apiKey", apiKeys.get(0).getApiKey());
-    }
-    sysMap.put("collectorHost",
-        MetaDictUtil.getStringValue(MetaDictType.TRACE_AGENT_CONFIG, MetaDictKey.COLLECTOR_HOST));
-    sysMap.put("traceInstallDocument", MetaDictUtil.getStringValue(MetaDictType.TRACE_AGENT_CONFIG,
-        MetaDictKey.TRACE_INSTALL_DOCUMENT));
-    return JsonResult.createSuccessResult(sysMap);
-  }
-
   @PostMapping(value = "/listFiles")
   @ResponseBody
   public JsonResult<Map<String, Object>> listFiles(
@@ -119,9 +96,10 @@ public class AgentFacadeImpl extends BaseFacade {
         try {
           JsonResult.createSuccessResult(result, agentLogTailService
               .listFiles(agentParamRequest, ms.getTenant(), ms.getWorkspace()).getDatas());
+        } catch (MonitorException e) {
+          JsonResult.fillFailResultTo(result, e.getMessage());
         } catch (Exception e) {
-          result.setMessage(e.getMessage());
-          JsonResult.createSuccessResult(result, new HashMap<>());
+          JsonResult.fillFailResultTo(result, e.getMessage());
         }
       }
     });
@@ -146,9 +124,10 @@ public class AgentFacadeImpl extends BaseFacade {
         try {
           JsonResult.createSuccessResult(result, agentLogTailService
               .previewFile(agentParamRequest, ms.getTenant(), ms.getWorkspace()).getDatas());
+        } catch (MonitorException e) {
+          JsonResult.fillFailResultTo(result, e.getMessage());
         } catch (Exception e) {
-          result.setMessage(e.getMessage());
-          JsonResult.createSuccessResult(result, new HashMap<>());
+          JsonResult.fillFailResultTo(result, e.getMessage());
         }
       }
     });
@@ -173,9 +152,10 @@ public class AgentFacadeImpl extends BaseFacade {
           JsonResult.createSuccessResult(result, agentLogTailService
               .inspect(agentParamRequest, ms.getTenant(), ms.getWorkspace()).getDatas());
 
+        } catch (MonitorException e) {
+          JsonResult.fillFailResultTo(result, e.getMessage());
         } catch (Exception e) {
-          result.setMessage(e.getMessage());
-          JsonResult.createSuccessResult(result, new HashMap<>());
+          JsonResult.fillFailResultTo(result, e.getMessage());
         }
       }
     });

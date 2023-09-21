@@ -7,7 +7,6 @@ import io.holoinsight.server.home.biz.service.DashboardService;
 import io.holoinsight.server.home.common.util.StringUtil;
 import io.holoinsight.server.home.dal.mapper.DashboardMapper;
 import io.holoinsight.server.home.dal.model.Dashboard;
-import io.holoinsight.server.home.dal.model.dto.DashboardDTO;
 import io.holoinsight.server.home.facade.page.MonitorPageRequest;
 import io.holoinsight.server.home.facade.page.MonitorPageResult;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -16,9 +15,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
-import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 
 @Service
 public class DashboardServiceImpl extends ServiceImpl<DashboardMapper, Dashboard>
@@ -46,46 +43,6 @@ public class DashboardServiceImpl extends ServiceImpl<DashboardMapper, Dashboard
     return queryById(id, tenant, null);
   }
 
-  @Override
-  public DashboardDTO save(DashboardDTO dashboardDTO) {
-    Object dashId = dashboardDTO.getDashboard().get("id");
-    String title = (String) dashboardDTO.getDashboard().get("title");
-
-    if (dashId == null) {
-      Dashboard dashboard = new Dashboard();
-      dashboard.setTitle(title);
-      dashboard.setConf(dashboardDTO.getDashboard());
-      dashboard.setGmtCreate(new Date());
-      dashboard.setGmtModified(new Date());
-      dashboard.setTenant(dashboardDTO.tenant);
-      dashboard.setWorkspace(dashboardDTO.workspace);
-      dashboard.setCreator(dashboardDTO.modifier);
-      dashboard.setModifier(dashboardDTO.modifier);
-      this.save(dashboard);
-      dashboardDTO.getDashboard().put("id", dashboard.getId());
-      dashboardDTO.getDashboard().put("uid", String.valueOf(dashboard.getId()));
-      return dashboardDTO;
-    }
-    Long id = Long.valueOf((Integer) dashId);
-
-    Dashboard dashboard = this.getById(id);
-
-    if (dashboard == null) {
-      return null;
-    }
-
-    dashboard.setGmtModified(new Date());
-    dashboard.setModifier(dashboardDTO.modifier);
-    dashboard.setTenant(dashboardDTO.tenant);
-    dashboard.setWorkspace(dashboardDTO.workspace);
-    dashboard.setTitle(title);
-    dashboard.setConf(dashboardDTO.getDashboard());
-    this.updateById(dashboard);
-    dashboardDTO.getDashboard().put("id", dashboard.getId());
-    dashboardDTO.getDashboard().put("uid", String.valueOf(dashboard.getId()));
-
-    return dashboardDTO;
-  }
 
   @Override
   public List<Dashboard> findByIds(List<String> ids) {
@@ -103,11 +60,12 @@ public class DashboardServiceImpl extends ServiceImpl<DashboardMapper, Dashboard
     if (StringUtil.isNotBlank(workspace)) {
       wrapper.eq("workspace", workspace);
     }
-    wrapper.like("id", keyword).or().like("title", keyword);
-    Page<Dashboard> page = new Page<>(1, 20);
-    page = page(page, wrapper);
+    wrapper.and(wa -> wa.like("id", keyword).or().like("title", keyword));
+    wrapper.last("LIMIT 10");
+    // Page<Dashboard> page = new Page<>(1, 20);
+    // page = page(page, wrapper);
 
-    return page.getRecords();
+    return baseMapper.selectList(wrapper);
   }
 
   @Override
@@ -155,18 +113,7 @@ public class DashboardServiceImpl extends ServiceImpl<DashboardMapper, Dashboard
       wrapper.like("title", dashboard.getTitle().trim());
     }
 
-    if (StringUtil.isNotBlank(request.getSortBy())
-        && StringUtil.isNotBlank(request.getSortRule())) {
-      if (request.getSortRule().toLowerCase(Locale.ROOT).equals("desc")) {
-        wrapper.orderByDesc(request.getSortBy());
-      } else {
-        wrapper.orderByAsc(request.getSortBy());
-      }
-    } else {
-      wrapper.orderByDesc("gmt_modified");
-    }
-    wrapper.select(Dashboard.class,
-        info -> !info.getColumn().equals("creator") && !info.getColumn().equals("modifier"));
+    wrapper.orderByDesc("id");
 
     Page<Dashboard> page = new Page<>(request.getPageNum(), request.getPageSize());
 

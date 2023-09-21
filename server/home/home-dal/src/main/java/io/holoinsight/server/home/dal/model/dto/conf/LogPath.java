@@ -36,8 +36,5 @@ public class LogPath implements Serializable {
   // * type == regexp,， 填写正则表达式，匹配全路径
   // */
   // public String regexp;
-  // 大于0则表示要设置阈值限流
-  public Integer agentLimitKB = -1;
 
-  public String charset = "utf-8";
 }

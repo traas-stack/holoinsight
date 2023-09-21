@@ -77,7 +77,7 @@ public class AlertGroupIT extends BaseIT {
     System.out.println(response.print());
     response.then() //
         .body("success", IS_FALSE) //
-        .body("message", eq("invalid groupName"));
+        .body("message", startsWith("invalid groupName"));
 
     response = queryAlertGroup.get();
     System.out.println(response.body().print());

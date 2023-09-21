@@ -19,7 +19,7 @@ public class JsonResult<T> implements Serializable {
   private String message;
   private String resultCode;
   private T data;
-  // private String host;
+  private String requestId;
 
   /**
    * <p>
@@ -30,7 +30,7 @@ public class JsonResult<T> implements Serializable {
     JsonResult<T> result = new JsonResult<>();
     result.setSuccess(true);
     result.setData(data);
-    // result.setHost(AddressUtil.getLocalHostIPV4());
+    result.setRequestId(AESEncrypt.encrypt(AddressUtil.getLocalHostIPV4()));
     return result;
   }
 
@@ -39,11 +39,11 @@ public class JsonResult<T> implements Serializable {
    * createFailResult.
    * </p>
    */
-  public static JsonResult<Object> createFailResult(String message) {
-    JsonResult<Object> result = new JsonResult<>();
+  public static <T> JsonResult<T> createFailResult(String message) {
+    JsonResult<T> result = new JsonResult<>();
     result.setSuccess(false);
     result.setMessage(message);
-    // result.setHost(AddressUtil.getLocalHostIPV4());
+    result.setRequestId(AESEncrypt.encrypt(AddressUtil.getLocalHostIPV4()));
     return result;
   }
 
@@ -55,31 +55,30 @@ public class JsonResult<T> implements Serializable {
   public static <T> void createSuccessResult(JsonResult<T> result, T data) {
     result.setSuccess(true);
     result.setData(data);
-    // result.setHost(AddressUtil.getLocalHostIPV4());
+    result.setRequestId(AESEncrypt.encrypt(AddressUtil.getLocalHostIPV4()));
   }
 
   /**
    * <p>
-   * createFailResult.
+   * fillFailResultTo
    * </p>
    */
-  public static <T> void createFailResult(JsonResult<T> result, String message) {
+  public static <T> void fillFailResultTo(JsonResult<T> result, String message) {
     result.setSuccess(false);
     result.setMessage(message);
-    // result.setHost(AddressUtil.getLocalHostIPV4());
+    result.setRequestId(AESEncrypt.encrypt(AddressUtil.getLocalHostIPV4()));
   }
 
   /**
    * <p>
-   * createFailResult.
+   * fillFailResultTo
    * </p>
    */
-  public static void createFailResult(JsonResult<Object> result, String resultCode,
-      String message) {
+  public static void fillFailResultTo(JsonResult<?> result, String resultCode, String message) {
     result.setSuccess(false);
     result.setMessage(message);
     result.setResultCode(resultCode);
-    // result.setHost(AddressUtil.getLocalHostIPV4());
+    result.setRequestId(AESEncrypt.encrypt(AddressUtil.getLocalHostIPV4()));
   }
 
   /**
@@ -136,13 +135,13 @@ public class JsonResult<T> implements Serializable {
     this.resultCode = resultCode;
   }
 
-  // public String getHost() {
-  // return host;
-  // }
-  //
-  // public void setHost(String host) {
-  // this.host = host;
-  // }
+  public String getRequestId() {
+    return requestId;
+  }
+
+  public void setRequestId(String requestId) {
+    this.requestId = requestId;
+  }
 
   /**
    * <p>
@@ -161,7 +160,7 @@ public class JsonResult<T> implements Serializable {
   public void setData(T data) {
     this.success = true;
     this.data = data;
-    // this.host = AddressUtil.getLocalHostIPV4();
+    this.requestId = AESEncrypt.encrypt(AddressUtil.getLocalHostIPV4());
   }
 
   /**
@@ -172,6 +171,6 @@ public class JsonResult<T> implements Serializable {
   public void setFail(String message) {
     this.success = false;
     this.message = message;
-    // this.host = AddressUtil.getLocalHostIPV4();
+    this.requestId = AESEncrypt.encrypt(AddressUtil.getLocalHostIPV4());
   }
 }

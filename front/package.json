@@ -1,0 +1,51 @@
+{
+  "private": true,
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/traas-stack/holoinsight/"
+  },
+  "author": "yuanliu",
+  "scripts": {
+    "build": "max build",
+    "dev": "max dev",
+    "format": "prettier --cache --write .",
+    "postinstall": "max setup",
+    "setup": "max setup",
+    "start": "npm run dev"
+  },
+  "dependencies": {
+    "@aligov/global-locale": "^1.0.5",
+    "@aligov/global-string-format": "^1.0.7",
+    "@ant-design/compatible": "v5-compatible-v4",
+    "@ant-design/icons": "^4.7.0",
+    "@ant-design/pro-components": "^2.0.1",
+    "@ant-design/pro-layout": "^7.10.3",
+    "@umijs/max": "^4.0.53",
+    "ahooks": "^3.7.6",
+    "antd": "^4.24.10",
+    "inversify": "6.0.1",
+    "lodash": "^4.17.21",
+    "moment": "^2.29.0",
+    "monaco-editor": "0.35.0",
+    "monaco-editor-webpack-plugin": "7.0.1",
+    "monaco-promql": "1.7.4",
+    "query-string": "^8.1.0",
+    "react-json-view": "^1.21.3",
+    "umi-request": "^1.4.0",
+    "react-monaco-editor": "0.51.0",
+    "@antv/g2plot": "^2.4.20",
+    "@antv/g6": "^4.7.10",
+    "clsx": "^1.2.1",
+    "react-copy-to-clipboard": "^5.1.0"
+  },
+  "devDependencies": {
+    "@types/react": "^18.0.0",
+    "@types/react-dom": "^18.0.0",
+    "lint-staged": "^13.0.3",
+    "prettier": "^2.7.1",
+    "prettier-plugin-organize-imports": "^2",
+    "prettier-plugin-packagejson": "^2",
+    "typescript": "^4.1.2"
+  },
+  "__npminstall_done": false
+}

@@ -20,7 +20,7 @@ import io.holoinsight.server.common.dao.entity.GaeaAgentDOExample;
 import io.holoinsight.server.common.dao.mapper.GaeaAgentDOMapper;
 import io.holoinsight.server.registry.core.utils.BoundedSchedulers;
 import io.holoinsight.server.registry.core.utils.Dict;
-import io.holoinsight.server.registry.core.utils.EventBusHolder;
+import io.holoinsight.server.common.event.EventBusHolder;
 import lombok.Data;
 import reactor.core.publisher.Mono;
 

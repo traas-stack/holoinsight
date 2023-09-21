@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import io.holoinsight.server.common.J;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -64,7 +65,7 @@ public class MetaSyncService {
     if (metaConfig.getBasic().isVerbose()) {
       LOGGER.info("fullSync {}", JsonUtils.toJson(req));
     }
-    LOGGER.info("curd detail, need compare: {}", req.getResources().size());
+    LOGGER.info("curd detail, need [compare]: {}, {}", req.getType(), req.getResources().size());
     List<Resource> upsert = new ArrayList<>();
     List<Map<String, Object>> delete = new ArrayList<>();
 
@@ -76,11 +77,16 @@ public class MetaSyncService {
     }
 
     // compare 返回upsert 列表，和 delete 列表
-    compare(tableName, req.getWorkspace(), req.getCluster(), req.getType(), req.getResources(),
-        upsert, delete);
+    try {
+      compare(tableName, req.getWorkspace(), req.getCluster(), req.getType(), req.getResources(),
+          upsert, delete);
+    } catch (Exception e) {
+      LOGGER.error("curd detail, error, {}", e.getMessage(), e);
+      throw new IllegalStateException("compare error, " + e.getMessage());
+    }
 
-    LOGGER.info("curd detail, need upsert: {}", upsert.size());
-    LOGGER.info("curd detail, need delete: {}", delete.size());
+    LOGGER.info("curd detail, need [upsert]: {}, {}", req.getType(), upsert.size());
+    LOGGER.info("curd detail, need [delete]: {}, {}", req.getType(), delete.size());
 
     // 加入到异步队列中
     if (!CollectionUtils.isEmpty(upsert)) {
@@ -104,6 +110,10 @@ public class MetaSyncService {
     }
     if (StringUtils.isEmpty(req.getCluster())) {
       req.setCluster(DEFAULT_CLUSTER);
+    }
+
+    if (metaConfig.getBasic().isVerbose()) {
+      LOGGER.info("deltaSync {}", JsonUtils.toJson(req));
     }
 
     String tableName = genTableName(req.getApikey());
@@ -240,23 +250,31 @@ public class MetaSyncService {
 
   private Map<String, Map<String, Object>> getFromDB(String tableName, String type,
       String workspace, String cluster) {
-
+    List<String> rowKeys = new ArrayList<>();
     QueryExample example = new QueryExample();
     if (StringUtils.isNotBlank(workspace)) {
       example.getParams().put("_workspace", workspace);
+      rowKeys.add("_workspace");
     }
 
     if (StringUtils.isNotBlank(cluster)) {
       example.getParams().put("_cluster", cluster);
+      rowKeys.add("_cluster");
     }
 
     example.getParams().put("_type", StringUtils.upperCase(type));
+    rowKeys.add("_type");
+    rowKeys.add("_uk");
+    rowKeys.add("name");
+    rowKeys.add("namespace");
 
+    example.setRowKeys(rowKeys);
     List<Map<String, Object>> mapList = dataClientService.queryByExample(tableName, example);
     if (CollectionUtils.isEmpty(mapList)) {
       return new HashMap<>();
     }
 
+    LOGGER.info("curd detail, [getFromDB], size: {}, {}", mapList.size(), J.toJson(example));
     Map<String, Map<String, Object>> uks = new HashMap<>();
     mapList.forEach(row -> {
       if (row.get("_uk") == null) {

@@ -66,11 +66,12 @@ message PreviewFileRequest {
 
 message PreviewFileResponse {
   io.holoinsight.server.common.grpc.CommonResponseHeader header = 1;
-  // 解析好的日志行
+  // parsed log lines
   repeated string content = 2;
-  // 日志使用的编码
-  // 如果用户请求里没有提供编码, 那么此时该编码是猜测的编码
+  // detected charset by agent
   string charset = 3;
+  // detected timezone by agent
+  string timezone = 4;
 }
 
 // 试切分/正则切分结果预览

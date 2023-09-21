@@ -4,7 +4,6 @@
 package io.holoinsight.server.home.alert.service.calculate;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import io.holoinsight.server.common.service.FuseProtector;
 import io.holoinsight.server.home.alert.common.AlertStat;
 import io.holoinsight.server.home.alert.common.G;
 import io.holoinsight.server.home.alert.model.compute.ComputeContext;
@@ -14,10 +13,12 @@ import io.holoinsight.server.home.alert.model.event.EventInfo;
 import io.holoinsight.server.home.alert.service.data.AlarmDataSet;
 import io.holoinsight.server.home.alert.service.data.CacheData;
 import io.holoinsight.server.home.alert.service.event.AlertEventService;
+import io.holoinsight.server.home.alert.service.event.RecordSucOrFailNotify;
 import io.holoinsight.server.home.alert.service.task.AlarmTaskExecutor;
 import io.holoinsight.server.home.common.exception.HoloinsightAlertIllegalArgumentException;
 import io.holoinsight.server.home.dal.mapper.AlarmHistoryMapper;
 import io.holoinsight.server.home.dal.model.AlarmHistory;
+import io.holoinsight.server.home.facade.AlertNotifyRecordDTO;
 import io.holoinsight.server.home.facade.InspectConfig;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -31,14 +32,13 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
-
-import static io.holoinsight.server.common.service.FuseProtector.CRITICAL_AlertTaskCompute;
 
 /**
  * @author wangsiyuan
@@ -67,9 +67,14 @@ public class AlertTaskCompute implements AlarmTaskExecutor<ComputeTaskPackage> {
   @Resource
   private CacheData cacheData;
 
+  private static final String ALERT_TASK_COMPUTE = "AlertTaskCompute";
+
   @Override
   public void process(ComputeTaskPackage computeTaskPackage) {
     try {
+      // alert notify record migrate
+      RecordSucOrFailNotify.alertNotifyMigrate(computeTaskPackage);
+
       // get metric data
       alarmDataSet.loadData(computeTaskPackage);
 
@@ -89,7 +94,14 @@ public class AlertTaskCompute implements AlarmTaskExecutor<ComputeTaskPackage> {
           if (inspectConfig == null) {
             continue;
           }
-          alarmNotifies.add(AlertNotify.eventInfoConvert(eventInfo, inspectConfig));
+
+          List<AlertNotifyRecordDTO> alertNotifyRecordDTOS =
+              getAlertNotifyRecord(computeTaskPackage);
+          AlertNotify alertNotify =
+              AlertNotify.eventInfoConvert(eventInfo, inspectConfig, alertNotifyRecordDTOS);
+          alarmNotifies.add(alertNotify);
+          RecordSucOrFailNotify.alertNotifyProcessSuc(ALERT_TASK_COMPUTE,
+              "event convert alert notify", alertNotify.getAlertNotifyRecord());
         }
         alertEventService.handleEvent(alarmNotifies);
       }
@@ -101,9 +113,7 @@ public class AlertTaskCompute implements AlarmTaskExecutor<ComputeTaskPackage> {
       LOGGER.error(
           "[HoloinsightAlertInternalException][AlertTaskCompute][{}] fail to execute alert task compute for {}",
           computeTaskPackage.inspectConfigs.size(), e.getMessage(), e);
-      FuseProtector.voteCriticalError(CRITICAL_AlertTaskCompute, e.getMessage());
     } finally {
-      FuseProtector.voteComplete(CRITICAL_AlertTaskCompute);
       Map<String, Map<String, Long>> counterMap = AlertStat.statRuleTypeCount(computeTaskPackage);
       for (Map.Entry<String /* tenant */, Map<String /* ruleType */, Long>> entry : counterMap
           .entrySet()) {
@@ -113,6 +123,24 @@ public class AlertTaskCompute implements AlarmTaskExecutor<ComputeTaskPackage> {
         }
       }
     }
+  }
+
+  private List<AlertNotifyRecordDTO> getAlertNotifyRecord(ComputeTaskPackage computeTaskPackage) {
+    if (Objects.isNull(computeTaskPackage)) {
+      return Collections.emptyList();
+    }
+    List<InspectConfig> inspectConfigs = computeTaskPackage.getInspectConfigs();
+    if (CollectionUtils.isEmpty(inspectConfigs)) {
+      return Collections.emptyList();
+    }
+    List<AlertNotifyRecordDTO> alertNotifyRecordDTOList = new ArrayList<>();
+    for (InspectConfig inspectConfig : inspectConfigs) {
+      if (inspectConfig.getAlertNotifyRecord() == null) {
+        continue;
+      }
+      alertNotifyRecordDTOList.add(inspectConfig.getAlertNotifyRecord());
+    }
+    return alertNotifyRecordDTOList;
   }
 
   protected List<EventInfo> calculate(ComputeTaskPackage computeTaskPackage) {
@@ -133,6 +161,7 @@ public class AlertTaskCompute implements AlarmTaskExecutor<ComputeTaskPackage> {
       }
       int parallelSize = computeTaskPackage.getInspectConfigs().size();
       CountDownLatch latch = new CountDownLatch(parallelSize);
+      List<AlertNotifyRecordDTO> alertNotifyRecordDTOList = new ArrayList<>();
       // detection, generate alert event
       for (InspectConfig inspectConfig : computeTaskPackage.getInspectConfigs()) {
         calculator.execute(() -> {
@@ -140,7 +169,8 @@ public class AlertTaskCompute implements AlarmTaskExecutor<ComputeTaskPackage> {
             ComputeContext context = new ComputeContext();
             context.setTimestamp(computeTaskPackage.getTimestamp());
             context.setInspectConfig(inspectConfig);
-            EventInfo eventInfo = abstractUniformInspectRunningRule.eval(context);
+            EventInfo eventInfo =
+                abstractUniformInspectRunningRule.eval(context, alertNotifyRecordDTOList);
             if (eventInfo != null) {
               eventLists.add(eventInfo);
             } else if (uniqueIds.contains(inspectConfig.getUniqueId())) {
@@ -164,8 +194,13 @@ public class AlertTaskCompute implements AlarmTaskExecutor<ComputeTaskPackage> {
             latch.countDown();
           }
         });
+        RecordSucOrFailNotify.alertNotifyProcessSuc(ALERT_TASK_COMPUTE, "alert task compute",
+            inspectConfig.getAlertNotifyRecord());
       }
       latch.await();
+      if (!CollectionUtils.isEmpty(alertNotifyRecordDTOList)) {
+        RecordSucOrFailNotify.batchInsert(alertNotifyRecordDTOList);
+      }
     } catch (Exception e) {
       LOGGER.error("AlertTaskCompute Exception", e);
     }

@@ -1,0 +1,71 @@
+{
+  "name": "loganalysis",
+  "parentFolderId": "-1",
+  "pluginType": "custom",
+  "status": "ONLINE",
+  "periodType": "MINUTE",
+  "conf": {
+    "collectRanges": {
+      "table": "default_server",
+      "condition": [
+        {
+          "app": [
+            "holoinsight-server-example"
+          ]
+        }
+      ]
+    },
+    "extraConfig": {
+      "keyCleanInterval": 0,
+      "maxKeySize": 20000,
+      "charset": "utf-8"
+    },
+    "logPaths": [
+      {
+        "path": "/home/admin/logs/holoinsight-server/test/loganalysis.log",
+        "type": "path"
+      }
+    ],
+    "logParse": {
+      "splitType": null,
+      "separator": null,
+      "regexp": null,
+      "multiLine": {
+        "multi": false
+      },
+      "pattern": {
+        "logPattern": true,
+        "maxUnknownPatterns": 50,
+        "maxLogLength": 300,
+        "logKnownPatterns": [
+          {
+            "eventName": "clusterping",
+            "maxSnapshots": 3,
+            "type": "CONTAINS",
+            "values": [
+              "Cluster-Ping"
+            ]
+          }
+        ]
+      }
+    },
+    "whiteFilters": [],
+    "blackFilters": [],
+    "collectMetrics": [
+      {
+        "metricType": "count",
+        "containValue": null,
+        "tags": [],
+        "metrics": [
+          {
+            "name": "value",
+            "func": "loganalysis"
+          }
+        ],
+        "afterFilters": null,
+        "tableName": "loganalysis"
+      }
+    ]
+  },
+  "tenant": "default"
+}

@@ -20,8 +20,6 @@ import io.holoinsight.server.home.dal.model.OpType;
 import io.holoinsight.server.home.dal.model.dto.AlarmWebhookDTO;
 import io.holoinsight.server.home.dal.model.dto.MarketplacePluginDTO;
 import io.holoinsight.server.home.dal.model.dto.MarketplaceProductDTO;
-import io.holoinsight.server.home.facade.page.MonitorPageRequest;
-import io.holoinsight.server.home.facade.page.MonitorPageResult;
 import io.holoinsight.server.home.web.common.ManageCallback;
 import io.holoinsight.server.home.web.common.ParaCheckUtil;
 import io.holoinsight.server.home.web.interceptor.MonitorScopeAuth;
@@ -30,7 +28,6 @@ import io.holoinsight.server.common.JsonResult;
 import com.google.gson.reflect.TypeToken;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -44,7 +41,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * @author jsy1001de
@@ -126,125 +122,6 @@ public class MarketplacePluginFacadeImpl extends BaseFacade {
     });
 
     return JsonResult.createSuccessResult(true);
-  }
-
-  @DeleteMapping(value = "/delete/{id}")
-  @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.EDIT)
-  public JsonResult<Object> deleteById(@PathVariable("id") Long id) {
-    final JsonResult<Object> result = new JsonResult<>();
-    facadeTemplate.manage(result, new ManageCallback() {
-      @Override
-      public void checkParameter() {
-        ParaCheckUtil.checkParaNotNull(id, "id");
-      }
-
-      @Override
-      public void doManage() {
-        MonitorScope ms = RequestContext.getContext().ms;
-        MarketplacePluginDTO byId =
-            marketplacePluginService.queryById(id, ms.getTenant(), ms.getWorkspace());
-        if (null == byId) {
-          throw new MonitorException(ResultCodeEnum.CANNOT_FIND_RECORD,
-              "can not find record: " + id);
-        }
-
-        marketplacePluginService.deleteById(id);
-        JsonResult.createSuccessResult(result, null);
-        userOpLogService.append("marketplace_plugin", byId.getId(), OpType.DELETE,
-            RequestContext.getContext().mu.getLoginName(), ms.getTenant(), ms.getWorkspace(),
-            J.toJson(byId), null, null, "marketplace_plugin_delete");
-
-      }
-    });
-    return result;
-  }
-
-  @DeleteMapping(value = "/deleteByType/{type}")
-  @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.EDIT)
-  public JsonResult<Object> deleteByType(@PathVariable("type") String type) {
-    final JsonResult<Object> result = new JsonResult<>();
-    facadeTemplate.manage(result, new ManageCallback() {
-      @Override
-      public void checkParameter() {
-        ParaCheckUtil.checkParaNotNull(type, "type");
-      }
-
-      @Override
-      public void doManage() {
-        MonitorScope ms = RequestContext.getContext().ms;
-        Map<String, Object> params = new HashMap<>();
-        params.put("tenant", ms.getTenant());
-
-        if (StringUtils.isNotBlank(ms.getWorkspace())) {
-          params.put("workspace", ms.getWorkspace());
-        }
-        params.put("type", type);
-        List<MarketplacePluginDTO> byTypes = marketplacePluginService.findByMap(params);
-        if (CollectionUtils.isEmpty(byTypes)) {
-          throw new MonitorException(ResultCodeEnum.CANNOT_FIND_RECORD,
-              "can not find record: " + type);
-        }
-
-        List<Long> ids =
-            byTypes.stream().map(MarketplacePluginDTO::getId).collect(Collectors.toList());
-        for (long id : ids) {
-          marketplacePluginService.deleteById(id);
-        }
-        JsonResult.createSuccessResult(result, null);
-        for (long id : ids) {
-          userOpLogService.append("marketplace_plugin", id, OpType.DELETE,
-              RequestContext.getContext().mu.getLoginName(), ms.getTenant(), ms.getWorkspace(),
-              J.toJson(id), null, null, "marketplace_plugin_delete");
-        }
-      }
-    });
-    return result;
-  }
-
-  @PostMapping("/create")
-  @ResponseBody
-  @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.EDIT)
-  public JsonResult<MarketplacePluginDTO> save(
-      @RequestBody MarketplacePluginDTO marketplacePluginDTO) {
-    final JsonResult<MarketplacePluginDTO> result = new JsonResult<>();
-    facadeTemplate.manage(result, new ManageCallback() {
-      @Override
-      public void checkParameter() {
-        ParaCheckUtil.checkParaNotBlank(marketplacePluginDTO.name, "name");
-        ParaCheckUtil.checkParaNotNull(marketplacePluginDTO.product, "product");
-        ParaCheckUtil.checkParaNotNull(marketplacePluginDTO.type, "type");
-        ParaCheckUtil.checkParaNotBlank(marketplacePluginDTO.json, "json");
-        // ParaCheckUtil.checkParaNotNull(marketplacePluginDTO.status);
-      }
-
-      @Override
-      public void doManage() {
-        MonitorScope ms = RequestContext.getContext().ms;
-        MonitorUser mu = RequestContext.getContext().mu;
-        if (ms != null) {
-          marketplacePluginDTO.setTenant(ms.getTenant());
-        }
-        if (mu != null) {
-          marketplacePluginDTO.setCreator(mu.getLoginName());
-          marketplacePluginDTO.setModifier(mu.getLoginName());
-        }
-
-        if (StringUtils.isNotBlank(ms.getWorkspace())) {
-          marketplacePluginDTO.setWorkspace(ms.getWorkspace());
-        }
-        marketplacePluginDTO.setStatus(true);
-        MarketplacePluginDTO save = marketplacePluginService.create(marketplacePluginDTO);
-        JsonResult.createSuccessResult(result, save);
-
-        assert mu != null;
-        userOpLogService.append("marketplace_plugin", save.getId(), OpType.CREATE,
-            mu.getLoginName(), ms.getTenant(), ms.getWorkspace(), J.toJson(marketplacePluginDTO),
-            null, null, "marketplace_plugin_create");
-
-      }
-    });
-
-    return result;
   }
 
   @GetMapping(value = "/queryById/{id}")
@@ -350,67 +227,7 @@ public class MarketplacePluginFacadeImpl extends BaseFacade {
             (new TypeToken<AlarmWebhookDTO>() {}).getType());
         alarmWebhookService.updateById(o);
       }
-
-      // if (map.get("type").equals("dataQuery")) {
-      //
-      // ApiKey o = J.fromJson(J.toJson(map.get("dataQuery")), (new TypeToken<ApiKey>() {
-      // }).getType());
-      // apiKeyService.updateById(o);
-      // }
     }
-  }
-
-  @GetMapping(value = "/queryByName/{name}")
-  @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.VIEW)
-  public JsonResult<List<MarketplacePluginDTO>> queryByName(@PathVariable("name") String name) {
-    final JsonResult<List<MarketplacePluginDTO>> result = new JsonResult<>();
-    facadeTemplate.manage(result, new ManageCallback() {
-      @Override
-      public void checkParameter() {
-        ParaCheckUtil.checkParaNotNull(name, "name");
-      }
-
-      @Override
-      public void doManage() {
-        MonitorScope ms = RequestContext.getContext().ms;
-        Map<String, Object> params = new HashMap<>();
-        params.put("tenant", ms.getTenant());
-        params.put("name", name);
-        if (StringUtils.isNotBlank(ms.getWorkspace())) {
-          params.put("workspace", ms.getWorkspace());
-        }
-        List<MarketplacePluginDTO> marketplacePluginDTOs =
-            marketplacePluginService.findByMap(params);
-        JsonResult.createSuccessResult(result, marketplacePluginDTOs);
-      }
-    });
-    return result;
-  }
-
-  @GetMapping(value = "/listAll")
-  @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.VIEW)
-  public JsonResult<List<MarketplacePluginDTO>> listAll() {
-    final JsonResult<List<MarketplacePluginDTO>> result = new JsonResult<>();
-    facadeTemplate.manage(result, new ManageCallback() {
-      @Override
-      public void checkParameter() {}
-
-      @Override
-      public void doManage() {
-        MonitorScope ms = RequestContext.getContext().ms;
-
-        Map<String, Object> params = new HashMap<>();
-        params.put("tenant", ms.getTenant());
-        if (StringUtils.isNotBlank(ms.getWorkspace())) {
-          params.put("workspace", ms.getWorkspace());
-        }
-        List<MarketplacePluginDTO> marketplacePluginDTOs =
-            marketplacePluginService.findByMap(params);
-
-        JsonResult.createSuccessResult(result, marketplacePluginDTOs);
-      }
-    });
-    return result;
   }
 
   @GetMapping(value = "/list")
@@ -435,147 +252,6 @@ public class MarketplacePluginFacadeImpl extends BaseFacade {
         JsonResult.createSuccessResult(result, marketplacePluginDTOs);
       }
     });
-    return result;
-  }
-
-  @GetMapping(value = "/listByType/{type}")
-  @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.VIEW)
-  public JsonResult<List<MarketplacePluginDTO>> listByType(@PathVariable String type) {
-    final JsonResult<List<MarketplacePluginDTO>> result = new JsonResult<>();
-    facadeTemplate.manage(result, new ManageCallback() {
-      @Override
-      public void checkParameter() {}
-
-      @Override
-      public void doManage() {
-        MonitorScope ms = RequestContext.getContext().ms;
-
-        Map<String, Object> params = new HashMap<>();
-        params.put("tenant", MonitorCookieUtil.getTenantOrException());
-        params.put("type", type);
-        if (StringUtils.isNotBlank(ms.getWorkspace())) {
-          params.put("workspace", ms.getWorkspace());
-        }
-        List<MarketplacePluginDTO> marketplacePluginDTOs =
-            marketplacePluginService.findByMap(params);
-        JsonResult.createSuccessResult(result, marketplacePluginDTOs);
-      }
-    });
-    return result;
-  }
-
-  @GetMapping(value = "/listAllNames")
-  @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.VIEW)
-  public JsonResult<List<String>> listAllNames() {
-    final JsonResult<List<String>> result = new JsonResult<>();
-    facadeTemplate.manage(result, new ManageCallback() {
-      @Override
-      public void checkParameter() {}
-
-      @Override
-      public void doManage() {
-        MonitorScope ms = RequestContext.getContext().ms;
-
-        Map<String, Object> params = new HashMap<>();
-        params.put("tenant", MonitorCookieUtil.getTenantOrException());
-        if (StringUtils.isNotBlank(ms.getWorkspace())) {
-          params.put("workspace", ms.getWorkspace());
-        }
-        List<MarketplacePluginDTO> marketplacePluginDTOs =
-            marketplacePluginService.findByMap(params);
-        List<String> names = marketplacePluginDTOs == null ? null
-            : marketplacePluginDTOs.stream().map(MarketplacePluginDTO::getName)
-                .collect(Collectors.toList());
-        JsonResult.createSuccessResult(result, names);
-      }
-    });
-    return result;
-  }
-
-  @GetMapping(value = "/listNames")
-  @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.VIEW)
-  public JsonResult<List<String>> listNames() {
-    final JsonResult<List<String>> result = new JsonResult<>();
-    facadeTemplate.manage(result, new ManageCallback() {
-      @Override
-      public void checkParameter() {}
-
-      @Override
-      public void doManage() {
-        MonitorScope ms = RequestContext.getContext().ms;
-
-        Map<String, Object> params = new HashMap<>();
-        params.put("tenant", MonitorCookieUtil.getTenantOrException());
-        if (StringUtils.isNotBlank(ms.getWorkspace())) {
-          params.put("workspace", ms.getWorkspace());
-        }
-        List<MarketplacePluginDTO> marketplacePluginDTOs =
-            marketplacePluginService.findByMap(params);
-        List<String> names = marketplacePluginDTOs == null ? null
-            : marketplacePluginDTOs.stream().map(MarketplacePluginDTO::getName)
-                .collect(Collectors.toList());
-        JsonResult.createSuccessResult(result, names);
-      }
-    });
-    return result;
-  }
-
-  @GetMapping(value = "/listNamesByType/{type}")
-  @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.VIEW)
-  public JsonResult<List<String>> listNamesByType(@PathVariable String type) {
-    final JsonResult<List<String>> result = new JsonResult<>();
-    facadeTemplate.manage(result, new ManageCallback() {
-      @Override
-      public void checkParameter() {}
-
-      @Override
-      public void doManage() {
-        MonitorScope ms = RequestContext.getContext().ms;
-
-        Map<String, Object> params = new HashMap<>();
-        params.put("tenant", MonitorCookieUtil.getTenantOrException());
-        params.put("type", type);
-
-        if (StringUtils.isNotBlank(ms.getWorkspace())) {
-          params.put("workspace", ms.getWorkspace());
-        }
-        List<MarketplacePluginDTO> marketplacePluginDTOs =
-            marketplacePluginService.findByMap(params);
-        List<String> names = marketplacePluginDTOs == null ? null
-            : marketplacePluginDTOs.stream().map(MarketplacePluginDTO::getName)
-                .collect(Collectors.toList());
-        JsonResult.createSuccessResult(result, names);
-      }
-    });
-    return result;
-  }
-
-  @PostMapping("/pageQuery")
-  @ResponseBody
-  @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.VIEW)
-  public JsonResult<MonitorPageResult<MarketplacePluginDTO>> pageQuery(
-      @RequestBody MonitorPageRequest<MarketplacePluginDTO> customPluginRequest) {
-    final JsonResult<MonitorPageResult<MarketplacePluginDTO>> result = new JsonResult<>();
-    facadeTemplate.manage(result, new ManageCallback() {
-      @Override
-      public void checkParameter() {
-        ParaCheckUtil.checkParaNotNull(customPluginRequest.getTarget(), "target");
-      }
-
-      @Override
-      public void doManage() {
-        MonitorScope ms = RequestContext.getContext().ms;
-        if (null != ms && StringUtils.isNotBlank(ms.tenant)) {
-          customPluginRequest.getTarget().setTenant(ms.tenant);
-        }
-        if (null != ms && StringUtils.isNotBlank(ms.getWorkspace())) {
-          customPluginRequest.getTarget().setWorkspace(ms.getWorkspace());
-        }
-        JsonResult.createSuccessResult(result,
-            marketplacePluginService.getListByPage(customPluginRequest));
-      }
-    });
-
     return result;
   }
 }

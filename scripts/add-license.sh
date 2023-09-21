@@ -9,3 +9,4 @@ project_root=`realpath $script_dir/..`
 cd $project_root
 
 mvn -f server/server-parent/pom.xml license:format
+

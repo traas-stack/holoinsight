@@ -8,8 +8,9 @@ import io.holoinsight.server.apm.common.constants.Const;
 import io.holoinsight.server.apm.common.model.query.BasicTrace;
 import io.holoinsight.server.apm.common.model.query.Pagination;
 import io.holoinsight.server.apm.common.model.query.QueryOrder;
-import io.holoinsight.server.apm.common.model.query.StatisticData;
 import io.holoinsight.server.apm.common.model.query.TraceBrief;
+import io.holoinsight.server.apm.common.model.query.TraceTree;
+import io.holoinsight.server.apm.common.model.specification.OtlpMappings;
 import io.holoinsight.server.apm.common.model.specification.otel.Event;
 import io.holoinsight.server.apm.common.model.specification.otel.KeyValue;
 import io.holoinsight.server.apm.common.model.specification.otel.Link;
@@ -23,10 +24,10 @@ import io.holoinsight.server.apm.common.model.specification.sw.Tag;
 import io.holoinsight.server.apm.common.model.specification.sw.Trace;
 import io.holoinsight.server.apm.common.model.specification.sw.TraceState;
 import io.holoinsight.server.apm.common.utils.GsonUtils;
-import io.holoinsight.server.apm.engine.elasticsearch.utils.EsGsonUtils;
+import io.holoinsight.server.apm.engine.elasticsearch.utils.ApmGsonUtils;
+import io.holoinsight.server.apm.engine.model.RecordDO;
 import io.holoinsight.server.apm.engine.model.SpanDO;
 import io.holoinsight.server.apm.engine.storage.SpanStorage;
-import io.opentelemetry.proto.trace.v1.Status;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -34,29 +35,14 @@ import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.index.query.BoolQueryBuilder;
-import org.elasticsearch.index.query.QueryBuilder;
-import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.index.query.RangeQueryBuilder;
 import org.elasticsearch.index.query.TermQueryBuilder;
 import org.elasticsearch.index.query.TermsQueryBuilder;
-import org.elasticsearch.search.aggregations.AggregationBuilders;
-import org.elasticsearch.search.aggregations.Aggregator;
-import org.elasticsearch.search.aggregations.bucket.filter.Filter;
-import org.elasticsearch.search.aggregations.bucket.terms.Terms;
-import org.elasticsearch.search.aggregations.bucket.terms.TermsAggregationBuilder;
-import org.elasticsearch.search.aggregations.metrics.Avg;
-import org.elasticsearch.search.aggregations.metrics.ParsedCardinality;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.elasticsearch.search.sort.SortOrder;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static java.util.Objects.nonNull;
 
@@ -66,8 +52,8 @@ public class SpanEsStorage extends RecordEsStorage<SpanDO> implements SpanStorag
   private static final int SPAN_QUERY_MAX_SIZE = 2000;
 
   @Override
-  public String timeField() {
-    return SpanDO.END_TIME;
+  public String timeSeriesField() {
+    return RecordDO.TIMESTAMP;
   }
 
   @Override
@@ -77,49 +63,9 @@ public class SpanEsStorage extends RecordEsStorage<SpanDO> implements SpanStorag
       long start, long end, List<Tag> tags) throws IOException {
     SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
 
-    BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder();
-    searchSourceBuilder.query(boolQueryBuilder);
-
-    if (StringUtils.isNotEmpty(tenant)) {
-      boolQueryBuilder.must(new TermQueryBuilder(SpanDO.resource(SpanDO.TENANT), tenant));
-    }
-    if (start != 0 && end != 0) {
-      boolQueryBuilder.must(new RangeQueryBuilder(timeField()).gte(start).lte(end));
-    }
-
-    if (minTraceDuration != 0 || maxTraceDuration != 0) {
-      RangeQueryBuilder rangeQueryBuilder = new RangeQueryBuilder(SpanDO.LATENCY);
-      if (minTraceDuration != 0) {
-        rangeQueryBuilder.gte(minTraceDuration);
-      }
-      if (maxTraceDuration != 0) {
-        rangeQueryBuilder.lte(maxTraceDuration);
-      }
-      boolQueryBuilder.must(rangeQueryBuilder);
-    }
-    if (StringUtils.isNotEmpty(serviceName)) {
-      boolQueryBuilder
-          .must(new TermQueryBuilder(SpanDO.resource(SpanDO.SERVICE_NAME), serviceName));
-    }
-    if (StringUtils.isNotEmpty(serviceInstanceName)) {
-      boolQueryBuilder.must(
-          new TermQueryBuilder(SpanDO.resource(SpanDO.SERVICE_INSTANCE_NAME), serviceInstanceName));
-    }
-    if (!Strings.isNullOrEmpty(endpointName)) {
-      boolQueryBuilder.must(new TermQueryBuilder(SpanDO.NAME, endpointName));
-    }
-    if (CollectionUtils.isNotEmpty(traceIds)) {
-      boolQueryBuilder.must(new TermsQueryBuilder(SpanDO.TRACE_ID, traceIds));
-    }
-    switch (traceState) {
-      case ERROR:
-        boolQueryBuilder
-            .must(new TermQueryBuilder(SpanDO.TRACE_STATUS, StatusCode.ERROR.getCode()));
-        break;
-      case SUCCESS:
-        boolQueryBuilder.must(new TermQueryBuilder(SpanDO.TRACE_STATUS, StatusCode.OK.getCode()));
-        break;
-    }
+    searchSourceBuilder.query(buildQuery(tenant, serviceName, serviceInstanceName, endpointName,
+        traceIds, minTraceDuration, maxTraceDuration, traceState, start, end, tags,
+        this.timeSeriesField()));
 
     switch (queryOrder) {
       case BY_START_TIME:
@@ -129,13 +75,6 @@ public class SpanEsStorage extends RecordEsStorage<SpanDO> implements SpanStorag
         searchSourceBuilder.sort(SpanDO.LATENCY, SortOrder.DESC);
         break;
     }
-    if (CollectionUtils.isNotEmpty(tags)) {
-      BoolQueryBuilder tagMatchQuery = new BoolQueryBuilder();
-      tags.forEach(tag -> tagMatchQuery
-          .must(new TermQueryBuilder(SpanDO.attributes(tag.getKey()), tag.getValue())));
-      boolQueryBuilder.must(tagMatchQuery);
-    }
-
     int limit = paging.getPageSize();
     int from = paging.getPageSize() * ((paging.getPageNum() == 0 ? 1 : paging.getPageNum()) - 1);
     searchSourceBuilder.from(from).size(limit);
@@ -143,17 +82,17 @@ public class SpanEsStorage extends RecordEsStorage<SpanDO> implements SpanStorag
     SearchRequest searchRequest =
         new SearchRequest(new String[] {SpanDO.INDEX_NAME}, searchSourceBuilder);
 
-    SearchResponse searchResponse = esClient().search(searchRequest, RequestOptions.DEFAULT);
+    SearchResponse searchResponse = client().search(searchRequest, RequestOptions.DEFAULT);
     final TraceBrief traceBrief = new TraceBrief();
     for (org.elasticsearch.search.SearchHit hit : searchResponse.getHits().getHits()) {
       String hitJson = hit.getSourceAsString();
-      SpanDO spanEsDO = EsGsonUtils.esGson().fromJson(hitJson, SpanDO.class);
+      SpanDO spanEsDO = ApmGsonUtils.apmGson().fromJson(hitJson, SpanDO.class);
       BasicTrace basicTrace = new BasicTrace();
       basicTrace.setStart(spanEsDO.getStartTime());
       basicTrace.getServiceNames()
-          .add(spanEsDO.getTags().get(SpanDO.resource(SpanDO.SERVICE_NAME)));
+          .add(spanEsDO.getTags().get(SpanDO.resource(SpanDO.SERVICE_NAME)).toString());
       basicTrace.getServiceInstanceNames().add(spanEsDO.getTags()
-          .getOrDefault(SpanDO.resource(SpanDO.SERVICE_INSTANCE_NAME), Const.UNKNOWN));
+          .getOrDefault(SpanDO.resource(SpanDO.SERVICE_INSTANCE_NAME), Const.UNKNOWN).toString());
       basicTrace.getEndpointNames().add(spanEsDO.getName());
       basicTrace.setDuration(spanEsDO.getLatency());
       basicTrace.setError(spanEsDO.getTraceStatus() == StatusCode.ERROR.getCode());
@@ -163,30 +102,22 @@ public class SpanEsStorage extends RecordEsStorage<SpanDO> implements SpanStorag
     return traceBrief;
   }
 
+  /**
+   *
+   * @param tenant
+   * @param start
+   * @param end
+   * @param traceId
+   * @param tags
+   * @return the span list, the front end needs to build a trace tree based on the relationship
+   *         between spanId and parentSpanId
+   * @throws IOException
+   */
   @Override
-  public Trace queryTrace(String traceId) throws IOException {
+  public Trace queryTrace(String tenant, long start, long end, String traceId, List<Tag> tags)
+      throws IOException {
     Trace trace = new Trace();
-    QueryBuilder queryBuilder = new TermQueryBuilder(SpanDO.TRACE_ID, traceId);
-    SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
-    searchSourceBuilder.query(queryBuilder);
-    searchSourceBuilder.size(SPAN_QUERY_MAX_SIZE);
-    SearchRequest searchRequest =
-        new SearchRequest(new String[] {SpanDO.INDEX_NAME}, searchSourceBuilder);
-    SearchResponse searchResponse = esClient().search(searchRequest, RequestOptions.DEFAULT);
-    List<SpanDO> spanRecords = new ArrayList<>();
-    for (org.elasticsearch.search.SearchHit hit : searchResponse.getHits().getHits()) {
-      String hitJson = hit.getSourceAsString();
-      SpanDO spanEsDO = EsGsonUtils.esGson().fromJson(hitJson, SpanDO.class);
-      spanRecords.add(spanEsDO);
-    }
-
-    if (!spanRecords.isEmpty()) {
-      for (SpanDO spanEsDO : spanRecords) {
-        if (nonNull(spanEsDO)) {
-          trace.getSpans().add(buildSpan(spanEsDO));
-        }
-      }
-    }
+    trace.setSpans(querySpan(tenant, start, end, traceId, tags));
 
     List<Span> sortedSpans = new LinkedList<>();
     if (CollectionUtils.isNotEmpty(trace.getSpans())) {
@@ -211,67 +142,69 @@ public class SpanEsStorage extends RecordEsStorage<SpanDO> implements SpanStorag
     return trace;
   }
 
+  /**
+   * First find the root node of the trace tree (there may be multiple root nodes), and then build
+   * the trace tree from the root node
+   * 
+   * @param tenant
+   * @param start
+   * @param end
+   * @param traceId
+   * @param tags
+   * @return the tree trace structure, the front end only needs to render, no need to build a tree
+   *         relationship
+   * @throws Exception
+   */
   @Override
-  public List<StatisticData> statisticTrace(long startTime, long endTime) throws IOException {
-    List<StatisticData> result = new ArrayList<>();
-
-    BoolQueryBuilder queryBuilder = QueryBuilders.boolQuery()
-        .must(QueryBuilders.rangeQuery(timeField()).gte(startTime).lte(endTime));
-
-    TermsAggregationBuilder aggregationBuilder =
-        AggregationBuilders.terms(SpanDO.TENANT).field(SpanDO.attributes(SpanDO.TENANT))
-            .subAggregation(AggregationBuilders.cardinality("service_count")
-                .field(SpanDO.resource(SpanDO.SERVICE_NAME)))
-            .subAggregation(AggregationBuilders.cardinality("trace_count").field(SpanDO.TRACE_ID))
-            .subAggregation(
-                AggregationBuilders
-                    .filter(SpanDO.TRACE_STATUS,
-                        QueryBuilders.termQuery(SpanDO.TRACE_STATUS,
-                            Status.StatusCode.STATUS_CODE_ERROR_VALUE))
-                    .subAggregation(
-                        AggregationBuilders.cardinality("error_count").field(SpanDO.TRACE_ID)))
-            .subAggregation(AggregationBuilders.avg("avg_latency").field(SpanDO.LATENCY))
-            .executionHint("map").collectMode(Aggregator.SubAggCollectionMode.BREADTH_FIRST)
-            .size(1000);
-
-    SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
-    sourceBuilder.size(1000);
-    sourceBuilder.query(queryBuilder);
-    sourceBuilder.aggregation(aggregationBuilder);
-
-    SearchRequest searchRequest = new SearchRequest(SpanDO.INDEX_NAME);
-    searchRequest.source(sourceBuilder);
-    SearchResponse response = esClient().search(searchRequest, RequestOptions.DEFAULT);
-
-    Terms terms = response.getAggregations().get(SpanDO.TENANT);
-    for (Terms.Bucket bucket : terms.getBuckets()) {
-      String tenant = bucket.getKey().toString();
-
-      ParsedCardinality serviceTerm = bucket.getAggregations().get("service_count");
-      long serviceCount = serviceTerm.getValue();
-
-      ParsedCardinality traceTerm = bucket.getAggregations().get("trace_count");
-      long traceCount = traceTerm.getValue();
-
-      Filter errFilter = bucket.getAggregations().get(SpanDO.TRACE_STATUS);
-      ParsedCardinality errorTerm = errFilter.getAggregations().get("error_count");
-      int errorCount = (int) errorTerm.getValue();
-
-      Avg avgLatency = bucket.getAggregations().get("avg_latency");
-      double latency = Double.valueOf(avgLatency.getValue());
-
-      StatisticData statisticData = new StatisticData();
-      statisticData.setTenant(tenant);
-      statisticData.setServiceCount(serviceCount);
-      statisticData.setTraceCount(traceCount);
-      statisticData.setAvgLatency(latency);
-      statisticData.setSuccessRate(((double) (traceCount - errorCount) / traceCount) * 100);
-
-      result.add(statisticData);
+  public List<TraceTree> queryTraceTree(String tenant, long start, long end, String traceId,
+      List<Tag> tags) throws Exception {
+    List<TraceTree> result = new ArrayList<>();
+    List<Span> spans = querySpan(tenant, start, end, traceId, tags);
+    if (CollectionUtils.isNotEmpty(spans)) {
+      List<Span> rootSpans = findRoot1(spans);
+      if (CollectionUtils.isNotEmpty(rootSpans)) {
+        rootSpans.forEach(span -> {
+          TraceTree root = new TraceTree();
+          root.setSpan(span);
+          List<TraceTree> children = new ArrayList<>();
+          root.setChildren(children);
+          findChildren1(spans, span, root, children);
+          result.add(root);
+        });
+      }
     }
     return result;
   }
 
+  private List<Span> querySpan(String tenant, long start, long end, String traceId, List<Tag> tags)
+      throws IOException {
+    List<Span> spans = new ArrayList<>();
+
+    SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
+
+    searchSourceBuilder.query(buildQuery(tenant, null, null, null,
+        Collections.singletonList(traceId), 0, 0, null, start, end, tags, this.timeSeriesField()));
+
+    searchSourceBuilder.size(SPAN_QUERY_MAX_SIZE);
+    SearchRequest searchRequest =
+        new SearchRequest(new String[] {SpanDO.INDEX_NAME}, searchSourceBuilder);
+    SearchResponse searchResponse = client().search(searchRequest, RequestOptions.DEFAULT);
+    List<SpanDO> spanRecords = new ArrayList<>();
+    for (org.elasticsearch.search.SearchHit hit : searchResponse.getHits().getHits()) {
+      String hitJson = hit.getSourceAsString();
+      SpanDO spanEsDO = ApmGsonUtils.apmGson().fromJson(hitJson, SpanDO.class);
+      spanRecords.add(spanEsDO);
+    }
+
+    if (!spanRecords.isEmpty()) {
+      for (SpanDO spanEsDO : spanRecords) {
+        if (nonNull(spanEsDO)) {
+          spans.add(buildSpan(spanEsDO));
+        }
+      }
+    }
+    return spans;
+  }
 
   private Span buildSpan(SpanDO spanEsDO) {
     Span span = new Span();
@@ -281,7 +214,7 @@ public class SpanEsStorage extends RecordEsStorage<SpanDO> implements SpanStorag
     span.setStartTime(spanEsDO.getStartTime());
     span.setEndTime(spanEsDO.getEndTime());
     span.setError(spanEsDO.getTraceStatus() == StatusCode.ERROR.getCode());
-    span.setLayer(spanEsDO.getTags().get(SpanDO.attributes(SpanDO.SPANLAYER)));
+    span.setLayer(spanEsDO.getTags().get(SpanDO.attributes(SpanDO.SPANLAYER)).toString());
     String kind = spanEsDO.getKind();
     if (StringUtils.equals(kind, SpanKind.SERVER.name())
         || StringUtils.equals(kind, SpanKind.CONSUMER.name())) {
@@ -293,13 +226,13 @@ public class SpanEsStorage extends RecordEsStorage<SpanDO> implements SpanStorag
       span.setType("Local");
     }
 
-    span.setPeer(spanEsDO.getTags().get(SpanDO.attributes(SpanDO.NET_PEER_NAME)));
+    span.setPeer(spanEsDO.getTags().get(SpanDO.attributes(SpanDO.NET_PEER_NAME)).toString());
 
     span.setEndpointName(spanEsDO.getName());
 
-    span.setServiceCode(spanEsDO.getTags().get(SpanDO.resource(SpanDO.SERVICE_NAME)));
+    span.setServiceCode(spanEsDO.getTags().get(SpanDO.resource(SpanDO.SERVICE_NAME)).toString());
     span.setServiceInstanceName(
-        spanEsDO.getTags().get(SpanDO.resource(SpanDO.SERVICE_INSTANCE_NAME)));
+        spanEsDO.getTags().get(SpanDO.resource(SpanDO.SERVICE_INSTANCE_NAME)).toString());
 
     // TODO: 2022/9/20
     // span.setComponent(getComponentLibraryCatalogService().getComponentName(spanObject.getComponentId()));
@@ -330,8 +263,14 @@ public class SpanEsStorage extends RecordEsStorage<SpanDO> implements SpanStorag
 
     spanEsDO.getTags().forEach((tagk, tagv) -> {
       io.holoinsight.server.apm.common.model.specification.sw.KeyValue keyValue =
-          new io.holoinsight.server.apm.common.model.specification.sw.KeyValue(tagk, tagv);
+          new io.holoinsight.server.apm.common.model.specification.sw.KeyValue(tagk,
+              tagv.toString());
       span.getTags().add(keyValue);
+      // mesh span
+      if (SpanDO.attributes(Const.MOSN_ATTR).equals(keyValue.getKey())
+          && "true".equals(keyValue.getValue())) {
+        span.setMesh(true);
+      }
     });
     Collections.sort(span.getTags(), (o1, o2) -> StringUtils.compare(o1.getKey(), o2.getKey()));
 
@@ -384,5 +323,174 @@ public class SpanEsStorage extends RecordEsStorage<SpanDO> implements SpanStorag
         findChildren(spans, span, childrenSpan);
       }
     });
+  }
+
+  /**
+   * Find all the root nodes of the trace tree. Since sofatracer may report some special spans
+   * (spanId==parentSpanId), special processing is required
+   * 
+   * @param spans
+   * @return
+   */
+  private List<Span> findRoot1(List<Span> spans) {
+    List<Span> rootSpans = new ArrayList<>();
+    ListIterator<Span> iterator = spans.listIterator(spans.size());
+    while (iterator.hasPrevious()) {
+      Span span = iterator.previous();
+      if (span.isMesh()) {
+        continue;
+      }
+      String spanId = span.getSpanId();
+      String parentSpanId = span.getParentSpanId();
+
+      boolean hasParent = false;
+      if (!StringUtils.isEmpty(parentSpanId)) {
+        for (Span subSpan : spans) {
+          if (!subSpan.isMesh() && subSpan.getSpanId().equals(parentSpanId)
+              && !subSpan.equals(span)) {
+            hasParent = true;
+            // if find parent, quick exit
+            break;
+          }
+        }
+      }
+
+      if (!hasParent) {
+        // sofatracer mq/rpc server span(parentSpanId == spanId)
+        if (spanId.equals(parentSpanId) && parentSpanId.contains(".")) {
+          parentSpanId = parentSpanId.substring(0, parentSpanId.lastIndexOf("."));
+          span.setParentSpanId(parentSpanId);
+          iterator.remove();
+          iterator.add(span);
+          continue;
+        }
+        // rootSpan.parentSpanId == ""
+        if (StringUtils.isEmpty(parentSpanId)) {
+          span.setRoot(true);
+          rootSpans.add(span);
+        } else {
+          // sofatracer may be missing span, supplement the missing span until the root span
+          Span missingSpan = new Span();
+          missingSpan.setSpanId(parentSpanId);
+          missingSpan.setTraceId(span.getTraceId());
+          missingSpan.setEndpointName(Const.NOT_APPLICABLE);
+          missingSpan.setParentSpanId("");
+          missingSpan.setType("");
+          // sofatracer spanId -> parentSpanId: 0.1.1 -> 0.1
+          if (parentSpanId.contains(".")) {
+            missingSpan.setParentSpanId(parentSpanId.substring(0, parentSpanId.lastIndexOf(".")));
+          }
+          iterator.add(missingSpan);
+        }
+      }
+    }
+
+    rootSpans.sort(Comparator.comparing(Span::getStartTime));
+    return rootSpans;
+  }
+
+  /**
+   * Recursively build a trace tree starting from the root node
+   * 
+   * @param spans
+   * @param parentSpan
+   * @param children
+   */
+  private void findChildren1(List<Span> spans, Span parentSpan, TraceTree parentTree,
+      List<TraceTree> children) {
+    long parentStartTime = Long.MAX_VALUE;
+    long parentEndTime = Long.MIN_VALUE;
+
+    ListIterator<Span> iterator = spans.listIterator(spans.size());
+    while (iterator.hasPrevious()) {
+      Span span = iterator.previous();
+      // find mesh span
+      if (span.isMesh() && parentSpan.getSpanId().equals(span.getSpanId())
+          && parentSpan.getParentSpanId().equals(span.getParentSpanId())
+          && parentSpan.getType().equals(span.getType())) {
+        parentTree.setMesh(span);
+      }
+
+      if (!span.isMesh() && !span.equals(parentSpan)
+          && span.getParentSpanId().equals(parentSpan.getSpanId())) {
+        TraceTree child = new TraceTree();
+        child.setSpan(span);
+        children.add(child);
+        List<TraceTree> newChildren = new ArrayList<>();
+        child.setChildren(newChildren);
+
+        findChildren1(spans, span, child, newChildren);
+
+        parentStartTime = Math.min(parentStartTime, span.getStartTime());
+        parentEndTime = Math.max(parentEndTime, span.getEndTime());
+      }
+    }
+
+    // The missing span needs to fill in the start and end time,
+    // and the front-end drawing time axis depends on the time field
+    if (Const.NOT_APPLICABLE.equals(parentSpan.getEndpointName())) {
+      parentSpan.setStartTime(parentStartTime);
+      parentSpan.setEndTime(parentEndTime);
+    }
+  }
+
+  public static BoolQueryBuilder buildQuery(final String tenant, String serviceName,
+      String serviceInstanceName, String endpointName, List<String> traceIds, int minTraceDuration,
+      int maxTraceDuration, TraceState traceState, long start, long end, List<Tag> tags,
+      String timeField) {
+    BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder();
+
+    if (StringUtils.isNotEmpty(tenant)) {
+      boolQueryBuilder.must(new TermQueryBuilder(SpanDO.resource(SpanDO.TENANT), tenant));
+    }
+    if (start != 0 && end != 0) {
+      boolQueryBuilder.must(new RangeQueryBuilder(timeField).gte(start).lte(end));
+    }
+
+    if (minTraceDuration != 0 || maxTraceDuration != 0) {
+      RangeQueryBuilder rangeQueryBuilder = new RangeQueryBuilder(SpanDO.LATENCY);
+      if (minTraceDuration != 0) {
+        rangeQueryBuilder.gte(minTraceDuration);
+      }
+      if (maxTraceDuration != 0) {
+        rangeQueryBuilder.lte(maxTraceDuration);
+      }
+      boolQueryBuilder.must(rangeQueryBuilder);
+    }
+    if (StringUtils.isNotEmpty(serviceName)) {
+      boolQueryBuilder
+          .must(new TermQueryBuilder(SpanDO.resource(SpanDO.SERVICE_NAME), serviceName));
+    }
+    if (StringUtils.isNotEmpty(serviceInstanceName)) {
+      boolQueryBuilder.must(
+          new TermQueryBuilder(SpanDO.resource(SpanDO.SERVICE_INSTANCE_NAME), serviceInstanceName));
+    }
+    if (!Strings.isNullOrEmpty(endpointName)) {
+      boolQueryBuilder.must(new TermQueryBuilder(SpanDO.NAME, endpointName));
+    }
+    if (CollectionUtils.isNotEmpty(traceIds)) {
+      boolQueryBuilder.must(new TermsQueryBuilder(SpanDO.TRACE_ID, traceIds));
+    }
+
+    if (traceState != null) {
+      switch (traceState) {
+        case ERROR:
+          boolQueryBuilder
+              .must(new TermQueryBuilder(SpanDO.TRACE_STATUS, StatusCode.ERROR.getCode()));
+          break;
+        case SUCCESS:
+          boolQueryBuilder.must(new TermQueryBuilder(SpanDO.TRACE_STATUS, StatusCode.OK.getCode()));
+          break;
+      }
+    }
+
+
+    if (CollectionUtils.isNotEmpty(tags)) {
+      BoolQueryBuilder tagMatchQuery = new BoolQueryBuilder();
+      tags.forEach(tag -> tagMatchQuery.must(new TermQueryBuilder(
+          OtlpMappings.toOtlp(SpanDO.INDEX_NAME, tag.getKey()), tag.getValue())));
+      boolQueryBuilder.must(tagMatchQuery);
+    }
+    return boolQueryBuilder;
   }
 }

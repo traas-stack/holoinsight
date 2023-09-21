@@ -31,7 +31,7 @@ public class EsDataCleaner implements DataCleaner {
   @Autowired
   private RestHighLevelClient esClient;
 
-  protected RestHighLevelClient esClient() {
+  protected RestHighLevelClient client() {
     return esClient;
   }
 
@@ -49,7 +49,7 @@ public class EsDataCleaner implements DataCleaner {
       return;
     }
     GetAliasesResponse getAliasesResponse =
-        esClient().indices().getAlias(new GetAliasesRequest(name), RequestOptions.DEFAULT);
+        client().indices().getAlias(new GetAliasesRequest(name), RequestOptions.DEFAULT);
     Collection<String> indices = getAliasesResponse.getAliases().keySet();
     if (CollectionUtils.isNotEmpty(indices)) {
       for (String index : indices) {
@@ -60,7 +60,7 @@ public class EsDataCleaner implements DataCleaner {
         long indexTimeBucket = Long.parseLong(indexSuffix);
         if (deadline >= indexTimeBucket) {
           AcknowledgedResponse acknowledgedResponse =
-              esClient().indices().delete(new DeleteIndexRequest(index), RequestOptions.DEFAULT);
+              client().indices().delete(new DeleteIndexRequest(index), RequestOptions.DEFAULT);
           if (acknowledgedResponse.isAcknowledged()) {
             this.indexLatestSuccess.put(name, deadline);
           }

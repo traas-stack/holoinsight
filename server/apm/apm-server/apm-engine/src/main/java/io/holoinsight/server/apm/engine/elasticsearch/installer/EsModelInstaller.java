@@ -11,7 +11,8 @@ import io.holoinsight.server.apm.common.utils.GsonUtils;
 import io.holoinsight.server.apm.common.utils.TimeBucket;
 import io.holoinsight.server.apm.core.installer.DataTypeMapping;
 import io.holoinsight.server.apm.core.installer.ModelInstaller;
-import io.holoinsight.server.apm.engine.elasticsearch.utils.EsGsonUtils;
+import io.holoinsight.server.apm.engine.elasticsearch.HoloinsightEsConfiguration;
+import io.holoinsight.server.apm.engine.elasticsearch.utils.ApmGsonUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.elasticsearch.ElasticsearchStatusException;
 import org.elasticsearch.action.support.master.AcknowledgedResponse;
@@ -27,16 +28,11 @@ import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.xcontent.XContentType;
 import org.elasticsearch.rest.RestStatus;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 
 import javax.annotation.Resource;
 import java.io.IOException;
 import java.util.*;
 
-/**
- * @author jiwliu
- * @version : EsModelInstaller.java, v 0.1 2022年10月11日 21:26 xiangwanpeng Exp $
- */
 @Slf4j
 public class EsModelInstaller implements ModelInstaller {
 
@@ -44,19 +40,21 @@ public class EsModelInstaller implements ModelInstaller {
   private RestHighLevelClient esClient;
 
   @Resource
-  @Qualifier("columnTypeEsMapping")
   DataTypeMapping dataTypeMapping;
+
+  @Autowired
+  private HoloinsightEsConfiguration esConfiguration;
 
   private IndexStructures structures = new IndexStructures();
 
-  protected RestHighLevelClient esClient() {
+  protected RestHighLevelClient client() {
     return esClient;
   }
 
   @Override
   public boolean isExists(Model model) {
     String tableName = model.getName();
-    IndicesClient indicesClient = esClient().indices();
+    IndicesClient indicesClient = client().indices();
     try {
       boolean isExists = indicesClient.existsIndexTemplate(
           new ComposableIndexTemplateExistRequest(tableName), RequestOptions.DEFAULT);
@@ -97,18 +95,19 @@ public class EsModelInstaller implements ModelInstaller {
 
   private void createTimeSeriesTable(Model model) {
     String tableName = model.getName();
-    IndicesClient indicesClient = esClient().indices();
+    IndicesClient indicesClient = client().indices();
     try {
       Mappings mappings = createMapping(model);
+      Settings settings = createSettings(model);
       boolean shouldUpdateTemplate = !isExists(model);
       shouldUpdateTemplate =
-          shouldUpdateTemplate || !structures.containsStructure(tableName, mappings);
+          shouldUpdateTemplate || !structures.containsStructure(tableName, mappings)
+              || !settings.equals(structures.getSettings(tableName));
       log.info("[apm] model={}, shouldUpdateTemplate={}", model.getName(), shouldUpdateTemplate);
       if (shouldUpdateTemplate) {
         structures.putStructure(tableName, mappings);
-        Settings settings = createSettings(model);
         CompressedXContent mappingCompressedXContent =
-            new CompressedXContent(EsGsonUtils.esGson().toJson(mappings));
+            new CompressedXContent(ApmGsonUtils.apmGson().toJson(mappings));
         PutComposableIndexTemplateRequest putComposableIndexTemplateRequest =
             new PutComposableIndexTemplateRequest().name(tableName);
         Map<String, AliasMetadata> aliases = new HashMap<>();
@@ -131,7 +130,7 @@ public class EsModelInstaller implements ModelInstaller {
       GetIndexRequest getIndexRequest = new GetIndexRequest(indexName);
       if (!indicesClient.exists(getIndexRequest, RequestOptions.DEFAULT)) {
         CreateIndexRequest createIndexRequest = new CreateIndexRequest(indexName);
-        createIndexRequest.mapping(EsGsonUtils.esGson().toJson(mappings), XContentType.JSON);
+        createIndexRequest.mapping(ApmGsonUtils.apmGson().toJson(mappings), XContentType.JSON);
         CreateIndexResponse createIndexResponse =
             indicesClient.create(createIndexRequest, RequestOptions.DEFAULT);
         boolean isAcknowledged = createIndexResponse.isAcknowledged();
@@ -151,9 +150,14 @@ public class EsModelInstaller implements ModelInstaller {
 
   protected Settings createSettings(Model model) {
     // for different versions of elasticsearch
-    Settings settings = Settings.builder().put("index.number_of_replicas", 1)
-        .put("number_of_replicas", 1).put("index.number_of_shards", 5).put("number_of_shards", 5)
-        .put("index.refresh_interval", "10s").put("refresh_interval", "10s").build();
+    Settings settings = Settings.builder()
+        .put("index.number_of_replicas", esConfiguration.getReplicas())
+        .put("number_of_replicas", esConfiguration.getReplicas())
+        .put("index.number_of_shards", esConfiguration.getShards())
+        .put("number_of_shards", esConfiguration.getShards()).put("index.refresh_interval", "10s")
+        .put("refresh_interval", "10s").put("index.translog.durability", "async")
+        .put("index.translog.sync_interval", "5s").build();
+    log.info("[apm] model settings, model={}, settings={}", model.getName(), settings.toString());
     return settings;
   }
 
@@ -170,13 +174,14 @@ public class EsModelInstaller implements ModelInstaller {
   private Map<String, Object> createProperties(Model model) {
     Map<String, Object> properties = new HashMap<>();
     for (ModelColumn columnDefine : model.getColumns()) {
-      final String type =
-          dataTypeMapping.transform(columnDefine.getType(), columnDefine.getGenericType());
+      final String type = dataTypeMapping.transform(columnDefine.getName(), columnDefine.getType(),
+          columnDefine.getGenericType());
       String columnName = columnDefine.getName();
       Map<String, Object> column = new HashMap<>();
       column.put("type", type);
       properties.put(columnName, column);
     }
+    log.info("[apm] model properties, model={}, properties={}", model.getName(), properties);
     return properties;
   }
 }

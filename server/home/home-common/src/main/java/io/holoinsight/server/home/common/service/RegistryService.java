@@ -3,7 +3,20 @@
  */
 package io.holoinsight.server.home.common.service;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.PostConstruct;
+
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+
+import io.grpc.ManagedChannel;
+import io.grpc.ManagedChannelBuilder;
 import io.holoinsight.server.common.grpc.FileNode;
+import io.holoinsight.server.home.common.util.MonitorException;
 import io.holoinsight.server.registry.grpc.prod.InspectRequest;
 import io.holoinsight.server.registry.grpc.prod.InspectResponse;
 import io.holoinsight.server.registry.grpc.prod.ListFilesRequest;
@@ -12,17 +25,7 @@ import io.holoinsight.server.registry.grpc.prod.PreviewFileRequest;
 import io.holoinsight.server.registry.grpc.prod.PreviewFileResponse;
 import io.holoinsight.server.registry.grpc.prod.RegistryServiceForProdGrpc;
 import io.holoinsight.server.registry.grpc.prod.TargetIdentifier;
-import com.google.protobuf.ProtocolStringList;
-import io.grpc.ManagedChannel;
-import io.grpc.ManagedChannelBuilder;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
-
-import java.util.List;
-import java.util.Map;
-
-import javax.annotation.PostConstruct;
 
 /**
  *
@@ -36,8 +39,8 @@ public class RegistryService {
   @Value("${holoinsight.registry.domain}")
   private String registryHost;
 
-  private static ManagedChannel channel;
-  private static RegistryServiceForProdGrpc.RegistryServiceForProdBlockingStub c;
+  private ManagedChannel channel;
+  private RegistryServiceForProdGrpc.RegistryServiceForProdBlockingStub c;
 
   @PostConstruct
   public void init() {
@@ -56,22 +59,22 @@ public class RegistryService {
         // 如果为true, 会显示 home 和 admin 节点
         .setIncludeParents(true) //
         // 支持的扩展名 不传则允许任意
-        // .addAllIncludeExts(Arrays.asList("log"))
-        .setTarget(buildTarget(tenant, dim)).build(); //
+        .addAllIncludeExts(Collections.singletonList("log")).setTarget(buildTarget(tenant, dim))
+        .build(); //
 
     ListFilesResponse listFilesResponse = c.listFiles(req);
 
     if (listFilesResponse.getHeader().getCode() != 0) {
       log.warn("listFiles failed, " + dim + " from " + logPath + ", errorMsg: "
           + listFilesResponse.getHeader().getMessage());
-      throw new RuntimeException(
+      throw new MonitorException(
           "listFiles failed, errorMsg: " + listFilesResponse.getHeader().getMessage());
     }
 
     return listFilesResponse.getNodesList();
   }
 
-  public ProtocolStringList previewFile(String tenant, Map<String, Object> dim, String logPath) {
+  public PreviewFileResponse previewFile(String tenant, Map<String, Object> dim, String logPath) {
     PreviewFileRequest req = PreviewFileRequest.newBuilder() //
         .setPath(logPath) //
         .setMaxBytes(4096) //
@@ -83,11 +86,11 @@ public class RegistryService {
     if (previewFileResponse.getHeader().getCode() != 0) {
       log.warn("previewFile failed, " + dim.get("ip") + " from " + logPath + ", errorMsg: "
           + previewFileResponse.getHeader().getMessage());
-      throw new RuntimeException(
+      throw new MonitorException(
           "previewFile failed, errorMsg: " + previewFileResponse.getHeader().getMessage());
     }
 
-    return previewFileResponse.getContentList();
+    return previewFileResponse;
   }
 
   public String inspect(String tenant, Map<String, Object> dim) {
@@ -96,7 +99,7 @@ public class RegistryService {
     InspectResponse resp = c.inspect(req);
     if (resp.getHeader().getCode() != 0) {
       log.warn("inspect failed, " + dim.get("ip") + ", errorMsg: " + resp.getHeader().getMessage());
-      throw new RuntimeException("inspect failed, errorMsg: " + resp.getHeader().getMessage());
+      throw new MonitorException("inspect failed, errorMsg: " + resp.getHeader().getMessage());
     }
 
     return resp.getResult();

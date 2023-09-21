@@ -3,7 +3,6 @@
  */
 package io.holoinsight.server.registry.model.integration;
 
-import io.holoinsight.server.registry.model.integration.GaeaTask;
 import io.holoinsight.server.registry.model.ExecuteRule;
 import lombok.Data;
 
@@ -16,4 +15,5 @@ public abstract class IntegrationTask extends GaeaTask {
   private String name;
   private String type;
   private ExecuteRule executeRule;
+  private IntegrationTransForm transform;
 }

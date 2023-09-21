@@ -3,6 +3,8 @@
  */
 package io.holoinsight.server.home.web.controller;
 
+import io.holoinsight.server.common.dao.entity.dto.MetricInfoDTO;
+import io.holoinsight.server.common.service.MetricInfoService;
 import io.holoinsight.server.home.biz.service.AlertRuleService;
 import io.holoinsight.server.home.biz.service.CustomPluginService;
 import io.holoinsight.server.home.biz.service.DashboardService;
@@ -35,6 +37,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Future;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /**
  *
@@ -61,6 +64,9 @@ public class SearchFacadeImpl extends BaseFacade {
   private AlertRuleService alarmRuleService;
 
   @Autowired
+  private MetricInfoService metricInfoService;
+
+  @Autowired
   private DataClientService dataClientService;
 
   @Autowired
@@ -77,43 +83,48 @@ public class SearchFacadeImpl extends BaseFacade {
       public void checkParameter() {
         ParaCheckUtil.checkParaNotNull(req, "req");
         ParaCheckUtil.checkParaNotNull(req.keyword, "keyword");
-        ParaCheckUtil.checkParaNotNull(req.tenant, "tenant");
-        ParaCheckUtil.checkEquals(req.tenant, RequestContext.getContext().ms.getTenant(),
-            "tenant is illegal");
       }
 
       @Override
       public void doManage() {
 
         MonitorScope ms = RequestContext.getContext().ms;
-        String tenant = ms.tenant;
-        String workspace = ms.workspace;
+        final String tenant = ms.tenant;
+        final String workspace = ms.workspace;
+        final String environment = ms.getEnvironment();
 
         List<SearchKeywordRet> ret = new ArrayList<>();
         List<Future<SearchKeywordRet>> futures = new ArrayList<>();
-        futures.add(queryThreadPool.submit(() -> {
-          return searchLogEntity(req.keyword, tenant, workspace);
-        }));
-
-        futures.add(queryThreadPool.submit(() -> {
-          return searchFolderEntity(req.keyword, tenant, workspace);
-        }));
 
         futures.add(queryThreadPool.submit(() -> {
           return searchDashboardEntity(req.keyword, tenant, workspace);
         }));
 
         futures.add(queryThreadPool.submit(() -> {
-          return searchInfraEntity(req.keyword, tenant, workspace);
-        }));
-
-        futures.add(queryThreadPool.submit(() -> {
-          return searchAppEntity(req.keyword, tenant, workspace);
-        }));
-
-        futures.add(queryThreadPool.submit(() -> {
           return searchAlarmEntity(req.keyword, tenant, workspace);
         }));
+
+        if (environment.equalsIgnoreCase("SERVER")) {
+          futures.add(queryThreadPool.submit(() -> {
+            return searchLogEntity(req.keyword, tenant, workspace);
+          }));
+
+          futures.add(queryThreadPool.submit(() -> {
+            return searchFolderEntity(req.keyword, tenant, workspace);
+          }));
+
+          futures.add(queryThreadPool.submit(() -> {
+            return searchInfraEntity(req.keyword, tenant, workspace);
+          }));
+
+          futures.add(queryThreadPool.submit(() -> {
+            return searchAppEntity(req.keyword, tenant, workspace);
+          }));
+
+          futures.add(queryThreadPool.submit(() -> {
+            return searchLogMetricEntity(req.keyword, tenant, workspace);
+          }));
+        }
 
         // 多线程
         for (Future<SearchKeywordRet> future : futures) {
@@ -145,9 +156,6 @@ public class SearchFacadeImpl extends BaseFacade {
       public void checkParameter() {
         ParaCheckUtil.checkParaNotNull(req, "req");
         ParaCheckUtil.checkParaNotNull(req.keyword, "keyword");
-        ParaCheckUtil.checkParaNotNull(req.tenant, "tenant");
-        ParaCheckUtil.checkEquals(req.tenant, RequestContext.getContext().ms.getTenant(),
-            "tenant is illegal");
       }
 
       @Override
@@ -213,15 +221,13 @@ public class SearchFacadeImpl extends BaseFacade {
   public SearchKeywordRet searchInfraEntity(String keyword, String tenant, String workspace) {
 
     QueryExample queryExample = new QueryExample();
-    queryExample.getParams().put("ip",
-        Pattern.compile(String.format("^.*%s.*$", keyword), Pattern.CASE_INSENSITIVE));
     queryExample.getParams().put("hostname",
         Pattern.compile(String.format("^.*%s.*$", keyword), Pattern.CASE_INSENSITIVE));
     if (StringUtils.isNotBlank(workspace)) {
       Map<String, String> conditions =
-          tenantInitService.getTenantWorkspaceMetaConditions(workspace);
+          tenantInitService.getTenantWorkspaceMetaConditions(tenant, workspace);
       if (!CollectionUtils.isEmpty(conditions)) {
-        queryExample.getParams().putAll(conditions);
+        conditions.forEach((k, v) -> queryExample.getParams().put(k, v));
       }
     }
 
@@ -248,6 +254,15 @@ public class SearchFacadeImpl extends BaseFacade {
   public SearchKeywordRet searchAlarmEntity(String keyword, String tenant, String workspace) {
 
     return genSearchResult("alarm", alarmRuleService.getListByKeyword(keyword, tenant, workspace));
+  }
+
+  public SearchKeywordRet searchLogMetricEntity(String keyword, String tenant, String workspace) {
+    List<MetricInfoDTO> listByKeyword =
+        metricInfoService.getListByKeyword(keyword, tenant, workspace);
+    List<MetricInfoDTO> logList =
+        listByKeyword.stream().filter(item -> item.getProduct().equalsIgnoreCase("logmonitor"))
+            .collect(Collectors.toList());
+    return genSearchResult("logMetric", logList);
   }
 
   public SearchKeywordRet genSearchResult(String type, List<?> datas) {

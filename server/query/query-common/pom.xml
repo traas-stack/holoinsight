@@ -27,6 +27,11 @@
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-lang3</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>io.holoinsight.server</groupId>
+			<artifactId>common-service</artifactId>
+			<version>${project.version}</version>
+		</dependency>
 	</dependencies>
 
 </project>
