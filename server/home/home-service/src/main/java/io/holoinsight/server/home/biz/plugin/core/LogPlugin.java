@@ -193,8 +193,8 @@ public class LogPlugin extends AbstractLocalIntegrationPlugin<LogPlugin> {
     for (CollectMetric collectMetric : collectMetrics) {
       try {
         MetricInfoDTO metricInfoDTO = new MetricInfoDTO();
-        metricInfoDTO.setTenant(tenant);
-        metricInfoDTO.setWorkspace(null == workspace ? "-" : workspace);
+        metricInfoDTO.setTenant("-");
+        metricInfoDTO.setWorkspace("-");
         metricInfoDTO.setOrganization("-");
         metricInfoDTO.setProduct(product);
 
