@@ -17,6 +17,8 @@ source="  Component\t  Access
   Server_JVM_Debugger\t  $ip:`get_port server 8000`
   Server_exec\t  ./server-exec.sh
   Server_Web_Shell\t  http://$ip:`get_port server 7681`
+  Collector_SkyWalking\t  $ip:`get_port collector 11800`
+  Collector_DataDog\t  $ip:`get_port collector 5001`
   MySQL\t  $ip:`get_port mysql 3306`
   MySQL_exec\t  ./mysql-exec.sh"
 
