@@ -456,5 +456,401 @@
     "conditions": {
     },
     "materialized": true
+  },
+  {
+    "name": "openai_tokens_total_avg",
+    "index": "holoinsight-span",
+    "field": "attributes.openai.response.usage.total_tokens",
+    "function": "avg",
+    "groups": [
+      "resource.service.name"
+    ],
+    "conditions": {
+      "attributes.component": "openai"
+    },
+    "materialized": true
+  },
+  {
+    "name": "openai_tokens_total_sum_groups_model",
+    "index": "holoinsight-span",
+    "field": "attributes.openai.response.usage.total_tokens",
+    "function": "sum",
+    "groups": [
+      "attributes.openai.response.model"
+    ],
+    "conditions": {
+      "attributes.component": "openai"
+    },
+    "materialized": true
+  },
+  {
+    "name": "openai_tokens_total_sum_groups_api",
+    "index": "holoinsight-span",
+    "field": "attributes.openai.response.usage.total_tokens",
+    "function": "sum",
+    "groups": [
+      "resource.service.name",
+      "attributes.openai.organization.name",
+      "attributes.openai.user.api_key"
+    ],
+    "conditions": {
+      "attributes.component": "openai"
+    },
+    "materialized": true
+  },
+  {
+    "name": "openai_tokens_completion_avg",
+    "index": "holoinsight-span",
+    "field": "attributes.openai.response.usage.completion_tokens",
+    "function": "avg",
+    "groups": [
+      "resource.service.name"
+    ],
+    "conditions": {
+      "attributes.component": "openai"
+    },
+    "materialized": true
+  },
+  {
+    "name": "openai_tokens_prompt_avg",
+    "index": "holoinsight-span",
+    "field": "attributes.openai.response.usage.prompt_tokens",
+    "function": "avg",
+    "groups": [
+      "resource.service.name"
+    ],
+    "conditions": {
+      "attributes.component": "openai"
+    },
+    "materialized": true
+  },
+  {
+    "name": "openai_ratelimit_requests_remaining",
+    "index": "holoinsight-span",
+    "field": "attributes.openai.organization.ratelimit.requests.remaining",
+    "function": "avg",
+    "groups": [
+      "attributes.openai.organization.name"
+    ],
+    "conditions": {
+      "attributes.component": "openai"
+    },
+    "materialized": true
+  },
+  {
+    "name": "openai_ratelimit_tokens_remaining",
+    "index": "holoinsight-span",
+    "field": "attributes.openai.organization.ratelimit.tokens.remaining",
+    "function": "avg",
+    "groups": [
+      "attributes.openai.organization.name"
+    ],
+    "conditions": {
+      "attributes.component": "openai"
+    },
+    "materialized": true
+  },
+  {
+    "name": "openai_request_count_groups_model",
+    "index": "holoinsight-span",
+    "field": "trace_id",
+    "function": "count",
+    "groups": [
+      "attributes.openai.response.model"
+    ],
+    "conditions": {
+      "attributes.component": "openai"
+    },
+    "materialized": true
+  },
+  {
+    "name": "openai_request_count_groups_api",
+    "index": "holoinsight-span",
+    "field": "trace_id",
+    "function": "count",
+    "groups": [
+      "resource.service.name",
+      "attributes.openai.organization.name",
+      "attributes.openai.user.api_key"
+    ],
+    "conditions": {
+      "attributes.component": "openai"
+    },
+    "materialized": true
+  },
+  {
+    "name": "openai_request_latency_avg",
+    "index": "holoinsight-span",
+    "field": "latency",
+    "function": "avg",
+    "groups": [
+      "resource.service.name",
+      "attributes.openai.response.model"
+    ],
+    "conditions": {
+      "attributes.component": "openai"
+    },
+    "materialized": true
+  },
+  {
+    "name": "openai_request_latency_percentiles",
+    "index": "holoinsight-span",
+    "field": "latency",
+    "function": "percentiles",
+    "groups": [
+      "resource.service.name",
+      "attributes.openai.response.model"
+    ],
+    "conditions": {
+      "attributes.component": "openai"
+    },
+    "materialized": true
+  },
+  {
+    "name": "openai_request_fail_count",
+    "index": "holoinsight-span",
+    "field": "trace_id",
+    "function": "count",
+    "groups": [
+      "resource.service.name"
+    ],
+    "conditions": {
+      "trace_status": "2",
+      "attributes.component": "openai"
+    },
+    "materialized": true
+  },
+  {
+    "name": "openai_request_fail_count_group_type",
+    "index": "holoinsight-span",
+    "field": "trace_id",
+    "function": "count",
+    "groups": [
+      "resource.service.name",
+      "attributes.error.type"
+    ],
+    "conditions": {
+      "trace_status": "2",
+      "attributes.component": "openai"
+    },
+    "materialized": true
+  },
+  {
+    "name": "openai_request_count",
+    "index": "holoinsight-span",
+    "field": "trace_id",
+    "function": "count",
+    "groups": [
+      "resource.service.name"
+    ],
+    "conditions": {
+      "attributes.component": "openai"
+    },
+    "materialized": true
+  },
+  {
+    "name": "langchain_tokens_total_avg",
+    "index": "holoinsight-span",
+    "field": "attributes.langchain.tokens.total_tokens",
+    "function": "avg",
+    "groups": [
+      "resource.service.name"
+    ],
+    "conditions": {
+      "name": "langchain.request"
+    },
+    "materialized": true
+  },
+  {
+    "name": "langchain_tokens_completion_avg",
+    "index": "holoinsight-span",
+    "field": "attributes.langchain.tokens.completion_tokens",
+    "function": "avg",
+    "groups": [
+      "resource.service.name"
+    ],
+    "conditions": {
+      "name": "langchain.request"
+    },
+    "materialized": true
+  },
+  {
+    "name": "langchain_tokens_prompt_avg",
+    "index": "holoinsight-span",
+    "field": "attributes.langchain.tokens.prompt_tokens",
+    "function": "avg",
+    "groups": [
+      "resource.service.name"
+    ],
+    "conditions": {
+      "name": "langchain.request"
+    },
+    "materialized": true
+  },
+  {
+    "name": "langchain_tokens_total_sum_groups_model",
+    "index": "holoinsight-span",
+    "field": "attributes.langchain.tokens.total_tokens",
+    "function": "sum",
+    "groups": [
+      "attributes.langchain.request.model"
+    ],
+    "conditions": {
+      "name": "langchain.request"
+    },
+    "materialized": true
+  },
+  {
+    "name": "langchain_tokens_total_sum_groups_api",
+    "index": "holoinsight-span",
+    "field": "attributes.langchain.tokens.total_tokens",
+    "function": "sum",
+    "groups": [
+      "resource.service.name",
+      "attributes.langchain.request.api_key"
+    ],
+    "conditions": {
+      "name": "langchain.request"
+    },
+    "materialized": true
+  },
+  {
+    "name": "langchain_tokens_total_sum_groups_type",
+    "index": "holoinsight-span",
+    "field": "attributes.langchain.tokens.total_tokens",
+    "function": "sum",
+    "groups": [
+      "resource.service.name",
+      "attributes.langchain.request.type"
+    ],
+    "conditions": {
+      "name": "langchain.request"
+    },
+    "materialized": true
+  },
+  {
+    "name": "langchain_request_count_groups_model",
+    "index": "holoinsight-span",
+    "field": "trace_id",
+    "function": "count",
+    "groups": [
+      "attributes.langchain.request.model"
+    ],
+    "conditions": {
+      "name": "langchain.request"
+    },
+    "materialized": true
+  },
+  {
+    "name": "langchain_request_count_groups_api",
+    "index": "holoinsight-span",
+    "field": "trace_id",
+    "function": "count",
+    "groups": [
+      "resource.service.name",
+      "attributes.langchain.request.api_key"
+    ],
+    "conditions": {
+      "name": "langchain.request"
+    },
+    "materialized": true
+  },
+  {
+    "name": "langchain_request_count_groups_type",
+    "index": "holoinsight-span",
+    "field": "trace_id",
+    "function": "count",
+    "groups": [
+      "resource.service.name",
+      "attributes.langchain.request.type"
+    ],
+    "conditions": {
+      "name": "langchain.request"
+    },
+    "materialized": true
+  },
+  {
+    "name": "langchain_request_count_groups_provider",
+    "index": "holoinsight-span",
+    "field": "trace_id",
+    "function": "count",
+    "groups": [
+      "resource.service.name",
+      "attributes.langchain.request.provider"
+    ],
+    "conditions": {
+      "name": "langchain.request"
+    },
+    "materialized": true
+  },
+  {
+    "name": "langchain_request_fail_count",
+    "index": "holoinsight-span",
+    "field": "trace_id",
+    "function": "count",
+    "groups": [
+      "resource.service.name"
+    ],
+    "conditions": {
+      "trace_status": "2",
+      "name": "langchain.request"
+    },
+    "materialized": true
+  },
+  {
+    "name": "langchain_request_fail_count_group_type",
+    "index": "holoinsight-span",
+    "field": "trace_id",
+    "function": "count",
+    "groups": [
+      "resource.service.name",
+      "attributes.error.type"
+    ],
+    "conditions": {
+      "trace_status": "2",
+      "name": "langchain.request"
+    },
+    "materialized": true
+  },
+  {
+    "name": "langchain_request_count",
+    "index": "holoinsight-span",
+    "field": "trace_id",
+    "function": "count",
+    "groups": [
+      "resource.service.name"
+    ],
+    "conditions": {
+      "name": "langchain.request"
+    },
+    "materialized": true
+  },
+  {
+    "name": "langchain_request_latency_avg",
+    "index": "holoinsight-span",
+    "field": "latency",
+    "function": "avg",
+    "groups": [
+      "resource.service.name",
+      "attributes.langchain.request.model"
+    ],
+    "conditions": {
+      "name": "langchain.request"
+    },
+    "materialized": true
+  },
+  {
+    "name": "langchain_request_latency_percentiles",
+    "index": "holoinsight-span",
+    "field": "latency",
+    "function": "percentiles",
+    "groups": [
+      "resource.service.name",
+      "attributes.langchain.request.model"
+    ],
+    "conditions": {
+      "name": "langchain.request"
+    },
+    "materialized": true
   }
 ]
