@@ -214,7 +214,6 @@ public class SpanEsStorage extends RecordEsStorage<SpanDO> implements SpanStorag
     span.setStartTime(spanEsDO.getStartTime());
     span.setEndTime(spanEsDO.getEndTime());
     span.setError(spanEsDO.getTraceStatus() == StatusCode.ERROR.getCode());
-    span.setLayer(spanEsDO.getTags().get(SpanDO.attributes(SpanDO.SPANLAYER)).toString());
     String kind = spanEsDO.getKind();
     if (StringUtils.equals(kind, SpanKind.SERVER.name())
         || StringUtils.equals(kind, SpanKind.CONSUMER.name())) {
@@ -225,14 +224,22 @@ public class SpanEsStorage extends RecordEsStorage<SpanDO> implements SpanStorag
     } else {
       span.setType("Local");
     }
-
-    span.setPeer(spanEsDO.getTags().get(SpanDO.attributes(SpanDO.NET_PEER_NAME)).toString());
+    Object spanLayer = spanEsDO.getTags().get(SpanDO.attributes(SpanDO.SPANLAYER));
+    if (spanLayer != null) {
+      span.setLayer(spanLayer.toString());
+    }
+    Object netPeerName = spanEsDO.getTags().get(SpanDO.attributes(SpanDO.NET_PEER_NAME));
+    if (netPeerName != null) {
+      span.setPeer(netPeerName.toString());
+    }
+    Object serviceInstanceName =
+        spanEsDO.getTags().get(SpanDO.resource(SpanDO.SERVICE_INSTANCE_NAME));
+    if (serviceInstanceName != null) {
+      span.setServiceInstanceName(serviceInstanceName.toString());
+    }
 
     span.setEndpointName(spanEsDO.getName());
-
     span.setServiceCode(spanEsDO.getTags().get(SpanDO.resource(SpanDO.SERVICE_NAME)).toString());
-    span.setServiceInstanceName(
-        spanEsDO.getTags().get(SpanDO.resource(SpanDO.SERVICE_INSTANCE_NAME)).toString());
 
     // TODO: 2022/9/20
     // span.setComponent(getComponentLibraryCatalogService().getComponentName(spanObject.getComponentId()));
