@@ -17,7 +17,6 @@ import io.holoinsight.server.home.biz.common.MetaDictUtil;
 import io.holoinsight.server.home.biz.service.TenantInitService;
 import io.holoinsight.server.home.common.service.QueryClientService;
 import io.holoinsight.server.home.common.service.query.KeyResult;
-import io.holoinsight.server.home.common.service.query.QueryDetailResponse;
 import io.holoinsight.server.home.common.service.query.QueryResponse;
 import io.holoinsight.server.home.common.service.query.QuerySchemaResponse;
 import io.holoinsight.server.home.common.service.query.Result;
@@ -109,6 +108,9 @@ public class QueryFacadeImpl extends BaseFacade {
           ParaCheckUtil.checkEquals(request.getTenant(), RequestContext.getContext().ms.getTenant(),
               "tenant is illegal");
         }
+        ParaCheckUtil.checkCustomQl(request, "Refusing to execute sql query");
+        ParaCheckUtil.checkSQlInjection(getGroupBys(request), "Illegal params in groupby");
+        ParaCheckUtil.checkSQlInjection(getFilters(request), "Illegal params in filter");
       }
 
       @Override
@@ -119,6 +121,41 @@ public class QueryFacadeImpl extends BaseFacade {
     });
 
     return result;
+  }
+
+  private List<String> getFilters(DataQueryRequest request) {
+    if (request == null || CollectionUtils.isEmpty(request.getDatasources())) {
+      return Collections.emptyList();
+    }
+    Set<String> filters = new HashSet<>();
+    for (QueryDataSource queryDataSource : request.getDatasources()) {
+      if (CollectionUtils.isEmpty(queryDataSource.getFilters())) {
+        continue;
+      }
+      for (DataQueryRequest.QueryFilter queryFilter : queryDataSource.getFilters()) {
+        if (StringUtils.isNotEmpty(queryFilter.name)) {
+          filters.add(queryFilter.name);
+        }
+        if (StringUtils.isNotEmpty(queryFilter.value)) {
+          filters.add(queryFilter.value);
+        }
+      }
+    }
+    return new ArrayList<>(filters);
+  }
+
+  private List<String> getGroupBys(DataQueryRequest request) {
+    if (request == null || CollectionUtils.isEmpty(request.getDatasources())) {
+      return Collections.emptyList();
+    }
+    Set<String> groupBys = new HashSet<>();
+    for (QueryDataSource queryDataSource : request.getDatasources()) {
+      if (CollectionUtils.isEmpty(queryDataSource.getGroupBy())) {
+        continue;
+      }
+      groupBys.addAll(queryDataSource.getGroupBy());
+    }
+    return new ArrayList<>(groupBys);
   }
 
   @PostMapping("/tags")
@@ -138,6 +175,8 @@ public class QueryFacadeImpl extends BaseFacade {
           ParaCheckUtil.checkEquals(request.getTenant(), RequestContext.getContext().ms.getTenant(),
               "tenant is illegal");
         }
+        ParaCheckUtil.checkCustomQl(request, "Refusing to execute sql query");
+        ParaCheckUtil.checkSQlInjection(getGroupBys(request), "Illegal params in groupby");
       }
 
       @Override
@@ -514,18 +553,27 @@ public class QueryFacadeImpl extends BaseFacade {
   protected void parseQl(QueryDataSource d, MetricInfo metricInfo) {
     Set<String> tags = new HashSet<>(J.toList(metricInfo.getTags()));
     StringBuilder select = new StringBuilder("select ");
-
+    List<String> gbList = parseGroupby(d, tags);
     List<String> selects = new ArrayList<>();
     selects.add("`period`");
+    for (String gb : gbList) {
+      if (!tags.contains(gb)) {
+        continue;
+      }
+      selects.add("`" + gb + "`");
+    }
+
     parseSelect(selects, select, d, tags);
 
     select.append(" from ").append(d.metric);
 
     parseFilters(select, d, tags);
 
-    List<String> gbList = new ArrayList<>();
     gbList.add("period");
-    parseGroupby(select, d, gbList, tags);
+
+    select.append(" group by `")//
+        .append(String.join("` , `", gbList)) //
+        .append("`");
 
     select.append(" order by `period` asc");
 
@@ -533,8 +581,8 @@ public class QueryFacadeImpl extends BaseFacade {
     d.setQl(select.toString());
   }
 
-  private void parseGroupby(StringBuilder select, QueryDataSource d, List<String> gbList,
-      Set<String> tags) {
+  private List<String> parseGroupby(QueryDataSource d, Set<String> tags) {
+    List<String> gbList = new ArrayList<>();
     if (!CollectionUtils.isEmpty(d.groupBy)) {
       for (String gb : d.groupBy) {
         if (!StringUtils.equals("period", gb) && !tags.contains(gb)) {
@@ -543,12 +591,7 @@ public class QueryFacadeImpl extends BaseFacade {
         gbList.add(gb);
       }
     }
-
-    if (!CollectionUtils.isEmpty(gbList)) {
-      select.append(" group by `")//
-          .append(String.join("` , `", gbList)) //
-          .append("`");
-    }
+    return gbList;
   }
 
   private void parseSelect(List<String> selects, StringBuilder select, QueryDataSource d,

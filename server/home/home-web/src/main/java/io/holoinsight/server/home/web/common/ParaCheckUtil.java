@@ -3,6 +3,7 @@
  */
 package io.holoinsight.server.home.web.common;
 
+import io.holoinsight.server.common.model.DataQueryRequest;
 import io.holoinsight.server.home.common.util.MonitorException;
 import io.holoinsight.server.home.common.util.ResultCodeEnum;
 import org.apache.commons.lang3.ArrayUtils;
@@ -11,6 +12,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.util.CollectionUtils;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -34,6 +36,8 @@ public class ParaCheckUtil {
 
   private static Pattern PATTERN_SQL =
       Pattern.compile("^[\\u00b7A-Za-z0-9\\u4e00-\\u9fa5\\-_ ,\\.]*$");
+  private static Pattern PATTERN_STRICT_SQL =
+      Pattern.compile("^[\\u00b7A-Za-z0-9\\u4e00-\\u9fa5\\-_,\\.]*$");
 
   private static final Pattern PATTERN_AIG_NAME =
       Pattern.compile("^[a-z]{1,20}-[a-z][a-z0-9]{0,27}");
@@ -169,6 +173,18 @@ public class ParaCheckUtil {
     return false;
   }
 
+  // reject space
+  private static boolean commonStrictCheck(String param) {
+    Matcher commonAllowed = PATTERN_STRICT_SQL.matcher(param);
+    if (commonAllowed.find()) {
+      if (!unicodeCheck(param)) {
+        return false;
+      }
+      return true;
+    }
+    return false;
+  }
+
   private static boolean unicodeCheck(String param) {
     // unicode encoding check
     int start = 0;
@@ -185,5 +201,32 @@ public class ParaCheckUtil {
       }
     }
     return true;
+  }
+
+  public static void checkCustomQl(DataQueryRequest request, String errorMsg) {
+    if (request == null || CollectionUtils.isEmpty(request.getDatasources())) {
+      return;
+    }
+    for (DataQueryRequest.QueryDataSource dataSource : request.getDatasources()) {
+      if (StringUtils.isNotEmpty(dataSource.getQl())) {
+        throw new MonitorException(ResultCodeEnum.PARAMETER_ILLEGAL, errorMsg);
+      }
+    }
+  }
+
+  public static void checkSQlInjection(List<String> groupBys, String errorMsg) {
+    if (CollectionUtils.isEmpty(groupBys)) {
+      return;
+    }
+    for (String param : groupBys) {
+      checkParaBoolean(commonStrictCheck(param), errorMsg);
+    }
+  }
+
+  public static void checkSQlInjection(String param, String errorMsg) {
+    if (StringUtils.isEmpty(param)) {
+      return;
+    }
+    checkParaBoolean(commonStrictCheck(param), errorMsg);
   }
 }
