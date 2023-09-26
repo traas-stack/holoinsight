@@ -55,7 +55,8 @@ public class QueryClientService {
     Debugger.print("QueryService", "query, request: " + J.toJson(request));
     long start = System.currentTimeMillis();
 
-    QueryProto.QueryResponse res = queryServiceBlockingStub.queryData(request);
+    QueryProto.QueryResponse res =
+        queryServiceBlockingStub.withMaxInboundMessageSize(4194304 * 100).queryData(request);
 
     int pointSize = getPointSizeFromResp(res);
     log.info("HOME_QUERY_STAT from[API] invoke[1], cost[{}], pointSize[{}]",
