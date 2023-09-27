@@ -109,12 +109,6 @@ public class DefaultTenantInitServiceImpl implements TenantInitService {
   }
 
   @Override
-  public Boolean checkAlarmRuleParams(String tenant, String workspace, String environment,
-      AlarmRuleDTO alarmRuleDTO) {
-    return Boolean.TRUE;
-  }
-
-  @Override
   public List<IntegrationGeneratedDTO> getExtraGeneratedLists() {
     return new ArrayList<>();
   }

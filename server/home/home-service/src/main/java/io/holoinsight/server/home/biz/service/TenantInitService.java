@@ -105,9 +105,6 @@ public interface TenantInitService {
 
   Boolean checkTraceParams(String tenant, String workspace, Map<String, String> paramsMap);
 
-  Boolean checkAlarmRuleParams(String tenant, String workspace, String environment,
-      AlarmRuleDTO alarmRuleDTO);
-
   List<IntegrationGeneratedDTO> getExtraGeneratedLists();
 
   Boolean checkIntegrationWorkspace(String workspace);
