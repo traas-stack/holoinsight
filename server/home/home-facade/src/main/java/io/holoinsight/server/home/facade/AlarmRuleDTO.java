@@ -3,11 +3,20 @@
  */
 package io.holoinsight.server.home.facade;
 
+import com.google.gson.reflect.TypeToken;
+import io.holoinsight.server.common.J;
+import io.holoinsight.server.home.facade.trigger.DataSource;
+import io.holoinsight.server.home.facade.trigger.Filter;
+import io.holoinsight.server.home.facade.trigger.Trigger;
 import lombok.Data;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.util.CollectionUtils;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -179,7 +188,11 @@ public class AlarmRuleDTO {
   protected static String getApmLink(AlarmRuleDTO alarmRuleDTO, String domain,
       Map<String /* metric */, Map<String /* type */, String /* page */>> systemMetrics) {
     String app = alarmRuleDTO.sourceType.split("_")[1];
-    String metric = alarmRuleDTO.getMetric();
+    List<String> metrics = alarmRuleDTO.getMetric();
+    if (CollectionUtils.isEmpty(metrics)) {
+      return StringUtils.EMPTY;
+    }
+    String metric = metrics.get(0);
     boolean isServer = alarmRuleDTO.checkIsServer();
     if (StringUtils.isEmpty(metric) || CollectionUtils.isEmpty(systemMetrics)) {
       return StringUtils.EMPTY;
@@ -209,20 +222,73 @@ public class AlarmRuleDTO {
         || groupBy.contains("pod") || groupBy.contains("ip");
   }
 
-  private String getMetric() {
+  public List<String> getMetric() {
     if (CollectionUtils.isEmpty(this.rule)) {
-      return StringUtils.EMPTY;
+      return Collections.emptyList();
     }
     List<Map<String, Object>> triggers = (List<Map<String, Object>>) this.rule.get("triggers");
     if (CollectionUtils.isEmpty(triggers)) {
-      return StringUtils.EMPTY;
+      return Collections.emptyList();
     }
-    Map<String, Object> trigger = triggers.get(0);
-    List<Map<String, Object>> datasources = (List<Map<String, Object>>) trigger.get("datasources");
-    if (CollectionUtils.isEmpty(datasources)) {
-      return StringUtils.EMPTY;
+    List<String> metrics = new ArrayList<>();
+    for (Map<String, Object> trigger : triggers) {
+      List<Map<String, Object>> datasources =
+          (List<Map<String, Object>>) trigger.get("datasources");
+      if (CollectionUtils.isEmpty(datasources)) {
+        return Collections.emptyList();
+      }
+
+      for (Map<String, Object> datasource : datasources) {
+        String metric = (String) datasource.get("metric");
+        if (StringUtils.isEmpty(metric)) {
+          continue;
+        }
+        metrics.add(metric);
+      }
     }
-    Map<String, Object> datasource = datasources.get(0);
-    return (String) datasource.get("metric");
+
+    return metrics;
+  }
+
+  public Map<String, List<Object>> getFilters(String metric) {
+    Map<String, List<Object>> filters = new HashMap<>();
+    if (CollectionUtils.isEmpty(this.rule)) {
+      return Collections.emptyMap();
+    }
+    Rule rule = J.fromJson(J.toJson(this.rule), new TypeToken<Rule>() {}.getType());
+
+    if (CollectionUtils.isEmpty(rule.getTriggers())) {
+      return Collections.emptyMap();
+    }
+    for (Trigger trigger : rule.getTriggers()) {
+      if (CollectionUtils.isEmpty(trigger.getDatasources())) {
+        continue;
+      }
+      for (DataSource dataSource : trigger.getDatasources()) {
+        if (CollectionUtils.isEmpty(dataSource.getFilters())) {
+          continue;
+        }
+        if (!StringUtils.equals(metric, dataSource.getMetric())) {
+          continue;
+        }
+        for (Filter filter : dataSource.getFilters()) {
+          String key = filter.getName();
+          String type = filter.getType();
+          List<Object> values = new ArrayList<>();
+          switch (type) {
+            case "literal_or":
+            case "not_literal_or":
+              values.addAll(Arrays.asList(filter.getValue().split("\\|")));
+              break;
+            default:
+              values.add(filter.getValue());
+              break;
+          }
+          List<Object> filterValues = filters.computeIfAbsent(key, k -> new ArrayList<>());
+          filterValues.addAll(values);
+        }
+      }
+    }
+    return filters;
   }
 }

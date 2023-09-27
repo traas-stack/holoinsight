@@ -42,6 +42,7 @@ import io.holoinsight.server.home.web.controller.model.PqlParseResult;
 import io.holoinsight.server.home.web.controller.model.PqlRangeQueryRequest;
 import io.holoinsight.server.home.web.controller.model.TagQueryRequest;
 import io.holoinsight.server.home.web.interceptor.MonitorScopeAuth;
+import io.holoinsight.server.home.web.security.ParameterSecurityService;
 import io.holoinsight.server.query.grpc.QueryProto;
 import io.holoinsight.server.query.grpc.QueryProto.Datasource;
 import io.holoinsight.server.query.grpc.QueryProto.Datasource.Builder;
@@ -91,6 +92,9 @@ public class QueryFacadeImpl extends BaseFacade {
   @Autowired
   private SuperCacheService superCacheService;
 
+  @Autowired
+  private ParameterSecurityService parameterSecurityService;
+
   @PostMapping
   public JsonResult<QueryResponse> query(@RequestBody DataQueryRequest request) {
 
@@ -110,7 +114,8 @@ public class QueryFacadeImpl extends BaseFacade {
         }
         ParaCheckUtil.checkCustomQl(request, "Refusing to execute sql query");
         ParaCheckUtil.checkSQlInjection(getGroupBys(request), "Illegal params in groupby");
-        ParaCheckUtil.checkSQlInjection(getFilters(request), "Illegal params in filter");
+        ParaCheckUtil.checkSQlInjection(parameterSecurityService.getDetailFilters(request),
+            "Illegal params in filter");
       }
 
       @Override
@@ -121,27 +126,6 @@ public class QueryFacadeImpl extends BaseFacade {
     });
 
     return result;
-  }
-
-  private List<String> getFilters(DataQueryRequest request) {
-    if (request == null || CollectionUtils.isEmpty(request.getDatasources())) {
-      return Collections.emptyList();
-    }
-    Set<String> filters = new HashSet<>();
-    for (QueryDataSource queryDataSource : request.getDatasources()) {
-      if (CollectionUtils.isEmpty(queryDataSource.getFilters())) {
-        continue;
-      }
-      for (DataQueryRequest.QueryFilter queryFilter : queryDataSource.getFilters()) {
-        if (StringUtils.isNotEmpty(queryFilter.name)) {
-          filters.add(queryFilter.name);
-        }
-        if (StringUtils.isNotEmpty(queryFilter.value)) {
-          filters.add(queryFilter.value);
-        }
-      }
-    }
-    return new ArrayList<>(filters);
   }
 
   private List<String> getGroupBys(DataQueryRequest request) {
