@@ -133,7 +133,9 @@ public class CoordinatorService {
     int pqlPageNum = pqlPageSize * realOrder;
     this.cacheAlertTask.setPqlPageSize(pqlPageSize);
     this.cacheAlertTask.setPqlPageNum(pqlPageNum);
-    log.info("TASK_ASSIGN_MONITOR,rulePageNum={},rulePageSize={},aiPageNum={},aiPageSize={},pqlPageNum={},pqlPageSize={}", rulePageNum, rulePageSize, aiPageNum, aiPageSize, pqlPageNum, pqlPageSize);
+    log.info(
+        "TASK_ASSIGN_MONITOR,rulePageNum={},rulePageSize={},aiPageNum={},aiPageSize={},pqlPageNum={},pqlPageSize={}",
+        rulePageNum, rulePageSize, aiPageNum, aiPageSize, pqlPageNum, pqlPageSize);
   }
 
   public void buildCluster() throws Exception {
@@ -157,8 +159,9 @@ public class CoordinatorService {
   }
 
   public void checkOrderedMapConfig() {
-    OrderConfig orderConfig = MetaDictUtil.getValue("alert", "coordinator_order", new com.google.gson.reflect.TypeToken<OrderConfig>() {});
-    if(orderConfig == null){
+    OrderConfig orderConfig = MetaDictUtil.getValue("alert", "coordinator_order",
+        new com.google.gson.reflect.TypeToken<OrderConfig>() {});
+    if (orderConfig == null) {
       log.info("can not get orderConfig from type {} dict_key {}", "alert", "coordinator_order");
       return;
     }

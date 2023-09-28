@@ -57,10 +57,12 @@ public class OrderMap {
   public synchronized void putOrdering(String key, String value) {
     long curPeriod = curPeriod();
     if (orderPeriod != curPeriod) {
-      log.info("ORDER_MONITOR,{},forceEnable={},forceOrderedMapSize={},orderingMapSize={}", DateUtil.getDateOf_YYMMDD_HHMMSS(new Date(curPeriod)), forceSetEnable, forceOrderedMap.size(), orderingMap.size());
-      if(forceSetEnable){
+      log.info("ORDER_MONITOR,{},forceEnable={},forceOrderedMapSize={},orderingMapSize={}",
+          DateUtil.getDateOf_YYMMDD_HHMMSS(new Date(curPeriod)), forceSetEnable,
+          forceOrderedMap.size(), orderingMap.size());
+      if (forceSetEnable) {
         this.orderedMap = new HashMap<>(forceOrderedMap);
-      }else {
+      } else {
         this.orderedMap = new HashMap<>(orderingMap);
       }
       this.orderingMap = new HashMap<>();
@@ -174,7 +176,7 @@ public class OrderMap {
   }
 
   public void forceSet(OrderConfig orderConfig) {
-    if(orderConfig.isEnable() && CollectionUtils.isEmpty(orderConfig.getOrderedMap())){
+    if (orderConfig.isEnable() && CollectionUtils.isEmpty(orderConfig.getOrderedMap())) {
       log.info("OrderedMapConfig is enable but empty.");
       return;
     }

@@ -14,6 +14,6 @@ import java.util.Map;
  */
 @Data
 public class OrderConfig {
-    private Map<String, String> orderedMap = new HashMap<>();
-    private boolean enable;
+  private Map<String, String> orderedMap = new HashMap<>();
+  private boolean enable;
 }

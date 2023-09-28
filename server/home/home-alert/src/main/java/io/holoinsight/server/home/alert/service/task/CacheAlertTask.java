@@ -244,7 +244,7 @@ public class CacheAlertTask {
   }
 
   private List<AlarmRule> getAlertRule(String ruleType, int pageNum, int pageSize) {
-    if(pageSize <= 0){
+    if (pageSize <= 0) {
       return Collections.emptyList();
     }
 
@@ -253,7 +253,8 @@ public class CacheAlertTask {
     condition.eq("rule_type", ruleType);
     condition.last("limit " + pageSize + " offset " + pageNum);
     List<AlarmRule> alarmRuleDOS = alarmRuleDOMapper.selectList(condition);
-    LOGGER.info("TASK_GET_MONITOR,ruleType={},pageNum={},pageSize={},size={}", ruleType, pageNum, pageSize, CollectionUtils.isEmpty(alarmRuleDOS)?0:alarmRuleDOS.size());
+    LOGGER.info("TASK_GET_MONITOR,ruleType={},pageNum={},pageSize={},size={}", ruleType, pageNum,
+        pageSize, CollectionUtils.isEmpty(alarmRuleDOS) ? 0 : alarmRuleDOS.size());
     return alarmRuleDOS;
   }
 
