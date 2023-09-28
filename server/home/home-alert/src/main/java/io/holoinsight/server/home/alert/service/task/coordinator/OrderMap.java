@@ -58,7 +58,9 @@ public class OrderMap {
     long curPeriod = curPeriod();
     if (orderPeriod != curPeriod) {
       log.info("ORDER_MONITOR,{},forceEnable={},forceOrderedMapSize={},orderingMapSize={}", DateUtil.getDateOf_YYMMDD_HHMMSS(new Date(curPeriod)), forceSetEnable, forceOrderedMap.size(), orderingMap.size());
-      if(!forceSetEnable){
+      if(forceSetEnable){
+        this.orderedMap = new HashMap<>(forceOrderedMap);
+      }else {
         this.orderedMap = new HashMap<>(orderingMap);
       }
       this.orderingMap = new HashMap<>();
