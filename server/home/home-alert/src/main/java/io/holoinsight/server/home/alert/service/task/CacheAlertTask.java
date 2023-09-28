@@ -244,25 +244,16 @@ public class CacheAlertTask {
   }
 
   private List<AlarmRule> getAlertRule(String ruleType, int pageNum, int pageSize) {
-    List<AlarmRule> alarmRuleDOS = new ArrayList<>();
-    int limit;
-    int offset;
-    if (pageSize > 0) {
-      limit = pageSize;
-      offset = pageNum;
-    } else {
+    if(pageSize <= 0){
       return Collections.emptyList();
     }
+
     QueryWrapper<AlarmRule> condition = new QueryWrapper<>();
     condition.orderByDesc("id");
     condition.eq("rule_type", ruleType);
-    condition.last("limit " + limit + " offset " + offset);
-    List<AlarmRule> alarmRuleDo = alarmRuleDOMapper.selectList(condition);
-    if (!CollectionUtils.isEmpty(alarmRuleDo)) {
-      alarmRuleDOS.addAll(alarmRuleDo);
-    }
-    LOGGER.info("rule_type={}, limit={}, offset={}, size={}", ruleType, limit, offset,
-        alarmRuleDOS.size());
+    condition.last("limit " + pageSize + " offset " + pageNum);
+    List<AlarmRule> alarmRuleDOS = alarmRuleDOMapper.selectList(condition);
+    LOGGER.info("TASK_GET_MONITOR,ruleType={},pageNum={},pageSize={},size={}", ruleType, pageNum, pageSize, CollectionUtils.isEmpty(alarmRuleDOS)?0:alarmRuleDOS.size());
     return alarmRuleDOS;
   }
 

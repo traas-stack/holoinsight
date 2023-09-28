@@ -4,9 +4,9 @@
 package io.holoinsight.server.home.alert.service.task.coordinator;
 
 import io.holoinsight.server.common.AddressUtil;
+import io.holoinsight.server.common.config.ScheduleLoadTask;
 import io.holoinsight.server.home.biz.service.ClusterService;
 import io.holoinsight.server.home.common.util.CLUSTER_ROLE_CONST;
-import io.holoinsight.server.common.config.ScheduleLoadTask;
 import io.holoinsight.server.home.dal.model.dto.ClusterDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -59,30 +59,9 @@ public class AlertClusterService extends ScheduleLoadTask {
     cluster.setHostname(hostName);
     cluster.setGmtModified(new Date());
     clusterService.upsert(cluster);
+    this.coordinatorService.checkOrderedMapConfig();
     this.coordinatorService.spread(heartbeat);
   }
-
-  // public void upsert(Cluster cluster) {
-  // long s = System.currentTimeMillis();
-  // QueryWrapper<Cluster> condition = new QueryWrapper<>();
-  // condition.eq("ip", cluster.getIp());
-  // condition.eq("role", cluster.getRole());
-  // List<Cluster> clusters = this.clusterMapper.selectList(condition);
-  // int result;
-  // if (CollectionUtils.isEmpty(clusters)) {
-  // result = this.clusterMapper.insert(cluster);
-  // } else {
-  // Cluster res = clusters.get(0);
-  // res.setLastHeartBeatTime(cluster.getLastHeartBeatTime());
-  // res.setRole(getRole());
-  // res.setHostname(cluster.getHostname());
-  // res.setGmtModified(new Date());
-  // QueryWrapper<Cluster> updateWrapper = new QueryWrapper<>();
-  // updateWrapper.eq("id", res.getId());
-  // result = this.clusterMapper.update(res, updateWrapper);
-  // }
-  // LOGGER.info("HEARTBEAT {} {} {}", true, System.currentTimeMillis() - s, result);
-  // }
 
   private String getRole() {
     return role;

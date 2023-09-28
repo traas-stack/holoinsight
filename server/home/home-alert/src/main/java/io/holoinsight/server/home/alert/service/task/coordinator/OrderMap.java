@@ -3,18 +3,20 @@
  */
 package io.holoinsight.server.home.alert.service.task.coordinator;
 
-import io.holoinsight.server.home.alert.service.task.coordinator.client.Client;
 import io.holoinsight.server.common.AddressUtil;
+import io.holoinsight.server.common.DateUtil;
+import io.holoinsight.server.home.alert.service.task.coordinator.client.Client;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -26,13 +28,17 @@ import static io.holoinsight.server.home.alert.service.task.coordinator.Coordina
  * @author masaimu
  * @version 2022-10-19 18:19:00
  */
+@Slf4j
+@Data
 public class OrderMap {
-  private static Logger LOGGER = LoggerFactory.getLogger(OrderMap.class);
 
-  public Map<String, String> orderingMap = new HashMap<>();
-  public Map<String, String> orderedMap = new HashMap<>();
-  public long orderPeriod = 0;
-  String selfIp = AddressUtil.getLocalHostIPV4();
+  private Map<String, String> orderingMap = new HashMap<>();
+  private Map<String, String> orderedMap = new HashMap<>();
+  private long orderPeriod = 0;
+  private final String selfIp = AddressUtil.getLocalHostIPV4();
+
+  private boolean forceSetEnable = false;
+  private Map<String, String> forceOrderedMap = new HashMap<>();
 
   public Map<String, Integer> countMap = new HashMap<>();
   public int max = 0;
@@ -51,7 +57,10 @@ public class OrderMap {
   public synchronized void putOrdering(String key, String value) {
     long curPeriod = curPeriod();
     if (orderPeriod != curPeriod) {
-      this.orderedMap = new HashMap<>(orderingMap);
+      log.info("ORDER_MONITOR,{},forceEnable={},forceOrderedMapSize={},orderingMapSize={}", DateUtil.getDateOf_YYMMDD_HHMMSS(new Date(curPeriod)), forceSetEnable, forceOrderedMap.size(), orderingMap.size());
+      if(!forceSetEnable){
+        this.orderedMap = new HashMap<>(orderingMap);
+      }
       this.orderingMap = new HashMap<>();
       orderPeriod = curPeriod;
     }
@@ -95,7 +104,7 @@ public class OrderMap {
 
   public Integer getRealSize() {
     int size = this.orderedMap.size();
-    return size <= 0 ? 1 : size;
+    return size == 0 ? 1 : size;
   }
 
   public Integer getRealOrder() {
@@ -108,7 +117,7 @@ public class OrderMap {
         return i;
       }
     }
-    LOGGER.warn("can not find myself in order map.");
+    log.warn("can not find myself in order map.");
     return -1;
   }
 
@@ -145,7 +154,7 @@ public class OrderMap {
       ChannelFuture channelFuture = entry.getValue();
       Channel channel = channelFuture.channel();
       if (!channel.isOpen() || !channel.isActive()) {
-        LOGGER.info("remove inactive endpoint {}", ip);
+        log.info("remove inactive endpoint {}", ip);
         Client client = this.clientMap.remove(ip);
         if (client != null) {
           client.shutdown();
@@ -160,5 +169,14 @@ public class OrderMap {
       return Collections.emptyList();
     }
     return this.channelMap.values();
+  }
+
+  public void forceSet(OrderConfig orderConfig) {
+    if(orderConfig.isEnable() && CollectionUtils.isEmpty(orderConfig.getOrderedMap())){
+      log.info("OrderedMapConfig is enable but empty.");
+      return;
+    }
+    this.forceSetEnable = orderConfig.isEnable();
+    this.forceOrderedMap = new HashMap<>(orderConfig.getOrderedMap());
   }
 }
