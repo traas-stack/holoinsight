@@ -19,7 +19,6 @@ import io.holoinsight.server.home.dal.model.dto.IntegrationPluginDTO;
 import io.holoinsight.server.home.dal.model.dto.IntegrationProductDTO;
 import io.holoinsight.server.home.web.common.ManageCallback;
 import io.holoinsight.server.home.web.common.ParaCheckUtil;
-import io.holoinsight.server.home.web.common.TokenUrls;
 import io.holoinsight.server.home.web.interceptor.MonitorScopeAuth;
 import io.holoinsight.server.common.JsonResult;
 import io.holoinsight.server.query.grpc.QueryProto;
@@ -44,7 +43,6 @@ import java.util.stream.Collectors;
  */
 @RestController
 @RequestMapping("/webapi/integration/product")
-@TokenUrls("/webapi/integration/product/create")
 public class IntegrationProductFacadeImpl extends BaseFacade {
 
   @Autowired

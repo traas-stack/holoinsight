@@ -13,7 +13,6 @@ import io.holoinsight.server.home.facade.page.MonitorPageRequest;
 import io.holoinsight.server.home.facade.page.MonitorPageResult;
 import io.holoinsight.server.home.web.common.ManageCallback;
 import io.holoinsight.server.home.web.common.ParaCheckUtil;
-import io.holoinsight.server.home.web.common.TokenUrls;
 import io.holoinsight.server.home.web.interceptor.MonitorScopeAuth;
 import io.holoinsight.server.common.JsonResult;
 import org.apache.commons.lang3.StringUtils;
@@ -33,7 +32,6 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @RequestMapping("/webapi/alarmHistory")
-@TokenUrls("/webapi/alarmHistory/query")
 public class AlarmHistoryFacadeImpl extends BaseFacade {
 
   @Autowired

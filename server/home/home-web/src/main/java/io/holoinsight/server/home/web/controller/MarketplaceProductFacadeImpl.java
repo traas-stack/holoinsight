@@ -4,12 +4,10 @@
 package io.holoinsight.server.home.web.controller;
 
 import io.holoinsight.server.home.biz.service.MarketplaceProductService;
-import io.holoinsight.server.home.biz.service.UserOpLogService;
 import io.holoinsight.server.home.common.util.scope.AuthTargetType;
 import io.holoinsight.server.home.common.util.scope.PowerConstants;
 import io.holoinsight.server.home.dal.model.dto.MarketplaceProductDTO;
 import io.holoinsight.server.home.web.common.ManageCallback;
-import io.holoinsight.server.home.web.common.TokenUrls;
 import io.holoinsight.server.home.web.interceptor.MonitorScopeAuth;
 import io.holoinsight.server.common.JsonResult;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +24,6 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/webapi/marketplace/product")
-@TokenUrls("/webapi/marketplace/product/create")
 public class MarketplaceProductFacadeImpl extends BaseFacade {
 
   @Autowired

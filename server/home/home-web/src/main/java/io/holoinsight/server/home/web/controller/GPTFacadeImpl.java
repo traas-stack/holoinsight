@@ -14,7 +14,6 @@ import io.holoinsight.server.common.J;
 import io.holoinsight.server.common.JsonResult;
 import io.holoinsight.server.home.common.util.scope.AuthTargetType;
 import io.holoinsight.server.home.common.util.scope.PowerConstants;
-import io.holoinsight.server.home.web.common.TokenUrls;
 import io.holoinsight.server.home.web.interceptor.MonitorScopeAuth;
 import io.holoinsight.server.home.web.openai.FunctionRegistry;
 import io.holoinsight.server.home.biz.service.openai.OpenAiService;
@@ -40,7 +39,6 @@ import java.util.UUID;
 @Slf4j
 @RestController
 @RequestMapping("/webapi/gpt")
-@TokenUrls("/webapi/gpt")
 public class GPTFacadeImpl extends BaseFacade {
 
   @Autowired

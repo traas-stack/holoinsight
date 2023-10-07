@@ -18,7 +18,6 @@ import io.holoinsight.server.home.facade.page.MonitorPageRequest;
 import io.holoinsight.server.home.facade.page.MonitorPageResult;
 import io.holoinsight.server.home.web.common.ManageCallback;
 import io.holoinsight.server.home.web.common.ParaCheckUtil;
-import io.holoinsight.server.home.web.common.TokenUrls;
 import io.holoinsight.server.home.web.interceptor.MonitorScopeAuth;
 import io.holoinsight.server.common.JsonResult;
 import lombok.extern.slf4j.Slf4j;
@@ -46,7 +45,6 @@ import java.util.Map;
 @Slf4j
 @RestController
 @RequestMapping("/webapi/alarmHistoryDetail")
-@TokenUrls("/webapi/alarmHistoryDetail")
 public class AlarmHistoryDetailFacadeImpl extends BaseFacade {
 
   @Autowired

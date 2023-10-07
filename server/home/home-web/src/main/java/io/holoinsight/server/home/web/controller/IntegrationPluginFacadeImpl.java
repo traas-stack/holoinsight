@@ -4,7 +4,6 @@
 package io.holoinsight.server.home.web.controller;
 
 import io.holoinsight.server.home.common.util.StringUtil;
-import io.holoinsight.server.home.web.common.TokenUrls;
 import io.holoinsight.server.common.J;
 import io.holoinsight.server.common.JsonResult;
 import io.holoinsight.server.home.biz.service.IntegrationPluginService;
@@ -44,7 +43,6 @@ import java.util.Map;
  */
 @RestController
 @RequestMapping("/webapi/integration/plugin")
-@TokenUrls("/webapi/integration/plugin")
 public class IntegrationPluginFacadeImpl extends BaseFacade {
 
   @Autowired
