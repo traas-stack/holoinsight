@@ -22,6 +22,7 @@ import io.holoinsight.server.home.common.service.query.QuerySchemaResponse;
 import io.holoinsight.server.home.common.service.query.Result;
 import io.holoinsight.server.home.common.service.query.ValueResult;
 import io.holoinsight.server.home.common.util.MonitorException;
+import io.holoinsight.server.home.common.util.ResultCodeEnum;
 import io.holoinsight.server.home.common.util.StringUtil;
 import io.holoinsight.server.home.common.util.scope.AuthTargetType;
 import io.holoinsight.server.home.common.util.scope.MonitorScope;
@@ -120,8 +121,16 @@ public class QueryFacadeImpl extends BaseFacade {
 
       @Override
       public void doManage() {
-        QueryResponse response = queryClientService.query(convertRequest(request));
-        JsonResult.createSuccessResult(result, response);
+        try {
+          QueryResponse response = queryClientService.query(convertRequest(request));
+          JsonResult.createSuccessResult(result, response);
+        } catch (Exception e) {
+          if (e.getMessage().contains("Evaluated points num")
+              && e.getMessage().contains("larger than")) {
+            throw new MonitorException(ResultCodeEnum.EXCEED_SERIES_LIMIT, e);
+          }
+          throw new MonitorException(ResultCodeEnum.MONITOR_SYSTEM_ERROR, e);
+        }
       }
     });
 
@@ -165,9 +174,17 @@ public class QueryFacadeImpl extends BaseFacade {
 
       @Override
       public void doManage() {
-        QueryResponse response = queryClientService.queryTags(convertRequest(request));
 
-        JsonResult.createSuccessResult(result, response);
+        try {
+          QueryResponse response = queryClientService.queryTags(convertRequest(request));
+          JsonResult.createSuccessResult(result, response);
+        } catch (Exception e) {
+          if (e.getMessage().contains("Evaluated points num")
+              && e.getMessage().contains("larger than")) {
+            throw new MonitorException(ResultCodeEnum.EXCEED_SERIES_LIMIT, e);
+          }
+          throw new MonitorException(ResultCodeEnum.MONITOR_SYSTEM_ERROR, e);
+        }
       }
     });
 
@@ -376,13 +393,23 @@ public class QueryFacadeImpl extends BaseFacade {
 
       @Override
       public void doManage() {
-        QueryProto.PqlRangeRequest rangeRequest = QueryProto.PqlRangeRequest.newBuilder()
-            .setQuery(request.getQuery())
-            .setTenant(tenantInitService.getTsdbTenant(RequestContext.getContext().ms.getTenant()))
-            .setTimeout(request.getTimeout()).setStart(request.getStart()).setEnd(request.getEnd())
-            .setFillZero(request.getFillZero()).setStep(request.getStep()).build();
-        QueryResponse response = queryClientService.pqlRangeQuery(rangeRequest);
-        JsonResult.createSuccessResult(result, response.getResults());
+        try {
+          QueryProto.PqlRangeRequest rangeRequest =
+              QueryProto.PqlRangeRequest.newBuilder().setQuery(request.getQuery())
+                  .setTenant(
+                      tenantInitService.getTsdbTenant(RequestContext.getContext().ms.getTenant()))
+                  .setTimeout(request.getTimeout()).setStart(request.getStart())
+                  .setEnd(request.getEnd()).setFillZero(request.getFillZero())
+                  .setStep(request.getStep()).build();
+          QueryResponse response = queryClientService.pqlRangeQuery(rangeRequest);
+          JsonResult.createSuccessResult(result, response.getResults());
+        } catch (Exception e) {
+          if (e.getMessage().contains("Evaluated points num")
+              && e.getMessage().contains("larger than")) {
+            throw new MonitorException(ResultCodeEnum.EXCEED_SERIES_LIMIT, e);
+          }
+          throw new MonitorException(ResultCodeEnum.MONITOR_SYSTEM_ERROR, e);
+        }
       }
     });
 
@@ -406,13 +433,22 @@ public class QueryFacadeImpl extends BaseFacade {
 
       @Override
       public void doManage() {
-        QueryProto.PqlInstantRequest instantRequest = QueryProto.PqlInstantRequest.newBuilder()
-            .setQuery(request.getQuery())
-            .setTenant(tenantInitService.getTsdbTenant(RequestContext.getContext().ms.getTenant()))
-            .setDelta(request.getDelta()).setTimeout(request.getTimeout())
-            .setTime(request.getTime()).build();
-        QueryResponse response = queryClientService.pqlInstantQuery(instantRequest);
-        JsonResult.createSuccessResult(result, response.getResults());
+        try {
+          QueryProto.PqlInstantRequest instantRequest =
+              QueryProto.PqlInstantRequest.newBuilder().setQuery(request.getQuery())
+                  .setTenant(
+                      tenantInitService.getTsdbTenant(RequestContext.getContext().ms.getTenant()))
+                  .setDelta(request.getDelta()).setTimeout(request.getTimeout())
+                  .setTime(request.getTime()).build();
+          QueryResponse response = queryClientService.pqlInstantQuery(instantRequest);
+          JsonResult.createSuccessResult(result, response.getResults());
+        } catch (Exception e) {
+          if (e.getMessage().contains("Evaluated points num")
+              && e.getMessage().contains("larger than")) {
+            throw new MonitorException(ResultCodeEnum.EXCEED_SERIES_LIMIT, e);
+          }
+          throw new MonitorException(ResultCodeEnum.MONITOR_SYSTEM_ERROR, e);
+        }
       }
     });
 

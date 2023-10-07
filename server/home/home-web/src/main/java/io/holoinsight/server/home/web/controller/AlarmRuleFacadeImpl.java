@@ -36,7 +36,6 @@ import io.holoinsight.server.home.facade.page.MonitorPageRequest;
 import io.holoinsight.server.home.facade.page.MonitorPageResult;
 import io.holoinsight.server.home.web.common.ManageCallback;
 import io.holoinsight.server.home.web.common.ParaCheckUtil;
-import io.holoinsight.server.home.web.common.TokenUrls;
 import io.holoinsight.server.home.web.interceptor.MonitorScopeAuth;
 import io.holoinsight.server.home.web.security.ParameterSecurityService;
 import org.apache.commons.lang3.StringUtils;
@@ -71,7 +70,6 @@ import static io.holoinsight.server.home.task.MetricCrawlerConstant.GLOBAL_WORKS
  */
 @RestController
 @RequestMapping("/webapi/alarmRule")
-@TokenUrls("/webapi/alarmRule/query")
 public class AlarmRuleFacadeImpl extends BaseFacade {
 
   @Autowired

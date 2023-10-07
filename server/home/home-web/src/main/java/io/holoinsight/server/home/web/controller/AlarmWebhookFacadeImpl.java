@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import io.holoinsight.server.home.web.common.TokenUrls;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
@@ -53,7 +52,6 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @RestController
 @RequestMapping("/webapi/alarmWebhook")
-@TokenUrls("/webapi/alarmWebhook/test")
 public class AlarmWebhookFacadeImpl extends BaseFacade {
 
   @Autowired

@@ -91,7 +91,7 @@ public class IntegrationPluginUpdateListener {
         gaeaCollectConfigDTO.type = integrationPlugin.collectPlugin;
         gaeaCollectConfigDTO.tableName = integrationPlugin.gaeaTableName;
         gaeaCollectConfigDTO.refId = "integration_" + integrationPluginDTO.getId();
-        gaeaCollectConfigDTO.executorSelector = integrationPlugin.getExecutorSelector();
+        gaeaCollectConfigDTO.executorSelector = plugin.getExecutorSelector();
         gaeaCollectConfigDTO.version = 1L;
         gaeaCollectConfigDTO.json = integrationPlugin.generateCollectConfig();
 

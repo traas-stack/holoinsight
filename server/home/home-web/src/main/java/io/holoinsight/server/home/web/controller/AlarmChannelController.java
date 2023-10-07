@@ -9,8 +9,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import io.holoinsight.server.home.web.common.TokenUrls;
-
 /**
  * @author wangsiyuan
  * @date 2022/7/14 9:36 下午
@@ -18,7 +16,6 @@ import io.holoinsight.server.home.web.common.TokenUrls;
 
 @RestController
 @RequestMapping("/webapi/v1/alarm/channel")
-@TokenUrls("/webapi/v1/alarm/channel")
 public class AlarmChannelController {
 
   @GetMapping("/sendMessage")
