@@ -12,6 +12,8 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 
+import java.util.UUID;
+
 /**
  * @author jsy1001de
  * @version 1.0: ManageTemplateImpl.java, v 0.1 2022年03月15日 12:23 下午 jinsong.yjs Exp $
@@ -23,28 +25,30 @@ public class FacadeTemplateImpl implements FacadeTemplate {
   @Override
   @SuppressWarnings("unchecked")
   public void manage(JsonResult result, ManageCallback callback) {
+    String requestId = UUID.randomUUID().toString();
+
     try {
       // 检验参数
       callback.checkParameter();
       // 执行管理方法
       callback.doManage();
     } catch (MonitorException e) {
-      log.error("MonitorException: " + e.getMessage(), e);
+      log.error(requestId + ", MonitorException: " + e.getMessage(), e);
       JsonResult.fillFailResultTo(result, e.getResultCode().getResultCode(), e.getMessage());
     } catch (DuplicateKeyException e) {
-      log.error("DuplicateKeyException: " + e.getMessage(), e);
+      log.error(requestId + ", DuplicateKeyException: " + e.getMessage(), e);
       JsonResult.fillFailResultTo(result, ResultCodeEnum.DUPLICATE_KEY.getResultCode(),
-          e.getMessage());
+          requestId + ", Duplicate entry 'xx' for key");
     } catch (DataAccessException e) {
-      log.error("DataAccessException: " + e.getMessage(), e);
+      log.error(requestId + ", DataAccessException: " + e.getMessage(), e);
       JsonResult.fillFailResultTo(result, ResultCodeEnum.DATAACCESS_ERROE.getResultCode(),
-          e.getMessage());
+          requestId + ", Database access exception");
     } catch (IllegalArgumentException e) {
-      log.error("IllegalAccessException: " + e.getMessage(), e);
+      log.error(requestId + ", IllegalAccessException: " + e.getMessage(), e);
       JsonResult.fillFailResultTo(result, ResultCodeEnum.PARAMETER_ILLEGAL.getResultCode(),
           e.getMessage());
     } catch (Exception e) {
-      log.error("Exception: " + e.getMessage(), e);
+      log.error(requestId + ", Exception: " + e.getMessage(), e);
       JsonResult.fillFailResultTo(result, ResultCodeEnum.SYSTEM_ERROR.getResultCode(),
           e.getMessage());
     }
