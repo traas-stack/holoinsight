@@ -8,7 +8,11 @@ import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.google.gson.reflect.TypeToken;
 import io.holoinsight.server.common.J;
 import io.holoinsight.server.common.dao.entity.MetaDataDictValue;
+import io.holoinsight.server.common.dao.entity.MonitorInstance;
+import io.holoinsight.server.common.dao.entity.MonitorInstanceCfg;
+import io.holoinsight.server.common.dao.mapper.MonitorInstanceMapper;
 import io.holoinsight.server.common.service.MetaDataDictValueService;
+import io.holoinsight.server.common.service.MonitorInstanceService;
 import io.holoinsight.server.common.service.SuperCacheService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
@@ -27,8 +31,11 @@ public class ProductCtlServiceImpl implements ProductCtlService {
   @Autowired
   private MetaDataDictValueService metaDataDictValueService;
 
+  @Autowired
+  private MonitorInstanceService monitorInstanceService;
 
-  private Map<String, Set<String>> productClosed;
+
+  private Map<String, Set<String>> productClosed = new HashMap<>();
 
   private Map<String, List<String>> resourceKeys;
 
@@ -40,6 +47,22 @@ public class ProductCtlServiceImpl implements ProductCtlService {
   @Scheduled(initialDelay = 10000L, fixedDelay = 60000L)
   private void refresh() {
 
+    List<MonitorInstance> monitorInstances = monitorInstanceService.queryByType("server");
+    Map<String, Set<String>> dbProductClosed = new HashMap<>();
+    for (MonitorInstance monitorInstance : monitorInstances) {
+      MonitorInstanceCfg cfg =
+          J.get().fromJson(monitorInstance.getConfig(), MonitorInstanceCfg.class);
+      cfg.getCtlStatus().forEach((code, status) -> {
+        if (!status) {
+          dbProductClosed.computeIfAbsent(monitorInstance.getInstance(), k -> new HashSet<>())
+              .add(code);
+        }
+      });
+    }
+
+    productClosed = dbProductClosed;
+
+
     MetaDataDictValue switchOnDictVal = superCacheService.getSc().metaDataDictValueMap
         .getOrDefault("global_config", new HashMap<>()).get("product_closed_switch_on");
     try {
@@ -48,12 +71,12 @@ public class ProductCtlServiceImpl implements ProductCtlService {
       switchOn = false;
     }
 
-    MetaDataDictValue productClosedDictVal = superCacheService.getSc().metaDataDictValueMap
-        .getOrDefault("global_config", new HashMap<>()).get("product_closed");
-    if (productClosedDictVal != null) {
-      productClosed = J.get().fromJson(productClosedDictVal.getDictValue(),
-          new TypeToken<Map<String, Set<String>>>() {}.getType());
-    }
+    // MetaDataDictValue productClosedDictVal = superCacheService.getSc().metaDataDictValueMap
+    // .getOrDefault("global_config", new HashMap<>()).get("product_closed");
+    // if (productClosedDictVal != null) {
+    // productClosed = J.get().fromJson(productClosedDictVal.getDictValue(),
+    // new TypeToken<Map<String, Set<String>>>() {}.getType());
+    // }
 
     MetaDataDictValue resourceKeyDictVal = superCacheService.getSc().metaDataDictValueMap
         .getOrDefault("global_config", new HashMap<>()).get("resource_keys");
