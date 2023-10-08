@@ -5,6 +5,7 @@ package io.holoinsight.server.home.web.controller;
 
 import io.holoinsight.server.home.biz.service.AlarmMetricService;
 import io.holoinsight.server.home.biz.service.CustomPluginService;
+import io.holoinsight.server.home.biz.service.TenantInitService;
 import io.holoinsight.server.home.biz.service.UserOpLogService;
 import io.holoinsight.server.home.common.util.MonitorException;
 import io.holoinsight.server.home.common.util.ResultCodeEnum;
@@ -72,6 +73,9 @@ public class CustomPluginFacadeImpl extends BaseFacade {
   @Autowired
   private AlarmMetricService alarmMetricService;
 
+  @Autowired
+  private TenantInitService tenantInitService;
+
   @PostMapping("/update")
   @ResponseBody
   @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.EDIT)
@@ -81,7 +85,6 @@ public class CustomPluginFacadeImpl extends BaseFacade {
       @Override
       public void checkParameter() {
         ParaCheckUtil.checkParaNotNull(customPluginDTO.id, "id");
-        // ParaCheckUtil.checkParaNotBlank(customPluginDTO.tenant);
         ParaCheckUtil.checkParaNotNull(customPluginDTO.parentFolderId, "parentFolderId");
         ParaCheckUtil.checkParaNotBlank(customPluginDTO.name, "name");
         ParaCheckUtil.checkParaNotBlank(customPluginDTO.pluginType, "pluginType");
@@ -101,6 +104,11 @@ public class CustomPluginFacadeImpl extends BaseFacade {
         }
         if (!item.getTenant().equalsIgnoreCase(customPluginDTO.getTenant())) {
           throw new MonitorException("the tenant parameter is invalid");
+        }
+        Boolean aBoolean = tenantInitService.checkCustomPluginLogConfParams(ms.getTenant(),
+            ms.getWorkspace(), customPluginDTO);
+        if (!aBoolean) {
+          throw new MonitorException("collectRange illegal");
         }
       }
 
@@ -147,6 +155,12 @@ public class CustomPluginFacadeImpl extends BaseFacade {
         ParaCheckUtil.checkParaNotNull(customPluginDTO.status, "status");
         ParaCheckUtil.checkParaNotNull(customPluginDTO.periodType, "periodType");
         ParaCheckUtil.checkParaNotNull(customPluginDTO.conf, "conf");
+        MonitorScope ms = RequestContext.getContext().ms;
+        Boolean aBoolean = tenantInitService.checkCustomPluginLogConfParams(ms.getTenant(),
+            ms.getWorkspace(), customPluginDTO);
+        if (!aBoolean) {
+          throw new MonitorException("collectRange illegal");
+        }
       }
 
       @Override
