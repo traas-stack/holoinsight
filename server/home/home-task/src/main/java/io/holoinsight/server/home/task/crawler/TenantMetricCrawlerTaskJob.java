@@ -94,7 +94,9 @@ public class TenantMetricCrawlerTaskJob extends MonitorTaskJob {
         stopWatch.getTime());
 
     if (!CollectionUtils.isEmpty(deleteList)) {
-      metricInfoService.removeBatchByIds(deleteList);
+      deleteList.forEach(delete -> {
+        metricInfoService.removeById(delete);
+      });
     }
 
     if (!CollectionUtils.isEmpty(updateList)) {
