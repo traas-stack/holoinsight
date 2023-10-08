@@ -8,6 +8,7 @@ import io.holoinsight.server.common.dao.entity.MetricInfo;
 import io.holoinsight.server.common.dao.entity.dto.TenantOpsStorage;
 import io.holoinsight.server.home.biz.plugin.config.MetaLabel;
 import io.holoinsight.server.home.dal.model.dto.CloudMonitorRange;
+import io.holoinsight.server.home.dal.model.dto.CustomPluginDTO;
 import io.holoinsight.server.home.dal.model.dto.IntegrationGeneratedDTO;
 import io.holoinsight.server.home.facade.AlarmRuleDTO;
 import io.holoinsight.server.query.grpc.QueryProto.QueryFilter;
@@ -108,5 +109,8 @@ public interface TenantInitService {
   List<IntegrationGeneratedDTO> getExtraGeneratedLists();
 
   Boolean checkIntegrationWorkspace(String workspace);
+
+  Boolean checkCustomPluginLogConfParams(String tenant, String workspace,
+      CustomPluginDTO customPluginDTO);
 
 }

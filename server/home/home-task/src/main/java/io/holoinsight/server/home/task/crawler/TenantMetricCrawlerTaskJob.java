@@ -4,6 +4,7 @@
 
 package io.holoinsight.server.home.task.crawler;
 
+import io.holoinsight.server.common.MD5Hash;
 import io.holoinsight.server.common.Pair;
 import io.holoinsight.server.common.dao.entity.MetricInfo;
 import io.holoinsight.server.common.service.MetricInfoService;
@@ -65,12 +66,17 @@ public class TenantMetricCrawlerTaskJob extends MonitorTaskJob {
     List<MetricInfo> createList = new ArrayList<>();
     Set<Long> existed = new HashSet<>();
     List<Long> deleteList = new ArrayList<>();
+    List<MetricInfo> updateList = new ArrayList<>();
     for (MetricInfo metricInfo : outerList) {
       if (!fromDbMap.containsKey(metricInfo.getMetricTable())) {
         createList.add(metricInfo);
-      } else {
-        existed.add(fromDbMap.get(metricInfo.getMetricTable()).left());
+        continue;
+      } else if (compareUpdate(fromDbMap.get(metricInfo.getMetricTable()).right(), metricInfo)) {
+        metricInfo.setId(fromDbMap.get(metricInfo.getMetricTable()).left());
+        updateList.add(metricInfo);
       }
+
+      existed.add(fromDbMap.get(metricInfo.getMetricTable()).left());
     }
 
     for (Pair<Long, MetricInfo> pair : fromDbMap.values()) {
@@ -82,11 +88,21 @@ public class TenantMetricCrawlerTaskJob extends MonitorTaskJob {
         createList.size());
     log.info("[crawlerTask][{}][{}], curd detail, need delete:{}", product, tenant,
         deleteList.size());
+    log.info("[crawlerTask][{}][{}], curd detail, need update:{}", product, tenant,
+        updateList.size());
     log.info("[crawlerTask][{}][{}], curd detail, compare cost:{}", product, tenant,
         stopWatch.getTime());
 
     if (!CollectionUtils.isEmpty(deleteList)) {
-      metricInfoService.removeBatchByIds(deleteList);
+      deleteList.forEach(delete -> {
+        metricInfoService.removeById(delete);
+      });
+    }
+
+    if (!CollectionUtils.isEmpty(updateList)) {
+      updateList.forEach(update -> {
+        metricInfoService.updateById(update);
+      });
     }
 
     if (!CollectionUtils.isEmpty(createList)) {
@@ -95,6 +111,18 @@ public class TenantMetricCrawlerTaskJob extends MonitorTaskJob {
       });
     }
     log.info("[crawlerTask][{}][{}], end", product, tenant);
+  }
+
+  private Boolean compareUpdate(MetricInfo db, MetricInfo outer) {
+    if (null == db || null == outer)
+      return false;
+    return !genMd5(db).equalsIgnoreCase(genMd5(outer));
+  }
+
+  private String genMd5(MetricInfo metricInfo) {
+    String stringBuffer = metricInfo.metric + metricInfo.metricTable + metricInfo.description
+        + metricInfo.unit + metricInfo.period + metricInfo.tags;
+    return MD5Hash.getMD5(stringBuffer);
   }
 
   private Map<String, Pair<Long, MetricInfo>> getFromDb(String tenant, String workspace,

@@ -10,6 +10,7 @@ import io.holoinsight.server.home.biz.common.GaeaConvertUtil;
 import io.holoinsight.server.home.biz.plugin.config.MetaLabel;
 import io.holoinsight.server.home.biz.service.TenantInitService;
 import io.holoinsight.server.home.dal.model.dto.CloudMonitorRange;
+import io.holoinsight.server.home.dal.model.dto.CustomPluginDTO;
 import io.holoinsight.server.home.dal.model.dto.IntegrationGeneratedDTO;
 import io.holoinsight.server.home.facade.AlarmRuleDTO;
 import io.holoinsight.server.query.grpc.QueryProto.QueryFilter;
@@ -115,6 +116,12 @@ public class DefaultTenantInitServiceImpl implements TenantInitService {
 
   @Override
   public Boolean checkIntegrationWorkspace(String workspace) {
+    return Boolean.TRUE;
+  }
+
+  @Override
+  public Boolean checkCustomPluginLogConfParams(String tenant, String workspace,
+      CustomPluginDTO customPluginDTO) {
     return Boolean.TRUE;
   }
 
