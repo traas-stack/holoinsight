@@ -71,12 +71,12 @@ public class ProductCtlServiceImpl implements ProductCtlService {
       switchOn = false;
     }
 
-    //MetaDataDictValue productClosedDictVal = superCacheService.getSc().metaDataDictValueMap
-    //    .getOrDefault("global_config", new HashMap<>()).get("product_closed");
-    //if (productClosedDictVal != null) {
-    //  productClosed = J.get().fromJson(productClosedDictVal.getDictValue(),
-    //      new TypeToken<Map<String, Set<String>>>() {}.getType());
-    //}
+    // MetaDataDictValue productClosedDictVal = superCacheService.getSc().metaDataDictValueMap
+    // .getOrDefault("global_config", new HashMap<>()).get("product_closed");
+    // if (productClosedDictVal != null) {
+    // productClosed = J.get().fromJson(productClosedDictVal.getDictValue(),
+    // new TypeToken<Map<String, Set<String>>>() {}.getType());
+    // }
 
     MetaDataDictValue resourceKeyDictVal = superCacheService.getSc().metaDataDictValueMap
         .getOrDefault("global_config", new HashMap<>()).get("resource_keys");

@@ -5,7 +5,6 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
-import javax.persistence.*;
 import java.util.Date;
 
 @TableName("monitor_instance")
@@ -46,16 +45,6 @@ public class MonitorInstance {
    * 租户名称
    */
   private String tenantName;
-
-  /**
-   * 被授权租户
-   */
-  private String accreditedTenant;
-
-  /**
-   * 被授权租户名称
-   */
-  private String accreditedTenantName;
 
   /**
    * 工作空间

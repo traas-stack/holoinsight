@@ -54,4 +54,10 @@ public class CommonServiceAutoConfiguration {
   public MetricInfoService metricInfoService() {
     return new MetricInfoServiceImpl();
   }
+
+  @Bean
+  @ConditionalOnMissingBean
+  public MonitorInstanceService monitorInstanceService() {
+    return new MonitorInstanceServiceImpl();
+  }
 }
