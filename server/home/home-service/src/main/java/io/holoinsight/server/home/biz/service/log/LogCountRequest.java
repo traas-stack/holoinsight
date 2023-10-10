@@ -40,7 +40,7 @@ public class LogCountRequest {
   /**
    * log path
    */
-  private String path;
+  private String logPath;
 
   /**
    * hostname or podname list
