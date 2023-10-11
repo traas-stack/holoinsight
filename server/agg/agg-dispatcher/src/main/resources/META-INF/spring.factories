@@ -1,0 +1,1 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=io.holoinsight.server.agg.v1.dispatcher.AggDispatcherAutoConfiguration

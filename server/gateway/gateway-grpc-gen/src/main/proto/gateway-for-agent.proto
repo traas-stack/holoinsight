@@ -136,6 +136,9 @@ message WriteMetricsRequestV4 {
     string ref_target_key = 3;
     // 数据结果, 使用表的形式
     Table table = 4;
+    map<string, string> extension = 5;
+    int64 timestamp = 6;
+    Completeness completeness = 7;
   }
 
   message Table {
@@ -157,6 +160,11 @@ message WriteMetricsRequestV4 {
     int64 timestamp = 1;
     repeated string tag_values = 2;
     repeated DataNode value_values = 3;
+  }
+
+  message Completeness {
+    bool ok = 1;
+    map<string, string> extension = 2;
   }
 }
 

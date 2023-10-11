@@ -1,0 +1,88 @@
+syntax = "proto3";
+package io.holoinsight.server.agg.v1.pb;
+
+option java_multiple_files = false;
+option java_package = "io.holoinsight.server.agg.v1.pb";
+option java_outer_classname = "StateProtos";
+
+import "agg.proto";
+//import "google/protobuf/empty.proto";
+
+// partition state
+message PartitionState {
+  // state version
+  int32 version = 1;
+  // kafka consumer offset for this state
+  int64 offset = 2;
+  // max event timestamp for this partition
+  int64 maxEventTimestamp = 3;
+  repeated AggTaskState  aggTaskStates = 4;
+  // extension field
+  map<string, string> extension = 6;
+  // string dict
+  repeated string string_dict = 7;
+}
+
+// agg task state
+message AggTaskState {
+  // agg task key
+  AggTaskKey         key = 1;
+  // max event timestamp for this agg task
+  int64 maxEventTimestamp = 2;
+  // watermark for this agg task
+  int64 watermark = 3;
+  repeated AggWindowState aggWindowStates = 4;
+  // extendion field
+  map<string, string> extension = 6;
+}
+
+// agg window
+message AggWindowState{
+  // start time for this window
+  int64 timestamp = 1;
+
+  //int32 status = 2;
+
+  int32 processed = 3;
+
+  // int32 late = 4;
+
+  repeated Group groups = 5;
+
+  // extension field
+  map<string, string> extension = 6;
+}
+
+message GroupKey {
+  // index in string dict
+  repeated int32 key = 1;
+}
+
+message Group {
+  // group key
+  GroupKey key = 1;
+  // group tags
+  // map<int32, int32> tags = 2;
+  // fields
+  repeated GroupField fields = 3;
+}
+
+message GroupField {
+  int32  count = 1;
+  double value = 2;
+  int32 accepted = 3;
+  LogSamplesState logSamples = 4;
+  map<string, string> extension = 5;
+  map<string, bytes> bytesExtension = 6;
+}
+
+message LogSamplesState {
+  int32 maxCount = 1;
+  repeated HostLogSample hostLogSamples = 2;
+  int32 strategy = 3;
+}
+
+message HostLogSample{
+  string hostname = 1;
+  repeated string logs = 2;
+}

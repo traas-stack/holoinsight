@@ -8,6 +8,7 @@ import java.util.Map;
 
 import io.holoinsight.server.meta.common.model.QueryExample;
 import io.holoinsight.server.meta.facade.service.DataClientService;
+import io.holoinsight.server.registry.core.utils.ApiResp;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -30,7 +31,7 @@ public class DimWebController {
 
   @GetMapping("/queryAll")
   public Object queryAll(@RequestParam("tableName") String tableName) {
-    return dataClientService.queryAll(tableName);
+    return ApiResp.resource(dataClientService.queryAll(tableName));
   }
 
   @GetMapping("/queryById")

@@ -1,0 +1,53 @@
+syntax = "proto3";
+
+package io.holoinsight.server.agg.v1.pb;
+
+option java_multiple_files = false;
+option java_package = "io.holoinsight.server.agg.v1.pb";
+option java_outer_classname = "AggProtos";
+
+
+// agg task key
+message AggTaskKey {
+  string tenant = 1;
+  // agg id
+  string aggId = 2;
+  // agg partition
+  string partition = 3;
+}
+
+// agg task value
+message AggTaskValue {
+  // 0: agg data
+  // 1: update event timestamp event
+  int32 type = 1;
+
+  // when type == 1
+  int64 timestamp = 2;
+
+  // when type == 0
+  repeated InDataNode inDataNodes = 3;
+
+  // metric name for inDataNodes
+  string metric = 4;
+
+  map<string, string> extension = 5;
+}
+
+// point to agg
+message InDataNode {
+  // 0: single float64 value metric
+  // 1: single string value metric
+  int32 type = 1;
+  // timestamp for this point
+  int64 timestamp = 2;
+  // tags for this point
+  map<string, string> tags = 3;
+
+  int32 count = 4;
+
+  // when type == 0
+  double float64Value = 5;
+  // when type == 1
+  bytes bytesValue = 6;
+}

@@ -72,6 +72,12 @@
 		<module>../extension/extension-storage-remote-promql</module>
 
 		<module>../../test/server-e2e-test</module>
+		<module>../agg/agg-core</module>
+		<module>../agg/agg-executor-bootstrap</module>
+		<module>../agg/agg-dispatcher</module>
+		<module>../agg/agg-executor</module>
+		<module>../agg/agg-boot</module>
+		<module>../agg/agg-executor-api</module>
 	</modules>
 
 	<parent>
@@ -113,6 +119,12 @@
 				<groupId>com.squareup.okhttp3</groupId>
 				<artifactId>okhttp</artifactId>
 				<version>4.1.1</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.apache.kafka</groupId>
+				<artifactId>kafka-clients</artifactId>
+				<version>3.5.1</version>
 			</dependency>
 
 		</dependencies>

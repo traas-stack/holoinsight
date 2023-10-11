@@ -1,0 +1,101 @@
+{
+  "aggId": "a3700003",
+  "version": 1,
+  "partitionKeys": [],
+  "select": {
+    "items": [
+      {
+        "agg": {
+          "type": "SUM"
+        },
+        "elect": "logmonitor_sofatracer_spans_size_3700003.value",
+        "as": "success",
+        "where": {
+          "simple": {
+            "result": [
+              "Y"
+            ]
+          }
+        }
+      },
+      {
+        "agg": {
+          "type": "SUM"
+        },
+        "elect": "logmonitor_sofatracer_spans_size_3700003.value",
+        "as": "total"
+      },
+      {
+        "agg": {
+          "type": "SUM"
+        },
+        "elect": "logmonitor_sofatracer_spans_cost_3700003.value",
+        "as": "costsum"
+      }
+    ]
+  },
+  "from": {
+    "type": "metrics",
+    "metrics": {
+      "metrics": [
+        {
+          "name": "logmonitor_sofatracer_spans_size_3700003"
+        },
+        {
+          "name": "logmonitor_sofatracer_spans_cost_3700003"
+        }
+      ]
+    },
+    "completeness 定义齐全度如何计算": "",
+    "completeness": {
+      "type": "tableName",
+      "tableName 表示根据采集的采集范围去计算齐全度": "此时 AggTaskValue 里必须携带 refTargetKey 的 extension 字段, 用于计算齐全度分子",
+      "当涉及多表计算时候, 只需要指定任意一个 tableName 即可, 因为他们通常是一起出现的, 比如一般指定 total": "",
+      "tableName": "logmonitor_sofatracer_spans_size_3700003",
+      "groupBy 是指齐全度指标表存储时的维度分组": "",
+      "groupBy": {}
+    }
+  },
+  "where": {
+  },
+  "groupBy": {
+    "keyLimit": 1000,
+    "items": [
+      {
+        "tag": "tenant"
+      },
+      {
+        "tag": "workspace"
+      }
+    ]
+  },
+  "window": {
+    "interval": 60000
+  },
+  "output": {
+    "items": [
+      {
+        "type": "TSDB",
+        "name": "a3700003_%s_agg",
+        "fields": [
+          {
+            "name": "success",
+            "expression": "success"
+          },
+          {
+            "name": "total",
+            "expression": "total"
+          },
+          {
+            "name": "successRatio",
+            "expression": "success / total"
+          },
+          {
+            "name": "cost",
+            "expression": "costsum / total"
+          }
+        ]
+      }
+    ]
+  }
+}

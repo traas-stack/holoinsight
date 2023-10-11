@@ -25,6 +25,7 @@ public final class StatUtils {
   public static final StatAccumulator<StringsKey> GRPC_TRAFFIC = SM.create("GRPC_TRAFFIC");
   /** Constant <code>STORAGE_WRITE</code> */
   public static final StatAccumulator<StringsKey> STORAGE_WRITE = SM.create("STORAGE_WRITE");
+  public static final StatAccumulator<StringsKey> KAFKA_SEND = SM.create("KAFKA_SEND");
   /** Constant <code>STORAGE_DISCARD</code> */
   public static final StatAccumulator<StringsKey> STORAGE_DISCARD = SM.create("STORAGE_DISCARD");
   private static final StatManager SM1S = new StatManager(1000, LOGGER::info, false);
