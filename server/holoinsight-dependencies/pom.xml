@@ -231,11 +231,15 @@
 			<dependency>
 				<groupId>com.aliyun.openservices</groupId>
 				<artifactId>aliyun-log</artifactId>
-				<version>0.6.75</version>
+				<version>0.6.87</version>
 				<exclusions>
 					<exclusion>
 						<groupId>org.slf4j</groupId>
 						<artifactId>com.springsource.slf4j.api</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>net.jpountz.lz4</groupId>
+						<artifactId>lz4</artifactId>
 					</exclusion>
 				</exclusions>
 			</dependency>

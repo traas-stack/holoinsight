@@ -1,0 +1,97 @@
+{
+  "aggId": "k8s_pod_cpu_util_topn",
+  "version": 1,
+  "partitionKeys":[],
+  "select": {
+    "items": [
+      {
+        "agg": {
+          "type": "TOPN",
+          "topn": {
+            "orderBy": "value",
+            "desc": true,
+            "limit": 1
+          }
+        },
+        "elect": "k8s_pod_cpu_util_5s.value",
+        "as": "topn"
+      },
+      {
+        "agg": {
+          "type": "COUNT"
+        },
+        "elect": "k8s_pod_cpu_util_5s.value",
+        "as": "count"
+      }
+    ]
+  },
+  "from": {
+    "type": "metrics",
+    "metrics": {
+      "metrics": [
+        "k8s_pod_cpu_util_5s"
+      ]
+    }
+  },
+  "where": {
+    "simple": {
+      "app": ["tzsearchkibana"]
+    }
+  },
+  "groupBy": {
+    "keyLimit": 1000,
+    "items": [
+      {
+        "tag": "tenant"
+      },
+      {
+        "tag": "workspace"
+      },
+      {
+        "tag": "app"
+      }
+    ]
+  },
+  "window": {
+    "interval": 5000
+  },
+  "output": {
+    "items": [
+      {
+        "type": "TSDB",
+        "name": "my_topn_agg",
+        "fields": [
+          {
+            "name": "value",
+            "expression": "topn"
+          },
+        ]
+      },
+      {
+        "type": "TSDB",
+        "name": "my_topn_agg_count",
+        "fields": [
+          {
+            "name": "value",
+            "expression": "count"
+          }
+        ]
+      },
+      {
+        "type": "TSDB",
+        "aprams" coner:true
+        "name": "my_topn_agg_%s",
+        "fields": [
+          {
+            "name": "value",
+            "expression": "topn"
+          },
+          {
+            "name": "count",
+            "expression": "count"
+          }
+        ]
+      }
+    ]
+  }
+}

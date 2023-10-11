@@ -1,0 +1,53 @@
+{
+  "aggId": "k8s_pod_cpu_util",
+  "version": 1,
+  "select": {
+    "items": [
+      {
+        "agg": {
+          "type": "AVG"
+        },
+        "elect": "k8s_pod_cpu_util.value",
+        "as": "cpu_avg"
+      }
+    ]
+  },
+  "from": {
+    "type": "metrics",
+    "metrics": {
+      "metrics": [
+        "k8s_pod_cpu_util"
+      ]
+    }
+  },
+  "where": {},
+  "groupBy": {
+    "items": [
+      {
+        "tag": "tenant"
+      },
+      {
+        "tag": "workspace"
+      },
+      {
+        "tag": "app"
+      }
+    ]
+  },
+  "window": {
+    "interval": 60000
+  },
+  "output": {
+    "items": [
+      {
+        "type": "console",
+        "fields": [
+          {
+            "name": "cpu_avg",
+            "expression": "cpu_avg"
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -9,17 +9,17 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import io.holoinsight.server.meta.common.model.QueryExample;
-import io.holoinsight.server.meta.facade.service.DataClientService;
-import io.holoinsight.server.registry.core.template.CollectTemplate;
-import io.holoinsight.server.registry.core.template.TemplateService;
-import io.holoinsight.server.registry.core.utils.ApiResp;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import io.holoinsight.server.meta.common.model.QueryExample;
+import io.holoinsight.server.meta.facade.service.DataClientService;
+import io.holoinsight.server.registry.core.template.CollectTemplate;
+import io.holoinsight.server.registry.core.template.TemplateService;
+import io.holoinsight.server.registry.core.utils.ApiResp;
 
 /**
  * <p>
@@ -74,7 +74,7 @@ public class CollectTargetWebController {
       dims.addAll(
           dataClientService.queryByExample(ct.getCollectRange().getCloudmonitor().getTable(), qe));
     }
-    return dims;
+    return ApiResp.resource(dims);
   }
 
   @GetMapping("/listKeysByTemplate")
@@ -83,7 +83,7 @@ public class CollectTargetWebController {
     if (ct == null) {
       return ApiResp.error("template not found");
     }
-    return collectTargetStorage.getByTemplateId(ct.getId());
+    return ApiResp.resource(collectTargetStorage.getByTemplateId(ct.getId()));
   }
 
   @GetMapping("/listByAgent")
