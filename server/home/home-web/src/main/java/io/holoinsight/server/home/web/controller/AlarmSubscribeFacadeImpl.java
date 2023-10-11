@@ -11,6 +11,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import io.holoinsight.server.home.common.service.RequestContextAdapter;
 import io.holoinsight.server.home.dal.model.AlarmSubscribe;
 import io.holoinsight.server.home.dal.model.dto.AlarmSubscribeInfo;
+import io.holoinsight.server.home.web.security.ParameterSecurityService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
@@ -52,6 +53,8 @@ public class AlarmSubscribeFacadeImpl extends BaseFacade {
 
   @Autowired
   private RequestContextAdapter requestContextAdapter;
+  @Autowired
+  private ParameterSecurityService parameterSecurityService;
 
   @GetMapping(value = "/queryByUniqueId/{uniqueId}")
   @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.VIEW)
@@ -97,6 +100,33 @@ public class AlarmSubscribeFacadeImpl extends BaseFacade {
       @Override
       public void checkParameter() {
         ParaCheckUtil.checkParaNotNull(alarmSubscribeDTO, "alarmSubscribeDTO");
+        MonitorScope ms = RequestContext.getContext().ms;
+        MonitorUser mu = RequestContext.getContext().mu;
+        if (StringUtils.isNotEmpty(alarmSubscribeDTO.getUniqueId())) {
+          ParaCheckUtil.checkParaBoolean(
+              parameterSecurityService.checkRuleTenantAndWorkspace(alarmSubscribeDTO.getUniqueId(),
+                  ms.getTenant(), ms.getWorkspace()),
+              "uniqueId do not belong to this tenant or workspace");
+        }
+        if (!CollectionUtils.isEmpty(alarmSubscribeDTO.getAlarmSubscribe())) {
+          for (AlarmSubscribeInfo alarmSubscribeInfo : alarmSubscribeDTO.getAlarmSubscribe()) {
+            if (CollectionUtils.isEmpty(alarmSubscribeInfo.getNoticeType())) {
+              continue;
+            }
+            if (alarmSubscribeInfo.getNoticeType().contains("dingding")
+                || alarmSubscribeInfo.getNoticeType().contains("sms")
+                || alarmSubscribeInfo.getNoticeType().contains("phone")
+                || alarmSubscribeInfo.getNoticeType().contains("email")) {
+              ParaCheckUtil.checkParaBoolean(parameterSecurityService.checkUserTenantAndWorkspace(
+                  alarmSubscribeInfo.getSubscriber(), mu), "invalid subscriber");
+            }
+            if (alarmSubscribeInfo.getNoticeType().contains("dingDingRobot")) {
+              ParaCheckUtil.checkParaBoolean(parameterSecurityService.checkGroupTenantAndWorkspace(
+                  alarmSubscribeInfo.getGroupId(), ms.getTenant(),
+                  requestContextAdapter.getWorkspace(true)), "invalid subscriber");
+            }
+          }
+        }
       }
 
       @Override

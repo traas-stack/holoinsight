@@ -20,6 +20,7 @@ import io.holoinsight.server.home.web.common.ParaCheckUtil;
 import io.holoinsight.server.home.web.interceptor.MonitorScopeAuth;
 import io.holoinsight.server.common.J;
 import io.holoinsight.server.common.JsonResult;
+import io.holoinsight.server.home.web.security.ParameterSecurityService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -47,6 +48,9 @@ public class AlarmBlockFacadeImpl extends BaseFacade {
   @Autowired
   private UserOpLogService userOpLogService;
 
+  @Autowired
+  private ParameterSecurityService parameterSecurityService;
+
   @PostMapping("/create")
   @ResponseBody
   @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.EDIT)
@@ -54,7 +58,15 @@ public class AlarmBlockFacadeImpl extends BaseFacade {
     final JsonResult<Long> result = new JsonResult<>();
     facadeTemplate.manage(result, new ManageCallback() {
       @Override
-      public void checkParameter() {}
+      public void checkParameter() {
+        if (StringUtils.isNotEmpty(alarmBlockDTO.getUniqueId())) {
+          MonitorScope ms = RequestContext.getContext().ms;
+          ParaCheckUtil.checkParaBoolean(
+              parameterSecurityService.checkRuleTenantAndWorkspace(alarmBlockDTO.getUniqueId(),
+                  ms.getTenant(), ms.getWorkspace()),
+              "uniqueId do not belong to this tenant or workspace");
+        }
+      }
 
       @Override
       public void doManage() {
@@ -96,7 +108,13 @@ public class AlarmBlockFacadeImpl extends BaseFacade {
         ParaCheckUtil.checkParaNotNull(alarmBlockDTO.getTenant(), "tenant");
         ParaCheckUtil.checkEquals(alarmBlockDTO.getTenant(),
             RequestContext.getContext().ms.getTenant(), "tenant is illegal");
-
+        if (StringUtils.isNotEmpty(alarmBlockDTO.getUniqueId())) {
+          MonitorScope ms = RequestContext.getContext().ms;
+          ParaCheckUtil.checkParaBoolean(
+              parameterSecurityService.checkRuleTenantAndWorkspace(alarmBlockDTO.getUniqueId(),
+                  ms.getTenant(), ms.getWorkspace()),
+              "uniqueId do not belong to this tenant or workspace");
+        }
       }
 
       @Override
