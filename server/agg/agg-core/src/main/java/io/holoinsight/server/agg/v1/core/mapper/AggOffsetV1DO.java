@@ -25,8 +25,8 @@ public class AggOffsetV1DO {
   private Long id;
   private Date gmtCreate;
   private Date gmtModified;
-  @TableField("`partition`")
-  private String partition;
+  @TableField("partition_name")
+  private String partitionName;
   private String consumerGroup;
   private long version;
   private byte[] data;

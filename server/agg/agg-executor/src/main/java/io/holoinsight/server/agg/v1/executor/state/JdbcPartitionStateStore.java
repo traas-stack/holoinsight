@@ -65,7 +65,7 @@ public class JdbcPartitionStateStore implements PartitionStateStore {
       d = new AggStateV1DO();
       d.setGmtCreate(now);
       d.setGmtModified(now);
-      d.setPartition(partition.toString());
+      d.setPartitionName(partition.toString());
       d.setConsumerGroup(aggProperties.getConsumerGroupId());
       d.setState(state);
       aggStateV1DOMapper.insert(d);
@@ -86,7 +86,7 @@ public class JdbcPartitionStateStore implements PartitionStateStore {
     AggOffsetV1DO d = new AggOffsetV1DO();
     d.setGmtCreate(now);
     d.setGmtModified(now);
-    d.setPartition(partition.toString());
+    d.setPartitionName(partition.toString());
     d.setConsumerGroup(aggProperties.getConsumerGroupId());
     d.setVersion(now.getTime());
     d.setData(data);
@@ -96,7 +96,7 @@ public class JdbcPartitionStateStore implements PartitionStateStore {
     Long count = aggOffsetV1DOMapper.selectCount(wrapper);
     if (count >= OFFSET_LIMIT2) {
       UpdateWrapper<AggOffsetV1DO> wrapper2 = new UpdateWrapper<>();
-      wrapper2.eq("`partition`", partition.toString());
+      wrapper2.eq("partition_name", partition.toString());
       wrapper2.eq("consumer_group", aggProperties.getConsumerGroupId());
       wrapper2.orderByAsc("id");
       wrapper2.last("limit " + (count.intValue() - OFFSET_LIMIT));
@@ -133,7 +133,7 @@ public class JdbcPartitionStateStore implements PartitionStateStore {
 
   private <T> QueryWrapper<T> partitionWhere(TopicPartition partition) {
     QueryWrapper<T> w = new QueryWrapper<>();
-    w.eq("`partition`", partition.toString());
+    w.eq("partition_name", partition.toString());
     w.eq("consumer_group", aggProperties.getConsumerGroupId());
     return w;
   }
