@@ -14,6 +14,7 @@ import org.apache.commons.lang3.StringUtils;
 import com.google.common.base.Preconditions;
 
 import io.holoinsight.server.agg.v1.core.conf.AggTask;
+import io.holoinsight.server.agg.v1.core.conf.CompletenessConfig;
 import io.holoinsight.server.agg.v1.core.conf.GroupBy;
 import io.holoinsight.server.agg.v1.core.conf.GroupByItem;
 import io.holoinsight.server.agg.v1.core.conf.Select;
@@ -33,11 +34,13 @@ public class XParserUtils {
       if (aggTask.getGroupBy().getKeyLimit() <= 0) {
         aggTask.getGroupBy().setKeyLimit(GroupBy.DEFAULT_KEY_LIMIT);
       }
-      for (GroupByItem item : aggTask.getGroupBy().getItems()) {
-        Preconditions.checkArgument(StringUtils.isNotEmpty(item.getTag()));
-        if (StringUtils.isEmpty(item.getAs())) {
-          item.setAs(item.getTag());
-        }
+      aggTask.getGroupBy().fixDefaultValue();
+    }
+
+    CompletenessConfig cc = aggTask.getFrom().getCompleteness();
+    if (cc != null) {
+      if (cc.getGroupBy() != null) {
+        cc.getGroupBy().fixDefaultValue();
       }
     }
 
