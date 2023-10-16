@@ -11,7 +11,7 @@ CREATE TABLE IF NOT EXISTS `agg_offset_v1` (
     ) AUTO_INCREMENT = 1 DEFAULT CHARSET = utf8mb4 COMMENT = '消费位点表v1';
 
 CREATE TABLE IF NOT EXISTS `agg_task_v1` (
-    `id` bigint(20) NOT NULL AUTO_INCREMENT comment 'pk',
+    `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT comment 'pk',
     `gmt_create` timestamp NOT NULL comment 'create time',
     `gmt_modified` timestamp NOT NULL ON UPDATE CURRENT_TIMESTAMP comment 'modify time',
     `agg_id` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL comment 'agg id',
