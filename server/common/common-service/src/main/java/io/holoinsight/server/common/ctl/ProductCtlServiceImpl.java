@@ -39,7 +39,7 @@ public class ProductCtlServiceImpl implements ProductCtlService {
 
   @Scheduled(initialDelay = 10000L, fixedRate = 10000L)
   private void refresh() {
-    List<MonitorInstance> monitorInstances = monitorInstanceService.queryByType("server");
+    List<MonitorInstance> monitorInstances = monitorInstanceService.list();
     Map<String, Set<String>> dbProductClosed = new HashMap<>();
     for (MonitorInstance monitorInstance : monitorInstances) {
       MonitorInstanceCfg cfg =
@@ -105,14 +105,15 @@ public class ProductCtlServiceImpl implements ProductCtlService {
     }
     String uniqueId = buildResourceVal(rks, tags);
 
-    MonitorInstance instance = monitorInstanceService.queryByInstanceAndType(uniqueId, "server");
-    if (instance != null) {
+    List<MonitorInstance> instances = monitorInstanceService.queryByInstance(uniqueId);
+    if (CollectionUtils.isNotEmpty(instances)) {
+      MonitorInstance instance = instances.get(0);
       MonitorInstanceCfg cfg = J.fromJson(instance.getConfig(), MonitorInstanceCfg.class);
       control(action, uniqueId, code.getCode(), cfg.getClosed(), productClosed);
       log.info("[product_ctl] uniqueId={}, instanceClosed={}, closed={}", uniqueId, cfg.getClosed(),
           productClosed);
       instance.setConfig(J.toJson(cfg));
-      monitorInstanceService.updateByInstanceAndType(instance);
+      monitorInstanceService.updateByInstance(instance);
     }
     return productClosed;
   }
@@ -126,10 +127,14 @@ public class ProductCtlServiceImpl implements ProductCtlService {
         closed.put(code.getCode(), false);
       } else {
         String uniqueId = buildResourceVal(rks, tags);
-        MonitorInstance instance =
-            monitorInstanceService.queryByInstanceAndType(uniqueId, "server");
-        MonitorInstanceCfg cfg = J.fromJson(instance.getConfig(), MonitorInstanceCfg.class);
-        closed = cfg.getClosed();
+        List<MonitorInstance> instances = monitorInstanceService.queryByInstance(uniqueId);
+        if (CollectionUtils.isEmpty(instances)) {
+          closed.put(code.getCode(), false);
+        } else {
+          MonitorInstanceCfg cfg =
+              J.fromJson(instances.get(0).getConfig(), MonitorInstanceCfg.class);
+          closed = cfg.getClosed();
+        }
       }
     }
     return closed;

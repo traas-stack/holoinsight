@@ -22,4 +22,6 @@ public interface MonitorInstanceService extends IService<MonitorInstance> {
 
   Boolean updateByInstanceAndType(MonitorInstance monitorInstance);
 
+  Boolean updateByInstance(MonitorInstance monitorInstance);
+
 }
