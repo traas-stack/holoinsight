@@ -22,9 +22,11 @@ import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.CooperativeStickyAssignor;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
+import org.apache.kafka.clients.producer.Callback;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.clients.producer.ProducerRecord;
+import org.apache.kafka.clients.producer.RecordMetadata;
 import org.apache.kafka.common.errors.WakeupException;
 import org.apache.kafka.common.serialization.Serdes;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,6 +43,7 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 public class AsyncOutput {
+  private static final int MAX_REQUEST_SIZE = 10 * 1024 * 1024;
   private static final Duration POLL_TIMEOUT = Duration.ofSeconds(2);
   private final CountDownLatch cdl = new CountDownLatch(1);
 
@@ -58,7 +61,6 @@ public class AsyncOutput {
 
   private transient Map<String, XOutput> outputMap = new HashMap<>();
 
-
   public AsyncOutput() {}
 
   @PostConstruct
@@ -72,6 +74,7 @@ public class AsyncOutput {
     pp.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, Serdes.Integer().serializer().getClass());
     pp.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, BatchSerdes.S.class);
     pp.put(ProducerConfig.COMPRESSION_TYPE_CONFIG, "lz4");
+    pp.put(ProducerConfig.MAX_REQUEST_SIZE_CONFIG, MAX_REQUEST_SIZE);
 
     Properties cp = new Properties();
     cp.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, aggProperties.getKafkaBootstrapServers());
@@ -181,6 +184,13 @@ public class AsyncOutput {
   public void write(XOutput.Batch batch) {
     int random = ThreadLocalRandom.current().nextInt();
     ProducerRecord<Integer, XOutput.Batch> r = new ProducerRecord<>(outputTopic, random, batch);
-    producer.send(r);
+    producer.send(r, new Callback() {
+      @Override
+      public void onCompletion(RecordMetadata metadata, Exception e) {
+        if (e != null) {
+          log.error("[output] write batch error", e);
+        }
+      }
+    });
   }
 }

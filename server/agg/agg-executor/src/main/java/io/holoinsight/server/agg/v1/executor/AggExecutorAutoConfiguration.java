@@ -82,7 +82,8 @@ public class AggExecutorAutoConfiguration {
 
   @Bean
   public ExecutorManager executorManager(DataSource dataSource, IAggTaskService aggTaskService,
-      PartitionStateStore stateStore, CompletenessService completenessService, AsyncOutput output) {
+      PartitionStateStore stateStore, CompletenessService completenessService, AsyncOutput output,
+      AggExecutorConfig aggExecutorConfig) {
     ExecutorConfig config = new ExecutorConfig();
     config.setTopic(aggProperties.getTopic());
     config.setKafkaBootstrapServers(aggProperties.getKafkaBootstrapServers());
@@ -99,12 +100,17 @@ public class AggExecutorAutoConfiguration {
 
     config.getFaultToleranceConfig().setStateConfig(stateConfig);
     ExecutorManager m = new ExecutorManager(config);
-
+    m.setAggExecutorConfig(aggExecutorConfig);
     m.setAggTaskService(aggTaskService);
     m.setStateStore(stateStore);
     m.setCompletenessService(completenessService);
     m.setOutput(output);
     return m;
+  }
+
+  @Bean
+  public AggExecutorConfig aggExecutorConfig() {
+    return new AggExecutorConfig();
   }
 
   @Bean

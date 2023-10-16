@@ -3,10 +3,12 @@
  */
 package io.holoinsight.server.agg.v1.core.conf;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import com.google.common.base.Preconditions;
 
@@ -24,7 +26,7 @@ import lombok.Setter;
 @Data
 public class GroupBy {
   public static final int DEFAULT_KEY_LIMIT = 1000;
-  private List<GroupByItem> items;
+  private List<GroupByItem> items = new ArrayList<>();
   private int keyLimit = DEFAULT_KEY_LIMIT;
 
   @Getter(AccessLevel.NONE)
@@ -64,6 +66,15 @@ public class GroupBy {
     Preconditions.checkArgument(values.length == items.size());
     for (int i = 0; i < items.size(); i++) {
       values[i] = items.get(i).getAsStringFromObject(obj);
+    }
+  }
+
+  public void fixDefaultValue() {
+    for (GroupByItem item : items) {
+      Preconditions.checkArgument(StringUtils.isNotEmpty(item.getTag()));
+      if (StringUtils.isEmpty(item.getAs())) {
+        item.setAs(item.getTag());
+      }
     }
   }
 }

@@ -19,11 +19,13 @@ import org.apache.kafka.clients.admin.AdminClientConfig;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.springframework.beans.factory.DisposableBean;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import io.holoinsight.server.agg.v1.core.Utils;
 import io.holoinsight.server.agg.v1.core.data.AggKeySerdes;
 import io.holoinsight.server.agg.v1.core.data.AggTaskKey;
 import io.holoinsight.server.agg.v1.core.data.AggValuesSerdes;
+import io.holoinsight.server.agg.v1.executor.AggExecutorConfig;
 import io.holoinsight.server.agg.v1.executor.CompletenessService;
 import io.holoinsight.server.agg.v1.executor.output.AsyncOutput;
 import io.holoinsight.server.agg.v1.executor.service.IAggTaskService;
@@ -55,6 +57,9 @@ public class ExecutorManager implements DisposableBean {
   private CompletenessService completenessService;
   @Setter
   private AsyncOutput output;
+  @Setter
+  private AggExecutorConfig aggExecutorConfig;
+
   private Admin adminClient;
 
   public ExecutorManager(ExecutorConfig config) {
