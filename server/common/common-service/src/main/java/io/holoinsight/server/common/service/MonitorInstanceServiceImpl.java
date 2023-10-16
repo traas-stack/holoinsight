@@ -68,4 +68,11 @@ public class MonitorInstanceServiceImpl extends ServiceImpl<MonitorInstanceMappe
     return update(monitorInstance, updateWrapper);
   }
 
+  @Override
+  public Boolean updateByInstance(MonitorInstance monitorInstance) {
+    UpdateWrapper<MonitorInstance> updateWrapper = new UpdateWrapper<>();
+    updateWrapper.eq("instance", monitorInstance.getInstance());
+    return update(monitorInstance, updateWrapper);
+  }
+
 }
