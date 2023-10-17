@@ -7,14 +7,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
+
 import io.holoinsight.server.agg.v1.core.Utils;
 import io.holoinsight.server.agg.v1.core.conf.CompletenessConfig;
 import io.holoinsight.server.agg.v1.core.dict.Dict;
 import io.holoinsight.server.agg.v1.executor.output.MergedCompleteness;
 import io.holoinsight.server.agg.v1.executor.state.AggWindowState;
 import io.holoinsight.server.agg.v1.pb.AggProtos;
-
-import org.apache.commons.lang3.StringUtils;
 
 /**
  * <p>
@@ -62,6 +62,9 @@ final class CompletenessUtils {
 
   static MergedCompleteness buildMergedCompleteness(AggWindowState w) {
     CompletenessConfig completenessConfig = w.getAggTask().getInner().getFrom().getCompleteness();
+    if (completenessConfig.getMode() == CompletenessConfig.Mode.NONE) {
+      return new MergedCompleteness();
+    }
     List<String> keepTargetKeys = completenessConfig.getKeepTargetKeys();
 
     MergedCompleteness mc = new MergedCompleteness();

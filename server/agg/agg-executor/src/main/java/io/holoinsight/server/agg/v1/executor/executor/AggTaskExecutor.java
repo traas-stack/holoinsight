@@ -155,7 +155,11 @@ public class AggTaskExecutor {
       }
 
       // do agg
-      g.agg(w.getAggTask(), aggTaskValue, in);
+      try {
+        g.agg(w.getAggTask(), aggTaskValue, in);
+      } catch (Exception e) {
+        log.error("[agg] [{}] agg error {}", key(), in, e);
+      }
     }
   }
 
@@ -190,6 +194,9 @@ public class AggTaskExecutor {
 
     From from = w.getAggTask().getInner().getFrom();
     CompletenessConfig completenessConfig = from.getCompleteness();
+    if (completenessConfig.getMode() == CompletenessConfig.Mode.NONE) {
+      return;
+    }
 
     List<String> tables;
     boolean dataMode = completenessConfig.getMode() == CompletenessConfig.Mode.DATA;
@@ -285,13 +292,14 @@ public class AggTaskExecutor {
 
     MergedCompleteness mc = CompletenessUtils.buildMergedCompleteness(w);
 
-    log.info("[agg] [{}] emit wm=[{}] ts=[{}] complete=[{}/{}] size=[{}]", //
+    log.info("[agg] [{}] emit wm=[{}] ts=[{}] complete=[{}/{}] input=[{}] groups=[{}]", //
         key(), //
         Utils.formatTimeShort(watermark), //
         Utils.formatTimeShort(w.getTimestamp()), //
         mc.ok, //
         mc.total, //
-        w.getGroupMap().size());
+        w.getInput(), //
+        w.getGroupMap().size()); //
 
     Map<Integer, XOutput.Batch> batches = new HashMap<>();
     XOutput.WindowInfo windowInfo = new XOutput.WindowInfo(w.getTimestamp(), w.getInput(), mc);

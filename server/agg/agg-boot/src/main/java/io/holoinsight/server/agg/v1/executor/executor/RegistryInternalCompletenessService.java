@@ -18,6 +18,7 @@ import io.holoinsight.server.registry.core.collecttarget.CollectTargetStorage;
 import io.holoinsight.server.registry.core.dim.ProdDimService;
 import io.holoinsight.server.registry.core.template.CollectTemplate;
 import io.holoinsight.server.registry.core.template.TemplateStorage;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * <p>
@@ -25,7 +26,8 @@ import io.holoinsight.server.registry.core.template.TemplateStorage;
  *
  * @author xzchaoo
  */
-public class RegistryCompletenessService2 implements CompletenessService {
+@Slf4j
+public class RegistryInternalCompletenessService implements CompletenessService {
   @Autowired
   private CollectTargetStorage collectTargetStorage;
   @Autowired

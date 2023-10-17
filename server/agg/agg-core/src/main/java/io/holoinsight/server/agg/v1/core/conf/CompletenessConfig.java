@@ -15,7 +15,7 @@ import lombok.Data;
  */
 @Data
 public class CompletenessConfig {
-  private Mode mode = Mode.COMPLETENESS_INFO;
+  private Mode mode = Mode.NONE;
 
   /**
    * Used when mode is {@link Mode#DATA}
@@ -37,6 +37,7 @@ public class CompletenessConfig {
   private List<String> keepTargetKeys;
 
   public enum Mode {
+    NONE,
     /**
      * Build completeness info by info extracted from data itself
      */

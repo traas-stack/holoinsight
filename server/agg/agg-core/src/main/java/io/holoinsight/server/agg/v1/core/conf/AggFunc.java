@@ -29,6 +29,7 @@ public class AggFunc {
 
   public static final int TYPE_TOPN = 8;
   public static final int TYPE_AVG_MERGE = 9;
+  public static final int TYPE_HLL = 10;
 
   private static final Map<String, Integer> TYPE_TO_INT = new HashMap<>();
 
@@ -44,6 +45,7 @@ public class AggFunc {
 
     TYPE_TO_INT.put("TOPN", 8);
     TYPE_TO_INT.put("AVG_MERGE", 9);
+    TYPE_TO_INT.put("HLL", 10);
   }
 
   private String type;
@@ -81,4 +83,5 @@ public class AggFunc {
     @Nullable
     private String strategy = "ANY";
   }
+
 }

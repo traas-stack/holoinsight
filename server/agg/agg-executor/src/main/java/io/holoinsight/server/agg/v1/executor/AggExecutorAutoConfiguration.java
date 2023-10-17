@@ -20,7 +20,6 @@ import io.holoinsight.server.agg.v1.core.mapper.AggOffsetV1DOMapper;
 import io.holoinsight.server.agg.v1.executor.executor.ExecutorConfig;
 import io.holoinsight.server.agg.v1.executor.executor.ExecutorManager;
 import io.holoinsight.server.agg.v1.executor.executor.FaultToleranceConfig;
-import io.holoinsight.server.agg.v1.executor.executor.RegistryCompletenessService;
 import io.holoinsight.server.agg.v1.executor.executor.StateConfig;
 import io.holoinsight.server.agg.v1.executor.output.AsyncOutput;
 import io.holoinsight.server.agg.v1.executor.service.AggTaskV1StorageForExecutor;
@@ -71,11 +70,6 @@ public class AggExecutorAutoConfiguration {
   }
 
   @Bean
-  public CompletenessService completenessService() {
-    return new RegistryCompletenessService();
-  }
-
-  @Bean
   public AsyncOutput asyncOutput() {
     return new AsyncOutput();
   }
@@ -117,4 +111,5 @@ public class AggExecutorAutoConfiguration {
   public ExecutorInitRunner executorInitRunner() {
     return new ExecutorInitRunner();
   }
+
 }

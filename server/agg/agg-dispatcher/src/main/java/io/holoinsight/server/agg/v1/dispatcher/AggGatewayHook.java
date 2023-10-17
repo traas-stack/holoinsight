@@ -3,6 +3,8 @@
  */
 package io.holoinsight.server.agg.v1.dispatcher;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 
 import io.holoinsight.server.common.auth.AuthInfo;
@@ -28,5 +30,10 @@ public class AggGatewayHook implements GatewayHook {
   @Override
   public void writeMetricsV4(AuthInfo authInfo, WriteMetricsRequestV4 request) {
     aggDispatcher.dispatch(authInfo, request);
+  }
+
+  @Override
+  public void writeDetail(AuthInfo authInfo, List<Data> request) {
+    aggDispatcher.dispatchDetailData(authInfo, request);
   }
 }

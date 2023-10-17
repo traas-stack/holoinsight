@@ -31,6 +31,7 @@ import io.holoinsight.server.agg.v1.core.data.AggTaskKey;
 import io.holoinsight.server.agg.v1.core.data.AggValuesSerdes;
 import io.holoinsight.server.agg.v1.pb.AggProtos;
 import io.holoinsight.server.common.auth.AuthInfo;
+import io.holoinsight.server.gateway.core.grpc.GatewayHook;
 import io.holoinsight.server.gateway.core.utils.StatUtils;
 import io.holoinsight.server.gateway.grpc.DataNode;
 import io.holoinsight.server.gateway.grpc.Point;
@@ -248,6 +249,34 @@ public class AggDispatcher {
         }
       }
     }
+  }
+
+  public void dispatchDetailData(AuthInfo authInfo, List<GatewayHook.Data> request) {
+    AggTaskKey aggTaskKey = new AggTaskKey(authInfo.getTenant(), request.get(0).getName(), "");
+
+    AggProtos.AggTaskValue.Builder b = AggProtos.AggTaskValue.newBuilder() //
+        .setType(0) //
+        .setTimestamp(request.get(0).getTimestamp()).setMetric(request.get(0).getName());
+
+    for (GatewayHook.Data d : request) {
+      AggProtos.InDataNode.Builder inB = AggProtos.InDataNode.newBuilder().setType(2) //
+          .putAllTags(d.getTags()) //
+          .setTimestamp(d.getTimestamp());
+
+      for (Map.Entry<String, Double> e : d.getFields().entrySet()) {
+        AggProtos.BasicField bf =
+            AggProtos.BasicField.newBuilder().setType(0).setFloat64Value(e.getValue()).build();
+        inB.putFields(e.getKey(), bf);
+      }
+
+      b.addInDataNodes(inB.build());
+    }
+
+    AggProtos.AggTaskValue aggTaskValue = b.build();
+
+    ProducerRecord<AggTaskKey, AggProtos.AggTaskValue> record =
+        new ProducerRecord<>(aggProperties.getTopic(), aggTaskKey, aggTaskValue);
+    kafkaProducer.send(record);
   }
 
   @NotNull

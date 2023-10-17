@@ -52,4 +52,9 @@ public class AggDispatcherAutoConfiguration {
   public AggConfig aggConfig() {
     return new AggConfig();
   }
+
+  // @Bean
+  // public AggDispatcherMockDataGenerator aggDispatcherMockDataGenerator() {
+  // return new AggDispatcherMockDataGenerator();
+  // }
 }

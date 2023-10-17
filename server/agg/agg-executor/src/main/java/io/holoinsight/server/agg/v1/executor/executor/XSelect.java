@@ -8,6 +8,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import io.holoinsight.server.agg.v1.core.conf.AggFunc;
 import io.holoinsight.server.agg.v1.core.conf.Select;
 import io.holoinsight.server.agg.v1.core.conf.SelectItem;
 import lombok.AccessLevel;
@@ -55,9 +56,16 @@ public class XSelect {
       for (int index = 0; index < items.size(); index++) {
         XSelectItem item = items.get(index);
         SelectItem.Elect e = item.getInner().getElect();
-        electToItemMap.computeIfAbsent(e.getMetric(), i -> new HashMap<>())
-            .computeIfAbsent(e.getField(), i -> new LinkedList<>()) //
-            .add(item);
+
+        if (item.getInner().getAgg().getTypeInt() == AggFunc.TYPE_HLL) {
+          electToItemMap.computeIfAbsent(e.getMetric(), i -> new HashMap<>())
+              .computeIfAbsent("-", i -> new LinkedList<>()) //
+              .add(item);
+        } else {
+          electToItemMap.computeIfAbsent(e.getMetric(), i -> new HashMap<>())
+              .computeIfAbsent(e.getField(), i -> new LinkedList<>()) //
+              .add(item);
+        }
       }
     }
     return electToItemMap.get(metric);

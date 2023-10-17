@@ -3,6 +3,9 @@
  */
 package io.holoinsight.server.gateway.core.grpc;
 
+import java.util.List;
+import java.util.Map;
+
 import io.holoinsight.server.common.auth.AuthInfo;
 import io.holoinsight.server.gateway.grpc.WriteMetricsRequestV1;
 import io.holoinsight.server.gateway.grpc.WriteMetricsRequestV4;
@@ -29,4 +32,33 @@ public interface GatewayHook {
    * @param request
    */
   void writeMetricsV4(AuthInfo authInfo, WriteMetricsRequestV4 request);
+
+  void writeDetail(AuthInfo authInfo, List<Data> request);
+
+  @lombok.Data
+  class Data {
+    private String name;
+    private long timestamp;
+    private Map<String, String> tags;
+    private Map<String, Double> fields;
+  }
+
+  @lombok.Data
+  class Table {
+    private String name;
+    private long timestamp;
+  }
+
+  @lombok.Data
+  class Header {
+    private List<String> tagKeys;
+    private List<String> fieldKeys;
+  }
+
+  @lombok.Data
+  class Row {
+    private List<String> tagValues;
+    // TODO
+    private List<Double> fieldValues;
+  }
 }

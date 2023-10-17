@@ -52,8 +52,8 @@ public class TopnState {
     return state;
   }
 
-  public void add(AggProtos.InDataNode in) {
-    double value = in.getFloat64Value();
+  public void add(AggProtos.InDataNode in, BasicFieldAccessors.Accessor accessor) {
+    double value = accessor.float64();
 
     if (q.size() > 0 && q.size() == params.getLimit()
         && costComparator.compare(value, q.peek().cost) <= 0) {

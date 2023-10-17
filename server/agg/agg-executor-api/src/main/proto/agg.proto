@@ -50,4 +50,18 @@ message InDataNode {
   double float64Value = 5;
   // when type == 1
   bytes bytesValue = 6;
+
+  map<string, BasicField> fields = 7;
+}
+
+message BasicField {
+  // 0: single float64 value metric
+  // 1: single string value metric
+  int32 type = 1;
+
+  int32 count = 2;
+  // when type == 0
+  double float64Value = 3;
+  // when type == 1
+  bytes bytesValue = 4;
 }
