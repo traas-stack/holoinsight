@@ -9,7 +9,9 @@ import io.holoinsight.server.home.biz.access.model.RateLimitedException;
 import com.google.common.util.concurrent.RateLimiter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -36,8 +38,8 @@ public class RateLimitService {
         accessConfigService.getAccessConfigDOMap().get(accessKey);
 
     // 判访问控制
-    if (accessConfig.isAccessAll()) {
-      if (!accessConfig.getAccessRange().contains(metric)) {
+    if (!accessConfig.isAccessAll()) {
+      if (!checkMetricRange(metric, accessConfig.getAccessRange())) {
         throw new AccessLimitedException("no access to " + metric + " [" + accessKey + "]");
       }
     }
@@ -65,5 +67,18 @@ public class RateLimitService {
       }
     }
 
+  }
+
+  private Boolean checkMetricRange(String metricName, Set<String> metricRanges) {
+    if (CollectionUtils.isEmpty(metricRanges))
+      return Boolean.TRUE;
+    if (metricRanges.contains(metricName))
+      return Boolean.TRUE;
+    for (String metric : metricRanges) {
+      if (metricName.startsWith(metric))
+        return Boolean.TRUE;
+    }
+
+    return Boolean.FALSE;
   }
 }
