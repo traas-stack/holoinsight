@@ -76,22 +76,8 @@ public class MetricInfoFacadeImpl extends BaseFacade {
       @Override
       public void doManage() {
         MonitorScope ms = RequestContext.getContext().ms;
-        String workspace = null;
-        if (metricInfoCheckService.needWorkspace(product)) {
-          workspace = ms.getWorkspace();
-        }
-        List<MetricInfoDTO> list = new ArrayList<>();
-        List<MetricInfoDTO> r1 =
-            metricInfoService.queryListByTenantProduct(null, workspace, product.toLowerCase());
-        List<MetricInfoDTO> r2 =
-            metricInfoCheckService.queryMetricInfoByMetricType(product.toLowerCase());
-        if (!CollectionUtils.isEmpty(r1)) {
-          list.addAll(r1);
-        }
-        if (!CollectionUtils.isEmpty(r2)) {
-          list.addAll(r2);
-        }
-        JsonResult.createSuccessResult(result, list);
+        JsonResult.createSuccessResult(result, metricInfoCheckService
+            .queryMetricInfoByMetricType(ms.getTenant(), ms.getWorkspace(), product.toLowerCase()));
       }
     });
     return result;

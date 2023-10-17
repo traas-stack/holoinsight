@@ -5,7 +5,6 @@ package io.holoinsight.server.home.biz.access;
 
 import io.holoinsight.server.home.biz.access.model.AccessLimitedException;
 import io.holoinsight.server.home.biz.access.model.MonitorAccessConfig;
-import io.holoinsight.server.home.biz.access.model.MonitorTokenData;
 import io.holoinsight.server.home.biz.access.model.RateLimitedException;
 import com.google.common.util.concurrent.RateLimiter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,42 +28,40 @@ public class RateLimitService {
   /**
    * 先判访问控制， 再判黑，再限流
    * 
-   * @param tokenData
+   * @param accessKey
    */
-  public void acquire(MonitorTokenData tokenData, String metric) {
-    final String accessId = tokenData.accessId;
+  public void acquire(String accessKey, String metric) {
     // 获取配置
     final MonitorAccessConfig accessConfig =
-        accessConfigService.getAccessConfigDOMap().get(accessId);
+        accessConfigService.getAccessConfigDOMap().get(accessKey);
 
     // 判访问控制
     if (accessConfig.isAccessAll()) {
       if (!accessConfig.getAccessRange().contains(metric)) {
-        throw new AccessLimitedException("no access to " + metric + " [" + tokenData + "]");
+        throw new AccessLimitedException("no access to " + metric + " [" + accessKey + "]");
       }
     }
 
     // AccessID维度是否黑名单
     if (accessConfig.getMetricQps() == 0) {
-      throw new RateLimitedException("accessId in blacklist, " + tokenData);
+      throw new RateLimitedException("accessId in blacklist, " + accessConfig.getAccessId());
     }
-
 
     // AccessID维度是否限流
     if (accessConfig.getMetricQps() > 0) {
       final long rate = Math.max(5, accessConfig.getMetricQps());
-      RateLimiter rateLimiter = LIMITERS.computeIfAbsent(accessId, s -> RateLimiter.create(rate));
+      RateLimiter rateLimiter = LIMITERS.computeIfAbsent(accessKey, s -> RateLimiter.create(rate));
 
       // not equal
       if (Math.abs(rateLimiter.getRate() - rate) > 1) {
         rateLimiter = RateLimiter.create(rate);
-        LIMITERS.put(accessId, rateLimiter);
+        LIMITERS.put(accessKey, rateLimiter);
       }
 
       final boolean succ = rateLimiter.tryAcquire();
 
       if (!succ) {
-        throw new RateLimitedException("accessId rate limited, " + tokenData);
+        throw new RateLimitedException("accessId rate limited, " + accessConfig.getAccessId());
       }
     }
 
