@@ -4,9 +4,7 @@
 package io.holoinsight.server.agg.v1.dispatcher;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.Arrays;
 import java.util.Random;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,25 +30,35 @@ public class AggDispatcherMockDataGenerator {
     AuthInfo ai = new AuthInfo();
     ai.setTenant("monitor");
 
-    List<GatewayHook.Data> request = new ArrayList<>();
-
     long ts = System.currentTimeMillis() / 1000 * 1000;
 
     Random r = new Random();
+
+    GatewayHook.Table table = new GatewayHook.Table();
+
+    GatewayHook.Header header = new GatewayHook.Header();
+    header.setTagKeys(Arrays.asList("app", "userId"));
+    header.setFieldKeys(Arrays.asList("count", "count1"));
+    table.setHeader(header);
+
+    table.setRows(new ArrayList<>(100));
+
+    table.setName("test");
+    table.setTimestamp(ts);
+
     for (int i = 0; i < 100; i++) {
-      GatewayHook.Data data = new GatewayHook.Data();
-      data.setName("test");
-      data.setTimestamp(ts);
-      Map<String, String> tags = new HashMap<>();
-      tags.put("app", "foo" + (r.nextInt(5)));
-      tags.put("userId", "user" + (r.nextInt(100)));
-      data.setTags(tags);
-      Map<String, Double> fields = new HashMap<>();
-      fields.put("count1", 1D);
-      fields.put("count", 1D);
-      data.setFields(fields);
-      request.add(data);
+      GatewayHook.Row row = new GatewayHook.Row();
+      row.setTimestamp(ts);
+
+      String app = "foo" + (r.nextInt(5));
+      String userId = "user" + (r.nextInt(100));
+      row.setTagValues(Arrays.asList(app, userId));
+
+      row.setFieldValues(Arrays.asList(1D, 1D));
+
+      table.getRows().add(row);
     }
-    aggDispatcher.dispatchDetailData(ai, request);
+
+    aggDispatcher.dispatchDetailData(ai, table);
   }
 }

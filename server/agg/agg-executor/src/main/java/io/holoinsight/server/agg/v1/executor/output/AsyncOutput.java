@@ -202,9 +202,9 @@ public class AsyncOutput {
 
   private void logToConsole(XOutput.Batch batch) {
     for (XOutput.Group g : batch.groups) {
-      log.info("[output] digest agg=[{}] ts=[{}] tags={} fields={}", //
-          batch.key, Utils.formatTime(batch.window.timestamp), g.getTags().asMap(),
-          g.getFinalFields());
+      log.info("[output] digest agg=[{}] metric=[{}] ts=[{}] tags={} fields={}", //
+          batch.key, batch.oi.getName(), Utils.formatTime(batch.window.timestamp),
+          g.getTags().asMap(), g.getFinalFields());
     }
   }
 }

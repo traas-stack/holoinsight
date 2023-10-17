@@ -23,6 +23,8 @@ import io.holoinsight.server.agg.v1.core.conf.FromConfigs;
 import io.holoinsight.server.agg.v1.core.conf.GroupBy;
 import io.holoinsight.server.agg.v1.core.conf.OutputItem;
 import io.holoinsight.server.agg.v1.core.data.AggTaskKey;
+import io.holoinsight.server.agg.v1.core.data.InDataNodeDataAccessor;
+import io.holoinsight.server.agg.v1.core.data.TableRowDataAccessor;
 import io.holoinsight.server.agg.v1.executor.CompletenessService;
 import io.holoinsight.server.agg.v1.executor.ExpectedCompleteness;
 import io.holoinsight.server.agg.v1.executor.output.AsyncOutput;
@@ -89,14 +91,99 @@ public class AggTaskExecutor {
         break;
       default:
         processData(latestAggTask, aggTaskValue);
+        processData2(latestAggTask, aggTaskValue);
         break;
+    }
+  }
+
+  private void processData2(XAggTask latestAggTask, AggProtos.AggTaskValue aggTaskValue) {
+    if (!aggTaskValue.hasDataTable()) {
+      return;
+    }
+
+    long now = System.currentTimeMillis();
+    AggWindowState lastWindowState = null;
+    AggProtos.Table table = aggTaskValue.getDataTable();
+
+    TableRowDataAccessor.Meta meta = new TableRowDataAccessor.Meta(table.getHeader());
+    TableRowDataAccessor da = new TableRowDataAccessor();
+    for (AggProtos.Table.Row row : table.getRowList()) {
+      long alignedDataTs =
+          Utils.align(row.getTimestamp(), latestAggTask.getInner().getWindow().getInterval());
+
+      if (alignedDataTs > now) {
+        log.error("[agg] [{}] invalid data {}]", key(), row);
+        continue;
+      }
+
+      if (alignedDataTs < ignoredMinWatermark) {
+        continue;
+      }
+
+      boolean late = alignedDataTs < state.getWatermark();
+      if (late) {
+        log.error("[agg] [{}] data late, ts=[{}] wm=[{}]", key(), alignedDataTs,
+            state.getWatermark());
+        continue;
+      }
+
+      state.updateMaxEventTimestamp(row.getTimestamp());
+
+
+      da.replace(meta, row);
+
+      // decide which time window to use
+      // 99% case: all InDataNodes have same timestamp
+      AggWindowState w;
+      if (lastWindowState != null && lastWindowState.getTimestamp() == alignedDataTs) {
+        w = lastWindowState;
+      } else {
+        w = state.getAggWindowState(alignedDataTs);
+      }
+      if (w != null) {
+        lastWindowState = w;
+        // use aggTask of the existing time window
+        if (!w.getAggTask().getWhere().test(da)) {
+          continue;
+        }
+      } else {
+        // use latest aggTask
+        if (!latestAggTask.getWhere().test(da)) {
+          continue;
+        }
+      }
+      if (w == null) {
+        w = state.getOrCreateAggWindowState(alignedDataTs, latestAggTask, this::onAggWindowCreate);
+        lastWindowState = w;
+      }
+
+      w.addInput();
+
+      CompletenessUtils.processCompletenessInfoInData(w, da);
+
+      // decide which group to use
+      Group g = w.getOrCreateGroup(da, this::onGroupCreate);
+      if (g == null) {
+        log.error("[agg] [{}] group key limit exceeded", key());
+        continue;
+      }
+
+      // do agg
+      try {
+        g.agg(w.getAggTask(), aggTaskValue, da);
+      } catch (Exception e) {
+        log.error("[agg] [{}] agg error {}", key(), da, e);
+      }
+
     }
   }
 
   private void processData(XAggTask latestAggTask, AggProtos.AggTaskValue aggTaskValue) {
     long now = System.currentTimeMillis();
     AggWindowState lastWindowState = null;
+    InDataNodeDataAccessor da = new InDataNodeDataAccessor();
     for (AggProtos.InDataNode in : aggTaskValue.getInDataNodesList()) {
+
       long alignedDataTs =
           Utils.align(in.getTimestamp(), latestAggTask.getInner().getWindow().getInterval());
 
@@ -120,6 +207,7 @@ public class AggTaskExecutor {
 
       // decide which time window to use
       // 99% case: all InDataNodes have same timestamp
+      da.replace(in);
       AggWindowState w;
       if (lastWindowState != null && lastWindowState.getTimestamp() == alignedDataTs) {
         w = lastWindowState;
@@ -129,12 +217,12 @@ public class AggTaskExecutor {
       if (w != null) {
         lastWindowState = w;
         // use aggTask of the existing time window
-        if (!w.getAggTask().getWhere().test(in)) {
+        if (!w.getAggTask().getWhere().test(da)) {
           continue;
         }
       } else {
         // use latest aggTask
-        if (!latestAggTask.getWhere().test(in)) {
+        if (!latestAggTask.getWhere().test(da)) {
           continue;
         }
       }
@@ -143,12 +231,12 @@ public class AggTaskExecutor {
         lastWindowState = w;
       }
 
-      w.addInput(in);
+      w.addInput();
 
-      CompletenessUtils.processCompletenessInfoInData(w, in);
+      CompletenessUtils.processCompletenessInfoInData(w, da);
 
       // decide which group to use
-      Group g = w.getOrCreateGroup(in, this::onGroupCreate);
+      Group g = w.getOrCreateGroup(da, this::onGroupCreate);
       if (g == null) {
         log.error("[agg] [{}] group key limit exceeded", key());
         continue;
@@ -156,7 +244,7 @@ public class AggTaskExecutor {
 
       // do agg
       try {
-        g.agg(w.getAggTask(), aggTaskValue, in);
+        g.agg(w.getAggTask(), aggTaskValue, da);
       } catch (Exception e) {
         log.error("[agg] [{}] agg error {}", key(), in, e);
       }

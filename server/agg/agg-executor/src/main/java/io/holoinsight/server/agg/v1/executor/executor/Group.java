@@ -14,6 +14,7 @@ import com.google.common.collect.Maps;
 import io.holoinsight.server.agg.v1.core.conf.OutputField;
 import io.holoinsight.server.agg.v1.core.conf.OutputItem;
 import io.holoinsight.server.agg.v1.core.conf.SelectItem;
+import io.holoinsight.server.agg.v1.core.data.DataAccessor;
 import io.holoinsight.server.agg.v1.pb.AggProtos;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
@@ -73,58 +74,40 @@ public class Group {
     }
   }
 
-  public void agg(XAggTask rule, AggProtos.AggTaskValue aggTaskValue, AggProtos.InDataNode in) {
+  public void agg(XAggTask rule, AggProtos.AggTaskValue aggTaskValue, DataAccessor da) {
     Map<String, List<XSelectItem>> m = rule.getSelect().getSelectItem(aggTaskValue.getMetric());
     if (m == null) {
       return;
     }
-    List<XSelectItem> records = m.get("-");
-    if (records != null) {
-      for (XSelectItem item : records) {
-        fields[item.getIndex()].add(in, item.getInner(), null);
-      }
-    }
 
-    // TODO hard code
-    switch (in.getType()) {
-      case 0:
-        // single float64
-        // fallthrough
-      case 1:
-      // single bytes
-      {
-        List<XSelectItem> m2 = m.get("value");
-        if (CollectionUtils.isEmpty(m2)) {
-          return;
+    if (da.isSingleValue()) {
+      List<XSelectItem> m2 = m.get("value");
+      if (CollectionUtils.isEmpty(m2)) {
+        return;
+      }
+
+      for (XSelectItem item : m2) {
+        da.bindFieldName(item.getInner().getElect().getField());
+        if (!item.getWhere().test(da)) {
+          continue;
+        }
+        fields[item.getIndex()].add(da, item.getInner());
+      }
+    } else {
+      for (String fieldName : da.getFieldNames()) {
+        List<XSelectItem> m2 = m.get(fieldName);
+        if (m2 == null) {
+          continue;
         }
 
-        BasicFieldAccessors.Accessor accessor = BasicFieldAccessors.direct(in);
         for (XSelectItem item : m2) {
-          if (!item.getWhere().test(in)) {
+          da.bindFieldName(item.getInner().getElect().getField());
+          if (!item.getWhere().test(da)) {
             continue;
           }
-          fields[item.getIndex()].add(in, item.getInner(), accessor);
+          fields[item.getIndex()].add(da, item.getInner());
         }
       }
-        break;
-
-      case 2:
-        for (Map.Entry<String, AggProtos.BasicField> e : in.getFieldsMap().entrySet()) {
-          String fieldName = e.getKey();
-          List<XSelectItem> m2 = m.get(fieldName);
-          if (m2 == null) {
-            continue;
-          }
-
-          BasicFieldAccessors.Accessor accessor = BasicFieldAccessors.field(e.getValue());
-          for (XSelectItem item : m2) {
-            if (!item.getWhere().test(in)) {
-              continue;
-            }
-            fields[item.getIndex()].add(in, item.getInner(), accessor);
-          }
-        }
-        break;
     }
   }
 

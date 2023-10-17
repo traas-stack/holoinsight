@@ -20,6 +20,7 @@ import io.holoinsight.server.agg.v1.core.conf.GroupByItem;
 import io.holoinsight.server.agg.v1.core.conf.Select;
 import io.holoinsight.server.agg.v1.core.conf.SelectItem;
 import io.holoinsight.server.agg.v1.core.conf.Where;
+import io.holoinsight.server.agg.v1.core.data.DataAccessor;
 import io.holoinsight.server.agg.v1.pb.AggProtos;
 
 /**
@@ -78,7 +79,7 @@ public class XParserUtils {
     return new XSelectItem(s, index, parseWhere(s.getWhere()));
   }
 
-  private static boolean testWhere(Where w, AggProtos.InDataNode in) {
+  private static boolean testWhere(Where w, DataAccessor da) {
     if (w == null) {
       return true;
     }
@@ -93,7 +94,7 @@ public class XParserUtils {
       if (not) {
         key = key.substring(1);
       }
-      String value = in.getTagsOrDefault(key, "-");
+      String value = da.getTagOrDefault(key, "-");
       if (not) {
         if (e.getValue().contains(value)) {
           return false;

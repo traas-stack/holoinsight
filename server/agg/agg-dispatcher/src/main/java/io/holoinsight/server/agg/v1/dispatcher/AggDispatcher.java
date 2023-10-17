@@ -251,32 +251,47 @@ public class AggDispatcher {
     }
   }
 
-  public void dispatchDetailData(AuthInfo authInfo, List<GatewayHook.Data> request) {
-    AggTaskKey aggTaskKey = new AggTaskKey(authInfo.getTenant(), request.get(0).getName(), "");
+  public void dispatchDetailData(AuthInfo authInfo, GatewayHook.Table table) {
+    List<AggTask> aggTasks = this.storage.getByMetric(table.getName());
+    if (CollectionUtils.isEmpty(aggTasks)) {
+      return;
+    }
 
     AggProtos.AggTaskValue.Builder b = AggProtos.AggTaskValue.newBuilder() //
         .setType(0) //
-        .setTimestamp(request.get(0).getTimestamp()).setMetric(request.get(0).getName());
+        .setTimestamp(table.getTimestamp()) //
+        .setMetric(table.getName()); //
 
-    for (GatewayHook.Data d : request) {
-      AggProtos.InDataNode.Builder inB = AggProtos.InDataNode.newBuilder().setType(2) //
-          .putAllTags(d.getTags()) //
-          .setTimestamp(d.getTimestamp());
+    AggProtos.Table.Builder tb = AggProtos.Table.newBuilder();
 
-      for (Map.Entry<String, Double> e : d.getFields().entrySet()) {
-        AggProtos.BasicField bf =
-            AggProtos.BasicField.newBuilder().setType(0).setFloat64Value(e.getValue()).build();
-        inB.putFields(e.getKey(), bf);
+    tb.setName(table.getName()).setTimestamp(table.getTimestamp());
+    tb.setHeader(AggProtos.Table.Header.newBuilder() //
+        .addAllTagKeys(table.getHeader().getTagKeys()) //
+        .addAllFieldKeys(table.getHeader().getFieldKeys())); //
+
+    for (GatewayHook.Row row : table.getRows()) {
+
+      AggProtos.Table.Row.Builder pbRow = AggProtos.Table.Row.newBuilder();
+      pbRow.setTimestamp(row.getTimestamp());
+      pbRow.addAllTagValues(row.getTagValues());
+      for (Double d : row.getFieldValues()) {
+        pbRow.addFieldValues(
+            AggProtos.BasicField.newBuilder().setType(0).setFloat64Value(d).build());
       }
 
-      b.addInDataNodes(inB.build());
+      tb.addRow(pbRow);
     }
 
+    b.setDataTable(tb);
     AggProtos.AggTaskValue aggTaskValue = b.build();
 
-    ProducerRecord<AggTaskKey, AggProtos.AggTaskValue> record =
-        new ProducerRecord<>(aggProperties.getTopic(), aggTaskKey, aggTaskValue);
-    kafkaProducer.send(record);
+    for (AggTask aggTask : aggTasks) {
+      AggTaskKey aggTaskKey = new AggTaskKey(authInfo.getTenant(), aggTask.getAggId());
+
+      ProducerRecord<AggTaskKey, AggProtos.AggTaskValue> record =
+          new ProducerRecord<>(aggProperties.getTopic(), aggTaskKey, aggTaskValue);
+      kafkaProducer.send(record);
+    }
   }
 
   @NotNull

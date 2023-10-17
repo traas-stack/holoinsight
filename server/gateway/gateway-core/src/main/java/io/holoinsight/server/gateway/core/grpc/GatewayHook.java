@@ -33,20 +33,14 @@ public interface GatewayHook {
    */
   void writeMetricsV4(AuthInfo authInfo, WriteMetricsRequestV4 request);
 
-  void writeDetail(AuthInfo authInfo, List<Data> request);
-
-  @lombok.Data
-  class Data {
-    private String name;
-    private long timestamp;
-    private Map<String, String> tags;
-    private Map<String, Double> fields;
-  }
+  void writeDetail(AuthInfo authInfo, Table table);
 
   @lombok.Data
   class Table {
     private String name;
     private long timestamp;
+    private Header header;
+    private List<Row> rows;
   }
 
   @lombok.Data
@@ -57,8 +51,12 @@ public interface GatewayHook {
 
   @lombok.Data
   class Row {
+    /**
+     * If the value is greater than 0, then its priority is higher than {@link Table#timestamp}
+     */
+    private long timestamp;
     private List<String> tagValues;
-    // TODO
+    // TODO field type is always Double ???
     private List<Double> fieldValues;
   }
 }

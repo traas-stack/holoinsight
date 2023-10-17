@@ -3,7 +3,7 @@
  */
 package io.holoinsight.server.agg.v1.executor.executor;
 
-import io.holoinsight.server.agg.v1.pb.AggProtos;
+import io.holoinsight.server.agg.v1.core.data.DataAccessor;
 
 /**
  * <p>
@@ -16,5 +16,5 @@ public interface XWhere {
 
   // Where inner();
 
-  boolean test(AggProtos.InDataNode in);
+  boolean test(DataAccessor da);
 }

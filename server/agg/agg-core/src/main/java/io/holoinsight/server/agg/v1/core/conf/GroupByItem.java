@@ -12,6 +12,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.google.common.base.Preconditions;
 
+import io.holoinsight.server.agg.v1.core.data.DataAccessor;
 import lombok.Data;
 
 /**
@@ -50,6 +51,11 @@ public class GroupByItem {
     Preconditions.checkArgument(StringUtils.isNotEmpty(tag), "tag");
 
     return new GroupByItem(tag, DEFAULT_VALUE, tag);
+  }
+
+  public String get(DataAccessor da) {
+    String v = da.getTag(tag);
+    return StringUtils.isEmpty(v) ? defaultValue : v;
   }
 
   public String get(Map<String, String> tags) {

@@ -8,12 +8,12 @@ import java.util.Map;
 import java.util.function.BiConsumer;
 
 import io.holoinsight.server.agg.v1.core.conf.GroupBy;
+import io.holoinsight.server.agg.v1.core.data.DataAccessor;
 import io.holoinsight.server.agg.v1.core.dict.Dict;
 import io.holoinsight.server.agg.v1.executor.executor.FixedSizeTags;
 import io.holoinsight.server.agg.v1.executor.executor.Group;
 import io.holoinsight.server.agg.v1.executor.executor.WindowCompleteness;
 import io.holoinsight.server.agg.v1.executor.executor.XAggTask;
-import io.holoinsight.server.agg.v1.pb.AggProtos;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 
@@ -38,9 +38,8 @@ public class AggWindowState {
   private int input;
   private XAggTask aggTask;
 
-  public Group getOrCreateGroup(AggProtos.InDataNode in,
-      BiConsumer<AggWindowState, Group> callback) {
-    FixedSizeTags groupKey = buildGroupKey(in);
+  public Group getOrCreateGroup(DataAccessor da, BiConsumer<AggWindowState, Group> callback) {
+    FixedSizeTags groupKey = buildGroupKey(da);
 
     Group g = groupMap.get(groupKey);
     if (g == null) {
@@ -62,7 +61,7 @@ public class AggWindowState {
     return g;
   }
 
-  private FixedSizeTags buildGroupKey(AggProtos.InDataNode inDataNode) {
+  private FixedSizeTags buildGroupKey(DataAccessor da) {
     if (!aggTask.getInner().hasGroupBy()) {
       return FixedSizeTags.EMPTY;
     }
@@ -70,8 +69,7 @@ public class AggWindowState {
     GroupBy groupBys = aggTask.getInner().getGroupBy();
 
     FixedSizeTags reused = this.internalGetReusedGroupKey();
-
-    groupBys.fillTagValuesFromTags(reused.getValues(), inDataNode.getTagsMap());
+    groupBys.fillTagValuesFromDataAccessor(reused.getValues(), da);
 
     return reused;
   }
@@ -95,7 +93,7 @@ public class AggWindowState {
   }
 
   @Deprecated
-  public void addInput(AggProtos.InDataNode in) {
+  public void addInput() {
     input++;
   }
 
