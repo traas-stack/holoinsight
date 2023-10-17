@@ -30,6 +30,11 @@ public class ParameterSecurityServiceImpl implements ParameterSecurityService {
   }
 
   @Override
+  public boolean checkGroupTenantAndWorkspace(Long groupId, String tenant, String workspace) {
+    return true;
+  }
+
+  @Override
   public String getTenantFromMetricInfo(String metricTable) {
     return StringUtils.EMPTY;
   }

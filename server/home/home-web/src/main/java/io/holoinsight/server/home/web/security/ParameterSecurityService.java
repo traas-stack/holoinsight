@@ -19,6 +19,8 @@ public interface ParameterSecurityService {
 
   boolean checkMetricTenantAndWorkspace(String metricTable, String tenant, String workspace);
 
+  boolean checkGroupTenantAndWorkspace(Long groupId, String tenant, String workspace);
+
   boolean checkUserTenantAndWorkspace(String uid, MonitorUser user);
 
   boolean checkFilterTenantAndWorkspace(String metricTable, Map<String, List<Object>> filters,
