@@ -12,7 +12,6 @@ import io.holoinsight.server.home.biz.service.AlarmHistoryService;
 import io.holoinsight.server.home.biz.service.AlertGroupService;
 import io.holoinsight.server.home.biz.service.AlertRuleService;
 import io.holoinsight.server.home.biz.service.AlertSubscribeService;
-import io.holoinsight.server.home.biz.service.TenantInitService;
 import io.holoinsight.server.home.biz.service.UserOpLogService;
 import io.holoinsight.server.home.common.service.RequestContextAdapter;
 import io.holoinsight.server.home.common.util.MonitorException;
@@ -95,9 +94,6 @@ public class AlarmRuleFacadeImpl extends BaseFacade {
 
   @Autowired
   private RequestContextAdapter requestContextAdapter;
-
-  @Autowired
-  private TenantInitService tenantInitService;
 
   @Autowired
   private ParameterSecurityService parameterSecurityService;
