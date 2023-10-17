@@ -3,15 +3,18 @@
  */
 package io.holoinsight.server.agg.v1.executor.executor;
 
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.annotation.JSONField;
+import com.google.common.hash.Hashing;
 
 import io.holoinsight.server.agg.v1.core.conf.AggFunc;
+import io.holoinsight.server.agg.v1.core.conf.SelectItem;
+import io.holoinsight.server.agg.v1.core.data.DataAccessor;
 import io.holoinsight.server.agg.v1.core.data.LogSamples;
 import io.holoinsight.server.agg.v1.executor.state.LogSamplesState;
-import io.holoinsight.server.agg.v1.pb.AggProtos;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 
@@ -30,27 +33,31 @@ public class GroupField {
   private double value;
   private LogSamplesState logSamples;
   private TopnState topn;
+  private HllState hll;
 
   public GroupField() {}
 
-  public void add(AggProtos.InDataNode in) {
+  public void add(DataAccessor da, SelectItem si) {
     input++;
 
+    double f64;
     switch (agg.getTypeInt()) {
       case AggFunc.TYPE_SUM:
       case AggFunc.TYPE_AVG:
         count++;
-        value += in.getFloat64Value();
+        value += da.getFloat64Field();
         break;
       case AggFunc.TYPE_MIN:
-        if (this.count == 0 || in.getFloat64Value() < this.value) {
-          this.value = in.getFloat64Value();
+        f64 = da.getFloat64Field();
+        if (count == 0 || f64 < value) {
+          value = f64;
         }
         count++;
         break;
       case AggFunc.TYPE_MAX:
-        if (count == 0 || in.getFloat64Value() > value) {
-          value = in.getFloat64Value();
+        f64 = da.getFloat64Field();
+        if (count == 0 || f64 > value) {
+          value = f64;
         }
         count++;
         break;
@@ -58,14 +65,14 @@ public class GroupField {
         count++;
         break;
       case AggFunc.TYPE_AVG_MERGE:
-        count += in.getCount();
-        value += in.getCount() * in.getFloat64Value();
+        count += da.getCount();
+        value += da.getCount() * da.getFloat64Field();
         break;
       case AggFunc.TYPE_LOGSAMPLES_MERGE: {
         if (logSamples != null && logSamples.isFull()) {
           return;
         }
-        LogSamples ls = JSON.parseObject(in.getBytesValue().toStringUtf8(), LogSamples.class);
+        LogSamples ls = JSON.parseObject(da.getStringField(), LogSamples.class);
         if (logSamples == null) {
           logSamples = new LogSamplesState();
           logSamples.setMaxCount(ls.getMaxCount());
@@ -86,9 +93,20 @@ public class GroupField {
           topn = new TopnState(params);
         }
 
-        topn.add(in);
+        topn.add(da);
         break;
       }
+      case AggFunc.TYPE_HLL:
+        if (hll == null) {
+          hll = new HllState();
+        }
+        String v = da.getTag(si.getElect().getField());
+        if (v != null) {
+          int x =
+              Hashing.murmur3_32().newHasher().putString(v, StandardCharsets.UTF_8).hash().asInt();
+          hll.hll.addRaw(x);
+        }
+        break;
     }
   }
 
@@ -125,6 +143,11 @@ public class GroupField {
       case AggFunc.TYPE_MIN:
       case AggFunc.TYPE_SUM:
         return value;
+      case AggFunc.TYPE_HLL:
+        if (hll == null) {
+          return 0;
+        }
+        return hll.hll.cardinality();
       default:
         throw new IllegalStateException("unsupported");
     }

@@ -3,7 +3,6 @@
  */
 package io.holoinsight.server.agg.v1.executor.executor;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -15,6 +14,7 @@ import com.google.common.collect.Maps;
 import io.holoinsight.server.agg.v1.core.conf.OutputField;
 import io.holoinsight.server.agg.v1.core.conf.OutputItem;
 import io.holoinsight.server.agg.v1.core.conf.SelectItem;
+import io.holoinsight.server.agg.v1.core.data.DataAccessor;
 import io.holoinsight.server.agg.v1.pb.AggProtos;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
@@ -41,9 +41,6 @@ public class Group {
 
     for (int i = 0; i < fields.length; i++) {
       GroupField gf = fields[i];
-      if (gf.getInput() == 0) {
-        continue;
-      }
       XSelectItem xsi = items.get(i);
       finalFields.put(xsi.getInner().getAs(), gf.getFinalValue());
     }
@@ -77,51 +74,40 @@ public class Group {
     }
   }
 
-  public void agg(XAggTask rule, AggProtos.AggTaskValue aggTaskValue, AggProtos.InDataNode in) {
+  public void agg(XAggTask rule, AggProtos.AggTaskValue aggTaskValue, DataAccessor da) {
     Map<String, List<XSelectItem>> m = rule.getSelect().getSelectItem(aggTaskValue.getMetric());
     if (m == null) {
       return;
     }
 
-    // TODO hard code
-    switch (in.getType()) {
-      case 0:
-        // 单值 metric
-      case 1:
-      // 单值 bytes
-      {
-        List<XSelectItem> m2 = m.get("value");
-        if (CollectionUtils.isEmpty(m2)) {
-          return;
+    if (da.isSingleValue()) {
+      List<XSelectItem> m2 = m.get("value");
+      if (CollectionUtils.isEmpty(m2)) {
+        return;
+      }
+
+      for (XSelectItem item : m2) {
+        da.bindFieldName(item.getInner().getElect().getField());
+        if (!item.getWhere().test(da)) {
+          continue;
+        }
+        fields[item.getIndex()].add(da, item.getInner());
+      }
+    } else {
+      for (String fieldName : da.getFieldNames()) {
+        List<XSelectItem> m2 = m.get(fieldName);
+        if (m2 == null) {
+          continue;
         }
 
         for (XSelectItem item : m2) {
-          if (!item.getWhere().test(in)) {
+          da.bindFieldName(item.getInner().getElect().getField());
+          if (!item.getWhere().test(da)) {
             continue;
           }
-          fields[item.getIndex()].add(in);
+          fields[item.getIndex()].add(da, item.getInner());
         }
       }
-        break;
-
-      case 2:
-        if (true) {
-          throw new UnsupportedOperationException("unsupported");
-        }
-
-        for (String fieldName : Arrays.asList("field1", "field2")) {
-          List<XSelectItem> m2 = m.get(fieldName);
-          if (m2 == null) {
-            return;
-          }
-
-          for (XSelectItem item : m2) {
-            if (!item.getWhere().test(in)) {
-              continue;
-            }
-            fields[item.getIndex()].add(in);
-          }
-        }
     }
   }
 

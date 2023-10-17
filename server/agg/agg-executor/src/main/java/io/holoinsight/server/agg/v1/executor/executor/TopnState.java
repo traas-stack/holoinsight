@@ -13,7 +13,7 @@ import java.util.PriorityQueue;
 import java.util.stream.Collectors;
 
 import io.holoinsight.server.agg.v1.core.conf.AggFunc;
-import io.holoinsight.server.agg.v1.pb.AggProtos;
+import io.holoinsight.server.agg.v1.core.data.DataAccessor;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
@@ -52,8 +52,8 @@ public class TopnState {
     return state;
   }
 
-  public void add(AggProtos.InDataNode in) {
-    double value = in.getFloat64Value();
+  public void add(DataAccessor da) {
+    double value = da.getFloat64Field();
 
     if (q.size() > 0 && q.size() == params.getLimit()
         && costComparator.compare(value, q.peek().cost) <= 0) {
@@ -61,7 +61,7 @@ public class TopnState {
     }
 
     Map<String, Object> obj = new HashMap<>();
-    obj.put("tags", in.getTagsMap());
+    obj.put("tags", da.getTags());
     obj.put("value", value);
 
     q.add(new CostItem(value, obj));

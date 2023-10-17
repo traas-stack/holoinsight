@@ -5,6 +5,7 @@ package io.holoinsight.server.agg.v1.core.data;
 
 import java.util.Collections;
 import java.util.Map;
+import java.util.Objects;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -30,6 +31,16 @@ public final class AggTaskKey {
   @Getter(AccessLevel.NONE)
   @EqualsAndHashCode.Exclude
   private transient Map<String, String> partitionInfo;
+
+  public AggTaskKey(String tenant, String aggId) {
+    this(tenant, aggId, "");
+  }
+
+  public AggTaskKey(String tenant, String aggId, String partition) {
+    this.tenant = Objects.requireNonNull(tenant);
+    this.aggId = Objects.requireNonNull(aggId);
+    this.partition = Objects.requireNonNull(partition);
+  }
 
   @Override
   public String toString() {

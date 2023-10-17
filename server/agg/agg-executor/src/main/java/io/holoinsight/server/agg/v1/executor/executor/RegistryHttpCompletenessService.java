@@ -29,7 +29,7 @@ import okhttp3.Response;
  * @author xzchaoo
  */
 @Slf4j
-public class RegistryCompletenessService implements CompletenessService {
+public class RegistryHttpCompletenessService implements CompletenessService {
 
   private final OkHttpClient client;
 
@@ -37,7 +37,7 @@ public class RegistryCompletenessService implements CompletenessService {
       .expireAfterWrite(Duration.ofMinutes(2)) //
       .build(); //
 
-  public RegistryCompletenessService() {
+  public RegistryHttpCompletenessService() {
     client = new OkHttpClient.Builder().build();
   }
 

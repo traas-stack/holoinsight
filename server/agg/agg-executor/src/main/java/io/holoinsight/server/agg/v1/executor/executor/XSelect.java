@@ -55,6 +55,7 @@ public class XSelect {
       for (int index = 0; index < items.size(); index++) {
         XSelectItem item = items.get(index);
         SelectItem.Elect e = item.getInner().getElect();
+
         electToItemMap.computeIfAbsent(e.getMetric(), i -> new HashMap<>())
             .computeIfAbsent(e.getField(), i -> new LinkedList<>()) //
             .add(item);

@@ -29,4 +29,9 @@ public class AggGatewayHook implements GatewayHook {
   public void writeMetricsV4(AuthInfo authInfo, WriteMetricsRequestV4 request) {
     aggDispatcher.dispatch(authInfo, request);
   }
+
+  @Override
+  public void writeDetail(AuthInfo authInfo, Table table) {
+    aggDispatcher.dispatchDetailData(authInfo, table);
+  }
 }
