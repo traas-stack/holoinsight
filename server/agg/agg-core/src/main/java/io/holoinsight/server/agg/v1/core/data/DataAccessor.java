@@ -46,5 +46,6 @@ public interface DataAccessor {
   int getCount();
 
   double getFloat64Field();
+
   String getStringField();
 }
