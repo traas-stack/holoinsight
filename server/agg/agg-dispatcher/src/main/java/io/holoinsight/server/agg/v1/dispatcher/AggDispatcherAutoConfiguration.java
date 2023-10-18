@@ -54,6 +54,7 @@ public class AggDispatcherAutoConfiguration {
     return new AggConfig();
   }
 
+  @ConditionalOnProperty(value = "holoinsight.agg.dispatcher.mock.enabled", havingValue = "true")
   @Bean
   public AggDispatcherMockDataGenerator aggDispatcherMockDataGenerator() {
     return new AggDispatcherMockDataGenerator();

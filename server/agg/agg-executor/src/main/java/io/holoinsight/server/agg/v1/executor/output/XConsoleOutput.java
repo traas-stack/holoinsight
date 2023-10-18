@@ -7,9 +7,9 @@ import java.util.Map;
 
 import com.alibaba.fastjson.JSON;
 
+import io.holoinsight.server.agg.v1.core.Utils;
 import io.holoinsight.server.agg.v1.core.conf.OutputItem;
 import io.holoinsight.server.agg.v1.core.data.AggTaskKey;
-import io.holoinsight.server.agg.v1.core.Utils;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -24,7 +24,7 @@ public class XConsoleOutput implements XOutput {
 
   @Override
   public String type() {
-    return "CONSOLE";
+    return TYPE;
   }
 
   @Override
@@ -37,7 +37,7 @@ public class XConsoleOutput implements XOutput {
       log.info("[agg] [{}] emit name=[{}] ts=[{}] tags=[{}] fields={}", //
           key, //
           oi.getName(), //
-          Utils.formatTime(w.getTimestamp()), //
+          Utils.formatTimeShort(w.getTimestamp()), //
           g.getTags(), //
           JSON.toJSONString(finalFields)); //
     }

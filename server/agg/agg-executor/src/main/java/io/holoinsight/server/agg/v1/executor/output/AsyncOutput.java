@@ -182,29 +182,17 @@ public class AsyncOutput {
   }
 
   public void write(XOutput.Batch batch) {
-    if (batch.getOi().getType().equals("CONSOLE")) {
-      // TODO use interface
-      logToConsole(batch);
-      return;
-    }
-
     int random = ThreadLocalRandom.current().nextInt();
     ProducerRecord<Integer, XOutput.Batch> r = new ProducerRecord<>(outputTopic, random, batch);
     producer.send(r, new Callback() {
       @Override
       public void onCompletion(RecordMetadata metadata, Exception e) {
         if (e != null) {
-          log.error("[output] write batch error", e);
+          log.error("[output] agg=[{}] ts=[{}] write batch error", batch.key,
+              Utils.formatTime(batch.window.timestamp), e);
         }
       }
     });
   }
 
-  private void logToConsole(XOutput.Batch batch) {
-    for (XOutput.Group g : batch.groups) {
-      log.info("[output] digest agg=[{}] metric=[{}] ts=[{}] tags={} fields={}", //
-          batch.key, batch.oi.getName(), Utils.formatTime(batch.window.timestamp),
-          g.getTags().asMap(), g.getFinalFields());
-    }
-  }
 }
