@@ -172,7 +172,7 @@ public class AbstractUniformInspectRunningRule {
           }
         });
       }
-      latch.await();
+      latch.await(30, TimeUnit.SECONDS);
       if (triggerResults.size() != 0) {
         triggerMap.put(trigger, triggerResults);
       }
