@@ -197,7 +197,7 @@ public class AlertTaskCompute implements AlarmTaskExecutor<ComputeTaskPackage> {
         RecordSucOrFailNotify.alertNotifyProcessSuc(ALERT_TASK_COMPUTE, "alert task compute",
             inspectConfig.getAlertNotifyRecord());
       }
-      latch.await();
+      latch.await(30, TimeUnit.SECONDS);
       if (!CollectionUtils.isEmpty(alertNotifyRecordDTOList)) {
         RecordSucOrFailNotify.batchInsert(alertNotifyRecordDTOList);
       }
