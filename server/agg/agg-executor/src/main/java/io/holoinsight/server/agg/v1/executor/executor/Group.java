@@ -6,8 +6,6 @@ package io.holoinsight.server.agg.v1.executor.executor;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.collections4.CollectionUtils;
-
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
 
@@ -81,34 +79,27 @@ public class Group {
     }
 
     if (da.isSingleValue()) {
-      List<XSelectItem> m2 = m.get("value");
-      if (CollectionUtils.isEmpty(m2)) {
-        return;
+      processField(m, da, "value");
+    } else {
+      for (String fieldName : da.getFieldNames()) {
+        processField(m, da, fieldName);
       }
+    }
 
-      for (XSelectItem item : m2) {
+    processField(m, da, XSelect.NO_FIELD);
+  }
+
+  private void processField(Map<String, List<XSelectItem>> fieldSelectItems, DataAccessor da,
+      String fieldName) {
+    List<XSelectItem> items = fieldSelectItems.get(fieldName);
+    if (items != null) {
+      for (XSelectItem item : items) {
         da.bindFieldName(item.getInner().getElect().getField());
         if (!item.getWhere().test(da)) {
           continue;
         }
         fields[item.getIndex()].add(da, item.getInner());
       }
-    } else {
-      for (String fieldName : da.getFieldNames()) {
-        List<XSelectItem> m2 = m.get(fieldName);
-        if (m2 == null) {
-          continue;
-        }
-
-        for (XSelectItem item : m2) {
-          da.bindFieldName(item.getInner().getElect().getField());
-          if (!item.getWhere().test(da)) {
-            continue;
-          }
-          fields[item.getIndex()].add(da, item.getInner());
-        }
-      }
     }
   }
-
 }

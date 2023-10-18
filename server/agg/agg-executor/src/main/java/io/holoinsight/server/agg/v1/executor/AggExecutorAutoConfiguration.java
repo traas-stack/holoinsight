@@ -22,6 +22,8 @@ import io.holoinsight.server.agg.v1.executor.executor.ExecutorManager;
 import io.holoinsight.server.agg.v1.executor.executor.FaultToleranceConfig;
 import io.holoinsight.server.agg.v1.executor.executor.StateConfig;
 import io.holoinsight.server.agg.v1.executor.output.AsyncOutput;
+import io.holoinsight.server.agg.v1.executor.output.XConsoleOutput;
+import io.holoinsight.server.agg.v1.executor.output.XOutput;
 import io.holoinsight.server.agg.v1.executor.service.AggTaskV1StorageForExecutor;
 import io.holoinsight.server.agg.v1.executor.service.AggTaskV1Syncer;
 import io.holoinsight.server.agg.v1.executor.service.IAggTaskService;
@@ -112,4 +114,8 @@ public class AggExecutorAutoConfiguration {
     return new ExecutorInitRunner();
   }
 
+  @Bean
+  public XOutput xConsoleOutput() {
+    return new XConsoleOutput();
+  }
 }
