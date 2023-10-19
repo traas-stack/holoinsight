@@ -160,10 +160,10 @@ public class AlarmGroupFacadeImpl extends BaseFacade {
       return jsonResult;
     }
 
-    return update(alarmGroup);
+    return update(alarmGroup, true);
   }
 
-  public JsonResult<Boolean> update(AlarmGroupDTO alarmGroup) {
+  public JsonResult<Boolean> update(AlarmGroupDTO alarmGroup, boolean needCheckUser) {
     final JsonResult<Boolean> result = new JsonResult<>();
     facadeTemplate.manage(result, new ManageCallback() {
       @Override
@@ -178,7 +178,7 @@ public class AlarmGroupFacadeImpl extends BaseFacade {
         }
         List<String> persons = alarmGroup.getUserList();
         MonitorUser mu = RequestContext.getContext().mu;
-        if (!CollectionUtils.isEmpty(persons)) {
+        if (!CollectionUtils.isEmpty(persons) && needCheckUser) {
           for (String person : persons) {
             ParaCheckUtil.checkParaBoolean(
                 parameterSecurityService.checkUserTenantAndWorkspace(person, mu),
