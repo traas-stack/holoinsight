@@ -205,7 +205,8 @@ public class AggDispatcher {
         ProducerRecord<AggTaskKey, AggProtos.AggTaskValue> record =
             new ProducerRecord<>(aggProperties.getTopic(), aggTaskKey, taskValue);
         kafkaProducer.send(record);
-        StatUtils.KAFKA_SEND.add(StringsKey.of("v1"), new long[]{1, taskValue.getInDataNodesCount()});
+        StatUtils.KAFKA_SEND.add(StringsKey.of("v1"),
+            new long[] {1, taskValue.getInDataNodesCount()});
       }
     }
   }
