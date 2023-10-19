@@ -39,7 +39,6 @@ public class MetricStorageOutput implements XOutput {
 
   @Override
   public void write(Batch batch) {
-    log.info("xxx");
     WriteMetricsParam param = new WriteMetricsParam();
     param.setTenant(batch.key.getTenant());
     List<WriteMetricsParam.Point> points = new ArrayList<>(batch.groups.size());

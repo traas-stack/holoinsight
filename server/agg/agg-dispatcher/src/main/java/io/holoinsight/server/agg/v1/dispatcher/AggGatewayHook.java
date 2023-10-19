@@ -34,4 +34,9 @@ public class AggGatewayHook implements GatewayHook {
   public void writeDetail(AuthInfo authInfo, Table table) {
     aggDispatcher.dispatchDetailData(authInfo, table);
   }
+
+  @Override
+  public boolean supportsDetail(String name) {
+    return aggDispatcher.supportsDetail(name);
+  }
 }
