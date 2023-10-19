@@ -162,7 +162,8 @@ public class AggDispatcher {
         ProducerRecord<AggTaskKey, AggProtos.AggTaskValue> record =
             new ProducerRecord<>(aggProperties.getTopic(), aggKey, aggTaskValue.build());
         kafkaProducer.send(record);
-        StatUtils.KAFKA_SEND.add(StringsKey.of("v4"), Stats.V_1);
+        StatUtils.KAFKA_SEND.add(StringsKey.of("v4"),
+            new long[] {1, aggTaskValue.getInDataNodesCount()});
       }
     }
   }
@@ -204,7 +205,7 @@ public class AggDispatcher {
         ProducerRecord<AggTaskKey, AggProtos.AggTaskValue> record =
             new ProducerRecord<>(aggProperties.getTopic(), aggTaskKey, taskValue);
         kafkaProducer.send(record);
-        StatUtils.KAFKA_SEND.add(StringsKey.of("v1"), Stats.V_1);
+        StatUtils.KAFKA_SEND.add(StringsKey.of("v1"), new long[]{1, taskValue.getInDataNodesCount()});
       }
     }
   }
@@ -291,7 +292,12 @@ public class AggDispatcher {
       ProducerRecord<AggTaskKey, AggProtos.AggTaskValue> record =
           new ProducerRecord<>(aggProperties.getTopic(), aggTaskKey, aggTaskValue);
       kafkaProducer.send(record);
+      StatUtils.KAFKA_SEND.add(StringsKey.of("detail"), new long[] {1, table.getRows().size()});
     }
+  }
+
+  public boolean supportsDetail(String name) {
+    return CollectionUtils.isNotEmpty(this.storage.getByMetric(name));
   }
 
   @NotNull

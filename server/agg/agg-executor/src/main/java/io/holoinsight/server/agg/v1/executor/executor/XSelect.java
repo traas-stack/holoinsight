@@ -59,7 +59,8 @@ public class XSelect {
         XSelectItem item = items.get(index);
         SelectItem.Elect e = item.getInner().getElect();
 
-        if (item.getInner().getAgg().getTypeInt() == AggFunc.TYPE_HLL) {
+        int aggType = item.getInner().getAgg().getTypeInt();
+        if (aggType == AggFunc.TYPE_HLL || aggType == AggFunc.TYPE_COUNT) {
           electToItemMap.computeIfAbsent(e.getMetric(), i -> new HashMap<>())
               .computeIfAbsent(NO_FIELD, i -> new LinkedList<>()) //
               .add(item);
