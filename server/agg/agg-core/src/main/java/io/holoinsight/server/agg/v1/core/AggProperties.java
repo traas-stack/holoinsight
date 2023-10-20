@@ -32,4 +32,9 @@ public class AggProperties {
    * producer compression type
    */
   private String producerCompressionType = "lz4";
+
+  /**
+   * if debugOutput is true, the agg output is printed to logs.
+   */
+  private boolean debugOutput = false;
 }

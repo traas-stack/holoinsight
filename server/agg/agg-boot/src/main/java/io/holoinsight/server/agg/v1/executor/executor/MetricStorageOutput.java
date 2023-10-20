@@ -42,6 +42,7 @@ public class MetricStorageOutput implements XOutput {
     WriteMetricsParam param = new WriteMetricsParam();
     param.setTenant(batch.key.getTenant());
     List<WriteMetricsParam.Point> points = new ArrayList<>(batch.groups.size());
+    param.setPoints(points);
 
 
     long time0 = System.currentTimeMillis();
