@@ -65,6 +65,10 @@ public class AsyncOutput {
 
   @PostConstruct
   public void start() {
+    if (aggProperties.isDebugOutput()) {
+      return;
+    }
+
     for (XOutput out : outputs) {
       outputMap.put(out.type(), out);
     }
@@ -102,6 +106,10 @@ public class AsyncOutput {
 
   @PreDestroy
   public void stop() {
+    if (aggProperties.isDebugOutput()) {
+      return;
+    }
+
     this.stopped = true;
     consumer.wakeup();
 
@@ -182,6 +190,11 @@ public class AsyncOutput {
   }
 
   public void write(XOutput.Batch batch) {
+    if (aggProperties.isDebugOutput()) {
+      new XConsoleOutput().write(batch);
+      return;
+    }
+
     int random = ThreadLocalRandom.current().nextInt();
     ProducerRecord<Integer, XOutput.Batch> r = new ProducerRecord<>(outputTopic, random, batch);
     producer.send(r, new Callback() {
