@@ -45,4 +45,6 @@ public class AccessConfig {
    * 一次查询维度中最多的Tags
    */
   private long tagsLimit = GatewayConstants.QUERY_DEFAULT_TAGS_LIMIT;
+
+  private String workspace;
 }

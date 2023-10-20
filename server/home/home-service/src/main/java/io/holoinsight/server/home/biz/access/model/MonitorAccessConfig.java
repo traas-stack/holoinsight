@@ -27,6 +27,8 @@ public class MonitorAccessConfig {
 
   private String tenant;
 
+  private String workspace;
+
   private Boolean online;
 
   /**
