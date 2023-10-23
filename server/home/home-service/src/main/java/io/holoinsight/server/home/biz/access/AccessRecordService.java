@@ -46,8 +46,8 @@ public class AccessRecordService {
     }, 0, 1, TimeUnit.MINUTES);
   }
 
-  public void record(String tenant, String workspace) {
-    ACCESS_MAP.computeIfAbsent(tenant + "_" + workspace, key -> new AtomicInteger(0)).addAndGet(1);
+  public void record(String tsdbTenant, String workspace) {
+    ACCESS_MAP.computeIfAbsent(tsdbTenant + "_" + workspace, key -> new AtomicInteger(0)).addAndGet(1);
   }
 
 
@@ -57,10 +57,9 @@ public class AccessRecordService {
       int value = entry.getValue().getAndSet(0);
       long period = System.currentTimeMillis() / 1000 * 1000;
       String[] keys = StringUtils.split(entry.getKey(), "_");
-      String tenant = keys[0];
+      String tsdbTenant = keys[0];
       String workspace = keys[1];
-      String tsdbTenant = tenantInitService.getTsdbTenant(tenant);
-      WriteMetricsParam writeMetricsParam = params.computeIfAbsent(tenant, k -> {
+      WriteMetricsParam writeMetricsParam = params.computeIfAbsent(tsdbTenant, k -> {
         WriteMetricsParam param = new WriteMetricsParam();
         param.setTenant(tsdbTenant);
         param.setPoints(new ArrayList<>());
@@ -70,7 +69,6 @@ public class AccessRecordService {
       WriteMetricsParam.Point point = new WriteMetricsParam.Point();
       point.setMetricName(METRIC_METER_METRIC);
       Map<String, String> tags = new HashMap<>();
-      tags.put("tenant", tenant);
       tags.put("workspace", workspace);
       point.setTags(tags);
       point.setTimeStamp(period);
