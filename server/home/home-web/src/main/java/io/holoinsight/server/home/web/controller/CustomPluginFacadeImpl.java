@@ -5,6 +5,7 @@ package io.holoinsight.server.home.web.controller;
 
 import io.holoinsight.server.home.biz.service.AlarmMetricService;
 import io.holoinsight.server.home.biz.service.CustomPluginService;
+import io.holoinsight.server.home.biz.service.FolderService;
 import io.holoinsight.server.home.biz.service.TenantInitService;
 import io.holoinsight.server.home.biz.service.UserOpLogService;
 import io.holoinsight.server.home.common.util.MonitorException;
@@ -16,6 +17,7 @@ import io.holoinsight.server.home.common.util.scope.MonitorUser;
 import io.holoinsight.server.home.common.util.scope.PowerConstants;
 import io.holoinsight.server.home.common.util.scope.RequestContext;
 import io.holoinsight.server.home.dal.model.AlarmMetric;
+import io.holoinsight.server.home.dal.model.Folder;
 import io.holoinsight.server.home.dal.model.OpType;
 import io.holoinsight.server.home.dal.model.dto.CustomPluginDTO;
 import io.holoinsight.server.home.dal.model.dto.conf.CollectMetric;
@@ -71,6 +73,9 @@ public class CustomPluginFacadeImpl extends BaseFacade {
   private UserOpLogService userOpLogService;
 
   @Autowired
+  private FolderService folderService;
+
+  @Autowired
   private AlarmMetricService alarmMetricService;
 
   @Autowired
@@ -110,6 +115,7 @@ public class CustomPluginFacadeImpl extends BaseFacade {
         if (!aBoolean) {
           throw new MonitorException("collectRange illegal");
         }
+        checkParentFolderId(customPluginDTO);
       }
 
       @Override
@@ -161,6 +167,7 @@ public class CustomPluginFacadeImpl extends BaseFacade {
         if (!aBoolean) {
           throw new MonitorException("collectRange illegal");
         }
+        checkParentFolderId(customPluginDTO);
       }
 
       @Override
@@ -205,6 +212,7 @@ public class CustomPluginFacadeImpl extends BaseFacade {
       public void checkParameter() {
         ParaCheckUtil.checkParaNotNull(customPluginDTO.id, "id");
         ParaCheckUtil.checkParaNotNull(customPluginDTO.parentFolderId, "parentFolderId");
+        checkParentFolderId(customPluginDTO);
       }
 
       @Override
@@ -649,5 +657,19 @@ public class CustomPluginFacadeImpl extends BaseFacade {
 
 
     return collectMetric;
+  }
+
+  private void checkParentFolderId(CustomPluginDTO customPluginDTO) {
+    if (customPluginDTO.parentFolderId == -1) {
+      return;
+    }
+
+    // check tenant
+    MonitorScope ms = RequestContext.getContext().ms;
+    Folder folder = folderService.queryById(customPluginDTO.getParentFolderId(), ms.getTenant(),
+        ms.getWorkspace());
+    if (null == folder) {
+      throw new MonitorException(ResultCodeEnum.PARAMETER_ILLEGAL, "parentFolderId illegal");
+    }
   }
 }

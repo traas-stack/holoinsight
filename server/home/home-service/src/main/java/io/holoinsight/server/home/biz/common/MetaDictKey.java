@@ -38,6 +38,7 @@ public class MetaDictKey {
   public static final String TRACE_INSTALL_DOCUMENT = "traceInstallDocument";
 
   public static final String IGNORE_TASK_LIST = "ignore_task_list";
+  public static final String SELETED_TENANT_LIST = "selected_tenant_list";
 
   public static final String OB_ACCESS_ID = "ob_access_id";
   public static final String OB_ACCESS_KEY = "ob_access_key";
