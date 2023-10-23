@@ -5,7 +5,9 @@ package io.holoinsight.server.home.alert.service.task.coordinator;
 
 import io.holoinsight.server.common.AddressUtil;
 import io.holoinsight.server.common.DateUtil;
+import io.holoinsight.server.common.J;
 import io.holoinsight.server.home.alert.service.task.coordinator.client.Client;
+import io.holoinsight.server.home.facade.emuns.PeriodType;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import lombok.Data;
@@ -49,9 +51,7 @@ public class OrderMap {
   Map<String, Client> clientMap = new HashMap<>();
 
   public static long curPeriod() {
-    long cur = System.currentTimeMillis();
-    long curPeriod = cur - cur % (HEARTBEAT_PERIOD_SECOND * 1000L);
-    return curPeriod;
+    return PeriodType.TEN_SECOND.rounding(System.currentTimeMillis());
   }
 
   public synchronized void putOrdering(String key, String value) {
@@ -75,7 +75,6 @@ public class OrderMap {
     long curPeriod = curPeriod();
     if (orderPeriod != curPeriod) {
       this.countMap = new HashMap<>();
-      orderPeriod = curPeriod;
       max = 0;
       maxData = new ArrayList<>();
     }
@@ -95,7 +94,6 @@ public class OrderMap {
     long curPeriod = curPeriod();
     if (orderPeriod != curPeriod) {
       this.distributionMap = new HashMap<>();
-      orderPeriod = curPeriod;
     }
     this.distributionMap.put(ip, data);
   }
@@ -107,8 +105,7 @@ public class OrderMap {
   }
 
   public Integer getRealSize() {
-    int size = this.orderedMap.size();
-    return size == 0 ? 1 : size;
+    return this.orderedMap.size();
   }
 
   public Integer getRealOrder() {
@@ -121,7 +118,7 @@ public class OrderMap {
         return i;
       }
     }
-    log.warn("can not find myself in order map.");
+    log.warn("can not find myself in order map {} {}.", selfIp, J.toJson(sortedMap));
     return -1;
   }
 

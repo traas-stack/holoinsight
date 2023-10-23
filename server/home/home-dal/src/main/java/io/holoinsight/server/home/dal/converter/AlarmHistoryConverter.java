@@ -3,9 +3,11 @@
  */
 package io.holoinsight.server.home.dal.converter;
 
+import io.holoinsight.server.common.J;
 import io.holoinsight.server.common.dao.transformer.ListJsonMapper;
 import io.holoinsight.server.home.dal.model.AlarmHistory;
 import io.holoinsight.server.home.facade.AlarmHistoryDTO;
+import io.holoinsight.server.home.facade.AlertHistoryExtra;
 import org.apache.commons.lang3.StringUtils;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -23,12 +25,16 @@ import java.util.List;
  */
 @Mapper(componentModel = "spring")
 public interface AlarmHistoryConverter {
-  @Mappings({@Mapping(source = "app", target = "app", qualifiedByName = "appMap2"), @Mapping(
-      source = "triggerContent", target = "triggerContent", qualifiedByName = "triggerContent2"),})
+  @Mappings({@Mapping(source = "app", target = "app", qualifiedByName = "appMap2"),
+      @Mapping(source = "triggerContent", target = "triggerContent",
+          qualifiedByName = "triggerContent2"),
+      @Mapping(source = "extra", target = "extra", qualifiedByName = "extra2"),})
   AlarmHistoryDTO doToDTO(AlarmHistory tenant);
 
-  @Mappings({@Mapping(source = "app", target = "app", qualifiedByName = "appMap1"), @Mapping(
-      source = "triggerContent", target = "triggerContent", qualifiedByName = "triggerContent1"),})
+  @Mappings({@Mapping(source = "app", target = "app", qualifiedByName = "appMap1"),
+      @Mapping(source = "triggerContent", target = "triggerContent",
+          qualifiedByName = "triggerContent1"),
+      @Mapping(source = "extra", target = "extra", qualifiedByName = "extra1"),})
   AlarmHistory dtoToDO(AlarmHistoryDTO tenantDTO);
 
   List<AlarmHistoryDTO> dosToDTOs(Iterable<AlarmHistory> tenants);
@@ -57,5 +63,21 @@ public interface AlarmHistoryConverter {
   @Named("triggerContent2")
   default List<String> triggerContent(String triggerContent) {
     return ListJsonMapper.asObj(triggerContent);
+  }
+
+  @Named("extra1")
+  default String extra(AlertHistoryExtra value) {
+    if (value == null) {
+      return null;
+    }
+    return J.toJson(value);
+  }
+
+  @Named("extra2")
+  default AlertHistoryExtra extra(String value) {
+    if (StringUtils.isBlank(value)) {
+      return null;
+    }
+    return J.fromJson(value, AlertHistoryExtra.class);
   }
 }

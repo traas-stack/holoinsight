@@ -50,18 +50,6 @@ public abstract class ScheduleLoadTask implements Runnable {
         TimeUnit.SECONDS);
   }
 
-  public static synchronized void drmTrigger(String taskName) throws Exception {
-    for (ScheduleLoadTask task : REGISTERED_TASK) {
-      if (StringUtils.isBlank(taskName) || task.getTaskName().equals(taskName)) {
-        ProdLog.info("[ScheduleLoadTask] " + task.getTaskName() + " drmTrigger start");
-        final long start = System.currentTimeMillis();
-        task.load();
-        ProdLog.info("[ScheduleLoadTask] " + task.getTaskName() + " drmTrigger end, cost="
-            + (System.currentTimeMillis() - start));
-      }
-    }
-  }
-
   @Override
   public void run() {
     ProdLog.info("[ScheduleLoadTask] " + getTaskName() + " load start");

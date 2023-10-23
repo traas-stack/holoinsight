@@ -9,6 +9,7 @@ public enum PeriodType {
 
   SECOND(1000, "1s"), //
   FIVE_SECOND(5000, "5s"), //
+  TEN_SECOND(10000, "10s"), //
   MINUTE(60000, "1min"), //
   FIVE_MINUTE(5 * 60000, "5min"), //
   QUARTER_HOUR(15 * 60000, "15min"), //
