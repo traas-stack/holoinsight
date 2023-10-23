@@ -116,29 +116,29 @@ public class CustomPluginFacadeIT extends BaseIT {
         .root("data").body("name", eq(name));
   }
 
-  //@Order(3)
-  //@Test
-  //public void test_custom_plugin_updateParentFolderId() {
-  //  CustomPluginDTO item = new CustomPluginDTO();
-  //  item.setId(id);
-  //  parentFolderId = Long.valueOf(-1);
-  //  item.setParentFolderId(parentFolderId);
-  //  given() //
-  //      .body(new JSONObject(J.toMap(J.toJson(item)))) //
-  //      .when() //
-  //      .post("/webapi/customPlugin/updateParentFolderId") //
-  //      .then() //
-  //      .body("success", IS_TRUE) //
-  //      .body("data", IS_TRUE); //
-  //  Response response = queryById.get();
-  //  System.out.println(response.body().print());
-  //  response //
-  //      .then() //
-  //      .body("success", IS_TRUE) //
-  //      .root("data").body("parentFolderId", eq(parentFolderId.intValue()));
+  // @Order(3)
+  // @Test
+  // public void test_custom_plugin_updateParentFolderId() {
+  // CustomPluginDTO item = new CustomPluginDTO();
+  // item.setId(id);
+  // parentFolderId = Long.valueOf(-1);
+  // item.setParentFolderId(parentFolderId);
+  // given() //
+  // .body(new JSONObject(J.toMap(J.toJson(item)))) //
+  // .when() //
+  // .post("/webapi/customPlugin/updateParentFolderId") //
+  // .then() //
+  // .body("success", IS_TRUE) //
+  // .body("data", IS_TRUE); //
+  // Response response = queryById.get();
+  // System.out.println(response.body().print());
+  // response //
+  // .then() //
+  // .body("success", IS_TRUE) //
+  // .root("data").body("parentFolderId", eq(parentFolderId.intValue()));
   //
   //
-  //}
+  // }
 
   @Order(4)
   @Test
