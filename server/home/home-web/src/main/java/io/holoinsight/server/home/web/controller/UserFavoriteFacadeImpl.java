@@ -155,7 +155,8 @@ public class UserFavoriteFacadeImpl extends BaseFacade {
             }
             break;
           case "integration":
-            IntegrationProductDTO byName = integrationProductService.findByName(userFavorite.name);
+            IntegrationProductDTO byName =
+                integrationProductService.findByName(userFavorite.relateId);
             if (null == byName) {
               throw new MonitorException(String.format("can not find record, %s-%s",
                   userFavorite.type, userFavorite.relateId));
