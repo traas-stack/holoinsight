@@ -101,15 +101,6 @@ public class CustomPluginFacadeImpl extends BaseFacade {
         MonitorScope ms = RequestContext.getContext().ms;
         ParaCheckUtil.checkEquals(customPluginDTO.getTenant(), ms.getTenant(), "tenant is illegal");
 
-        CustomPluginDTO item = customPluginService.queryById(customPluginDTO.getId(),
-            ms.getTenant(), ms.getWorkspace());
-
-        if (null == item) {
-          throw new MonitorException("cannot find record: " + customPluginDTO.getId());
-        }
-        if (!item.getTenant().equalsIgnoreCase(customPluginDTO.getTenant())) {
-          throw new MonitorException("the tenant parameter is invalid");
-        }
         Boolean aBoolean = tenantInitService.checkCustomPluginLogConfParams(ms.getTenant(),
             ms.getWorkspace(), customPluginDTO);
         if (!aBoolean) {
@@ -124,13 +115,24 @@ public class CustomPluginFacadeImpl extends BaseFacade {
 
         MonitorScope ms = RequestContext.getContext().ms;
         MonitorUser mu = RequestContext.getContext().mu;
+
+        CustomPluginDTO item = customPluginService.queryById(customPluginDTO.getId(),
+            ms.getTenant(), ms.getWorkspace());
+
+        if (null == item) {
+          throw new MonitorException("cannot find record: " + customPluginDTO.getId());
+        }
+        if (!item.getTenant().equalsIgnoreCase(customPluginDTO.getTenant())) {
+          throw new MonitorException("the tenant parameter is invalid");
+        }
+
         if (null != mu) {
           customPluginDTO.setModifier(mu.getLoginName());
         }
-        if (null != ms && !StringUtils.isEmpty(ms.tenant)) {
+        if (!StringUtils.isEmpty(ms.tenant)) {
           customPluginDTO.setTenant(ms.tenant);
         }
-        if (null != ms && !StringUtils.isEmpty(ms.workspace)) {
+        if (!StringUtils.isEmpty(ms.workspace)) {
           customPluginDTO.setWorkspace(ms.workspace);
         }
         customPluginDTO.setGmtModified(new Date());
@@ -138,7 +140,7 @@ public class CustomPluginFacadeImpl extends BaseFacade {
         JsonResult.createSuccessResult(result, update);
         assert mu != null;
         userOpLogService.append("custom_plugin", update.getId(), OpType.UPDATE, mu.getLoginName(),
-            ms.getTenant(), ms.getWorkspace(), J.toJson(customPluginDTO), J.toJson(update), null,
+            ms.getTenant(), ms.getWorkspace(), J.toJson(item), J.toJson(update), null,
             "custom_plugin_update");
 
       }

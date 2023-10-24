@@ -5,6 +5,7 @@ package io.holoinsight.server.home.biz.plugin.core;
 
 import io.holoinsight.server.common.dao.entity.dto.MetricInfoDTO;
 import io.holoinsight.server.common.service.MetricInfoService;
+import io.holoinsight.server.home.biz.common.GaeaConvertUtil;
 import io.holoinsight.server.home.biz.common.GaeaSqlTaskUtil;
 import io.holoinsight.server.home.biz.plugin.config.LogPluginConfig;
 import io.holoinsight.server.home.dal.model.dto.CustomPluginPeriodType;
@@ -256,5 +257,13 @@ public class LogPlugin extends AbstractLocalIntegrationPlugin<LogPlugin> {
           integrationPluginDTO.workspace, integrationPluginDTO.product, config.name,
           integrationPluginDTO.status);
     }
+  }
+
+  @Override
+  public Map<String, Object> getExecutorSelector() {
+    if (this instanceof SlsLogPlugin) {
+      return GaeaConvertUtil.getCenterExecutorSelector();
+    }
+    return GaeaConvertUtil.getLocalExecutorSelector();
   }
 }
