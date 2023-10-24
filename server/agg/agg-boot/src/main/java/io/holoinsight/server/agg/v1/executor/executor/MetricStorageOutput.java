@@ -44,7 +44,6 @@ public class MetricStorageOutput implements XOutput {
     List<WriteMetricsParam.Point> points = new ArrayList<>(batch.groups.size());
     param.setPoints(points);
 
-
     long time0 = System.currentTimeMillis();
 
     String baseName = batch.oi.getName();
@@ -109,8 +108,8 @@ public class MetricStorageOutput implements XOutput {
     }
     long time1 = System.currentTimeMillis();
 
-    log.info("[output] [ceresdb3] agg=[{}] ts=[{}] input=[{}] output=[{}] discard=[{}] cost=[{}]", //
-        batch.key, ts, batch.window.getInput(), points.size(), discard, time1 - time0);
+    log.info("[output] [ceresdb3] agg=[{}] ts=[{}] stat={} output=[{}] discard=[{}] cost=[{}]", //
+        batch.key, ts, batch.window.getStat(), points.size(), discard, time1 - time0);
 
     param = new WriteMetricsParam();
     param.setTenant(batch.key.getTenant());

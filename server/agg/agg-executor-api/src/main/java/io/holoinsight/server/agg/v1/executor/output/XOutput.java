@@ -42,12 +42,11 @@ public interface XOutput {
   }
 
   @Data
-  @NoArgsConstructor
   @AllArgsConstructor
   class WindowInfo {
     public long timestamp;
-    public int input;
     public MergedCompleteness mergedCompleteness;
+    public WindowStat stat;
   }
 
   @Data
