@@ -66,4 +66,6 @@ public class InspectConfig {
   private AlertNotifyRecordDTO alertNotifyRecord;
 
   private boolean alertRecord;
+
+  private AlertSilenceConfig alertSilenceConfig;
 }

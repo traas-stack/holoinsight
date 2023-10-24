@@ -65,6 +65,7 @@ public class DoConvert {
       if (StringUtils.isNotBlank(alarmRuleDO.getExtra())) {
         AlertRuleExtra alertRuleExtra = J.fromJson(alarmRuleDO.getExtra(), AlertRuleExtra.class);
         inspectConfig.setAlertRecord(alertRuleExtra.isRecord);
+        inspectConfig.setAlertSilenceConfig(alertRuleExtra.alertSilenceConfig);
       }
     } catch (Exception e) {
       LOGGER.error("fail to convert alarmRule {}", G.get().toJson(alarmRuleDO), e);

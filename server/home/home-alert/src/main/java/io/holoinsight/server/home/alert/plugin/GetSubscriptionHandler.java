@@ -6,6 +6,7 @@ package io.holoinsight.server.home.alert.plugin;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.google.common.reflect.TypeToken;
+import io.holoinsight.server.common.J;
 import io.holoinsight.server.home.alert.common.G;
 import io.holoinsight.server.home.alert.model.event.AlertNotify;
 import io.holoinsight.server.home.alert.model.event.NotifyDataInfo;
@@ -24,7 +25,9 @@ import io.holoinsight.server.home.dal.model.AlarmDingDingRobot;
 import io.holoinsight.server.home.dal.model.AlarmGroup;
 import io.holoinsight.server.home.dal.model.AlarmSubscribe;
 import io.holoinsight.server.home.dal.model.AlarmWebhook;
+import io.holoinsight.server.home.facade.AlertSilenceConfig;
 import io.holoinsight.server.home.facade.DataResult;
+import io.holoinsight.server.home.facade.InspectConfig;
 import io.holoinsight.server.home.facade.PqlRule;
 import io.holoinsight.server.home.facade.trigger.Trigger;
 import org.apache.commons.lang3.StringUtils;
@@ -97,6 +100,14 @@ public class GetSubscriptionHandler implements AlertHandlerExecutor {
               alarmSubscribeDOMapper.selectList(alertSubscribeQueryWrapper);
           LOGGER.info("{} GetSubscription_SUCCESS {} {} ", alertNotify.getTraceId(),
               alertNotify.getUniqueId(), G.get().toJson(alertSubscribeList));
+
+          InspectConfig inspectConfig = alertNotify.getRuleConfig();
+          if (keepSilence(inspectConfig.getAlertSilenceConfig(), alertNotify.getAlarmTime())) {
+            LOGGER.info("{} keep silence {}.", alertNotify.getTraceId(),
+                J.toJson(inspectConfig.getAlertSilenceConfig()));
+            return;
+          }
+
           if (!CollectionUtils.isEmpty(alertSubscribeList)) {
             Set<String> userIdList = new HashSet<>();
             Set<Long> dingDingGroupIdList = new HashSet<>();
@@ -205,6 +216,10 @@ public class GetSubscriptionHandler implements AlertHandlerExecutor {
           "[HoloinsightAlertInternalException][GetSubscriptionHandler][{}] fail to get_subscription for {}",
           alertNotifies.size(), e.getMessage(), e);
     }
+  }
+
+  private boolean keepSilence(AlertSilenceConfig alertSilenceConfig, Long alarmTime) {
+    return alertSilenceConfig != null && !alertSilenceConfig.needShoot(alarmTime);
   }
 
   private void handleBlock(List<AlertNotify> alertNotifies) {

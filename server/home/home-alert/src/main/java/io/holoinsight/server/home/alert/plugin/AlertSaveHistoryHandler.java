@@ -20,7 +20,9 @@ import io.holoinsight.server.home.dal.mapper.AlarmHistoryDetailMapper;
 import io.holoinsight.server.home.dal.mapper.AlarmHistoryMapper;
 import io.holoinsight.server.home.dal.model.AlarmHistory;
 import io.holoinsight.server.home.dal.model.AlarmHistoryDetail;
+import io.holoinsight.server.home.facade.AlertHistoryExtra;
 import io.holoinsight.server.home.facade.AlertNotifyRecordDTO;
+import io.holoinsight.server.home.facade.AlertSilenceConfig;
 import io.holoinsight.server.home.facade.DataResult;
 import io.holoinsight.server.home.facade.InspectConfig;
 import io.holoinsight.server.home.facade.trigger.AlertHistoryDetailExtra;
@@ -332,6 +334,23 @@ public class AlertSaveHistoryHandler implements AlertHandlerExecutor {
               triggerList.addAll(triggerListNew);
               alertHistory.setTriggerContent(G.get().toJson(triggerList));
             }
+            if (hasSilenceConfig(alertNotify)) {
+              AlertHistoryExtra alertHistoryExtra = getAlertHistoryExtra(alertHistory.getExtra());
+              AlertSilenceConfig alertSilenceConfig =
+                  getNewAlertSilenceConfig(alertNotify.getRuleConfig(), alertHistoryExtra);
+              if (alertSilenceConfig.timeIsUp(alertNotify.getAlarmTime())) {
+                alertSilenceConfig.updatePeriod(alertNotify.getAlarmTime());
+                alertHistoryExtra.setAlertSilenceConfig(alertSilenceConfig);
+                alertHistory.setExtra(J.toJson(alertHistoryExtra));
+                LOGGER.info("{} alert rule {} silence has been broken for {}.",
+                    alertNotify.getTraceId(), alertNotify.getUniqueId(),
+                    J.toJson(alertHistoryExtra.getAlertSilenceConfig()));
+              } else {
+                LOGGER.info("{} alert rule {} keep silence for {}.", alertNotify.getTraceId(),
+                    alertNotify.getUniqueId(), J.toJson(alertSilenceConfig));
+              }
+              alertNotify.getRuleConfig().setAlertSilenceConfig(alertSilenceConfig);
+            }
             alarmHistoryDOMapper.updateById(alertHistory);
           }
           alertNotify.setDuration(alertHistory.getDuration());
@@ -341,6 +360,15 @@ public class AlertSaveHistoryHandler implements AlertHandlerExecutor {
           alertHistoryNew.setDuration(0L);
           alertHistoryNew.setApp(getApps(alertNotify));
           alertNotify.setDuration(alertHistoryNew.getDuration());
+          if (hasSilenceConfig(alertNotify)) {
+            AlertSilenceConfig alertSilenceConfig =
+                getNewAlertSilenceConfig(alertNotify.getRuleConfig(), null);
+            alertSilenceConfig.updatePeriod(alertNotify.getAlarmTime());
+            AlertHistoryExtra alertHistoryExtra = new AlertHistoryExtra();
+            alertHistoryExtra.setAlertSilenceConfig(alertSilenceConfig);
+            alertHistoryNew.setExtra(J.toJson(alertHistoryExtra));
+            alertNotify.getRuleConfig().setAlertSilenceConfig(alertSilenceConfig);
+          }
           alarmHistoryDOMapper.insert(alertHistoryNew);
           historyId = alertHistoryNew.getId();
         }
@@ -370,6 +398,32 @@ public class AlertSaveHistoryHandler implements AlertHandlerExecutor {
             alertNotify.getTraceId(), e.getMessage(), e);
       }
     }
+  }
+
+  private AlertSilenceConfig getNewAlertSilenceConfig(InspectConfig ruleConfig,
+      AlertHistoryExtra alertHistoryExtra) {
+    AlertSilenceConfig alertSilenceConfig = ruleConfig.getAlertSilenceConfig();
+    if (alertHistoryExtra != null && alertHistoryExtra.alertSilenceConfig != null) {
+      AlertSilenceConfig lastSilenceConfig = alertHistoryExtra.getAlertSilenceConfig();
+      alertSilenceConfig.setSilencePeriod(lastSilenceConfig.getSilencePeriod());
+      alertSilenceConfig.setStep(lastSilenceConfig.getStep());
+    }
+    return alertSilenceConfig;
+  }
+
+  private AlertHistoryExtra getAlertHistoryExtra(String extra) {
+    if (StringUtils.isNotEmpty(extra)) {
+      return J.fromJson(extra, AlertHistoryExtra.class);
+    }
+    return new AlertHistoryExtra();
+  }
+
+  private boolean hasSilenceConfig(AlertNotify alertNotify) {
+    if (alertNotify == null || alertNotify.getRuleConfig() == null
+        || alertNotify.getRuleConfig().getAlertSilenceConfig() == null) {
+      return false;
+    }
+    return true;
   }
 
   private String getApps(AlertNotify alertNotify) {
