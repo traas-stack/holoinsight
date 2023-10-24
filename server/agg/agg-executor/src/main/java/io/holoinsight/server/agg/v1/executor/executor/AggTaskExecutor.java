@@ -157,13 +157,14 @@ public class AggTaskExecutor {
         lastWindowState = w;
       }
 
-      w.addInput();
+      w.getStat().incInput();
 
       CompletenessUtils.processCompletenessInfoInData(w, da);
 
       // decide which group to use
       Group g = w.getOrCreateGroup(da, this::onGroupCreate);
       if (g == null) {
+        w.getStat().incDiscardKeyLimit();
         log.error("[agg] [{}] group key limit exceeded", key());
         continue;
       }
@@ -218,27 +219,30 @@ public class AggTaskExecutor {
         lastWindowState = w;
         // use aggTask of the existing time window
         if (!w.getAggTask().getWhere().test(da)) {
+          w.getStat().incFilterWhere();
           continue;
         }
       } else {
         // use latest aggTask
         if (!latestAggTask.getWhere().test(da)) {
+          // w.getStat().incFilterWhere();
           continue;
         }
       }
+
       if (w == null) {
         w = state.getOrCreateAggWindowState(alignedDataTs, latestAggTask, this::onAggWindowCreate);
         lastWindowState = w;
       }
 
-      w.addInput();
+      w.getStat().incInput();
 
       CompletenessUtils.processCompletenessInfoInData(w, da);
 
       // decide which group to use
       Group g = w.getOrCreateGroup(da, this::onGroupCreate);
       if (g == null) {
-        log.error("[agg] [{}] group key limit exceeded", key());
+        w.getStat().incDiscardKeyLimit();
         continue;
       }
 
@@ -246,6 +250,7 @@ public class AggTaskExecutor {
       try {
         g.agg(w.getAggTask(), aggTaskValue, da);
       } catch (Exception e) {
+        w.getStat().incError();
         log.error("[agg] [{}] agg error {}", key(), in, e);
       }
     }
@@ -380,17 +385,17 @@ public class AggTaskExecutor {
 
     MergedCompleteness mc = CompletenessUtils.buildMergedCompleteness(w);
 
-    log.info("[agg] [{}] emit wm=[{}] ts=[{}] complete=[{}/{}] input=[{}] groups=[{}]", //
+    log.info("[agg] [{}] emit wm=[{}] ts=[{}] complete=[{}/{}] stat={} groups=[{}]", //
         key(), //
         Utils.formatTimeShort(watermark), //
         Utils.formatTimeShort(w.getTimestamp()), //
         mc.ok, //
         mc.total, //
-        w.getInput(), //
+        w.getStat(), //
         w.getGroupMap().size()); //
 
     Map<Integer, XOutput.Batch> batches = new HashMap<>();
-    XOutput.WindowInfo windowInfo = new XOutput.WindowInfo(w.getTimestamp(), w.getInput(), mc);
+    XOutput.WindowInfo windowInfo = new XOutput.WindowInfo(w.getTimestamp(), mc, w.getStat());
 
     for (Group g : w.getGroupMap().values()) {
       Map<String, Object> env = g.getFinalFields1(w.getAggTask());
@@ -407,7 +412,6 @@ public class AggTaskExecutor {
           log.error("[agg] [{}] MapUtils.isEmpty(finalFields)", key());
           continue;
         }
-
 
         XOutput.Batch batch =
             batches.computeIfAbsent(i, x -> new XOutput.Batch(key(), oi, windowInfo));

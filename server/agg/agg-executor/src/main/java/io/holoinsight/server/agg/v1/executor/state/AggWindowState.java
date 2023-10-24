@@ -14,6 +14,7 @@ import io.holoinsight.server.agg.v1.executor.executor.FixedSizeTags;
 import io.holoinsight.server.agg.v1.executor.executor.Group;
 import io.holoinsight.server.agg.v1.executor.executor.WindowCompleteness;
 import io.holoinsight.server.agg.v1.executor.executor.XAggTask;
+import io.holoinsight.server.agg.v1.executor.output.WindowStat;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 
@@ -35,7 +36,7 @@ public class AggWindowState {
   private transient FixedSizeTags reused;
   private Map<FixedSizeTags, Group> groupMap = new HashMap<>();
   private WindowCompleteness windowCompleteness = new WindowCompleteness();
-  private int input;
+  private WindowStat stat = new WindowStat();
   private XAggTask aggTask;
 
   public Group getOrCreateGroup(DataAccessor da, BiConsumer<AggWindowState, Group> callback) {
@@ -92,15 +93,9 @@ public class AggWindowState {
     return reused;
   }
 
-  @Deprecated
-  public void addInput() {
-    input++;
-  }
-
   private static FixedSizeTags cloneTags(FixedSizeTags gk) {
     FixedSizeTags cloned = gk.clone();
     Dict.reuse(cloned.getValues());
     return cloned;
   }
-
 }

@@ -94,7 +94,7 @@ public class StatePbConverter {
   private static AggWindowState fromPb(StateProtos.AggWindowState pb) {
     AggWindowState s = new AggWindowState();
     s.setTimestamp(pb.getTimestamp());
-    s.setInput(pb.getProcessed());
+    s.getStat().setInput(pb.getProcessed());
 
     String aggTaskJson = pb.getExtensionOrThrow("aggTask");
     XAggTask aggTask = XParserUtils.parse(JSON.parseObject(aggTaskJson, AggTask.class));
@@ -196,7 +196,7 @@ public class StatePbConverter {
   private static StateProtos.AggWindowState.Builder toPb(AggWindowState s) {
     StateProtos.AggWindowState.Builder b = StateProtos.AggWindowState.newBuilder() //
         .setTimestamp(s.getTimestamp()) //
-        .setProcessed(s.getInput());
+        .setProcessed(s.getStat().getInput());
 
     b.putExtension("aggTask", JSON.toJSONString(s.getAggTask().getInner()));
 
