@@ -9,12 +9,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.text.StringSubstitutor;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 
 import io.holoinsight.server.agg.v1.core.Utils;
+import io.holoinsight.server.agg.v1.executor.output.AggStringLookup;
 import io.holoinsight.server.agg.v1.executor.output.MergedCompleteness;
 import io.holoinsight.server.agg.v1.executor.output.XOutput;
 import io.holoinsight.server.extension.MetricStorage;
@@ -47,7 +49,10 @@ public class MetricStorageOutput implements XOutput {
     long time0 = System.currentTimeMillis();
 
     String baseName = batch.oi.getName();
-    boolean useFormatName = baseName.contains("%s");
+    AggStringLookup aggStringLookup = new AggStringLookup();
+    boolean useFormatName = baseName.contains("$");
+    StringSubstitutor stringSubstitutor = new StringSubstitutor(aggStringLookup);
+
     String ts = Utils.formatTimeShort(batch.window.getTimestamp());
 
     boolean debug = false;
@@ -63,15 +68,13 @@ public class MetricStorageOutput implements XOutput {
         }
 
         String metricName;
-        if ("value".equals(e.getKey())) {
-          metricName = baseName;
+        if (useFormatName) {
+          aggStringLookup.bind(e.getKey(), g.tags, batch.key.getPartitionInfo());
+          metricName = stringSubstitutor.replace(baseName);
         } else {
-          if (useFormatName) {
-            metricName = String.format(baseName, e.getKey());
-          } else {
-            metricName = baseName + "_" + e.getKey();
-          }
+          metricName = baseName;
         }
+
         usedMetricNames.add(metricName);
 
         try {
