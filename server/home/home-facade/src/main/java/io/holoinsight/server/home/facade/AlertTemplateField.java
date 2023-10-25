@@ -44,6 +44,9 @@ public enum AlertTemplateField {
   ALERT_TRIGGER_CONDITION("ALERT_TRIGGER_CONDITION", "告警触发条件", "string"), //
   SOURCE_TYPE("SOURCE_TYPE", "告警来源类型", "string"), //
   LOG_CONTENT("LOG_CONTENT", "告警来源日志采样内容", "string"), //
+  TENANT_NAME("TENANT_NAME", "租户名", "string"), //
+  WORKSPACE_NAME("WORKSPACE_NAME", "工作空间名", "string"), //
+  PID("PID", "pid", "string"), //
 
   ;
 
