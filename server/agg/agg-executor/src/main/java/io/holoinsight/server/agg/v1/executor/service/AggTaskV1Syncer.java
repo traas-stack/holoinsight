@@ -98,6 +98,9 @@ public class AggTaskV1Syncer implements InitializingBean {
 
     for (AggTaskV1DO task : list) {
       XAggTask aggTask = XParserUtils.parse(JSON.parseObject(task.getJson(), AggTask.class));
+      if (aggTask == null) {
+        continue;
+      }
       aggTask.getInner().setId(task.getId());
       aggTask.getInner().setAggId(task.getAggId());
       aggTask.getInner().setVersion(task.getVersion());
@@ -152,6 +155,14 @@ public class AggTaskV1Syncer implements InitializingBean {
         case 1:
           XAggTask aggTask =
               XParserUtils.parse(JSON.parseObject(d.add.get(0).getJson(), AggTask.class));
+          if (aggTask == null) {
+            if (storage.remove(d.aggId) != null) {
+              ++del;
+            }
+            log.info("[aggtask] parse error [{}/{}]", d.aggId, d.add.get(0).getVersion());
+            continue;
+          }
+
           if (storage.get(d.aggId) != null) {
             ++update;
           } else {

@@ -5,11 +5,13 @@ package io.holoinsight.server.agg.v1.executor.executor;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import javax.annotation.Nullable;
 
@@ -420,6 +422,27 @@ public class AggTaskExecutor {
     }
 
     for (XOutput.Batch batch : batches.values()) {
+      // process topn after agg
+      OutputItem.Topn topn = batch.oi.getTopn();
+      if (topn != null && topn.isEnabled()) {
+        String orderBy = topn.getOrderBy();
+
+        Comparator<XOutput.Group> comparator = Comparator.comparingDouble(
+            x -> ((Number) x.getFinalFields().getOrDefault(orderBy, 0D)).doubleValue());
+
+        if (!topn.isAsc()) {
+          comparator = comparator.reversed();
+        }
+
+        batch.groups = batch.groups.stream() //
+            .sorted(comparator) //
+            .limit(topn.getLimit()) //
+            .collect(Collectors.toList()); //
+      }
+
+      if (batch.groups.isEmpty()) {
+        continue;
+      }
       output.write(batch);
     }
   }
