@@ -5,6 +5,8 @@ package io.holoinsight.server.home.biz.service.log;
 
 import lombok.Data;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -39,4 +41,5 @@ public class LogCountResponse {
    * query context
    */
   private Map<String, String> params;
+  private List<LogHistogramCount> logHistogramCounts = new ArrayList<>();
 }
