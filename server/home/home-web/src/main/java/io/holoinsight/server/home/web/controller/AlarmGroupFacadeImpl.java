@@ -101,10 +101,10 @@ public class AlarmGroupFacadeImpl extends BaseFacade {
       return jsonResult;
     }
 
-    return save(alarmGroup);
+    return save(alarmGroup, true);
   }
 
-  public JsonResult<Long> save(AlarmGroupDTO alarmGroup) {
+  public JsonResult<Long> save(AlarmGroupDTO alarmGroup, boolean needCheckUser) {
     final JsonResult<Long> result = new JsonResult<>();
     facadeTemplate.manage(result, new ManageCallback() {
       @Override
@@ -114,7 +114,7 @@ public class AlarmGroupFacadeImpl extends BaseFacade {
             "invalid groupName, please use a-z A-Z 0-9 Chinese - _ , . spaces");
         List<String> persons = alarmGroup.getUserList();
         MonitorUser mu = RequestContext.getContext().mu;
-        if (!CollectionUtils.isEmpty(persons)) {
+        if (!CollectionUtils.isEmpty(persons) && needCheckUser) {
           for (String person : persons) {
             ParaCheckUtil.checkParaBoolean(
                 parameterSecurityService.checkUserTenantAndWorkspace(person, mu),
