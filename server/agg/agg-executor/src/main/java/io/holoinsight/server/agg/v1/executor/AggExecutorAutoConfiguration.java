@@ -30,8 +30,10 @@ import io.holoinsight.server.agg.v1.executor.service.IAggTaskService;
 import io.holoinsight.server.agg.v1.executor.service.JdbcAggTaskService;
 import io.holoinsight.server.agg.v1.executor.state.JdbcPartitionStateStore;
 import io.holoinsight.server.agg.v1.executor.state.PartitionStateStore;
+import io.holoinsight.server.common.config.ConfigConfiguration;
 import io.holoinsight.server.common.dao.CommonDaoConfiguration;
 import io.holoinsight.server.common.springboot.ConditionalOnRole;
+import io.holoinsight.server.common.threadpool.ThreadPoolConfiguration;
 
 /**
  * <p>
@@ -44,7 +46,7 @@ import io.holoinsight.server.common.springboot.ConditionalOnRole;
 @EnableScheduling
 @ConditionalOnRole("agg-executor")
 @EnableConfigurationProperties(AggProperties.class)
-@Import(CommonDaoConfiguration.class)
+@Import({CommonDaoConfiguration.class, ConfigConfiguration.class, ThreadPoolConfiguration.class})
 @MapperScan(basePackageClasses = AggOffsetV1DOMapper.class)
 public class AggExecutorAutoConfiguration {
   @Autowired

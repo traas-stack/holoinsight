@@ -39,5 +39,21 @@ public class OutputItem {
   @Nonnull
   private Map<String, String> params = new HashMap<>();
 
+  private Topn topn;
+
   public OutputItem() {}
+
+  @Data
+  public static class Topn {
+    /**
+     * whether enable topn after agg
+     */
+    private boolean enabled;
+    /**
+     * topn field
+     */
+    private String orderBy;
+    private boolean asc;
+    private int limit = 3;
+  }
 }
