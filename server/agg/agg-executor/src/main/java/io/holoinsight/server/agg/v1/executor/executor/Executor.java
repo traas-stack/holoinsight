@@ -36,6 +36,7 @@ import org.apache.kafka.common.TopicPartition;
 import org.apache.kafka.common.errors.WakeupException;
 
 import io.holoinsight.server.agg.v1.core.Utils;
+import io.holoinsight.server.agg.v1.core.conf.AggTaskValueTypes;
 import io.holoinsight.server.agg.v1.core.data.AggKeySerdes;
 import io.holoinsight.server.agg.v1.core.data.AggTaskKey;
 import io.holoinsight.server.agg.v1.core.data.AggValuesSerdes;
@@ -59,7 +60,8 @@ public class Executor {
   private static final int ERROR_SLEEP = 1000;
   private static final Duration POLL_TIMEOUT = Duration.ofSeconds(3);
   private static final Duration MAX_WINDOW = Duration.ofMinutes(1);
-  private static final long UPDATE_LASTEST_OFFSET_INTERVAL = 10_000L;
+  private static final long UPDATE_LATEST_OFFSET_INTERVAL = 10_000L;
+
   private final int index;
   private final ExecutorConfig config;
   private final Map<TopicPartition, PartitionProcessor> partitionProcessorMap = new HashMap<>();
@@ -67,13 +69,15 @@ public class Executor {
   private final ForkJoinPool threadpool;
   private final ExecutorService ioTP;
   private final KafkaProducer<AggTaskKey, AggProtos.AggTaskValue> kafkaProducer;
-  private final CountDownLatch cdl = new CountDownLatch(1);
   private final IAggTaskService aggTaskService;
   private final CompletenessService completenessService;
   private final AsyncOutput output;
   private final LastRun saveOffsetsLastRun;
   private final Admin adminClient;
+
+  private final CountDownLatch stopCDL = new CountDownLatch(1);
   private volatile boolean stopped;
+
   private KafkaConsumer<AggTaskKey, AggProtos.AggTaskValue> kafkaConsumer;
   private transient long lastSaveStateTime = System.currentTimeMillis();
   private transient long lastUpdateLatestOffsetsTime;
@@ -134,7 +138,7 @@ public class Executor {
 
   private void maybeUpdateLastOffsets() {
     long now = System.currentTimeMillis();
-    if (this.lastUpdateLatestOffsetsTime + UPDATE_LASTEST_OFFSET_INTERVAL < now) {
+    if (this.lastUpdateLatestOffsetsTime + UPDATE_LATEST_OFFSET_INTERVAL < now) {
       this.lastUpdateLatestOffsetsTime = now;
       saveOffsetsLastRun.add(this::updateLatestOffsets);
     }
@@ -154,9 +158,6 @@ public class Executor {
    */
   private void maybeSaveState() {
     FaultToleranceConfig faultToleranceConfig = config.getFaultToleranceConfig();
-    if (faultToleranceConfig.getType() != FaultToleranceConfig.Type.STATE_SAVE) {
-      return;
-    }
 
     long now = System.currentTimeMillis();
     if (lastSaveStateTime + faultToleranceConfig.getSaveStateInterval().toMillis() >= now) {
@@ -171,6 +172,7 @@ public class Executor {
         log.error("[partition] [{}] save state error", pp.partition, e);
       }
     }
+
     long cost = System.currentTimeMillis() - now;
     log.info("[executor] [{}] save state successfully, cost=[{}]", index, cost);
   }
@@ -186,17 +188,13 @@ public class Executor {
     long minActiveTime = now - config.getIdleTimeout().toMillis();
 
     AggProtos.AggTaskValue timestampValue = AggProtos.AggTaskValue.newBuilder() //
-        .setType(1) //
+        .setType(AggTaskValueTypes.PUSH_EVENT_TIMESTAMP) //
         .setTimestamp(now) //
         .build(); //
 
     for (PartitionProcessor pp : this.partitionProcessorMap.values()) {
-      if (pp.lastActiveTime < minActiveTime) {
-
+      if (pp.isIdle(now, minActiveTime)) {
         log.info("[partition] [{}] push ET=[{}]", pp.partition, Utils.formatTime(now));
-
-        pp.lastActiveTime = now;
-
         kafkaProducer.send(new ProducerRecord<>(pp.partition.topic(), pp.partition.partition(),
             null, timestampValue));
       }
@@ -211,21 +209,12 @@ public class Executor {
     }
     long time1 = System.currentTimeMillis();
 
+
     Set<TopicPartition> partitions = crs.partitions();
-
+    List<Callable<Void>> tasks = new ArrayList<>(partitions.size());
     for (TopicPartition partition : partitions) {
       PartitionProcessor pp = partitionProcessorMap.get(partition);
-      if (pp != null) {
-        pp.lastActiveTime = time1;
-      } else {
-        // logically impossible
-        throw new IllegalStateException("no processor for partition " + partition);
-      }
-    }
-
-    List<Callable<Object>> tasks = new ArrayList<>(partitions.size());
-    for (TopicPartition partition : partitions) {
-      PartitionProcessor pp = partitionProcessorMap.get(partition);
+      pp.touch(time1);
       tasks.add(() -> {
         pp.process(crs.records(partition));
         return null;
@@ -233,9 +222,10 @@ public class Executor {
     }
     threadpool.invokeAll(tasks);
 
+
     long time2 = System.currentTimeMillis();
-    log.info("[executor] [{}] poll once count=[{}] pullCost=[{}] processCost=[{}]", index,
-        crs.count(), time1 - time0, time2 - time1);
+    log.info("[executor] [{}] loop once count=[{}] pullCost=[{}] processCost=[{}]", //
+        index, crs.count(), time1 - time0, time2 - time1);
   }
 
   private KafkaConsumer<AggTaskKey, AggProtos.AggTaskValue> createKafkaConsumer() {
@@ -267,7 +257,7 @@ public class Executor {
       loop();
     } finally {
       stopped = true;
-      cdl.countDown();
+      stopCDL.countDown();
     }
   }
 
@@ -280,7 +270,7 @@ public class Executor {
     if (kafkaConsumer != null) {
       kafkaConsumer.wakeup();
     }
-    if (cdl.await(timeout, unit)) {
+    if (stopCDL.await(timeout, unit)) {
       log.info("[executor] [{}] shutdown successfully", index);
       return true;
     } else {
@@ -289,7 +279,8 @@ public class Executor {
     return false;
   }
 
-  private RecomputingOffsets findRecomputingOffsets(TopicPartition partition) throws Exception {
+  private RecomputingOffsets findRecomputingOffsets(TopicPartition partition, long mustCoverOffset)
+      throws Exception {
     List<OffsetInfo> offsetInfos = stateStore.loadOffsets(partition) //
         .stream() //
         .sorted(Comparator.comparingLong(OffsetInfo::getOffset).reversed()) //
@@ -306,57 +297,45 @@ public class Executor {
 
     for (int i = 1; i < offsetInfos.size(); i++) {
       OffsetInfo oi = offsetInfos.get(i);
-      if (oi.getMaxEventTimestamp() < minWindow) {
+      if (oi.getMaxEventTimestamp() < minWindow
+          && (mustCoverOffset <= 0 || oi.getOffset() < mustCoverOffset)) {
         return new RecomputingOffsets(last, oi);
       }
     }
     return null;
   }
 
-  private boolean recoverByState(PartitionProcessor pp, Map<TopicPartition, Long> endOffsets) {
-
+  private void maybeRecoverState(PartitionProcessor pp) {
     try {
       pp.loadState(stateStore);
     } catch (Exception e) {
       pp.clearState();
       log.error("[partition] [{}] [recover] load state error", pp.partition, e);
-      return false;
     }
-
-    if (pp.state.getOffset() > 0) {
-      Long latest = endOffsets.get(pp.partition);
-      if (latest == null) {
-        latest = 0L;
-      }
-      kafkaConsumer.seek(pp.partition, pp.state.getOffset());
-      log.info(
-          "[partition] [{}] [recover] recover by STATE, seek to offset=[{}] MET=[{}] latest=[{}] lag=[{}]", //
-          pp.partition, pp.state.getOffset(), Utils.formatTime(pp.state.getMaxEventTimestamp()),
-          latest, latest - pp.state.getOffset());
-      return true;
-    }
-
-    return false;
   }
 
-  private boolean recoverByRecomputing(PartitionProcessor pp,
-      Map<TopicPartition, Long> endOffsets) {
+  private boolean recoverByRecomputing(PartitionProcessor pp, Map<TopicPartition, Long> endOffsets,
+      long mustCoverOffset) {
     TopicPartition partition = pp.partition;
 
     RecomputingOffsets ro = null;
     try {
-      ro = findRecomputingOffsets(partition);
+      ro = findRecomputingOffsets(partition, mustCoverOffset);
     } catch (Exception e) {
       log.error("[partition] [{}] [recover] findRecomputingOffsets error", partition, e);
     }
 
     if (ro == null) {
-      log.error("[partition] [{}] [recover] no good offset for recomputing, will seek to end",
-          partition);
+      log.error(
+          "[partition] [{}] [recover] no good offset for recomputing, will seek to end, mustCoverOffset=[{}]",
+          partition, mustCoverOffset);
       return false;
     }
 
-    kafkaConsumer.seek(partition, ro.getStart().getOffset());
+    // ro.last.getOffset() is the last offset we have consumed.
+    // ro.start.getOffset() + 1 is the next offset we want to consume.
+    // so we seek to ro.start.getOffset() + 1
+    kafkaConsumer.seek(partition, ro.getStart().getOffset() + 1);
     long latest = endOffsets.get(partition);
     log.info(
         "[partition] [{}] [recover] prepare recomputing last=[{},{}] seek=[{},{}] latest=[{}] lag=[{}]",
@@ -406,21 +385,23 @@ public class Executor {
 
       for (TopicPartition partition : partitions) {
         PartitionProcessor pp = partitionProcessorMap.remove(partition);
-        if (pp != null) {
-
-          pp.maybeSaveOffset(config.getFaultToleranceConfig(), stateStore, true);
-
-          if (config.getFaultToleranceConfig().getType() == FaultToleranceConfig.Type.STATE_SAVE) {
-            try {
-              pp.saveState(stateStore);
-            } catch (Exception e) {
-              log.error("[partition] [{}] save state error", partition, e);
-            }
-          }
-        } else {
+        if (pp == null) {
           log.error(
-              "[executor] [{}] no PartitionProcessor for partition {} when onPartitionsRevoked is called",
+              "[executor] [{}] no PartitionProcessor for partition {} when onPartitionsRevoked",
               index, partition);
+          continue;
+        }
+
+        try {
+          pp.maybeSaveOffset(config.getFaultToleranceConfig(), stateStore, true);
+        } catch (Exception e) {
+          log.error("[partition] [{}] save offset error", partition, e);
+        }
+
+        try {
+          pp.saveState(stateStore);
+        } catch (Exception e) {
+          log.error("[partition] [{}] save state error", partition, e);
         }
       }
 
@@ -465,7 +446,6 @@ public class Executor {
         pp = new PartitionProcessor(partition, aggTaskService, config, completenessService, output,
             ioTP);
         partitionProcessorMap.put(partition, pp);
-        FaultToleranceConfig faultToleranceConfig = config.getFaultToleranceConfig();
 
         if (forceBegin) {
           log.info("[partition] [{}] [recover] force seek to beginning", partition);
@@ -473,33 +453,11 @@ public class Executor {
           continue;
         }
 
-        switch (faultToleranceConfig.getType()) {
-          case NONE:
-            seekToEnds.add(partition);
-            break;
-          case RECOMPUTE: {
-            if (!recoverByRecomputing(pp, endOffsets)) {
-              pp.clearState();
-              seekToEnds.add(pp.partition);
-            }
-            break;
-          }
-          case STATE_SAVE: {
-            if (!recoverByState(pp, endOffsets)) {
-              log.info("[partition] [{}] [recover] fail to recover by state, fallback to RECOMPUTE",
-                  pp.partition);
+        maybeRecoverState(pp);
 
-              if (!recoverByRecomputing(pp, endOffsets)) {
-                pp.clearState();
-                seekToEnds.add(pp.partition);
-              }
-            }
-            break;
-
-          }
-          default:
-            throw new UnsupportedOperationException(
-                "unsupported type " + faultToleranceConfig.getType());
+        if (!recoverByRecomputing(pp, endOffsets, pp.state.getRestoredOffset())) {
+          pp.clearState();
+          seekToEnds.add(pp.partition);
         }
       }
 

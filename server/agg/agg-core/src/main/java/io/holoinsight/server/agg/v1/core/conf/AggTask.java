@@ -45,14 +45,16 @@ public class AggTask {
   private Where gatewayWhere;
   @Nullable
   private Where where;
-
   @Nonnull
   private GroupBy groupBy;
-
   @Nonnull
   private Window window;
   @Nonnull
   private Output output;
+  /**
+   * agg task state config
+   */
+  private State state = new State();
 
   public AggTask() {}
 

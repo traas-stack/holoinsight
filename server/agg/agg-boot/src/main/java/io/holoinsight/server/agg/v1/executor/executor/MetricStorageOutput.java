@@ -114,28 +114,30 @@ public class MetricStorageOutput implements XOutput {
     log.info("[output] [ceresdb3] agg=[{}] ts=[{}] stat={} output=[{}] discard=[{}] cost=[{}]", //
         batch.key, ts, batch.window.getStat(), points.size(), discard, time1 - time0);
 
+    if (batch.window.preview) {
+      return;
+    }
+
     param = new WriteMetricsParam();
     param.setTenant(batch.key.getTenant());
     param.setPoints(points);
     points.clear();
     // completeness info
-    {
-      for (String metricName : usedMetricNames) {
-        String completeMetric = metricName + "_complete";
+    for (String metricName : usedMetricNames) {
+      String completeMetric = metricName + "_complete";
 
-        for (MergedCompleteness.GroupCompleteness mgc : batch.window.mergedCompleteness
-            .getDetails()) {
+      for (MergedCompleteness.GroupCompleteness mgc : batch.window.mergedCompleteness
+          .getDetails()) {
 
-          String value = JSON.toJSONString(mgc.getTables(), SerializerFeature.NotWriteDefaultValue);
+        String value = JSON.toJSONString(mgc.getTables(), SerializerFeature.NotWriteDefaultValue);
 
-          WriteMetricsParam.Point p = new WriteMetricsParam.Point();
-          p.setMetricName(completeMetric);
-          p.setTimeStamp(batch.window.getTimestamp());
-          p.setTags(mgc.getTags());
-          p.setStrValue(value);
+        WriteMetricsParam.Point p = new WriteMetricsParam.Point();
+        p.setMetricName(completeMetric);
+        p.setTimeStamp(batch.window.getTimestamp());
+        p.setTags(mgc.getTags());
+        p.setStrValue(value);
 
-          points.add(p);
-        }
+        points.add(p);
       }
     }
     if (points.size() > 0) {

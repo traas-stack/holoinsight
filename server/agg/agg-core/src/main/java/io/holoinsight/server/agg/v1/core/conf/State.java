@@ -3,21 +3,15 @@
  */
 package io.holoinsight.server.agg.v1.core.conf;
 
-import java.util.List;
-
-import javax.annotation.Nonnull;
-
 import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
 
 /**
  * <p>
- * created at 2023/9/22
+ * created at 2023/10/26
  *
  * @author xzchaoo
  */
 @Data
-public class Select {
-  private List<SelectItem> items;
+public class State {
+  private boolean enabled = false;
 }

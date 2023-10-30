@@ -5,8 +5,6 @@ package io.holoinsight.server.agg.v1.core.conf;
 
 import java.util.List;
 
-import javax.annotation.Nonnull;
-
 import lombok.Data;
 
 /**
@@ -17,8 +15,14 @@ import lombok.Data;
  */
 @Data
 public class Output {
-  @Nonnull
   private List<OutputItem> items;
+
+  /**
+   * If preview is true, the incomplete result will be emitted.
+   *
+   * @see Window#getPreviewEmitInterval()
+   */
+  private boolean preview = false;
 
   public Output() {}
 }

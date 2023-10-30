@@ -9,6 +9,7 @@ import java.util.Map;
 import javax.annotation.Nullable;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  * <p>
@@ -17,6 +18,7 @@ import lombok.Data;
  * @author xzchaoo
  */
 @Data
+@NoArgsConstructor
 public class AggFunc {
   public static final int TYPE_SUM = 1;
   public static final int TYPE_AVG = 2;
@@ -57,6 +59,10 @@ public class AggFunc {
   @Nullable
   private LogSamplesMergeParams logSamplesMerge;
 
+  public AggFunc(String type) {
+    this.type = type;
+  }
+
   public int getTypeInt() {
     if (typeInt != 0) {
       return typeInt;
@@ -67,9 +73,18 @@ public class AggFunc {
 
   @Data
   public static class TopnParams {
+    /**
+     * Order by which field
+     */
     private String orderBy;
-    private boolean desc;
-    private int limit;
+    /**
+     * Desc or asc
+     */
+    private boolean asc;
+    /**
+     * topn limit
+     */
+    private int limit = 3;
   }
 
   @Data

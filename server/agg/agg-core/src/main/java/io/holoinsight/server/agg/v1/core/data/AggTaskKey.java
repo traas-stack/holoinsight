@@ -13,6 +13,7 @@ import lombok.AccessLevel;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 /**
@@ -22,10 +23,11 @@ import lombok.Setter;
  * @author xzchaoo
  */
 @Data
+@NoArgsConstructor
 public final class AggTaskKey {
-  private final String tenant;
-  private final String aggId;
-  private final String partition;
+  private String tenant;
+  private String aggId;
+  private String partition;
 
   @Setter(AccessLevel.NONE)
   @Getter(AccessLevel.NONE)

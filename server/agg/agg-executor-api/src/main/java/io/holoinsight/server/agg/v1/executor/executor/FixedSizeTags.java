@@ -12,6 +12,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 /**
@@ -20,6 +21,7 @@ import lombok.Setter;
  *
  * @author xzchaoo
  */
+@NoArgsConstructor
 public final class FixedSizeTags implements Cloneable {
   public static final FixedSizeTags EMPTY = new FixedSizeTags(new String[0], new String[0], 0);
 
@@ -54,8 +56,6 @@ public final class FixedSizeTags implements Cloneable {
     this.values = values;
     this.hash = hash;
   }
-
-  public FixedSizeTags() {}
 
   public Map<String, String> asMap() {
     Map<String, String> map = this.map;

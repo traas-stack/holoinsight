@@ -3,12 +3,10 @@
  */
 package io.holoinsight.server.agg.v1.executor.executor;
 
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.annotation.JSONField;
-import com.google.common.hash.Hashing;
 
 import io.holoinsight.server.agg.v1.core.conf.AggFunc;
 import io.holoinsight.server.agg.v1.core.conf.SelectItem;
@@ -27,7 +25,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Data
 public class GroupField {
-  private transient AggFunc agg;
+  private AggFunc agg;
   private int input;
   private int count;
   private double value;
@@ -97,14 +95,12 @@ public class GroupField {
         break;
       }
       case AggFunc.TYPE_HLL:
-        if (hll == null) {
-          hll = new HllState();
-        }
         String v = da.getTag(si.getElect().getField());
         if (v != null) {
-          int x =
-              Hashing.murmur3_32().newHasher().putString(v, StandardCharsets.UTF_8).hash().asInt();
-          hll.hll.addRaw(x);
+          if (hll == null) {
+            hll = new HllState();
+          }
+          hll.add(v);
         }
         break;
     }
@@ -147,7 +143,7 @@ public class GroupField {
         if (hll == null) {
           return 0;
         }
-        return hll.hll.cardinality();
+        return hll.cardinality();
       default:
         throw new IllegalStateException("unsupported");
     }

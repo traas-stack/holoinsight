@@ -12,10 +12,15 @@ import java.util.Objects;
 import java.util.PriorityQueue;
 import java.util.stream.Collectors;
 
+import com.esotericsoftware.kryo.DefaultSerializer;
+
 import io.holoinsight.server.agg.v1.core.conf.AggFunc;
 import io.holoinsight.server.agg.v1.core.data.DataAccessor;
+import io.holoinsight.server.agg.v1.executor.executor.kryo.TopnStateSerializer;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 /**
  * <p>
@@ -23,18 +28,21 @@ import lombok.Data;
  *
  * @author xzchaoo
  */
+@DefaultSerializer(TopnStateSerializer.class)
 public class TopnState {
   private static final Comparator<CostItem> ASC = Comparator.comparingDouble(CostItem::getCost);
   private static final Comparator<CostItem> DESC = ASC.reversed();
 
+  @Getter
   private final AggFunc.TopnParams params;
+  @Getter
   private final PriorityQueue<CostItem> q;
   private final Comparator<CostItem> comparator;
   private final DoubleComparator costComparator;
 
   public TopnState(AggFunc.TopnParams params) {
     this.params = Objects.requireNonNull(params);
-    if (params.isDesc()) {
+    if (!params.isAsc()) {
       comparator = ASC;
       costComparator = Double::compare;
     } else {
@@ -108,10 +116,11 @@ public class TopnState {
   }
 
   @AllArgsConstructor
+  @NoArgsConstructor
   @Data
   public static class CostItem {
-    final double cost;
-    final Object item;
+    public double cost;
+    public Object item;
   }
 
 }
