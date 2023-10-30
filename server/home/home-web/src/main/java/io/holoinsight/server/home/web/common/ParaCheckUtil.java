@@ -55,6 +55,13 @@ public class ParaCheckUtil {
     }
   }
 
+
+  public static void checkParaId(Long id) {
+    if (null != id) {
+      throw new MonitorException(ResultCodeEnum.PARAMETER_ILLEGAL, "id not null");
+    }
+  }
+
   /**
    * Check time range
    *

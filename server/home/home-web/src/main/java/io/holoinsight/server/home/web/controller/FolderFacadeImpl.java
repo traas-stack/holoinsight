@@ -133,6 +133,7 @@ public class FolderFacadeImpl extends BaseFacade {
       public void checkParameter() {
         ParaCheckUtil.checkParaNotNull(folder.parentFolderId, "parentFolderId");
         ParaCheckUtil.checkParaNotBlank(folder.name, "name");
+        ParaCheckUtil.checkParaId(folder.getId());
         checkParentFolderId(folder);
       }
 

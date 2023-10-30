@@ -148,6 +148,7 @@ public class IntegrationPluginFacadeImpl extends BaseFacade {
         ParaCheckUtil.checkParaNotNull(integrationPluginDTO.type, "type");
         ParaCheckUtil.checkParaNotBlank(integrationPluginDTO.json, "json");
         // ParaCheckUtil.checkParaNotNull(integrationPluginDTO.status);
+        ParaCheckUtil.checkParaId(integrationPluginDTO.getId());
       }
 
       @Override

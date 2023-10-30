@@ -75,6 +75,7 @@ public class UserinfoVerificationFacadeImpl extends BaseFacade {
           ParaCheckUtil.checkParaNotBlank(userinfoVerification.getContentType(), "contentType");
           ParaCheckUtil.checkInvalidUserinfoVerificationContentType(
               userinfoVerification.getContentType(), "invalid contentType");
+          ParaCheckUtil.checkParaId(userinfoVerification.getId());
         }
 
         @Override

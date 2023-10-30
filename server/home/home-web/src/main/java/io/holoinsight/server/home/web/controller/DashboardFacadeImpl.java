@@ -137,7 +137,7 @@ public class DashboardFacadeImpl extends BaseFacade {
     facadeTemplate.manage(result, new ManageCallback() {
       @Override
       public void checkParameter() {
-
+        ParaCheckUtil.checkParaId(request.getId());
       }
 
       @Override

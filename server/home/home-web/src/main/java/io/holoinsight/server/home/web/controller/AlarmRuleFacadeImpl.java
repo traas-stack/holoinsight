@@ -118,6 +118,7 @@ public class AlarmRuleFacadeImpl extends BaseFacade {
         ParaCheckUtil.checkParaNotNull(alarmRuleDTO.getIsMerge(), "isMerge");
         ParaCheckUtil.checkInvalidCharacter(alarmRuleDTO.getRuleName(),
             "invalid ruleName, please use a-z A-Z 0-9 Chinese - _ , . spaces");
+        ParaCheckUtil.checkParaId(alarmRuleDTO.getId());
         MonitorScope ms = RequestContext.getContext().ms;
 
         List<String> metrics = alarmRuleDTO.getMetric();

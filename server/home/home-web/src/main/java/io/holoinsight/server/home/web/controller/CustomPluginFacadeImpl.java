@@ -163,6 +163,7 @@ public class CustomPluginFacadeImpl extends BaseFacade {
         ParaCheckUtil.checkParaNotNull(customPluginDTO.status, "status");
         ParaCheckUtil.checkParaNotNull(customPluginDTO.periodType, "periodType");
         ParaCheckUtil.checkParaNotNull(customPluginDTO.conf, "conf");
+        ParaCheckUtil.checkParaId(customPluginDTO.getId());
         MonitorScope ms = RequestContext.getContext().ms;
         Boolean aBoolean = tenantInitService.checkCustomPluginLogConfParams(ms.getTenant(),
             ms.getWorkspace(), customPluginDTO);

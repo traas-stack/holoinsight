@@ -77,6 +77,7 @@ public class AlarmWebhookFacadeImpl extends BaseFacade {
         ParaCheckUtil.checkParaNotBlank(alarmWebhookDTO.getRequestBody(), "requestBody");
         ParaCheckUtil.checkParaNotBlank(alarmWebhookDTO.getWebhookName(), "name");
         ParaCheckUtil.checkParaNotBlank(alarmWebhookDTO.getWebhookTest(), "webhookDebugBody");
+        ParaCheckUtil.checkParaId(alarmWebhookDTO.getId());
       }
 
       @Override

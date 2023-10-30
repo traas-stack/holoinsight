@@ -134,6 +134,7 @@ public class IntegrationGeneratedFacadeImpl extends BaseFacade {
         ParaCheckUtil.checkParaNotNull(generatedDTO.product, "product");
         ParaCheckUtil.checkParaNotNull(generatedDTO.config, "config");
         ParaCheckUtil.checkParaNotNull(generatedDTO.custom, "custom");
+        ParaCheckUtil.checkParaId(generatedDTO.getId());
 
       }
 

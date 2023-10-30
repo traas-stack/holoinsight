@@ -64,6 +64,7 @@ public class AlarmDingDingRobotFacadeImpl extends BaseFacade {
         ParaCheckUtil.checkParaNotBlank(alarmDingDingRobotDTO.getGroupName(), "groupName");
         ParaCheckUtil.checkParaStartWith(alarmDingDingRobotDTO.getRobotUrl(), dingdingUrlPrefix,
             "robotUrl");
+        ParaCheckUtil.checkParaId(alarmDingDingRobotDTO.getId());
       }
 
       @Override
