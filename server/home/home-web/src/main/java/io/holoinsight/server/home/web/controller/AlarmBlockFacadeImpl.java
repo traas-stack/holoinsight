@@ -65,6 +65,7 @@ public class AlarmBlockFacadeImpl extends BaseFacade {
               parameterSecurityService.checkRuleTenantAndWorkspace(alarmBlockDTO.getUniqueId(),
                   ms.getTenant(), ms.getWorkspace()),
               "uniqueId do not belong to this tenant or workspace");
+          ParaCheckUtil.checkParaId(alarmBlockDTO.getId());
         }
       }
 

@@ -166,7 +166,7 @@ public class UserFavoriteFacadeImpl extends BaseFacade {
             throw new MonitorException(String.format("can not find record, %s-%s",
                 userFavorite.type, userFavorite.relateId));
         }
-
+        ParaCheckUtil.checkParaId(userFavorite.getId());
       }
 
       @Override

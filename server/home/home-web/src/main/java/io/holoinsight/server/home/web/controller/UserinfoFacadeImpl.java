@@ -89,6 +89,7 @@ public class UserinfoFacadeImpl extends BaseFacade {
           ParaCheckUtil.checkParaBoolean(
               checkMembers(Collections.singletonList(userinfoDTO.getUid())),
               userinfoDTO.getUid() + " is not in current tenant scope.");
+          ParaCheckUtil.checkParaId(userinfoDTO.getId());
         }
 
         @Override

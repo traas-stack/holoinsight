@@ -101,6 +101,7 @@ public class AlarmGroupFacadeImpl extends BaseFacade {
       return jsonResult;
     }
 
+    ParaCheckUtil.checkParaId(alarmGroup.getId());
     return save(alarmGroup, true);
   }
 

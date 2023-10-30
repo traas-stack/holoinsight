@@ -89,6 +89,7 @@ public class OpenmetricsScraperFacadeImpl extends BaseFacade {
         ParaCheckUtil.checkParaNotNull(openmetricsScraperDTO.getScrapeInterval(), "interval");
         ParaCheckUtil.checkParaNotNull(openmetricsScraperDTO.getScrapeTimeout(), "timeout");
         ParaCheckUtil.checkParaNotNull(openmetricsScraperDTO.getMetricsPath(), "metricPath");
+        ParaCheckUtil.checkParaId(openmetricsScraperDTO.getId());
       }
 
       @Override
