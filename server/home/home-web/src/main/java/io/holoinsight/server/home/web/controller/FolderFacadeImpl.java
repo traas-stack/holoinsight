@@ -215,6 +215,9 @@ public class FolderFacadeImpl extends BaseFacade {
         }
 
         Folder byId = folderService.queryById(id, ms.getTenant(), ms.getWorkspace());
+        if (null == byId) {
+          throw new MonitorException(ResultCodeEnum.CANNOT_FIND_RECORD, "can not find record");
+        }
         folderService.removeById(id);
         JsonResult.createSuccessResult(result, null);
         userOpLogService.append("folder", byId.getId(), OpType.DELETE,
