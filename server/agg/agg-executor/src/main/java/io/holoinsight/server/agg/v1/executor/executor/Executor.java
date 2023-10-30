@@ -381,6 +381,27 @@ public class Executor {
   private class ExecutorConsumerRebalanceListener implements ConsumerRebalanceListener {
     @Override
     public void onPartitionsRevoked(Collection<TopicPartition> partitions) {
+      onPartitionsRevoked0(partitions, true);
+    }
+
+    @Override
+    public void onPartitionsAssigned(Collection<TopicPartition> partitions) {
+      if (partitions.isEmpty()) {
+        return;
+      }
+      long begin = System.currentTimeMillis();
+      onPartitionsAssigned0(partitions);
+      long cost = System.currentTimeMillis() - begin;
+      log.info("[executor] [{}] onPartitionsAssigned partitions={} cost=[{}]", //
+          index, partitions, cost);
+    }
+
+    @Override
+    public void onPartitionsLost(Collection<TopicPartition> partitions) {
+      onPartitionsRevoked0(partitions, false);
+    }
+
+    private void onPartitionsRevoked0(Collection<TopicPartition> partitions, boolean revoked) {
       long begin = System.currentTimeMillis();
 
       for (TopicPartition partition : partitions) {
@@ -391,41 +412,26 @@ public class Executor {
               index, partition);
           continue;
         }
+        if (revoked) {
+          try {
+            pp.maybeSaveOffset(config.getFaultToleranceConfig(), stateStore, true);
+          } catch (Exception e) {
+            log.error("[partition] [{}] save offset error", partition, e);
+          }
 
-        try {
-          pp.maybeSaveOffset(config.getFaultToleranceConfig(), stateStore, true);
-        } catch (Exception e) {
-          log.error("[partition] [{}] save offset error", partition, e);
-        }
-
-        try {
-          pp.saveState(stateStore);
-        } catch (Exception e) {
-          log.error("[partition] [{}] save state error", partition, e);
+          try {
+            pp.saveState(stateStore);
+          } catch (Exception e) {
+            log.error("[partition] [{}] save state error", partition, e);
+          }
         }
       }
 
       long cost = System.currentTimeMillis() - begin;
-      log.info("[executor] [{}] onPartitionsRevoked partitions={} cost=[{}]", //
-          index, partitions, cost);
+      log.info("[executor] [{}] onPartitions{} partitions={} cost=[{}]", //
+          index, revoked ? "Revoked" : "Lost", partitions, cost);
     }
 
-    @Override
-    public void onPartitionsAssigned(Collection<TopicPartition> partitions) {
-      log.info("[executor] [{}] onPartitionsAssigned {}", index, partitions);
-      if (partitions.isEmpty()) {
-        return;
-      }
-      long begin = System.currentTimeMillis();
-      onPartitionsAssigned0(partitions);
-      long cost = System.currentTimeMillis() - begin;
-      log.info("[executor] [{}] onPartitionsAssigned cost=[{}]", index, cost);
-    }
-
-    @Override
-    public void onPartitionsLost(Collection<TopicPartition> partitions) {
-      log.info("[executor] [{}] onPartitionsLost {}", index, partitions);
-    }
 
     private void onPartitionsAssigned0(Collection<TopicPartition> partitions) {
       Map<TopicPartition, Long> endOffsets = kafkaConsumer.endOffsets(partitions);
@@ -437,14 +443,13 @@ public class Executor {
       List<TopicPartition> seekToEnds = new ArrayList<>();
 
       for (TopicPartition partition : partitions) {
-
         PartitionProcessor pp = partitionProcessorMap.remove(partition);
         if (pp != null) {
-          throw new IllegalStateException("duplicate assignment " + partition);
+          log.error("[executor] [{}] [partition] [{}] duplicate assignment", index, partition);
         }
 
-        pp = new PartitionProcessor(partition, aggTaskService, config, completenessService, output,
-            ioTP);
+        pp = new PartitionProcessor( //
+            partition, aggTaskService, config, completenessService, output, ioTP);
         partitionProcessorMap.put(partition, pp);
 
         if (forceBegin) {

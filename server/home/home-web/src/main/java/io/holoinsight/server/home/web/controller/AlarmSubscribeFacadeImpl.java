@@ -110,6 +110,12 @@ public class AlarmSubscribeFacadeImpl extends BaseFacade {
         }
         if (!CollectionUtils.isEmpty(alarmSubscribeDTO.getAlarmSubscribe())) {
           for (AlarmSubscribeInfo alarmSubscribeInfo : alarmSubscribeDTO.getAlarmSubscribe()) {
+            if (StringUtils.isNotEmpty(alarmSubscribeInfo.getUniqueId())) {
+              ParaCheckUtil.checkParaBoolean(
+                  parameterSecurityService.checkRuleTenantAndWorkspace(
+                      alarmSubscribeInfo.getUniqueId(), ms.getTenant(), ms.getWorkspace()),
+                  "uniqueId do not belong to this tenant or workspace");
+            }
             if (CollectionUtils.isEmpty(alarmSubscribeInfo.getNoticeType())) {
               continue;
             }
