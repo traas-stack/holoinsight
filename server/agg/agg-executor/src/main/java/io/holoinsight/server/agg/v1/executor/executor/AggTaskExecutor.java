@@ -18,6 +18,7 @@ import javax.annotation.Nullable;
 import org.apache.commons.collections4.MapUtils;
 
 import io.holoinsight.server.agg.v1.core.Utils;
+import io.holoinsight.server.agg.v1.core.conf.AggTask;
 import io.holoinsight.server.agg.v1.core.conf.AggTaskValueTypes;
 import io.holoinsight.server.agg.v1.core.conf.CompletenessConfig;
 import io.holoinsight.server.agg.v1.core.conf.From;
@@ -59,6 +60,11 @@ public class AggTaskExecutor {
    * AggTaskExecutor should ignore data whose aligned ts < ignoredMinWatermark
    */
   long ignoredMinWatermark;
+
+  /**
+   * This agg task executor is recovered from persistent state with offset = restoredOffset
+   */
+  long restoredOffset = -1;
 
   /**
    * deletion mark
@@ -131,7 +137,6 @@ public class AggTaskExecutor {
 
       state.updateMaxEventTimestamp(row.getTimestamp());
 
-
       da.replace(meta, row);
 
       // decide which time window to use
@@ -160,6 +165,7 @@ public class AggTaskExecutor {
       }
 
       w.getStat().incInput();
+      w.setPreviewDirty(true);
 
       CompletenessUtils.processCompletenessInfoInData(w, da);
 
@@ -238,6 +244,7 @@ public class AggTaskExecutor {
       }
 
       w.getStat().incInput();
+      w.setPreviewDirty(true);
 
       CompletenessUtils.processCompletenessInfoInData(w, da);
 
@@ -282,6 +289,8 @@ public class AggTaskExecutor {
     AggWindowState w = state.getOrCreateAggWindowState(ts, latestAggTask, this::onAggWindowCreate);
 
     CompletenessUtils.processCompletenessInfo(w, aggTaskValue);
+
+    w.setPreviewDirty(true);
   }
 
   private void onAggWindowCreate(AggWindowState w) {
@@ -366,29 +375,52 @@ public class AggTaskExecutor {
   private void onGroupCreate(AggWindowState w, Group g) {}
 
   void maybeEmit(long watermark) {
+    // If the current instance is restored from the persistent state, when it is in the
+    // recalculation phase, watermark <= state.watermark will occur, and we need to ignore such
+    // situations.
+    if (watermark <= state.getWatermark()) {
+      return;
+    }
+
     state.setWatermark(watermark);
 
     Iterator<AggWindowState> iter = state.getAggWindowStateIter();
+    long now = System.currentTimeMillis();
     while (iter.hasNext()) {
       AggWindowState w = iter.next();
-      if (w.getTimestamp() < watermark) {
+      AggTask inner = w.getAggTask().getInner();
+
+      boolean complete = w.getTimestamp() < watermark;
+
+      boolean preview = !complete && inner.getOutput().isPreview() && w.isPreviewDirty()
+          && w.getLastPreviewEmitTime() < now - inner.getWindow().getPreviewEmitInterval();
+
+      if (complete || preview) {
+        w.setPreviewDirty(false);
+        w.setLastPreviewEmitTime(now);
+
         try {
-          doOutput(watermark, w);
+          doOutput(watermark, w, preview);
         } catch (Exception e) {
           log.error("[agg] [{}] output error", key(), e);
         }
-        iter.remove();
+
+        if (complete) {
+          iter.remove();
+        }
+
       }
     }
   }
 
-  private void doOutput(long watermark, AggWindowState w) {
+  private void doOutput(long watermark, AggWindowState w, boolean preview) {
     XAggTask aggTask = w.getAggTask();
 
     MergedCompleteness mc = CompletenessUtils.buildMergedCompleteness(w);
 
-    log.info("[agg] [{}] emit wm=[{}] ts=[{}] complete=[{}/{}] stat={} groups=[{}]", //
+    log.info("[agg] [{}] [{}] emit wm=[{}] ts=[{}] complete=[{}/{}] stat={} groups=[{}]", //
         key(), //
+        preview ? "preview" : "complete", //
         Utils.formatTimeShort(watermark), //
         Utils.formatTimeShort(w.getTimestamp()), //
         mc.ok, //
@@ -397,7 +429,8 @@ public class AggTaskExecutor {
         w.getGroupMap().size()); //
 
     Map<Integer, XOutput.Batch> batches = new HashMap<>();
-    XOutput.WindowInfo windowInfo = new XOutput.WindowInfo(w.getTimestamp(), mc, w.getStat());
+    XOutput.WindowInfo windowInfo =
+        new XOutput.WindowInfo(w.getTimestamp(), mc, w.getStat(), preview);
 
     for (Group g : w.getGroupMap().values()) {
       Map<String, Object> env = g.getFinalFields1(w.getAggTask());

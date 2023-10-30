@@ -30,7 +30,10 @@ public class FaultToleranceConfig {
 
   private StateConfig stateConfig = new StateConfig();
 
-  private Duration saveStateInterval = Duration.ofSeconds(10);
+  /**
+   * Save state interval
+   */
+  private Duration saveStateInterval = Duration.ofMinutes(1);
 
   private Duration maxLagTime = Duration.ofHours(2);
 

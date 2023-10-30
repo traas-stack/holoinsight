@@ -20,6 +20,11 @@ public class Window {
   private String type;
   private long interval;
 
+  /**
+   * emit interval for preview data
+   */
+  private long previewEmitInterval = 60000L;
+
   public Window() {}
 
   public static Window sliding(long interval) {

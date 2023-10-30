@@ -6,6 +6,8 @@ package io.holoinsight.server.agg.v1.executor.executor;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.alibaba.fastjson.annotation.JSONField;
+
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.Getter;
@@ -34,6 +36,7 @@ public class WindowCompleteness {
   @Setter(AccessLevel.NONE)
   private Map<String, Map<String, Object>> allTargets = new HashMap<>();
 
+  @JSONField(serialize = false)
   public FixedSizeTags getReusedTags() {
     reused.clearCache();
     return reused;

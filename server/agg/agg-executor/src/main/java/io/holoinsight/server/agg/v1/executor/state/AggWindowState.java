@@ -15,7 +15,9 @@ import io.holoinsight.server.agg.v1.executor.executor.Group;
 import io.holoinsight.server.agg.v1.executor.executor.WindowCompleteness;
 import io.holoinsight.server.agg.v1.executor.executor.XAggTask;
 import io.holoinsight.server.agg.v1.executor.output.WindowStat;
-import lombok.Data;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -25,20 +27,59 @@ import lombok.extern.slf4j.Slf4j;
  *
  * @author xzchaoo
  */
-@Data
+@Getter
 @Slf4j
 public class AggWindowState {
 
   /**
+   * Last preview emit time
+   */
+  @Setter
+  transient long lastPreviewEmitTime;
+
+  /**
+   * This agg window has new input since last preview emit.
+   */
+  @Setter
+  transient boolean previewDirty;
+
+  /**
    * agg window timestamp
    */
+  @Setter
   private long timestamp;
+  /**
+   * reused FixedSizeTags instance for {@link #groupMap}
+   */
+  @Getter(AccessLevel.NONE)
   private transient FixedSizeTags reused;
+  /**
+   * Groups
+   */
   private Map<FixedSizeTags, Group> groupMap = new HashMap<>();
+  /**
+   * Window completeness info
+   */
+  @Setter
   private WindowCompleteness windowCompleteness = new WindowCompleteness();
+  /**
+   * window statistics
+   */
+  @Setter
   private WindowStat stat = new WindowStat();
+  /**
+   * Agg task related to this agg window state.
+   */
+  @Setter
   private XAggTask aggTask;
 
+  /**
+   * Get or create group
+   * 
+   * @param da
+   * @param callback
+   * @return null if group count exceeds limit
+   */
   public Group getOrCreateGroup(DataAccessor da, BiConsumer<AggWindowState, Group> callback) {
     FixedSizeTags groupKey = buildGroupKey(da);
 

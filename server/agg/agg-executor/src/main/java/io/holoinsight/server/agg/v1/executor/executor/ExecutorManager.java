@@ -127,7 +127,8 @@ public class ExecutorManager implements DisposableBean {
       executors.add(executor);
       executor.run();
     } else {
-      ExecutorService executorTP = Utils.createThreadPool("executor", config.getExecutorCount());
+      ExecutorService executorTP =
+          Utils.createThreadPool("agg-executor", config.getExecutorCount());
       List<Future<?>> futures = new ArrayList<>(config.getExecutorCount());
 
       for (int i = 0; i < config.getExecutorCount(); i++) {

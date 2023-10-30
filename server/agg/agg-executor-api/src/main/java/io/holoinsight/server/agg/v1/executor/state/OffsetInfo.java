@@ -3,7 +3,9 @@
  */
 package io.holoinsight.server.agg.v1.executor.state;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  * Consumer offset info
@@ -13,6 +15,8 @@ import lombok.Data;
  * @author xzchaoo
  */
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class OffsetInfo {
   /**
    * Kafka partition offset

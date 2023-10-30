@@ -47,6 +47,7 @@ public interface XOutput {
     public long timestamp;
     public MergedCompleteness mergedCompleteness;
     public WindowStat stat;
+    public boolean preview;
   }
 
   @Data

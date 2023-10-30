@@ -52,19 +52,19 @@ public class PartitionProcessor {
   private final LastRun lastRun;
   PartitionState state = new PartitionState();
   /**
-   * The last active time(read event) for this partition
-   */
-  transient long lastActiveTime;
-  /**
    * The last saved MaxEventTimestamp (MET)
    */
   transient long lastSavedOffsetMET;
   transient long minSaveOffset;
-
   /**
    * Stale latest offset
    */
   volatile long staleLatestOffset;
+
+  /**
+   * The last active time(read event) for this partition
+   */
+  private transient long lastActiveTime;
 
   private transient Map<AggTaskKey, AggTaskExecutor> aggTaskExecutors = new HashMap<>();
 
@@ -78,12 +78,6 @@ public class PartitionProcessor {
     this.output = Objects.requireNonNull(output);
     lastRun = new LastRun(ioTP);
     state.setVersion(EXPECTED_VERSION);
-  }
-
-  private void maybeUpdateTimestamp(long timestamp) {
-    if (state.updateMaxEventTimestamp(timestamp)) {
-      log.info("[partition] [{}] update ET=[{}]", partition, Utils.formatTime(timestamp));
-    }
   }
 
   void process(List<ConsumerRecord<AggTaskKey, AggProtos.AggTaskValue>> records) {
@@ -103,7 +97,8 @@ public class PartitionProcessor {
   private void processRecords(List<ConsumerRecord<AggTaskKey, AggProtos.AggTaskValue>> records) {
     long partitionMET = state.getMaxEventTimestamp();
 
-    Map<AggTaskKey, List<AggProtos.AggTaskValue>> byKey = new HashMap<>();
+    Map<AggTaskKey, List<ConsumerRecord<AggTaskKey, AggProtos.AggTaskValue>>> byKey =
+        new HashMap<>();
 
     for (ConsumerRecord<AggTaskKey, AggProtos.AggTaskValue> cr : records) {
       state.setOffset(cr.offset());
@@ -114,12 +109,13 @@ public class PartitionProcessor {
         continue;
       }
 
-      byKey.computeIfAbsent(cr.key(), i -> new ArrayList<>()).add(cr.value());
+      byKey.computeIfAbsent(cr.key(), i -> new ArrayList<>()).add(cr);
     }
 
     List<RecursiveTask<Long>> futures = new ArrayList<>(byKey.size());
 
-    for (Map.Entry<AggTaskKey, List<AggProtos.AggTaskValue>> e : byKey.entrySet()) {
+    for (Map.Entry<AggTaskKey, List<ConsumerRecord<AggTaskKey, AggProtos.AggTaskValue>>> e : byKey
+        .entrySet()) {
       AggTaskKey key = e.getKey();
 
       XAggTask latestAggTask = aggTaskService.getAggTask(key.getAggId());
@@ -133,8 +129,23 @@ public class PartitionProcessor {
       RecursiveTask<Long> rt = new RecursiveTask<Long>() {
         @Override
         protected Long compute() {
-          for (AggProtos.AggTaskValue aggTaskValue : e.getValue()) {
-            executor.process(latestAggTask, aggTaskValue);
+          boolean processed = false;
+          for (ConsumerRecord<AggTaskKey, AggProtos.AggTaskValue> cr : e.getValue()) {
+            // If this AggTaskExecutor is recovered by state, we should ignore offsets that have
+            // offset <= restoredOffset
+            if (cr.offset() <= executor.restoredOffset) {
+              continue;
+            }
+            processed = true;
+            executor.process(latestAggTask, cr.value());
+          }
+
+          // If all offsets are <= executor.ignoreMinOffset, it means that it is in the recomputing
+          // process at this time.
+          // We should not return our max event timestamp because it will cause the MET value on the
+          // partition to be larger.
+          if (!processed) {
+            return 0L;
           }
           return executor.getState().getMaxEventTimestamp();
         }
@@ -214,11 +225,43 @@ public class PartitionProcessor {
   }
 
   void saveState(PartitionStateStore store) throws Exception {
+    if (state.getOffset() <= state.getRestoredOffset()) {
+      // no need to save this state
+      // During the recalculation phase, there may be situations where offset <= resetredOffset
+      return;
+    }
+
     long begin = System.currentTimeMillis();
-    byte[] stateBytes = StateUtils.serialize(state);
+    PartitionState persistentState = buildPersistentState();
+    byte[] stateBytes = StateUtils.serialize(persistentState);
     store.saveState(partition, stateBytes);
     long cost = System.currentTimeMillis() - begin;
     log.info("[partition] [{}] [recover] save state successfully, cost=[{}]", partition, cost);
+  }
+
+  /**
+   * Build a state that needs to be persisted.
+   * 
+   * @return
+   */
+  private PartitionState buildPersistentState() {
+    PartitionState ps = new PartitionState();
+    ps.setVersion(state.getVersion());
+    ps.setOffset(state.getOffset());
+    ps.setMaxEventTimestamp(state.getMaxEventTimestamp());
+
+    // Only AggTasks with "state.enabled" set to true need to be persistent.
+    for (AggTaskState ats : state.getAggTaskStates().values()) {
+      XAggTask aggTask = aggTaskService.getAggTask(ats.getKey().getAggId());
+      if (aggTask == null) {
+        continue;
+      }
+      if (aggTask.getInner().getState().isEnabled()) {
+        log.info("[partition] [{}] save agg task state {}", partition, ats.getKey());
+        ps.getAggTaskStates().put(ats.getKey(), ats);
+      }
+    }
+    return ps;
   }
 
   void loadState(PartitionStateStore store) throws Exception {
@@ -228,23 +271,33 @@ public class PartitionProcessor {
       return;
     }
 
-    PartitionState state = StateUtils.deserialize(stateBytes);
-    if (state.getVersion() != EXPECTED_VERSION) {
-      throw new IllegalStateException(
-          "expected state version " + EXPECTED_VERSION + ", but got " + state.getVersion());
-    }
-    this.state = state;
-    for (AggTaskState aggTaskState : state.getAggTaskStates().values()) {
-      this.aggTaskExecutors.put(aggTaskState.getKey(),
-          new AggTaskExecutor(aggTaskState, completenessService, output));
+    PartitionState restored = StateUtils.deserialize(stateBytes);
+    if (restored.getVersion() != EXPECTED_VERSION) {
+      log.info("[partition] [{}] discard old restored with version=[{}], expectedVersion=[{}]", //
+          partition, restored.getVersion(), EXPECTED_VERSION);
+      return;
     }
 
+    state.setRestoredOffset(restored.getOffset());
+    for (AggTaskState ats : restored.getAggTaskStates().values()) {
+      log.info("[partition] [{}] load agg task restored {}", partition, ats.getKey());
+      AggTaskExecutor e = new AggTaskExecutor(ats, completenessService, output);
+      e.restoredOffset = restored.getOffset();
+      aggTaskExecutors.put(ats.getKey(), e);
+      state.put(ats);
+    }
+
+    // There is no need to update state.offset and state.maxEventTimestamp, they will be
+    // automatically updated to reasonable values using the recalculation mechanism.
+
     long cost = System.currentTimeMillis() - begin;
-    log.info("[partition] [{}] load state successfully, cost=[{}]", partition, cost);
+    log.info("[partition] [{}] load restored successfully, cost=[{}], aggTaskStates=[{}]",
+        partition, cost, restored.getAggTaskStates().size());
   }
 
   void clearState() {
     state.clear();
+    aggTaskExecutors.clear();
   }
 
   void maybeSaveOffset(FaultToleranceConfig config, PartitionStateStore stateStore, boolean force) {
@@ -263,9 +316,7 @@ public class PartitionProcessor {
 
     lastSavedOffsetMET = state.getMaxEventTimestamp();
     long begin = System.currentTimeMillis();
-    OffsetInfo oi = new OffsetInfo();
-    oi.setOffset(state.getOffset());
-    oi.setMaxEventTimestamp(state.getMaxEventTimestamp());
+    OffsetInfo oi = new OffsetInfo(state.getOffset(), state.getMaxEventTimestamp());
 
     Runnable r = () -> {
       try {
@@ -295,4 +346,27 @@ public class PartitionProcessor {
     }
   }
 
+  /**
+   * Check if this partition processor is idle
+   * 
+   * @param now
+   * @param minActiveTime
+   * @return
+   */
+  boolean isIdle(long now, long minActiveTime) {
+    if (lastActiveTime < minActiveTime) {
+      lastActiveTime = now;
+      return true;
+    }
+    return false;
+  }
+
+  /**
+   * update last active time
+   * 
+   * @param t
+   */
+  void touch(long t) {
+    lastActiveTime = t;
+  }
 }

@@ -3,19 +3,15 @@
  */
 package io.holoinsight.server.agg.v1.executor.state;
 
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.function.Consumer;
 
 import io.holoinsight.server.agg.v1.core.data.AggTaskKey;
-import io.holoinsight.server.agg.v1.core.data.PartitionKeysUtils;
 import io.holoinsight.server.agg.v1.executor.executor.XAggTask;
-import lombok.AccessLevel;
 import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.NoArgsConstructor;
 
 /**
  * <p>
@@ -24,26 +20,32 @@ import lombok.Setter;
  * @author xzchaoo
  */
 @Data
+@NoArgsConstructor
 public class AggTaskState {
-  AggTaskKey key;
   /**
    * deletion mark
    */
   transient boolean expired;
-  @Getter(AccessLevel.NONE)
-  @Setter(AccessLevel.NONE)
-  private transient Map<String, String> partitionKeys;
+
+  /**
+   * agg task key
+   */
+  private AggTaskKey key;
+
+  /**
+   * The maximum event timestamp that has ever been encountered
+   */
+  private long maxEventTimestamp;
 
   /**
    * agg window whose ts < watermark should be emitted
    */
   private long watermark;
 
+  /**
+   * Agg window state, keyed by time window start
+   */
   private Map<Long, AggWindowState> aggWindowStateMap = new TreeMap<>();
-
-  private long maxEventTimestamp;
-
-  public AggTaskState() {}
 
   public AggTaskState(AggTaskKey key) {
     this.key = key;
@@ -96,14 +98,4 @@ public class AggTaskState {
     aggWindowStateMap.put(x.getTimestamp(), x);
   }
 
-  public Map<String, String> partitionKeys() {
-    if (partitionKeys == null) {
-      if (key.getPartition().isEmpty()) {
-        partitionKeys = Collections.emptyMap();
-      } else {
-        partitionKeys = PartitionKeysUtils.decode(key.getPartition());
-      }
-    }
-    return partitionKeys;
-  }
 }

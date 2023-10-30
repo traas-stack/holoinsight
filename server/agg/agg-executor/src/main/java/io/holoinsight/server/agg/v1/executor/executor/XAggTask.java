@@ -5,7 +5,10 @@ package io.holoinsight.server.agg.v1.executor.executor;
 
 import javax.annotation.Nonnull;
 
+import com.esotericsoftware.kryo.DefaultSerializer;
+
 import io.holoinsight.server.agg.v1.core.conf.AggTask;
+import io.holoinsight.server.agg.v1.executor.executor.kryo.XAggTaskSerializer;
 import lombok.Getter;
 
 /**
@@ -15,6 +18,7 @@ import lombok.Getter;
  * @author xzchaoo
  */
 @Getter
+@DefaultSerializer(XAggTaskSerializer.class)
 public class XAggTask {
   @Nonnull
   private final AggTask inner;
