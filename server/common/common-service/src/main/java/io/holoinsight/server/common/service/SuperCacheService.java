@@ -66,7 +66,6 @@ public class SuperCacheService extends ScheduleLoadTask {
 
   private void queryMetricInfoByPage(SuperCache sc) {
     QueryWrapper<MetricInfo> queryWrapper = new QueryWrapper<>();
-    queryWrapper.eq("deleted", 0);
 
     int current = 1;
     Map<String /* metric table */, MetricInfo> map = new HashMap<>();
