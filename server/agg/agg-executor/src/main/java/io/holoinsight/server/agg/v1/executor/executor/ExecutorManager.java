@@ -170,7 +170,7 @@ public class ExecutorManager implements DisposableBean {
         log.warn("shutdown interrupted");
         Thread.currentThread().interrupt();
       } catch (Exception e) {
-        log.warn("shutdown error");
+        log.error("shutdown error", e);
       }
     }
   }
