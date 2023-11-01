@@ -20,7 +20,9 @@ import org.apache.commons.collections4.MapUtils;
 import io.holoinsight.server.agg.v1.core.Utils;
 import io.holoinsight.server.agg.v1.core.conf.AggTask;
 import io.holoinsight.server.agg.v1.core.conf.AggTaskValueTypes;
+import io.holoinsight.server.agg.v1.core.conf.AggTaskVersion;
 import io.holoinsight.server.agg.v1.core.conf.CompletenessConfig;
+import io.holoinsight.server.agg.v1.core.conf.FillZero;
 import io.holoinsight.server.agg.v1.core.conf.From;
 import io.holoinsight.server.agg.v1.core.conf.FromConfigs;
 import io.holoinsight.server.agg.v1.core.conf.GroupBy;
@@ -382,10 +384,16 @@ public class AggTaskExecutor {
       return;
     }
 
-    state.setWatermark(watermark);
+    maybeFillZero(watermark);
 
+    maybeEmit0(watermark);
+  }
+
+  private void maybeEmit0(long watermark) {
+    state.setWatermark(watermark);
     Iterator<AggWindowState> iter = state.getAggWindowStateIter();
     long now = System.currentTimeMillis();
+
     while (iter.hasNext()) {
       AggWindowState w = iter.next();
       AggTask inner = w.getAggTask().getInner();
@@ -408,9 +416,82 @@ public class AggTaskExecutor {
         if (complete) {
           iter.remove();
         }
-
       }
     }
+  }
+
+  private void maybeFillZero(long watermark) {
+    FillZero fillZero = lastUsedAggTask.getInner().getFillZero();
+
+    if (!fillZero.isEnabled() || state.getWatermark() <= 0) {
+      return;
+    }
+
+    AggTaskVersion historyTagsVersion = state.getHistoryTagsVersion();
+    Map<FixedSizeTags, Long> historyTags = state.getHistoryTags();
+
+    long interval = lastUsedAggTask.getInner().getWindow().getInterval();
+    long lastEmitTimestamp = (state.getWatermark() - 1) / interval * interval;
+
+    for (long ts = lastEmitTimestamp + interval; ts < watermark; ts += interval) {
+      AggWindowState w = state.getAggWindowState(ts);
+
+      if (w == null) {
+        w = state.getOrCreateAggWindowState(ts, lastUsedAggTask, null);
+        log.info("[agg] [{}] create empty window [{}]", key(), Utils.formatTimeShort(ts));
+      }
+
+      if (historyTagsVersion.isEmpty()) {
+        historyTagsVersion.updateTo(w.getAggTask().getInner());
+        historyTags.clear();
+      } else if (!historyTagsVersion.hasSameVersion(w.getAggTask().getInner())) {
+        // this is the last window
+        if (ts + interval >= watermark) {
+          historyTagsVersion.updateTo(w.getAggTask().getInner());
+          historyTags.clear();
+        }
+      }
+
+      log.info("[agg] [{}] ts=[{}] groups={} history={}", //
+          key(), Utils.formatTime(ts), w.getGroupMap().size(), historyTags.size());
+
+      if (historyTags.size() > 0) {
+        List<FixedSizeTags> backup = new ArrayList<>(w.getGroupMap().keySet());
+        for (FixedSizeTags tags : historyTags.keySet()) {
+          w.maybeCreateGroup(tags, this::onGroupCreate);
+        }
+        for (FixedSizeTags tags : backup) {
+          historyTags.put(tags, w.getTimestamp());
+        }
+      } else {
+        for (FixedSizeTags tags : w.getGroupMap().keySet()) {
+          historyTags.put(tags, w.getTimestamp());
+        }
+      }
+    }
+
+    long expiredTime = watermark - fillZero.getExpireTime();
+
+    Iterator<Map.Entry<FixedSizeTags, Long>> iter = historyTags.entrySet().iterator();
+    while (iter.hasNext()) {
+      Map.Entry<FixedSizeTags, Long> e = iter.next();
+      if (e.getValue() < expiredTime) {
+        iter.remove();
+        log.info("[agg] [{}] delete expired history tags {}", key(), e.getKey());
+      }
+    }
+
+    if (historyTags.size() > fillZero.getKeyLimit()) {
+      // randomly remove some history tags
+      int count = historyTags.size() - fillZero.getKeyLimit();
+      Iterator<Map.Entry<FixedSizeTags, Long>> iter2 = historyTags.entrySet().iterator();
+      while (!historyTags.isEmpty() && historyTags.size() > fillZero.getKeyLimit()) {
+        iter2.next();
+        iter2.remove();
+      }
+      log.info("[agg] [{}] clear {} redundant history tags", key(), count);
+    }
+
   }
 
   private void doOutput(long watermark, AggWindowState w, boolean preview) {
@@ -457,7 +538,7 @@ public class AggTaskExecutor {
     for (XOutput.Batch batch : batches.values()) {
       // process topn after agg
       OutputItem.Topn topn = batch.oi.getTopn();
-      if (topn != null && topn.isEnabled()) {
+      if (topn != null && topn.isEnabled() && topn.getLimit() < batch.groups.size()) {
         String orderBy = topn.getOrderBy();
 
         Comparator<XOutput.Group> comparator = Comparator.comparingDouble(

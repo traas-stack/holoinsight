@@ -190,6 +190,7 @@ public class PartitionProcessor {
       XAggTask lastUsedAggTask = e.lastUsedAggTask;
       if (lastUsedAggTask == null) {
         lastUsedAggTask = aggTaskService.getAggTask(e.key().getAggId());
+        e.lastUsedAggTask = lastUsedAggTask;
       }
 
       if (lastUsedAggTask == null) {
