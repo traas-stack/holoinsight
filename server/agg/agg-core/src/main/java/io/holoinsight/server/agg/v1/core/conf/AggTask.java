@@ -51,14 +51,21 @@ public class AggTask {
   private Window window;
   @Nonnull
   private Output output;
+
   /**
-   * agg task state config
+   * Agg task state config
    */
   private State state = new State();
+
+  /**
+   * Agg task fill-zero config
+   */
+  private FillZero fillZero = new FillZero();
 
   public AggTask() {}
 
   public boolean hasGroupBy() {
     return groupBy != null && !groupBy.isEmpty();
   }
+
 }

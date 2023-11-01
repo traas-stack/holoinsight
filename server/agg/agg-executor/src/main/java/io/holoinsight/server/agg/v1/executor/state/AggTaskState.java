@@ -3,12 +3,15 @@
  */
 package io.holoinsight.server.agg.v1.executor.state;
 
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.function.Consumer;
 
+import io.holoinsight.server.agg.v1.core.conf.AggTaskVersion;
 import io.holoinsight.server.agg.v1.core.data.AggTaskKey;
+import io.holoinsight.server.agg.v1.executor.executor.FixedSizeTags;
 import io.holoinsight.server.agg.v1.executor.executor.XAggTask;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -45,7 +48,20 @@ public class AggTaskState {
   /**
    * Agg window state, keyed by time window start
    */
-  private Map<Long, AggWindowState> aggWindowStateMap = new TreeMap<>();
+  private TreeMap<Long, AggWindowState> aggWindowStateMap = new TreeMap<>();
+
+
+  /**
+   * This field represents the tags that have appeared in the aggregation task, and its value is the
+   * timestamp of the last occurrence of the corresponding tags.
+   */
+  private Map<FixedSizeTags, Long> historyTags = new HashMap<>();
+
+  /**
+   * This field indicates the version of AggTask corresponding to historyTags. Different versions of
+   * historyTags may be incompatible.
+   */
+  private AggTaskVersion historyTagsVersion = new AggTaskVersion();
 
   public AggTaskState(AggTaskKey key) {
     this.key = key;

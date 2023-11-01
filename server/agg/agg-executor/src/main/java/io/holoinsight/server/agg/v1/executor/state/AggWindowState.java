@@ -103,6 +103,29 @@ public class AggWindowState {
     return g;
   }
 
+  public boolean maybeCreateGroup(FixedSizeTags groupKey,
+      BiConsumer<AggWindowState, Group> callback) {
+
+    Group g = groupMap.get(groupKey);
+    if (g != null) {
+      return true;
+    }
+
+    // check key limit
+    if (groupMap.size() >= aggTask.getInner().getGroupBy().getKeyLimit()) {
+      return false;
+    }
+
+    g = new Group();
+    g.setTags(groupKey);
+    g.initGroupFields(aggTask.getSelect());
+    groupMap.put(groupKey, g);
+    if (callback != null) {
+      callback.accept(this, g);
+    }
+    return true;
+  }
+
   private FixedSizeTags buildGroupKey(DataAccessor da) {
     if (!aggTask.getInner().hasGroupBy()) {
       return FixedSizeTags.EMPTY;
