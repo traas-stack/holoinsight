@@ -86,7 +86,8 @@ public class Step2IdentityFilter implements Filter {
       return false;
     }
 
-    if (RestAuthUtil.singleton.isNoAuthRequest(req) || !RestAuthUtil.singleton.isAuthRequest(req)) {
+    if (RestAuthUtil.singleton.isNoAuthRequest(req) || !RestAuthUtil.singleton.isAuthRequest(req)
+        || MetaDictUtil.getTokenUrlNoAuth().contains(req.getServletPath())) {
       MonitorUser adminUser = MonitorUser.adminUser;
       adminUser.setAuthToken("singleton");
       req.setAttribute(MonitorUser.MONITOR_USER, adminUser);

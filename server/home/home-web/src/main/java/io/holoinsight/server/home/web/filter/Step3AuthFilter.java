@@ -72,7 +72,8 @@ public class Step3AuthFilter implements Filter {
 
   public boolean auth(HttpServletRequest req, HttpServletResponse resp) throws Throwable {
 
-    if (RestAuthUtil.singleton.isNoAuthRequest(req) || !RestAuthUtil.singleton.isAuthRequest(req)) {
+    if (RestAuthUtil.singleton.isNoAuthRequest(req) || !RestAuthUtil.singleton.isAuthRequest(req)
+        || MetaDictUtil.getTokenUrlNoAuth().contains(req.getServletPath())) {
       return true;
     }
     MonitorUser mu = (MonitorUser) req.getAttribute(MonitorUser.MONITOR_USER);
