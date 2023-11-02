@@ -133,6 +133,14 @@ public class MetaDictUtil {
     return value;
   }
 
+  public static List<String> getTokenUrlNoAuth() {
+    List<String> value = MetaDictUtil.getValue(MetaDictType.GLOBAL_CONFIG,
+        MetaDictKey.TOKEN_URL_NO_AUTH, new TypeToken<List<String>>() {});
+    if (CollectionUtils.isEmpty(value))
+      return new ArrayList<>();
+    return value;
+  }
+
   public static Boolean isLogMeteringOpen() {
     Boolean value = MetaDictUtil.getValue(MetaDictType.GLOBAL_CONFIG, MetaDictKey.METERING_LOG_OPEN,
         new TypeToken<Boolean>() {});

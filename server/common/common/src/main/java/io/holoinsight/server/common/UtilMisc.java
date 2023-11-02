@@ -5,6 +5,11 @@ package io.holoinsight.server.common;
 
 import org.springframework.util.CollectionUtils;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -85,5 +90,28 @@ public class UtilMisc {
       default:
     }
     return interval;
+  }
+
+  /**
+   * 将inputStream里的数据读取出来并转换成字符串
+   */
+  public static String inputStream2String(InputStream inputStream) throws IOException {
+    StringBuilder sb = new StringBuilder();
+    BufferedReader reader = null;
+    try {
+      reader = new BufferedReader(new InputStreamReader(inputStream, Charset.defaultCharset()));
+      String line;
+      while ((line = reader.readLine()) != null) {
+        sb.append(line);
+      }
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    } finally {
+      if (reader != null) {
+        reader.close();
+      }
+    }
+
+    return sb.toString();
   }
 }
