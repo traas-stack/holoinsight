@@ -3,6 +3,7 @@
  */
 package io.holoinsight.server.agg.v1.dispatcher;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -20,7 +21,6 @@ import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.google.common.collect.Maps;
-import com.xzchaoo.commons.stat.Stats;
 import com.xzchaoo.commons.stat.StringsKey;
 
 import io.holoinsight.server.agg.v1.core.AggProperties;
@@ -29,8 +29,10 @@ import io.holoinsight.server.agg.v1.core.conf.PartitionKey;
 import io.holoinsight.server.agg.v1.core.data.AggKeySerdes;
 import io.holoinsight.server.agg.v1.core.data.AggTaskKey;
 import io.holoinsight.server.agg.v1.core.data.AggValuesSerdes;
+import io.holoinsight.server.agg.v1.core.kafka.KafkaProducerHealthChecker;
 import io.holoinsight.server.agg.v1.pb.AggProtos;
 import io.holoinsight.server.common.auth.AuthInfo;
+import io.holoinsight.server.common.threadpool.CommonThreadPools;
 import io.holoinsight.server.gateway.core.grpc.GatewayHook;
 import io.holoinsight.server.gateway.core.utils.StatUtils;
 import io.holoinsight.server.gateway.grpc.DataNode;
@@ -50,6 +52,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class AggDispatcher {
   private KafkaProducer<AggTaskKey, AggProtos.AggTaskValue> kafkaProducer;
+  private KafkaProducerHealthChecker kafkaProducerHealthChecker;
 
   @Autowired
   private AggProperties aggProperties;
@@ -57,6 +60,9 @@ public class AggDispatcher {
   private AggTaskV1StorageForDispatcher storage;
   @Autowired
   private AggConfig aggConfig;
+
+  @Autowired
+  private CommonThreadPools commonThreadPools;
 
   @PostConstruct
   public void init() {
@@ -67,13 +73,18 @@ public class AggDispatcher {
     properties.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, AggValuesSerdes.S.class.getName());
     properties.put(ProducerConfig.BATCH_SIZE_CONFIG, 64 * 1024);
     properties.put(ProducerConfig.LINGER_MS_CONFIG, 100);
+    properties.put(ProducerConfig.MAX_BLOCK_MS_CONFIG, 3000);
     properties.put(ProducerConfig.COMPRESSION_TYPE_CONFIG,
         aggProperties.getProducerCompressionType());
     this.kafkaProducer = new KafkaProducer<>(properties);
+    kafkaProducerHealthChecker = new KafkaProducerHealthChecker(kafkaProducer,
+        aggProperties.getTopic(), Duration.ofSeconds(30), commonThreadPools.getScheduler());
+    kafkaProducerHealthChecker.start();
   }
 
   @PreDestroy
   public void close() {
+    kafkaProducerHealthChecker.stop();
     this.kafkaProducer.close();
   }
 
@@ -96,11 +107,7 @@ public class AggDispatcher {
 
         for (AggTask aggTask : aggTasks) {
           AggTaskKey aggTaskKey = new AggTaskKey(authInfo.getTenant(), aggTask.getAggId(), "");
-
-          ProducerRecord<AggTaskKey, AggProtos.AggTaskValue> record =
-              new ProducerRecord<>(aggProperties.getTopic(), aggTaskKey, aggTaskValue);
-
-          kafkaProducer.send(record);
+          send(aggTaskKey, aggTaskValue);
         }
 
         continue;
@@ -158,12 +165,10 @@ public class AggDispatcher {
           }
           aggTaskValue.addInDataNodes(b);
         }
-
-        ProducerRecord<AggTaskKey, AggProtos.AggTaskValue> record =
-            new ProducerRecord<>(aggProperties.getTopic(), aggKey, aggTaskValue.build());
-        kafkaProducer.send(record);
-        StatUtils.KAFKA_SEND.add(StringsKey.of("v4"),
-            new long[] {1, aggTaskValue.getInDataNodesCount()});
+        if (send(aggKey, aggTaskValue.build())) {
+          StatUtils.KAFKA_SEND.add(StringsKey.of("v4"),
+              new long[] {1, aggTaskValue.getInDataNodesCount()});
+        }
       }
     }
   }
@@ -202,11 +207,10 @@ public class AggDispatcher {
 
         AggProtos.AggTaskValue taskValue = aggTaskValue.build();
 
-        ProducerRecord<AggTaskKey, AggProtos.AggTaskValue> record =
-            new ProducerRecord<>(aggProperties.getTopic(), aggTaskKey, taskValue);
-        kafkaProducer.send(record);
-        StatUtils.KAFKA_SEND.add(StringsKey.of("v1"),
-            new long[] {1, taskValue.getInDataNodesCount()});
+        if (send(aggTaskKey, taskValue)) {
+          StatUtils.KAFKA_SEND.add(StringsKey.of("v1"),
+              new long[] {1, taskValue.getInDataNodesCount()});
+        }
       }
     }
   }
@@ -244,10 +248,7 @@ public class AggDispatcher {
         for (AggTask aggTask : aggTasks) {
           // TODO partition ???
           AggTaskKey aggTaskKey = new AggTaskKey(authInfo.getTenant(), aggTask.getAggId(), "");
-
-          ProducerRecord<AggTaskKey, AggProtos.AggTaskValue> record =
-              new ProducerRecord<>(aggProperties.getTopic(), aggTaskKey, aggTaskValue);
-          kafkaProducer.send(record);
+          send(aggTaskKey, aggTaskValue);
         }
       }
     }
@@ -289,16 +290,45 @@ public class AggDispatcher {
 
     for (AggTask aggTask : aggTasks) {
       AggTaskKey aggTaskKey = new AggTaskKey(authInfo.getTenant(), aggTask.getAggId());
-
-      ProducerRecord<AggTaskKey, AggProtos.AggTaskValue> record =
-          new ProducerRecord<>(aggProperties.getTopic(), aggTaskKey, aggTaskValue);
-      kafkaProducer.send(record);
-      StatUtils.KAFKA_SEND.add(StringsKey.of("detail"), new long[] {1, table.getRows().size()});
+      if (send(aggTaskKey, aggTaskValue)) {
+        StatUtils.KAFKA_SEND.add(StringsKey.of("detail"), new long[] {1, table.getRows().size()});
+      }
     }
   }
 
   public boolean supportsDetail(String name) {
     return CollectionUtils.isNotEmpty(this.storage.getByMetric(name));
+  }
+
+  private boolean send(AggTaskKey key, AggProtos.AggTaskValue value) {
+    if (!kafkaProducerHealthChecker.isHealthy()) {
+      int count = value.getInDataNodesCount();
+      if (value.hasDataTable()) {
+        count += value.getDataTable().getRowCount();
+      }
+      StatUtils.KAFKA_SEND.add(StringsKey.of("discard"), new long[] {1, count});
+      return false;
+    }
+
+    ProducerRecord<AggTaskKey, AggProtos.AggTaskValue> record =
+        new ProducerRecord<>(aggProperties.getTopic(), key, value);
+
+    // When kafka is unhealthy, the calling to `KafkaProducer.send` itself will block at waiting for
+    // metadata.
+    // If the metadata already exists, well, we hit the cache and the send method doesn't block.
+    // In any case, we'd better have a health check for kafka and fail quickly in unhealthy
+    // situations instead of blocking. (Although this will occasionally lose some data)
+    kafkaProducer.send(record, (metadata, exception) -> {
+      if (exception != null) {
+        int count = value.getInDataNodesCount();
+        if (value.hasDataTable()) {
+          count += value.getDataTable().getRowCount();
+        }
+        log.error("[agg] [{}] write kafka error, metric=[{}] size=[{}]", //
+            key, value.getMetric(), count);
+      }
+    });
+    return true;
   }
 
   @NotNull
