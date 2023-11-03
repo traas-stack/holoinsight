@@ -78,6 +78,8 @@
 		<module>../agg/agg-executor</module>
 		<module>../agg/agg-boot</module>
 		<module>../agg/agg-executor-api</module>
+		<module>../otlp/otlp-core</module>
+		<module>../otlp/otlp-server</module>
 	</modules>
 
 	<parent>
