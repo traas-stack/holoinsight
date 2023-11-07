@@ -54,7 +54,8 @@ public class IntegrationPluginFacadeImpl extends BaseFacade {
   @PostMapping("/update")
   @ResponseBody
   @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.EDIT)
-  public JsonResult<Object> update(@RequestBody IntegrationPluginDTO integrationPluginDTO) {
+  public JsonResult<IntegrationPluginDTO> update(
+      @RequestBody IntegrationPluginDTO integrationPluginDTO) {
     final JsonResult<IntegrationPluginDTO> result = new JsonResult<>();
     facadeTemplate.manage(result, new ManageCallback() {
       @Override
@@ -92,7 +93,7 @@ public class IntegrationPluginFacadeImpl extends BaseFacade {
         }
         IntegrationPluginDTO update =
             integrationPluginService.updateByRequest(integrationPluginDTO);
-
+        JsonResult.createSuccessResult(result, update);
         assert mu != null;
         userOpLogService.append("integration_plugin", update.getId(), OpType.UPDATE,
             mu.getLoginName(), ms.getTenant(), ms.getWorkspace(), J.toJson(integrationPluginDTO),
@@ -101,7 +102,7 @@ public class IntegrationPluginFacadeImpl extends BaseFacade {
       }
     });
 
-    return JsonResult.createSuccessResult(true);
+    return result;
   }
 
   @DeleteMapping(value = "/delete/{id}")

@@ -124,12 +124,12 @@ public class QueryFacadeImpl extends BaseFacade {
         try {
           QueryResponse response = queryClientService.query(convertRequest(request));
           JsonResult.createSuccessResult(result, response);
-        } catch (Exception e) {
-          if (e.getMessage().contains("Evaluated points num")
-              && e.getMessage().contains("larger than")) {
-            throw new MonitorException(ResultCodeEnum.EXCEED_SERIES_LIMIT, e);
+        } catch (Throwable t) {
+          if (t.getMessage().contains("Evaluated points num")
+              && t.getMessage().contains("larger than")) {
+            throw new MonitorException(ResultCodeEnum.EXCEED_SERIES_LIMIT, t);
           }
-          throw new MonitorException(ResultCodeEnum.MONITOR_SYSTEM_ERROR, e);
+          throw new MonitorException(ResultCodeEnum.MONITOR_SYSTEM_ERROR, t);
         }
       }
     });
@@ -178,12 +178,12 @@ public class QueryFacadeImpl extends BaseFacade {
         try {
           QueryResponse response = queryClientService.queryTags(convertRequest(request));
           JsonResult.createSuccessResult(result, response);
-        } catch (Exception e) {
-          if (e.getMessage().contains("Evaluated points num")
-              && e.getMessage().contains("larger than")) {
-            throw new MonitorException(ResultCodeEnum.EXCEED_SERIES_LIMIT, e);
+        } catch (Throwable t) {
+          if (t.getMessage().contains("Evaluated points num")
+              && t.getMessage().contains("larger than")) {
+            throw new MonitorException(ResultCodeEnum.EXCEED_SERIES_LIMIT, t);
           }
-          throw new MonitorException(ResultCodeEnum.MONITOR_SYSTEM_ERROR, e);
+          throw new MonitorException(ResultCodeEnum.MONITOR_SYSTEM_ERROR, t);
         }
       }
     });
