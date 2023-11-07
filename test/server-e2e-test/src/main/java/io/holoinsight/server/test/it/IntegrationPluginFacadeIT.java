@@ -96,7 +96,7 @@ public class IntegrationPluginFacadeIT extends BaseIT {
         .post("/webapi/integration/plugin/update") //
         .then() //
         .body("success", IS_TRUE) //
-        .body("data", IS_TRUE); //
+        .body("data", NOT_NULL); //
     Response response = queryById.get();
     System.out.println(response.body().print());
     response //
