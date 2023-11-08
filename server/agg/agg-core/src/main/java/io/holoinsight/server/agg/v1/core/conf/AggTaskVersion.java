@@ -35,6 +35,6 @@ public class AggTaskVersion {
   }
 
   public boolean isEmpty() {
-    return id == 0 && version == 0;
+    return id == 0;
   }
 }

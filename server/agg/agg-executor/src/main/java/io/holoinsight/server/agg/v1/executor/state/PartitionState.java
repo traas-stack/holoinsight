@@ -55,6 +55,7 @@ public class PartitionState {
     offset = 0L;
     aggTaskStates.clear();
     maxEventTimestamp = 0;
+    restoredOffset = 0;
   }
 
   public boolean updateMaxEventTimestamp(long timestamp) {

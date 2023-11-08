@@ -163,6 +163,10 @@ public class AggTaskV1Syncer implements InitializingBean {
             continue;
           }
 
+          aggTask.getInner().setId(d.add.get(0).getId());
+          aggTask.getInner().setVersion(d.add.get(0).getVersion());
+          aggTask.getInner().setAggId(d.add.get(0).getAggId());
+
           if (storage.get(d.aggId) != null) {
             ++update;
           } else {

@@ -281,7 +281,8 @@ public class PartitionProcessor {
 
     state.setRestoredOffset(restored.getOffset());
     for (AggTaskState ats : restored.getAggTaskStates().values()) {
-      log.info("[partition] [{}] load agg task restored {}", partition, ats.getKey());
+      log.info("[partition] [{}] load agg task restored {} watermark=[{}]", partition, ats.getKey(),
+          Utils.formatTime(ats.getWatermark()));
       AggTaskExecutor e = new AggTaskExecutor(ats, completenessService, output);
       e.restoredOffset = restored.getOffset();
       aggTaskExecutors.put(ats.getKey(), e);
@@ -292,8 +293,9 @@ public class PartitionProcessor {
     // automatically updated to reasonable values using the recalculation mechanism.
 
     long cost = System.currentTimeMillis() - begin;
-    log.info("[partition] [{}] load restored successfully, cost=[{}], aggTaskStates=[{}]",
-        partition, cost, restored.getAggTaskStates().size());
+    log.info("[partition] [{}] load restored successfully, cost=[{}], aggTaskStates=[{}] MET=[{}]",
+        partition, cost, restored.getAggTaskStates().size(),
+        Utils.formatTime(state.getMaxEventTimestamp()));
   }
 
   void clearState() {

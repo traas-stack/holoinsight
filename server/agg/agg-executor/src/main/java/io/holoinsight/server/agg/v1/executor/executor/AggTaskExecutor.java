@@ -297,6 +297,8 @@ public class AggTaskExecutor {
 
   private void onAggWindowCreate(AggWindowState w) {
     AggTaskKey key = key();
+    log.info("[agg] [{}] window created ts=[{}] aggVersion=[{}]", //
+        key, Utils.formatTimeShort(w.getTimestamp()), w.getAggTask().getInner().getVersion());
 
     From from = w.getAggTask().getInner().getFrom();
     CompletenessConfig completenessConfig = from.getCompleteness();
@@ -431,7 +433,11 @@ public class AggTaskExecutor {
     Map<FixedSizeTags, Long> historyTags = state.getHistoryTags();
 
     long interval = lastUsedAggTask.getInner().getWindow().getInterval();
-    long lastEmitTimestamp = (state.getWatermark() - 1) / interval * interval;
+    long lastEmitTimestamp = Math.max( //
+        // This value may be small if the state is restored from a very old state.
+        (state.getWatermark() - 1) / interval * interval,
+        // So we restrict it to be within the last 60 periods of the watermark
+        (((watermark - 1) / interval) - 60) * interval);
 
     for (long ts = lastEmitTimestamp + interval; ts < watermark; ts += interval) {
       AggWindowState w = state.getAggWindowState(ts);
@@ -446,9 +452,16 @@ public class AggTaskExecutor {
         historyTags.clear();
       } else if (!historyTagsVersion.hasSameVersion(w.getAggTask().getInner())) {
         // this is the last window
-        if (ts + interval >= watermark) {
+        if (ts + interval >= watermark
+            && w.getAggTask().getInner().getVersion() > historyTagsVersion.getVersion()) {
+          log.info("[agg] [{}] tags version changed, clear history tags {} {}/{}", key(),
+              historyTagsVersion, w.getAggTask().getInner().getId(), w.getAggTask().getInner().getVersion());
           historyTagsVersion.updateTo(w.getAggTask().getInner());
           historyTags.clear();
+        } else {
+          log.info("[agg] [{}] tags version changed, no fill history tags {} {}/{}", //
+              key(), historyTagsVersion, w.getAggTask().getInner().getId(), w.getAggTask().getInner().getVersion());
+          continue;
         }
       }
 
