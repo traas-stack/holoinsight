@@ -431,7 +431,11 @@ public class AggTaskExecutor {
     Map<FixedSizeTags, Long> historyTags = state.getHistoryTags();
 
     long interval = lastUsedAggTask.getInner().getWindow().getInterval();
-    long lastEmitTimestamp = (state.getWatermark() - 1) / interval * interval;
+    long lastEmitTimestamp = Math.max( //
+        // This value may be small if the state is restored from a very old state.
+        (state.getWatermark() - 1) / interval * interval,
+        // So we restrict it to be within the last 60 periods of the watermark
+        ((watermark - 1) - 60) / interval * interval);
 
     for (long ts = lastEmitTimestamp + interval; ts < watermark; ts += interval) {
       AggWindowState w = state.getAggWindowState(ts);

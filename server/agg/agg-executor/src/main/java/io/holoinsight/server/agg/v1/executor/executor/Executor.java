@@ -434,6 +434,7 @@ public class Executor {
 
 
     private void onPartitionsAssigned0(Collection<TopicPartition> partitions) {
+      Map<TopicPartition, Long> beginningOffsets = kafkaConsumer.beginningOffsets(partitions);
       Map<TopicPartition, Long> endOffsets = kafkaConsumer.endOffsets(partitions);
 
       // for PERFORMANCE TEST
@@ -459,6 +460,24 @@ public class Executor {
         }
 
         maybeRecoverState(pp);
+
+        if (pp.state.getRestoredOffset() > 0) {
+          long restored = pp.state.getRestoredOffset();
+          Long begin = beginningOffsets.get(partition);
+          if (begin != null && restored < begin) {
+            log.info("[partition] [{}] clear expired restored state, restored=[{}] begin=[{}]", //
+                partition, restored, begin);
+            pp.state.clear();
+          }
+
+          restored = pp.state.getRestoredOffset();
+          Long end = endOffsets.get(partition);
+          if (restored > 0 && end != null && restored > end) {
+            log.info("[partition] [{}] clear expired restored state, restored=[{}] end=[{}]", //
+                partition, restored, end);
+            pp.state.clear();
+          }
+        }
 
         if (!recoverByRecomputing(pp, endOffsets, pp.state.getRestoredOffset())) {
           pp.clearState();
