@@ -455,12 +455,14 @@ public class AggTaskExecutor {
         if (ts + interval >= watermark
             && w.getAggTask().getInner().getVersion() > historyTagsVersion.getVersion()) {
           log.info("[agg] [{}] tags version changed, clear history tags {} {}/{}", key(),
-              historyTagsVersion, w.getAggTask().getInner().getId(), w.getAggTask().getInner().getVersion());
+              historyTagsVersion, w.getAggTask().getInner().getId(),
+              w.getAggTask().getInner().getVersion());
           historyTagsVersion.updateTo(w.getAggTask().getInner());
           historyTags.clear();
         } else {
           log.info("[agg] [{}] tags version changed, no fill history tags {} {}/{}", //
-              key(), historyTagsVersion, w.getAggTask().getInner().getId(), w.getAggTask().getInner().getVersion());
+              key(), historyTagsVersion, w.getAggTask().getInner().getId(),
+              w.getAggTask().getInner().getVersion());
           continue;
         }
       }
