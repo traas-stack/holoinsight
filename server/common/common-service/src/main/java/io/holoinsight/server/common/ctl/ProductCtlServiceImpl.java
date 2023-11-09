@@ -3,15 +3,16 @@
  */
 package io.holoinsight.server.common.ctl;
 
-import com.google.gson.reflect.TypeToken;
 import io.holoinsight.server.common.J;
 import io.holoinsight.server.common.dao.entity.MetaDataDictValue;
 import io.holoinsight.server.common.dao.entity.MonitorInstance;
 import io.holoinsight.server.common.dao.entity.MonitorInstanceCfg;
 import io.holoinsight.server.common.service.MonitorInstanceService;
+import io.holoinsight.server.common.service.ResourceKeysHolder;
 import io.holoinsight.server.common.service.SuperCacheService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 
@@ -30,11 +31,12 @@ public class ProductCtlServiceImpl implements ProductCtlService {
 
   private Map<String, Set<String>> productClosed = new HashMap<>();
 
-  private Map<String, List<String>> resourceKeys;
-
   private boolean switchOn = false;
 
   protected static final String RS_DELIMITER = "_";
+
+  @Autowired
+  private ResourceKeysHolder resourceKeysHolder;
 
 
   @Scheduled(initialDelay = 10000L, fixedRate = 10000L)
@@ -60,16 +62,9 @@ public class ProductCtlServiceImpl implements ProductCtlService {
       switchOn = false;
     }
 
-    MetaDataDictValue resourceKeyDictVal = superCacheService.getSc().metaDataDictValueMap
-        .getOrDefault("global_config", new HashMap<>()).get("resource_keys");
-    if (resourceKeyDictVal != null) {
-      resourceKeys = J.get().fromJson(resourceKeyDictVal.getDictValue(),
-          new TypeToken<Map<String, List<String>>>() {}.getType());
-    }
 
-
-    log.info("[product_ctl] refresh closed products, switchOn={}, resourceKeys={}, closed={}",
-        switchOn, resourceKeys, productClosed);
+    log.info("[product_ctl] refresh closed products, switchOn={}, closed={}", switchOn,
+        productClosed);
   }
 
   @Override
@@ -78,32 +73,42 @@ public class ProductCtlServiceImpl implements ProductCtlService {
   }
 
   public String buildResourceVal(List<String> resourceKeys, Map<String, String> tags) {
-    return resourceKeys.stream().map(tags::get).collect(Collectors.joining(RS_DELIMITER));
+    return resourceKeys.stream().map(rk -> {
+      if (tags.containsKey(rk)) {
+        return tags.get(rk);
+      }
+      for (String tagk : tags.keySet()) {
+        if (StringUtils.endsWith(tagk, rk)) {
+          return tags.get(tagk);
+        }
+      }
+      return "NONE";
+    }).collect(Collectors.joining(RS_DELIMITER));
   }
 
   @Override
   public boolean productClosed(MonitorProductCode productCode, Map<String, String> tags) {
+    List<String> resourceKeys = resourceKeysHolder.getResourceKeys();
     if (!switchOn || productCode == null || resourceKeys == null || tags == null
         || productClosed == null) {
       return false;
     }
     String code = productCode.getCode();
-    List<String> rks = resourceKeys.get(code);
-    if (CollectionUtils.isEmpty(rks)) {
+    if (CollectionUtils.isEmpty(resourceKeys)) {
       return false;
     }
-    String rkVal = buildResourceVal(rks, tags);
+    String rkVal = buildResourceVal(resourceKeys, tags);
     return productClosed.getOrDefault(rkVal, new HashSet<>()).contains(code);
   }
 
   @Override
   public Map<String, Set<String>> productCtl(MonitorProductCode code, Map<String, String> tags,
       String action) throws Exception {
-    List<String> rks = resourceKeys.get(code.getCode());
-    if (CollectionUtils.isEmpty(rks)) {
+    List<String> resourceKeys = resourceKeysHolder.getResourceKeys();
+    if (CollectionUtils.isEmpty(resourceKeys)) {
       throw new RuntimeException("resource keys not found for code : " + code.getCode());
     }
-    String uniqueId = buildResourceVal(rks, tags);
+    String uniqueId = buildResourceVal(resourceKeys, tags);
 
     List<MonitorInstance> instances = monitorInstanceService.queryByInstance(uniqueId);
     if (CollectionUtils.isNotEmpty(instances)) {
@@ -121,12 +126,12 @@ public class ProductCtlServiceImpl implements ProductCtlService {
   @Override
   public Map<String, Boolean> productStatus(Map<String, String> tags) throws Exception {
     Map<String, Boolean> closed = new HashMap<>();
+    List<String> resourceKeys = resourceKeysHolder.getResourceKeys();
     for (MonitorProductCode code : MonitorProductCode.values()) {
-      List<String> rks = resourceKeys.get(code.getCode());
-      if (CollectionUtils.isEmpty(rks)) {
+      if (CollectionUtils.isEmpty(resourceKeys)) {
         closed.put(code.getCode(), false);
       } else {
-        String uniqueId = buildResourceVal(rks, tags);
+        String uniqueId = buildResourceVal(resourceKeys, tags);
         List<MonitorInstance> instances = monitorInstanceService.queryByInstance(uniqueId);
         if (CollectionUtils.isEmpty(instances)) {
           closed.put(code.getCode(), false);
