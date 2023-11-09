@@ -73,6 +73,10 @@ public class TemplateValue {
 
   String alertServer;
 
+  String alertIp;
+
+  String pid;
+
   /**
    * log content triggered alert
    */

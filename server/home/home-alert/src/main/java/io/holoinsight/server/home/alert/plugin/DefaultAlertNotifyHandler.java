@@ -21,6 +21,11 @@ public class DefaultAlertNotifyHandler extends AlertNotifyHandler {
   }
 
   @Override
+  protected String getPid(AlertNotify alertNotify) {
+    return alertNotify.getTenant();
+  }
+
+  @Override
   protected String getAppKey() {
     return "app";
   }

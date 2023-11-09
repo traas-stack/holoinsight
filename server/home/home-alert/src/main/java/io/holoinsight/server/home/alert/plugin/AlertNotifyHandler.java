@@ -116,7 +116,8 @@ public abstract class AlertNotifyHandler implements AlertHandlerExecutor {
     alertNotifyRequest.setSourceType(alertNotify.getSourceType());
     alertNotifyRequest.setDuration(alertNotify.getDuration());
     alertNotifyRequest.setAlertServer(alertNotify.getAlertServer());
-
+    alertNotifyRequest.setAlertIp(alertNotify.getAlertIp());
+    alertNotifyRequest.setPid(getPid(alertNotify));
     alertNotifyRequest.setTenant(getTenant(alertNotify));
     alertNotifyRequest.setWorkspace(getWorkspace(alertNotify));
     alertNotifyRequest.setLogAnalysis(alertNotify.getLogAnalysis());
@@ -144,6 +145,8 @@ public abstract class AlertNotifyHandler implements AlertHandlerExecutor {
   protected abstract String getWorkspace(AlertNotify alertNotify);
 
   protected abstract String getTenant(AlertNotify alertNotify);
+
+  protected abstract String getPid(AlertNotify alertNotify);
 
   protected abstract String getAppKey();
 }

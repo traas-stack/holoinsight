@@ -34,6 +34,7 @@ public enum AlertTemplateField {
   alarmContent("alarmContent", "告警内容", "string"), //
   EVENT_TYPE("EVENT_TYPE", "指标类型", "string"), //
   HOSTNAME("HOSTNAME", "告警计算节点", "string"), //
+  IP("IP", "告警计算节点ip", "string"), //
   ALERT_ATTACHMENTS("ALERT_ATTACHMENTS", "告警付文(json)", "string"), //
   LINK("LINK", "监控链接", "string"), //
   ruleUrl("ruleUrl", "告警规则链接", "string"), //

@@ -157,6 +157,8 @@ public class NotificationTemplate {
         return templateValue.sourceType;
       case HOSTNAME:
         return templateValue.alertServer;
+      case IP:
+        return templateValue.alertIp;
       case ALERT_ATTACHMENTS:
         return buildAttachments();
       // case LINK:

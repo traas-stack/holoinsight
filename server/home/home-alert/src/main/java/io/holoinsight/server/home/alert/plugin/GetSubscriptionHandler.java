@@ -131,6 +131,9 @@ public class GetSubscriptionHandler implements AlertHandlerExecutor {
                       QueryWrapper<AlarmGroup> wrapper = new QueryWrapper<>();
                       wrapper.eq("id", alertSubscribe.getGroupId());
                       AlarmGroup alarmGroup = alarmGroupDOMapper.selectOne(wrapper);
+                      if (alarmGroup == null) {
+                        break;
+                      }
                       Map<String, List<String>> map =
                           G.get().fromJson(alarmGroup.getGroupInfo(), Map.class);
                       personList = map.get("person");
