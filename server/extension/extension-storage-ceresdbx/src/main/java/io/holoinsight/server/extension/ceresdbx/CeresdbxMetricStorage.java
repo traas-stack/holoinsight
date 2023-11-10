@@ -20,11 +20,13 @@ import java.util.stream.Stream;
 import io.ceresdb.common.parser.SqlParser;
 import io.ceresdb.common.parser.SqlParserFactoryProvider;
 import io.holoinsight.server.common.J;
+import io.holoinsight.server.extension.MeterService;
 import io.holoinsight.server.extension.model.DetailResult;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
 
 import com.google.common.collect.Lists;
@@ -74,6 +76,9 @@ public class CeresdbxMetricStorage implements MetricStorage {
 
   private PqlQueryService pqlQueryService;
 
+  @Autowired(required = false)
+  private MeterService meterService;
+
   public CeresdbxMetricStorage(CeresdbxClientManager ceresdbxClientManager) {
     this.ceresdbxClientManager = ceresdbxClientManager;
   }
@@ -105,6 +110,9 @@ public class CeresdbxMetricStorage implements MetricStorage {
         oneBatch = Lists.newLinkedList();
         dps = 0;
       }
+    }
+    if (meterService != null && !writeMetricsParam.isFree()) {
+      meterService.meter(writeMetricsParam);
     }
     return Mono.empty();
   }
