@@ -3,8 +3,10 @@
  */
 package io.holoinsight.server.home.web.controller;
 
+import io.holoinsight.server.home.biz.common.MetaDictUtil;
 import io.holoinsight.server.home.biz.service.DisplayMenuService;
 import io.holoinsight.server.home.biz.service.IntegrationGeneratedService;
+import io.holoinsight.server.home.biz.service.TenantInitService;
 import io.holoinsight.server.home.common.util.MonitorException;
 import io.holoinsight.server.home.common.util.ResultCodeEnum;
 import io.holoinsight.server.home.common.util.scope.AuthTargetType;
@@ -51,6 +53,8 @@ public class DisplayMenuFacadeImpl extends BaseFacade {
   @Autowired
   private IntegrationGeneratedService integrationGeneratedService;
 
+  @Autowired
+  private TenantInitService tenantInitService;
 
   @GetMapping(value = "/query/{id}")
   @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.VIEW)
@@ -137,6 +141,12 @@ public class DisplayMenuFacadeImpl extends BaseFacade {
         if (!CollectionUtils.isEmpty(byTenantMap)) {
           displayMenuDTO = byTenantMap.get(0);
         }
+        Boolean defaultApmDisplayMenu = MetaDictUtil.isDefaultApmDisplayMenu();
+        if (defaultApmDisplayMenu) {
+          JsonResult.createSuccessResult(result, displayMenuDTO.getConfig());
+          return;
+        }
+
         Map<String, Object> columnMap = new HashMap<>();
         columnMap.put("tenant", ms.getTenant());
         columnMap.put("name", name);
