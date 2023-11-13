@@ -109,6 +109,15 @@ public class MetaDictUtil {
     return value;
   }
 
+  public static Boolean isDefaultApmDisplayMenu() {
+
+    Boolean value = MetaDictUtil.getValue(MetaDictType.GLOBAL_CONFIG, MetaDictKey.DISPLAY_MENU_APM,
+        new TypeToken<Boolean>() {});
+    if (null == value) {
+      return false;
+    }
+    return value;
+  }
 
   public static Boolean isApmMaterialized() {
 

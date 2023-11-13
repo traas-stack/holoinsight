@@ -293,7 +293,8 @@ public class IntegrationPluginServiceImpl extends
     if (StringUtils.isNotBlank(workspace)) {
       queryWrapper.eq("workspace", workspace);
     }
-    queryWrapper.select("id", "name", "product", "type", "config", "json", "version");
+    queryWrapper.select("id", "name", "product", "type", "config", "json", "version", "tenant",
+        "workspace");
     return integrationPluginConverter.dosToDTOs(baseMapper.selectList(queryWrapper));
   }
 }
