@@ -65,6 +65,10 @@ public class AlertNotifyRequest {
 
   private String alertServer;
 
+  private String alertIp;
+
+  private String pid;
+
   // log analysis content
   private List<String> logAnalysis;
 
