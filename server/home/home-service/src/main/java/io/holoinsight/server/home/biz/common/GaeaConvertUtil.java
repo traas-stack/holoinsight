@@ -82,7 +82,7 @@ public class GaeaConvertUtil {
 
     Map<String, Object> executorSelector = new HashMap<>();
     executorSelector.put("type", "central");
-
+    executorSelector.put("central", new HashMap<>());
     return executorSelector;
   }
 
