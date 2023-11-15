@@ -101,7 +101,10 @@ public class CollectTargetService {
         throw new IllegalStateException("");
       case ExecutorSelector.CENTRAL:
         CentralAgentService.State state = centralAgentService.getState();
-        String requiredClusterName = es.getCentral().getName();
+        String requiredClusterName = null;
+        if (es.getCentral() != null) {
+          requiredClusterName = es.getCentral().getName();
+        }
         if (StringUtils.isEmpty(requiredClusterName)) {
           requiredClusterName = "global0";
         }
