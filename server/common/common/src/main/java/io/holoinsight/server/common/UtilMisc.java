@@ -14,6 +14,7 @@ import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -122,17 +123,16 @@ public class UtilMisc {
   }
 
   public static boolean validateWithTimeout(String regex, String input, long timeout) {
-    Runnable task = () -> {
-      try {
-        Pattern pattern = Pattern.compile(regex);
-        pattern.matcher(input).matches();
-      } catch (Exception e) {
-        log.warn("parse regex exception, " + e.getMessage(), e);
-      }
-    };
-
+    ExecutorService executor = Executors.newSingleThreadExecutor();
     try {
-      Executors.newSingleThreadExecutor().submit(task).get(timeout, TimeUnit.MILLISECONDS);
+      executor.submit(() -> {
+        try {
+          Pattern pattern = Pattern.compile(regex);
+          pattern.matcher(input).matches();
+        } catch (Exception e) {
+          log.warn("parse regex exception, " + e.getMessage(), e);
+        }
+      }).get(timeout, TimeUnit.MILLISECONDS);
     } catch (TimeoutException timeoutException) {
       log.error("parse regex timeout exception, " + timeoutException.getMessage(),
           timeoutException);
@@ -140,6 +140,8 @@ public class UtilMisc {
     } catch (Exception e) {
       log.error("parse regex exception, " + e.getMessage(), e);
       return false;
+    } finally {
+      executor.shutdown();
     }
     return true;
   }
