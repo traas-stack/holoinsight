@@ -222,7 +222,9 @@ public class GetSubscriptionHandler implements AlertHandlerExecutor {
   }
 
   private boolean keepSilence(AlertSilenceConfig alertSilenceConfig, Long alarmTime) {
-    return alertSilenceConfig != null && !alertSilenceConfig.needShoot(alarmTime);
+    return alertSilenceConfig != null
+        && !StringUtils.equals(alertSilenceConfig.getSilenceMode(), "default")
+        && !alertSilenceConfig.needShoot(alarmTime);
   }
 
   private void handleBlock(List<AlertNotify> alertNotifies) {
