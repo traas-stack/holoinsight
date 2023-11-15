@@ -16,8 +16,10 @@ import java.util.List;
 import java.util.Random;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
@@ -124,16 +126,20 @@ public class UtilMisc {
 
   public static boolean validateWithTimeout(String regex, String input, long timeout) {
     ExecutorService executor = Executors.newSingleThreadExecutor();
+    Future<Boolean> future = executor.submit(() -> {
+      try {
+        Pattern pattern = Pattern.compile(regex);
+        Matcher interruptableMatcher = pattern.matcher(new InterruptibleCharSequence(input));
+        interruptableMatcher.find();
+      } catch (Exception e) {
+        log.warn("parse regex exception, " + e.getMessage(), e);
+      }
+      return true;
+    });
     try {
-      executor.submit(() -> {
-        try {
-          Pattern pattern = Pattern.compile(regex);
-          pattern.matcher(input).matches();
-        } catch (Exception e) {
-          log.warn("parse regex exception, " + e.getMessage(), e);
-        }
-      }).get(timeout, TimeUnit.MILLISECONDS);
+      future.get(timeout, TimeUnit.MILLISECONDS);
     } catch (TimeoutException timeoutException) {
+      future.cancel(true); // 取消任务执行
       log.error("parse regex timeout exception, " + timeoutException.getMessage(),
           timeoutException);
       return false;
@@ -144,5 +150,37 @@ public class UtilMisc {
       executor.shutdown();
     }
     return true;
+  }
+
+  private static class InterruptibleCharSequence implements CharSequence {
+    CharSequence inner;
+
+    public InterruptibleCharSequence(CharSequence inner) {
+      super();
+      this.inner = inner;
+    }
+
+    @Override
+    public char charAt(int index) {
+      if (Thread.currentThread().isInterrupted()) {
+        throw new RuntimeException("Interrupted!");
+      }
+      return inner.charAt(index);
+    }
+
+    @Override
+    public int length() {
+      return inner.length();
+    }
+
+    @Override
+    public CharSequence subSequence(int start, int end) {
+      return new InterruptibleCharSequence(inner.subSequence(start, end));
+    }
+
+    @Override
+    public String toString() {
+      return inner.toString();
+    }
   }
 }

@@ -475,13 +475,12 @@ public class CustomPluginFacadeImpl extends BaseFacade {
 
   public List<String[]> presplitRegexp(List<String> sampleLogs, String expression) {
 
-    boolean b = UtilMisc.validateWithTimeout(expression, sampleLogs.get(0), 1000);
-    if (!b) {
-      throw new MonitorException("regex expression invalid");
-    }
-
     List<String[]> strings = new ArrayList<>();
     sampleLogs.forEach(log -> {
+      boolean b = UtilMisc.validateWithTimeout(expression, log, 1000);
+      if (!b) {
+        throw new MonitorException("regex expression invalid");
+      }
       Pattern pattern = Pattern.compile(expression);
 
       Matcher matcher = pattern.matcher(log);
