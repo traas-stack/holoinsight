@@ -3,6 +3,7 @@
  */
 package io.holoinsight.server.common;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.CollectionUtils;
 
 import java.io.BufferedReader;
@@ -13,6 +14,10 @@ import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+import java.util.regex.Pattern;
 
 /**
  * <p>
@@ -22,6 +27,7 @@ import java.util.Random;
  * @author xzchaoo
  * @version 1.0: UtilMisc.java, v 0.1 2022年04月24日 12:36 下午 jinsong.yjs Exp $
  */
+@Slf4j
 public class UtilMisc {
   private static Random seed = new Random();
 
@@ -113,5 +119,28 @@ public class UtilMisc {
     }
 
     return sb.toString();
+  }
+
+  public static boolean validateWithTimeout(String regex, String input, long timeout) {
+    Runnable task = () -> {
+      try {
+        Pattern pattern = Pattern.compile(regex);
+        pattern.matcher(input).matches();
+      } catch (Exception e) {
+        log.warn("parse regex exception, " + e.getMessage(), e);
+      }
+    };
+
+    try {
+      Executors.newSingleThreadExecutor().submit(task).get(timeout, TimeUnit.MILLISECONDS);
+    } catch (TimeoutException timeoutException) {
+      log.error("parse regex timeout exception, " + timeoutException.getMessage(),
+          timeoutException);
+      return false;
+    } catch (Exception e) {
+      log.error("parse regex exception, " + e.getMessage(), e);
+      return false;
+    }
+    return true;
   }
 }

@@ -3,6 +3,7 @@
  */
 package io.holoinsight.server.home.web.controller;
 
+import io.holoinsight.server.common.UtilMisc;
 import io.holoinsight.server.home.biz.service.AlarmMetricService;
 import io.holoinsight.server.home.biz.service.CustomPluginService;
 import io.holoinsight.server.home.biz.service.FolderService;
@@ -35,6 +36,7 @@ import io.holoinsight.server.home.web.controller.model.LogSplitReq;
 import io.holoinsight.server.home.web.interceptor.MonitorScopeAuth;
 import io.holoinsight.server.common.J;
 import io.holoinsight.server.common.JsonResult;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
@@ -64,6 +66,7 @@ import java.util.regex.Pattern;
  */
 @RestController
 @RequestMapping("/webapi/customPlugin")
+@Slf4j
 public class CustomPluginFacadeImpl extends BaseFacade {
 
   @Autowired
@@ -471,6 +474,12 @@ public class CustomPluginFacadeImpl extends BaseFacade {
   }
 
   public List<String[]> presplitRegexp(List<String> sampleLogs, String expression) {
+
+    boolean b = UtilMisc.validateWithTimeout(expression, sampleLogs.get(0), 1000);
+    if (!b) {
+      throw new MonitorException("regex expression invalid");
+    }
+
     List<String[]> strings = new ArrayList<>();
     sampleLogs.forEach(log -> {
       Pattern pattern = Pattern.compile(expression);
