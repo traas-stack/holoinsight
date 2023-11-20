@@ -383,9 +383,9 @@ public class AlertSaveHistoryHandler implements AlertHandlerExecutor {
           if (CollectionUtils.isEmpty(notifyDataInfos)) {
             LOGGER.warn("{} {} notifyDataInfos is empty, return.", alertNotify.getTraceId(),
                 alertNotify.getAlarmTraceId());
-            return;
+          } else {
+            genAlertHistoryDetail(alertNotify, historyId);
           }
-          genAlertHistoryDetail(alertNotify, historyId);
         }
         RecordSucOrFailNotify.alertNotifyProcessSuc(SAVE_HISTORY, "save history",
             alertNotify.getAlertNotifyRecord());

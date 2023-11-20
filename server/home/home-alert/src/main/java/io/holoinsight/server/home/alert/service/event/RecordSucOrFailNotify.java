@@ -6,6 +6,7 @@ package io.holoinsight.server.home.alert.service.event;
 import io.holoinsight.server.common.AddressUtil;
 import io.holoinsight.server.common.J;
 import io.holoinsight.server.home.alert.model.compute.ComputeTaskPackage;
+import io.holoinsight.server.home.biz.common.MetaDictUtil;
 import io.holoinsight.server.home.biz.service.AlertNotifyRecordService;
 import io.holoinsight.server.home.common.service.SpringContext;
 import io.holoinsight.server.home.dal.mapper.AlertNotifyRecordMapper;
@@ -18,6 +19,7 @@ import io.holoinsight.server.home.facade.NotifyUser;
 import io.holoinsight.server.home.facade.Steps;
 import io.holoinsight.server.home.facade.trigger.TriggerResult;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.BeanUtils;
 import org.springframework.util.CollectionUtils;
@@ -27,6 +29,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
+
+import static io.holoinsight.server.home.biz.common.MetaDictType.GLOBAL_CONFIG;
 
 /**
  *
@@ -46,10 +50,16 @@ public class RecordSucOrFailNotify {
 
   private static final String NOTIFY_CHAIN = "NotifyChains";
 
-
+  private static boolean recordEnable() {
+    String enable = MetaDictUtil.getStringValue(GLOBAL_CONFIG, "record_enable");
+    return StringUtils.isNotEmpty(enable) && StringUtils.equals(enable, "true");
+  }
 
   public static void alertNotifyChannelFail(String errorNode, String notifyChannel,
       AlertNotifyRecordDTO alertNotifyRecord, String notifyUser) {
+    if (!recordEnable()) {
+      return;
+    }
     if (Objects.nonNull(alertNotifyRecord)) {
       try {
         if (alertNotifyRecord.getIsRecord()) {
@@ -169,6 +179,9 @@ public class RecordSucOrFailNotify {
 
   public static void alertNotifyProcess(String errorNode, String stage, String step,
       AlertNotifyRecordDTO alertNotifyRecord) {
+    if (!recordEnable()) {
+      return;
+    }
     if (Objects.isNull(alertNotifyRecord)) {
       log.warn("{} {} {} record fail. alertNotifyRecord is null", stage, step, errorNode);
       return;
@@ -310,6 +323,9 @@ public class RecordSucOrFailNotify {
   }
 
   public static void batchInsert(List<AlertNotifyRecordDTO> alertNotifyRecordDTOList) {
+    if (!recordEnable()) {
+      return;
+    }
     try {
       List<AlertNotifyRecord> alertNotifyRecords = new ArrayList<>();
       if (!CollectionUtils.isEmpty(alertNotifyRecordDTOList)) {
