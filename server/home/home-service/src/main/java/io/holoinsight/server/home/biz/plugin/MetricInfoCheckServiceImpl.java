@@ -4,8 +4,9 @@
 package io.holoinsight.server.home.biz.plugin;
 
 import io.holoinsight.server.common.dao.entity.dto.MetricInfoDTO;
+import io.holoinsight.server.common.service.MetricInfoService;
 
-import java.util.Collections;
+import javax.annotation.Resource;
 import java.util.List;
 
 /**
@@ -13,13 +14,13 @@ import java.util.List;
  * @version 2023-09-14 10:45:00
  */
 public class MetricInfoCheckServiceImpl implements MetricInfoCheckService {
-  @Override
-  public boolean needWorkspace(String product) {
-    return false;
-  }
+
+  @Resource
+  private MetricInfoService metricInfoService;
 
   @Override
-  public List<MetricInfoDTO> queryMetricInfoByMetricType(String product) {
-    return Collections.emptyList();
+  public List<MetricInfoDTO> queryMetricInfoByMetricType(String tenant, String workspace,
+      String product) {
+    return metricInfoService.queryListByTenantProduct(null, null, product);
   }
 }

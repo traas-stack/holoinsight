@@ -3,6 +3,8 @@
  */
 package io.holoinsight.server.home.web.filter;
 
+import io.holoinsight.server.home.common.util.MonitorException;
+import io.holoinsight.server.home.common.util.ResultCodeEnum;
 import io.holoinsight.server.home.web.config.RestAuthUtil;
 import io.holoinsight.server.common.J;
 import io.holoinsight.server.home.biz.ula.ULAFacade;
@@ -72,7 +74,8 @@ public class Step3AuthFilter implements Filter {
 
   public boolean auth(HttpServletRequest req, HttpServletResponse resp) throws Throwable {
 
-    if (RestAuthUtil.singleton.isNoAuthRequest(req) || !RestAuthUtil.singleton.isAuthRequest(req)) {
+    if (RestAuthUtil.singleton.isNoAuthRequest(req) || !RestAuthUtil.singleton.isAuthRequest(req)
+        || MetaDictUtil.getTokenUrlNoAuth().contains(req.getServletPath())) {
       return true;
     }
     MonitorUser mu = (MonitorUser) req.getAttribute(MonitorUser.MONITOR_USER);
@@ -136,6 +139,14 @@ public class Step3AuthFilter implements Filter {
       MonitorCookieUtil.addMonitorAuthCookie(ma, resp);
       MonitorCookieUtil.addUserCookie(mu, resp);
       // 放到线程上下文中
+    } catch (MonitorException me) {
+      log.error("auth failed by MonitorException", me);
+      if (me.getResultCode() == ResultCodeEnum.NO_AUTH) {
+        authFailedResponse(resp, HttpServletResponse.SC_UNAUTHORIZED, me.getMessage());
+      } else {
+        authFailedResponse(resp, HttpServletResponse.SC_FORBIDDEN,
+            "auth failed by MonitorException, " + me.getMessage());
+      }
     } catch (Throwable e) {
       log.error("auth failed by cookie", e);
       authFailedResponse(resp, HttpServletResponse.SC_FORBIDDEN,

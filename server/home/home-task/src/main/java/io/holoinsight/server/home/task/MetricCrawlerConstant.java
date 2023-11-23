@@ -13,7 +13,6 @@ public class MetricCrawlerConstant {
   public static final String GLOBAL_TENANT = "-";
   public static final String GLOBAL_WORKSPACE = "-";
   public static final String GLOBAL_ORGANIZATION = "-";
-  public static final String LOG_MONITOR_PRODUCT = "logmonitor";
   public static final String PERCENT_UNIT = "percent";
   public static final String NUMBER_UNIT = "number";
   public static final String BYTES_UNIT = "bytes";

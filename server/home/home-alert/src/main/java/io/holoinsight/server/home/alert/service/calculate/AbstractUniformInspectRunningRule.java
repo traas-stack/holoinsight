@@ -51,7 +51,7 @@ public class AbstractUniformInspectRunningRule {
       LoggerFactory.getLogger(AbstractUniformInspectRunningRule.class);
 
   ThreadPoolExecutor ruleRunner = new ThreadPoolExecutor(20, 100, 10, TimeUnit.SECONDS,
-      new ArrayBlockingQueue<>(1000), r -> new Thread(r, "RuleRunner"));
+      new ArrayBlockingQueue<>(2000), r -> new Thread(r, "RuleRunner"));
 
   @Autowired
   private NullValueTracker nullValueTracker;
@@ -74,8 +74,8 @@ public class AbstractUniformInspectRunningRule {
     } catch (Throwable ex) {
       RecordSucOrFailNotify.alertNotifyProcess("AlertTaskCompute Exception: " + ex,
           ALERT_TASK_COMPUTE, "alert task compute", inspectConfig.getAlertNotifyRecord());
-      logger.error("fail to eval inspectConfig {}, traceId: {} ", G.get().toJson(inspectConfig),
-          traceId, ex);
+      logger.error("ALERT_EXCEPTION_MONITOR inspectConfig {}, traceId: {} ",
+          inspectConfig.getUniqueId(), traceId, ex);
     }
     return events;
   }
@@ -155,6 +155,8 @@ public class AbstractUniformInspectRunningRule {
       ComputeInfo computeInfo = ComputeInfo.getComputeInfo(inspectConfig, period);
       List<TriggerResult> triggerResults = new CopyOnWriteArrayList<>();
       CountDownLatch latch = new CountDownLatch(parallelSize);
+      logger.info("ALERT_CONCURRENT_MONITOR,size={},rule={}", parallelSize,
+          inspectConfig.getUniqueId());
       for (DataResult dataResult : dataResultList) {
         ruleRunner.execute(() -> {
           try {
@@ -172,7 +174,7 @@ public class AbstractUniformInspectRunningRule {
           }
         });
       }
-      latch.await();
+      latch.await(30, TimeUnit.SECONDS);
       if (triggerResults.size() != 0) {
         triggerMap.put(trigger, triggerResults);
       }

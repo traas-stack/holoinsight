@@ -163,6 +163,10 @@ public class GatewayGrpcServiceImpl extends GatewayServiceGrpc.GatewayServiceImp
     param.setPoints(points);
 
     for (WriteMetricsRequestV4.TaskResult tr : request.getResultsList()) {
+      if (tr.getTable().getRowsCount() == 0) {
+        continue;
+      }
+
       WriteMetricsRequestV4.Table table = tr.getTable();
       WriteMetricsRequestV4.Header header = table.getHeader();
 

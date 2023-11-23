@@ -87,7 +87,7 @@ public class AlarmHistoryDTO {
   /**
    * 额外信息
    */
-  private String extra;
+  private AlertHistoryExtra extra;
 
   /**
    * 环境类型

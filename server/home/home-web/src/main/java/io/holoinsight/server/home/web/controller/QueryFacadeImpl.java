@@ -17,12 +17,12 @@ import io.holoinsight.server.home.biz.common.MetaDictUtil;
 import io.holoinsight.server.home.biz.service.TenantInitService;
 import io.holoinsight.server.home.common.service.QueryClientService;
 import io.holoinsight.server.home.common.service.query.KeyResult;
-import io.holoinsight.server.home.common.service.query.QueryDetailResponse;
 import io.holoinsight.server.home.common.service.query.QueryResponse;
 import io.holoinsight.server.home.common.service.query.QuerySchemaResponse;
 import io.holoinsight.server.home.common.service.query.Result;
 import io.holoinsight.server.home.common.service.query.ValueResult;
 import io.holoinsight.server.home.common.util.MonitorException;
+import io.holoinsight.server.home.common.util.ResultCodeEnum;
 import io.holoinsight.server.home.common.util.StringUtil;
 import io.holoinsight.server.home.common.util.scope.AuthTargetType;
 import io.holoinsight.server.home.common.util.scope.MonitorScope;
@@ -43,6 +43,7 @@ import io.holoinsight.server.home.web.controller.model.PqlParseResult;
 import io.holoinsight.server.home.web.controller.model.PqlRangeQueryRequest;
 import io.holoinsight.server.home.web.controller.model.TagQueryRequest;
 import io.holoinsight.server.home.web.interceptor.MonitorScopeAuth;
+import io.holoinsight.server.home.web.security.ParameterSecurityService;
 import io.holoinsight.server.query.grpc.QueryProto;
 import io.holoinsight.server.query.grpc.QueryProto.Datasource;
 import io.holoinsight.server.query.grpc.QueryProto.Datasource.Builder;
@@ -92,6 +93,9 @@ public class QueryFacadeImpl extends BaseFacade {
   @Autowired
   private SuperCacheService superCacheService;
 
+  @Autowired
+  private ParameterSecurityService parameterSecurityService;
+
   @PostMapping
   public JsonResult<QueryResponse> query(@RequestBody DataQueryRequest request) {
 
@@ -109,16 +113,42 @@ public class QueryFacadeImpl extends BaseFacade {
           ParaCheckUtil.checkEquals(request.getTenant(), RequestContext.getContext().ms.getTenant(),
               "tenant is illegal");
         }
+        ParaCheckUtil.checkCustomQl(request, "Refusing to execute sql query");
+        ParaCheckUtil.checkSQlInjection(getGroupBys(request), "Illegal params in groupby");
+        ParaCheckUtil.checkSQlInjection(parameterSecurityService.getDetailFilters(request),
+            "Illegal params in filter");
       }
 
       @Override
       public void doManage() {
-        QueryResponse response = queryClientService.query(convertRequest(request));
-        JsonResult.createSuccessResult(result, response);
+        try {
+          QueryResponse response = queryClientService.query(convertRequest(request));
+          JsonResult.createSuccessResult(result, response);
+        } catch (Throwable t) {
+          if (t.getMessage().contains("Evaluated points num")
+              && t.getMessage().contains("larger than")) {
+            throw new MonitorException(ResultCodeEnum.EXCEED_SERIES_LIMIT, t);
+          }
+          throw new MonitorException(ResultCodeEnum.MONITOR_SYSTEM_ERROR, t);
+        }
       }
     });
 
     return result;
+  }
+
+  private List<String> getGroupBys(DataQueryRequest request) {
+    if (request == null || CollectionUtils.isEmpty(request.getDatasources())) {
+      return Collections.emptyList();
+    }
+    Set<String> groupBys = new HashSet<>();
+    for (QueryDataSource queryDataSource : request.getDatasources()) {
+      if (CollectionUtils.isEmpty(queryDataSource.getGroupBy())) {
+        continue;
+      }
+      groupBys.addAll(queryDataSource.getGroupBy());
+    }
+    return new ArrayList<>(groupBys);
   }
 
   @PostMapping("/tags")
@@ -138,13 +168,23 @@ public class QueryFacadeImpl extends BaseFacade {
           ParaCheckUtil.checkEquals(request.getTenant(), RequestContext.getContext().ms.getTenant(),
               "tenant is illegal");
         }
+        ParaCheckUtil.checkCustomQl(request, "Refusing to execute sql query");
+        ParaCheckUtil.checkSQlInjection(getGroupBys(request), "Illegal params in groupby");
       }
 
       @Override
       public void doManage() {
-        QueryResponse response = queryClientService.queryTags(convertRequest(request));
 
-        JsonResult.createSuccessResult(result, response);
+        try {
+          QueryResponse response = queryClientService.queryTags(convertRequest(request));
+          JsonResult.createSuccessResult(result, response);
+        } catch (Throwable t) {
+          if (t.getMessage().contains("Evaluated points num")
+              && t.getMessage().contains("larger than")) {
+            throw new MonitorException(ResultCodeEnum.EXCEED_SERIES_LIMIT, t);
+          }
+          throw new MonitorException(ResultCodeEnum.MONITOR_SYSTEM_ERROR, t);
+        }
       }
     });
 
@@ -353,13 +393,23 @@ public class QueryFacadeImpl extends BaseFacade {
 
       @Override
       public void doManage() {
-        QueryProto.PqlRangeRequest rangeRequest = QueryProto.PqlRangeRequest.newBuilder()
-            .setQuery(request.getQuery())
-            .setTenant(tenantInitService.getTsdbTenant(RequestContext.getContext().ms.getTenant()))
-            .setTimeout(request.getTimeout()).setStart(request.getStart()).setEnd(request.getEnd())
-            .setFillZero(request.getFillZero()).setStep(request.getStep()).build();
-        QueryResponse response = queryClientService.pqlRangeQuery(rangeRequest);
-        JsonResult.createSuccessResult(result, response.getResults());
+        try {
+          QueryProto.PqlRangeRequest rangeRequest =
+              QueryProto.PqlRangeRequest.newBuilder().setQuery(request.getQuery())
+                  .setTenant(
+                      tenantInitService.getTsdbTenant(RequestContext.getContext().ms.getTenant()))
+                  .setTimeout(request.getTimeout()).setStart(request.getStart())
+                  .setEnd(request.getEnd()).setFillZero(request.getFillZero())
+                  .setStep(request.getStep()).build();
+          QueryResponse response = queryClientService.pqlRangeQuery(rangeRequest);
+          JsonResult.createSuccessResult(result, response.getResults());
+        } catch (Exception e) {
+          if (e.getMessage().contains("Evaluated points num")
+              && e.getMessage().contains("larger than")) {
+            throw new MonitorException(ResultCodeEnum.EXCEED_SERIES_LIMIT, e);
+          }
+          throw new MonitorException(ResultCodeEnum.MONITOR_SYSTEM_ERROR, e);
+        }
       }
     });
 
@@ -383,13 +433,22 @@ public class QueryFacadeImpl extends BaseFacade {
 
       @Override
       public void doManage() {
-        QueryProto.PqlInstantRequest instantRequest = QueryProto.PqlInstantRequest.newBuilder()
-            .setQuery(request.getQuery())
-            .setTenant(tenantInitService.getTsdbTenant(RequestContext.getContext().ms.getTenant()))
-            .setDelta(request.getDelta()).setTimeout(request.getTimeout())
-            .setTime(request.getTime()).build();
-        QueryResponse response = queryClientService.pqlInstantQuery(instantRequest);
-        JsonResult.createSuccessResult(result, response.getResults());
+        try {
+          QueryProto.PqlInstantRequest instantRequest =
+              QueryProto.PqlInstantRequest.newBuilder().setQuery(request.getQuery())
+                  .setTenant(
+                      tenantInitService.getTsdbTenant(RequestContext.getContext().ms.getTenant()))
+                  .setDelta(request.getDelta()).setTimeout(request.getTimeout())
+                  .setTime(request.getTime()).build();
+          QueryResponse response = queryClientService.pqlInstantQuery(instantRequest);
+          JsonResult.createSuccessResult(result, response.getResults());
+        } catch (Exception e) {
+          if (e.getMessage().contains("Evaluated points num")
+              && e.getMessage().contains("larger than")) {
+            throw new MonitorException(ResultCodeEnum.EXCEED_SERIES_LIMIT, e);
+          }
+          throw new MonitorException(ResultCodeEnum.MONITOR_SYSTEM_ERROR, e);
+        }
       }
     });
 
@@ -514,18 +573,27 @@ public class QueryFacadeImpl extends BaseFacade {
   protected void parseQl(QueryDataSource d, MetricInfo metricInfo) {
     Set<String> tags = new HashSet<>(J.toList(metricInfo.getTags()));
     StringBuilder select = new StringBuilder("select ");
-
+    List<String> gbList = parseGroupby(d, tags);
     List<String> selects = new ArrayList<>();
     selects.add("`period`");
+    for (String gb : gbList) {
+      if (!tags.contains(gb)) {
+        continue;
+      }
+      selects.add("`" + gb + "`");
+    }
+
     parseSelect(selects, select, d, tags);
 
     select.append(" from ").append(d.metric);
 
     parseFilters(select, d, tags);
 
-    List<String> gbList = new ArrayList<>();
     gbList.add("period");
-    parseGroupby(select, d, gbList, tags);
+
+    select.append(" group by `")//
+        .append(String.join("` , `", gbList)) //
+        .append("`");
 
     select.append(" order by `period` asc");
 
@@ -533,8 +601,8 @@ public class QueryFacadeImpl extends BaseFacade {
     d.setQl(select.toString());
   }
 
-  private void parseGroupby(StringBuilder select, QueryDataSource d, List<String> gbList,
-      Set<String> tags) {
+  private List<String> parseGroupby(QueryDataSource d, Set<String> tags) {
+    List<String> gbList = new ArrayList<>();
     if (!CollectionUtils.isEmpty(d.groupBy)) {
       for (String gb : d.groupBy) {
         if (!StringUtils.equals("period", gb) && !tags.contains(gb)) {
@@ -543,12 +611,7 @@ public class QueryFacadeImpl extends BaseFacade {
         gbList.add(gb);
       }
     }
-
-    if (!CollectionUtils.isEmpty(gbList)) {
-      select.append(" group by `")//
-          .append(String.join("` , `", gbList)) //
-          .append("`");
-    }
+    return gbList;
   }
 
   private void parseSelect(List<String> selects, StringBuilder select, QueryDataSource d,

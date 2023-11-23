@@ -76,6 +76,7 @@ public class AccessConfigService {
 
       currentAccess.setAccessAll(accessConfig.isAccessAll());
       currentAccess.setAccessRange(accessConfig.getAccessRange());
+      currentAccess.setAccessUrl(accessConfig.getAccessUrl());
       currentAccess.setMetricQps(accessConfig.getMetricQps());
       currentAccess.setMetaQps(accessConfig.getMetaQps());
       currentAccess.setDpsLimit(accessConfig.getDpsLimit());

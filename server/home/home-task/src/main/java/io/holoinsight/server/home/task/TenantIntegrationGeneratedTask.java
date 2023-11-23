@@ -16,6 +16,8 @@ import com.google.gson.reflect.TypeToken;
 import io.holoinsight.server.common.J;
 import io.holoinsight.server.common.MD5Hash;
 import io.holoinsight.server.common.dao.entity.TenantOps;
+import io.holoinsight.server.home.biz.common.MetaDictKey;
+import io.holoinsight.server.home.biz.common.MetaDictType;
 import io.holoinsight.server.home.biz.common.MetaDictUtil;
 import io.holoinsight.server.home.biz.plugin.PluginRepository;
 import io.holoinsight.server.home.biz.plugin.config.LogPluginConfig;
@@ -134,8 +136,8 @@ public class TenantIntegrationGeneratedTask extends AbstractMonitorTask {
     }
 
     // create
+    log.info("newList: " + newList.size());
     if (!CollectionUtils.isEmpty(newList)) {
-      log.info("newList: " + newList.size());
       for (IntegrationGeneratedDTO integrationGeneratedDTO : newList) {
         integrationGeneratedService.insert(integrationGeneratedDTO);
       }
@@ -160,12 +162,11 @@ public class TenantIntegrationGeneratedTask extends AbstractMonitorTask {
   }
 
   private Map<String, IntegrationGenerated> getFromDb() {
-    List<TenantOps> tenantOps = tenantOpsService.list();
+    List<String> tenants = getTenants();
     Map<String, IntegrationGenerated> dbUks = new HashMap<>();
 
-    for (TenantOps ops : tenantOps) {
-      List<IntegrationGenerated> dblist =
-          integrationGeneratedService.queryByTenant(ops.getTenant());
+    for (String tenant : tenants) {
+      List<IntegrationGenerated> dblist = integrationGeneratedService.queryByTenant(tenant);
       if (CollectionUtils.isEmpty(dblist)) {
         continue;
       }
@@ -183,17 +184,16 @@ public class TenantIntegrationGeneratedTask extends AbstractMonitorTask {
 
     Map<String, IntegrationGeneratedDTO> dtoMap = new HashMap<>();
     List<IntegrationGeneratedDTO> generateds = new ArrayList<>();
-    List<TenantOps> tenantOps = tenantOpsService.list();
-    for (TenantOps ops : tenantOps) {
-
-      String tableName = ops.getTenant() + "_app";
+    List<String> tenants = getTenants();
+    for (String tenant : tenants) {
+      String tableName = tenantInitService.getTenantAppTable(tenant);
 
       List<AppModel> dbApps = getDbApps(tableName);
       if (CollectionUtils.isEmpty(dbApps))
         continue;
 
       List<IntegrationPluginDTO> integrationPluginDTOS =
-          integrationPluginService.queryByTenant(ops.getTenant());
+          integrationPluginService.queryByTenant(tenant);
 
       Set<String> uks = new HashSet<>();
       if (!CollectionUtils.isEmpty(integrationPluginDTOS)) {
@@ -255,9 +255,9 @@ public class TenantIntegrationGeneratedTask extends AbstractMonitorTask {
               String uk = app + "#" + integrationPluginDTO.product + "#" + integrationPlugin.name;
               if (appItemSets.contains(uk))
                 continue;
-              generateds.add(integrationGeneratedService.generated(ops.getTenant(),
-                  integrationPluginDTO.getWorkspace(), app, integrationPlugin.name,
-                  integrationPluginDTO.getProduct(), configMap));
+              generateds.add(
+                  integrationGeneratedService.generated(tenant, integrationPluginDTO.getWorkspace(),
+                      app, integrationPlugin.name, integrationPluginDTO.getProduct(), configMap));
 
               appItemSets.add(uk);
               uks.add(uk);
@@ -268,19 +268,24 @@ public class TenantIntegrationGeneratedTask extends AbstractMonitorTask {
       }
 
       for (AppModel appModel : dbApps) {
+
+        if (!tenant.equalsIgnoreCase(tenantInitService.getTsdbTenant(tenant))
+            && null != appModel.getTenant() && !appModel.getTenant().equalsIgnoreCase(tenant)) {
+          continue;
+        }
+
         if (appModel.getMachineType().equalsIgnoreCase("VM")) {
-          generateds.add(integrationGeneratedService.generated(ops.getTenant(),
-              appModel.getWorkspace(), appModel.getApp(), "vmsystem", "System", new HashMap<>()));
+          generateds.add(integrationGeneratedService.generated(tenant, appModel.getWorkspace(),
+              appModel.getApp(), "vmsystem", "System", new HashMap<>()));
         } else {
-          generateds.add(integrationGeneratedService.generated(ops.getTenant(),
-              appModel.getWorkspace(), appModel.getApp(), "podsystem", "System", new HashMap<>()));
+          generateds.add(integrationGeneratedService.generated(tenant, appModel.getWorkspace(),
+              appModel.getApp(), "podsystem", "System", new HashMap<>()));
         }
 
         String portCheckUk = appModel.getApp() + "#PortCheck#portcheck";
         if (!uks.contains(portCheckUk)) {
-          generateds
-              .add(integrationGeneratedService.generated(ops.getTenant(), appModel.getWorkspace(),
-                  appModel.getApp(), "portcheck", "PortCheck", new HashMap<>()));
+          generateds.add(integrationGeneratedService.generated(tenant, appModel.getWorkspace(),
+              appModel.getApp(), "portcheck", "PortCheck", new HashMap<>()));
         }
 
         Map<String, String> dictMap = MetaDictUtil.getValue(INTEGRATION_CONFIG,
@@ -288,9 +293,8 @@ public class TenantIntegrationGeneratedTask extends AbstractMonitorTask {
         if (CollectionUtils.isEmpty(dictMap))
           continue;
         for (Map.Entry<String, String> dict : dictMap.entrySet()) {
-          generateds
-              .add(integrationGeneratedService.generated(ops.getTenant(), appModel.getWorkspace(),
-                  appModel.getApp(), dict.getValue(), dict.getKey(), new HashMap<>()));
+          generateds.add(integrationGeneratedService.generated(tenant, appModel.getWorkspace(),
+              appModel.getApp(), dict.getValue(), dict.getKey(), new HashMap<>()));
         }
       }
     }
@@ -370,5 +374,22 @@ public class TenantIntegrationGeneratedTask extends AbstractMonitorTask {
     CommonLocalCache.put(cacheKey, appModels, 10, TimeUnit.MINUTES);
 
     return appModels;
+  }
+
+  private List<String> getTenants() {
+
+    List<String> selectedTenants = MetaDictUtil.getValue(MetaDictType.GLOBAL_CONFIG,
+        MetaDictKey.SELETED_TENANT_LIST, new TypeToken<List<String>>() {});
+
+    if (!CollectionUtils.isEmpty(selectedTenants)) {
+      return selectedTenants;
+    }
+
+    List<String> tenants = new ArrayList<>();
+    List<TenantOps> tenantOpsList = tenantOpsService.list();
+    for (TenantOps tenantOps : tenantOpsList) {
+      tenants.add(tenantOps.getTenant());
+    }
+    return tenants;
   }
 }

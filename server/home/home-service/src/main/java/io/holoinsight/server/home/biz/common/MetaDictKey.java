@@ -13,7 +13,9 @@ public class MetaDictKey {
   public static final String ULA_HOST = "ula_host";
   public static final String LOG_TIME_LAYOUT = "s";
   public static final String TOKEN_URL_WRITE_LIST = "token_url_write_list";
+  public static final String TOKEN_URL_NO_AUTH = "token_url_no_auth";
   public static final String IS_APM_MATERIALIZED = "is_apm_materialized";
+  public static final String DISPLAY_MENU_APM = "display_menu_apm";
 
   public static final String AGENT_INSTALL_HOST = "agentInstallHost";
   public static final String AGENT_REGISTRY_HOST = "agentRegistryHost";
@@ -38,6 +40,7 @@ public class MetaDictKey {
   public static final String TRACE_INSTALL_DOCUMENT = "traceInstallDocument";
 
   public static final String IGNORE_TASK_LIST = "ignore_task_list";
+  public static final String SELETED_TENANT_LIST = "selected_tenant_list";
 
   public static final String OB_ACCESS_ID = "ob_access_id";
   public static final String OB_ACCESS_KEY = "ob_access_key";

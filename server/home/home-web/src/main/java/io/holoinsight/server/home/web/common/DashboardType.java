@@ -9,7 +9,7 @@ package io.holoinsight.server.home.web.common;
  * @version 2023-08-27 19:17:00
  */
 public enum DashboardType {
-  magi("magi"), iot("iot"), miniapp("miniapp");
+  magi("magi"), iot("iot"), miniapp("miniapp"), faas("faas");
 
   private final String code;
 

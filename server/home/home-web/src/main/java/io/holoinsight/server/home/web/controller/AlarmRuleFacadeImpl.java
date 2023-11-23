@@ -12,7 +12,6 @@ import io.holoinsight.server.home.biz.service.AlarmHistoryService;
 import io.holoinsight.server.home.biz.service.AlertGroupService;
 import io.holoinsight.server.home.biz.service.AlertRuleService;
 import io.holoinsight.server.home.biz.service.AlertSubscribeService;
-import io.holoinsight.server.home.biz.service.TenantInitService;
 import io.holoinsight.server.home.biz.service.UserOpLogService;
 import io.holoinsight.server.home.common.service.RequestContextAdapter;
 import io.holoinsight.server.home.common.util.MonitorException;
@@ -36,8 +35,8 @@ import io.holoinsight.server.home.facade.page.MonitorPageRequest;
 import io.holoinsight.server.home.facade.page.MonitorPageResult;
 import io.holoinsight.server.home.web.common.ManageCallback;
 import io.holoinsight.server.home.web.common.ParaCheckUtil;
-import io.holoinsight.server.home.web.common.TokenUrls;
 import io.holoinsight.server.home.web.interceptor.MonitorScopeAuth;
+import io.holoinsight.server.home.web.security.ParameterSecurityService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -62,6 +61,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import static io.holoinsight.server.home.facade.AlarmRuleDTO.tryParseLink;
+import static io.holoinsight.server.home.task.MetricCrawlerConstant.GLOBAL_WORKSPACE;
 
 /**
  * @author wangsiyuan
@@ -69,7 +69,6 @@ import static io.holoinsight.server.home.facade.AlarmRuleDTO.tryParseLink;
  */
 @RestController
 @RequestMapping("/webapi/alarmRule")
-@TokenUrls("/webapi/alarmRule/query")
 public class AlarmRuleFacadeImpl extends BaseFacade {
 
   @Autowired
@@ -97,7 +96,7 @@ public class AlarmRuleFacadeImpl extends BaseFacade {
   private RequestContextAdapter requestContextAdapter;
 
   @Autowired
-  private TenantInitService tenantInitService;
+  private ParameterSecurityService parameterSecurityService;
 
   @Value("${holoinsight.home.domain}")
   private String domain;
@@ -119,11 +118,21 @@ public class AlarmRuleFacadeImpl extends BaseFacade {
         ParaCheckUtil.checkParaNotNull(alarmRuleDTO.getIsMerge(), "isMerge");
         ParaCheckUtil.checkInvalidCharacter(alarmRuleDTO.getRuleName(),
             "invalid ruleName, please use a-z A-Z 0-9 Chinese - _ , . spaces");
+        ParaCheckUtil.checkParaId(alarmRuleDTO.getId());
         MonitorScope ms = RequestContext.getContext().ms;
-        Boolean aBoolean = tenantInitService.checkAlarmRuleParams(ms.getTenant(), ms.getWorkspace(),
-            ms.getEnvironment(), alarmRuleDTO);
-        if (aBoolean == Boolean.FALSE) {
-          throw new MonitorException("alarm rule params is illegal");
+
+        List<String> metrics = alarmRuleDTO.getMetric();
+        for (String metric : metrics) {
+          ParaCheckUtil.checkParaBoolean(parameterSecurityService.checkMetricTenantAndWorkspace(
+              metric, ms.getTenant(), ms.getWorkspace()), "invalid metric table");
+          Map<String, List<Object>> filters = alarmRuleDTO.getFilters(metric);
+          String metricInfoWorkspace = parameterSecurityService.getWorkspaceFromMetricInfo(metric);
+          if (StringUtils.equals(GLOBAL_WORKSPACE, metricInfoWorkspace)) {
+            ParaCheckUtil.checkParaBoolean(
+                parameterSecurityService.checkFilterTenantAndWorkspace(metric, filters,
+                    ms.getTenant(), ms.getWorkspace()),
+                "filter should contain valid info like tenant");
+          }
         }
       }
 
@@ -192,10 +201,19 @@ public class AlarmRuleFacadeImpl extends BaseFacade {
               "invalid ruleName, please use a-z A-Z 0-9 Chinese - _ , . spaces");
         }
         MonitorScope ms = RequestContext.getContext().ms;
-        Boolean aBoolean = tenantInitService.checkAlarmRuleParams(ms.getTenant(), ms.getWorkspace(),
-            ms.getEnvironment(), alarmRuleDTO);
-        if (aBoolean == Boolean.FALSE) {
-          throw new MonitorException("alarm rule params is illegal");
+
+        List<String> metrics = alarmRuleDTO.getMetric();
+        for (String metric : metrics) {
+          ParaCheckUtil.checkParaBoolean(parameterSecurityService.checkMetricTenantAndWorkspace(
+              metric, ms.getTenant(), ms.getWorkspace()), "invalid metric table");
+          Map<String, List<Object>> filters = alarmRuleDTO.getFilters(metric);
+          String metricInfoWorkspace = parameterSecurityService.getWorkspaceFromMetricInfo(metric);
+          if (StringUtils.equals(GLOBAL_WORKSPACE, metricInfoWorkspace)) {
+            ParaCheckUtil.checkParaBoolean(
+                parameterSecurityService.checkFilterTenantAndWorkspace(metric, filters,
+                    ms.getTenant(), ms.getWorkspace()),
+                "filter should contain valid info like tenant");
+          }
         }
       }
 

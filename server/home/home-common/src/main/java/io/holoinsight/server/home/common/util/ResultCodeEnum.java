@@ -53,7 +53,7 @@ public enum ResultCodeEnum {
   /** 操作失败 */
   FAILED("FAILED", "操作失败"),
 
-  NO_AUTH("NO_AUTH", "没权限"),
+  NO_AUTH("NO_AUTH", "没权限"), AUTH_CHECK_ERROR("AUTH_CHECK_ERROR", "权限校验失败"),
 
   /**
    * 对象转换出错

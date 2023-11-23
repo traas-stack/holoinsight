@@ -95,10 +95,14 @@ public class MonitorAccessService {
     final MonitorTokenData tokenData = check(token);
 
     if (System.currentTimeMillis() - tokenData.time <= expireInSecond * 1000) {
+      MonitorAccessConfig monitorAccessConfig =
+          accessConfigService.getAccessConfigDOMap().get(tokenData.accessKey);
+
       MonitorScope monitorScope = new MonitorScope();
       monitorScope.tenant = tokenData.tenant;
       monitorScope.accessId = tokenData.accessId;
       monitorScope.accessKey = tokenData.accessKey;
+      monitorScope.accessConfig = monitorAccessConfig;
       Context c = new Context(monitorScope);
       RequestContext.setContext(c);
       req.setAttribute(MonitorUser.MONITOR_USER, MonitorUser.newTokenUser(tokenData.accessKey));
@@ -120,6 +124,7 @@ public class MonitorAccessService {
     monitorScope.tenant = monitorAccessConfig.getTenant();
     monitorScope.accessId = monitorAccessConfig.getAccessId();
     monitorScope.accessKey = monitorAccessConfig.getAccessKey();
+    monitorScope.accessConfig = monitorAccessConfig;
     Context c = new Context(monitorScope);
     RequestContext.setContext(c);
 

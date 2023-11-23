@@ -47,6 +47,10 @@ public class RequestContext {
     gs.get().mp = mp;
   }
 
+  public static void setMonitorScope(MonitorScope ms) {
+    gs.get().ms = ms;
+  }
+
   public static class Context {
     public MonitorScope ms;
     public MonitorUser mu;

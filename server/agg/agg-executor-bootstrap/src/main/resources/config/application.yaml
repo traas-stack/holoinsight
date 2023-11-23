@@ -1,0 +1,22 @@
+spring:
+  application:
+    name: executor
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: TODO
+    username: TODO
+    password: TODO
+
+holoinsight:
+  roles:
+    active: agg-executor
+  agg:
+    kafkaBootstrapServers: 127.0.0.1:9092
+    topic: aggv1
+    consumerGroupId: "x1"
+
+mybatis-plus:
+  config-location: classpath:mybatis/mybatis-config.xml
+  mapper-locations:
+  - classpath*:sqlmap/*.xml
+  - classpath*:sqlmap-ext/*.xml

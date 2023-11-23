@@ -48,6 +48,9 @@ public class AgentEventService {
   @Autowired
   private CommonThreadPools commonThreadPools;
 
+  @Autowired(required = false)
+  private List<AgentEventHandler> agentEventHandlers = new ArrayList<>();
+
   /**
    * Record events to log files
    * 
@@ -55,6 +58,13 @@ public class AgentEventService {
    * @param request
    */
   public void reportEvents(AuthInfo ai, ReportEventRequest request) {
+    for (AgentEventHandler h : agentEventHandlers) {
+      try {
+        h.handle(ai, request);
+      } catch (Exception e) {
+        log.error("AgentEventHandler error", e);
+      }
+    }
     Context ctx = new Context();
     ctx.setWorkspace(request.getHeader().getWorkspace());
     List<Event> events = null;

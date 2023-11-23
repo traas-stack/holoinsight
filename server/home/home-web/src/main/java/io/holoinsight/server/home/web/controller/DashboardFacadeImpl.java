@@ -137,7 +137,7 @@ public class DashboardFacadeImpl extends BaseFacade {
     facadeTemplate.manage(result, new ManageCallback() {
       @Override
       public void checkParameter() {
-
+        ParaCheckUtil.checkParaId(request.getId());
       }
 
       @Override
@@ -243,6 +243,7 @@ public class DashboardFacadeImpl extends BaseFacade {
         Dashboard target = new Dashboard();
         DashboardType dashboardType = DashboardType.valueOf(type);
         switch (dashboardType) {
+          case faas:
           case iot:
           case miniapp:
             target.setType(dashboardType.code());

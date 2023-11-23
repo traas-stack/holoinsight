@@ -88,6 +88,7 @@ public class FolderFacadeImpl extends BaseFacade {
         if (!item.getTenant().equalsIgnoreCase(folder.getTenant())) {
           throw new MonitorException("the tenant parameter is invalid");
         }
+        checkParentFolderId(folder);
       }
 
       @Override
@@ -132,6 +133,8 @@ public class FolderFacadeImpl extends BaseFacade {
       public void checkParameter() {
         ParaCheckUtil.checkParaNotNull(folder.parentFolderId, "parentFolderId");
         ParaCheckUtil.checkParaNotBlank(folder.name, "name");
+        ParaCheckUtil.checkParaId(folder.getId());
+        checkParentFolderId(folder);
       }
 
       @Override
@@ -213,6 +216,9 @@ public class FolderFacadeImpl extends BaseFacade {
         }
 
         Folder byId = folderService.queryById(id, ms.getTenant(), ms.getWorkspace());
+        if (null == byId) {
+          throw new MonitorException(ResultCodeEnum.CANNOT_FIND_RECORD, "can not find record");
+        }
         folderService.removeById(id);
         JsonResult.createSuccessResult(result, null);
         userOpLogService.append("folder", byId.getId(), OpType.DELETE,
@@ -377,5 +383,19 @@ public class FolderFacadeImpl extends BaseFacade {
     }
     fps.paths.add(new FolderPath(f.getId(), f.getName()));
     return gogo(f.getParentFolderId(), fps);
+  }
+
+  private void checkParentFolderId(Folder folder) {
+    if (folder.parentFolderId == -1) {
+      return;
+    }
+
+    // check tenant
+    MonitorScope ms = RequestContext.getContext().ms;
+    Folder folderItem =
+        folderService.queryById(folder.getParentFolderId(), ms.getTenant(), ms.getWorkspace());
+    if (null == folderItem) {
+      throw new MonitorException(ResultCodeEnum.PARAMETER_ILLEGAL, "parentFolderId illegal");
+    }
   }
 }

@@ -13,7 +13,5 @@ import java.util.List;
  */
 public interface MetricInfoCheckService {
 
-  boolean needWorkspace(String product);
-
-  List<MetricInfoDTO> queryMetricInfoByMetricType(String product);
+  List<MetricInfoDTO> queryMetricInfoByMetricType(String tenant, String workspace, String product);
 }

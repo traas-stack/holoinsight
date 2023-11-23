@@ -24,6 +24,7 @@ import io.holoinsight.server.home.web.common.TokenUrls;
 import io.holoinsight.server.home.web.interceptor.MonitorScopeAuth;
 import io.holoinsight.server.common.J;
 import io.holoinsight.server.common.JsonResult;
+import io.holoinsight.server.home.web.security.ParameterSecurityService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
@@ -62,6 +63,8 @@ public class AlarmGroupFacadeImpl extends BaseFacade {
 
   @Autowired
   private RequestContextAdapter requestContextAdapter;
+  @Autowired
+  private ParameterSecurityService parameterSecurityService;
 
   @PostMapping("/pageQuery")
   @ResponseBody
@@ -98,10 +101,11 @@ public class AlarmGroupFacadeImpl extends BaseFacade {
       return jsonResult;
     }
 
-    return save(alarmGroup);
+    ParaCheckUtil.checkParaId(alarmGroup.getId());
+    return save(alarmGroup, true);
   }
 
-  public JsonResult<Long> save(AlarmGroupDTO alarmGroup) {
+  public JsonResult<Long> save(AlarmGroupDTO alarmGroup, boolean needCheckUser) {
     final JsonResult<Long> result = new JsonResult<>();
     facadeTemplate.manage(result, new ManageCallback() {
       @Override
@@ -109,6 +113,15 @@ public class AlarmGroupFacadeImpl extends BaseFacade {
         ParaCheckUtil.checkParaNotBlank(alarmGroup.getGroupName(), "groupName");
         ParaCheckUtil.checkInvalidCharacter(alarmGroup.getGroupName(),
             "invalid groupName, please use a-z A-Z 0-9 Chinese - _ , . spaces");
+        List<String> persons = alarmGroup.getUserList();
+        MonitorUser mu = RequestContext.getContext().mu;
+        if (!CollectionUtils.isEmpty(persons) && needCheckUser) {
+          for (String person : persons) {
+            ParaCheckUtil.checkParaBoolean(
+                parameterSecurityService.checkUserTenantAndWorkspace(person, mu),
+                "invalid alarm group person");
+          }
+        }
       }
 
       @Override
@@ -148,10 +161,10 @@ public class AlarmGroupFacadeImpl extends BaseFacade {
       return jsonResult;
     }
 
-    return update(alarmGroup);
+    return update(alarmGroup, true);
   }
 
-  public JsonResult<Boolean> update(AlarmGroupDTO alarmGroup) {
+  public JsonResult<Boolean> update(AlarmGroupDTO alarmGroup, boolean needCheckUser) {
     final JsonResult<Boolean> result = new JsonResult<>();
     facadeTemplate.manage(result, new ManageCallback() {
       @Override
@@ -163,6 +176,15 @@ public class AlarmGroupFacadeImpl extends BaseFacade {
         if (StringUtils.isNotBlank(alarmGroup.getGroupName())) {
           ParaCheckUtil.checkInvalidCharacter(alarmGroup.getGroupName(),
               "invalid groupName, please use a-z A-Z 0-9 Chinese - _ , . spaces");
+        }
+        List<String> persons = alarmGroup.getUserList();
+        MonitorUser mu = RequestContext.getContext().mu;
+        if (!CollectionUtils.isEmpty(persons) && needCheckUser) {
+          for (String person : persons) {
+            ParaCheckUtil.checkParaBoolean(
+                parameterSecurityService.checkUserTenantAndWorkspace(person, mu),
+                "invalid alarm group person");
+          }
         }
       }
 

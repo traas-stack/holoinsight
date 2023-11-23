@@ -3,6 +3,9 @@
  */
 package io.holoinsight.server.gateway.core.trace;
 
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
 import io.holoinsight.server.common.springboot.ConditionalOnFeature;
 import io.holoinsight.server.common.springboot.HoloinsightProperties;
 import io.holoinsight.server.common.trace.TraceAgentConfigurationService;
@@ -10,10 +13,6 @@ import io.holoinsight.server.gateway.core.trace.controller.TraceAgentConfigurati
 import io.holoinsight.server.gateway.core.trace.exporter.LocalTraceExporter;
 import io.holoinsight.server.gateway.core.trace.exporter.RelayTraceExporter;
 import io.holoinsight.server.gateway.core.trace.exporter.TraceExporter;
-import io.holoinsight.server.gateway.core.trace.receiver.opentelemetry.TraceServiceImpl;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 
 /**
  * <p>
@@ -38,27 +37,6 @@ public class GatewayTraceConfiguration {
     return new RelayTraceExporter();
   }
 
-  /**
-   * <p>
-   * gatewayTraceGrpcServer.
-   * </p>
-   */
-  @Bean
-  public GatewayTraceGrpcServer gatewayTraceGrpcServer() {
-    return new GatewayTraceGrpcServer();
-  }
-
-  /**
-   * <p>
-   * gateway_traceServiceImpl.
-   * </p>
-   */
-  @Bean
-  @Qualifier("gateway_traceServiceImpl")
-  public TraceServiceImpl gateway_traceServiceImpl() {
-    return new TraceServiceImpl();
-  }
-
   @Bean
   public TraceAgentConfigurationController agentConfigurationController() {
     return new TraceAgentConfigurationController();
@@ -72,5 +50,10 @@ public class GatewayTraceConfiguration {
   @Bean
   public TraceAgentConfigurationService traceAgentConfigurationService() {
     return new TraceAgentConfigurationService();
+  }
+
+  @Bean
+  public GatewayOTLPTraceHandler gatewayOTLPTraceHandler() {
+    return new GatewayOTLPTraceHandler();
   }
 }

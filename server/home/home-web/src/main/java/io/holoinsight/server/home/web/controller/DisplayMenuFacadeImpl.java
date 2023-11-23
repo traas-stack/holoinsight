@@ -3,6 +3,7 @@
  */
 package io.holoinsight.server.home.web.controller;
 
+import io.holoinsight.server.home.biz.common.MetaDictUtil;
 import io.holoinsight.server.home.biz.service.DisplayMenuService;
 import io.holoinsight.server.home.biz.service.IntegrationGeneratedService;
 import io.holoinsight.server.home.common.util.MonitorException;
@@ -136,6 +137,12 @@ public class DisplayMenuFacadeImpl extends BaseFacade {
         List<DisplayMenuDTO> byTenantMap = displayMenuService.findByMap(apmMenuTenantMap);
         if (!CollectionUtils.isEmpty(byTenantMap)) {
           displayMenuDTO = byTenantMap.get(0);
+        }
+
+        Boolean defaultApmDisplayMenu = MetaDictUtil.isDefaultApmDisplayMenu();
+        if (defaultApmDisplayMenu) {
+          JsonResult.createSuccessResult(result, displayMenuDTO.getConfig());
+          return;
         }
         Map<String, Object> columnMap = new HashMap<>();
         columnMap.put("tenant", ms.getTenant());

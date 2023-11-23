@@ -1,0 +1,71 @@
+{
+  "aggId": "portcheck",
+  "version": 1,
+  "select": {
+    "items": [
+      {
+        "agg": {
+          "type": "SUM"
+        },
+        "elect": "portcheck_up.value",
+        "as": "up"
+      },
+      {
+        "agg": {
+          "type": "SUM"
+        },
+        "elect": "portcheck_down.value",
+        "as": "down"
+      }
+    ]
+  },
+  "from": {
+    "type": "metrics",
+    "metrics": {
+      "metrics": [
+        "portcheck_up",
+        "portcheck_down",
+        "portcheck_cost"
+      ]
+    }
+  },
+  "where": {},
+  "groupBy": {
+    "items": [
+      {
+        "tag": "tenant"
+      },
+      {
+        "tag": "workspace"
+      },
+      {
+        "tag": "app"
+      }
+    ]
+  },
+  "window": {
+    "interval": 60000
+  },
+  "output": {
+    "items": [
+      {
+        "type": "console",
+        "fields": [
+          {
+            "name": "up",
+            "expression": "up"
+          },
+          {
+            "name": "down",
+            "expression": "down"
+          },
+          {
+            "name": "total",
+            "_doc": "如果为 null 呢???",
+            "expression": "up + down"
+          }
+        ]
+      }
+    ]
+  }
+}

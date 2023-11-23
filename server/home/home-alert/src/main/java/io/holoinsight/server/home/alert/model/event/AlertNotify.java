@@ -89,6 +89,8 @@ public class AlertNotify {
 
   private String alertServer;
 
+  private String alertIp;
+
   private String envType;
 
   private String sourceType;
@@ -139,7 +141,8 @@ public class AlertNotify {
         // 对于平台消费侧，可能需要知道完整的告警规则
         alertNotify.setRuleConfig(inspectConfig);
         tryFixAlertLevel(alertNotify, eventInfo.getAlarmTriggerResults());
-        alertNotify.setAlertServer(AddressUtil.getHostAddress());
+        alertNotify.setAlertServer(AddressUtil.getLocalHostName());
+        alertNotify.setAlertIp(AddressUtil.getHostAddress());
       }
     } catch (Exception e) {
       RecordSucOrFailNotify.alertNotifyProcess("event convert alert notify exception" + e,

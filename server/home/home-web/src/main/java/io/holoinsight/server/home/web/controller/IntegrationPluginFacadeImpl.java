@@ -4,7 +4,6 @@
 package io.holoinsight.server.home.web.controller;
 
 import io.holoinsight.server.home.common.util.StringUtil;
-import io.holoinsight.server.home.web.common.TokenUrls;
 import io.holoinsight.server.common.J;
 import io.holoinsight.server.common.JsonResult;
 import io.holoinsight.server.home.biz.service.IntegrationPluginService;
@@ -44,7 +43,6 @@ import java.util.Map;
  */
 @RestController
 @RequestMapping("/webapi/integration/plugin")
-@TokenUrls("/webapi/integration/plugin")
 public class IntegrationPluginFacadeImpl extends BaseFacade {
 
   @Autowired
@@ -56,7 +54,8 @@ public class IntegrationPluginFacadeImpl extends BaseFacade {
   @PostMapping("/update")
   @ResponseBody
   @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.EDIT)
-  public JsonResult<Object> update(@RequestBody IntegrationPluginDTO integrationPluginDTO) {
+  public JsonResult<IntegrationPluginDTO> update(
+      @RequestBody IntegrationPluginDTO integrationPluginDTO) {
     final JsonResult<IntegrationPluginDTO> result = new JsonResult<>();
     facadeTemplate.manage(result, new ManageCallback() {
       @Override
@@ -94,7 +93,7 @@ public class IntegrationPluginFacadeImpl extends BaseFacade {
         }
         IntegrationPluginDTO update =
             integrationPluginService.updateByRequest(integrationPluginDTO);
-
+        JsonResult.createSuccessResult(result, update);
         assert mu != null;
         userOpLogService.append("integration_plugin", update.getId(), OpType.UPDATE,
             mu.getLoginName(), ms.getTenant(), ms.getWorkspace(), J.toJson(integrationPluginDTO),
@@ -103,7 +102,7 @@ public class IntegrationPluginFacadeImpl extends BaseFacade {
       }
     });
 
-    return JsonResult.createSuccessResult(true);
+    return result;
   }
 
   @DeleteMapping(value = "/delete/{id}")
@@ -150,6 +149,7 @@ public class IntegrationPluginFacadeImpl extends BaseFacade {
         ParaCheckUtil.checkParaNotNull(integrationPluginDTO.type, "type");
         ParaCheckUtil.checkParaNotBlank(integrationPluginDTO.json, "json");
         // ParaCheckUtil.checkParaNotNull(integrationPluginDTO.status);
+        ParaCheckUtil.checkParaId(integrationPluginDTO.getId());
       }
 
       @Override

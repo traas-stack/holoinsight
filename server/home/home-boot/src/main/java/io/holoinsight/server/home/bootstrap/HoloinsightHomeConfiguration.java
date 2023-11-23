@@ -28,8 +28,9 @@ import io.holoinsight.server.home.biz.service.impl.UserinfoVerificationServiceIm
 import io.holoinsight.server.home.common.service.RequestContextAdapter;
 import io.holoinsight.server.home.common.service.RequestContextAdapterImpl;
 import io.holoinsight.server.home.web.controller.TraceAgentFacadeImpl;
+import io.holoinsight.server.home.web.security.ParameterSecurityService;
+import io.holoinsight.server.home.web.security.ParameterSecurityServiceImpl;
 import org.mybatis.spring.annotation.MapperScan;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -104,5 +105,10 @@ public class HoloinsightHomeConfiguration {
   @Bean
   public ProductCtlService productCtlService() {
     return new ProductCtlServiceImpl();
+  }
+
+  @Bean
+  public ParameterSecurityService alertSecurityService() {
+    return new ParameterSecurityServiceImpl();
   }
 }

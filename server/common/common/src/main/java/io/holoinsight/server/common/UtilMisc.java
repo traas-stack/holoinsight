@@ -3,11 +3,24 @@
  */
 package io.holoinsight.server.common;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.CollectionUtils;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * <p>
@@ -17,6 +30,7 @@ import java.util.Random;
  * @author xzchaoo
  * @version 1.0: UtilMisc.java, v 0.1 2022年04月24日 12:36 下午 jinsong.yjs Exp $
  */
+@Slf4j
 public class UtilMisc {
   private static Random seed = new Random();
 
@@ -85,5 +99,88 @@ public class UtilMisc {
       default:
     }
     return interval;
+  }
+
+  /**
+   * 将inputStream里的数据读取出来并转换成字符串
+   */
+  public static String inputStream2String(InputStream inputStream) throws IOException {
+    StringBuilder sb = new StringBuilder();
+    BufferedReader reader = null;
+    try {
+      reader = new BufferedReader(new InputStreamReader(inputStream, Charset.defaultCharset()));
+      String line;
+      while ((line = reader.readLine()) != null) {
+        sb.append(line);
+      }
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    } finally {
+      if (reader != null) {
+        reader.close();
+      }
+    }
+
+    return sb.toString();
+  }
+
+  public static boolean validateWithTimeout(String regex, String input, long timeout) {
+    ExecutorService executor = Executors.newSingleThreadExecutor();
+    Future<Boolean> future = executor.submit(() -> {
+      try {
+        Pattern pattern = Pattern.compile(regex);
+        Matcher interruptableMatcher = pattern.matcher(new InterruptibleCharSequence(input));
+        interruptableMatcher.find();
+      } catch (Exception e) {
+        log.warn("parse regex exception, " + e.getMessage(), e);
+      }
+      return true;
+    });
+    try {
+      future.get(timeout, TimeUnit.MILLISECONDS);
+    } catch (TimeoutException timeoutException) {
+      future.cancel(true); // 取消任务执行
+      log.error("parse regex timeout exception, " + timeoutException.getMessage(),
+          timeoutException);
+      return false;
+    } catch (Exception e) {
+      log.error("parse regex exception, " + e.getMessage(), e);
+      return false;
+    } finally {
+      executor.shutdown();
+    }
+    return true;
+  }
+
+  private static class InterruptibleCharSequence implements CharSequence {
+    CharSequence inner;
+
+    public InterruptibleCharSequence(CharSequence inner) {
+      super();
+      this.inner = inner;
+    }
+
+    @Override
+    public char charAt(int index) {
+      if (Thread.currentThread().isInterrupted()) {
+        throw new RuntimeException("Interrupted!");
+      }
+      return inner.charAt(index);
+    }
+
+    @Override
+    public int length() {
+      return inner.length();
+    }
+
+    @Override
+    public CharSequence subSequence(int start, int end) {
+      return new InterruptibleCharSequence(inner.subSequence(start, end));
+    }
+
+    @Override
+    public String toString() {
+      return inner.toString();
+    }
   }
 }

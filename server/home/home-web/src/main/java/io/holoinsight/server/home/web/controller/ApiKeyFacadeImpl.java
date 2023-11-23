@@ -123,6 +123,7 @@ public class ApiKeyFacadeImpl extends BaseFacade {
       public void checkParameter() {
         ParaCheckUtil.checkParaNotNull(apiKey.name, "name");
         ParaCheckUtil.checkParaNotNull(apiKey.status, "status");
+        ParaCheckUtil.checkParaId(apiKey.getId());
       }
 
       @Override

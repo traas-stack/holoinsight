@@ -25,7 +25,6 @@ import io.holoinsight.server.home.facade.page.MonitorPageRequest;
 import io.holoinsight.server.home.facade.page.MonitorPageResult;
 import io.holoinsight.server.home.web.common.ManageCallback;
 import io.holoinsight.server.home.web.common.ParaCheckUtil;
-import io.holoinsight.server.home.web.common.TokenUrls;
 import io.holoinsight.server.home.web.interceptor.MonitorScopeAuth;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -55,7 +54,6 @@ import java.util.UUID;
 @Slf4j
 @RestController
 @RequestMapping("/webapi/userinfo")
-@TokenUrls("/webapi/userinfo/query")
 public class UserinfoFacadeImpl extends BaseFacade {
 
   @Resource
@@ -91,6 +89,7 @@ public class UserinfoFacadeImpl extends BaseFacade {
           ParaCheckUtil.checkParaBoolean(
               checkMembers(Collections.singletonList(userinfoDTO.getUid())),
               userinfoDTO.getUid() + " is not in current tenant scope.");
+          ParaCheckUtil.checkParaId(userinfoDTO.getId());
         }
 
         @Override

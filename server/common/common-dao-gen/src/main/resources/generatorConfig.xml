@@ -102,6 +102,9 @@
 		<table tableName="trace_agent_configuration_properties" domainObjectName="TraceAgentConfPropDO" enableSelectByExample="true">
 		</table>
 
+		<table tableName="agg_task_v1" domainObjectName="AggTaskV1DO" enableSelectByExample="true">
+		</table>
+
 	</context>
 
 </generatorConfiguration>

@@ -6,6 +6,9 @@ package io.holoinsight.server.home.common.util.scope;
 import io.holoinsight.server.home.common.util.StringUtil;
 import org.springframework.util.StringUtils;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  *
  * @author jsy1001de
@@ -18,6 +21,8 @@ public class MonitorScope {
   public String environment;
   public String accessId;
   public String accessKey;
+  public Object accessConfig;
+  public List<String> accreditWsList = new ArrayList<>();
 
   public String getWorkspace() {
     if (StringUtil.isBlank(workspace)) {
@@ -46,6 +51,18 @@ public class MonitorScope {
 
   public void setTenant(String tenant) {
     this.tenant = tenant;
+  }
+
+  public void setAccreditWsList(List<String> accreditWsList) {
+    this.accreditWsList = accreditWsList;
+  }
+
+  public List<String> getAccreditWsList() {
+    return accreditWsList;
+  }
+
+  public Object getAccessConfig() {
+    return accessConfig;
   }
 
   public static boolean legalValue(String value) {

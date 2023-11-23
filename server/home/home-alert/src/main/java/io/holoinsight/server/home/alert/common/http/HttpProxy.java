@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 /**
  * http DataCollection proxy
@@ -149,7 +150,7 @@ public class HttpProxy {
         latch.countDown();
       }
     });
-    latch.await();
+    latch.await(30, TimeUnit.SECONDS);
     if (optional.sucess) {
       logger.info("http request[" + request + "] cost " + (System.currentTimeMillis() - start)
           + "ms, code[" + optional.response.code + "].");

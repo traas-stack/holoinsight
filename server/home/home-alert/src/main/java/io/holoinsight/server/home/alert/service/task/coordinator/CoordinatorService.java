@@ -13,10 +13,11 @@ import io.holoinsight.server.home.biz.common.MetaDictUtil;
 import io.holoinsight.server.home.common.util.CLUSTER_ROLE_CONST;
 import io.holoinsight.server.home.dal.mapper.ClusterMapper;
 import io.holoinsight.server.home.dal.model.Cluster;
+import io.holoinsight.server.home.facade.emuns.PeriodType;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
@@ -36,9 +37,9 @@ import static io.holoinsight.server.home.biz.common.MetaDictType.GLOBAL_CONFIG;
  * @author masaimu
  * @version 2022-10-18 15:06:00
  */
+@Slf4j
 @Service
 public class CoordinatorService {
-  private static Logger LOGGER = LoggerFactory.getLogger(CoordinatorService.class);
 
   @Resource
   private ClusterMapper clusterMapper;
@@ -65,7 +66,7 @@ public class CoordinatorService {
 
     clusters.sort(Comparator.comparing(Cluster::getIp));
     String myIp = AddressUtil.getLocalHostIPV4();
-    LOGGER.info("get order by my ip {} in {}", myIp, J.toJson(clusters));
+    log.info("get order by my ip {} in {}", myIp, J.toJson(clusters));
     this.otherMembers = new ArrayList<>();
     int order = -1;
     List<String> blackList = getBlackServerList();
@@ -94,17 +95,18 @@ public class CoordinatorService {
   public void spread(long heartbeat) {
     int order = getOrder();
     if (order < 0) {
-      LOGGER.info("fail to get order, give up allocating task.");
+      log.info("fail to get order, give up allocating task.");
       return;
     }
     long periodId = orderMap.curPeriod();
-    LOGGER.info("gossip spread preorder orderId {}, periodId {}, otherMenbers {}", order, periodId,
+    log.info("gossip spread preorder orderId {}, periodId {}, otherMenbers {}", order, periodId,
         this.otherMembers);
     CoordinatorSender sender = new CoordinatorSender(this.otherMembers, String.valueOf(order),
         String.valueOf(periodId), this, orderMap);
     sender.sendOrder(heartbeat);
 
     int realOrder = orderMap.getRealOrder();
+    log.info("REAL_ORDER_MONITOR,realOrder={},ip={}", realOrder, orderMap.getSelfIp());
     if (realOrder < 0) {
       return;
     }
@@ -117,7 +119,7 @@ public class CoordinatorService {
     double aiSize = this.cacheAlertTask.ruleSize("ai").doubleValue();
     double pqlSize = this.cacheAlertTask.ruleSize("pql").doubleValue();
     // 领取任务，[(order-1)*(ruleSize/realSize), order*(ruleSize/realSize))
-    LOGGER.info("gossip order realOrder {}, realSize {}, ruleSize {}, aiSize {}, pqlSize {}",
+    log.info("gossip order realOrder {}, realSize {}, ruleSize {}, aiSize {}, pqlSize {}",
         realOrder, realSize, ruleSize, aiSize, pqlSize);
     int rulePageSize = (int) Math.ceil(ruleSize / realSize);
     int rulePageNum = rulePageSize * realOrder;
@@ -133,6 +135,9 @@ public class CoordinatorService {
     int pqlPageNum = pqlPageSize * realOrder;
     this.cacheAlertTask.setPqlPageSize(pqlPageSize);
     this.cacheAlertTask.setPqlPageNum(pqlPageNum);
+    log.info(
+        "TASK_ASSIGN_MONITOR,rulePageNum={},rulePageSize={},aiPageNum={},aiPageSize={},pqlPageNum={},pqlPageSize={}",
+        rulePageNum, rulePageSize, aiPageNum, aiPageSize, pqlPageNum, pqlPageSize);
   }
 
   public void buildCluster() throws Exception {
@@ -153,5 +158,15 @@ public class CoordinatorService {
 
   public List getSortedOrderedMap() {
     return this.orderMap.getSortedOrderedMap();
+  }
+
+  public void checkOrderedMapConfig() {
+    OrderConfig orderConfig = MetaDictUtil.getValue("alert", "coordinator_order",
+        new com.google.gson.reflect.TypeToken<OrderConfig>() {});
+    if (orderConfig == null) {
+      log.info("can not get orderConfig from type {} dict_key {}", "alert", "coordinator_order");
+      return;
+    }
+    orderMap.forceSet(orderConfig);
   }
 }

@@ -155,7 +155,8 @@ public class UserFavoriteFacadeImpl extends BaseFacade {
             }
             break;
           case "integration":
-            IntegrationProductDTO byName = integrationProductService.findByName(userFavorite.name);
+            IntegrationProductDTO byName =
+                integrationProductService.findByName(userFavorite.relateId);
             if (null == byName) {
               throw new MonitorException(String.format("can not find record, %s-%s",
                   userFavorite.type, userFavorite.relateId));
@@ -165,7 +166,7 @@ public class UserFavoriteFacadeImpl extends BaseFacade {
             throw new MonitorException(String.format("can not find record, %s-%s",
                 userFavorite.type, userFavorite.relateId));
         }
-
+        ParaCheckUtil.checkParaId(userFavorite.getId());
       }
 
       @Override
@@ -349,7 +350,7 @@ public class UserFavoriteFacadeImpl extends BaseFacade {
             case "folder":
               folders.add(userFavorite.getRelateId());
               break;
-            case "dashobard":
+            case "dashboard":
               dashboards.add(userFavorite.getRelateId());
               break;
             case "logmonitor":
@@ -396,7 +397,7 @@ public class UserFavoriteFacadeImpl extends BaseFacade {
               }
 
               break;
-            case "dashobard":
+            case "dashboard":
               if (dashboardMaps.containsKey(userFavorite.getRelateId())) {
                 userFavorite.setName(dashboardMaps.get(userFavorite.getRelateId()));
               }

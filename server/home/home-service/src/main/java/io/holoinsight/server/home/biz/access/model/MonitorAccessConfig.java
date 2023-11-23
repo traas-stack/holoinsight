@@ -37,6 +37,7 @@ public class MonitorAccessConfig {
    * 允许访问的指标列表
    */
   private Set<String> accessRange = new HashSet<>();
+  private Set<String> accessUrl = new HashSet<>();
   /**
    * 单机QPS， -1代表不限，0代表黑名单， 其他代表正常限流
    */

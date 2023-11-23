@@ -109,6 +109,15 @@ public class MetaDictUtil {
     return value;
   }
 
+  public static Boolean isDefaultApmDisplayMenu() {
+
+    Boolean value = MetaDictUtil.getValue(MetaDictType.GLOBAL_CONFIG, MetaDictKey.DISPLAY_MENU_APM,
+        new TypeToken<Boolean>() {});
+    if (null == value) {
+      return false;
+    }
+    return value;
+  }
 
   public static Boolean isApmMaterialized() {
 
@@ -128,6 +137,14 @@ public class MetaDictUtil {
   public static List<String> getTokenUrlWriteList() {
     List<String> value = MetaDictUtil.getValue(MetaDictType.GLOBAL_CONFIG,
         MetaDictKey.TOKEN_URL_WRITE_LIST, new TypeToken<List<String>>() {});
+    if (CollectionUtils.isEmpty(value))
+      return new ArrayList<>();
+    return value;
+  }
+
+  public static List<String> getTokenUrlNoAuth() {
+    List<String> value = MetaDictUtil.getValue(MetaDictType.GLOBAL_CONFIG,
+        MetaDictKey.TOKEN_URL_NO_AUTH, new TypeToken<List<String>>() {});
     if (CollectionUtils.isEmpty(value))
       return new ArrayList<>();
     return value;

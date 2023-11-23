@@ -36,6 +36,12 @@ public class CommonServiceAutoConfiguration {
     return new SuperCacheService();
   }
 
+  @Bean
+  @ConditionalOnMissingBean
+  public ResourceKeysHolder resourceKeysHolder() {
+    return new ResourceKeysHolder();
+  }
+
 
   @Bean
   @ConditionalOnMissingBean
@@ -53,5 +59,11 @@ public class CommonServiceAutoConfiguration {
   @ConditionalOnMissingBean
   public MetricInfoService metricInfoService() {
     return new MetricInfoServiceImpl();
+  }
+
+  @Bean
+  @ConditionalOnMissingBean
+  public MonitorInstanceService monitorInstanceService() {
+    return new MonitorInstanceServiceImpl();
   }
 }
