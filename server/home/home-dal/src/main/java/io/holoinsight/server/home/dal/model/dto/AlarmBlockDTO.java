@@ -3,19 +3,36 @@
  */
 package io.holoinsight.server.home.dal.model.dto;
 
+import io.holoinsight.server.home.common.service.SpringContext;
+import io.holoinsight.server.home.facade.ApiSecurity;
+import io.holoinsight.server.home.facade.utils.ApiSecurityService;
+import io.holoinsight.server.home.facade.utils.CreateCheck;
+import io.holoinsight.server.home.facade.utils.ParaCheckUtil;
+import io.holoinsight.server.home.facade.utils.UpdateCheck;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import org.apache.commons.lang3.StringUtils;
 
+import java.lang.reflect.Field;
 import java.util.Date;
+
+import static io.holoinsight.server.home.facade.utils.CheckCategory.CUSTOM;
+import static io.holoinsight.server.home.facade.utils.CheckCategory.EXIST;
+import static io.holoinsight.server.home.facade.utils.CheckCategory.IS_NULL;
+import static io.holoinsight.server.home.facade.utils.CheckCategory.NOT_NULL;
 
 /**
  * @author wangsiyuan
  * @date 2022/6/15 4:52 下午
  */
+@EqualsAndHashCode(callSuper = true)
 @Data
-public class AlarmBlockDTO {
+public class AlarmBlockDTO extends ApiSecurity {
   /**
    * id
    */
+  @CreateCheck(IS_NULL)
+  @UpdateCheck({NOT_NULL, EXIST, CUSTOM})
   private Long id;
 
   /**
@@ -51,6 +68,8 @@ public class AlarmBlockDTO {
   /**
    * 告警id
    */
+  @CreateCheck(CUSTOM)
+  @UpdateCheck(CUSTOM)
   private String uniqueId;
 
   /**
@@ -61,6 +80,7 @@ public class AlarmBlockDTO {
   /**
    * 租户id
    */
+  @UpdateCheck({NOT_NULL, CUSTOM})
   private String tenant;
 
   /**
@@ -87,4 +107,38 @@ public class AlarmBlockDTO {
    * 结束时间
    */
   private Date endTime;
+
+  @Override
+  public void customCheckUpdate(Field field, String tenant, String workspace) {
+    ApiSecurityService apiSecurityService = SpringContext.getBean(ApiSecurityService.class);
+    String fieldName = field.getName();
+    switch (fieldName) {
+      case "uniqueId":
+        if (StringUtils.isNotEmpty(this.uniqueId)) {
+          ParaCheckUtil.checkParaBoolean(
+              apiSecurityService.checkRuleTenantAndWorkspace(this.uniqueId, tenant, workspace),
+              "uniqueId do not belong to this tenant or workspace");
+        }
+        break;
+      case "tenant":
+        if (!StringUtils.equals(this.tenant, tenant)) {
+          throwMonitorException("tenant is illegal");
+        }
+    }
+  }
+
+  @Override
+  public void customCheckCreate(Field field, String tenant, String workspace) {
+    ApiSecurityService apiSecurityService = SpringContext.getBean(ApiSecurityService.class);
+    String fieldName = field.getName();
+    switch (fieldName) {
+      case "uniqueId":
+        if (StringUtils.isNotEmpty(this.uniqueId)) {
+          ParaCheckUtil.checkParaBoolean(
+              apiSecurityService.checkRuleTenantAndWorkspace(this.uniqueId, tenant, workspace),
+              "uniqueId do not belong to this tenant or workspace");
+        }
+        break;
+    }
+  }
 }

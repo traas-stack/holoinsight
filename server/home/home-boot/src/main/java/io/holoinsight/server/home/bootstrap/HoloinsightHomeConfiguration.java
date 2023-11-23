@@ -28,7 +28,9 @@ import io.holoinsight.server.home.biz.service.impl.DefaultTenantInitServiceImpl;
 import io.holoinsight.server.home.biz.service.impl.UserinfoVerificationServiceImpl;
 import io.holoinsight.server.home.common.service.RequestContextAdapter;
 import io.holoinsight.server.home.common.service.RequestContextAdapterImpl;
+import io.holoinsight.server.home.facade.utils.ApiSecurityService;
 import io.holoinsight.server.home.web.controller.TraceAgentFacadeImpl;
+import io.holoinsight.server.home.web.security.ApiSecurityServiceImpl;
 import io.holoinsight.server.home.web.security.ParameterSecurityService;
 import io.holoinsight.server.home.web.security.ParameterSecurityServiceImpl;
 import org.mybatis.spring.annotation.MapperScan;
@@ -116,5 +118,10 @@ public class HoloinsightHomeConfiguration {
   @Bean
   public AccessRecordService accessRecordService() {
     return new AccessRecordService();
+  }
+
+  @Bean
+  public ApiSecurityService apiSecurityService() {
+    return new ApiSecurityServiceImpl();
   }
 }

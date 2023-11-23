@@ -5,13 +5,20 @@ package io.holoinsight.server.home.facade;
 
 import com.google.gson.reflect.TypeToken;
 import io.holoinsight.server.common.J;
+import io.holoinsight.server.home.common.service.SpringContext;
 import io.holoinsight.server.home.facade.trigger.DataSource;
 import io.holoinsight.server.home.facade.trigger.Filter;
 import io.holoinsight.server.home.facade.trigger.Trigger;
+import io.holoinsight.server.home.facade.utils.ApiSecurityService;
+import io.holoinsight.server.home.facade.utils.CreateCheck;
+import io.holoinsight.server.home.facade.utils.ParaCheckUtil;
+import io.holoinsight.server.home.facade.utils.UpdateCheck;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.util.CollectionUtils;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -20,16 +27,24 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static io.holoinsight.server.home.facade.utils.CheckCategory.CUSTOM;
+import static io.holoinsight.server.home.facade.utils.CheckCategory.EXIST;
+import static io.holoinsight.server.home.facade.utils.CheckCategory.IS_NULL;
+import static io.holoinsight.server.home.facade.utils.CheckCategory.NOT_NULL;
+
 /**
  * @author wangsiyuan
  * @date 2022/4/12 9:38 下午
  */
+@EqualsAndHashCode(callSuper = true)
 @Data
-public class AlarmRuleDTO {
+public class AlarmRuleDTO extends ApiSecurity {
 
   /**
    * id
    */
+  @CreateCheck(IS_NULL)
+  @UpdateCheck({NOT_NULL, EXIST, CUSTOM})
   private Long id;
 
   /**
@@ -45,6 +60,8 @@ public class AlarmRuleDTO {
   /**
    * 规则名称
    */
+  @CreateCheck({NOT_NULL, CUSTOM})
+  @UpdateCheck({CUSTOM})
   private String ruleName;
 
   /**
@@ -65,6 +82,7 @@ public class AlarmRuleDTO {
   /**
    * 告警级别
    */
+  @CreateCheck(NOT_NULL)
   private String alarmLevel;
 
   /**
@@ -75,11 +93,13 @@ public class AlarmRuleDTO {
   /**
    * 规则是否生效
    */
+  @CreateCheck(NOT_NULL)
   private Byte status;
 
   /**
    * 合并是否开启
    */
+  @CreateCheck(NOT_NULL)
   private Byte isMerge;
 
   /**
@@ -90,6 +110,7 @@ public class AlarmRuleDTO {
   /**
    * 恢复通知是否开启
    */
+  @CreateCheck(NOT_NULL)
   private Byte recover;
 
   /**
@@ -105,6 +126,7 @@ public class AlarmRuleDTO {
   /**
    * 租户id
    */
+  @UpdateCheck({NOT_NULL, CUSTOM})
   private String tenant;
 
   /**
@@ -115,11 +137,14 @@ public class AlarmRuleDTO {
   /**
    * 告警规则
    */
+  @CreateCheck({NOT_NULL, CUSTOM})
+  @UpdateCheck({CUSTOM})
   private Map<String, Object> rule;
 
   /**
    * 生效时间
    */
+  @CreateCheck(NOT_NULL)
   private Map<String, Object> timeFilter;
 
   /**
@@ -250,7 +275,7 @@ public class AlarmRuleDTO {
     return metrics;
   }
 
-  public Map<String, List<Object>> getFilters(String metric) {
+  public Map<String /* tagk */, List<Object> /* tagvs */> getFilters(String metric) {
     Map<String, List<Object>> filters = new HashMap<>();
     if (CollectionUtils.isEmpty(this.rule)) {
       return Collections.emptyMap();
@@ -290,5 +315,68 @@ public class AlarmRuleDTO {
       }
     }
     return filters;
+  }
+
+  @Override
+  public void customCheckCreate(Field field, String tenant, String workspace) {
+    String fieldName = field.getName();
+    switch (fieldName) {
+      case "ruleName":
+        if (!ParaCheckUtil.commonCheck(this.ruleName)) {
+          throwMonitorException(
+              "invalid ruleName, please use a-z A-Z 0-9 Chinese - _ , . spaces " + this.ruleName,
+              field);
+        }
+        break;
+      case "rule":
+        checkMetrics(tenant, workspace);
+        break;
+    }
+  }
+
+  @Override
+  public void customCheckUpdate(Field field, String tenant, String workspace) {
+    String fieldName = field.getName();
+    switch (fieldName) {
+      case "ruleName":
+        if (StringUtils.isNotBlank(this.ruleName)) {
+          if (!ParaCheckUtil.commonCheck(this.ruleName)) {
+            throwMonitorException(
+                "invalid ruleName, please use a-z A-Z 0-9 Chinese - _ , . spaces " + this.ruleName,
+                field);
+          }
+        }
+        break;
+      case "tenant":
+        if (!StringUtils.equals(this.tenant, tenant)) {
+          throwMonitorException("tenant is illegal");
+        }
+      case "rule":
+        checkMetrics(tenant, workspace);
+        break;
+    }
+  }
+
+  private void checkMetrics(String tenant, String workspace) {
+    List<String> metrics = getMetric();
+    if (CollectionUtils.isEmpty(metrics)) {
+      return;
+    }
+    ApiSecurityService apiSecurityService = SpringContext.getBean(ApiSecurityService.class);
+    for (String metric : metrics) {
+      if (apiSecurityService.isGlobalMetric(metric)) {
+        Map<String /* tagk */, List<Object> /* tagvs */> filter = getFilters(metric);
+        boolean checkResult = apiSecurityService.checkFilter(metric, filter, tenant, workspace);
+        if (!checkResult) {
+          throwMonitorException("the tenant or workspace of " + metric + " is invalid.");
+        }
+      } else {
+        boolean checkResult =
+            apiSecurityService.checkMetricTenantAndWorkspace(metric, tenant, workspace);
+        if (!checkResult) {
+          throwMonitorException("the tenant or workspace of " + metric + " is invalid.");
+        }
+      }
+    }
   }
 }

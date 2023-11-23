@@ -35,6 +35,7 @@ import io.holoinsight.server.home.facade.page.MonitorPageRequest;
 import io.holoinsight.server.home.facade.page.MonitorPageResult;
 import io.holoinsight.server.home.web.common.ManageCallback;
 import io.holoinsight.server.home.web.common.ParaCheckUtil;
+import io.holoinsight.server.home.web.common.SecurityResource;
 import io.holoinsight.server.home.web.interceptor.MonitorScopeAuth;
 import io.holoinsight.server.home.web.security.ParameterSecurityService;
 import org.apache.commons.lang3.StringUtils;
@@ -61,7 +62,8 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import static io.holoinsight.server.home.facade.AlarmRuleDTO.tryParseLink;
-import static io.holoinsight.server.home.task.MetricCrawlerConstant.GLOBAL_WORKSPACE;
+import static io.holoinsight.server.home.facade.utils.SecurityMethodCategory.create;
+import static io.holoinsight.server.home.facade.utils.SecurityMethodCategory.update;
 
 /**
  * @author wangsiyuan
@@ -104,36 +106,13 @@ public class AlarmRuleFacadeImpl extends BaseFacade {
   @PostMapping("/create")
   @ResponseBody
   @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.EDIT)
-  public JsonResult<Long> save(@RequestBody AlarmRuleDTO alarmRuleDTO) {
+  public JsonResult<Long> save(@RequestBody @SecurityResource(value = create,
+      mapper = "alarmRuleMapper") AlarmRuleDTO alarmRuleDTO) {
     final JsonResult<Long> result = new JsonResult<>();
     facadeTemplate.manage(result, new ManageCallback() {
       @Override
       public void checkParameter() {
-        ParaCheckUtil.checkParaNotBlank(alarmRuleDTO.getRuleName(), "ruleName");
-        ParaCheckUtil.checkParaNotBlank(alarmRuleDTO.getAlarmLevel(), "alarmLevel");
-        ParaCheckUtil.checkParaNotNull(alarmRuleDTO.getRule(), "rule");
-        ParaCheckUtil.checkParaNotNull(alarmRuleDTO.getTimeFilter(), "timeFilter");
-        ParaCheckUtil.checkParaNotNull(alarmRuleDTO.getStatus(), "status");
-        ParaCheckUtil.checkParaNotNull(alarmRuleDTO.getRecover(), "recover");
-        ParaCheckUtil.checkParaNotNull(alarmRuleDTO.getIsMerge(), "isMerge");
-        ParaCheckUtil.checkInvalidCharacter(alarmRuleDTO.getRuleName(),
-            "invalid ruleName, please use a-z A-Z 0-9 Chinese - _ , . spaces");
-        ParaCheckUtil.checkParaId(alarmRuleDTO.getId());
-        MonitorScope ms = RequestContext.getContext().ms;
-
-        List<String> metrics = alarmRuleDTO.getMetric();
-        for (String metric : metrics) {
-          ParaCheckUtil.checkParaBoolean(parameterSecurityService.checkMetricTenantAndWorkspace(
-              metric, ms.getTenant(), ms.getWorkspace()), "invalid metric table");
-          Map<String, List<Object>> filters = alarmRuleDTO.getFilters(metric);
-          String metricInfoWorkspace = parameterSecurityService.getWorkspaceFromMetricInfo(metric);
-          if (StringUtils.equals(GLOBAL_WORKSPACE, metricInfoWorkspace)) {
-            ParaCheckUtil.checkParaBoolean(
-                parameterSecurityService.checkFilterTenantAndWorkspace(metric, filters,
-                    ms.getTenant(), ms.getWorkspace()),
-                "filter should contain valid info like tenant");
-          }
-        }
+        check(alarmRuleDTO);
       }
 
       @Override
@@ -186,35 +165,13 @@ public class AlarmRuleFacadeImpl extends BaseFacade {
   @PostMapping("/update")
   @ResponseBody
   @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.EDIT)
-  public JsonResult<Boolean> update(@RequestBody AlarmRuleDTO alarmRuleDTO) {
+  public JsonResult<Boolean> update(@RequestBody @SecurityResource(value = update,
+      mapper = "alarmRuleMapper") AlarmRuleDTO alarmRuleDTO) {
     final JsonResult<Boolean> result = new JsonResult<>();
     facadeTemplate.manage(result, new ManageCallback() {
       @Override
       public void checkParameter() {
-        ParaCheckUtil.checkParaNotNull(alarmRuleDTO.getId(), "id");
-
-        ParaCheckUtil.checkParaNotNull(alarmRuleDTO.getTenant(), "tenant");
-        ParaCheckUtil.checkEquals(alarmRuleDTO.getTenant(),
-            RequestContext.getContext().ms.getTenant(), "tenant is illegal");
-        if (StringUtils.isNotBlank(alarmRuleDTO.getRuleName())) {
-          ParaCheckUtil.checkInvalidCharacter(alarmRuleDTO.getRuleName(),
-              "invalid ruleName, please use a-z A-Z 0-9 Chinese - _ , . spaces");
-        }
-        MonitorScope ms = RequestContext.getContext().ms;
-
-        List<String> metrics = alarmRuleDTO.getMetric();
-        for (String metric : metrics) {
-          ParaCheckUtil.checkParaBoolean(parameterSecurityService.checkMetricTenantAndWorkspace(
-              metric, ms.getTenant(), ms.getWorkspace()), "invalid metric table");
-          Map<String, List<Object>> filters = alarmRuleDTO.getFilters(metric);
-          String metricInfoWorkspace = parameterSecurityService.getWorkspaceFromMetricInfo(metric);
-          if (StringUtils.equals(GLOBAL_WORKSPACE, metricInfoWorkspace)) {
-            ParaCheckUtil.checkParaBoolean(
-                parameterSecurityService.checkFilterTenantAndWorkspace(metric, filters,
-                    ms.getTenant(), ms.getWorkspace()),
-                "filter should contain valid info like tenant");
-          }
-        }
+        check(alarmRuleDTO);
       }
 
       @Override
