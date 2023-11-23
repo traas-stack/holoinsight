@@ -82,6 +82,8 @@
 
     <select id="queryChangedMeta" resultType="io.holoinsight.server.meta.dal.service.model.MetaData">
         SELECT
+        id,
+        gmt_modified,
         table_name AS tableName,
         uk,
         json,
@@ -98,6 +100,8 @@
 
     <select id="queryTableChangedMeta" resultType="io.holoinsight.server.meta.dal.service.model.MetaData">
         SELECT
+        id,
+        gmt_modified,
         table_name AS tableName,
         uk,
         json,

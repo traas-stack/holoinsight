@@ -96,7 +96,7 @@ public class BitmapDataCoreService extends SqlDataCoreService {
       Map<String, Object> values = J.toMap(metaData.getJson());
       values.put(UK_FIELD, metaData.getUk());
       return new DimDataRow(metaData.getTableName(), metaData.getId(), metaData.getUk(), values,
-          metaData.getDeleted() == 1, metaData.getGmtModified().getTime());
+          metaData.getDeleted()!=null&& metaData.getDeleted()== 1, metaData.getGmtModified().getTime());
     }).collect(Collectors.toList())).join();
   }
 
