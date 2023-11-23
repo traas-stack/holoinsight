@@ -8,6 +8,7 @@ import io.holoinsight.server.common.service.SuperCacheService;
 import io.holoinsight.server.meta.core.service.DBCoreService;
 import io.holoinsight.server.meta.core.service.MongoDataCoreService;
 import io.holoinsight.server.meta.core.service.SqlDataCoreService;
+import io.holoinsight.server.meta.core.service.bitmap.BitmapDataCoreService;
 import io.holoinsight.server.meta.dal.service.mapper.MetaDataMapper;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -35,7 +36,7 @@ public class MetaServiceConfiguration {
   @ConditionalOnProperty(value = "holoinsight.meta.db_data_mode", havingValue = "mysql")
   public DBCoreService SqlDataCoreService(MetaDataMapper metaDataMapper,
       SuperCacheService superCacheService) {
-    return new SqlDataCoreService(metaDataMapper, superCacheService);
+    return new BitmapDataCoreService(metaDataMapper, superCacheService);
   }
 
   @Bean

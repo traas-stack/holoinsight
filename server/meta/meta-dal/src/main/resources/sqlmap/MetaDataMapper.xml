@@ -2,98 +2,115 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="io.holoinsight.server.meta.dal.service.mapper.MetaDataMapper">
 
-  <resultMap id="BaseResultMap" type="io.holoinsight.server.meta.dal.service.model.MetaData">
-    <id column="id" jdbcType="BIGINT" property="id" />
-    <result column="gmt_create" jdbcType="TIMESTAMP" property="gmtCreate" />
-    <result column="gmt_modified" jdbcType="TIMESTAMP" property="gmtModified" />
-    <result column="uk" jdbcType="VARCHAR" property="uk" />
-    <result column="table_name" jdbcType="VARCHAR" property="tableName" />
-    <result column="json" jdbcType="VARCHAR" property="json" />
-    <result column="annotations" jdbcType="VARCHAR" property="annotations" />
-    <result column="deleted" jdbcType="INTEGER" property="deleted" />
-  </resultMap>
+    <resultMap id="BaseResultMap" type="io.holoinsight.server.meta.dal.service.model.MetaData">
+        <id column="id" jdbcType="BIGINT" property="id" />
+        <result column="gmt_create" jdbcType="TIMESTAMP" property="gmtCreate" />
+        <result column="gmt_modified" jdbcType="TIMESTAMP" property="gmtModified" />
+        <result column="uk" jdbcType="VARCHAR" property="uk" />
+        <result column="table_name" jdbcType="VARCHAR" property="tableName" />
+        <result column="json" jdbcType="VARCHAR" property="json" />
+        <result column="annotations" jdbcType="VARCHAR" property="annotations" />
+        <result column="deleted" jdbcType="INTEGER" property="deleted" />
+    </resultMap>
 
-  <insert id="batchInsertOrUpdate">
-    insert into meta_dim_data(
-    table_name,
-    uk,
-    json,
-    annotations,
-    deleted,
-    gmt_create,
-    gmt_modified
-    )
-    values
-    <foreach collection="metaDataList" item="item" index="index" separator=",">
-    (
-     #{item.tableName},
-     #{item.uk},
-     #{item.json},
-     #{item.annotations},
-     #{item.deleted},
-     #{item.gmtCreate},
-     #{item.gmtModified}
-     )
-    </foreach>
-    ON DUPLICATE KEY UPDATE
-      json = VALUES(json),
-      annotations = VALUES(annotations),
-      deleted = VALUES(deleted),
-      gmt_modified = VALUES(gmt_modified)
-  </insert>
+    <insert id="batchInsertOrUpdate">
+        insert into meta_dim_data(
+        table_name,
+        uk,
+        json,
+        annotations,
+        deleted,
+        gmt_create,
+        gmt_modified
+        )
+        values
+        <foreach collection="metaDataList" item="item" index="index" separator=",">
+            (
+            #{item.tableName},
+            #{item.uk},
+            #{item.json},
+            #{item.annotations},
+            #{item.deleted},
+            #{item.gmtCreate},
+            #{item.gmtModified}
+            )
+        </foreach>
+        ON DUPLICATE KEY UPDATE
+        json = VALUES(json),
+        annotations = VALUES(annotations),
+        deleted = VALUES(deleted),
+        gmt_modified = VALUES(gmt_modified)
+    </insert>
 
-  <update id="updateByUk">
-      update meta_dim_data
-      <set>
-        json = #{item.json}, annotations = #{item.annotations}, gmt_modified = #{item.gmtModified}
-      </set>
-       where table_name = #{tableName} and uk = #{item.uk} and deleted = 0
-  </update>
+    <update id="updateByUk">
+        update meta_dim_data
+        <set>
+            json = #{item.json}, annotations = #{item.annotations}, gmt_modified = #{item.gmtModified}
+        </set>
+        where table_name = #{tableName} and uk = #{item.uk} and deleted = 0
+    </update>
 
-  <update id="softDeleteByUks">
-    update meta_dim_data set deleted = 1, gmt_modified = #{gmtModified}
-    <where>
-      table_name = #{tableName}
-    </where>
-    <if test="pkList != null and pkList.size() > 0">
-      and uk in
-       <foreach collection="pkList" item="item" separator="," open="(" close=")">
-         #{item}
-       </foreach>
-    </if>
-  </update>
+    <update id="softDeleteByUks">
+        update meta_dim_data set deleted = 1, gmt_modified = #{gmtModified}
+        <where>
+            table_name = #{tableName}
+        </where>
+        <if test="pkList != null and pkList.size() > 0">
+            and uk in
+            <foreach collection="pkList" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+    </update>
 
     <delete id="cleanMetaData">
         delete from meta_dim_data where deleted = 1 and  <![CDATA[gmt_modified <= #{end}]]>
     </delete>
 
     <select id="selectByUks" resultMap="BaseResultMap">
-    select * from meta_dim_data
-    where
-      table_name = #{tableName}
-    <if test="pkList != null and pkList.size() > 0">
-      AND uk in
-      <foreach collection="pkList" item="item" separator="," open="(" close=")">
-        #{item}
-      </foreach>
-    </if>
-     AND deleted = 0
-  </select>
+        select * from meta_dim_data
+        where
+        table_name = #{tableName}
+        <if test="pkList != null and pkList.size() > 0">
+            AND uk in
+            <foreach collection="pkList" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        AND deleted = 0
+    </select>
 
-  <select id="queryChangedMeta" resultType="io.holoinsight.server.meta.dal.service.model.MetaData">
-    SELECT
-      table_name AS tableName,
-      uk,
-      json,
-      deleted
-    FROM meta_dim_data
-    where
+    <select id="queryChangedMeta" resultType="io.holoinsight.server.meta.dal.service.model.MetaData">
+        SELECT
+        table_name AS tableName,
+        uk,
+        json,
+        deleted
+        FROM meta_dim_data
+        where
         gmt_modified >= #{start}
         and  <![CDATA[gmt_modified <= #{end}]]>
         <if test="!containDeleted">
-          and deleted = 0
+            and deleted = 0
         </if>
         limit #{offset},#{limit}
-  </select>
+    </select>
+
+    <select id="queryTableChangedMeta" resultType="io.holoinsight.server.meta.dal.service.model.MetaData">
+        SELECT
+        table_name AS tableName,
+        uk,
+        json,
+        deleted
+        FROM meta_dim_data
+        where
+        table_name = #{table}
+        and gmt_modified >= #{start}
+        and  <![CDATA[gmt_modified < #{end}]]>
+        <if test="!containDeleted">
+            and deleted = 0
+        </if>
+        limit #{offset},#{limit}
+    </select>
 
 </mapper>

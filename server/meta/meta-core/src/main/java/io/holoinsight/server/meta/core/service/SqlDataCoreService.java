@@ -56,7 +56,7 @@ public class SqlDataCoreService extends AbstractDataCoreService {
   public static final int DELETED = 1;
   public static final String EMPTY_VALUE = "NULL";
   public static final int CLEAN_TASK_PERIOD = 3600;
-  private MetaDataMapper metaDataMapper;
+  protected MetaDataMapper metaDataMapper;
   private SuperCacheService superCacheService;
 
   // tableName ---> Map(uk ---> Map(key ---> value))
@@ -172,10 +172,10 @@ public class SqlDataCoreService extends AbstractDataCoreService {
 
   /**
    * update meta cache
-   * 
+   *
    * @return
    */
-  private Consumer<List<MetaData>> buildCache() {
+  protected Consumer<List<MetaData>> buildCache() {
     return data -> data.forEach(metaData -> {
       Map<String, Map<String, Object>> items =
           ukMetaCache.computeIfAbsent(metaData.getTableName(), k -> Maps.newConcurrentMap());
@@ -229,7 +229,7 @@ public class SqlDataCoreService extends AbstractDataCoreService {
     return builder.substring(0, builder.length() - 1);
   }
 
-  private Integer queryChangedMeta(Date start, Date end, Boolean containDeleted,
+  protected Integer queryChangedMeta(Date start, Date end, Boolean containDeleted,
       Consumer<List<MetaData>> listConsumer) {
     int offset = 0;
     int count = 0;
@@ -244,6 +244,22 @@ public class SqlDataCoreService extends AbstractDataCoreService {
       listConsumer.accept(metaDataList);
     }
     return count;
+  }
+
+  protected List<MetaData> queryTableChangedMeta(String tableName, Date start, Date end,
+      Boolean containDeleted) {
+    int offset = 0;
+    List<MetaData> result = new ArrayList<>();
+    while (true) {
+      List<MetaData> metaDataList = metaDataMapper.queryTableChangedMeta(tableName, start, end,
+          containDeleted, offset, LIMIT);
+      offset += LIMIT;
+      if (metaDataList.isEmpty()) {
+        break;
+      }
+      result.addAll(metaDataList);
+    }
+    return result;
   }
 
   @Override
