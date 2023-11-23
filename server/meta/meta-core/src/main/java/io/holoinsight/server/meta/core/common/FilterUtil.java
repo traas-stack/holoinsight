@@ -42,6 +42,7 @@ public class FilterUtil {
     DimCondition dimCondition = new DimCondition();
     OrCondition orCondition = new OrCondition();
     filters.forEach((type, entries) -> {
+      type = type.split("\\.")[0];
       switch (type) {
         case REGEX_FILTERS_KEY:
           entries.forEach((k, v) -> {
