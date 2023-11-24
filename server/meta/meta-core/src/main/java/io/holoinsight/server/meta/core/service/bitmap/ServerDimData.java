@@ -5,6 +5,7 @@ package io.holoinsight.server.meta.core.service.bitmap;
 
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections.CollectionUtils;
 
 import java.util.List;
 
@@ -28,8 +29,8 @@ public class ServerDimData extends AbstractDimData {
       Metasynchronizer synchronizer) {
     super(tableName, SERVER_DATA_EXPIRED_TIME, version, rows, synchronizer);
     this.buildTime = System.currentTimeMillis();
-    log.info("ServerDimData build finish, table={}, buildTime={}, ttl={}.", this.getTableName(),
-        this.getBuildTime(), this.getTtl());
+    log.info("ServerDimData build finish, table={}, buildTime={}, ttl={}, rows={}.", this.getTableName(),
+        this.getBuildTime(), this.getTtl(), CollectionUtils.size(rows));
     this.startSync();
   }
 

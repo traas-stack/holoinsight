@@ -264,6 +264,7 @@ public abstract class AbstractDimData implements DimData {
         labelMap.forEach((k, v) -> colsMap.putIfAbsent(k, new DimColData(this.tableName, k, this)));
       }
     });
+    log.info("fill cols with labels, rows={}, cols={}",CollectionUtils.size(rows),CollectionUtils.size(this.colsMap));
   }
 
   public boolean isExpired() {
