@@ -47,28 +47,27 @@ public class FilterUtil {
     } else {
       filters.forEach((type, entries) -> {
         type = type.contains(".") ? type.split("\\.")[0] : type;
-        switch (type) {
-          case REGEX_FILTERS_KEY:
-            entries.forEach((k, v) -> {
-              AndCondition andCondition = orCondition.and();
-              andCondition.setRegex(true);
-              andCondition.setExpress(new String[] {k});
-              andCondition.setValueRange(Collections.singletonList(v));
-            });
-          case EQ_FILTERS_KEY:
-            entries.forEach((k, v) -> {
-              AndCondition andCondition = orCondition.and();
-              andCondition.setExpress(new String[] {k});
-              andCondition.setValueRange(Collections.singletonList(v));
-            });
-          case IN_FILTERS_KEY:
-            entries.forEach((k, v) -> {
-              AndCondition andCondition = orCondition.and();
-              andCondition.setExpress(new String[] {k});
-              andCondition.setValueRange((List) v);
-            });
-          default:
-            throw new IllegalArgumentException("unsupported filter type: " + type);
+        if (REGEX_FILTERS_KEY.equals(type)) {
+          entries.forEach((k, v) -> {
+            AndCondition andCondition = orCondition.and();
+            andCondition.setRegex(true);
+            andCondition.setExpress(new String[] {k});
+            andCondition.setValueRange(Collections.singletonList(v));
+          });
+        } else if (EQ_FILTERS_KEY.equals(type)) {
+          entries.forEach((k, v) -> {
+            AndCondition andCondition = orCondition.and();
+            andCondition.setExpress(new String[] {k});
+            andCondition.setValueRange(Collections.singletonList(v));
+          });
+        } else if (IN_FILTERS_KEY.equals(type)) {
+          entries.forEach((k, v) -> {
+            AndCondition andCondition = orCondition.and();
+            andCondition.setExpress(new String[] {k});
+            andCondition.setValueRange((List) v);
+          });
+        } else {
+          throw new IllegalArgumentException("unsupported filter type: " + type);
         }
       });
     }
