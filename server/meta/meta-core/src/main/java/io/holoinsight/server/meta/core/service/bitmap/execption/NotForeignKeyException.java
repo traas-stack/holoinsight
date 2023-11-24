@@ -1,12 +1,9 @@
-/**
- * Alipay.com Inc. Copyright (c) 2004-2019 All Rights Reserved.
+/*
+ * Copyright 2022 Holoinsight Project Authors. Licensed under Apache-2.0.
  */
+
 package io.holoinsight.server.meta.core.service.bitmap.execption;
 
-/**
- * @author wangfei
- * @version $Id: NotForeignKeyException.java, v 0.1 2019年08月06日 9:01 PM wangfei Exp $
- */
 public class NotForeignKeyException extends Exception {
 
   public NotForeignKeyException(String table, String column) {

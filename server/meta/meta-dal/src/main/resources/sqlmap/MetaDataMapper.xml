@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="io.holoinsight.server.meta.dal.service.mapper.MetaDataMapper">
 
-    <resultMap id="BaseResultMap" type="io.holoinsight.server.meta.dal.service.model.MetaData">
+    <resultMap id="BaseResultMap" type="io.holoinsight.server.meta.dal.service.model.MetaDataDO">
         <id column="id" jdbcType="BIGINT" property="id" />
         <result column="gmt_create" jdbcType="TIMESTAMP" property="gmtCreate" />
         <result column="gmt_modified" jdbcType="TIMESTAMP" property="gmtModified" />
@@ -80,7 +80,7 @@
         AND deleted = 0
     </select>
 
-    <select id="queryChangedMeta" resultType="io.holoinsight.server.meta.dal.service.model.MetaData">
+    <select id="queryChangedMeta" resultType="io.holoinsight.server.meta.dal.service.model.MetaDataDO">
         SELECT
         id,
         gmt_modified,
@@ -98,7 +98,7 @@
         limit #{offset},#{limit}
     </select>
 
-    <select id="queryTableChangedMeta" resultType="io.holoinsight.server.meta.dal.service.model.MetaData">
+    <select id="queryTableChangedMeta" resultType="io.holoinsight.server.meta.dal.service.model.MetaDataDO">
         SELECT
         id,
         gmt_modified,

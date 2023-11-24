@@ -1,3 +1,6 @@
+/*
+ * Copyright 2022 Holoinsight Project Authors. Licensed under Apache-2.0.
+ */
 /// *
 // * Copyright 2022 Holoinsight Project Authors. Licensed under Apache-2.0.
 // */
@@ -75,12 +78,12 @@
 // try {
 // long cleanMetaDataDuration = getCleanMetaDataDuration();
 // long end = System.currentTimeMillis() - cleanMetaDataDuration;
-// logger.info("[DIM-CLEAN] the cleaning task will clean up the data before {}", end);
+// logger.info("[META-CLEAN] the cleaning task will clean up the data before {}", end);
 // Integer count = metaDataMapper.cleanMetaData(new Date(end));
-// logger.info("[DIM-CLEAN] cleaned up {} pieces of data before {}, cost: {}", count, end,
+// logger.info("[META-CLEAN] cleaned up {} pieces of data before {}, cost: {}", count, end,
 // stopWatch.getTime());
 // } catch (Exception e) {
-// logger.error("[DIM-CLEAN] an exception occurred in the cleanup task", e);
+// logger.error("[META-CLEAN] an exception occurred in the cleanup task", e);
 // }
 // }
 //
@@ -96,7 +99,7 @@
 // scheduledExecutor.scheduleAtFixedRate(this::sync, 60 - LocalTime.now().getSecond(), PERIOD,
 // TimeUnit.SECONDS);
 // int initialDelay = new Random().nextInt(CLEAN_TASK_PERIOD);
-// logger.info("[DIM-CLEAN] clean task will scheduled after {}", initialDelay);
+// logger.info("[META-CLEAN] clean task will scheduled after {}", initialDelay);
 // cleanMeatExecutor.scheduleAtFixedRate(this::cleanMeta, initialDelay, CLEAN_TASK_PERIOD,
 // TimeUnit.SECONDS);
 // }

@@ -13,7 +13,7 @@ import lombok.Data;
  * @date 2023/4/24
  */
 @Data
-public class MetaData {
+public class MetaDataDO {
 
   private Long id;
 

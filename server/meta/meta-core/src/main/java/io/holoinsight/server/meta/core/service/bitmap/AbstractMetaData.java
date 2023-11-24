@@ -1,10 +1,11 @@
-/**
- * Alipay.com Inc. Copyright (c) 2004-2019 All Rights Reserved.
+/*
+ * Copyright 2022 Holoinsight Project Authors. Licensed under Apache-2.0.
  */
+
 package io.holoinsight.server.meta.core.service.bitmap;
 
 import io.holoinsight.server.meta.core.common.DimForkJoinPool;
-import lombok.Getter;
+import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.concurrent.BasicThreadFactory;
@@ -19,14 +20,12 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
 /**
- * 某个维度的所有数据 基于列式
+ * 某个维度的所有数据 基于 bitmap 构建索引
  *
- * @author wanpeng.xwp
- * @version : DimData.java,v 0.1 2019年12月06日 16:31 wanpeng.xwp Exp $
  */
-@Getter
+@Data
 @Slf4j
-public abstract class AbstractDimData implements DimData {
+public abstract class AbstractMetaData implements IMetaData {
 
   /**
    * changelog积压比，超过会将数据置为过期
@@ -62,26 +61,26 @@ public abstract class AbstractDimData implements DimData {
   private ScheduledExecutorService SCHEDULER;
 
   /**
-   * 所有行 pkVal -> row
+   * 所有行 ukVal -> row
    */
-  protected Map<Object, DimDataRow> rowsMap = new ConcurrentHashMap<>();
+  protected Map<String, MetaDataRow> rowsMap = new ConcurrentHashMap<>();
 
   /**
    * 所有行 id -> row
    */
-  protected Map<Long, DimDataRow> idRowsMap = new ConcurrentHashMap<>();
+  protected Map<Long, MetaDataRow> idRowsMap = new ConcurrentHashMap<>();
 
   /**
    * 所有列 colName -> colData
    */
-  protected Map<String, DimColData> colsMap = new ConcurrentHashMap<>();
+  protected Map<String, MetaColData> colsMap = new ConcurrentHashMap<>();
 
   /**
    * 所有变更信息
    */
-  protected List<DimDataRow> allLogs = new ArrayList<>();
+  protected List<MetaDataRow> allLogs = new ArrayList<>();
 
-  public AbstractDimData(String tableName, long ttl, long version, List<DimDataRow> rows,
+  public AbstractMetaData(String tableName, long ttl, long version, List<MetaDataRow> rows,
       Metasynchronizer synchronizer) {
     this.tableName = tableName;
     this.version = version;
@@ -89,15 +88,15 @@ public abstract class AbstractDimData implements DimData {
     this.synchronizer = synchronizer;
     StopWatch stopWatch = StopWatch.createStarted();
     try {
-      Map<Object, DimDataRow> newRowsMap = new ConcurrentHashMap<>();
-      Map<Long, DimDataRow> newIdRowsMap = new ConcurrentHashMap();
+      Map<String, MetaDataRow> newRowsMap = new ConcurrentHashMap<>();
+      Map<Long, MetaDataRow> newIdRowsMap = new ConcurrentHashMap();
       DimForkJoinPool.get()
           .submit(() -> rows.parallelStream().forEach(row -> newRowsMap.put(row.getUk(), row)))
           .join();
       DimForkJoinPool.get()
           .submit(() -> rows.parallelStream().forEach(row -> newIdRowsMap.put(row.getId(), row)))
           .join();
-      Map<String, DimColData> initColsMap = new ConcurrentHashMap<>();
+      Map<String, MetaColData> initColsMap = new ConcurrentHashMap<>();
       fillColsMapWithLabels(initColsMap, rows);
       synchronized (this) {
         this.rowsMap = newRowsMap;
@@ -105,15 +104,15 @@ public abstract class AbstractDimData implements DimData {
         this.colsMap = initColsMap;
         this.allLogs = new ArrayList<>(rows);
       }
-      log.info("DIMSERVICE-STAT,REPLACE,SUCCESS,{},table={},size={}.", stopWatch.getTime(),
-          tableName, rows.size());
+      log.info("META-STAT,REPLACE,SUCCESS,{},table={},size={}.", stopWatch.getTime(), tableName,
+          rows.size());
     } catch (Exception e) {
-      log.error("DIMSERVICE-STAT,REPLACE,FAIL,{},table={},size={},msg={}.", stopWatch.getTime(),
+      log.error("META-STAT,REPLACE,FAIL,{},table={},size={},msg={}.", stopWatch.getTime(),
           tableName, rows.size(), e.getMessage(), e);
       throw new RuntimeException(e);
     }
-    this.SCHEDULER = new ScheduledThreadPoolExecutor(1,
-        new BasicThreadFactory.Builder().namingPattern("meta-sync-" + tableName + "-%d").build());
+    this.SCHEDULER = new ScheduledThreadPoolExecutor(1, new BasicThreadFactory.Builder()
+        .namingPattern("meta-sync-" + this.tableName + "-" + this.buildTime + "-%d").build());
   }
 
   public void startSync() {
@@ -123,33 +122,35 @@ public abstract class AbstractDimData implements DimData {
   }
 
   public void stopSync() {
-    synchronizing.compareAndSet(true, false);
+    if (synchronizing.compareAndSet(true, false)) {
+      this.SCHEDULER.shutdown();
+    }
   }
 
   private void doSync() {
     long newVersion = System.currentTimeMillis() / 1000 * 1000 - syncDelay();
     try {
       // 增量更新
-      log.info("[DIM-DATA-SYNC] sync start, table={}, currentVersion={}, newVersion={}.", tableName,
-          this.getVersion(), newVersion);
+      log.info("[META-DATA-SYNC] sync start, table={}, currentVersion={}, newVersion={}.",
+          tableName, this.getVersion(), newVersion);
       if (newVersion > this.getVersion()) {
-        List<DimDataRow> changeRows =
+        List<MetaDataRow> changeRows =
             this.synchronizer.sync(tableName, this.getVersion(), newVersion);
         long realVersion = this.getVersion();
         if (!changeRows.isEmpty()) {
-          realVersion = changeRows.stream().map(DimDataRow::getGmtModified)
-              .max(Comparator.comparingLong(l -> l)).get();
+          realVersion = changeRows.stream().map(MetaDataRow::getGmtModified)
+              .max(Comparator.comparingLong(l -> l)).get() + 1;
         }
         if (realVersion > this.getVersion()) {
           this.merge(realVersion, changeRows);
         }
         log.info(
-            "[DIM-DATA-SYNC] sync success, table={}, currentVersion={}, newVersion={}, realVersion={}, size={}.",
+            "[META-DATA-SYNC] sync success, table={}, currentVersion={}, newVersion={}, realVersion={}, size={}.",
             tableName, this.getVersion(), newVersion, realVersion, changeRows.size());
       }
     } catch (Exception e) {
       log.error(
-          "[DIM-DATA-SYNC] sync fail and keep version try next time, table={}, currentVersion={}, newVersion={}, msg={}.",
+          "[META-DATA-SYNC] sync fail and keep version try next time, table={}, currentVersion={}, newVersion={}, msg={}.",
           tableName, this.getVersion(), newVersion, e.getMessage(), e);
     }
   }
@@ -160,19 +161,20 @@ public abstract class AbstractDimData implements DimData {
   protected abstract long syncDelay();
 
   @Override
-  public Collection<DimDataRow> allRows() {
+  public Collection<MetaDataRow> allRows() {
     return rowsMap.values();
   }
 
   @Override
-  public Collection<DimColData> allCols() {
+  public Collection<MetaColData> allCols() {
     return colsMap.values();
   }
 
   @Override
-  public void merge(long version, List<DimDataRow> changeLogs) {
+  public void merge(long version, List<MetaDataRow> changeLogs) {
     if (version > this.version) {
       if (CollectionUtils.isEmpty(changeLogs)) {
+        setVersion(version);
         return;
       }
       synchronized (this) {
@@ -181,32 +183,39 @@ public abstract class AbstractDimData implements DimData {
           mergeRows(changeLogs);
           mergeCols(changeLogs);
           stopWatch.stop();
-          log.info("DIMSERVICE-STAT,MERGE,SUCCESS,{},table={},size={}.", stopWatch.getTime(),
-              tableName, changeLogs.size());
+          log.info(
+              "META-STAT,MERGE,SUCCESS,{},table={},oldVersion={},currentVersion={},size={},rows={},cols={}.",
+              stopWatch.getTime(), tableName, this.version, version,
+              CollectionUtils.size(changeLogs), CollectionUtils.size(rowsMap),
+              CollectionUtils.size(colsMap));
+          this.setVersion(version);
         } catch (Exception e) {
-          log.error("DIMSERVICE-STAT,MERGE,FAIL,{},table={},size={},msg={}.", stopWatch.getTime(),
-              tableName, changeLogs.size(), e.getMessage(), e);
+          log.error(
+              "META-STAT,MERGE,FAIL,{},table={},mergeVersion={},currentVersion={},size={},rows={},cols={},msg={}.",
+              stopWatch.getTime(), tableName, version, this.version,
+              CollectionUtils.size(changeLogs), CollectionUtils.size(rowsMap),
+              CollectionUtils.size(colsMap), e.getMessage(), e);
           throw new RuntimeException(e);
         }
       }
     } else {
-      log.warn("DIMSERVICE-STAT,MERGE,SKIP,table={},mergeVersion={},currentVersion={}.", tableName,
+      log.warn("META-STAT,MERGE,SKIP,table={},mergeVersion={},currentVersion={}.", tableName,
           version, this.version);
     }
   }
 
   @Override
-  public DimDataRow getByUk(Object pk) {
+  public MetaDataRow getByUk(Object pk) {
     return rowsMap.get(pk);
   }
 
   @Override
-  public DimDataRow getById(long id) {
+  public MetaDataRow getById(long id) {
     return idRowsMap.get(id);
   }
 
   @Override
-  public List<DimDataRow> getByPks(List<String> pks) {
+  public List<MetaDataRow> getByPks(List<String> pks) {
     if (CollectionUtils.isEmpty(pks)) {
       return Collections.emptyList();
     }
@@ -214,14 +223,14 @@ public abstract class AbstractDimData implements DimData {
   }
 
   @Override
-  public List<DimDataRow> getByIds(List<Long> ids) {
+  public List<MetaDataRow> getByIds(List<Long> ids) {
     if (CollectionUtils.isEmpty(ids)) {
       return Collections.emptyList();
     }
     return ids.stream().map(this::getById).filter(Objects::nonNull).collect(Collectors.toList());
   }
 
-  protected void mergeRows(List<DimDataRow> changeLogs) {
+  protected void mergeRows(List<MetaDataRow> changeLogs) {
     allLogs.addAll(changeLogs);
     changeLogs.forEach(changeLog -> {
       boolean deleted = changeLog.getDeleted();
@@ -233,37 +242,41 @@ public abstract class AbstractDimData implements DimData {
     });
   }
 
-  private void mergeCols(List<DimDataRow> changeLogs) {
+  private void mergeCols(List<MetaDataRow> changeLogs) {
     fillColsMapWithLabels(this.colsMap, changeLogs);
     appendLogsOnCols(this.colsMap, changeLogs);
   }
 
-  private void appendLogsOnCols(Map<String, DimColData> colsMap, List<DimDataRow> changeLogs) {
+  private void appendLogsOnCols(Map<String, MetaColData> colsMap, List<MetaDataRow> changeLogs) {
     if (colsMap != null && changeLogs != null) {
-      colsMap.values().parallelStream().filter(dimColData -> dimColData.getLoaded().get())
-          .forEach(dimColData -> dimColData.appendLogs(changeLogs));
+      DimForkJoinPool.get()
+          .submit(() -> colsMap.values().parallelStream()
+              .filter(metaColData -> metaColData.getLoaded().get())
+              .forEach(metaColData -> metaColData.appendLogs(changeLogs)))
+          .join();
     }
   }
 
-  protected void addOneRow(DimDataRow addLog) {
-    Object addPkVal = addLog.getUk();
-    rowsMap.put(addPkVal, addLog);
+  protected void addOneRow(MetaDataRow addLog) {
+    String addUkVal = addLog.getUk();
+    rowsMap.put(addUkVal, addLog);
     idRowsMap.put(addLog.getId(), addLog);
   }
 
-  protected void deleteOneRow(DimDataRow deleteLog) {
-    Object deletePkVal = deleteLog.getUk();
-    rowsMap.remove(deletePkVal);
+  protected void deleteOneRow(MetaDataRow deleteLog) {
+    String deleteUkVal = deleteLog.getUk();
+    rowsMap.remove(deleteUkVal);
     idRowsMap.remove(deleteLog.getId());
   }
 
-  private void fillColsMapWithLabels(Map<String, DimColData> colsMap, List<DimDataRow> rows) {
-    rows.parallelStream().forEach(row -> {
+  private void fillColsMapWithLabels(Map<String, MetaColData> colsMap, List<MetaDataRow> rows) {
+    DimForkJoinPool.get().submit(() -> rows.parallelStream().forEach(row -> {
       Map<String, Object> labelMap = row.getValues();
       if (labelMap != null) {
-        labelMap.forEach((k, v) -> colsMap.putIfAbsent(k, new DimColData(this.tableName, k, this)));
+        labelMap
+            .forEach((k, v) -> colsMap.putIfAbsent(k, new MetaColData(this.tableName, k, this)));
       }
-    });
+    })).join();
     log.info("fill cols with labels, rows={}, cols={}", CollectionUtils.size(rows),
         CollectionUtils.size(this.colsMap));
   }
@@ -280,7 +293,7 @@ public abstract class AbstractDimData implements DimData {
 
   public void setExpired() {
     this.expired = true;
-    log.info("dim data expired, table={}, buildTime={}, ttl={}, rowSize={}, logSize={}", tableName,
+    log.info("meta data expired, table={}, buildTime={}, ttl={}, rowSize={}, logSize={}", tableName,
         buildTime, ttl, rowsMap.size(), this.allLogs.size());
     this.stopSync();
 

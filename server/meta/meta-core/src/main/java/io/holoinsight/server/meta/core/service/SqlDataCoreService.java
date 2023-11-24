@@ -13,7 +13,7 @@ import io.holoinsight.server.meta.common.model.QueryExample;
 import io.holoinsight.server.meta.common.util.ConstModel;
 import io.holoinsight.server.meta.core.common.FilterUtil;
 import io.holoinsight.server.meta.dal.service.mapper.MetaDataMapper;
-import io.holoinsight.server.meta.dal.service.model.MetaData;
+import io.holoinsight.server.meta.dal.service.model.MetaDataDO;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.StopWatch;
 import org.slf4j.Logger;
@@ -50,12 +50,12 @@ public abstract class SqlDataCoreService extends AbstractDataCoreService {
     try {
       long cleanMetaDataDuration = getCleanMetaDataDuration();
       long end = System.currentTimeMillis() - cleanMetaDataDuration;
-      logger.info("[DIM-CLEAN] the cleaning task will clean up the data before {}", end);
+      logger.info("[META-CLEAN] the cleaning task will clean up the data before {}", end);
       Integer count = metaDataMapper.cleanMetaData(new Date(end));
-      logger.info("[DIM-CLEAN] cleaned up {} pieces of data before {}, cost: {}", count, end,
+      logger.info("[META-CLEAN] cleaned up {} pieces of data before {}, cost: {}", count, end,
           stopWatch.getTime());
     } catch (Exception e) {
-      logger.error("[DIM-CLEAN] an exception occurred in the cleanup task", e);
+      logger.error("[META-CLEAN] an exception occurred in the cleanup task", e);
     }
   }
 
@@ -63,17 +63,17 @@ public abstract class SqlDataCoreService extends AbstractDataCoreService {
     this.metaDataMapper = metaDataMapper;
     this.superCacheService = superCacheService;
     int initialDelay = new Random().nextInt(CLEAN_TASK_PERIOD);
-    logger.info("[DIM-CLEAN] clean task will scheduled after {}", initialDelay);
+    logger.info("[META-CLEAN] clean task will scheduled after {}", initialDelay);
     cleanMeatExecutor.scheduleAtFixedRate(this::cleanMeta, initialDelay, CLEAN_TASK_PERIOD,
         TimeUnit.SECONDS);
   }
 
   protected Integer queryChangedMeta(Date start, Date end, Boolean containDeleted,
-      Consumer<List<MetaData>> listConsumer) {
+      Consumer<List<MetaDataDO>> listConsumer) {
     int offset = 0;
     int count = 0;
     while (true) {
-      List<MetaData> metaDataList =
+      List<MetaDataDO> metaDataList =
           metaDataMapper.queryChangedMeta(start, end, containDeleted, offset, LIMIT);
       offset += LIMIT;
       if (metaDataList.isEmpty()) {
@@ -85,12 +85,12 @@ public abstract class SqlDataCoreService extends AbstractDataCoreService {
     return count;
   }
 
-  protected List<MetaData> queryTableChangedMeta(String tableName, Date start, Date end,
+  protected List<MetaDataDO> queryTableChangedMeta(String tableName, Date start, Date end,
       Boolean containDeleted) {
     int offset = 0;
-    List<MetaData> result = new ArrayList<>();
+    List<MetaDataDO> result = new ArrayList<>();
     while (true) {
-      List<MetaData> metaDataList = metaDataMapper.queryTableChangedMeta(tableName, start, end,
+      List<MetaDataDO> metaDataList = metaDataMapper.queryTableChangedMeta(tableName, start, end,
           containDeleted, offset, LIMIT);
       offset += LIMIT;
       if (metaDataList.isEmpty()) {
@@ -115,7 +115,7 @@ public abstract class SqlDataCoreService extends AbstractDataCoreService {
         String uk = item.get(ConstModel.default_pk).toString();
         ukToUpdateOrInsertRow.put(uk, item);
       });
-      List<MetaData> metaDataList =
+      List<MetaDataDO> metaDataList =
           metaDataMapper.selectByUks(tableName, ukToUpdateOrInsertRow.keySet());
       Pair<Integer, Integer> sameAndExistSize;
       if (!CollectionUtils.isEmpty(metaDataList)) {
@@ -143,10 +143,10 @@ public abstract class SqlDataCoreService extends AbstractDataCoreService {
       return 0;
     }
     List<String> addedUks = Lists.newArrayList();
-    List<MetaData> metaDataList = Lists.newArrayList();
+    List<MetaDataDO> metaDataList = Lists.newArrayList();
     ukToUpdateOrInsertRow.forEach((uk, row) -> {
       addedUks.add(uk);
-      MetaData metaData = new MetaData();
+      MetaDataDO metaData = new MetaDataDO();
       metaData.setUk(uk);
       metaData.setTableName(tableName);
       metaData.setDeleted(0);
@@ -167,11 +167,11 @@ public abstract class SqlDataCoreService extends AbstractDataCoreService {
     return addedUks.size();
   }
 
-  private Pair<Integer, Integer> doUpdate(String tableName, List<MetaData> metaDataList,
+  private Pair<Integer, Integer> doUpdate(String tableName, List<MetaDataDO> metaDataList,
       Map<String, Map<String, Object>> ukToUpdateOrInsertRow) {
     int existUkSize = 0;
     int sameUkSize = 0;
-    for (MetaData metaData : metaDataList) {
+    for (MetaDataDO metaData : metaDataList) {
       String uk = metaData.getUk();
       existUkSize++;
       Map<String, Object> updateOrInsertRow = ukToUpdateOrInsertRow.remove(uk);
@@ -207,7 +207,7 @@ public abstract class SqlDataCoreService extends AbstractDataCoreService {
    * @param updateOrInsertRow
    * @return
    */
-  private Pair<Boolean, Object> sameWithDbAnnotations(MetaData metaData,
+  private Pair<Boolean, Object> sameWithDbAnnotations(MetaDataDO metaData,
       Map<String, Object> updateOrInsertRow) {
     Object annotations = updateOrInsertRow.remove(ConstModel.ANNOTATIONS);
     Map<String, Object> extraMap = null;

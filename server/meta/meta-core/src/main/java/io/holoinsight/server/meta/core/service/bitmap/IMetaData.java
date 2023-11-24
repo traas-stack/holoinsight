@@ -1,12 +1,13 @@
-/**
- * Alipay.com Inc. Copyright (c) 2004-2019 All Rights Reserved.
+/*
+ * Copyright 2022 Holoinsight Project Authors. Licensed under Apache-2.0.
  */
+
 package io.holoinsight.server.meta.core.service.bitmap;
 
 import java.util.Collection;
 import java.util.List;
 
-public interface DimData {
+public interface IMetaData {
 
   /**
    * 维表名称
@@ -21,21 +22,21 @@ public interface DimData {
    *
    * @return
    */
-  Collection<DimDataRow> allRows();
+  Collection<MetaDataRow> allRows();
 
   /**
    * 获取所有维度数据列
    *
    * @return
    */
-  Collection<DimColData> allCols();
+  Collection<MetaColData> allCols();
 
   /**
    * 增量合并
    *
    * @param changeLogs
    */
-  void merge(long version, List<DimDataRow> changeLogs);
+  void merge(long version, List<MetaDataRow> changeLogs);
 
   /**
    * 是否过期
@@ -50,7 +51,7 @@ public interface DimData {
    * @param pk
    * @return
    */
-  DimDataRow getByUk(Object pk);
+  MetaDataRow getByUk(Object pk);
 
   /**
    * 根据Id查询
@@ -58,7 +59,7 @@ public interface DimData {
    * @param id
    * @return
    */
-  DimDataRow getById(long id);
+  MetaDataRow getById(long id);
 
   /**
    * 根据主键批量查询
@@ -66,7 +67,7 @@ public interface DimData {
    * @param pks
    * @return
    */
-  List<DimDataRow> getByPks(List<String> pks);
+  List<MetaDataRow> getByPks(List<String> pks);
 
   /**
    * 根据id批量查询
@@ -74,6 +75,6 @@ public interface DimData {
    * @param ids
    * @return
    */
-  List<DimDataRow> getByIds(List<Long> ids);
+  List<MetaDataRow> getByIds(List<Long> ids);
 
 }

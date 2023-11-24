@@ -3,7 +3,6 @@
  */
 package io.holoinsight.server.meta.core.common;
 
-import java.lang.reflect.Array;
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.function.Function;
@@ -15,7 +14,7 @@ import com.google.common.collect.Maps;
 import io.holoinsight.server.common.J;
 import io.holoinsight.server.meta.common.model.QueryExample;
 import io.holoinsight.server.meta.core.service.bitmap.condition.AndCondition;
-import io.holoinsight.server.meta.core.service.bitmap.condition.DimCondition;
+import io.holoinsight.server.meta.core.service.bitmap.condition.MetaCondition;
 import io.holoinsight.server.meta.core.service.bitmap.condition.OrCondition;
 import org.springframework.util.CollectionUtils;
 
@@ -36,11 +35,11 @@ public class FilterUtil {
   public static final String EQ_FILTERS_KEY = "eqFilters";
   public static final String IN_FILTERS_KEY = "inFilters";
 
-  public static DimCondition buildDimCondition(QueryExample queryExample,
+  public static MetaCondition buildDimCondition(QueryExample queryExample,
       Boolean containRegexFilters) {
     Map<String, Map<String, Object>> filters = buildFilters(queryExample, containRegexFilters);
-    DimCondition dimCondition = new DimCondition();
-    OrCondition orCondition = dimCondition.or();
+    MetaCondition metaCondition = new MetaCondition();
+    OrCondition orCondition = metaCondition.or();
     if (CollectionUtils.isEmpty(filters)) {
       AndCondition andCondition = orCondition.and();
       andCondition.setAll(true);
@@ -76,7 +75,7 @@ public class FilterUtil {
       andCondition.setExpress(new String[] {UK_FIELD});
       andCondition.setValueRange(new ArrayList<>(queryExample.getRowKeys()));
     }
-    return dimCondition;
+    return metaCondition;
   }
 
   public static Map<String, Map<String, Object>> buildFilters(QueryExample queryExample,

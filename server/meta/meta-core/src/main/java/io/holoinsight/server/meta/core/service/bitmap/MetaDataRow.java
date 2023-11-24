@@ -1,6 +1,7 @@
-/**
- * Alipay.com Inc. Copyright (c) 2004-2019 All Rights Reserved.
+/*
+ * Copyright 2022 Holoinsight Project Authors. Licensed under Apache-2.0.
  */
+
 package io.holoinsight.server.meta.core.service.bitmap;
 
 import lombok.*;
@@ -12,17 +13,15 @@ import java.util.Map;
 /**
  * 表示一行维度数据 (供cache使用)
  */
-@Getter
-@Setter
-@ToString(callSuper = true)
+@Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Slf4j
-public class DimDataRow implements Serializable {
+public class MetaDataRow implements Serializable {
 
   private static final long serialVersionUID = 5919391884128700188L;
 
-  private String dimTable;
+  private String tableName;
 
   private long id;
 

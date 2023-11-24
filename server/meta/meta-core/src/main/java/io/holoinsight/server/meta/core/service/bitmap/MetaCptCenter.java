@@ -1,12 +1,13 @@
-/**
- * Alipay.com Inc. Copyright (c) 2004-2019 All Rights Reserved.
+/*
+ * Copyright 2022 Holoinsight Project Authors. Licensed under Apache-2.0.
  */
+
 package io.holoinsight.server.meta.core.service.bitmap;
 
 import com.google.common.collect.Sets;
 import com.googlecode.javaewah.EWAHCompressedBitmap;
 import io.holoinsight.server.meta.core.service.bitmap.condition.AndCondition;
-import io.holoinsight.server.meta.core.service.bitmap.condition.DimCondition;
+import io.holoinsight.server.meta.core.service.bitmap.condition.MetaCondition;
 import io.holoinsight.server.meta.core.service.bitmap.condition.OrCondition;
 import io.holoinsight.server.meta.core.service.bitmap.execption.NotForeignKeyException;
 import lombok.extern.slf4j.Slf4j;
@@ -24,8 +25,8 @@ import static io.holoinsight.server.meta.core.service.bitmap.BitmapDataCoreServi
 /**
  * 元数据计算中心
  *
- * @author wanpeng.xwp
- * @version : MetaCptCenter.java, v 0.1 2019年12月05日 20:16 wanpeng.xwp Exp $
+ * @author xiangwanpeng
+ * @version : MetaCptCenter.java, v 0.1 2019年12月05日 20:16 xiangwanpeng Exp $
  */
 @Slf4j
 @Service
@@ -41,13 +42,13 @@ public class MetaCptCenter {
    * @param condition 复合查询条件
    * @return 符合条件的维度数据行
    */
-  public boolean match(String tableName, DimCondition condition, Object ukVal,
+  public boolean match(String tableName, MetaCondition condition, Object ukVal,
       boolean containsDelete) throws NotForeignKeyException {
-    AbstractDimData dimData = bitmapDataCoreService.getMetaData(tableName);
+    AbstractMetaData metaData = bitmapDataCoreService.getMetaData(tableName);
     EWAHCompressedBitmap conditionBitmap =
-        computeBitmapByCondition(tableName, dimData, condition, containsDelete);
+        computeBitmapByCondition(tableName, metaData, condition, containsDelete);
     EWAHCompressedBitmap pkBitmap =
-        computeBitmapByIndex(dimData, Collections.singletonMap(UK_FIELD, ukVal));
+        computeBitmapByIndex(metaData, Collections.singletonMap(UK_FIELD, ukVal));
     return !(conditionBitmap == null || pkBitmap == null
         || conditionBitmap.and(pkBitmap).isEmpty());
   }
@@ -58,12 +59,12 @@ public class MetaCptCenter {
    * @param condition 复合查询条件
    * @return 符合条件的维度数据行
    */
-  public boolean matchByIndex(String tableName, DimCondition condition, Map<String, Object> index,
+  public boolean matchByIndex(String tableName, MetaCondition condition, Map<String, Object> index,
       boolean containsDelete) throws NotForeignKeyException {
-    AbstractDimData dimData = bitmapDataCoreService.getMetaData(tableName);
+    AbstractMetaData metaData = bitmapDataCoreService.getMetaData(tableName);
     EWAHCompressedBitmap conditionBitmap =
-        computeBitmapByCondition(tableName, dimData, condition, containsDelete);
-    EWAHCompressedBitmap indexBitmap = computeBitmapByIndex(dimData, index);
+        computeBitmapByCondition(tableName, metaData, condition, containsDelete);
+    EWAHCompressedBitmap indexBitmap = computeBitmapByIndex(metaData, index);
     return !(conditionBitmap == null || indexBitmap == null
         || conditionBitmap.and(indexBitmap).isEmpty());
   }
@@ -75,12 +76,12 @@ public class MetaCptCenter {
    * @param condition 复合查询条件
    * @return 符合条件的维度数据行
    */
-  public List<DimDataRow> computeByCondition(String tableName, DimCondition condition,
+  public List<MetaDataRow> computeByCondition(String tableName, MetaCondition condition,
       boolean containsDelete) throws NotForeignKeyException {
-    AbstractDimData dimData = bitmapDataCoreService.getMetaData(tableName);
+    AbstractMetaData metaData = bitmapDataCoreService.getMetaData(tableName);
     EWAHCompressedBitmap resultBitmap =
-        computeBitmapByCondition(tableName, dimData, condition, containsDelete);
-    return computeByBitmap(dimData, resultBitmap, containsDelete);
+        computeBitmapByCondition(tableName, metaData, condition, containsDelete);
+    return computeByBitmap(metaData, resultBitmap, containsDelete);
   }
 
   /**
@@ -89,33 +90,33 @@ public class MetaCptCenter {
    * @param condition 查询条件
    * @return 符合条件的维度数据行
    */
-  public List<DimDataRow> computeByIndex(String tableName, Map<String, Object> condition,
+  public List<MetaDataRow> computeByIndex(String tableName, Map<String, Object> condition,
       boolean containsDelete) {
-    AbstractDimData dimData = bitmapDataCoreService.getMetaData(tableName);
+    AbstractMetaData metaData = bitmapDataCoreService.getMetaData(tableName);
     if (condition == null || condition.isEmpty()) {
       throw new IllegalArgumentException(
           String.format("invalid query condition, table=%s, condition=%s.", tableName, condition));
     }
-    EWAHCompressedBitmap resultBitmap = computeBitmapByIndex(dimData, condition);
-    return computeByBitmap(dimData, resultBitmap, containsDelete);
+    EWAHCompressedBitmap resultBitmap = computeBitmapByIndex(metaData, condition);
+    return computeByBitmap(metaData, resultBitmap, containsDelete);
   }
 
   /**
    * 模糊查询
    *
    * @param tableName
-   * @param dimData
+   * @param metaData
    * @param condition
    * @param containsDelete
    * @return
    */
-  public List<DimDataRow> fuzzyCompute(String tableName, AbstractDimData dimData,
+  public List<MetaDataRow> fuzzyCompute(String tableName, AbstractMetaData metaData,
       Map<String, String> condition, boolean containsDelete) {
-    EWAHCompressedBitmap resultBitmap = computeFuzzyBitmap(tableName, dimData, condition, false);
-    return resultBitmap == null ? null : computeByBitmap(dimData, resultBitmap, containsDelete);
+    EWAHCompressedBitmap resultBitmap = computeFuzzyBitmap(tableName, metaData, condition, false);
+    return resultBitmap == null ? null : computeByBitmap(metaData, resultBitmap, containsDelete);
   }
 
-  private EWAHCompressedBitmap computeFuzzyBitmap(String tableName, AbstractDimData dimData,
+  private EWAHCompressedBitmap computeFuzzyBitmap(String tableName, AbstractMetaData metaData,
       Map<String, String> condition, boolean isRegex) {
     if (condition == null) {
       return null;
@@ -124,11 +125,11 @@ public class MetaCptCenter {
     for (Entry<String, String> entry : condition.entrySet()) {
       String key = entry.getKey();
       String val = entry.getValue();
-      DimColData dimColData = dimData.getColsMap().get(key);
-      if (dimColData == null) {
+      MetaColData metaColData = metaData.getColsMap().get(key);
+      if (metaColData == null) {
         return emptyBitmap();
       } else {
-        List<EWAHCompressedBitmap> batchFuzzyBitmaps = dimColData.fuzzyGetBitmap(val, isRegex);
+        List<EWAHCompressedBitmap> batchFuzzyBitmaps = metaColData.fuzzyGetBitmap(val, isRegex);
         fuzzyBitmaps.addAll(batchFuzzyBitmaps);
       }
     }
@@ -136,45 +137,45 @@ public class MetaCptCenter {
     return resultBitmap;
   }
 
-  public List<DimDataRow> computeByBitmap(AbstractDimData dimData,
+  public List<MetaDataRow> computeByBitmap(AbstractMetaData metaData,
       EWAHCompressedBitmap resultBitmap, boolean containsDelete) {
     if (containsDelete) {
-      return computeByBitmapWithDelete(dimData, resultBitmap);
+      return computeByBitmapWithDelete(metaData, resultBitmap);
     } else {
-      return computeByBitmapWithoutDelete(dimData, resultBitmap);
+      return computeByBitmapWithoutDelete(metaData, resultBitmap);
     }
   }
 
-  public List<DimDataRow> computeByBitmapWithDelete(AbstractDimData dimData,
+  public List<MetaDataRow> computeByBitmapWithDelete(AbstractMetaData metaData,
       EWAHCompressedBitmap resultBitmap) {
-    List<DimDataRow> resultDimDataRows = new ArrayList<>();
+    List<MetaDataRow> resultMetaDataRows = new ArrayList<>();
     for (int i : resultBitmap.toArray()) {
-      DimDataRow dimDataRow = dimData.getAllLogs().get(i);
-      resultDimDataRows.add(dimDataRow);
+      MetaDataRow metaDataRow = metaData.getAllLogs().get(i);
+      resultMetaDataRows.add(metaDataRow);
     }
-    return resultDimDataRows;
+    return resultMetaDataRows;
   }
 
-  public List<DimDataRow> computeByBitmapWithoutDelete(AbstractDimData dimData,
+  public List<MetaDataRow> computeByBitmapWithoutDelete(AbstractMetaData metaData,
       EWAHCompressedBitmap resultBitmap) {
-    Map<Object, DimDataRow> resultDimDataRows = new HashMap<>();
+    Map<Object, MetaDataRow> resultmetaDataRows = new HashMap<>();
     for (int i : resultBitmap.toArray()) {
-      DimDataRow dimDataRow = dimData.getAllLogs().get(i);
-      if (dimDataRow.equals(dimData.getByUk(dimDataRow.getUk()))) {
-        resultDimDataRows.put(dimDataRow.getUk(), dimDataRow);
+      MetaDataRow metaDataRow = metaData.getAllLogs().get(i);
+      if (metaDataRow.equals(metaData.getByUk(metaDataRow.getUk()))) {
+        resultmetaDataRows.put(metaDataRow.getUk(), metaDataRow);
       }
     }
-    return new ArrayList<>(resultDimDataRows.values());
+    return new ArrayList<>(resultmetaDataRows.values());
   }
 
   /**
    * 计算符合条件的下标位图
    *
-   * @param dimData 维度数据
+   * @param metaData 维度数据
    * @param condition 普通查询条件，各组条件之间是与的关系
    * @return 符合条件的下标位图
    */
-  public EWAHCompressedBitmap computeBitmapByIndex(AbstractDimData dimData,
+  public EWAHCompressedBitmap computeBitmapByIndex(AbstractMetaData metaData,
       Map<String, Object> condition) {
     if (condition == null || condition.isEmpty()) {
       return emptyBitmap();
@@ -183,11 +184,11 @@ public class MetaCptCenter {
     for (Entry<String, Object> entry : condition.entrySet()) {
       String key = entry.getKey();
       Object val = entry.getValue();
-      DimColData dimColData = dimData.getColsMap().get(key);
-      if (dimColData == null) {
+      MetaColData metaColData = metaData.getColsMap().get(key);
+      if (metaColData == null) {
         return emptyBitmap();
       } else {
-        EWAHCompressedBitmap bitmap = computeBitmapSingle(dimData, dimColData, key, val);
+        EWAHCompressedBitmap bitmap = computeBitmapSingle(metaData, metaColData, key, val);
         andBitmaps.add(bitmap);
       }
     }
@@ -197,21 +198,21 @@ public class MetaCptCenter {
   /**
    * 查询一个条件
    *
-   * @param dimData 维度数据
-   * @param dimColData 维度列数据
+   * @param metaData 维度数据
+   * @param metaColData 维度列数据
    * @param key 条件列
    * @param val 条件值
    * @return 符合条件的下标位图
    */
-  private EWAHCompressedBitmap computeBitmapSingle(AbstractDimData dimData, DimColData dimColData,
-      String key, Object val) {
+  private EWAHCompressedBitmap computeBitmapSingle(AbstractMetaData metaData,
+      MetaColData metaColData, String key, Object val) {
     if (val == null) {
       return emptyBitmap();
     }
     if (val instanceof List) {
-      return computeBitmapBatch(dimData, dimColData, key, new HashSet<>((List<Object>) val));
+      return computeBitmapBatch(metaData, metaColData, key, new HashSet<>((List<Object>) val));
     } else {
-      EWAHCompressedBitmap bitmap = dimColData.getBitmapOrDefault(val, emptyBitmap());
+      EWAHCompressedBitmap bitmap = metaColData.getBitmapOrDefault(val, emptyBitmap());
       return bitmap;
     }
   }
@@ -219,27 +220,27 @@ public class MetaCptCenter {
   /**
    * 查询一批条件
    *
-   * @param dimData 维度数据
-   * @param dimColData 维度列数据
+   * @param metaData 维度数据
+   * @param metaColData 维度列数据
    * @param key 条件列
    * @param vals 条件值集合，集合内条件值之间是或的关系
    * @return 符合条件的下标位图
    */
-  private EWAHCompressedBitmap computeBitmapBatch(AbstractDimData dimData, DimColData dimColData,
-      String key, Set<Object> vals) {
+  private EWAHCompressedBitmap computeBitmapBatch(AbstractMetaData metaData,
+      MetaColData metaColData, String key, Set<Object> vals) {
     int valsCount = vals.size();
-    int totalCount = dimColData.getCount();
+    int totalCount = metaColData.getCount();
     double quotient = (double) valsCount / (double) totalCount;
     // 批量查询的val超过总val量的70%，正向查询可能导致海量的bitmap计算，改为反向查询
     if (quotient > 0.7) {
-      Set<Object> inverseVals = Sets.difference(dimColData.getVal2BitMap().keySet(), vals);
+      Set<Object> inverseVals = Sets.difference(metaColData.getVal2BitMap().keySet(), vals);
       EWAHCompressedBitmap inverseBitmap =
-          computeBitmapBatch(dimData, dimColData, key, inverseVals);
-      return computeNotBitmap(inverseBitmap, dimData);
+          computeBitmapBatch(metaData, metaColData, key, inverseVals);
+      return computeNotBitmap(inverseBitmap, metaData);
     } else {
       List<EWAHCompressedBitmap> orBitmaps = new ArrayList<>();
       for (Object val : vals) {
-        EWAHCompressedBitmap bitmap = computeBitmapSingle(dimData, dimColData, key, val);
+        EWAHCompressedBitmap bitmap = computeBitmapSingle(metaData, metaColData, key, val);
         orBitmaps.add(bitmap);
       }
       return bitmapOr(orBitmaps);
@@ -258,11 +259,11 @@ public class MetaCptCenter {
   /**
    * 获取全置位1的bitmap
    *
-   * @param dimData
+   * @param metaData
    * @return
    */
-  private EWAHCompressedBitmap computeFullBitmap(AbstractDimData dimData) {
-    int size = dimData.getAllLogs().size();
+  private EWAHCompressedBitmap computeFullBitmap(AbstractMetaData metaData) {
+    int size = metaData.getAllLogs().size();
     if (size == 0) {
       return emptyBitmap();
     }
@@ -275,12 +276,12 @@ public class MetaCptCenter {
    * 取反
    *
    * @param bitmap
-   * @param dimData
+   * @param metaData
    * @return
    */
   private EWAHCompressedBitmap computeNotBitmap(EWAHCompressedBitmap bitmap,
-      AbstractDimData dimData) {
-    EWAHCompressedBitmap fullBitmap = computeFullBitmap(dimData);
+      AbstractMetaData metaData) {
+    EWAHCompressedBitmap fullBitmap = computeFullBitmap(metaData);
     return EWAHCompressedBitmap.xor(fullBitmap, bitmap);
   }
 
@@ -312,9 +313,9 @@ public class MetaCptCenter {
     }
   }
 
-  private EWAHCompressedBitmap computeBitmapByCondition(String tableName, AbstractDimData dimData,
-      DimCondition dimCondition, boolean containsDelete) throws NotForeignKeyException {
-    List<OrCondition> orConditions = dimCondition.getOrConditions();
+  private EWAHCompressedBitmap computeBitmapByCondition(String tableName, AbstractMetaData metaData,
+      MetaCondition metaCondition, boolean containsDelete) throws NotForeignKeyException {
+    List<OrCondition> orConditions = metaCondition.getOrConditions();
     List<EWAHCompressedBitmap> orBitmaps = new ArrayList<>();
     if (CollectionUtils.isNotEmpty(orConditions)) {
       for (OrCondition orCondition : orConditions) {
@@ -323,7 +324,7 @@ public class MetaCptCenter {
         if (CollectionUtils.isNotEmpty(andConditions)) {
           for (AndCondition andCondition : andConditions) {
             EWAHCompressedBitmap andBitmap =
-                computeBitmapByOneCondition(tableName, dimData, andCondition, containsDelete);
+                computeBitmapByOneCondition(tableName, metaData, andCondition, containsDelete);
             andBitmaps.add(andBitmap);
           }
         }
@@ -336,11 +337,11 @@ public class MetaCptCenter {
   }
 
   private EWAHCompressedBitmap computeBitmapByOneCondition(String tableName,
-      AbstractDimData dimData, AndCondition andCondition, boolean containsDelete)
+      AbstractMetaData metaData, AndCondition andCondition, boolean containsDelete)
       throws NotForeignKeyException {
     EWAHCompressedBitmap resultBitmap;
     if (andCondition.isAll()) {
-      resultBitmap = computeFullBitmap(dimData);
+      resultBitmap = computeFullBitmap(metaData);
     } else if (andCondition.isRegex()) {
       String[] express = andCondition.getExpress();
       if (express == null || express.length > 1) {
@@ -352,14 +353,14 @@ public class MetaCptCenter {
         throw new IllegalArgumentException("REGEX not support multi values");
       }
       Object val = vals.get(0);
-      resultBitmap = computeFuzzyBitmap(tableName, dimData,
+      resultBitmap = computeFuzzyBitmap(tableName, metaData,
           Collections.singletonMap(key, String.valueOf(val)), true);
     } else {
-      resultBitmap = computeBitmapByRange(tableName, dimData, andCondition.getValueRange(),
+      resultBitmap = computeBitmapByRange(tableName, metaData, andCondition.getValueRange(),
           containsDelete, andCondition.getExpress());
     }
     if (andCondition.isNot()) {
-      resultBitmap = computeNotBitmap(resultBitmap, dimData);
+      resultBitmap = computeNotBitmap(resultBitmap, metaData);
     }
     return resultBitmap;
   }
@@ -368,30 +369,30 @@ public class MetaCptCenter {
    * 根据path路径计算位图
    *
    * @param tableName
-   * @param dimData
+   * @param metaData
    * @param values
    * @param tag
    * @return
    * @throws NotForeignKeyException
    */
-  private EWAHCompressedBitmap computeBitmapByRange(String tableName, AbstractDimData dimData,
+  private EWAHCompressedBitmap computeBitmapByRange(String tableName, AbstractMetaData metaData,
       List<Object> values, boolean containsDelete, String... tag) throws NotForeignKeyException {
     String childName = tag[0];
     if (tag.length == 1) {
-      return computeBitmapByIndex(dimData, Collections.singletonMap(childName, values));
+      return computeBitmapByIndex(metaData, Collections.singletonMap(childName, values));
     }
     ForeignKey foreignKey = bitmapDataCoreService.getForeignKey(tableName, childName);
     if (foreignKey == null) {
       throw new NotForeignKeyException(tableName, childName);
     }
     String refTable = foreignKey.getRefTable();
-    AbstractDimData refDimData = bitmapDataCoreService.getMetaData(refTable);
-    EWAHCompressedBitmap childBitmap = computeBitmapByRange(refTable, refDimData, values,
+    AbstractMetaData refmetaData = bitmapDataCoreService.getMetaData(refTable);
+    EWAHCompressedBitmap childBitmap = computeBitmapByRange(refTable, refmetaData, values,
         containsDelete, Arrays.copyOfRange(tag, 1, tag.length));
-    List<DimDataRow> childDimDataRows = computeByBitmap(refDimData, childBitmap, containsDelete);
+    List<MetaDataRow> childMetaDataRows = computeByBitmap(refmetaData, childBitmap, containsDelete);
     List<Object> newValues =
-        childDimDataRows.parallelStream().map(DimDataRow::getUk).collect(Collectors.toList());
-    return computeBitmapByRange(tableName, dimData, newValues, containsDelete, childName);
+        childMetaDataRows.parallelStream().map(MetaDataRow::getUk).collect(Collectors.toList());
+    return computeBitmapByRange(tableName, metaData, newValues, containsDelete, childName);
   }
 
 }

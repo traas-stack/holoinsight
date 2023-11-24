@@ -13,14 +13,13 @@ import com.google.common.util.concurrent.MoreExecutors;
 import io.holoinsight.server.common.J;
 import io.holoinsight.server.common.service.SuperCacheService;
 import io.holoinsight.server.meta.common.model.QueryExample;
-import io.holoinsight.server.meta.common.util.ConstModel;
 import io.holoinsight.server.meta.core.common.DimForkJoinPool;
 import io.holoinsight.server.meta.core.common.FilterUtil;
 import io.holoinsight.server.meta.core.service.SqlDataCoreService;
-import io.holoinsight.server.meta.core.service.bitmap.condition.DimCondition;
+import io.holoinsight.server.meta.core.service.bitmap.condition.MetaCondition;
 import io.holoinsight.server.meta.core.service.bitmap.execption.NotForeignKeyException;
 import io.holoinsight.server.meta.dal.service.mapper.MetaDataMapper;
-import io.holoinsight.server.meta.dal.service.model.MetaData;
+import io.holoinsight.server.meta.dal.service.model.MetaDataDO;
 import org.apache.commons.lang3.concurrent.BasicThreadFactory;
 import org.apache.commons.lang3.time.StopWatch;
 import org.slf4j.Logger;
@@ -45,15 +44,16 @@ public class BitmapDataCoreService extends SqlDataCoreService {
       new ThreadPoolExecutor(8, 8, 60L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<>(),
           new BasicThreadFactory.Builder().namingPattern("meta-reload-%d").build()));
 
-  private LoadingCache<String, AbstractDimData> metaDatas = CacheBuilder.newBuilder()
-      .expireAfterAccess(60, TimeUnit.MINUTES).build(new CacheLoader<String, AbstractDimData>() {
+  private LoadingCache<String, AbstractMetaData> metaDatas = CacheBuilder.newBuilder()
+      .expireAfterAccess(60, TimeUnit.MINUTES).build(new CacheLoader<String, AbstractMetaData>() {
         @Override
-        public AbstractDimData load(String tableName) {
+        public AbstractMetaData load(String tableName) {
           return buildMetaData(tableName);
         }
 
         @Override
-        public ListenableFuture<AbstractDimData> reload(String tableName, AbstractDimData oldData) {
+        public ListenableFuture<AbstractMetaData> reload(String tableName,
+            AbstractMetaData oldData) {
           return RELOADER.submit(() -> buildMetaData(tableName));
         }
       });
@@ -67,36 +67,36 @@ public class BitmapDataCoreService extends SqlDataCoreService {
     super(metaDataMapper, superCacheService);
   }
 
-  private AbstractDimData buildMetaData(String tableName) {
+  private AbstractMetaData buildMetaData(String tableName) {
     long version = System.currentTimeMillis() / 1000 * 1000 - 1000;
-    List<DimDataRow> rows = fromMetaDatas(loadFromDB(tableName, version));
-    return new ServerDimData(tableName, version, rows,
+    List<MetaDataRow> rows = fromMetaDatas(loadFromDB(tableName, version));
+    return new ServerMetaData(tableName, version, rows,
         (table, start, end) -> fromMetaDatas(BitmapDataCoreService.super.queryTableChangedMeta(
-            table, new Date(start), new Date(end), false)));
+            table, new Date(start), new Date(end), true)));
   }
 
-  private List<MetaData> loadFromDB(String tableName, long version) {
+  private List<MetaDataDO> loadFromDB(String tableName, long version) {
     return queryTableChangedMeta(tableName, new Date(0), new Date(version), false);
   }
 
-  public AbstractDimData getMetaData(String tableName) {
-    AbstractDimData dimData = this.metaDatas.getUnchecked(tableName);
-    if (dimData.isExpired()) {
+  public AbstractMetaData getMetaData(String tableName) {
+    AbstractMetaData metaData = this.metaDatas.getUnchecked(tableName);
+    if (metaData.isExpired()) {
       this.metaDatas.refresh(tableName);
     }
-    Assert.notNull(dimData, String.format("table not found: %s", tableName));
-    return dimData;
+    Assert.notNull(metaData, String.format("table not found: %s", tableName));
+    return metaData;
   }
 
   public ForeignKey getForeignKey(String tableName, String field) {
     return foreignKeys.getOrDefault(tableName, new HashMap<>()).get(field);
   }
 
-  private List<DimDataRow> fromMetaDatas(List<MetaData> metaDatas) {
+  private List<MetaDataRow> fromMetaDatas(List<MetaDataDO> metaDatas) {
     return DimForkJoinPool.get().submit(() -> metaDatas.parallelStream().map(metaData -> {
       Map<String, Object> values = J.toMap(metaData.getJson());
       values.put(UK_FIELD, metaData.getUk());
-      return new DimDataRow(metaData.getTableName(), metaData.getId(), metaData.getUk(), values,
+      return new MetaDataRow(metaData.getTableName(), metaData.getId(), metaData.getUk(), values,
           metaData.getDeleted() != null && metaData.getDeleted() == 1,
           metaData.getGmtModified().getTime());
     }).collect(Collectors.toList())).join();
@@ -111,12 +111,12 @@ public class BitmapDataCoreService extends SqlDataCoreService {
   public List<Map<String, Object>> queryByTable(String tableName, List<String> rowKeys) {
     logger.info("[queryByTable] start, table={}, rowsKeys={}.", tableName, rowKeys);
     StopWatch stopWatch = StopWatch.createStarted();
-    AbstractDimData dimData = getMetaData(tableName);
-    Collection<DimDataRow> rows;
+    AbstractMetaData metaData = getMetaData(tableName);
+    Collection<MetaDataRow> rows;
     if (!CollectionUtils.isEmpty(rowKeys)) {
-      rows = dimData.getByPks(rowKeys);
+      rows = metaData.getByPks(rowKeys);
     } else {
-      rows = dimData.getRowsMap().values();
+      rows = metaData.getRowsMap().values();
     }
     List<Map<String, Object>> result = toValMap(rows);
     logger.info("[queryByTable] finish, table={}, records={}, cost={}.", tableName, result.size(),
@@ -127,13 +127,12 @@ public class BitmapDataCoreService extends SqlDataCoreService {
   @Override
   public List<Map<String, Object>> queryByPks(String tableName, List<String> pkValList) {
     logger.info("[queryByPks] start, table={}, pkValList={}.", tableName, pkValList.size());
-    AbstractDimData dimData = getMetaData(tableName);
-    Collection<DimDataRow> rows;
+    AbstractMetaData metaData = getMetaData(tableName);
     if (CollectionUtils.isEmpty(pkValList)) {
       return Lists.newArrayList();
     }
     StopWatch stopWatch = StopWatch.createStarted();
-    List<Map<String, Object>> result = toValMap(dimData.getByPks(pkValList));
+    List<Map<String, Object>> result = toValMap(metaData.getByPks(pkValList));
     logger.info("[queryByPks] finish, table={}, records={}, cost={}.", tableName, result.size(),
         stopWatch.getTime());
     return result;
@@ -144,10 +143,10 @@ public class BitmapDataCoreService extends SqlDataCoreService {
     logger.info("[queryByExample] start, table={}, queryExample={}.", tableName,
         J.toJson(queryExample));
     StopWatch stopWatch = StopWatch.createStarted();
-    DimCondition dimCondition = FilterUtil.buildDimCondition(queryExample, false);
+    MetaCondition metaCondition = FilterUtil.buildDimCondition(queryExample, false);
     List<Map<String, Object>> rows = null;
     try {
-      rows = toValMap(metaCptCenter.computeByCondition(tableName, dimCondition, false));
+      rows = toValMap(metaCptCenter.computeByCondition(tableName, metaCondition, false));
     } catch (NotForeignKeyException e) {
       throw new RuntimeException(e);
     }
@@ -161,10 +160,10 @@ public class BitmapDataCoreService extends SqlDataCoreService {
     logger.info("[fuzzyByExample] start, table={}, queryExample={}.", tableName,
         J.toJson(queryExample));
     StopWatch stopWatch = StopWatch.createStarted();
-    DimCondition dimCondition = FilterUtil.buildDimCondition(queryExample, true);
+    MetaCondition metaCondition = FilterUtil.buildDimCondition(queryExample, true);
     List<Map<String, Object>> rows = null;
     try {
-      rows = toValMap(metaCptCenter.computeByCondition(tableName, dimCondition, false));
+      rows = toValMap(metaCptCenter.computeByCondition(tableName, metaCondition, false));
     } catch (NotForeignKeyException e) {
       throw new RuntimeException(e);
     }
@@ -173,8 +172,8 @@ public class BitmapDataCoreService extends SqlDataCoreService {
     return rows;
   }
 
-  private List<Map<String, Object>> toValMap(Collection<DimDataRow> rows) {
-    return rows.parallelStream().map(DimDataRow::getValues).collect(Collectors.toList());
+  private List<Map<String, Object>> toValMap(Collection<MetaDataRow> rows) {
+    return rows.parallelStream().map(MetaDataRow::getValues).collect(Collectors.toList());
   }
 
 }

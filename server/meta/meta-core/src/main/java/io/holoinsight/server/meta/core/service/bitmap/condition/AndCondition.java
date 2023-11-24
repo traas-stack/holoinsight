@@ -1,5 +1,5 @@
-/**
- * Alipay.com Inc. Copyright (c) 2004-2020 All Rights Reserved.
+/*
+ * Copyright 2022 Holoinsight Project Authors. Licensed under Apache-2.0.
  */
 package io.holoinsight.server.meta.core.service.bitmap.condition;
 
@@ -13,8 +13,8 @@ import java.util.List;
 /**
  * 一个查询条件
  *
- * @author wanpeng.xwp
- * @version : AndCondition.java, v 0.1 2020年04月20日 15:03 wanpeng.xwp Exp $
+ * @author xiangwanpeng
+ * @version : AndCondition.java, v 0.1 2020年04月20日 15:03 xiangwanpeng Exp $
  */
 @Data
 @AllArgsConstructor

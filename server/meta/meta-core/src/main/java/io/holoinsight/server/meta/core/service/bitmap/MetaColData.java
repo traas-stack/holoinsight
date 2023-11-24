@@ -1,6 +1,7 @@
-/**
- * Alipay.com Inc. Copyright (c) 2004-2019 All Rights Reserved.
+/*
+ * Copyright 2022 Holoinsight Project Authors. Licensed under Apache-2.0.
  */
+
 package io.holoinsight.server.meta.core.service.bitmap;
 
 import com.googlecode.javaewah.EWAHCompressedBitmap;
@@ -25,7 +26,7 @@ import java.util.regex.Pattern;
 @Setter
 @ToString(callSuper = true)
 @Slf4j
-public class DimColData {
+public class MetaColData {
 
   private String tableName;
 
@@ -40,15 +41,15 @@ public class DimColData {
   private AtomicBoolean loaded = new AtomicBoolean(false);
 
 
-  private AbstractDimData dimData;
+  private AbstractMetaData metaData;
 
-  public DimColData(String tableName, String colName, AbstractDimData dimData) {
+  public MetaColData(String tableName, String colName, AbstractMetaData metaData) {
     this.tableName = tableName;
     this.colName = colName;
-    this.dimData = dimData;
+    this.metaData = metaData;
   }
 
-  public DimColData(String tableName, String colName, Map<Object, EWAHCompressedBitmap> val2BitMap,
+  public MetaColData(String tableName, String colName, Map<Object, EWAHCompressedBitmap> val2BitMap,
       int logSize) {
     this.tableName = tableName;
     this.colName = colName;
@@ -105,16 +106,17 @@ public class DimColData {
    */
   public void lazyLoad() {
     if (loaded.get() == false) {
-      synchronized (dimData) {
+      synchronized (metaData) {
         if (loaded.get() == false) {
           StopWatch stopWatch = StopWatch.createStarted();
-          log.info("DimColData lazy load start, table={}, col={}, size={}, logSize={}, valSize={}.",
-              tableName, colName, dimData.getAllLogs().size(), logSizeCounter.get(),
-              valSizeCounter.get());
-          appendLogs(dimData.getAllLogs());
           log.info(
-              "DimColData lazy load finish, table={}, col={}, size={},  logSize={}, valSize={}, cost={}.",
-              tableName, colName, dimData.getAllLogs().size(), logSizeCounter.get(),
+              "MetaColData lazy load start, table={}, col={}, size={}, logSize={}, valSize={}.",
+              tableName, colName, metaData.getAllLogs().size(), logSizeCounter.get(),
+              valSizeCounter.get());
+          appendLogs(metaData.getAllLogs());
+          log.info(
+              "MetaColData lazy load finish, table={}, col={}, size={},  logSize={}, valSize={}, cost={}.",
+              tableName, colName, metaData.getAllLogs().size(), logSizeCounter.get(),
               valSizeCounter.get(), stopWatch.getTime());
           loaded.set(true);
         }
@@ -127,7 +129,7 @@ public class DimColData {
    *
    * @param changeLogs
    */
-  public void appendLogs(List<DimDataRow> changeLogs) {
+  public void appendLogs(List<MetaDataRow> changeLogs) {
     changeLogs.forEach(changeLog -> {
       Object changeColVal = changeLog.getValues().get(colName);
       if (changeColVal == null) {

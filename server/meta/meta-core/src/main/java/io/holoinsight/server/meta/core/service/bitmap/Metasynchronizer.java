@@ -1,5 +1,5 @@
-/**
- * Alipay.com Inc. Copyright (c) 2004-2023 All Rights Reserved.
+/*
+ * Copyright 2022 Holoinsight Project Authors. Licensed under Apache-2.0.
  */
 package io.holoinsight.server.meta.core.service.bitmap;
 
@@ -7,9 +7,9 @@ import java.util.List;
 
 /**
  *
- * @author wanpeng.xwp
- * @version : Metasynchronizer.java, v 0.1 2023年11月23日 19:25 wanpeng.xwp Exp $
+ * @author xiangwanpeng
+ * @version : Metasynchronizer.java, v 0.1 2023年11月23日 19:25 xiangwanpeng Exp $
  */
 public interface Metasynchronizer {
-  List<DimDataRow> sync(String tableName, long start, long end);
+  List<MetaDataRow> sync(String tableName, long start, long end);
 }
