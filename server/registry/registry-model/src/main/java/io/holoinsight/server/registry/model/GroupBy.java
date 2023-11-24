@@ -3,11 +3,12 @@
  */
 package io.holoinsight.server.registry.model;
 
-import java.util.List;
-
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+
+import java.util.List;
 
 /**
  * <p>
@@ -25,6 +26,15 @@ public class GroupBy {
    * Log analysis conf
    */
   private LogAnalysis logAnalysis;
+  private Details details;
+
+  @ToString
+  @Getter
+  @Setter
+  @AllArgsConstructor
+  public static class Details {
+    private boolean enabled;
+  }
 
   @ToString
   @Getter
