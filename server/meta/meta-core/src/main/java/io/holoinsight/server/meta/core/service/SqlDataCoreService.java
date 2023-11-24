@@ -178,7 +178,8 @@ public abstract class SqlDataCoreService extends AbstractDataCoreService {
       List<Map<String, Object>> cachedRows = queryByPks(tableName, Collections.singletonList(uk));
       Pair<Boolean, Object> sameWithDbAnnotations =
           sameWithDbAnnotations(metaData, updateOrInsertRow);
-      if (!CollectionUtils.isEmpty(cachedRows)&&sameWithCache(updateOrInsertRow, cachedRows.get(0)) && sameWithDbAnnotations.left()) {
+      if (!CollectionUtils.isEmpty(cachedRows)
+          && sameWithCache(updateOrInsertRow, cachedRows.get(0)) && sameWithDbAnnotations.left()) {
         sameUkSize++;
         continue;
       }
@@ -245,11 +246,13 @@ public abstract class SqlDataCoreService extends AbstractDataCoreService {
   public abstract List<Map<String, Object>> queryByPks(String tableName, List<String> pkValList);
 
   @Override
-  public abstract List<Map<String, Object>> queryByExample(String tableName, QueryExample queryExample);
+  public abstract List<Map<String, Object>> queryByExample(String tableName,
+      QueryExample queryExample);
 
 
   @Override
-  public abstract List<Map<String, Object>> fuzzyByExample(String tableName, QueryExample queryExample);
+  public abstract List<Map<String, Object>> fuzzyByExample(String tableName,
+      QueryExample queryExample);
 
 
   @Override
@@ -257,8 +260,7 @@ public abstract class SqlDataCoreService extends AbstractDataCoreService {
     logger.info("[deleteByExample] start, table={}, queryExample={}.", tableName,
         J.toJson(queryExample));
     StopWatch stopWatch = StopWatch.createStarted();
-    Collection<Map<String, Object>> metaData =
-        queryByExample(tableName, queryExample);
+    Collection<Map<String, Object>> metaData = queryByExample(tableName, queryExample);
     if (CollectionUtils.isEmpty(metaData)) {
       return 0;
     }

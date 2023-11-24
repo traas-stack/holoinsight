@@ -29,8 +29,8 @@ public class ServerDimData extends AbstractDimData {
       Metasynchronizer synchronizer) {
     super(tableName, SERVER_DATA_EXPIRED_TIME, version, rows, synchronizer);
     this.buildTime = System.currentTimeMillis();
-    log.info("ServerDimData build finish, table={}, buildTime={}, ttl={}, rows={}.", this.getTableName(),
-        this.getBuildTime(), this.getTtl(), CollectionUtils.size(rows));
+    log.info("ServerDimData build finish, table={}, buildTime={}, ttl={}, rows={}.",
+        this.getTableName(), this.getBuildTime(), this.getTtl(), CollectionUtils.size(rows));
     this.startSync();
   }
 

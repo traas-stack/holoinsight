@@ -97,7 +97,8 @@ public class BitmapDataCoreService extends SqlDataCoreService {
       Map<String, Object> values = J.toMap(metaData.getJson());
       values.put(UK_FIELD, metaData.getUk());
       return new DimDataRow(metaData.getTableName(), metaData.getId(), metaData.getUk(), values,
-          metaData.getDeleted()!=null&& metaData.getDeleted()== 1, metaData.getGmtModified().getTime());
+          metaData.getDeleted() != null && metaData.getDeleted() == 1,
+          metaData.getGmtModified().getTime());
     }).collect(Collectors.toList())).join();
   }
 
@@ -153,12 +154,6 @@ public class BitmapDataCoreService extends SqlDataCoreService {
     logger.info("[queryByExample] finish, table={}, records={}, cost={}.", tableName, rows.size(),
         stopWatch.getTime());
     return rows;
-  }
-
-  @Override
-  public Collection<Map<String, Object>> getMetaDataFromCache(String tableName, QueryExample queryExample,
-                                                              Map<String, Map<String, Object>> ukToRowCache) {
-    return queryByExample(tableName,queryExample);
   }
 
   @Override
