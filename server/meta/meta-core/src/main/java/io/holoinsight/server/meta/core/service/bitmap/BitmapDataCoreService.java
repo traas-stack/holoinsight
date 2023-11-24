@@ -13,6 +13,7 @@ import com.google.common.util.concurrent.MoreExecutors;
 import io.holoinsight.server.common.J;
 import io.holoinsight.server.common.service.SuperCacheService;
 import io.holoinsight.server.meta.common.model.QueryExample;
+import io.holoinsight.server.meta.common.util.ConstModel;
 import io.holoinsight.server.meta.core.common.DimForkJoinPool;
 import io.holoinsight.server.meta.core.common.FilterUtil;
 import io.holoinsight.server.meta.core.service.SqlDataCoreService;
@@ -152,6 +153,12 @@ public class BitmapDataCoreService extends SqlDataCoreService {
     logger.info("[queryByExample] finish, table={}, records={}, cost={}.", tableName, rows.size(),
         stopWatch.getTime());
     return rows;
+  }
+
+  @Override
+  public Collection<Map<String, Object>> getMetaDataFromCache(String tableName, QueryExample queryExample,
+                                                              Map<String, Map<String, Object>> ukToRowCache) {
+    return queryByExample(tableName,queryExample);
   }
 
   @Override
