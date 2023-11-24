@@ -40,7 +40,7 @@ public class FilterUtil {
       Boolean containRegexFilters) {
     Map<String, Map<String, Object>> filters = buildFilters(queryExample, containRegexFilters);
     DimCondition dimCondition = new DimCondition();
-    OrCondition orCondition = new OrCondition();
+    OrCondition orCondition = dimCondition.or();
     if (CollectionUtils.isEmpty(filters)) {
       AndCondition andCondition = orCondition.and();
       andCondition.setAll(true);
