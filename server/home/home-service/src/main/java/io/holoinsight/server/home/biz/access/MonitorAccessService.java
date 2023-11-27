@@ -33,9 +33,6 @@ public class MonitorAccessService {
   @Autowired
   private AccessConfigService accessConfigService;
 
-  @Autowired
-  private AccessRecordService accessRecordService;
-
   /**
    * 申请token，如果入参非法报错
    *
@@ -131,8 +128,6 @@ public class MonitorAccessService {
     monitorScope.accessConfig = monitorAccessConfig;
     Context c = new Context(monitorScope);
     RequestContext.setContext(c);
-
-    accessRecordService.record(monitorScope.tenant, monitorScope.workspace);
 
     return true;
   }

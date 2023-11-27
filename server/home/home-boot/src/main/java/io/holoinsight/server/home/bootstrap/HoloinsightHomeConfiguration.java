@@ -7,6 +7,7 @@ import io.holoinsight.server.common.config.EnvironmentProperties;
 import io.holoinsight.server.common.ctl.ProductCtlService;
 import io.holoinsight.server.common.ctl.ProductCtlServiceImpl;
 import io.holoinsight.server.common.dao.CommonDaoConfiguration;
+import io.holoinsight.server.common.service.AccessRecordService;
 import io.holoinsight.server.common.service.CommonServiceAutoConfiguration;
 import io.holoinsight.server.common.springboot.ConditionalOnRole;
 import io.holoinsight.server.home.alert.plugin.AlertNotifyHandler;
@@ -110,5 +111,10 @@ public class HoloinsightHomeConfiguration {
   @Bean
   public ParameterSecurityService alertSecurityService() {
     return new ParameterSecurityServiceImpl();
+  }
+
+  @Bean
+  public AccessRecordService accessRecordService() {
+    return new AccessRecordService();
   }
 }

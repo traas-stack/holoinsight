@@ -23,6 +23,8 @@ public class SuperCache {
   public Map<String /* metric table */, MetricInfo> metricInfoMap;
   public Map<String /* workspace */, List<MetricInfo>> workspaceMetricInfoMap;
 
+  public Map<String /* workspace */, String /* tenant */> workspaceTenantMap;
+
   public String getStringValue(String type, String k) {
 
     Map<String, MetaDataDictValue> kMap = this.metaDataDictValueMap.get(type);

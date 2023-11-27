@@ -11,7 +11,7 @@ import java.util.Map;
  * @author zanghaibo
  * @time 2023-05-23 10:39 上午
  */
-public interface MeterService {
+public interface MetricMeterService {
   /**
    * meter metric
    *

@@ -8,6 +8,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.holoinsight.server.common.config.ProdLog;
 import io.holoinsight.server.common.config.ScheduleLoadTask;
 import io.holoinsight.server.common.dao.entity.MetricInfo;
+import io.holoinsight.server.common.dao.entity.MonitorInstance;
 import io.holoinsight.server.common.dao.mapper.MetricInfoMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -19,6 +20,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
  *
@@ -35,6 +38,9 @@ public class SuperCacheService extends ScheduleLoadTask {
   @Autowired
   private MetricInfoService metricInfoService;
 
+  @Autowired
+  private MonitorInstanceService monitorInstanceService;
+
   @Resource
   private MetricInfoMapper metricInfoMapper;
 
@@ -48,6 +54,10 @@ public class SuperCacheService extends ScheduleLoadTask {
     SuperCache sc = new SuperCache();
     sc.metaDataDictValueMap = metaDictValueService.getMetaDictValue();
     sc.expressionMetricList = metricInfoService.querySpmList();
+    sc.workspaceTenantMap = new HashMap<>();
+    List<MonitorInstance> instances = monitorInstanceService.list();
+    instances.forEach(
+        instance -> sc.workspaceTenantMap.put(instance.getWorkspace(), instance.getTenant()));
     queryMetricInfoByPage(sc);
     this.sc = sc;
     ProdLog.info("[SuperCache] load end");
