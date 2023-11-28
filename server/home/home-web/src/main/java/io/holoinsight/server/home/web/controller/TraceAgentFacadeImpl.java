@@ -13,8 +13,10 @@ import io.holoinsight.server.home.biz.service.TenantInitService;
 import io.holoinsight.server.home.biz.service.TraceAgentConfPropService;
 import io.holoinsight.server.home.biz.service.TraceAgentConfigurationService;
 import io.holoinsight.server.home.common.util.MonitorException;
+import io.holoinsight.server.home.common.util.scope.AuthTargetType;
 import io.holoinsight.server.home.common.util.scope.MonitorScope;
 import io.holoinsight.server.home.common.util.scope.MonitorUser;
+import io.holoinsight.server.home.common.util.scope.PowerConstants;
 import io.holoinsight.server.home.common.util.scope.RequestContext;
 import io.holoinsight.server.home.dal.model.ApiKey;
 import io.holoinsight.server.home.dal.model.TraceAgentConfProp;
@@ -23,6 +25,7 @@ import io.holoinsight.server.home.web.common.AesUtil;
 import io.holoinsight.server.home.web.common.ManageCallback;
 import io.holoinsight.server.home.web.common.ParaCheckUtil;
 import io.holoinsight.server.home.web.config.TraceAuthEncryptConfiguration;
+import io.holoinsight.server.home.web.interceptor.MonitorScopeAuth;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
@@ -70,6 +73,7 @@ public class TraceAgentFacadeImpl extends BaseFacade {
    */
   @ResponseBody
   @PostMapping(value = "/traceAgent")
+  @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.VIEW)
   public JsonResult<Map<String, Object>> traceAgent(
       @RequestBody(required = false) Map<String, String> extendInfo) {
     String tenant = RequestContext.getContext().ms.getTenant();
@@ -130,6 +134,7 @@ public class TraceAgentFacadeImpl extends BaseFacade {
 
   @PostMapping(value = "/create/configuration")
   @ResponseBody
+  @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.EDIT)
   public JsonResult<Boolean> createAgentConfiguration(@RequestBody Map<String, String> request) {
     MonitorUser mu = RequestContext.getContext().mu;
     final JsonResult<Boolean> result = new JsonResult<>();
@@ -174,6 +179,7 @@ public class TraceAgentFacadeImpl extends BaseFacade {
 
   @PostMapping(value = "/query/configuration")
   @ResponseBody
+  @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.VIEW)
   public JsonResult<TraceAgentConfiguration> queryAgentConfiguration(
       @RequestBody Map<String, String> request) {
     final JsonResult<TraceAgentConfiguration> result = new JsonResult<>();
@@ -212,6 +218,7 @@ public class TraceAgentFacadeImpl extends BaseFacade {
 
   @GetMapping(value = "/query/configuration/properties")
   @ResponseBody
+  @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.VIEW)
   public JsonResult<List<TraceAgentConfProp>> queryAgentConfProperties(@RequestParam String type,
       @RequestParam String language) {
     final JsonResult<List<TraceAgentConfProp>> result = new JsonResult<>();

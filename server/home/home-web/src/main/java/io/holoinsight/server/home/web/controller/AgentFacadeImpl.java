@@ -11,11 +11,14 @@ import io.holoinsight.server.home.biz.service.ApiKeyService;
 import io.holoinsight.server.home.biz.service.agent.AgentLogTailService;
 import io.holoinsight.server.home.biz.service.agent.AgentParamRequest;
 import io.holoinsight.server.home.common.util.MonitorException;
+import io.holoinsight.server.home.common.util.scope.AuthTargetType;
 import io.holoinsight.server.home.common.util.scope.MonitorScope;
+import io.holoinsight.server.home.common.util.scope.PowerConstants;
 import io.holoinsight.server.home.common.util.scope.RequestContext;
 import io.holoinsight.server.home.dal.model.ApiKey;
 import io.holoinsight.server.home.web.common.ManageCallback;
 import io.holoinsight.server.home.web.common.ParaCheckUtil;
+import io.holoinsight.server.home.web.interceptor.MonitorScopeAuth;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -46,6 +49,7 @@ public class AgentFacadeImpl extends BaseFacade {
 
   @ResponseBody
   @GetMapping(value = "/vmAgent")
+  @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.VIEW)
   public JsonResult<Map<String, Object>> vmAgent() {
     String tenant = RequestContext.getContext().ms.getTenant();
     Map<String, Object> conditions = new HashMap<>();
@@ -80,6 +84,7 @@ public class AgentFacadeImpl extends BaseFacade {
 
   @PostMapping(value = "/listFiles")
   @ResponseBody
+  @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.VIEW)
   public JsonResult<Map<String, Object>> listFiles(
       @RequestBody AgentParamRequest agentParamRequest) {
 
@@ -109,6 +114,7 @@ public class AgentFacadeImpl extends BaseFacade {
 
   @PostMapping(value = "/previewFile")
   @ResponseBody
+  @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.VIEW)
   public JsonResult<Map<String, Object>> previewFile(
       @RequestBody AgentParamRequest agentParamRequest) {
     final JsonResult<Map<String, Object>> result = new JsonResult<>();
@@ -137,6 +143,7 @@ public class AgentFacadeImpl extends BaseFacade {
 
   @PostMapping(value = "/inspect")
   @ResponseBody
+  @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.VIEW)
   public JsonResult<Map<String, Object>> inspect(@RequestBody AgentParamRequest agentParamRequest) {
     final JsonResult<Map<String, Object>> result = new JsonResult<>();
     facadeTemplate.manage(result, new ManageCallback() {

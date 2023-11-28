@@ -221,7 +221,7 @@ public class AlarmGroupFacadeImpl extends BaseFacade {
 
   @GetMapping("/query/{id}")
   @ResponseBody
-  @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.EDIT)
+  @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.VIEW)
   public JsonResult<AlarmGroupDTO> queryById(@PathVariable("id") Long id) {
     final JsonResult<AlarmGroupDTO> result = new JsonResult<>();
     facadeTemplate.manage(result, new ManageCallback() {

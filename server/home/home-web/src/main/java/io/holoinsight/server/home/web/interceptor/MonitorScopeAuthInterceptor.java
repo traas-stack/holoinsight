@@ -61,8 +61,8 @@ public class MonitorScopeAuthInterceptor implements MethodInterceptor {
       AuthTargetType authType = monitorScopeAuth.targetType();
 
       if (authType == AuthTargetType.SRE && mu.getIdentityType() != IdentityType.OUTTOKEN) {
-        JsonResult<Object> resp = new JsonResult<Object>();
-        JsonResult.fillFailResultTo(resp, ResultCodeEnum.NO_AUTH.name(), "no auth");
+        JsonResult<Object> resp = new JsonResult<>();
+        JsonResult.fillFailResultTo(resp, ResultCodeEnum.NO_ROLE_AUTH.getResultCode(), "no auth");
         return resp;
       }
 
@@ -74,8 +74,10 @@ public class MonitorScopeAuthInterceptor implements MethodInterceptor {
       if (!pass) {
         log.warn("monitor tenant auth not enough, need power: " + needPower + ", ma:" + J.toJson(ma)
             + ", mu:" + J.toJson(mu) + ",ms:" + J.toJson(ms));
-        return JsonResult
-            .createFailResult("monitor tenant auth not enough, need power: " + needPower);
+        JsonResult<Object> failResult =
+            JsonResult.createFailResult("monitor auth not enough, need power: " + needPower);
+        failResult.setResultCode(ResultCodeEnum.NO_ROLE_AUTH.getResultCode());
+        return failResult;
       }
     } catch (Exception e) {
       log.error("auth failed, " + e.getMessage(), e);

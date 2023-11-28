@@ -153,7 +153,7 @@ public class AlarmBlockFacadeImpl extends BaseFacade {
 
   @GetMapping("/query/{id}")
   @ResponseBody
-  @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.EDIT)
+  @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.VIEW)
   public JsonResult<AlarmBlockDTO> queryById(@PathVariable("id") Long id) {
     final JsonResult<AlarmBlockDTO> result = new JsonResult<>();
     facadeTemplate.manage(result, new ManageCallback() {
@@ -233,7 +233,7 @@ public class AlarmBlockFacadeImpl extends BaseFacade {
 
   @GetMapping("/queryByRuleId/{ruleId}")
   @ResponseBody
-  @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.EDIT)
+  @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.VIEW)
   public JsonResult<AlarmBlockDTO> queryByRuleId(@PathVariable("ruleId") String ruleId) {
     final JsonResult<AlarmBlockDTO> result = new JsonResult<>();
     facadeTemplate.manage(result, new ManageCallback() {

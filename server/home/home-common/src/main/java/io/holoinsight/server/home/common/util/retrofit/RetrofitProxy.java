@@ -4,6 +4,8 @@
 package io.holoinsight.server.home.common.util.retrofit;
 
 import io.holoinsight.server.common.J;
+import io.holoinsight.server.home.common.util.MonitorException;
+import io.holoinsight.server.home.common.util.ResultCodeEnum;
 import lombok.extern.slf4j.Slf4j;
 import retrofit2.Call;
 import retrofit2.Response;
@@ -41,7 +43,8 @@ public class RetrofitProxy<T> implements InvocationHandler {
 
       printAfter(start, call.request().url().uri().toString(), method, response);
       if (response.code() == 404 || response.code() == 403) {
-        throw new AuthenticationException("Authenticate failed, " + response.toString());
+        throw new MonitorException(ResultCodeEnum.DOWNSTREAM_AUTH_SYSTEM_ERROR,
+            "Authenticate failed, " + response);
       }
       if (response.isSuccessful()) {
         return response.body();
@@ -50,7 +53,8 @@ public class RetrofitProxy<T> implements InvocationHandler {
       // 其他都是异常处理, 可以根据不同错误码单独处理
       String body = J.toJson(response.body());
       log.error("Response of {}, error: {}", call.request().url().uri().toString(), body);
-      throw new RuntimeException("call failed, " + response.code() + ", " + body);
+      throw new MonitorException(ResultCodeEnum.DOWNSTREAM_SYSTEM_ERROR,
+          "call failed, " + response.code() + ", " + body);
     } else {
       return ret;
     }

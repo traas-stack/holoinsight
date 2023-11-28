@@ -97,6 +97,7 @@ public class QueryFacadeImpl extends BaseFacade {
   private ParameterSecurityService parameterSecurityService;
 
   @PostMapping
+  @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.VIEW)
   public JsonResult<QueryResponse> query(@RequestBody DataQueryRequest request) {
 
     final JsonResult<QueryResponse> result = new JsonResult<>();
@@ -152,6 +153,7 @@ public class QueryFacadeImpl extends BaseFacade {
   }
 
   @PostMapping("/tags")
+  @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.VIEW)
   public JsonResult<?> queryTags(@RequestBody DataQueryRequest request) {
 
     final JsonResult<QueryResponse> result = new JsonResult<>();
@@ -192,6 +194,7 @@ public class QueryFacadeImpl extends BaseFacade {
   }
 
   @DeleteMapping("/deltags")
+  @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.EDIT)
   public JsonResult<?> delTags(@RequestBody DelTagReq request) {
     final JsonResult<Boolean> result = new JsonResult<>();
     facadeTemplate.manage(result, new ManageCallback() {
@@ -244,7 +247,7 @@ public class QueryFacadeImpl extends BaseFacade {
 
   @GetMapping("/schema")
   @ResponseBody
-  @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.EDIT)
+  @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.VIEW)
   public JsonResult<KeyResult> tagsKey(@RequestParam("name") String metric) {
     final JsonResult<KeyResult> result = new JsonResult<>();
     facadeTemplate.manage(result, new ManageCallback() {
@@ -294,7 +297,7 @@ public class QueryFacadeImpl extends BaseFacade {
    */
   @GetMapping("/metric")
   @ResponseBody
-  @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.EDIT)
+  @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.VIEW)
   public JsonResult<List<String>> metric(@RequestParam("name") String name) {
     final JsonResult<List<String>> result = new JsonResult<>();
     facadeTemplate.manage(result, new ManageCallback() {
@@ -328,7 +331,7 @@ public class QueryFacadeImpl extends BaseFacade {
    */
   @PostMapping("/tagValues")
   @ResponseBody
-  @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.EDIT)
+  @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.VIEW)
   public JsonResult<ValueResult> queryTagValues(@RequestBody TagQueryRequest tagQueryRequest) {
 
     final JsonResult<ValueResult> result = new JsonResult<>();
@@ -377,6 +380,7 @@ public class QueryFacadeImpl extends BaseFacade {
   }
 
   @PostMapping(value = "/pql/range")
+  @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.VIEW)
   public JsonResult<List<Result>> pqlRangeQuery(@RequestBody PqlRangeQueryRequest request) {
 
     final JsonResult<List<Result>> result = new JsonResult<>();
@@ -417,6 +421,7 @@ public class QueryFacadeImpl extends BaseFacade {
   }
 
   @PostMapping(value = "/pql/instant")
+  @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.VIEW)
   public JsonResult<List<Result>> pqlInstanceQuery(@RequestBody PqlInstanceRequest request) {
     final JsonResult<List<Result>> result = new JsonResult<>();
     RequestContext.Context ctx = RequestContext.getContext();
@@ -710,6 +715,7 @@ public class QueryFacadeImpl extends BaseFacade {
   }
 
   @PostMapping(value = "/pql/parse")
+  @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.VIEW)
   public JsonResult<PqlParseResult> pqlParse(@RequestBody PqlParseRequest request) {
     final JsonResult<PqlParseResult> result = new JsonResult<>();
     PqlParseResult pqlParseResult = new PqlParseResult();

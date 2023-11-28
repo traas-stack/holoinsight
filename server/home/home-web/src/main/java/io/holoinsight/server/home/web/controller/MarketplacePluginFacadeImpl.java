@@ -182,7 +182,7 @@ public class MarketplacePluginFacadeImpl extends BaseFacade {
   }
 
   @GetMapping(value = "/install/{id}")
-  @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.VIEW)
+  @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.EDIT)
   public JsonResult<MarketplacePluginDTO> install(@PathVariable("id") Long id) {
     final JsonResult<MarketplacePluginDTO> result = new JsonResult<>();
     facadeTemplate.manage(result, new ManageCallback() {

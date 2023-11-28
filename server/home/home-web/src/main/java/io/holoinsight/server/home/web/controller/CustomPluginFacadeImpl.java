@@ -434,6 +434,7 @@ public class CustomPluginFacadeImpl extends BaseFacade {
 
   @ResponseBody
   @RequestMapping(value = "/log/presplit", method = RequestMethod.POST)
+  @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.VIEW)
   public JsonResult<Object> presplit(@RequestBody LogSplitReq req) {
 
     final JsonResult<Object> result = new JsonResult<>();

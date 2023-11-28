@@ -80,12 +80,12 @@ public class UserinfoFacadeImpl extends BaseFacade {
       facadeTemplate.manage(result, new ManageCallback() {
         @Override
         public void checkParameter() {
-          ParaCheckUtil.checkParaNotBlank(userinfoDTO.getNickname(), "nickname can not be blank.");
+          ParaCheckUtil.checkParaNotBlank(userinfoDTO.getNickname(), "nickname");
           if (StringUtils.isNotBlank(userinfoDTO.getNickname())) {
             ParaCheckUtil.checkInvalidCharacter(userinfoDTO.getNickname(),
                 "invalid nickname, please use a-z A-Z 0-9 Chinese - _ , . spaces");
           }
-          ParaCheckUtil.checkParaNotBlank(userinfoDTO.getUid(), "uid can not be blank.");
+          ParaCheckUtil.checkParaNotBlank(userinfoDTO.getUid(), "uid");
           ParaCheckUtil.checkParaBoolean(
               checkMembers(Collections.singletonList(userinfoDTO.getUid())),
               userinfoDTO.getUid() + " is not in current tenant scope.");
@@ -250,7 +250,7 @@ public class UserinfoFacadeImpl extends BaseFacade {
 
   @GetMapping("/query/{id}")
   @ResponseBody
-  @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.EDIT)
+  @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.VIEW)
   public JsonResult<UserinfoDTO> queryById(@PathVariable("id") Long id) {
 
     final JsonResult<UserinfoDTO> result = new JsonResult<>();

@@ -40,7 +40,7 @@ public class AlarmHistoryFacadeImpl extends BaseFacade {
 
   @GetMapping("/query/{id}")
   @ResponseBody
-  @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.EDIT)
+  @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.VIEW)
   public JsonResult<AlarmHistoryDTO> queryById(@PathVariable("id") Long id) {
     final JsonResult<AlarmHistoryDTO> result = new JsonResult<>();
     facadeTemplate.manage(result, new ManageCallback() {

@@ -11,7 +11,9 @@ import io.holoinsight.server.home.biz.service.DashboardService;
 import io.holoinsight.server.home.biz.service.FolderService;
 import io.holoinsight.server.home.biz.service.TenantInitService;
 import io.holoinsight.server.home.common.util.CommonThreadPool;
+import io.holoinsight.server.home.common.util.scope.AuthTargetType;
 import io.holoinsight.server.home.common.util.scope.MonitorScope;
+import io.holoinsight.server.home.common.util.scope.PowerConstants;
 import io.holoinsight.server.home.common.util.scope.RequestContext;
 import io.holoinsight.server.home.dal.model.Folder;
 import io.holoinsight.server.home.dal.model.dto.CustomPluginDTO;
@@ -19,6 +21,7 @@ import io.holoinsight.server.home.web.common.ManageCallback;
 import io.holoinsight.server.home.web.common.ParaCheckUtil;
 import io.holoinsight.server.common.J;
 import io.holoinsight.server.common.JsonResult;
+import io.holoinsight.server.home.web.interceptor.MonitorScopeAuth;
 import io.holoinsight.server.meta.common.model.QueryExample;
 import io.holoinsight.server.meta.facade.service.DataClientService;
 import lombok.extern.slf4j.Slf4j;
@@ -74,6 +77,7 @@ public class SearchFacadeImpl extends BaseFacade {
 
   @ResponseBody
   @PostMapping(value = "/queryByKeyword")
+  @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.VIEW)
   public JsonResult<Object> query(@RequestBody QueryKeywordReq req) {
 
     final JsonResult<Object> result = new JsonResult<>();
@@ -147,6 +151,7 @@ public class SearchFacadeImpl extends BaseFacade {
 
   @ResponseBody
   @PostMapping(value = "/configSearch")
+  @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.VIEW)
   public JsonResult<Object> configSearch(@RequestBody QueryKeywordReq req) {
 
     final JsonResult<Object> result = new JsonResult<>();
