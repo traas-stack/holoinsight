@@ -67,28 +67,9 @@ public class AlertmanagerWebhookImpl extends BaseFacade {
     return result;
   }
 
-  // @GetMapping
-  // public JsonResult<Object> index(@RequestParam(value = "pageNum", defaultValue="1") Integer
-  // pageNum, @RequestParam(value = "pageSize", defaultValue="10") Integer pageSize) {
-  // MonitorScope ms = RequestContext.getContext().ms;
-  //
-  // Page<AlertmanagerWebhook> page = new Page<>(pageNum, pageSize);
-  // QueryWrapper<AlertmanagerWebhook> wrapper = new QueryWrapper<>();
-  // wrapper.eq("tenant", ms.getTenant());
-  // alertmanagerWebhookService.page(page, wrapper);
-  //
-  // MonitorPageResult<AlertmanagerWebhookDTO> result = new MonitorPageResult<>();
-  //
-  // result.setItems(alertmanagerWebhookConverter.dosToDTOs(page.getRecords()));
-  // result.setPageNum(pageNum);
-  // result.setPageSize(pageSize);
-  // result.setTotalCount(page.getTotal());
-  // result.setTotalPage(page.getPages());
-  //
-  // return JsonResult.createSuccessResult(result);
-  // }
 
   @GetMapping("/{id}")
+  @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.VIEW)
   public JsonResult<Object> get(@PathVariable("id") Long id) {
     MonitorScope ms = RequestContext.getContext().ms;
 
@@ -102,6 +83,7 @@ public class AlertmanagerWebhookImpl extends BaseFacade {
   }
 
   @PostMapping
+  @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.EDIT)
   public JsonResult<Object> create(@RequestBody AlertmanagerWebhookDTO alertmanagerWebhookDTO) {
     MonitorScope ms = RequestContext.getContext().ms;
     MonitorUser mu = RequestContext.getContext().mu;
@@ -124,6 +106,7 @@ public class AlertmanagerWebhookImpl extends BaseFacade {
   }
 
   @PostMapping("/update/{id}")
+  @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.EDIT)
   public JsonResult<AlertmanagerWebhookDTO> update(@PathVariable("id") Long id,
       @RequestBody AlertmanagerWebhookDTO alertmanagerWebhookDTO) {
 
@@ -167,6 +150,7 @@ public class AlertmanagerWebhookImpl extends BaseFacade {
   }
 
   @PostMapping("/delete/{id}")
+  @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.EDIT)
   public JsonResult<Object> delete(@PathVariable("id") Long id) {
     MonitorScope ms = RequestContext.getContext().ms;
 

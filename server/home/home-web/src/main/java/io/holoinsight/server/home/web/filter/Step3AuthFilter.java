@@ -60,7 +60,7 @@ public class Step3AuthFilter implements Filter {
       next = auth(req, resp);
     } catch (Throwable e) {
       authFailedResponse(resp, HttpServletResponse.SC_FORBIDDEN,
-          "auth check error, " + e.getMessage());
+          "auth check error, " + e.getMessage(), ResultCodeEnum.MONITOR_SYSTEM_ERROR);
       log.error("{} auth check error, auth info: {}", RequestContext.getTrace(),
           J.toJson(J.toJson(RequestContext.getContext())), e);
       return;
@@ -86,7 +86,8 @@ public class Step3AuthFilter implements Filter {
       // 接口权限判定
       if (!ulaFacade.authFunc(req) && StringUtil.isBlank(token)) {
         log.warn("{} authFunc check failed", RequestContext.getTrace());
-        authFailedResponse(resp, HttpServletResponse.SC_FORBIDDEN, "权限不足，请联系账号管理员");
+        authFailedResponse(resp, HttpServletResponse.SC_FORBIDDEN, "权限不足，请联系账号管理员",
+            ResultCodeEnum.AUTH_CHECK_ERROR);
         return false;
       }
       Context c = new Context(RequestContext.getContext().ms, mu, new MonitorAuth(),
@@ -125,14 +126,15 @@ public class Step3AuthFilter implements Filter {
       if (null == ma || CollectionUtils.isEmpty(ma.powerConstants)
           || CollectionUtils.isEmpty(ma.getTenantViewPowerList())) {
         log.error("check tenant auth failed, " + J.toJson(ma));
-        authFailedResponse(resp, HttpServletResponse.SC_FORBIDDEN, "check tenant auth failed");
+        authFailedResponse(resp, HttpServletResponse.SC_FORBIDDEN, "check tenant auth failed",
+            ResultCodeEnum.AUTH_CHECK_ERROR);
         return false;
       }
 
       if (!ma.getTenantViewPowerList().containsKey(ms.getTenant())) {
         log.error("check tenant " + ms.getTenant() + " is not auth, " + J.toJson(ma));
         authFailedResponse(resp, HttpServletResponse.SC_FORBIDDEN,
-            "check tenant " + ms.getTenant() + " is not auth");
+            "check tenant " + ms.getTenant() + " is not auth", ResultCodeEnum.AUTH_CHECK_ERROR);
         return false;
       }
 
@@ -140,23 +142,27 @@ public class Step3AuthFilter implements Filter {
       MonitorCookieUtil.addUserCookie(mu, resp);
       // 放到线程上下文中
     } catch (MonitorException me) {
-      log.error("auth failed by MonitorException", me);
-      if (me.getResultCode() == ResultCodeEnum.NO_AUTH) {
-        authFailedResponse(resp, HttpServletResponse.SC_UNAUTHORIZED, me.getMessage());
+      log.error("auth failed by exception", me);
+      if (me.getResultCode() == ResultCodeEnum.NO_LOGIN_AUTH) {
+        authFailedResponse(resp, HttpServletResponse.SC_UNAUTHORIZED, me.getMessage(),
+            ResultCodeEnum.NO_LOGIN_AUTH);
+      } else if (me.getResultCode() == ResultCodeEnum.DOWNSTREAM_SYSTEM_ERROR) {
+        authFailedResponse(resp, HttpServletResponse.SC_FORBIDDEN, me.getMessage(),
+            ResultCodeEnum.DOWNSTREAM_AUTH_SYSTEM_ERROR);
       } else {
         authFailedResponse(resp, HttpServletResponse.SC_FORBIDDEN,
-            "auth failed by MonitorException, " + me.getMessage());
+            "auth failed by exception, " + me.getMessage(),
+            ResultCodeEnum.MONITOR_AUTH_SYSTEM_ERROR);
       }
     } catch (Throwable e) {
       log.error("auth failed by cookie", e);
       authFailedResponse(resp, HttpServletResponse.SC_FORBIDDEN,
-          "auth failed by cookie, " + e.getMessage());
+          "auth failed by cookie, " + e.getMessage(), ResultCodeEnum.MONITOR_SYSTEM_ERROR);
       return false;
     } finally {
       Context c = new Context(ms, mu, ma);
-      Debugger.print("Step3AuthFilter", "MS: " + J.toJson(ms));
-      Debugger.print("Step3AuthFilter", "MU: " + J.toJson(mu));
-      Debugger.print("Step3AuthFilter", "MA: " + J.toJson(ma));
+      Debugger.print("Step3AuthFilter",
+          "MS: " + J.toJson(ms) + ", MU: " + J.toJson(mu) + ", MA: " + J.toJson(ma));
       RequestContext.setContext(c);
     }
     return true;

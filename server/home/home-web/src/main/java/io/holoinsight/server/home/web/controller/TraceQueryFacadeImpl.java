@@ -18,11 +18,14 @@ import io.holoinsight.server.common.JsonResult;
 import io.holoinsight.server.home.biz.service.TenantInitService;
 import io.holoinsight.server.home.common.service.QueryClientService;
 import io.holoinsight.server.home.common.util.MonitorException;
+import io.holoinsight.server.home.common.util.scope.AuthTargetType;
 import io.holoinsight.server.home.common.util.scope.MonitorScope;
+import io.holoinsight.server.home.common.util.scope.PowerConstants;
 import io.holoinsight.server.home.common.util.scope.RequestContext;
 import io.holoinsight.server.home.web.common.ManageCallback;
 import io.holoinsight.server.home.web.common.ParaCheckUtil;
 import io.holoinsight.server.home.web.common.TokenUrls;
+import io.holoinsight.server.home.web.interceptor.MonitorScopeAuth;
 import io.holoinsight.server.query.grpc.QueryProto;
 import io.holoinsight.server.query.grpc.QueryProto.QueryMetaRequest.Builder;
 import io.holoinsight.server.query.grpc.QueryProto.QueryTopologyRequest;
@@ -52,6 +55,7 @@ public class TraceQueryFacadeImpl extends BaseFacade {
 
 
   @PostMapping(value = "/query/basic")
+  @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.VIEW)
   public JsonResult<TraceBrief> queryBasicTraces(@RequestBody QueryTraceRequest request) {
 
     final JsonResult<TraceBrief> result = new JsonResult<>();
@@ -84,6 +88,7 @@ public class TraceQueryFacadeImpl extends BaseFacade {
   }
 
   @PostMapping(value = "/query")
+  @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.VIEW)
   public JsonResult<Trace> queryTrace(@RequestBody QueryTraceRequest request) {
 
     final JsonResult<Trace> result = new JsonResult<>();
@@ -116,6 +121,7 @@ public class TraceQueryFacadeImpl extends BaseFacade {
   }
 
   @PostMapping(value = "/query/traceTree")
+  @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.VIEW)
   public JsonResult<List<TraceTree>> queryTraceTree(@RequestBody QueryTraceRequest request) {
 
     final JsonResult<List<TraceTree>> result = new JsonResult<>();
@@ -148,6 +154,7 @@ public class TraceQueryFacadeImpl extends BaseFacade {
   }
 
   @PostMapping(value = "/query/serviceList")
+  @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.VIEW)
   public JsonResult<List<Service>> queryServiceList(
       @RequestBody QueryProto.QueryMetaRequest request) {
 
@@ -193,6 +200,7 @@ public class TraceQueryFacadeImpl extends BaseFacade {
   }
 
   @PostMapping(value = "/query/endpointList")
+  @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.VIEW)
   public JsonResult<List<Endpoint>> queryEndpointList(
       @RequestBody QueryProto.QueryMetaRequest request) {
 
@@ -228,6 +236,7 @@ public class TraceQueryFacadeImpl extends BaseFacade {
   }
 
   @PostMapping(value = "/query/serviceInstanceList")
+  @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.VIEW)
   public JsonResult<List<ServiceInstance>> queryServiceInstanceList(
       @RequestBody QueryProto.QueryMetaRequest request) {
 
@@ -270,6 +279,7 @@ public class TraceQueryFacadeImpl extends BaseFacade {
    * @return
    */
   @PostMapping(value = "/query/componentList")
+  @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.VIEW)
   public JsonResult<List<VirtualComponent>> queryComponentList(
       @RequestBody QueryProto.QueryMetaRequest request) {
 
@@ -307,6 +317,7 @@ public class TraceQueryFacadeImpl extends BaseFacade {
   }
 
   @PostMapping(value = "/query/componentTraceIds")
+  @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.VIEW)
   public JsonResult<List<String>> queryComponentTraceIds(
       @RequestBody QueryProto.QueryMetaRequest request) {
 
@@ -349,6 +360,7 @@ public class TraceQueryFacadeImpl extends BaseFacade {
    * @return
    */
   @PostMapping(value = "/query/topology")
+  @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.VIEW)
   public JsonResult<Topology> queryTenantTopology(
       @RequestBody QueryProto.QueryTopologyRequest request) {
 
@@ -391,6 +403,7 @@ public class TraceQueryFacadeImpl extends BaseFacade {
    * @return
    */
   @PostMapping(value = "/slowSql")
+  @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.VIEW)
   public JsonResult<List<SlowSql>> querySlowSqlList(
       @RequestBody QueryProto.QueryMetaRequest request) {
 
@@ -431,6 +444,7 @@ public class TraceQueryFacadeImpl extends BaseFacade {
    * @return
    */
   @PostMapping(value = "/serviceErrorList")
+  @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.VIEW)
   public JsonResult<List<Map<String, String>>> queryServiceErrorList(
       @RequestBody QueryProto.QueryMetaRequest request) {
 
@@ -471,6 +485,7 @@ public class TraceQueryFacadeImpl extends BaseFacade {
    * @return
    */
   @PostMapping(value = "/serviceErrorDetail")
+  @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.VIEW)
   public JsonResult<List<Map<String, String>>> queryServiceErrorDetail(
       @RequestBody QueryProto.QueryMetaRequest request) {
     final JsonResult<List<Map<String, String>>> result = new JsonResult<>();
@@ -504,6 +519,7 @@ public class TraceQueryFacadeImpl extends BaseFacade {
   }
 
   @PostMapping(value = "/events")
+  @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.VIEW)
   public JsonResult<List<Event>> queryEvents(@RequestBody QueryProto.QueryEventRequest request) {
     final JsonResult<List<Event>> result = new JsonResult<>();
     facadeTemplate.manage(result, new ManageCallback() {

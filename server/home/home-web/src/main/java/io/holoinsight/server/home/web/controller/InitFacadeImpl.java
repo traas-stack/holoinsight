@@ -14,7 +14,10 @@ import java.util.UUID;
 
 import javax.servlet.http.HttpServletResponse;
 
+import io.holoinsight.server.home.common.util.scope.AuthTargetType;
+import io.holoinsight.server.home.common.util.scope.PowerConstants;
 import io.holoinsight.server.home.web.common.ParaCheckUtil;
+import io.holoinsight.server.home.web.interceptor.MonitorScopeAuth;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
@@ -139,6 +142,7 @@ public class InitFacadeImpl extends BaseFacade {
 
   @ResponseBody
   @GetMapping(value = "/tenant")
+  @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.EDIT)
   public JsonResult<Boolean> sys() {
 
     final JsonResult<Boolean> result = new JsonResult<>();

@@ -5,6 +5,8 @@ package io.holoinsight.server.home.web.filter;
 
 import io.holoinsight.server.home.biz.common.MetaDictUtil;
 import io.holoinsight.server.home.biz.ula.ULAFacade;
+import io.holoinsight.server.home.common.util.MonitorException;
+import io.holoinsight.server.home.common.util.ResultCodeEnum;
 import io.holoinsight.server.home.common.util.scope.RequestContext;
 import io.holoinsight.server.home.web.config.RestAuthUtil;
 import io.holoinsight.server.home.biz.access.MonitorAccessService;
@@ -58,7 +60,8 @@ public class Step2IdentityFilter implements Filter {
       next = identity(req, resp);
     } catch (Throwable e) {
       authFailedResponse(resp, HttpServletResponse.SC_UNAUTHORIZED,
-          RequestContext.getTrace() + " identity error, " + e.getMessage());
+          RequestContext.getTrace() + " identity error, " + e.getMessage(),
+          ResultCodeEnum.MONITOR_SYSTEM_ERROR);
       log.error("{} identity error", RequestContext.getTrace(), e);
       return;
     }
@@ -81,7 +84,8 @@ public class Step2IdentityFilter implements Filter {
         return true;
       }
       authFailedResponse(resp, HttpServletResponse.SC_UNAUTHORIZED,
-          req.getServletPath() + ", accessKey is not existed, " + accessKey);
+          req.getServletPath() + ", accessKey is not existed, " + accessKey,
+          ResultCodeEnum.API_ACCESS_INVALID);
       log.error(req.getServletPath() + ", accessKey is not existed, " + accessKey);
       return false;
     }
@@ -120,13 +124,27 @@ public class Step2IdentityFilter implements Filter {
         req.setAttribute(MonitorUser.MONITOR_USER, user);
         return true;
       } else {
-        authFailedResponse(resp, HttpServletResponse.SC_UNAUTHORIZED, "check login failed");
+        authFailedResponse(resp, HttpServletResponse.SC_UNAUTHORIZED, "check login failed",
+            ResultCodeEnum.NO_LOGIN_AUTH);
         return false;
+      }
+    } catch (MonitorException me) {
+      log.error("login failed by MonitorException", me);
+      if (me.getResultCode() == ResultCodeEnum.NO_LOGIN_AUTH) {
+        authFailedResponse(resp, HttpServletResponse.SC_UNAUTHORIZED, me.getMessage(),
+            ResultCodeEnum.NO_LOGIN_AUTH);
+      } else if (me.getResultCode() == ResultCodeEnum.DOWNSTREAM_SYSTEM_ERROR) {
+        authFailedResponse(resp, HttpServletResponse.SC_UNAUTHORIZED, me.getMessage(),
+            ResultCodeEnum.DOWNSTREAM_AUTH_SYSTEM_ERROR);
+      } else {
+        authFailedResponse(resp, HttpServletResponse.SC_UNAUTHORIZED,
+            "login failed by MonitorException, " + me.getMessage(),
+            ResultCodeEnum.MONITOR_AUTH_SYSTEM_ERROR);
       }
     } catch (Throwable e) {
       log.error("login failed, " + e.getMessage(), e);
       authFailedResponse(resp, HttpServletResponse.SC_UNAUTHORIZED,
-          "check login failed, " + e.getMessage());
+          "check login failed, " + e.getMessage(), ResultCodeEnum.MONITOR_SYSTEM_ERROR);
     }
     return false;
 
@@ -137,14 +155,15 @@ public class Step2IdentityFilter implements Filter {
     if (!TokenUrlFactoryHolder.checkIsExist(req.getServletPath())
         && !MetaDictUtil.getTokenUrlWriteList().contains(req.getServletPath())) {
       authFailedResponse(resp, HttpServletResponse.SC_UNAUTHORIZED,
-          req.getServletPath() + " is not open, please connect monitor admin, " + token);
+          req.getServletPath() + " is not open, please connect monitor admin, " + token,
+          ResultCodeEnum.AUTH_CHECK_ERROR);
       log.error(req.getServletPath() + " is not open, please connect monitor admin, " + token);
       return false;
     }
     Boolean aBoolean = monitorAccessService.tokenExpire(req, token, token_expire_sec);
     if (aBoolean) {
       authFailedResponse(resp, HttpServletResponse.SC_UNAUTHORIZED,
-          req.getServletPath() + ", token expired, " + token);
+          req.getServletPath() + ", token expired, " + token, ResultCodeEnum.API_TOKEN_INVALID);
       log.error(req.getServletPath() + ", token expired, " + token);
       return false;
     }

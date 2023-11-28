@@ -144,7 +144,7 @@ public class AlarmDingDingRobotFacadeImpl extends BaseFacade {
 
   @GetMapping("/query/{id}")
   @ResponseBody
-  @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.EDIT)
+  @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.VIEW)
   public JsonResult<AlarmDingDingRobotDTO> queryById(@PathVariable("id") Long id) {
     final JsonResult<AlarmDingDingRobotDTO> result = new JsonResult<>();
     facadeTemplate.manage(result, new ManageCallback() {

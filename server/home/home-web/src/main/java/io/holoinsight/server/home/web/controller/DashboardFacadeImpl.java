@@ -195,6 +195,7 @@ public class DashboardFacadeImpl extends BaseFacade {
   }
 
   @DeleteMapping("/{id}")
+  @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.EDIT)
   public JsonResult<Boolean> deleteById(@PathVariable Long id) {
     final JsonResult<Boolean> result = new JsonResult<>();
     facadeTemplate.manage(result, new ManageCallback() {

@@ -9,6 +9,8 @@ import java.util.Set;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import io.holoinsight.server.home.common.service.RequestContextAdapter;
+import io.holoinsight.server.home.common.util.MonitorException;
+import io.holoinsight.server.home.common.util.ResultCodeEnum;
 import io.holoinsight.server.home.dal.model.AlarmSubscribe;
 import io.holoinsight.server.home.dal.model.dto.AlarmSubscribeInfo;
 import io.holoinsight.server.home.web.security.ParameterSecurityService;
@@ -27,7 +29,6 @@ import io.holoinsight.server.common.JsonResult;
 import io.holoinsight.server.home.biz.service.AlertSubscribeService;
 import io.holoinsight.server.home.biz.ula.ULAFacade;
 import io.holoinsight.server.home.common.util.scope.AuthTargetType;
-import io.holoinsight.server.home.common.util.scope.MonitorCookieUtil;
 import io.holoinsight.server.home.common.util.scope.MonitorScope;
 import io.holoinsight.server.home.common.util.scope.MonitorUser;
 import io.holoinsight.server.home.common.util.scope.PowerConstants;
@@ -130,6 +131,13 @@ public class AlarmSubscribeFacadeImpl extends BaseFacade {
               ParaCheckUtil.checkParaBoolean(parameterSecurityService.checkGroupTenantAndWorkspace(
                   alarmSubscribeInfo.getGroupId(), ms.getTenant(),
                   requestContextAdapter.getWorkspace(true)), "invalid subscriber");
+            }
+
+            if (null != alarmSubscribeInfo.getId()) {
+              AlarmSubscribe byId = alarmSubscribeService.getById(alarmSubscribeInfo.getId());
+              if (null == byId) {
+                throw new MonitorException(ResultCodeEnum.CANNOT_FIND_RECORD, "id not existed");
+              }
             }
           }
         }

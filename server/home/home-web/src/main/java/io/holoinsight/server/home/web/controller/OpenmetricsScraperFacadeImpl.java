@@ -63,6 +63,7 @@ public class OpenmetricsScraperFacadeImpl extends BaseFacade {
   }
 
   @GetMapping("/{id}")
+  @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.VIEW)
   public JsonResult<OpenmetricsScraperDTO> get(@PathVariable("id") Long id) {
     MonitorScope ms = RequestContext.getContext().ms;
     JsonResult<OpenmetricsScraperDTO> result = new JsonResult<>();
@@ -77,6 +78,7 @@ public class OpenmetricsScraperFacadeImpl extends BaseFacade {
   }
 
   @PostMapping("/create")
+  @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.EDIT)
   public JsonResult<OpenmetricsScraperDTO> create(
       @RequestBody OpenmetricsScraperDTO openmetricsScraperDTO) {
 
@@ -113,6 +115,7 @@ public class OpenmetricsScraperFacadeImpl extends BaseFacade {
   }
 
   @PostMapping("/update/{id}")
+  @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.EDIT)
   public JsonResult<OpenmetricsScraperDTO> update(@PathVariable("id") Long id,
       @RequestBody OpenmetricsScraperDTO openmetricsScraperDTO) {
 
@@ -167,6 +170,7 @@ public class OpenmetricsScraperFacadeImpl extends BaseFacade {
   }
 
   @PostMapping("/delete/{id}")
+  @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.EDIT)
   public JsonResult<Boolean> delete(@PathVariable("id") Long id) {
 
     final JsonResult<Boolean> result = new JsonResult<>();

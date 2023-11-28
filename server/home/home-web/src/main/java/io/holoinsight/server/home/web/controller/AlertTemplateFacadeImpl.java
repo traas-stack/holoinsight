@@ -32,7 +32,7 @@ public class AlertTemplateFacadeImpl extends BaseFacade {
 
   @GetMapping("/listAvailableFields")
   @ResponseBody
-  @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.EDIT)
+  @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.VIEW)
   public JsonResult<List<Map<String, String>>> listAvailableFields() {
     final JsonResult<List<Map<String, String>>> result = new JsonResult<>();
     facadeTemplate.manage(result, new ManageCallback() {

@@ -34,7 +34,7 @@ public class AlertNotifyRecordController extends BaseFacade {
 
   @GetMapping("/queryByHistoryDetailId/{historyDetailId}")
   @ResponseBody
-  @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.EDIT)
+  @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.VIEW)
   public JsonResult<AlertNotifyRecordDTO> queryByHistoryDetailId(
       @PathVariable("historyDetailId") Long historyDetailId) {
     final JsonResult<AlertNotifyRecordDTO> result = new JsonResult<>();

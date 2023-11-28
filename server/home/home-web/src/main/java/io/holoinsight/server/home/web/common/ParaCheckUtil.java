@@ -49,9 +49,10 @@ public class ParaCheckUtil {
    *
    * @param object
    */
-  public static void checkParaNotNull(Object object, String errorMsg) {
+  public static void checkParaNotNull(Object object, String errorKey) {
     if (object == null) {
-      throw new MonitorException(ResultCodeEnum.PARAMETER_ILLEGAL, errorMsg);
+      throw new MonitorException(ResultCodeEnum.PARAMETER_ILLEGAL,
+          "the " + errorKey + " parameter cannot be null");
     }
   }
 
@@ -78,16 +79,18 @@ public class ParaCheckUtil {
    * @param param
    * @param errorMsg
    */
-  public static void checkParaNotBlank(String param, String errorMsg) {
+  public static void checkParaNotBlank(String param, String errorKey) {
     if (StringUtils.isBlank(param)) {
-      throw new MonitorException(ResultCodeEnum.PARAMETER_ILLEGAL, errorMsg);
+      throw new MonitorException(ResultCodeEnum.PARAMETER_ILLEGAL,
+          "the " + errorKey + " parameter cannot be null");
     }
   }
 
 
   public static void checkParaStartWith(String param, String startString, String errorMsg) {
     if (StringUtils.isBlank(param) || !param.startsWith(startString)) {
-      throw new MonitorException(ResultCodeEnum.PARAMETER_ILLEGAL, errorMsg);
+      throw new MonitorException(ResultCodeEnum.PARAMETER_ILLEGAL,
+          errorMsg + " must be start with" + startString);
     }
   }
 
@@ -96,7 +99,8 @@ public class ParaCheckUtil {
    */
   public static void checkParaNotNegative(Integer param, String errorMsg) {
     if (param == null || param < 0) {
-      throw new MonitorException(ResultCodeEnum.PARAMETER_ILLEGAL, errorMsg);
+      throw new MonitorException(ResultCodeEnum.PARAMETER_ILLEGAL,
+          "the " + errorMsg + " parameter must be negative");
     }
   }
 
@@ -105,7 +109,8 @@ public class ParaCheckUtil {
    */
   public static void checkParaNotEmpty(Collection<?> collection, String errorMsg) {
     if (CollectionUtils.isEmpty(collection)) {
-      throw new MonitorException(ResultCodeEnum.PARAMETER_ILLEGAL, errorMsg);
+      throw new MonitorException(ResultCodeEnum.PARAMETER_ILLEGAL,
+          "the " + errorMsg + " parameter cannot be empty");
     }
   }
 
@@ -114,7 +119,8 @@ public class ParaCheckUtil {
    */
   public static void checkParaNotEmpty(Map<?, ?> map, String errorMsg) {
     if (CollectionUtils.isEmpty(map)) {
-      throw new MonitorException(ResultCodeEnum.PARAMETER_ILLEGAL, errorMsg);
+      throw new MonitorException(ResultCodeEnum.PARAMETER_ILLEGAL,
+          "the " + errorMsg + " parameter cannot be empty");
     }
   }
 
@@ -123,17 +129,8 @@ public class ParaCheckUtil {
     Pattern p = Pattern.compile(regEx);
     Matcher m = p.matcher(str);
     if (m.find()) {
-      throw new MonitorException(ResultCodeEnum.PARAMETER_ILLEGAL, errorMsg);
-    }
-  }
-
-
-  /**
-   * Check whether the array param is empty.
-   */
-  public static void checkParaNotEmpty(String[] array, String errorMsg) {
-    if (ArrayUtils.isEmpty(array)) {
-      throw new MonitorException(ResultCodeEnum.PARAMETER_ILLEGAL, errorMsg);
+      throw new MonitorException(ResultCodeEnum.PARAMETER_ILLEGAL,
+          "the " + errorMsg + " parameter cannot be special char");
     }
   }
 

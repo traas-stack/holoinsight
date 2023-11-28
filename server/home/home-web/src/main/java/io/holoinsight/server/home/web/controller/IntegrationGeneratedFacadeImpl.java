@@ -16,6 +16,7 @@ import io.holoinsight.server.home.biz.plugin.model.PluginType;
 import io.holoinsight.server.home.biz.service.IntegrationGeneratedService;
 import io.holoinsight.server.home.biz.service.IntegrationPluginService;
 import io.holoinsight.server.home.biz.service.IntegrationProductService;
+import io.holoinsight.server.home.biz.service.TenantInitService;
 import io.holoinsight.server.home.biz.service.UserOpLogService;
 import io.holoinsight.server.home.common.util.MonitorException;
 import io.holoinsight.server.home.common.util.scope.*;
@@ -74,11 +75,16 @@ public class IntegrationGeneratedFacadeImpl extends BaseFacade {
   @Autowired
   private UserOpLogService userOpLogService;
 
+  @Autowired
+  private TenantInitService tenantInitService;
+
+
   @PostMapping("/update")
   @ResponseBody
   @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.EDIT)
-  public JsonResult<Boolean> update(@RequestBody IntegrationGeneratedDTO generatedDTO) {
-    final JsonResult<Boolean> result = new JsonResult<>();
+  public JsonResult<IntegrationGeneratedDTO> update(
+      @RequestBody IntegrationGeneratedDTO generatedDTO) {
+    final JsonResult<IntegrationGeneratedDTO> result = new JsonResult<>();
     facadeTemplate.manage(result, new ManageCallback() {
       @Override
       public void checkParameter() {
@@ -91,12 +97,13 @@ public class IntegrationGeneratedFacadeImpl extends BaseFacade {
 
         MonitorScope ms = RequestContext.getContext().ms;
         IntegrationGeneratedDTO item = integrationGeneratedService.queryById(generatedDTO.getId(),
-            ms.getTenant(), ms.getWorkspace());
+            tenantInitService.getTraceTenant(ms.getTenant()), ms.getWorkspace());
 
         if (null == item) {
           throw new MonitorException("cannot find record: " + generatedDTO.getId());
         }
-        ParaCheckUtil.checkEquals(item.getTenant(), ms.getTenant(), "tenant is illegal");
+        ParaCheckUtil.checkEquals(item.getTenant(),
+            tenantInitService.getTraceTenant(ms.getTenant()), "tenant is illegal");
 
       }
 
@@ -106,7 +113,7 @@ public class IntegrationGeneratedFacadeImpl extends BaseFacade {
         MonitorUser mu = RequestContext.getContext().mu;
         MonitorScope ms = RequestContext.getContext().ms;
         generatedDTO.setWorkspace(ms.getWorkspace());
-        generatedDTO.setTenant(ms.getTenant());
+        generatedDTO.setTenant(tenantInitService.getTraceTenant(ms.getTenant()));
         generatedDTO.setModifier(mu.getLoginName());
         generatedDTO.setGmtModified(new Date());
         generatedDTO.setDeleted(false);
@@ -115,17 +122,19 @@ public class IntegrationGeneratedFacadeImpl extends BaseFacade {
         userOpLogService.append("integration_generated", byId.getId(), OpType.UPDATE,
             mu.getLoginName(), ms.getTenant(), ms.getWorkspace(), J.toJson(generatedDTO),
             J.toJson(byId), null, "integration_generated_update");
+        JsonResult.createSuccessResult(result, generatedDTO);
       }
     });
 
-    return JsonResult.createSuccessResult(true);
+    return result;
   }
 
   @PostMapping("/create")
   @ResponseBody
   @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.EDIT)
-  public JsonResult<Boolean> create(@RequestBody IntegrationGeneratedDTO generatedDTO) {
-    final JsonResult<Boolean> result = new JsonResult<>();
+  public JsonResult<IntegrationGeneratedDTO> create(
+      @RequestBody IntegrationGeneratedDTO generatedDTO) {
+    final JsonResult<IntegrationGeneratedDTO> result = new JsonResult<>();
     facadeTemplate.manage(result, new ManageCallback() {
       @Override
       public void checkParameter() {
@@ -144,7 +153,7 @@ public class IntegrationGeneratedFacadeImpl extends BaseFacade {
         MonitorUser mu = RequestContext.getContext().mu;
         MonitorScope ms = RequestContext.getContext().ms;
         generatedDTO.setWorkspace(ms.getWorkspace());
-        generatedDTO.setTenant(ms.getTenant());
+        generatedDTO.setTenant(tenantInitService.getTraceTenant(ms.getTenant()));
         generatedDTO.setCreator(mu.getLoginName());
         generatedDTO.setModifier(mu.getLoginName());
         generatedDTO.setGmtCreate(new Date());
@@ -154,15 +163,16 @@ public class IntegrationGeneratedFacadeImpl extends BaseFacade {
         userOpLogService.append("integration_generated", insert.getId(), OpType.CREATE,
             mu.getLoginName(), ms.getTenant(), ms.getWorkspace(), J.toJson(insert), null, null,
             "integration_generated_create");
+        JsonResult.createSuccessResult(result, insert);
       }
     });
 
-    return JsonResult.createSuccessResult(true);
+    return result;
   }
 
   @GetMapping("/query/{name}")
   @ResponseBody
-  @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.EDIT)
+  @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.VIEW)
   public JsonResult<List<IntegrationAppProductModel>> queryByName(
       @PathVariable("name") String name) {
     final JsonResult<List<IntegrationAppProductModel>> result = new JsonResult<>();
@@ -184,16 +194,16 @@ public class IntegrationGeneratedFacadeImpl extends BaseFacade {
         }
 
         MonitorScope ms = RequestContext.getContext().ms;
-        List<IntegrationGeneratedDTO> integrationGeneratedDTOS =
-            integrationGeneratedService.queryByName(ms.getTenant(), ms.getWorkspace(), name);
+        List<IntegrationGeneratedDTO> integrationGeneratedDTOS = integrationGeneratedService
+            .queryByName(tenantInitService.getTraceTenant(ms.getTenant()), ms.getWorkspace(), name);
 
-        Map<String, List<IntegrationGeneratedDTO>> listMap = new HashMap<>();
+        Map<String, List<IntegrationGeneratedDTO>> generatedMap = new HashMap<>();
         if (!CollectionUtils.isEmpty(integrationGeneratedDTOS)) {
           integrationGeneratedDTOS.forEach(integrationGeneratedDTO -> {
-            if (!listMap.containsKey(integrationGeneratedDTO.product)) {
-              listMap.put(integrationGeneratedDTO.product, new ArrayList<>());
+            if (!generatedMap.containsKey(integrationGeneratedDTO.product)) {
+              generatedMap.put(integrationGeneratedDTO.product, new ArrayList<>());
             }
-            listMap.get(integrationGeneratedDTO.product).add(integrationGeneratedDTO);
+            generatedMap.get(integrationGeneratedDTO.product).add(integrationGeneratedDTO);
           });
         }
         Map<String, IntegrationPluginDTO> pluginMap = new HashMap<>();
@@ -218,10 +228,10 @@ public class IntegrationGeneratedFacadeImpl extends BaseFacade {
 
           List<IntegrationAppModel> appModels = new ArrayList<>();
           Set<String> itemMap = new HashSet<>();
-          if (listMap.containsKey(integrationProductDTO.getName())) {
-            listMap.get(integrationProductDTO.getName()).forEach(generatedDTO -> {
+          if (generatedMap.containsKey(integrationProductDTO.getName())) {
+            generatedMap.get(integrationProductDTO.getName()).forEach(generatedDTO -> {
               itemMap.add(generatedDTO.product + "_" + generatedDTO.item);
-              String status = "OFFLINE";
+              String status = "ONLINE";
               if (!CollectionUtils.isEmpty(generatedDTO.config)
                   && generatedDTO.getConfig().containsKey("status")) {
                 status = generatedDTO.getConfig().get("status").toString();
@@ -286,8 +296,12 @@ public class IntegrationGeneratedFacadeImpl extends BaseFacade {
               }
             }
           }
-          if (CollectionUtils.isEmpty(appModels) && Boolean.FALSE == canCustom) {
-            continue;
+          if (CollectionUtils.isEmpty(appModels)) {
+            if (Boolean.FALSE == canCustom) {
+              continue;
+            }
+            appModels.add(new IntegrationAppModel(null, integrationProductDTO.name.toLowerCase(),
+                "OFFLINE", false, canCustom, new HashMap<>()));
           }
           integrationAppProductModels
               .add(new IntegrationAppProductModel(integrationProductDTO.getName(),

@@ -51,9 +51,17 @@ public enum ResultCodeEnum {
   MONITOR_SYSTEM_ERROR("MONITOR_SYSTEM_ERROR", "Monitor系统异常"),
 
   /** 操作失败 */
-  FAILED("FAILED", "操作失败"),
+  FAILED("FAILED", "操作失败"), API_TOKEN_INVALID("TOKEN_INVALID",
+      "Token失效"), API_ACCESS_INVALID("API_ACCESS_INVALID", "AccessKey失效"),
 
-  NO_AUTH("NO_AUTH", "没权限"), AUTH_CHECK_ERROR("AUTH_CHECK_ERROR", "权限校验失败"),
+  NO_LOGIN_AUTH("NO_LOGIN_AUTH", "登陆权限校验失败"), AUTH_CHECK_ERROR("AUTH_CHECK_ERROR", "权限校验失败"),
+
+  NO_ROLE_AUTH("NO_ROLE_AUTH", "角色校验失败"),
+
+  DOWNSTREAM_SYSTEM_ERROR("DOWNSTREAM_SYSTEM_ERROR", "下游系统异常"),
+
+  MONITOR_AUTH_SYSTEM_ERROR("MONITOR_AUTH_SYSTEM_ERROR",
+      "Monitor系统鉴权异常"), DOWNSTREAM_AUTH_SYSTEM_ERROR("DOWNSTREAM_AUTH_SYSTEM_ERROR", "下游系统鉴权异常"),
 
   /**
    * 对象转换出错
