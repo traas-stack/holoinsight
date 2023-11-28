@@ -133,9 +133,9 @@ public class AlarmSubscribeFacadeImpl extends BaseFacade {
                   requestContextAdapter.getWorkspace(true)), "invalid subscriber");
             }
 
-            if(null != alarmSubscribeInfo.getId()){
+            if (null != alarmSubscribeInfo.getId()) {
               AlarmSubscribe byId = alarmSubscribeService.getById(alarmSubscribeInfo.getId());
-              if(null ==  byId){
+              if (null == byId) {
                 throw new MonitorException(ResultCodeEnum.CANNOT_FIND_RECORD, "id not existed");
               }
             }
