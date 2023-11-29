@@ -3,6 +3,7 @@
  */
 package io.holoinsight.server.common.ctl;
 
+import com.google.common.reflect.TypeToken;
 import io.holoinsight.server.common.J;
 import io.holoinsight.server.common.dao.entity.MetaDataDictValue;
 import io.holoinsight.server.common.dao.entity.MonitorInstance;
@@ -31,6 +32,8 @@ public class ProductCtlServiceImpl implements ProductCtlService {
 
   private Map<String, Set<String>> productClosed = new HashMap<>();
 
+  private Set<String> metricWhitePrefixes = new HashSet<>();
+
   private boolean switchOn = false;
 
   protected static final String RS_DELIMITER = "_";
@@ -42,6 +45,7 @@ public class ProductCtlServiceImpl implements ProductCtlService {
   @Scheduled(initialDelay = 10000L, fixedRate = 10000L)
   private void refresh() {
     List<MonitorInstance> monitorInstances = monitorInstanceService.list();
+
     Map<String, Set<String>> dbProductClosed = new HashMap<>();
     for (MonitorInstance monitorInstance : monitorInstances) {
       MonitorInstanceCfg cfg =
@@ -54,6 +58,7 @@ public class ProductCtlServiceImpl implements ProductCtlService {
       });
     }
     productClosed = dbProductClosed;
+
     MetaDataDictValue switchOnDictVal = superCacheService.getSc().metaDataDictValueMap
         .getOrDefault("global_config", new HashMap<>()).get("product_closed_switch_on");
     try {
@@ -62,14 +67,26 @@ public class ProductCtlServiceImpl implements ProductCtlService {
       switchOn = false;
     }
 
+    MetaDataDictValue whiteListDictVal = superCacheService.getSc().metaDataDictValueMap
+        .getOrDefault("global_config", new HashMap<>()).get("metric_stop_white_prefixes");
+    try {
+      metricWhitePrefixes = J.fromJson(whiteListDictVal.getDictValue(),
+          new TypeToken<HashSet<String>>() {}.getType());
+    } catch (Exception e) {
+    }
 
-    log.info("[product_ctl] refresh closed products, switchOn={}, closed={}", switchOn,
-        productClosed);
+    log.info("[product_ctl] refresh closed products, switchOn={}, closed={}, metricWhiteList={}",
+        switchOn, productClosed, metricWhitePrefixes);
   }
 
   @Override
   public boolean switchOn() {
     return switchOn;
+  }
+
+  @Override
+  public boolean isMetricInWhiteList(String metric) {
+    return metricWhitePrefixes.stream().anyMatch(prefix -> StringUtils.startsWith(metric, prefix));
   }
 
   public String buildResourceVal(List<String> resourceKeys, Map<String, String> tags) {

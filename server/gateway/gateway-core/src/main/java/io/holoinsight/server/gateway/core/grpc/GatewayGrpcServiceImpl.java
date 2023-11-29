@@ -131,7 +131,8 @@ public class GatewayGrpcServiceImpl extends GatewayServiceGrpc.GatewayServiceImp
     List<WriteMetricsParam.Point> points = new ArrayList<>(request.getPointCount());
     for (Point p : request.getPointList()) {
 
-      if (productCtlService.productClosed(MonitorProductCode.METRIC, p.getTagsMap())) {
+      if (!productCtlService.isMetricInWhiteList(p.getMetricName())
+          && productCtlService.productClosed(MonitorProductCode.METRIC, p.getTagsMap())) {
         continue;
       }
 
@@ -177,7 +178,8 @@ public class GatewayGrpcServiceImpl extends GatewayServiceGrpc.GatewayServiceImp
         for (int i = 0; i < header.getTagKeysCount(); i++) {
           tags.put(header.getTagKeys(i), row.getTagValues(i));
         }
-        if (productCtlService.productClosed(MonitorProductCode.METRIC, tags)) {
+        if (!productCtlService.isMetricInWhiteList(header.getMetricName())
+            && productCtlService.productClosed(MonitorProductCode.METRIC, tags)) {
           continue;
         }
         wmpp.setTimeStamp(row.getTimestamp());

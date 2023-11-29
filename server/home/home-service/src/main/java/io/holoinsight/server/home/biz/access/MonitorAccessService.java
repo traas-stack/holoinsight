@@ -122,6 +122,7 @@ public class MonitorAccessService {
 
     MonitorScope monitorScope = new MonitorScope();
     monitorScope.tenant = monitorAccessConfig.getTenant();
+    monitorScope.workspace = monitorAccessConfig.getWorkspace();
     monitorScope.accessId = monitorAccessConfig.getAccessId();
     monitorScope.accessKey = monitorAccessConfig.getAccessKey();
     monitorScope.accessConfig = monitorAccessConfig;

@@ -82,6 +82,7 @@ public class AccessConfigService {
       currentAccess.setDpsLimit(accessConfig.getDpsLimit());
       currentAccess.setTagsLimit(accessConfig.getTagsLimit());
       currentAccess.setUserRate(accessConfig.getUserRate());
+      currentAccess.setWorkspace(accessConfig.getWorkspace());
 
       monitorAccessConfigMap.put(t.getApiKey(), currentAccess);
 

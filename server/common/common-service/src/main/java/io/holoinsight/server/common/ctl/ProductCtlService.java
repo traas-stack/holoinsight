@@ -10,6 +10,8 @@ public interface ProductCtlService {
 
   boolean switchOn();
 
+  boolean isMetricInWhiteList(String metric);
+
   boolean productClosed(MonitorProductCode productCode, Map<String, String> tags);
 
   Map<String, Set<String>> productCtl(MonitorProductCode code, Map<String, String> tags,
