@@ -143,7 +143,9 @@ public class GetSubscriptionHandler implements AlertHandlerExecutor {
                       personList.add(userId);
                     }
                     if (!CollectionUtils.isEmpty(personList)) {
-                      userNotifyMap.put(noticeType, personList);
+                      List<String> list =
+                          userNotifyMap.computeIfAbsent(noticeType, k -> new ArrayList<>());
+                      list.addAll(personList);
                     }
                     break;
                   case "dingDingRobot":
