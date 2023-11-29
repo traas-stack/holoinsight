@@ -90,8 +90,7 @@
         <dependency>
             <groupId>io.holoinsight.server</groupId>
             <artifactId>extension-storage</artifactId>
-            <version>1.0.0-SNAPSHOT</version>
-            <scope>compile</scope>
+            <version>${project.version}</version>
         </dependency>
     </dependencies>
 </project>
