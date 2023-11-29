@@ -39,7 +39,7 @@ public abstract class SqlDataCoreService extends AbstractDataCoreService {
   public static final int PERIOD = 10;
   public static final int CLEAN_TASK_PERIOD = 3600;
   protected MetaDataMapper metaDataMapper;
-  private SuperCacheService superCacheService;
+  protected SuperCacheService superCacheService;
 
   private static final long DEFAULT_DEL_DURATION = 3 * 24 * 60 * 60 * 1000;
   public static final ScheduledThreadPoolExecutor cleanMeatExecutor =

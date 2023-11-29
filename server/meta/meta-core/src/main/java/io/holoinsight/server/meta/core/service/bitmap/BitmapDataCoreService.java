@@ -33,6 +33,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class BitmapDataCoreService extends SqlDataCoreService {
 
@@ -65,6 +66,7 @@ public class BitmapDataCoreService extends SqlDataCoreService {
 
   public BitmapDataCoreService(MetaDataMapper metaDataMapper, SuperCacheService superCacheService) {
     super(metaDataMapper, superCacheService);
+    logger.info("meta service initialized, engine=bitmap");
   }
 
   private AbstractMetaData buildMetaData(String tableName) {
@@ -113,12 +115,8 @@ public class BitmapDataCoreService extends SqlDataCoreService {
     StopWatch stopWatch = StopWatch.createStarted();
     AbstractMetaData metaData = getMetaData(tableName);
     Collection<MetaDataRow> rows;
-    if (!CollectionUtils.isEmpty(rowKeys)) {
-      rows = metaData.getByPks(rowKeys);
-    } else {
-      rows = metaData.getRowsMap().values();
-    }
-    List<Map<String, Object>> result = toValMap(rows);
+    rows = metaData.getRowsMap().values();
+    List<Map<String, Object>> result = toValMap(rows, rowKeys);
     logger.info("[queryByTable] finish, table={}, records={}, cost={}.", tableName, result.size(),
         stopWatch.getTime());
     return result;
@@ -132,7 +130,7 @@ public class BitmapDataCoreService extends SqlDataCoreService {
       return Lists.newArrayList();
     }
     StopWatch stopWatch = StopWatch.createStarted();
-    List<Map<String, Object>> result = toValMap(metaData.getByPks(pkValList));
+    List<Map<String, Object>> result = toValMap(metaData.getByPks(pkValList), null);
     logger.info("[queryByPks] finish, table={}, records={}, cost={}.", tableName, result.size(),
         stopWatch.getTime());
     return result;
@@ -146,7 +144,8 @@ public class BitmapDataCoreService extends SqlDataCoreService {
     MetaCondition metaCondition = FilterUtil.buildDimCondition(queryExample, false);
     List<Map<String, Object>> rows = null;
     try {
-      rows = toValMap(metaCptCenter.computeByCondition(tableName, metaCondition, false));
+      rows = toValMap(metaCptCenter.computeByCondition(tableName, metaCondition, false),
+          queryExample.getRowKeys());
     } catch (NotForeignKeyException e) {
       throw new RuntimeException(e);
     }
@@ -163,7 +162,8 @@ public class BitmapDataCoreService extends SqlDataCoreService {
     MetaCondition metaCondition = FilterUtil.buildDimCondition(queryExample, true);
     List<Map<String, Object>> rows = null;
     try {
-      rows = toValMap(metaCptCenter.computeByCondition(tableName, metaCondition, false));
+      rows = toValMap(metaCptCenter.computeByCondition(tableName, metaCondition, false),
+          queryExample.getRowKeys());
     } catch (NotForeignKeyException e) {
       throw new RuntimeException(e);
     }
@@ -172,8 +172,14 @@ public class BitmapDataCoreService extends SqlDataCoreService {
     return rows;
   }
 
-  private List<Map<String, Object>> toValMap(Collection<MetaDataRow> rows) {
-    return rows.parallelStream().map(MetaDataRow::getValues).collect(Collectors.toList());
+  private List<Map<String, Object>> toValMap(Collection<MetaDataRow> rows, List<String> rowKeys) {
+    Stream<Map<String, Object>> stream = rows.parallelStream().map(MetaDataRow::getValues);
+    if (!CollectionUtils.isEmpty(rowKeys)) {
+      stream = stream
+          .map(data -> data.entrySet().stream().filter(entry -> rowKeys.contains(entry.getKey()))
+              .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)));
+    }
+    return stream.collect(Collectors.toList());
   }
 
 }

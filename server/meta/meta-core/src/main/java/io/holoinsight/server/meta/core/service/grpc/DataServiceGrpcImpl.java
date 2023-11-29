@@ -3,12 +3,7 @@
  */
 package io.holoinsight.server.meta.core.service.grpc;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Random;
+import java.util.*;
 import java.util.function.Supplier;
 
 import com.google.gson.reflect.TypeToken;
@@ -22,6 +17,9 @@ import io.holoinsight.server.meta.common.util.ConstModel;
 import io.holoinsight.server.meta.common.util.ConstPool;
 import io.holoinsight.server.meta.common.util.RetryPolicy;
 import io.holoinsight.server.meta.core.service.DBCoreService;
+import io.holoinsight.server.meta.core.service.DBCoreServiceSwitcher;
+import io.holoinsight.server.meta.core.service.bitmap.BitmapDataCoreService;
+import io.holoinsight.server.meta.core.service.hashmap.HashMapDataCoreService;
 import io.holoinsight.server.meta.proto.data.BatchDeleteByPkRequest;
 import io.holoinsight.server.meta.proto.data.DataBaseResponse;
 import io.holoinsight.server.meta.proto.data.DataHello;
@@ -37,6 +35,7 @@ import org.apache.commons.lang3.time.StopWatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
@@ -47,11 +46,9 @@ import org.springframework.util.CollectionUtils;
 @Service
 public class DataServiceGrpcImpl extends DataServiceGrpc.DataServiceImplBase {
   private static final Logger logger = LoggerFactory.getLogger(DataServiceGrpcImpl.class);
-  @Autowired
-  private DBCoreService dbCoreService;
 
   @Autowired
-  private SuperCacheService superCacheService;
+  private DBCoreServiceSwitcher dbCoreServiceSwitcher;
 
   @Override
   public void insertOrUpdate(InsertOrUpdateRequest request,
@@ -64,8 +61,9 @@ public class DataServiceGrpcImpl extends DataServiceGrpc.DataServiceImplBase {
     List<Map<String, Object>> rows = J.toMapList(rowsJson);
     DataBaseResponse.Builder builder = DataBaseResponse.newBuilder();
     try {
-      Pair<Integer, Integer> insertOrUpdate =
-          tryUntilSuccess(() -> dbCoreService.insertOrUpdate(tableName, rows), "insertOrUpdate", 0);
+      Pair<Integer, Integer> insertOrUpdate = tryUntilSuccess(
+          () -> dbCoreServiceSwitcher.dbCoreService().insertOrUpdate(tableName, rows),
+          "insertOrUpdate", 0);
       builder.setSuccess(true).setRowsJson(String.format("insertCount: %s, updateCount: %s",
           insertOrUpdate.left(), insertOrUpdate.right()));
       logger.info("DimWriterGrpcBackend,insert,Y,{},{},{},{},{},{},", stopWatch.getTime(),
@@ -90,7 +88,8 @@ public class DataServiceGrpcImpl extends DataServiceGrpc.DataServiceImplBase {
         J.fromJson(request.getPkValsJson(), new TypeToken<List<String>>() {}.getType());
     stopWatch.start();
     List<Map<String, Object>> rows =
-        tryUntilSuccess(() -> dbCoreService.queryByPks(tableName, pkVals), "queryDataByPks", 0);
+        tryUntilSuccess(() -> dbCoreServiceSwitcher.dbCoreService().queryByPks(tableName, pkVals),
+            "queryDataByPks", 0);
     stopWatch.stop();
     try {
       logger.info("DimWriterGrpcBackend,queryDataByPks,Y,{},{},{},{},{},{},", stopWatch.getTime(),
@@ -115,7 +114,8 @@ public class DataServiceGrpcImpl extends DataServiceGrpc.DataServiceImplBase {
     String tableName = request.getTableName();
     List<Map<String, Object>> rows;
     try {
-      rows = tryUntilSuccess(() -> dbCoreService.queryByTable(tableName), "queryByTable", 0);
+      rows = tryUntilSuccess(() -> dbCoreServiceSwitcher.dbCoreService().queryByTable(tableName),
+          "queryByTable", 0);
       Iterator<Map<String, Object>> it = rows.iterator();
       int total = 0;
       int count = 0;
@@ -156,8 +156,9 @@ public class DataServiceGrpcImpl extends DataServiceGrpc.DataServiceImplBase {
     String pkRows = request.getPkRows();
     List<String> rowVals = J.toList(pkRows);
     try {
-      rows =
-          tryUntilSuccess(() -> dbCoreService.queryByTable(tableName, rowVals), "queryByTable", 0);
+      rows = tryUntilSuccess(
+          () -> dbCoreServiceSwitcher.dbCoreService().queryByTable(tableName, rowVals),
+          "queryByTable", 0);
       Iterator<Map<String, Object>> it = rows.iterator();
       int total = 0;
       int count = 0;
@@ -197,9 +198,8 @@ public class DataServiceGrpcImpl extends DataServiceGrpc.DataServiceImplBase {
     List<String> pkVals = J.toList(pkValsJson);
     DataBaseResponse.Builder builder = DataBaseResponse.newBuilder();
     try {
-      Long deleteCount =
-          tryUntilSuccess(() -> dbCoreService.batchDeleteByPk(request.getTableName(), pkVals),
-              "batchDeleteByPk", 0);
+      Long deleteCount = tryUntilSuccess(() -> dbCoreServiceSwitcher.dbCoreService()
+          .batchDeleteByPk(request.getTableName(), pkVals), "batchDeleteByPk", 0);
       logger.info("DimWriterGrpcBackend,batchDeleteByPk,Y,{},{},{},{},{},{},{},",
           stopWatch.getTime(), request.getTableName(), pkVals.size(), 0, request.getFromApp(),
           request.getFromIp(), deleteCount);
@@ -224,7 +224,8 @@ public class DataServiceGrpcImpl extends DataServiceGrpc.DataServiceImplBase {
     QueryExample example = J.json2Bean(request.getExampleJson(), QueryExample.class);
     DataBaseResponse.Builder builder = DataBaseResponse.newBuilder();
     try {
-      Long deleteCount = tryUntilSuccess(() -> dbCoreService.deleteByExample(tableName, example),
+      Long deleteCount = tryUntilSuccess(
+          () -> dbCoreServiceSwitcher.dbCoreService().deleteByExample(tableName, example),
           "deleteByExample", 0);
       logger.info("DimWriterGrpcBackend,deleteByExample,Y,{},{},{},{},{},{},{},",
           stopWatch.getTime(), tableName, 0, 0, request.getFromApp(), request.getFromIp(),
@@ -251,7 +252,8 @@ public class DataServiceGrpcImpl extends DataServiceGrpc.DataServiceImplBase {
         (new TypeToken<List<Map<String, Object>>>() {}).getType());
     DataBaseResponse.Builder builder = DataBaseResponse.newBuilder();
     try {
-      Long deleteCount = tryUntilSuccess(() -> dbCoreService.deleteByRowMap(tableName, example),
+      Long deleteCount = tryUntilSuccess(
+          () -> dbCoreServiceSwitcher.dbCoreService().deleteByRowMap(tableName, example),
           "deleteByRowMap", 0);
       logger.info("DimWriterGrpcBackend,deleteByRowMap,Y,{},{},{},{},{},{},{},",
           stopWatch.getTime(), tableName, 0, 0, request.getFromApp(), request.getFromIp(),
@@ -278,7 +280,8 @@ public class DataServiceGrpcImpl extends DataServiceGrpc.DataServiceImplBase {
     List<Map<String, Object>> rows;
     QueryDataResponse.Builder builder = QueryDataResponse.newBuilder();
     try {
-      rows = tryUntilSuccess(() -> dbCoreService.queryByExample(tableName, example),
+      rows = tryUntilSuccess(
+          () -> dbCoreServiceSwitcher.dbCoreService().queryByExample(tableName, example),
           "queryByExample", 0);
       logger.info("DimWriterGrpcBackend,queryByExample,Y,{},{},{},{},{},{},", stopWatch.getTime(),
           tableName, 0, rows.size(), request.getFromApp(), request.getFromIp());
@@ -305,7 +308,8 @@ public class DataServiceGrpcImpl extends DataServiceGrpc.DataServiceImplBase {
     List<Map<String, Object>> rows;
     QueryDataResponse.Builder builder = QueryDataResponse.newBuilder();
     try {
-      rows = tryUntilSuccess(() -> dbCoreService.fuzzyByExample(tableName, example),
+      rows = tryUntilSuccess(
+          () -> dbCoreServiceSwitcher.dbCoreService().fuzzyByExample(tableName, example),
           "fuzzyByExample", 0);
       logger.info("DimWriterGrpcBackend,fuzzyByExample,Y,{},{},{},{},{},{},", stopWatch.getTime(),
           tableName, 0, rows.size(), request.getFromApp(), request.getFromIp());
@@ -331,7 +335,8 @@ public class DataServiceGrpcImpl extends DataServiceGrpc.DataServiceImplBase {
     QueryExample example = J.json2Bean(exampleJson, QueryExample.class);
     List<Map<String, Object>> rows;
     try {
-      rows = tryUntilSuccess(() -> dbCoreService.queryByExample(tableName, example),
+      rows = tryUntilSuccess(
+          () -> dbCoreServiceSwitcher.dbCoreService().queryByExample(tableName, example),
           "queryByExampleStream", 0);
       Iterator<Map<String, Object>> it = rows.iterator();
       int count = 0;

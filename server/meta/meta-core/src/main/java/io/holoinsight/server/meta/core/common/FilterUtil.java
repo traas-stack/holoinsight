@@ -70,11 +70,6 @@ public class FilterUtil {
         }
       });
     }
-    if (!CollectionUtils.isEmpty(queryExample.getRowKeys())) {
-      AndCondition andCondition = orCondition.and();
-      andCondition.setExpress(new String[] {UK_FIELD});
-      andCondition.setValueRange(new ArrayList<>(queryExample.getRowKeys()));
-    }
     return metaCondition;
   }
 
