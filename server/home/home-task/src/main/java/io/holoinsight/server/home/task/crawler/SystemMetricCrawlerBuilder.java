@@ -65,6 +65,8 @@ public class SystemMetricCrawlerBuilder extends AbstractMetricCrawlerBuilder {
     metricInfoList
         .add(genMetricInfo(GLOBAL_TENANT, GLOBAL_WORKSPACE, GLOBAL_ORGANIZATION, "system", "TCP",
             "tcp_established", "k8s_pod_tcp_established", "tcp 连接被重置的每秒次数", BYTES_UNIT, 60, tags));
+    metricInfoList.add(genMetricInfo(GLOBAL_TENANT, GLOBAL_WORKSPACE, GLOBAL_ORGANIZATION, "system",
+        "OOM", "oom", "k8s_pod_oom", "oom 数量", NUMBER_UNIT, 60, tags));
 
     // metricInfoList.add(genMetricInfo(GLOBAL_TENANT, GLOBAL_WORKSPACE, GLOBAL_ORGANIZATION,
     // "system",

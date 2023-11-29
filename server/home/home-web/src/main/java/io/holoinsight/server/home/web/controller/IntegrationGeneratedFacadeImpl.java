@@ -231,10 +231,12 @@ public class IntegrationGeneratedFacadeImpl extends BaseFacade {
           if (generatedMap.containsKey(integrationProductDTO.getName())) {
             generatedMap.get(integrationProductDTO.getName()).forEach(generatedDTO -> {
               itemMap.add(generatedDTO.product + "_" + generatedDTO.item);
-              String status = "ONLINE";
+              String status;
               if (!CollectionUtils.isEmpty(generatedDTO.config)
                   && generatedDTO.getConfig().containsKey("status")) {
                 status = generatedDTO.getConfig().get("status").toString();
+              } else {
+                status = "OFFLINE";
               }
 
               appModels.add(new IntegrationAppModel(generatedDTO.id, generatedDTO.item, status,

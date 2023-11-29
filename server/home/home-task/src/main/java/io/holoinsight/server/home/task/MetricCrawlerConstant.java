@@ -16,4 +16,5 @@ public class MetricCrawlerConstant {
   public static final String PERCENT_UNIT = "percent";
   public static final String NUMBER_UNIT = "number";
   public static final String BYTES_UNIT = "bytes";
+  public static final String BITS_UNIT = "bytes";
 }
