@@ -30,7 +30,7 @@ public class ProductCtlServiceImpl implements ProductCtlService {
   private MonitorInstanceService monitorInstanceService;
 
 
-  private Map<String, Set<String>> productClosed = new HashMap<>();
+  private Map<String /* resource-val */, Set<String /* code */>> productClosed = new HashMap<>();
 
   private Set<String> metricWhitePrefixes = new HashSet<>();
 
@@ -121,23 +121,23 @@ public class ProductCtlServiceImpl implements ProductCtlService {
   @Override
   public Map<String, Set<String>> productCtl(MonitorProductCode code, Map<String, String> tags,
       String action) throws Exception {
+    Map<String, Set<String>> result = new HashMap<>();
     List<String> resourceKeys = resourceKeysHolder.getResourceKeys();
     if (CollectionUtils.isEmpty(resourceKeys)) {
       throw new RuntimeException("resource keys not found for code : " + code.getCode());
     }
     String uniqueId = buildResourceVal(resourceKeys, tags);
-
     List<MonitorInstance> instances = monitorInstanceService.queryByInstance(uniqueId);
     if (CollectionUtils.isNotEmpty(instances)) {
       MonitorInstance instance = instances.get(0);
       MonitorInstanceCfg cfg = J.fromJson(instance.getConfig(), MonitorInstanceCfg.class);
       control(action, uniqueId, code.getCode(), cfg.getClosed(), productClosed);
-      log.info("[product_ctl] uniqueId={}, instanceClosed={}, closed={}", uniqueId, cfg.getClosed(),
-          productClosed);
+      log.info("[product_ctl] exec ctl, tenant={}, workspace={}, uniqueId={}, action={}", instance.getTenant(), instance.getWorkspace(), uniqueId, action);
       instance.setConfig(J.toJson(cfg));
       monitorInstanceService.updateByInstance(instance);
     }
-    return productClosed;
+    result.put(uniqueId, productClosed.get(uniqueId));
+    return result;
   }
 
   @Override
