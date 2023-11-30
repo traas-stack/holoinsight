@@ -148,6 +148,11 @@ public class GatewayGrpcServiceImpl extends GatewayServiceGrpc.GatewayServiceImp
         continue;
       }
 
+      p = gatewayHookManager.processV1(authInfo, p);
+      if (p == null) {
+        continue;
+      }
+
       WriteMetricsParam.Point wmpp = new WriteMetricsParam.Point();
       wmpp.setMetricName(p.getMetricName());
       wmpp.setTimeStamp(p.getTimestamp());

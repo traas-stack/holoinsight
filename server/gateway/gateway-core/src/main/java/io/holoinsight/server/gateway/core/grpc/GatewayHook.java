@@ -7,6 +7,7 @@ import java.util.List;
 
 import io.holoinsight.server.common.auth.AuthInfo;
 import io.holoinsight.server.extension.model.Table;
+import io.holoinsight.server.gateway.grpc.Point;
 import io.holoinsight.server.gateway.grpc.WriteMetricsRequestV1;
 import io.holoinsight.server.gateway.grpc.WriteMetricsRequestV4;
 
@@ -36,5 +37,9 @@ public interface GatewayHook {
   void writeDetail(AuthInfo authInfo, Table table);
 
   boolean supportsDetail(String name);
+
+  default Point processV1(AuthInfo authInfo, Point point) {
+    return point;
+  }
 
 }
