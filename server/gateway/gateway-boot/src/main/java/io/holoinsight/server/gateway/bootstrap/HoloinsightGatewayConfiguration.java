@@ -3,6 +3,13 @@
  */
 package io.holoinsight.server.gateway.bootstrap;
 
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
+
 import io.holoinsight.server.common.auth.ApiKeyAutoConfiguration;
 import io.holoinsight.server.common.config.ConfigConfiguration;
 import io.holoinsight.server.common.dao.CommonDaoConfiguration;
@@ -13,16 +20,12 @@ import io.holoinsight.server.common.springboot.ConditionalOnRole;
 import io.holoinsight.server.common.springboot.HoloinsightProperties;
 import io.holoinsight.server.common.threadpool.ThreadPoolConfiguration;
 import io.holoinsight.server.common.trace.TraceAgentConfigurationScheduler;
+import io.holoinsight.server.extension.DetailsStorage;
 import io.holoinsight.server.extension.MetricStorage;
+import io.holoinsight.server.extension.NoopDetailsStorage;
 import io.holoinsight.server.extension.NoopMetricStorage;
 import io.holoinsight.server.extension.ceresdbx.HoloinsightCeresdbxConfiguration;
 import io.holoinsight.server.gateway.core.grpc.GatewayProperties;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
 
 /**
  * <p>
@@ -55,4 +58,9 @@ public class HoloinsightGatewayConfiguration {
     return new TraceAgentConfigurationScheduler();
   }
 
+  @Bean
+  @ConditionalOnMissingBean
+  public DetailsStorage detailsStorage() {
+    return new NoopDetailsStorage();
+  }
 }

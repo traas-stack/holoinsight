@@ -33,6 +33,8 @@ import io.holoinsight.server.agg.v1.core.kafka.KafkaProducerHealthChecker;
 import io.holoinsight.server.agg.v1.pb.AggProtos;
 import io.holoinsight.server.common.auth.AuthInfo;
 import io.holoinsight.server.common.threadpool.CommonThreadPools;
+import io.holoinsight.server.extension.model.Row;
+import io.holoinsight.server.extension.model.Table;
 import io.holoinsight.server.gateway.core.grpc.GatewayHook;
 import io.holoinsight.server.gateway.core.utils.StatUtils;
 import io.holoinsight.server.gateway.grpc.DataNode;
@@ -254,7 +256,7 @@ public class AggDispatcher {
     }
   }
 
-  public void dispatchDetailData(AuthInfo authInfo, GatewayHook.Table table) {
+  public void dispatchDetailData(AuthInfo authInfo, Table table) {
     List<AggTask> aggTasks = this.storage.getByMetric(table.getName());
     if (CollectionUtils.isEmpty(aggTasks)) {
       return;
@@ -272,7 +274,7 @@ public class AggDispatcher {
         .addAllTagKeys(table.getHeader().getTagKeys()) //
         .addAllFieldKeys(table.getHeader().getFieldKeys())); //
 
-    for (GatewayHook.Row row : table.getRows()) {
+    for (Row row : table.getRows()) {
 
       AggProtos.Table.Row.Builder pbRow = AggProtos.Table.Row.newBuilder();
       pbRow.setTimestamp(row.getTimestamp());
