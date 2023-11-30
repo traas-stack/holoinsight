@@ -275,6 +275,10 @@ public class DateUtil {
     return getDate(date, "yyyy-MM-dd HH:mm:ss");
   }
 
+  public static String getDateOf_YYMMDD_Plus_HHMMSS(Date date) {
+    return getDate(date, "yyyy-MM-dd+HH:mm:ss");
+  }
+
   public static String getDateOf_HHMM(Date date) {
     return getDate(date, "HH:mm");
   }
