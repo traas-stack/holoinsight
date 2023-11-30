@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import io.holoinsight.server.common.auth.AuthInfo;
+import io.holoinsight.server.gateway.grpc.Point;
 import io.holoinsight.server.gateway.grpc.WriteMetricsRequestV1;
 import io.holoinsight.server.gateway.grpc.WriteMetricsRequestV4;
 import lombok.extern.slf4j.Slf4j;
@@ -46,4 +47,18 @@ public class GatewayHookManager {
     }
   }
 
+  public Point processV1(AuthInfo authInfo, Point p) {
+    for (GatewayHook hook : gatewayHooks) {
+      try {
+        Point p2 = hook.processV1(authInfo, p);
+        if (p2 == null) {
+          return null;
+        }
+        p = p2;
+      } catch (Exception e) {
+        log.error("processV1 hook error", e);
+      }
+    }
+    return p;
+  }
 }

@@ -98,6 +98,11 @@
 			<artifactId>otlp-core</artifactId>
 			<version>${project.version}</version>
 		</dependency>
+		<dependency>
+			<groupId>io.holoinsight.server</groupId>
+			<artifactId>meta-facade</artifactId>
+			<version>${project.version}</version>
+		</dependency>
     </dependencies>
 
 
