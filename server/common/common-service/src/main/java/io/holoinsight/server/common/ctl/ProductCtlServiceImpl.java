@@ -132,7 +132,8 @@ public class ProductCtlServiceImpl implements ProductCtlService {
       MonitorInstance instance = instances.get(0);
       MonitorInstanceCfg cfg = J.fromJson(instance.getConfig(), MonitorInstanceCfg.class);
       control(action, uniqueId, code.getCode(), cfg.getClosed(), productClosed);
-      log.info("[product_ctl] exec ctl, tenant={}, workspace={}, uniqueId={}, action={}", instance.getTenant(), instance.getWorkspace(), uniqueId, action);
+      log.info("[product_ctl] exec ctl, tenant={}, workspace={}, uniqueId={}, action={}",
+          instance.getTenant(), instance.getWorkspace(), uniqueId, action);
       instance.setConfig(J.toJson(cfg));
       monitorInstanceService.updateByInstance(instance);
     }
