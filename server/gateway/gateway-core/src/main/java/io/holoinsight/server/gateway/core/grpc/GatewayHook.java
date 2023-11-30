@@ -6,6 +6,7 @@ package io.holoinsight.server.gateway.core.grpc;
 import java.util.List;
 
 import io.holoinsight.server.common.auth.AuthInfo;
+import io.holoinsight.server.extension.model.Table;
 import io.holoinsight.server.gateway.grpc.WriteMetricsRequestV1;
 import io.holoinsight.server.gateway.grpc.WriteMetricsRequestV4;
 
@@ -18,7 +19,7 @@ import io.holoinsight.server.gateway.grpc.WriteMetricsRequestV4;
 public interface GatewayHook {
   /**
    * writeMetricsV1 hook
-   * 
+   *
    * @param authInfo
    * @param request
    */
@@ -36,35 +37,4 @@ public interface GatewayHook {
 
   boolean supportsDetail(String name);
 
-  @lombok.Data
-  class Table {
-    private String name;
-    private long timestamp;
-    private Header header;
-    private List<Row> rows;
-  }
-
-  @lombok.Data
-  class Header {
-    private List<String> tagKeys;
-    private List<String> fieldKeys;
-
-    public Header() {}
-
-    public Header(List<String> tagKeys, List<String> fieldKeys) {
-      this.tagKeys = tagKeys;
-      this.fieldKeys = fieldKeys;
-    }
-  }
-
-  @lombok.Data
-  class Row {
-    /**
-     * If the value is greater than 0, then its priority is higher than {@link Table#timestamp}
-     */
-    private long timestamp;
-    private List<String> tagValues;
-    // TODO field type is always Double ???
-    private List<Double> fieldValues;
-  }
 }

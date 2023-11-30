@@ -36,6 +36,8 @@ import io.holoinsight.server.gateway.grpc.WriteMetricsRequestV1;
 import io.holoinsight.server.gateway.grpc.WriteMetricsRequestV4;
 import io.holoinsight.server.gateway.grpc.WriteMetricsResponse;
 import io.holoinsight.server.gateway.grpc.common.CommonResponseHeader;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 /**
  * <p>
@@ -62,6 +64,9 @@ public class GatewayGrpcServiceImpl extends GatewayServiceGrpc.GatewayServiceImp
 
   @Autowired
   private GatewayHookManager gatewayHookManager;
+
+  @Autowired
+  private DetailsStorageService detailsStorageService;
 
   /** {@inheritDoc} */
   @Override
@@ -107,6 +112,7 @@ public class GatewayGrpcServiceImpl extends GatewayServiceGrpc.GatewayServiceImp
   @Override
   public void writeMetricsV4(WriteMetricsRequestV4 request,
       StreamObserver<WriteMetricsResponse> o) {
+
     // 1. 对 apikey 做鉴权, 可能是同步或异步的
     // 2. 计量
     // 3. 如果请求类型为独立模式, 那么自己作为一批立即写入ceresdb, 并同步返回写入结果, 要小心超时设置
@@ -117,8 +123,14 @@ public class GatewayGrpcServiceImpl extends GatewayServiceGrpc.GatewayServiceImp
     apikeyAuthService.get(request.getHeader().getApikey(), true) //
         .doOnNext(authInfo -> recordTraffic(authInfo, tt)) //
         .flatMap(authInfo -> { //
+          // details
+          Mono<Void> detailMono =
+              detailsStorageService.write(authInfo, request).onErrorResume(error -> Mono.empty());
+
           gatewayHookManager.writeMetricsV4(authInfo, request);
-          return metricStorage.write(convertToWriteMetricsParam(authInfo, request));
+          Mono<Void> metricsMono =
+              metricStorage.write(convertToWriteMetricsParam(authInfo, request));
+          return Flux.merge(detailMono, metricsMono).ignoreElements();
         }).subscribe(null, error -> handleError(error, o), () -> handleSuccess(o));
   }
 
@@ -165,6 +177,9 @@ public class GatewayGrpcServiceImpl extends GatewayServiceGrpc.GatewayServiceImp
 
     for (WriteMetricsRequestV4.TaskResult tr : request.getResultsList()) {
       if (tr.getTable().getRowsCount() == 0) {
+        continue;
+      }
+      if (TaskResultUtils.isDetails(tr)) {
         continue;
       }
 

@@ -3,6 +3,7 @@
  */
 package io.holoinsight.server.extension;
 
+import io.holoinsight.server.extension.model.Table;
 import io.holoinsight.server.extension.model.WriteMetricsParam;
 
 import java.util.Map;
@@ -18,6 +19,8 @@ public interface MetricMeterService {
    * @param writeMetricsParam
    */
   void meter(WriteMetricsParam writeMetricsParam);
+
+  void meter(String tenant, Table table);
 
   /**
    * meter one single point

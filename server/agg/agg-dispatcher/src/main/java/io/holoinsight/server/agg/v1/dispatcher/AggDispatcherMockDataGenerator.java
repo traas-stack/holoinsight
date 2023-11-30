@@ -11,6 +11,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 
 import io.holoinsight.server.common.auth.AuthInfo;
+import io.holoinsight.server.extension.model.Header;
+import io.holoinsight.server.extension.model.Row;
+import io.holoinsight.server.extension.model.Table;
 import io.holoinsight.server.gateway.core.grpc.GatewayHook;
 import lombok.extern.slf4j.Slf4j;
 
@@ -34,9 +37,9 @@ public class AggDispatcherMockDataGenerator {
 
     Random r = new Random();
 
-    GatewayHook.Table table = new GatewayHook.Table();
+    Table table = new Table();
 
-    GatewayHook.Header header = new GatewayHook.Header();
+    Header header = new Header();
     header.setTagKeys(Arrays.asList("app", "userId"));
     header.setFieldKeys(Arrays.asList("count", "count1"));
     table.setHeader(header);
@@ -47,7 +50,7 @@ public class AggDispatcherMockDataGenerator {
     table.setTimestamp(ts);
 
     for (int i = 0; i < 100; i++) {
-      GatewayHook.Row row = new GatewayHook.Row();
+      Row row = new Row();
       row.setTimestamp(ts);
 
       String app = "foo" + (r.nextInt(5));

@@ -6,6 +6,7 @@ package io.holoinsight.server.agg.v1.dispatcher;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import io.holoinsight.server.common.auth.AuthInfo;
+import io.holoinsight.server.extension.model.Table;
 import io.holoinsight.server.gateway.core.grpc.GatewayHook;
 import io.holoinsight.server.gateway.grpc.WriteMetricsRequestV1;
 import io.holoinsight.server.gateway.grpc.WriteMetricsRequestV4;
