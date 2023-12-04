@@ -75,7 +75,7 @@ public class MonitorScopeAuthInterceptor implements MethodInterceptor {
         log.warn("monitor tenant auth not enough, need power: " + needPower + ", ma:" + J.toJson(ma)
             + ", mu:" + J.toJson(mu) + ",ms:" + J.toJson(ms));
         JsonResult<Object> failResult =
-            JsonResult.createFailResult("monitor auth not enough, need power: " + needPower);
+            JsonResult.createFailResult("permission denied, need auth: " + needPower);
         failResult.setResultCode(ResultCodeEnum.NO_ROLE_AUTH.getResultCode());
         return failResult;
       }
