@@ -104,7 +104,7 @@ public class AlarmHistoryServiceImpl extends ServiceImpl<AlarmHistoryMapper, Ala
     }
 
     if (null != alarmHistory.getApp()) {
-      wrapper.like("app", "," + alarmHistory.getApp() + ",");
+      wrapper.like("app", alarmHistory.getApp());
     }
 
     if (alarmHistory.getRecoverTime() == null) {
