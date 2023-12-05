@@ -8,12 +8,14 @@ import java.util.List;
 import java.util.Set;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import io.holoinsight.server.common.J;
 import io.holoinsight.server.home.common.service.RequestContextAdapter;
 import io.holoinsight.server.home.common.util.MonitorException;
 import io.holoinsight.server.home.common.util.ResultCodeEnum;
 import io.holoinsight.server.home.dal.model.AlarmSubscribe;
 import io.holoinsight.server.home.dal.model.dto.AlarmSubscribeInfo;
 import io.holoinsight.server.home.web.security.ParameterSecurityService;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
@@ -43,6 +45,7 @@ import io.holoinsight.server.home.web.interceptor.MonitorScopeAuth;
  * @date 2022/4/18 11:02 下午
  */
 @RestController
+@Slf4j
 @RequestMapping("/webapi/alarmSubscribe")
 public class AlarmSubscribeFacadeImpl extends BaseFacade {
 
