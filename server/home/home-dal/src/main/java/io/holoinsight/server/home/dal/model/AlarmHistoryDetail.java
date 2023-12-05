@@ -8,7 +8,6 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import lombok.Data;
 
 import javax.persistence.Column;
-import javax.persistence.Id;
 import javax.persistence.Table;
 import java.util.Date;
 
@@ -19,7 +18,6 @@ public class AlarmHistoryDetail {
   /**
    * id
    */
-  @Id
   @TableId(type = IdType.AUTO)
   private Long id;
 

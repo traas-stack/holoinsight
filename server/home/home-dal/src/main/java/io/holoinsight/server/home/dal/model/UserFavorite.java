@@ -6,7 +6,6 @@ package io.holoinsight.server.home.dal.model;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import lombok.Data;
-import javax.persistence.Id;
 import javax.persistence.Table;
 import java.util.Date;
 
@@ -19,7 +18,6 @@ import java.util.Date;
 @Table(name = "user_favorite")
 public class UserFavorite {
 
-  @Id
   @TableId(type = IdType.AUTO)
   public Long id;
 
