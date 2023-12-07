@@ -39,6 +39,11 @@
       <artifactId>jackson-module-jsonSchema</artifactId>
       <version>2.14.2</version>
     </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>home-common</artifactId>
+      <version>${project.version}</version>
+    </dependency>
   </dependencies>
 
 

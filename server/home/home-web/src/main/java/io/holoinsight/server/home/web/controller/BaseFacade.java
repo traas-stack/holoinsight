@@ -3,21 +3,28 @@
  */
 package io.holoinsight.server.home.web.controller;
 
-import io.holoinsight.server.home.web.common.FacadeTemplate;
 import io.holoinsight.server.common.JsonResult;
+import io.holoinsight.server.home.common.util.scope.MonitorScope;
+import io.holoinsight.server.home.common.util.scope.RequestContext;
+import io.holoinsight.server.home.facade.ApiSecurity;
+import io.holoinsight.server.home.web.common.ApiSecurityFactory;
+import io.holoinsight.server.home.web.common.FacadeTemplate;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.FastDateFormat;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.InitBinder;
 
 import java.beans.PropertyEditorSupport;
+import java.lang.reflect.Method;
 import java.util.Date;
+import java.util.List;
 
 /**
  *
@@ -87,6 +94,36 @@ public class BaseFacade {
       this.setValue(value);
     }
 
+  }
+
+  protected void check(ApiSecurity securityParam) {
+    StackTraceElement[] stackTraceElements = Thread.currentThread().getStackTrace();
+    Class<?> clazz = getClass();
+    for (StackTraceElement element : stackTraceElements) {
+      String stackMethodName = String.join(".", element.getClassName(), element.getMethodName());
+      log.info("[API_SECURITY] try to look for {} ", stackMethodName);
+      MonitorScope ms = RequestContext.getContext().ms;
+      for (Method m : clazz.getMethods()) {
+        String reflectedMethodName = String.join(".", clazz.getName(), m.getName());
+        if (!StringUtils.equals(reflectedMethodName, stackMethodName)) {
+          continue;
+        }
+        String fullMethodName = ApiSecurityFactory.getFullMethodName(clazz, m);
+        log.info("[API_SECURITY] begin to check {}", fullMethodName);
+        if (ApiSecurityFactory.createParameterMap.containsKey(fullMethodName)) {
+          log.info("[API_SECURITY] check create method {}", fullMethodName);
+          List<String> mappers = ApiSecurityFactory.createParameterMap.get(fullMethodName);
+          securityParam.checkCreate(ms.getTenant(), ms.getWorkspace(),
+              CollectionUtils.isEmpty(mappers) ? null : mappers.get(0));
+        }
+        if (ApiSecurityFactory.updateParameterMap.containsKey(fullMethodName)) {
+          log.info("[API_SECURITY] check update method {}", fullMethodName);
+          List<String> mappers = ApiSecurityFactory.updateParameterMap.get(fullMethodName);
+          securityParam.checkUpdate(ms.getTenant(), ms.getWorkspace(),
+              CollectionUtils.isEmpty(mappers) ? null : mappers.get(0));
+        }
+      }
+    }
   }
 
 }

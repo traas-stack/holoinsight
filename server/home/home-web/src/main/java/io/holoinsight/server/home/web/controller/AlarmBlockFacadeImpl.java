@@ -3,9 +3,10 @@
  */
 package io.holoinsight.server.home.web.controller;
 
+import io.holoinsight.server.common.J;
+import io.holoinsight.server.common.JsonResult;
 import io.holoinsight.server.home.biz.service.AlertBlockService;
 import io.holoinsight.server.home.biz.service.UserOpLogService;
-import io.holoinsight.server.home.common.util.MonitorException;
 import io.holoinsight.server.home.common.util.scope.AuthTargetType;
 import io.holoinsight.server.home.common.util.scope.MonitorScope;
 import io.holoinsight.server.home.common.util.scope.MonitorUser;
@@ -17,10 +18,8 @@ import io.holoinsight.server.home.facade.page.MonitorPageRequest;
 import io.holoinsight.server.home.facade.page.MonitorPageResult;
 import io.holoinsight.server.home.web.common.ManageCallback;
 import io.holoinsight.server.home.web.common.ParaCheckUtil;
+import io.holoinsight.server.home.web.common.SecurityResource;
 import io.holoinsight.server.home.web.interceptor.MonitorScopeAuth;
-import io.holoinsight.server.common.J;
-import io.holoinsight.server.common.JsonResult;
-import io.holoinsight.server.home.web.security.ParameterSecurityService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -33,6 +32,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Date;
+
+import static io.holoinsight.server.home.facade.utils.SecurityMethodCategory.create;
+import static io.holoinsight.server.home.facade.utils.SecurityMethodCategory.update;
 
 /**
  * @author wangsiyuan
@@ -48,25 +50,16 @@ public class AlarmBlockFacadeImpl extends BaseFacade {
   @Autowired
   private UserOpLogService userOpLogService;
 
-  @Autowired
-  private ParameterSecurityService parameterSecurityService;
-
   @PostMapping("/create")
   @ResponseBody
   @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.EDIT)
-  public JsonResult<Long> save(@RequestBody AlarmBlockDTO alarmBlockDTO) {
+  public JsonResult<Long> save(@RequestBody @SecurityResource(value = create,
+      mapper = "alarmBlockMapper") AlarmBlockDTO alarmBlockDTO) {
     final JsonResult<Long> result = new JsonResult<>();
     facadeTemplate.manage(result, new ManageCallback() {
       @Override
       public void checkParameter() {
-        if (StringUtils.isNotEmpty(alarmBlockDTO.getUniqueId())) {
-          MonitorScope ms = RequestContext.getContext().ms;
-          ParaCheckUtil.checkParaBoolean(
-              parameterSecurityService.checkRuleTenantAndWorkspace(alarmBlockDTO.getUniqueId(),
-                  ms.getTenant(), ms.getWorkspace()),
-              "uniqueId do not belong to this tenant or workspace");
-          ParaCheckUtil.checkParaId(alarmBlockDTO.getId());
-        }
+        check(alarmBlockDTO);
       }
 
       @Override
@@ -100,22 +93,13 @@ public class AlarmBlockFacadeImpl extends BaseFacade {
   @PostMapping("/update")
   @ResponseBody
   @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.EDIT)
-  public JsonResult<Boolean> update(@RequestBody AlarmBlockDTO alarmBlockDTO) {
+  public JsonResult<Boolean> update(@RequestBody @SecurityResource(value = update,
+      mapper = "alarmBlockMapper") AlarmBlockDTO alarmBlockDTO) {
     final JsonResult<Boolean> result = new JsonResult<>();
     facadeTemplate.manage(result, new ManageCallback() {
       @Override
       public void checkParameter() {
-        ParaCheckUtil.checkParaNotNull(alarmBlockDTO.getId(), "id");
-        ParaCheckUtil.checkParaNotNull(alarmBlockDTO.getTenant(), "tenant");
-        ParaCheckUtil.checkEquals(alarmBlockDTO.getTenant(),
-            RequestContext.getContext().ms.getTenant(), "tenant is illegal");
-        if (StringUtils.isNotEmpty(alarmBlockDTO.getUniqueId())) {
-          MonitorScope ms = RequestContext.getContext().ms;
-          ParaCheckUtil.checkParaBoolean(
-              parameterSecurityService.checkRuleTenantAndWorkspace(alarmBlockDTO.getUniqueId(),
-                  ms.getTenant(), ms.getWorkspace()),
-              "uniqueId do not belong to this tenant or workspace");
-        }
+        check(alarmBlockDTO);
       }
 
       @Override
@@ -123,12 +107,6 @@ public class AlarmBlockFacadeImpl extends BaseFacade {
         MonitorScope ms = RequestContext.getContext().ms;
         AlarmBlockDTO item =
             alarmBlockService.queryById(alarmBlockDTO.getId(), ms.getTenant(), ms.getWorkspace());
-        if (null == item) {
-          throw new MonitorException("cannot find record: " + alarmBlockDTO.getId());
-        }
-        if (!item.getTenant().equalsIgnoreCase(alarmBlockDTO.getTenant())) {
-          throw new MonitorException("the tenant parameter is invalid");
-        }
 
         MonitorUser mu = RequestContext.getContext().mu;
         if (null != mu) {
