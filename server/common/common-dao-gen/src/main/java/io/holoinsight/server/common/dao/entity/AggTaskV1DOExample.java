@@ -666,6 +666,109 @@ public class AggTaskV1DOExample {
       return (Criteria) this;
     }
 
+    public Criteria andRefIdIsNull() {
+      addCriterion("ref_id is null");
+      return (Criteria) this;
+    }
+
+    public Criteria andRefIdIsNotNull() {
+      addCriterion("ref_id is not null");
+      return (Criteria) this;
+    }
+
+    public Criteria andRefIdEqualTo(String value) {
+      addCriterion("ref_id =", value, "refId");
+      return (Criteria) this;
+    }
+
+    public Criteria andRefIdEqualToColumn(AggTaskV1DO.Column column) {
+      addCriterion(new StringBuilder("ref_id = ").append(column.getEscapedColumnName()).toString());
+      return (Criteria) this;
+    }
+
+    public Criteria andRefIdNotEqualTo(String value) {
+      addCriterion("ref_id <>", value, "refId");
+      return (Criteria) this;
+    }
+
+    public Criteria andRefIdNotEqualToColumn(AggTaskV1DO.Column column) {
+      addCriterion(
+          new StringBuilder("ref_id <> ").append(column.getEscapedColumnName()).toString());
+      return (Criteria) this;
+    }
+
+    public Criteria andRefIdGreaterThan(String value) {
+      addCriterion("ref_id >", value, "refId");
+      return (Criteria) this;
+    }
+
+    public Criteria andRefIdGreaterThanColumn(AggTaskV1DO.Column column) {
+      addCriterion(new StringBuilder("ref_id > ").append(column.getEscapedColumnName()).toString());
+      return (Criteria) this;
+    }
+
+    public Criteria andRefIdGreaterThanOrEqualTo(String value) {
+      addCriterion("ref_id >=", value, "refId");
+      return (Criteria) this;
+    }
+
+    public Criteria andRefIdGreaterThanOrEqualToColumn(AggTaskV1DO.Column column) {
+      addCriterion(
+          new StringBuilder("ref_id >= ").append(column.getEscapedColumnName()).toString());
+      return (Criteria) this;
+    }
+
+    public Criteria andRefIdLessThan(String value) {
+      addCriterion("ref_id <", value, "refId");
+      return (Criteria) this;
+    }
+
+    public Criteria andRefIdLessThanColumn(AggTaskV1DO.Column column) {
+      addCriterion(new StringBuilder("ref_id < ").append(column.getEscapedColumnName()).toString());
+      return (Criteria) this;
+    }
+
+    public Criteria andRefIdLessThanOrEqualTo(String value) {
+      addCriterion("ref_id <=", value, "refId");
+      return (Criteria) this;
+    }
+
+    public Criteria andRefIdLessThanOrEqualToColumn(AggTaskV1DO.Column column) {
+      addCriterion(
+          new StringBuilder("ref_id <= ").append(column.getEscapedColumnName()).toString());
+      return (Criteria) this;
+    }
+
+    public Criteria andRefIdLike(String value) {
+      addCriterion("ref_id like", value, "refId");
+      return (Criteria) this;
+    }
+
+    public Criteria andRefIdNotLike(String value) {
+      addCriterion("ref_id not like", value, "refId");
+      return (Criteria) this;
+    }
+
+    public Criteria andRefIdIn(List<String> values) {
+      addCriterion("ref_id in", values, "refId");
+      return (Criteria) this;
+    }
+
+    public Criteria andRefIdNotIn(List<String> values) {
+      addCriterion("ref_id not in", values, "refId");
+      return (Criteria) this;
+    }
+
+    public Criteria andRefIdBetween(String value1, String value2) {
+      addCriterion("ref_id between", value1, value2, "refId");
+      return (Criteria) this;
+    }
+
+    public Criteria andRefIdNotBetween(String value1, String value2) {
+      addCriterion("ref_id not between", value1, value2, "refId");
+      return (Criteria) this;
+    }
+
     public Criteria andDeletedIsNull() {
       addCriterion("deleted is null");
       return (Criteria) this;

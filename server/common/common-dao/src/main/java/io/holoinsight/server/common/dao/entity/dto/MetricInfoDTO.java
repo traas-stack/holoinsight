@@ -8,6 +8,7 @@ import lombok.Data;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author jsy1001de
@@ -43,7 +44,7 @@ public class MetricInfoDTO {
   public boolean deleted;
 
   public String ref;
-  public String extInfo;
+  public Map<String, Object> extInfo;
 
   public String storageTenant;
 

@@ -4,7 +4,7 @@
 package io.holoinsight.server.home.dal.converter;
 
 import io.holoinsight.server.home.dal.model.AlertNotifyRecord;
-import io.holoinsight.server.home.dal.transformer.MapJsonMapper;
+import io.holoinsight.server.common.dao.transformer.MapJsonMapper;
 import io.holoinsight.server.home.facade.AlertNotifyRecordDTO;
 import org.mapstruct.Mapper;
 

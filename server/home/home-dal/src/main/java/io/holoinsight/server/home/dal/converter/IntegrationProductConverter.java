@@ -6,7 +6,7 @@ package io.holoinsight.server.home.dal.converter;
 import io.holoinsight.server.home.dal.model.IntegrationProduct;
 import io.holoinsight.server.home.dal.model.dto.IntegrationProductDTO;
 import io.holoinsight.server.home.dal.transformer.FormJsonMapper;
-import io.holoinsight.server.home.dal.transformer.MapJsonMapper;
+import io.holoinsight.server.common.dao.transformer.MapJsonMapper;
 import io.holoinsight.server.home.dal.transformer.MetricJsonMapper;
 import org.mapstruct.Mapper;
 

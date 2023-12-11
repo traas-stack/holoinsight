@@ -92,5 +92,10 @@
             <artifactId>extension-storage</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>io.holoinsight.server</groupId>
+            <artifactId>agg-core</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
 </project>

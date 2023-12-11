@@ -10,6 +10,14 @@ import java.util.List;
 @Data
 public class QueryResponse {
 
+  /**
+   * data
+   */
   private List<Result> results;
+
+  /**
+   * 齐全度
+   */
+  private List<Result> completes;
 
 }

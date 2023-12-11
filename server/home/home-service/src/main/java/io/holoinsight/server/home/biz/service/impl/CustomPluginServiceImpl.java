@@ -223,6 +223,8 @@ public class CustomPluginServiceImpl extends ServiceImpl<CustomPluginMapper, Cus
           tableName = collectMetric.name;
         }
         collectMetric.targetTable = tenantInitService.getLogMonitorMetricTable(tableName);
+        String aggTableName = collectMetric.tableName + "_agg_" + customPluginDTO.id;
+        collectMetric.aggTableName = tenantInitService.getLogMonitorMetricTable(aggTableName);
       });
     }
     return customPluginDTO;
@@ -241,6 +243,9 @@ public class CustomPluginServiceImpl extends ServiceImpl<CustomPluginMapper, Cus
               tableName = collectMetric.name;
             }
             collectMetric.targetTable = tenantInitService.getLogMonitorMetricTable(tableName);
+
+            String aggTableName = collectMetric.tableName + "_agg_" + customPluginDTO.id;
+            collectMetric.aggTableName = tenantInitService.getLogMonitorMetricTable(aggTableName);
           });
         }
       });

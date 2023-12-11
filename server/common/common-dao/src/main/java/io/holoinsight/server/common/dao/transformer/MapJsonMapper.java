@@ -1,7 +1,7 @@
 /*
  * Copyright 2022 Holoinsight Project Authors. Licensed under Apache-2.0.
  */
-package io.holoinsight.server.home.dal.transformer;
+package io.holoinsight.server.common.dao.transformer;
 
 import java.lang.reflect.Type;
 import java.util.Map;
@@ -12,7 +12,7 @@ import com.google.gson.reflect.TypeToken;
 /**
  *
  * @author jsy1001de
- * @version 1.0: GaeaCollectExcutorSelectMapper.java, v 0.1 2022年03月31日 8:52 下午 jinsong.yjs Exp $
+ * @version 1.0: MapJsonMapper.java, v 0.1 2022年03月31日 8:52 下午 jinsong.yjs Exp $
  */
 public class MapJsonMapper {
   public static String asString(Map<String, Object> map) {

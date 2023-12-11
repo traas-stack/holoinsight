@@ -5,7 +5,7 @@ package io.holoinsight.server.home.dal.converter;
 
 import io.holoinsight.server.common.J;
 import io.holoinsight.server.home.dal.model.AlarmRule;
-import io.holoinsight.server.home.dal.transformer.MapJsonMapper;
+import io.holoinsight.server.common.dao.transformer.MapJsonMapper;
 import io.holoinsight.server.home.facade.AlarmRuleDTO;
 import io.holoinsight.server.home.facade.AlertRuleExtra;
 import org.apache.commons.lang3.StringUtils;

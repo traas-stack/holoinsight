@@ -18,6 +18,8 @@ public class AggTaskV1DO {
 
   private Long version;
 
+  private String refId;
+
   private Integer deleted;
 
   private String json;
@@ -62,6 +64,14 @@ public class AggTaskV1DO {
     this.version = version;
   }
 
+  public String getRefId() {
+    return refId;
+  }
+
+  public void setRefId(String refId) {
+    this.refId = refId == null ? null : refId.trim();
+  }
+
   public Integer getDeleted() {
     return deleted;
   }
@@ -89,6 +99,7 @@ public class AggTaskV1DO {
     sb.append(", gmtModified=").append(gmtModified);
     sb.append(", aggId=").append(aggId);
     sb.append(", version=").append(version);
+    sb.append(", refId=").append(refId);
     sb.append(", deleted=").append(deleted);
     sb.append(", json=").append(json);
     sb.append("]");
@@ -116,6 +127,8 @@ public class AggTaskV1DO {
             : this.getAggId().equals(other.getAggId()))
         && (this.getVersion() == null ? other.getVersion() == null
             : this.getVersion().equals(other.getVersion()))
+        && (this.getRefId() == null ? other.getRefId() == null
+            : this.getRefId().equals(other.getRefId()))
         && (this.getDeleted() == null ? other.getDeleted() == null
             : this.getDeleted().equals(other.getDeleted()))
         && (this.getJson() == null ? other.getJson() == null
@@ -131,6 +144,7 @@ public class AggTaskV1DO {
     result = prime * result + ((getGmtModified() == null) ? 0 : getGmtModified().hashCode());
     result = prime * result + ((getAggId() == null) ? 0 : getAggId().hashCode());
     result = prime * result + ((getVersion() == null) ? 0 : getVersion().hashCode());
+    result = prime * result + ((getRefId() == null) ? 0 : getRefId().hashCode());
     result = prime * result + ((getDeleted() == null) ? 0 : getDeleted().hashCode());
     result = prime * result + ((getJson() == null) ? 0 : getJson().hashCode());
     return result;
@@ -172,6 +186,11 @@ public class AggTaskV1DO {
       return this;
     }
 
+    public Builder refId(String refId) {
+      obj.setRefId(refId);
+      return this;
+    }
+
     public Builder deleted(Integer deleted) {
       obj.setDeleted(deleted);
       return this;
@@ -190,8 +209,9 @@ public class AggTaskV1DO {
   public enum Column {
     id("id", "id", "BIGINT", false), gmtCreate("gmt_create", "gmtCreate", "TIMESTAMP",
         false), gmtModified("gmt_modified", "gmtModified", "TIMESTAMP", false), aggId("agg_id",
-            "aggId", "VARCHAR", false), version("version", "version", "BIGINT", false), deleted(
-                "deleted", "deleted", "INTEGER", false), json("json", "json", "LONGVARCHAR", false);
+            "aggId", "VARCHAR", false), version("version", "version", "BIGINT",
+                false), refId("ref_id", "refId", "VARCHAR", false), deleted("deleted", "deleted",
+                    "INTEGER", false), json("json", "json", "LONGVARCHAR", false);
 
     private static final String BEGINNING_DELIMITER = "`";
 

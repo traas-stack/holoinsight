@@ -5,6 +5,7 @@ package io.holoinsight.server.home.biz.service.impl;
 
 import io.holoinsight.server.common.MD5Hash;
 import io.holoinsight.server.home.biz.service.GaeaCollectConfigService;
+import io.holoinsight.server.home.dal.converter.GaeaCollectConfigConverter;
 import io.holoinsight.server.home.dal.mapper.GaeaCollectConfigMapper;
 import io.holoinsight.server.home.dal.model.GaeaCollectConfig;
 import io.holoinsight.server.home.dal.model.dto.GaeaCollectConfigDTO;
@@ -30,12 +31,12 @@ import java.util.Map;
 public class GaeaCollectConfigServiceImpl extends
     ServiceImpl<GaeaCollectConfigMapper, GaeaCollectConfig> implements GaeaCollectConfigService {
 
-  private io.holoinsight.server.home.dal.converter.GaeaCollectConfigMapper gaeaCollectConfigMapper =
-      Mappers.getMapper(io.holoinsight.server.home.dal.converter.GaeaCollectConfigMapper.class);
+  private GaeaCollectConfigConverter gaeaCollectConfigConverter =
+      Mappers.getMapper(GaeaCollectConfigConverter.class);
 
   @Override
   public GaeaCollectConfigDTO findById(Long id) {
-    return gaeaCollectConfigMapper.doToDTO(getById(id));
+    return gaeaCollectConfigConverter.doToDTO(getById(id));
   }
 
   @Override
@@ -43,7 +44,7 @@ public class GaeaCollectConfigServiceImpl extends
     Map<String, Object> columnMap = new HashMap<>();
     columnMap.put("ref_id", refId);
     columnMap.put("deleted", 0);
-    return gaeaCollectConfigMapper.dosToDTOs(listByMap(columnMap));
+    return gaeaCollectConfigConverter.dosToDTOs(listByMap(columnMap));
   }
 
   @Override
@@ -68,8 +69,8 @@ public class GaeaCollectConfigServiceImpl extends
     // md5 比对
 
     GaeaCollectConfig dbConfig = byTableName.get(0);
-    if (equelByMd5(gaeaCollectConfigMapper.dtoToDO(gaeaCollectConfigDTO), dbConfig)) {
-      log.info("{}-{} md5 is not update, contine", dbConfig.id, dbConfig.tableName);
+    if (equelByMd5(gaeaCollectConfigConverter.dtoToDO(gaeaCollectConfigDTO), dbConfig)) {
+      log.info("{}-{} md5 is not update, continue", dbConfig.id, dbConfig.tableName);
       return null;
     }
     dbConfig.setGmtModified(new Date());
@@ -107,10 +108,10 @@ public class GaeaCollectConfigServiceImpl extends
   public GaeaCollectConfigDTO create(GaeaCollectConfigDTO gaeaCollectConfigDTO) {
     gaeaCollectConfigDTO.setGmtCreate(new Date());
     gaeaCollectConfigDTO.setGmtModified(new Date());
-    GaeaCollectConfig gaeaCollectConfig = gaeaCollectConfigMapper.dtoToDO(gaeaCollectConfigDTO);
+    GaeaCollectConfig gaeaCollectConfig = gaeaCollectConfigConverter.dtoToDO(gaeaCollectConfigDTO);
 
     save(gaeaCollectConfig);
-    return gaeaCollectConfigMapper.doToDTO(gaeaCollectConfig);
+    return gaeaCollectConfigConverter.doToDTO(gaeaCollectConfig);
   }
 
   @Override
@@ -191,9 +192,9 @@ public class GaeaCollectConfigServiceImpl extends
   public GaeaCollectConfigDTO update(GaeaCollectConfigDTO gaeaCollectConfigDTO) {
     gaeaCollectConfigDTO.setGmtModified(new Date());
 
-    GaeaCollectConfig gaeaCollectConfig = gaeaCollectConfigMapper.dtoToDO(gaeaCollectConfigDTO);
+    GaeaCollectConfig gaeaCollectConfig = gaeaCollectConfigConverter.dtoToDO(gaeaCollectConfigDTO);
     saveOrUpdate(gaeaCollectConfig);
 
-    return gaeaCollectConfigMapper.doToDTO(gaeaCollectConfig);
+    return gaeaCollectConfigConverter.doToDTO(gaeaCollectConfig);
   }
 }

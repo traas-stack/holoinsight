@@ -9,7 +9,7 @@ import io.holoinsight.server.home.dal.model.dto.GaeaCollectConfigDTO.CollectRang
 import io.holoinsight.server.home.dal.model.dto.IntegrationPluginDTO;
 import io.holoinsight.server.home.dal.transformer.GaeaCollectRangeMapper;
 import io.holoinsight.server.home.dal.transformer.JsonObjectMapper;
-import io.holoinsight.server.home.dal.transformer.MapJsonMapper;
+import io.holoinsight.server.common.dao.transformer.MapJsonMapper;
 import org.apache.commons.lang3.StringUtils;
 import org.mapstruct.Mapper;
 
