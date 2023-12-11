@@ -4,7 +4,7 @@
 package io.holoinsight.server.home.dal.converter;
 
 import io.holoinsight.server.home.dal.model.Userinfo;
-import io.holoinsight.server.home.dal.transformer.MapJsonMapper;
+import io.holoinsight.server.common.dao.transformer.MapJsonMapper;
 import io.holoinsight.server.home.facade.UserinfoDTO;
 import org.mapstruct.Mapper;
 

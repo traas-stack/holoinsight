@@ -16,6 +16,8 @@ import io.holoinsight.server.home.facade.AlarmRuleDTO;
 import io.holoinsight.server.query.grpc.QueryProto.QueryFilter;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -123,6 +125,16 @@ public class DefaultTenantInitServiceImpl implements TenantInitService {
   public Boolean checkCustomPluginLogConfParams(String tenant, String workspace,
       CustomPluginDTO customPluginDTO) {
     return Boolean.TRUE;
+  }
+
+  @Override
+  public List<String> getAggCompletenessTags() {
+    return Collections.singletonList("app");
+  }
+
+  @Override
+  public List<String> getAggDefaultGroupByTags() {
+    return new ArrayList<>();
   }
 
 }

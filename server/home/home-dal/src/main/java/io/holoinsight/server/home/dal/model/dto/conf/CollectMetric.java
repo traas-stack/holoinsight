@@ -19,17 +19,18 @@ public class CollectMetric implements Serializable {
   private static final long serialVersionUID = -616464385087632888L;
 
   /**
-   * 指定存储表名称
+   * 指定存储表名称, 已经废弃，暂不删除
    */
+  @Deprecated
   public String name;
 
   /**
-   * 监控项名称
+   * 监控项名称，前端传入
    */
   public String tableName;
 
   /**
-   * 真正的指标表名称
+   * 真正的指标表名称，非前端传入，是后端自动生成
    */
   public String targetTable;
 
@@ -58,6 +59,17 @@ public class CollectMetric implements Serializable {
 
   // Logs that exceed 4096 are truncated
   public Integer sampleMaxLength = 4096;
+
+  // pre calculate, 是否开启预计算
+  public Boolean calculate;
+
+  /**
+   * agg 预聚合指标表名称，非前端传入，是后端自动生成
+   */
+  public String aggTableName;
+
+  // 单机明细数据是否存储
+  public Boolean notStorage;
 
   @Data
   public static class Metric implements Serializable {

@@ -8,7 +8,7 @@ import io.holoinsight.server.home.dal.model.dto.GaeaCollectConfigDTO;
 import io.holoinsight.server.home.dal.transformer.BooleanIntegerMapper;
 import io.holoinsight.server.home.dal.transformer.GaeaCollectConfigJsonMapper;
 import io.holoinsight.server.home.dal.transformer.GaeaCollectRangeMapper;
-import io.holoinsight.server.home.dal.transformer.MapJsonMapper;
+import io.holoinsight.server.common.dao.transformer.MapJsonMapper;
 import org.mapstruct.Mapper;
 
 import java.util.List;
@@ -20,7 +20,7 @@ import java.util.List;
  */
 @Mapper(componentModel = "spring", uses = {BooleanIntegerMapper.class,
     GaeaCollectConfigJsonMapper.class, MapJsonMapper.class, GaeaCollectRangeMapper.class})
-public interface GaeaCollectConfigMapper {
+public interface GaeaCollectConfigConverter {
   GaeaCollectConfigDTO doToDTO(GaeaCollectConfig gaeaCollectConfig);
 
   GaeaCollectConfig dtoToDO(GaeaCollectConfigDTO gaeaCollectConfigDTO);

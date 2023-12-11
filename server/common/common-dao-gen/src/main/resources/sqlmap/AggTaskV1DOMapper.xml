@@ -7,6 +7,7 @@
     <result column="gmt_modified" jdbcType="TIMESTAMP" property="gmtModified" />
     <result column="agg_id" jdbcType="VARCHAR" property="aggId" />
     <result column="version" jdbcType="BIGINT" property="version" />
+    <result column="ref_id" jdbcType="VARCHAR" property="refId" />
     <result column="deleted" jdbcType="INTEGER" property="deleted" />
   </resultMap>
   <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="io.holoinsight.server.common.dao.entity.AggTaskV1DO">
@@ -71,7 +72,7 @@
     </where>
   </sql>
   <sql id="Base_Column_List">
-    id, gmt_create, gmt_modified, agg_id, version, deleted
+    id, gmt_create, gmt_modified, agg_id, version, ref_id, deleted
   </sql>
   <sql id="Blob_Column_List">
     json
@@ -192,11 +193,11 @@
   </delete>
   <insert id="insert" parameterType="io.holoinsight.server.common.dao.entity.AggTaskV1DO">
     insert into agg_task_v1 (id, gmt_create, gmt_modified, 
-      agg_id, version, deleted, 
-      json)
+      agg_id, version, ref_id, 
+      deleted, json)
     values (#{id,jdbcType=BIGINT}, #{gmtCreate,jdbcType=TIMESTAMP}, #{gmtModified,jdbcType=TIMESTAMP}, 
-      #{aggId,jdbcType=VARCHAR}, #{version,jdbcType=BIGINT}, #{deleted,jdbcType=INTEGER}, 
-      #{json,jdbcType=LONGVARCHAR})
+      #{aggId,jdbcType=VARCHAR}, #{version,jdbcType=BIGINT}, #{refId,jdbcType=VARCHAR}, 
+      #{deleted,jdbcType=INTEGER}, #{json,jdbcType=LONGVARCHAR})
   </insert>
   <insert id="insertSelective" parameterType="map">
     insert into agg_task_v1
@@ -222,6 +223,9 @@
           </if>
           <if test="record.version != null">
             version,
+          </if>
+          <if test="record.refId != null">
+            ref_id,
           </if>
           <if test="record.deleted != null">
             deleted,
@@ -256,6 +260,9 @@
           </if>
           <if test="record.version != null">
             #{record.version,jdbcType=BIGINT},
+          </if>
+          <if test="record.refId != null">
+            #{record.refId,jdbcType=VARCHAR},
           </if>
           <if test="record.deleted != null">
             #{record.deleted,jdbcType=INTEGER},
@@ -299,6 +306,9 @@
           <if test="record.version != null">
             version = #{record.version,jdbcType=BIGINT},
           </if>
+          <if test="record.refId != null">
+            ref_id = #{record.refId,jdbcType=VARCHAR},
+          </if>
           <if test="record.deleted != null">
             deleted = #{record.deleted,jdbcType=INTEGER},
           </if>
@@ -319,6 +329,7 @@
       gmt_modified = #{record.gmtModified,jdbcType=TIMESTAMP},
       agg_id = #{record.aggId,jdbcType=VARCHAR},
       version = #{record.version,jdbcType=BIGINT},
+      ref_id = #{record.refId,jdbcType=VARCHAR},
       deleted = #{record.deleted,jdbcType=INTEGER},
       json = #{record.json,jdbcType=LONGVARCHAR}
     <if test="_parameter != null">
@@ -332,6 +343,7 @@
       gmt_modified = #{record.gmtModified,jdbcType=TIMESTAMP},
       agg_id = #{record.aggId,jdbcType=VARCHAR},
       version = #{record.version,jdbcType=BIGINT},
+      ref_id = #{record.refId,jdbcType=VARCHAR},
       deleted = #{record.deleted,jdbcType=INTEGER}
     <if test="_parameter != null">
       <include refid="Update_By_Example_Where_Clause" />
@@ -360,6 +372,9 @@
           <if test="record.version != null">
             version = #{record.version,jdbcType=BIGINT},
           </if>
+          <if test="record.refId != null">
+            ref_id = #{record.refId,jdbcType=VARCHAR},
+          </if>
           <if test="record.deleted != null">
             deleted = #{record.deleted,jdbcType=INTEGER},
           </if>
@@ -377,6 +392,7 @@
       gmt_modified = #{gmtModified,jdbcType=TIMESTAMP},
       agg_id = #{aggId,jdbcType=VARCHAR},
       version = #{version,jdbcType=BIGINT},
+      ref_id = #{refId,jdbcType=VARCHAR},
       deleted = #{deleted,jdbcType=INTEGER},
       json = #{json,jdbcType=LONGVARCHAR}
     where id = #{id,jdbcType=BIGINT}
@@ -387,6 +403,7 @@
       gmt_modified = #{gmtModified,jdbcType=TIMESTAMP},
       agg_id = #{aggId,jdbcType=VARCHAR},
       version = #{version,jdbcType=BIGINT},
+      ref_id = #{refId,jdbcType=VARCHAR},
       deleted = #{deleted,jdbcType=INTEGER}
     where id = #{id,jdbcType=BIGINT}
   </update>
@@ -441,12 +458,12 @@
   </select>
   <insert id="batchInsert" parameterType="map">
     insert into agg_task_v1
-    (id, gmt_create, gmt_modified, agg_id, version, deleted, json)
+    (id, gmt_create, gmt_modified, agg_id, version, ref_id, deleted, json)
     values
     <foreach collection="list" item="item" separator=",">
       (#{item.id,jdbcType=BIGINT}, #{item.gmtCreate,jdbcType=TIMESTAMP}, #{item.gmtModified,jdbcType=TIMESTAMP}, 
-        #{item.aggId,jdbcType=VARCHAR}, #{item.version,jdbcType=BIGINT}, #{item.deleted,jdbcType=INTEGER}, 
-        #{item.json,jdbcType=LONGVARCHAR})
+        #{item.aggId,jdbcType=VARCHAR}, #{item.version,jdbcType=BIGINT}, #{item.refId,jdbcType=VARCHAR}, 
+        #{item.deleted,jdbcType=INTEGER}, #{item.json,jdbcType=LONGVARCHAR})
     </foreach>
   </insert>
   <insert id="batchInsertSelective" parameterType="map">
@@ -473,6 +490,9 @@
         </if>
         <if test="'version'.toString() == column.value">
           #{item.version,jdbcType=BIGINT}
+        </if>
+        <if test="'ref_id'.toString() == column.value">
+          #{item.refId,jdbcType=VARCHAR}
         </if>
         <if test="'deleted'.toString() == column.value">
           #{item.deleted,jdbcType=INTEGER}
@@ -509,6 +529,9 @@
           <if test="record.version != null">
             version,
           </if>
+          <if test="record.refId != null">
+            ref_id,
+          </if>
           <if test="record.deleted != null">
             deleted,
           </if>
@@ -543,6 +566,9 @@
           <if test="record.version != null">
             #{record.version,jdbcType=BIGINT},
           </if>
+          <if test="record.refId != null">
+            #{record.refId,jdbcType=VARCHAR},
+          </if>
           <if test="record.deleted != null">
             #{record.deleted,jdbcType=INTEGER},
           </if>
@@ -576,6 +602,9 @@
           <if test="record.version != null">
             version = #{record.version,jdbcType=BIGINT},
           </if>
+          <if test="record.refId != null">
+            ref_id = #{record.refId,jdbcType=VARCHAR},
+          </if>
           <if test="record.deleted != null">
             deleted = #{record.deleted,jdbcType=INTEGER},
           </if>
@@ -588,32 +617,34 @@
   </insert>
   <insert id="upsert" parameterType="io.holoinsight.server.common.dao.entity.AggTaskV1DO">
     insert into agg_task_v1
-    (id, gmt_create, gmt_modified, agg_id, version, deleted)
+    (id, gmt_create, gmt_modified, agg_id, version, ref_id, deleted)
     values
     (#{id,jdbcType=BIGINT}, #{gmtCreate,jdbcType=TIMESTAMP}, #{gmtModified,jdbcType=TIMESTAMP}, 
-      #{aggId,jdbcType=VARCHAR}, #{version,jdbcType=BIGINT}, #{deleted,jdbcType=INTEGER}
-      )
+      #{aggId,jdbcType=VARCHAR}, #{version,jdbcType=BIGINT}, #{refId,jdbcType=VARCHAR}, 
+      #{deleted,jdbcType=INTEGER})
     on duplicate key update 
     id = #{id,jdbcType=BIGINT}, 
     gmt_create = #{gmtCreate,jdbcType=TIMESTAMP}, 
     gmt_modified = #{gmtModified,jdbcType=TIMESTAMP}, 
     agg_id = #{aggId,jdbcType=VARCHAR}, 
     version = #{version,jdbcType=BIGINT}, 
+    ref_id = #{refId,jdbcType=VARCHAR}, 
     deleted = #{deleted,jdbcType=INTEGER}
   </insert>
   <insert id="upsertWithBLOBs" parameterType="io.holoinsight.server.common.dao.entity.AggTaskV1DO">
     insert into agg_task_v1
-    (id, gmt_create, gmt_modified, agg_id, version, deleted, json)
+    (id, gmt_create, gmt_modified, agg_id, version, ref_id, deleted, json)
     values
     (#{id,jdbcType=BIGINT}, #{gmtCreate,jdbcType=TIMESTAMP}, #{gmtModified,jdbcType=TIMESTAMP}, 
-      #{aggId,jdbcType=VARCHAR}, #{version,jdbcType=BIGINT}, #{deleted,jdbcType=INTEGER}, 
-      #{json,jdbcType=LONGVARCHAR})
+      #{aggId,jdbcType=VARCHAR}, #{version,jdbcType=BIGINT}, #{refId,jdbcType=VARCHAR}, 
+      #{deleted,jdbcType=INTEGER}, #{json,jdbcType=LONGVARCHAR})
     on duplicate key update 
     id = #{id,jdbcType=BIGINT}, 
     gmt_create = #{gmtCreate,jdbcType=TIMESTAMP}, 
     gmt_modified = #{gmtModified,jdbcType=TIMESTAMP}, 
     agg_id = #{aggId,jdbcType=VARCHAR}, 
     version = #{version,jdbcType=BIGINT}, 
+    ref_id = #{refId,jdbcType=VARCHAR}, 
     deleted = #{deleted,jdbcType=INTEGER}, 
     json = #{json,jdbcType=LONGVARCHAR}
   </insert>

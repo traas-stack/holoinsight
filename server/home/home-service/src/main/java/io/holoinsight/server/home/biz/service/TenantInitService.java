@@ -113,4 +113,8 @@ public interface TenantInitService {
   Boolean checkCustomPluginLogConfParams(String tenant, String workspace,
       CustomPluginDTO customPluginDTO);
 
+  List<String> getAggCompletenessTags();
+
+  List<String> getAggDefaultGroupByTags();
+
 }

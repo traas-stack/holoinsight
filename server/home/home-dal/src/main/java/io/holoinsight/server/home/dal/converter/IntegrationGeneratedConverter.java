@@ -5,7 +5,7 @@ package io.holoinsight.server.home.dal.converter;
 
 import io.holoinsight.server.home.dal.model.IntegrationGenerated;
 import io.holoinsight.server.home.dal.model.dto.IntegrationGeneratedDTO;
-import io.holoinsight.server.home.dal.transformer.MapJsonMapper;
+import io.holoinsight.server.common.dao.transformer.MapJsonMapper;
 import org.mapstruct.Mapper;
 
 import java.util.List;
