@@ -41,6 +41,20 @@ public class RequestContextAdapterImpl implements RequestContextAdapter {
   }
 
   @Override
+  public <T> void queryWrapperTenantAdapt(QueryWrapper<T> queryWrapper, String tenant) {
+    if (queryWrapper != null && StringUtils.isNotBlank(tenant)) {
+      queryWrapper.eq("tenant", tenant);
+    }
+  }
+
+  @Override
+  public <T> void queryWrapperWorkspaceAdapt(QueryWrapper<T> queryWrapper, String workspace) {
+    if (queryWrapper != null && StringUtils.isNotBlank(workspace)) {
+      queryWrapper.eq("workspace", workspace);
+    }
+  }
+
+  @Override
   public String getWorkspace(boolean cross) {
     MonitorScope ms = RequestContext.getContext().ms;
     return ms.getWorkspace();

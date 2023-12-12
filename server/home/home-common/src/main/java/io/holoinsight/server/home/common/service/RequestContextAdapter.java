@@ -20,5 +20,9 @@ public interface RequestContextAdapter {
 
   <T> void queryWrapperTenantAdapt(QueryWrapper<T> queryWrapper, String tenant, String workspace);
 
+  <T> void queryWrapperTenantAdapt(QueryWrapper<T> queryWrapper, String tenant);
+
+  <T> void queryWrapperWorkspaceAdapt(QueryWrapper<T> queryWrapper, String workspace);
+
   String getWorkspace(boolean cross);
 }
