@@ -53,8 +53,7 @@ public class AlarmBlockFacadeImpl extends BaseFacade {
   @PostMapping("/create")
   @ResponseBody
   @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.EDIT)
-  public JsonResult<Long> save(@RequestBody @SecurityResource(value = create,
-      mapper = "alarmBlockMapper") AlarmBlockDTO alarmBlockDTO) {
+  public JsonResult<Long> save(@RequestBody @SecurityResource(create) AlarmBlockDTO alarmBlockDTO) {
     final JsonResult<Long> result = new JsonResult<>();
     facadeTemplate.manage(result, new ManageCallback() {
       @Override
@@ -93,8 +92,8 @@ public class AlarmBlockFacadeImpl extends BaseFacade {
   @PostMapping("/update")
   @ResponseBody
   @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.EDIT)
-  public JsonResult<Boolean> update(@RequestBody @SecurityResource(value = update,
-      mapper = "alarmBlockMapper") AlarmBlockDTO alarmBlockDTO) {
+  public JsonResult<Boolean> update(
+      @RequestBody @SecurityResource(update) AlarmBlockDTO alarmBlockDTO) {
     final JsonResult<Boolean> result = new JsonResult<>();
     facadeTemplate.manage(result, new ManageCallback() {
       @Override

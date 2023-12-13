@@ -33,6 +33,8 @@ public class ApiSecurityFactory implements BeanPostProcessor {
       new HashMap<>();
   public static final Map<String /* method full name */, List<String /* param name */>> updateParameterMap =
       new HashMap<>();
+  public static final Map<String /* method full name */, List<String /* param name */>> readParameterMap =
+      new HashMap<>();
 
 
   @Override
@@ -78,13 +80,19 @@ public class ApiSecurityFactory implements BeanPostProcessor {
             log.info("ApiSecurityFactory init, add {} to createParameterMap", key);
             List<String /* param name */> cl =
                 createParameterMap.computeIfAbsent(key, k -> new ArrayList<>());
-            cl.add(securityResource.mapper());
+            cl.add(parameter.getName());
             break;
           case update:
             log.info("ApiSecurityFactory init, add {} to updateParameterMap", key);
             List<String /* param name */> ul =
                 updateParameterMap.computeIfAbsent(key, k -> new ArrayList<>());
-            ul.add(securityResource.mapper());
+            ul.add(parameter.getName());
+            break;
+          case query:
+            log.info("ApiSecurityFactory init, add {} to readParameterMap", key);
+            List<String /* param name */> rl =
+                readParameterMap.computeIfAbsent(key, k -> new ArrayList<>());
+            rl.add(parameter.getName());
             break;
         }
       }

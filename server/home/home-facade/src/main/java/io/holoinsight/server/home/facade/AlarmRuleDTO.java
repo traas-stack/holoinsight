@@ -11,6 +11,7 @@ import io.holoinsight.server.home.facade.trigger.Filter;
 import io.holoinsight.server.home.facade.trigger.Trigger;
 import io.holoinsight.server.home.facade.utils.ApiSecurityService;
 import io.holoinsight.server.home.facade.utils.CreateCheck;
+import io.holoinsight.server.home.facade.utils.ExistCheck;
 import io.holoinsight.server.home.facade.utils.ParaCheckUtil;
 import io.holoinsight.server.home.facade.utils.UpdateCheck;
 import lombok.Data;
@@ -28,9 +29,9 @@ import java.util.List;
 import java.util.Map;
 
 import static io.holoinsight.server.home.facade.utils.CheckCategory.CUSTOM;
-import static io.holoinsight.server.home.facade.utils.CheckCategory.EXIST;
 import static io.holoinsight.server.home.facade.utils.CheckCategory.IS_NULL;
 import static io.holoinsight.server.home.facade.utils.CheckCategory.NOT_NULL;
+import static io.holoinsight.server.home.facade.utils.CheckCategory.SQL_NAME;
 
 /**
  * @author wangsiyuan
@@ -44,7 +45,8 @@ public class AlarmRuleDTO extends ApiSecurity {
    * id
    */
   @CreateCheck(IS_NULL)
-  @UpdateCheck({NOT_NULL, EXIST, CUSTOM})
+  @UpdateCheck({NOT_NULL, CUSTOM})
+  @ExistCheck(column = {"id", "tenant", "workspace"}, mapper = "alarmRuleMapper")
   private Long id;
 
   /**
@@ -60,8 +62,8 @@ public class AlarmRuleDTO extends ApiSecurity {
   /**
    * 规则名称
    */
-  @CreateCheck({NOT_NULL, CUSTOM})
-  @UpdateCheck({CUSTOM})
+  @CreateCheck({NOT_NULL, SQL_NAME})
+  @UpdateCheck({SQL_NAME})
   private String ruleName;
 
   /**
@@ -318,16 +320,14 @@ public class AlarmRuleDTO extends ApiSecurity {
   }
 
   @Override
+  public void customCheckRead(Field field, String tenant, String workspace) {
+
+  }
+
+  @Override
   public void customCheckCreate(Field field, String tenant, String workspace) {
     String fieldName = field.getName();
     switch (fieldName) {
-      case "ruleName":
-        if (!ParaCheckUtil.commonCheck(this.ruleName)) {
-          throwMonitorException(
-              "invalid ruleName, please use a-z A-Z 0-9 Chinese - _ , . spaces " + this.ruleName,
-              field);
-        }
-        break;
       case "rule":
         checkMetrics(tenant, workspace);
         break;
@@ -338,19 +338,11 @@ public class AlarmRuleDTO extends ApiSecurity {
   public void customCheckUpdate(Field field, String tenant, String workspace) {
     String fieldName = field.getName();
     switch (fieldName) {
-      case "ruleName":
-        if (StringUtils.isNotBlank(this.ruleName)) {
-          if (!ParaCheckUtil.commonCheck(this.ruleName)) {
-            throwMonitorException(
-                "invalid ruleName, please use a-z A-Z 0-9 Chinese - _ , . spaces " + this.ruleName,
-                field);
-          }
-        }
-        break;
       case "tenant":
         if (!StringUtils.equals(this.tenant, tenant)) {
           throwMonitorException("tenant is illegal");
         }
+        break;
       case "rule":
         checkMetrics(tenant, workspace);
         break;

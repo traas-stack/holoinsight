@@ -8,5 +8,5 @@ package io.holoinsight.server.home.facade.utils;
  * @version 2023-12-06 16:21:00
  */
 public enum CheckCategory {
-  NOT_NULL, IS_NULL, EXIST, CUSTOM,
+  NOT_NULL, IS_NULL, SQL_NAME, SQL_FIELD, CUSTOM,
 }

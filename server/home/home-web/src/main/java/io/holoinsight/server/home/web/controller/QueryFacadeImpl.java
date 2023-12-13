@@ -580,7 +580,12 @@ public class QueryFacadeImpl extends BaseFacade {
     StringBuilder select = new StringBuilder("select ");
     List<String> gbList = parseGroupby(d, tags);
     List<String> selects = new ArrayList<>();
-    selects.add("`period`");
+    String downsample = "PT1M";
+    if (StringUtils.equalsIgnoreCase(d.getDownsample(), "1h")) {
+      downsample = "PT1H";
+    }
+    selects.add("time_bucket(`period`, '" + downsample
+        + "', 'yyyy-MM-dd HH:mm:ss', '+0800') AS `timestamp`");
     for (String gb : gbList) {
       if (!tags.contains(gb)) {
         continue;
@@ -594,13 +599,19 @@ public class QueryFacadeImpl extends BaseFacade {
 
     parseFilters(select, d, tags);
 
-    gbList.add("period");
+    String groupBy = "";
+    if (!CollectionUtils.isEmpty(gbList)) {
+      groupBy = "`" + String.join("` , `", gbList) + "`";
+    }
 
-    select.append(" group by `")//
-        .append(String.join("` , `", gbList)) //
-        .append("`");
+    select.append(" group by ") //
+        .append(groupBy) //
+        .append(StringUtils.isEmpty(groupBy) ? "" : ", ") //
+        .append(" time_bucket(`period`, '") //
+        .append(downsample) //
+        .append("', 'yyyy-MM-dd HH:mm:ss', '+0800') ");
 
-    select.append(" order by `period` asc");
+    select.append(" order by `timestamp` asc");
 
     log.info("parse sql {}", select);
     d.setQl(select.toString());

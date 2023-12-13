@@ -112,15 +112,15 @@ public class BaseFacade {
         log.info("[API_SECURITY] begin to check {}", fullMethodName);
         if (ApiSecurityFactory.createParameterMap.containsKey(fullMethodName)) {
           log.info("[API_SECURITY] check create method {}", fullMethodName);
-          List<String> mappers = ApiSecurityFactory.createParameterMap.get(fullMethodName);
-          securityParam.checkCreate(ms.getTenant(), ms.getWorkspace(),
-              CollectionUtils.isEmpty(mappers) ? null : mappers.get(0));
+          securityParam.checkCreate(ms.getTenant(), ms.getWorkspace());
         }
         if (ApiSecurityFactory.updateParameterMap.containsKey(fullMethodName)) {
           log.info("[API_SECURITY] check update method {}", fullMethodName);
-          List<String> mappers = ApiSecurityFactory.updateParameterMap.get(fullMethodName);
-          securityParam.checkUpdate(ms.getTenant(), ms.getWorkspace(),
-              CollectionUtils.isEmpty(mappers) ? null : mappers.get(0));
+          securityParam.checkUpdate(ms.getTenant(), ms.getWorkspace());
+        }
+        if (ApiSecurityFactory.readParameterMap.containsKey(fullMethodName)) {
+          log.info("[API_SECURITY] check read method {}", fullMethodName);
+          securityParam.checkRead(ms.getTenant(), ms.getWorkspace());
         }
       }
     }

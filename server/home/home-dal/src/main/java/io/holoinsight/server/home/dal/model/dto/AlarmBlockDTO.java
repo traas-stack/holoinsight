@@ -7,6 +7,7 @@ import io.holoinsight.server.home.common.service.SpringContext;
 import io.holoinsight.server.home.facade.ApiSecurity;
 import io.holoinsight.server.home.facade.utils.ApiSecurityService;
 import io.holoinsight.server.home.facade.utils.CreateCheck;
+import io.holoinsight.server.home.facade.utils.ExistCheck;
 import io.holoinsight.server.home.facade.utils.ParaCheckUtil;
 import io.holoinsight.server.home.facade.utils.UpdateCheck;
 import lombok.Data;
@@ -17,7 +18,6 @@ import java.lang.reflect.Field;
 import java.util.Date;
 
 import static io.holoinsight.server.home.facade.utils.CheckCategory.CUSTOM;
-import static io.holoinsight.server.home.facade.utils.CheckCategory.EXIST;
 import static io.holoinsight.server.home.facade.utils.CheckCategory.IS_NULL;
 import static io.holoinsight.server.home.facade.utils.CheckCategory.NOT_NULL;
 
@@ -32,7 +32,8 @@ public class AlarmBlockDTO extends ApiSecurity {
    * id
    */
   @CreateCheck(IS_NULL)
-  @UpdateCheck({NOT_NULL, EXIST, CUSTOM})
+  @UpdateCheck({NOT_NULL, CUSTOM})
+  @ExistCheck(column = {"id", "tenant", "workspace"}, mapper = "alarmBlockMapper")
   private Long id;
 
   /**
@@ -109,6 +110,11 @@ public class AlarmBlockDTO extends ApiSecurity {
   private Date endTime;
 
   @Override
+  public void customCheckRead(Field field, String tenant, String workspace) {
+
+  }
+
+  @Override
   public void customCheckUpdate(Field field, String tenant, String workspace) {
     ApiSecurityService apiSecurityService = SpringContext.getBean(ApiSecurityService.class);
     String fieldName = field.getName();
@@ -124,6 +130,7 @@ public class AlarmBlockDTO extends ApiSecurity {
         if (!StringUtils.equals(this.tenant, tenant)) {
           throwMonitorException("tenant is illegal");
         }
+        break;
     }
   }
 

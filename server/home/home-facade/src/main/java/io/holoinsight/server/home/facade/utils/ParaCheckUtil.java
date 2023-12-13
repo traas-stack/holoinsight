@@ -3,17 +3,10 @@
  */
 package io.holoinsight.server.home.facade.utils;
 
-import io.holoinsight.server.common.model.DataQueryRequest;
 import io.holoinsight.server.home.common.util.MonitorException;
 import io.holoinsight.server.home.common.util.ResultCodeEnum;
-import org.apache.commons.lang3.ArrayUtils;
-import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.util.CollectionUtils;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -27,6 +20,8 @@ public class ParaCheckUtil {
 
   private static Pattern PATTERN_SQL =
       Pattern.compile("^[\\u00b7A-Za-z0-9\\u4e00-\\u9fa5\\-_ ,\\.]*$");
+  private static Pattern PATTERN_STRICT_SQL =
+      Pattern.compile("^[\\u00b7A-Za-z0-9\\u4e00-\\u9fa5\\-_,|\\.]*$");
 
   private static Pattern uniCodePattern = Pattern.compile("\\\\u[0-9a-f]{4}");
 
@@ -39,8 +34,19 @@ public class ParaCheckUtil {
     }
   }
 
-  public static boolean commonCheck(String param) {
+  public static boolean sqlNameCheck(String param) {
     Matcher commonAllowed = PATTERN_SQL.matcher(param);
+    if (commonAllowed.find()) {
+      if (!unicodeCheck(param)) {
+        return false;
+      }
+      return true;
+    }
+    return false;
+  }
+
+  public static boolean sqlFieldCheck(String param) {
+    Matcher commonAllowed = PATTERN_STRICT_SQL.matcher(param);
     if (commonAllowed.find()) {
       if (!unicodeCheck(param)) {
         return false;
@@ -66,5 +72,11 @@ public class ParaCheckUtil {
       }
     }
     return true;
+  }
+
+  public static void checkTimeRange(Long start, Long end, String errorMsg) {
+    if (start > end) {
+      throw new MonitorException(ResultCodeEnum.PARAMETER_ILLEGAL, errorMsg);
+    }
   }
 }

@@ -14,4 +14,6 @@ public interface FieldCheck {
   void customCheckUpdate(Field field, String tenant, String workspace);
 
   void customCheckCreate(Field field, String tenant, String workspace);
+
+  void customCheckRead(Field field, String tenant, String workspace);
 }
