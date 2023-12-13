@@ -131,14 +131,14 @@ public class CeresdbDetailsStorage implements DetailsStorage {
     }
 
     StringBuilder sb = new StringBuilder("CREATE TABLE `" + table.getName() + "` (");
-    sb.append("`timestamp` timestamp NOT NULL,");
+    sb.append("`period` timestamp NOT NULL,");
     for (String tagKey : table.getHeader().getTagKeys()) {
       sb.append("`" + tagKey + "` string TAG NULL,");
     }
     for (String fieldKey : table.getHeader().getFieldKeys()) {
       sb.append("`" + fieldKey + "` double NULL,");
     }
-    sb.append("TIMESTAMP KEY(timestamp)");
+    sb.append("TIMESTAMP KEY(period)");
     sb.append(") ENGINE=Analytic WITH(update_mode='APPEND')");
 
     SqlQueryRequest createTableReq = SqlQueryRequest.newBuilder() //
