@@ -21,6 +21,7 @@ public class JsonResult<T> implements Serializable {
   private T data;
   private String requestId;
 
+
   /**
    * <p>
    * createSuccessResult.
@@ -30,7 +31,8 @@ public class JsonResult<T> implements Serializable {
     JsonResult<T> result = new JsonResult<>();
     result.setSuccess(true);
     result.setData(data);
-    result.setRequestId(AESEncrypt.encrypt(AddressUtil.getLocalHostIPV4()));
+    result.setRequestId(
+        AesUtil.encodeBase64(AesUtil.aesTest, AesUtil.aesTest, AddressUtil.getLocalHostIPV4()));
     return result;
   }
 
@@ -43,7 +45,8 @@ public class JsonResult<T> implements Serializable {
     JsonResult<T> result = new JsonResult<>();
     result.setSuccess(false);
     result.setMessage(message);
-    result.setRequestId(AESEncrypt.encrypt(AddressUtil.getLocalHostIPV4()));
+    result.setRequestId(
+        AesUtil.encodeBase64(AesUtil.aesTest, AesUtil.aesTest, AddressUtil.getLocalHostIPV4()));
     return result;
   }
 
@@ -52,7 +55,8 @@ public class JsonResult<T> implements Serializable {
     result.setSuccess(false);
     result.setMessage(message);
     result.setResultCode(resultCode);
-    result.setRequestId(AESEncrypt.encrypt(AddressUtil.getLocalHostIPV4()));
+    result.setRequestId(
+        AesUtil.encodeBase64(AesUtil.aesTest, AesUtil.aesTest, AddressUtil.getLocalHostIPV4()));
     return result;
   }
 
@@ -64,7 +68,8 @@ public class JsonResult<T> implements Serializable {
   public static <T> void createSuccessResult(JsonResult<T> result, T data) {
     result.setSuccess(true);
     result.setData(data);
-    result.setRequestId(AESEncrypt.encrypt(AddressUtil.getLocalHostIPV4()));
+    result.setRequestId(
+        AesUtil.encodeBase64(AesUtil.aesTest, AesUtil.aesTest, AddressUtil.getLocalHostIPV4()));
   }
 
   /**
@@ -75,7 +80,8 @@ public class JsonResult<T> implements Serializable {
   public static <T> void fillFailResultTo(JsonResult<T> result, String message) {
     result.setSuccess(false);
     result.setMessage(message);
-    result.setRequestId(AESEncrypt.encrypt(AddressUtil.getLocalHostIPV4()));
+    result.setRequestId(
+        AesUtil.encodeBase64(AesUtil.aesTest, AesUtil.aesTest, AddressUtil.getLocalHostIPV4()));
   }
 
   /**
@@ -87,7 +93,8 @@ public class JsonResult<T> implements Serializable {
     result.setSuccess(false);
     result.setMessage(message);
     result.setResultCode(resultCode);
-    result.setRequestId(AESEncrypt.encrypt(AddressUtil.getLocalHostIPV4()));
+    result.setRequestId(
+        AesUtil.encodeBase64(AesUtil.aesTest, AesUtil.aesTest, AddressUtil.getLocalHostIPV4()));
   }
 
   /**
@@ -169,7 +176,8 @@ public class JsonResult<T> implements Serializable {
   public void setData(T data) {
     this.success = true;
     this.data = data;
-    this.requestId = AESEncrypt.encrypt(AddressUtil.getLocalHostIPV4());
+    this.requestId =
+        AesUtil.encodeBase64(AesUtil.aesTest, AesUtil.aesTest, AddressUtil.getLocalHostIPV4());
   }
 
   /**
@@ -180,6 +188,7 @@ public class JsonResult<T> implements Serializable {
   public void setFail(String message) {
     this.success = false;
     this.message = message;
-    this.requestId = AESEncrypt.encrypt(AddressUtil.getLocalHostIPV4());
+    this.requestId =
+        AesUtil.encodeBase64(AesUtil.aesTest, AesUtil.aesTest, AddressUtil.getLocalHostIPV4());
   }
 }

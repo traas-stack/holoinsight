@@ -6,6 +6,7 @@ package io.holoinsight.server.home.biz.service.log;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  * @author jsy1001de
@@ -13,6 +14,7 @@ import lombok.Data;
  */
 @Data
 @AllArgsConstructor
+@NoArgsConstructor
 public class LogHistogramCount {
   private Long fromTime;
   private Long toTime;

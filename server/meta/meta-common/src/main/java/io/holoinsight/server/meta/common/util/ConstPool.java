@@ -38,7 +38,7 @@ public class ConstPool {
   public static final int GRPC_UPDATE_MAX_SIZE = 1000;
 
   // grpc接收批量写入数量上限
-  public static final int GRPC_INSERT_MAX_SIZE = 4000;
+  public static final int GRPC_INSERT_MAX_SIZE = 6000;
 
   // grpc接收根据pk批量查询数量上限
   public static final int GRPC_QUERY_BY_PKS_MAX_SIZE = 4000;

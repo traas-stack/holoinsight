@@ -21,7 +21,7 @@ import io.holoinsight.server.home.common.util.scope.RequestContext;
 import io.holoinsight.server.home.dal.model.ApiKey;
 import io.holoinsight.server.home.dal.model.TraceAgentConfProp;
 import io.holoinsight.server.home.dal.model.TraceAgentConfiguration;
-import io.holoinsight.server.home.web.common.AesUtil;
+import io.holoinsight.server.common.AesUtil;
 import io.holoinsight.server.home.web.common.ManageCallback;
 import io.holoinsight.server.home.web.common.ParaCheckUtil;
 import io.holoinsight.server.home.web.config.TraceAuthEncryptConfiguration;
@@ -112,7 +112,7 @@ public class TraceAgentFacadeImpl extends BaseFacade {
                 TRACE_EXTEND_AUTHENTICATION_PREFIX + objectMapper.writeValueAsString(extendInfo);
             if (traceAuthEncryptConfiguration.isEnable()
                 && !StringUtils.isEmpty(traceAuthEncryptConfiguration.getSecretKey())) {
-              apikey = AesUtil.aesEncrypt(apikey, traceAuthEncryptConfiguration.getSecretKey(),
+              apikey = AesUtil.aesEncryptHex(apikey, traceAuthEncryptConfiguration.getSecretKey(),
                   traceAuthEncryptConfiguration.getIv());
             }
           }
