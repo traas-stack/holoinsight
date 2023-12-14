@@ -1129,16 +1129,16 @@ public class DefaultQueryServiceImpl implements QueryService {
         valueBuilder.setType(value.getType().name());
         switch (value.getType()) {
           case String:
-            valueBuilder.setStrValue((String) value.getValue());
+            valueBuilder.setStrValue(getStrValue(value.getValue()));
             break;
           case Timestamp:
-            valueBuilder.setTimestampValue(((Number) value.getValue()).longValue());
+            valueBuilder.setTimestampValue(getLongValue(value.getValue()));
             break;
           case Double:
-            valueBuilder.setDoubleValue(((Number) value.getValue()).doubleValue());
+            valueBuilder.setDoubleValue(getDoubleValue(value.getValue()));
             break;
           case Boolean:
-            valueBuilder.setBoolValue((Boolean) value.getValue());
+            valueBuilder.setBoolValue(getBoolValue(value.getValue()));
             break;
         }
         resultBuilder.addValues(valueBuilder.build());
@@ -1147,6 +1147,34 @@ public class DefaultQueryServiceImpl implements QueryService {
     }
     builder.addResults(detailResultBuilder.build());
     return builder;
+  }
+
+  private boolean getBoolValue(Object value) {
+    if (value instanceof Boolean) {
+      return (boolean) value;
+    }
+    return false;
+  }
+
+  private double getDoubleValue(Object value) {
+    if (value instanceof Number) {
+      return ((Number) value).doubleValue();
+    }
+    return 0;
+  }
+
+  private long getLongValue(Object value) {
+    if (value instanceof Number) {
+      return ((Number) value).longValue();
+    }
+    return 0L;
+  }
+
+  private String getStrValue(Object value) {
+    if (value instanceof String) {
+      return (String) value;
+    }
+    return StringUtils.EMPTY;
   }
 
   private QueryProto.QueryResponse.Builder analysis(String tenant,
