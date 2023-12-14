@@ -51,6 +51,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -537,6 +538,11 @@ public class CustomPluginFacadeImpl extends BaseFacade {
     if (!CollectionUtils.isEmpty(conf.collectMetrics)) {
       for (CollectMetric collectMetric : conf.collectMetrics) {
         if (null == collectMetric.spm || Boolean.FALSE == collectMetric.spm) {
+          if (spm == Boolean.TRUE
+              && Arrays.asList("total", "success", "fail", "cost", "successPercent")
+                  .contains(collectMetric.tableName)) {
+            continue;
+          }
           newCollectMetrics.add(collectMetric);
           continue;
         }
