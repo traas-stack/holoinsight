@@ -573,18 +573,42 @@ public class QueryFacadeImpl extends BaseFacade {
     return builder.build();
   }
 
-
+  private String getTimestampName(QueryDataSource d) {
+    String timestampName = "period";
+    MetricInfo metricInfo = this.superCacheService.getSc().metricInfoMap.get(d.metric);
+    if (metricInfo == null || StringUtils.isEmpty(metricInfo.getExtInfo())) {
+      return timestampName;
+    }
+    Map<String, Object> metricInfoExtInfo = J.toMap(metricInfo.getExtInfo());
+    Map<String, Object> tableSchema = (Map<String, Object>) metricInfoExtInfo.get("tableSchema");
+    if (CollectionUtils.isEmpty(tableSchema)) {
+      return timestampName;
+    }
+    List<Map<String, Object>> rowSchemaList =
+        (List<Map<String, Object>>) tableSchema.get("rowSchemaList");
+    if (CollectionUtils.isEmpty(rowSchemaList)) {
+      return timestampName;
+    }
+    for (Map<String, Object> rowSchema : rowSchemaList) {
+      String type = (String) rowSchema.get("type");
+      if (StringUtils.equals("timestamp", type)) {
+        return (String) rowSchema.get("name");
+      }
+    }
+    return timestampName;
+  }
 
   protected void parseQl(QueryDataSource d, MetricInfo metricInfo) {
+    String timestampName = getTimestampName(d);
     Set<String> tags = new HashSet<>(J.toList(metricInfo.getTags()));
     StringBuilder select = new StringBuilder("select ");
-    List<String> gbList = parseGroupby(d, tags);
+    List<String> gbList = parseGroupby(d, tags, timestampName);
     List<String> selects = new ArrayList<>();
     String downsample = "PT1M";
     if (StringUtils.equalsIgnoreCase(d.getDownsample(), "1h")) {
       downsample = "PT1H";
     }
-    selects.add("time_bucket(`period`, '" + downsample
+    selects.add("time_bucket(`" + timestampName + "`, '" + downsample
         + "', 'yyyy-MM-dd HH:mm:ss', '+0800') AS `timestamp`");
     for (String gb : gbList) {
       if (!tags.contains(gb)) {
@@ -597,7 +621,7 @@ public class QueryFacadeImpl extends BaseFacade {
 
     select.append(" from ").append(d.metric);
 
-    parseFilters(select, d, tags);
+    parseFilters(select, d, tags, timestampName);
 
     String groupBy = "";
     if (!CollectionUtils.isEmpty(gbList)) {
@@ -607,7 +631,9 @@ public class QueryFacadeImpl extends BaseFacade {
     select.append(" group by ") //
         .append(groupBy) //
         .append(StringUtils.isEmpty(groupBy) ? "" : ", ") //
-        .append(" time_bucket(`period`, '") //
+        .append(" time_bucket(`") //
+        .append(timestampName) //
+        .append("`, '") //
         .append(downsample) //
         .append("', 'yyyy-MM-dd HH:mm:ss', '+0800') ");
 
@@ -617,11 +643,11 @@ public class QueryFacadeImpl extends BaseFacade {
     d.setQl(select.toString());
   }
 
-  private List<String> parseGroupby(QueryDataSource d, Set<String> tags) {
+  private List<String> parseGroupby(QueryDataSource d, Set<String> tags, String timestampName) {
     List<String> gbList = new ArrayList<>();
     if (!CollectionUtils.isEmpty(d.groupBy)) {
       for (String gb : d.groupBy) {
-        if (!StringUtils.equals("period", gb) && !tags.contains(gb)) {
+        if (!StringUtils.equals(timestampName, gb) && !tags.contains(gb)) {
           continue;
         }
         gbList.add(gb);
@@ -652,10 +678,15 @@ public class QueryFacadeImpl extends BaseFacade {
     select.append(String.join(" , ", selects));
   }
 
-  private void parseFilters(StringBuilder select, QueryDataSource d, Set<String> tags) {
-    select.append(" where `period` <= ") //
+  private void parseFilters(StringBuilder select, QueryDataSource d, Set<String> tags,
+      String timestampName) {
+    select.append(" where `") //
+        .append(timestampName) //
+        .append("` <= ") //
         .append(d.end) //
-        .append(" and `period` >= ") //
+        .append(" and `") //
+        .append(timestampName) //
+        .append("` >= ") //
         .append(d.start);
     if (!CollectionUtils.isEmpty(d.filters)) {
       for (QueryFilter filter : d.filters) {
