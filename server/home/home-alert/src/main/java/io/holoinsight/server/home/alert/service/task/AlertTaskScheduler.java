@@ -135,7 +135,7 @@ public class AlertTaskScheduler {
             break;
           }
         } catch (Throwable e) {
-          RecordSucOrFailNotify.alertNotifyProcess(
+          RecordSucOrFailNotify.alertNotifyProcessFail(
               "fail to consume compute task for {}" + e.getMessage(), ALERT_TASK_SCHEDULE,
               "consume compute task", alertNotifyRecordDTO);
           logger.error("fail to consume compute task for {}", e.getMessage(), e);

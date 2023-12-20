@@ -3,27 +3,21 @@
  */
 package io.holoinsight.server.home.biz.service.impl;
 
-import com.alibaba.fastjson.JSONArray;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import io.holoinsight.server.home.biz.service.AlertNotifyRecordService;
 import io.holoinsight.server.home.common.service.RequestContextAdapter;
-import io.holoinsight.server.home.dal.mapper.AlertNotifyRecordMapper;
 import io.holoinsight.server.home.dal.converter.AlertNotifyRecordConverter;
+import io.holoinsight.server.home.dal.mapper.AlertNotifyRecordMapper;
 import io.holoinsight.server.home.dal.model.AlertNotifyRecord;
 import io.holoinsight.server.home.facade.AlertNotifyRecordDTO;
-import io.holoinsight.server.home.facade.NotifyErrorMsg;
-import io.holoinsight.server.home.facade.NotifyStage;
-import io.holoinsight.server.home.facade.NotifyUser;
 import io.holoinsight.server.home.facade.page.MonitorPageRequest;
 import io.holoinsight.server.home.facade.page.MonitorPageResult;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.Resource;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -34,7 +28,7 @@ public class AlertNotifyRecordServiceImpl extends
   @Autowired
   private RequestContextAdapter requestContextAdapter;
 
-  @Resource
+  @Autowired
   private AlertNotifyRecordConverter alertNotifyRecordConverter;
 
   @Override
@@ -46,9 +40,7 @@ public class AlertNotifyRecordServiceImpl extends
     wrapper.eq("history_detail_id", historyDetailId);
     wrapper.last("LIMIT 1");
     AlertNotifyRecord alertNotifyRecord = this.getOne(wrapper);
-    AlertNotifyRecordDTO alertNotifyRecordDTO =
-        alertNotifyRecordConverter.doToDTO(alertNotifyRecord);
-    return alertNotifyRecordDTO;
+    return alertNotifyRecordConverter.doToDTO(alertNotifyRecord);
   }
 
   @Override
@@ -71,7 +63,7 @@ public class AlertNotifyRecordServiceImpl extends
         alertNotifyRecord.getWorkspace());
 
     if (null != alertNotifyRecord.getNotifyErrorTime()) {
-      wrapper.like("notify_error_time", alertNotifyRecord.getNotifyErrorTime());
+      wrapper.ge("notify_error_time", alertNotifyRecord.getNotifyErrorTime());
     }
 
     if (StringUtils.isNotBlank(alertNotifyRecord.getNotifyChannel())) {
@@ -80,10 +72,6 @@ public class AlertNotifyRecordServiceImpl extends
 
     if (StringUtils.isNotBlank(alertNotifyRecord.getRuleName())) {
       wrapper.like("rule_name", alertNotifyRecord.getRuleName().trim());
-    }
-
-    if (StringUtils.isNotBlank(alertNotifyRecord.getNotifyUser())) {
-      wrapper.likeRight("notify_user", alertNotifyRecord.getNotifyUser().trim());
     }
 
     if (null != alertNotifyRecord.getHistoryId()) {
@@ -118,8 +106,8 @@ public class AlertNotifyRecordServiceImpl extends
 
     MonitorPageResult<AlertNotifyRecordDTO> pageResult = new MonitorPageResult<>();
 
-    List<AlertNotifyRecordDTO> alertNotifyRecordDTOList = recordConverter(page.getRecords());
-
+    List<AlertNotifyRecordDTO> alertNotifyRecordDTOList =
+        alertNotifyRecordConverter.dosToDTOs(page.getRecords());
 
     pageResult.setItems(alertNotifyRecordDTOList);
     pageResult.setPageNum(pageRequest.getPageNum());
@@ -130,51 +118,10 @@ public class AlertNotifyRecordServiceImpl extends
     return pageResult;
   }
 
-  private List<AlertNotifyRecordDTO> recordConverter(List<AlertNotifyRecord> records) {
-    if (records == null) {
-      return null;
-    }
+  @Override
+  public void insert(AlertNotifyRecordDTO alertNotifyRecordDTO) {
+    AlertNotifyRecord alertNotifyRecord = alertNotifyRecordConverter.dtoToDO(alertNotifyRecordDTO);
 
-    List<AlertNotifyRecordDTO> list = new ArrayList<AlertNotifyRecordDTO>(records.size());
-    for (AlertNotifyRecord alertNotifyRecord : records) {
-      list.add(dTOConverter(alertNotifyRecord));
-    }
-
-    return list;
-  }
-
-  private AlertNotifyRecordDTO dTOConverter(AlertNotifyRecord alertNotifyRecord) {
-    if (alertNotifyRecord == null) {
-      return null;
-    }
-
-    AlertNotifyRecordDTO alertNotifyRecordDTO = new AlertNotifyRecordDTO();
-
-    alertNotifyRecordDTO.setId(alertNotifyRecord.getId());
-    alertNotifyRecordDTO.setGmtCreate(alertNotifyRecord.getGmtCreate());
-    alertNotifyRecordDTO.setGmtModified(alertNotifyRecord.getGmtModified());
-    alertNotifyRecordDTO.setHistoryDetailId(alertNotifyRecord.getHistoryDetailId());
-    alertNotifyRecordDTO.setHistoryId(alertNotifyRecord.getHistoryId());
-    alertNotifyRecordDTO.setNotifyErrorTime(alertNotifyRecord.getNotifyErrorTime());
-    alertNotifyRecordDTO.setIsSuccess(alertNotifyRecord.getIsSuccess());
-    alertNotifyRecordDTO.setNotifyChannel(alertNotifyRecord.getNotifyChannel());
-    alertNotifyRecordDTO.setNotifyUser(alertNotifyRecord.getNotifyUser());
-    alertNotifyRecordDTO.setNotifyErrorNode(alertNotifyRecord.getNotifyErrorNode());
-    alertNotifyRecordDTO.setTenant(alertNotifyRecord.getTenant());
-    alertNotifyRecordDTO.setExtra(alertNotifyRecord.getExtra());
-    alertNotifyRecordDTO.setEnvType(alertNotifyRecord.getEnvType());
-    alertNotifyRecordDTO.setWorkspace(alertNotifyRecord.getWorkspace());
-    alertNotifyRecordDTO.setUniqueId(alertNotifyRecord.getUniqueId());
-    alertNotifyRecordDTO.setRuleName(alertNotifyRecord.getRuleName());
-    alertNotifyRecordDTO.setTriggerResult(alertNotifyRecord.getTriggerResult());
-    alertNotifyRecordDTO
-        .setNotifyStage(JSONArray.parseArray(alertNotifyRecord.getExtra(), NotifyStage.class));
-    alertNotifyRecordDTO.setNotifyErrorMsgList(
-        JSONArray.parseArray(alertNotifyRecord.getNotifyErrorNode(), NotifyErrorMsg.class));
-    alertNotifyRecordDTO.setNotifyChannelList(
-        JSONArray.parseArray(alertNotifyRecord.getNotifyChannel(), String.class));
-    alertNotifyRecordDTO.setNotifyUserList(
-        JSONArray.parseArray(alertNotifyRecord.getNotifyUser(), NotifyUser.class));
-    return alertNotifyRecordDTO;
+    this.save(alertNotifyRecord);
   }
 }

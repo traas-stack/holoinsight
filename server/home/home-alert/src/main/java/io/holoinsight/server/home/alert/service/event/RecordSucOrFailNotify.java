@@ -9,8 +9,6 @@ import io.holoinsight.server.home.alert.model.compute.ComputeTaskPackage;
 import io.holoinsight.server.home.biz.common.MetaDictUtil;
 import io.holoinsight.server.home.biz.service.AlertNotifyRecordService;
 import io.holoinsight.server.home.common.service.SpringContext;
-import io.holoinsight.server.home.dal.mapper.AlertNotifyRecordMapper;
-import io.holoinsight.server.home.dal.model.AlertNotifyRecord;
 import io.holoinsight.server.home.facade.AlertNotifyRecordDTO;
 import io.holoinsight.server.home.facade.InspectConfig;
 import io.holoinsight.server.home.facade.NotifyErrorMsg;
@@ -21,7 +19,6 @@ import io.holoinsight.server.home.facade.trigger.TriggerResult;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
-import org.springframework.beans.BeanUtils;
 import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
@@ -40,8 +37,6 @@ import static io.holoinsight.server.home.biz.common.MetaDictType.GLOBAL_CONFIG;
  */
 @Slf4j
 public class RecordSucOrFailNotify {
-  private static AlertNotifyRecordMapper alertNotifyRecordMapper =
-      SpringContext.getBean(AlertNotifyRecordMapper.class);
 
   private static AlertNotifyRecordService alertNotifyRecordService =
       SpringContext.getBean(AlertNotifyRecordService.class);
@@ -53,6 +48,42 @@ public class RecordSucOrFailNotify {
   private static boolean recordEnable() {
     String enable = MetaDictUtil.getStringValue(GLOBAL_CONFIG, "record_enable");
     return StringUtils.isNotEmpty(enable) && StringUtils.equals(enable, "true");
+  }
+
+
+  public static void alertNotifyMigrate(ComputeTaskPackage computeTaskPackage) {
+    if (Objects.isNull(computeTaskPackage)
+        || Objects.isNull(computeTaskPackage.getAlertNotifyRecord())) {
+      log.warn("alertNotifyMigrate record fail. computeTaskPackage or alertNotifyRecord is null");
+      return;
+    }
+    try {
+      AlertNotifyRecordDTO alertNotifyRecord = computeTaskPackage.getAlertNotifyRecord();
+      List<InspectConfig> inspectConfigs = computeTaskPackage.getInspectConfigs();
+      List<InspectConfig> inspectConfigList = new ArrayList<>();
+
+      for (int i = 0; i < inspectConfigs.size(); i++) {
+
+        InspectConfig inspectConfig = inspectConfigs.get(i);
+        List<NotifyStage> notifyStage = new ArrayList<>(alertNotifyRecord.getNotifyStage());
+        AlertNotifyRecordDTO alertNotifyRecordDTO = new AlertNotifyRecordDTO();
+        alertNotifyRecordDTO.setGmtCreate(alertNotifyRecord.getGmtCreate());
+        alertNotifyRecordDTO.setIsSuccess(alertNotifyRecord.getIsSuccess());
+        alertNotifyRecordDTO.setTraceId(alertNotifyRecord.getTraceId());
+        alertNotifyRecordDTO.setNotifyStage(notifyStage);
+        alertNotifyRecordDTO.setIsRecord(inspectConfig.isAlertRecord());
+        alertNotifyRecordDTO.setTenant(inspectConfig.getTenant());
+        alertNotifyRecordDTO.setUniqueId(inspectConfig.getUniqueId());
+        alertNotifyRecordDTO.setRuleName(inspectConfig.getRuleName());
+        alertNotifyRecordDTO.setEnvType(inspectConfig.getEnvType());
+
+        inspectConfig.setAlertNotifyRecord(alertNotifyRecordDTO);
+        inspectConfigList.add(inspectConfig);
+      }
+      computeTaskPackage.setInspectConfigs(inspectConfigList);
+    } catch (Exception e) {
+      log.error("{} alertNotifyMigrate record fail.", computeTaskPackage.getTraceId(), e);
+    }
   }
 
   public static void alertNotifyChannelFail(String errorNode, String notifyChannel,
@@ -74,14 +105,9 @@ public class RecordSucOrFailNotify {
 
           alertNotifyRecord.setNotifyErrorTime(new Date());
           alertNotifyRecord.setIsSuccess((byte) 0);
-          alertNotifyRecord.setExtra(J.toJson(notifyStageList));
-          alertNotifyRecord.setNotifyErrorNode(J.toJson(notifyErrorMsgList));
-          alertNotifyRecord.setNotifyChannel(J.toJson(alertNotifyRecord.getNotifyChannelList()));
-          alertNotifyRecord.setNotifyUser(J.toJson(alertNotifyRecord.getNotifyUserList()));
+          alertNotifyRecord.setNotifyErrorNode(notifyErrorMsgList);
 
-          AlertNotifyRecord alertNotifyRecord1 = new AlertNotifyRecord();
-          BeanUtils.copyProperties(alertNotifyRecord, alertNotifyRecord1);
-          alertNotifyRecordMapper.insert(alertNotifyRecord1);
+          alertNotifyRecordService.insert(alertNotifyRecord);
         }
       } catch (Exception e) {
         log.error("{} {} {} {} {} record fail. ", alertNotifyRecord.getTraceId(),
@@ -99,10 +125,9 @@ public class RecordSucOrFailNotify {
     NotifyErrorMsg notifyErrorMsg = new NotifyErrorMsg();
     notifyErrorMsg.setNotifyType(notifyChannel);
     notifyErrorMsg.setErrMsg(errorNode);
-    notifyErrorMsg.setIsSuccess(false);
     notifyErrorMsg.setAddress(address);
     notifyErrorMsg.setNotifyUser(notifyUser);
-    List<NotifyErrorMsg> notifyErrorMsgList = alertNotifyRecord.getNotifyErrorMsgList();
+    List<NotifyErrorMsg> notifyErrorMsgList = alertNotifyRecord.getNotifyErrorNode();
     if (CollectionUtils.isEmpty(notifyErrorMsgList)) {
       notifyErrorMsgList = new ArrayList<>();
     }
@@ -110,8 +135,11 @@ public class RecordSucOrFailNotify {
     return notifyErrorMsgList;
   }
 
-  public static void alertNotifySuccess(String notifyChannel,
+  public static void alertNotifyChannelSuccess(String notifyChannel,
       AlertNotifyRecordDTO alertNotifyRecord, String user) {
+    if (!recordEnable()) {
+      return;
+    }
     if (Objects.isNull(alertNotifyRecord)) {
       log.warn("{} {} record fail. alertNotifyRecord is null", NOTIFY_CHAIN, notifyChannel);
       return;
@@ -121,7 +149,10 @@ public class RecordSucOrFailNotify {
         List<NotifyStage> notifyStageList = alertNotifyRecord.getNotifyStage();
         buildNotifyStage(notifyStageList, NOTIFY_CHAIN, notifyChannel, true);
         alertNotifyRecord.setNotifyStage(notifyStageList);
+
         buildChannelAndUser(notifyChannel, alertNotifyRecord, user);
+        alertNotifyRecord.setNotifyErrorNode(new ArrayList<>());
+        alertNotifyRecordService.insert(alertNotifyRecord);
       }
     } catch (Exception e) {
       log.error("{} {} {} {} record fail. ", alertNotifyRecord.getTraceId(),
@@ -142,11 +173,12 @@ public class RecordSucOrFailNotify {
         List<NotifyErrorMsg> notifyErrorMsgList =
             buildErrorMsg(errorNode, "", alertNotifyRecord, "");
         alertNotifyRecord.setNotifyStage(notifyStageList);
-        alertNotifyRecord.setNotifyErrorMsgList(notifyErrorMsgList);
+        alertNotifyRecord.setNotifyErrorNode(notifyErrorMsgList);
         alertNotifyRecord.setIsSuccess((byte) 1);
-        alertNotifyRecord.setNotifyErrorTime(new Date());
         alertNotifyRecord.setTriggerResult(J.toJson(noEventGeneratedList));
       }
+      log.info("{} {} {} {} no alarm event generated, {}", alertNotifyRecord.getTraceId(),
+          alertNotifyRecord.getUniqueId(), stage, step, errorNode);
     } catch (Exception e) {
       log.error("{} {} {} {} record fail. ", alertNotifyRecord.getTraceId(),
           alertNotifyRecord.getUniqueId(), stage, step, e);
@@ -155,29 +187,18 @@ public class RecordSucOrFailNotify {
 
   private static void buildChannelAndUser(String notifyChannel,
       AlertNotifyRecordDTO alertNotifyRecord, String user) {
-    List<NotifyUser> notifyUserList = alertNotifyRecord.getNotifyUserList();
-    if (CollectionUtils.isEmpty(notifyUserList)) {
-      notifyUserList = new ArrayList<>();
-    }
     NotifyUser notifyUser = new NotifyUser();
     notifyUser.setNotifyChannel(notifyChannel);
     notifyUser.setUser(user);
-    if (!notifyUserList.contains(notifyUser)) {
-      notifyUserList.add(notifyUser);
-      alertNotifyRecord.setNotifyUserList(notifyUserList);
-    }
 
-    List<String> notifyChannelList = alertNotifyRecord.getNotifyChannelList();
-    if (CollectionUtils.isEmpty(notifyChannelList)) {
-      notifyChannelList = new ArrayList<>();
-    }
-    if (!notifyChannelList.contains(notifyChannel)) {
-      notifyChannelList.add(notifyChannel);
-      alertNotifyRecord.setNotifyChannelList(notifyChannelList);
-    }
+    List<NotifyUser> notifyUserList = new ArrayList<>();
+    notifyUserList.add(notifyUser);
+
+    alertNotifyRecord.setNotifyUser(notifyUserList);
+    alertNotifyRecord.setNotifyChannel(notifyChannel);
   }
 
-  public static void alertNotifyProcess(String errorNode, String stage, String step,
+  public static void alertNotifyProcessFail(String errorNode, String stage, String step,
       AlertNotifyRecordDTO alertNotifyRecord) {
     if (!recordEnable()) {
       return;
@@ -193,19 +214,16 @@ public class RecordSucOrFailNotify {
         buildNotifyStage(notifyStageList, stage, step, false);
 
         NotifyErrorMsg notifyErrorMsg = new NotifyErrorMsg();
-        notifyErrorMsg.setNotifyType("default");
+        notifyErrorMsg.setNotifyType("-");
         notifyErrorMsg.setErrMsg(errorNode);
-        notifyErrorMsg.setIsSuccess(false);
         notifyErrorMsg.setAddress(address);
         List<NotifyErrorMsg> notifyErrorMsgList = new ArrayList<>();
         notifyErrorMsgList.add(notifyErrorMsg);
+
         alertNotifyRecord.setNotifyStage(notifyStageList);
-        alertNotifyRecord.setExtra(J.toJson(notifyStageList));
-        alertNotifyRecord.setNotifyErrorNode(J.toJson(notifyErrorMsgList));
+        alertNotifyRecord.setNotifyErrorNode(notifyErrorMsgList);
         alertNotifyRecord.setIsSuccess((byte) 0);
-        AlertNotifyRecord alertNotifyRecord1 = new AlertNotifyRecord();
-        BeanUtils.copyProperties(alertNotifyRecord, alertNotifyRecord1);
-        alertNotifyRecordMapper.insert(alertNotifyRecord1);
+        alertNotifyRecordService.insert(alertNotifyRecord);
       }
     } catch (Exception e) {
       log.error("{} {} {} {} record fail. ", alertNotifyRecord.getTraceId(),
@@ -269,35 +287,12 @@ public class RecordSucOrFailNotify {
     }
   }
 
-
-  public static void alertNotifyMigrate(ComputeTaskPackage computeTaskPackage) {
-    if (Objects.isNull(computeTaskPackage)
-        || Objects.isNull(computeTaskPackage.getAlertNotifyRecord())) {
-      log.warn("alertNotifyMigrate record fail. computeTaskPackage or alertNotifyRecord is null");
-      return;
-    }
-    try {
-      AlertNotifyRecordDTO alertNotifyRecord = computeTaskPackage.getAlertNotifyRecord();
-      List<InspectConfig> inspectConfigs = computeTaskPackage.getInspectConfigs();
-      List<InspectConfig> inspectConfigList = new ArrayList<>();
-      for (int i = 0; i < inspectConfigs.size(); i++) {
-        AlertNotifyRecordDTO alertNotifyRecordDTO = new AlertNotifyRecordDTO();
-        BeanUtils.copyProperties(alertNotifyRecord, alertNotifyRecordDTO);
-        InspectConfig inspectConfig = inspectConfigs.get(i);
-        BeanUtils.copyProperties(inspectConfig, alertNotifyRecordDTO);
-        alertNotifyRecordDTO.setIsRecord(inspectConfig.isAlertRecord());
-        inspectConfig.setAlertNotifyRecord(alertNotifyRecordDTO);
-        log.info("alertNotifyRecord switch :{}", alertNotifyRecordDTO.getIsRecord());
-        inspectConfigList.add(inspectConfig);
-      }
-      computeTaskPackage.setInspectConfigs(inspectConfigList);
-    } catch (Exception e) {
-      log.error("{} alertNotifyMigrate record fail.", computeTaskPackage.getTraceId(), e);
-    }
-  }
-
   public static void alertNotifyFailAppendMsg(String errorNode, String notifyChannel,
       AlertNotifyRecordDTO alertNotifyRecord, String notifyUser) {
+
+    if (!recordEnable()) {
+      return;
+    }
     if (Objects.isNull(alertNotifyRecord)) {
       log.warn("{} {} {} record fail. alertNotifyRecord is null", NOTIFY_CHAIN, notifyChannel,
           errorNode);
@@ -313,8 +308,10 @@ public class RecordSucOrFailNotify {
 
         List<NotifyErrorMsg> notifyErrorMsgList =
             buildErrorMsg(errorNode, notifyChannel, alertNotifyRecord, notifyUser);
-        alertNotifyRecord.setNotifyErrorNode(J.toJson(notifyErrorMsgList));
+        alertNotifyRecord.setNotifyErrorNode(notifyErrorMsgList);
         alertNotifyRecord.setIsSuccess((byte) 0);
+
+        alertNotifyRecordService.insert(alertNotifyRecord);
       }
     } catch (Exception e) {
       log.error("{} {} {} {} {} record fail. ", alertNotifyRecord.getTraceId(),
@@ -322,36 +319,23 @@ public class RecordSucOrFailNotify {
     }
   }
 
-  public static void batchInsert(List<AlertNotifyRecordDTO> alertNotifyRecordDTOList) {
-    if (!recordEnable()) {
-      return;
-    }
-    try {
-      List<AlertNotifyRecord> alertNotifyRecords = new ArrayList<>();
-      if (!CollectionUtils.isEmpty(alertNotifyRecordDTOList)) {
-        alertNotifyRecordDTOList.forEach(alertNotifyRecord -> {
-          if (Objects.nonNull(alertNotifyRecord) && alertNotifyRecord.getIsRecord()) {
-            alertNotifyRecord.setExtra(J.toJson(alertNotifyRecord.getNotifyStage()));
-            alertNotifyRecord.setNotifyUser(J.toJson(alertNotifyRecord.getNotifyUserList()));
-            alertNotifyRecord
-                .setNotifyErrorNode(J.toJson(alertNotifyRecord.getNotifyErrorMsgList()));
-            alertNotifyRecord.setNotifyChannel(J.toJson(alertNotifyRecord.getNotifyChannelList()));
-            alertNotifyRecord.setNotifyUser(J.toJson(alertNotifyRecord.getNotifyUserList()));
-
-            AlertNotifyRecord alertNotifyRecord1 = new AlertNotifyRecord();
-            BeanUtils.copyProperties(alertNotifyRecord, alertNotifyRecord1);
-            alertNotifyRecords.add(alertNotifyRecord1);
-          }
-        });
-      } else {
-        log.warn("batch insert record fail. alertNotifyRecordDTOList is null");
-        return;
-      }
-      log.info("batch insert data size {}", alertNotifyRecords.size());
-      alertNotifyRecordService.saveBatch(alertNotifyRecords);
-    } catch (Exception e) {
-      log.error("batch insert record fail. {}", e.getMessage(), e);
-    }
-
-  }
+  // public static void batchInsert(List<AlertNotifyRecordDTO> alertNotifyRecordDTOList) {
+  // if (!recordEnable()) {
+  // return;
+  // }
+  // try {
+  // if (!CollectionUtils.isEmpty(alertNotifyRecordDTOList)) {
+  // alertNotifyRecordDTOList.forEach(alertNotifyRecord -> {
+  // if (Objects.nonNull(alertNotifyRecord) && alertNotifyRecord.getIsRecord()) {
+  // alertNotifyRecordService.insert(alertNotifyRecord);
+  // }
+  // });
+  // } else {
+  // log.warn("batch insert record fail. alertNotifyRecordDTOList is null");
+  // }
+  // } catch (Exception e) {
+  // log.error("batch insert record fail. {}", e.getMessage(), e);
+  // }
+  //
+  // }
 }

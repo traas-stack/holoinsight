@@ -68,8 +68,8 @@ public abstract class AlertNotifyHandler implements AlertHandlerExecutor {
         LOGGER.error(
             "[HoloinsightAlertInternalException][AlertNotifyHandler][1] {} fail to alert_notify_handle for {}",
             alertNotify.getTraceId(), e.getMessage(), e);
-        RecordSucOrFailNotify.alertNotifyProcess(
-            "fail to alert_notify_handle for " + e.getMessage(), NOTIFY_HANDLER,
+        RecordSucOrFailNotify.alertNotifyProcessFail(
+            "fail to alert notify handle for " + e.getMessage(), NOTIFY_HANDLER,
             "alert notify handle", alertNotify.getAlertNotifyRecord());
       } finally {
         if (latch != null && alertNotify.isAlertRecord()) {
@@ -90,7 +90,7 @@ public abstract class AlertNotifyHandler implements AlertHandlerExecutor {
     }
     if (status) {
       LOGGER.info("alert notify record data size {} .", recordLatch.size());
-      RecordSucOrFailNotify.batchInsert(recordLatch.getAlertNotifyRecordDTOList());
+      // RecordSucOrFailNotify.batchInsert(recordLatch.getAlertNotifyRecordDTOList());
     }
 
     LOGGER.info("alert_notification_notify_step size [{}]", count);

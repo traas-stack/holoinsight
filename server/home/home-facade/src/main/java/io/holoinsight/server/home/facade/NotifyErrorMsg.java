@@ -17,8 +17,6 @@ public class NotifyErrorMsg {
 
   private String errMsg;
 
-  private Boolean isSuccess;
-
   private String address;
 
   private String notifyUser;

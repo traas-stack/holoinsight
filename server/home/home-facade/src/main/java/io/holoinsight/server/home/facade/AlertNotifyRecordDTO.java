@@ -59,12 +59,12 @@ public class AlertNotifyRecordDTO {
   /**
    * notify target detail
    */
-  private String notifyUser;
+  private List<NotifyUser> notifyUser;
 
   /**
    * exception node
    */
-  private String notifyErrorNode;
+  private List<NotifyErrorMsg> notifyErrorNode;
 
   /**
    * tenant
@@ -74,7 +74,7 @@ public class AlertNotifyRecordDTO {
   /**
    * alert compute detail
    */
-  private String extra;
+  private List<NotifyStage> notifyStage;
 
   /**
    * env type
@@ -88,14 +88,6 @@ public class AlertNotifyRecordDTO {
   private String ruleName;
 
   private String triggerResult;
-
-  private List<NotifyStage> notifyStage;
-
-  private List<String> notifyChannelList;
-
-  private List<NotifyErrorMsg> notifyErrorMsgList;
-
-  private List<NotifyUser> notifyUserList;
 
   private Boolean isRecord;
 }

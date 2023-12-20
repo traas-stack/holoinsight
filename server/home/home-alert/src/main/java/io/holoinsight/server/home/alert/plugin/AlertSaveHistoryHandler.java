@@ -390,8 +390,8 @@ public class AlertSaveHistoryHandler implements AlertHandlerExecutor {
         RecordSucOrFailNotify.alertNotifyProcessSuc(SAVE_HISTORY, "save history",
             alertNotify.getAlertNotifyRecord());
       } catch (Exception e) {
-        RecordSucOrFailNotify.alertNotifyProcess(
-            alertNotify.getTraceId() + "fail to alert_history_save for" + e.getMessage(),
+        RecordSucOrFailNotify.alertNotifyProcessFail(
+            alertNotify.getTraceId() + "fail to alert history save for" + e.getMessage(),
             SAVE_HISTORY, "save history", alertNotify.getAlertNotifyRecord());
         LOGGER.error(
             "[HoloinsightAlertInternalException][AlertSaveHistoryHandler][1] {}  fail to alert_history_save for {}",
@@ -569,12 +569,12 @@ public class AlertSaveHistoryHandler implements AlertHandlerExecutor {
         AlarmHistory alertHistory = alertHistoryDOMap.get(alertNotify.getUniqueId());
         alertHistory.setRecoverTime(new Date(alertNotify.getAlarmTime()));
         alarmHistoryDOMapper.updateById(alertHistory);
-        RecordSucOrFailNotify.alertNotifyProcessSuc(SAVE_HISTORY, "save history is recover",
+        RecordSucOrFailNotify.alertNotifyProcessSuc(SAVE_HISTORY, "alert recover",
             alertNotify.getAlertNotifyRecord());
       } catch (Exception e) {
-        RecordSucOrFailNotify.alertNotifyProcess(
-            alertNotify.getTraceId() + "fail to alert_recover_update for" + e.getMessage(),
-            SAVE_HISTORY, "save history is recover", alertNotify.getAlertNotifyRecord());
+        RecordSucOrFailNotify.alertNotifyProcessFail(
+            alertNotify.getTraceId() + "fail to alert recover for" + e.getMessage(), SAVE_HISTORY,
+            "alert recover", alertNotify.getAlertNotifyRecord());
         LOGGER.error(
             "[HoloinsightAlertInternalException][AlertSaveHistoryHandler][1] {}  fail to alert_recover_update for {}",
             alertNotify.getTraceId(), e.getMessage(), e);
