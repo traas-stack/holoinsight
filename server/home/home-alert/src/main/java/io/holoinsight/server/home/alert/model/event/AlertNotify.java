@@ -145,7 +145,7 @@ public class AlertNotify {
         alertNotify.setAlertIp(AddressUtil.getHostAddress());
       }
     } catch (Exception e) {
-      RecordSucOrFailNotify.alertNotifyProcess("event convert alert notify exception" + e,
+      RecordSucOrFailNotify.alertNotifyProcessFail("event convert alert notify exception" + e,
           "alert task compute", "event convert alert notify", alertNotify.getAlertNotifyRecord());
       throw e;
     }

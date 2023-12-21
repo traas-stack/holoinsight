@@ -3,7 +3,6 @@
  */
 package io.holoinsight.server.home.alert.model.compute;
 
-import io.holoinsight.server.home.dal.model.AlertNotifyRecord;
 import io.holoinsight.server.home.facade.AlertNotifyRecordDTO;
 import io.holoinsight.server.home.facade.InspectConfig;
 import lombok.Data;

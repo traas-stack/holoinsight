@@ -15,4 +15,6 @@ public interface AlertNotifyRecordService extends IService<AlertNotifyRecord> {
 
   MonitorPageResult<AlertNotifyRecordDTO> getListByPage(
       MonitorPageRequest<AlertNotifyRecordDTO> pageRequest);
+
+  void insert(AlertNotifyRecordDTO alertNotifyRecordDTO);
 }

@@ -10,7 +10,6 @@ import io.holoinsight.server.home.alert.model.compute.ComputeTaskPackage;
 import io.holoinsight.server.home.alert.service.converter.DoConvert;
 import io.holoinsight.server.home.alert.service.data.CacheData;
 import io.holoinsight.server.home.alert.service.event.RecordSucOrFailNotify;
-import io.holoinsight.server.home.biz.service.CustomPluginService;
 import io.holoinsight.server.home.dal.mapper.AlarmRuleMapper;
 import io.holoinsight.server.home.dal.model.AlarmRule;
 import io.holoinsight.server.home.facade.AlertNotifyRecordDTO;
@@ -19,7 +18,6 @@ import io.holoinsight.server.home.facade.NotifyStage;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
@@ -62,9 +60,6 @@ public class CacheAlertTask {
 
   @Resource
   private CacheData cacheData;
-
-  @Autowired
-  private CustomPluginService customPluginService;
 
   @Resource
   private MetricInfoMapper metricInfoMapper;
@@ -168,7 +163,7 @@ public class CacheAlertTask {
       RecordSucOrFailNotify.alertNotifyProcessSuc(ALARM_CONFIG, "convert alarmRule",
           computeTaskPackage.getAlertNotifyRecord());
     } catch (Exception e) {
-      RecordSucOrFailNotify.alertNotifyProcess("fail to convert alarmRule", ALARM_CONFIG,
+      RecordSucOrFailNotify.alertNotifyProcessFail("fail to convert alarmRule", ALARM_CONFIG,
           "convert alarmRule", computeTaskPackage.getAlertNotifyRecord());
       LOGGER.error("{} [CRITICAL] fail to convert alarmRules", computeTaskPackage.getTraceId(), e);
     }

@@ -89,6 +89,8 @@ public class GetSubscriptionHandler implements AlertHandlerExecutor {
 
       // 查询消息通知订阅关系
       alertNotifies.parallelStream().forEach(alertNotify -> {
+        RecordSucOrFailNotify.alertNotifyProcessSuc(GET_SUBSCRIPTION, "query subscriber",
+            alertNotify.getAlertNotifyRecord());
         try {
           QueryWrapper<AlarmSubscribe> alertSubscribeQueryWrapper = new QueryWrapper<>();
           alertSubscribeQueryWrapper.eq("unique_id", alertNotify.getUniqueId());
@@ -109,7 +111,6 @@ public class GetSubscriptionHandler implements AlertHandlerExecutor {
           }
 
           if (!CollectionUtils.isEmpty(alertSubscribeList)) {
-            Set<String> userIdList = new HashSet<>();
             Set<Long> dingDingGroupIdList = new HashSet<>();
             List<WebhookInfo> webhookInfos = new ArrayList<>();
             Map<String/* notify type */, List<String>> userNotifyMap = new HashMap<>();
@@ -205,14 +206,20 @@ public class GetSubscriptionHandler implements AlertHandlerExecutor {
               alertNotify.setDingdingUrl(dingdingUrls);
             }
           }
-          RecordSucOrFailNotify.alertNotifyProcessSuc(GET_SUBSCRIPTION, "query subscription",
-              alertNotify.getAlertNotifyRecord());
+
+          if (CollectionUtils.isEmpty(alertNotify.getUserNotifyMap())
+              && CollectionUtils.isEmpty(alertNotify.getWebhookInfos())
+              && CollectionUtils.isEmpty(alertNotify.getDingdingUrl())) {
+            RecordSucOrFailNotify.alertNotifyProcessFail("query subscriber is empty",
+                GET_SUBSCRIPTION, "query subscriber error", alertNotify.getAlertNotifyRecord());
+          }
         } catch (Throwable e) {
           LOGGER.error(
               "[HoloinsightAlertInternalException][GetSubscriptionHandler][1] {}  fail to get_subscription for {}",
               alertNotify.getTraceId(), e.getMessage(), e);
-          RecordSucOrFailNotify.alertNotifyProcess("fail to get_subscription for " + e.getMessage(),
-              GET_SUBSCRIPTION, "query subscription", alertNotify.getAlertNotifyRecord());
+          RecordSucOrFailNotify.alertNotifyProcessFail(
+              "query subscriber is error, " + e.getMessage(), GET_SUBSCRIPTION,
+              "query subscriber error", alertNotify.getAlertNotifyRecord());
         }
       });
       LOGGER.info("[GetSubscriptionHandler][{}] finish to get_subscription.", alertNotifies.size());
@@ -239,8 +246,6 @@ public class GetSubscriptionHandler implements AlertHandlerExecutor {
       AlertNotify alertNotify = iterator.next();
 
       if (alertNotify.getIsRecover()) {
-        RecordSucOrFailNotify.alertNotifyProcess("alertNotify is recover", GET_SUBSCRIPTION,
-            "remove block subscription", alertNotify.getAlertNotifyRecord());
         iterator.remove();
         LOGGER.info("{} alert rule {} has recovered.", alertNotify.getTraceId(),
             alertNotify.getUniqueId());
@@ -253,8 +258,6 @@ public class GetSubscriptionHandler implements AlertHandlerExecutor {
       }
 
       if (StringUtils.isEmpty(alertBlock.getTags()) || alertBlock.getTags().equals("{}")) {
-        RecordSucOrFailNotify.alertNotifyProcess("alertNotify is blocked", GET_SUBSCRIPTION,
-            "remove block subscription", alertNotify.getAlertNotifyRecord());
         iterator.remove();
         LOGGER.info("{} alert rule {} has been blocked.", alertNotify.getTraceId(),
             alertNotify.getUniqueId());
@@ -278,6 +281,8 @@ public class GetSubscriptionHandler implements AlertHandlerExecutor {
                 if (matcher.find()) {
                   LOGGER.info("{} pql alert rule {} tag {} {} has been blocked.",
                       alertNotify.getTraceId(), alertNotify.getUniqueId(), key, value);
+                  RecordSucOrFailNotify.alertNotifyProcessSuc(GET_SUBSCRIPTION, "alarm block",
+                      alertNotify.getAlertNotifyRecord());
                   it.remove();
                 }
               }
@@ -286,6 +291,8 @@ public class GetSubscriptionHandler implements AlertHandlerExecutor {
           if (CollectionUtils.isEmpty(pqlRule.getDataResult())) {
             LOGGER.info("{} pql alert rule {} has been blocked because all tags have been blocked.",
                 alertNotify.getTraceId(), alertNotify.getUniqueId());
+            RecordSucOrFailNotify.alertNotifyProcessSuc(GET_SUBSCRIPTION, "alarm block",
+                alertNotify.getAlertNotifyRecord());
             iterator.remove();
           }
         } else {
@@ -304,6 +311,8 @@ public class GetSubscriptionHandler implements AlertHandlerExecutor {
                     LOGGER.info("{} alert rule {} tag {} {} has been blocked.",
                         alertNotify.getTraceId(), alertNotify.getUniqueId(), key, value);
                     it.remove();
+                    RecordSucOrFailNotify.alertNotifyProcessSuc(GET_SUBSCRIPTION, "alarm block",
+                        alertNotify.getAlertNotifyRecord());
                   }
                 }
               });
@@ -315,15 +324,14 @@ public class GetSubscriptionHandler implements AlertHandlerExecutor {
           if (CollectionUtils.isEmpty(notifyDataInfos)) {
             LOGGER.info("{} alert rule {} has been blocked because all tags have been blocked.",
                 alertNotify.getTraceId(), alertNotify.getUniqueId());
+            RecordSucOrFailNotify.alertNotifyProcessSuc(GET_SUBSCRIPTION, "alarm block",
+                alertNotify.getAlertNotifyRecord());
             iterator.remove();
           } else {
             alertNotify.setNotifyDataInfos(notifyDataInfos);
           }
         }
       }
-
-      RecordSucOrFailNotify.alertNotifyProcessSuc(GET_SUBSCRIPTION, "remove block subscription",
-          alertNotify.getAlertNotifyRecord());
     }
   }
 

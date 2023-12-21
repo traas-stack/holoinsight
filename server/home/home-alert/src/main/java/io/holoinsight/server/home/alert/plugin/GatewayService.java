@@ -73,16 +73,17 @@ public abstract class GatewayService {
     String type = defaultNotifyChain.name;
     if (CollectionUtils.isEmpty(notify.getNotifyDataInfos())) {
       LOGGER.info("{} notify data info is empty.", traceId);
-      RecordSucOrFailNotify.alertNotifyProcess(traceId + ": notify data info is empty ", GATEWAY,
-          "check notify data info", notify.getAlertNotifyRecord());
+      RecordSucOrFailNotify.alertNotifyProcessFail(traceId + ": notify data info is empty ",
+          GATEWAY, "check notify data info", notify.getAlertNotifyRecord());
       return true;
     }
 
     String ruleId = notify.getRuleId();
     if (!StringUtils.isNumeric(ruleId)) {
       LOGGER.warn("{} invalid rule {}", traceId, ruleId);
-      RecordSucOrFailNotify.alertNotifyProcess(traceId + ": invalid rule fail; ruleId is " + ruleId,
-          GATEWAY, "invalid rule", notify.getAlertNotifyRecord());
+      RecordSucOrFailNotify.alertNotifyProcessFail(
+          traceId + ": invalid rule fail; ruleId is " + ruleId, GATEWAY, "invalid rule",
+          notify.getAlertNotifyRecord());
       return true;
     }
 
@@ -99,7 +100,7 @@ public abstract class GatewayService {
 
     if (CollectionUtils.isEmpty(notifyChainList)) {
       LOGGER.info("{} {} notifyChainList is empty, skip.", traceId, ruleId);
-      RecordSucOrFailNotify.alertNotifyProcess(traceId + ": notifyChainList is empty, skip ",
+      RecordSucOrFailNotify.alertNotifyProcessFail(traceId + ": notifyChainList is empty, skip ",
           GATEWAY, " get notify chainList", notify.getAlertNotifyRecord());
       return true;
     }
@@ -108,8 +109,9 @@ public abstract class GatewayService {
     AlarmRuleDTO alertRule = this.alarmRuleConverter.doToDTO(rawRule);
     if (alertRule == null) {
       LOGGER.warn("{} can not find alarmRule by {}", traceId, ruleId);
-      RecordSucOrFailNotify.alertNotifyProcess(traceId + ": can not find alarmRule by " + ruleId,
-          GATEWAY, "find alarmRule", notify.getAlertNotifyRecord());
+      RecordSucOrFailNotify.alertNotifyProcessFail(
+          traceId + ": can not find alarmRule by " + ruleId, GATEWAY, "find alarmRule",
+          notify.getAlertNotifyRecord());
       return true;
     }
 

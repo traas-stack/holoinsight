@@ -3,7 +3,6 @@
  */
 package io.holoinsight.server.home.alert.service.calculate;
 
-import io.holoinsight.server.home.alert.common.G;
 import io.holoinsight.server.home.alert.model.compute.ComputeContext;
 import io.holoinsight.server.home.alert.model.compute.ComputeInfo;
 import io.holoinsight.server.home.alert.model.event.EventInfo;
@@ -72,7 +71,7 @@ public class AbstractUniformInspectRunningRule {
         events = runRule(inspectConfig, period, alertNotifyRecordDTOList);
       }
     } catch (Throwable ex) {
-      RecordSucOrFailNotify.alertNotifyProcess("AlertTaskCompute Exception: " + ex,
+      RecordSucOrFailNotify.alertNotifyProcessFail("AlertTaskCompute Exception: " + ex,
           ALERT_TASK_COMPUTE, "alert task compute", inspectConfig.getAlertNotifyRecord());
       logger.error("ALERT_EXCEPTION_MONITOR inspectConfig {}, traceId: {} ",
           inspectConfig.getUniqueId(), traceId, ex);
@@ -82,6 +81,19 @@ public class AbstractUniformInspectRunningRule {
 
   public EventInfo runPqlRule(InspectConfig inspectConfig, long period,
       List<AlertNotifyRecordDTO> alertNotifyRecordDTOList) {
+
+    if (!inspectConfig.getIsPql()
+        || CollectionUtils.isEmpty(inspectConfig.getPqlRule().getDataResult())) {
+      // record pql rule alert
+      AlertNotifyRecordDTO alertNotifyRecordDTO = inspectConfig.getAlertNotifyRecord();
+      if (Objects.nonNull(alertNotifyRecordDTO)) {
+        RecordSucOrFailNotify.alertNotifyNoEventGenerated("pql rule is empty", ALERT_TASK_COMPUTE,
+            "run pql rule", alertNotifyRecordDTO, null);
+        alertNotifyRecordDTOList.add(alertNotifyRecordDTO);
+      }
+      return null;
+    }
+
     if (inspectConfig.getIsPql()
         && !CollectionUtils.isEmpty(inspectConfig.getPqlRule().getDataResult())) {
       EventInfo eventInfo = new EventInfo();
@@ -94,15 +106,13 @@ public class AbstractUniformInspectRunningRule {
       Map<Trigger, List<TriggerResult>> triggerMap =
           convertFromPql(inspectConfig.getPqlRule(), period, inspectConfig);
       eventInfo.setAlarmTriggerResults(triggerMap);
+
+      RecordSucOrFailNotify.alertNotifyProcessSuc(ALERT_TASK_COMPUTE, "run pql rule",
+          inspectConfig.getAlertNotifyRecord());
+
       return eventInfo;
     }
-    // record pql rule alert
-    AlertNotifyRecordDTO alertNotifyRecordDTO = inspectConfig.getAlertNotifyRecord();
-    if (Objects.nonNull(alertNotifyRecordDTO)) {
-      RecordSucOrFailNotify.alertNotifyNoEventGenerated("pql rule is empty", ALERT_TASK_COMPUTE,
-          "run pql rule", alertNotifyRecordDTO, null);
-      alertNotifyRecordDTOList.add(alertNotifyRecordDTO);
-    }
+
     // 恢复时这里返回null
     return null;
   }
@@ -190,6 +200,9 @@ public class AbstractUniformInspectRunningRule {
       eventInfo.setAlarmTime(period);
       eventInfo.setIsRecover(false);
       eventInfo.setEnvType(inspectConfig.getEnvType());
+
+      RecordSucOrFailNotify.alertNotifyProcessSuc(ALERT_TASK_COMPUTE, "run rule",
+          inspectConfig.getAlertNotifyRecord());
       return eventInfo;
     }
     // record no alarm event generated data
