@@ -69,6 +69,8 @@ holoinsight:
   flyway:
     enabled: true
   env: default
+  gpt:
+    url: http://gpt:5001
 
 management:
   # avoid exposing to public

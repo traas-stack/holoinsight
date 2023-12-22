@@ -33,3 +33,5 @@ holoinsight:
       url: http://ai:5000
   meta:
     domain: 127.0.0.1
+  gpt:
+    url: http://gpt:5001
