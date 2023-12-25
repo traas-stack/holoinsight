@@ -6,6 +6,7 @@ package io.holoinsight.server.common;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
@@ -275,5 +276,25 @@ public class DateUtil {
       lf.put(format + zoneId, df);
     }
     return df;
+  }
+
+
+  public static Date getFirstDayOfMonth() {
+    // 获取当前时间的Calendar实例
+    Calendar calendar = Calendar.getInstance();
+
+    // 将时间设置为本月的第一天
+    calendar.set(Calendar.DAY_OF_MONTH, 1);
+
+    // 将时分秒和毫秒清零
+    calendar.set(Calendar.HOUR_OF_DAY, 0);
+    calendar.set(Calendar.MINUTE, 0);
+    calendar.set(Calendar.SECOND, 0);
+    calendar.set(Calendar.MILLISECOND, 0);
+
+    // 获取本月第一天的时间戳（以毫秒为单位）
+    long firstDayOfMonthTimestamp = calendar.getTimeInMillis();
+
+    return new Date(firstDayOfMonthTimestamp);
   }
 }
