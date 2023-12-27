@@ -5,8 +5,10 @@ package io.holoinsight.server.allinone.bootstrap;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.data.mongo.MongoDataAutoConfiguration;
 import org.springframework.boot.autoconfigure.elasticsearch.ElasticsearchRestClientAutoConfiguration;
 import org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration;
+import org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 
 import io.holoinsight.server.common.ContextHolder;
@@ -20,8 +22,8 @@ import io.holoinsight.server.common.ContextHolder;
  *
  * @author xzchaoo
  */
-@SpringBootApplication(
-    exclude = {ElasticsearchRestClientAutoConfiguration.class, FlywayAutoConfiguration.class})
+@SpringBootApplication(exclude = {ElasticsearchRestClientAutoConfiguration.class,
+    FlywayAutoConfiguration.class, MongoAutoConfiguration.class, MongoDataAutoConfiguration.class})
 public class HoloinsightAllInOneBootstrap {
   public static void main(String[] args) {
     try {
