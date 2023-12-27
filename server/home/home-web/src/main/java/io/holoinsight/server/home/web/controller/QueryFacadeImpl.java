@@ -605,10 +605,8 @@ public class QueryFacadeImpl extends BaseFacade {
     StringBuilder select = new StringBuilder("select ");
     List<String> gbList = parseGroupby(d, tags, timestampName);
     List<String> selects = new ArrayList<>();
-    String downsample = "PT1M";
-    if (StringUtils.equalsIgnoreCase(d.getDownsample(), "1h")) {
-      downsample = "PT1H";
-    }
+    String downsample = getPeriodOfTime(d.getDownsample());
+
     selects.add("time_bucket(`" + timestampName + "`, '" + downsample
         + "', 'yyyy-MM-dd HH:mm:ss', '+0800') AS `timestamp`");
     for (String gb : gbList) {
@@ -642,6 +640,24 @@ public class QueryFacadeImpl extends BaseFacade {
 
     log.info("parse sql {}", select);
     d.setQl(select.toString());
+  }
+
+  private String getPeriodOfTime(String downsample) {
+    if (StringUtils.isBlank(downsample)) {
+      return "PT1M";
+    }
+    switch (downsample) {
+      case "1m":
+        return "PT1M";
+      case "5m":
+        return "PT5M";
+      case "30m":
+        return "PT30M";
+      case "1h":
+        return "PT1H";
+      default:
+        return "PT1M";
+    }
   }
 
   private List<String> parseGroupby(QueryDataSource d, Set<String> tags, String timestampName) {
