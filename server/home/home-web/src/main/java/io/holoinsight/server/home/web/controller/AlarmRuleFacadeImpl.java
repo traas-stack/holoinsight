@@ -37,6 +37,8 @@ import io.holoinsight.server.home.web.common.ManageCallback;
 import io.holoinsight.server.home.web.common.ParaCheckUtil;
 import io.holoinsight.server.home.web.common.SecurityResource;
 import io.holoinsight.server.home.web.interceptor.MonitorScopeAuth;
+import io.holoinsight.server.home.web.security.CheckTypeEnum;
+import io.holoinsight.server.home.web.security.LevelAuthorizationAccess;
 import io.holoinsight.server.home.web.security.ParameterSecurityService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -103,6 +105,9 @@ public class AlarmRuleFacadeImpl extends BaseFacade {
   @Value("${holoinsight.home.domain}")
   private String domain;
 
+  @LevelAuthorizationAccess(paramConfigs = {"PARAMETER" + ":$!alarmRuleDTO"},
+      contentContainer = "CUSTOM", checkType = CheckTypeEnum.CUSTOMCHECK,
+      levelAuthorizationCheckeClass = "io.holoinsight.server.home.web.security.custom.AlarmRuleLevelAuthorizationChecker")
   @PostMapping("/create")
   @ResponseBody
   @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.EDIT)
@@ -161,6 +166,10 @@ public class AlarmRuleFacadeImpl extends BaseFacade {
         new TypeToken<Map<String, Map<String, String>>>() {});
   }
 
+  @LevelAuthorizationAccess(paramConfigs = {"PARAMETER" + ":$!alarmRuleDTO"},
+      contentContainer = "CUSTOM", checkType = CheckTypeEnum.CUSTOMCHECK,
+      levelAuthorizationCheckeClass = "io.holoinsight.server.home.web.security.custom.AlarmRuleLevelAuthorizationChecker",
+      contentTargetCollectClass = "")
   @PostMapping("/update")
   @ResponseBody
   @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.EDIT)
