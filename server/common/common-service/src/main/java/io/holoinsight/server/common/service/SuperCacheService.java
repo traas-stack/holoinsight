@@ -65,7 +65,7 @@ public class SuperCacheService extends ScheduleLoadTask {
 
   @Override
   public int periodInSeconds() {
-    return 10;
+    return 60;
   }
 
   @Override
