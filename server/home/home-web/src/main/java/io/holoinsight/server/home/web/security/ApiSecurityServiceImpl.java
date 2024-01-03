@@ -51,7 +51,8 @@ public class ApiSecurityServiceImpl implements ApiSecurityService {
     return StringUtils.equals(metricInfo.getWorkspace(), "-");
   }
 
-  private MetricInfo getMetricInfo(String metricTable) {
+  @Override
+  public MetricInfo getMetricInfo(String metricTable) {
     if (StringUtils.isEmpty(metricTable)) {
       return null;
     }

@@ -3,6 +3,8 @@
  */
 package io.holoinsight.server.home.facade.utils;
 
+import io.holoinsight.server.common.dao.entity.MetricInfo;
+
 import java.util.List;
 import java.util.Map;
 
@@ -20,5 +22,7 @@ public interface ApiSecurityService {
   boolean checkRuleTenantAndWorkspace(String uniqueId, String tenant, String workspace);
 
   boolean isGlobalMetric(String metricTable);
+
+  MetricInfo getMetricInfo(String metricTable);
 
 }
