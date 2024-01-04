@@ -56,9 +56,10 @@ public class DetailsStorageService {
         row.setTimestamp(pbrow.getTimestamp());
         row.setTagValues(pbrow.getTagValuesList());
         List<Double> fieldValues = new ArrayList<>(pbrow.getValueValuesCount());
-        if (pbrow.getValueValuesCount() == 0) {
-          continue;
-        }
+        // empty fields are allowed
+        // if (pbrow.getValueValuesCount() == 0) {
+        // continue;
+        // }
         for (DataNode dn : pbrow.getValueValuesList()) {
           fieldValues.add(dn.getValue());
         }
