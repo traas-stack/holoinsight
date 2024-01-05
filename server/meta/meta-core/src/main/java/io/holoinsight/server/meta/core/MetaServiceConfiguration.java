@@ -7,9 +7,11 @@ import com.mongodb.client.MongoDatabase;
 import io.holoinsight.server.common.service.SuperCacheService;
 import io.holoinsight.server.meta.core.service.DBCoreService;
 import io.holoinsight.server.meta.core.service.MongoDataCoreService;
-import io.holoinsight.server.meta.core.service.SqlDataCoreService;
+import io.holoinsight.server.meta.core.service.bitmap.BitmapDataCoreService;
+import io.holoinsight.server.meta.core.service.hashmap.HashMapDataCoreService;
 import io.holoinsight.server.meta.dal.service.mapper.MetaDataMapper;
 import org.mybatis.spring.annotation.MapperScan;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
@@ -24,6 +26,9 @@ import org.springframework.context.annotation.Configuration;
 @MapperScan(basePackages = {"io.holoinsight.server.meta.dal.service.mapper"})
 public class MetaServiceConfiguration {
 
+  @Autowired
+  private SuperCacheService superCacheService;
+
   @Bean("mongoDataCoreService")
   @ConditionalOnProperty(value = "holoinsight.meta.db_data_mode", havingValue = "mongodb",
       matchIfMissing = true)
@@ -31,11 +36,18 @@ public class MetaServiceConfiguration {
     return new MongoDataCoreService(mongoDatabase);
   }
 
-  @Bean("sqlDataCoreService")
+  @Bean("hashMapDataCoreService")
   @ConditionalOnProperty(value = "holoinsight.meta.db_data_mode", havingValue = "mysql")
-  public DBCoreService SqlDataCoreService(MetaDataMapper metaDataMapper,
+  public HashMapDataCoreService hashMapDataCoreService(MetaDataMapper metaDataMapper,
       SuperCacheService superCacheService) {
-    return new SqlDataCoreService(metaDataMapper, superCacheService);
+    return new HashMapDataCoreService(metaDataMapper, superCacheService);
+  }
+
+  @Bean("bitmapDataCoreService")
+  @ConditionalOnProperty(value = "holoinsight.meta.db_data_mode", havingValue = "mysql")
+  public BitmapDataCoreService bitmapDataCoreService(MetaDataMapper metaDataMapper,
+      SuperCacheService superCacheService) {
+    return new BitmapDataCoreService(metaDataMapper, superCacheService);
   }
 
   @Bean

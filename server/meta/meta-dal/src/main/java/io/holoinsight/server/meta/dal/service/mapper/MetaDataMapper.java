@@ -6,9 +6,8 @@ package io.holoinsight.server.meta.dal.service.mapper;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
-import io.holoinsight.server.meta.dal.service.model.MetaData;
+import io.holoinsight.server.meta.dal.service.model.MetaDataDO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
@@ -22,19 +21,23 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface MetaDataMapper {
 
-  void batchInsertOrUpdate(List<MetaData> metaDataList);
+  void batchInsertOrUpdate(List<MetaDataDO> metaDataList);
 
-  List<MetaData> selectByUks(@Param("tableName") String tableName,
+  List<MetaDataDO> selectByUks(@Param("tableName") String tableName,
       @Param("pkList") Collection<String> pkList);
 
   Integer softDeleteByUks(@Param("tableName") String tableName,
       @Param("pkList") Collection<String> pkList, @Param("gmtModified") Date gmtModified);
 
-  void updateByUk(@Param("tableName") String tableName, @Param("item") MetaData item);
+  void updateByUk(@Param("tableName") String tableName, @Param("item") MetaDataDO item);
 
-  List<MetaData> queryChangedMeta(@Param("start") Date start, @Param("end") Date end,
+  List<MetaDataDO> queryChangedMeta(@Param("start") Date start, @Param("end") Date end,
       @Param("containDeleted") Boolean containDeleted, @Param("offset") int offset,
       @Param("limit") int limit);
+
+  List<MetaDataDO> queryTableChangedMeta(@Param("table") String table, @Param("start") Date start,
+      @Param("end") Date end, @Param("containDeleted") Boolean containDeleted,
+      @Param("offset") int offset, @Param("limit") int limit);
 
   Integer cleanMetaData(@Param("end") Date end);
 }

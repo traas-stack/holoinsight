@@ -3,11 +3,8 @@
  */
 package io.holoinsight.server.meta.core.common;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Objects;
 import java.util.function.Function;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -16,11 +13,15 @@ import java.util.stream.Stream;
 import com.google.common.collect.Maps;
 import io.holoinsight.server.common.J;
 import io.holoinsight.server.meta.common.model.QueryExample;
+import io.holoinsight.server.meta.core.service.bitmap.condition.AndCondition;
+import io.holoinsight.server.meta.core.service.bitmap.condition.MetaCondition;
+import io.holoinsight.server.meta.core.service.bitmap.condition.OrCondition;
 import org.springframework.util.CollectionUtils;
 
 import static io.holoinsight.server.meta.common.util.ConstModel.default_app;
 import static io.holoinsight.server.meta.common.util.ConstModel.default_hostname;
 import static io.holoinsight.server.meta.common.util.ConstModel.default_ip;
+import static io.holoinsight.server.meta.core.service.bitmap.BitmapDataCoreService.UK_FIELD;
 
 /**
  * @author jinyan.ljw
@@ -33,6 +34,44 @@ public class FilterUtil {
   public static final String REGEX_FILTERS_KEY = "regexFilters";
   public static final String EQ_FILTERS_KEY = "eqFilters";
   public static final String IN_FILTERS_KEY = "inFilters";
+
+  public static MetaCondition buildDimCondition(QueryExample queryExample,
+      Boolean containRegexFilters) {
+    Map<String, Map<String, Object>> filters = buildFilters(queryExample, containRegexFilters);
+    MetaCondition metaCondition = new MetaCondition();
+    OrCondition orCondition = metaCondition.or();
+    if (CollectionUtils.isEmpty(filters)) {
+      AndCondition andCondition = orCondition.and();
+      andCondition.setAll(true);
+    } else {
+      filters.forEach((type, entries) -> {
+        type = type.contains(".") ? type.split("\\.")[0] : type;
+        if (REGEX_FILTERS_KEY.equals(type)) {
+          entries.forEach((k, v) -> {
+            AndCondition andCondition = orCondition.and();
+            andCondition.setRegex(true);
+            andCondition.setExpress(new String[] {k});
+            andCondition.setValueRange(Collections.singletonList(v));
+          });
+        } else if (EQ_FILTERS_KEY.equals(type)) {
+          entries.forEach((k, v) -> {
+            AndCondition andCondition = orCondition.and();
+            andCondition.setExpress(new String[] {k});
+            andCondition.setValueRange(Collections.singletonList(v));
+          });
+        } else if (IN_FILTERS_KEY.equals(type)) {
+          entries.forEach((k, v) -> {
+            AndCondition andCondition = orCondition.and();
+            andCondition.setExpress(new String[] {k});
+            andCondition.setValueRange((List) v);
+          });
+        } else {
+          throw new IllegalArgumentException("unsupported filter type: " + type);
+        }
+      });
+    }
+    return metaCondition;
+  }
 
   public static Map<String, Map<String, Object>> buildFilters(QueryExample queryExample,
       Boolean containRegexFilters) {

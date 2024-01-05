@@ -30,6 +30,11 @@ public abstract class AbstractDataCoreService implements DBCoreService {
   @Autowired
   private MetaTableService metaTableService;
 
+  @Override
+  public void startBuildIndex() {
+
+  }
+
   public List<Map<String, Object>> addUkValues(String tableName, List<Map<String, Object>> rows) {
 
     List<Map<String, Object>> filterRows = new ArrayList<>();
