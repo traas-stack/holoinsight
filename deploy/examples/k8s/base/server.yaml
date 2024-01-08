@@ -74,11 +74,7 @@ data:
         database: holoinsight
         db_data_mode: mysql
       flyway:
-        enabled: false
-    management:
-      health:
-        mongo:
-          enabled: false    
+        enabled: false  
         ---
 apiVersion: v1
 kind: Service

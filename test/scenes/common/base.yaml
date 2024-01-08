@@ -29,31 +29,6 @@ services:
     - 80
     profiles:
     - debug
-  mongo:
-    image: ${mongo_image:-mongo:4.4.18}
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: holoinsight
-      MONGO_INITDB_ROOT_PASSWORD: holoinsight
-      MONGO_INITDB_DATABASE: holoinsight
-    volumes:
-    - ./init.js:/docker-entrypoint-initdb.d/init.js
-    restart: always
-    healthcheck:
-      test: [ "CMD", "timeout", "1", "bash", "-c", "cat < /dev/null > /dev/tcp/127.0.0.1/27017" ]
-      interval: 3s
-      retries: 300
-      timeout: 10s
-  # mongo web ui
-  mongo-express:
-    image: mongo-express:latest
-    environment:
-      ME_CONFIG_MONGODB_SERVER: mongo
-      ME_CONFIG_MONGODB_ADMINUSERNAME: holoinsight
-      ME_CONFIG_MONGODB_ADMINPASSWORD: holoinsight
-    ports:
-    - 8081
-    profiles:
-    - debug
   ceresdb:
     image: ${ceresdb_image:-ceresdb/ceresdb-server:v1.0.0}
     volumes:

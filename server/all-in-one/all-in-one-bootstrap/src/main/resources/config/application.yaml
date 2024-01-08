@@ -57,8 +57,6 @@ holoinsight:
     database: holoinsight
     domain: 127.0.0.1
     db_data_mode: mysql
-    mongodb_config:
-      key-need-convert: false
   registry:
     meta:
       vip: 127.0.0.1
@@ -80,8 +78,6 @@ management:
   endpoint:
     health:
       show-details: always
-      mongo:
-        enabled: false
 
 crypto:
   client:

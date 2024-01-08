@@ -93,11 +93,6 @@ jobs:
         it:
         - test: AuthIT
           scene: scene-default
-        # override scene-default with mongo_image=mongo:5
-        - test: AuthIT
-          scene: scene-default
-          env: |
-            COMPOSE_mongo_image=mongo:5
         - test: LogMonitoringFolderIT
           scene: scene-default
         - test: MetaVMIT

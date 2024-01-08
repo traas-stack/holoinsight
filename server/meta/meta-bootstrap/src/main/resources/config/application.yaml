@@ -10,9 +10,6 @@ spring:
     properties:
       hibernate.dialect: org.hibernate.dialect.MySQL8Dialect
       ddl-auto: update
-  data:
-    mongodb: {}
-      #uri: TODO
 
 server:
   port: 8089
@@ -28,8 +25,6 @@ management:
   endpoint:
     prometheus:
       enabled: true
-
-# db_data_mode: mongodb
 
 holoinsight:
   roles:
