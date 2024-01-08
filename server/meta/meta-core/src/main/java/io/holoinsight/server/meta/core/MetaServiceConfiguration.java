@@ -3,10 +3,7 @@
  */
 package io.holoinsight.server.meta.core;
 
-import com.mongodb.client.MongoDatabase;
 import io.holoinsight.server.common.service.SuperCacheService;
-import io.holoinsight.server.meta.core.service.DBCoreService;
-import io.holoinsight.server.meta.core.service.MongoDataCoreService;
 import io.holoinsight.server.meta.core.service.bitmap.BitmapDataCoreService;
 import io.holoinsight.server.meta.core.service.hashmap.HashMapDataCoreService;
 import io.holoinsight.server.meta.dal.service.mapper.MetaDataMapper;
@@ -28,13 +25,6 @@ public class MetaServiceConfiguration {
 
   @Autowired
   private SuperCacheService superCacheService;
-
-  @Bean("mongoDataCoreService")
-  @ConditionalOnProperty(value = "holoinsight.meta.db_data_mode", havingValue = "mongodb",
-      matchIfMissing = true)
-  public DBCoreService MongoDataCoreService(MongoDatabase mongoDatabase) {
-    return new MongoDataCoreService(mongoDatabase);
-  }
 
   @Bean("hashMapDataCoreService")
   @ConditionalOnProperty(value = "holoinsight.meta.db_data_mode", havingValue = "mysql")

@@ -14,8 +14,6 @@ mybatis-plus:
     - classpath*:sqlmap/*.xml
     - classpath*:sqlmap-ext/*.xml
 
-mongodb_config:
-  key-need-convert: false
 
 management:
   endpoints:

@@ -48,8 +48,6 @@ public class MetaSyncService {
   @Autowired
   private MetaWriterService metaWriterService;
 
-  @Value("${holoinsight.meta.mongodb_config.key-need-convert:false}")
-  private Boolean keyNeedConvert;
 
   @Autowired
   private MetaConfig metaConfig;
@@ -167,34 +165,10 @@ public class MetaSyncService {
     map.put("name", resource.getName());
 
     if (!CollectionUtils.isEmpty(resource.getLabels())) {
-      if (null != keyNeedConvert && keyNeedConvert) {
-        Map<String, Object> labelMaps = new HashMap<>();
-        resource.getLabels().forEach((k, v) -> {
-          if (k.contains(".")) {
-            labelMaps.put(k.replace(".", "_"), v);
-          } else {
-            labelMaps.put(k, v);
-          }
-        });
-        map.put("labels", labelMaps);
-      } else {
-        map.put("labels", resource.getLabels());
-      }
+      map.put("labels", resource.getLabels());
     }
     if (!CollectionUtils.isEmpty(resource.getAnnotations())) {
-      if (null != keyNeedConvert && keyNeedConvert) {
-        Map<String, Object> annotationMaps = new HashMap<>();
-        resource.getAnnotations().forEach((k, v) -> {
-          if (k.contains(".")) {
-            annotationMaps.put(k.replace(".", "_"), v);
-          } else {
-            annotationMaps.put(k, v);
-          }
-        });
-        map.put("annotations", annotationMaps);
-      } else {
-        map.put("annotations", resource.getAnnotations());
-      }
+      map.put("annotations", resource.getAnnotations());
     }
 
     Map<String, Object> extraLabel = metaWriterService.getExtraLabel(resource.getLabels());

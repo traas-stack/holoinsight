@@ -4,7 +4,7 @@
 3. Be proficient in using `docker-compose` if you need to customize the test scenario.
 
 # Principles of E2E Integration Testing
-We have build a default `docker-compose` scene named `scene-default`. It contains mysql:8 + mongo:4.4.18 + cersedb:v0.3.1 + server + agent(running inside the server as a sidecar process).
+We have build a default `docker-compose` scene named `scene-default`. It contains mysql:8 + cersedb:v0.3.1 + server + agent(running inside the server as a sidecar process).
 
 When you deploy this `docker-compose` scene, it will start `holoinsight-server` and map its 80 port to a local random port.  
 Then we can run our E2E Integration Tests. They use [rest-assure](https://github.com/rest-assured/rest-assured) to test and validate our webapi.

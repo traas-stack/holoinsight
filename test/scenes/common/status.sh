@@ -27,11 +27,6 @@ if echo "$ps" | grep phpmyadmin >/dev/null; then
   MySQL_Web_UI\t  http://$ip:`get_port phpmyadmin 80`?db=holoinsight"
 fi
 
-if echo "$ps" | grep mongo-express >/dev/null; then
-  source="$source
-  MongoDB_Web_UI\t  http://$ip:`get_port mongo-express 8081`/db/holoinsight/"
-fi
-
 if echo "$ps" | grep kibana >/dev/null; then
   source="$source
   Kibana_Web_UI\t  http://$ip:`get_port kibana 5601`"

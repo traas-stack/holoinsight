@@ -3,7 +3,6 @@ resources:
 - clusterroles.yaml
 - clusterrolebindings.yaml
 - mysql.yaml
-#- mongo.yaml
 - ceresdb.yaml
 - server.yaml
 - collector.yaml
