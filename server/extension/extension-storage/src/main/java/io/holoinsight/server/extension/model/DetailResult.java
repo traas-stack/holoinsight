@@ -40,23 +40,29 @@ public class DetailResult {
     List<Value> values = new ArrayList<>();
 
     public void addStringValue(String string) {
-      Value value = new Value(DetailDataType.String, string);
+      String s = string == null ? "" : string;
+      Value value = new Value(DetailDataType.String, s);
       values.add(value);
     }
 
-    public void addTimestampValue(long timestamp) {
-      Value value = new Value(DetailDataType.Timestamp, timestamp);
+    public void addTimestampValue(Long timestamp) {
+      long time = timestamp == null ? 0L : timestamp;
+      Value value = new Value(DetailDataType.Timestamp, time);
       values.add(value);
     }
 
-    public void addBooleanValue(boolean aBoolean) {
-      Value value = new Value(DetailDataType.Boolean, aBoolean);
+    public void addBooleanValue(Boolean aBoolean) {
+      boolean bool = aBoolean != null && aBoolean;
+      Value value = new Value(DetailDataType.Boolean, bool);
       values.add(value);
     }
 
     public void addNumValue(Object object) {
       if (object instanceof Number) {
         Value value = new Value(DetailDataType.Double, ((Number) object).doubleValue());
+        values.add(value);
+      } else if (object == null) {
+        Value value = new Value(DetailDataType.Double, 0d);
         values.add(value);
       }
     }
