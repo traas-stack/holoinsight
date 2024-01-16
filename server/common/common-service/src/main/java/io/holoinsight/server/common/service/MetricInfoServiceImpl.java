@@ -99,8 +99,8 @@ public class MetricInfoServiceImpl extends ServiceImpl<MetricInfoMapper, MetricI
     List<MetricInfo> metricInfos = listByMap(columnMap);
     if (CollectionUtils.isEmpty(metricInfos)) {
       Map<String, Object> newColumnMap = new HashMap<>();
-      newColumnMap.put("tenant", "-");
-      newColumnMap.put("workspace", "-");
+      // newColumnMap.put("tenant", "-");
+      // newColumnMap.put("workspace", "-");
       newColumnMap.put("metric_table", metric);
       newColumnMap.put("deleted", 0);
       List<MetricInfo> globalMetrics = listByMap(newColumnMap);
