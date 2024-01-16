@@ -45,9 +45,11 @@ public class GptService {
   public String save(List<Map<String, Object>> request, String traceId) {
     String saveUrl = environmentProperties.getGptUrl() + "/qa/save";
     if (CollectionUtils.isNotEmpty(request)) {
-      LOGGER.info("{} [submit],url={},requestBody={}", traceId, saveUrl,
-          JSON.toJSONString(request));
-      request.forEach(req -> post(saveUrl, JSON.toJSONString(req), traceId));
+      request.forEach(req -> {
+        LOGGER.info("{} [save],url={},requestBody={}", traceId, saveUrl,
+            JSON.toJSONString(req));
+        post(saveUrl, JSON.toJSONString(req), traceId);
+      });
       return "SUCCESS";
     } else {
       return "FALSE";

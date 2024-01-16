@@ -149,8 +149,8 @@ public class GPTFacadeImpl extends BaseFacade {
   @PostMapping("/qa/save")
   @ResponseBody
   @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.EDIT)
-  public JsonResult<Map<String, Object>> qaSave(@RequestBody List<Map<String, Object>> request) {
-    final JsonResult<Map<String, Object>> result = new JsonResult<>();
+  public JsonResult<String> qaSave(@RequestBody List<Map<String, Object>> request) {
+    final JsonResult<String> result = new JsonResult<>();
     facadeTemplate.manage(result, new ManageCallback() {
       @Override
       public void checkParameter() {
@@ -160,8 +160,7 @@ public class GPTFacadeImpl extends BaseFacade {
       @Override
       public void doManage() {
         String str = gptService.save(request, UUID.randomUUID().toString());
-        Map<String, Object> rtnMap = J.toMap(str);
-        JsonResult.createSuccessResult(result, rtnMap);
+        JsonResult.createSuccessResult(result, str);
       }
     });
 
