@@ -46,8 +46,7 @@ public class GptService {
     String saveUrl = environmentProperties.getGptUrl() + "/qa/save";
     if (CollectionUtils.isNotEmpty(request)) {
       request.forEach(req -> {
-        LOGGER.info("{} [save],url={},requestBody={}", traceId, saveUrl,
-            JSON.toJSONString(req));
+        LOGGER.info("{} [save],url={},requestBody={}", traceId, saveUrl, JSON.toJSONString(req));
         post(saveUrl, JSON.toJSONString(req), traceId);
       });
       return "SUCCESS";
