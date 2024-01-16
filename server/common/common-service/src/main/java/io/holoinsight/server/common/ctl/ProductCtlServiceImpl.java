@@ -133,9 +133,9 @@ public class ProductCtlServiceImpl implements ProductCtlService {
       MonitorInstanceCfg cfg = J.fromJson(instance.getConfig(), MonitorInstanceCfg.class);
       control(action, uniqueId, code.getCode(), cfg.getClosed(), productClosed);
       log.info(
-          "[product_ctl] exec ctl, tenant={}, tenantName={}, workspace={}, workspaceName={}, instance={}, uniqueId={}, action={}",
+          "[product_ctl] exec ctl, tenant={}, tenantName={}, workspace={}, workspaceName={}, instance={}, uniqueId={}, code={}, action={}",
           instance.getTenant(), instance.getTenantName(), instance.getWorkspace(),
-          instance.getWorkspaceName(), instance.getInstance(), uniqueId, action);
+          instance.getWorkspaceName(), instance.getInstance(), uniqueId, code.getCode(), action);
       instance.setConfig(J.toJson(cfg));
       monitorInstanceService.updateByInstance(instance);
     }

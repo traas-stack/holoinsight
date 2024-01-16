@@ -68,7 +68,7 @@ public enum ResultCodeEnum {
    */
   OBJECT_CONVERT_ERROR("OBJECT_CONVERT_ERROR", "对象转换出错"),
 
-  EXCEED_SERIES_LIMIT("EXCEED_SERIES_LIMIT", "超过查询限制"),;
+  EXCEED_SERIES_LIMIT("EXCEED_SERIES_LIMIT", "超过查询限制，请缩短时间范围"),;
 
   /**
    * 错误码
