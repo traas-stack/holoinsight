@@ -33,6 +33,7 @@ import io.holoinsight.server.home.biz.service.TenantInitService;
 import io.holoinsight.server.home.biz.service.TenantOpsService;
 import io.holoinsight.server.home.common.model.TaskEnum;
 import io.holoinsight.server.home.common.util.cache.local.CommonLocalCache;
+import io.holoinsight.server.home.dal.converter.IntegrationGeneratedConverter;
 import io.holoinsight.server.home.dal.model.IntegrationGenerated;
 import io.holoinsight.server.home.dal.model.dto.CloudMonitorRange;
 import io.holoinsight.server.home.dal.model.dto.GaeaCollectConfigDTO.GaeaCollectRange;
@@ -80,6 +81,9 @@ public class TenantIntegrationGeneratedTask extends AbstractMonitorTask {
 
   @Autowired
   private TenantInitService tenantInitService;
+
+  @Autowired
+  private IntegrationGeneratedConverter integrationGeneratedConverter;
 
   @Autowired
   private MetaService metaService;
@@ -139,7 +143,9 @@ public class TenantIntegrationGeneratedTask extends AbstractMonitorTask {
     log.info("newList: " + newList.size());
     if (!CollectionUtils.isEmpty(newList)) {
       for (IntegrationGeneratedDTO integrationGeneratedDTO : newList) {
-        integrationGeneratedService.insert(integrationGeneratedDTO);
+        IntegrationGenerated integrationGenerated =
+            integrationGeneratedConverter.dtoToDO(integrationGeneratedDTO);
+        integrationGeneratedService.save(integrationGenerated);
       }
     }
 
@@ -188,6 +194,8 @@ public class TenantIntegrationGeneratedTask extends AbstractMonitorTask {
     for (String tenant : tenants) {
       String tableName = tenantInitService.getTenantAppTable(tenant);
 
+      log.info("[integration_generated], {}, start", tableName);
+
       List<AppModel> dbApps = getDbApps(tableName);
       if (CollectionUtils.isEmpty(dbApps))
         continue;
@@ -198,6 +206,8 @@ public class TenantIntegrationGeneratedTask extends AbstractMonitorTask {
       Set<String> uks = new HashSet<>();
       if (!CollectionUtils.isEmpty(integrationPluginDTOS)) {
         for (IntegrationPluginDTO integrationPluginDTO : integrationPluginDTOS) {
+          log.info("[integration_generated], {}, {} start", tableName,
+              integrationPluginDTO.getProduct());
           Plugin plugin = this.pluginRepository.getTemplate(integrationPluginDTO.type,
               integrationPluginDTO.version);
           if (null == plugin || plugin.getPluginType().equals(PluginType.hosting)) {
@@ -263,9 +273,11 @@ public class TenantIntegrationGeneratedTask extends AbstractMonitorTask {
               uks.add(uk);
             }
           }
-          log.info("outList: " + tableName + ", generated size: " + generateds.size());
+          log.info("outList: {}, {}, generated size: {}", tableName,
+              integrationPluginDTO.getProduct(), generateds.size());
         }
       }
+      log.info("[integration_generated], {}, apps={}", tableName, dbApps.size());
 
       for (AppModel appModel : dbApps) {
 
@@ -298,6 +310,7 @@ public class TenantIntegrationGeneratedTask extends AbstractMonitorTask {
         }
       }
     }
+    log.info("[integration_generated], generated={}", generateds.size());
 
     List<IntegrationGeneratedDTO> extraGeneratedLists = tenantInitService.getExtraGeneratedLists();
     if (!CollectionUtils.isEmpty(extraGeneratedLists)) {
