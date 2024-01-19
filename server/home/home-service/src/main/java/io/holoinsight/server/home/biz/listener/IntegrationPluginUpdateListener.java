@@ -14,6 +14,7 @@ import io.holoinsight.server.home.dal.model.dto.GaeaCollectConfigDTO;
 import io.holoinsight.server.home.dal.model.dto.IntegrationPluginDTO;
 import com.google.common.eventbus.AllowConcurrentEvents;
 import com.google.common.eventbus.Subscribe;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -29,6 +30,7 @@ import static io.holoinsight.server.home.biz.service.impl.IntegrationPluginServi
  * @version 1.0: IntegrationPluginUpdateListener.java, v 0.1 2022年06月08日 8:40 下午 xiangwanpeng Exp $
  */
 @Component
+@Slf4j
 public class IntegrationPluginUpdateListener {
 
   @Autowired
@@ -50,24 +52,34 @@ public class IntegrationPluginUpdateListener {
   @Subscribe
   @AllowConcurrentEvents
   public void onEvent(IntegrationPluginDTO integrationPluginDTO) {
-    boolean needUpsertGaea = isClassicPlugin(integrationPluginDTO.getProduct())
-        || checkActionType(integrationPluginDTO, null, this.pluginRepository);
-    if (needUpsertGaea) {
-      List<Long> upsert = upsertGaea(integrationPluginDTO);
-      notify(upsert);
-    } else if (this.pluginRepository.isHostingPlugin(integrationPluginDTO.type)) {
-      HostingPlugin hostingPlugin = (HostingPlugin) this.pluginRepository
-          .getTemplate(integrationPluginDTO.type, integrationPluginDTO.version);
-      if (integrationPluginDTO.status) {
-        hostingPlugin.apply(integrationPluginDTO);
-      } else {
-        hostingPlugin.disable(integrationPluginDTO);
+    log.info("[integration_plugin][{}][{}] convert start", integrationPluginDTO.getProduct(),
+        integrationPluginDTO.getId());
+    try {
+      boolean needUpsertGaea = isClassicPlugin(integrationPluginDTO.getProduct())
+          || checkActionType(integrationPluginDTO, null, this.pluginRepository);
+      if (needUpsertGaea) {
+        List<Long> upsert = upsertGaea(integrationPluginDTO);
+        notify(upsert);
+      } else if (this.pluginRepository.isHostingPlugin(integrationPluginDTO.type)) {
+        HostingPlugin hostingPlugin = (HostingPlugin) this.pluginRepository
+            .getTemplate(integrationPluginDTO.type, integrationPluginDTO.version);
+        if (integrationPluginDTO.status) {
+          hostingPlugin.apply(integrationPluginDTO);
+        } else {
+          hostingPlugin.disable(integrationPluginDTO);
+        }
+      } else if ("OpenAiPlugin".equals(integrationPluginDTO.getProduct())) {
+        if (!integrationPluginDTO.status) {
+          this.openAiService.unload(integrationPluginDTO.tenant);
+        }
       }
-    } else if ("OpenAiPlugin".equals(integrationPluginDTO.getProduct())) {
-      if (!integrationPluginDTO.status) {
-        this.openAiService.unload(integrationPluginDTO.tenant);
-      }
+    } catch (Throwable t) {
+      log.error("[integration_plugin][{}][{}] convert error, {}", integrationPluginDTO.getProduct(),
+          integrationPluginDTO.getId(), t.getMessage(), t);
     }
+
+    log.info("[integration_plugin][{}][{}] convert end", integrationPluginDTO.getProduct(),
+        integrationPluginDTO.getId());
   }
 
   public List<Long> upsertGaea(IntegrationPluginDTO integrationPluginDTO) {
