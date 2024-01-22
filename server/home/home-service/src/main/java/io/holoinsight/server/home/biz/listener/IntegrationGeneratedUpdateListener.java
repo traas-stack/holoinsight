@@ -18,6 +18,7 @@ import io.holoinsight.server.home.dal.model.dto.CloudMonitorRange;
 import io.holoinsight.server.home.dal.model.dto.GaeaCollectConfigDTO.GaeaCollectRange;
 import io.holoinsight.server.home.dal.model.dto.IntegrationGeneratedDTO;
 import io.holoinsight.server.home.dal.model.dto.IntegrationPluginDTO;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -35,6 +36,7 @@ import java.util.Map;
  * @version 1.0: IntegrationGeneratedUpdateListener.java, Date: 2023-07-26 Time: 10:57
  */
 @Component
+@Slf4j
 public class IntegrationGeneratedUpdateListener {
 
   @Autowired
@@ -51,15 +53,25 @@ public class IntegrationGeneratedUpdateListener {
   @Subscribe
   @AllowConcurrentEvents
   public void onEvent(IntegrationGeneratedDTO integrationGeneratedDTO) {
-    if (CollectionUtils.isEmpty(integrationGeneratedDTO.config))
-      return;
-    IntegrationPluginDTO integrationPluginDTO = convertIntegrationPlugin(integrationGeneratedDTO);
+    log.info("[integration_generated][{}][{}] convert start", integrationGeneratedDTO.getProduct(),
+        integrationGeneratedDTO.getId());
 
-    if (StringUtils.isBlank(integrationPluginDTO.json)
-        || StringUtils.isBlank(integrationPluginDTO.type))
-      return;
-    List<Long> upsert = integrationPluginUpdateListener.upsertGaea(integrationPluginDTO);
-    notify(upsert);
+    try {
+      if (CollectionUtils.isEmpty(integrationGeneratedDTO.config))
+        return;
+      IntegrationPluginDTO integrationPluginDTO = convertIntegrationPlugin(integrationGeneratedDTO);
+
+      if (StringUtils.isBlank(integrationPluginDTO.json)
+          || StringUtils.isBlank(integrationPluginDTO.type))
+        return;
+      List<Long> upsert = integrationPluginUpdateListener.upsertGaea(integrationPluginDTO);
+      notify(upsert);
+    } catch (Throwable t) {
+      log.error("[integration_plugin][{}][{}] convert error, {}",
+          integrationGeneratedDTO.getProduct(), integrationGeneratedDTO.getId(), t.getMessage(), t);
+    }
+    log.info("[integration_generated][{}][{}] convert end", integrationGeneratedDTO.getProduct(),
+        integrationGeneratedDTO.getId());
   }
 
   private IntegrationPluginDTO convertIntegrationPlugin(IntegrationGeneratedDTO generatedDTO) {

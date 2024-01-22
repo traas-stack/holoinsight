@@ -8,12 +8,18 @@ import io.holoinsight.server.common.service.MetricInfoService;
 import io.holoinsight.server.home.biz.common.GaeaConvertUtil;
 import io.holoinsight.server.home.biz.common.GaeaSqlTaskUtil;
 import io.holoinsight.server.home.biz.plugin.config.LogPluginConfig;
+import io.holoinsight.server.home.common.util.MonitorException;
 import io.holoinsight.server.home.dal.model.dto.CustomPluginPeriodType;
 import io.holoinsight.server.home.dal.model.dto.IntegrationPluginDTO;
 import io.holoinsight.server.home.dal.model.dto.conf.CollectMetric;
+import io.holoinsight.server.home.dal.model.dto.conf.CollectMetric.AfterFilter;
+import io.holoinsight.server.home.dal.model.dto.conf.CollectMetric.Metric;
 import io.holoinsight.server.home.dal.model.dto.conf.CustomPluginConf;
 import io.holoinsight.server.home.dal.model.dto.conf.CustomPluginConf.ExtraConfig;
+import io.holoinsight.server.home.dal.model.dto.conf.CustomPluginConf.SplitCol;
+import io.holoinsight.server.home.dal.model.dto.conf.CustomPluginConf.SpmCols;
 import io.holoinsight.server.home.dal.model.dto.conf.Filter;
+import io.holoinsight.server.home.dal.model.dto.conf.FilterType;
 import io.holoinsight.server.home.dal.model.dto.conf.LogParse;
 import io.holoinsight.server.home.dal.model.dto.conf.LogPath;
 import io.holoinsight.server.common.J;
@@ -32,6 +38,7 @@ import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -127,6 +134,8 @@ public class LogPlugin extends AbstractLocalIntegrationPlugin<LogPlugin> {
       CustomPluginConf customPluginConf =
           J.fromJson(J.toJson(config.conf), new TypeToken<CustomPluginConf>() {}.getType());
 
+      addSpmColInPluginConf(customPluginConf);
+
       if (CollectionUtils.isEmpty(customPluginConf.collectMetrics))
         continue;
       CustomPluginPeriodType periodType = config.periodType;
@@ -182,6 +191,10 @@ public class LogPlugin extends AbstractLocalIntegrationPlugin<LogPlugin> {
 
   public String getPrefix() {
     return null;
+  }
+
+  public void addSpmColInPluginConf(CustomPluginConf conf) {
+
   }
 
   @Autowired
