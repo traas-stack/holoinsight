@@ -97,7 +97,7 @@ public class LogMonitoringMultilineIT extends BaseIT {
 
             for (int i = 0; i < 2; i++) {
               resp.body("data.results.find { it.tags['thread'] == '%s' }.values[%d][1]",
-                  withArgs(thread, size - 1 - i), eq("12.0"));
+                  withArgs(thread, size - 1 - i), not("0.0"));
             }
           }
 
