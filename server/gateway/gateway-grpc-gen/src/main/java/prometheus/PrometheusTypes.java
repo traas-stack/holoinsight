@@ -727,8 +727,8 @@ public final class PrometheusTypes {
       }
 
       private void maybeForceBuilderInitialization() {
-//        if (com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders) {
-//        }
+        // if (com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders) {
+        // }
       }
 
       @java.lang.Override
@@ -1588,8 +1588,8 @@ public final class PrometheusTypes {
       }
 
       private void maybeForceBuilderInitialization() {
-//        if (com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders) {
-//        }
+        // if (com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders) {
+        // }
       }
 
       @java.lang.Override
@@ -5053,8 +5053,8 @@ public final class PrometheusTypes {
       }
 
       private void maybeForceBuilderInitialization() {
-//        if (com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders) {
-//        }
+        // if (com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders) {
+        // }
       }
 
       @java.lang.Override
@@ -6778,8 +6778,8 @@ public final class PrometheusTypes {
       }
 
       private void maybeForceBuilderInitialization() {
-//        if (com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders) {
-//        }
+        // if (com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders) {
+        // }
       }
 
       @java.lang.Override
@@ -7881,8 +7881,8 @@ public final class PrometheusTypes {
       }
 
       private void maybeForceBuilderInitialization() {
-//        if (com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders) {
-//        }
+        // if (com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders) {
+        // }
       }
 
       @java.lang.Override
@@ -9141,8 +9141,8 @@ public final class PrometheusTypes {
       }
 
       private void maybeForceBuilderInitialization() {
-//        if (com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders) {
-//        }
+        // if (com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders) {
+        // }
       }
 
       @java.lang.Override
