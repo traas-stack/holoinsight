@@ -20,6 +20,7 @@ import java.util.Map;
 public class NotificationTemplate {
 
   public LinkedHashMap<String, AlertTemplateField> fieldMap = new LinkedHashMap<>();
+  public LinkedHashMap<String, String> tagMap = new LinkedHashMap<>();
 
   public static NotificationTemplate defaultWebhookTemplate() {
     NotificationTemplate template = new NotificationTemplate();
@@ -44,16 +45,34 @@ public class NotificationTemplate {
     template.fieldMap = new LinkedHashMap<>();
     template.fieldMap.put("告警规则名称", AlertTemplateField.ruleName);
     template.fieldMap.put("告警严重度", AlertTemplateField.ALERT_PRIORITY);
-    // template.fieldMap.put("告警标题", AlertTemplateField.ALERT_TITLE);
     template.fieldMap.put("告警内容", AlertTemplateField.EVENT_MSG);
     template.fieldMap.put("告警对象", AlertTemplateField.ALERT_SCOPE);
     template.fieldMap.put("告警首次触发时间", AlertTemplateField.ALERT_START_TIME);
     template.fieldMap.put("此次评估触发时间", AlertTemplateField.alarmTime);
-    // template.fieldMap.put("告警触发条件", AlertTemplateField.ALERT_TRIGGER_CONDITION);
     template.fieldMap.put("告警触发数值", AlertTemplateField.ALERT_VALUE);
     template.fieldMap.put("日志内容", AlertTemplateField.LOG_CONTENT);
-    // template.fieldMap.put("[详情]", AlertTemplateField.LINK);
-    // template.fieldMap.put("[设置]", AlertTemplateField.ruleUrl);
+
+    return template;
+  }
+
+  public static NotificationTemplate defaultMiniappDingtalkTemplate(TemplateValue templateValue) {
+    NotificationTemplate template = new NotificationTemplate();
+    template.fieldMap = new LinkedHashMap<>();
+    template.fieldMap.put("告警规则名称", AlertTemplateField.ruleName);
+    template.fieldMap.put("PID", AlertTemplateField.PID);
+    template.fieldMap.put("租户名", AlertTemplateField.TENANT_NAME);
+    template.fieldMap.put("小程序名", AlertTemplateField.WORKSPACE_NAME);
+    template.fieldMap.put("告警严重度", AlertTemplateField.ALERT_PRIORITY);
+    template.fieldMap.put("告警内容", AlertTemplateField.EVENT_MSG);
+    template.fieldMap.put("告警对象", AlertTemplateField.ALERT_SCOPE);
+    template.fieldMap.put("告警首次触发时间", AlertTemplateField.ALERT_START_TIME);
+    template.fieldMap.put("此次评估触发时间", AlertTemplateField.alarmTime);
+    template.fieldMap.put("告警触发数值", AlertTemplateField.ALERT_VALUE);
+    template.fieldMap.put("聚合条数", AlertTemplateField.aggregationNum);
+    template.fieldMap.put("告警来源", AlertTemplateField.SOURCE_TYPE);
+    if (templateValue != null && StringUtils.isNotEmpty(templateValue.getLogContent())) {
+      template.fieldMap.put("日志内容", AlertTemplateField.LOG_CONTENT);
+    }
 
     return template;
   }
