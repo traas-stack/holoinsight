@@ -151,4 +151,10 @@ public class AlarmRule {
   @Column(name = "env_type")
   private String envType;
 
+  /**
+   * 告警模板ID
+   */
+  @Column(name = "alert_notification_template_id")
+  private Long alertNotificationTemplateId;
+
 }

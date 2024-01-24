@@ -55,7 +55,9 @@ public class SuperCacheService extends ScheduleLoadTask {
     sc.metaDataDictValueMap = metaDictValueService.getMetaDictValue();
     sc.expressionMetricList = metricInfoService.querySpmList();
     sc.workspaceTenantMap = new HashMap<>();
-    List<MonitorInstance> instances = monitorInstanceService.list();
+    QueryWrapper<MonitorInstance> queryWrapper = new QueryWrapper<>();
+    queryWrapper.eq("deleted", false);
+    List<MonitorInstance> instances = monitorInstanceService.list(queryWrapper);
     instances.forEach(
         instance -> sc.workspaceTenantMap.put(instance.getWorkspace(), instance.getTenant()));
     queryMetricInfoByPage(sc);
