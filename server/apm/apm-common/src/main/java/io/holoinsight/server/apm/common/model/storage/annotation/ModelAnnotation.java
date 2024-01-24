@@ -17,5 +17,10 @@ import java.lang.annotation.Target;
 public @interface ModelAnnotation {
   String name();
 
-  long ttl() default 60000L * 60 * 24 * 3;
+  /**
+   * unit: day
+   * 
+   * @return
+   */
+  long ttl() default 0;
 }

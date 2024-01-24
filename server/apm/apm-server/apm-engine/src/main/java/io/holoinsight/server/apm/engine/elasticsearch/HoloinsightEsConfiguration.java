@@ -60,6 +60,7 @@ public class HoloinsightEsConfiguration {
   private String password;
   private int shards = 5;
   private int replicas = 1;
+  private int ttl = 7; // unit: day
 
   @Bean("elasticsearchClient")
   @Primary
