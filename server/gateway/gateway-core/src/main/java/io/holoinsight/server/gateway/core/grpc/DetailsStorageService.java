@@ -4,8 +4,13 @@
 package io.holoinsight.server.gateway.core.grpc;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import io.holoinsight.server.common.ctl.MonitorProductCode;
+import io.holoinsight.server.common.ctl.ProductCtlService;
+import io.holoinsight.server.extension.MetricMeterService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -17,6 +22,7 @@ import io.holoinsight.server.extension.model.Table;
 import io.holoinsight.server.gateway.grpc.DataNode;
 import io.holoinsight.server.gateway.grpc.WriteMetricsRequestV4;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.util.CollectionUtils;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -31,6 +37,12 @@ import reactor.core.publisher.Mono;
 public class DetailsStorageService {
   @Autowired
   private DetailsStorage detailsStorage;
+
+  @Autowired
+  private ProductCtlService productCtlService;
+
+  @Autowired
+  private MetricMeterService metricMeterService;
 
   public Mono<Void> write(AuthInfo authInfo, WriteMetricsRequestV4 req) {
     List<Mono<Void>> monos = new ArrayList<>();
@@ -64,6 +76,27 @@ public class DetailsStorageService {
           fieldValues.add(dn.getValue());
         }
         row.setFieldValues(fieldValues);
+
+        // meter
+        Map<String, String> dataTags = new HashMap<>();
+        if (!CollectionUtils.isEmpty(header.getTagKeys())) {
+          for (int i = 0; i < header.getTagKeys().size(); i++) {
+            dataTags.put(header.getTagKeys().get(i), row.getTagValues().get(i));
+          }
+          if (CollectionUtils.isEmpty(dataTags)) {
+            continue;
+          }
+          Map<String, String> meterTags =
+              metricMeterService.keyGen(authInfo.getTenant(), table.getName(), dataTags);
+          if (CollectionUtils.isEmpty(meterTags)) {
+            continue;
+          }
+
+          if (!productCtlService.isMetricInWhiteList(table.getName())
+              && productCtlService.productClosed(MonitorProductCode.METRIC, meterTags)) {
+            continue;
+          }
+        }
         rows.add(row);
       }
       table.setRows(rows);
