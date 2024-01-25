@@ -12,6 +12,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * @author masaimu
@@ -19,8 +21,9 @@ import java.util.Map;
  */
 public class NotificationTemplate {
 
-  public LinkedHashMap<String, AlertTemplateField> fieldMap = new LinkedHashMap<>();
-  public LinkedHashMap<String, String> tagMap = new LinkedHashMap<>();
+  public LinkedHashMap<String /* alias */, AlertTemplateField> fieldMap = new LinkedHashMap<>();
+  public LinkedHashMap<String /* alias */, String /* tagk */> tagMap = new LinkedHashMap<>();
+  public String text;
 
   public static NotificationTemplate defaultWebhookTemplate() {
     NotificationTemplate template = new NotificationTemplate();
@@ -37,6 +40,7 @@ public class NotificationTemplate {
     template.fieldMap.put("aggregationNum", AlertTemplateField.aggregationNum);
     template.fieldMap.put("alarmUrl", AlertTemplateField.ruleUrl);
     template.fieldMap.put("link", AlertTemplateField.LINK);
+    template.text = template.getTemplateJson();
     return template;
   }
 
@@ -51,7 +55,7 @@ public class NotificationTemplate {
     template.fieldMap.put("此次评估触发时间", AlertTemplateField.alarmTime);
     template.fieldMap.put("告警触发数值", AlertTemplateField.ALERT_VALUE);
     template.fieldMap.put("日志内容", AlertTemplateField.LOG_CONTENT);
-
+    template.text = template.getTemplateJson();
     return template;
   }
 
@@ -73,7 +77,7 @@ public class NotificationTemplate {
     if (templateValue != null && StringUtils.isNotEmpty(templateValue.getLogContent())) {
       template.fieldMap.put("日志内容", AlertTemplateField.LOG_CONTENT);
     }
-
+    template.text = template.getTemplateJson();
     return template;
   }
 
@@ -84,6 +88,12 @@ public class NotificationTemplate {
     LinkedHashMap<String, String> templateMap = new LinkedHashMap<>();
     for (Map.Entry<String, AlertTemplateField> entry : this.fieldMap.entrySet()) {
       templateMap.put(entry.getKey(), String.format("${%s}", entry.getValue().getFieldName()));
+      if (entry.getValue() == AlertTemplateField.ALERT_SCOPE && !CollectionUtils.isEmpty(tagMap)) {
+        for (Map.Entry<String, String> tagItem : tagMap.entrySet()) {
+          templateMap.put(tagItem.getKey(),
+              String.format("${%s.%s}", entry.getValue().getFieldName(), tagItem.getValue()));
+        }
+      }
     }
     return J.toJson(templateMap);
   }
@@ -141,6 +151,9 @@ public class NotificationTemplate {
         return templateValue.metric;
       case ALERT_PRIORITY:
       case alarmLevel:
+        if (templateValue.alarmLevel == null) {
+          return StringUtils.EMPTY;
+        }
         return templateValue.alarmLevel.getDesc();
       case ALERT_QUERY:
         return templateValue.alertQuery;
@@ -204,15 +217,33 @@ public class NotificationTemplate {
       if (alarmTags.startsWith("[")) {
         return alarmTags;
       }
+      Map<String /* tagk */, String /* alias */> reverseTagMap = reverseTagMap();
       Map<String, Object> tags = J.toMap(alarmTags);
       StringBuilder msg = new StringBuilder();
       for (Map.Entry<String, Object> entry : tags.entrySet()) {
-        msg.append(String.format("    - %s: %s  \n\n  ", entry.getKey(), entry.getValue()));
+        if (!CollectionUtils.isEmpty(reverseTagMap)) {
+          if (reverseTagMap.containsKey(entry.getKey())) {
+            msg.append(String.format("    - %s: %s  \n\n  ", reverseTagMap.get(entry.getKey()),
+                entry.getValue()));
+          }
+        } else {
+          msg.append(String.format("    - %s: %s  \n\n  ", entry.getKey(), entry.getValue()));
+        }
       }
       return msg.toString();
     } else {
       return alarmTags;
     }
+  }
+
+  private Map<String, String> reverseTagMap() {
+    Map<String /* tagk */, String /* alias */> reverseTagMap = new LinkedHashMap<>();
+    for (Map.Entry<String /* alias */, String /* tagk */> tagItem : tagMap.entrySet()) {
+      String alias = tagItem.getKey();
+      String tagk = tagItem.getValue();
+      reverseTagMap.put(tagk, alias);
+    }
+    return reverseTagMap;
   }
 
   public static String getAlertValue(Double alertValue) {
@@ -243,5 +274,36 @@ public class NotificationTemplate {
       return StringUtils.EMPTY;
     }
     return ruleConfig.getRule().getTriggers().get(0).getTriggerTitle();
+  }
+
+  private static final Pattern pattern = Pattern.compile("\\$\\{(.*?)\\}");
+
+  public boolean parseText() {
+    if (StringUtils.isEmpty(this.text)) {
+      return true;
+    }
+    try {
+      Map<String, Object> map = J.toMap(this.text);
+      for (Map.Entry<String, Object> entry : map.entrySet()) {
+        String alias = entry.getKey();
+        String fieldName = (String) entry.getValue();
+        if (StringUtils.isBlank(fieldName)) {
+          continue;
+        }
+        Matcher matcher = pattern.matcher(fieldName);
+        if (matcher.find()) {
+          fieldName = matcher.group(1); // group(1) corresponds to (.*?), which is the content
+                                        // within ${}
+        }
+        if (fieldName.startsWith("ALERT_SCOPE.") || fieldName.startsWith("alarmTags.")) {
+          tagMap.put(alias, fieldName.split("\\.", 2)[1]);
+        } else {
+          fieldMap.put(alias, AlertTemplateField.valueOf(fieldName));
+        }
+      }
+    } catch (Exception e) {
+      return false;
+    }
+    return true;
   }
 }

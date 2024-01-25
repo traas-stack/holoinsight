@@ -7,6 +7,7 @@ package io.holoinsight.server.home.alert.model.event;
 import io.holoinsight.server.home.facade.AlertNotifyRecordDTO;
 import io.holoinsight.server.home.facade.AlertRuleExtra;
 import io.holoinsight.server.home.facade.InspectConfig;
+import io.holoinsight.server.home.facade.NotificationTemplate;
 import io.holoinsight.server.home.facade.trigger.Trigger;
 import lombok.Data;
 
@@ -54,6 +55,8 @@ public class AlertNotifyRequest {
   private String envType;
 
   private AlertRuleExtra alertRuleExtra;
+
+  private NotificationTemplate notificationTemplate;
 
   public Long alarmHistoryId;
 
