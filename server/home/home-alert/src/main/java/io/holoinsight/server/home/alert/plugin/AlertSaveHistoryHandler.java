@@ -157,7 +157,8 @@ public class AlertSaveHistoryHandler implements AlertHandlerExecutor {
         List<String> logs = new ArrayList<>();
         Long alertTime = alertNotify.getAlarmTime();
         for (QueryProto.QueryRequest queryRequest : queryRequests) {
-          QueryProto.QueryResponse response = this.queryClientService.queryData(queryRequest);
+          QueryProto.QueryResponse response =
+              this.queryClientService.queryData(queryRequest, "LOG_ALERT");
           if (response != null && !CollectionUtils.isEmpty(response.getResultsList())) {
             LOGGER.debug("{} log sample result {} request {}", alertNotify.getTraceId(),
                 J.toJson(response.getResultsList()), J.toJson(queryRequest));
@@ -226,7 +227,8 @@ public class AlertSaveHistoryHandler implements AlertHandlerExecutor {
         List<String> logs = new ArrayList<>();
         Long alertTime = alertNotify.getAlarmTime();
         for (QueryProto.QueryRequest queryRequest : queryRequests) {
-          QueryProto.QueryResponse response = this.queryClientService.queryData(queryRequest);
+          QueryProto.QueryResponse response =
+              this.queryClientService.queryData(queryRequest, "LOG_ALERT");
           if (response != null && !CollectionUtils.isEmpty(response.getResultsList())) {
             LOGGER.debug("{} log analysis result {} request {}", alertNotify.getTraceId(),
                 J.toJson(response.getResultsList()), J.toJson(queryRequest));

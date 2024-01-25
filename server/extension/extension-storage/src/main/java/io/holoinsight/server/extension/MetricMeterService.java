@@ -28,4 +28,6 @@ public interface MetricMeterService {
    * @param tags
    */
   void meter(Map<String, String> tags, String tenant, String metricName);
+
+  Map<String, String> keyGen(String tenant, String name, Map<String, String> tags);
 }

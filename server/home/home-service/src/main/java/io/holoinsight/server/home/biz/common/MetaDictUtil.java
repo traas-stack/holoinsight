@@ -5,14 +5,15 @@ package io.holoinsight.server.home.biz.common;
 
 import com.google.gson.reflect.TypeToken;
 import io.holoinsight.server.common.J;
+import io.holoinsight.server.common.dao.entity.MetaDataDictValue;
 import io.holoinsight.server.common.service.SuperCacheService;
 import io.holoinsight.server.home.common.service.SpringContext;
 import io.holoinsight.server.home.common.util.scope.IdentityType;
-import io.holoinsight.server.common.dao.entity.MetaDataDictValue;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -150,12 +151,11 @@ public class MetaDictUtil {
     return value;
   }
 
-  public static Boolean isLogMeteringOpen() {
-    Boolean value = MetaDictUtil.getValue(MetaDictType.GLOBAL_CONFIG, MetaDictKey.METERING_LOG_OPEN,
-        new TypeToken<Boolean>() {});
-    if (null == value) {
-      return false;
-    }
+  public static List<String> getResourceKeys() {
+    List<String> value = MetaDictUtil.getValue(MetaDictType.GLOBAL_CONFIG,
+        MetaDictKey.RESOURCE_KEYS, new TypeToken<List<String>>() {});
+    if (CollectionUtils.isEmpty(value))
+      return Collections.singletonList("tenant");
     return value;
   }
 

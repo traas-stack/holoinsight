@@ -49,13 +49,13 @@ public class RuleAlarmLoadData implements AlarmLoadData {
     try {
       request = buildRequest(computeTask.getTimestamp(), inspectConfig.getTenant(), trigger);
       LOGGER.debug("{} alert query request {}", inspectConfig.getTraceId(), request.toString());
-      response = queryClientService.queryData(request);
+      response = queryClientService.queryData(request, "ALERT");
       dataResults = merge(dataResults, response);
       long deltaTimestamp = getDeltaTimestamp(trigger.getPeriodType());
       if (deltaTimestamp > 0) {
         deltaRequest = buildRequest(computeTask.getTimestamp() - deltaTimestamp,
             inspectConfig.getTenant(), trigger);
-        deltaResponse = queryClientService.queryData(deltaRequest);
+        deltaResponse = queryClientService.queryData(deltaRequest, "ALERT");
         dataResults = merge(dataResults, deltaResponse);
       }
     } catch (Exception exception) {

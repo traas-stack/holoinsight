@@ -427,14 +427,14 @@ public class QueryClientService {
     return requestBuilder.build();
   }
 
-  public QueryProto.QueryResponse queryData(QueryProto.QueryRequest request) {
+  public QueryProto.QueryResponse queryData(QueryProto.QueryRequest request, String source) {
 
     QueryProto.QueryRequest queryRequest = this.requestContextAdapter.requestAdapte(request);
     long start = System.currentTimeMillis();
     QueryProto.QueryResponse response =
         queryServiceBlockingStub.withMaxInboundMessageSize(4194304 * 100).queryData(queryRequest);
     int pointSize = getPointSizeFromResp(response);
-    log.info("HOME_QUERY_STAT from[ALERT] invoke[1], cost[{}], pointSize[{}]",
+    log.info("HOME_QUERY_STAT from[{}] invoke[1], cost[{}], pointSize[{}]", source,
         System.currentTimeMillis() - start, pointSize);
     return response;
   }

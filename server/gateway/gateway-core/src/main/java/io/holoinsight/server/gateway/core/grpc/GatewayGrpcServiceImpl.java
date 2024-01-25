@@ -3,27 +3,13 @@
  */
 package io.holoinsight.server.gateway.core.grpc;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
 import com.google.common.collect.Maps;
 import com.google.protobuf.Empty;
 import com.xzchaoo.commons.stat.StringsKey;
-
 import io.grpc.stub.StreamObserver;
 import io.holoinsight.server.common.TrafficTracer;
 import io.holoinsight.server.common.auth.ApikeyAuthService;
 import io.holoinsight.server.common.auth.AuthInfo;
-import io.holoinsight.server.common.ctl.MonitorProductCode;
-import io.holoinsight.server.common.ctl.ProductCtlService;
-import io.holoinsight.server.common.service.MetaDataDictValueService;
 import io.holoinsight.server.extension.MetricStorage;
 import io.holoinsight.server.extension.model.WriteMetricsParam;
 import io.holoinsight.server.gateway.core.utils.StatUtils;
@@ -36,8 +22,17 @@ import io.holoinsight.server.gateway.grpc.WriteMetricsRequestV1;
 import io.holoinsight.server.gateway.grpc.WriteMetricsRequestV4;
 import io.holoinsight.server.gateway.grpc.WriteMetricsResponse;
 import io.holoinsight.server.gateway.grpc.common.CommonResponseHeader;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -55,12 +50,6 @@ public class GatewayGrpcServiceImpl extends GatewayServiceGrpc.GatewayServiceImp
 
   @Autowired
   private ApikeyAuthService apikeyAuthService;
-
-  @Autowired
-  private ProductCtlService productCtlService;
-
-  @Autowired
-  private MetaDataDictValueService metaDataDictValueService;
 
   @Autowired
   private GatewayHookManager gatewayHookManager;
@@ -143,10 +132,10 @@ public class GatewayGrpcServiceImpl extends GatewayServiceGrpc.GatewayServiceImp
     List<WriteMetricsParam.Point> points = new ArrayList<>(request.getPointCount());
     for (Point p : request.getPointList()) {
 
-      if (!productCtlService.isMetricInWhiteList(p.getMetricName())
-          && productCtlService.productClosed(MonitorProductCode.METRIC, p.getTagsMap())) {
-        continue;
-      }
+      // if (!productCtlService.isMetricInWhiteList(p.getMetricName())
+      // && productCtlService.productClosed(MonitorProductCode.METRIC, p.getTagsMap())) {
+      // continue;
+      // }
 
       p = gatewayHookManager.processV1(authInfo, p);
       if (p == null) {
@@ -198,10 +187,10 @@ public class GatewayGrpcServiceImpl extends GatewayServiceGrpc.GatewayServiceImp
         for (int i = 0; i < header.getTagKeysCount(); i++) {
           tags.put(header.getTagKeys(i), row.getTagValues(i));
         }
-        if (!productCtlService.isMetricInWhiteList(header.getMetricName())
-            && productCtlService.productClosed(MonitorProductCode.METRIC, tags)) {
-          continue;
-        }
+        // if (!productCtlService.isMetricInWhiteList(header.getMetricName())
+        // && productCtlService.productClosed(MonitorProductCode.METRIC, tags)) {
+        // continue;
+        // }
         wmpp.setTimeStamp(row.getTimestamp());
         wmpp.setTags(tags);
         for (DataNode dataNode : row.getValueValuesList()) {

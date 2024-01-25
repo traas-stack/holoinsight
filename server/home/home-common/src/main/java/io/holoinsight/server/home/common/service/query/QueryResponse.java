@@ -20,4 +20,10 @@ public class QueryResponse {
    */
   private List<Result> completes;
 
+  private String message;
+
+  private Boolean success = true;
+
+  private String errorCode;
+
 }
