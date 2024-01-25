@@ -4,6 +4,7 @@
 package io.holoinsight.server.extension.ceresdbx;
 
 import io.holoinsight.server.common.dao.mapper.TenantOpsMapper;
+import io.holoinsight.server.extension.MetricMeterService;
 import io.holoinsight.server.extension.MetricStorage;
 import io.holoinsight.server.extension.promql.PqlQueryService;
 import io.holoinsight.server.extension.promql.RemotePqlConfiguration;
@@ -33,4 +34,8 @@ public class HoloinsightCeresdbxConfiguration {
     return new CeresdbxMetricStorage(ceresdbxClientManager, pqlQueryService);
   }
 
+  @Bean
+  public MetricMeterService meterService() {
+    return new MetricMeterServiceImpl();
+  }
 }

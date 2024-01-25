@@ -42,7 +42,7 @@ public class DetailsStorageService {
   private ProductCtlService productCtlService;
 
   @Autowired
-  private MetricMeterService metricMeterService;
+  private MetricMeterService meterService;
 
   public Mono<Void> write(AuthInfo authInfo, WriteMetricsRequestV4 req) {
     List<Mono<Void>> monos = new ArrayList<>();
@@ -77,29 +77,9 @@ public class DetailsStorageService {
         }
         row.setFieldValues(fieldValues);
 
-        // meter
-        try {
-          Map<String, String> dataTags = new HashMap<>();
-          if (!CollectionUtils.isEmpty(header.getTagKeys())) {
-            for (int i = 0; i < header.getTagKeys().size(); i++) {
-              dataTags.put(header.getTagKeys().get(i), row.getTagValues().get(i));
-            }
-            if (CollectionUtils.isEmpty(dataTags)) {
-              continue;
-            }
-            Map<String, String> meterTags =
-                metricMeterService.keyGen(authInfo.getTenant(), table.getName(), dataTags);
-            if (CollectionUtils.isEmpty(meterTags)) {
-              continue;
-            }
-
-            if (!productCtlService.isMetricInWhiteList(table.getName())
-                && productCtlService.productClosed(MonitorProductCode.METRIC, meterTags)) {
-              continue;
-            }
-          }
-        } catch (Exception e) {
-          log.warn("detail metric meter fail" + e.getMessage(), e);
+        // check
+        if (!checkClosed(authInfo.getTenant(), table.getName(), header, pbrow.getTagValuesList())) {
+          continue;
         }
         rows.add(row);
       }
@@ -110,5 +90,31 @@ public class DetailsStorageService {
     }
 
     return Flux.merge(monos).ignoreElements();
+  }
+
+  private Boolean checkClosed(String tenant, String metric, Header header, List<String> tagValues) {
+    try {
+      Map<String, String> dataTags = new HashMap<>();
+      if (!CollectionUtils.isEmpty(header.getTagKeys())) {
+        for (int i = 0; i < header.getTagKeys().size(); i++) {
+          dataTags.put(header.getTagKeys().get(i), tagValues.get(i));
+        }
+        if (CollectionUtils.isEmpty(dataTags)) {
+          return Boolean.TRUE;
+        }
+        Map<String, String> meterTags = meterService.keyGen(tenant, metric, dataTags);
+        if (CollectionUtils.isEmpty(meterTags)) {
+          return Boolean.TRUE;
+        }
+
+        if (!productCtlService.isMetricInWhiteList(metric)
+            && productCtlService.productClosed(MonitorProductCode.METRIC, meterTags)) {
+          return Boolean.FALSE;
+        }
+      }
+    } catch (Exception e) {
+      log.warn("detail metric meter fail" + e.getMessage(), e);
+    }
+    return Boolean.TRUE;
   }
 }
