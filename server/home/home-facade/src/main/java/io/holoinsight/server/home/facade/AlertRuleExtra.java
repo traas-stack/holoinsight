@@ -19,4 +19,11 @@ public class AlertRuleExtra {
   public Map<String, String> tagAlias;
   public boolean isRecord;
   public AlertSilenceConfig alertSilenceConfig;
+
+  public NotificationTemplate getDingTalkTemplate() {
+    if (notificationConfig == null || notificationConfig.dingtalkTemplate == null) {
+      return null;
+    }
+    return notificationConfig.dingtalkTemplate;
+  }
 }
