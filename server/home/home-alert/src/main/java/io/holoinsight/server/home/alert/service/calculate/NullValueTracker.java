@@ -110,7 +110,7 @@ public class NullValueTracker {
 
     QueryProto.QueryRequest request =
         ruleAlarmLoadData.buildRequest(record.period, record.tenant, record.trigger);
-    QueryProto.QueryResponse response = queryClientService.queryData(request);
+    QueryProto.QueryResponse response = queryClientService.queryData(request, "ALERT");
 
     Map<Long, Double> points = new HashMap<>();
     if (response != null && !CollectionUtils.isEmpty(response.getResultsList())) {

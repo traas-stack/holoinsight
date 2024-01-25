@@ -134,7 +134,7 @@ public class AIAlarmLoadData implements AlarmLoadData {
 
       request = QueryProto.QueryRequest.newBuilder().setTenant(inspectConfig.getTenant())
           .setQuery(trigger.getQuery()).addAllDatasources(datasources).build();
-      response = queryClientService.queryData(request);
+      response = queryClientService.queryData(request, "AI_ALERT");
       if (LOGGER.isDebugEnabled()) {
         LOGGER.debug("{} QueryData Success Request:{} Response:{}", inspectConfig.getTraceId(),
             G.get().toJson(request), G.get().toJson(response));

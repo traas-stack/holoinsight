@@ -127,12 +127,17 @@ public class QueryFacadeImpl extends BaseFacade {
           JsonResult.createSuccessResult(result, response);
         } catch (Throwable t) {
           log.error("query error", t);
+          QueryResponse response = new QueryResponse();
           if ((t.getMessage().contains("Evaluated points num")
               || t.getMessage().contains("Evaluated series num"))
               && t.getMessage().contains("larger than")) {
-            throw new MonitorException(ResultCodeEnum.EXCEED_SERIES_LIMIT, t.getMessage());
+            response.setErrorCode(ResultCodeEnum.EXCEED_SERIES_LIMIT.name());
+          } else {
+            response.setErrorCode(ResultCodeEnum.DOWNSTREAM_SYSTEM_ERROR.name());
           }
-          throw new MonitorException(ResultCodeEnum.DOWNSTREAM_SYSTEM_ERROR, t.getMessage());
+          response.setSuccess(false);
+          response.setMessage(t.getMessage());
+          JsonResult.fillFailResultTo(result, t.getMessage());
         }
       }
     });
@@ -183,12 +188,17 @@ public class QueryFacadeImpl extends BaseFacade {
           QueryResponse response = queryClientService.queryTags(convertRequest(request));
           JsonResult.createSuccessResult(result, response);
         } catch (Throwable t) {
+          QueryResponse response = new QueryResponse();
           if ((t.getMessage().contains("Evaluated points num")
               || t.getMessage().contains("Evaluated series num"))
               && t.getMessage().contains("larger than")) {
-            throw new MonitorException(ResultCodeEnum.EXCEED_SERIES_LIMIT, t.getMessage());
+            response.setErrorCode(ResultCodeEnum.EXCEED_SERIES_LIMIT.name());
+          } else {
+            response.setErrorCode(ResultCodeEnum.DOWNSTREAM_SYSTEM_ERROR.name());
           }
-          throw new MonitorException(ResultCodeEnum.DOWNSTREAM_SYSTEM_ERROR, t.getMessage());
+          response.setSuccess(false);
+          response.setMessage(t.getMessage());
+          JsonResult.fillFailResultTo(result, t.getMessage());
         }
       }
     });
@@ -411,12 +421,17 @@ public class QueryFacadeImpl extends BaseFacade {
           QueryResponse response = queryClientService.pqlRangeQuery(rangeRequest);
           JsonResult.createSuccessResult(result, response.getResults());
         } catch (Throwable t) {
+          QueryResponse response = new QueryResponse();
           if ((t.getMessage().contains("Evaluated points num")
               || t.getMessage().contains("Evaluated series num"))
               && t.getMessage().contains("larger than")) {
-            throw new MonitorException(ResultCodeEnum.EXCEED_SERIES_LIMIT, t.getMessage());
+            response.setErrorCode(ResultCodeEnum.EXCEED_SERIES_LIMIT.name());
+          } else {
+            response.setErrorCode(ResultCodeEnum.DOWNSTREAM_SYSTEM_ERROR.name());
           }
-          throw new MonitorException(ResultCodeEnum.DOWNSTREAM_SYSTEM_ERROR, t.getMessage());
+          response.setSuccess(false);
+          response.setMessage(t.getMessage());
+          JsonResult.fillFailResultTo(result, t.getMessage());
         }
       }
     });
@@ -452,12 +467,17 @@ public class QueryFacadeImpl extends BaseFacade {
           QueryResponse response = queryClientService.pqlInstantQuery(instantRequest);
           JsonResult.createSuccessResult(result, response.getResults());
         } catch (Throwable t) {
+          QueryResponse response = new QueryResponse();
           if ((t.getMessage().contains("Evaluated points num")
               || t.getMessage().contains("Evaluated series num"))
               && t.getMessage().contains("larger than")) {
-            throw new MonitorException(ResultCodeEnum.EXCEED_SERIES_LIMIT, t.getMessage());
+            response.setErrorCode(ResultCodeEnum.EXCEED_SERIES_LIMIT.name());
+          } else {
+            response.setErrorCode(ResultCodeEnum.DOWNSTREAM_SYSTEM_ERROR.name());
           }
-          throw new MonitorException(ResultCodeEnum.DOWNSTREAM_SYSTEM_ERROR, t.getMessage());
+          response.setSuccess(false);
+          response.setMessage(t.getMessage());
+          JsonResult.fillFailResultTo(result, t.getMessage());
         }
       }
     });
