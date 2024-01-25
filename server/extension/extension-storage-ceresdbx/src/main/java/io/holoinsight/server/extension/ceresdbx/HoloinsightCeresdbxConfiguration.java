@@ -35,7 +35,7 @@ public class HoloinsightCeresdbxConfiguration {
   }
 
   @Bean
-  public MetricMeterService meterService() {
+  public MetricMeterService metricMeterService() {
     return new MetricMeterServiceImpl();
   }
 }

@@ -77,7 +77,7 @@ public class CeresdbxMetricStorage implements MetricStorage {
   private PqlQueryService pqlQueryService;
 
   @Autowired(required = false)
-  private MetricMeterService meterService;
+  private MetricMeterService metricMeterService;
 
   public CeresdbxMetricStorage(CeresdbxClientManager ceresdbxClientManager) {
     this.ceresdbxClientManager = ceresdbxClientManager;
@@ -111,8 +111,8 @@ public class CeresdbxMetricStorage implements MetricStorage {
         dps = 0;
       }
     }
-    if (meterService != null && !writeMetricsParam.isFree()) {
-      meterService.meter(writeMetricsParam);
+    if (metricMeterService != null && !writeMetricsParam.isFree()) {
+      metricMeterService.meter(writeMetricsParam);
     }
     return Mono.empty();
   }

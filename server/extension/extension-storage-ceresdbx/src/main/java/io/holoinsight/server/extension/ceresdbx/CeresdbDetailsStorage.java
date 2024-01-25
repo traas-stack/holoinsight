@@ -41,7 +41,7 @@ public class CeresdbDetailsStorage implements DetailsStorage {
   @Autowired
   private CeresdbxClientManager ceresdbxClientManager;
   @Autowired
-  private MetricMeterService meterService;
+  private MetricMeterService metricMeterService;
   private Cache<String, Boolean> cache = //
       CacheBuilder.newBuilder() //
           .expireAfterWrite(Duration.ofHours(1)) //
@@ -57,7 +57,7 @@ public class CeresdbDetailsStorage implements DetailsStorage {
 
   @Override
   public Mono<Void> write(String tenant, Table table) {
-    meterService.meter(tenant, table);
+    metricMeterService.meter(tenant, table);
 
     String forceTenant = StringUtils.firstNonEmpty(this.forceTenant, tenant);
 

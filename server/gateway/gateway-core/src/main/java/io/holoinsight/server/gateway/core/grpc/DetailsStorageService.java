@@ -42,7 +42,7 @@ public class DetailsStorageService {
   private ProductCtlService productCtlService;
 
   @Autowired
-  private MetricMeterService meterService;
+  private MetricMeterService metricMeterService;
 
   public Mono<Void> write(AuthInfo authInfo, WriteMetricsRequestV4 req) {
     List<Mono<Void>> monos = new ArrayList<>();
@@ -102,7 +102,7 @@ public class DetailsStorageService {
         if (CollectionUtils.isEmpty(dataTags)) {
           return Boolean.TRUE;
         }
-        Map<String, String> meterTags = meterService.keyGen(tenant, metric, dataTags);
+        Map<String, String> meterTags = metricMeterService.keyGen(tenant, metric, dataTags);
         if (CollectionUtils.isEmpty(meterTags)) {
           return Boolean.TRUE;
         }
