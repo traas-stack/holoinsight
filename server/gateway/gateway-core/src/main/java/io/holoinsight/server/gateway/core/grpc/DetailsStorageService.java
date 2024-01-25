@@ -78,24 +78,28 @@ public class DetailsStorageService {
         row.setFieldValues(fieldValues);
 
         // meter
-        Map<String, String> dataTags = new HashMap<>();
-        if (!CollectionUtils.isEmpty(header.getTagKeys())) {
-          for (int i = 0; i < header.getTagKeys().size(); i++) {
-            dataTags.put(header.getTagKeys().get(i), row.getTagValues().get(i));
-          }
-          if (CollectionUtils.isEmpty(dataTags)) {
-            continue;
-          }
-          Map<String, String> meterTags =
-              metricMeterService.keyGen(authInfo.getTenant(), table.getName(), dataTags);
-          if (CollectionUtils.isEmpty(meterTags)) {
-            continue;
-          }
+        try {
+          Map<String, String> dataTags = new HashMap<>();
+          if (!CollectionUtils.isEmpty(header.getTagKeys())) {
+            for (int i = 0; i < header.getTagKeys().size(); i++) {
+              dataTags.put(header.getTagKeys().get(i), row.getTagValues().get(i));
+            }
+            if (CollectionUtils.isEmpty(dataTags)) {
+              continue;
+            }
+            Map<String, String> meterTags =
+                metricMeterService.keyGen(authInfo.getTenant(), table.getName(), dataTags);
+            if (CollectionUtils.isEmpty(meterTags)) {
+              continue;
+            }
 
-          if (!productCtlService.isMetricInWhiteList(table.getName())
-              && productCtlService.productClosed(MonitorProductCode.METRIC, meterTags)) {
-            continue;
+            if (!productCtlService.isMetricInWhiteList(table.getName())
+                && productCtlService.productClosed(MonitorProductCode.METRIC, meterTags)) {
+              continue;
+            }
           }
+        } catch (Exception e) {
+          log.warn("detail metric meter fail" + e.getMessage(), e);
         }
         rows.add(row);
       }
