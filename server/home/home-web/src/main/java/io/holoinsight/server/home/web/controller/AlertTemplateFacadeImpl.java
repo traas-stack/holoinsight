@@ -24,6 +24,7 @@ import io.holoinsight.server.home.facade.page.MonitorPageRequest;
 import io.holoinsight.server.home.facade.page.MonitorPageResult;
 import io.holoinsight.server.home.web.common.ManageCallback;
 import io.holoinsight.server.home.web.interceptor.MonitorScopeAuth;
+import io.holoinsight.server.home.web.security.LevelAuthorizationAccess;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -62,6 +63,8 @@ public class AlertTemplateFacadeImpl extends BaseFacade {
   @Autowired
   private UserOpLogService userOpLogService;
 
+  @LevelAuthorizationAccess(paramConfigs = {"PARAMETER" + ":$!templateDTO"},
+      levelAuthorizationCheckeClass = "io.holoinsight.server.home.web.security.custom.AlertTemplateFacadeImplChecker")
   @PostMapping("/create")
   @ResponseBody
   @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.EDIT)
@@ -70,9 +73,7 @@ public class AlertTemplateFacadeImpl extends BaseFacade {
 
     facadeTemplate.manage(result, new ManageCallback() {
       @Override
-      public void checkParameter() {
-
-      }
+      public void checkParameter() {}
 
       @Override
       public void doManage() {
@@ -106,6 +107,8 @@ public class AlertTemplateFacadeImpl extends BaseFacade {
     return result;
   }
 
+  @LevelAuthorizationAccess(paramConfigs = {"PARAMETER" + ":$!templateDTO"},
+      levelAuthorizationCheckeClass = "io.holoinsight.server.home.web.security.custom.AlertTemplateFacadeImplChecker")
   @PostMapping("/update")
   @ResponseBody
   @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.EDIT)
@@ -144,6 +147,8 @@ public class AlertTemplateFacadeImpl extends BaseFacade {
     return result;
   }
 
+  @LevelAuthorizationAccess(paramConfigs = {"PARAMETER" + ":$!id"},
+      levelAuthorizationCheckeClass = "io.holoinsight.server.home.web.security.custom.AlertTemplateFacadeImplChecker")
   @GetMapping("/query/{id}")
   @ResponseBody
   @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.VIEW)
@@ -176,6 +181,8 @@ public class AlertTemplateFacadeImpl extends BaseFacade {
     return result;
   }
 
+  @LevelAuthorizationAccess(paramConfigs = {"PARAMETER" + ":$!id"},
+      levelAuthorizationCheckeClass = "io.holoinsight.server.home.web.security.custom.AlertTemplateFacadeImplChecker")
   @DeleteMapping(value = "/delete/{id}")
   @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.EDIT)
   public JsonResult<Integer> deleteById(@PathVariable("id") Long id) {
@@ -205,6 +212,8 @@ public class AlertTemplateFacadeImpl extends BaseFacade {
     return result;
   }
 
+  @LevelAuthorizationAccess(paramConfigs = {"PARAMETER" + ":$!pageRequest"},
+      levelAuthorizationCheckeClass = "io.holoinsight.server.home.web.security.custom.AlertTemplateFacadeImplChecker")
   @PostMapping("/pageQuery")
   @ResponseBody
   @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.VIEW)
@@ -277,6 +286,8 @@ public class AlertTemplateFacadeImpl extends BaseFacade {
     return result;
   }
 
+  @LevelAuthorizationAccess(paramConfigs = {"PARAMETER" + ":$!templateDTO"},
+      levelAuthorizationCheckeClass = "io.holoinsight.server.home.web.security.custom.AlertTemplateFacadeImplChecker")
   @PostMapping("/check")
   @ResponseBody
   @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.EDIT)
