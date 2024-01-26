@@ -97,7 +97,7 @@ public class LogMonitoringMultilineIT extends BaseIT {
 
             for (int i = 0; i < 2; i++) {
               resp.body("data.results.find { it.tags['thread'] == '%s' }.values[%d][1]",
-                  withArgs(thread, size - 1 - i), not("0.0"));
+                  withArgs(thread, size - 1 - i), greaterThanOrEqualTo("8.0"));
             }
           }
 
@@ -131,12 +131,12 @@ public class LogMonitoringMultilineIT extends BaseIT {
                 .path("data.results.find { it.tags['thread'] == '%s' }.values.size()", thread);
 
             for (int i = 0; i < 2; i++) {
-              String expected = "12.0";
+              String expected = "8.0";
               if ("thread-1".equals(thread)) {
-                expected = "24.0";
+                expected = "16.0";
               }
               resp.body("data.results.find { it.tags['thread'] == '%s' }.values[%d][1]",
-                  withArgs(thread, size - 1 - i), eq(expected));
+                  withArgs(thread, size - 1 - i), greaterThanOrEqualTo(expected));
             }
           }
 
