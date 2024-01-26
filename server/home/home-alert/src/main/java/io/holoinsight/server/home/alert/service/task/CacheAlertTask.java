@@ -222,18 +222,23 @@ public class CacheAlertTask {
 
   protected List<AlarmRule> getAlarmRuleListByPage() {
     List<AlarmRule> alarmRules = new ArrayList<>();
-    List<AlarmRule> ruleAlerts =
-        getAlertRule("rule", this.rulePageNum.get(), this.rulePageSize.get());
-    List<AlarmRule> aiAlerts = getAlertRule("ai", this.aiPageNum.get(), this.aiPageSize.get());
-    List<AlarmRule> pqlAlerts = getAlertRule("pql", this.pqlPageNum.get(), this.pqlPageSize.get());
-    if (!CollectionUtils.isEmpty(ruleAlerts)) {
-      alarmRules.addAll(ruleAlerts);
-    }
-    if (!CollectionUtils.isEmpty(aiAlerts)) {
-      alarmRules.addAll(aiAlerts);
-    }
-    if (!CollectionUtils.isEmpty(pqlAlerts)) {
-      alarmRules.addAll(pqlAlerts);
+    int retry = 0;
+    while (retry++ < 3 && CollectionUtils.isEmpty(alarmRules)) {
+      List<AlarmRule> ruleAlerts =
+          getAlertRule("rule", this.rulePageNum.get(), this.rulePageSize.get());
+      List<AlarmRule> aiAlerts = getAlertRule("ai", this.aiPageNum.get(), this.aiPageSize.get());
+      List<AlarmRule> pqlAlerts =
+          getAlertRule("pql", this.pqlPageNum.get(), this.pqlPageSize.get());
+      if (!CollectionUtils.isEmpty(ruleAlerts)) {
+        alarmRules.addAll(ruleAlerts);
+      }
+      if (!CollectionUtils.isEmpty(aiAlerts)) {
+        alarmRules.addAll(aiAlerts);
+      }
+      if (!CollectionUtils.isEmpty(pqlAlerts)) {
+        alarmRules.addAll(pqlAlerts);
+      }
+      LOGGER.info("try to get AlarmRuleList retry {}, size {}", retry, alarmRules.size());
     }
     return alarmRules;
   }
