@@ -37,4 +37,5 @@ public class AlertNotificationTemplateDTO {
   public String workspace;
   public String creator;
   public String modifier;
+  public String description;
 }

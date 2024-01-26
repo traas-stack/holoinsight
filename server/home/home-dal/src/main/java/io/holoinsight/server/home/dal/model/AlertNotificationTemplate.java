@@ -46,5 +46,6 @@ public class AlertNotificationTemplate {
   public String workspace;
   public String creator;
   public String modifier;
+  public String description;
 
 }

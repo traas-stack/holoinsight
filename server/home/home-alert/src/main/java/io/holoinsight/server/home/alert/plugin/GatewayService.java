@@ -13,12 +13,17 @@ import io.holoinsight.server.home.alert.service.event.RecordSucOrFailNotify;
 import io.holoinsight.server.home.biz.plugin.model.PluginContext;
 import io.holoinsight.server.home.biz.service.IntegrationPluginService;
 import io.holoinsight.server.home.dal.converter.AlarmRuleConverter;
+import io.holoinsight.server.home.dal.converter.AlertNotificationTemplateConverter;
 import io.holoinsight.server.home.dal.mapper.AlarmRuleMapper;
+import io.holoinsight.server.home.dal.mapper.AlertNotificationTemplateMapper;
 import io.holoinsight.server.home.dal.model.AlarmRule;
+import io.holoinsight.server.home.dal.model.AlertNotificationTemplate;
 import io.holoinsight.server.home.dal.model.dto.IntegrationPluginDTO;
 import io.holoinsight.server.home.facade.AlarmRuleDTO;
+import io.holoinsight.server.home.facade.AlertNotificationTemplateDTO;
 import io.holoinsight.server.home.facade.AlertNotifyRecordDTO;
 import io.holoinsight.server.home.facade.AlertRuleExtra;
+import io.holoinsight.server.home.facade.NotificationTemplate;
 import io.holoinsight.server.home.facade.trigger.Trigger;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -59,6 +64,10 @@ public abstract class GatewayService {
   private EnvironmentProperties environmentProperties;
   @Resource
   private AlarmRuleConverter alarmRuleConverter;
+  @Resource
+  private AlertNotificationTemplateMapper alertNotificationTemplateMapper;
+  @Autowired
+  private AlertNotificationTemplateConverter alertNotificationTemplateConverter;
 
   private static final String GATEWAY = "GatewayService";
 
@@ -117,6 +126,21 @@ public abstract class GatewayService {
 
     AlertRuleExtra extra = alertRule.getExtra();
     notify.setAlertRuleExtra(extra);
+    NotificationTemplate notificationTemplate = extra == null ? null : extra.getDingTalkTemplate();
+    if (notificationTemplate == null) {
+      Long alertNotificationTemplateId = alertRule.getAlertNotificationTemplateId();
+      if (alertNotificationTemplateId != null) {
+        AlertNotificationTemplate alertNotificationTemplate =
+            this.alertNotificationTemplateMapper.selectById(alertNotificationTemplateId);
+        if (alertNotificationTemplate != null) {
+          AlertNotificationTemplateDTO templateDTO =
+              this.alertNotificationTemplateConverter.doToDTO(alertNotificationTemplate);
+          notificationTemplate = templateDTO.templateConfig;
+        }
+      }
+    }
+    notify.setNotificationTemplate(notificationTemplate);
+
     PluginContext pluginContext = buildNotifyContext(traceId, notify);
     RecordSucOrFailNotify.alertNotifyProcessSuc(GATEWAY, "send alert notify",
         notify.getAlertNotifyRecord());
