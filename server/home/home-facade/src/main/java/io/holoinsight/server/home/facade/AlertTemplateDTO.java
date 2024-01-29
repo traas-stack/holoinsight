@@ -12,11 +12,9 @@ import java.util.Date;
  * @version 2024-01-22 17:02:00
  */
 @Data
-public class AlertNotificationTemplateDTO {
-  /**
-   * id
-   */
-  public Long id;
+public class AlertTemplateDTO {
+
+  public String uuid;
 
   /**
    * 创建时间

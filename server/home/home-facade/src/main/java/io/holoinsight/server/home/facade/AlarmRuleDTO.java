@@ -179,10 +179,12 @@ public class AlarmRuleDTO extends ApiSecurity {
    */
   private String pql;
 
-  /**
-   * 告警模板ID
-   */
   private Long alertNotificationTemplateId;
+
+  /**
+   * 告警模板UUID
+   */
+  private String alertTemplateUuid;
 
   public static void tryParseLink(AlarmRuleDTO alarmRuleDTO, String domain,
       Map<String /* metric */, Map<String /* type */, String /* page */>> systemMetrics,

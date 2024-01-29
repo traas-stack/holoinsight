@@ -28,6 +28,9 @@ public class UserOpLog {
   @Column(name = "table_entity_id")
   public Long tableEntityId;
 
+  @Column(name = "table_entity_uuid")
+  public String tableEntityUuid;
+
   public String opType;
 
   public String opBeforeContext;
