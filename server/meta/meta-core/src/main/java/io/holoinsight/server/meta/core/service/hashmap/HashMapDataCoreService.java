@@ -208,7 +208,26 @@ public class HashMapDataCoreService extends SqlDataCoreService {
     StringBuilder builder = new StringBuilder();
     boolean containAllKeys = true;
     for (String key : indexKeys) {
-      Object value = metaRows.get(key);
+      Object value;
+      // 支持两层 key 索引
+      if (key.contains(".")) {
+        int doxIndex = key.indexOf('.');
+        String firstKey = key.substring(0, doxIndex);
+        String secondKey = key.substring(doxIndex + 1);
+        Object o = metaRows.get(firstKey);
+        if (Objects.isNull(o)) {
+          value = null;
+        } else {
+          Map<String, Object> map = J.toMap(J.toJson(o));
+          if (null == map) {
+            value = null;
+          } else {
+            value = map.get(secondKey);
+          }
+        }
+      } else {
+        value = metaRows.get(key);
+      }
       if (Objects.isNull(value)) {
         containAllKeys = false;
         builder.append(EMPTY_VALUE);

@@ -137,6 +137,7 @@ public class QueryFacadeImpl extends BaseFacade {
           }
           response.setSuccess(false);
           response.setMessage(t.getMessage());
+          result.setData(response);
           JsonResult.fillFailResultTo(result, t.getMessage());
         }
       }
@@ -198,6 +199,7 @@ public class QueryFacadeImpl extends BaseFacade {
           }
           response.setSuccess(false);
           response.setMessage(t.getMessage());
+          result.setData(response);
           JsonResult.fillFailResultTo(result, t.getMessage());
         }
       }
