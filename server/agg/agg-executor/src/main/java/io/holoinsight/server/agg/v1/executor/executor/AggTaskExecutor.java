@@ -118,8 +118,7 @@ public class AggTaskExecutor {
     TableRowDataAccessor.Meta meta = new TableRowDataAccessor.Meta(table.getHeader());
     TableRowDataAccessor da = new TableRowDataAccessor();
     for (AggProtos.Table.Row row : table.getRowList()) {
-      long alignedDataTs =
-          Utils.align(row.getTimestamp(), latestAggTask.getInner().getWindow().getInterval());
+      long alignedDataTs = Utils.align(row.getTimestamp(), latestAggTask.getInner().getWindow());
 
       if (alignedDataTs > now) {
         log.error("[agg] [{}] invalid data {}]", key(), row);
@@ -194,9 +193,7 @@ public class AggTaskExecutor {
     AggWindowState lastWindowState = null;
     InDataNodeDataAccessor da = new InDataNodeDataAccessor();
     for (AggProtos.InDataNode in : aggTaskValue.getInDataNodesList()) {
-
-      long alignedDataTs =
-          Utils.align(in.getTimestamp(), latestAggTask.getInner().getWindow().getInterval());
+      long alignedDataTs = Utils.align(in.getTimestamp(), latestAggTask.getInner().getWindow());
 
       if (alignedDataTs > now) {
         log.error("[agg] [{}] invalid data {}]", key(), in);
@@ -435,9 +432,9 @@ public class AggTaskExecutor {
     long interval = lastUsedAggTask.getInner().getWindow().getInterval();
     long lastEmitTimestamp = Math.max( //
         // This value may be small if the state is restored from a very old state.
-        (state.getWatermark() - 1) / interval * interval,
+        Utils.align(state.getWatermark() - 1, lastUsedAggTask.getInner().getWindow()),
         // So we restrict it to be within the last 60 periods of the watermark
-        (((watermark - 1) / interval) - 60) * interval);
+        Utils.align(watermark - 1, lastUsedAggTask.getInner().getWindow()) - 60 * interval);
 
     for (long ts = lastEmitTimestamp + interval; ts < watermark; ts += interval) {
       AggWindowState w = state.getAggWindowState(ts);
