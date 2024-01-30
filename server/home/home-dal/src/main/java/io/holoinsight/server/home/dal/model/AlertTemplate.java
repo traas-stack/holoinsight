@@ -16,14 +16,11 @@ import java.util.Date;
  * @version 2024-01-22 16:48:00
  */
 @Data
-@Table(name = "alert_notification_template")
-public class AlertNotificationTemplate {
+@Table(name = "alert_template")
+public class AlertTemplate {
 
-  /**
-   * id
-   */
-  @TableId(type = IdType.AUTO)
-  public Long id;
+  @TableId(type = IdType.INPUT)
+  public String uuid;
 
   /**
    * 创建时间

@@ -13,14 +13,14 @@ import io.holoinsight.server.home.alert.service.event.RecordSucOrFailNotify;
 import io.holoinsight.server.home.biz.plugin.model.PluginContext;
 import io.holoinsight.server.home.biz.service.IntegrationPluginService;
 import io.holoinsight.server.home.dal.converter.AlarmRuleConverter;
-import io.holoinsight.server.home.dal.converter.AlertNotificationTemplateConverter;
+import io.holoinsight.server.home.dal.converter.AlertTemplateConverter;
 import io.holoinsight.server.home.dal.mapper.AlarmRuleMapper;
-import io.holoinsight.server.home.dal.mapper.AlertNotificationTemplateMapper;
+import io.holoinsight.server.home.dal.mapper.AlertTemplateMapper;
 import io.holoinsight.server.home.dal.model.AlarmRule;
-import io.holoinsight.server.home.dal.model.AlertNotificationTemplate;
+import io.holoinsight.server.home.dal.model.AlertTemplate;
 import io.holoinsight.server.home.dal.model.dto.IntegrationPluginDTO;
 import io.holoinsight.server.home.facade.AlarmRuleDTO;
-import io.holoinsight.server.home.facade.AlertNotificationTemplateDTO;
+import io.holoinsight.server.home.facade.AlertTemplateDTO;
 import io.holoinsight.server.home.facade.AlertNotifyRecordDTO;
 import io.holoinsight.server.home.facade.AlertRuleExtra;
 import io.holoinsight.server.home.facade.NotificationTemplate;
@@ -65,9 +65,9 @@ public abstract class GatewayService {
   @Resource
   private AlarmRuleConverter alarmRuleConverter;
   @Resource
-  private AlertNotificationTemplateMapper alertNotificationTemplateMapper;
+  private AlertTemplateMapper alertTemplateMapper;
   @Autowired
-  private AlertNotificationTemplateConverter alertNotificationTemplateConverter;
+  private AlertTemplateConverter alertTemplateConverter;
 
   private static final String GATEWAY = "GatewayService";
 
@@ -130,11 +130,10 @@ public abstract class GatewayService {
     if (notificationTemplate == null) {
       Long alertNotificationTemplateId = alertRule.getAlertNotificationTemplateId();
       if (alertNotificationTemplateId != null) {
-        AlertNotificationTemplate alertNotificationTemplate =
-            this.alertNotificationTemplateMapper.selectById(alertNotificationTemplateId);
-        if (alertNotificationTemplate != null) {
-          AlertNotificationTemplateDTO templateDTO =
-              this.alertNotificationTemplateConverter.doToDTO(alertNotificationTemplate);
+        AlertTemplate alertTemplate =
+            this.alertTemplateMapper.selectById(alertNotificationTemplateId);
+        if (alertTemplate != null) {
+          AlertTemplateDTO templateDTO = this.alertTemplateConverter.doToDTO(alertTemplate);
           notificationTemplate = templateDTO.templateConfig;
         }
       }

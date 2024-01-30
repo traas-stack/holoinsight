@@ -5,8 +5,8 @@ package io.holoinsight.server.home.dal.converter;
 
 import io.holoinsight.server.common.J;
 import io.holoinsight.server.common.dao.transformer.MapJsonMapper;
-import io.holoinsight.server.home.dal.model.AlertNotificationTemplate;
-import io.holoinsight.server.home.facade.AlertNotificationTemplateDTO;
+import io.holoinsight.server.home.dal.model.AlertTemplate;
+import io.holoinsight.server.home.facade.AlertTemplateDTO;
 import io.holoinsight.server.home.facade.NotificationTemplate;
 import org.apache.commons.lang3.StringUtils;
 import org.mapstruct.Mapper;
@@ -18,13 +18,13 @@ import java.util.List;
  * @version 2024-01-22 17:03:00
  */
 @Mapper(componentModel = "spring", uses = {MapJsonMapper.class})
-public interface AlertNotificationTemplateConverter {
+public interface AlertTemplateConverter {
 
-  AlertNotificationTemplateDTO doToDTO(AlertNotificationTemplate template);
+  AlertTemplateDTO doToDTO(AlertTemplate template);
 
-  AlertNotificationTemplate dtoToDO(AlertNotificationTemplateDTO templateDTO);
+  AlertTemplate dtoToDO(AlertTemplateDTO templateDTO);
 
-  List<AlertNotificationTemplateDTO> dosToDTOs(Iterable<AlertNotificationTemplate> templates);
+  List<AlertTemplateDTO> dosToDTOs(Iterable<AlertTemplate> templates);
 
   default String map(NotificationTemplate value) {
     if (value == null) {
