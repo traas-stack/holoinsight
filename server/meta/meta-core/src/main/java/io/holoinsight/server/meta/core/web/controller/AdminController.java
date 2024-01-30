@@ -4,21 +4,15 @@
 package io.holoinsight.server.meta.core.web.controller;
 
 import io.holoinsight.server.meta.common.model.QueryExample;
-import io.holoinsight.server.meta.core.service.DBCoreService;
 import io.holoinsight.server.common.JsonResult;
 import io.holoinsight.server.meta.core.service.DBCoreServiceSwitcher;
-import io.holoinsight.server.meta.core.service.bitmap.BitmapDataCoreService;
-import io.holoinsight.server.meta.core.service.hashmap.HashMapDataCoreService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 

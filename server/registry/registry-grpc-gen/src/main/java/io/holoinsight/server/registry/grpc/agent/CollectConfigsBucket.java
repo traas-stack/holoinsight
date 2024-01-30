@@ -451,7 +451,6 @@ public final class CollectConfigsBucket extends com.google.protobuf.GeneratedMes
     public io.holoinsight.server.registry.grpc.agent.CollectConfigsBucket buildPartial() {
       io.holoinsight.server.registry.grpc.agent.CollectConfigsBucket result =
           new io.holoinsight.server.registry.grpc.agent.CollectConfigsBucket(this);
-      int from_bitField0_ = bitField0_;
       result.state_ = state_;
       if (collectTasksBuilder_ == null) {
         if (((bitField0_ & 0x00000001) != 0)) {
@@ -1037,4 +1036,3 @@ public final class CollectConfigsBucket extends com.google.protobuf.GeneratedMes
   }
 
 }
-

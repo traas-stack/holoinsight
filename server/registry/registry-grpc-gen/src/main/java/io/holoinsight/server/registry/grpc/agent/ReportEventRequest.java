@@ -1356,10 +1356,7 @@ public final class ReportEventRequest extends com.google.protobuf.GeneratedMessa
         maybeForceBuilderInitialization();
       }
 
-      private void maybeForceBuilderInitialization() {
-        if (com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders) {
-        }
-      }
+      private void maybeForceBuilderInitialization() {}
 
       @java.lang.Override
       public Builder clear() {
@@ -1406,7 +1403,6 @@ public final class ReportEventRequest extends com.google.protobuf.GeneratedMessa
       public io.holoinsight.server.registry.grpc.agent.ReportEventRequest.Event buildPartial() {
         io.holoinsight.server.registry.grpc.agent.ReportEventRequest.Event result =
             new io.holoinsight.server.registry.grpc.agent.ReportEventRequest.Event(this);
-        int from_bitField0_ = bitField0_;
         result.bornTimestamp_ = bornTimestamp_;
         result.eventTimestamp_ = eventTimestamp_;
         result.eventType_ = eventType_;
@@ -1815,7 +1811,7 @@ public final class ReportEventRequest extends com.google.protobuf.GeneratedMessa
       }
 
       private com.google.protobuf.MapField<java.lang.String, java.lang.String> internalGetMutableTags() {
-        onChanged();;
+        onChanged();
         if (tags_ == null) {
           tags_ = com.google.protobuf.MapField.newMapField(TagsDefaultEntryHolder.defaultEntry);
         }
@@ -1977,7 +1973,7 @@ public final class ReportEventRequest extends com.google.protobuf.GeneratedMessa
       }
 
       private com.google.protobuf.MapField<java.lang.String, java.lang.Long> internalGetMutableNumbers() {
-        onChanged();;
+        onChanged();
         if (numbers_ == null) {
           numbers_ =
               com.google.protobuf.MapField.newMapField(NumbersDefaultEntryHolder.defaultEntry);
@@ -2130,7 +2126,7 @@ public final class ReportEventRequest extends com.google.protobuf.GeneratedMessa
       }
 
       private com.google.protobuf.MapField<java.lang.String, java.lang.String> internalGetMutableStrings() {
-        onChanged();;
+        onChanged();
         if (strings_ == null) {
           strings_ =
               com.google.protobuf.MapField.newMapField(StringsDefaultEntryHolder.defaultEntry);
@@ -2855,7 +2851,6 @@ public final class ReportEventRequest extends com.google.protobuf.GeneratedMessa
     public io.holoinsight.server.registry.grpc.agent.ReportEventRequest buildPartial() {
       io.holoinsight.server.registry.grpc.agent.ReportEventRequest result =
           new io.holoinsight.server.registry.grpc.agent.ReportEventRequest(this);
-      int from_bitField0_ = bitField0_;
       if (headerBuilder_ == null) {
         result.header_ = header_;
       } else {
@@ -3408,4 +3403,3 @@ public final class ReportEventRequest extends com.google.protobuf.GeneratedMessa
   }
 
 }
-

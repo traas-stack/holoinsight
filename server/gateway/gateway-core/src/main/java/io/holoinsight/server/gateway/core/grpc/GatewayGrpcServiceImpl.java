@@ -78,7 +78,7 @@ public class GatewayGrpcServiceImpl extends GatewayServiceGrpc.GatewayServiceImp
       StreamObserver<WriteMetricsResponse> o) {
 
     String centralTenant = request.getHeader().getExtensionMap().get("tenant");
-    String centralAgentId = request.getHeader().getExtensionMap().get("agentID");
+    request.getHeader().getExtensionMap().get("agentID");
     TrafficTracer tt = TrafficTracer.KEY.get();
 
     apikeyAuthService.get(request.getHeader().getApikey(), true) //

@@ -4,7 +4,6 @@
 package io.holoinsight.server.home.facade.trigger;
 
 import java.util.HashMap;
-import java.util.Map;
 
 /**
  * @author masaimu

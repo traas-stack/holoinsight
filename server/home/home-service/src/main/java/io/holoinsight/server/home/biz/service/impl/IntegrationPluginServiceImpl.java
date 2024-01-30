@@ -12,7 +12,6 @@ import io.holoinsight.server.home.common.util.EventBusHolder;
 import io.holoinsight.server.home.dal.converter.IntegrationPluginConverter;
 import io.holoinsight.server.home.dal.mapper.IntegrationPluginMapper;
 import io.holoinsight.server.home.dal.model.IntegrationPlugin;
-import io.holoinsight.server.home.dal.model.IntegrationProduct;
 import io.holoinsight.server.home.dal.model.dto.IntegrationPluginDTO;
 import io.holoinsight.server.home.facade.page.MonitorPageRequest;
 import io.holoinsight.server.home.facade.page.MonitorPageResult;

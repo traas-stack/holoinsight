@@ -59,7 +59,7 @@ public class AlarmRuleFcService {
     String requestId = (String) paramMap.get("requestId");
     log.info("{} paramMap: {}", requestId, J.toJson(paramMap));
     String ruleName = (String) paramMap.get("ruleName");
-    String metric = (String) paramMap.get("metric");
+    paramMap.get("metric");
     MetricInfo metricInfo = findMetricInfo(requestId, ruleName);
     if (metricInfo == null) {
       return null;

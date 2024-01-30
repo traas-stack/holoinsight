@@ -645,10 +645,7 @@ public final class DryRunRequest extends com.google.protobuf.GeneratedMessageV3 
         maybeForceBuilderInitialization();
       }
 
-      private void maybeForceBuilderInitialization() {
-        if (com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders) {
-        }
-      }
+      private void maybeForceBuilderInitialization() {}
 
       @java.lang.Override
       public Builder clear() {
@@ -1585,10 +1582,7 @@ public final class DryRunRequest extends com.google.protobuf.GeneratedMessageV3 
         maybeForceBuilderInitialization();
       }
 
-      private void maybeForceBuilderInitialization() {
-        if (com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders) {
-        }
-      }
+      private void maybeForceBuilderInitialization() {}
 
       @java.lang.Override
       public Builder clear() {
@@ -2451,10 +2445,7 @@ public final class DryRunRequest extends com.google.protobuf.GeneratedMessageV3 
         maybeForceBuilderInitialization();
       }
 
-      private void maybeForceBuilderInitialization() {
-        if (com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders) {
-        }
-      }
+      private void maybeForceBuilderInitialization() {}
 
       @java.lang.Override
       public Builder clear() {
@@ -2490,7 +2481,6 @@ public final class DryRunRequest extends com.google.protobuf.GeneratedMessageV3 
       public io.holoinsight.server.registry.grpc.prod.DryRunRequest.InputPlain buildPartial() {
         io.holoinsight.server.registry.grpc.prod.DryRunRequest.InputPlain result =
             new io.holoinsight.server.registry.grpc.prod.DryRunRequest.InputPlain(this);
-        int from_bitField0_ = bitField0_;
         if (((bitField0_ & 0x00000001) != 0)) {
           lines_ = lines_.getUnmodifiableView();
           bitField0_ = (bitField0_ & ~0x00000001);
@@ -3404,10 +3394,7 @@ public final class DryRunRequest extends com.google.protobuf.GeneratedMessageV3 
         maybeForceBuilderInitialization();
       }
 
-      private void maybeForceBuilderInitialization() {
-        if (com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders) {
-        }
-      }
+      private void maybeForceBuilderInitialization() {}
 
       @java.lang.Override
       public Builder clear() {
@@ -4304,10 +4291,7 @@ public final class DryRunRequest extends com.google.protobuf.GeneratedMessageV3 
       maybeForceBuilderInitialization();
     }
 
-    private void maybeForceBuilderInitialization() {
-      if (com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders) {
-      }
-    }
+    private void maybeForceBuilderInitialization() {}
 
     @java.lang.Override
     public Builder clear() {
@@ -5166,4 +5150,3 @@ public final class DryRunRequest extends com.google.protobuf.GeneratedMessageV3 
   }
 
 }
-

@@ -35,7 +35,6 @@ import io.holoinsight.server.common.auth.AuthInfo;
 import io.holoinsight.server.common.threadpool.CommonThreadPools;
 import io.holoinsight.server.extension.model.Row;
 import io.holoinsight.server.extension.model.Table;
-import io.holoinsight.server.gateway.core.grpc.GatewayHook;
 import io.holoinsight.server.gateway.core.utils.StatUtils;
 import io.holoinsight.server.gateway.grpc.DataNode;
 import io.holoinsight.server.gateway.grpc.Point;
@@ -218,9 +217,7 @@ public class AggDispatcher {
   }
 
   public void dispatchUpEvent(AuthInfo authInfo, ReportEventRequest request) {
-    if (true) {
-      return;
-    }
+    return;
 
     for (ReportEventRequest.Event e : request.getEventsList()) {
       if (e.getEventType().equals("STAT") && e.getPayloadType().equals("log_monitor_up")) {

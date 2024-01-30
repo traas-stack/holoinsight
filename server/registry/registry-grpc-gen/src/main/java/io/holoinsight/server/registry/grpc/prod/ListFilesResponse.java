@@ -431,7 +431,6 @@ public final class ListFilesResponse extends com.google.protobuf.GeneratedMessag
     public io.holoinsight.server.registry.grpc.prod.ListFilesResponse buildPartial() {
       io.holoinsight.server.registry.grpc.prod.ListFilesResponse result =
           new io.holoinsight.server.registry.grpc.prod.ListFilesResponse(this);
-      int from_bitField0_ = bitField0_;
       if (headerBuilder_ == null) {
         result.header_ = header_;
       } else {
@@ -974,4 +973,3 @@ public final class ListFilesResponse extends com.google.protobuf.GeneratedMessag
   }
 
 }
-

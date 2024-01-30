@@ -753,10 +753,7 @@ public final class WriteMetricsRequestV3 extends com.google.protobuf.GeneratedMe
         maybeForceBuilderInitialization();
       }
 
-      private void maybeForceBuilderInitialization() {
-        if (com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders) {
-        }
-      }
+      private void maybeForceBuilderInitialization() {}
 
       @java.lang.Override
       public Builder clear() {
@@ -1776,7 +1773,6 @@ public final class WriteMetricsRequestV3 extends com.google.protobuf.GeneratedMe
     public io.holoinsight.server.gateway.grpc.WriteMetricsRequestV3 buildPartial() {
       io.holoinsight.server.gateway.grpc.WriteMetricsRequestV3 result =
           new io.holoinsight.server.gateway.grpc.WriteMetricsRequestV3(this);
-      int from_bitField0_ = bitField0_;
       if (headerBuilder_ == null) {
         result.header_ = header_;
       } else {
@@ -2333,4 +2329,3 @@ public final class WriteMetricsRequestV3 extends com.google.protobuf.GeneratedMe
   }
 
 }
-

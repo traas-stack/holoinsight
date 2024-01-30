@@ -528,10 +528,7 @@ public final class AggProtos {
         maybeForceBuilderInitialization();
       }
 
-      private void maybeForceBuilderInitialization() {
-        if (com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders) {
-        }
-      }
+      private void maybeForceBuilderInitialization() {}
 
       @java.lang.Override
       public Builder clear() {
@@ -1889,7 +1886,6 @@ public final class AggProtos {
       public io.holoinsight.server.agg.v1.pb.AggProtos.AggTaskValue buildPartial() {
         io.holoinsight.server.agg.v1.pb.AggProtos.AggTaskValue result =
             new io.holoinsight.server.agg.v1.pb.AggProtos.AggTaskValue(this);
-        int from_bitField0_ = bitField0_;
         result.type_ = type_;
         result.timestamp_ = timestamp_;
         if (inDataNodesBuilder_ == null) {
@@ -2568,7 +2564,7 @@ public final class AggProtos {
       }
 
       private com.google.protobuf.MapField<java.lang.String, java.lang.String> internalGetMutableExtension() {
-        onChanged();;
+        onChanged();
         if (extension_ == null) {
           extension_ =
               com.google.protobuf.MapField.newMapField(ExtensionDefaultEntryHolder.defaultEntry);
@@ -3522,10 +3518,7 @@ public final class AggProtos {
           maybeForceBuilderInitialization();
         }
 
-        private void maybeForceBuilderInitialization() {
-          if (com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders) {
-          }
-        }
+        private void maybeForceBuilderInitialization() {}
 
         @java.lang.Override
         public Builder clear() {
@@ -3560,7 +3553,6 @@ public final class AggProtos {
         public io.holoinsight.server.agg.v1.pb.AggProtos.Table.Header buildPartial() {
           io.holoinsight.server.agg.v1.pb.AggProtos.Table.Header result =
               new io.holoinsight.server.agg.v1.pb.AggProtos.Table.Header(this);
-          int from_bitField0_ = bitField0_;
           if (((bitField0_ & 0x00000001) != 0)) {
             tagKeys_ = tagKeys_.getUnmodifiableView();
             bitField0_ = (bitField0_ & ~0x00000001);
@@ -4513,7 +4505,6 @@ public final class AggProtos {
         public io.holoinsight.server.agg.v1.pb.AggProtos.Table.Row buildPartial() {
           io.holoinsight.server.agg.v1.pb.AggProtos.Table.Row result =
               new io.holoinsight.server.agg.v1.pb.AggProtos.Table.Row(this);
-          int from_bitField0_ = bitField0_;
           result.timestamp_ = timestamp_;
           if (((bitField0_ & 0x00000001) != 0)) {
             tagValues_ = tagValues_.getUnmodifiableView();
@@ -5525,7 +5516,6 @@ public final class AggProtos {
       public io.holoinsight.server.agg.v1.pb.AggProtos.Table buildPartial() {
         io.holoinsight.server.agg.v1.pb.AggProtos.Table result =
             new io.holoinsight.server.agg.v1.pb.AggProtos.Table(this);
-        int from_bitField0_ = bitField0_;
         result.name_ = name_;
         result.timestamp_ = timestamp_;
         if (headerBuilder_ == null) {
@@ -7050,10 +7040,7 @@ public final class AggProtos {
         maybeForceBuilderInitialization();
       }
 
-      private void maybeForceBuilderInitialization() {
-        if (com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders) {
-        }
-      }
+      private void maybeForceBuilderInitialization() {}
 
       @java.lang.Override
       public Builder clear() {
@@ -7096,7 +7083,6 @@ public final class AggProtos {
       public io.holoinsight.server.agg.v1.pb.AggProtos.InDataNode buildPartial() {
         io.holoinsight.server.agg.v1.pb.AggProtos.InDataNode result =
             new io.holoinsight.server.agg.v1.pb.AggProtos.InDataNode(this);
-        int from_bitField0_ = bitField0_;
         result.type_ = type_;
         result.timestamp_ = timestamp_;
         result.tags_ = internalGetTags();
@@ -7314,7 +7300,7 @@ public final class AggProtos {
       }
 
       private com.google.protobuf.MapField<java.lang.String, java.lang.String> internalGetMutableTags() {
-        onChanged();;
+        onChanged();
         if (tags_ == null) {
           tags_ = com.google.protobuf.MapField.newMapField(TagsDefaultEntryHolder.defaultEntry);
         }
@@ -7612,7 +7598,7 @@ public final class AggProtos {
       }
 
       private com.google.protobuf.MapField<java.lang.String, io.holoinsight.server.agg.v1.pb.AggProtos.BasicField> internalGetMutableFields() {
-        onChanged();;
+        onChanged();
         if (fields_ == null) {
           fields_ = com.google.protobuf.MapField.newMapField(FieldsDefaultEntryHolder.defaultEntry);
         }
@@ -8223,10 +8209,7 @@ public final class AggProtos {
         maybeForceBuilderInitialization();
       }
 
-      private void maybeForceBuilderInitialization() {
-        if (com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders) {
-        }
-      }
+      private void maybeForceBuilderInitialization() {}
 
       @java.lang.Override
       public Builder clear() {

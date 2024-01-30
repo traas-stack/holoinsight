@@ -55,7 +55,6 @@ public class Client {
       this.channel = channelFuture.channel();
 
       return channelFuture;
-    } finally {
     }
   }
 

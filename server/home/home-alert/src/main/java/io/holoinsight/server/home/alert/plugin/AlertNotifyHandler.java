@@ -5,7 +5,6 @@
 package io.holoinsight.server.home.alert.plugin;
 
 import io.holoinsight.server.common.J;
-import io.holoinsight.server.home.alert.common.G;
 import io.holoinsight.server.home.alert.model.event.AlertNotify;
 import io.holoinsight.server.home.alert.model.event.AlertNotifyRecordLatch;
 import io.holoinsight.server.home.alert.model.event.AlertNotifyRequest;
@@ -52,7 +51,7 @@ public abstract class AlertNotifyHandler implements AlertHandlerExecutor {
     CountDownLatch latch = null;
     if (latchSize > 0) {
       latch = new CountDownLatch(latchSize);
-    } ;
+    }
     recordLatch.setAlertNotifyRecordDTOList(alertNotifyRecordDTOList);
 
     for (AlertNotify alertNotify : alertNotifies) {

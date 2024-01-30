@@ -582,10 +582,7 @@ public final class Agent extends com.google.protobuf.GeneratedMessageV3 implemen
       maybeForceBuilderInitialization();
     }
 
-    private void maybeForceBuilderInitialization() {
-      if (com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders) {
-      }
-    }
+    private void maybeForceBuilderInitialization() {}
 
     @java.lang.Override
     public Builder clear() {
@@ -623,7 +620,6 @@ public final class Agent extends com.google.protobuf.GeneratedMessageV3 implemen
     public io.holoinsight.server.registry.grpc.agent.Agent buildPartial() {
       io.holoinsight.server.registry.grpc.agent.Agent result =
           new io.holoinsight.server.registry.grpc.agent.Agent(this);
-      int from_bitField0_ = bitField0_;
       result.id_ = id_;
       result.ip_ = ip_;
       result.hostname_ = hostname_;
@@ -978,7 +974,7 @@ public final class Agent extends com.google.protobuf.GeneratedMessageV3 implemen
     }
 
     private com.google.protobuf.MapField<java.lang.String, java.lang.String> internalGetMutableOther() {
-      onChanged();;
+      onChanged();
       if (other_ == null) {
         other_ = com.google.protobuf.MapField.newMapField(OtherDefaultEntryHolder.defaultEntry);
       }
@@ -1179,4 +1175,3 @@ public final class Agent extends com.google.protobuf.GeneratedMessageV3 implemen
   }
 
 }
-

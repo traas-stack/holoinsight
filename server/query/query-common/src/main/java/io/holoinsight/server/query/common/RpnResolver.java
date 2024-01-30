@@ -148,11 +148,11 @@ public class RpnResolver {
     RpnResolver rpnResolver = new RpnResolver();
     String expr = "((a1+2.22)*3.58+b2)/(c3*99)";
     List<String> exprArgs = rpnResolver.expr2Infix(expr);
-    System.out.println(exprArgs);
+    // System.out.println(exprArgs);
     List list = new ArrayList();
     list.addAll(Arrays.asList(2700.0, "/", 0));
 
-    System.out.println(rpnResolver.getrp(list));
-    System.out.println(rpnResolver.calByInfix(list));
+    // System.out.println(rpnResolver.getrp(list));
+    // System.out.println(rpnResolver.calByInfix(list));
   }
 }

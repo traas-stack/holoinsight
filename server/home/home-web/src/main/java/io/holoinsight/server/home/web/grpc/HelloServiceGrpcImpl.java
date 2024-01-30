@@ -20,7 +20,7 @@ public class HelloServiceGrpcImpl extends HelloServiceGrpc.HelloServiceImplBase 
 
   public void hello(HelloRequest request,
       io.grpc.stub.StreamObserver<HelloResponse> responseObserver) {
-    System.out.println(request);
+    // System.out.println(request);
 
     String greeting = "Hi " + request.getName() + " you are " + request.getAge() + " years old"
         + " your hoby is " + (request.getHobbiesList()) + " your tags " + request.getTagsMap();

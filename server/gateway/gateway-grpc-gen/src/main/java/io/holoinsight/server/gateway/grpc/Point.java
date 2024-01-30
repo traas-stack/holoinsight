@@ -748,10 +748,7 @@ public final class Point extends com.google.protobuf.GeneratedMessageV3 implemen
       maybeForceBuilderInitialization();
     }
 
-    private void maybeForceBuilderInitialization() {
-      if (com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders) {
-      }
-    }
+    private void maybeForceBuilderInitialization() {}
 
     @java.lang.Override
     public Builder clear() {
@@ -789,7 +786,6 @@ public final class Point extends com.google.protobuf.GeneratedMessageV3 implemen
     public io.holoinsight.server.gateway.grpc.Point buildPartial() {
       io.holoinsight.server.gateway.grpc.Point result =
           new io.holoinsight.server.gateway.grpc.Point(this);
-      int from_bitField0_ = bitField0_;
       result.metricName_ = metricName_;
       result.timestamp_ = timestamp_;
       result.tags_ = internalGetTags();
@@ -1027,7 +1023,7 @@ public final class Point extends com.google.protobuf.GeneratedMessageV3 implemen
     }
 
     private com.google.protobuf.MapField<java.lang.String, java.lang.String> internalGetMutableTags() {
-      onChanged();;
+      onChanged();
       if (tags_ == null) {
         tags_ = com.google.protobuf.MapField.newMapField(TagsDefaultEntryHolder.defaultEntry);
       }
@@ -1159,7 +1155,7 @@ public final class Point extends com.google.protobuf.GeneratedMessageV3 implemen
     }
 
     private com.google.protobuf.MapField<java.lang.String, java.lang.Double> internalGetMutableNumberValues() {
-      onChanged();;
+      onChanged();
       if (numberValues_ == null) {
         numberValues_ =
             com.google.protobuf.MapField.newMapField(NumberValuesDefaultEntryHolder.defaultEntry);
@@ -1325,7 +1321,7 @@ public final class Point extends com.google.protobuf.GeneratedMessageV3 implemen
     }
 
     private com.google.protobuf.MapField<java.lang.String, java.lang.String> internalGetMutableStringValues() {
-      onChanged();;
+      onChanged();
       if (stringValues_ == null) {
         stringValues_ =
             com.google.protobuf.MapField.newMapField(StringValuesDefaultEntryHolder.defaultEntry);
@@ -1498,4 +1494,3 @@ public final class Point extends com.google.protobuf.GeneratedMessageV3 implemen
   }
 
 }
-

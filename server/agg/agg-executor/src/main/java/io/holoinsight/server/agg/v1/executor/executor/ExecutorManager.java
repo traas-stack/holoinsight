@@ -19,7 +19,6 @@ import org.apache.kafka.clients.admin.AdminClientConfig;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.springframework.beans.factory.DisposableBean;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import io.holoinsight.server.agg.v1.core.Utils;
 import io.holoinsight.server.agg.v1.core.data.AggKeySerdes;

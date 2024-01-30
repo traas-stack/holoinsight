@@ -715,10 +715,7 @@ public final class SegmentReference extends com.google.protobuf.GeneratedMessage
       maybeForceBuilderInitialization();
     }
 
-    private void maybeForceBuilderInitialization() {
-      if (com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders) {
-      }
-    }
+    private void maybeForceBuilderInitialization() {}
 
     @java.lang.Override
     public Builder clear() {
@@ -1627,4 +1624,3 @@ public final class SegmentReference extends com.google.protobuf.GeneratedMessage
   }
 
 }
-

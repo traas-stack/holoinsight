@@ -211,10 +211,12 @@ public class AgentSyncer {
     List<GaeaAgentDO> gas = mapper.selectByExampleWithBLOBs(example);
     long dbEnd = System.currentTimeMillis();
     if (gas.isEmpty()) {
-      LOGGER.info("delta sync success, range=[{}, {}) empty, dbCost=[{}]", //
-          SDF.format(begin), //
-          SDF.format(end), //
-          dbEnd - dbBegin); //
+      synchronized (SDF) {
+        LOGGER.info("delta sync success, range=[{}, {}) empty, dbCost=[{}]", //
+            SDF.format(begin), //
+            SDF.format(end), //
+            dbEnd - dbBegin);
+      }
       return;
     }
 
@@ -240,9 +242,11 @@ public class AgentSyncer {
       }
     }
 
-    LOGGER.info("delta sync success, range=[{}, {}) add=[{}] update=[{}] del=[{}] dbCost=[{}]",
-        SDF.format(begin), //
-        SDF.format(end), add, update, del, dbEnd - dbBegin);
+    synchronized (SDF) {
+      LOGGER.info("delta sync success, range=[{}, {}) add=[{}] update=[{}] del=[{}] dbCost=[{}]",
+          SDF.format(begin), //
+          SDF.format(end), add, update, del, dbEnd - dbBegin);
+    }
   }
 
   private void initLoad0() {

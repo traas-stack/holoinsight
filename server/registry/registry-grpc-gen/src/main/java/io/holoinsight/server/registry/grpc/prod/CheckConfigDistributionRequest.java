@@ -398,10 +398,7 @@ public final class CheckConfigDistributionRequest extends com.google.protobuf.Ge
       maybeForceBuilderInitialization();
     }
 
-    private void maybeForceBuilderInitialization() {
-      if (com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders) {
-      }
-    }
+    private void maybeForceBuilderInitialization() {}
 
     @java.lang.Override
     public Builder clear() {
@@ -816,4 +813,3 @@ public final class CheckConfigDistributionRequest extends com.google.protobuf.Ge
   }
 
 }
-

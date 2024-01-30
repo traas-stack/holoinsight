@@ -379,7 +379,6 @@ public final class SegmentCollection extends com.google.protobuf.GeneratedMessag
     public io.holoinsight.server.apm.grpc.trace.SegmentCollection buildPartial() {
       io.holoinsight.server.apm.grpc.trace.SegmentCollection result =
           new io.holoinsight.server.apm.grpc.trace.SegmentCollection(this);
-      int from_bitField0_ = bitField0_;
       if (segmentsBuilder_ == null) {
         if (((bitField0_ & 0x00000001) != 0)) {
           segments_ = java.util.Collections.unmodifiableList(segments_);
@@ -797,4 +796,3 @@ public final class SegmentCollection extends com.google.protobuf.GeneratedMessag
   }
 
 }
-

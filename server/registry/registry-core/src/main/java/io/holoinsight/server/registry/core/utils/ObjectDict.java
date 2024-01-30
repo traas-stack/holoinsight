@@ -11,8 +11,6 @@ import com.google.common.collect.Maps;
 import java.time.Duration;
 import java.util.Collections;
 import java.util.Map;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 
 /**
  * @author weibu
@@ -28,13 +26,6 @@ public class ObjectDict {
       // .scheduler(CaffeineScheduler.SCHEDULER) //
       .expireAfterAccess(Duration.ofHours(1)) //
       .build(); //
-
-  static {
-    // Executors.newSingleThreadScheduledExecutor() //
-    // .scheduleWithFixedDelay(() -> {
-    // EventLogger.LOGGER.info("ObjectDict {}", DICT.stats());
-    // }, 1, 1, TimeUnit.MINUTES);
-  }
 
   /**
    * 入参必须是可比较的值

@@ -365,7 +365,6 @@ public final class Commands extends com.google.protobuf.GeneratedMessageV3 imple
     public io.holoinsight.server.apm.grpc.common.Commands buildPartial() {
       io.holoinsight.server.apm.grpc.common.Commands result =
           new io.holoinsight.server.apm.grpc.common.Commands(this);
-      int from_bitField0_ = bitField0_;
       if (commandsBuilder_ == null) {
         if (((bitField0_ & 0x00000001) != 0)) {
           commands_ = java.util.Collections.unmodifiableList(commands_);
@@ -777,4 +776,3 @@ public final class Commands extends com.google.protobuf.GeneratedMessageV3 imple
   }
 
 }
-

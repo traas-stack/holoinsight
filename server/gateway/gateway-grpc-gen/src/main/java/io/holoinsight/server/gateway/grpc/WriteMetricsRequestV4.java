@@ -1048,10 +1048,7 @@ public final class WriteMetricsRequestV4 extends com.google.protobuf.GeneratedMe
         maybeForceBuilderInitialization();
       }
 
-      private void maybeForceBuilderInitialization() {
-        if (com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders) {
-        }
-      }
+      private void maybeForceBuilderInitialization() {}
 
       @java.lang.Override
       public Builder clear() {
@@ -1104,7 +1101,6 @@ public final class WriteMetricsRequestV4 extends com.google.protobuf.GeneratedMe
       public io.holoinsight.server.gateway.grpc.WriteMetricsRequestV4.TaskResult buildPartial() {
         io.holoinsight.server.gateway.grpc.WriteMetricsRequestV4.TaskResult result =
             new io.holoinsight.server.gateway.grpc.WriteMetricsRequestV4.TaskResult(this);
-        int from_bitField0_ = bitField0_;
         result.key_ = key_;
         result.refCollectKey_ = refCollectKey_;
         result.refTargetKey_ = refTargetKey_;
@@ -1706,7 +1702,7 @@ public final class WriteMetricsRequestV4 extends com.google.protobuf.GeneratedMe
       }
 
       private com.google.protobuf.MapField<java.lang.String, java.lang.String> internalGetMutableExtension() {
-        onChanged();;
+        onChanged();
         if (extension_ == null) {
           extension_ =
               com.google.protobuf.MapField.newMapField(ExtensionDefaultEntryHolder.defaultEntry);
@@ -2606,7 +2602,6 @@ public final class WriteMetricsRequestV4 extends com.google.protobuf.GeneratedMe
       public io.holoinsight.server.gateway.grpc.WriteMetricsRequestV4.Table buildPartial() {
         io.holoinsight.server.gateway.grpc.WriteMetricsRequestV4.Table result =
             new io.holoinsight.server.gateway.grpc.WriteMetricsRequestV4.Table(this);
-        int from_bitField0_ = bitField0_;
         if (headerBuilder_ == null) {
           result.header_ = header_;
         } else {
@@ -3820,10 +3815,7 @@ public final class WriteMetricsRequestV4 extends com.google.protobuf.GeneratedMe
         maybeForceBuilderInitialization();
       }
 
-      private void maybeForceBuilderInitialization() {
-        if (com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders) {
-        }
-      }
+      private void maybeForceBuilderInitialization() {}
 
       @java.lang.Override
       public Builder clear() {
@@ -3860,7 +3852,6 @@ public final class WriteMetricsRequestV4 extends com.google.protobuf.GeneratedMe
       public io.holoinsight.server.gateway.grpc.WriteMetricsRequestV4.Header buildPartial() {
         io.holoinsight.server.gateway.grpc.WriteMetricsRequestV4.Header result =
             new io.holoinsight.server.gateway.grpc.WriteMetricsRequestV4.Header(this);
-        int from_bitField0_ = bitField0_;
         result.metricName_ = metricName_;
         if (((bitField0_ & 0x00000001) != 0)) {
           tagKeys_ = tagKeys_.getUnmodifiableView();
@@ -4904,7 +4895,6 @@ public final class WriteMetricsRequestV4 extends com.google.protobuf.GeneratedMe
       public io.holoinsight.server.gateway.grpc.WriteMetricsRequestV4.Row buildPartial() {
         io.holoinsight.server.gateway.grpc.WriteMetricsRequestV4.Row result =
             new io.holoinsight.server.gateway.grpc.WriteMetricsRequestV4.Row(this);
-        int from_bitField0_ = bitField0_;
         result.timestamp_ = timestamp_;
         if (((bitField0_ & 0x00000001) != 0)) {
           tagValues_ = tagValues_.getUnmodifiableView();
@@ -5974,10 +5964,7 @@ public final class WriteMetricsRequestV4 extends com.google.protobuf.GeneratedMe
         maybeForceBuilderInitialization();
       }
 
-      private void maybeForceBuilderInitialization() {
-        if (com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders) {
-        }
-      }
+      private void maybeForceBuilderInitialization() {}
 
       @java.lang.Override
       public Builder clear() {
@@ -6013,7 +6000,6 @@ public final class WriteMetricsRequestV4 extends com.google.protobuf.GeneratedMe
       public io.holoinsight.server.gateway.grpc.WriteMetricsRequestV4.Completeness buildPartial() {
         io.holoinsight.server.gateway.grpc.WriteMetricsRequestV4.Completeness result =
             new io.holoinsight.server.gateway.grpc.WriteMetricsRequestV4.Completeness(this);
-        int from_bitField0_ = bitField0_;
         result.ok_ = ok_;
         result.extension_ = internalGetExtension();
         result.extension_.makeImmutable();
@@ -6152,7 +6138,7 @@ public final class WriteMetricsRequestV4 extends com.google.protobuf.GeneratedMe
       }
 
       private com.google.protobuf.MapField<java.lang.String, java.lang.String> internalGetMutableExtension() {
-        onChanged();;
+        onChanged();
         if (extension_ == null) {
           extension_ =
               com.google.protobuf.MapField.newMapField(ExtensionDefaultEntryHolder.defaultEntry);
@@ -6668,7 +6654,6 @@ public final class WriteMetricsRequestV4 extends com.google.protobuf.GeneratedMe
     public io.holoinsight.server.gateway.grpc.WriteMetricsRequestV4 buildPartial() {
       io.holoinsight.server.gateway.grpc.WriteMetricsRequestV4 result =
           new io.holoinsight.server.gateway.grpc.WriteMetricsRequestV4(this);
-      int from_bitField0_ = bitField0_;
       if (headerBuilder_ == null) {
         result.header_ = header_;
       } else {
@@ -7226,4 +7211,3 @@ public final class WriteMetricsRequestV4 extends com.google.protobuf.GeneratedMe
   }
 
 }
-
