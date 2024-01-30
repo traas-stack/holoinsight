@@ -504,7 +504,6 @@ public final class WriteMetricsRequestV1 extends com.google.protobuf.GeneratedMe
     public io.holoinsight.server.gateway.grpc.WriteMetricsRequestV1 buildPartial() {
       io.holoinsight.server.gateway.grpc.WriteMetricsRequestV1 result =
           new io.holoinsight.server.gateway.grpc.WriteMetricsRequestV1(this);
-      int from_bitField0_ = bitField0_;
       if (headerBuilder_ == null) {
         result.header_ = header_;
       } else {
@@ -1141,4 +1140,3 @@ public final class WriteMetricsRequestV1 extends com.google.protobuf.GeneratedMe
   }
 
 }
-

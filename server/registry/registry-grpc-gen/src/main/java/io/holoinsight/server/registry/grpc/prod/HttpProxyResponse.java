@@ -532,10 +532,7 @@ public final class HttpProxyResponse extends com.google.protobuf.GeneratedMessag
       maybeForceBuilderInitialization();
     }
 
-    private void maybeForceBuilderInitialization() {
-      if (com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders) {
-      }
-    }
+    private void maybeForceBuilderInitialization() {}
 
     @java.lang.Override
     public Builder clear() {
@@ -579,7 +576,6 @@ public final class HttpProxyResponse extends com.google.protobuf.GeneratedMessag
     public io.holoinsight.server.registry.grpc.prod.HttpProxyResponse buildPartial() {
       io.holoinsight.server.registry.grpc.prod.HttpProxyResponse result =
           new io.holoinsight.server.registry.grpc.prod.HttpProxyResponse(this);
-      int from_bitField0_ = bitField0_;
       if (headerBuilder_ == null) {
         result.header_ = header_;
       } else {
@@ -846,7 +842,7 @@ public final class HttpProxyResponse extends com.google.protobuf.GeneratedMessag
     }
 
     private com.google.protobuf.MapField<java.lang.String, java.lang.String> internalGetMutableHeaders() {
-      onChanged();;
+      onChanged();
       if (headers_ == null) {
         headers_ = com.google.protobuf.MapField.newMapField(HeadersDefaultEntryHolder.defaultEntry);
       }
@@ -1074,4 +1070,3 @@ public final class HttpProxyResponse extends com.google.protobuf.GeneratedMessag
   }
 
 }
-

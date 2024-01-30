@@ -514,10 +514,7 @@ public final class PreviewFileResponse extends com.google.protobuf.GeneratedMess
       maybeForceBuilderInitialization();
     }
 
-    private void maybeForceBuilderInitialization() {
-      if (com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders) {
-      }
-    }
+    private void maybeForceBuilderInitialization() {}
 
     @java.lang.Override
     public Builder clear() {
@@ -560,7 +557,6 @@ public final class PreviewFileResponse extends com.google.protobuf.GeneratedMess
     public io.holoinsight.server.registry.grpc.prod.PreviewFileResponse buildPartial() {
       io.holoinsight.server.registry.grpc.prod.PreviewFileResponse result =
           new io.holoinsight.server.registry.grpc.prod.PreviewFileResponse(this);
-      int from_bitField0_ = bitField0_;
       if (headerBuilder_ == null) {
         result.header_ = header_;
       } else {
@@ -1161,4 +1157,3 @@ public final class PreviewFileResponse extends com.google.protobuf.GeneratedMess
   }
 
 }
-

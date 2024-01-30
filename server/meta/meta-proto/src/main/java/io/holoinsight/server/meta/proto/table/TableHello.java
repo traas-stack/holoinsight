@@ -369,10 +369,7 @@ public final class TableHello extends com.google.protobuf.GeneratedMessageV3 imp
       maybeForceBuilderInitialization();
     }
 
-    private void maybeForceBuilderInitialization() {
-      if (com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders) {
-      }
-    }
+    private void maybeForceBuilderInitialization() {}
 
     public Builder clear() {
       super.clear();
@@ -700,4 +697,3 @@ public final class TableHello extends com.google.protobuf.GeneratedMessageV3 imp
   }
 
 }
-

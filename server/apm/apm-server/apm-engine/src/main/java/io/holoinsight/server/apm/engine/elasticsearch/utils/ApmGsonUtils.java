@@ -128,7 +128,10 @@ public class ApmGsonUtils extends GsonUtils {
                 try {
                   field.set(instance, element.getAsNumber().longValue());
                 } catch (Exception e) {
-                  Date date = SDF.parse(element.getAsString());
+                  Date date = new Date();
+                  synchronized (SDF) {
+                    date = SDF.parse(element.getAsString());
+                  }
                   field.set(instance, date.getTime());
                 }
               } else if (fieldType == Double.class || fieldType == double.class) {
@@ -180,7 +183,7 @@ public class ApmGsonUtils extends GsonUtils {
       JsonObject jsonObject = new JsonObject();
       try {
         for (Field field : allFields) {
-          String fieldName = field.getName();
+          field.getName();
           Class<?> fieldType = field.getType();
           field.setAccessible(true);
           Object value = field.get(src);

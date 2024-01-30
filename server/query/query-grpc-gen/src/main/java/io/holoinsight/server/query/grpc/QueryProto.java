@@ -2349,10 +2349,7 @@ public final class QueryProto {
         maybeForceBuilderInitialization();
       }
 
-      private void maybeForceBuilderInitialization() {
-        if (com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders) {
-        }
-      }
+      private void maybeForceBuilderInitialization() {}
 
       @java.lang.Override
       public Builder clear() {
@@ -6416,10 +6413,7 @@ public final class QueryProto {
         maybeForceBuilderInitialization();
       }
 
-      private void maybeForceBuilderInitialization() {
-        if (com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders) {
-        }
-      }
+      private void maybeForceBuilderInitialization() {}
 
       @java.lang.Override
       public Builder clear() {
@@ -7264,10 +7258,7 @@ public final class QueryProto {
         maybeForceBuilderInitialization();
       }
 
-      private void maybeForceBuilderInitialization() {
-        if (com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders) {
-        }
-      }
+      private void maybeForceBuilderInitialization() {}
 
       @java.lang.Override
       public Builder clear() {
@@ -8152,7 +8143,6 @@ public final class QueryProto {
       public io.holoinsight.server.query.grpc.QueryProto.QueryResponse buildPartial() {
         io.holoinsight.server.query.grpc.QueryProto.QueryResponse result =
             new io.holoinsight.server.query.grpc.QueryProto.QueryResponse(this);
-        int from_bitField0_ = bitField0_;
         if (resultsBuilder_ == null) {
           if (((bitField0_ & 0x00000001) != 0)) {
             results_ = java.util.Collections.unmodifiableList(results_);
@@ -9216,7 +9206,6 @@ public final class QueryProto {
       public io.holoinsight.server.query.grpc.QueryProto.Result buildPartial() {
         io.holoinsight.server.query.grpc.QueryProto.Result result =
             new io.holoinsight.server.query.grpc.QueryProto.Result(this);
-        int from_bitField0_ = bitField0_;
         result.metric_ = metric_;
         result.tags_ = internalGetTags();
         result.tags_.makeImmutable();
@@ -9431,7 +9420,7 @@ public final class QueryProto {
       }
 
       private com.google.protobuf.MapField<java.lang.String, java.lang.String> internalGetMutableTags() {
-        onChanged();;
+        onChanged();
         if (tags_ == null) {
           tags_ = com.google.protobuf.MapField.newMapField(TagsDefaultEntryHolder.defaultEntry);
         }
@@ -10256,10 +10245,7 @@ public final class QueryProto {
         maybeForceBuilderInitialization();
       }
 
-      private void maybeForceBuilderInitialization() {
-        if (com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders) {
-        }
-      }
+      private void maybeForceBuilderInitialization() {}
 
       @java.lang.Override
       public Builder clear() {
@@ -10997,7 +10983,6 @@ public final class QueryProto {
       public io.holoinsight.server.query.grpc.QueryProto.QuerySchemaResponse buildPartial() {
         io.holoinsight.server.query.grpc.QueryProto.QuerySchemaResponse result =
             new io.holoinsight.server.query.grpc.QueryProto.QuerySchemaResponse(this);
-        int from_bitField0_ = bitField0_;
         if (resultsBuilder_ == null) {
           if (((bitField0_ & 0x00000001) != 0)) {
             results_ = java.util.Collections.unmodifiableList(results_);
@@ -11855,10 +11840,7 @@ public final class QueryProto {
         maybeForceBuilderInitialization();
       }
 
-      private void maybeForceBuilderInitialization() {
-        if (com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders) {
-        }
-      }
+      private void maybeForceBuilderInitialization() {}
 
       @java.lang.Override
       public Builder clear() {
@@ -11893,7 +11875,6 @@ public final class QueryProto {
       public io.holoinsight.server.query.grpc.QueryProto.KeysResult buildPartial() {
         io.holoinsight.server.query.grpc.QueryProto.KeysResult result =
             new io.holoinsight.server.query.grpc.QueryProto.KeysResult(this);
-        int from_bitField0_ = bitField0_;
         result.metric_ = metric_;
         if (((bitField0_ & 0x00000001) != 0)) {
           keys_ = keys_.getUnmodifiableView();
@@ -12655,7 +12636,6 @@ public final class QueryProto {
       public io.holoinsight.server.query.grpc.QueryProto.QueryMetricsResponse buildPartial() {
         io.holoinsight.server.query.grpc.QueryProto.QueryMetricsResponse result =
             new io.holoinsight.server.query.grpc.QueryProto.QueryMetricsResponse(this);
-        int from_bitField0_ = bitField0_;
         if (resultsBuilder_ == null) {
           if (((bitField0_ & 0x00000001) != 0)) {
             results_ = java.util.Collections.unmodifiableList(results_);
@@ -13412,10 +13392,7 @@ public final class QueryProto {
         maybeForceBuilderInitialization();
       }
 
-      private void maybeForceBuilderInitialization() {
-        if (com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders) {
-        }
-      }
+      private void maybeForceBuilderInitialization() {}
 
       @java.lang.Override
       public Builder clear() {
@@ -14315,10 +14292,7 @@ public final class QueryProto {
         maybeForceBuilderInitialization();
       }
 
-      private void maybeForceBuilderInitialization() {
-        if (com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders) {
-        }
-      }
+      private void maybeForceBuilderInitialization() {}
 
       @java.lang.Override
       public Builder clear() {
@@ -15748,10 +15722,7 @@ public final class QueryProto {
         maybeForceBuilderInitialization();
       }
 
-      private void maybeForceBuilderInitialization() {
-        if (com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders) {
-        }
-      }
+      private void maybeForceBuilderInitialization() {}
 
       @java.lang.Override
       public Builder clear() {
@@ -17071,10 +17042,7 @@ public final class QueryProto {
         maybeForceBuilderInitialization();
       }
 
-      private void maybeForceBuilderInitialization() {
-        if (com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders) {
-        }
-      }
+      private void maybeForceBuilderInitialization() {}
 
       @java.lang.Override
       public Builder clear() {
@@ -17113,7 +17081,6 @@ public final class QueryProto {
       public io.holoinsight.server.query.grpc.QueryProto.StatisticRequest buildPartial() {
         io.holoinsight.server.query.grpc.QueryProto.StatisticRequest result =
             new io.holoinsight.server.query.grpc.QueryProto.StatisticRequest(this);
-        int from_bitField0_ = bitField0_;
         result.tenant_ = tenant_;
         result.start_ = start_;
         result.end_ = end_;
@@ -18976,10 +18943,7 @@ public final class QueryProto {
         maybeForceBuilderInitialization();
       }
 
-      private void maybeForceBuilderInitialization() {
-        if (com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders) {
-        }
-      }
+      private void maybeForceBuilderInitialization() {}
 
       @java.lang.Override
       public Builder clear() {
@@ -20178,7 +20142,7 @@ public final class QueryProto {
       }
 
       private com.google.protobuf.MapField<java.lang.String, java.lang.String> internalGetMutableTags() {
-        onChanged();;
+        onChanged();
         if (tags_ == null) {
           tags_ = com.google.protobuf.MapField.newMapField(TagsDefaultEntryHolder.defaultEntry);
         }
@@ -20753,7 +20717,6 @@ public final class QueryProto {
       public io.holoinsight.server.query.grpc.QueryProto.TraceBrief buildPartial() {
         io.holoinsight.server.query.grpc.QueryProto.TraceBrief result =
             new io.holoinsight.server.query.grpc.QueryProto.TraceBrief(this);
-        int from_bitField0_ = bitField0_;
         if (tracesBuilder_ == null) {
           if (((bitField0_ & 0x00000001) != 0)) {
             traces_ = java.util.Collections.unmodifiableList(traces_);
@@ -21947,10 +21910,7 @@ public final class QueryProto {
         maybeForceBuilderInitialization();
       }
 
-      private void maybeForceBuilderInitialization() {
-        if (com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders) {
-        }
-      }
+      private void maybeForceBuilderInitialization() {}
 
       @java.lang.Override
       public Builder clear() {
@@ -21995,7 +21955,6 @@ public final class QueryProto {
       public io.holoinsight.server.query.grpc.QueryProto.BasicTrace buildPartial() {
         io.holoinsight.server.query.grpc.QueryProto.BasicTrace result =
             new io.holoinsight.server.query.grpc.QueryProto.BasicTrace(this);
-        int from_bitField0_ = bitField0_;
         if (((bitField0_ & 0x00000001) != 0)) {
           serviceNames_ = serviceNames_.getUnmodifiableView();
           bitField0_ = (bitField0_ & ~0x00000001);
@@ -23201,7 +23160,6 @@ public final class QueryProto {
       public io.holoinsight.server.query.grpc.QueryProto.Trace buildPartial() {
         io.holoinsight.server.query.grpc.QueryProto.Trace result =
             new io.holoinsight.server.query.grpc.QueryProto.Trace(this);
-        int from_bitField0_ = bitField0_;
         if (spansBuilder_ == null) {
           if (((bitField0_ & 0x00000001) != 0)) {
             spans_ = java.util.Collections.unmodifiableList(spans_);
@@ -24018,7 +23976,6 @@ public final class QueryProto {
       public io.holoinsight.server.query.grpc.QueryProto.TraceTreeList buildPartial() {
         io.holoinsight.server.query.grpc.QueryProto.TraceTreeList result =
             new io.holoinsight.server.query.grpc.QueryProto.TraceTreeList(this);
-        int from_bitField0_ = bitField0_;
         if (traceTreeBuilder_ == null) {
           if (((bitField0_ & 0x00000001) != 0)) {
             traceTree_ = java.util.Collections.unmodifiableList(traceTree_);
@@ -25014,7 +24971,6 @@ public final class QueryProto {
       public io.holoinsight.server.query.grpc.QueryProto.TraceTree buildPartial() {
         io.holoinsight.server.query.grpc.QueryProto.TraceTree result =
             new io.holoinsight.server.query.grpc.QueryProto.TraceTree(this);
-        int from_bitField0_ = bitField0_;
         if (spanBuilder_ == null) {
           result.span_ = span_;
         } else {
@@ -27213,7 +27169,6 @@ public final class QueryProto {
       public io.holoinsight.server.query.grpc.QueryProto.Span buildPartial() {
         io.holoinsight.server.query.grpc.QueryProto.Span result =
             new io.holoinsight.server.query.grpc.QueryProto.Span(this);
-        int from_bitField0_ = bitField0_;
         result.traceId_ = traceId_;
         result.spanId_ = spanId_;
         result.parentSpanId_ = parentSpanId_;
@@ -29669,10 +29624,7 @@ public final class QueryProto {
         maybeForceBuilderInitialization();
       }
 
-      private void maybeForceBuilderInitialization() {
-        if (com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders) {
-        }
-      }
+      private void maybeForceBuilderInitialization() {}
 
       @java.lang.Override
       public Builder clear() {
@@ -30447,7 +30399,6 @@ public final class QueryProto {
       public io.holoinsight.server.query.grpc.QueryProto.LogEntity buildPartial() {
         io.holoinsight.server.query.grpc.QueryProto.LogEntity result =
             new io.holoinsight.server.query.grpc.QueryProto.LogEntity(this);
-        int from_bitField0_ = bitField0_;
         result.time_ = time_;
         if (dataBuilder_ == null) {
           if (((bitField0_ & 0x00000001) != 0)) {
@@ -31378,10 +31329,7 @@ public final class QueryProto {
         maybeForceBuilderInitialization();
       }
 
-      private void maybeForceBuilderInitialization() {
-        if (com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders) {
-        }
-      }
+      private void maybeForceBuilderInitialization() {}
 
       @java.lang.Override
       public Builder clear() {
@@ -32829,10 +32777,7 @@ public final class QueryProto {
         maybeForceBuilderInitialization();
       }
 
-      private void maybeForceBuilderInitialization() {
-        if (com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders) {
-        }
-      }
+      private void maybeForceBuilderInitialization() {}
 
       @java.lang.Override
       public Builder clear() {
@@ -33626,7 +33571,7 @@ public final class QueryProto {
       }
 
       private com.google.protobuf.MapField<java.lang.String, java.lang.String> internalGetMutableTermParams() {
-        onChanged();;
+        onChanged();
         if (termParams_ == null) {
           termParams_ =
               com.google.protobuf.MapField.newMapField(TermParamsDefaultEntryHolder.defaultEntry);
@@ -34883,10 +34828,7 @@ public final class QueryProto {
         maybeForceBuilderInitialization();
       }
 
-      private void maybeForceBuilderInitialization() {
-        if (com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders) {
-        }
-      }
+      private void maybeForceBuilderInitialization() {}
 
       @java.lang.Override
       public Builder clear() {
@@ -35741,7 +35683,7 @@ public final class QueryProto {
       }
 
       private com.google.protobuf.MapField<java.lang.String, java.lang.String> internalGetMutableTermParams() {
-        onChanged();;
+        onChanged();
         if (termParams_ == null) {
           termParams_ =
               com.google.protobuf.MapField.newMapField(TermParamsDefaultEntryHolder.defaultEntry);
@@ -36396,10 +36338,7 @@ public final class QueryProto {
         maybeForceBuilderInitialization();
       }
 
-      private void maybeForceBuilderInitialization() {
-        if (com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders) {
-        }
-      }
+      private void maybeForceBuilderInitialization() {}
 
       @java.lang.Override
       public Builder clear() {
@@ -37232,10 +37171,7 @@ public final class QueryProto {
         maybeForceBuilderInitialization();
       }
 
-      private void maybeForceBuilderInitialization() {
-        if (com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders) {
-        }
-      }
+      private void maybeForceBuilderInitialization() {}
 
       @java.lang.Override
       public Builder clear() {
@@ -38025,7 +37961,6 @@ public final class QueryProto {
       public io.holoinsight.server.query.grpc.QueryProto.QueryMetaResponse buildPartial() {
         io.holoinsight.server.query.grpc.QueryProto.QueryMetaResponse result =
             new io.holoinsight.server.query.grpc.QueryProto.QueryMetaResponse(this);
-        int from_bitField0_ = bitField0_;
         if (mataBuilder_ == null) {
           if (((bitField0_ & 0x00000001) != 0)) {
             mata_ = java.util.Collections.unmodifiableList(mata_);
@@ -38928,10 +38863,7 @@ public final class QueryProto {
         maybeForceBuilderInitialization();
       }
 
-      private void maybeForceBuilderInitialization() {
-        if (com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders) {
-        }
-      }
+      private void maybeForceBuilderInitialization() {}
 
       @java.lang.Override
       public Builder clear() {
@@ -39818,7 +39750,6 @@ public final class QueryProto {
       public io.holoinsight.server.query.grpc.QueryProto.QueryVirtualComponentResponse buildPartial() {
         io.holoinsight.server.query.grpc.QueryProto.QueryVirtualComponentResponse result =
             new io.holoinsight.server.query.grpc.QueryProto.QueryVirtualComponentResponse(this);
-        int from_bitField0_ = bitField0_;
         if (componentBuilder_ == null) {
           if (((bitField0_ & 0x00000001) != 0)) {
             component_ = java.util.Collections.unmodifiableList(component_);
@@ -40860,10 +40791,7 @@ public final class QueryProto {
         maybeForceBuilderInitialization();
       }
 
-      private void maybeForceBuilderInitialization() {
-        if (com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders) {
-        }
-      }
+      private void maybeForceBuilderInitialization() {}
 
       @java.lang.Override
       public Builder clear() {
@@ -41865,7 +41793,6 @@ public final class QueryProto {
       public io.holoinsight.server.query.grpc.QueryProto.QuerySlowSqlResponse buildPartial() {
         io.holoinsight.server.query.grpc.QueryProto.QuerySlowSqlResponse result =
             new io.holoinsight.server.query.grpc.QueryProto.QuerySlowSqlResponse(this);
-        int from_bitField0_ = bitField0_;
         if (slowSqlBuilder_ == null) {
           if (((bitField0_ & 0x00000001) != 0)) {
             slowSql_ = java.util.Collections.unmodifiableList(slowSql_);
@@ -42946,10 +42873,7 @@ public final class QueryProto {
         maybeForceBuilderInitialization();
       }
 
-      private void maybeForceBuilderInitialization() {
-        if (com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders) {
-        }
-      }
+      private void maybeForceBuilderInitialization() {}
 
       @java.lang.Override
       public Builder clear() {
@@ -44480,10 +44404,7 @@ public final class QueryProto {
         maybeForceBuilderInitialization();
       }
 
-      private void maybeForceBuilderInitialization() {
-        if (com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders) {
-        }
-      }
+      private void maybeForceBuilderInitialization() {}
 
       @java.lang.Override
       public Builder clear() {
@@ -45900,7 +45821,6 @@ public final class QueryProto {
       public io.holoinsight.server.query.grpc.QueryProto.Topology buildPartial() {
         io.holoinsight.server.query.grpc.QueryProto.Topology result =
             new io.holoinsight.server.query.grpc.QueryProto.Topology(this);
-        int from_bitField0_ = bitField0_;
         if (nodeBuilder_ == null) {
           if (((bitField0_ & 0x00000001) != 0)) {
             node_ = java.util.Collections.unmodifiableList(node_);
@@ -46960,10 +46880,7 @@ public final class QueryProto {
         maybeForceBuilderInitialization();
       }
 
-      private void maybeForceBuilderInitialization() {
-        if (com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders) {
-        }
-      }
+      private void maybeForceBuilderInitialization() {}
 
       @java.lang.Override
       public Builder clear() {
@@ -46996,7 +46913,6 @@ public final class QueryProto {
       public io.holoinsight.server.query.grpc.QueryProto.TraceIds buildPartial() {
         io.holoinsight.server.query.grpc.QueryProto.TraceIds result =
             new io.holoinsight.server.query.grpc.QueryProto.TraceIds(this);
-        int from_bitField0_ = bitField0_;
         if (((bitField0_ & 0x00000001) != 0)) {
           traceId_ = traceId_.getUnmodifiableView();
           bitField0_ = (bitField0_ & ~0x00000001);
@@ -47852,10 +47768,7 @@ public final class QueryProto {
         maybeForceBuilderInitialization();
       }
 
-      private void maybeForceBuilderInitialization() {
-        if (com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders) {
-        }
-      }
+      private void maybeForceBuilderInitialization() {}
 
       @java.lang.Override
       public Builder clear() {
@@ -47888,7 +47801,6 @@ public final class QueryProto {
       public io.holoinsight.server.query.grpc.QueryProto.StatisticData buildPartial() {
         io.holoinsight.server.query.grpc.QueryProto.StatisticData result =
             new io.holoinsight.server.query.grpc.QueryProto.StatisticData(this);
-        int from_bitField0_ = bitField0_;
         result.resources_ = internalGetResources();
         result.resources_.makeImmutable();
         result.datas_ = internalGetDatas();
@@ -47986,7 +47898,7 @@ public final class QueryProto {
       }
 
       private com.google.protobuf.MapField<java.lang.String, java.lang.String> internalGetMutableResources() {
-        onChanged();;
+        onChanged();
         if (resources_ == null) {
           resources_ =
               com.google.protobuf.MapField.newMapField(ResourcesDefaultEntryHolder.defaultEntry);
@@ -48119,7 +48031,7 @@ public final class QueryProto {
       }
 
       private com.google.protobuf.MapField<java.lang.String, java.lang.Double> internalGetMutableDatas() {
-        onChanged();;
+        onChanged();
         if (datas_ == null) {
           datas_ = com.google.protobuf.MapField.newMapField(DatasDefaultEntryHolder.defaultEntry);
         }
@@ -48693,7 +48605,6 @@ public final class QueryProto {
       public io.holoinsight.server.query.grpc.QueryProto.StatisticDataList buildPartial() {
         io.holoinsight.server.query.grpc.QueryProto.StatisticDataList result =
             new io.holoinsight.server.query.grpc.QueryProto.StatisticDataList(this);
-        int from_bitField0_ = bitField0_;
         if (statisticDataBuilder_ == null) {
           if (((bitField0_ & 0x00000001) != 0)) {
             statisticData_ = java.util.Collections.unmodifiableList(statisticData_);
@@ -49555,10 +49466,7 @@ public final class QueryProto {
         maybeForceBuilderInitialization();
       }
 
-      private void maybeForceBuilderInitialization() {
-        if (com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders) {
-        }
-      }
+      private void maybeForceBuilderInitialization() {}
 
       @java.lang.Override
       public Builder clear() {
@@ -49590,7 +49498,6 @@ public final class QueryProto {
       public io.holoinsight.server.query.grpc.QueryProto.CommonMapTypeData buildPartial() {
         io.holoinsight.server.query.grpc.QueryProto.CommonMapTypeData result =
             new io.holoinsight.server.query.grpc.QueryProto.CommonMapTypeData(this);
-        int from_bitField0_ = bitField0_;
         result.data_ = internalGetData();
         result.data_.makeImmutable();
         onBuilt();
@@ -49686,7 +49593,7 @@ public final class QueryProto {
       }
 
       private com.google.protobuf.MapField<java.lang.String, java.lang.String> internalGetMutableData() {
-        onChanged();;
+        onChanged();
         if (data_ == null) {
           data_ = com.google.protobuf.MapField.newMapField(DataDefaultEntryHolder.defaultEntry);
         }
@@ -50267,7 +50174,6 @@ public final class QueryProto {
       public io.holoinsight.server.query.grpc.QueryProto.CommonMapTypeDataList buildPartial() {
         io.holoinsight.server.query.grpc.QueryProto.CommonMapTypeDataList result =
             new io.holoinsight.server.query.grpc.QueryProto.CommonMapTypeDataList(this);
-        int from_bitField0_ = bitField0_;
         if (commonMapTypeDataBuilder_ == null) {
           if (((bitField0_ & 0x00000001) != 0)) {
             commonMapTypeData_ = java.util.Collections.unmodifiableList(commonMapTypeData_);
@@ -51099,7 +51005,6 @@ public final class QueryProto {
       public io.holoinsight.server.query.grpc.QueryProto.QueryDetailResponse buildPartial() {
         io.holoinsight.server.query.grpc.QueryProto.QueryDetailResponse result =
             new io.holoinsight.server.query.grpc.QueryProto.QueryDetailResponse(this);
-        int from_bitField0_ = bitField0_;
         if (resultsBuilder_ == null) {
           if (((bitField0_ & 0x00000001) != 0)) {
             results_ = java.util.Collections.unmodifiableList(results_);
@@ -52201,7 +52106,6 @@ public final class QueryProto {
       public io.holoinsight.server.query.grpc.QueryProto.DetailResult buildPartial() {
         io.holoinsight.server.query.grpc.QueryProto.DetailResult result =
             new io.holoinsight.server.query.grpc.QueryProto.DetailResult(this);
-        int from_bitField0_ = bitField0_;
         if (((bitField0_ & 0x00000001) != 0)) {
           tables_ = tables_.getUnmodifiableView();
           bitField0_ = (bitField0_ & ~0x00000001);
@@ -53384,7 +53288,6 @@ public final class QueryProto {
       public io.holoinsight.server.query.grpc.QueryProto.DetailRow buildPartial() {
         io.holoinsight.server.query.grpc.QueryProto.DetailRow result =
             new io.holoinsight.server.query.grpc.QueryProto.DetailRow(this);
-        int from_bitField0_ = bitField0_;
         if (valuesBuilder_ == null) {
           if (((bitField0_ & 0x00000001) != 0)) {
             values_ = java.util.Collections.unmodifiableList(values_);
@@ -54409,10 +54312,7 @@ public final class QueryProto {
         maybeForceBuilderInitialization();
       }
 
-      private void maybeForceBuilderInitialization() {
-        if (com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders) {
-        }
-      }
+      private void maybeForceBuilderInitialization() {}
 
       @java.lang.Override
       public Builder clear() {
@@ -55515,10 +55415,7 @@ public final class QueryProto {
         maybeForceBuilderInitialization();
       }
 
-      private void maybeForceBuilderInitialization() {
-        if (com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders) {
-        }
-      }
+      private void maybeForceBuilderInitialization() {}
 
       @java.lang.Override
       public Builder clear() {
@@ -55556,7 +55453,6 @@ public final class QueryProto {
       public io.holoinsight.server.query.grpc.QueryProto.QueryEventRequest buildPartial() {
         io.holoinsight.server.query.grpc.QueryProto.QueryEventRequest result =
             new io.holoinsight.server.query.grpc.QueryProto.QueryEventRequest(this);
-        int from_bitField0_ = bitField0_;
         result.tenant_ = tenant_;
         result.start_ = start_;
         result.end_ = end_;
@@ -55821,7 +55717,7 @@ public final class QueryProto {
       }
 
       private com.google.protobuf.MapField<java.lang.String, java.lang.String> internalGetMutableTermParams() {
-        onChanged();;
+        onChanged();
         if (termParams_ == null) {
           termParams_ =
               com.google.protobuf.MapField.newMapField(TermParamsDefaultEntryHolder.defaultEntry);
@@ -56396,7 +56292,6 @@ public final class QueryProto {
       public io.holoinsight.server.query.grpc.QueryProto.QueryEventResponse buildPartial() {
         io.holoinsight.server.query.grpc.QueryProto.QueryEventResponse result =
             new io.holoinsight.server.query.grpc.QueryProto.QueryEventResponse(this);
-        int from_bitField0_ = bitField0_;
         if (eventBuilder_ == null) {
           if (((bitField0_ & 0x00000001) != 0)) {
             event_ = java.util.Collections.unmodifiableList(event_);
@@ -57564,10 +57459,7 @@ public final class QueryProto {
         maybeForceBuilderInitialization();
       }
 
-      private void maybeForceBuilderInitialization() {
-        if (com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders) {
-        }
-      }
+      private void maybeForceBuilderInitialization() {}
 
       @java.lang.Override
       public Builder clear() {
@@ -57609,7 +57501,6 @@ public final class QueryProto {
       public io.holoinsight.server.query.grpc.QueryProto.Event buildPartial() {
         io.holoinsight.server.query.grpc.QueryProto.Event result =
             new io.holoinsight.server.query.grpc.QueryProto.Event(this);
-        int from_bitField0_ = bitField0_;
         result.tenant_ = tenant_;
         result.id_ = id_;
         result.name_ = name_;
@@ -58088,7 +57979,7 @@ public final class QueryProto {
       }
 
       private com.google.protobuf.MapField<java.lang.String, java.lang.String> internalGetMutableTags() {
-        onChanged();;
+        onChanged();
         if (tags_ == null) {
           tags_ = com.google.protobuf.MapField.newMapField(TagsDefaultEntryHolder.defaultEntry);
         }

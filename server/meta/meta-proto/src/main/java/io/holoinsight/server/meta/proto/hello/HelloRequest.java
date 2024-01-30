@@ -514,10 +514,7 @@ public final class HelloRequest extends com.google.protobuf.GeneratedMessageV3 i
       maybeForceBuilderInitialization();
     }
 
-    private void maybeForceBuilderInitialization() {
-      if (com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders) {
-      }
-    }
+    private void maybeForceBuilderInitialization() {}
 
     public Builder clear() {
       super.clear();
@@ -550,7 +547,6 @@ public final class HelloRequest extends com.google.protobuf.GeneratedMessageV3 i
     public io.holoinsight.server.meta.proto.hello.HelloRequest buildPartial() {
       io.holoinsight.server.meta.proto.hello.HelloRequest result =
           new io.holoinsight.server.meta.proto.hello.HelloRequest(this);
-      int from_bitField0_ = bitField0_;
       int to_bitField0_ = 0;
       result.name_ = name_;
       result.age_ = age_;
@@ -857,7 +853,7 @@ public final class HelloRequest extends com.google.protobuf.GeneratedMessageV3 i
     }
 
     private com.google.protobuf.MapField<java.lang.String, java.lang.String> internalGetMutableTags() {
-      onChanged();;
+      onChanged();
       if (tags_ == null) {
         tags_ = com.google.protobuf.MapField.newMapField(TagsDefaultEntryHolder.defaultEntry);
       }
@@ -1019,4 +1015,3 @@ public final class HelloRequest extends com.google.protobuf.GeneratedMessageV3 i
   }
 
 }
-

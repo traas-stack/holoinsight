@@ -619,10 +619,7 @@ public final class CheckConfigTaskDistributionRequest extends com.google.protobu
         maybeForceBuilderInitialization();
       }
 
-      private void maybeForceBuilderInitialization() {
-        if (com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders) {
-        }
-      }
+      private void maybeForceBuilderInitialization() {}
 
       @java.lang.Override
       public Builder clear() {
@@ -1425,7 +1422,6 @@ public final class CheckConfigTaskDistributionRequest extends com.google.protobu
     public io.holoinsight.server.registry.grpc.prod.CheckConfigTaskDistributionRequest buildPartial() {
       io.holoinsight.server.registry.grpc.prod.CheckConfigTaskDistributionRequest result =
           new io.holoinsight.server.registry.grpc.prod.CheckConfigTaskDistributionRequest(this);
-      int from_bitField0_ = bitField0_;
       if (headerBuilder_ == null) {
         result.header_ = header_;
       } else {
@@ -1987,4 +1983,3 @@ public final class CheckConfigTaskDistributionRequest extends com.google.protobu
   }
 
 }
-

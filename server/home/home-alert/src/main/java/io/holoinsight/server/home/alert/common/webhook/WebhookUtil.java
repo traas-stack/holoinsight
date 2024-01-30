@@ -12,7 +12,6 @@ import io.holoinsight.server.home.alert.model.event.WebhookInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
 import static java.nio.charset.StandardCharsets.UTF_8;

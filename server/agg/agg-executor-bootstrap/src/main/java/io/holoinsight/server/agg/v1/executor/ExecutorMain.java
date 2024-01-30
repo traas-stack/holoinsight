@@ -7,7 +7,6 @@ import io.holoinsight.server.agg.v1.executor.executor.RegistryHttpCompletenessSe
 
 import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.annotation.Bean;
 

@@ -6,7 +6,6 @@ package io.holoinsight.server.home.web.common;
 import io.holoinsight.server.common.model.DataQueryRequest;
 import io.holoinsight.server.home.common.util.MonitorException;
 import io.holoinsight.server.home.common.util.ResultCodeEnum;
-import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.util.CollectionUtils;

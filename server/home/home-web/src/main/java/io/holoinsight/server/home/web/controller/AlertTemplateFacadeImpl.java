@@ -132,7 +132,7 @@ public class AlertTemplateFacadeImpl extends BaseFacade {
         }
         templateDTO.setGmtModified(new Date());
         AlertTemplate alertTemplate = alertTemplateConverter.dtoToDO(templateDTO);
-        int update = alertTemplateMapper.updateById(alertTemplate);
+        alertTemplateMapper.updateById(alertTemplate);
 
         userOpLogService.append("alert_notification_template", templateDTO.getUuid(), OpType.UPDATE,
             RequestContext.getContext().mu.getLoginName(), ms.getTenant(), ms.getWorkspace(),

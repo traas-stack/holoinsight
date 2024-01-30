@@ -10,7 +10,6 @@ import lombok.extern.slf4j.Slf4j;
 import retrofit2.Call;
 import retrofit2.Response;
 
-import javax.naming.AuthenticationException;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 

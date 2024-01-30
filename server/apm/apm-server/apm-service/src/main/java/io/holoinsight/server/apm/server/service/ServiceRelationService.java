@@ -5,7 +5,6 @@ package io.holoinsight.server.apm.server.service;
 
 import io.holoinsight.server.apm.engine.model.ServiceRelationDO;
 
-import java.io.IOException;
 import java.util.List;
 
 

@@ -565,10 +565,7 @@ public final class CollectTarget extends com.google.protobuf.GeneratedMessageV3 
       maybeForceBuilderInitialization();
     }
 
-    private void maybeForceBuilderInitialization() {
-      if (com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders) {
-      }
-    }
+    private void maybeForceBuilderInitialization() {}
 
     @java.lang.Override
     public Builder clear() {
@@ -606,7 +603,6 @@ public final class CollectTarget extends com.google.protobuf.GeneratedMessageV3 
     public io.holoinsight.server.registry.grpc.agent.CollectTarget buildPartial() {
       io.holoinsight.server.registry.grpc.agent.CollectTarget result =
           new io.holoinsight.server.registry.grpc.agent.CollectTarget(this);
-      int from_bitField0_ = bitField0_;
       result.key_ = key_;
       result.type_ = type_;
       result.version_ = version_;
@@ -942,7 +938,7 @@ public final class CollectTarget extends com.google.protobuf.GeneratedMessageV3 
     }
 
     private com.google.protobuf.MapField<java.lang.String, java.lang.String> internalGetMutableMeta() {
-      onChanged();;
+      onChanged();
       if (meta_ == null) {
         meta_ = com.google.protobuf.MapField.newMapField(MetaDefaultEntryHolder.defaultEntry);
       }
@@ -1108,4 +1104,3 @@ public final class CollectTarget extends com.google.protobuf.GeneratedMessageV3 
   }
 
 }
-

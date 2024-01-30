@@ -546,9 +546,6 @@ public class CollectTemplateSyncer {
       }
       Set<Long> ids = templateStorage.get(g.getTableName());
       CollectTemplate add0 = g.getAdd0();
-      if (ids == null || ids.isEmpty() || ids.size() == 1 && ids.contains(add0.getId())) {
-        // return Mono.empty();
-      }
 
       List<CollectTemplate> ensureDeleted = new ArrayList<>();
       for (long id : new ArrayList<>(ids)) {
@@ -558,9 +555,6 @@ public class CollectTemplateSyncer {
             ensureDeleted.add(residual);
           }
         }
-      }
-      if (ensureDeleted.isEmpty()) {
-        // return Mono.empty();
       }
       // return taskMaintainer.maintainTemplateDelete(g.getTableName(), ensureDeleted);
     });
@@ -584,8 +578,10 @@ public class CollectTemplateSyncer {
     List<GaeaCollectConfigDO> configDos = mapper.selectByExampleWithBLOBs(example);
     long dbEnd = System.currentTimeMillis();
     if (configDos.isEmpty()) {
-      LOGGER.info("delta sync success range=[{}, {}) empty, dbCost=[{}]", SDF.format(begin),
-          SDF.format(end), dbEnd - dbBegin);
+      synchronized (SDF) {
+        LOGGER.info("delta sync success range=[{}, {}) empty, dbCost=[{}]", SDF.format(begin),
+            SDF.format(end), dbEnd - dbBegin);
+      }
       return null;
     }
 
@@ -688,10 +684,12 @@ public class CollectTemplateSyncer {
     // 1. 配置下发时候检查tableName不重复, 否则直接报错;
     // 2. 在storage层维护一个byTableName的索引, 配置同步时我们做这个检查
 
-    LOGGER.info(
-        "delta sync success range=[{}, {}) update=[{}] add=[{}] delete=[{}] retry=[{}] invalid=[{}]", //
-        SDF.format(begin), SDF.format(end), //
-        update, add, delete, retryTableNames.size(), invalid); //
+    synchronized (SDF) {
+      LOGGER.info(
+          "delta sync success range=[{}, {}) update=[{}] add=[{}] delete=[{}] retry=[{}] invalid=[{}]", //
+          SDF.format(begin), SDF.format(end), //
+          update, add, delete, retryTableNames.size(), invalid);
+    }
 
     return buildCollectTemplateDelta(groups);
   }

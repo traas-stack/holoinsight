@@ -83,7 +83,7 @@ public class AlertManagerBuildMsgHandler implements AlertHandlerExecutor {
       map.put("alarmLevel", values.getAlarmLevel() == null ? "" : values.getAlarmLevel().getDesc());
       content = buildMsgWithMap(template, map, Collections.emptyList());
     } catch (Exception e) {
-
+      // This catch statement is intentionally empty
     }
     // 模板参数全局替换
     return content;

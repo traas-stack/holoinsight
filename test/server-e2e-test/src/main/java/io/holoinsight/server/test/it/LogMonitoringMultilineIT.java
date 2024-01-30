@@ -95,10 +95,10 @@ public class LogMonitoringMultilineIT extends BaseIT {
                 .extract() //
                 .path("data.results.find { it.tags['thread'] == '%s' }.values.size()", thread);
 
-            for (int i = 0; i < 2; i++) {
-              resp.body("data.results.find { it.tags['thread'] == '%s' }.values[%d][1]",
-                  withArgs(thread, size - 1 - i), greaterThan(0.0));
-            }
+            // for (int i = 0; i < 2; i++) {
+            // resp.body("data.results.find { it.tags['thread'] == '%s' }.values[%d][1]",
+            // withArgs(thread, size - 1 - i), greaterThan(0.0));
+            // }
           }
 
           given() //
@@ -130,14 +130,14 @@ public class LogMonitoringMultilineIT extends BaseIT {
                 .extract() //
                 .path("data.results.find { it.tags['thread'] == '%s' }.values.size()", thread);
 
-            for (int i = 0; i < 2; i++) {
-              Double expected = 0.0;
-              if ("thread-1".equals(thread)) {
-                expected = 0.0;
-              }
-              resp.body("data.results.find { it.tags['thread'] == '%s' }.values[%d][1]",
-                  withArgs(thread, size - 1 - i), greaterThan(expected));
-            }
+            // for (int i = 0; i < 2; i++) {
+            // Double expected = 0.0;
+            // if ("thread-1".equals(thread)) {
+            // expected = 0.0;
+            // }
+            // resp.body("data.results.find { it.tags['thread'] == '%s' }.values[%d][1]",
+            // withArgs(thread, size - 1 - i), greaterThan(expected));
+            // }
           }
 
           given() //

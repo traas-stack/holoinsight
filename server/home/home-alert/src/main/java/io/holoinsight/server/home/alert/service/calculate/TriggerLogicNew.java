@@ -4,7 +4,6 @@
 package io.holoinsight.server.home.alert.service.calculate;
 
 import io.holoinsight.server.home.facade.emuns.CompareOperationEnum;
-import io.holoinsight.server.home.facade.trigger.CompareParam;
 
 import java.io.Serializable;
 

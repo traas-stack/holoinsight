@@ -73,6 +73,7 @@ public class ProductCtlServiceImpl implements ProductCtlService {
       metricWhitePrefixes = J.fromJson(whiteListDictVal.getDictValue(),
           new TypeToken<HashSet<String>>() {}.getType());
     } catch (Exception e) {
+      // This catch statement is intentionally empty
     }
 
     log.info("[product_ctl] refresh closed products, switchOn={}, closed={}, metricWhiteList={}",

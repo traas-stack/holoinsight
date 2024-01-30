@@ -183,10 +183,12 @@ public class AggTaskV1Syncer implements InitializingBean {
     }
 
     long cost = System.currentTimeMillis() - time0;
-    log.info(
-        "[aggtask] delta sync once, [{}, {}), add=[{}] update=[{}] del=[{}] read=[{}] cost=[{}]", //
-        SDF.format(begin), SDF.format(end), //
-        add, update, del, deltaMap.size(), cost);
+    synchronized (SDF) {
+      log.info(
+          "[aggtask] delta sync once, [{}, {}), add=[{}] update=[{}] del=[{}] read=[{}] cost=[{}]", //
+          SDF.format(begin), SDF.format(end), //
+          add, update, del, deltaMap.size(), cost);
+    }
   }
 
   @Override

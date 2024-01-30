@@ -788,7 +788,6 @@ public final class SegmentObject extends com.google.protobuf.GeneratedMessageV3 
     public io.holoinsight.server.apm.grpc.trace.SegmentObject buildPartial() {
       io.holoinsight.server.apm.grpc.trace.SegmentObject result =
           new io.holoinsight.server.apm.grpc.trace.SegmentObject(this);
-      int from_bitField0_ = bitField0_;
       result.traceId_ = traceId_;
       result.traceSegmentId_ = traceSegmentId_;
       if (spansBuilder_ == null) {
@@ -1875,4 +1874,3 @@ public final class SegmentObject extends com.google.protobuf.GeneratedMessageV3 
   }
 
 }
-

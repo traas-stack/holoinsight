@@ -171,8 +171,7 @@ public class AgentLogTailService {
 
     if (!fileNode.getDir() || CollectionUtils.isEmpty(fileNode.getChildrenList())) {
       return monitorFileNode;
-    } ;
-
+    }
     fileNode.getChildrenList().forEach(child -> {
       MonitorFileNode childNode = convertFileNode(child, fullpath);
       monitorFileNode.getSubs().add(childNode);

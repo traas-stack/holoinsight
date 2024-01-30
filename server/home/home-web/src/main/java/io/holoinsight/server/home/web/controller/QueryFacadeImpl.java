@@ -445,7 +445,7 @@ public class QueryFacadeImpl extends BaseFacade {
   @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.VIEW)
   public JsonResult<List<Result>> pqlInstanceQuery(@RequestBody PqlInstanceRequest request) {
     final JsonResult<List<Result>> result = new JsonResult<>();
-    RequestContext.Context ctx = RequestContext.getContext();
+    RequestContext.getContext();
 
     facadeTemplate.manage(result, new ManageCallback() {
       @Override

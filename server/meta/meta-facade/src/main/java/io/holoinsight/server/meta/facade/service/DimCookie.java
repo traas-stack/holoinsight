@@ -21,7 +21,6 @@ import io.holoinsight.server.meta.proto.data.QueryDataByExampleRequest;
 import io.holoinsight.server.meta.proto.data.QueryDataByTableRequest;
 import io.holoinsight.server.meta.proto.data.QueryDataByTableRowsRequest;
 import io.holoinsight.server.meta.proto.data.QueryDataResponse;
-import io.holoinsight.server.meta.proto.data.UpdateDataByExampleRequest;
 import io.grpc.ManagedChannel;
 import lombok.Getter;
 import lombok.Setter;

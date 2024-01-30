@@ -69,7 +69,7 @@ public class OpenmetricsScraperUpdateListener {
         GaeaConvertUtil.convertCollectRange(openmetricsScraperDTO.getCollectRanges());
     gaeaCollectConfigDTO.executorSelector = convertExecutorSelector();
 
-    GaeaCollectConfigDTO upsert = gaeaCollectConfigService.upsert(gaeaCollectConfigDTO);
+    gaeaCollectConfigService.upsert(gaeaCollectConfigDTO);
   }
 
   private Map<String, Object> convertExecutorSelector() {
