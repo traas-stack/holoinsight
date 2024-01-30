@@ -217,40 +217,38 @@ public class AggDispatcher {
   }
 
   public void dispatchUpEvent(AuthInfo authInfo, ReportEventRequest request) {
-    return;
-
-    for (ReportEventRequest.Event e : request.getEventsList()) {
-      if (e.getEventType().equals("STAT") && e.getPayloadType().equals("log_monitor_up")) {
-        String key = e.getTagsOrDefault("t_key", null);
-        if (key == null) {
-          continue;
-        }
-        String[] ss = key.split("/");
-        if (ss.length != 2) {
-          continue;
-        }
-        String refCollectKey = ss[0];
-        String refTargetKey = ss[1];
-
-        List<AggTask> aggTasks = storage.getByTableName(refCollectKey);
-        if (aggTasks.isEmpty()) {
-          continue;
-        }
-
-        AggProtos.AggTaskValue aggTaskValue = AggProtos.AggTaskValue.newBuilder() //
-            .setType(2) //
-            .setTimestamp(e.getEventTimestamp()) //
-            .putExtension("refCollectKey", refCollectKey) //
-            .putExtension("refTargetKey", refTargetKey) //
-            .build();
-
-        for (AggTask aggTask : aggTasks) {
-          // TODO partition ???
-          AggTaskKey aggTaskKey = new AggTaskKey(authInfo.getTenant(), aggTask.getAggId(), "");
-          send(aggTaskKey, aggTaskValue);
-        }
-      }
-    }
+    // for (ReportEventRequest.Event e : request.getEventsList()) {
+    // if (e.getEventType().equals("STAT") && e.getPayloadType().equals("log_monitor_up")) {
+    // String key = e.getTagsOrDefault("t_key", null);
+    // if (key == null) {
+    // continue;
+    // }
+    // String[] ss = key.split("/");
+    // if (ss.length != 2) {
+    // continue;
+    // }
+    // String refCollectKey = ss[0];
+    // String refTargetKey = ss[1];
+    //
+    // List<AggTask> aggTasks = storage.getByTableName(refCollectKey);
+    // if (aggTasks.isEmpty()) {
+    // continue;
+    // }
+    //
+    // AggProtos.AggTaskValue aggTaskValue = AggProtos.AggTaskValue.newBuilder() //
+    // .setType(2) //
+    // .setTimestamp(e.getEventTimestamp()) //
+    // .putExtension("refCollectKey", refCollectKey) //
+    // .putExtension("refTargetKey", refTargetKey) //
+    // .build();
+    //
+    // for (AggTask aggTask : aggTasks) {
+    // // TODO partition ???
+    // AggTaskKey aggTaskKey = new AggTaskKey(authInfo.getTenant(), aggTask.getAggId(), "");
+    // send(aggTaskKey, aggTaskValue);
+    // }
+    // }
+    // }
   }
 
   public void dispatchDetailData(AuthInfo authInfo, Table table) {

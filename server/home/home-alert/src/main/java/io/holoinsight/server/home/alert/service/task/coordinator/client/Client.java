@@ -12,12 +12,14 @@ import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
+import lombok.extern.slf4j.Slf4j;
 
 
 /**
  * Client is the Netty TCP client.
  * 
  */
+@Slf4j
 public class Client {
   int port;
   String ip;
@@ -55,6 +57,8 @@ public class Client {
       this.channel = channelFuture.channel();
 
       return channelFuture;
+    } finally {
+      log.info("client startup.");
     }
   }
 

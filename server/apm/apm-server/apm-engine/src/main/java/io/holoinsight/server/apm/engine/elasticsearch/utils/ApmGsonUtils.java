@@ -128,8 +128,9 @@ public class ApmGsonUtils extends GsonUtils {
                 try {
                   field.set(instance, element.getAsNumber().longValue());
                 } catch (Exception e) {
+                  Date date = new Date();
                   synchronized (SDF) {
-                    Date date = SDF.parse(element.getAsString());
+                    date = SDF.parse(element.getAsString());
                   }
                   field.set(instance, date.getTime());
                 }
