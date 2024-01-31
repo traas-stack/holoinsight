@@ -87,8 +87,12 @@ public class AlertTemplateFacadeImplChecker implements LevelAuthorizationCheck {
       }
     }
 
-    AlertTemplateDTO templateDTO = pageRequest.getTarget();
-    return checkAlertNotificationTemplateDTO(methodName, templateDTO, tenant, workspace);
+    AlertTemplateDTO target = pageRequest.getTarget();
+    if (target == null) {
+      log.error("fail to check target, target can not be null");
+      return false;
+    }
+    return checkAlertNotificationTemplateDTO(methodName, target, tenant, workspace);
   }
 
   private boolean checkId(List<String> parameters, String tenant, String workspace) {

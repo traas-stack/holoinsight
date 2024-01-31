@@ -8,7 +8,6 @@ import io.holoinsight.server.common.JsonResult;
 import io.holoinsight.server.home.biz.service.AlertDingDingRobotService;
 import io.holoinsight.server.home.biz.service.UserOpLogService;
 import io.holoinsight.server.home.common.service.RequestContextAdapter;
-import io.holoinsight.server.home.common.util.MonitorException;
 import io.holoinsight.server.home.common.util.scope.AuthTargetType;
 import io.holoinsight.server.home.common.util.scope.MonitorScope;
 import io.holoinsight.server.home.common.util.scope.MonitorUser;
@@ -19,8 +18,8 @@ import io.holoinsight.server.home.dal.model.dto.AlarmDingDingRobotDTO;
 import io.holoinsight.server.home.facade.page.MonitorPageRequest;
 import io.holoinsight.server.home.facade.page.MonitorPageResult;
 import io.holoinsight.server.home.web.common.ManageCallback;
-import io.holoinsight.server.home.web.common.ParaCheckUtil;
 import io.holoinsight.server.home.web.interceptor.MonitorScopeAuth;
+import io.holoinsight.server.home.web.security.LevelAuthorizationAccess;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -42,7 +41,7 @@ import java.util.Date;
 @RequestMapping("/webapi/alarmDingDingRobot")
 public class AlarmDingDingRobotFacadeImpl extends BaseFacade {
 
-  private static final String dingdingUrlPrefix =
+  public static final String dingdingUrlPrefix =
       "https://oapi.dingtalk.com/robot/send?access_token=";
 
   @Autowired
@@ -54,19 +53,16 @@ public class AlarmDingDingRobotFacadeImpl extends BaseFacade {
   @Autowired
   private RequestContextAdapter requestContextAdapter;
 
+  @LevelAuthorizationAccess(paramConfigs = {"PARAMETER" + ":$!alarmDingDingRobotDTO"},
+      levelAuthorizationCheckeClass = "io.holoinsight.server.home.web.security.custom.AlarmDingDingRobotFacadeImplChecker")
   @PostMapping("/create")
   @ResponseBody
   @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.EDIT)
-  public JsonResult<Long> save(@RequestBody AlarmDingDingRobotDTO alarmDingDingRobotDTO) {
+  public JsonResult<Long> create(@RequestBody AlarmDingDingRobotDTO alarmDingDingRobotDTO) {
     final JsonResult<Long> result = new JsonResult<>();
     facadeTemplate.manage(result, new ManageCallback() {
       @Override
-      public void checkParameter() {
-        ParaCheckUtil.checkParaNotBlank(alarmDingDingRobotDTO.getGroupName(), "groupName");
-        ParaCheckUtil.checkParaStartWith(alarmDingDingRobotDTO.getRobotUrl(), dingdingUrlPrefix,
-            "robotUrl");
-        ParaCheckUtil.checkParaId(alarmDingDingRobotDTO.getId());
-      }
+      public void checkParameter() {}
 
       @Override
       public void doManage() {
@@ -94,6 +90,8 @@ public class AlarmDingDingRobotFacadeImpl extends BaseFacade {
     return result;
   }
 
+  @LevelAuthorizationAccess(paramConfigs = {"PARAMETER" + ":$!alarmDingDingRobotDTO"},
+      levelAuthorizationCheckeClass = "io.holoinsight.server.home.web.security.custom.AlarmDingDingRobotFacadeImplChecker")
   @PostMapping("/update")
   @ResponseBody
   @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.EDIT)
@@ -101,27 +99,13 @@ public class AlarmDingDingRobotFacadeImpl extends BaseFacade {
     final JsonResult<Boolean> result = new JsonResult<>();
     facadeTemplate.manage(result, new ManageCallback() {
       @Override
-      public void checkParameter() {
-        ParaCheckUtil.checkParaNotNull(alarmDingDingRobotDTO.getId(), "id");
-        ParaCheckUtil.checkParaNotNull(alarmDingDingRobotDTO.getTenant(), "tenant");
-        ParaCheckUtil.checkParaStartWith(alarmDingDingRobotDTO.getRobotUrl(), dingdingUrlPrefix,
-            "robotUrl");
-        ParaCheckUtil.checkEquals(alarmDingDingRobotDTO.getTenant(),
-            RequestContext.getContext().ms.getTenant(), "tenant is illegal");
-
-      }
+      public void checkParameter() {}
 
       @Override
       public void doManage() {
 
         AlarmDingDingRobotDTO item = alarmDingDingRobotService
             .queryById(alarmDingDingRobotDTO.getId(), RequestContext.getContext().ms.getTenant());
-        if (null == item) {
-          throw new MonitorException("cannot find record: " + alarmDingDingRobotDTO.getId());
-        }
-        if (!item.getTenant().equalsIgnoreCase(alarmDingDingRobotDTO.getTenant())) {
-          throw new MonitorException("the tenant parameter is invalid");
-        }
 
         MonitorUser mu = RequestContext.getContext().mu;
         if (null != mu) {
@@ -143,6 +127,8 @@ public class AlarmDingDingRobotFacadeImpl extends BaseFacade {
     return result;
   }
 
+  @LevelAuthorizationAccess(paramConfigs = {"PARAMETER" + ":$!id"},
+      levelAuthorizationCheckeClass = "io.holoinsight.server.home.web.security.custom.AlarmDingDingRobotFacadeImplChecker")
   @GetMapping("/query/{id}")
   @ResponseBody
   @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.VIEW)
@@ -150,9 +136,7 @@ public class AlarmDingDingRobotFacadeImpl extends BaseFacade {
     final JsonResult<AlarmDingDingRobotDTO> result = new JsonResult<>();
     facadeTemplate.manage(result, new ManageCallback() {
       @Override
-      public void checkParameter() {
-        ParaCheckUtil.checkParaNotNull(id, "id");
-      }
+      public void checkParameter() {}
 
       @Override
       public void doManage() {
@@ -166,15 +150,15 @@ public class AlarmDingDingRobotFacadeImpl extends BaseFacade {
     return result;
   }
 
+  @LevelAuthorizationAccess(paramConfigs = {"PARAMETER" + ":$!id"},
+      levelAuthorizationCheckeClass = "io.holoinsight.server.home.web.security.custom.AlarmDingDingRobotFacadeImplChecker")
   @DeleteMapping(value = "/delete/{id}")
   @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.EDIT)
   public JsonResult<Boolean> deleteById(@PathVariable("id") Long id) {
     final JsonResult<Boolean> result = new JsonResult<>();
     facadeTemplate.manage(result, new ManageCallback() {
       @Override
-      public void checkParameter() {
-        ParaCheckUtil.checkParaNotNull(id, "id");
-      }
+      public void checkParameter() {}
 
       @Override
       public void doManage() {
@@ -197,6 +181,8 @@ public class AlarmDingDingRobotFacadeImpl extends BaseFacade {
     return result;
   }
 
+  @LevelAuthorizationAccess(paramConfigs = {"PARAMETER" + ":$!pageRequest"},
+      levelAuthorizationCheckeClass = "io.holoinsight.server.home.web.security.custom.AlarmDingDingRobotFacadeImplChecker")
   @PostMapping("/pageQuery")
   @ResponseBody
   @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.VIEW)
@@ -205,9 +191,7 @@ public class AlarmDingDingRobotFacadeImpl extends BaseFacade {
     final JsonResult<MonitorPageResult<AlarmDingDingRobotDTO>> result = new JsonResult<>();
     facadeTemplate.manage(result, new ManageCallback() {
       @Override
-      public void checkParameter() {
-        ParaCheckUtil.checkParaNotNull(pageRequest.getTarget(), "target");
-      }
+      public void checkParameter() {}
 
       @Override
       public void doManage() {
