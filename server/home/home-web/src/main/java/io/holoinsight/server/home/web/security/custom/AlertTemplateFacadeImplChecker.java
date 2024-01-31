@@ -96,7 +96,7 @@ public class AlertTemplateFacadeImplChecker implements LevelAuthorizationCheck {
       return false;
     }
 
-    String uuid = parameters.get(0);
+    String uuid = J.fromJson(parameters.get(0), String.class);
     return checkId(uuid, tenant, workspace);
   }
 

@@ -98,9 +98,9 @@ public class AlertTemplateFacadeImpl extends BaseFacade {
             "create alertNotificationTemplate tenant {} workspace {} creator {} insert size {}",
             templateDTO.getTenant(), templateDTO.getWorkspace(), templateDTO.getCreator(), insert);
 
-        userOpLogService.append("alert_notification_template", alertTemplate.getUuid(),
-            OpType.CREATE, mu.getLoginName(), ms.getTenant(), ms.getWorkspace(),
-            J.toJson(templateDTO), null, null, "alert_notification_template_create");
+        userOpLogService.append("alert_template", alertTemplate.getUuid(), OpType.CREATE,
+            mu.getLoginName(), ms.getTenant(), ms.getWorkspace(), J.toJson(templateDTO), null, null,
+            "alert_template_create");
         JsonResult.createSuccessResult(result, alertTemplate.getUuid());
       }
     });
@@ -134,10 +134,9 @@ public class AlertTemplateFacadeImpl extends BaseFacade {
         AlertTemplate alertTemplate = alertTemplateConverter.dtoToDO(templateDTO);
         alertTemplateMapper.updateById(alertTemplate);
 
-        userOpLogService.append("alert_notification_template", templateDTO.getUuid(), OpType.UPDATE,
+        userOpLogService.append("alert_template", templateDTO.getUuid(), OpType.UPDATE,
             RequestContext.getContext().mu.getLoginName(), ms.getTenant(), ms.getWorkspace(),
-            J.toJson(originalItem), J.toJson(templateDTO), null,
-            "alert_notification_template_update");
+            J.toJson(originalItem), J.toJson(templateDTO), null, "alert_template_update");
 
         JsonResult.createSuccessResult(result, templateDTO.uuid);
       }
@@ -183,7 +182,7 @@ public class AlertTemplateFacadeImpl extends BaseFacade {
       levelAuthorizationCheckeClass = "io.holoinsight.server.home.web.security.custom.AlertTemplateFacadeImplChecker")
   @DeleteMapping(value = "/delete/{uuid}")
   @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.EDIT)
-  public JsonResult<Integer> deleteById(@PathVariable("uuid") Long uuid) {
+  public JsonResult<Integer> deleteById(@PathVariable("uuid") String uuid) {
     final JsonResult<Integer> result = new JsonResult<>();
     facadeTemplate.manage(result, new ManageCallback() {
       @Override
@@ -200,9 +199,9 @@ public class AlertTemplateFacadeImpl extends BaseFacade {
           rtn = alertTemplateMapper.deleteById(uuid);
         }
 
-        userOpLogService.append("alert_notification_template", uuid, OpType.DELETE,
+        userOpLogService.append("alert_template", uuid, OpType.DELETE,
             RequestContext.getContext().mu.getLoginName(), ms.getTenant(), ms.getWorkspace(),
-            J.toJson(originalItem), null, null, "alert_notification_template_delete");
+            J.toJson(originalItem), null, null, "alert_template_delete");
 
         JsonResult.createSuccessResult(result, rtn);
       }
