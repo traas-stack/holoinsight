@@ -64,13 +64,22 @@ public class AlarmDingDingRobotFacadeImplChecker implements LevelAuthorizationCh
       case "update":
         return checkAlarmDingDingRobotDTO(methodName, parameters, tenant, workspace);
       case "queryById":
+        return checkIdNotNull(parameters);
       case "deleteById":
-        return checkId(parameters, tenant, workspace);
+        return checkIdExists(parameters, tenant, workspace);
       case "pageQuery":
         return checkPageRequest(methodName, parameters, tenant, workspace);
       default:
         return true;
     }
+  }
+
+  private boolean checkIdNotNull(List<String> parameters) {
+    if (CollectionUtils.isEmpty(parameters) || !StringUtils.isNumeric(parameters.get(0))) {
+      log.error("parameters {} is empty or is not numeric.", parameters);
+      return false;
+    }
+    return true;
   }
 
   private boolean checkPageRequest(String methodName, List<String> parameters, String tenant,
@@ -98,13 +107,12 @@ public class AlarmDingDingRobotFacadeImplChecker implements LevelAuthorizationCh
     return checkAlarmDingDingRobotDTO(methodName, target, tenant, workspace);
   }
 
-  private boolean checkId(List<String> parameters, String tenant, String workspace) {
-    if (CollectionUtils.isEmpty(parameters) || !StringUtils.isNumeric(parameters.get(0))) {
-      log.error("parameters {} is empty or is not numeric.", parameters);
+  private boolean checkIdExists(List<String> parameters, String tenant, String workspace) {
+    if (!checkIdNotNull(parameters)) {
       return false;
     }
     Long id = Long.parseLong(parameters.get(0));
-    return checkId(id, tenant, workspace);
+    return checkIdExists(id, tenant, workspace);
   }
 
   private boolean checkAlarmDingDingRobotDTO(String methodName, List<String> parameters,
@@ -135,7 +143,7 @@ public class AlarmDingDingRobotFacadeImplChecker implements LevelAuthorizationCh
         log.error("fail to check {} for id is null", methodName);
         return false;
       }
-      if (!checkId(dto.getId(), tenant, workspace)) {
+      if (!checkIdExists(dto.getId(), tenant, workspace)) {
         return false;
       }
     }
@@ -198,11 +206,13 @@ public class AlarmDingDingRobotFacadeImplChecker implements LevelAuthorizationCh
     return true;
   }
 
-  private boolean checkId(Long id, String tenant, String workspace) {
+  private boolean checkIdExists(Long id, String tenant, String workspace) {
     QueryWrapper<AlarmDingDingRobot> queryWrapper = new QueryWrapper<>();
     queryWrapper.eq("id", id);
     queryWrapper.eq("tenant", tenant);
-    queryWrapper.eq("workspace", workspace);
+    if (StringUtils.isNotEmpty(workspace)) {
+      queryWrapper.eq("workspace", workspace);
+    }
     List<AlarmDingDingRobot> exist = this.alarmDingDingRobotMapper.selectList(queryWrapper);
     if (CollectionUtils.isEmpty(exist)) {
       log.error("fail to check id for no existed {} {} {}", id, tenant, workspace);

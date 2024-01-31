@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.google.common.reflect.TypeToken;
 import io.holoinsight.server.common.J;
 import io.holoinsight.server.home.common.util.scope.MonitorScope;
+import io.holoinsight.server.home.common.util.scope.MonitorUser;
 import io.holoinsight.server.home.common.util.scope.RequestContext;
 import io.holoinsight.server.home.dal.mapper.AlertTemplateMapper;
 import io.holoinsight.server.home.dal.model.AlertTemplate;
@@ -178,13 +179,18 @@ public class AlertTemplateFacadeImplChecker implements LevelAuthorizationCheck {
       return false;
     }
 
-    if (StringUtils.isNotEmpty(templateDTO.creator) && !checkSqlField(templateDTO.creator)) {
-      log.error("fail to check {} for invalid creator {}", methodName, templateDTO.creator);
+    MonitorUser mu = RequestContext.getContext().mu;
+    if (StringUtils.isNotEmpty(templateDTO.creator)
+        && !StringUtils.equals(templateDTO.creator, mu.getLoginName())) {
+      log.error("fail to check {} for invalid creator {} for login name {}", methodName,
+          templateDTO.creator, mu.getLoginName());
       return false;
     }
 
-    if (StringUtils.isNotEmpty(templateDTO.modifier) && !checkSqlField(templateDTO.modifier)) {
-      log.error("fail to check {} for invalid modifier {}", methodName, templateDTO.modifier);
+    if (StringUtils.isNotEmpty(templateDTO.modifier)
+        && !StringUtils.equals(templateDTO.modifier, mu.getLoginName())) {
+      log.error("fail to check {} for invalid modifier {} for login name {}", methodName,
+          templateDTO.modifier, mu.getLoginName());
       return false;
     }
 
