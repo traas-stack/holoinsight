@@ -74,6 +74,7 @@ public class Executor {
   private final AsyncOutput output;
   private final LastRun saveOffsetsLastRun;
   private final Admin adminClient;
+  private final AggMetaService aggMetaService;
 
   private final CountDownLatch stopCDL = new CountDownLatch(1);
   private volatile boolean stopped;
@@ -85,7 +86,7 @@ public class Executor {
   Executor(int index, ExecutorConfig config, PartitionStateStore stateStore,
       ForkJoinPool threadpool, KafkaProducer<AggTaskKey, AggProtos.AggTaskValue> kafkaProducer,
       IAggTaskService aggTaskService, CompletenessService completenessService, AsyncOutput output,
-      ExecutorService ioTP, Admin adminClient) {
+      ExecutorService ioTP, Admin adminClient, AggMetaService aggMetaService) {
     this.index = index;
     this.config = Objects.requireNonNull(config);
     this.stateStore = Objects.requireNonNull(stateStore);
@@ -97,6 +98,7 @@ public class Executor {
     this.ioTP = Objects.requireNonNull(ioTP);
     this.adminClient = Objects.requireNonNull(adminClient);
     this.saveOffsetsLastRun = new LastRun(ioTP);
+    this.aggMetaService = Objects.requireNonNull(aggMetaService);
   }
 
   private void loop() {
@@ -450,7 +452,7 @@ public class Executor {
         }
 
         pp = new PartitionProcessor( //
-            partition, aggTaskService, config, completenessService, output, ioTP);
+            partition, aggTaskService, config, completenessService, output, ioTP, aggMetaService);
         partitionProcessorMap.put(partition, pp);
 
         if (forceBegin) {

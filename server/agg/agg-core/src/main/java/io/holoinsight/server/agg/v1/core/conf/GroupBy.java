@@ -12,7 +12,6 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.google.common.base.Preconditions;
 
-import io.holoinsight.server.agg.v1.core.data.DataAccessor;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.Getter;
@@ -79,10 +78,4 @@ public class GroupBy {
     }
   }
 
-  public void fillTagValuesFromDataAccessor(String[] values, DataAccessor da) {
-    Preconditions.checkArgument(values.length == items.size());
-    for (int i = 0; i < items.size(); i++) {
-      values[i] = items.get(i).get(da);
-    }
-  }
 }

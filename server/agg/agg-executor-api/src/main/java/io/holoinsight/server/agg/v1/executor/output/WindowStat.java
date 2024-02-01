@@ -19,6 +19,8 @@ public class WindowStat {
   private int discardKeyLimit;
   private int error;
   private int filterWhere;
+  private int discardMetaUnmatched;
+  private int matchMultiMeta;
 
   public void incInput() {
     input++;
@@ -39,5 +41,13 @@ public class WindowStat {
   @Override
   public String toString() {
     return JSON.toJSONString(this);
+  }
+
+  public void incDiscardMetaUnmatched() {
+    discardMetaUnmatched++;
+  }
+
+  public void incMatchMultiMeta() {
+    matchMultiMeta++;
   }
 }

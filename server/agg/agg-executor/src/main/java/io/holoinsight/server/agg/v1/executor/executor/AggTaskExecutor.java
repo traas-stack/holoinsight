@@ -57,6 +57,7 @@ public class AggTaskExecutor {
   private final AggTaskState state;
   private final CompletenessService completenessService;
   private final AsyncOutput output;
+  private final AggMetaService aggMetaService;
 
   /**
    * AggTaskExecutor should ignore data whose aligned ts < ignoredMinWatermark
@@ -82,10 +83,11 @@ public class AggTaskExecutor {
   transient XAggTask lastUsedAggTask;
 
   public AggTaskExecutor(AggTaskState state, CompletenessService completenessService,
-      AsyncOutput output) {
+      AsyncOutput output, AggMetaService aggMetaService) {
     this.state = Objects.requireNonNull(state);
     this.completenessService = Objects.requireNonNull(completenessService);
     this.output = Objects.requireNonNull(output);
+    this.aggMetaService = Objects.requireNonNull(aggMetaService);
   }
 
   /**
@@ -100,17 +102,16 @@ public class AggTaskExecutor {
         processCompletenessInfo(latestAggTask, aggTaskValue);
         break;
       default:
-        processData(latestAggTask, aggTaskValue);
-        processData2(latestAggTask, aggTaskValue);
+        if (aggTaskValue.hasDataTable()) {
+          processData2(latestAggTask, aggTaskValue);
+        } else {
+          processData(latestAggTask, aggTaskValue);
+        }
         break;
     }
   }
 
   private void processData2(XAggTask latestAggTask, AggProtos.AggTaskValue aggTaskValue) {
-    if (!aggTaskValue.hasDataTable()) {
-      return;
-    }
-
     long now = System.currentTimeMillis();
     AggWindowState lastWindowState = null;
     AggProtos.Table table = aggTaskValue.getDataTable();
@@ -171,10 +172,8 @@ public class AggTaskExecutor {
       CompletenessUtils.processCompletenessInfoInData(w, da);
 
       // decide which group to use
-      Group g = w.getOrCreateGroup(da, this::onGroupCreate);
+      Group g = w.getOrCreateGroup(da, aggMetaService, this::onGroupCreate);
       if (g == null) {
-        w.getStat().incDiscardKeyLimit();
-        log.error("[agg] [{}] group key limit exceeded", key());
         continue;
       }
 
@@ -248,9 +247,8 @@ public class AggTaskExecutor {
       CompletenessUtils.processCompletenessInfoInData(w, da);
 
       // decide which group to use
-      Group g = w.getOrCreateGroup(da, this::onGroupCreate);
+      Group g = w.getOrCreateGroup(da, aggMetaService, this::onGroupCreate);
       if (g == null) {
-        w.getStat().incDiscardKeyLimit();
         continue;
       }
 
