@@ -8,6 +8,7 @@ import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
 
@@ -147,5 +148,14 @@ public final class FixedSizeTags implements Cloneable {
     }
 
     return defaultValue;
+  }
+
+  @VisibleForTesting
+  public FixedSizeTags with(String key, String value) {
+    String[] keys = Arrays.copyOf(this.keys, this.keys.length + 1);
+    String[] values = Arrays.copyOf(this.values, this.keys.length + 1);
+    keys[keys.length - 1] = key;
+    values[values.length - 1] = value;
+    return new FixedSizeTags(keys, values);
   }
 }
