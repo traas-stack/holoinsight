@@ -128,10 +128,10 @@ public abstract class GatewayService {
     notify.setAlertRuleExtra(extra);
     NotificationTemplate notificationTemplate = extra == null ? null : extra.getDingTalkTemplate();
     if (notificationTemplate == null) {
-      Long alertNotificationTemplateId = alertRule.getAlertNotificationTemplateId();
-      if (alertNotificationTemplateId != null) {
+      String alertRuleAlertTemplateUuid = alertRule.getAlertTemplateUuid();
+      if (StringUtils.isNotEmpty(alertRuleAlertTemplateUuid)) {
         AlertTemplate alertTemplate =
-            this.alertTemplateMapper.selectById(alertNotificationTemplateId);
+            this.alertTemplateMapper.selectById(alertRuleAlertTemplateUuid);
         if (alertTemplate != null) {
           AlertTemplateDTO templateDTO = this.alertTemplateConverter.doToDTO(alertTemplate);
           notificationTemplate = templateDTO.templateConfig;

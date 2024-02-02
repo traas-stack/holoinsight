@@ -243,6 +243,7 @@ public class AlertTemplateFacadeImpl extends BaseFacade {
         if (StringUtils.isNotBlank(pageRequest.getTarget().templateName)) {
           queryWrapper.like("template_name", pageRequest.getTarget().templateName);
         }
+        queryWrapper.orderByDesc("gmt_modified");
 
         Page<AlertTemplate> p = alertTemplateMapper.selectPage(page, queryWrapper);
         MonitorPageResult<AlertTemplateDTO> pageResult = new MonitorPageResult<>();
@@ -286,8 +287,8 @@ public class AlertTemplateFacadeImpl extends BaseFacade {
   @PostMapping("/check")
   @ResponseBody
   @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.EDIT)
-  public JsonResult<Boolean> checkTemplateText(@RequestBody AlertTemplateDTO templateDTO) {
-    final JsonResult<Boolean> result = new JsonResult<>();
+  public JsonResult<AlertTemplateDTO> checkTemplateText(@RequestBody AlertTemplateDTO templateDTO) {
+    final JsonResult<AlertTemplateDTO> result = new JsonResult<>();
 
     facadeTemplate.manage(result, new ManageCallback() {
       @Override
@@ -297,12 +298,19 @@ public class AlertTemplateFacadeImpl extends BaseFacade {
 
       @Override
       public void doManage() {
-        if (templateDTO.templateConfig == null
-            || StringUtils.isEmpty(templateDTO.templateConfig.text)) {
-          JsonResult.createSuccessResult(result, false);
+        NotificationTemplate template = templateDTO.getTemplateConfig();
+        if (template == null) {
+          result.setMessage("templateConfig is null");
           return;
         }
-        JsonResult.createSuccessResult(result, templateDTO.templateConfig.parseText());
+
+        if (StringUtils.isNotEmpty(template.text)) {
+          result.setSuccess(template.parseText());
+        } else if (!CollectionUtils.isEmpty(template.fieldMap)) {
+          template.text = template.getTemplateJson();
+          result.setSuccess(true);
+        }
+        result.setData(templateDTO);
       }
     });
 
