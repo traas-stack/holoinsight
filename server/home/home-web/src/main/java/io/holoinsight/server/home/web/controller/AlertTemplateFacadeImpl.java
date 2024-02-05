@@ -48,7 +48,7 @@ import java.util.UUID;
 
 /**
  * alert template facade
- * 
+ *
  * @author masaimu
  * @version 2023-02-21 16:43:00
  */
@@ -305,12 +305,14 @@ public class AlertTemplateFacadeImpl extends BaseFacade {
         }
 
         if (StringUtils.isNotEmpty(template.text)) {
+          if (template.parseText()) {
+            result.setData(templateDTO);
+          }
           result.setSuccess(template.parseText());
         } else if (!CollectionUtils.isEmpty(template.fieldMap)) {
           template.text = template.getTemplateJson();
           result.setSuccess(true);
         }
-        result.setData(templateDTO);
       }
     });
 
