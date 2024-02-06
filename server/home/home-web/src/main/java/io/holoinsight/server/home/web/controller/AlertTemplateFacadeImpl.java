@@ -254,6 +254,8 @@ public class AlertTemplateFacadeImpl extends BaseFacade {
           }
         }
         pageResult.setItems(dtoList);
+        pageResult.setTotalCount(p.getTotal());
+        pageResult.setTotalPage(p.getPages());
         JsonResult.createSuccessResult(result, pageResult);
       }
     });
