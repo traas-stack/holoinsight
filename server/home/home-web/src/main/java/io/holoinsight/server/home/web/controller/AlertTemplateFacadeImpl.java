@@ -311,7 +311,7 @@ public class AlertTemplateFacadeImpl extends BaseFacade {
           result.setSuccess(template.parseText());
         } else if (!CollectionUtils.isEmpty(template.fieldMap)) {
           template.text = template.getTemplateJson();
-          result.setSuccess(true);
+          result.setData(templateDTO);
         }
       }
     });
