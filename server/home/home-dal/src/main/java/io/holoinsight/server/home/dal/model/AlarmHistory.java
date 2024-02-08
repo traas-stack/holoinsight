@@ -117,4 +117,6 @@ public class AlarmHistory {
    */
   @Column(name = "app")
   private String app;
+
+  private boolean deleted;
 }
