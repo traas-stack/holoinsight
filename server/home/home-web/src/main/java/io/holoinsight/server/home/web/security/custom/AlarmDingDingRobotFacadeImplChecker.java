@@ -14,7 +14,6 @@ import io.holoinsight.server.home.dal.mapper.AlarmDingDingRobotMapper;
 import io.holoinsight.server.home.dal.model.AlarmDingDingRobot;
 import io.holoinsight.server.home.dal.model.dto.AlarmDingDingRobotDTO;
 import io.holoinsight.server.home.facade.page.MonitorPageRequest;
-import io.holoinsight.server.home.web.security.LevelAuthorizationCheck;
 import io.holoinsight.server.home.web.security.LevelAuthorizationMetaData;
 import io.holoinsight.server.home.web.security.ParameterSecurityService;
 import lombok.extern.slf4j.Slf4j;
@@ -35,7 +34,7 @@ import static io.holoinsight.server.home.web.controller.AlarmDingDingRobotFacade
  */
 @Slf4j
 @Service
-public class AlarmDingDingRobotFacadeImplChecker implements LevelAuthorizationCheck {
+public class AlarmDingDingRobotFacadeImplChecker extends AbstractResourceChecker {
 
   @Autowired
   private AlarmDingDingRobotMapper alarmDingDingRobotMapper;
@@ -74,13 +73,7 @@ public class AlarmDingDingRobotFacadeImplChecker implements LevelAuthorizationCh
     }
   }
 
-  private boolean checkIdNotNull(List<String> parameters) {
-    if (CollectionUtils.isEmpty(parameters) || !StringUtils.isNumeric(parameters.get(0))) {
-      log.error("parameters {} is empty or is not numeric.", parameters);
-      return false;
-    }
-    return true;
-  }
+
 
   private boolean checkPageRequest(String methodName, List<String> parameters, String tenant,
       String workspace) {
@@ -107,13 +100,7 @@ public class AlarmDingDingRobotFacadeImplChecker implements LevelAuthorizationCh
     return checkAlarmDingDingRobotDTO(methodName, target, tenant, workspace);
   }
 
-  private boolean checkIdExists(List<String> parameters, String tenant, String workspace) {
-    if (!checkIdNotNull(parameters)) {
-      return false;
-    }
-    Long id = Long.parseLong(parameters.get(0));
-    return checkIdExists(id, tenant, workspace);
-  }
+
 
   private boolean checkAlarmDingDingRobotDTO(String methodName, List<String> parameters,
       String tenant, String workspace) {
@@ -206,7 +193,8 @@ public class AlarmDingDingRobotFacadeImplChecker implements LevelAuthorizationCh
     return true;
   }
 
-  private boolean checkIdExists(Long id, String tenant, String workspace) {
+  @Override
+  boolean checkIdExists(Long id, String tenant, String workspace) {
     QueryWrapper<AlarmDingDingRobot> queryWrapper = new QueryWrapper<>();
     queryWrapper.eq("id", id);
     queryWrapper.eq("tenant", tenant);
