@@ -51,13 +51,16 @@ public class SuperCacheService extends ScheduleLoadTask {
     ProdLog.info("[SuperCache] load start");
     SuperCache sc = new SuperCache();
     sc.metaDataDictValueMap = metaDictValueService.getMetaDictValue();
+    ProdLog.info("[SuperCache][metaDataDictValueMap] size: " + sc.metaDataDictValueMap.size());
     sc.expressionMetricList = metricInfoService.querySpmList();
+    ProdLog.info("[SuperCache][expressionMetricList] size: " + sc.expressionMetricList.size());
     sc.workspaceTenantMap = new HashMap<>();
     QueryWrapper<MonitorInstance> queryWrapper = new QueryWrapper<>();
-    queryWrapper.eq("deleted", false);
+    queryWrapper.eq("deleted", 0);
     List<MonitorInstance> instances = monitorInstanceService.list(queryWrapper);
     instances.forEach(
         instance -> sc.workspaceTenantMap.put(instance.getWorkspace(), instance.getTenant()));
+    ProdLog.info("[SuperCache][workspaceTenantMap] size: " + sc.workspaceTenantMap.size());
     queryMetricInfoByPage(sc);
     this.sc = sc;
     ProdLog.info("[SuperCache] load end");
@@ -104,5 +107,7 @@ public class SuperCacheService extends ScheduleLoadTask {
     } while (current < 1000);
     sc.metricInfoMap = map;
     sc.workspaceMetricInfoMap = workspaceMap;
+    ProdLog.info("[SuperCache][metricInfoMap] size: " + sc.metricInfoMap.size());
+    ProdLog.info("[SuperCache][workspaceMetricInfoMap] size: " + sc.workspaceMetricInfoMap.size());
   }
 }
