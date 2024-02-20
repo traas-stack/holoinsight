@@ -57,7 +57,7 @@ public abstract class AlertNotifyHandler implements AlertHandlerExecutor {
     for (AlertNotify alertNotify : alertNotifies) {
       try {
         LOGGER.info("{} alert notify handle begin.", alertNotify.getTraceId());
-        if (alertNotify.getIsRecover() != null && alertNotify.getIsRecover()) {
+        if (alertNotify.nonNotifyRecover()) {
           LOGGER.info("{} alert notify is recover.", alertNotify.getTraceId());
           continue;
         }
@@ -121,6 +121,7 @@ public abstract class AlertNotifyHandler implements AlertHandlerExecutor {
     alertNotifyRequest.setWorkspace(getWorkspace(alertNotify));
     alertNotifyRequest.setLogAnalysis(alertNotify.getLogAnalysis());
     alertNotifyRequest.setLogSample(alertNotify.getLogSample());
+    alertNotifyRequest.setNotifyRecover(alertNotify.notifyRecover());
 
     alertNotifyRequest.setAlertNotifyRecord(alertNotify.getAlertNotifyRecord());
 

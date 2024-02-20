@@ -119,11 +119,4 @@ public class DoConvert {
     return alarmHistory;
   }
 
-  public static AlertNotify eventInfoConverter(AlertmanagerWebhook alertmanagerWebhook) {
-    AlertNotify alertNotify = new AlertNotify();
-    BeanUtils.copyProperties(alertmanagerWebhook, alertNotify);
-    // alarmNotify.setMembers(alertmanagerWebhook.getSucribeInfoListOrBuilderList().stream().map(AlarmWebhook.SubcribeInfoOrBuilder::getNoticeId).collect(Collectors.toList()));
-    return alertNotify;
-  }
-
 }
