@@ -59,7 +59,7 @@ public class SuperCacheService extends ScheduleLoadTask {
     queryWrapper.eq("deleted", 0);
     List<MonitorInstance> instances = monitorInstanceService.list(queryWrapper);
     instances.forEach(
-            instance -> sc.workspaceTenantMap.put(instance.getWorkspace(), instance.getTenant()));
+        instance -> sc.workspaceTenantMap.put(instance.getWorkspace(), instance.getTenant()));
     ProdLog.info("[SuperCache][workspaceTenantMap] size: " + sc.workspaceTenantMap.size());
     queryMetricInfoByPage(sc);
     this.sc = sc;
@@ -98,9 +98,9 @@ public class SuperCacheService extends ScheduleLoadTask {
         }
         map.put(metricInfo.getMetricTable(), metricInfo);
         if (StringUtils.isNotBlank(metricInfo.getWorkspace())
-                && !StringUtils.equals(metricInfo.getWorkspace(), "-")) {
+            && !StringUtils.equals(metricInfo.getWorkspace(), "-")) {
           List<MetricInfo> list =
-                  workspaceMap.computeIfAbsent(metricInfo.getWorkspace(), k -> new ArrayList<>());
+              workspaceMap.computeIfAbsent(metricInfo.getWorkspace(), k -> new ArrayList<>());
           list.add(metricInfo);
         }
       }
