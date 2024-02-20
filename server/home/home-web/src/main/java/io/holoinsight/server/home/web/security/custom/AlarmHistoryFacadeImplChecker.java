@@ -6,6 +6,7 @@ package io.holoinsight.server.home.web.security.custom;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.google.common.reflect.TypeToken;
 import io.holoinsight.server.common.J;
+import io.holoinsight.server.home.common.service.RequestContextAdapter;
 import io.holoinsight.server.home.common.util.scope.MonitorScope;
 import io.holoinsight.server.home.common.util.scope.RequestContext;
 import io.holoinsight.server.home.dal.mapper.AlarmHistoryMapper;
@@ -16,6 +17,7 @@ import io.holoinsight.server.home.web.security.LevelAuthorizationMetaData;
 import lombok.extern.slf4j.Slf4j;
 import org.aopalliance.intercept.MethodInvocation;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
@@ -32,6 +34,8 @@ public class AlarmHistoryFacadeImplChecker extends AbstractResourceChecker {
 
   @Resource
   private AlarmHistoryMapper alarmHistoryMapper;
+  @Autowired
+  private RequestContextAdapter requestContextAdapter;
 
   @Override
   public boolean check(LevelAuthorizationMetaData levelAuthMetaData,
@@ -63,10 +67,8 @@ public class AlarmHistoryFacadeImplChecker extends AbstractResourceChecker {
   boolean checkIdExists(Long id, String tenant, String workspace) {
     QueryWrapper<AlarmHistory> queryWrapper = new QueryWrapper<>();
     queryWrapper.eq("id", id);
-    queryWrapper.eq("tenant", tenant);
-    if (StringUtils.isNotEmpty(workspace)) {
-      queryWrapper.eq("workspace", workspace);
-    }
+    this.requestContextAdapter.queryWrapperTenantAdapt(queryWrapper, tenant, workspace);
+
     List<AlarmHistory> exist = this.alarmHistoryMapper.selectList(queryWrapper);
     if (CollectionUtils.isEmpty(exist)) {
       log.error("fail to check id for no existed {} {} {}", id, tenant, workspace);

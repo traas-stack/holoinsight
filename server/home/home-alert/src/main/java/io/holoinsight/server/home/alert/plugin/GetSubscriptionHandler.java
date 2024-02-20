@@ -104,7 +104,8 @@ public class GetSubscriptionHandler implements AlertHandlerExecutor {
               alertNotify.getUniqueId(), G.get().toJson(alertSubscribeList));
 
           InspectConfig inspectConfig = alertNotify.getRuleConfig();
-          if (keepSilence(inspectConfig.getAlertSilenceConfig(), alertNotify.getAlarmTime())) {
+          if (keepSilence(alertNotify.notifyRecover(), inspectConfig.getAlertSilenceConfig(),
+              alertNotify.getAlarmTime())) {
             LOGGER.info("{} keep silence {}.", alertNotify.getTraceId(),
                 J.toJson(inspectConfig.getAlertSilenceConfig()));
             return;
@@ -230,7 +231,11 @@ public class GetSubscriptionHandler implements AlertHandlerExecutor {
     }
   }
 
-  private boolean keepSilence(AlertSilenceConfig alertSilenceConfig, Long alarmTime) {
+  private boolean keepSilence(boolean notifyRecover, AlertSilenceConfig alertSilenceConfig,
+      Long alarmTime) {
+    if (notifyRecover) {
+      return false;
+    }
     return alertSilenceConfig != null
         && !StringUtils.equals(alertSilenceConfig.getSilenceMode(), "default")
         && !alertSilenceConfig.needShoot(alarmTime);
@@ -246,9 +251,12 @@ public class GetSubscriptionHandler implements AlertHandlerExecutor {
       AlertNotify alertNotify = iterator.next();
 
       if (alertNotify.getIsRecover()) {
-        iterator.remove();
-        LOGGER.info("{} alert rule {} has recovered.", alertNotify.getTraceId(),
-            alertNotify.getUniqueId());
+        if (!alertNotify.isRecoverNotify()) {
+          // 告警屏蔽对告警恢复通知无效
+          iterator.remove();
+          LOGGER.info("{} alert rule {} has recovered.", alertNotify.getTraceId(),
+              alertNotify.getUniqueId());
+        }
         continue;
       }
 
@@ -337,6 +345,9 @@ public class GetSubscriptionHandler implements AlertHandlerExecutor {
 
   private void addGlobalWebhook(AlertNotify alertNotify,
       Map<String, List<AlarmWebhook>> alertWebhookMap) {
+    if (alertNotify.getIsRecover()) {
+      return;
+    }
     List<WebhookInfo> webhookInfos = new ArrayList<>();
     List<AlarmWebhook> alertWebhookList = alertWebhookMap.get(alertNotify.getTenant());
     if (!CollectionUtils.isEmpty(alertWebhookList)) {

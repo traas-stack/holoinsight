@@ -73,14 +73,14 @@ public abstract class GatewayService {
 
   public boolean sendAlertNotifyV3(AlertNotifyRequest notify, AlertNotifyRecordLatch recordLatch) {
     String traceId = notify.getTraceId();
-    LOGGER.info("{} receive_alarm_notify_request at {}", traceId,
-        this.environmentProperties.getDeploymentSite());
+    LOGGER.info("{} receive_alarm_notify_request at {}, recover notify {}", traceId,
+        this.environmentProperties.getDeploymentSite(), notify.isNotifyRecover());
 
     NotifyChain defaultNotifyChain = new NotifyChain(this.scheduleQueue);
 
     String tenant = notify.getTenant();
     String type = defaultNotifyChain.name;
-    if (CollectionUtils.isEmpty(notify.getNotifyDataInfos())) {
+    if (!notify.isNotifyRecover() && CollectionUtils.isEmpty(notify.getNotifyDataInfos())) {
       LOGGER.info("{} notify data info is empty.", traceId);
       RecordSucOrFailNotify.alertNotifyProcessFail(traceId + ": notify data info is empty ",
           GATEWAY, "check notify data info", notify.getAlertNotifyRecord());
@@ -183,22 +183,28 @@ public abstract class GatewayService {
    * @return
    */
   private List<Map<String, Object>> convertToInput(AlertNotifyRequest notifyRequest) {
+    List<Map<String, Object>> res = new ArrayList<>();
     Map<Trigger, List<NotifyDataInfo>> notifyDataInfoMap = notifyRequest.getNotifyDataInfos();
     if (CollectionUtils.isEmpty(notifyDataInfoMap)) {
-      return Collections.emptyList();
-    }
-    List<Map<String, Object>> res = new ArrayList<>();
-    for (Map.Entry<Trigger, List<NotifyDataInfo>> entry : notifyDataInfoMap.entrySet()) {
-      for (NotifyDataInfo notifyDataInfo : entry.getValue()) {
-        Map<String, Object> item = new HashMap<>();
-        item.put("alarmTime", notifyRequest.getAlarmTime());
-        item.put("alarmLevel", notifyRequest.getAlarmLevel());
-        item.put("alarmName", notifyRequest.getRuleName());
-        item.put("tenant", notifyRequest.getTenant());
-        item.put("triggerContent", notifyDataInfo.getTriggerContent());
-        item.put("currentValue", notifyDataInfo.getCurrentValue());
-        item.put("tags", notifyDataInfo.getTags());
-        res.add(item);
+      Map<String, Object> item = new HashMap<>();
+      item.put("alarmTime", notifyRequest.getAlarmTime());
+      item.put("alarmLevel", notifyRequest.getAlarmLevel());
+      item.put("alarmName", notifyRequest.getRuleName());
+      item.put("tenant", notifyRequest.getTenant());
+      res.add(item);
+    } else {
+      for (Map.Entry<Trigger, List<NotifyDataInfo>> entry : notifyDataInfoMap.entrySet()) {
+        for (NotifyDataInfo notifyDataInfo : entry.getValue()) {
+          Map<String, Object> item = new HashMap<>();
+          item.put("alarmTime", notifyRequest.getAlarmTime());
+          item.put("alarmLevel", notifyRequest.getAlarmLevel());
+          item.put("alarmName", notifyRequest.getRuleName());
+          item.put("tenant", notifyRequest.getTenant());
+          item.put("triggerContent", notifyDataInfo.getTriggerContent());
+          item.put("currentValue", notifyDataInfo.getCurrentValue());
+          item.put("tags", notifyDataInfo.getTags());
+          res.add(item);
+        }
       }
     }
 

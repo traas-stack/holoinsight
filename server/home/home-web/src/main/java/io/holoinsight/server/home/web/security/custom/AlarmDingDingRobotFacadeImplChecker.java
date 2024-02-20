@@ -197,10 +197,8 @@ public class AlarmDingDingRobotFacadeImplChecker extends AbstractResourceChecker
   boolean checkIdExists(Long id, String tenant, String workspace) {
     QueryWrapper<AlarmDingDingRobot> queryWrapper = new QueryWrapper<>();
     queryWrapper.eq("id", id);
-    queryWrapper.eq("tenant", tenant);
-    if (StringUtils.isNotEmpty(workspace)) {
-      queryWrapper.eq("workspace", workspace);
-    }
+    this.requestContextAdapter.queryWrapperTenantAdapt(queryWrapper, tenant, workspace);
+
     List<AlarmDingDingRobot> exist = this.alarmDingDingRobotMapper.selectList(queryWrapper);
     if (CollectionUtils.isEmpty(exist)) {
       log.error("fail to check id for no existed {} {} {}", id, tenant, workspace);

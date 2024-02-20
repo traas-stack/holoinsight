@@ -60,6 +60,8 @@ public class AlertNotify {
 
   private Boolean isRecover;
 
+  private boolean recoverNotify;
+
   private List<SubscriptionInfo> subscriptionInfos;
 
   private List<UserInfo> userInfos;
@@ -110,8 +112,11 @@ public class AlertNotify {
     try {
       BeanUtils.copyProperties(inspectConfig, alertNotify);
       BeanUtils.copyProperties(eventInfo, alertNotify);
+      if (inspectConfig.getRecover() != null) {
+        alertNotify.setRecoverNotify(inspectConfig.getRecover());
+      }
+      alertNotify.setIsPql(inspectConfig.getIsPql() != null && inspectConfig.getIsPql());
       if (!eventInfo.getIsRecover()) {
-        alertNotify.setIsPql(inspectConfig.getIsPql() != null && inspectConfig.getIsPql());
         Map<Trigger, List<NotifyDataInfo>> notifyDataInfoMap = new HashMap<>();
         eventInfo.getAlarmTriggerResults().forEach((trigger, resultList) -> {
           List<NotifyDataInfo> notifyDataInfos = new ArrayList<>();
@@ -137,13 +142,13 @@ public class AlertNotify {
         }
         alertNotify.setNotifyDataInfos(notifyDataInfoMap);
         alertNotify.setAggregationNum(notifyDataInfoMap.size());
-        alertNotify.setEnvType(eventInfo.getEnvType());
-        // 对于平台消费侧，可能需要知道完整的告警规则
-        alertNotify.setRuleConfig(inspectConfig);
-        tryFixAlertLevel(alertNotify, eventInfo.getAlarmTriggerResults());
-        alertNotify.setAlertServer(AddressUtil.getLocalHostName());
-        alertNotify.setAlertIp(AddressUtil.getHostAddress());
       }
+      alertNotify.setEnvType(eventInfo.getEnvType());
+      // 对于平台消费侧，可能需要知道完整的告警规则
+      alertNotify.setRuleConfig(inspectConfig);
+      tryFixAlertLevel(alertNotify, eventInfo.getAlarmTriggerResults());
+      alertNotify.setAlertServer(AddressUtil.getLocalHostName());
+      alertNotify.setAlertIp(AddressUtil.getHostAddress());
     } catch (Exception e) {
       RecordSucOrFailNotify.alertNotifyProcessFail("event convert alert notify exception" + e,
           "alert task compute", "event convert alert notify", alertNotify.getAlertNotifyRecord());
@@ -181,5 +186,19 @@ public class AlertNotify {
     templateValue.setAlarmLevel(AlertLevel.getByCode(alertNotify.getAlarmLevel()));
     templateValues.add(templateValue);
     return templateValues;
+  }
+
+  public boolean notifyRecover() {
+    if (isRecover == null) {
+      return false;
+    }
+    return isRecover && recoverNotify;
+  }
+
+  public boolean nonNotifyRecover() {
+    if (isRecover == null) {
+      return false;
+    }
+    return isRecover && !recoverNotify;
   }
 }
