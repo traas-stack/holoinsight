@@ -36,12 +36,6 @@ public class CommonServiceAutoConfiguration {
     return new SuperCacheService();
   }
 
-  @Bean
-  @ConditionalOnMissingBean
-  public ResourceKeysHolder resourceKeysHolder() {
-    return new ResourceKeysHolder();
-  }
-
 
   @Bean
   @ConditionalOnMissingBean

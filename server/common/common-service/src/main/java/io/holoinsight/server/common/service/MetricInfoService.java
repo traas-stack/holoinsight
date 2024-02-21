@@ -24,6 +24,8 @@ public interface MetricInfoService extends IService<MetricInfo> {
 
   List<MetricInfoDTO> queryListByTenant(String tenant, String workspace);
 
+  List<MetricInfo> queryListByWorkspace(String workspace);
+
   List<MetricInfoDTO> queryListByTenantProduct(String tenant, String workspace, String product);
 
   MetricInfoDTO queryByMetric(String tenant, String workspace, String metric);
