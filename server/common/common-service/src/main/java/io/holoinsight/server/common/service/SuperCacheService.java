@@ -8,7 +8,6 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.holoinsight.server.common.config.ProdLog;
 import io.holoinsight.server.common.config.ScheduleLoadTask;
 import io.holoinsight.server.common.dao.entity.MetricInfo;
-import io.holoinsight.server.common.dao.entity.MonitorInstance;
 import io.holoinsight.server.common.dao.mapper.MetricInfoMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -16,12 +15,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 /**
  *
@@ -38,9 +33,6 @@ public class SuperCacheService extends ScheduleLoadTask {
   @Autowired
   private MetricInfoService metricInfoService;
 
-  @Autowired
-  private MonitorInstanceService monitorInstanceService;
-
   @Resource
   private MetricInfoMapper metricInfoMapper;
 
@@ -53,13 +45,10 @@ public class SuperCacheService extends ScheduleLoadTask {
     ProdLog.info("[SuperCache] load start");
     SuperCache sc = new SuperCache();
     sc.metaDataDictValueMap = metaDictValueService.getMetaDictValue();
+    ProdLog.info("[SuperCache][metaDataDictValueMap] size: " + sc.metaDataDictValueMap.size());
     sc.expressionMetricList = metricInfoService.querySpmList();
-    sc.workspaceTenantMap = new HashMap<>();
-    QueryWrapper<MonitorInstance> queryWrapper = new QueryWrapper<>();
-    queryWrapper.eq("deleted", false);
-    List<MonitorInstance> instances = monitorInstanceService.list(queryWrapper);
-    instances.forEach(
-        instance -> sc.workspaceTenantMap.put(instance.getWorkspace(), instance.getTenant()));
+    ProdLog.info("[SuperCache][expressionMetricList] size: " + sc.expressionMetricList.size());
+
     queryMetricInfoByPage(sc);
     this.sc = sc;
     ProdLog.info("[SuperCache] load end");
@@ -81,7 +70,6 @@ public class SuperCacheService extends ScheduleLoadTask {
 
     int current = 1;
     Map<String /* metric table */, MetricInfo> map = new HashMap<>();
-    Map<String /* ref */, List<MetricInfo>> workspaceMap = new HashMap<>();
     int size = 1000;
     do {
       Page<MetricInfo> page = new Page<>(current++, size);
@@ -96,15 +84,9 @@ public class SuperCacheService extends ScheduleLoadTask {
           continue;
         }
         map.put(metricInfo.getMetricTable(), metricInfo);
-        if (StringUtils.isNotBlank(metricInfo.getWorkspace())
-            && !StringUtils.equals(metricInfo.getWorkspace(), "-")) {
-          List<MetricInfo> list =
-              workspaceMap.computeIfAbsent(metricInfo.getWorkspace(), k -> new ArrayList<>());
-          list.add(metricInfo);
-        }
       }
     } while (current < 1000);
     sc.metricInfoMap = map;
-    sc.workspaceMetricInfoMap = workspaceMap;
+    ProdLog.info("[SuperCache][metricInfoMap] size: " + sc.metricInfoMap.size());
   }
 }

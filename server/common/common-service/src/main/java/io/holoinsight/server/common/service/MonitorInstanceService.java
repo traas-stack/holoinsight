@@ -14,6 +14,8 @@ public interface MonitorInstanceService extends IService<MonitorInstance> {
 
   List<MonitorInstance> queryByInstance(String instance);
 
+  List<MonitorInstance> queryByWorkspace(String workspace);
+
   List<MonitorInstance> queryByType(String type);
 
   MonitorInstance queryByInstanceAndType(String instance, String type);

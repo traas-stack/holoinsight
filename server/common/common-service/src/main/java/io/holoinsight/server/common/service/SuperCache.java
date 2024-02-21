@@ -3,9 +3,12 @@
  */
 package io.holoinsight.server.common.service;
 
+import com.google.gson.reflect.TypeToken;
+import io.holoinsight.server.common.J;
 import io.holoinsight.server.common.dao.entity.MetaDataDictValue;
 import io.holoinsight.server.common.dao.entity.MetricInfo;
 import io.holoinsight.server.query.grpc.QueryProto.QueryRequest;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.List;
 import java.util.Map;
@@ -21,9 +24,6 @@ public class SuperCache {
   public Map<String, QueryRequest> expressionMetricList;
 
   public Map<String /* metric table */, MetricInfo> metricInfoMap;
-  public Map<String /* workspace */, List<MetricInfo>> workspaceMetricInfoMap;
-
-  public Map<String /* workspace */, String /* tenant */> workspaceTenantMap;
 
   public String getStringValue(String type, String k) {
 
@@ -39,5 +39,21 @@ public class SuperCache {
       return null;
     }
     return meta.getDictValue();
+  }
+
+  public List<String> getListValue(String type, String k, List<String> defaultValues) {
+
+    Map<String, MetaDataDictValue> kMap = this.metaDataDictValueMap.get(type);
+
+    if (null == kMap) {
+      return defaultValues;
+    }
+
+    MetaDataDictValue meta = kMap.get(k);
+
+    if (null == meta || StringUtils.isBlank(meta.getDictValue())) {
+      return defaultValues;
+    }
+    return J.fromJson(meta.getDictValue(), new TypeToken<List<String>>() {}.getType());
   }
 }
