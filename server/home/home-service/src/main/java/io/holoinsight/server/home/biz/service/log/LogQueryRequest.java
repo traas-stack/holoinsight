@@ -64,7 +64,7 @@ public class LogQueryRequest {
   /**
    * order by time
    */
-  private boolean isReverse = true;
+  private Boolean isReverse = true;
 
   /**
    * type
