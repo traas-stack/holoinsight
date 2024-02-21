@@ -105,6 +105,7 @@ public class InitRunner implements ApplicationRunner {
         dataClientService.queryAll("anything");
         break;
       } catch (Throwable ignored) {
+        // This catch statement is intentionally empty
       }
     }
   }

@@ -5,11 +5,8 @@ package io.holoinsight.server.agg.v1.core.conf;
 
 import java.util.List;
 
-import javax.annotation.Nonnull;
 
 import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
 
 /**
  * <p>

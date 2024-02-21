@@ -88,7 +88,7 @@ public class PqlTest {
 
   public static void main(String[] args) {
     for (String pql : pqls) {
-      System.out.println(pql);
+      // System.out.println(pql);
       Parser p = new Parser();
       p.initLexer(pql);
       Expr e = null;
@@ -97,9 +97,9 @@ public class PqlTest {
       } catch (PqlException ex) {
         ex.printStackTrace();
       }
-      System.out.println(e.explain());
-      System.out.println(J.toJson(e.explainToList()));
-      System.out.println("\n");
+      // System.out.println(e.explain());
+      // System.out.println(J.toJson(e.explainToList()));
+      // System.out.println("\n");
     }
   }
 }

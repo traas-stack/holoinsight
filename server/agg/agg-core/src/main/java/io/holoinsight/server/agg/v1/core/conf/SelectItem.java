@@ -8,7 +8,6 @@ import javax.annotation.Nullable;
 
 import lombok.Data;
 
-import com.alibaba.fastjson.annotation.JSONCreator;
 import com.alibaba.fastjson.annotation.JSONField;
 
 /**

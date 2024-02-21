@@ -21,7 +21,6 @@ import okhttp3.Request.Builder;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -85,7 +84,7 @@ public class HttpClientUtils {
     params.put("time", System.currentTimeMillis() / 1000);
     params.put("isabc", false);
     HttpUrl httpUrl = withParams(new Endpoint("127.0.0.1", 9090), "api/v1/query", params);
-    System.out.println(httpUrl);
+    // System.out.println(httpUrl);
   }
 
   public static HttpUrl withParams(Endpoint endpoint, String url, Map<String, Object> params) {

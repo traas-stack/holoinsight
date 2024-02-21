@@ -23,4 +23,7 @@ public interface UserOpLogService extends IService<UserOpLog> {
 
   UserOpLog append(String tableName, Long tableEntityId, String opType, String user, String tenant,
       String workspace, String before, String after, String relate, String name);
+
+  UserOpLog append(String tableName, String tableEntityUuid, String opType, String user,
+      String tenant, String workspace, String before, String after, String relate, String name);
 }

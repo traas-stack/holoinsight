@@ -329,10 +329,7 @@ public final class ID extends com.google.protobuf.GeneratedMessageV3 implements
       maybeForceBuilderInitialization();
     }
 
-    private void maybeForceBuilderInitialization() {
-      if (com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders) {
-      }
-    }
+    private void maybeForceBuilderInitialization() {}
 
     @java.lang.Override
     public Builder clear() {
@@ -365,7 +362,6 @@ public final class ID extends com.google.protobuf.GeneratedMessageV3 implements
     public io.holoinsight.server.apm.grpc.trace.ID buildPartial() {
       io.holoinsight.server.apm.grpc.trace.ID result =
           new io.holoinsight.server.apm.grpc.trace.ID(this);
-      int from_bitField0_ = bitField0_;
       if (((bitField0_ & 0x00000001) != 0)) {
         id_ = id_.getUnmodifiableView();
         bitField0_ = (bitField0_ & ~0x00000001);
@@ -607,4 +603,3 @@ public final class ID extends com.google.protobuf.GeneratedMessageV3 implements
   }
 
 }
-

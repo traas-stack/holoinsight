@@ -12,7 +12,6 @@ import io.holoinsight.server.home.facade.trigger.Trigger;
 import io.holoinsight.server.home.facade.utils.ApiSecurityService;
 import io.holoinsight.server.home.facade.utils.CreateCheck;
 import io.holoinsight.server.home.facade.utils.ExistCheck;
-import io.holoinsight.server.home.facade.utils.ParaCheckUtil;
 import io.holoinsight.server.home.facade.utils.UpdateCheck;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -179,10 +178,12 @@ public class AlarmRuleDTO extends ApiSecurity {
    */
   private String pql;
 
-  /**
-   * 告警模板ID
-   */
   private Long alertNotificationTemplateId;
+
+  /**
+   * 告警模板UUID
+   */
+  private String alertTemplateUuid;
 
   public static void tryParseLink(AlarmRuleDTO alarmRuleDTO, String domain,
       Map<String /* metric */, Map<String /* type */, String /* page */>> systemMetrics,

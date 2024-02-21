@@ -19,7 +19,6 @@ public class CloseUtil {
       try {
         closeable.close();
       } catch (IOException var2) {
-        ;
       }
 
     }
@@ -30,7 +29,6 @@ public class CloseUtil {
       try {
         socket.close();
       } catch (IOException var2) {
-        ;
       }
 
     }
@@ -41,7 +39,6 @@ public class CloseUtil {
       try {
         serverSocket.close();
       } catch (IOException var2) {
-        ;
       }
     }
   }

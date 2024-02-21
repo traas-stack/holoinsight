@@ -4,6 +4,9 @@
 package io.holoinsight.server.agg.v1.core;
 
 import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.temporal.ChronoUnit;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -17,6 +20,7 @@ import java.util.concurrent.ThreadFactory;
 import com.google.common.collect.Maps;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
+import io.holoinsight.server.agg.v1.core.conf.Window;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -32,6 +36,15 @@ public final class Utils {
 
   private static final ThreadLocal<SimpleDateFormat> SHORT_SDF_TL =
       ThreadLocal.withInitial(() -> new SimpleDateFormat("HH:mm:ss"));
+  private static final long ALIGN_DAY_ADJUST;
+  private static final long DAY_MILLS = 86400000L;
+
+  static {
+    Instant now = Instant.now();
+    ALIGN_DAY_ADJUST =
+        now.atZone(ZoneId.systemDefault()).truncatedTo(ChronoUnit.DAYS).toInstant().toEpochMilli()
+            - now.toEpochMilli() / DAY_MILLS * DAY_MILLS;
+  }
 
   private Utils() {}
 
@@ -51,8 +64,24 @@ public final class Utils {
     return formatTimeShort(new Date(ts));
   }
 
-  public static long align(long ts, long window) {
-    return ts / window * window;
+  /**
+   * <p>
+   * Align timestamp to window.interval .
+   * <p>
+   * If window.interval equals to {@link #DAY_MILLS}; then timestamp is aligned using local
+   * timezone.
+   * 
+   * @param ts
+   * @param window
+   * @return
+   */
+  public static long align(long ts, Window window) {
+    long i = window.getInterval();
+    if (i == DAY_MILLS) {
+      return ts / i * i + ALIGN_DAY_ADJUST;
+    } else {
+      return ts / i * i;
+    }
   }
 
   public static ExecutorService createThreadPool(String namePrefix, int size) {

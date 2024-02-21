@@ -3,11 +3,11 @@
  */
 package io.holoinsight.server.home.biz.service;
 
+import com.baomidou.mybatisplus.extension.service.IService;
 import io.holoinsight.server.home.dal.model.AlarmHistory;
 import io.holoinsight.server.home.facade.AlarmHistoryDTO;
 import io.holoinsight.server.home.facade.page.MonitorPageRequest;
 import io.holoinsight.server.home.facade.page.MonitorPageResult;
-import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.util.List;
 
@@ -22,5 +22,7 @@ public interface AlarmHistoryService extends IService<AlarmHistory> {
 
   MonitorPageResult<AlarmHistoryDTO> getListByPage(MonitorPageRequest<AlarmHistoryDTO> pageRequest,
       List<String> uniqueIds);
+
+  Boolean deleteById(Long id);
 
 }

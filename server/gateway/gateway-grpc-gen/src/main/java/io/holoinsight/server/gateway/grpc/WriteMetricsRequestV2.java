@@ -610,7 +610,6 @@ public final class WriteMetricsRequestV2 extends com.google.protobuf.GeneratedMe
       public io.holoinsight.server.gateway.grpc.WriteMetricsRequestV2.Batch buildPartial() {
         io.holoinsight.server.gateway.grpc.WriteMetricsRequestV2.Batch result =
             new io.holoinsight.server.gateway.grpc.WriteMetricsRequestV2.Batch(this);
-        int from_bitField0_ = bitField0_;
         if (headerBuilder_ == null) {
           result.header_ = header_;
         } else {
@@ -1988,10 +1987,7 @@ public final class WriteMetricsRequestV2 extends com.google.protobuf.GeneratedMe
         maybeForceBuilderInitialization();
       }
 
-      private void maybeForceBuilderInitialization() {
-        if (com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders) {
-        }
-      }
+      private void maybeForceBuilderInitialization() {}
 
       @java.lang.Override
       public Builder clear() {
@@ -2034,7 +2030,6 @@ public final class WriteMetricsRequestV2 extends com.google.protobuf.GeneratedMe
       public io.holoinsight.server.gateway.grpc.WriteMetricsRequestV2.BatchHeader buildPartial() {
         io.holoinsight.server.gateway.grpc.WriteMetricsRequestV2.BatchHeader result =
             new io.holoinsight.server.gateway.grpc.WriteMetricsRequestV2.BatchHeader(this);
-        int from_bitField0_ = bitField0_;
         result.metricName_ = metricName_;
         if (((bitField0_ & 0x00000001) != 0)) {
           tagKeys_ = tagKeys_.getUnmodifiableView();
@@ -3640,7 +3635,6 @@ public final class WriteMetricsRequestV2 extends com.google.protobuf.GeneratedMe
       public io.holoinsight.server.gateway.grpc.WriteMetricsRequestV2.BatchValue buildPartial() {
         io.holoinsight.server.gateway.grpc.WriteMetricsRequestV2.BatchValue result =
             new io.holoinsight.server.gateway.grpc.WriteMetricsRequestV2.BatchValue(this);
-        int from_bitField0_ = bitField0_;
         result.timestamp_ = timestamp_;
         if (((bitField0_ & 0x00000001) != 0)) {
           tagValues_ = tagValues_.getUnmodifiableView();
@@ -4824,7 +4818,6 @@ public final class WriteMetricsRequestV2 extends com.google.protobuf.GeneratedMe
     public io.holoinsight.server.gateway.grpc.WriteMetricsRequestV2 buildPartial() {
       io.holoinsight.server.gateway.grpc.WriteMetricsRequestV2 result =
           new io.holoinsight.server.gateway.grpc.WriteMetricsRequestV2(this);
-      int from_bitField0_ = bitField0_;
       if (headerBuilder_ == null) {
         result.header_ = header_;
       } else {
@@ -5380,4 +5373,3 @@ public final class WriteMetricsRequestV2 extends com.google.protobuf.GeneratedMe
   }
 
 }
-

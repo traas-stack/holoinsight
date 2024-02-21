@@ -350,10 +350,7 @@ public final class GetControlConfigsResponse extends com.google.protobuf.Generat
       maybeForceBuilderInitialization();
     }
 
-    private void maybeForceBuilderInitialization() {
-      if (com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders) {
-      }
-    }
+    private void maybeForceBuilderInitialization() {}
 
     @java.lang.Override
     public Builder clear() {
@@ -720,4 +717,3 @@ public final class GetControlConfigsResponse extends com.google.protobuf.Generat
   }
 
 }
-

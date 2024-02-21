@@ -19,7 +19,6 @@ import org.apache.kafka.clients.admin.AdminClientConfig;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.springframework.beans.factory.DisposableBean;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import io.holoinsight.server.agg.v1.core.Utils;
 import io.holoinsight.server.agg.v1.core.data.AggKeySerdes;
@@ -44,6 +43,8 @@ import lombok.extern.slf4j.Slf4j;
 public class ExecutorManager implements DisposableBean {
   private final ExecutorConfig config;
   private final List<Executor> executors = new ArrayList<>();
+  @Setter
+  AggMetaService aggMetaService;
   /**
    * When a partition is idle, ExecutorManager will send a timestamp event to it in order to push
    * event time forward. event time forward
@@ -58,8 +59,6 @@ public class ExecutorManager implements DisposableBean {
   @Setter
   private AsyncOutput output;
   @Setter
-  private AggExecutorConfig aggExecutorConfig;
-
   private Admin adminClient;
 
   public ExecutorManager(ExecutorConfig config) {
@@ -123,7 +122,7 @@ public class ExecutorManager implements DisposableBean {
     if (config.getExecutorCount() <= 1) {
       // run in current thread
       Executor executor = new Executor(0, config, stateStore, computingTP, kafkaProducer,
-          aggTaskService, completenessService, output, ioTP, adminClient);
+          aggTaskService, completenessService, output, ioTP, adminClient, aggMetaService);
       executors.add(executor);
       executor.run();
     } else {
@@ -133,7 +132,7 @@ public class ExecutorManager implements DisposableBean {
 
       for (int i = 0; i < config.getExecutorCount(); i++) {
         Executor executor = new Executor(i, config, stateStore, computingTP, kafkaProducer,
-            aggTaskService, completenessService, output, ioTP, adminClient);
+            aggTaskService, completenessService, output, ioTP, adminClient, aggMetaService);
         executors.add(executor);
         futures.add(executorTP.submit(executor::run));
       }

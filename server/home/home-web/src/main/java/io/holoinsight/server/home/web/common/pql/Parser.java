@@ -91,7 +91,7 @@ public class Parser {
 
   public Boolean isWith(String s) {
     s = s.toLowerCase();
-    return s == "with";
+    return s.equals("with");
   }
 
   public Expr parseSingleExpr() throws PqlException {

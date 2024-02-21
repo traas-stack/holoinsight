@@ -422,10 +422,7 @@ public final class UpdateTableStatusRequest extends com.google.protobuf.Generate
       maybeForceBuilderInitialization();
     }
 
-    private void maybeForceBuilderInitialization() {
-      if (com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders) {
-      }
-    }
+    private void maybeForceBuilderInitialization() {}
 
     public Builder clear() {
       super.clear();
@@ -831,4 +828,3 @@ public final class UpdateTableStatusRequest extends com.google.protobuf.Generate
   }
 
 }
-

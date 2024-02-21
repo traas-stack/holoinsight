@@ -214,7 +214,9 @@ public class NotificationTemplate {
 
   private String buildTagValue(String alarmTags, boolean tagMarkdown) {
     if (tagMarkdown) {
-      if (alarmTags.startsWith("[")) {
+      if (StringUtils.isEmpty(alarmTags)) {
+        return StringUtils.EMPTY;
+      } else if (alarmTags.startsWith("[")) {
         return alarmTags;
       }
       Map<String /* tagk */, String /* alias */> reverseTagMap = reverseTagMap();
@@ -293,7 +295,7 @@ public class NotificationTemplate {
         Matcher matcher = pattern.matcher(fieldName);
         if (matcher.find()) {
           fieldName = matcher.group(1); // group(1) corresponds to (.*?), which is the content
-                                        // within ${}
+          // within ${}
         }
         if (fieldName.startsWith("ALERT_SCOPE.") || fieldName.startsWith("alarmTags.")) {
           tagMap.put(alias, fieldName.split("\\.", 2)[1]);

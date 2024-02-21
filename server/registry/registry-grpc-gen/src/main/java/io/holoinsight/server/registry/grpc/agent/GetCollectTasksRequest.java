@@ -554,10 +554,7 @@ public final class GetCollectTasksRequest extends com.google.protobuf.GeneratedM
       maybeForceBuilderInitialization();
     }
 
-    private void maybeForceBuilderInitialization() {
-      if (com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders) {
-      }
-    }
+    private void maybeForceBuilderInitialization() {}
 
     @java.lang.Override
     public Builder clear() {
@@ -597,7 +594,6 @@ public final class GetCollectTasksRequest extends com.google.protobuf.GeneratedM
     public io.holoinsight.server.registry.grpc.agent.GetCollectTasksRequest buildPartial() {
       io.holoinsight.server.registry.grpc.agent.GetCollectTasksRequest result =
           new io.holoinsight.server.registry.grpc.agent.GetCollectTasksRequest(this);
-      int from_bitField0_ = bitField0_;
       if (headerBuilder_ == null) {
         result.header_ = header_;
       } else {
@@ -899,7 +895,7 @@ public final class GetCollectTasksRequest extends com.google.protobuf.GeneratedM
     }
 
     private com.google.protobuf.MapField<java.lang.String, java.lang.String> internalGetMutableBuckets() {
-      onChanged();;
+      onChanged();
       if (buckets_ == null) {
         buckets_ = com.google.protobuf.MapField.newMapField(BucketsDefaultEntryHolder.defaultEntry);
       }
@@ -1094,4 +1090,3 @@ public final class GetCollectTasksRequest extends com.google.protobuf.GeneratedM
   }
 
 }
-

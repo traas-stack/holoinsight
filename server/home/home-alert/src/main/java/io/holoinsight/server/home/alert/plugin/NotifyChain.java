@@ -111,7 +111,7 @@ public class NotifyChain extends ChainPlugin implements Runnable {
           this.traceId, e.getMessage(), e);
     } finally {
       if (context != null && context.latch != null) {
-        context.latch.countDown();;
+        context.latch.countDown();
       }
     }
   }

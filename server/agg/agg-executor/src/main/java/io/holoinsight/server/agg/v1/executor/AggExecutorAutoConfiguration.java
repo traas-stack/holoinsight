@@ -17,6 +17,8 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 
 import io.holoinsight.server.agg.v1.core.AggProperties;
 import io.holoinsight.server.agg.v1.core.mapper.AggOffsetV1DOMapper;
+import io.holoinsight.server.agg.v1.executor.executor.AggMetaService;
+import io.holoinsight.server.agg.v1.executor.executor.AggMetaServiceImpl;
 import io.holoinsight.server.agg.v1.executor.executor.ExecutorConfig;
 import io.holoinsight.server.agg.v1.executor.executor.ExecutorManager;
 import io.holoinsight.server.agg.v1.executor.executor.FaultToleranceConfig;
@@ -34,6 +36,7 @@ import io.holoinsight.server.common.config.ConfigConfiguration;
 import io.holoinsight.server.common.dao.CommonDaoConfiguration;
 import io.holoinsight.server.common.springboot.ConditionalOnRole;
 import io.holoinsight.server.common.threadpool.ThreadPoolConfiguration;
+import io.holoinsight.server.meta.facade.service.DataClientService;
 
 /**
  * <p>
@@ -81,7 +84,7 @@ public class AggExecutorAutoConfiguration {
   @Bean
   public ExecutorManager executorManager(DataSource dataSource, IAggTaskService aggTaskService,
       PartitionStateStore stateStore, CompletenessService completenessService, AsyncOutput output,
-      AggExecutorConfig aggExecutorConfig) {
+      AggMetaService aggMetaService) {
     ExecutorConfig config = new ExecutorConfig();
     config.setTopic(aggProperties.getTopic());
     config.setKafkaBootstrapServers(aggProperties.getKafkaBootstrapServers());
@@ -98,11 +101,11 @@ public class AggExecutorAutoConfiguration {
 
     config.getFaultToleranceConfig().setStateConfig(stateConfig);
     ExecutorManager m = new ExecutorManager(config);
-    m.setAggExecutorConfig(aggExecutorConfig);
     m.setAggTaskService(aggTaskService);
     m.setStateStore(stateStore);
     m.setCompletenessService(completenessService);
     m.setOutput(output);
+    m.setAggMetaService(aggMetaService);
     return m;
   }
 
@@ -119,5 +122,10 @@ public class AggExecutorAutoConfiguration {
   @Bean
   public XOutput xConsoleOutput() {
     return new XConsoleOutput();
+  }
+
+  @Bean
+  public AggMetaService aggMetaService(DataClientService dataClientService) {
+    return new AggMetaServiceImpl(dataClientService);
   }
 }

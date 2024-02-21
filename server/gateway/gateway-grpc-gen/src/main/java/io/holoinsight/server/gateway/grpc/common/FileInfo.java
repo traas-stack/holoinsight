@@ -357,10 +357,7 @@ public final class FileInfo extends com.google.protobuf.GeneratedMessageV3 imple
       maybeForceBuilderInitialization();
     }
 
-    private void maybeForceBuilderInitialization() {
-      if (com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders) {
-      }
-    }
+    private void maybeForceBuilderInitialization() {}
 
     @java.lang.Override
     public Builder clear() {
@@ -663,4 +660,3 @@ public final class FileInfo extends com.google.protobuf.GeneratedMessageV3 imple
   }
 
 }
-

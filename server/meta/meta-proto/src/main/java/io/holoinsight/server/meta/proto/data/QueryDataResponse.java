@@ -372,10 +372,7 @@ public final class QueryDataResponse extends com.google.protobuf.GeneratedMessag
       maybeForceBuilderInitialization();
     }
 
-    private void maybeForceBuilderInitialization() {
-      if (com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders) {
-      }
-    }
+    private void maybeForceBuilderInitialization() {}
 
     public Builder clear() {
       super.clear();
@@ -703,4 +700,3 @@ public final class QueryDataResponse extends com.google.protobuf.GeneratedMessag
   }
 
 }
-

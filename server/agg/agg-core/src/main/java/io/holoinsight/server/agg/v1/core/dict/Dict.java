@@ -5,16 +5,34 @@ package io.holoinsight.server.agg.v1.core.dict;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import com.google.common.collect.Maps;
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
+
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * created at 2023/9/21
  *
  * @author xzchaoo
  */
+@Slf4j
 public class Dict {
   private static final Map<String, String> DICT = new ConcurrentHashMap<>();
+
+  static {
+    ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor(
+        new ThreadFactoryBuilder().setDaemon(true).setNameFormat("AGG-DICT-%d").build());
+    scheduler.scheduleWithFixedDelay(Dict::clearDict, 3, 3, TimeUnit.MINUTES);
+  }
+
+  public static void clearDict() {
+    log.info("[agg-dict] clear dict {}", DICT.size());
+    DICT.clear();
+  }
 
   public static Map<String, String> get(Map<String, String> m) {
     if (m == null) {

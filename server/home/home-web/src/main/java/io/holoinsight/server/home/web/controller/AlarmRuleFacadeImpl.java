@@ -200,8 +200,7 @@ public class AlarmRuleFacadeImpl extends BaseFacade {
           alarmRuleDTO.setModifier(mu.getLoginName());
         }
         alarmRuleDTO.setGmtModified(new Date());
-        Map<String /* metric */, Map<String /* type */, String /* page */>> systemMetrics =
-            getMetricPage();
+        getMetricPage();
         boolean save = alarmRuleService.updateById(alarmRuleDTO);
 
         userOpLogService.append("alarm_rule", alarmRuleDTO.getId(), OpType.UPDATE,
@@ -414,7 +413,7 @@ public class AlarmRuleFacadeImpl extends BaseFacade {
   }
 
   protected List<AlarmRuleDTO> getRuleListByGroup(boolean myself) {
-    MonitorScope ms = RequestContext.getContext().ms;
+    RequestContext.getContext();
     String userId = RequestContext.getContext().mu.getUserId();
     List<AlarmGroupDTO> listByUserLike =
         alarmGroupService.getListByUserLike(userId, MonitorCookieUtil.getTenantOrException());
@@ -467,7 +466,7 @@ public class AlarmRuleFacadeImpl extends BaseFacade {
   }
 
   protected List<AlarmRuleDTO> getRuleListBySubscribe(boolean myself) {
-    MonitorScope ms = RequestContext.getContext().ms;
+    RequestContext.getContext();
     String userId = RequestContext.getContext().mu.getUserId();
     QueryWrapper<AlarmSubscribe> alarmSubscribeQueryWrapper = new QueryWrapper<>();
     alarmSubscribeQueryWrapper.eq("subscriber", userId);

@@ -1114,10 +1114,7 @@ public final class RegisterAgentRequest extends com.google.protobuf.GeneratedMes
       maybeForceBuilderInitialization();
     }
 
-    private void maybeForceBuilderInitialization() {
-      if (com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders) {
-      }
-    }
+    private void maybeForceBuilderInitialization() {}
 
     @java.lang.Override
     public Builder clear() {
@@ -1181,7 +1178,6 @@ public final class RegisterAgentRequest extends com.google.protobuf.GeneratedMes
     public io.holoinsight.server.registry.grpc.agent.RegisterAgentRequest buildPartial() {
       io.holoinsight.server.registry.grpc.agent.RegisterAgentRequest result =
           new io.holoinsight.server.registry.grpc.agent.RegisterAgentRequest(this);
-      int from_bitField0_ = bitField0_;
       if (headerBuilder_ == null) {
         result.header_ = header_;
       } else {
@@ -1985,7 +1981,7 @@ public final class RegisterAgentRequest extends com.google.protobuf.GeneratedMes
     }
 
     private com.google.protobuf.MapField<java.lang.String, java.lang.String> internalGetMutableLabels() {
-      onChanged();;
+      onChanged();
       if (labels_ == null) {
         labels_ = com.google.protobuf.MapField.newMapField(LabelsDefaultEntryHolder.defaultEntry);
       }
@@ -2684,4 +2680,3 @@ public final class RegisterAgentRequest extends com.google.protobuf.GeneratedMes
   }
 
 }
-

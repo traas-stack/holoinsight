@@ -6,8 +6,6 @@ package io.holoinsight.server.home.common.service;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import io.holoinsight.server.query.grpc.QueryProto;
 
-import java.util.Map;
-
 /**
  * @author masaimu
  * @version 2023-06-09 17:30:00

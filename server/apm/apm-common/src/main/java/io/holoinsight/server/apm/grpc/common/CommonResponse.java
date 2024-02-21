@@ -342,10 +342,7 @@ public final class CommonResponse extends com.google.protobuf.GeneratedMessageV3
       maybeForceBuilderInitialization();
     }
 
-    private void maybeForceBuilderInitialization() {
-      if (com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders) {
-      }
-    }
+    private void maybeForceBuilderInitialization() {}
 
     @java.lang.Override
     public Builder clear() {
@@ -630,4 +627,3 @@ public final class CommonResponse extends com.google.protobuf.GeneratedMessageV3
   }
 
 }
-

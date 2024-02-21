@@ -3,7 +3,6 @@
  */
 package io.holoinsight.server.gateway.core.grpc;
 
-import java.util.List;
 
 import io.holoinsight.server.common.auth.AuthInfo;
 import io.holoinsight.server.extension.model.Table;

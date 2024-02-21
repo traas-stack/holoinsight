@@ -23,7 +23,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static io.holoinsight.server.home.alert.service.task.coordinator.AlertClusterService.HEARTBEAT_PERIOD_SECOND;
 import static io.holoinsight.server.home.alert.service.task.coordinator.CoordinatorService.PORT;
 
 /**

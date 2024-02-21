@@ -3,13 +3,6 @@
  */
 package io.holoinsight.server.meta.core.common;
 
-import java.util.*;
-import java.util.Map.Entry;
-import java.util.function.Function;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
 import com.google.common.collect.Maps;
 import io.holoinsight.server.common.J;
 import io.holoinsight.server.meta.common.model.QueryExample;
@@ -18,10 +11,20 @@ import io.holoinsight.server.meta.core.service.bitmap.condition.MetaCondition;
 import io.holoinsight.server.meta.core.service.bitmap.condition.OrCondition;
 import org.springframework.util.CollectionUtils;
 
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Objects;
+import java.util.function.Function;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 import static io.holoinsight.server.meta.common.util.ConstModel.default_app;
 import static io.holoinsight.server.meta.common.util.ConstModel.default_hostname;
 import static io.holoinsight.server.meta.common.util.ConstModel.default_ip;
-import static io.holoinsight.server.meta.core.service.bitmap.BitmapDataCoreService.UK_FIELD;
 
 /**
  * @author jinyan.ljw
@@ -45,7 +48,7 @@ public class FilterUtil {
       andCondition.setAll(true);
     } else {
       filters.forEach((type, entries) -> {
-        type = type.contains(".") ? type.split("\\.")[0] : type;
+        // type = type.contains(".") ? type.split("\\.")[0] : type;
         if (REGEX_FILTERS_KEY.equals(type)) {
           entries.forEach((k, v) -> {
             AndCondition andCondition = orCondition.and();
@@ -161,13 +164,15 @@ public class FilterUtil {
 
   private static Object getRealVal(String key, Map<String, Object> map) {
     if (key.contains(".")) {
-      String[] eqItemKeys = key.split("\\.");
-      Object value0 = map.get(eqItemKeys[0]);
+      int doxIndex = key.indexOf('.');
+      String firstKey = key.substring(0, doxIndex);
+      String secondKey = key.substring(doxIndex + 1);
+      Object value0 = map.get(firstKey);
       if (Objects.isNull(value0)) {
         return null;
       }
       Map<String, Object> keyItem = (Map<String, Object>) value0;
-      return keyItem.get(eqItemKeys[1]);
+      return keyItem.get(secondKey);
     } else {
       return map.get(key);
     }
