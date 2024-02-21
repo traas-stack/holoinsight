@@ -7,10 +7,11 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.google.common.reflect.TypeToken;
 import io.holoinsight.server.common.J;
 import io.holoinsight.server.home.common.util.scope.MonitorScope;
+import io.holoinsight.server.home.common.util.scope.MonitorUser;
 import io.holoinsight.server.home.common.util.scope.RequestContext;
-import io.holoinsight.server.home.dal.mapper.AlertNotificationTemplateMapper;
-import io.holoinsight.server.home.dal.model.AlertNotificationTemplate;
-import io.holoinsight.server.home.facade.AlertNotificationTemplateDTO;
+import io.holoinsight.server.home.dal.mapper.AlertTemplateMapper;
+import io.holoinsight.server.home.dal.model.AlertTemplate;
+import io.holoinsight.server.home.facade.AlertTemplateDTO;
 import io.holoinsight.server.home.facade.page.MonitorPageRequest;
 import io.holoinsight.server.home.web.security.LevelAuthorizationCheck;
 import io.holoinsight.server.home.web.security.LevelAuthorizationMetaData;
@@ -35,7 +36,7 @@ import java.util.Set;
 public class AlertTemplateFacadeImplChecker implements LevelAuthorizationCheck {
 
   @Resource
-  private AlertNotificationTemplateMapper alertNotificationTemplateMapper;
+  private AlertTemplateMapper alertTemplateMapper;
 
   private static final Set<String> sceneTypeSet =
       new HashSet<>(Arrays.asList("miniapp", "server", "iot"));
@@ -76,8 +77,8 @@ public class AlertTemplateFacadeImplChecker implements LevelAuthorizationCheck {
       return false;
     }
     String parameter = parameters.get(0);
-    MonitorPageRequest<AlertNotificationTemplateDTO> pageRequest = J.fromJson(parameter,
-        new TypeToken<MonitorPageRequest<AlertNotificationTemplateDTO>>() {}.getType());
+    MonitorPageRequest<AlertTemplateDTO> pageRequest =
+        J.fromJson(parameter, new TypeToken<MonitorPageRequest<AlertTemplateDTO>>() {}.getType());
 
     if (pageRequest.getFrom() != null && pageRequest.getTo() != null) {
       if (pageRequest.getFrom() > pageRequest.getTo()) {
@@ -87,31 +88,31 @@ public class AlertTemplateFacadeImplChecker implements LevelAuthorizationCheck {
       }
     }
 
-    AlertNotificationTemplateDTO templateDTO = pageRequest.getTarget();
-    return checkAlertNotificationTemplateDTO(methodName, templateDTO, tenant, workspace);
+    AlertTemplateDTO target = pageRequest.getTarget();
+    if (target == null) {
+      log.error("fail to check target, target can not be null");
+      return false;
+    }
+    return checkAlertNotificationTemplateDTO(methodName, target, tenant, workspace);
   }
 
   private boolean checkId(List<String> parameters, String tenant, String workspace) {
     if (CollectionUtils.isEmpty(parameters) || StringUtils.isBlank(parameters.get(0))) {
       return false;
     }
-    if (!StringUtils.isNumeric(parameters.get(0))) {
-      log.error("fail to check id {} for id is not numeric", parameters.get(0));
-      return false;
-    }
-    Long id = Long.parseLong(parameters.get(0));
-    return checkId(id, tenant, workspace);
+
+    String uuid = J.fromJson(parameters.get(0), String.class);
+    return checkId(uuid, tenant, workspace);
   }
 
-  private boolean checkId(Long id, String tenant, String workspace) {
-    QueryWrapper<AlertNotificationTemplate> queryWrapper = new QueryWrapper<>();
-    queryWrapper.eq("id", id);
+  private boolean checkId(String uuid, String tenant, String workspace) {
+    QueryWrapper<AlertTemplate> queryWrapper = new QueryWrapper<>();
+    queryWrapper.eq("uuid", uuid);
     queryWrapper.eq("tenant", tenant);
     queryWrapper.eq("workspace", workspace);
-    List<AlertNotificationTemplate> exist =
-        this.alertNotificationTemplateMapper.selectList(queryWrapper);
+    List<AlertTemplate> exist = this.alertTemplateMapper.selectList(queryWrapper);
     if (CollectionUtils.isEmpty(exist)) {
-      log.error("fail to check id for no existed {} {} {}", id, tenant, workspace);
+      log.error("fail to check uuid for no existed {} {} {}", uuid, tenant, workspace);
       return false;
     }
     return true;
@@ -123,27 +124,26 @@ public class AlertTemplateFacadeImplChecker implements LevelAuthorizationCheck {
       return false;
     }
     log.info("checkParameters {} parameter {}", methodName, parameters.get(0));
-    AlertNotificationTemplateDTO templateDTO =
-        J.fromJson(parameters.get(0), AlertNotificationTemplateDTO.class);
+    AlertTemplateDTO templateDTO = J.fromJson(parameters.get(0), AlertTemplateDTO.class);
     return checkAlertNotificationTemplateDTO(methodName, templateDTO, tenant, workspace);
   }
 
-  private boolean checkAlertNotificationTemplateDTO(String methodName,
-      AlertNotificationTemplateDTO templateDTO, String tenant, String workspace) {
+  private boolean checkAlertNotificationTemplateDTO(String methodName, AlertTemplateDTO templateDTO,
+      String tenant, String workspace) {
 
     if (methodName.equals("create")) {
-      if (templateDTO.id != null) {
-        log.error("fail to check {} for id is not null", methodName);
+      if (StringUtils.isNotEmpty(templateDTO.uuid)) {
+        log.error("fail to check {} for uuid is not null", methodName);
         return false;
       }
     }
 
     if (methodName.equals("update")) {
-      if (templateDTO.id == null) {
-        log.error("fail to check {} for id is null", methodName);
+      if (StringUtils.isEmpty(templateDTO.uuid)) {
+        log.error("fail to check {} for uuid is null", methodName);
         return false;
       }
-      if (!checkId(templateDTO.id, tenant, workspace)) {
+      if (!checkId(templateDTO.uuid, tenant, workspace)) {
         return false;
       }
     }
@@ -179,13 +179,18 @@ public class AlertTemplateFacadeImplChecker implements LevelAuthorizationCheck {
       return false;
     }
 
-    if (StringUtils.isNotEmpty(templateDTO.creator) && !checkSqlField(templateDTO.creator)) {
-      log.error("fail to check {} for invalid creator {}", methodName, templateDTO.creator);
+    MonitorUser mu = RequestContext.getContext().mu;
+    if (StringUtils.isNotEmpty(templateDTO.creator)
+        && !StringUtils.equals(templateDTO.creator, mu.getLoginName())) {
+      log.error("fail to check {} for invalid creator {} for login name {}", methodName,
+          templateDTO.creator, mu.getLoginName());
       return false;
     }
 
-    if (StringUtils.isNotEmpty(templateDTO.modifier) && !checkSqlField(templateDTO.modifier)) {
-      log.error("fail to check {} for invalid modifier {}", methodName, templateDTO.modifier);
+    if (StringUtils.isNotEmpty(templateDTO.modifier)
+        && !StringUtils.equals(templateDTO.modifier, mu.getLoginName())) {
+      log.error("fail to check {} for invalid modifier {} for login name {}", methodName,
+          templateDTO.modifier, mu.getLoginName());
       return false;
     }
 

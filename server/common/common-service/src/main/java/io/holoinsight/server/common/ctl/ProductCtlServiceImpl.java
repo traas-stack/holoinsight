@@ -9,7 +9,6 @@ import io.holoinsight.server.common.dao.entity.MetaDataDictValue;
 import io.holoinsight.server.common.dao.entity.MonitorInstance;
 import io.holoinsight.server.common.dao.entity.MonitorInstanceCfg;
 import io.holoinsight.server.common.service.MonitorInstanceService;
-import io.holoinsight.server.common.service.ResourceKeysHolder;
 import io.holoinsight.server.common.service.SuperCacheService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
@@ -37,10 +36,6 @@ public class ProductCtlServiceImpl implements ProductCtlService {
   private boolean switchOn = false;
 
   protected static final String RS_DELIMITER = "_";
-
-  @Autowired
-  private ResourceKeysHolder resourceKeysHolder;
-
 
   @Scheduled(initialDelay = 10000L, fixedRate = 10000L)
   private void refresh() {
@@ -73,6 +68,7 @@ public class ProductCtlServiceImpl implements ProductCtlService {
       metricWhitePrefixes = J.fromJson(whiteListDictVal.getDictValue(),
           new TypeToken<HashSet<String>>() {}.getType());
     } catch (Exception e) {
+      // This catch statement is intentionally empty
     }
 
     log.info("[product_ctl] refresh closed products, switchOn={}, closed={}, metricWhiteList={}",
@@ -105,7 +101,8 @@ public class ProductCtlServiceImpl implements ProductCtlService {
 
   @Override
   public boolean productClosed(MonitorProductCode productCode, Map<String, String> tags) {
-    List<String> resourceKeys = resourceKeysHolder.getResourceKeys();
+    List<String> resourceKeys = superCacheService.getSc().getListValue("global_config",
+        "resource_keys", Collections.singletonList("tenant"));
     if (!switchOn || productCode == null || resourceKeys == null || tags == null
         || productClosed == null) {
       return false;
@@ -122,7 +119,8 @@ public class ProductCtlServiceImpl implements ProductCtlService {
   public Map<String, Set<String>> productCtl(MonitorProductCode code, Map<String, String> tags,
       String action) throws Exception {
     Map<String, Set<String>> result = new HashMap<>();
-    List<String> resourceKeys = resourceKeysHolder.getResourceKeys();
+    List<String> resourceKeys = superCacheService.getSc().getListValue("global_config",
+        "resource_keys", Collections.singletonList("tenant"));
     if (CollectionUtils.isEmpty(resourceKeys)) {
       throw new RuntimeException("resource keys not found for code : " + code.getCode());
     }
@@ -146,7 +144,8 @@ public class ProductCtlServiceImpl implements ProductCtlService {
   @Override
   public Map<String, Boolean> productStatus(Map<String, String> tags) throws Exception {
     Map<String, Boolean> closed = new HashMap<>();
-    List<String> resourceKeys = resourceKeysHolder.getResourceKeys();
+    List<String> resourceKeys = superCacheService.getSc().getListValue("global_config",
+        "resource_keys", Collections.singletonList("tenant"));
     for (MonitorProductCode code : MonitorProductCode.values()) {
       if (CollectionUtils.isEmpty(resourceKeys)) {
         closed.put(code.getCode(), false);

@@ -627,10 +627,7 @@ public final class ListFilesRequest extends com.google.protobuf.GeneratedMessage
       maybeForceBuilderInitialization();
     }
 
-    private void maybeForceBuilderInitialization() {
-      if (com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders) {
-      }
-    }
+    private void maybeForceBuilderInitialization() {}
 
     @java.lang.Override
     public Builder clear() {
@@ -683,7 +680,6 @@ public final class ListFilesRequest extends com.google.protobuf.GeneratedMessage
     public io.holoinsight.server.registry.grpc.prod.ListFilesRequest buildPartial() {
       io.holoinsight.server.registry.grpc.prod.ListFilesRequest result =
           new io.holoinsight.server.registry.grpc.prod.ListFilesRequest(this);
-      int from_bitField0_ = bitField0_;
       if (headerBuilder_ == null) {
         result.header_ = header_;
       } else {
@@ -1510,4 +1506,3 @@ public final class ListFilesRequest extends com.google.protobuf.GeneratedMessage
   }
 
 }
-

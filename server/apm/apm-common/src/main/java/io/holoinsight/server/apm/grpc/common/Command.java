@@ -420,7 +420,6 @@ public final class Command extends com.google.protobuf.GeneratedMessageV3 implem
     public io.holoinsight.server.apm.grpc.common.Command buildPartial() {
       io.holoinsight.server.apm.grpc.common.Command result =
           new io.holoinsight.server.apm.grpc.common.Command(this);
-      int from_bitField0_ = bitField0_;
       result.command_ = command_;
       if (argsBuilder_ == null) {
         if (((bitField0_ & 0x00000001) != 0)) {
@@ -911,4 +910,3 @@ public final class Command extends com.google.protobuf.GeneratedMessageV3 implem
   }
 
 }
-

@@ -3,8 +3,12 @@
  */
 package io.holoinsight.server.home.biz.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import io.holoinsight.server.home.biz.service.AlarmHistoryService;
 import io.holoinsight.server.home.common.service.RequestContextAdapter;
+import io.holoinsight.server.home.common.util.EventBusHolder;
 import io.holoinsight.server.home.common.util.StringUtil;
 import io.holoinsight.server.home.dal.converter.AlarmHistoryConverter;
 import io.holoinsight.server.home.dal.mapper.AlarmHistoryMapper;
@@ -12,9 +16,6 @@ import io.holoinsight.server.home.dal.model.AlarmHistory;
 import io.holoinsight.server.home.facade.AlarmHistoryDTO;
 import io.holoinsight.server.home.facade.page.MonitorPageRequest;
 import io.holoinsight.server.home.facade.page.MonitorPageResult;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -43,6 +44,17 @@ public class AlarmHistoryServiceImpl extends ServiceImpl<AlarmHistoryMapper, Ala
     wrapper.last("LIMIT 1");
     AlarmHistory alarmHistory = this.getOne(wrapper);
     return alarmHistoryConverter.doToDTO(alarmHistory);
+  }
+
+  @Override
+  public Boolean deleteById(Long id) {
+    AlarmHistory alarmHistory = getById(id);
+    if (null == alarmHistory) {
+      return true;
+    }
+    alarmHistory.setDeleted(true);
+    EventBusHolder.post(alarmHistoryConverter.doToDTO(alarmHistory));
+    return this.removeById(id);
   }
 
   @Override

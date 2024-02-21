@@ -152,7 +152,7 @@ public class IntegrationProductFacadeImpl extends BaseFacade {
             }
             List<String> metricNames =
                 metrics.getSubMetrics().values().stream().flatMap(v -> v.stream())
-                    .map(IntegrationMetricDTO::getName).collect(Collectors.toList());;
+                    .map(IntegrationMetricDTO::getName).collect(Collectors.toList());
             Collections.shuffle(metricNames);
             List<String> sampleNames = metricNames.subList(0, Math.min(metricNames.size(), 10));
             QueryProto.QueryRequest.Builder builder =

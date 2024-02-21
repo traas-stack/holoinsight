@@ -5,8 +5,5 @@ package io.holoinsight.server.apm.engine.storage;
 
 import io.holoinsight.server.apm.engine.model.ServiceRelationDO;
 
-import java.io.IOException;
-import java.util.List;
-
 public interface ServiceRelationStorage extends WritableStorage<ServiceRelationDO> {
 }

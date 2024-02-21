@@ -95,4 +95,6 @@ public class AlarmHistoryDTO {
   private String envType;
 
   private List<String> app;
+
+  private boolean deleted;
 }

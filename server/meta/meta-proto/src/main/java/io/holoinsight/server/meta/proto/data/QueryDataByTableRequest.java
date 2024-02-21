@@ -396,10 +396,7 @@ public final class QueryDataByTableRequest extends com.google.protobuf.Generated
       maybeForceBuilderInitialization();
     }
 
-    private void maybeForceBuilderInitialization() {
-      if (com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders) {
-      }
-    }
+    private void maybeForceBuilderInitialization() {}
 
     public Builder clear() {
       super.clear();
@@ -769,4 +766,3 @@ public final class QueryDataByTableRequest extends com.google.protobuf.Generated
   }
 
 }
-

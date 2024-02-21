@@ -407,10 +407,7 @@ public final class MatchFilesResponse extends com.google.protobuf.GeneratedMessa
       maybeForceBuilderInitialization();
     }
 
-    private void maybeForceBuilderInitialization() {
-      if (com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders) {
-      }
-    }
+    private void maybeForceBuilderInitialization() {}
 
     @java.lang.Override
     public Builder clear() {
@@ -451,7 +448,6 @@ public final class MatchFilesResponse extends com.google.protobuf.GeneratedMessa
     public io.holoinsight.server.registry.grpc.prod.MatchFilesResponse buildPartial() {
       io.holoinsight.server.registry.grpc.prod.MatchFilesResponse result =
           new io.holoinsight.server.registry.grpc.prod.MatchFilesResponse(this);
-      int from_bitField0_ = bitField0_;
       if (headerBuilder_ == null) {
         result.header_ = header_;
       } else {
@@ -860,4 +856,3 @@ public final class MatchFilesResponse extends com.google.protobuf.GeneratedMessa
   }
 
 }
-

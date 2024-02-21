@@ -66,6 +66,18 @@ public class MetricInfoServiceImpl extends ServiceImpl<MetricInfoMapper, MetricI
   }
 
   @Override
+  public List<MetricInfo> queryListByWorkspace(String workspace) {
+    Map<String, Object> columnMap = new HashMap<>();
+    columnMap.put("workspace", workspace);
+    columnMap.put("deleted", 0);
+    List<MetricInfo> metricInfos = listByMap(columnMap);
+    if (CollectionUtils.isEmpty(metricInfos)) {
+      return null;
+    }
+    return metricInfos;
+  }
+
+  @Override
   public List<MetricInfoDTO> queryListByTenantProduct(String tenant, String workspace,
       String product) {
     Map<String, Object> columnMap = new HashMap<>();

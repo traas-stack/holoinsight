@@ -470,10 +470,7 @@ public final class CreateIndexKeyRequest extends com.google.protobuf.GeneratedMe
       maybeForceBuilderInitialization();
     }
 
-    private void maybeForceBuilderInitialization() {
-      if (com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders) {
-      }
-    }
+    private void maybeForceBuilderInitialization() {}
 
     public Builder clear() {
       super.clear();
@@ -954,4 +951,3 @@ public final class CreateIndexKeyRequest extends com.google.protobuf.GeneratedMe
   }
 
 }
-

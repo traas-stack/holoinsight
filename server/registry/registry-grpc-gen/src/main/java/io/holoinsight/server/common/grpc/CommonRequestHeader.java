@@ -558,10 +558,7 @@ public final class CommonRequestHeader extends com.google.protobuf.GeneratedMess
       maybeForceBuilderInitialization();
     }
 
-    private void maybeForceBuilderInitialization() {
-      if (com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders) {
-      }
-    }
+    private void maybeForceBuilderInitialization() {}
 
     @java.lang.Override
     public Builder clear() {
@@ -599,7 +596,6 @@ public final class CommonRequestHeader extends com.google.protobuf.GeneratedMess
     public io.holoinsight.server.common.grpc.CommonRequestHeader buildPartial() {
       io.holoinsight.server.common.grpc.CommonRequestHeader result =
           new io.holoinsight.server.common.grpc.CommonRequestHeader(this);
-      int from_bitField0_ = bitField0_;
       result.apikey_ = apikey_;
       result.traceId_ = traceId_;
       result.header_ = internalGetHeader();
@@ -846,7 +842,7 @@ public final class CommonRequestHeader extends com.google.protobuf.GeneratedMess
     }
 
     private com.google.protobuf.MapField<java.lang.String, java.lang.String> internalGetMutableHeader() {
-      onChanged();;
+      onChanged();
       if (header_ == null) {
         header_ = com.google.protobuf.MapField.newMapField(HeaderDefaultEntryHolder.defaultEntry);
       }
@@ -1102,4 +1098,3 @@ public final class CommonRequestHeader extends com.google.protobuf.GeneratedMess
   }
 
 }
-

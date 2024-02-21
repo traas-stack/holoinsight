@@ -455,10 +455,7 @@ public final class SplitLogResponse extends com.google.protobuf.GeneratedMessage
       maybeForceBuilderInitialization();
     }
 
-    private void maybeForceBuilderInitialization() {
-      if (com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders) {
-      }
-    }
+    private void maybeForceBuilderInitialization() {}
 
     @java.lang.Override
     public Builder clear() {
@@ -496,7 +493,6 @@ public final class SplitLogResponse extends com.google.protobuf.GeneratedMessage
     public io.holoinsight.server.registry.grpc.prod.SplitLogResponse buildPartial() {
       io.holoinsight.server.registry.grpc.prod.SplitLogResponse result =
           new io.holoinsight.server.registry.grpc.prod.SplitLogResponse(this);
-      int from_bitField0_ = bitField0_;
       if (headerBuilder_ == null) {
         result.header_ = header_;
       } else {
@@ -722,7 +718,7 @@ public final class SplitLogResponse extends com.google.protobuf.GeneratedMessage
     }
 
     private com.google.protobuf.MapField<java.lang.String, java.lang.String> internalGetMutableResult() {
-      onChanged();;
+      onChanged();
       if (result_ == null) {
         result_ = com.google.protobuf.MapField.newMapField(ResultDefaultEntryHolder.defaultEntry);
       }
@@ -889,4 +885,3 @@ public final class SplitLogResponse extends com.google.protobuf.GeneratedMessage
   }
 
 }
-

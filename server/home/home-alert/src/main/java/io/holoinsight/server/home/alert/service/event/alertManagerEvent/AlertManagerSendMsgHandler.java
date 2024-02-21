@@ -47,12 +47,6 @@ public class AlertManagerSendMsgHandler implements AlertHandlerExecutor {
 
     try {
       alarmNotifies.forEach(alarmNotify -> {
-        if (alarmNotify.getDingdingUrl() != null) {
-          // 修改为网关发送
-          // alarmNotify.getDingdingUrl()
-          // .forEach(dingdingUrl -> MsgSendUtil.sendGocAarMsg("告警通知：", alarmNotify.getMsg(),
-          // dingdingUrl));
-        }
       });
       LOGGER.info("AlarmSendMsgHandler SUCCESS {} ", G.get().toJson(alarmNotifies));
     } catch (Exception e) {

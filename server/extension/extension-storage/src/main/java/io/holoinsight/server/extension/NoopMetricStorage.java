@@ -5,7 +5,6 @@ package io.holoinsight.server.extension;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 import io.holoinsight.server.extension.model.DetailResult;
 import io.holoinsight.server.extension.model.PqlParam;

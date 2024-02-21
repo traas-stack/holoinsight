@@ -10,8 +10,6 @@ import io.holoinsight.server.home.facade.trigger.CompareParam;
 import io.holoinsight.server.home.facade.trigger.TriggerResult;
 import org.springframework.stereotype.Service;
 
-import java.util.Map;
-
 /**
  * @author masaimu
  * @version 2023-03-21 14:37:00

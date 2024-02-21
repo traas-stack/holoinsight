@@ -49,6 +49,7 @@ public class PartitionProcessor {
   private final ExecutorConfig config;
   private final CompletenessService completenessService;
   private final AsyncOutput output;
+  private final AggMetaService aggMetaService;
   private final LastRun lastRun;
   PartitionState state = new PartitionState();
   /**
@@ -70,12 +71,13 @@ public class PartitionProcessor {
 
   PartitionProcessor(TopicPartition partition, IAggTaskService aggTaskService,
       ExecutorConfig config, CompletenessService completenessService, AsyncOutput output,
-      ExecutorService ioTP) {
+      ExecutorService ioTP, AggMetaService aggMetaService) {
     this.partition = Objects.requireNonNull(partition);
     this.aggTaskService = Objects.requireNonNull(aggTaskService);
     this.config = Objects.requireNonNull(config);
     this.completenessService = Objects.requireNonNull(completenessService);
     this.output = Objects.requireNonNull(output);
+    this.aggMetaService = Objects.requireNonNull(aggMetaService);
     lastRun = new LastRun(ioTP);
     state.setVersion(EXPECTED_VERSION);
   }
@@ -174,7 +176,7 @@ public class PartitionProcessor {
         watermark = 0L;
       }
       s.setWatermark(watermark);
-      e = new AggTaskExecutor(s, completenessService, output);
+      e = new AggTaskExecutor(s, completenessService, output, aggMetaService);
       e.ignoredMinWatermark = watermark;
       e.lastUsedAggTask = aggTask;
       aggTaskExecutors.put(key, e);
@@ -283,7 +285,7 @@ public class PartitionProcessor {
     for (AggTaskState ats : restored.getAggTaskStates().values()) {
       log.info("[partition] [{}] load agg task restored {} watermark=[{}]", partition, ats.getKey(),
           Utils.formatTime(ats.getWatermark()));
-      AggTaskExecutor e = new AggTaskExecutor(ats, completenessService, output);
+      AggTaskExecutor e = new AggTaskExecutor(ats, completenessService, output, aggMetaService);
       e.restoredOffset = restored.getOffset();
       aggTaskExecutors.put(ats.getKey(), e);
       state.put(ats);

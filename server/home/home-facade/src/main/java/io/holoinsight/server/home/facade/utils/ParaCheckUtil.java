@@ -21,7 +21,7 @@ public class ParaCheckUtil {
   private static Pattern PATTERN_SQL =
       Pattern.compile("^[\\u00b7A-Za-z0-9\\u4e00-\\u9fa5\\-_ ,\\.]*$");
   private static Pattern PATTERN_STRICT_SQL =
-      Pattern.compile("^[\\u00b7A-Za-z0-9\\u4e00-\\u9fa5\\-_,|\\.]*$");
+      Pattern.compile("^[\\u00b7A-Za-z0-9\\u4e00-\\u9fa5\\-_, |:\\.]*$");
 
   private static Pattern uniCodePattern = Pattern.compile("\\\\u[0-9a-f]{4}");
 

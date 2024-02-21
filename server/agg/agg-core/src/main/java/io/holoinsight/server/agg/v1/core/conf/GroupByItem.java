@@ -24,6 +24,7 @@ import lombok.Data;
 @Data
 public class GroupByItem {
   public static final String DEFAULT_VALUE = "-";
+
   /**
    * tag to group by
    */
@@ -38,6 +39,12 @@ public class GroupByItem {
 
   @Nullable
   private String as;
+
+  /**
+   * Generate group tag through joining metadata
+   */
+  @Nullable
+  private JoinMeta joinMeta;
 
   public GroupByItem() {}
 

@@ -13,11 +13,11 @@ import io.holoinsight.server.home.common.util.scope.MonitorScope;
 import io.holoinsight.server.home.common.util.scope.MonitorUser;
 import io.holoinsight.server.home.common.util.scope.PowerConstants;
 import io.holoinsight.server.home.common.util.scope.RequestContext;
-import io.holoinsight.server.home.dal.converter.AlertNotificationTemplateConverter;
-import io.holoinsight.server.home.dal.mapper.AlertNotificationTemplateMapper;
-import io.holoinsight.server.home.dal.model.AlertNotificationTemplate;
+import io.holoinsight.server.home.dal.converter.AlertTemplateConverter;
+import io.holoinsight.server.home.dal.mapper.AlertTemplateMapper;
+import io.holoinsight.server.home.dal.model.AlertTemplate;
 import io.holoinsight.server.home.dal.model.OpType;
-import io.holoinsight.server.home.facade.AlertNotificationTemplateDTO;
+import io.holoinsight.server.home.facade.AlertTemplateDTO;
 import io.holoinsight.server.home.facade.AlertTemplateField;
 import io.holoinsight.server.home.facade.NotificationTemplate;
 import io.holoinsight.server.home.facade.page.MonitorPageRequest;
@@ -44,10 +44,11 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 /**
  * alert template facade
- * 
+ *
  * @author masaimu
  * @version 2023-02-21 16:43:00
  */
@@ -57,9 +58,9 @@ import java.util.Map;
 public class AlertTemplateFacadeImpl extends BaseFacade {
 
   @Resource
-  private AlertNotificationTemplateMapper alertNotificationTemplateMapper;
+  private AlertTemplateMapper alertTemplateMapper;
   @Autowired
-  private AlertNotificationTemplateConverter alertNotificationTemplateConverter;
+  private AlertTemplateConverter alertTemplateConverter;
   @Autowired
   private UserOpLogService userOpLogService;
 
@@ -68,8 +69,8 @@ public class AlertTemplateFacadeImpl extends BaseFacade {
   @PostMapping("/create")
   @ResponseBody
   @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.EDIT)
-  public JsonResult<Long> create(@RequestBody AlertNotificationTemplateDTO templateDTO) {
-    final JsonResult<Long> result = new JsonResult<>();
+  public JsonResult<String> create(@RequestBody AlertTemplateDTO templateDTO) {
+    final JsonResult<String> result = new JsonResult<>();
 
     facadeTemplate.manage(result, new ManageCallback() {
       @Override
@@ -88,19 +89,19 @@ public class AlertTemplateFacadeImpl extends BaseFacade {
         if (null != ms && !StringUtils.isEmpty(ms.workspace)) {
           templateDTO.setWorkspace(ms.workspace);
         }
+        templateDTO.setUuid(UUID.randomUUID().toString().replace("-", ""));
         templateDTO.setGmtCreate(new Date());
         templateDTO.setGmtModified(new Date());
-        AlertNotificationTemplate alertNotificationTemplate =
-            alertNotificationTemplateConverter.dtoToDO(templateDTO);
-        int insert = alertNotificationTemplateMapper.insert(alertNotificationTemplate);
+        AlertTemplate alertTemplate = alertTemplateConverter.dtoToDO(templateDTO);
+        int insert = alertTemplateMapper.insert(alertTemplate);
         log.info(
             "create alertNotificationTemplate tenant {} workspace {} creator {} insert size {}",
             templateDTO.getTenant(), templateDTO.getWorkspace(), templateDTO.getCreator(), insert);
 
-        userOpLogService.append("alert_notification_template", alertNotificationTemplate.getId(),
-            OpType.CREATE, mu.getLoginName(), ms.getTenant(), ms.getWorkspace(),
-            J.toJson(templateDTO), null, null, "alert_notification_template_create");
-        JsonResult.createSuccessResult(result, alertNotificationTemplate.getId());
+        userOpLogService.append("alert_template", alertTemplate.getUuid(), OpType.CREATE,
+            mu.getLoginName(), ms.getTenant(), ms.getWorkspace(), J.toJson(templateDTO), null, null,
+            "alert_template_create");
+        JsonResult.createSuccessResult(result, alertTemplate.getUuid());
       }
     });
 
@@ -112,8 +113,8 @@ public class AlertTemplateFacadeImpl extends BaseFacade {
   @PostMapping("/update")
   @ResponseBody
   @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.EDIT)
-  public JsonResult<Long> update(@RequestBody AlertNotificationTemplateDTO templateDTO) {
-    final JsonResult<Long> result = new JsonResult<>();
+  public JsonResult<String> update(@RequestBody AlertTemplateDTO templateDTO) {
+    final JsonResult<String> result = new JsonResult<>();
 
     facadeTemplate.manage(result, new ManageCallback() {
       @Override
@@ -125,35 +126,32 @@ public class AlertTemplateFacadeImpl extends BaseFacade {
       public void doManage() {
         MonitorScope ms = RequestContext.getContext().ms;
         MonitorUser mu = RequestContext.getContext().mu;
-        AlertNotificationTemplate originalItem =
-            alertNotificationTemplateMapper.selectById(templateDTO.id);
+        AlertTemplate originalItem = alertTemplateMapper.selectById(templateDTO.uuid);
         if (null != mu && StringUtils.isBlank(templateDTO.getModifier())) {
           templateDTO.setModifier(mu.getLoginName());
         }
         templateDTO.setGmtModified(new Date());
-        AlertNotificationTemplate alertNotificationTemplate =
-            alertNotificationTemplateConverter.dtoToDO(templateDTO);
-        int update = alertNotificationTemplateMapper.updateById(alertNotificationTemplate);
+        AlertTemplate alertTemplate = alertTemplateConverter.dtoToDO(templateDTO);
+        alertTemplateMapper.updateById(alertTemplate);
 
-        userOpLogService.append("alert_notification_template", templateDTO.getId(), OpType.UPDATE,
+        userOpLogService.append("alert_template", templateDTO.getUuid(), OpType.UPDATE,
             RequestContext.getContext().mu.getLoginName(), ms.getTenant(), ms.getWorkspace(),
-            J.toJson(originalItem), J.toJson(templateDTO), null,
-            "alert_notification_template_update");
+            J.toJson(originalItem), J.toJson(templateDTO), null, "alert_template_update");
 
-        JsonResult.createSuccessResult(result, templateDTO.id);
+        JsonResult.createSuccessResult(result, templateDTO.uuid);
       }
     });
 
     return result;
   }
 
-  @LevelAuthorizationAccess(paramConfigs = {"PARAMETER" + ":$!id"},
+  @LevelAuthorizationAccess(paramConfigs = {"PARAMETER" + ":$!uuid"},
       levelAuthorizationCheckeClass = "io.holoinsight.server.home.web.security.custom.AlertTemplateFacadeImplChecker")
-  @GetMapping("/query/{id}")
+  @GetMapping("/query/{uuid}")
   @ResponseBody
   @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.VIEW)
-  public JsonResult<AlertNotificationTemplateDTO> queryById(@PathVariable("id") Long id) {
-    final JsonResult<AlertNotificationTemplateDTO> result = new JsonResult<>();
+  public JsonResult<AlertTemplateDTO> queryById(@PathVariable("uuid") String uuid) {
+    final JsonResult<AlertTemplateDTO> result = new JsonResult<>();
     facadeTemplate.manage(result, new ManageCallback() {
       @Override
       public void checkParameter() {
@@ -163,16 +161,15 @@ public class AlertTemplateFacadeImpl extends BaseFacade {
       @Override
       public void doManage() {
         MonitorScope ms = RequestContext.getContext().ms;
-        QueryWrapper<AlertNotificationTemplate> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("id", id);
+        QueryWrapper<AlertTemplate> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("uuid", uuid);
         queryWrapper.eq("tenant", ms.getTenant());
         queryWrapper.eq("workspace", ms.getWorkspace());
         queryWrapper.last("LIMIT 1");
-        AlertNotificationTemplate template =
-            alertNotificationTemplateMapper.selectOne(queryWrapper);
-        AlertNotificationTemplateDTO dto = null;
+        AlertTemplate template = alertTemplateMapper.selectOne(queryWrapper);
+        AlertTemplateDTO dto = null;
         if (template != null) {
-          dto = alertNotificationTemplateConverter.doToDTO(template);
+          dto = alertTemplateConverter.doToDTO(template);
         }
         JsonResult.createSuccessResult(result, dto);
       }
@@ -181,11 +178,11 @@ public class AlertTemplateFacadeImpl extends BaseFacade {
     return result;
   }
 
-  @LevelAuthorizationAccess(paramConfigs = {"PARAMETER" + ":$!id"},
+  @LevelAuthorizationAccess(paramConfigs = {"PARAMETER" + ":$!uuid"},
       levelAuthorizationCheckeClass = "io.holoinsight.server.home.web.security.custom.AlertTemplateFacadeImplChecker")
-  @DeleteMapping(value = "/delete/{id}")
+  @DeleteMapping(value = "/delete/{uuid}")
   @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.EDIT)
-  public JsonResult<Integer> deleteById(@PathVariable("id") Long id) {
+  public JsonResult<Integer> deleteById(@PathVariable("uuid") String uuid) {
     final JsonResult<Integer> result = new JsonResult<>();
     facadeTemplate.manage(result, new ManageCallback() {
       @Override
@@ -197,14 +194,14 @@ public class AlertTemplateFacadeImpl extends BaseFacade {
       public void doManage() {
         MonitorScope ms = RequestContext.getContext().ms;
         int rtn = 0;
-        AlertNotificationTemplate originalItem = alertNotificationTemplateMapper.selectById(id);
+        AlertTemplate originalItem = alertTemplateMapper.selectById(uuid);
         if (originalItem != null) {
-          rtn = alertNotificationTemplateMapper.deleteById(id);
+          rtn = alertTemplateMapper.deleteById(uuid);
         }
 
-        userOpLogService.append("alert_notification_template", id, OpType.DELETE,
+        userOpLogService.append("alert_template", uuid, OpType.DELETE,
             RequestContext.getContext().mu.getLoginName(), ms.getTenant(), ms.getWorkspace(),
-            J.toJson(originalItem), null, null, "alert_notification_template_delete");
+            J.toJson(originalItem), null, null, "alert_template_delete");
 
         JsonResult.createSuccessResult(result, rtn);
       }
@@ -217,9 +214,9 @@ public class AlertTemplateFacadeImpl extends BaseFacade {
   @PostMapping("/pageQuery")
   @ResponseBody
   @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.VIEW)
-  public JsonResult<MonitorPageResult<AlertNotificationTemplateDTO>> pageQuery(
-      @RequestBody MonitorPageRequest<AlertNotificationTemplateDTO> pageRequest) {
-    final JsonResult<MonitorPageResult<AlertNotificationTemplateDTO>> result = new JsonResult<>();
+  public JsonResult<MonitorPageResult<AlertTemplateDTO>> pageQuery(
+      @RequestBody MonitorPageRequest<AlertTemplateDTO> pageRequest) {
+    final JsonResult<MonitorPageResult<AlertTemplateDTO>> result = new JsonResult<>();
     facadeTemplate.manage(result, new ManageCallback() {
       @Override
       public void checkParameter() {
@@ -235,9 +232,8 @@ public class AlertTemplateFacadeImpl extends BaseFacade {
         if (null != ms && !StringUtils.isEmpty(ms.workspace)) {
           pageRequest.getTarget().setWorkspace(ms.workspace);
         }
-        Page<AlertNotificationTemplate> page =
-            new Page<>(pageRequest.getPageNum(), pageRequest.getPageSize());
-        QueryWrapper<AlertNotificationTemplate> queryWrapper = new QueryWrapper<>();
+        Page<AlertTemplate> page = new Page<>(pageRequest.getPageNum(), pageRequest.getPageSize());
+        QueryWrapper<AlertTemplate> queryWrapper = new QueryWrapper<>();
         if (null != ms && !StringUtils.isEmpty(ms.tenant)) {
           queryWrapper.eq("tenant", ms.tenant);
         }
@@ -247,17 +243,19 @@ public class AlertTemplateFacadeImpl extends BaseFacade {
         if (StringUtils.isNotBlank(pageRequest.getTarget().templateName)) {
           queryWrapper.like("template_name", pageRequest.getTarget().templateName);
         }
+        queryWrapper.orderByDesc("gmt_modified");
 
-        Page<AlertNotificationTemplate> p =
-            alertNotificationTemplateMapper.selectPage(page, queryWrapper);
-        MonitorPageResult<AlertNotificationTemplateDTO> pageResult = new MonitorPageResult<>();
-        List<AlertNotificationTemplateDTO> dtoList = new ArrayList<>();
+        Page<AlertTemplate> p = alertTemplateMapper.selectPage(page, queryWrapper);
+        MonitorPageResult<AlertTemplateDTO> pageResult = new MonitorPageResult<>();
+        List<AlertTemplateDTO> dtoList = new ArrayList<>();
         if (!CollectionUtils.isEmpty(p.getRecords())) {
-          for (AlertNotificationTemplate template : p.getRecords()) {
-            dtoList.add(alertNotificationTemplateConverter.doToDTO(template));
+          for (AlertTemplate template : p.getRecords()) {
+            dtoList.add(alertTemplateConverter.doToDTO(template));
           }
         }
         pageResult.setItems(dtoList);
+        pageResult.setTotalCount(p.getTotal());
+        pageResult.setTotalPage(p.getPages());
         JsonResult.createSuccessResult(result, pageResult);
       }
     });
@@ -291,9 +289,8 @@ public class AlertTemplateFacadeImpl extends BaseFacade {
   @PostMapping("/check")
   @ResponseBody
   @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.EDIT)
-  public JsonResult<Boolean> checkTemplateText(
-      @RequestBody AlertNotificationTemplateDTO templateDTO) {
-    final JsonResult<Boolean> result = new JsonResult<>();
+  public JsonResult<AlertTemplateDTO> checkTemplateText(@RequestBody AlertTemplateDTO templateDTO) {
+    final JsonResult<AlertTemplateDTO> result = new JsonResult<>();
 
     facadeTemplate.manage(result, new ManageCallback() {
       @Override
@@ -303,12 +300,21 @@ public class AlertTemplateFacadeImpl extends BaseFacade {
 
       @Override
       public void doManage() {
-        if (templateDTO.templateConfig == null
-            || StringUtils.isEmpty(templateDTO.templateConfig.text)) {
-          JsonResult.createSuccessResult(result, false);
+        NotificationTemplate template = templateDTO.getTemplateConfig();
+        if (template == null) {
+          result.setMessage("templateConfig is null");
           return;
         }
-        JsonResult.createSuccessResult(result, templateDTO.templateConfig.parseText());
+
+        if (StringUtils.isNotEmpty(template.text)) {
+          if (template.parseText()) {
+            result.setData(templateDTO);
+          }
+          result.setSuccess(template.parseText());
+        } else if (!CollectionUtils.isEmpty(template.fieldMap)) {
+          template.text = template.getTemplateJson();
+          result.setData(templateDTO);
+        }
       }
     });
 

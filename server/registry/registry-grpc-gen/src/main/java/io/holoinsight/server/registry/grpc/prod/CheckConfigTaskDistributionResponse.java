@@ -403,10 +403,7 @@ public final class CheckConfigTaskDistributionResponse
       maybeForceBuilderInitialization();
     }
 
-    private void maybeForceBuilderInitialization() {
-      if (com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders) {
-      }
-    }
+    private void maybeForceBuilderInitialization() {}
 
     @java.lang.Override
     public Builder clear() {
@@ -447,7 +444,6 @@ public final class CheckConfigTaskDistributionResponse
     public io.holoinsight.server.registry.grpc.prod.CheckConfigTaskDistributionResponse buildPartial() {
       io.holoinsight.server.registry.grpc.prod.CheckConfigTaskDistributionResponse result =
           new io.holoinsight.server.registry.grpc.prod.CheckConfigTaskDistributionResponse(this);
-      int from_bitField0_ = bitField0_;
       if (headerBuilder_ == null) {
         result.header_ = header_;
       } else {
@@ -803,4 +799,3 @@ public final class CheckConfigTaskDistributionResponse
   }
 
 }
-

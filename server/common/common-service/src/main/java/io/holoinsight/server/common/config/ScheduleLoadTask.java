@@ -3,7 +3,6 @@
  */
 package io.holoinsight.server.common.config;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.concurrent.BasicThreadFactory;
 
 import java.util.ArrayList;

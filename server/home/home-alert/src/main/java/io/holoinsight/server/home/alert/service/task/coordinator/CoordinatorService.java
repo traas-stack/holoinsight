@@ -13,11 +13,9 @@ import io.holoinsight.server.home.biz.common.MetaDictUtil;
 import io.holoinsight.server.home.common.util.CLUSTER_ROLE_CONST;
 import io.holoinsight.server.home.dal.mapper.ClusterMapper;
 import io.holoinsight.server.home.dal.model.Cluster;
-import io.holoinsight.server.home.facade.emuns.PeriodType;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 

@@ -655,7 +655,6 @@ public final class FileNode extends com.google.protobuf.GeneratedMessageV3 imple
     public io.holoinsight.server.common.grpc.FileNode buildPartial() {
       io.holoinsight.server.common.grpc.FileNode result =
           new io.holoinsight.server.common.grpc.FileNode(this);
-      int from_bitField0_ = bitField0_;
       result.name_ = name_;
       if (childrenBuilder_ == null) {
         if (((bitField0_ & 0x00000001) != 0)) {
@@ -1582,4 +1581,3 @@ public final class FileNode extends com.google.protobuf.GeneratedMessageV3 imple
   }
 
 }
-

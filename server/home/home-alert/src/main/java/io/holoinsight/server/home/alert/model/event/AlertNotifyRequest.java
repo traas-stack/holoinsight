@@ -79,4 +79,6 @@ public class AlertNotifyRequest {
 
   private AlertNotifyRecordDTO alertNotifyRecord;
 
+  private boolean notifyRecover;
+
 }

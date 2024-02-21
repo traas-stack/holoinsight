@@ -77,8 +77,8 @@ public class Fmt {
   }
 
   public static void main(String[] args) {
-    System.out.println(Fmt.toFixed(0.562, 2));
-    System.out.println(Fmt.toPercent(0.562, 0));
+    // System.out.println(Fmt.toFixed(0.562, 2));
+    // System.out.println(Fmt.toPercent(0.562, 0));
   }
 
 }

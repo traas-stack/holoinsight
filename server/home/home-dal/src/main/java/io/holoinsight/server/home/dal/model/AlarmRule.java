@@ -157,4 +157,7 @@ public class AlarmRule {
   @Column(name = "alert_notification_template_id")
   private Long alertNotificationTemplateId;
 
+  @Column(name = "alert_template_uuid")
+  private String alertTemplateUuid;
+
 }

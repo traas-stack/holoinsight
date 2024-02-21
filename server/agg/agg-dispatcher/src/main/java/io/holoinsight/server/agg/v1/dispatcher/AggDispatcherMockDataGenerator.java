@@ -14,7 +14,6 @@ import io.holoinsight.server.common.auth.AuthInfo;
 import io.holoinsight.server.extension.model.Header;
 import io.holoinsight.server.extension.model.Row;
 import io.holoinsight.server.extension.model.Table;
-import io.holoinsight.server.gateway.core.grpc.GatewayHook;
 import lombok.extern.slf4j.Slf4j;
 
 /**

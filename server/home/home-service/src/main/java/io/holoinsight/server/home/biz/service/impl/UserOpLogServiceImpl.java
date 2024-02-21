@@ -134,4 +134,24 @@ public class UserOpLogServiceImpl extends ServiceImpl<UserOpLogMapper, UserOpLog
     return opLog;
   }
 
+  @Override
+  public UserOpLog append(String tableName, String tableEntityUuid, String opType, String user,
+      String tenant, String workspace, String before, String after, String relate, String name) {
+    UserOpLog opLog = new UserOpLog();
+    opLog.setTableName(tableName);
+    opLog.setTableEntityUuid(tableEntityUuid);
+    opLog.setOpType(opType);
+    opLog.setCreator(user);
+    opLog.setTenant(tenant);
+    opLog.setWorkspace(workspace);
+    opLog.setGmtCreate(new Date());
+    opLog.setGmtCreate(new Date());
+    opLog.setOpBeforeContext(before);
+    opLog.setOpAfterContext(after);
+    opLog.setName(name);
+    opLog.setRelate(relate);
+    save(opLog);
+    EventBusHolder.post(opLog);
+    return opLog;
+  }
 }

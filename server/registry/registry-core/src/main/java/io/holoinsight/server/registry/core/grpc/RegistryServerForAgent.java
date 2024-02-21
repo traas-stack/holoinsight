@@ -20,12 +20,10 @@ import org.springframework.stereotype.Component;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
-import io.grpc.Attributes;
 import io.grpc.BindableService;
 import io.grpc.Server;
 import io.grpc.ServerBuilder;
 import io.grpc.ServerServiceDefinition;
-import io.grpc.ServerTransportFilter;
 import io.holoinsight.server.common.TrafficTracer;
 import io.holoinsight.server.common.hook.CommonHooksManager;
 import io.holoinsight.server.registry.core.RegistryProperties;

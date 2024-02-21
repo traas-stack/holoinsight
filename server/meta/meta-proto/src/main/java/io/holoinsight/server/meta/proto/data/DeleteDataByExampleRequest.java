@@ -446,10 +446,7 @@ public final class DeleteDataByExampleRequest extends com.google.protobuf.Genera
       maybeForceBuilderInitialization();
     }
 
-    private void maybeForceBuilderInitialization() {
-      if (com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders) {
-      }
-    }
+    private void maybeForceBuilderInitialization() {}
 
     public Builder clear() {
       super.clear();
@@ -897,4 +894,3 @@ public final class DeleteDataByExampleRequest extends com.google.protobuf.Genera
   }
 
 }
-

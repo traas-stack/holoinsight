@@ -67,7 +67,7 @@ public class IndexStructures {
     if (!structures.containsKey(tableName)) {
       return new Mappings();
     }
-    Map<String, Object> properties = mappings.getProperties();
+    mappings.getProperties();
     Map<String, Object> diffProperties = structures.get(tableName).diffFields(mappings);
     return Mappings.builder().properties(diffProperties).build();
   }

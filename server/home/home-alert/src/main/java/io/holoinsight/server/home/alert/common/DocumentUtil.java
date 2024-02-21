@@ -20,6 +20,7 @@ public class DocumentUtil {
       saxReader.setFeature(EGE, false);
       saxReader.setFeature(LED, false);
     } catch (Exception e) {
+      // This catch statement is intentionally empty
     }
     return saxReader;
   }

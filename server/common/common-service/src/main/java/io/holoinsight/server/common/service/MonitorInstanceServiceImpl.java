@@ -34,6 +34,14 @@ public class MonitorInstanceServiceImpl extends ServiceImpl<MonitorInstanceMappe
   }
 
   @Override
+  public List<MonitorInstance> queryByWorkspace(String workspace) {
+    Map<String, Object> cols = new HashMap<>();
+    cols.put("workspace", workspace);
+    cols.put("deleted", 0);
+    return listByMap(cols);
+  }
+
+  @Override
   public List<MonitorInstance> queryByType(String type) {
     Map<String, Object> cols = new HashMap<>();
     cols.put("type", type);

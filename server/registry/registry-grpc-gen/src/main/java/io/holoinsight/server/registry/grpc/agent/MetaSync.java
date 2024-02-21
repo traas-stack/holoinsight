@@ -804,7 +804,6 @@ public final class MetaSync extends com.google.protobuf.GeneratedMessageV3 imple
       public io.holoinsight.server.registry.grpc.agent.MetaSync.FullSyncRequest buildPartial() {
         io.holoinsight.server.registry.grpc.agent.MetaSync.FullSyncRequest result =
             new io.holoinsight.server.registry.grpc.agent.MetaSync.FullSyncRequest(this);
-        int from_bitField0_ = bitField0_;
         if (headerBuilder_ == null) {
           result.header_ = header_;
         } else {
@@ -2480,7 +2479,6 @@ public final class MetaSync extends com.google.protobuf.GeneratedMessageV3 imple
       public io.holoinsight.server.registry.grpc.agent.MetaSync.DeltaSyncRequest buildPartial() {
         io.holoinsight.server.registry.grpc.agent.MetaSync.DeltaSyncRequest result =
             new io.holoinsight.server.registry.grpc.agent.MetaSync.DeltaSyncRequest(this);
-        int from_bitField0_ = bitField0_;
         if (headerBuilder_ == null) {
           result.header_ = header_;
         } else {
@@ -4753,10 +4751,7 @@ public final class MetaSync extends com.google.protobuf.GeneratedMessageV3 imple
         maybeForceBuilderInitialization();
       }
 
-      private void maybeForceBuilderInitialization() {
-        if (com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders) {
-        }
-      }
+      private void maybeForceBuilderInitialization() {}
 
       @java.lang.Override
       public Builder clear() {
@@ -4802,7 +4797,6 @@ public final class MetaSync extends com.google.protobuf.GeneratedMessageV3 imple
       public io.holoinsight.server.registry.grpc.agent.MetaSync.Resource buildPartial() {
         io.holoinsight.server.registry.grpc.agent.MetaSync.Resource result =
             new io.holoinsight.server.registry.grpc.agent.MetaSync.Resource(this);
-        int from_bitField0_ = bitField0_;
         result.name_ = name_;
         result.namespace_ = namespace_;
         result.labels_ = internalGetLabels();
@@ -5071,7 +5065,7 @@ public final class MetaSync extends com.google.protobuf.GeneratedMessageV3 imple
       }
 
       private com.google.protobuf.MapField<java.lang.String, java.lang.String> internalGetMutableLabels() {
-        onChanged();;
+        onChanged();
         if (labels_ == null) {
           labels_ = com.google.protobuf.MapField.newMapField(LabelsDefaultEntryHolder.defaultEntry);
         }
@@ -5199,7 +5193,7 @@ public final class MetaSync extends com.google.protobuf.GeneratedMessageV3 imple
       }
 
       private com.google.protobuf.MapField<java.lang.String, java.lang.String> internalGetMutableAnnotations() {
-        onChanged();;
+        onChanged();
         if (annotations_ == null) {
           annotations_ =
               com.google.protobuf.MapField.newMapField(AnnotationsDefaultEntryHolder.defaultEntry);
@@ -5623,7 +5617,7 @@ public final class MetaSync extends com.google.protobuf.GeneratedMessageV3 imple
       }
 
       private com.google.protobuf.MapField<java.lang.String, java.lang.String> internalGetMutableSpec() {
-        onChanged();;
+        onChanged();
         if (spec_ == null) {
           spec_ = com.google.protobuf.MapField.newMapField(SpecDefaultEntryHolder.defaultEntry);
         }
@@ -6002,10 +5996,7 @@ public final class MetaSync extends com.google.protobuf.GeneratedMessageV3 imple
       maybeForceBuilderInitialization();
     }
 
-    private void maybeForceBuilderInitialization() {
-      if (com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders) {
-      }
-    }
+    private void maybeForceBuilderInitialization() {}
 
     @java.lang.Override
     public Builder clear() {
@@ -6164,4 +6155,3 @@ public final class MetaSync extends com.google.protobuf.GeneratedMessageV3 imple
   }
 
 }
-

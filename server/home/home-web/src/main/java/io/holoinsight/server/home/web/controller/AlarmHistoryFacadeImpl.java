@@ -3,6 +3,7 @@
  */
 package io.holoinsight.server.home.web.controller;
 
+import io.holoinsight.server.common.JsonResult;
 import io.holoinsight.server.home.biz.service.AlarmHistoryService;
 import io.holoinsight.server.home.common.util.scope.AuthTargetType;
 import io.holoinsight.server.home.common.util.scope.MonitorScope;
@@ -12,11 +13,11 @@ import io.holoinsight.server.home.facade.AlarmHistoryDTO;
 import io.holoinsight.server.home.facade.page.MonitorPageRequest;
 import io.holoinsight.server.home.facade.page.MonitorPageResult;
 import io.holoinsight.server.home.web.common.ManageCallback;
-import io.holoinsight.server.home.web.common.ParaCheckUtil;
 import io.holoinsight.server.home.web.interceptor.MonitorScopeAuth;
-import io.holoinsight.server.common.JsonResult;
+import io.holoinsight.server.home.web.security.LevelAuthorizationAccess;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -37,7 +38,8 @@ public class AlarmHistoryFacadeImpl extends BaseFacade {
   @Autowired
   private AlarmHistoryService alarmHistoryService;
 
-
+  @LevelAuthorizationAccess(paramConfigs = {"PARAMETER" + ":$!id"},
+      levelAuthorizationCheckeClass = "io.holoinsight.server.home.web.security.custom.AlarmHistoryFacadeImplChecker")
   @GetMapping("/query/{id}")
   @ResponseBody
   @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.VIEW)
@@ -45,9 +47,7 @@ public class AlarmHistoryFacadeImpl extends BaseFacade {
     final JsonResult<AlarmHistoryDTO> result = new JsonResult<>();
     facadeTemplate.manage(result, new ManageCallback() {
       @Override
-      public void checkParameter() {
-        ParaCheckUtil.checkParaNotNull(id, "id");
-      }
+      public void checkParameter() {}
 
       @Override
       public void doManage() {
@@ -60,6 +60,36 @@ public class AlarmHistoryFacadeImpl extends BaseFacade {
     return result;
   }
 
+  @LevelAuthorizationAccess(paramConfigs = {"PARAMETER" + ":$!id"},
+      levelAuthorizationCheckeClass = "io.holoinsight.server.home.web.security.custom.AlarmHistoryFacadeImplChecker")
+  @DeleteMapping("/delete/{id}")
+  @ResponseBody
+  @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.VIEW)
+  public JsonResult<Boolean> deleteById(@PathVariable("id") Long id) {
+    final JsonResult<Boolean> result = new JsonResult<>();
+    facadeTemplate.manage(result, new ManageCallback() {
+      @Override
+      public void checkParameter() {}
+
+      @Override
+      public void doManage() {
+        MonitorScope ms = RequestContext.getContext().ms;
+        boolean rtn = false;
+        AlarmHistoryDTO alarmHistoryDTO =
+            alarmHistoryService.queryById(id, ms.getTenant(), ms.getWorkspace());
+        if (alarmHistoryDTO != null) {
+          rtn = alarmHistoryService.deleteById(id);
+        }
+
+        JsonResult.createSuccessResult(result, rtn);
+      }
+    });
+
+    return result;
+  }
+
+  @LevelAuthorizationAccess(paramConfigs = {"PARAMETER" + ":$!pageRequest"},
+      levelAuthorizationCheckeClass = "io.holoinsight.server.home.web.security.custom.AlarmHistoryFacadeImplChecker")
   @PostMapping("/pageQuery")
   @ResponseBody
   @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.VIEW)
@@ -68,9 +98,7 @@ public class AlarmHistoryFacadeImpl extends BaseFacade {
     final JsonResult<MonitorPageResult<AlarmHistoryDTO>> result = new JsonResult<>();
     facadeTemplate.manage(result, new ManageCallback() {
       @Override
-      public void checkParameter() {
-        ParaCheckUtil.checkParaNotNull(pageRequest.getTarget(), "target");
-      }
+      public void checkParameter() {}
 
       @Override
       public void doManage() {

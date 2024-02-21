@@ -13,14 +13,14 @@ import io.holoinsight.server.home.alert.service.event.RecordSucOrFailNotify;
 import io.holoinsight.server.home.biz.plugin.model.PluginContext;
 import io.holoinsight.server.home.biz.service.IntegrationPluginService;
 import io.holoinsight.server.home.dal.converter.AlarmRuleConverter;
-import io.holoinsight.server.home.dal.converter.AlertNotificationTemplateConverter;
+import io.holoinsight.server.home.dal.converter.AlertTemplateConverter;
 import io.holoinsight.server.home.dal.mapper.AlarmRuleMapper;
-import io.holoinsight.server.home.dal.mapper.AlertNotificationTemplateMapper;
+import io.holoinsight.server.home.dal.mapper.AlertTemplateMapper;
 import io.holoinsight.server.home.dal.model.AlarmRule;
-import io.holoinsight.server.home.dal.model.AlertNotificationTemplate;
+import io.holoinsight.server.home.dal.model.AlertTemplate;
 import io.holoinsight.server.home.dal.model.dto.IntegrationPluginDTO;
 import io.holoinsight.server.home.facade.AlarmRuleDTO;
-import io.holoinsight.server.home.facade.AlertNotificationTemplateDTO;
+import io.holoinsight.server.home.facade.AlertTemplateDTO;
 import io.holoinsight.server.home.facade.AlertNotifyRecordDTO;
 import io.holoinsight.server.home.facade.AlertRuleExtra;
 import io.holoinsight.server.home.facade.NotificationTemplate;
@@ -65,22 +65,22 @@ public abstract class GatewayService {
   @Resource
   private AlarmRuleConverter alarmRuleConverter;
   @Resource
-  private AlertNotificationTemplateMapper alertNotificationTemplateMapper;
+  private AlertTemplateMapper alertTemplateMapper;
   @Autowired
-  private AlertNotificationTemplateConverter alertNotificationTemplateConverter;
+  private AlertTemplateConverter alertTemplateConverter;
 
   private static final String GATEWAY = "GatewayService";
 
   public boolean sendAlertNotifyV3(AlertNotifyRequest notify, AlertNotifyRecordLatch recordLatch) {
     String traceId = notify.getTraceId();
-    LOGGER.info("{} receive_alarm_notify_request at {}", traceId,
-        this.environmentProperties.getDeploymentSite());
+    LOGGER.info("{} receive_alarm_notify_request at {}, recover notify {}", traceId,
+        this.environmentProperties.getDeploymentSite(), notify.isNotifyRecover());
 
     NotifyChain defaultNotifyChain = new NotifyChain(this.scheduleQueue);
 
     String tenant = notify.getTenant();
     String type = defaultNotifyChain.name;
-    if (CollectionUtils.isEmpty(notify.getNotifyDataInfos())) {
+    if (!notify.isNotifyRecover() && CollectionUtils.isEmpty(notify.getNotifyDataInfos())) {
       LOGGER.info("{} notify data info is empty.", traceId);
       RecordSucOrFailNotify.alertNotifyProcessFail(traceId + ": notify data info is empty ",
           GATEWAY, "check notify data info", notify.getAlertNotifyRecord());
@@ -128,13 +128,12 @@ public abstract class GatewayService {
     notify.setAlertRuleExtra(extra);
     NotificationTemplate notificationTemplate = extra == null ? null : extra.getDingTalkTemplate();
     if (notificationTemplate == null) {
-      Long alertNotificationTemplateId = alertRule.getAlertNotificationTemplateId();
-      if (alertNotificationTemplateId != null) {
-        AlertNotificationTemplate alertNotificationTemplate =
-            this.alertNotificationTemplateMapper.selectById(alertNotificationTemplateId);
-        if (alertNotificationTemplate != null) {
-          AlertNotificationTemplateDTO templateDTO =
-              this.alertNotificationTemplateConverter.doToDTO(alertNotificationTemplate);
+      String alertRuleAlertTemplateUuid = alertRule.getAlertTemplateUuid();
+      if (StringUtils.isNotEmpty(alertRuleAlertTemplateUuid)) {
+        AlertTemplate alertTemplate =
+            this.alertTemplateMapper.selectById(alertRuleAlertTemplateUuid);
+        if (alertTemplate != null) {
+          AlertTemplateDTO templateDTO = this.alertTemplateConverter.doToDTO(alertTemplate);
           notificationTemplate = templateDTO.templateConfig;
         }
       }
@@ -184,22 +183,28 @@ public abstract class GatewayService {
    * @return
    */
   private List<Map<String, Object>> convertToInput(AlertNotifyRequest notifyRequest) {
+    List<Map<String, Object>> res = new ArrayList<>();
     Map<Trigger, List<NotifyDataInfo>> notifyDataInfoMap = notifyRequest.getNotifyDataInfos();
     if (CollectionUtils.isEmpty(notifyDataInfoMap)) {
-      return Collections.emptyList();
-    }
-    List<Map<String, Object>> res = new ArrayList<>();
-    for (Map.Entry<Trigger, List<NotifyDataInfo>> entry : notifyDataInfoMap.entrySet()) {
-      for (NotifyDataInfo notifyDataInfo : entry.getValue()) {
-        Map<String, Object> item = new HashMap<>();
-        item.put("alarmTime", notifyRequest.getAlarmTime());
-        item.put("alarmLevel", notifyRequest.getAlarmLevel());
-        item.put("alarmName", notifyRequest.getRuleName());
-        item.put("tenant", notifyRequest.getTenant());
-        item.put("triggerContent", notifyDataInfo.getTriggerContent());
-        item.put("currentValue", notifyDataInfo.getCurrentValue());
-        item.put("tags", notifyDataInfo.getTags());
-        res.add(item);
+      Map<String, Object> item = new HashMap<>();
+      item.put("alarmTime", notifyRequest.getAlarmTime());
+      item.put("alarmLevel", notifyRequest.getAlarmLevel());
+      item.put("alarmName", notifyRequest.getRuleName());
+      item.put("tenant", notifyRequest.getTenant());
+      res.add(item);
+    } else {
+      for (Map.Entry<Trigger, List<NotifyDataInfo>> entry : notifyDataInfoMap.entrySet()) {
+        for (NotifyDataInfo notifyDataInfo : entry.getValue()) {
+          Map<String, Object> item = new HashMap<>();
+          item.put("alarmTime", notifyRequest.getAlarmTime());
+          item.put("alarmLevel", notifyRequest.getAlarmLevel());
+          item.put("alarmName", notifyRequest.getRuleName());
+          item.put("tenant", notifyRequest.getTenant());
+          item.put("triggerContent", notifyDataInfo.getTriggerContent());
+          item.put("currentValue", notifyDataInfo.getCurrentValue());
+          item.put("tags", notifyDataInfo.getTags());
+          res.add(item);
+        }
       }
     }
 

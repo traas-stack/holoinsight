@@ -6,7 +6,6 @@ package io.holoinsight.server.apm.engine.elasticsearch.storage.impl;
 import io.holoinsight.server.apm.common.model.query.Endpoint;
 import io.holoinsight.server.apm.engine.model.EndpointRelationDO;
 import io.holoinsight.server.apm.engine.model.RecordDO;
-import io.holoinsight.server.apm.engine.model.SpanDO;
 import io.holoinsight.server.apm.engine.storage.EndpointStorage;
 import io.holoinsight.server.apm.engine.storage.ICommonBuilder;
 import lombok.extern.slf4j.Slf4j;

@@ -4,11 +4,11 @@
 package io.holoinsight.server.home.dal.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import io.holoinsight.server.home.dal.model.AlertNotificationTemplate;
+import io.holoinsight.server.home.dal.model.AlertTemplate;
 
 /**
  * @author masaimu
  * @version 2024-01-22 16:56:00
  */
-public interface AlertNotificationTemplateMapper extends BaseMapper<AlertNotificationTemplate> {
+public interface AlertTemplateMapper extends BaseMapper<AlertTemplate> {
 }
