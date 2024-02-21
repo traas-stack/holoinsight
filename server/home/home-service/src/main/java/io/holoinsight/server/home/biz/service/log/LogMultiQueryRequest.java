@@ -49,7 +49,7 @@ public class LogMultiQueryRequest {
   /**
    * order by time
    */
-  private boolean isReverse = true;
+  private Boolean isReverse = true;
 
   @Data
   public static class SingleAppLogQuery {
