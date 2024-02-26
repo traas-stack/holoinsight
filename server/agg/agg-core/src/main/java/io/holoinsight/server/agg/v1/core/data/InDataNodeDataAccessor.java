@@ -22,6 +22,8 @@ public class InDataNodeDataAccessor implements DataAccessor {
 
   public void replace(AggProtos.InDataNode in) {
     this.in = in;
+    this.fieldName = null;
+    this.bf = null;
   }
 
   @Override
@@ -76,6 +78,7 @@ public class InDataNodeDataAccessor implements DataAccessor {
   public void bindFieldName(String fieldName) {
     if (!isSingleValue()) {
       this.fieldName = fieldName;
+      this.bf = null;
     }
   }
 
@@ -119,6 +122,10 @@ public class InDataNodeDataAccessor implements DataAccessor {
   private void ensureBf() {
     if (bf == null) {
       bf = in.getFieldsOrDefault(fieldName, null);
+      // if bf is null, we have to treat it as a default value
+      if (bf == null) {
+        bf = AggProtos.BasicField.getDefaultInstance();
+      }
     }
   }
 }

@@ -12,7 +12,9 @@ import io.holoinsight.server.agg.v1.core.conf.AggFunc;
 import io.holoinsight.server.agg.v1.core.conf.SelectItem;
 import io.holoinsight.server.agg.v1.core.data.DataAccessor;
 import io.holoinsight.server.agg.v1.core.data.LogSamples;
+import io.holoinsight.server.agg.v1.executor.output.PercentileFinalValues;
 import io.holoinsight.server.agg.v1.executor.state.LogSamplesState;
+import io.holoinsight.server.common.JsonUtils;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 
@@ -25,6 +27,9 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Data
 public class GroupField {
+  private static final double[] DEFAULT_PERCENTILE_RANKS =
+      {0.01, 0.05, 0.25, 0.50, 0.75, 0.95, 0.99};
+
   private AggFunc agg;
   private int input;
   private int count;
@@ -32,6 +37,7 @@ public class GroupField {
   private LogSamplesState logSamples;
   private TopnState topn;
   private HllState hll;
+  private PercentileState percentile;
 
   public GroupField() {}
 
@@ -103,6 +109,12 @@ public class GroupField {
           hll.add(v);
         }
         break;
+      case AggFunc.TYPE_PERCENTILE:
+        if (percentile == null) {
+          percentile = new PercentileState();
+        }
+        percentile.add(da.getFloat64Field());
+        break;
     }
   }
 
@@ -144,9 +156,18 @@ public class GroupField {
           return 0;
         }
         return hll.cardinality();
+      case AggFunc.TYPE_PERCENTILE:
+        if (percentile == null) {
+          return null;
+        }
+        PercentileFinalValues pfv = new PercentileFinalValues(DEFAULT_PERCENTILE_RANKS.length);
+        double[] quantiles = percentile.getQuantiles(DEFAULT_PERCENTILE_RANKS);
+        for (int i = 0; i < DEFAULT_PERCENTILE_RANKS.length; i++) {
+          pfv.add(DEFAULT_PERCENTILE_RANKS[i], quantiles[i]);
+        }
+        return JsonUtils.toJson(pfv);
       default:
         throw new IllegalStateException("unsupported");
     }
   }
-
 }

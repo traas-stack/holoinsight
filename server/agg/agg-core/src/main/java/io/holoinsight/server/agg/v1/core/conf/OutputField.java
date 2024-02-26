@@ -8,6 +8,7 @@ import javax.annotation.Nonnull;
 import com.googlecode.aviator.AviatorEvaluator;
 import com.googlecode.aviator.Expression;
 
+import lombok.AccessLevel;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
@@ -20,6 +21,9 @@ import lombok.Setter;
  */
 @Data
 public class OutputField {
+  public static final String DEFAULT = "";
+  public static final String PERCENTILE = "PERCENTILE";
+
   @Nonnull
   private String name;
   /**
@@ -28,9 +32,20 @@ public class OutputField {
   @Nonnull
   private String expression;
 
-  @Getter
-  @Setter
+  @Getter(AccessLevel.NONE)
+  @Setter(AccessLevel.NONE)
   private transient Expression compiledExpression;
+
+  /**
+   * Final data type
+   * <ul>
+   * <li>null or "" or "DEFAULT": data of number and string types are supported, and data of other
+   * types will be uniformly converted to string.</li>
+   * <li>PERCENTILE: percentile requires the output result to be null, or `Map<String, Double>`
+   * where Key is the string format of the percentile, such as "99" "95"</li>
+   * </ul>
+   */
+  private String type = DEFAULT;
 
   public OutputField() {}
 

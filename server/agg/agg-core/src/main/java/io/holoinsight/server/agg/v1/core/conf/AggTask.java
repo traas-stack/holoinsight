@@ -62,10 +62,11 @@ public class AggTask {
    */
   private FillZero fillZero = new FillZero();
 
+  private Extension extension = new Extension();
+
   public AggTask() {}
 
   public boolean hasGroupBy() {
     return groupBy != null && !groupBy.isEmpty();
   }
-
 }

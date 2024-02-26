@@ -3,6 +3,20 @@
  */
 package io.holoinsight.server.apm.receiver.trace;
 
+import static io.holoinsight.server.apm.receiver.common.TransformAttr.anyValueToString;
+import static io.holoinsight.server.apm.receiver.common.TransformAttr.convertKeyValue;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+import org.apache.commons.codec.binary.Hex;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.time.StopWatch;
+import org.springframework.beans.factory.annotation.Autowired;
+
 import io.holoinsight.server.apm.common.constants.Const;
 import io.holoinsight.server.apm.common.model.specification.otel.Event;
 import io.holoinsight.server.apm.common.model.specification.otel.KeyValue;
@@ -22,6 +36,7 @@ import io.holoinsight.server.apm.engine.model.ServiceInstanceRelationDO;
 import io.holoinsight.server.apm.engine.model.ServiceRelationDO;
 import io.holoinsight.server.apm.engine.model.SlowSqlDO;
 import io.holoinsight.server.apm.engine.model.SpanDO;
+import io.holoinsight.server.apm.engine.storage.SpanStorageHookManager;
 import io.holoinsight.server.apm.receiver.analysis.RelationAnalysis;
 import io.holoinsight.server.apm.receiver.analysis.ServiceErrorAnalysis;
 import io.holoinsight.server.apm.receiver.analysis.SlowSqlAnalysis;
@@ -38,19 +53,6 @@ import io.holoinsight.server.common.ctl.MonitorProductCode;
 import io.holoinsight.server.common.ctl.ProductCtlService;
 import io.opentelemetry.proto.trace.v1.ScopeSpans;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.codec.binary.Hex;
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang3.time.StopWatch;
-import org.springframework.beans.factory.annotation.Autowired;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-
-import static io.holoinsight.server.apm.receiver.common.TransformAttr.anyValueToString;
-import static io.holoinsight.server.apm.receiver.common.TransformAttr.convertKeyValue;
 
 @Slf4j
 public class SpanHandler {
@@ -77,6 +79,8 @@ public class SpanHandler {
   private ServiceErrorService serviceErrorService;
   @Autowired
   private ProductCtlService productCtlService;
+  @Autowired
+  private SpanStorageHookManager spanStorageHookManager;
 
   public void handleResourceSpans(
       List<io.opentelemetry.proto.trace.v1.ResourceSpans> resourceSpansList) {
@@ -195,6 +199,7 @@ public class SpanHandler {
   }
 
   private void storageSpan(List<SpanDO> spans) throws Exception {
+    spanStorageHookManager.beforeStorage(spans);
     traceService.insertSpans(spans);
   }
 
@@ -204,6 +209,7 @@ public class SpanHandler {
   }
 
   public void storageServiceRelation(List<ServiceRelationDO> relationList) throws Exception {
+    spanStorageHookManager.beforeStorageServiceRelation(relationList);
     serviceRelationService.insert(relationList);
   }
 
@@ -221,6 +227,7 @@ public class SpanHandler {
   }
 
   public void storageServiceError(List<ServiceErrorDO> errorInfoDOList) throws Exception {
+    spanStorageHookManager.beforeStorageServiceError(errorInfoDOList);
     serviceErrorService.insert(errorInfoDOList);
   }
 

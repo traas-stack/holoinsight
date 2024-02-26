@@ -46,19 +46,15 @@ public class AsyncOutput {
   private static final int MAX_REQUEST_SIZE = 10 * 1024 * 1024;
   private static final Duration POLL_TIMEOUT = Duration.ofSeconds(2);
   private final CountDownLatch cdl = new CountDownLatch(1);
-
+  private final XConsoleOutput consoleOutput = new XConsoleOutput();
   private KafkaConsumer<Integer, XOutput.Batch> consumer;
   private KafkaProducer<Integer, XOutput.Batch> producer;
   private volatile boolean stopped;
-
   @Autowired
   private AggProperties aggProperties;
-
   private String outputTopic;
-
   @Autowired(required = false)
   private List<XOutput> outputs = new ArrayList<>();
-
   private transient Map<String, XOutput> outputMap = new HashMap<>();
 
   public AsyncOutput() {}
@@ -190,8 +186,10 @@ public class AsyncOutput {
   }
 
   public void write(XOutput.Batch batch) {
-    if (aggProperties.isDebugOutput()) {
-      new XConsoleOutput().write(batch);
+    if (aggProperties.isDebugOutput() || XConsoleOutput.TYPE.equals(batch.getOi().getType())) {
+      // write to console of current instance directly
+      // avoid logging on another machine
+      consoleOutput.write(batch);
       return;
     }
 

@@ -28,6 +28,11 @@
 			<artifactId>registry-core</artifactId>
 			<version>${project.version}</version>
 		</dependency>
+		<dependency>
+			<groupId>io.holoinsight.server</groupId>
+			<artifactId>apm-engine</artifactId>
+			<version>${project.version}</version>
+		</dependency>
 	</dependencies>
 
 </project>

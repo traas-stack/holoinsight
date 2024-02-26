@@ -3,6 +3,7 @@
  */
 package io.holoinsight.server.agg.v1.dispatcher;
 
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -58,5 +59,12 @@ public class AggDispatcherAutoConfiguration {
   @Bean
   public AggDispatcherMockDataGenerator aggDispatcherMockDataGenerator() {
     return new AggDispatcherMockDataGenerator();
+  }
+
+  @ConditionalOnMissingBean
+  @ConditionalOnRole("apm")
+  @Bean
+  public AggSpanStorageHook aggSpanStorageHook() {
+    return new AggSpanStorageHook();
   }
 }

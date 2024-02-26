@@ -38,6 +38,7 @@ import io.holoinsight.server.agg.v1.executor.output.XOutput;
 import io.holoinsight.server.agg.v1.executor.state.AggTaskState;
 import io.holoinsight.server.agg.v1.executor.state.AggWindowState;
 import io.holoinsight.server.agg.v1.pb.AggProtos;
+import io.holoinsight.server.common.ProtoJsonUtils;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -105,7 +106,11 @@ public class AggTaskExecutor {
         if (aggTaskValue.hasDataTable()) {
           processData2(latestAggTask, aggTaskValue);
         } else {
-          processData(latestAggTask, aggTaskValue);
+          try {
+            processData(latestAggTask, aggTaskValue);
+          } catch (Exception e) {
+            log.error("[agg] [{}] error", key(), e);
+          }
         }
         break;
     }
@@ -188,6 +193,11 @@ public class AggTaskExecutor {
   }
 
   private void processData(XAggTask latestAggTask, AggProtos.AggTaskValue aggTaskValue) {
+    boolean debug = latestAggTask.getInner().getExtension().isDebug();
+    if (debug) {
+      log.info("[agg] [debug] [{}] input={}", key(), ProtoJsonUtils.toJson(aggTaskValue));
+    }
+
     long now = System.currentTimeMillis();
     AggWindowState lastWindowState = null;
     InDataNodeDataAccessor da = new InDataNodeDataAccessor();
