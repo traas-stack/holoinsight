@@ -7,11 +7,10 @@ import java.util.Map;
 
 import org.apache.commons.text.StringSubstitutor;
 
-import com.alibaba.fastjson.JSON;
-
 import io.holoinsight.server.agg.v1.core.Utils;
 import io.holoinsight.server.agg.v1.core.conf.OutputItem;
 import io.holoinsight.server.agg.v1.core.data.AggTaskKey;
+import io.holoinsight.server.common.JsonUtils;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -49,8 +48,8 @@ public class XConsoleOutput implements XOutput {
             key, //
             oi.getName(), //
             Utils.formatTimeShort(w.getTimestamp()), //
-            g.getTags(), //
-            JSON.toJSONString(finalFields)); //
+            JsonUtils.toJson(g.getTags()), //
+            JsonUtils.toJson(finalFields)); //
       } else {
         for (Map.Entry<String, Object> e : finalFields.entrySet()) {
           String metricName;
@@ -64,7 +63,8 @@ public class XConsoleOutput implements XOutput {
               key, //
               oi.getName(), //
               Utils.formatTimeShort(w.getTimestamp()), //
-              metricName, g.getTags(), //
+              metricName, //
+              JsonUtils.toJson(g.getTags()), //
               e.getValue()); //
         }
       }

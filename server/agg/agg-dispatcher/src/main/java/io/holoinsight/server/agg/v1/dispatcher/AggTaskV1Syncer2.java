@@ -130,17 +130,17 @@ public class AggTaskV1Syncer2 implements InitializingBean {
         case 0:
           // del
           aggTasks.remove(d.aggId);
-          log.error("[aggtask] [sync] remove {}", d.aggId);
+          log.info("[aggtask] [sync] remove {}", d.aggId);
           ++del;
           break;
         case 1:
           AggTask aggTask = JSON.parseObject(d.add.get(0).getJson(), AggTask.class);
           aggTasks.put(d.aggId, aggTask);
-          log.error("[aggtask] [sync] add [{}/{}]", d.aggId, d.add.get(0).getVersion());
+          log.info("[aggtask] [sync] add [{}/{}]", d.aggId, d.add.get(0).getVersion());
           ++add;
           break;
         default:
-          log.error("[aggtask] [sync] invalid {}", d);
+          log.info("[aggtask] [sync] invalid {}", d);
           // invalid
           break;
       }

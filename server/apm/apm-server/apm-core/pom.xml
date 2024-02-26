@@ -14,6 +14,11 @@
 	<dependencies>
 		<dependency>
 			<groupId>io.holoinsight.server</groupId>
+			<artifactId>common</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>io.holoinsight.server</groupId>
 			<artifactId>apm-common</artifactId>
 			<version>${project.version}</version>
 		</dependency>
@@ -24,6 +29,10 @@
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot</artifactId>
 		</dependency>
 	</dependencies>
 </project>
