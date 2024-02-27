@@ -15,6 +15,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import io.holoinsight.server.home.biz.service.UserinfoService;
+import io.holoinsight.server.home.common.util.scope.MonitorParams;
 import io.holoinsight.server.home.facade.UserinfoDTO;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -135,8 +136,9 @@ public class ULAFacade {
     return instanceMap.get(ulaType);
   }
 
-  public void checkWorkspace(HttpServletRequest req, MonitorUser user, MonitorScope ms) {
-    getCurrentULA().checkWorkspace(req, user, ms);
+  public void checkWorkspace(HttpServletRequest req, MonitorUser user, MonitorScope ms,
+      MonitorParams mp) {
+    getCurrentULA().checkWorkspace(req, user, ms, mp);
   }
 
   public Boolean authFunc(HttpServletRequest req) {
@@ -147,6 +149,8 @@ public class ULAFacade {
     return getCurrentULA().getMonitorScope(req, mu);
   }
 
-
+  public MonitorParams getMonitorParams(HttpServletRequest req, MonitorUser mu) {
+    return getCurrentULA().getMonitorParams(req, mu);
+  }
 
 }

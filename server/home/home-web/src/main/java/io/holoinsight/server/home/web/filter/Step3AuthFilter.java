@@ -5,6 +5,7 @@ package io.holoinsight.server.home.web.filter;
 
 import io.holoinsight.server.home.common.util.MonitorException;
 import io.holoinsight.server.home.common.util.ResultCodeEnum;
+import io.holoinsight.server.home.common.util.scope.MonitorParams;
 import io.holoinsight.server.home.web.config.RestAuthUtil;
 import io.holoinsight.server.common.J;
 import io.holoinsight.server.home.biz.ula.ULAFacade;
@@ -98,6 +99,7 @@ public class Step3AuthFilter implements Filter {
 
     // 获取一个用户的权限包
     MonitorScope ms = ulaFacade.getMonitorScope(req, mu);
+    MonitorParams mp = ulaFacade.getMonitorParams(req, mu);
     MonitorAuth ma = null;
 
     try {
@@ -117,12 +119,12 @@ public class Step3AuthFilter implements Filter {
           checkCache = true;
         }
         if (checkCache) {
-          ulaFacade.checkWorkspace(req, mu, ms);
+          ulaFacade.checkWorkspace(req, mu, ms, mp);
           return true;
         }
       }
       ma = ulaFacade.getUserPowerPkg(req, mu, ms);
-      ulaFacade.checkWorkspace(req, mu, ms);
+      ulaFacade.checkWorkspace(req, mu, ms, mp);
       if (null == ma || CollectionUtils.isEmpty(ma.powerConstants)
           || CollectionUtils.isEmpty(ma.getTenantViewPowerList())) {
         log.error("check tenant auth failed, " + J.toJson(ma));
@@ -160,7 +162,7 @@ public class Step3AuthFilter implements Filter {
           "auth failed by cookie, " + e.getMessage(), ResultCodeEnum.MONITOR_SYSTEM_ERROR);
       return false;
     } finally {
-      Context c = new Context(ms, mu, ma);
+      Context c = new Context(ms, mu, ma, mp);
       Debugger.print("Step3AuthFilter",
           "MS: " + J.toJson(ms) + ", MU: " + J.toJson(mu) + ", MA: " + J.toJson(ma));
       RequestContext.setContext(c);

@@ -104,9 +104,9 @@ public class CustomPluginUpdateListener {
         String tableName = String.format("%s_%s", name, customPluginDTO.id);
         sqlTaskMaps.put(tableName, sqlTask);
 
-        if (null != collectMetric.getCalculate() && Boolean.TRUE == collectMetric.calculate) {
+        if (null != collectMetric.getCalculate() && Boolean.TRUE == collectMetric.getCalculate()) {
           AggTask aggTask = buildAggTask(collectMetric, customPluginDTO);
-          aggTaskMaps.put(collectMetric.aggTableName, aggTask);
+          aggTaskMaps.put(collectMetric.logCalculate.aggTableName, aggTask);
         }
       }
 
@@ -221,6 +221,7 @@ public class CustomPluginUpdateListener {
         AggTaskUtil.buildGroupBy(collectMetric, tenantInitService.getAggDefaultGroupByTags()));
     aggTask.setWindow(AggTaskUtil.buildWindow(customPluginDTO.getPeriodType().dataUnitMs));
     aggTask.setOutput(AggTaskUtil.buildOutput(collectMetric));
+    aggTask.setFillZero(AggTaskUtil.buildFillZero(collectMetric));
     return aggTask;
   }
 
@@ -277,7 +278,7 @@ public class CustomPluginUpdateListener {
 
     for (CollectMetric collectMetric : collectMetrics) {
       saveMetricByCollectMetric(customPluginDTO, collectMetric, conf.spm, false);
-      if (Boolean.TRUE == collectMetric.calculate) {
+      if (null != collectMetric.getCalculate() && Boolean.TRUE == collectMetric.getCalculate()) {
         saveMetricByCollectMetric(customPluginDTO, collectMetric, conf.spm, true);
       }
     }
@@ -289,7 +290,7 @@ public class CustomPluginUpdateListener {
     String tableName = collectMetric.getTableName();
     String targetTable = collectMetric.getTargetTable();
     if (isAgg) {
-      targetTable = collectMetric.getAggTableName();
+      targetTable = collectMetric.logCalculate.getAggTableName();
     }
 
     try {
@@ -324,6 +325,9 @@ public class CustomPluginUpdateListener {
       List<String> tags = new ArrayList<>(Arrays.asList("ip", "hostname", "namespace"));
       if (!isAgg && !CollectionUtils.isEmpty(collectMetric.tags)) {
         tags.addAll(collectMetric.tags);
+      }
+      if (!isAgg && !CollectionUtils.isEmpty(collectMetric.refTags)) {
+        tags.addAll(collectMetric.refTags);
       }
       metricInfoDTO.setTags(tags);
       metricInfoDTO.setRef(String.valueOf(customPluginDTO.getId()));

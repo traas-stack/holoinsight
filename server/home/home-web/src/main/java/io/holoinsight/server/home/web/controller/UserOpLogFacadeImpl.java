@@ -84,9 +84,9 @@ public class UserOpLogFacadeImpl extends BaseFacade {
         if (null != ms && !StringUtils.isBlank(ms.tenant)) {
           userOpLogRequest.getTarget().setTenant(ms.tenant);
         }
-        if (null != ms && !StringUtils.isBlank(ms.workspace)) {
-          userOpLogRequest.getTarget().setWorkspace(ms.workspace);
-        }
+        // if (null != ms && !StringUtils.isBlank(ms.workspace)) {
+        // userOpLogRequest.getTarget().setWorkspace(ms.workspace);
+        // }
         JsonResult.createSuccessResult(result, userOpLogService.getListByPage(userOpLogRequest));
       }
     });

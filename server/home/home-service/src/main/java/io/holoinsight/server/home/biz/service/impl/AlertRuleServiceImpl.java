@@ -19,7 +19,6 @@ import io.holoinsight.server.home.facade.page.MonitorPageRequest;
 import io.holoinsight.server.home.facade.page.MonitorPageResult;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
@@ -32,12 +31,11 @@ import java.util.stream.Collectors;
  * @author wangsiyuan
  * @date 2022/4/1 10:44 上午
  */
-@Service
 public class AlertRuleServiceImpl extends ServiceImpl<AlarmRuleMapper, AlarmRule>
     implements AlertRuleService {
 
   @Resource
-  private AlarmRuleConverter alarmRuleConverter;
+  public AlarmRuleConverter alarmRuleConverter;
 
   @Resource
   private AlertBlockService alertBlockService;
