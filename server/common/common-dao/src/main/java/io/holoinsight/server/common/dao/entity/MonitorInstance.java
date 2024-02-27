@@ -35,6 +35,8 @@ public class MonitorInstance {
   private String instance;
 
   private String instanceName;
+  private String instanceType;
+  private String instanceInfo;
 
   /**
    * 实例类型
