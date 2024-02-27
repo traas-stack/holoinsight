@@ -96,8 +96,8 @@ public class AlarmMetricFacadeImpl extends BaseFacade {
         }
 
         for (AlarmMetric alarmMetric : metrics) {
-          MetricInfoDTO metricInfoDTO = metricInfoService.queryByMetric(ms.getTenant(),
-              ms.getWorkspace(), alarmMetric.getMetricTable());
+          MetricInfoDTO metricInfoDTO = metricInfoService.queryByMetric(alarmMetric.getTenant(),
+              alarmMetric.getWorkspace(), alarmMetric.getMetricTable());
           if (null == metricInfoDTO || StringUtils.isBlank(metricInfoDTO.getRef()))
             continue;
           if (!refMaps.containsKey(metricInfoDTO.getProduct())) {

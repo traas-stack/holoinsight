@@ -23,6 +23,8 @@ import io.holoinsight.server.home.biz.plugin.MetricInfoCheckServiceImpl;
 import io.holoinsight.server.home.biz.service.EnvironmentService;
 import io.holoinsight.server.home.biz.service.TenantInitService;
 import io.holoinsight.server.home.biz.service.UserinfoVerificationService;
+import io.holoinsight.server.home.biz.service.impl.AlarmHistoryServiceImpl;
+import io.holoinsight.server.home.biz.service.impl.AlertRuleServiceImpl;
 import io.holoinsight.server.home.biz.service.impl.DefaultEnvironmentServiceImpl;
 import io.holoinsight.server.home.biz.service.impl.DefaultTenantInitServiceImpl;
 import io.holoinsight.server.home.biz.service.impl.UserinfoVerificationServiceImpl;
@@ -108,6 +110,11 @@ public class HoloinsightHomeConfiguration {
   @Bean
   public ProductCtlService productCtlService() {
     return new ProductCtlServiceImpl();
+  }
+
+  @Bean
+  public AlertRuleServiceImpl alertRuleService() {
+    return new AlertRuleServiceImpl();
   }
 
   @Bean

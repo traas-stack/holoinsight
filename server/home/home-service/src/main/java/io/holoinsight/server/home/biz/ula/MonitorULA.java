@@ -10,6 +10,7 @@ import io.holoinsight.server.home.common.util.scope.AuthTargetType;
 import io.holoinsight.server.home.common.util.scope.IdentityType;
 import io.holoinsight.server.home.common.util.scope.MonitorAuth;
 import io.holoinsight.server.home.common.util.scope.MonitorCookieUtil;
+import io.holoinsight.server.home.common.util.scope.MonitorParams;
 import io.holoinsight.server.home.common.util.scope.MonitorScope;
 import io.holoinsight.server.home.common.util.scope.MonitorTenant;
 import io.holoinsight.server.home.common.util.scope.MonitorUser;
@@ -144,7 +145,8 @@ public class MonitorULA implements ULA {
   }
 
   @Override
-  public Boolean checkWorkspace(HttpServletRequest request, MonitorUser user, MonitorScope ms) {
+  public Boolean checkWorkspace(HttpServletRequest request, MonitorUser user, MonitorScope ms,
+      MonitorParams mp) {
     return true;
   }
 
@@ -161,5 +163,10 @@ public class MonitorULA implements ULA {
   @Override
   public MonitorScope getMonitorScope(HttpServletRequest req, MonitorUser mu) {
     return MonitorCookieUtil.getScope(req, mu);
+  }
+
+  @Override
+  public MonitorParams getMonitorParams(HttpServletRequest req, MonitorUser mu) {
+    return new MonitorParams();
   }
 }

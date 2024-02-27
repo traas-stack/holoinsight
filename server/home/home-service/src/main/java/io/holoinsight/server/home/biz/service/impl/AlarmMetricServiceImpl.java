@@ -7,9 +7,11 @@ package io.holoinsight.server.home.biz.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import io.holoinsight.server.home.biz.service.AlarmMetricService;
+import io.holoinsight.server.home.common.service.RequestContextAdapter;
 import io.holoinsight.server.home.dal.mapper.AlarmMetricMapper;
 import io.holoinsight.server.home.dal.model.AlarmMetric;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -21,6 +23,10 @@ import java.util.List;
 @Service
 public class AlarmMetricServiceImpl extends ServiceImpl<AlarmMetricMapper, AlarmMetric>
     implements AlarmMetricService {
+
+  @Autowired
+  private RequestContextAdapter requestContextAdapter;
+
   @Override
   public AlarmMetric queryByMetric(Long ruleId, String metric, String tenant, String workspace) {
 
@@ -50,9 +56,13 @@ public class AlarmMetricServiceImpl extends ServiceImpl<AlarmMetricMapper, Alarm
 
   @Override
   public List<AlarmMetric> queryByRuleId(Long ruleId, String tenant, String workspace) {
+    this.requestContextAdapter.tenantAdapt(tenant, workspace);
     QueryWrapper<AlarmMetric> wrapper = new QueryWrapper<>();
     wrapper.eq("deleted", 0);
-    wrapper.eq("tenant", tenant);
+    if (StringUtils.isNotBlank(tenant)) {
+      wrapper.eq("tenant", tenant);
+    }
+
     if (StringUtils.isNotBlank(workspace)) {
       wrapper.eq("workspace", workspace);
     }

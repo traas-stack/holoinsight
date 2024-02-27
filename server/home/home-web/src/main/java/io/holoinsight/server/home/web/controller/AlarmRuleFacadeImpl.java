@@ -191,9 +191,6 @@ public class AlarmRuleFacadeImpl extends BaseFacade {
         if (null == item) {
           throw new MonitorException("cannot find record: " + alarmRuleDTO.getId());
         }
-        if (!item.getTenant().equalsIgnoreCase(alarmRuleDTO.getTenant())) {
-          throw new MonitorException("the tenant parameter is invalid");
-        }
 
         MonitorUser mu = RequestContext.getContext().mu;
         if (null != mu && StringUtils.isBlank(alarmRuleDTO.getModifier())) {

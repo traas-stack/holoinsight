@@ -7,6 +7,7 @@ package io.holoinsight.server.home.biz.common;
 import io.holoinsight.server.agg.v1.core.conf.AggFunc;
 import io.holoinsight.server.agg.v1.core.conf.CompletenessConfig;
 import io.holoinsight.server.agg.v1.core.conf.CompletenessConfig.Mode;
+import io.holoinsight.server.agg.v1.core.conf.FillZero;
 import io.holoinsight.server.agg.v1.core.conf.From;
 import io.holoinsight.server.agg.v1.core.conf.FromConfigs;
 import io.holoinsight.server.agg.v1.core.conf.FromMetrics;
@@ -145,7 +146,7 @@ public class AggTaskUtil {
 
     OutputItem outputItem = new OutputItem();
     outputItem.setType(OUTPUT_STORAGE_ENGINE);
-    outputItem.setName(collectMetric.getAggTableName());
+    outputItem.setName(collectMetric.getLogCalculate().getAggTableName());
 
     List<OutputField> fields = new ArrayList<>();
     OutputField outputField = new OutputField();
@@ -153,6 +154,11 @@ public class AggTaskUtil {
     outputField.setExpression(collectMetric.getTargetTable());
     fields.add(outputField);
     outputItem.setFields(fields);
+
+    if (null != collectMetric.getLogCalculate().getTopn()
+        && collectMetric.getLogCalculate().getTopn().isEnabled()) {
+      outputItem.setTopn(collectMetric.getLogCalculate().getTopn());
+    }
 
     List<OutputItem> items = new ArrayList<>();
     items.add(outputItem);
@@ -163,5 +169,13 @@ public class AggTaskUtil {
 
   public static List<PartitionKey> buildPartition(CollectMetric collectMetric) {
     return new ArrayList<>();
+  }
+
+  public static FillZero buildFillZero(CollectMetric collectMetric) {
+    if (null != collectMetric.getLogCalculate().getFillZero()
+        && collectMetric.getLogCalculate().getFillZero().isEnabled()) {
+      return collectMetric.getLogCalculate().getFillZero();
+    }
+    return new FillZero();
   }
 }

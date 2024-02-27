@@ -13,6 +13,7 @@ import io.holoinsight.server.home.dal.model.dto.conf.CustomPluginConf.SplitCol;
 import io.holoinsight.server.home.dal.model.dto.conf.Translate.TranslateTransform;
 import io.holoinsight.server.registry.model.Elect;
 import io.holoinsight.server.registry.model.Elect.RefIndex;
+import io.holoinsight.server.registry.model.Elect.RefMeta;
 import io.holoinsight.server.registry.model.Elect.RefName;
 import io.holoinsight.server.registry.model.Elect.TransFormFilter;
 import io.holoinsight.server.registry.model.Elect.TransFormFilterAppend;
@@ -665,76 +666,97 @@ public class GaeaSqlTaskUtil {
       return buildLogPatternParse(logParse, extraConfig);
     }
     List<String> tags = collectMetric.getTags();
+    List<String> refTags = collectMetric.getRefTags();
 
     GroupBy groupBy = new GroupBy();
     groupBy.setGroups(new ArrayList<>());
-    if (CollectionUtils.isEmpty(tags)) {
+    if (CollectionUtils.isEmpty(tags) && CollectionUtils.isEmpty(refTags)) {
       return groupBy;
     }
-    tags.forEach(t -> {
+    if (!CollectionUtils.isEmpty(tags)) {
+      tags.forEach(t -> {
 
-      SplitCol dim = splitColMap.get(dimColType).get(t);
-      if (null == dim) {
-        return;
-      }
-      Rule rule = dim.rule;
+        SplitCol dim = splitColMap.get(dimColType).get(t);
+        if (null == dim) {
+          return;
+        }
+        Rule rule = dim.rule;
 
-      Elect elect = new Elect();
+        Elect elect = new Elect();
 
-      switch (logParse.splitType) {
-        case leftRight:
-          Elect.LeftRight leftRight = new Elect.LeftRight();
-          leftRight.setLeft(rule.left);
-          leftRight.setLeftIndex(rule.leftIndex);
-          leftRight.setRight(rule.right);
+        switch (logParse.splitType) {
+          case leftRight:
+            Elect.LeftRight leftRight = new Elect.LeftRight();
+            leftRight.setLeft(rule.left);
+            leftRight.setLeftIndex(rule.leftIndex);
+            leftRight.setRight(rule.right);
 
-          elect.setType("leftRight");
-          elect.setLeftRight(leftRight);
-          break;
+            elect.setType("leftRight");
+            elect.setLeftRight(leftRight);
+            break;
 
-        case separator:
-          elect.setType("refIndex");
-          elect.setRefIndex(new RefIndex());
-          elect.getRefIndex().setIndex(rule.pos);
-          break;
-        case regexp:
-          if (StringUtils.isNotEmpty(rule.regexpName)) {
-            elect.setType("refName");
-            elect.setRefName(new RefName());
-            elect.getRefName().setName(rule.regexpName);
-          } else if (rule.pos != null) {
+          case separator:
             elect.setType("refIndex");
             elect.setRefIndex(new RefIndex());
             elect.getRefIndex().setIndex(rule.pos);
-          }
-          break;
-        case json:
-          elect.setType("refName");
-          elect.setRefName(new RefName());
-          elect.getRefName().setName(rule.jsonPathSyntax);
-          break;
-        default:
-          break;
-      }
+            break;
+          case regexp:
+            if (StringUtils.isNotEmpty(rule.regexpName)) {
+              elect.setType("refName");
+              elect.setRefName(new RefName());
+              elect.getRefName().setName(rule.regexpName);
+            } else if (rule.pos != null) {
+              elect.setType("refIndex");
+              elect.setRefIndex(new RefIndex());
+              elect.getRefIndex().setIndex(rule.pos);
+            }
+            break;
+          case json:
+            elect.setType("refName");
+            elect.setRefName(new RefName());
+            elect.getRefName().setName(rule.jsonPathSyntax);
+            break;
+          default:
+            break;
+        }
 
-      if (null != rule.translate && !CollectionUtils.isEmpty(rule.translate.transforms)) {
-        Transform transform = new Transform();
-        transform.setFilters(convertTransFormFilters(rule.translate.transforms));
-        elect.setTransform(transform);
-      }
+        if (null != rule.translate && !CollectionUtils.isEmpty(rule.translate.transforms)) {
+          Transform transform = new Transform();
+          transform.setFilters(convertTransFormFilters(rule.translate.transforms));
+          elect.setTransform(transform);
+        }
 
-      if (StringUtils.isNotEmpty(rule.defaultValue)) {
-        elect.setDefaultValue(rule.defaultValue);
-      }
+        if (StringUtils.isNotEmpty(rule.defaultValue)) {
+          elect.setDefaultValue(rule.defaultValue);
+        }
 
-      GroupBy.Group group = new GroupBy.Group();
-      {
-        group.setName(t);
-        group.setElect(elect);
-      }
-      groupBy.setMaxKeySize(extraConfig.getMaxKeySize());
-      groupBy.getGroups().add(group);
-    });
+        GroupBy.Group group = new GroupBy.Group();
+        {
+          group.setName(t);
+          group.setElect(elect);
+        }
+        groupBy.setMaxKeySize(extraConfig.getMaxKeySize());
+        groupBy.getGroups().add(group);
+      });
+    }
+
+    if (!CollectionUtils.isEmpty(refTags)) {
+      refTags.forEach(t -> {
+
+        Elect elect = new Elect();
+        elect.setType("refMeta");
+        elect.setRefMeta(new RefMeta());
+        elect.getRefMeta().setName(t);
+
+        GroupBy.Group group = new GroupBy.Group();
+        {
+          group.setName(t);
+          group.setElect(elect);
+        }
+        groupBy.setMaxKeySize(extraConfig.getMaxKeySize());
+        groupBy.getGroups().add(group);
+      });
+    }
 
     Map<String, SplitCol> extendColTypes = splitColMap.get(extendColType);
     if (!CollectionUtils.isEmpty(extendColTypes)) {

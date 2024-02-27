@@ -5,6 +5,7 @@ package io.holoinsight.server.home.biz.ula;
 
 import io.holoinsight.server.home.common.util.scope.IdentityType;
 import io.holoinsight.server.home.common.util.scope.MonitorAuth;
+import io.holoinsight.server.home.common.util.scope.MonitorParams;
 import io.holoinsight.server.home.common.util.scope.MonitorScope;
 import io.holoinsight.server.home.common.util.scope.MonitorTenant;
 import io.holoinsight.server.home.common.util.scope.MonitorUser;
@@ -67,7 +68,8 @@ public interface ULA {
   String authTokenName();
 
   // 权限
-  Boolean checkWorkspace(HttpServletRequest request, MonitorUser user, MonitorScope ms);
+  Boolean checkWorkspace(HttpServletRequest request, MonitorUser user, MonitorScope ms,
+      MonitorParams mp);
 
   Boolean authFunc(HttpServletRequest request);
 
@@ -75,5 +77,7 @@ public interface ULA {
   String authApplyUrl();
 
   MonitorScope getMonitorScope(HttpServletRequest req, MonitorUser mu);
+
+  MonitorParams getMonitorParams(HttpServletRequest req, MonitorUser mu);
 
 }
