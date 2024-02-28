@@ -34,4 +34,6 @@ public interface ParameterSecurityService {
 
 
   List<String> getDetailFilters(DataQueryRequest request);
+
+  boolean checkRelateId(String relateId, String relateType, String tenant, String workspace);
 }

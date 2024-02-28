@@ -64,4 +64,10 @@ public class ParameterSecurityServiceImpl implements ParameterSecurityService {
       Map<String, List<Object>> filters, String tenant, String workspace) {
     return true;
   }
+
+  @Override
+  public boolean checkRelateId(String relateId, String relateType, String tenant,
+      String workspace) {
+    return true;
+  }
 }

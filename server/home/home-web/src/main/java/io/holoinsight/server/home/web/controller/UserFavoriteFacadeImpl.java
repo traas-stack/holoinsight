@@ -10,6 +10,7 @@ import io.holoinsight.server.home.biz.service.IntegrationProductService;
 import io.holoinsight.server.home.biz.service.TenantInitService;
 import io.holoinsight.server.home.biz.service.UserFavoriteService;
 import io.holoinsight.server.home.biz.service.UserOpLogService;
+import io.holoinsight.server.home.common.service.SpringContext;
 import io.holoinsight.server.home.common.util.MonitorException;
 import io.holoinsight.server.home.common.util.ResultCodeEnum;
 import io.holoinsight.server.home.common.util.StringUtil;
@@ -32,6 +33,7 @@ import io.holoinsight.server.home.web.controller.model.FavRequest;
 import io.holoinsight.server.home.web.interceptor.MonitorScopeAuth;
 import io.holoinsight.server.common.J;
 import io.holoinsight.server.common.JsonResult;
+import io.holoinsight.server.home.web.security.ParameterSecurityService;
 import io.holoinsight.server.meta.common.model.QueryExample;
 import io.holoinsight.server.meta.facade.service.DataClientService;
 import lombok.extern.slf4j.Slf4j;
@@ -86,6 +88,26 @@ public class UserFavoriteFacadeImpl extends BaseFacade {
 
   @Autowired
   private UserOpLogService userOpLogService;
+
+  @Autowired
+  private ParameterSecurityService parameterSecurityService;
+
+  public static void main(String[] args) {
+    UserFavorite userFavorite = new UserFavorite();
+    userFavorite.setRelateId("2021004103628030");
+    userFavorite.setType("miniapp");
+    userFavorite.setName("UAT测试2");
+    userFavorite.setUrl("/console/miniApp/pageMonitor");
+    System.out.println(J.toJson(userFavorite));
+
+
+    MonitorPageRequest<UserFavorite> userFavoriteRequest = new MonitorPageRequest<>();
+    userFavoriteRequest.setPageSize(1000);
+    UserFavorite userFavorite1 = new UserFavorite();
+    userFavorite1.setType("miniapp");
+    userFavoriteRequest.setTarget(userFavorite1);
+    System.out.println(J.toJson(userFavoriteRequest));
+  }
 
   @PostMapping("/create")
   @ResponseBody
@@ -162,6 +184,12 @@ public class UserFavoriteFacadeImpl extends BaseFacade {
                   userFavorite.type, userFavorite.relateId));
             }
             break;
+          case "miniapp":
+            if (!parameterSecurityService.checkRelateId(userFavorite.getRelateId(),
+                userFavorite.getType(), ms.getTenant(), ms.getWorkspace())) {
+              throw new MonitorException(String.format("invalid miniapp appId, %s-%s",
+                  userFavorite.type, userFavorite.relateId));
+            }
           default:
             throw new MonitorException(String.format("can not find record, %s-%s",
                 userFavorite.type, userFavorite.relateId));
