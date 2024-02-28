@@ -38,6 +38,7 @@ public class GroupField {
   private TopnState topn;
   private HllState hll;
   private PercentileState percentile;
+  private LogAnalysisState logAnalysis;
 
   public GroupField() {}
 
@@ -86,6 +87,15 @@ public class GroupField {
           }
         }
         logSamples.add(ls.getSamples());
+        break;
+      }
+      case AggFunc.TYPE_LOGANALYSIS_MERGE: {
+        if (logAnalysis == null) {
+          boolean unknownMode = "__analysis".equals(da.getTagOrDefault("eventName", ""));
+          logAnalysis = new LogAnalysisState(unknownMode);
+        }
+        LogAnalysis la = JsonUtils.fromJson(da.getStringField(), LogAnalysis.class);
+        logAnalysis.add(da, la);
         break;
       }
       case AggFunc.TYPE_TOPN: {
@@ -166,6 +176,11 @@ public class GroupField {
           pfv.add(DEFAULT_PERCENTILE_RANKS[i], quantiles[i]);
         }
         return JsonUtils.toJson(pfv);
+      case AggFunc.TYPE_LOGANALYSIS_MERGE:
+        if (logAnalysis == null) {
+          return null;
+        }
+        return logAnalysis.getFinalValue();
       default:
         throw new IllegalStateException("unsupported");
     }

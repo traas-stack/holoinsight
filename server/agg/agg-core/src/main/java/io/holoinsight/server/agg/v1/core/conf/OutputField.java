@@ -5,6 +5,7 @@ package io.holoinsight.server.agg.v1.core.conf;
 
 import javax.annotation.Nonnull;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.googlecode.aviator.AviatorEvaluator;
 import com.googlecode.aviator.Expression;
 
@@ -58,6 +59,7 @@ public class OutputField {
     return new OutputField(name, expr);
   }
 
+  @JsonIgnore
   public Expression getCompiledExpression() {
     if (compiledExpression == null) {
       // TODO compile error?

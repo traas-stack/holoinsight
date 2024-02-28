@@ -11,6 +11,7 @@ import org.springframework.context.annotation.DependsOn;
 import org.springframework.context.annotation.Import;
 
 import io.holoinsight.server.agg.v1.core.AggProperties;
+import io.holoinsight.server.agg.v1.dispatcher.mock.AggDispatcherMockDataGenerator;
 import io.holoinsight.server.common.dao.CommonDaoConfiguration;
 import io.holoinsight.server.common.springboot.ConditionalOnRole;
 

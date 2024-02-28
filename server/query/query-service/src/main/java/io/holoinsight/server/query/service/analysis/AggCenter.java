@@ -3,20 +3,22 @@
  */
 package io.holoinsight.server.query.service.analysis;
 
-import com.google.gson.reflect.TypeToken;
-import io.holoinsight.server.query.service.analysis.collect.AnalyzedLog;
-import io.holoinsight.server.query.service.analysis.collect.MergeData;
-import io.holoinsight.server.query.service.analysis.known.KnownValue;
-import io.holoinsight.server.query.service.analysis.unknown.UnknownValue;
-import io.holoinsight.server.apm.common.utils.GsonUtils;
-import io.holoinsight.server.query.service.sample.LogSample;
-import io.holoinsight.server.query.service.sample.LogSamples;
-import org.apache.commons.collections.CollectionUtils;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.BiFunction;
+
+import org.apache.commons.collections.CollectionUtils;
+
+import com.google.gson.reflect.TypeToken;
+
+import io.holoinsight.server.apm.common.utils.GsonUtils;
+import io.holoinsight.server.query.service.analysis.collect.AnalyzedLog;
+import io.holoinsight.server.query.service.analysis.collect.MergeData;
+import io.holoinsight.server.query.service.analysis.known.KnownValue;
+import io.holoinsight.server.query.service.analysis.unknown.UnknownValue;
+import io.holoinsight.server.query.service.sample.LogSample;
+import io.holoinsight.server.query.service.sample.LogSamples;
 
 public class AggCenter {
   private static final Map<String, BiFunction<Map<String, String>, String, Mergeable>> AGGREGATORS =
@@ -24,8 +26,13 @@ public class AggCenter {
 
   static {
     AGGREGATORS.put("unknown-analysis", (tags, json) -> {
-      UnknownValue value = new UnknownValue();
       Analysis analysis = GsonUtils.fromJson(json, Analysis.class);
+
+      // If the pre-aggregated result is not empty, it is returned directly.
+      if (analysis != null && analysis.getUnknown() != null) {
+        return analysis.getUnknown();
+      }
+      UnknownValue value = new UnknownValue();
       if (analysis != null && CollectionUtils.isNotEmpty(analysis.getAnalyzedLogs())) {
         List<AnalyzedLog> logs = analysis.getAnalyzedLogs();
         String host = tags.getOrDefault("hostname", "UNKNOWN");
@@ -45,8 +52,12 @@ public class AggCenter {
     });
 
     AGGREGATORS.put("known-analysis", (tags, json) -> {
-      KnownValue value = null;
       Analysis analysis = GsonUtils.fromJson(json, Analysis.class);
+      // If the pre-aggregated result is not empty, it is returned directly.
+      if (analysis != null && analysis.getKnown() != null) {
+        return analysis.getKnown();
+      }
+      KnownValue value = null;
       if (analysis != null && CollectionUtils.isNotEmpty(analysis.getAnalyzedLogs())) {
         List<AnalyzedLog> logs = analysis.getAnalyzedLogs();
         AnalyzedLog log = logs.get(0);
