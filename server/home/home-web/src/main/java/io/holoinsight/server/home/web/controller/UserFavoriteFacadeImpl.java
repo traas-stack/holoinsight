@@ -92,23 +92,6 @@ public class UserFavoriteFacadeImpl extends BaseFacade {
   @Autowired
   private ParameterSecurityService parameterSecurityService;
 
-  public static void main(String[] args) {
-    UserFavorite userFavorite = new UserFavorite();
-    userFavorite.setRelateId("2021004103628030");
-    userFavorite.setType("miniapp");
-    userFavorite.setName("UAT测试2");
-    userFavorite.setUrl("/console/miniApp/pageMonitor");
-    System.out.println(J.toJson(userFavorite));
-
-
-    MonitorPageRequest<UserFavorite> userFavoriteRequest = new MonitorPageRequest<>();
-    userFavoriteRequest.setPageSize(1000);
-    UserFavorite userFavorite1 = new UserFavorite();
-    userFavorite1.setType("miniapp");
-    userFavoriteRequest.setTarget(userFavorite1);
-    System.out.println(J.toJson(userFavoriteRequest));
-  }
-
   @PostMapping("/create")
   @ResponseBody
   @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.EDIT)
