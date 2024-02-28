@@ -3,12 +3,14 @@
  */
 package io.holoinsight.server.query.service.analysis;
 
+import java.util.List;
+
 import io.holoinsight.server.query.service.analysis.collect.AnalyzedLog;
+import io.holoinsight.server.query.service.analysis.known.KnownValue;
+import io.holoinsight.server.query.service.analysis.unknown.UnknownValue;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.util.List;
 
 /**
  * @author xiangwanpeng
@@ -20,4 +22,14 @@ import java.util.List;
 public class Analysis {
   private int count;
   private List<AnalyzedLog> analyzedLogs;
+
+  /**
+   * The result after pre-aggregation
+   */
+  private KnownValue known;
+
+  /**
+   * The result after pre-aggregation
+   */
+  private UnknownValue unknown;
 }

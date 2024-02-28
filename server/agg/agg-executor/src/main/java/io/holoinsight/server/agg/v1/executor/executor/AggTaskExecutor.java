@@ -98,6 +98,12 @@ public class AggTaskExecutor {
    * @param aggTaskValue
    */
   public void process(XAggTask latestAggTask, AggProtos.AggTaskValue aggTaskValue) {
+    boolean debug = latestAggTask.getInner().getExtension().isDebug();
+    if (debug) {
+      log.info("[agg] [debug] [{}] input={}", key(), ProtoJsonUtils.toJson(aggTaskValue));
+    }
+
+
     switch (aggTaskValue.getType()) {
       case AggTaskValueTypes.COMPLETENESS_INFO:
         processCompletenessInfo(latestAggTask, aggTaskValue);
