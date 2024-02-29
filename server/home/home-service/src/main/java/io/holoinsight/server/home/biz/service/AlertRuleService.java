@@ -25,6 +25,10 @@ public interface AlertRuleService extends IService<AlarmRule> {
 
   AlarmRuleDTO queryById(Long id, String tenant, String workspace);
 
+  List<AlarmRuleDTO> queryBySourceType(String sourceType, String tenant, String workspace);
+
+  List<AlarmRuleDTO> queryBySourceId(Long sourceId);
+
   MonitorPageResult<AlarmRuleDTO> getListByPage(MonitorPageRequest<AlarmRuleDTO> pageRequest);
 
   List<AlarmRuleDTO> getListByKeyword(String keyword, String tenant, String workspace);
