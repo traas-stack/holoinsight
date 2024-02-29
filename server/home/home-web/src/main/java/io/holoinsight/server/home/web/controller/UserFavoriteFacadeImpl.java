@@ -10,6 +10,7 @@ import io.holoinsight.server.home.biz.service.IntegrationProductService;
 import io.holoinsight.server.home.biz.service.TenantInitService;
 import io.holoinsight.server.home.biz.service.UserFavoriteService;
 import io.holoinsight.server.home.biz.service.UserOpLogService;
+import io.holoinsight.server.home.common.service.SpringContext;
 import io.holoinsight.server.home.common.util.MonitorException;
 import io.holoinsight.server.home.common.util.ResultCodeEnum;
 import io.holoinsight.server.home.common.util.StringUtil;
@@ -32,6 +33,7 @@ import io.holoinsight.server.home.web.controller.model.FavRequest;
 import io.holoinsight.server.home.web.interceptor.MonitorScopeAuth;
 import io.holoinsight.server.common.J;
 import io.holoinsight.server.common.JsonResult;
+import io.holoinsight.server.home.web.security.ParameterSecurityService;
 import io.holoinsight.server.meta.common.model.QueryExample;
 import io.holoinsight.server.meta.facade.service.DataClientService;
 import lombok.extern.slf4j.Slf4j;
@@ -86,6 +88,9 @@ public class UserFavoriteFacadeImpl extends BaseFacade {
 
   @Autowired
   private UserOpLogService userOpLogService;
+
+  @Autowired
+  private ParameterSecurityService parameterSecurityService;
 
   @PostMapping("/create")
   @ResponseBody
@@ -162,6 +167,12 @@ public class UserFavoriteFacadeImpl extends BaseFacade {
                   userFavorite.type, userFavorite.relateId));
             }
             break;
+          case "miniapp":
+            if (!parameterSecurityService.checkRelateId(userFavorite.getRelateId(),
+                userFavorite.getType(), ms.getTenant(), ms.getWorkspace())) {
+              throw new MonitorException(String.format("invalid miniapp appId, %s-%s",
+                  userFavorite.type, userFavorite.relateId));
+            }
           default:
             throw new MonitorException(String.format("can not find record, %s-%s",
                 userFavorite.type, userFavorite.relateId));
