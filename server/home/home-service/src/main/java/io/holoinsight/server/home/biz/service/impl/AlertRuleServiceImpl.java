@@ -6,6 +6,8 @@ package io.holoinsight.server.home.biz.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import io.holoinsight.server.common.J;
+import io.holoinsight.server.common.MD5Hash;
 import io.holoinsight.server.home.biz.service.AlertBlockService;
 import io.holoinsight.server.home.biz.service.AlertRuleService;
 import io.holoinsight.server.home.common.service.RequestContextAdapter;
@@ -15,9 +17,11 @@ import io.holoinsight.server.home.dal.mapper.AlarmRuleMapper;
 import io.holoinsight.server.home.dal.model.AlarmBlock;
 import io.holoinsight.server.home.dal.model.AlarmRule;
 import io.holoinsight.server.home.facade.AlarmRuleDTO;
+import io.holoinsight.server.home.facade.AlertRuleExtra;
 import io.holoinsight.server.home.facade.page.MonitorPageRequest;
 import io.holoinsight.server.home.facade.page.MonitorPageResult;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.annotation.Resource;
@@ -45,6 +49,10 @@ public class AlertRuleServiceImpl extends ServiceImpl<AlarmRuleMapper, AlarmRule
 
   @Override
   public Long save(AlarmRuleDTO alarmRuleDTO) {
+    String md5 = MD5Hash.getMD5(J.toJson(alarmRuleDTO.getRule()));
+    AlertRuleExtra extra =
+        null != alarmRuleDTO.getExtra() ? alarmRuleDTO.getExtra() : new AlertRuleExtra();
+    extra.md5 = md5;
     AlarmRule alarmRule = alarmRuleConverter.dtoToDO(alarmRuleDTO);
     this.save(alarmRule);
     EventBusHolder.post(alarmRuleConverter.doToDTO(alarmRule));
@@ -53,9 +61,22 @@ public class AlertRuleServiceImpl extends ServiceImpl<AlarmRuleMapper, AlarmRule
 
   @Override
   public Boolean updateById(AlarmRuleDTO alarmRuleDTO) {
+
+    AlertRuleExtra extra =
+        null != alarmRuleDTO.getExtra() ? alarmRuleDTO.getExtra() : new AlertRuleExtra();
+    extra.md5 = genMd5(alarmRuleDTO);
     AlarmRule alarmRule = alarmRuleConverter.dtoToDO(alarmRuleDTO);
     EventBusHolder.post(alarmRuleDTO);
     return this.updateById(alarmRule);
+  }
+
+  public String genMd5(AlarmRuleDTO alarmRuleDTO) {
+
+    AlarmRuleDTO alarmRuleDTO1 = new AlarmRuleDTO();
+    BeanUtils.copyProperties(alarmRuleDTO, alarmRuleDTO1, "id", "gmtCreate", "gmtModified",
+        "creator", "modifier", "status", "blockId", "tenant", "workspace", "sourceType", "sourceId",
+        "extra", "envType");
+    return MD5Hash.getMD5(J.toJson(alarmRuleDTO1));
   }
 
   @Override
@@ -82,6 +103,21 @@ public class AlertRuleServiceImpl extends ServiceImpl<AlarmRuleMapper, AlarmRule
     return alarmRuleDTO;
   }
 
+  @Override
+  public List<AlarmRuleDTO> queryBySourceType(String sourceType, String tenant, String workspace) {
+    QueryWrapper<AlarmRule> wrapper = new QueryWrapper<>();
+    wrapper.eq("tenant", tenant);
+    wrapper.eq("workspace", workspace);
+    wrapper.eq("source_type", sourceType);
+    return alarmRuleConverter.dosToDTOs(this.baseMapper.selectList(wrapper));
+  }
+
+  @Override
+  public List<AlarmRuleDTO> queryBySourceId(Long sourceId) {
+    QueryWrapper<AlarmRule> wrapper = new QueryWrapper<>();
+    wrapper.eq("source_id", sourceId);
+    return alarmRuleConverter.dosToDTOs(this.baseMapper.selectList(wrapper));
+  }
 
   @Override
   public MonitorPageResult<AlarmRuleDTO> getListByPage(

@@ -18,6 +18,7 @@ public class AlertRuleExtra {
   public List<String> alertTags;
   public Map<String, String> tagAlias;
   public boolean isRecord;
+  public String md5;
   public AlertSilenceConfig alertSilenceConfig;
 
   public NotificationTemplate getDingTalkTemplate() {

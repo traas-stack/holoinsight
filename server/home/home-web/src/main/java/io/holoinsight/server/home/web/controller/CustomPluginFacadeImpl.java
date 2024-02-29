@@ -4,6 +4,8 @@
 package io.holoinsight.server.home.web.controller;
 
 import io.holoinsight.server.common.UtilMisc;
+import io.holoinsight.server.common.dao.entity.dto.MetricInfoDTO;
+import io.holoinsight.server.common.service.MetricInfoService;
 import io.holoinsight.server.home.biz.plugin.core.LogPluginUtil;
 import io.holoinsight.server.home.biz.service.AlarmMetricService;
 import io.holoinsight.server.home.biz.service.CustomPluginService;
@@ -74,6 +76,9 @@ public class CustomPluginFacadeImpl extends BaseFacade {
 
   @Autowired
   private AlarmMetricService alarmMetricService;
+
+  @Autowired
+  private MetricInfoService metricInfoService;
 
   @Autowired
   private TenantInitService tenantInitService;
@@ -294,12 +299,32 @@ public class CustomPluginFacadeImpl extends BaseFacade {
         if (null == byId) {
           throw new MonitorException(ResultCodeEnum.CANNOT_FIND_RECORD, "can not find record");
         }
+
+        List<MetricInfoDTO> metricInfoDTOS = metricInfoService.queryListByRef(ms.getTenant(),
+            ms.getWorkspace(), "logmonitor", String.valueOf(byId.getId()));
+        if (!CollectionUtils.isEmpty(metricInfoDTOS)) {
+          boolean checkHasAlarmMetric = false;
+
+          for (MetricInfoDTO metricInfoDTO : metricInfoDTOS) {
+            List<AlarmMetric> alarmMetrics = alarmMetricService
+                .queryByMetric(metricInfoDTO.getMetricTable(), ms.getTenant(), ms.getWorkspace());
+            if (!CollectionUtils.isEmpty(alarmMetrics)) {
+              checkHasAlarmMetric = true;
+              break;
+            }
+          }
+
+          if (checkHasAlarmMetric) {
+            throw new MonitorException(ResultCodeEnum.CANNOT_FIND_RECORD,
+                "This log configuration is associated with the alarm rule configuration. Delete the alarm rule first");
+          }
+        }
+
         customPluginService.deleteById(id);
         JsonResult.createSuccessResult(result, null);
         userOpLogService.append("custom_plugin", byId.getId(), OpType.DELETE,
             RequestContext.getContext().mu.getLoginName(), ms.getTenant(), ms.getWorkspace(),
             J.toJson(byId), null, null, "custom_plugin_delete");
-
       }
     });
     return result;

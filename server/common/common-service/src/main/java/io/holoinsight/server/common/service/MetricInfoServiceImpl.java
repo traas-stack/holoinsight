@@ -97,6 +97,22 @@ public class MetricInfoServiceImpl extends ServiceImpl<MetricInfoMapper, MetricI
   }
 
   @Override
+  public List<MetricInfoDTO> queryListByRef(String tenant, String workspace, String product,
+      String ref) {
+    Map<String, Object> columnMap = new HashMap<>();
+    columnMap.put("tenant", tenant);
+    columnMap.put("workspace", workspace);
+    columnMap.put("product", product);
+    columnMap.put("ref", ref);
+    columnMap.put("deleted", 0);
+    List<MetricInfo> metricInfos = listByMap(columnMap);
+    if (CollectionUtils.isEmpty(metricInfos)) {
+      return null;
+    }
+    return metricInfoConverter.dosToDTOs(metricInfos);
+  }
+
+  @Override
   public MetricInfoDTO queryByMetric(String tenant, String workspace, String metric) {
     Map<String, Object> columnMap = new HashMap<>();
 
