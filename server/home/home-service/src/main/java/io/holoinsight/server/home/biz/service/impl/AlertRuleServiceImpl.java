@@ -150,7 +150,13 @@ public class AlertRuleServiceImpl extends ServiceImpl<AlarmRuleMapper, AlarmRule
     }
 
     if (StringUtils.isNotBlank(alarmRule.getSourceType())) {
-      wrapper.likeRight("source_type", alarmRule.getSourceType().trim());
+      if (StringUtils.equals(alarmRule.getSourceType(), "template")) {
+        wrapper.eq("source_type", alarmRule.getSourceType().trim());
+      } else if (StringUtils.equals(alarmRule.getSourceType(), "antiTemplate")) {
+        wrapper.ne("source_type", "template");
+      } else {
+        wrapper.likeRight("source_type", alarmRule.getSourceType().trim());
+      }
     }
 
     if (null != alarmRule.getSourceId()) {
