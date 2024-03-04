@@ -173,6 +173,7 @@ public class UserFavoriteFacadeImpl extends BaseFacade {
               throw new MonitorException(String.format("invalid miniapp appId, %s-%s",
                   userFavorite.type, userFavorite.relateId));
             }
+            break;
           default:
             throw new MonitorException(String.format("can not find record, %s-%s",
                 userFavorite.type, userFavorite.relateId));

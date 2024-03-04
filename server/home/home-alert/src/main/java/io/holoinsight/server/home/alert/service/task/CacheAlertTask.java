@@ -137,7 +137,7 @@ public class CacheAlertTask {
         for (AlarmRule alarmRule : alarmRules) {
           try {
             InspectConfig inspectConfig = DoConvert.alarmRuleConverter(alarmRule);
-            if (enableAlert(inspectConfig)) {
+            if (nonTemplate(alarmRule) && enableAlert(inspectConfig)) {
               // cache
               if (!CollectionUtils.isEmpty(inspectConfig.getMetrics())) {
                 for (String metric : inspectConfig.getMetrics()) {
@@ -168,6 +168,11 @@ public class CacheAlertTask {
       LOGGER.error("{} [CRITICAL] fail to convert alarmRules", computeTaskPackage.getTraceId(), e);
     }
     return computeTaskPackage;
+  }
+
+  // not alarm rule template
+  private boolean nonTemplate(AlarmRule alarmRule) {
+    return !StringUtils.equals(alarmRule.getSourceType(), "template");
   }
 
   private void buildAlertNotifyRecord(ComputeTaskPackage computeTaskPackage) {
