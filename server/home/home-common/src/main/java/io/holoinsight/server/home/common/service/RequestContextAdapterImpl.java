@@ -61,4 +61,9 @@ public class RequestContextAdapterImpl implements RequestContextAdapter {
     MonitorScope ms = RequestContext.getContext().ms;
     return ms.getWorkspace();
   }
+
+  @Override
+  public String getLoginName() {
+    return StringUtils.EMPTY;
+  }
 }

@@ -18,14 +18,21 @@ import io.holoinsight.server.home.dal.model.AlarmBlock;
 import io.holoinsight.server.home.dal.model.AlarmRule;
 import io.holoinsight.server.home.facade.AlarmRuleDTO;
 import io.holoinsight.server.home.facade.AlertRuleExtra;
+import io.holoinsight.server.home.facade.Rule;
 import io.holoinsight.server.home.facade.page.MonitorPageRequest;
 import io.holoinsight.server.home.facade.page.MonitorPageResult;
+import io.holoinsight.server.home.facade.trigger.DataSource;
+import io.holoinsight.server.home.facade.trigger.Filter;
+import io.holoinsight.server.home.facade.trigger.Trigger;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -35,6 +42,7 @@ import java.util.stream.Collectors;
  * @author wangsiyuan
  * @date 2022/4/1 10:44 上午
  */
+@Slf4j
 public class AlertRuleServiceImpl extends ServiceImpl<AlarmRuleMapper, AlarmRule>
     implements AlertRuleService {
 
@@ -49,10 +57,7 @@ public class AlertRuleServiceImpl extends ServiceImpl<AlarmRuleMapper, AlarmRule
 
   @Override
   public Long save(AlarmRuleDTO alarmRuleDTO) {
-    String md5 = MD5Hash.getMD5(J.toJson(alarmRuleDTO.getRule()));
-    AlertRuleExtra extra =
-        null != alarmRuleDTO.getExtra() ? alarmRuleDTO.getExtra() : new AlertRuleExtra();
-    extra.md5 = md5;
+    genMd5(alarmRuleDTO);
     AlarmRule alarmRule = alarmRuleConverter.dtoToDO(alarmRuleDTO);
     this.save(alarmRule);
     EventBusHolder.post(alarmRuleConverter.doToDTO(alarmRule));
@@ -61,22 +66,10 @@ public class AlertRuleServiceImpl extends ServiceImpl<AlarmRuleMapper, AlarmRule
 
   @Override
   public Boolean updateById(AlarmRuleDTO alarmRuleDTO) {
-
-    AlertRuleExtra extra =
-        null != alarmRuleDTO.getExtra() ? alarmRuleDTO.getExtra() : new AlertRuleExtra();
-    extra.md5 = genMd5(alarmRuleDTO);
+    genMd5(alarmRuleDTO);
     AlarmRule alarmRule = alarmRuleConverter.dtoToDO(alarmRuleDTO);
     EventBusHolder.post(alarmRuleDTO);
     return this.updateById(alarmRule);
-  }
-
-  public String genMd5(AlarmRuleDTO alarmRuleDTO) {
-
-    AlarmRuleDTO alarmRuleDTO1 = new AlarmRuleDTO();
-    BeanUtils.copyProperties(alarmRuleDTO, alarmRuleDTO1, "id", "gmtCreate", "gmtModified",
-        "creator", "modifier", "status", "blockId", "tenant", "workspace", "sourceType", "sourceId",
-        "extra", "envType");
-    return MD5Hash.getMD5(J.toJson(alarmRuleDTO1));
   }
 
   @Override
@@ -267,5 +260,60 @@ public class AlertRuleServiceImpl extends ServiceImpl<AlarmRuleMapper, AlarmRule
     wrapper.and(wa -> wa.like("id", keyword).or().like("rule_name", keyword));
     wrapper.last("LIMIT 10");
     return alarmRuleConverter.dosToDTOs(baseMapper.selectList(wrapper));
+  }
+
+  public static void genMd5(AlarmRuleDTO alarmRuleDTO) {
+
+    AlarmRuleDTO md5Rule = new AlarmRuleDTO();
+    BeanUtils.copyProperties(alarmRuleDTO, md5Rule, "id", "gmtCreate", "gmtModified", "creator",
+        "modifier", "status", "isMerge", "mergeType", "noticeType", "alarmContent", "tenant",
+        "workspace", "sourceType", "sourceId", "envType", "alertNotificationTemplateId");
+    if (md5Rule.getExtra() != null) {
+      md5Rule.getExtra().md5 = StringUtils.EMPTY;
+    }
+    if (!CollectionUtils.isEmpty(md5Rule.getRule())) {
+      Rule rule = J.fromJson(J.toJson(md5Rule.getRule()), Rule.class);
+      if (!CollectionUtils.isEmpty(rule.getTriggers())) {
+        for (Trigger trigger : rule.getTriggers()) {
+          markMetric(trigger, alarmRuleDTO.getSourceType());
+        }
+      }
+      md5Rule.setRule(J.toMap(J.toJson(rule)));
+    }
+    String md5 = MD5Hash.getMD5(J.toJson(md5Rule));
+    log.info("generate md5 {} for rule {}", md5, J.toJson(md5Rule));
+    if (alarmRuleDTO.getExtra() == null) {
+      alarmRuleDTO.setExtra(new AlertRuleExtra());
+    }
+    alarmRuleDTO.getExtra().md5 = md5;
+  }
+
+  private static void markMetric(Trigger trigger, String sourceType) {
+    if (CollectionUtils.isEmpty(trigger.getDatasources())) {
+      return;
+    }
+    if (StringUtils.isEmpty(sourceType) || !sourceType.startsWith("template")) {
+      return;
+    }
+    for (DataSource dataSource : trigger.getDatasources()) {
+      if (StringUtils.isEmpty(dataSource.getMetric())) {
+        continue;
+      }
+      String[] metricArr = dataSource.getMetric().split("_");
+      String suffix = metricArr[metricArr.length - 1];
+      if (StringUtils.isNumeric(suffix) || "${appId}".equals(suffix)) {
+        String[] newMetricArr = new String[metricArr.length - 1];
+        System.arraycopy(metricArr, 0, newMetricArr, 0, metricArr.length - 1);
+        dataSource.setMetric(String.join("_", Arrays.asList(newMetricArr)));
+      }
+      List<Filter> filters = dataSource.getFilters();
+      if (!CollectionUtils.isEmpty(filters)) {
+        for (Filter filter : filters) {
+          if (StringUtils.equals(filter.getName(), "appId")) {
+            filter.setValue(StringUtils.EMPTY);
+          }
+        }
+      }
+    }
   }
 }

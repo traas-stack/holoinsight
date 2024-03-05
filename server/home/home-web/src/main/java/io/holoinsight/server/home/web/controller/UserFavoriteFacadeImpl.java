@@ -10,6 +10,7 @@ import io.holoinsight.server.home.biz.service.IntegrationProductService;
 import io.holoinsight.server.home.biz.service.TenantInitService;
 import io.holoinsight.server.home.biz.service.UserFavoriteService;
 import io.holoinsight.server.home.biz.service.UserOpLogService;
+import io.holoinsight.server.home.common.service.RequestContextAdapter;
 import io.holoinsight.server.home.common.service.SpringContext;
 import io.holoinsight.server.home.common.util.MonitorException;
 import io.holoinsight.server.home.common.util.ResultCodeEnum;
@@ -91,6 +92,9 @@ public class UserFavoriteFacadeImpl extends BaseFacade {
 
   @Autowired
   private ParameterSecurityService parameterSecurityService;
+
+  @Autowired
+  private RequestContextAdapter requestContextAdapter;
 
   @PostMapping("/create")
   @ResponseBody
@@ -322,6 +326,11 @@ public class UserFavoriteFacadeImpl extends BaseFacade {
         }
         if (null != ms && !StringUtil.isBlank(ms.workspace)) {
           userFavoriteRequest.getTarget().setWorkspace(ms.workspace);
+        }
+        if (StringUtils.isEmpty(userFavoriteRequest.getTarget().getUserLoginName())) {
+          if (StringUtils.isNotEmpty(requestContextAdapter.getLoginName())) {
+            userFavoriteRequest.getTarget().setUserLoginName(requestContextAdapter.getLoginName());
+          }
         }
         JsonResult.createSuccessResult(result,
             userFavoriteService.getListByPage(userFavoriteRequest));

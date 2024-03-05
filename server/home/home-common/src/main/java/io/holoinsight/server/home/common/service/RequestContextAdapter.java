@@ -25,4 +25,6 @@ public interface RequestContextAdapter {
   <T> void queryWrapperWorkspaceAdapt(QueryWrapper<T> queryWrapper, String workspace);
 
   String getWorkspace(boolean cross);
+
+  String getLoginName();
 }

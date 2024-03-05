@@ -95,7 +95,6 @@ public class UserOpLogServiceImpl extends ServiceImpl<UserOpLogMapper, UserOpLog
 
     wrapper.orderByDesc("gmt_create");
 
-    wrapper.select(UserOpLog.class, info -> !info.getColumn().equals("creator"));
 
     Page<UserOpLog> page =
         new Page<>(userOpLogRequest.getPageNum(), userOpLogRequest.getPageSize());
