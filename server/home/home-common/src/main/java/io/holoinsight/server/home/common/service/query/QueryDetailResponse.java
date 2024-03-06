@@ -74,8 +74,19 @@ public class QueryDetailResponse {
       }
       int finalIndex = index;
       values.sort((o1, o2) -> {
-        Double d1 = Double.parseDouble(String.valueOf(o1[finalIndex]));
-        Double d2 = Double.parseDouble(String.valueOf(o2[finalIndex]));
+        Double d1;
+        Double d2;
+        if (o1.length <= finalIndex) {
+          d1 = Double.MIN_VALUE;
+        } else {
+          d1 = Double.parseDouble(String.valueOf(o1[finalIndex]));
+        }
+        if (o2.length <= finalIndex) {
+          d2 = Double.MIN_VALUE;
+        } else {
+          d2 = Double.parseDouble(String.valueOf(o2[finalIndex]));
+        }
+
         if (StringUtils.equalsIgnoreCase(order, "asc")) {
           return d1.compareTo(d2);
         } else {
