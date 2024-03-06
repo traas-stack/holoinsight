@@ -20,6 +20,7 @@ import io.holoinsight.server.home.biz.plugin.DefaultMarketplaceProductHandler;
 import io.holoinsight.server.home.biz.plugin.MarketplaceProductHandler;
 import io.holoinsight.server.home.biz.plugin.MetricInfoCheckService;
 import io.holoinsight.server.home.biz.plugin.MetricInfoCheckServiceImpl;
+import io.holoinsight.server.home.biz.service.AlertRuleService;
 import io.holoinsight.server.home.biz.service.EnvironmentService;
 import io.holoinsight.server.home.biz.service.TenantInitService;
 import io.holoinsight.server.home.biz.service.UserinfoVerificationService;
@@ -113,7 +114,7 @@ public class HoloinsightHomeConfiguration {
   }
 
   @Bean
-  public AlertRuleServiceImpl alertRuleService() {
+  public AlertRuleService alertRuleService() {
     return new AlertRuleServiceImpl();
   }
 
