@@ -7,6 +7,7 @@ import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 
+import java.util.concurrent.RejectedExecutionHandler;
 import java.util.concurrent.ThreadPoolExecutor;
 
 /**
@@ -17,12 +18,19 @@ import java.util.concurrent.ThreadPoolExecutor;
 public class CommonThreadPool {
   public static ThreadPoolTaskExecutor createThreadPool(int coreSize, int maxSize,
       int queueCapacity, String tpname) {
+    return createThreadPool(coreSize, maxSize, queueCapacity, tpname,
+        new ThreadPoolExecutor.AbortPolicy());
+  }
+
+  public static ThreadPoolTaskExecutor createThreadPool(int coreSize, int maxSize,
+      int queueCapacity, String tpname, RejectedExecutionHandler rejectedExecutionHandler) {
     ThreadPoolTaskExecutor threadPool = new ThreadPoolTaskExecutor();
     threadPool.setThreadNamePrefix(tpname);
     threadPool.setMaxPoolSize(maxSize);
     threadPool.setCorePoolSize(coreSize);
     threadPool.setQueueCapacity(queueCapacity);
     threadPool.afterPropertiesSet();
+    threadPool.setRejectedExecutionHandler(rejectedExecutionHandler);
     return threadPool;
   }
 
