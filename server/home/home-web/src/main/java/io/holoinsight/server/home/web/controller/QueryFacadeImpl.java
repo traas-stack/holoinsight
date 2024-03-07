@@ -26,6 +26,7 @@ import io.holoinsight.server.home.common.util.ResultCodeEnum;
 import io.holoinsight.server.home.common.util.StringUtil;
 import io.holoinsight.server.home.common.util.scope.AuthTargetType;
 import io.holoinsight.server.home.common.util.scope.MonitorScope;
+import io.holoinsight.server.home.common.util.scope.MonitorUser;
 import io.holoinsight.server.home.common.util.scope.PowerConstants;
 import io.holoinsight.server.home.common.util.scope.RequestContext;
 import io.holoinsight.server.home.web.common.ManageCallback;
@@ -547,7 +548,11 @@ public class QueryFacadeImpl extends BaseFacade {
   }
 
   public QueryProto.QueryRequest convertRequest(DataQueryRequest request) {
-    MonitorScope ms = RequestContext.getContext().ms;
+    return convertRequest(request, RequestContext.getContext().ms, RequestContext.getContext().mu);
+  }
+
+  public QueryProto.QueryRequest convertRequest(DataQueryRequest request, MonitorScope ms,
+      MonitorUser mu) {
     QueryProto.QueryRequest.Builder builder = QueryProto.QueryRequest.newBuilder();
     builder.setTenant(tenantInitService.getTsdbTenant(ms.getTenant()));
     if (StringUtil.isNotBlank(request.getQuery())) {
@@ -587,8 +592,9 @@ public class QueryFacadeImpl extends BaseFacade {
         objMap.remove("select");
       }
       toProtoBean(datasourceBuilder, objMap);
-      Boolean aBoolean = tenantInitService.checkConditions(ms.getTenant(), ms.getWorkspace(),
-          ms.getEnvironment(), datasourceBuilder.getMetric(), datasourceBuilder.getFiltersList());
+      Boolean aBoolean =
+          tenantInitService.checkConditions(ms.getTenant(), ms.getWorkspace(), ms.getEnvironment(),
+              datasourceBuilder.getMetric(), datasourceBuilder.getFiltersList(), ms, mu);
       if (!aBoolean) {
         throw new MonitorException("workspace is illegal");
       }

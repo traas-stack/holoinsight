@@ -7,6 +7,8 @@ import io.holoinsight.server.apm.common.model.specification.sw.Tag;
 import io.holoinsight.server.common.dao.entity.MetricInfo;
 import io.holoinsight.server.common.dao.entity.dto.TenantOpsStorage;
 import io.holoinsight.server.home.biz.plugin.config.MetaLabel;
+import io.holoinsight.server.home.common.util.scope.MonitorScope;
+import io.holoinsight.server.home.common.util.scope.MonitorUser;
 import io.holoinsight.server.home.dal.model.dto.CloudMonitorRange;
 import io.holoinsight.server.home.dal.model.dto.CustomPluginDTO;
 import io.holoinsight.server.home.dal.model.dto.IntegrationGeneratedDTO;
@@ -65,7 +67,7 @@ public interface TenantInitService {
   String getTsdbTenant(String tenant, MetricInfo metricInfo);
 
   Boolean checkConditions(String tenant, String workspace, String environment, String metric,
-      List<QueryFilter> filters);
+      List<QueryFilter> filters, MonitorScope ms, MonitorUser mu);
 
 
   /**

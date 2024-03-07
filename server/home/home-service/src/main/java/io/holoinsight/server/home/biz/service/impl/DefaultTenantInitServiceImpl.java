@@ -9,6 +9,8 @@ import io.holoinsight.server.common.dao.entity.dto.TenantOpsStorage;
 import io.holoinsight.server.home.biz.common.GaeaConvertUtil;
 import io.holoinsight.server.home.biz.plugin.config.MetaLabel;
 import io.holoinsight.server.home.biz.service.TenantInitService;
+import io.holoinsight.server.home.common.util.scope.MonitorScope;
+import io.holoinsight.server.home.common.util.scope.MonitorUser;
 import io.holoinsight.server.home.dal.model.dto.CloudMonitorRange;
 import io.holoinsight.server.home.dal.model.dto.CustomPluginDTO;
 import io.holoinsight.server.home.dal.model.dto.IntegrationGeneratedDTO;
@@ -62,7 +64,7 @@ public class DefaultTenantInitServiceImpl implements TenantInitService {
 
   @Override
   public Boolean checkConditions(String tenant, String workspace, String environment, String metric,
-      List<QueryFilter> filters) {
+      List<QueryFilter> filters, MonitorScope ms, MonitorUser mu) {
     return true;
   }
 
