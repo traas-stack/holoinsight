@@ -3,6 +3,7 @@
  */
 package io.holoinsight.server.home.web.controller;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import io.holoinsight.server.common.J;
 import io.holoinsight.server.common.JsonResult;
 import com.google.protobuf.InvalidProtocolBufferException;
@@ -11,6 +12,7 @@ import com.google.protobuf.util.JsonFormat;
 import io.holoinsight.server.common.LatchWork;
 import io.holoinsight.server.common.UtilMisc;
 import io.holoinsight.server.common.dao.entity.MetricInfo;
+import io.holoinsight.server.common.dao.mapper.MetricInfoMapper;
 import io.holoinsight.server.common.service.SuperCacheService;
 import io.holoinsight.server.common.threadpool.CommonThreadPools;
 import io.holoinsight.server.home.biz.common.MetaDictUtil;
@@ -62,6 +64,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -72,6 +75,11 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
+
+import static io.holoinsight.server.home.biz.common.MetaDictKey.SCHEMA_METRIC_TABLE_PREFIX;
+import static io.holoinsight.server.home.biz.common.MetaDictType.GLOBAL_CONFIG;
+import static io.holoinsight.server.home.task.MetricCrawlerConstant.GLOBAL_TENANT;
+import static io.holoinsight.server.home.task.MetricCrawlerConstant.GLOBAL_WORKSPACE;
 
 @RestController
 @RequestMapping("/webapi/v1/query")
@@ -96,6 +104,8 @@ public class QueryFacadeImpl extends BaseFacade {
 
   @Autowired
   private ParameterSecurityService parameterSecurityService;
+  @Resource
+  private MetricInfoMapper metricInfoMapper;
 
   @PostMapping
   @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.VIEW)
@@ -272,6 +282,17 @@ public class QueryFacadeImpl extends BaseFacade {
 
       @Override
       public void doManage() {
+        if (useGlobalMetricInfo(metric)) {
+          MetricInfo metricInfo = getGlobalMetricInfo(metric);
+          if (metricInfo != null) {
+            List<String> tags = getTagsFromMetricInfo(metricInfo);
+            KeyResult keyResult = new KeyResult();
+            keyResult.setMetric(metric);
+            keyResult.setTags(tags);
+            result.setData(keyResult);
+            return;
+          }
+        }
         MonitorScope ms = RequestContext.getContext().ms;
         Builder builder = Datasource.newBuilder().setMetric(metric)
             .setStart(System.currentTimeMillis() - 60000 * 60 * 5)
@@ -303,6 +324,40 @@ public class QueryFacadeImpl extends BaseFacade {
     });
 
     return result;
+  }
+
+  private List<String> getTagsFromMetricInfo(MetricInfo metricInfo) {
+    String tags = metricInfo.getTags();
+    if (StringUtils.isBlank(tags)) {
+      return Collections.emptyList();
+    }
+    return J.toList(tags);
+  }
+
+  private MetricInfo getGlobalMetricInfo(String metric) {
+    QueryWrapper<MetricInfo> queryWrapper = new QueryWrapper<>();
+    queryWrapper.eq("tenant", GLOBAL_TENANT);
+    queryWrapper.eq("workspace", GLOBAL_WORKSPACE);
+    queryWrapper.eq("metric_table", metric);
+    List<MetricInfo> metricInfos = metricInfoMapper.selectList(queryWrapper);
+    if (CollectionUtils.isEmpty(metricInfos)) {
+      return null;
+    }
+    return metricInfos.get(0);
+  }
+
+  private boolean useGlobalMetricInfo(String metric) {
+    List<String> schemaMetricTablePrefix =
+        MetaDictUtil.getList(GLOBAL_CONFIG, SCHEMA_METRIC_TABLE_PREFIX);
+    if (CollectionUtils.isEmpty(schemaMetricTablePrefix)) {
+      return false;
+    }
+    for (String prefix : schemaMetricTablePrefix) {
+      if (metric.startsWith(prefix)) {
+        return true;
+      }
+    }
+    return false;
   }
 
   /**
