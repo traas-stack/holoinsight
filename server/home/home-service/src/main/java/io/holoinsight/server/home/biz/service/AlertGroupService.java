@@ -24,6 +24,8 @@ public interface AlertGroupService extends IService<AlarmGroup> {
 
   AlarmGroupDTO queryById(Long id, String tenant);
 
+  AlarmGroupDTO queryById(Long id, String tenant, String workspace);
+
   List<AlarmGroupDTO> getListByUserLike(String userId, String tenant);
 
   MonitorPageResult<AlarmGroupDTO> getListByPage(MonitorPageRequest<AlarmGroupDTO> pageRequest);
