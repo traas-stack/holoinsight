@@ -343,6 +343,9 @@ public class AlertTemplateFacadeImpl extends BaseFacade {
   static List<Map<String, String>> getAllFields() {
     List<Map<String, String>> list = new ArrayList<>();
     for (AlertTemplateField alertTemplateField : AlertTemplateField.values()) {
+      if (alertTemplateField.isCompatible()) {
+        continue;
+      }
       Map<String, String> item = new HashMap<>();
       item.put("fieldName", alertTemplateField.getFieldName());
       item.put("describe", alertTemplateField.getDescribe());
