@@ -18,4 +18,10 @@ public class Extension {
    * Whether to enter debug mode
    */
   private boolean debug;
+
+  /**
+   * When an AggTask update is found, whether to discard the intermediate calculation results of the
+   * current cycle
+   */
+  private boolean discardWhenUpdate;
 }
