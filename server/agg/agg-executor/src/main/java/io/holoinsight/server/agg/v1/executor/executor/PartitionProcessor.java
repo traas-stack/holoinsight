@@ -126,7 +126,6 @@ public class PartitionProcessor {
       }
 
       AggTaskExecutor executor = getOrCreateAggTaskExecutor(key, latestAggTask);
-      executor.lastUsedAggTask = latestAggTask;
 
       RecursiveTask<Long> rt = new RecursiveTask<Long>() {
         @Override
@@ -165,8 +164,25 @@ public class PartitionProcessor {
     state.updateMaxEventTimestamp(partitionMET);
   }
 
+  private void removeAggTaskExecutor(AggTaskKey key) {
+    aggTaskExecutors.remove(key);
+    state.getAggTaskStates().remove(key);
+  }
+
   private AggTaskExecutor getOrCreateAggTaskExecutor(AggTaskKey key, XAggTask aggTask) {
     AggTaskExecutor e = aggTaskExecutors.get(key);
+
+    // When an AggTask update is found, discard the intermediate calculation results of
+    // the current cycle. Doing so allows you to immediately update the day-level tasks instead of
+    // waiting until the next day to take effect. But the disadvantage is that the intermediate
+    // state will be lost and the data will be calculated from zero.
+    if (e != null && e.lastUsedAggTask != null
+        && aggTask.getInner().getExtension().isDiscardWhenUpdate()
+        && !e.lastUsedAggTask.hasSameVersion(aggTask)) {
+      removeAggTaskExecutor(key);
+      e = null;
+    }
+
     if (e == null) {
       AggTaskState s = new AggTaskState(key);
       long watermark = state.getMaxEventTimestamp() //
@@ -178,10 +194,10 @@ public class PartitionProcessor {
       s.setWatermark(watermark);
       e = new AggTaskExecutor(s, completenessService, output, aggMetaService);
       e.ignoredMinWatermark = watermark;
-      e.lastUsedAggTask = aggTask;
       aggTaskExecutors.put(key, e);
       state.put(s);
     }
+    e.lastUsedAggTask = aggTask;
     return e;
   }
 

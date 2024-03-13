@@ -33,4 +33,8 @@ public class XAggTask {
     this.select = select;
     this.where = where;
   }
+
+  public boolean hasSameVersion(XAggTask aggTask) {
+    return inner.getVersion() == aggTask.getInner().getVersion();
+  }
 }
