@@ -48,7 +48,7 @@ import io.holoinsight.server.home.dal.model.dto.MetaTableDTO;
 import io.holoinsight.server.home.dal.model.dto.MetaTableDTO.TableStatus;
 import io.holoinsight.server.home.dal.model.dto.meta.MetaTableCol;
 import io.holoinsight.server.home.dal.model.dto.meta.MetaTableConfig;
-import io.holoinsight.server.home.web.common.ManageCallback;
+import io.holoinsight.server.home.common.util.ManageCallback;
 import lombok.extern.slf4j.Slf4j;
 
 /**

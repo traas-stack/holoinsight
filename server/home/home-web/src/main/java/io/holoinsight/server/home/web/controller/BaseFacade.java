@@ -8,7 +8,7 @@ import io.holoinsight.server.home.common.util.scope.MonitorScope;
 import io.holoinsight.server.home.common.util.scope.RequestContext;
 import io.holoinsight.server.home.facade.ApiSecurity;
 import io.holoinsight.server.home.web.common.ApiSecurityFactory;
-import io.holoinsight.server.home.web.common.FacadeTemplate;
+import io.holoinsight.server.home.common.util.FacadeTemplate;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.FastDateFormat;

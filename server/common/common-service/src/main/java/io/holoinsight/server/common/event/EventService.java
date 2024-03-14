@@ -3,8 +3,6 @@
  */
 package io.holoinsight.server.common.event;
 
-import io.holoinsight.server.common.event.Event;
-
 import java.util.List;
 import java.util.Map;
 

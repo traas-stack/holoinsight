@@ -22,7 +22,7 @@ import io.holoinsight.server.home.dal.model.ApiKey;
 import io.holoinsight.server.home.dal.model.TraceAgentConfProp;
 import io.holoinsight.server.home.dal.model.TraceAgentConfiguration;
 import io.holoinsight.server.common.AesUtil;
-import io.holoinsight.server.home.web.common.ManageCallback;
+import io.holoinsight.server.home.common.util.ManageCallback;
 import io.holoinsight.server.home.web.common.ParaCheckUtil;
 import io.holoinsight.server.home.web.config.TraceAuthEncryptConfiguration;
 import io.holoinsight.server.home.web.interceptor.MonitorScopeAuth;

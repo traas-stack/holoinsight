@@ -20,7 +20,7 @@ import io.holoinsight.server.home.dal.mapper.UserinfoVerificationMapper;
 import io.holoinsight.server.home.dal.model.OpType;
 import io.holoinsight.server.home.dal.model.UserinfoVerification;
 import io.holoinsight.server.home.facade.emuns.PeriodType;
-import io.holoinsight.server.home.web.common.ManageCallback;
+import io.holoinsight.server.home.common.util.ManageCallback;
 import io.holoinsight.server.home.web.common.ParaCheckUtil;
 import io.holoinsight.server.home.web.interceptor.MonitorScopeAuth;
 import lombok.extern.slf4j.Slf4j;

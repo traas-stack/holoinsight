@@ -30,6 +30,7 @@ public class RestAuthUtil {
 
   public boolean isNoAuthRequest(HttpServletRequest req) {
     return NO_AUTH_PATH.contains(req.getServletPath())
+        || NO_AUTH_PATH.stream().anyMatch(path -> req.getServletPath().contains(path))
         || NO_AUTH_PREFIX.stream().anyMatch(prefix -> req.getServletPath().startsWith(prefix));
   }
 

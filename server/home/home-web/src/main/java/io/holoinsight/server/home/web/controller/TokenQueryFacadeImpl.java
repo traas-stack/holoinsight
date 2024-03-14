@@ -4,7 +4,7 @@
 package io.holoinsight.server.home.web.controller;
 
 import io.holoinsight.server.home.biz.access.MonitorAccessService;
-import io.holoinsight.server.home.web.common.ManageCallback;
+import io.holoinsight.server.home.common.util.ManageCallback;
 import io.holoinsight.server.home.web.common.ParaCheckUtil;
 import io.holoinsight.server.home.web.controller.model.TokenQueryRequest;
 import io.holoinsight.server.common.JsonResult;
