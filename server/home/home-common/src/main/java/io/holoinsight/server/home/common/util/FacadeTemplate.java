@@ -1,7 +1,7 @@
 /*
  * Copyright 2022 Holoinsight Project Authors. Licensed under Apache-2.0.
  */
-package io.holoinsight.server.home.web.common;
+package io.holoinsight.server.home.common.util;
 
 import io.holoinsight.server.common.JsonResult;
 
@@ -15,5 +15,7 @@ public interface FacadeTemplate {
   void manage(JsonResult result, ManageCallback callback);
 
   void manage(JsonResult result, ManageCallback callback, String trace);
+
+  void manageWithTransaction(JsonResult result, ManageCallback callback, String trace);
 
 }

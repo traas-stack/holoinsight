@@ -13,7 +13,7 @@ import io.holoinsight.server.home.common.util.scope.MonitorScope;
 import io.holoinsight.server.home.common.util.scope.PowerConstants;
 import io.holoinsight.server.home.common.util.scope.RequestContext;
 import io.holoinsight.server.home.dal.model.AlarmMetric;
-import io.holoinsight.server.home.web.common.ManageCallback;
+import io.holoinsight.server.home.common.util.ManageCallback;
 import io.holoinsight.server.home.web.common.ParaCheckUtil;
 import io.holoinsight.server.home.web.interceptor.MonitorScopeAuth;
 import org.apache.commons.lang3.StringUtils;

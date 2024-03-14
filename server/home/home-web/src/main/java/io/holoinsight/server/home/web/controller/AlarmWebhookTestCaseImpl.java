@@ -7,7 +7,7 @@ package io.holoinsight.server.home.web.controller;
 import io.holoinsight.server.common.J;
 import io.holoinsight.server.common.JsonResult;
 import io.holoinsight.server.common.web.InternalWebApi;
-import io.holoinsight.server.home.web.common.ManageCallback;
+import io.holoinsight.server.home.common.util.ManageCallback;
 import io.holoinsight.server.home.web.common.ParaCheckUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.PostMapping;

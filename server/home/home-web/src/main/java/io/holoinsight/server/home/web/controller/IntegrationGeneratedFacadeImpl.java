@@ -28,7 +28,7 @@ import io.holoinsight.server.home.dal.model.dto.IntegrationFormDTO;
 import io.holoinsight.server.home.dal.model.dto.IntegrationGeneratedDTO;
 import io.holoinsight.server.home.dal.model.dto.IntegrationPluginDTO;
 import io.holoinsight.server.home.dal.model.dto.IntegrationProductDTO;
-import io.holoinsight.server.home.web.common.ManageCallback;
+import io.holoinsight.server.home.common.util.ManageCallback;
 import io.holoinsight.server.home.web.common.ParaCheckUtil;
 import io.holoinsight.server.home.web.interceptor.MonitorScopeAuth;
 import lombok.AllArgsConstructor;
