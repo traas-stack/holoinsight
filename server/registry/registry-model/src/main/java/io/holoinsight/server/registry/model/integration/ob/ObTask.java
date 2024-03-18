@@ -4,6 +4,7 @@
 package io.holoinsight.server.registry.model.integration.ob;
 
 import io.holoinsight.server.registry.model.integration.LocalIntegrationTask;
+import io.holoinsight.server.registry.model.integration.CollectMetricConf;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -21,5 +22,5 @@ public class ObTask extends LocalIntegrationTask {
   public String network;
   public Integer port;
   public String dbName;
-  public List<ObMetricConf> metrics;
+  public List<CollectMetricConf> metrics;
 }

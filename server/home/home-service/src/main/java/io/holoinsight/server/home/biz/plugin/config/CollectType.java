@@ -9,6 +9,6 @@ package io.holoinsight.server.home.biz.plugin.config;
  * @version 1.0: CollectType.java, Date: 2023-08-09 Time: 14:59
  */
 public enum CollectType {
-  CENTER, LOCAL, OB_CLIENT
+  CENTER, LOCAL, OB_CLIENT, MYSQL_CLIENT
 
 }
