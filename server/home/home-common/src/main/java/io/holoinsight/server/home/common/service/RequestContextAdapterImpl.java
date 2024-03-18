@@ -66,4 +66,14 @@ public class RequestContextAdapterImpl implements RequestContextAdapter {
   public String getLoginName() {
     return StringUtils.EMPTY;
   }
+
+  @Override
+  public String getTenantFromContext(RequestContext.Context context) {
+    return context.ms.tenant;
+  }
+
+  @Override
+  public String getWorkspaceFromContext(RequestContext.Context context) {
+    return context.ms.workspace;
+  }
 }
