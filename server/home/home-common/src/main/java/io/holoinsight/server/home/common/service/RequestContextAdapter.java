@@ -4,6 +4,7 @@
 package io.holoinsight.server.home.common.service;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import io.holoinsight.server.home.common.util.scope.RequestContext;
 import io.holoinsight.server.query.grpc.QueryProto;
 
 /**
@@ -27,4 +28,8 @@ public interface RequestContextAdapter {
   String getWorkspace(boolean cross);
 
   String getLoginName();
+
+  String getTenantFromContext(RequestContext.Context context);
+
+  String getWorkspaceFromContext(RequestContext.Context context);
 }

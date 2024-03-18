@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.InitBinder;
 import java.beans.PropertyEditorSupport;
 import java.lang.reflect.Method;
 import java.util.Date;
+import java.util.UUID;
 
 /**
  *
@@ -122,6 +123,10 @@ public class BaseFacade {
         }
       }
     }
+  }
+
+  protected String createUuid() {
+    return UUID.randomUUID().toString().replace("-", "");
   }
 
 }

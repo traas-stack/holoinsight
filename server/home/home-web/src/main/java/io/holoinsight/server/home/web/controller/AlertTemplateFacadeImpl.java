@@ -89,7 +89,7 @@ public class AlertTemplateFacadeImpl extends BaseFacade {
         if (null != ms && !StringUtils.isEmpty(ms.workspace)) {
           templateDTO.setWorkspace(ms.workspace);
         }
-        templateDTO.setUuid(UUID.randomUUID().toString().replace("-", ""));
+        templateDTO.setUuid(createUuid());
         templateDTO.setGmtCreate(new Date());
         templateDTO.setGmtModified(new Date());
         AlertTemplate alertTemplate = alertTemplateConverter.dtoToDO(templateDTO);
