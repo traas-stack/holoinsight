@@ -21,4 +21,5 @@ public class IntegrationTransForm {
 
   private List<String> metricWhiteList;
   private Map<String, Map<String, String>> metricConfigs;
+  private List<String> scripts;
 }
