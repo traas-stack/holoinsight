@@ -30,4 +30,6 @@ public @interface ConditionalOnRole {
    * @return
    */
   String[] value();
+
+  boolean any() default true;
 }
