@@ -28,17 +28,25 @@ class ConditionalOnRoleCondition extends SpringBootCondition {
       AnnotatedTypeMetadata metadata) {
     Map<String, Object> attributes =
         metadata.getAnnotationAttributes(ConditionalOnRole.class.getName(), true);
-    String[] anyRole = (String[]) attributes.get("value");
-
+    String[] expectedRoles = (String[]) attributes.get("value");
+    boolean any = (Boolean) attributes.get("any");
     String roles = context.getEnvironment().getProperty("holoinsight.roles.active", "");
     Iterable<String> iter = Splitter.on(',').trimResults().omitEmptyStrings().split(roles);
 
-    for (String role : anyRole) {
-      if (Iterables.contains(iter, role)) {
-        return ConditionOutcome.match("match '" + role + "' role");
+    if (any) {
+      for (String role : expectedRoles) {
+        if (Iterables.contains(iter, role)) {
+          return ConditionOutcome.match("match '" + role + "' role");
+        }
+      }
+    } else {
+      for (String role : expectedRoles) {
+        if (!Iterables.contains(iter, role)) {
+          return ConditionOutcome.match("no match '" + role + "' role");
+        }
       }
     }
 
-    return ConditionOutcome.noMatch("no any roles: " + Arrays.toString(anyRole));
+    return ConditionOutcome.noMatch("no match roles: " + Arrays.toString(expectedRoles));
   }
 }
