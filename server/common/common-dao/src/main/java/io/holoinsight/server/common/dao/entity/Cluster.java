@@ -1,7 +1,7 @@
 /*
  * Copyright 2022 Holoinsight Project Authors. Licensed under Apache-2.0.
  */
-package io.holoinsight.server.home.dal.model;
+package io.holoinsight.server.common.dao.entity;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
@@ -15,7 +15,6 @@ import java.util.Date;
  * @version 1.0: Cluster.java, v 0.1 2022年03月17日 5:41 下午 jinsong.yjs Exp $
  */
 @Data
-
 public class Cluster {
   @TableId(type = IdType.AUTO)
   public Long id;

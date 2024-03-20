@@ -1,9 +1,10 @@
 /*
  * Copyright 2022 Holoinsight Project Authors. Licensed under Apache-2.0.
  */
-package io.holoinsight.server.home.biz.service;
+package io.holoinsight.server.common.service;
 
-import io.holoinsight.server.home.dal.model.dto.ClusterDTO;
+
+import io.holoinsight.server.common.dao.entity.dto.ClusterDTO;
 
 import java.util.List;
 

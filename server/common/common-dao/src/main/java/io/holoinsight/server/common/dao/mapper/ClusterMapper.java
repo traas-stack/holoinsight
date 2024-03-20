@@ -1,9 +1,9 @@
 /*
  * Copyright 2022 Holoinsight Project Authors. Licensed under Apache-2.0.
  */
-package io.holoinsight.server.home.dal.mapper;
+package io.holoinsight.server.common.dao.mapper;
 
-import io.holoinsight.server.home.dal.model.Cluster;
+import io.holoinsight.server.common.dao.entity.Cluster;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 
 /**

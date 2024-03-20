@@ -20,8 +20,8 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 public class MysqlTaskV3 extends LocalIntegrationTask {
-  private String username;
-  private String password;
+  public String username;
+  public String password;
   public Integer port;
   public String sql;
   public List<CollectMetricConf> metrics;
