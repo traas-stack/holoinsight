@@ -42,7 +42,7 @@ class ConditionalOnRoleCondition extends SpringBootCondition {
     } else {
       for (String role : expectedRoles) {
         if (!Iterables.contains(iter, role)) {
-          return ConditionOutcome.match("no match '" + role + "' role");
+          return ConditionOutcome.noMatch("no match '" + role + "' role");
         }
       }
     }
