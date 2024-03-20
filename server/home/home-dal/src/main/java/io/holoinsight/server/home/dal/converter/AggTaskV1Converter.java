@@ -7,7 +7,7 @@ package io.holoinsight.server.home.dal.converter;
 import io.holoinsight.server.home.dal.model.AggTaskV1;
 import io.holoinsight.server.home.dal.model.dto.AggTaskV1DTO;
 import io.holoinsight.server.home.dal.transformer.AggTaskV1ConfigMapper;
-import io.holoinsight.server.home.dal.transformer.BooleanIntegerMapper;
+import io.holoinsight.server.common.dao.transformer.BooleanIntegerMapper;
 import org.mapstruct.Mapper;
 
 import java.util.List;

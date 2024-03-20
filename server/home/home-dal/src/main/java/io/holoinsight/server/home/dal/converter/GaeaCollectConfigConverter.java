@@ -5,7 +5,7 @@ package io.holoinsight.server.home.dal.converter;
 
 import io.holoinsight.server.home.dal.model.GaeaCollectConfig;
 import io.holoinsight.server.home.dal.model.dto.GaeaCollectConfigDTO;
-import io.holoinsight.server.home.dal.transformer.BooleanIntegerMapper;
+import io.holoinsight.server.common.dao.transformer.BooleanIntegerMapper;
 import io.holoinsight.server.home.dal.transformer.GaeaCollectConfigJsonMapper;
 import io.holoinsight.server.home.dal.transformer.GaeaCollectRangeMapper;
 import io.holoinsight.server.common.dao.transformer.MapJsonMapper;

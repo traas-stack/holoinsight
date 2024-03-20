@@ -98,6 +98,10 @@ public class IntegrationPluginUpdateListener {
 
       List<AbstractIntegrationPlugin> abstractIntegrationPlugins =
           plugin.genPluginList(integrationPluginDTO);
+      log.info("[integration_plugin][{}][{}] convert plugin size: {}",
+          integrationPluginDTO.getProduct(), integrationPluginDTO.type,
+          abstractIntegrationPlugins.size());
+
       for (AbstractIntegrationPlugin integrationPlugin : abstractIntegrationPlugins) {
         gaeaCollectConfigDTO.collectRange = integrationPlugin.getGaeaCollectRange();
         gaeaCollectConfigDTO.type = integrationPlugin.collectPlugin;

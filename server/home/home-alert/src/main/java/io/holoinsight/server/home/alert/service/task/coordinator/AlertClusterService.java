@@ -5,9 +5,9 @@ package io.holoinsight.server.home.alert.service.task.coordinator;
 
 import io.holoinsight.server.common.AddressUtil;
 import io.holoinsight.server.common.config.ScheduleLoadTask;
-import io.holoinsight.server.home.biz.service.ClusterService;
-import io.holoinsight.server.home.common.util.CLUSTER_ROLE_CONST;
-import io.holoinsight.server.home.dal.model.dto.ClusterDTO;
+import io.holoinsight.server.common.service.ClusterService;
+import io.holoinsight.server.common.model.CLUSTER_ROLE_CONST;
+import io.holoinsight.server.common.dao.entity.dto.ClusterDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

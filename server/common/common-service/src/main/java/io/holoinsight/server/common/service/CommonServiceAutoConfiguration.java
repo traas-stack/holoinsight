@@ -60,4 +60,10 @@ public class CommonServiceAutoConfiguration {
   public MonitorInstanceService monitorInstanceService() {
     return new MonitorInstanceServiceImpl();
   }
+
+  @Bean
+  @ConditionalOnMissingBean
+  public ClusterService clusterService() {
+    return new ClusterServiceImpl();
+  }
 }

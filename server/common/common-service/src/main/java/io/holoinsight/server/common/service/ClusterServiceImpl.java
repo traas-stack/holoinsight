@@ -1,19 +1,18 @@
 /*
  * Copyright 2022 Holoinsight Project Authors. Licensed under Apache-2.0.
  */
-package io.holoinsight.server.home.biz.service.impl;
+package io.holoinsight.server.common.service;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import io.holoinsight.server.common.AddressUtil;
 import io.holoinsight.server.common.J;
-import io.holoinsight.server.home.biz.service.ClusterService;
-import io.holoinsight.server.home.common.util.CLUSTER_ROLE_CONST;
+import io.holoinsight.server.common.dao.converter.CustomConverter;
+import io.holoinsight.server.common.model.CLUSTER_ROLE_CONST;
 import io.holoinsight.server.common.config.ProdLog;
-import io.holoinsight.server.home.common.util.StringUtil;
-import io.holoinsight.server.home.dal.converter.CustomConverter;
-import io.holoinsight.server.home.dal.mapper.ClusterMapper;
-import io.holoinsight.server.home.dal.model.Cluster;
-import io.holoinsight.server.home.dal.model.dto.ClusterDTO;
+import io.holoinsight.server.common.dao.mapper.ClusterMapper;
+import io.holoinsight.server.common.dao.entity.Cluster;
+import io.holoinsight.server.common.dao.entity.dto.ClusterDTO;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -110,7 +109,7 @@ public class ClusterServiceImpl extends ServiceImpl<ClusterMapper, Cluster>
   }
 
   private String getRole() {
-    if (StringUtil.isBlank(role)) {
+    if (StringUtils.isBlank(role)) {
       return CLUSTER_ROLE_CONST.PROD;
     }
 

@@ -4,7 +4,7 @@
 package io.holoinsight.server.home.task;
 
 import io.holoinsight.server.home.common.model.TaskEnum;
-import io.holoinsight.server.home.common.util.CLUSTER_ROLE_CONST;
+import io.holoinsight.server.common.model.CLUSTER_ROLE_CONST;
 import io.holoinsight.server.home.common.util.CommonThreadPool;
 import io.holoinsight.server.home.dal.model.ClusterTask;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
