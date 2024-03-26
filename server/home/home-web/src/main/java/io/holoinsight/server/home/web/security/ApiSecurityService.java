@@ -1,7 +1,7 @@
 /*
  * Copyright 2022 Holoinsight Project Authors. Licensed under Apache-2.0.
  */
-package io.holoinsight.server.home.facade.utils;
+package io.holoinsight.server.home.web.security;
 
 import io.holoinsight.server.common.dao.entity.MetricInfo;
 

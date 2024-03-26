@@ -5,21 +5,19 @@ package io.holoinsight.server.home.web.controller;
 
 import io.holoinsight.server.common.DateUtil;
 import io.holoinsight.server.common.J;
+import io.holoinsight.server.common.JsonResult;
 import io.holoinsight.server.home.biz.service.AlarmHistoryDetailService;
 import io.holoinsight.server.home.common.service.query.QueryResponse;
 import io.holoinsight.server.home.common.service.query.Result;
+import io.holoinsight.server.home.common.util.ManageCallback;
 import io.holoinsight.server.home.common.util.scope.AuthTargetType;
-import io.holoinsight.server.home.common.util.scope.MonitorScope;
 import io.holoinsight.server.home.common.util.scope.PowerConstants;
-import io.holoinsight.server.home.common.util.scope.RequestContext;
 import io.holoinsight.server.home.facade.AlarmHistoryDetailDTO;
 import io.holoinsight.server.home.facade.emuns.PeriodType;
 import io.holoinsight.server.home.facade.page.MonitorPageRequest;
 import io.holoinsight.server.home.facade.page.MonitorPageResult;
-import io.holoinsight.server.home.common.util.ManageCallback;
 import io.holoinsight.server.home.web.common.ParaCheckUtil;
 import io.holoinsight.server.home.web.interceptor.MonitorScopeAuth;
-import io.holoinsight.server.common.JsonResult;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -64,12 +62,13 @@ public class AlarmHistoryDetailFacadeImpl extends BaseFacade {
 
       @Override
       public void doManage() {
-        MonitorScope ms = RequestContext.getContext().ms;
-        if (null != ms && !StringUtils.isEmpty(ms.tenant)) {
-          pageRequest.getTarget().setTenant(ms.tenant);
+        String tenant = tenant();
+        String workspace = workspace();
+        if (StringUtils.isNotEmpty(tenant)) {
+          pageRequest.getTarget().setTenant(tenant);
         }
-        if (null != ms && !StringUtils.isEmpty(ms.workspace)) {
-          pageRequest.getTarget().setWorkspace(ms.workspace);
+        if (StringUtils.isNotEmpty(workspace)) {
+          pageRequest.getTarget().setWorkspace(workspace);
         }
         JsonResult.createSuccessResult(result,
             alarmHistoryDetailService.getListByPage(pageRequest));
@@ -95,12 +94,13 @@ public class AlarmHistoryDetailFacadeImpl extends BaseFacade {
 
       @Override
       public void doManage() {
-        MonitorScope ms = RequestContext.getContext().ms;
-        if (null != ms && !StringUtils.isEmpty(ms.tenant)) {
-          pageRequest.getTarget().setTenant(ms.tenant);
+        String tenant = tenant();
+        String workspace = workspace();
+        if (StringUtils.isEmpty(tenant)) {
+          pageRequest.getTarget().setTenant(tenant);
         }
-        if (null != ms && !StringUtils.isEmpty(ms.workspace)) {
-          pageRequest.getTarget().setWorkspace(ms.workspace);
+        if (StringUtils.isNotEmpty(workspace)) {
+          pageRequest.getTarget().setWorkspace(workspace);
         }
         List<Map<String, Object>> countMap = alarmHistoryDetailService.count(pageRequest);
         QueryResponse response = new QueryResponse();

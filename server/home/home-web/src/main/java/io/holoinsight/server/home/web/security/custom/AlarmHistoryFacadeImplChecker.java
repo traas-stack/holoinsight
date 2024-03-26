@@ -7,12 +7,13 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.google.common.reflect.TypeToken;
 import io.holoinsight.server.common.J;
 import io.holoinsight.server.home.common.service.RequestContextAdapter;
-import io.holoinsight.server.home.common.util.scope.MonitorScope;
 import io.holoinsight.server.home.common.util.scope.RequestContext;
 import io.holoinsight.server.home.dal.mapper.AlarmHistoryMapper;
 import io.holoinsight.server.home.dal.model.AlarmHistory;
 import io.holoinsight.server.home.facade.AlarmHistoryDTO;
 import io.holoinsight.server.home.facade.page.MonitorPageRequest;
+import io.holoinsight.server.home.web.security.LevelAuthorizationCheck;
+import io.holoinsight.server.home.web.security.LevelAuthorizationCheckResult;
 import io.holoinsight.server.home.web.security.LevelAuthorizationMetaData;
 import lombok.extern.slf4j.Slf4j;
 import org.aopalliance.intercept.MethodInvocation;
@@ -24,13 +25,17 @@ import org.springframework.util.CollectionUtils;
 import javax.annotation.Resource;
 import java.util.List;
 
+import static io.holoinsight.server.home.web.security.LevelAuthorizationCheckResult.failCheckResult;
+import static io.holoinsight.server.home.web.security.LevelAuthorizationCheckResult.successCheckResult;
+
 /**
  * @author masaimu
  * @version 2024-02-07 17:25:00
  */
 @Slf4j
 @Service
-public class AlarmHistoryFacadeImplChecker extends AbstractResourceChecker {
+public class AlarmHistoryFacadeImplChecker
+    implements AbstractResourceChecker, LevelAuthorizationCheck {
 
   @Resource
   private AlarmHistoryMapper alarmHistoryMapper;
@@ -38,19 +43,19 @@ public class AlarmHistoryFacadeImplChecker extends AbstractResourceChecker {
   private RequestContextAdapter requestContextAdapter;
 
   @Override
-  public boolean check(LevelAuthorizationMetaData levelAuthMetaData,
+  public LevelAuthorizationCheckResult check(LevelAuthorizationMetaData levelAuthMetaData,
       MethodInvocation methodInvocation) {
-    MonitorScope ms = RequestContext.getContext().ms;
-    String workspace = ms.getWorkspace();
-    String tenant = ms.getTenant();
+    String workspace =
+        this.requestContextAdapter.getWorkspaceFromContext(RequestContext.getContext());
+    String tenant = this.requestContextAdapter.getTenantFromContext(RequestContext.getContext());
 
     List<String> parameters = levelAuthMetaData.getParameters();
     String methodName = methodInvocation.getMethod().getName();
     return checkParameters(methodName, parameters, tenant, workspace);
   }
 
-  private boolean checkParameters(String methodName, List<String> parameters, String tenant,
-      String workspace) {
+  private LevelAuthorizationCheckResult checkParameters(String methodName, List<String> parameters,
+      String tenant, String workspace) {
     switch (methodName) {
       case "queryById":
         return checkIdNotNull(parameters);
@@ -59,28 +64,27 @@ public class AlarmHistoryFacadeImplChecker extends AbstractResourceChecker {
       case "pageQuery":
         return checkPageRequest(methodName, parameters, tenant, workspace);
       default:
-        return true;
+        return successCheckResult();
     }
   }
 
   @Override
-  boolean checkIdExists(Long id, String tenant, String workspace) {
+  public LevelAuthorizationCheckResult checkIdExists(Long id, String tenant, String workspace) {
     QueryWrapper<AlarmHistory> queryWrapper = new QueryWrapper<>();
     queryWrapper.eq("id", id);
     this.requestContextAdapter.queryWrapperTenantAdapt(queryWrapper, tenant, workspace);
 
     List<AlarmHistory> exist = this.alarmHistoryMapper.selectList(queryWrapper);
     if (CollectionUtils.isEmpty(exist)) {
-      log.error("fail to check id for no existed {} {} {}", id, tenant, workspace);
-      return false;
+      return failCheckResult("fail to check id for no existed %s %s %s", id, tenant, workspace);
     }
-    return true;
+    return successCheckResult();
   }
 
-  private boolean checkPageRequest(String methodName, List<String> parameters, String tenant,
-      String workspace) {
+  protected LevelAuthorizationCheckResult checkPageRequest(String methodName,
+      List<String> parameters, String tenant, String workspace) {
     if (CollectionUtils.isEmpty(parameters) || StringUtils.isBlank(parameters.get(0))) {
-      return false;
+      return failCheckResult("parameters is empty");
     }
     String parameter = parameters.get(0);
     MonitorPageRequest<AlarmHistoryDTO> pageRequest =
@@ -88,36 +92,32 @@ public class AlarmHistoryFacadeImplChecker extends AbstractResourceChecker {
 
     if (pageRequest.getFrom() != null && pageRequest.getTo() != null) {
       if (pageRequest.getFrom() > pageRequest.getTo()) {
-        log.error("fail to check time range for start {} larger than end {}", pageRequest.getFrom(),
-            pageRequest.getTo());
-        return false;
+        return failCheckResult("fail to check time range for start %d larger than end %d",
+            pageRequest.getFrom(), pageRequest.getTo());
       }
     }
 
     AlarmHistoryDTO target = pageRequest.getTarget();
     if (target == null) {
-      log.error("fail to check target, target can not be null");
-      return false;
+      return failCheckResult("fail to check target, target can not be null");
     }
     return checkAlarmHistoryDTO(methodName, target, tenant, workspace);
   }
 
-  private boolean checkAlarmHistoryDTO(String methodName, AlarmHistoryDTO target, String tenant,
-      String workspace) {
+  private LevelAuthorizationCheckResult checkAlarmHistoryDTO(String methodName,
+      AlarmHistoryDTO target, String tenant, String workspace) {
     if (StringUtils.isNotEmpty(target.getTenant())
         && !StringUtils.equals(target.getTenant(), tenant)) {
-      log.error("fail to check {} for invalid tenant {}, valid tenant {}", methodName,
+      return failCheckResult("fail to check %s for invalid tenant %s, valid tenant %s", methodName,
           target.getTenant(), tenant);
-      return false;
     }
 
     if (StringUtils.isNotEmpty(target.getWorkspace())
         && !StringUtils.equals(target.getWorkspace(), workspace)) {
-      log.error("fail to check {} for invalid workspace {}, valid workspace {}", methodName,
-          target.getWorkspace(), workspace);
-      return false;
+      return failCheckResult("fail to check %s for invalid workspace %s, valid workspace %s",
+          methodName, target.getWorkspace(), workspace);
     }
 
-    return true;
+    return successCheckResult();
   }
 }

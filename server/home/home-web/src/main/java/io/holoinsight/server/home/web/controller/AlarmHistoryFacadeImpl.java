@@ -5,14 +5,12 @@ package io.holoinsight.server.home.web.controller;
 
 import io.holoinsight.server.common.JsonResult;
 import io.holoinsight.server.home.biz.service.AlarmHistoryService;
+import io.holoinsight.server.home.common.util.ManageCallback;
 import io.holoinsight.server.home.common.util.scope.AuthTargetType;
-import io.holoinsight.server.home.common.util.scope.MonitorScope;
 import io.holoinsight.server.home.common.util.scope.PowerConstants;
-import io.holoinsight.server.home.common.util.scope.RequestContext;
 import io.holoinsight.server.home.facade.AlarmHistoryDTO;
 import io.holoinsight.server.home.facade.page.MonitorPageRequest;
 import io.holoinsight.server.home.facade.page.MonitorPageResult;
-import io.holoinsight.server.home.common.util.ManageCallback;
 import io.holoinsight.server.home.web.interceptor.MonitorScopeAuth;
 import io.holoinsight.server.home.web.security.LevelAuthorizationAccess;
 import org.apache.commons.lang3.StringUtils;
@@ -51,8 +49,7 @@ public class AlarmHistoryFacadeImpl extends BaseFacade {
 
       @Override
       public void doManage() {
-        MonitorScope ms = RequestContext.getContext().ms;
-        AlarmHistoryDTO save = alarmHistoryService.queryById(id, ms.getTenant(), ms.getWorkspace());
+        AlarmHistoryDTO save = alarmHistoryService.queryById(id, tenant(), workspace());
         JsonResult.createSuccessResult(result, save);
       }
     });
@@ -73,10 +70,8 @@ public class AlarmHistoryFacadeImpl extends BaseFacade {
 
       @Override
       public void doManage() {
-        MonitorScope ms = RequestContext.getContext().ms;
         boolean rtn = false;
-        AlarmHistoryDTO alarmHistoryDTO =
-            alarmHistoryService.queryById(id, ms.getTenant(), ms.getWorkspace());
+        AlarmHistoryDTO alarmHistoryDTO = alarmHistoryService.queryById(id, tenant(), workspace());
         if (alarmHistoryDTO != null) {
           rtn = alarmHistoryService.deleteById(id);
         }
@@ -102,13 +97,14 @@ public class AlarmHistoryFacadeImpl extends BaseFacade {
 
       @Override
       public void doManage() {
-        MonitorScope ms = RequestContext.getContext().ms;
-        if (null != ms && !StringUtils.isEmpty(ms.tenant)) {
-          pageRequest.getTarget().setTenant(ms.tenant);
+        String tenant = tenant();
+        String workspace = workspace();
+        if (StringUtils.isNotEmpty(tenant)) {
+          pageRequest.getTarget().setTenant(tenant);
         }
 
-        if (null != ms && !StringUtils.isEmpty(ms.workspace)) {
-          pageRequest.getTarget().setWorkspace(ms.workspace);
+        if (StringUtils.isNotEmpty(workspace)) {
+          pageRequest.getTarget().setWorkspace(workspace);
         }
         JsonResult.createSuccessResult(result,
             alarmHistoryService.getListByPage(pageRequest, pageRequest.getTarget().getUniqueIds()));

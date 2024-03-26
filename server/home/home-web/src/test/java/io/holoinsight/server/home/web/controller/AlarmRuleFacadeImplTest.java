@@ -78,7 +78,7 @@ public class AlarmRuleFacadeImplTest {
 
   @Test
   public void testGetRuleListByGroup() {
-    List<AlarmRuleDTO> alarmRuleDTOList = facade.getRuleListByGroup(true);
+    List<AlarmRuleDTO> alarmRuleDTOList = facade.getRuleListByGroup(true, tenant, workspace);
 
     Mockito.verify(facade.alarmRuleService).list(argument.capture());
     QueryWrapper<AlarmRule> queryWrapper = argument.getValue();
@@ -94,7 +94,7 @@ public class AlarmRuleFacadeImplTest {
 
   @Test
   public void testGetRuleListByGroup_false() {
-    facade.getRuleListByGroup(false);
+    facade.getRuleListByGroup(false, tenant, workspace);
     Mockito.verify(facade.alarmRuleService).list(argument.capture());
     QueryWrapper<AlarmRule> queryWrapper = argument.getValue();
     Assert.assertEquals("(id IN (#{ew.paramNameValuePairs.MPGENVAL1}))",
@@ -103,7 +103,7 @@ public class AlarmRuleFacadeImplTest {
 
   @Test
   public void testGetRuleListBySubscribe() {
-    List<AlarmRuleDTO> alarmRuleDTOList = facade.getRuleListBySubscribe(true);
+    List<AlarmRuleDTO> alarmRuleDTOList = facade.getRuleListBySubscribe(true, tenant, workspace);
     Mockito.verify(facade.alarmRuleService).list(argument.capture());
     QueryWrapper<AlarmRule> queryWrapper = argument.getValue();
     Assert.assertEquals(
@@ -118,7 +118,7 @@ public class AlarmRuleFacadeImplTest {
 
   @Test
   public void testGetRuleListBySubscribe_false() {
-    List<AlarmRuleDTO> alarmRuleDTOList = facade.getRuleListBySubscribe(false);
+    List<AlarmRuleDTO> alarmRuleDTOList = facade.getRuleListBySubscribe(false, tenant, workspace);
     Mockito.verify(facade.alarmRuleService).list(argument.capture());
     QueryWrapper<AlarmRule> queryWrapper = argument.getValue();
     Assert.assertEquals("(id IN (#{ew.paramNameValuePairs.MPGENVAL1}))",

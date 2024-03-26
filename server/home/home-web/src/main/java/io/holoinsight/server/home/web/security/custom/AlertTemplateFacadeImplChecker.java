@@ -14,6 +14,7 @@ import io.holoinsight.server.home.dal.model.AlertTemplate;
 import io.holoinsight.server.home.facade.AlertTemplateDTO;
 import io.holoinsight.server.home.facade.page.MonitorPageRequest;
 import io.holoinsight.server.home.web.security.LevelAuthorizationCheck;
+import io.holoinsight.server.home.web.security.LevelAuthorizationCheckResult;
 import io.holoinsight.server.home.web.security.LevelAuthorizationMetaData;
 import lombok.extern.slf4j.Slf4j;
 import org.aopalliance.intercept.MethodInvocation;
@@ -26,6 +27,9 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
+import static io.holoinsight.server.home.web.security.LevelAuthorizationCheckResult.failCheckResult;
+import static io.holoinsight.server.home.web.security.LevelAuthorizationCheckResult.successCheckResult;
 
 /**
  * @author masaimu
@@ -43,7 +47,7 @@ public class AlertTemplateFacadeImplChecker implements LevelAuthorizationCheck {
   private static final Set<String> channelTypeSet = new HashSet<>(Arrays.asList("sms", "dingTalk"));
 
   @Override
-  public boolean check(LevelAuthorizationMetaData levelAuthMetaData,
+  public LevelAuthorizationCheckResult check(LevelAuthorizationMetaData levelAuthMetaData,
       MethodInvocation methodInvocation) {
     MonitorScope ms = RequestContext.getContext().ms;
     String workspace = ms.getWorkspace();
@@ -54,8 +58,8 @@ public class AlertTemplateFacadeImplChecker implements LevelAuthorizationCheck {
     return checkParameters(methodName, parameters, tenant, workspace);
   }
 
-  private boolean checkParameters(String methodName, List<String> parameters, String tenant,
-      String workspace) {
+  private LevelAuthorizationCheckResult checkParameters(String methodName, List<String> parameters,
+      String tenant, String workspace) {
     switch (methodName) {
       case "create":
       case "update":
@@ -67,14 +71,14 @@ public class AlertTemplateFacadeImplChecker implements LevelAuthorizationCheck {
       case "pageQuery":
         return checkPageRequest(methodName, parameters, tenant, workspace);
       default:
-        return true;
+        return successCheckResult();
     }
   }
 
-  private boolean checkPageRequest(String methodName, List<String> parameters, String tenant,
-      String workspace) {
+  private LevelAuthorizationCheckResult checkPageRequest(String methodName, List<String> parameters,
+      String tenant, String workspace) {
     if (CollectionUtils.isEmpty(parameters) || StringUtils.isBlank(parameters.get(0))) {
-      return false;
+      return failCheckResult("parameters is empty");
     }
     String parameter = parameters.get(0);
     MonitorPageRequest<AlertTemplateDTO> pageRequest =
@@ -82,122 +86,116 @@ public class AlertTemplateFacadeImplChecker implements LevelAuthorizationCheck {
 
     if (pageRequest.getFrom() != null && pageRequest.getTo() != null) {
       if (pageRequest.getFrom() > pageRequest.getTo()) {
-        log.error("fail to check time range for start {} larger than end {}", pageRequest.getFrom(),
-            pageRequest.getTo());
-        return false;
+        return failCheckResult("fail to check time range for start %s larger than end %s",
+            pageRequest.getFrom(), pageRequest.getTo());
       }
     }
 
     AlertTemplateDTO target = pageRequest.getTarget();
     if (target == null) {
-      log.error("fail to check target, target can not be null");
-      return false;
+      return failCheckResult("fail to check target, target can not be null");
     }
     return checkAlertNotificationTemplateDTO(methodName, target, tenant, workspace);
   }
 
-  private boolean checkId(List<String> parameters, String tenant, String workspace) {
+  private LevelAuthorizationCheckResult checkId(List<String> parameters, String tenant,
+      String workspace) {
     if (CollectionUtils.isEmpty(parameters) || StringUtils.isBlank(parameters.get(0))) {
-      return false;
+      return failCheckResult("parameters is empty");
     }
 
     String uuid = J.fromJson(parameters.get(0), String.class);
     return checkId(uuid, tenant, workspace);
   }
 
-  private boolean checkId(String uuid, String tenant, String workspace) {
+  private LevelAuthorizationCheckResult checkId(String uuid, String tenant, String workspace) {
     QueryWrapper<AlertTemplate> queryWrapper = new QueryWrapper<>();
     queryWrapper.eq("uuid", uuid);
     queryWrapper.eq("tenant", tenant);
     queryWrapper.eq("workspace", workspace);
     List<AlertTemplate> exist = this.alertTemplateMapper.selectList(queryWrapper);
     if (CollectionUtils.isEmpty(exist)) {
-      log.error("fail to check uuid for no existed {} {} {}", uuid, tenant, workspace);
-      return false;
+      return failCheckResult("fail to check uuid for no existed %s %s %s", uuid, tenant, workspace);
     }
-    return true;
+    return successCheckResult();
   }
 
-  private boolean checkAlertNotificationTemplateDTO(String methodName, List<String> parameters,
-      String tenant, String workspace) {
+  private LevelAuthorizationCheckResult checkAlertNotificationTemplateDTO(String methodName,
+      List<String> parameters, String tenant, String workspace) {
     if (CollectionUtils.isEmpty(parameters) || StringUtils.isBlank(parameters.get(0))) {
-      return false;
+      return failCheckResult("parameters is empty");
     }
     log.info("checkParameters {} parameter {}", methodName, parameters.get(0));
     AlertTemplateDTO templateDTO = J.fromJson(parameters.get(0), AlertTemplateDTO.class);
     return checkAlertNotificationTemplateDTO(methodName, templateDTO, tenant, workspace);
   }
 
-  private boolean checkAlertNotificationTemplateDTO(String methodName, AlertTemplateDTO templateDTO,
-      String tenant, String workspace) {
+  private LevelAuthorizationCheckResult checkAlertNotificationTemplateDTO(String methodName,
+      AlertTemplateDTO templateDTO, String tenant, String workspace) {
 
     if (methodName.equals("create")) {
       if (StringUtils.isNotEmpty(templateDTO.uuid)) {
-        log.error("fail to check {} for uuid is not null", methodName);
-        return false;
+        return failCheckResult("fail to check %s for uuid is not null", methodName);
       }
     }
 
     if (methodName.equals("update")) {
       if (StringUtils.isEmpty(templateDTO.uuid)) {
-        log.error("fail to check {} for uuid is null", methodName);
-        return false;
+        return failCheckResult("fail to check %s for uuid is null", methodName);
       }
-      if (!checkId(templateDTO.uuid, tenant, workspace)) {
-        return false;
+      LevelAuthorizationCheckResult checkResult = checkId(templateDTO.uuid, tenant, workspace);
+      if (!checkResult.isSuccess()) {
+        return checkResult;
       }
     }
 
     if (StringUtils.isNotEmpty(templateDTO.templateName)
         && !checkSqlName(templateDTO.templateName)) {
-      log.error("fail to check {} for invalid templateName {}", methodName,
+      return failCheckResult("fail to check %s for invalid templateName %s", methodName,
           templateDTO.templateName);
-      return false;
     }
 
     if (StringUtils.isNotEmpty(templateDTO.sceneType)
         && !sceneTypeSet.contains(templateDTO.sceneType)) {
-      log.error("fail to check {} for invalid sceneType {}", methodName, templateDTO.sceneType);
-      return false;
+      return failCheckResult("fail to check %s for invalid sceneType %s", methodName,
+          templateDTO.sceneType);
     }
 
     if (StringUtils.isNotEmpty(templateDTO.channelType)
         && !channelTypeSet.contains(templateDTO.channelType)) {
-      log.error("fail to check {} for invalid channelType {}", methodName, templateDTO.channelType);
-      return false;
+      return failCheckResult("fail to check %s for invalid channelType %s", methodName,
+          templateDTO.channelType);
     }
 
     if (StringUtils.isNotEmpty(templateDTO.tenant)
         && !StringUtils.equals(templateDTO.tenant, tenant)) {
-      log.error("fail to check {} for invalid tenant {}", methodName, templateDTO.tenant);
-      return false;
+      return failCheckResult("fail to check %s for invalid tenant %s", methodName,
+          templateDTO.tenant);
     }
 
     if (StringUtils.isNotEmpty(templateDTO.workspace)
         && !StringUtils.equals(templateDTO.workspace, workspace)) {
-      log.error("fail to check {} for invalid workspace {}", methodName, templateDTO.workspace);
-      return false;
+      return failCheckResult("fail to check %s for invalid workspace %s", methodName,
+          templateDTO.workspace);
     }
 
     MonitorUser mu = RequestContext.getContext().mu;
     if (StringUtils.isNotEmpty(templateDTO.creator)
         && !StringUtils.equals(templateDTO.creator, mu.getLoginName())) {
-      log.error("fail to check {} for invalid creator {} for login name {}", methodName,
-          templateDTO.creator, mu.getLoginName());
-      return false;
+      return failCheckResult("fail to check %s for invalid creator %s for login name %s",
+          methodName, templateDTO.creator, mu.getLoginName());
     }
 
     if (StringUtils.isNotEmpty(templateDTO.modifier)
         && !StringUtils.equals(templateDTO.modifier, mu.getLoginName())) {
-      log.error("fail to check {} for invalid modifier {} for login name {}", methodName,
-          templateDTO.modifier, mu.getLoginName());
-      return false;
+      return failCheckResult("fail to check %s for invalid modifier %s for login name %s",
+          methodName, templateDTO.modifier, mu.getLoginName());
     }
 
     if (StringUtils.isNotEmpty(templateDTO.description) && !checkSqlName(templateDTO.description)) {
-      log.error("fail to check {} for invalid description {}", methodName, templateDTO.description);
-      return false;
+      return failCheckResult("fail to check %s for invalid description %s", methodName,
+          templateDTO.description);
     }
-    return true;
+    return successCheckResult();
   }
 }

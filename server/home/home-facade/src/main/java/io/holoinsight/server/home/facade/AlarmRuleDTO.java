@@ -9,12 +9,7 @@ import io.holoinsight.server.home.common.service.SpringContext;
 import io.holoinsight.server.home.facade.trigger.DataSource;
 import io.holoinsight.server.home.facade.trigger.Filter;
 import io.holoinsight.server.home.facade.trigger.Trigger;
-import io.holoinsight.server.home.facade.utils.ApiSecurityService;
-import io.holoinsight.server.home.facade.utils.CreateCheck;
-import io.holoinsight.server.home.facade.utils.ExistCheck;
-import io.holoinsight.server.home.facade.utils.UpdateCheck;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.util.CollectionUtils;
 
@@ -28,24 +23,18 @@ import java.util.List;
 import java.util.Map;
 
 import static io.holoinsight.server.home.facade.utils.CheckCategory.CUSTOM;
-import static io.holoinsight.server.home.facade.utils.CheckCategory.IS_NULL;
 import static io.holoinsight.server.home.facade.utils.CheckCategory.NOT_NULL;
-import static io.holoinsight.server.home.facade.utils.CheckCategory.SQL_NAME;
 
 /**
  * @author wangsiyuan
  * @date 2022/4/12 9:38 下午
  */
-@EqualsAndHashCode(callSuper = true)
 @Data
-public class AlarmRuleDTO extends ApiSecurity {
+public class AlarmRuleDTO {
 
   /**
    * id
    */
-  @CreateCheck(IS_NULL)
-  @UpdateCheck({NOT_NULL, CUSTOM})
-  @ExistCheck(column = {"id", "tenant", "workspace"}, mapper = "alarmRuleMapper")
   private Long id;
 
   /**
@@ -61,8 +50,6 @@ public class AlarmRuleDTO extends ApiSecurity {
   /**
    * 规则名称
    */
-  @CreateCheck({NOT_NULL, SQL_NAME})
-  @UpdateCheck({SQL_NAME})
   private String ruleName;
 
   /**
@@ -83,7 +70,6 @@ public class AlarmRuleDTO extends ApiSecurity {
   /**
    * 告警级别
    */
-  @CreateCheck(NOT_NULL)
   private String alarmLevel;
 
   /**
@@ -94,13 +80,11 @@ public class AlarmRuleDTO extends ApiSecurity {
   /**
    * 规则是否生效
    */
-  @CreateCheck(NOT_NULL)
   private Byte status;
 
   /**
    * 合并是否开启
    */
-  @CreateCheck(NOT_NULL)
   private Byte isMerge;
 
   /**
@@ -111,7 +95,6 @@ public class AlarmRuleDTO extends ApiSecurity {
   /**
    * 恢复通知是否开启
    */
-  @CreateCheck(NOT_NULL)
   private Byte recover;
 
   /**
@@ -127,7 +110,6 @@ public class AlarmRuleDTO extends ApiSecurity {
   /**
    * 租户id
    */
-  @UpdateCheck({NOT_NULL, CUSTOM})
   private String tenant;
 
   /**
@@ -138,14 +120,11 @@ public class AlarmRuleDTO extends ApiSecurity {
   /**
    * 告警规则
    */
-  @CreateCheck({NOT_NULL, CUSTOM})
-  @UpdateCheck({CUSTOM})
   private Map<String, Object> rule;
 
   /**
    * 生效时间
    */
-  @CreateCheck(NOT_NULL)
   private Map<String, Object> timeFilter;
 
   /**
@@ -323,58 +302,5 @@ public class AlarmRuleDTO extends ApiSecurity {
       }
     }
     return filters;
-  }
-
-  @Override
-  public void customCheckRead(Field field, String tenant, String workspace) {
-
-  }
-
-  @Override
-  public void customCheckCreate(Field field, String tenant, String workspace) {
-    String fieldName = field.getName();
-    switch (fieldName) {
-      case "rule":
-        checkMetrics(tenant, workspace);
-        break;
-    }
-  }
-
-  @Override
-  public void customCheckUpdate(Field field, String tenant, String workspace) {
-    String fieldName = field.getName();
-    switch (fieldName) {
-      case "tenant":
-        if (!StringUtils.equals(this.tenant, tenant)) {
-          throwMonitorException("tenant is illegal");
-        }
-        break;
-      case "rule":
-        checkMetrics(tenant, workspace);
-        break;
-    }
-  }
-
-  private void checkMetrics(String tenant, String workspace) {
-    List<String> metrics = getMetric();
-    if (CollectionUtils.isEmpty(metrics)) {
-      return;
-    }
-    ApiSecurityService apiSecurityService = SpringContext.getBean(ApiSecurityService.class);
-    for (String metric : metrics) {
-      if (apiSecurityService.isGlobalMetric(metric)) {
-        Map<String /* tagk */, List<Object> /* tagvs */> filter = getFilters(metric);
-        boolean checkResult = apiSecurityService.checkFilter(metric, filter, tenant, workspace);
-        if (!checkResult) {
-          throwMonitorException("the tenant or workspace of " + metric + " is invalid.");
-        }
-      } else {
-        boolean checkResult =
-            apiSecurityService.checkMetricTenantAndWorkspace(metric, tenant, workspace);
-        if (!checkResult) {
-          throwMonitorException("the tenant or workspace of " + metric + " is invalid.");
-        }
-      }
-    }
   }
 }

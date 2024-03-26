@@ -13,7 +13,7 @@ import org.apache.commons.lang3.StringUtils;
  */
 public interface LevelAuthorizationCheck {
 
-  public boolean check(LevelAuthorizationMetaData levelAuthMetaData,
+  LevelAuthorizationCheckResult check(LevelAuthorizationMetaData levelAuthMetaData,
       MethodInvocation methodInvocation);
 
   default boolean checkSqlField(String sqlField) {

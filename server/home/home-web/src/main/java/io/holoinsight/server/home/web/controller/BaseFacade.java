@@ -4,11 +4,9 @@
 package io.holoinsight.server.home.web.controller;
 
 import io.holoinsight.server.common.JsonResult;
-import io.holoinsight.server.home.common.util.scope.MonitorScope;
-import io.holoinsight.server.home.common.util.scope.RequestContext;
-import io.holoinsight.server.home.facade.ApiSecurity;
-import io.holoinsight.server.home.web.common.ApiSecurityFactory;
+import io.holoinsight.server.home.common.service.RequestContextAdapter;
 import io.holoinsight.server.home.common.util.FacadeTemplate;
+import io.holoinsight.server.home.common.util.scope.RequestContext;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.FastDateFormat;
@@ -21,7 +19,6 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.InitBinder;
 
 import java.beans.PropertyEditorSupport;
-import java.lang.reflect.Method;
 import java.util.Date;
 import java.util.UUID;
 
@@ -36,6 +33,8 @@ public class BaseFacade {
 
   @Autowired
   public FacadeTemplate facadeTemplate;
+  @Autowired
+  protected RequestContextAdapter requestContextAdapter;
 
   private static DatePropertyEditorSupport dateEditorSupport = new DatePropertyEditorSupport();
 
@@ -95,38 +94,20 @@ public class BaseFacade {
 
   }
 
-  protected void check(ApiSecurity securityParam) {
-    StackTraceElement[] stackTraceElements = Thread.currentThread().getStackTrace();
-    Class<?> clazz = getClass();
-    for (StackTraceElement element : stackTraceElements) {
-      String stackMethodName = String.join(".", element.getClassName(), element.getMethodName());
-      log.info("[API_SECURITY] try to look for {} ", stackMethodName);
-      MonitorScope ms = RequestContext.getContext().ms;
-      for (Method m : clazz.getMethods()) {
-        String reflectedMethodName = String.join(".", clazz.getName(), m.getName());
-        if (!StringUtils.equals(reflectedMethodName, stackMethodName)) {
-          continue;
-        }
-        String fullMethodName = ApiSecurityFactory.getFullMethodName(clazz, m);
-        log.info("[API_SECURITY] begin to check {}", fullMethodName);
-        if (ApiSecurityFactory.createParameterMap.containsKey(fullMethodName)) {
-          log.info("[API_SECURITY] check create method {}", fullMethodName);
-          securityParam.checkCreate(ms.getTenant(), ms.getWorkspace());
-        }
-        if (ApiSecurityFactory.updateParameterMap.containsKey(fullMethodName)) {
-          log.info("[API_SECURITY] check update method {}", fullMethodName);
-          securityParam.checkUpdate(ms.getTenant(), ms.getWorkspace());
-        }
-        if (ApiSecurityFactory.readParameterMap.containsKey(fullMethodName)) {
-          log.info("[API_SECURITY] check read method {}", fullMethodName);
-          securityParam.checkRead(ms.getTenant(), ms.getWorkspace());
-        }
-      }
-    }
-  }
-
   protected String createUuid() {
     return UUID.randomUUID().toString().replace("-", "");
+  }
+
+  protected String tenant() {
+    return this.requestContextAdapter.getTenantFromContext(RequestContext.getContext());
+  }
+
+  protected String workspace() {
+    return this.requestContextAdapter.getWorkspaceFromContext(RequestContext.getContext());
+  }
+
+  protected String simpleWorkspace() {
+    return this.requestContextAdapter.getSimpleWorkspaceFromContext(RequestContext.getContext());
   }
 
 }

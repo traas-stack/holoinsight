@@ -32,4 +32,6 @@ public interface RequestContextAdapter {
   String getTenantFromContext(RequestContext.Context context);
 
   String getWorkspaceFromContext(RequestContext.Context context);
+
+  String getSimpleWorkspaceFromContext(RequestContext.Context context);
 }
