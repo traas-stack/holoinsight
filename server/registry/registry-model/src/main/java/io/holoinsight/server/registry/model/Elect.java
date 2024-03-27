@@ -88,7 +88,6 @@ public class Elect {
   @ToString
   @Getter
   @Setter
-  @AllArgsConstructor
   @NoArgsConstructor
   public static class RefMeta {
     /**
@@ -101,6 +100,10 @@ public class Elect {
      * annotations.xxx 格式
      */
     private String type;
+
+    public RefMeta(String name) {
+      this.name = name;
+    }
   }
 
   @ToString
