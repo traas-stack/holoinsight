@@ -88,22 +88,13 @@ public class Elect {
   @ToString
   @Getter
   @Setter
+  @AllArgsConstructor
   @NoArgsConstructor
   public static class RefMeta {
     /**
      * ip/host/app
      */
     private String name;
-
-    /**
-     * Type 为 null，表示直接从目标元数据引用字段 Type 为 “pod”，表示从 pod 元数据获取字段，此时约定 name 必须为 labels.xxx 或者
-     * annotations.xxx 格式
-     */
-    private String type;
-
-    public RefMeta(String name) {
-      this.name = name;
-    }
   }
 
   @ToString
