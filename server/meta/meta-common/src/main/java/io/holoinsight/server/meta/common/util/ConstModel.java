@@ -10,7 +10,6 @@ package io.holoinsight.server.meta.common.util;
  */
 public class ConstModel {
 
-  public static final String default_id = "_id";
   public static final String default_pk = "_uk";
   public static final String default_type = "_type";
   public static final String default_ip = "ip";
@@ -20,11 +19,7 @@ public class ConstModel {
   public static final String default_modifier = "_modifier";
   public static final String default_status = "_status";
   public static final String default_modified = "_modified";
-  public static final String default_basic = "_basic";
-  public static final String default_annotation = "_annotation";
-  public static final String default_label = "_label";
-  public static final String READ_MYSQL_ENABLE = "readMysqlEnable";
-  public static final String WRITE_MYSQL_ENABLE = "writeMysqlEnable";
+  public static final String default_label = "labels";
   public static final String META_CONFIG = "meta_config";
   public static final String ANNOTATIONS = "annotations";
   public static final String META_INDEX_CONFIG = "meta_index_config";
