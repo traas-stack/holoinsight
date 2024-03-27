@@ -4,6 +4,7 @@
 
 package io.holoinsight.server.meta.core.service.bitmap;
 
+import io.holoinsight.server.meta.common.util.ConstModel;
 import io.holoinsight.server.meta.core.common.DimForkJoinPool;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
@@ -269,12 +270,21 @@ public abstract class AbstractMetaData implements IMetaData {
     idRowsMap.remove(deleteLog.getId());
   }
 
+  @SuppressWarnings("unchecked")
   private void fillColsMapWithLabels(Map<String, MetaColData> colsMap, List<MetaDataRow> rows) {
     DimForkJoinPool.get().submit(() -> rows.parallelStream().forEach(row -> {
-      Map<String, Object> labelMap = row.getValues();
-      if (labelMap != null) {
-        labelMap
-            .forEach((k, v) -> colsMap.putIfAbsent(k, new MetaColData(this.tableName, k, this)));
+      Map<String, Object> jsonMap = row.getValues();
+      if (jsonMap != null) {
+        jsonMap.forEach((k, v) -> colsMap.putIfAbsent(k, new MetaColData(this.tableName, k, this)));
+        if (jsonMap.containsKey(ConstModel.default_label)
+            && jsonMap.get(ConstModel.default_label) instanceof Map<?, ?>) {
+          Map<String, Object> lableMap =
+              (Map<String, Object>) jsonMap.get(ConstModel.default_label);
+          if (null != lableMap) {
+            lableMap.forEach((k, v) -> colsMap.putIfAbsent(ConstModel.default_label + "." + k,
+                new MetaColData(this.tableName, ConstModel.default_label + "." + k, this)));
+          }
+        }
       }
     })).join();
     log.info("fill cols with labels, rows={}, cols={}", CollectionUtils.size(rows),

@@ -5,6 +5,7 @@
 package io.holoinsight.server.meta.core.service.bitmap;
 
 import com.googlecode.javaewah.EWAHCompressedBitmap;
+import io.holoinsight.server.meta.common.util.ConstModel;
 import io.holoinsight.server.meta.core.common.DimForkJoinPool;
 import lombok.Getter;
 import lombok.Setter;
@@ -58,21 +59,21 @@ public class MetaColData {
   }
 
   public int getCount() {
-    if (loaded.get() == false) {
+    if (!loaded.get()) {
       this.lazyLoad();
     }
     return this.valSizeCounter.get();
   }
 
   public EWAHCompressedBitmap getBitmap(Object val) {
-    if (loaded.get() == false) {
+    if (!loaded.get()) {
       this.lazyLoad();
     }
     return this.val2BitMap.get(val);
   }
 
   public EWAHCompressedBitmap getBitmapOrDefault(Object val, EWAHCompressedBitmap defaultBitmap) {
-    if (loaded.get() == false) {
+    if (!loaded.get()) {
       this.lazyLoad();
     }
     return this.val2BitMap.getOrDefault(val, defaultBitmap);
@@ -105,9 +106,9 @@ public class MetaColData {
    * 懒加载
    */
   public void lazyLoad() {
-    if (loaded.get() == false) {
+    if (!loaded.get()) {
       synchronized (metaData) {
-        if (loaded.get() == false) {
+        if (!loaded.get()) {
           StopWatch stopWatch = StopWatch.createStarted();
           log.info(
               "MetaColData lazy load start, table={}, col={}, size={}, logSize={}, valSize={}.",
@@ -129,9 +130,19 @@ public class MetaColData {
    *
    * @param changeLogs
    */
+  @SuppressWarnings("unchecked")
   public void appendLogs(List<MetaDataRow> changeLogs) {
     changeLogs.forEach(changeLog -> {
-      Object changeColVal = changeLog.getValues().get(colName);
+      Object changeColVal = null;
+      if (colName.startsWith(ConstModel.default_label + ".")) {
+        Object labels = changeLog.getValues().get(ConstModel.default_label);
+        if (labels instanceof Map<?, ?>) {
+          String labelCol = colName.substring(ConstModel.default_label.length() + 1);
+          changeColVal = ((Map<String, Object>) labels).get(labelCol);
+        }
+      } else {
+        changeColVal = changeLog.getValues().get(colName);
+      }
       if (changeColVal == null) {
         changeColVal = "null";
       }
