@@ -50,9 +50,6 @@ public class AlarmDingDingRobotFacadeImpl extends BaseFacade {
   @Autowired
   private UserOpLogService userOpLogService;
 
-  @Autowired
-  private RequestContextAdapter requestContextAdapter;
-
   @LevelAuthorizationAccess(paramConfigs = {"PARAMETER" + ":$!alarmDingDingRobotDTO"},
       levelAuthorizationCheckeClass = "io.holoinsight.server.home.web.security.custom.AlarmDingDingRobotFacadeImplChecker")
   @PostMapping("/create")

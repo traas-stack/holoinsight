@@ -18,10 +18,12 @@ import java.util.regex.Pattern;
  */
 public class ParaCheckUtil {
 
+  private static Pattern PATTERN_CN_SQL =
+      Pattern.compile("^[\\u00b7A-Za-z0-9\\u4e00-\\u9fa5\\u3000-\\u303f\\uFF0C\\-_ ,|:\\.]*$");
   private static Pattern PATTERN_SQL =
-      Pattern.compile("^[\\u00b7A-Za-z0-9\\u4e00-\\u9fa5\\-_ ,\\.]*$");
+      Pattern.compile("^[\\u00b7A-Za-z0-9\\u4e00-\\u9fa5\\-_ ,|:\\.]*$");
   private static Pattern PATTERN_STRICT_SQL =
-      Pattern.compile("^[\\u00b7A-Za-z0-9\\u4e00-\\u9fa5\\-_, |:\\.]*$");
+      Pattern.compile("^[\\u00b7A-Za-z0-9\\u4e00-\\u9fa5\\-_,|\\.]*$");
 
   private static Pattern uniCodePattern = Pattern.compile("\\\\u[0-9a-f]{4}");
 
@@ -36,6 +38,17 @@ public class ParaCheckUtil {
 
   public static boolean sqlNameCheck(String param) {
     Matcher commonAllowed = PATTERN_SQL.matcher(param);
+    if (commonAllowed.find()) {
+      if (!unicodeCheck(param)) {
+        return false;
+      }
+      return true;
+    }
+    return false;
+  }
+
+  public static boolean sqlCnNameCheck(String param) {
+    Matcher commonAllowed = PATTERN_CN_SQL.matcher(param);
     if (commonAllowed.find()) {
       if (!unicodeCheck(param)) {
         return false;

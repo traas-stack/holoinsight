@@ -4,34 +4,38 @@
 package io.holoinsight.server.home.web.security.custom;
 
 import io.holoinsight.server.home.web.security.LevelAuthorizationCheck;
+import io.holoinsight.server.home.web.security.LevelAuthorizationCheckResult;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.util.CollectionUtils;
 
 import java.util.List;
 
+import static io.holoinsight.server.home.web.security.LevelAuthorizationCheckResult.failCheckResult;
+import static io.holoinsight.server.home.web.security.LevelAuthorizationCheckResult.successCheckResult;
+
 /**
  * @author masaimu
  * @version 2024-02-07 17:29:00
  */
-@Slf4j
-public abstract class AbstractResourceChecker implements LevelAuthorizationCheck {
+public interface AbstractResourceChecker {
 
-  protected boolean checkIdNotNull(List<String> parameters) {
+  default LevelAuthorizationCheckResult checkIdNotNull(List<String> parameters) {
     if (CollectionUtils.isEmpty(parameters) || !StringUtils.isNumeric(parameters.get(0))) {
-      log.error("parameters {} is empty or is not numeric.", parameters);
-      return false;
+      return failCheckResult("parameters %s is empty or is not numeric.", parameters);
     }
-    return true;
+    return successCheckResult();
   }
 
-  protected boolean checkIdExists(List<String> parameters, String tenant, String workspace) {
-    if (!checkIdNotNull(parameters)) {
-      return false;
+  default LevelAuthorizationCheckResult checkIdExists(List<String> parameters, String tenant,
+      String workspace) {
+    LevelAuthorizationCheckResult checkResult = checkIdNotNull(parameters);
+    if (!checkResult.isSuccess()) {
+      return checkResult;
     }
     Long id = Long.parseLong(parameters.get(0));
     return checkIdExists(id, tenant, workspace);
   }
 
-  abstract boolean checkIdExists(Long id, String tenant, String workspace);
+  LevelAuthorizationCheckResult checkIdExists(Long id, String tenant, String workspace);
 }

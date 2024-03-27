@@ -7,6 +7,7 @@ import io.holoinsight.server.common.J;
 import io.holoinsight.server.common.JsonResult;
 import io.holoinsight.server.home.biz.service.AlertBlockService;
 import io.holoinsight.server.home.biz.service.UserOpLogService;
+import io.holoinsight.server.home.common.util.ManageCallback;
 import io.holoinsight.server.home.common.util.scope.AuthTargetType;
 import io.holoinsight.server.home.common.util.scope.MonitorScope;
 import io.holoinsight.server.home.common.util.scope.MonitorUser;
@@ -16,10 +17,9 @@ import io.holoinsight.server.home.dal.model.OpType;
 import io.holoinsight.server.home.dal.model.dto.AlarmBlockDTO;
 import io.holoinsight.server.home.facade.page.MonitorPageRequest;
 import io.holoinsight.server.home.facade.page.MonitorPageResult;
-import io.holoinsight.server.home.common.util.ManageCallback;
 import io.holoinsight.server.home.web.common.ParaCheckUtil;
-import io.holoinsight.server.home.web.common.SecurityResource;
 import io.holoinsight.server.home.web.interceptor.MonitorScopeAuth;
+import io.holoinsight.server.home.web.security.LevelAuthorizationAccess;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -32,9 +32,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Date;
-
-import static io.holoinsight.server.home.facade.utils.SecurityMethodCategory.create;
-import static io.holoinsight.server.home.facade.utils.SecurityMethodCategory.update;
 
 /**
  * @author wangsiyuan
@@ -50,37 +47,38 @@ public class AlarmBlockFacadeImpl extends BaseFacade {
   @Autowired
   private UserOpLogService userOpLogService;
 
+  @LevelAuthorizationAccess(paramConfigs = {"PARAMETER" + ":$!alarmBlockDTO"},
+      levelAuthorizationCheckeClass = "io.holoinsight.server.home.web.security.custom.AlarmBlockFacadeImplChecker")
   @PostMapping("/create")
   @ResponseBody
   @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.EDIT)
-  public JsonResult<Long> save(@RequestBody @SecurityResource(create) AlarmBlockDTO alarmBlockDTO) {
+  public JsonResult<Long> save(@RequestBody AlarmBlockDTO alarmBlockDTO) {
     final JsonResult<Long> result = new JsonResult<>();
     facadeTemplate.manage(result, new ManageCallback() {
       @Override
-      public void checkParameter() {
-        check(alarmBlockDTO);
-      }
+      public void checkParameter() {}
 
       @Override
       public void doManage() {
-        MonitorScope ms = RequestContext.getContext().ms;
+        String tenant = tenant();
+        String workspace = workspace();
         MonitorUser mu = RequestContext.getContext().mu;
         if (null != mu) {
           alarmBlockDTO.setCreator(mu.getLoginName());
         }
-        if (null != ms && !StringUtils.isEmpty(ms.tenant)) {
-          alarmBlockDTO.setTenant(ms.tenant);
+        if (StringUtils.isNotEmpty(tenant)) {
+          alarmBlockDTO.setTenant(tenant);
         }
 
-        if (null != ms && !StringUtils.isEmpty(ms.workspace)) {
-          alarmBlockDTO.setWorkspace(ms.workspace);
+        if (StringUtils.isNotEmpty(workspace)) {
+          alarmBlockDTO.setWorkspace(workspace);
         }
         alarmBlockDTO.setGmtCreate(new Date());
         alarmBlockDTO.setGmtModified(new Date());
         Long id = alarmBlockService.save(alarmBlockDTO);
 
-        userOpLogService.append("alarm_block", id, OpType.CREATE, mu.getLoginName(), ms.getTenant(),
-            ms.getWorkspace(), J.toJson(alarmBlockDTO), null, null, "alarm_block_create");
+        userOpLogService.append("alarm_block", id, OpType.CREATE, mu.getLoginName(), tenant,
+            workspace, J.toJson(alarmBlockDTO), null, null, "alarm_block_create");
 
         JsonResult.createSuccessResult(result, id);
       }
@@ -89,37 +87,36 @@ public class AlarmBlockFacadeImpl extends BaseFacade {
     return result;
   }
 
+  @LevelAuthorizationAccess(paramConfigs = {"PARAMETER" + ":$!alarmBlockDTO"},
+      levelAuthorizationCheckeClass = "io.holoinsight.server.home.web.security.custom.AlarmBlockFacadeImplChecker")
   @PostMapping("/update")
   @ResponseBody
   @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.EDIT)
-  public JsonResult<Boolean> update(
-      @RequestBody @SecurityResource(update) AlarmBlockDTO alarmBlockDTO) {
+  public JsonResult<Boolean> update(@RequestBody AlarmBlockDTO alarmBlockDTO) {
     final JsonResult<Boolean> result = new JsonResult<>();
     facadeTemplate.manage(result, new ManageCallback() {
       @Override
-      public void checkParameter() {
-        check(alarmBlockDTO);
-      }
+      public void checkParameter() {}
 
       @Override
       public void doManage() {
-        MonitorScope ms = RequestContext.getContext().ms;
-        AlarmBlockDTO item =
-            alarmBlockService.queryById(alarmBlockDTO.getId(), ms.getTenant(), ms.getWorkspace());
+        String tenant = tenant();
+        String workspace = workspace();
+        AlarmBlockDTO item = alarmBlockService.queryById(alarmBlockDTO.getId(), tenant, workspace);
 
         MonitorUser mu = RequestContext.getContext().mu;
         if (null != mu) {
           alarmBlockDTO.setModifier(mu.getLoginName());
         }
 
-        if (StringUtils.isNotBlank(ms.getWorkspace())) {
-          alarmBlockDTO.setWorkspace(ms.getWorkspace());
+        if (StringUtils.isNotEmpty(workspace)) {
+          alarmBlockDTO.setWorkspace(workspace);
         }
         alarmBlockDTO.setGmtModified(new Date());
         boolean save = alarmBlockService.updateById(alarmBlockDTO);
         userOpLogService.append("alarm_block", item.getId(), OpType.UPDATE,
-            RequestContext.getContext().mu.getLoginName(), ms.getTenant(), ms.getWorkspace(),
-            J.toJson(item), J.toJson(alarmBlockDTO), null, "alarm_block_update");
+            RequestContext.getContext().mu.getLoginName(), tenant, workspace, J.toJson(item),
+            J.toJson(alarmBlockDTO), null, "alarm_block_update");
 
         JsonResult.createSuccessResult(result, save);
       }
@@ -128,6 +125,8 @@ public class AlarmBlockFacadeImpl extends BaseFacade {
     return result;
   }
 
+  @LevelAuthorizationAccess(paramConfigs = {"PARAMETER" + ":$!id"},
+      levelAuthorizationCheckeClass = "io.holoinsight.server.home.web.security.custom.AlarmBlockFacadeImplChecker")
   @GetMapping("/query/{id}")
   @ResponseBody
   @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.VIEW)
@@ -135,14 +134,13 @@ public class AlarmBlockFacadeImpl extends BaseFacade {
     final JsonResult<AlarmBlockDTO> result = new JsonResult<>();
     facadeTemplate.manage(result, new ManageCallback() {
       @Override
-      public void checkParameter() {
-        ParaCheckUtil.checkParaNotNull(id, "id");
-      }
+      public void checkParameter() {}
 
       @Override
       public void doManage() {
-        MonitorScope ms = RequestContext.getContext().ms;
-        AlarmBlockDTO save = alarmBlockService.queryById(id, ms.getTenant(), ms.getWorkspace());
+        String tenant = tenant();
+        String workspace = workspace();
+        AlarmBlockDTO save = alarmBlockService.queryById(id, tenant, workspace);
         JsonResult.createSuccessResult(result, save);
       }
     });
@@ -150,28 +148,28 @@ public class AlarmBlockFacadeImpl extends BaseFacade {
     return result;
   }
 
+  @LevelAuthorizationAccess(paramConfigs = {"PARAMETER" + ":$!id"},
+      levelAuthorizationCheckeClass = "io.holoinsight.server.home.web.security.custom.AlarmBlockFacadeImplChecker")
   @DeleteMapping(value = "/delete/{id}")
   @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.EDIT)
   public JsonResult<Boolean> deleteById(@PathVariable("id") Long id) {
     final JsonResult<Boolean> result = new JsonResult<>();
     facadeTemplate.manage(result, new ManageCallback() {
       @Override
-      public void checkParameter() {
-        ParaCheckUtil.checkParaNotNull(id, "id");
-      }
+      public void checkParameter() {}
 
       @Override
       public void doManage() {
         boolean rtn = false;
-        MonitorScope ms = RequestContext.getContext().ms;
-        AlarmBlockDTO alarmBlockDTO =
-            alarmBlockService.queryById(id, ms.getTenant(), ms.getWorkspace());
+        String tenant = tenant();
+        String workspace = workspace();
+        AlarmBlockDTO alarmBlockDTO = alarmBlockService.queryById(id, tenant, workspace);
         if (alarmBlockDTO != null) {
           rtn = alarmBlockService.removeById(id);
         }
 
         userOpLogService.append("alarm_block", id, OpType.DELETE,
-            RequestContext.getContext().mu.getLoginName(), ms.getTenant(), ms.getWorkspace(),
+            RequestContext.getContext().mu.getLoginName(), tenant, workspace,
             J.toJson(alarmBlockDTO), null, null, "alarm_block_delete");
 
         JsonResult.createSuccessResult(result, rtn);
@@ -180,6 +178,8 @@ public class AlarmBlockFacadeImpl extends BaseFacade {
     return result;
   }
 
+  @LevelAuthorizationAccess(paramConfigs = {"PARAMETER" + ":$!pageRequest"},
+      levelAuthorizationCheckeClass = "io.holoinsight.server.home.web.security.custom.AlarmBlockFacadeImplChecker")
   @PostMapping("/pageQuery")
   @ResponseBody
   @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.VIEW)
@@ -188,18 +188,17 @@ public class AlarmBlockFacadeImpl extends BaseFacade {
     final JsonResult<MonitorPageResult<AlarmBlockDTO>> result = new JsonResult<>();
     facadeTemplate.manage(result, new ManageCallback() {
       @Override
-      public void checkParameter() {
-        ParaCheckUtil.checkParaNotNull(pageRequest.getTarget(), "target");
-      }
+      public void checkParameter() {}
 
       @Override
       public void doManage() {
-        MonitorScope ms = RequestContext.getContext().ms;
-        if (null != ms && !StringUtils.isEmpty(ms.tenant)) {
-          pageRequest.getTarget().setTenant(ms.tenant);
+        String tenant = tenant();
+        String workspace = workspace();
+        if (StringUtils.isNotEmpty(tenant)) {
+          pageRequest.getTarget().setTenant(tenant);
         }
-        if (null != ms && !StringUtils.isEmpty(ms.workspace)) {
-          pageRequest.getTarget().setWorkspace(ms.workspace);
+        if (StringUtils.isNotEmpty(workspace)) {
+          pageRequest.getTarget().setWorkspace(workspace);
         }
         JsonResult.createSuccessResult(result, alarmBlockService.getListByPage(pageRequest));
       }
@@ -208,6 +207,8 @@ public class AlarmBlockFacadeImpl extends BaseFacade {
     return result;
   }
 
+  @LevelAuthorizationAccess(paramConfigs = {"PARAMETER" + ":$!ruleId"},
+      levelAuthorizationCheckeClass = "io.holoinsight.server.home.web.security.custom.AlarmBlockFacadeImplChecker")
   @GetMapping("/queryByRuleId/{ruleId}")
   @ResponseBody
   @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.VIEW)
@@ -215,15 +216,11 @@ public class AlarmBlockFacadeImpl extends BaseFacade {
     final JsonResult<AlarmBlockDTO> result = new JsonResult<>();
     facadeTemplate.manage(result, new ManageCallback() {
       @Override
-      public void checkParameter() {
-        ParaCheckUtil.checkParaNotNull(ruleId, "ruleId");
-      }
+      public void checkParameter() {}
 
       @Override
       public void doManage() {
-        MonitorScope ms = RequestContext.getContext().ms;
-        AlarmBlockDTO save =
-            alarmBlockService.queryByRuleId(ruleId, ms.getTenant(), ms.getWorkspace());
+        AlarmBlockDTO save = alarmBlockService.queryByRuleId(ruleId, tenant(), workspace());
         JsonResult.createSuccessResult(result, save);
       }
     });

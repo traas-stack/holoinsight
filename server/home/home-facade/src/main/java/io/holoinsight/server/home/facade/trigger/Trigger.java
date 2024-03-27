@@ -45,8 +45,6 @@ public class Trigger {
   // compare config list
   private List<CompareConfig> compareConfigs;
 
-  private String triggerId;
-
   // ai alert config
   private RuleConfig ruleConfig;
 

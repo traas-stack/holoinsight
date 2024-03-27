@@ -75,6 +75,7 @@ public class AlertRuleIT extends BaseIT {
         .body(new JSONObject(J.toMap(J.toJson(alarmRuleDTO)))) //
         .when() //
         .post("/webapi/alarmRule/create") //
+        .prettyPeek() //
         .then() //
         .body("success", IS_TRUE) //
         .body("data", Matchers.any(Number.class)) //
@@ -114,6 +115,7 @@ public class AlertRuleIT extends BaseIT {
         .body(new JSONObject(J.toMap(J.toJson(alarmRuleDTO)))) //
         .when() //
         .post("/webapi/alarmRule/create") //
+        .prettyPeek() //
         .then() //
         .body("success", IS_TRUE) //
         .body("data", Matchers.any(Number.class)) //
@@ -157,9 +159,10 @@ public class AlertRuleIT extends BaseIT {
         .body(new JSONObject(J.toMap(J.toJson(alarmRuleDTO)))) //
         .when() //
         .post("/webapi/alarmRule/create") //
+        .prettyPeek() //
         .then() //
         .body("success", IS_FALSE) //
-        .body("message", startsWith("API_SECURITY"));
+        .body("message", startsWith("SecurityCheckFailed"));
 
     invalidRuleName = name + "<a href=http://www.baidu.com>点击查看详情</a>";
     alarmRuleDTO = new AlarmRuleDTO();
@@ -170,9 +173,10 @@ public class AlertRuleIT extends BaseIT {
         .body(new JSONObject(J.toMap(J.toJson(alarmRuleDTO)))) //
         .when() //
         .post("/webapi/alarmRule/update") //
+        .prettyPeek() //
         .then() //
         .body("success", IS_FALSE) //
-        .body("message", startsWith("API_SECURITY"));
+        .body("message", startsWith("SecurityCheckFailed"));
     Response response = queryAlertRule.get();
     System.out.println(response.body().print());
     response //
@@ -194,6 +198,7 @@ public class AlertRuleIT extends BaseIT {
         .body(new JSONObject(J.toMap(J.toJson(alarmRuleDTO)))) //
         .when() //
         .post("/webapi/alarmRule/update") //
+        .prettyPeek() //
         .then() //
         .body("success", IS_TRUE) //
         .body("data", IS_TRUE);
@@ -216,8 +221,7 @@ public class AlertRuleIT extends BaseIT {
     System.out.println(response.body().print());
     response //
         .then() //
-        .body("success", IS_TRUE) //
-        .body("data", IS_NULL);
+        .body("success", IS_FALSE);
   }
 
   @Order(6)
@@ -229,6 +233,7 @@ public class AlertRuleIT extends BaseIT {
           .body(new JSONObject(J.toMap(J.toJson(buildAlarmRule("hit_rule_" + i))))) //
           .when() //
           .post("/webapi/alarmRule/create") //
+          .prettyPeek() //
           .then() //
           .body("success", IS_TRUE) //
           .extract() //
@@ -240,6 +245,7 @@ public class AlertRuleIT extends BaseIT {
           .body(new JSONObject(J.toMap(J.toJson(buildAlarmRule("miss_rule_" + i))))) //
           .when() //
           .post("/webapi/alarmRule/create") //
+          .prettyPeek() //
           .then() //
           .body("success", IS_TRUE);
     }
@@ -253,6 +259,7 @@ public class AlertRuleIT extends BaseIT {
         .body(new JSONObject(J.toMap(J.toJson(pageRequest)))) //
         .when() //
         .post("/webapi/alarmRule/pageQuery") //
+        .prettyPeek() //
         .then() //
         .body("success", IS_TRUE) //
         .root("data")
@@ -274,6 +281,7 @@ public class AlertRuleIT extends BaseIT {
         .body(new JSONObject(J.toMap(J.toJson(buildAlarmRule("notification"))))) //
         .when() //
         .post("/webapi/alarmRule/create") //
+        .prettyPeek() //
         .then() //
         .body("success", IS_TRUE) //
         .body("data", Matchers.any(Number.class)) //
@@ -310,6 +318,7 @@ public class AlertRuleIT extends BaseIT {
               .body(new JSONObject(J.toMap(J.toJson(detailPageRequest)))) //
               .when() //
               .post("/webapi/alarmHistoryDetail/countTrend") //
+              .prettyPeek() //
               .then() //
               .body("success", IS_TRUE) //
               .root("data") //
@@ -415,7 +424,7 @@ public class AlertRuleIT extends BaseIT {
     dataSource.setName("a");
     dataSource.setAggregator("avg");
     dataSource.setDownsample("1m-avg");
-    dataSource.setGroupBy(Arrays.asList("hostname"));
+    // dataSource.setGroupBy(Arrays.asList("hostname"));
     dataSource.setFilters(Collections.singletonList(filter));
     return dataSource;
   }

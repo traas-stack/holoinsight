@@ -76,4 +76,9 @@ public class RequestContextAdapterImpl implements RequestContextAdapter {
   public String getWorkspaceFromContext(RequestContext.Context context) {
     return context.ms.workspace;
   }
+
+  @Override
+  public String getSimpleWorkspaceFromContext(RequestContext.Context context) {
+    return getWorkspaceFromContext(context);
+  }
 }

@@ -10,6 +10,6 @@ package io.holoinsight.server.home.web.security;
 public class LevelAuthorizationCheckException extends RuntimeException {
 
   public LevelAuthorizationCheckException(String message) {
-    super("SecurityCheckFailed:" + message);
+    super("SecurityCheckFailed: " + message);
   }
 }

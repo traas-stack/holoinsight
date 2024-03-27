@@ -13,11 +13,10 @@ import io.holoinsight.server.home.biz.service.AlertGroupService;
 import io.holoinsight.server.home.biz.service.AlertRuleService;
 import io.holoinsight.server.home.biz.service.AlertSubscribeService;
 import io.holoinsight.server.home.biz.service.UserOpLogService;
-import io.holoinsight.server.home.common.service.RequestContextAdapter;
+import io.holoinsight.server.home.common.util.ManageCallback;
 import io.holoinsight.server.home.common.util.MonitorException;
 import io.holoinsight.server.home.common.util.scope.AuthTargetType;
 import io.holoinsight.server.home.common.util.scope.MonitorCookieUtil;
-import io.holoinsight.server.home.common.util.scope.MonitorScope;
 import io.holoinsight.server.home.common.util.scope.MonitorUser;
 import io.holoinsight.server.home.common.util.scope.PowerConstants;
 import io.holoinsight.server.home.common.util.scope.RequestContext;
@@ -33,13 +32,8 @@ import io.holoinsight.server.home.facade.AlarmHistoryDTO;
 import io.holoinsight.server.home.facade.AlarmRuleDTO;
 import io.holoinsight.server.home.facade.page.MonitorPageRequest;
 import io.holoinsight.server.home.facade.page.MonitorPageResult;
-import io.holoinsight.server.home.common.util.ManageCallback;
-import io.holoinsight.server.home.web.common.ParaCheckUtil;
-import io.holoinsight.server.home.web.common.SecurityResource;
 import io.holoinsight.server.home.web.interceptor.MonitorScopeAuth;
-import io.holoinsight.server.home.web.security.CheckTypeEnum;
 import io.holoinsight.server.home.web.security.LevelAuthorizationAccess;
-import io.holoinsight.server.home.web.security.ParameterSecurityService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -64,8 +58,6 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import static io.holoinsight.server.home.facade.AlarmRuleDTO.tryParseLink;
-import static io.holoinsight.server.home.facade.utils.SecurityMethodCategory.create;
-import static io.holoinsight.server.home.facade.utils.SecurityMethodCategory.update;
 
 /**
  * @author wangsiyuan
@@ -96,41 +88,33 @@ public class AlarmRuleFacadeImpl extends BaseFacade {
   @Resource
   protected AlarmRuleConverter alarmRuleConverter;
 
-  @Autowired
-  private RequestContextAdapter requestContextAdapter;
-
-  @Autowired
-  private ParameterSecurityService parameterSecurityService;
-
   @Value("${holoinsight.home.domain}")
   private String domain;
 
   @LevelAuthorizationAccess(paramConfigs = {"PARAMETER" + ":$!alarmRuleDTO"},
-      contentContainer = "CUSTOM", checkType = CheckTypeEnum.CUSTOMCHECK,
       levelAuthorizationCheckeClass = "io.holoinsight.server.home.web.security.custom.AlarmRuleLevelAuthorizationChecker")
   @PostMapping("/create")
   @ResponseBody
   @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.EDIT)
-  public JsonResult<Long> save(@RequestBody @SecurityResource(create) AlarmRuleDTO alarmRuleDTO) {
+  public JsonResult<Long> create(@RequestBody AlarmRuleDTO alarmRuleDTO) {
     final JsonResult<Long> result = new JsonResult<>();
     facadeTemplate.manage(result, new ManageCallback() {
       @Override
-      public void checkParameter() {
-        check(alarmRuleDTO);
-      }
+      public void checkParameter() {}
 
       @Override
       public void doManage() {
-        MonitorScope ms = RequestContext.getContext().ms;
+        String tenant = tenant();
+        String workspace = workspace();
         MonitorUser mu = RequestContext.getContext().mu;
         if (null != mu && StringUtils.isBlank(alarmRuleDTO.getCreator())) {
           alarmRuleDTO.setCreator(mu.getLoginName());
         }
-        if (null != ms && !StringUtils.isEmpty(ms.tenant)) {
-          alarmRuleDTO.setTenant(ms.tenant);
+        if (StringUtils.isNotEmpty(tenant)) {
+          alarmRuleDTO.setTenant(tenant);
         }
-        if (null != ms && !StringUtils.isEmpty(ms.workspace)) {
-          alarmRuleDTO.setWorkspace(ms.workspace);
+        if (StringUtils.isNotEmpty(workspace)) {
+          alarmRuleDTO.setWorkspace(workspace);
         }
         alarmRuleDTO.setGmtCreate(new Date());
         alarmRuleDTO.setGmtModified(new Date());
@@ -143,8 +127,8 @@ public class AlarmRuleFacadeImpl extends BaseFacade {
         }
         Long id = alarmRuleService.save(alarmRuleDTO);
 
-        userOpLogService.append("alarm_rule", id, OpType.CREATE, mu.getLoginName(), ms.getTenant(),
-            ms.getWorkspace(), J.toJson(alarmRuleDTO), null, null, "alarm_rule_create");
+        userOpLogService.append("alarm_rule", id, OpType.CREATE, mu.getLoginName(), tenant,
+            workspace, J.toJson(alarmRuleDTO), null, null, "alarm_rule_create");
         JsonResult.createSuccessResult(result, id);
       }
     });
@@ -167,26 +151,21 @@ public class AlarmRuleFacadeImpl extends BaseFacade {
   }
 
   @LevelAuthorizationAccess(paramConfigs = {"PARAMETER" + ":$!alarmRuleDTO"},
-      contentContainer = "CUSTOM", checkType = CheckTypeEnum.CUSTOMCHECK,
-      levelAuthorizationCheckeClass = "io.holoinsight.server.home.web.security.custom.AlarmRuleLevelAuthorizationChecker",
-      contentTargetCollectClass = "")
+      levelAuthorizationCheckeClass = "io.holoinsight.server.home.web.security.custom.AlarmRuleLevelAuthorizationChecker")
   @PostMapping("/update")
   @ResponseBody
   @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.EDIT)
-  public JsonResult<Boolean> update(
-      @RequestBody @SecurityResource(update) AlarmRuleDTO alarmRuleDTO) {
+  public JsonResult<Boolean> update(@RequestBody AlarmRuleDTO alarmRuleDTO) {
     final JsonResult<Boolean> result = new JsonResult<>();
     facadeTemplate.manage(result, new ManageCallback() {
       @Override
-      public void checkParameter() {
-        check(alarmRuleDTO);
-      }
+      public void checkParameter() {}
 
       @Override
       public void doManage() {
-        MonitorScope ms = RequestContext.getContext().ms;
-        AlarmRuleDTO item =
-            alarmRuleService.queryById(alarmRuleDTO.getId(), ms.getTenant(), ms.getWorkspace());
+        String tenant = tenant();
+        String workspace = workspace();
+        AlarmRuleDTO item = alarmRuleService.queryById(alarmRuleDTO.getId(), tenant, workspace);
 
         if (null == item) {
           throw new MonitorException("cannot find record: " + alarmRuleDTO.getId());
@@ -201,8 +180,8 @@ public class AlarmRuleFacadeImpl extends BaseFacade {
         boolean save = alarmRuleService.updateById(alarmRuleDTO);
 
         userOpLogService.append("alarm_rule", alarmRuleDTO.getId(), OpType.UPDATE,
-            RequestContext.getContext().mu.getLoginName(), ms.getTenant(), ms.getWorkspace(),
-            J.toJson(item), J.toJson(alarmRuleDTO), null, "alarm_rule_update");
+            RequestContext.getContext().mu.getLoginName(), tenant, workspace, J.toJson(item),
+            J.toJson(alarmRuleDTO), null, "alarm_rule_update");
 
         JsonResult.createSuccessResult(result, save);
       }
@@ -211,6 +190,8 @@ public class AlarmRuleFacadeImpl extends BaseFacade {
     return result;
   }
 
+  @LevelAuthorizationAccess(paramConfigs = {"PARAMETER" + ":$!id"},
+      levelAuthorizationCheckeClass = "io.holoinsight.server.home.web.security.custom.AlarmRuleLevelAuthorizationChecker")
   @GetMapping("/query/{id}")
   @ResponseBody
   @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.VIEW)
@@ -218,14 +199,13 @@ public class AlarmRuleFacadeImpl extends BaseFacade {
     final JsonResult<AlarmRuleDTO> result = new JsonResult<>();
     facadeTemplate.manage(result, new ManageCallback() {
       @Override
-      public void checkParameter() {
-        ParaCheckUtil.checkParaNotNull(id, "id");
-      }
+      public void checkParameter() {}
 
       @Override
       public void doManage() {
-        MonitorScope ms = RequestContext.getContext().ms;
-        AlarmRuleDTO save = alarmRuleService.queryById(id, ms.getTenant(), ms.getWorkspace());
+        String tenant = tenant();
+        String workspace = workspace();
+        AlarmRuleDTO save = alarmRuleService.queryById(id, tenant, workspace);
         JsonResult.createSuccessResult(result, save);
       }
     });
@@ -233,6 +213,8 @@ public class AlarmRuleFacadeImpl extends BaseFacade {
     return result;
   }
 
+  @LevelAuthorizationAccess(paramConfigs = {"PARAMETER" + ":$!ids"},
+      levelAuthorizationCheckeClass = "io.holoinsight.server.home.web.security.custom.AlarmRuleLevelAuthorizationChecker")
   @GetMapping("/queryByIds/{ids}")
   @ResponseBody
   @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.VIEW)
@@ -240,18 +222,17 @@ public class AlarmRuleFacadeImpl extends BaseFacade {
     final JsonResult<List<AlarmRuleDTO>> result = new JsonResult<>();
     facadeTemplate.manage(result, new ManageCallback() {
       @Override
-      public void checkParameter() {
-        ParaCheckUtil.checkParaNotNull(ids, "ids");
-      }
+      public void checkParameter() {}
 
       @Override
       public void doManage() {
-        MonitorScope ms = RequestContext.getContext().ms;
+        String tenant = tenant();
+        String workspace = workspace();
         List<AlarmRuleDTO> alarmRuleDTOS = new ArrayList<>();
         String[] idArray = StringUtils.split(ids, ",");
         for (String id : idArray) {
           AlarmRuleDTO alarmRuleDTO =
-              alarmRuleService.queryById(Long.parseLong(id), ms.getTenant(), ms.getWorkspace());
+              alarmRuleService.queryById(Long.parseLong(id), tenant, workspace);
           if (null == alarmRuleDTO)
             continue;
           alarmRuleDTOS.add(alarmRuleDTO);
@@ -263,28 +244,29 @@ public class AlarmRuleFacadeImpl extends BaseFacade {
     return result;
   }
 
+  @LevelAuthorizationAccess(paramConfigs = {"PARAMETER" + ":$!id"},
+      levelAuthorizationCheckeClass = "io.holoinsight.server.home.web.security.custom.AlarmRuleLevelAuthorizationChecker")
   @DeleteMapping(value = "/delete/{id}")
   @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.EDIT)
   public JsonResult<Boolean> deleteById(@PathVariable("id") Long id) {
     final JsonResult<Boolean> result = new JsonResult<>();
     facadeTemplate.manage(result, new ManageCallback() {
       @Override
-      public void checkParameter() {
-        ParaCheckUtil.checkParaNotNull(id, "id");
-      }
+      public void checkParameter() {}
 
       @Override
       public void doManage() {
-        MonitorScope ms = RequestContext.getContext().ms;
+        String tenant = tenant();
+        String workspace = workspace();
         boolean rtn = false;
-        AlarmRuleDTO alarmRule = alarmRuleService.queryById(id, ms.getTenant(), ms.getWorkspace());
+        AlarmRuleDTO alarmRule = alarmRuleService.queryById(id, tenant, workspace);
         if (alarmRule != null) {
           rtn = alarmRuleService.deleteById(id);
         }
 
         userOpLogService.append("alarm_rule", id, OpType.DELETE,
-            RequestContext.getContext().mu.getLoginName(), ms.getTenant(), ms.getWorkspace(),
-            J.toJson(alarmRule), null, null, "alarm_rule_delete");
+            RequestContext.getContext().mu.getLoginName(), tenant, workspace, J.toJson(alarmRule),
+            null, null, "alarm_rule_delete");
 
         JsonResult.createSuccessResult(result, rtn);
       }
@@ -292,6 +274,8 @@ public class AlarmRuleFacadeImpl extends BaseFacade {
     return result;
   }
 
+  @LevelAuthorizationAccess(paramConfigs = {"PARAMETER" + ":$!pageRequest"},
+      levelAuthorizationCheckeClass = "io.holoinsight.server.home.web.security.custom.AlarmRuleLevelAuthorizationChecker")
   @PostMapping("/pageQuery")
   @ResponseBody
   @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.VIEW)
@@ -300,18 +284,17 @@ public class AlarmRuleFacadeImpl extends BaseFacade {
     final JsonResult<MonitorPageResult<AlarmRuleDTO>> result = new JsonResult<>();
     facadeTemplate.manage(result, new ManageCallback() {
       @Override
-      public void checkParameter() {
-        ParaCheckUtil.checkParaNotNull(pageRequest.getTarget(), "target");
-      }
+      public void checkParameter() {}
 
       @Override
       public void doManage() {
-        MonitorScope ms = RequestContext.getContext().ms;
-        if (null != ms && !StringUtils.isEmpty(ms.tenant)) {
-          pageRequest.getTarget().setTenant(ms.tenant);
+        String tenant = tenant();
+        String workspace = workspace();
+        if (StringUtils.isNotEmpty(tenant)) {
+          pageRequest.getTarget().setTenant(tenant);
         }
-        if (null != ms && !StringUtils.isEmpty(ms.workspace)) {
-          pageRequest.getTarget().setWorkspace(ms.workspace);
+        if (StringUtils.isNotEmpty(workspace)) {
+          pageRequest.getTarget().setWorkspace(workspace);
         }
         JsonResult.createSuccessResult(result, alarmRuleService.getListByPage(pageRequest));
       }
@@ -320,6 +303,8 @@ public class AlarmRuleFacadeImpl extends BaseFacade {
     return result;
   }
 
+  @LevelAuthorizationAccess(paramConfigs = {"PARAMETER" + ":$!req"},
+      levelAuthorizationCheckeClass = "io.holoinsight.server.home.web.security.custom.AlarmRuleLevelAuthorizationChecker")
   @GetMapping(value = "/querySubscribeList")
   @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.VIEW)
   public JsonResult<List<AlarmRuleDTO>> querySubscribeList(
@@ -331,17 +316,19 @@ public class AlarmRuleFacadeImpl extends BaseFacade {
 
       @Override
       public void doManage() {
+        String tenant = tenant();
+        String workspace = workspace();
         boolean myself = StringUtils.equals(req, "true");
         Map<Long, AlarmRuleDTO> map = new HashMap<>();
 
-        List<AlarmRuleDTO> byIds = getRuleListBySubscribe(myself);
+        List<AlarmRuleDTO> byIds = getRuleListBySubscribe(myself, tenant, workspace);
         if (!CollectionUtils.isEmpty(byIds)) {
           byIds.forEach(byId -> {
             map.put(byId.getId(), byId);
           });
         }
 
-        List<AlarmRuleDTO> byGroups = getRuleListByGroup(myself);
+        List<AlarmRuleDTO> byGroups = getRuleListByGroup(myself, tenant, workspace);
         if (!CollectionUtils.isEmpty(byGroups)) {
           byGroups.forEach(byGroup -> {
             map.put(byGroup.getId(), byGroup);
@@ -355,6 +342,8 @@ public class AlarmRuleFacadeImpl extends BaseFacade {
     return result;
   }
 
+  @LevelAuthorizationAccess(paramConfigs = {"PARAMETER" + ":$!req", "PARAMETER" + ":$!pageRequest"},
+      levelAuthorizationCheckeClass = "io.holoinsight.server.home.web.security.custom.AlarmRuleLevelAuthorizationChecker")
   @PostMapping(value = "/querySubAlarmHistory")
   @ResponseBody
   @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.VIEW)
@@ -364,35 +353,35 @@ public class AlarmRuleFacadeImpl extends BaseFacade {
     final JsonResult<MonitorPageResult<AlarmHistoryDTO>> result = new JsonResult<>();
     facadeTemplate.manage(result, new ManageCallback() {
       @Override
-      public void checkParameter() {
-        ParaCheckUtil.checkParaNotNull(pageRequest.getTarget(), "target");
-      }
+      public void checkParameter() {}
 
       @Override
       public void doManage() {
+        String tenant = tenant();
+        String workspace = workspace();
         boolean myself = StringUtils.equals(req, "true");
         List<AlarmRuleDTO> alarmRuleDTOS = new ArrayList<>();
 
-        List<AlarmRuleDTO> byIds = getRuleListBySubscribe(myself);
+        List<AlarmRuleDTO> byIds = getRuleListBySubscribe(myself, tenant, workspace);
         if (!CollectionUtils.isEmpty(byIds)) {
           alarmRuleDTOS.addAll(byIds);
         }
 
-        List<AlarmRuleDTO> byGroups = getRuleListByGroup(myself);
+        List<AlarmRuleDTO> byGroups = getRuleListByGroup(myself, tenant, workspace);
         if (!CollectionUtils.isEmpty(byGroups)) {
           alarmRuleDTOS.addAll(byGroups);
         }
 
-        if (CollectionUtils.isEmpty(alarmRuleDTOS))
+        if (CollectionUtils.isEmpty(alarmRuleDTOS)) {
           return;
-
-        MonitorScope ms = RequestContext.getContext().ms;
-        if (null != ms && !StringUtils.isEmpty(ms.tenant)) {
-          pageRequest.getTarget().setTenant(ms.tenant);
         }
 
-        if (null != ms && !StringUtils.isEmpty(ms.workspace)) {
-          pageRequest.getTarget().setWorkspace(ms.workspace);
+        if (StringUtils.isNotEmpty(tenant)) {
+          pageRequest.getTarget().setTenant(tenant);
+        }
+
+        if (StringUtils.isNotEmpty(workspace)) {
+          pageRequest.getTarget().setWorkspace(workspace);
         }
 
         List<String> uniqueIds = alarmRuleDTOS.stream()
@@ -409,8 +398,7 @@ public class AlarmRuleFacadeImpl extends BaseFacade {
     return result;
   }
 
-  protected List<AlarmRuleDTO> getRuleListByGroup(boolean myself) {
-    RequestContext.getContext();
+  protected List<AlarmRuleDTO> getRuleListByGroup(boolean myself, String tenant, String workspace) {
     String userId = RequestContext.getContext().mu.getUserId();
     List<AlarmGroupDTO> listByUserLike =
         alarmGroupService.getListByUserLike(userId, MonitorCookieUtil.getTenantOrException());
@@ -423,8 +411,7 @@ public class AlarmRuleFacadeImpl extends BaseFacade {
       QueryWrapper<AlarmSubscribe> alarmSubscribeQueryWrapper = new QueryWrapper<>();
       alarmSubscribeQueryWrapper.eq("group_id", alarmGroupDTO.getId());
 
-      requestContextAdapter.queryWrapperTenantAdapt(alarmSubscribeQueryWrapper,
-          MonitorCookieUtil.getTenantOrException(), requestContextAdapter.getWorkspace(false));
+      requestContextAdapter.queryWrapperTenantAdapt(alarmSubscribeQueryWrapper, tenant, workspace);
       List<AlarmSubscribeInfo> alarmSubscribeInfos =
           alarmSubscribeService.queryByMap(alarmSubscribeQueryWrapper);
 
@@ -462,14 +449,14 @@ public class AlarmRuleFacadeImpl extends BaseFacade {
 
   }
 
-  protected List<AlarmRuleDTO> getRuleListBySubscribe(boolean myself) {
+  protected List<AlarmRuleDTO> getRuleListBySubscribe(boolean myself, String tenant,
+      String workspace) {
     RequestContext.getContext();
     String userId = RequestContext.getContext().mu.getUserId();
     QueryWrapper<AlarmSubscribe> alarmSubscribeQueryWrapper = new QueryWrapper<>();
     alarmSubscribeQueryWrapper.eq("subscriber", userId);
 
-    requestContextAdapter.queryWrapperTenantAdapt(alarmSubscribeQueryWrapper,
-        MonitorCookieUtil.getTenantOrException(), requestContextAdapter.getWorkspace(false));
+    requestContextAdapter.queryWrapperTenantAdapt(alarmSubscribeQueryWrapper, tenant, workspace);
     List<AlarmSubscribeInfo> alarmSubscribeInfos =
         alarmSubscribeService.queryByMap(alarmSubscribeQueryWrapper);
 

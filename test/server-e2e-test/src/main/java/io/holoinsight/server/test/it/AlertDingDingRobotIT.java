@@ -51,6 +51,7 @@ public class AlertDingDingRobotIT extends BaseIT {
         .body(new JSONObject(J.toMap(J.toJson(item)))) //
         .when() //
         .post("/webapi/alarmDingDingRobot/create") //
+        .prettyPeek() //
         .then() //
         .body("success", IS_TRUE) //
         .extract() //
@@ -80,6 +81,7 @@ public class AlertDingDingRobotIT extends BaseIT {
         .body(new JSONObject(J.toMap(J.toJson(item)))) //
         .when() //
         .post("/webapi/alarmDingDingRobot/update") //
+        .prettyPeek() //
         .then() //
         .body("success", IS_TRUE) //
         .body("data", IS_TRUE); //

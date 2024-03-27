@@ -134,11 +134,14 @@ public class LevelAuthorizationDecisionManager {
         }
         if (StringUtils.equals(levelAuthorizationCheck.getClass().getName(),
             levelAuthMetaData.getLevelAuthorizationCheckeClass())) {
-          if (!levelAuthorizationCheck.check(levelAuthMetaData, methodInvocation)) {
+          LevelAuthorizationCheckResult checkResult =
+              levelAuthorizationCheck.check(levelAuthMetaData, methodInvocation);
+          if (!checkResult.isSuccess()) {
             // 抛异常
             formatError(log, "LevelAuthorizationDecisionManager", "decide", "SecurityDecideFailed",
-                "pass=false", "Custom levelauthorization checker find risk, need to be blocked!");
-            throw new LevelAuthorizationCheckException("security check failed!");
+                "pass=false", "Custom levelauthorization checker find risk, need to be blocked! "
+                    + checkResult.getErrorMsg());
+            throw new LevelAuthorizationCheckException(checkResult.getErrorMsg());
           }
         }
       }

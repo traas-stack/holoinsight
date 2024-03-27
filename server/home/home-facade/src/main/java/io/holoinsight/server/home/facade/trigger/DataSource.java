@@ -19,8 +19,6 @@ public class DataSource implements Serializable {
 
   private String product; // 产品
 
-  private List<String> position;
-
   private String metric; // 监控项
 
   private List<String> groupBy; // 维度聚合
@@ -30,8 +28,6 @@ public class DataSource implements Serializable {
   private String name; // 代称 （a、b）
 
   private List<Filter> filters; // 维度筛选
-
-  private String fillType; // 数据补全逻辑
 
   private String aggregator; // 数据聚合函数
 }
