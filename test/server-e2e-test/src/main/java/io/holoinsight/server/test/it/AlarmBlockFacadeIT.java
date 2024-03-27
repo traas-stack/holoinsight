@@ -13,6 +13,7 @@ import org.json.JSONObject;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 
+import java.util.Date;
 import java.util.Map;
 import java.util.Stack;
 import java.util.function.Supplier;
@@ -60,15 +61,15 @@ public class AlarmBlockFacadeIT extends BaseIT {
   @Test
   public void test_alarm_block_update() {
     AlarmBlockDTO item = new AlarmBlockDTO();
-    uniqueId = uniqueId + "0";
     item.setId(id);
     item.setTenant(tenant);
-    item.setUniqueId(uniqueId);
+    item.setTags("{}");
 
     given() //
         .body(new JSONObject(J.toMap(J.toJson(item)))) //
         .when() //
         .post("/webapi/alarmBlock/update") //
+        .prettyPeek() //
         .then() //
         .body("success", IS_TRUE) //
         .body("data", NOT_NULL); //
@@ -86,15 +87,16 @@ public class AlarmBlockFacadeIT extends BaseIT {
     given() //
         .pathParam("id", id) //
         .when() //
-        .delete("/webapi/alarmBlock/delete/{id}").then() //
+        .delete("/webapi/alarmBlock/delete/{id}") //
+        .prettyPeek() //
+        .then() //
         .body("success", IS_TRUE) //
         .body("data", IS_TRUE); //
     Response response = queryById.get();
     System.out.println(response.body().print());
     response //
         .then() //
-        .body("success", IS_TRUE) //
-        .body("data", IS_NULL); //
+        .body("success", IS_FALSE); //
   }
 
   @Order(4)
@@ -102,12 +104,13 @@ public class AlarmBlockFacadeIT extends BaseIT {
   public void test_custom_plugin_pageQuery() {
     Stack<Long> ids = new Stack<>();
     AlarmBlockDTO item = new AlarmBlockDTO();
-    item.setUniqueId(uniqueId);
+    item.setTenant(tenant);
     for (int i = 0; i < 10; i++) {
       Long id = ((Number) given() //
           .body(new JSONObject(J.toMap(J.toJson(item)))) //
           .when() //
           .post("/webapi/alarmBlock/create") //
+          .prettyPeek() //
           .then() //
           .body("success", IS_TRUE) //
           .extract() //
@@ -116,7 +119,7 @@ public class AlarmBlockFacadeIT extends BaseIT {
     }
 
     AlarmBlockDTO condition = new AlarmBlockDTO();
-    condition.setUniqueId(uniqueId);
+    condition.setTenant(tenant);
     MonitorPageRequest<AlarmBlockDTO> pageRequest = new MonitorPageRequest<>();
     pageRequest.setTarget(condition);
     pageRequest.setPageNum(0);
@@ -125,6 +128,7 @@ public class AlarmBlockFacadeIT extends BaseIT {
         .body(new JSONObject(J.toMap(J.toJson(pageRequest)))) //
         .when() //
         .post("/webapi/alarmBlock/pageQuery") //
+        .prettyPeek() //
         .then() //
         .body("success", IS_TRUE) //
         .root("data")

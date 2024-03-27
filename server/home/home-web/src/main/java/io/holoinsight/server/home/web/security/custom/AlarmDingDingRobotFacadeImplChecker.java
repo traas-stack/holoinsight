@@ -149,7 +149,7 @@ public class AlarmDingDingRobotFacadeImplChecker
           dto.getModifier());
     }
 
-    if (StringUtils.isNotEmpty(dto.getGroupName()) && !checkSqlField(dto.getGroupName())) {
+    if (StringUtils.isNotEmpty(dto.getGroupName()) && !checkSqlName(dto.getGroupName())) {
       return failCheckResult("fail to check %s for invalid group name %s", methodName,
           dto.getGroupName());
     }

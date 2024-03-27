@@ -149,12 +149,12 @@ public class AlarmBlockFacadeImplChecker
       return failCheckResult("invalid tags %s", alarmBlockDTO.getTags());
     }
     if (StringUtils.isNotEmpty(alarmBlockDTO.getTenant())
-        && StringUtils.equals(alarmBlockDTO.getTenant(), tenant)) {
+        && !StringUtils.equals(alarmBlockDTO.getTenant(), tenant)) {
       return failCheckResult("invalid tenant %s, real tenant %s", alarmBlockDTO.getTenant(),
           tenant);
     }
     if (StringUtils.isNotEmpty(alarmBlockDTO.getWorkspace())
-        && StringUtils.equals(alarmBlockDTO.getWorkspace(), workspace)) {
+        && !StringUtils.equals(alarmBlockDTO.getWorkspace(), workspace)) {
       return failCheckResult("invalid workspace %s, real workspace %s",
           alarmBlockDTO.getWorkspace(), workspace);
     }
@@ -173,8 +173,7 @@ public class AlarmBlockFacadeImplChecker
     QueryWrapper<AlarmRule> queryWrapper = new QueryWrapper<>();
     queryWrapper.eq("rule_type", arr[0]);
     queryWrapper.eq("id", Long.parseLong(arr[1]));
-    queryWrapper.eq("tenant", tenant);
-    queryWrapper.eq("workspace", workspace);
+    requestContextAdapter.queryWrapperTenantAdapt(queryWrapper, tenant, workspace);
     List<AlarmRule> rules = this.alarmRuleMapper.selectList(queryWrapper);
     if (CollectionUtils.isEmpty(rules)) {
       return false;
@@ -204,8 +203,7 @@ public class AlarmBlockFacadeImplChecker
   public LevelAuthorizationCheckResult checkIdExists(Long id, String tenant, String workspace) {
     QueryWrapper<AlarmBlock> queryWrapper = new QueryWrapper<>();
     queryWrapper.eq("id", id);
-    queryWrapper.eq("tenant", tenant);
-    queryWrapper.eq("workspace", workspace);
+    this.requestContextAdapter.queryWrapperTenantAdapt(queryWrapper, tenant, workspace);
     List<AlarmBlock> exist = this.alarmBlockMapper.selectList(queryWrapper);
     if (CollectionUtils.isEmpty(exist)) {
       return failCheckResult("fail to check id for no existed %d %s %s", id, tenant, workspace);

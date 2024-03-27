@@ -45,6 +45,7 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static io.holoinsight.server.home.facade.utils.ParaCheckUtil.sqlCnNameCheck;
 import static io.holoinsight.server.home.web.security.LevelAuthorizationCheckResult.failCheckResult;
 import static io.holoinsight.server.home.web.security.LevelAuthorizationCheckResult.successCheckResult;
 
@@ -258,7 +259,7 @@ public class AlarmRuleLevelAuthorizationChecker extends AbstractQueryChecker
     }
 
     if (StringUtils.isNotEmpty(alarmRuleDTO.getRuleDescribe())
-        && !checkSqlName(alarmRuleDTO.getRuleDescribe())) {
+        && !sqlCnNameCheck(alarmRuleDTO.getRuleDescribe())) {
       return failCheckResult(
           "invalid ruleDescribe %s, please use a-z A-Z 0-9 Chinese - _ , . : spaces ",
           alarmRuleDTO.getRuleDescribe());
@@ -415,10 +416,12 @@ public class AlarmRuleLevelAuthorizationChecker extends AbstractQueryChecker
           return checkResult;
         }
       }
-      if (!CollectionUtils.isEmpty(dataSource.getGroupBy())
-          && !checkGroupBy(dataSource.getMetric(), dataSource.getGroupBy())) {
-        return failCheckResult("fail to check groupBy %s for metric %s",
-            J.toJson(dataSource.getGroupBy()), dataSource.getMetric());
+      if (!CollectionUtils.isEmpty(dataSource.getGroupBy())) {
+        LevelAuthorizationCheckResult checkResult =
+            checkGroupBy(dataSource.getMetric(), dataSource.getGroupBy());
+        if (!checkResult.isSuccess()) {
+          return checkResult;
+        }
       }
       if (StringUtils.isNotEmpty(dataSource.getDownsample())
           && !checkDownsample(dataSource.getDownsample())) {
@@ -446,15 +449,18 @@ public class AlarmRuleLevelAuthorizationChecker extends AbstractQueryChecker
     return matcher.matches();
   }
 
-  private boolean checkGroupBy(String metric, List<String> groupBys) {
+  private LevelAuthorizationCheckResult checkGroupBy(String metric, List<String> groupBys) {
     MetricInfo metricInfo = apiSecurityService.getMetricInfo(metric);
+    if (metricInfo == null) {
+      return failCheckResult("metricInfo is null for metric %s", metric);
+    }
     List<String> tags = J.toList(metricInfo.getTags());
     for (String groupBy : groupBys) {
       if (!tags.contains(groupBy)) {
-        return false;
+        return failCheckResult("groupby %s cannot be found in %s", groupBy, metricInfo.getTags());
       }
     }
-    return true;
+    return successCheckResult();
   }
 
   private LevelAuthorizationCheckResult checkCompareConfigs(List<CompareConfig> compareConfigs) {
@@ -612,8 +618,7 @@ public class AlarmRuleLevelAuthorizationChecker extends AbstractQueryChecker
   public LevelAuthorizationCheckResult checkIdExists(Long id, String tenant, String workspace) {
     QueryWrapper<AlarmRule> queryWrapper = new QueryWrapper<>();
     queryWrapper.eq("id", id);
-    queryWrapper.eq("tenant", tenant);
-    queryWrapper.eq("workspace", workspace);
+    this.requestContextAdapter.queryWrapperTenantAdapt(queryWrapper, tenant, workspace);
     List<AlarmRule> exist = this.alarmRuleMapper.selectList(queryWrapper);
     if (CollectionUtils.isEmpty(exist)) {
       return failCheckResult("fail to check id for no existed %s %s %s", id, tenant, workspace);

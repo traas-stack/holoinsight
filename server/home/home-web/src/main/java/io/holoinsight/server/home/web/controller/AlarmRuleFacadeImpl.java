@@ -96,7 +96,7 @@ public class AlarmRuleFacadeImpl extends BaseFacade {
   @PostMapping("/create")
   @ResponseBody
   @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.EDIT)
-  public JsonResult<Long> save(@RequestBody AlarmRuleDTO alarmRuleDTO) {
+  public JsonResult<Long> create(@RequestBody AlarmRuleDTO alarmRuleDTO) {
     final JsonResult<Long> result = new JsonResult<>();
     facadeTemplate.manage(result, new ManageCallback() {
       @Override
