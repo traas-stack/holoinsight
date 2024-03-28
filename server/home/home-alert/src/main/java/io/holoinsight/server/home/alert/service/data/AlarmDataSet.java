@@ -84,7 +84,7 @@ public class AlarmDataSet {
                 alarmLoadData.queryDataResult(computeTaskPackage, inspectConfig, trigger);
             trigger.setDataResult(dataResults);
           } catch (Exception exception) {
-            LOGGER.error("AlarmLoadData Exception", exception);
+            LOGGER.error("{} AlarmLoadData Exception", inspectConfig.getTraceId(), exception);
             RecordSucOrFailNotify.alertNotifyProcessFail("alarm load data Exception: " + exception,
                 ALERT_TASK_COMPUTE, "alarm load data", inspectConfig.getAlertNotifyRecord());
             notifySuccess = false;

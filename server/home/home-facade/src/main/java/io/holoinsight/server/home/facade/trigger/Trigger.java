@@ -19,7 +19,7 @@ public class Trigger {
 
   private List<DataSource> datasources;
 
-  private String query;
+  private String query = "a";
 
   private String aggregator;
 

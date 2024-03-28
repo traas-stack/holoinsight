@@ -3,16 +3,24 @@
  */
 package io.holoinsight.server.home.web.controller;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import io.holoinsight.server.common.JsonResult;
+import io.holoinsight.server.home.biz.service.AlertSubscribeService;
+import io.holoinsight.server.home.biz.ula.ULAFacade;
 import io.holoinsight.server.home.common.service.RequestContextAdapter;
+import io.holoinsight.server.home.common.util.ManageCallback;
 import io.holoinsight.server.home.common.util.MonitorException;
 import io.holoinsight.server.home.common.util.ResultCodeEnum;
+import io.holoinsight.server.home.common.util.scope.AuthTargetType;
+import io.holoinsight.server.home.common.util.scope.MonitorScope;
+import io.holoinsight.server.home.common.util.scope.MonitorUser;
+import io.holoinsight.server.home.common.util.scope.PowerConstants;
+import io.holoinsight.server.home.common.util.scope.RequestContext;
 import io.holoinsight.server.home.dal.model.AlarmSubscribe;
+import io.holoinsight.server.home.dal.model.dto.AlarmSubscribeDTO;
 import io.holoinsight.server.home.dal.model.dto.AlarmSubscribeInfo;
+import io.holoinsight.server.home.web.common.ParaCheckUtil;
+import io.holoinsight.server.home.web.interceptor.MonitorScopeAuth;
 import io.holoinsight.server.home.web.security.ParameterSecurityService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -26,18 +34,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import io.holoinsight.server.common.JsonResult;
-import io.holoinsight.server.home.biz.service.AlertSubscribeService;
-import io.holoinsight.server.home.biz.ula.ULAFacade;
-import io.holoinsight.server.home.common.util.scope.AuthTargetType;
-import io.holoinsight.server.home.common.util.scope.MonitorScope;
-import io.holoinsight.server.home.common.util.scope.MonitorUser;
-import io.holoinsight.server.home.common.util.scope.PowerConstants;
-import io.holoinsight.server.home.common.util.scope.RequestContext;
-import io.holoinsight.server.home.dal.model.dto.AlarmSubscribeDTO;
-import io.holoinsight.server.home.common.util.ManageCallback;
-import io.holoinsight.server.home.web.common.ParaCheckUtil;
-import io.holoinsight.server.home.web.interceptor.MonitorScopeAuth;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 
 /**
  * @author wangsiyuan
@@ -108,16 +107,17 @@ public class AlarmSubscribeFacadeImpl extends BaseFacade {
         if (StringUtils.isNotEmpty(alarmSubscribeDTO.getUniqueId())) {
           ParaCheckUtil.checkParaBoolean(
               parameterSecurityService.checkRuleTenantAndWorkspace(alarmSubscribeDTO.getUniqueId(),
-                  ms.getTenant(), ms.getWorkspace()),
-              "uniqueId do not belong to this tenant or workspace");
+                  tenant(), workspace()),
+              "uniqueId do not belong to this tenant " + tenant() + " or workspace " + workspace());
         }
         if (!CollectionUtils.isEmpty(alarmSubscribeDTO.getAlarmSubscribe())) {
           for (AlarmSubscribeInfo alarmSubscribeInfo : alarmSubscribeDTO.getAlarmSubscribe()) {
             if (StringUtils.isNotEmpty(alarmSubscribeInfo.getUniqueId())) {
               ParaCheckUtil.checkParaBoolean(
                   parameterSecurityService.checkRuleTenantAndWorkspace(
-                      alarmSubscribeInfo.getUniqueId(), ms.getTenant(), ms.getWorkspace()),
-                  "uniqueId do not belong to this tenant or workspace");
+                      alarmSubscribeInfo.getUniqueId(), tenant(), workspace()),
+                  "uniqueId do not belong to this tenant " + tenant() + " or workspace "
+                      + workspace());
             }
             if (CollectionUtils.isEmpty(alarmSubscribeInfo.getNoticeType())) {
               continue;
@@ -147,18 +147,13 @@ public class AlarmSubscribeFacadeImpl extends BaseFacade {
 
       @Override
       public void doManage() {
-        MonitorScope ms = RequestContext.getContext().ms;
         MonitorUser mu = RequestContext.getContext().mu;
         String creator = null;
-        String tenant = null;
         if (null != mu) {
           creator = mu.getLoginName();
         }
-        if (null != ms && !StringUtils.isEmpty(ms.tenant)) {
-          tenant = ms.tenant;
-        }
         boolean rtn =
-            alarmSubscribeService.saveDataBatch(alarmSubscribeDTO, creator, tenant, ms.workspace);
+            alarmSubscribeService.saveDataBatch(alarmSubscribeDTO, creator, tenant(), workspace());
         JsonResult.createSuccessResult(result, rtn);
       }
     });
@@ -178,11 +173,9 @@ public class AlarmSubscribeFacadeImpl extends BaseFacade {
 
       @Override
       public void doManage() {
-        MonitorScope ms = RequestContext.getContext().ms;
         QueryWrapper<AlarmSubscribe> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("unique_id", uniqueId);
-        requestContextAdapter.queryWrapperTenantAdapt(queryWrapper, ms.getTenant(),
-            ms.getWorkspace());
+        requestContextAdapter.queryWrapperTenantAdapt(queryWrapper, tenant(), workspace());
         AlarmSubscribeDTO alarmSubscribeDTO =
             alarmSubscribeService.queryByUniqueId(queryWrapper, uniqueId);
 

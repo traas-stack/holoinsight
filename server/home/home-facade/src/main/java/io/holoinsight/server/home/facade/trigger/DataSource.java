@@ -25,7 +25,7 @@ public class DataSource implements Serializable {
 
   private String downsample; // 时间窗口
 
-  private String name; // 代称 （a、b）
+  private String name = "a"; // 代称 （a、b）
 
   private List<Filter> filters; // 维度筛选
 
