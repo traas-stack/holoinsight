@@ -513,9 +513,9 @@ public class AlarmRuleLevelAuthorizationChecker extends AbstractQueryChecker
     if (StringUtils.isNotEmpty(extra.sourceLink)) {
       return failCheckResult("sourceLink %s should be empty", extra.sourceLink);
     }
-    if (StringUtils.isNotEmpty(extra.md5)) {
-      return failCheckResult("md5 %s should be empty", extra.md5);
-    }
+    // if (StringUtils.isNotEmpty(extra.md5)) {
+    // return failCheckResult("md5 %s should be empty", extra.md5);
+    // }
     if (!CollectionUtils.isEmpty(extra.alertTags) && !checkSqlField(extra.alertTags)) {
       return failCheckResult("fail to check sql field in alertTags %s", J.toJson(extra.alertTags));
     }
