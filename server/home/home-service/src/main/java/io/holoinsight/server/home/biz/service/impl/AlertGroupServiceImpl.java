@@ -79,8 +79,10 @@ public class AlertGroupServiceImpl extends ServiceImpl<AlarmGroupMapper, AlarmGr
 
     AlarmGroup alarmGroup = alarmGroupConverter.dtoToDO(pageRequest.getTarget());
 
-    this.requestContextAdapter.queryWrapperTenantAdapt(wrapper, alarmGroup.getTenant(),
-        alarmGroup.getWorkspace());
+    wrapper.eq("tenant", alarmGroup.getTenant());
+    if (StringUtils.isNotEmpty(alarmGroup.getWorkspace())) {
+      wrapper.eq("workspace", alarmGroup.getWorkspace());
+    }
 
     if (null != alarmGroup.getId()) {
       wrapper.eq("id", alarmGroup.getId());

@@ -270,11 +270,15 @@ public class AlarmRuleLevelAuthorizationChecker extends AbstractQueryChecker
     }
 
     if (StringUtils.isNotEmpty(alarmRuleDTO.getNoticeType())) {
-      return failCheckResult("noticeType %s should be empty", alarmRuleDTO.getMergeType());
+      return failCheckResult("noticeType %s should be empty", alarmRuleDTO.getNoticeType());
     }
 
     if (!CollectionUtils.isEmpty(alarmRuleDTO.getAlarmContent())) {
-      return failCheckResult("alarmContent %s should be empty", alarmRuleDTO.getMergeType());
+      for (String content : alarmRuleDTO.getAlarmContent()) {
+        if (!sqlCnNameCheck(content)) {
+          return failCheckResult("invalid content %s in alarmContent", content);
+        }
+      }
     }
 
     if (StringUtils.isNotEmpty(alarmRuleDTO.getTenant())
@@ -471,7 +475,7 @@ public class AlarmRuleLevelAuthorizationChecker extends AbstractQueryChecker
             config.getTriggerLevel());
       }
       if (StringUtils.isNotEmpty(config.getTriggerContent())
-          && !checkSqlName(config.getTriggerContent())) {
+          && !sqlCnNameCheck(config.getTriggerContent())) {
         return failCheckResult("fail to check triggerContent in compareConfigs %s",
             config.getTriggerContent());
       }
