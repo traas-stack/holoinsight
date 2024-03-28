@@ -9,13 +9,11 @@ import io.holoinsight.server.common.dao.entity.dto.MetricInfoDTO;
 import io.holoinsight.server.common.service.MetricInfoService;
 import io.holoinsight.server.home.biz.plugin.MetricInfoCheckService;
 import io.holoinsight.server.home.biz.service.IntegrationProductService;
+import io.holoinsight.server.home.common.util.ManageCallback;
 import io.holoinsight.server.home.common.util.scope.AuthTargetType;
-import io.holoinsight.server.home.common.util.scope.MonitorScope;
 import io.holoinsight.server.home.common.util.scope.PowerConstants;
-import io.holoinsight.server.home.common.util.scope.RequestContext;
 import io.holoinsight.server.home.dal.model.dto.IntegrationProductDTO;
 import io.holoinsight.server.home.task.MetricCrawlerConstant;
-import io.holoinsight.server.home.common.util.ManageCallback;
 import io.holoinsight.server.home.web.common.ParaCheckUtil;
 import io.holoinsight.server.home.web.interceptor.MonitorScopeAuth;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -75,9 +73,8 @@ public class MetricInfoFacadeImpl extends BaseFacade {
 
       @Override
       public void doManage() {
-        MonitorScope ms = RequestContext.getContext().ms;
         JsonResult.createSuccessResult(result, metricInfoCheckService
-            .queryMetricInfoByMetricType(ms.getTenant(), ms.getWorkspace(), product.toLowerCase()));
+            .queryMetricInfoByMetricType(tenant(), workspace(), product.toLowerCase()));
       }
     });
     return result;
@@ -97,7 +94,6 @@ public class MetricInfoFacadeImpl extends BaseFacade {
       public void doManage() {
 
         List<MetricInfoDTO> metricInfoDTOS = new ArrayList<>();
-        MonitorScope ms = RequestContext.getContext().ms;
         List<MetricInfoDTO> globalMetrics = metricInfoService.queryListByTenant(
             MetricCrawlerConstant.GLOBAL_TENANT, MetricCrawlerConstant.GLOBAL_WORKSPACE);
 
@@ -106,7 +102,7 @@ public class MetricInfoFacadeImpl extends BaseFacade {
         }
 
         List<MetricInfoDTO> tenantMetrics =
-            metricInfoService.queryListByTenant(ms.getTenant(), ms.getWorkspace());
+            metricInfoService.queryListByTenant(tenant(), workspace());
 
         if (CollectionUtils.isEmpty(tenantMetrics)) {
           metricInfoDTOS.addAll(tenantMetrics);
@@ -130,9 +126,8 @@ public class MetricInfoFacadeImpl extends BaseFacade {
 
       @Override
       public void doManage() {
-        MonitorScope ms = RequestContext.getContext().ms;
         MetricInfoDTO metricInfoDTO =
-            metricInfoService.queryByMetric(ms.getTenant(), ms.getWorkspace(), metric);
+            metricInfoService.queryByMetric(tenant(), workspace(), metric);
         JsonResult.createSuccessResult(result, metricInfoDTO);
       }
     });

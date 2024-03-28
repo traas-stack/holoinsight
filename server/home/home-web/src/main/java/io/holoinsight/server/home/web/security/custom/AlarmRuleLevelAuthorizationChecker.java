@@ -369,7 +369,7 @@ public class AlarmRuleLevelAuthorizationChecker extends AbstractQueryChecker
       }
 
       if (StringUtils.isNotEmpty(trigger.getTriggerContent())
-          && !checkSqlName(trigger.getTriggerContent())) {
+          && !sqlCnNameCheck(trigger.getTriggerContent())) {
         return failCheckResult("fail to check triggerContent %s", trigger.getTriggerContent());
       }
 

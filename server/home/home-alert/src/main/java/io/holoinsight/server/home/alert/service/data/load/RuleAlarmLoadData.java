@@ -59,9 +59,10 @@ public class RuleAlarmLoadData implements AlarmLoadData {
         dataResults = merge(dataResults, deltaResponse);
       }
     } catch (Exception exception) {
-      LOGGER.error("QueryData Exception Request:{} Response:{} DeltaRequest:{} DeltaResponse: {}",
-          G.get().toJson(request), G.get().toJson(response), G.get().toJson(deltaRequest),
-          G.get().toJson(deltaResponse), exception);
+      LOGGER.error(
+          "{} QueryData Exception Request:{} Response:{} DeltaRequest:{} DeltaResponse: {}",
+          inspectConfig.getTraceId(), G.get().toJson(request), G.get().toJson(response),
+          G.get().toJson(deltaRequest), G.get().toJson(deltaResponse), exception);
     }
     return dataResults;
   }

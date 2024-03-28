@@ -15,6 +15,7 @@ import io.holoinsight.server.home.dal.model.AlarmDingDingRobot;
 import io.holoinsight.server.home.dal.model.dto.AlarmDingDingRobotDTO;
 import io.holoinsight.server.home.facade.page.MonitorPageRequest;
 import io.holoinsight.server.home.facade.page.MonitorPageResult;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -74,8 +75,10 @@ public class AlertDingDingRobotServiceImpl extends
     AlarmDingDingRobot alarmDingDingRobot =
         alarmDingDingRobotConverter.dtoToDO(pageRequest.getTarget());
 
-    this.requestContextAdapter.queryWrapperTenantAdapt(wrapper, alarmDingDingRobot.getTenant(),
-        alarmDingDingRobot.getWorkspace());
+    wrapper.eq("tenant", alarmDingDingRobot.getTenant());
+    if (StringUtils.isNotEmpty(alarmDingDingRobot.getWorkspace())) {
+      wrapper.eq("workspace", alarmDingDingRobot.getWorkspace());
+    }
 
     if (null != alarmDingDingRobot.getId()) {
       wrapper.eq("id", alarmDingDingRobot.getId());
