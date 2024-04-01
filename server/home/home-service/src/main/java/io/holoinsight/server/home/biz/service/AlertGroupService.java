@@ -22,8 +22,6 @@ public interface AlertGroupService extends IService<AlarmGroup> {
 
   Boolean updateById(AlarmGroupDTO alarmGroupDTO);
 
-  AlarmGroupDTO queryById(Long id, String tenant);
-
   AlarmGroupDTO queryById(Long id, String tenant, String workspace);
 
   List<AlarmGroupDTO> getListByUserLike(String userId, String tenant);

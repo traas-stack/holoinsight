@@ -45,11 +45,6 @@ public class AlertGroupServiceImpl extends ServiceImpl<AlarmGroupMapper, AlarmGr
   }
 
   @Override
-  public AlarmGroupDTO queryById(Long id, String tenant) {
-    return queryById(id, tenant, requestContextAdapter.getWorkspace(true));
-  }
-
-  @Override
   public AlarmGroupDTO queryById(Long id, String tenant, String workspace) {
     QueryWrapper<AlarmGroup> wrapper = new QueryWrapper<>();
     requestContextAdapter.queryWrapperTenantAdapt(wrapper, tenant, workspace);

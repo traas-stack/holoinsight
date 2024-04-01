@@ -75,10 +75,8 @@ public class AlertDingDingRobotServiceImpl extends
     AlarmDingDingRobot alarmDingDingRobot =
         alarmDingDingRobotConverter.dtoToDO(pageRequest.getTarget());
 
-    wrapper.eq("tenant", alarmDingDingRobot.getTenant());
-    if (StringUtils.isNotEmpty(alarmDingDingRobot.getWorkspace())) {
-      wrapper.eq("workspace", alarmDingDingRobot.getWorkspace());
-    }
+    requestContextAdapter.queryWrapperTenantAdapt(wrapper, alarmDingDingRobot.getTenant(),
+        alarmDingDingRobot.getWorkspace());
 
     if (null != alarmDingDingRobot.getId()) {
       wrapper.eq("id", alarmDingDingRobot.getId());

@@ -38,11 +38,6 @@ public class RequestContextAdapterImpl implements RequestContextAdapter {
   }
 
   @Override
-  public void tenantAdapt(String tenant, String workspace) {
-
-  }
-
-  @Override
   public <T> void queryWrapperTenantAdapt(QueryWrapper<T> queryWrapper, String tenant) {
     if (queryWrapper != null && StringUtils.isNotBlank(tenant)) {
       queryWrapper.eq("tenant", tenant);

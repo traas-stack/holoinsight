@@ -56,7 +56,6 @@ public class AlarmMetricServiceImpl extends ServiceImpl<AlarmMetricMapper, Alarm
 
   @Override
   public List<AlarmMetric> queryByRuleId(Long ruleId, String tenant, String workspace) {
-    this.requestContextAdapter.tenantAdapt(tenant, workspace);
     QueryWrapper<AlarmMetric> wrapper = new QueryWrapper<>();
     wrapper.eq("deleted", 0);
     if (StringUtils.isNotBlank(tenant)) {

@@ -47,8 +47,8 @@ public class AlertNotifyRecordController extends BaseFacade {
       @Override
       public void doManage() {
         MonitorScope ms = RequestContext.getContext().ms;
-        AlertNotifyRecordDTO save = alertNotifyRecordService.queryByHistoryDetailId(historyDetailId,
-            ms.getTenant(), ms.getWorkspace());
+        AlertNotifyRecordDTO save =
+            alertNotifyRecordService.queryByHistoryDetailId(historyDetailId, tenant(), workspace());
         JsonResult.createSuccessResult(result, save);
       }
     });
@@ -69,12 +69,13 @@ public class AlertNotifyRecordController extends BaseFacade {
 
       @Override
       public void doManage() {
-        MonitorScope ms = RequestContext.getContext().ms;
-        if (null != ms && !StringUtils.isEmpty(ms.tenant)) {
-          pageRequest.getTarget().setTenant(ms.tenant);
+        String tenant = tenant();
+        String workspace = workspace();
+        if (StringUtils.isNotEmpty(tenant)) {
+          pageRequest.getTarget().setTenant(tenant);
         }
-        if (null != ms && !StringUtils.isEmpty(ms.workspace)) {
-          pageRequest.getTarget().setWorkspace(ms.workspace);
+        if (StringUtils.isNotEmpty(workspace)) {
+          pageRequest.getTarget().setWorkspace(workspace);
         }
         JsonResult.createSuccessResult(result, alertNotifyRecordService.getListByPage(pageRequest));
       }

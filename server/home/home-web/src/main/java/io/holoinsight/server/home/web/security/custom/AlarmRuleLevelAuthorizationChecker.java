@@ -89,7 +89,7 @@ public class AlarmRuleLevelAuthorizationChecker extends AbstractQueryChecker
       "max", "count", "none", "SUM", "AVG", "MIX", "MAX", "COUNT", "NONE"));
   private static final Set<String> metricTypes =
       new HashSet<>(Arrays.asList("app", "cache", "log", "oss", "trace", "system", "metric",
-          "service", "function", "pg", "mongodb", "db", "miniProgram"));
+          "service", "function", "pg", "mongodb", "db", "miniProgram", "mysql"));
   private static final Set<String> products = new HashSet<>(Arrays.asList("JVM", "Function",
       "OceanBase", "Tbase", "PortCheck", "System", "MiniProgram", "Spanner", "IoT"));
 
