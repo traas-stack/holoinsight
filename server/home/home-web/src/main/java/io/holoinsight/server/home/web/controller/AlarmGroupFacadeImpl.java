@@ -192,7 +192,7 @@ public class AlarmGroupFacadeImpl extends BaseFacade {
       public void doManage() {
 
         AlarmGroupDTO item = alarmGroupService.queryById(alarmGroup.getId(),
-            RequestContext.getContext().ms.getTenant());
+            RequestContext.getContext().ms.getTenant(), requestContextAdapter.getWorkspace(true));
         if (null == item) {
           throw new MonitorException("cannot find record: " + alarmGroup.getId());
         }
@@ -233,8 +233,8 @@ public class AlarmGroupFacadeImpl extends BaseFacade {
       @Override
       public void doManage() {
 
-        AlarmGroupDTO save =
-            alarmGroupService.queryById(id, RequestContext.getContext().ms.getTenant());
+        AlarmGroupDTO save = alarmGroupService.queryById(id,
+            RequestContext.getContext().ms.getTenant(), requestContextAdapter.getWorkspace(true));
         JsonResult.createSuccessResult(result, save);
       }
     });
@@ -256,7 +256,8 @@ public class AlarmGroupFacadeImpl extends BaseFacade {
       public void doManage() {
         MonitorScope ms = RequestContext.getContext().ms;
         boolean rtn = false;
-        AlarmGroupDTO alarmGroup = alarmGroupService.queryById(id, ms.getTenant());
+        AlarmGroupDTO alarmGroup = alarmGroupService.queryById(id, ms.getTenant(),
+            requestContextAdapter.getWorkspace(true));
         if (alarmGroup != null && StringUtils.equals(alarmGroup.getTenant(), ms.getTenant())) {
           rtn = alarmGroupService.removeById(id);
         }
