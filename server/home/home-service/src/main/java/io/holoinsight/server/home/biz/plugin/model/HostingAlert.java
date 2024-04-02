@@ -4,23 +4,23 @@
 package io.holoinsight.server.home.biz.plugin.model;
 
 import io.holoinsight.server.common.J;
-import io.holoinsight.server.home.dal.model.AlarmRule;
+import io.holoinsight.server.common.dao.entity.AlarmRule;
 import io.holoinsight.server.home.dal.model.dto.IntegrationPluginDTO;
 import io.holoinsight.server.home.dal.model.dto.IntegrationProductDTO;
-import io.holoinsight.server.home.facade.AlarmRuleDTO;
-import io.holoinsight.server.home.facade.Rule;
-import io.holoinsight.server.home.facade.TimeFilter;
-import io.holoinsight.server.home.facade.emuns.AlertLevel;
-import io.holoinsight.server.home.facade.emuns.BoolOperationEnum;
-import io.holoinsight.server.home.facade.emuns.CompareOperationEnum;
-import io.holoinsight.server.home.facade.emuns.FunctionEnum;
-import io.holoinsight.server.home.facade.emuns.TimeFilterEnum;
-import io.holoinsight.server.home.facade.trigger.CompareConfig;
-import io.holoinsight.server.home.facade.trigger.CompareParam;
-import io.holoinsight.server.home.facade.trigger.DataSource;
-import io.holoinsight.server.home.facade.trigger.Filter;
-import io.holoinsight.server.home.facade.trigger.RuleConfig;
-import io.holoinsight.server.home.facade.trigger.Trigger;
+import io.holoinsight.server.common.dao.entity.dto.AlarmRuleDTO;
+import io.holoinsight.server.common.dao.entity.dto.alarm.AlarmRuleConf;
+import io.holoinsight.server.common.dao.entity.dto.alarm.TimeFilter;
+import io.holoinsight.server.common.dao.emuns.AlertLevel;
+import io.holoinsight.server.common.dao.emuns.BoolOperationEnum;
+import io.holoinsight.server.common.dao.emuns.CompareOperationEnum;
+import io.holoinsight.server.common.dao.emuns.FunctionEnum;
+import io.holoinsight.server.common.dao.emuns.TimeFilterEnum;
+import io.holoinsight.server.common.dao.entity.dto.alarm.trigger.CompareConfig;
+import io.holoinsight.server.common.dao.entity.dto.alarm.trigger.CompareParam;
+import io.holoinsight.server.common.dao.entity.dto.alarm.trigger.DataSource;
+import io.holoinsight.server.common.dao.entity.dto.alarm.trigger.Filter;
+import io.holoinsight.server.common.dao.entity.dto.alarm.trigger.RuleConfig;
+import io.holoinsight.server.common.dao.entity.dto.alarm.trigger.Trigger;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.util.CollectionUtils;
 
@@ -56,22 +56,22 @@ public class HostingAlert {
   public List<CompareConfig> compareConfigs;
 
   public static HostingAlert parseAlarmRuleVO(AlarmRule alarmRule) {
-    Rule rule = J.fromJson(alarmRule.getRule(), Rule.class);
+    AlarmRuleConf alarmRuleConf = J.fromJson(alarmRule.getRule(), AlarmRuleConf.class);
     HostingAlert vo = new HostingAlert();
     vo.ruleId = String.valueOf(alarmRule.getId());
     vo.alertType = alarmRule.getRuleType();
-    vo.alertMetric = getMetric(rule);
-    vo.alertScope = getScope(rule);
+    vo.alertMetric = getMetric(alarmRuleConf);
+    vo.alertScope = getScope(alarmRuleConf);
     vo.alertTitle = alarmRule.getRuleName();
     vo.tenant = alarmRule.getTenant();
     return vo;
   }
 
-  private static String getScope(Rule rule) {
-    if (CollectionUtils.isEmpty(rule.getTriggers())) {
+  private static String getScope(AlarmRuleConf alarmRuleConf) {
+    if (CollectionUtils.isEmpty(alarmRuleConf.getTriggers())) {
       return StringUtils.EMPTY;
     }
-    Trigger trigger = rule.getTriggers().get(0);
+    Trigger trigger = alarmRuleConf.getTriggers().get(0);
     if (CollectionUtils.isEmpty(trigger.getDatasources())) {
       return StringUtils.EMPTY;
     }
@@ -87,11 +87,11 @@ public class HostingAlert {
     return J.toJson(map);
   }
 
-  private static String getMetric(Rule rule) {
-    if (CollectionUtils.isEmpty(rule.getTriggers())) {
+  private static String getMetric(AlarmRuleConf alarmRuleConf) {
+    if (CollectionUtils.isEmpty(alarmRuleConf.getTriggers())) {
       return StringUtils.EMPTY;
     }
-    Trigger trigger = rule.getTriggers().get(0);
+    Trigger trigger = alarmRuleConf.getTriggers().get(0);
     if (CollectionUtils.isEmpty(trigger.getDatasources())) {
       return StringUtils.EMPTY;
     }
@@ -153,10 +153,10 @@ public class HostingAlert {
   }
 
   private Map<String, Object> buildRule(IntegrationProductDTO product, List<Filter> filters) {
-    Rule alertRule = new Rule();
-    alertRule.setBoolOperation(BoolOperationEnum.AND);
-    alertRule.setTriggers(buildTriggers(product, filters));
-    return J.toMap(J.toJson(alertRule));
+    AlarmRuleConf alertAlarmRuleConf = new AlarmRuleConf();
+    alertAlarmRuleConf.setBoolOperation(BoolOperationEnum.AND);
+    alertAlarmRuleConf.setTriggers(buildTriggers(product, filters));
+    return J.toMap(J.toJson(alertAlarmRuleConf));
   }
 
   private List<Trigger> buildTriggers(IntegrationProductDTO product, List<Filter> filters) {

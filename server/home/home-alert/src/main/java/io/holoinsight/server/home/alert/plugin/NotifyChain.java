@@ -9,7 +9,7 @@ import io.holoinsight.server.home.biz.plugin.model.PluginModel;
 import io.holoinsight.server.home.biz.plugin.model.PluginType;
 import io.holoinsight.server.home.biz.plugin.model.ScheduleTimeEnum;
 import io.holoinsight.server.home.biz.plugin.model.WaitPlugin;
-import io.holoinsight.server.home.common.exception.HoloinsightAlertIllegalArgumentException;
+import io.holoinsight.server.common.model.HoloinsightAlertIllegalArgumentException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;

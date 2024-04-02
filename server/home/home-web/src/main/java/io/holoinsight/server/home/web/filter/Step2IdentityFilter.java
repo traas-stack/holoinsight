@@ -3,18 +3,17 @@
  */
 package io.holoinsight.server.home.web.filter;
 
+import io.holoinsight.server.common.MonitorException;
+import io.holoinsight.server.common.RequestContext;
+import io.holoinsight.server.common.ResultCodeEnum;
+import io.holoinsight.server.common.scope.IdentityType;
+import io.holoinsight.server.common.scope.MonitorCookieUtil;
+import io.holoinsight.server.common.scope.MonitorUser;
+import io.holoinsight.server.home.biz.access.MonitorAccessService;
 import io.holoinsight.server.home.biz.common.MetaDictUtil;
 import io.holoinsight.server.home.biz.ula.ULAFacade;
-import io.holoinsight.server.home.common.util.MonitorException;
-import io.holoinsight.server.home.common.util.ResultCodeEnum;
-import io.holoinsight.server.home.common.util.scope.RequestContext;
-import io.holoinsight.server.home.web.config.RestAuthUtil;
-import io.holoinsight.server.home.biz.access.MonitorAccessService;
-import io.holoinsight.server.home.common.util.StringUtil;
-import io.holoinsight.server.home.common.util.scope.IdentityType;
-import io.holoinsight.server.home.common.util.scope.MonitorCookieUtil;
-import io.holoinsight.server.home.common.util.scope.MonitorUser;
 import io.holoinsight.server.home.web.common.TokenUrlFactoryHolder;
+import io.holoinsight.server.home.web.config.RestAuthUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -73,7 +72,7 @@ public class Step2IdentityFilter implements Filter {
   public boolean identity(HttpServletRequest req, HttpServletResponse resp) throws IOException {
     // token 降级
     String token = req.getHeader("apiToken");
-    if (StringUtil.isNotBlank(token)) {
+    if (StringUtils.isNotBlank(token)) {
       return tokenCheck(token, req, resp);
     }
 
@@ -110,7 +109,7 @@ public class Step2IdentityFilter implements Filter {
       if (userCookie != null && user != null) {
         // double check 校验用户cookies里面的tenant和 用户信息里面的cookies 是否一致
         String tenantCookie = MonitorCookieUtil.getTenantCookie(req);
-        if (StringUtil.isNotBlank(user.getLoginTenant())
+        if (StringUtils.isNotBlank(user.getLoginTenant())
             && user.getLoginTenant().equalsIgnoreCase(tenantCookie)
             && (user.getIdentityType() != IdentityType.INNER)) {
           // cookie存在，用户存在

@@ -14,8 +14,8 @@ import java.util.UUID;
 
 import javax.servlet.http.HttpServletResponse;
 
-import io.holoinsight.server.home.common.util.scope.AuthTargetType;
-import io.holoinsight.server.home.common.util.scope.PowerConstants;
+import io.holoinsight.server.common.scope.AuthTargetType;
+import io.holoinsight.server.common.scope.PowerConstants;
 import io.holoinsight.server.home.web.common.ParaCheckUtil;
 import io.holoinsight.server.home.web.interceptor.MonitorScopeAuth;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,21 +34,21 @@ import io.holoinsight.server.common.dao.entity.TenantOps;
 import io.holoinsight.server.common.dao.entity.dto.TenantOpsDTO;
 import io.holoinsight.server.common.dao.entity.dto.TenantOpsStorage;
 import io.holoinsight.server.common.dao.entity.dto.TenantOpsStorage.StorageMetric;
-import io.holoinsight.server.home.biz.service.ApiKeyService;
+import io.holoinsight.server.common.service.ApiKeyService;
 import io.holoinsight.server.home.biz.service.MetaTableService;
 import io.holoinsight.server.home.biz.service.TenantInitService;
 import io.holoinsight.server.home.biz.service.TenantOpsService;
-import io.holoinsight.server.home.common.util.Debugger;
-import io.holoinsight.server.home.common.util.scope.MonitorCookieUtil;
-import io.holoinsight.server.home.common.util.scope.MonitorScope;
-import io.holoinsight.server.home.common.util.scope.MonitorUser;
-import io.holoinsight.server.home.common.util.scope.RequestContext;
-import io.holoinsight.server.home.dal.model.ApiKey;
+import io.holoinsight.server.common.Debugger;
+import io.holoinsight.server.common.scope.MonitorCookieUtil;
+import io.holoinsight.server.common.scope.MonitorScope;
+import io.holoinsight.server.common.scope.MonitorUser;
+import io.holoinsight.server.common.RequestContext;
+import io.holoinsight.server.common.dao.entity.ApiKey;
 import io.holoinsight.server.home.dal.model.dto.MetaTableDTO;
 import io.holoinsight.server.home.dal.model.dto.MetaTableDTO.TableStatus;
 import io.holoinsight.server.home.dal.model.dto.meta.MetaTableCol;
 import io.holoinsight.server.home.dal.model.dto.meta.MetaTableConfig;
-import io.holoinsight.server.home.common.util.ManageCallback;
+import io.holoinsight.server.common.ManageCallback;
 import lombok.extern.slf4j.Slf4j;
 
 /**

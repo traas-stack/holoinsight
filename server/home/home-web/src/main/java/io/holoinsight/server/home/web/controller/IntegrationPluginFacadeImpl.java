@@ -3,22 +3,21 @@
  */
 package io.holoinsight.server.home.web.controller;
 
-import io.holoinsight.server.home.common.util.StringUtil;
 import io.holoinsight.server.common.J;
 import io.holoinsight.server.common.JsonResult;
+import io.holoinsight.server.common.ManageCallback;
+import io.holoinsight.server.common.MonitorException;
+import io.holoinsight.server.common.RequestContext;
+import io.holoinsight.server.common.ResultCodeEnum;
+import io.holoinsight.server.common.scope.AuthTargetType;
+import io.holoinsight.server.common.scope.MonitorCookieUtil;
+import io.holoinsight.server.common.scope.MonitorScope;
+import io.holoinsight.server.common.scope.MonitorUser;
+import io.holoinsight.server.common.scope.PowerConstants;
+import io.holoinsight.server.common.service.UserOpLogService;
 import io.holoinsight.server.home.biz.service.IntegrationPluginService;
-import io.holoinsight.server.home.biz.service.UserOpLogService;
-import io.holoinsight.server.home.common.util.MonitorException;
-import io.holoinsight.server.home.common.util.ResultCodeEnum;
-import io.holoinsight.server.home.common.util.scope.AuthTargetType;
-import io.holoinsight.server.home.common.util.scope.MonitorCookieUtil;
-import io.holoinsight.server.home.common.util.scope.MonitorScope;
-import io.holoinsight.server.home.common.util.scope.MonitorUser;
-import io.holoinsight.server.home.common.util.scope.PowerConstants;
-import io.holoinsight.server.home.common.util.scope.RequestContext;
 import io.holoinsight.server.home.dal.model.OpType;
 import io.holoinsight.server.home.dal.model.dto.IntegrationPluginDTO;
-import io.holoinsight.server.home.common.util.ManageCallback;
 import io.holoinsight.server.home.web.common.ParaCheckUtil;
 import io.holoinsight.server.home.web.interceptor.MonitorScopeAuth;
 import org.apache.commons.lang3.StringUtils;
@@ -163,7 +162,7 @@ public class IntegrationPluginFacadeImpl extends BaseFacade {
           integrationPluginDTO.setCreator(mu.getLoginName());
           integrationPluginDTO.setModifier(mu.getLoginName());
         }
-        if (null != ms && !StringUtil.isBlank(ms.workspace)) {
+        if (null != ms && !StringUtils.isBlank(ms.workspace)) {
           integrationPluginDTO.setWorkspace(ms.workspace);
         }
         integrationPluginDTO.setStatus(true);
@@ -223,7 +222,7 @@ public class IntegrationPluginFacadeImpl extends BaseFacade {
         Map<String, Object> params = new HashMap<>();
         params.put("tenant", MonitorCookieUtil.getTenantOrException());
         params.put("product", name);
-        if (null != ms && !StringUtil.isBlank(ms.workspace)) {
+        if (null != ms && !StringUtils.isBlank(ms.workspace)) {
           params.put("workspace", ms.workspace);
         }
         List<IntegrationPluginDTO> integrationPluginDTOs =

@@ -7,6 +7,7 @@ package io.holoinsight.server.home.alert.plugin;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.google.common.reflect.TypeToken;
 import io.holoinsight.server.common.J;
+import io.holoinsight.server.common.dao.entity.dto.InspectConfig;
 import io.holoinsight.server.home.alert.common.G;
 import io.holoinsight.server.home.alert.model.event.AlertNotify;
 import io.holoinsight.server.home.alert.model.event.NotifyDataInfo;
@@ -14,22 +15,21 @@ import io.holoinsight.server.home.alert.model.event.WebhookInfo;
 import io.holoinsight.server.home.alert.service.converter.DoConvert;
 import io.holoinsight.server.home.alert.service.event.AlertHandlerExecutor;
 import io.holoinsight.server.home.alert.service.event.RecordSucOrFailNotify;
-import io.holoinsight.server.home.common.service.RequestContextAdapter;
-import io.holoinsight.server.home.dal.mapper.AlarmBlockMapper;
-import io.holoinsight.server.home.dal.mapper.AlarmDingDingRobotMapper;
-import io.holoinsight.server.home.dal.mapper.AlarmGroupMapper;
-import io.holoinsight.server.home.dal.mapper.AlarmSubscribeMapper;
-import io.holoinsight.server.home.dal.mapper.AlarmWebhookMapper;
-import io.holoinsight.server.home.dal.model.AlarmBlock;
-import io.holoinsight.server.home.dal.model.AlarmDingDingRobot;
-import io.holoinsight.server.home.dal.model.AlarmGroup;
-import io.holoinsight.server.home.dal.model.AlarmSubscribe;
-import io.holoinsight.server.home.dal.model.AlarmWebhook;
-import io.holoinsight.server.home.facade.AlertSilenceConfig;
-import io.holoinsight.server.home.facade.DataResult;
-import io.holoinsight.server.home.facade.InspectConfig;
-import io.holoinsight.server.home.facade.PqlRule;
-import io.holoinsight.server.home.facade.trigger.Trigger;
+import io.holoinsight.server.common.service.RequestContextAdapter;
+import io.holoinsight.server.common.dao.mapper.AlarmBlockMapper;
+import io.holoinsight.server.common.dao.mapper.AlarmDingDingRobotMapper;
+import io.holoinsight.server.common.dao.mapper.AlarmGroupMapper;
+import io.holoinsight.server.common.dao.mapper.AlarmSubscribeMapper;
+import io.holoinsight.server.common.dao.mapper.AlarmWebhookMapper;
+import io.holoinsight.server.common.dao.entity.AlarmBlock;
+import io.holoinsight.server.common.dao.entity.AlarmDingDingRobot;
+import io.holoinsight.server.common.dao.entity.AlarmGroup;
+import io.holoinsight.server.common.dao.entity.AlarmSubscribe;
+import io.holoinsight.server.common.dao.entity.AlarmWebhook;
+import io.holoinsight.server.common.dao.entity.dto.AlertSilenceConfig;
+import io.holoinsight.server.common.dao.entity.dto.alarm.trigger.TriggerDataResult;
+import io.holoinsight.server.common.dao.entity.dto.alarm.PqlRule;
+import io.holoinsight.server.common.dao.entity.dto.alarm.trigger.Trigger;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -278,10 +278,10 @@ public class GetSubscriptionHandler implements AlertHandlerExecutor {
       if (!CollectionUtils.isEmpty(tagMap)) {
         if (alertNotify.isPqlNotify()) {
           PqlRule pqlRule = alertNotify.getPqlRule();
-          Iterator<DataResult> it = pqlRule.getDataResult().iterator();
+          Iterator<TriggerDataResult> it = pqlRule.getDataResult().iterator();
           while (it.hasNext()) {
-            DataResult dataResult = it.next();
-            Map<String, String> notifyTags = dataResult.getTags();
+            TriggerDataResult triggerDataResult = it.next();
+            Map<String, String> notifyTags = triggerDataResult.getTags();
             notifyTags.forEach((key, value) -> {
               if (tagMap.containsKey(key)) {
                 Pattern pattern = Pattern.compile(tagMap.get(key));

@@ -5,6 +5,8 @@ package io.holoinsight.server.common.config;
 
 import java.time.Duration;
 
+import io.holoinsight.server.common.cache.local.CommonLocalCache;
+import io.holoinsight.server.common.cache.local.SimpleCache;
 import io.holoinsight.server.common.dao.CommonDaoConfiguration;
 import io.holoinsight.server.common.dao.mapper.GaeaConfigDOMapper;
 
@@ -66,5 +68,15 @@ public class ConfigConfiguration {
     new UpdateConfigTask(dbConfig, configDao::getConfig, Duration.ofSeconds(10)).start();
 
     return dbConfig;
+  }
+
+  @Bean
+  public LocalCacheManage localCacheManage() {
+    return new LocalCacheManage();
+  }
+
+  @Bean
+  public CommonLocalCache commonLocalCache() {
+    return new CommonLocalCache();
   }
 }

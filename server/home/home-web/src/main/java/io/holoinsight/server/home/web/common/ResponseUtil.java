@@ -6,7 +6,7 @@ package io.holoinsight.server.home.web.common;
 import io.holoinsight.server.common.J;
 import io.holoinsight.server.common.JsonResult;
 import io.holoinsight.server.common.JsonUtils;
-import io.holoinsight.server.home.common.util.ResultCodeEnum;
+import io.holoinsight.server.common.ResultCodeEnum;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 

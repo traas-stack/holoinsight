@@ -3,7 +3,7 @@
  */
 package io.holoinsight.server.home.web.common;
 
-import io.holoinsight.server.home.common.util.scope.PowerConstants;
+import io.holoinsight.server.common.scope.PowerConstants;
 import lombok.AllArgsConstructor;
 
 import java.util.List;

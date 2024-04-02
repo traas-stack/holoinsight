@@ -7,12 +7,12 @@ import io.holoinsight.server.home.alert.common.G;
 import io.holoinsight.server.home.alert.model.compute.ComputeTaskPackage;
 import io.holoinsight.server.home.alert.service.data.AlarmLoadData;
 import io.holoinsight.server.home.common.service.QueryClientService;
-import io.holoinsight.server.home.facade.DataResult;
-import io.holoinsight.server.home.facade.InspectConfig;
-import io.holoinsight.server.home.facade.emuns.PeriodType;
-import io.holoinsight.server.home.facade.trigger.DataSource;
-import io.holoinsight.server.home.facade.trigger.Filter;
-import io.holoinsight.server.home.facade.trigger.Trigger;
+import io.holoinsight.server.common.dao.entity.dto.alarm.trigger.TriggerDataResult;
+import io.holoinsight.server.common.dao.entity.dto.InspectConfig;
+import io.holoinsight.server.common.dao.emuns.PeriodType;
+import io.holoinsight.server.common.dao.entity.dto.alarm.trigger.DataSource;
+import io.holoinsight.server.common.dao.entity.dto.alarm.trigger.Filter;
+import io.holoinsight.server.common.dao.entity.dto.alarm.trigger.Trigger;
 import io.holoinsight.server.query.grpc.QueryProto;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -39,24 +39,24 @@ public class AIAlarmLoadData implements AlarmLoadData {
   private QueryClientService queryClientService;
 
   @Override
-  public List<DataResult> queryDataResult(ComputeTaskPackage computeTask,
+  public List<TriggerDataResult> queryDataResult(ComputeTaskPackage computeTask,
       InspectConfig inspectConfig, Trigger trigger) {
-    List<DataResult> dataResults = new ArrayList<>();
+    List<TriggerDataResult> triggerDataResults = new ArrayList<>();
     QueryProto.QueryResponse response = queryDataCount(computeTask, inspectConfig, trigger);
     if (response != null) {
       for (QueryProto.Result result : response.getResultsList()) {
-        DataResult dataResult = new DataResult();
-        dataResult.setMetric(result.getMetric());
-        dataResult.setTags(result.getTagsMap());
+        TriggerDataResult triggerDataResult = new TriggerDataResult();
+        triggerDataResult.setMetric(result.getMetric());
+        triggerDataResult.setTags(result.getTagsMap());
         Map<Long, Double> points = new HashMap<>();
         for (QueryProto.Point point : result.getPointsList()) {
           points.put(point.getTimestamp(), point.getValue());
         }
-        dataResult.setPoints(points);
-        dataResults.add(dataResult);
+        triggerDataResult.setPoints(points);
+        triggerDataResults.add(triggerDataResult);
       }
     }
-    return dataResults;
+    return triggerDataResults;
   }
 
   private QueryProto.QueryResponse queryDataCount(ComputeTaskPackage computeTask,

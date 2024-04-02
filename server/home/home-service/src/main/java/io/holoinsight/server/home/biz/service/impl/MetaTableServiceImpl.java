@@ -4,7 +4,7 @@
 package io.holoinsight.server.home.biz.service.impl;
 
 import io.holoinsight.server.home.biz.service.MetaTableService;
-import io.holoinsight.server.home.common.util.JpaUpdateUtil;
+import io.holoinsight.server.common.JpaUpdateUtil;
 import io.holoinsight.server.home.dal.converter.MetaTableConverter;
 import io.holoinsight.server.home.dal.mapper.MetaTableMapper;
 import io.holoinsight.server.home.dal.model.MetaTable;

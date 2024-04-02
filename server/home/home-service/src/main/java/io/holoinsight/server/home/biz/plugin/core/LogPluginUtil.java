@@ -4,7 +4,7 @@
 
 package io.holoinsight.server.home.biz.plugin.core;
 
-import io.holoinsight.server.home.common.util.MonitorException;
+import io.holoinsight.server.common.MonitorException;
 import io.holoinsight.server.home.dal.model.dto.conf.CollectMetric;
 import io.holoinsight.server.home.dal.model.dto.conf.CollectMetric.AfterFilter;
 import io.holoinsight.server.home.dal.model.dto.conf.CollectMetric.Metric;

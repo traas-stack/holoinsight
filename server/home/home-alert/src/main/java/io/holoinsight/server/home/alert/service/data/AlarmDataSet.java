@@ -6,10 +6,10 @@ package io.holoinsight.server.home.alert.service.data;
 import io.holoinsight.server.home.alert.model.compute.ComputeTaskPackage;
 import io.holoinsight.server.home.alert.service.data.load.PqlAlarmLoadData;
 import io.holoinsight.server.home.alert.service.event.RecordSucOrFailNotify;
-import io.holoinsight.server.home.facade.DataResult;
-import io.holoinsight.server.home.facade.PqlRule;
-import io.holoinsight.server.home.facade.Rule;
-import io.holoinsight.server.home.facade.trigger.Trigger;
+import io.holoinsight.server.common.dao.entity.dto.alarm.trigger.TriggerDataResult;
+import io.holoinsight.server.common.dao.entity.dto.alarm.PqlRule;
+import io.holoinsight.server.common.dao.entity.dto.alarm.AlarmRuleConf;
+import io.holoinsight.server.common.dao.entity.dto.alarm.trigger.Trigger;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -54,7 +54,7 @@ public class AlarmDataSet {
         try {
           PqlRule pqlRule = inspectConfig.getPqlRule();
           if (pqlRule != null && !StringUtils.isEmpty(pqlRule.getPql())) {
-            List<DataResult> result =
+            List<TriggerDataResult> result =
                 pqlAlarmLoadData.queryDataResult(computeTaskPackage, inspectConfig);
             pqlRule.setDataResult(result);
             inspectConfig.setPqlRule(pqlRule);
@@ -69,20 +69,20 @@ public class AlarmDataSet {
         }
       } else {
         // 处理rule&ai告警逻辑
-        Rule rule = inspectConfig.getRule();
-        if (rule == null || CollectionUtils.isEmpty(rule.getTriggers())) {
+        AlarmRuleConf alarmRuleConf = inspectConfig.getRule();
+        if (alarmRuleConf == null || CollectionUtils.isEmpty(alarmRuleConf.getTriggers())) {
           return;
         }
         boolean notifySuccess = true;
-        for (Trigger trigger : rule.getTriggers()) {
+        for (Trigger trigger : alarmRuleConf.getTriggers()) {
           if (null == trigger || null == trigger.getType())
             continue;
           try {
             // 接入统一数据源，查询数据信息
             alarmLoadData = loadDataFactory.getLoadDataService(trigger.getType().getType());
-            List<DataResult> dataResults =
+            List<TriggerDataResult> triggerDataResults =
                 alarmLoadData.queryDataResult(computeTaskPackage, inspectConfig, trigger);
-            trigger.setDataResult(dataResults);
+            trigger.setDataResult(triggerDataResults);
           } catch (Exception exception) {
             LOGGER.error("{} AlarmLoadData Exception", inspectConfig.getTraceId(), exception);
             RecordSucOrFailNotify.alertNotifyProcessFail("alarm load data Exception: " + exception,

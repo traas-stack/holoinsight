@@ -3,8 +3,8 @@
  */
 package io.holoinsight.server.home.alert.model.compute;
 
-import io.holoinsight.server.home.facade.AlertNotifyRecordDTO;
-import io.holoinsight.server.home.facade.InspectConfig;
+import io.holoinsight.server.common.dao.entity.dto.AlertNotifyRecordDTO;
+import io.holoinsight.server.common.dao.entity.dto.InspectConfig;
 import lombok.Data;
 
 import java.util.List;

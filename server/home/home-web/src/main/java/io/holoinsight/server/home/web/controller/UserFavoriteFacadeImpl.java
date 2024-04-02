@@ -8,26 +8,25 @@ import io.holoinsight.server.home.biz.service.DashboardService;
 import io.holoinsight.server.home.biz.service.FolderService;
 import io.holoinsight.server.home.biz.service.IntegrationProductService;
 import io.holoinsight.server.home.biz.service.TenantInitService;
-import io.holoinsight.server.home.biz.service.UserFavoriteService;
-import io.holoinsight.server.home.biz.service.UserOpLogService;
-import io.holoinsight.server.home.common.service.RequestContextAdapter;
-import io.holoinsight.server.home.common.util.MonitorException;
-import io.holoinsight.server.home.common.util.ResultCodeEnum;
-import io.holoinsight.server.home.common.util.StringUtil;
-import io.holoinsight.server.home.common.util.scope.AuthTargetType;
-import io.holoinsight.server.home.common.util.scope.MonitorScope;
-import io.holoinsight.server.home.common.util.scope.MonitorUser;
-import io.holoinsight.server.home.common.util.scope.PowerConstants;
-import io.holoinsight.server.home.common.util.scope.RequestContext;
+import io.holoinsight.server.common.service.UserFavoriteService;
+import io.holoinsight.server.common.service.UserOpLogService;
+import io.holoinsight.server.common.service.RequestContextAdapter;
+import io.holoinsight.server.common.MonitorException;
+import io.holoinsight.server.common.ResultCodeEnum;
+import io.holoinsight.server.common.scope.AuthTargetType;
+import io.holoinsight.server.common.scope.MonitorScope;
+import io.holoinsight.server.common.scope.MonitorUser;
+import io.holoinsight.server.common.scope.PowerConstants;
+import io.holoinsight.server.common.RequestContext;
 import io.holoinsight.server.home.dal.model.Dashboard;
 import io.holoinsight.server.home.dal.model.Folder;
 import io.holoinsight.server.home.dal.model.OpType;
-import io.holoinsight.server.home.dal.model.UserFavorite;
+import io.holoinsight.server.common.dao.entity.UserFavorite;
 import io.holoinsight.server.home.dal.model.dto.CustomPluginDTO;
 import io.holoinsight.server.home.dal.model.dto.IntegrationProductDTO;
-import io.holoinsight.server.home.facade.page.MonitorPageRequest;
-import io.holoinsight.server.home.facade.page.MonitorPageResult;
-import io.holoinsight.server.home.common.util.ManageCallback;
+import io.holoinsight.server.common.MonitorPageRequest;
+import io.holoinsight.server.common.MonitorPageResult;
+import io.holoinsight.server.common.ManageCallback;
 import io.holoinsight.server.home.web.common.ParaCheckUtil;
 import io.holoinsight.server.home.web.controller.model.FavRequest;
 import io.holoinsight.server.home.web.interceptor.MonitorScopeAuth;
@@ -191,10 +190,10 @@ public class UserFavoriteFacadeImpl extends BaseFacade {
         if (null != mu) {
           userFavorite.setUserLoginName(mu.getLoginName());
         }
-        if (null != ms && !StringUtil.isBlank(ms.tenant)) {
+        if (null != ms && !StringUtils.isBlank(ms.tenant)) {
           userFavorite.setTenant(ms.tenant);
         }
-        if (null != ms && !StringUtil.isBlank(ms.workspace)) {
+        if (null != ms && !StringUtils.isBlank(ms.workspace)) {
           userFavorite.setWorkspace(ms.workspace);
         }
         userFavorite.setGmtCreate(new Date());
@@ -282,7 +281,7 @@ public class UserFavoriteFacadeImpl extends BaseFacade {
         MonitorScope ms = RequestContext.getContext().ms;
         MonitorUser mu = RequestContext.getContext().mu;
 
-        if (StringUtil.isBlank(favRequest.getUserLoginName())) {
+        if (StringUtils.isBlank(favRequest.getUserLoginName())) {
           favRequest.setUserLoginName(mu.getLoginName());
         }
 
@@ -320,10 +319,10 @@ public class UserFavoriteFacadeImpl extends BaseFacade {
       @Override
       public void doManage() {
         MonitorScope ms = RequestContext.getContext().ms;
-        if (null != ms && !StringUtil.isBlank(ms.tenant)) {
+        if (null != ms && !StringUtils.isBlank(ms.tenant)) {
           userFavoriteRequest.getTarget().setTenant(ms.tenant);
         }
-        if (null != ms && !StringUtil.isBlank(ms.workspace)) {
+        if (null != ms && !StringUtils.isBlank(ms.workspace)) {
           userFavoriteRequest.getTarget().setWorkspace(ms.workspace);
         }
         if (StringUtils.isEmpty(userFavoriteRequest.getTarget().getUserLoginName())) {

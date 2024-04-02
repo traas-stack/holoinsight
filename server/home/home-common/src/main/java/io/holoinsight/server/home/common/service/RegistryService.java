@@ -15,7 +15,7 @@ import org.springframework.stereotype.Service;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import io.holoinsight.server.common.grpc.FileNode;
-import io.holoinsight.server.home.common.util.MonitorException;
+import io.holoinsight.server.common.MonitorException;
 import io.holoinsight.server.registry.grpc.prod.InspectRequest;
 import io.holoinsight.server.registry.grpc.prod.InspectResponse;
 import io.holoinsight.server.registry.grpc.prod.ListFilesRequest;

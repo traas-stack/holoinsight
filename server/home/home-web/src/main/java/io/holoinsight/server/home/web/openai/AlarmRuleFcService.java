@@ -8,23 +8,23 @@ import com.google.gson.reflect.TypeToken;
 import io.holoinsight.server.common.J;
 import io.holoinsight.server.common.dao.entity.MetricInfo;
 import io.holoinsight.server.common.dao.mapper.MetricInfoMapper;
-import io.holoinsight.server.home.biz.service.AlertRuleService;
+import io.holoinsight.server.common.service.AlertRuleService;
 import io.holoinsight.server.home.biz.service.openai.OpenAiService;
-import io.holoinsight.server.home.common.util.scope.MonitorScope;
-import io.holoinsight.server.home.common.util.scope.MonitorUser;
-import io.holoinsight.server.home.common.util.scope.RequestContext;
+import io.holoinsight.server.common.scope.MonitorScope;
+import io.holoinsight.server.common.scope.MonitorUser;
+import io.holoinsight.server.common.RequestContext;
 import io.holoinsight.server.home.dal.model.openai.AlertRuleType;
-import io.holoinsight.server.home.facade.AlarmRuleDTO;
-import io.holoinsight.server.home.facade.Rule;
-import io.holoinsight.server.home.facade.TimeFilter;
-import io.holoinsight.server.home.facade.emuns.AlertLevel;
-import io.holoinsight.server.home.facade.emuns.BoolOperationEnum;
-import io.holoinsight.server.home.facade.emuns.FunctionEnum;
-import io.holoinsight.server.home.facade.emuns.TimeFilterEnum;
-import io.holoinsight.server.home.facade.trigger.CompareConfig;
-import io.holoinsight.server.home.facade.trigger.CompareParam;
-import io.holoinsight.server.home.facade.trigger.DataSource;
-import io.holoinsight.server.home.facade.trigger.Trigger;
+import io.holoinsight.server.common.dao.entity.dto.AlarmRuleDTO;
+import io.holoinsight.server.common.dao.entity.dto.alarm.AlarmRuleConf;
+import io.holoinsight.server.common.dao.entity.dto.alarm.TimeFilter;
+import io.holoinsight.server.common.dao.emuns.AlertLevel;
+import io.holoinsight.server.common.dao.emuns.BoolOperationEnum;
+import io.holoinsight.server.common.dao.emuns.FunctionEnum;
+import io.holoinsight.server.common.dao.emuns.TimeFilterEnum;
+import io.holoinsight.server.common.dao.entity.dto.alarm.trigger.CompareConfig;
+import io.holoinsight.server.common.dao.entity.dto.alarm.trigger.CompareParam;
+import io.holoinsight.server.common.dao.entity.dto.alarm.trigger.DataSource;
+import io.holoinsight.server.common.dao.entity.dto.alarm.trigger.Trigger;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -121,10 +121,10 @@ public class AlarmRuleFcService {
 
   private Map<String, Object> buildRule(List<CompareConfig> compareConfigs, String ruleDescribe,
       MetricInfo metricInfo) {
-    Rule alertRule = new Rule();
-    alertRule.setBoolOperation(BoolOperationEnum.AND);
-    alertRule.setTriggers(buildTriggers(compareConfigs, ruleDescribe, metricInfo));
-    return J.toMap(J.toJson(alertRule));
+    AlarmRuleConf alertAlarmRuleConf = new AlarmRuleConf();
+    alertAlarmRuleConf.setBoolOperation(BoolOperationEnum.AND);
+    alertAlarmRuleConf.setTriggers(buildTriggers(compareConfigs, ruleDescribe, metricInfo));
+    return J.toMap(J.toJson(alertAlarmRuleConf));
   }
 
   private String slidingWindowAggregator = "avg";

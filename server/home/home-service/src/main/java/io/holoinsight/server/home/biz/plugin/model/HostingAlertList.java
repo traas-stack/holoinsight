@@ -5,8 +5,8 @@ package io.holoinsight.server.home.biz.plugin.model;
 
 import io.holoinsight.server.home.dal.model.dto.IntegrationPluginDTO;
 import io.holoinsight.server.home.dal.model.dto.IntegrationProductDTO;
-import io.holoinsight.server.home.facade.AlarmRuleDTO;
-import io.holoinsight.server.home.facade.trigger.Filter;
+import io.holoinsight.server.common.dao.entity.dto.AlarmRuleDTO;
+import io.holoinsight.server.common.dao.entity.dto.alarm.trigger.Filter;
 import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;

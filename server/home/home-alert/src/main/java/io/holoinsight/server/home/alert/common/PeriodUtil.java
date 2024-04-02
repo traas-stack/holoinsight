@@ -3,7 +3,7 @@
  */
 package io.holoinsight.server.home.alert.common;
 
-import io.holoinsight.server.home.facade.emuns.PeriodType;
+import io.holoinsight.server.common.dao.emuns.PeriodType;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;

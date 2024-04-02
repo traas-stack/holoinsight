@@ -9,7 +9,7 @@ import io.holoinsight.server.home.biz.plugin.model.HostingPlugin;
 import io.holoinsight.server.home.biz.service.GaeaCollectConfigService;
 import io.holoinsight.server.home.biz.service.TenantInitService;
 import io.holoinsight.server.home.biz.service.openai.OpenAiService;
-import io.holoinsight.server.home.common.util.EventBusHolder;
+import io.holoinsight.server.common.EventBusHolder;
 import io.holoinsight.server.home.dal.model.dto.GaeaCollectConfigDTO;
 import io.holoinsight.server.home.dal.model.dto.IntegrationPluginDTO;
 import com.google.common.eventbus.AllowConcurrentEvents;

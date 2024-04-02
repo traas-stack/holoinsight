@@ -3,12 +3,12 @@
  */
 package io.holoinsight.server.home.biz.service.impl;
 
-import io.holoinsight.server.home.biz.service.FolderService;
-import io.holoinsight.server.home.common.util.StringUtil;
-import io.holoinsight.server.home.dal.mapper.FolderMapper;
-import io.holoinsight.server.home.dal.model.Folder;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import io.holoinsight.server.home.biz.service.FolderService;
+import io.holoinsight.server.home.dal.mapper.FolderMapper;
+import io.holoinsight.server.home.dal.model.Folder;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -25,10 +25,10 @@ public class FolderServiceImpl extends ServiceImpl<FolderMapper, Folder> impleme
   @Override
   public List<Folder> getListByKeyword(String keyword, String tenant, String workspace) {
     QueryWrapper<Folder> wrapper = new QueryWrapper<>();
-    if (StringUtil.isNotBlank(tenant)) {
+    if (StringUtils.isNotBlank(tenant)) {
       wrapper.eq("tenant", tenant);
     }
-    if (StringUtil.isNotBlank(workspace)) {
+    if (StringUtils.isNotBlank(workspace)) {
       wrapper.eq("workspace", workspace);
     }
     wrapper.and(wa -> wa.like("id", keyword).or().like("name", keyword));
@@ -41,7 +41,7 @@ public class FolderServiceImpl extends ServiceImpl<FolderMapper, Folder> impleme
   public List<Folder> getListByNameLike(String name, String tenant, String workspace) {
     QueryWrapper<Folder> wrapper = new QueryWrapper<>();
     wrapper.eq("tenant", tenant);
-    if (StringUtil.isNotBlank(workspace)) {
+    if (StringUtils.isNotBlank(workspace)) {
       wrapper.eq("workspace", workspace);
     }
     wrapper.select().like("name", name);
@@ -59,7 +59,7 @@ public class FolderServiceImpl extends ServiceImpl<FolderMapper, Folder> impleme
   public Folder queryById(Long id, String tenant, String workspace) {
     QueryWrapper<Folder> wrapper = new QueryWrapper<>();
     wrapper.eq("tenant", tenant);
-    if (StringUtil.isNotBlank(workspace)) {
+    if (StringUtils.isNotBlank(workspace)) {
       wrapper.eq("workspace", workspace);
     }
     wrapper.eq("id", id);

@@ -8,7 +8,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.module.jsonSchema.JsonSchema;
 import com.fasterxml.jackson.module.jsonSchema.JsonSchemaGenerator;
 import io.holoinsight.server.common.J;
-import io.holoinsight.server.home.facade.trigger.CompareConfig;
+import io.holoinsight.server.common.dao.entity.dto.alarm.trigger.CompareConfig;
 import lombok.Data;
 
 import java.util.Arrays;

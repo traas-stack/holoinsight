@@ -14,17 +14,17 @@ import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import io.holoinsight.server.home.biz.service.UserinfoService;
-import io.holoinsight.server.home.common.util.scope.MonitorParams;
-import io.holoinsight.server.home.facade.UserinfoDTO;
+import io.holoinsight.server.common.service.UserinfoService;
+import io.holoinsight.server.common.scope.MonitorParams;
+import io.holoinsight.server.common.dao.entity.dto.UserinfoDTO;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import io.holoinsight.server.home.biz.common.MetaDictUtil;
-import io.holoinsight.server.home.common.util.scope.MonitorAuth;
-import io.holoinsight.server.home.common.util.scope.MonitorScope;
-import io.holoinsight.server.home.common.util.scope.MonitorUser;
+import io.holoinsight.server.common.scope.MonitorAuth;
+import io.holoinsight.server.common.scope.MonitorScope;
+import io.holoinsight.server.common.scope.MonitorUser;
 import org.springframework.util.CollectionUtils;
 
 /**

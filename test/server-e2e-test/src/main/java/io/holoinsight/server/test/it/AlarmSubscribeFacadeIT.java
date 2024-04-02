@@ -4,8 +4,8 @@
 package io.holoinsight.server.test.it;
 
 import io.holoinsight.server.common.J;
-import io.holoinsight.server.home.dal.model.dto.AlarmSubscribeDTO;
-import io.holoinsight.server.home.dal.model.dto.AlarmSubscribeInfo;
+import io.holoinsight.server.common.dao.entity.dto.AlarmSubscribeDTO;
+import io.holoinsight.server.common.dao.entity.dto.AlarmSubscribeInfo;
 import io.restassured.response.Response;
 import org.json.JSONArray;
 import org.json.JSONObject;

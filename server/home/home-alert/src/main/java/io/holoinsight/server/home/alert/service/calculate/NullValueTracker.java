@@ -9,8 +9,8 @@ import io.holoinsight.server.home.alert.model.function.FunctionConfigParam;
 import io.holoinsight.server.home.alert.service.data.load.RuleAlarmLoadData;
 import io.holoinsight.server.home.biz.common.MetaDictUtil;
 import io.holoinsight.server.home.common.service.QueryClientService;
-import io.holoinsight.server.home.facade.DataResult;
-import io.holoinsight.server.home.facade.trigger.Trigger;
+import io.holoinsight.server.common.dao.entity.dto.alarm.trigger.TriggerDataResult;
+import io.holoinsight.server.common.dao.entity.dto.alarm.trigger.Trigger;
 import io.holoinsight.server.query.grpc.QueryProto;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -43,24 +43,25 @@ public class NullValueTracker {
   private ConcurrentHashMap<Long, List<Record>> map = new ConcurrentHashMap<>();
 
 
-  public void record(DataResult dataResult, Trigger trigger, List<Long> nullValTimes,
+  public void record(TriggerDataResult triggerDataResult, Trigger trigger, List<Long> nullValTimes,
       ComputeInfo computeInfo) {
     if (!enable()) {
       return;
     }
     long period = computeInfo.getPeriod();
-    log.info("record at {} {}", period, dataResult.getKey());
+    log.info("record at {} {}", period, triggerDataResult.getKey());
     List<Record> records = map.computeIfAbsent(period, k -> new ArrayList<>());
-    records.add(new Record(dataResult, trigger, nullValTimes, period, computeInfo.getTenant()));
+    records
+        .add(new Record(triggerDataResult, trigger, nullValTimes, period, computeInfo.getTenant()));
   }
 
-  public List<Long> hasNullValue(DataResult dataResult,
+  public List<Long> hasNullValue(TriggerDataResult triggerDataResult,
       List<FunctionConfigParam> functionConfigParams) {
     if (CollectionUtils.isEmpty(functionConfigParams)) {
       return Collections.emptyList();
     }
     List<Long> nullValTimes = new ArrayList<>();
-    Map<Long, Double> points = dataResult.getPoints();
+    Map<Long, Double> points = triggerDataResult.getPoints();
     for (FunctionConfigParam functionConfigParam : functionConfigParams) {
       long duration = functionConfigParam.getDuration();
       for (long i = 0; i < duration; i++) {
@@ -136,15 +137,15 @@ public class NullValueTracker {
   }
 
   private static class Record {
-    DataResult dataResult;
+    TriggerDataResult triggerDataResult;
     Trigger trigger;
     List<Long> nullValTimes;
     long period;
     String tenant;
 
-    public Record(DataResult dataResult, Trigger trigger, List<Long> nullValTimes, long period,
-        String tenant) {
-      this.dataResult = dataResult;
+    public Record(TriggerDataResult triggerDataResult, Trigger trigger, List<Long> nullValTimes,
+        long period, String tenant) {
+      this.triggerDataResult = triggerDataResult;
       this.trigger = trigger;
       this.nullValTimes = nullValTimes;
       this.period = period;
@@ -152,10 +153,10 @@ public class NullValueTracker {
     }
 
     public boolean equalMetricAndTags(QueryProto.Result result) {
-      DataResult key = new DataResult();
+      TriggerDataResult key = new TriggerDataResult();
       key.setMetric(result.getMetric());
       key.setTags(result.getTagsMap());
-      return StringUtils.equals(dataResult.getKey(), key.getKey());
+      return StringUtils.equals(triggerDataResult.getKey(), key.getKey());
     }
   }
 
@@ -178,8 +179,8 @@ public class NullValueTracker {
       CheckResult checkResult = new CheckResult();
       checkResult.conflict = true;
       checkResult.curValue = curValue;
-      checkResult.metric = record.dataResult.getMetric();
-      checkResult.tags = record.dataResult.getTags();
+      checkResult.metric = record.triggerDataResult.getMetric();
+      checkResult.tags = record.triggerDataResult.getTags();
       checkResult.cur = timestamp;
       return checkResult;
     }

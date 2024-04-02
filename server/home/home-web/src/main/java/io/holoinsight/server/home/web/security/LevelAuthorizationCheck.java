@@ -3,7 +3,7 @@
  */
 package io.holoinsight.server.home.web.security;
 
-import io.holoinsight.server.home.facade.utils.ParaCheckUtil;
+import io.holoinsight.server.home.web.common.ParaCheckUtil;
 import org.aopalliance.intercept.MethodInvocation;
 import org.apache.commons.lang3.StringUtils;
 

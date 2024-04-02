@@ -7,7 +7,7 @@ import io.holoinsight.server.common.AddressUtil;
 import io.holoinsight.server.common.DateUtil;
 import io.holoinsight.server.common.J;
 import io.holoinsight.server.home.alert.service.task.coordinator.client.Client;
-import io.holoinsight.server.home.facade.emuns.PeriodType;
+import io.holoinsight.server.common.dao.emuns.PeriodType;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import lombok.Data;

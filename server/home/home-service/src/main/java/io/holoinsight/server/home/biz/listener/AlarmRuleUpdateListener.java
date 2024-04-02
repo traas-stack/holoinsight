@@ -9,15 +9,15 @@ import com.google.common.eventbus.AllowConcurrentEvents;
 import com.google.common.eventbus.Subscribe;
 import com.google.gson.reflect.TypeToken;
 import io.holoinsight.server.common.J;
-import io.holoinsight.server.home.biz.service.AlarmMetricService;
-import io.holoinsight.server.home.common.util.EventBusHolder;
-import io.holoinsight.server.home.dal.mapper.AlarmHistoryMapper;
-import io.holoinsight.server.home.dal.model.AlarmHistory;
-import io.holoinsight.server.home.dal.model.AlarmMetric;
-import io.holoinsight.server.home.facade.AlarmRuleDTO;
-import io.holoinsight.server.home.facade.Rule;
-import io.holoinsight.server.home.facade.trigger.DataSource;
-import io.holoinsight.server.home.facade.trigger.Trigger;
+import io.holoinsight.server.common.dao.entity.dto.alarm.AlarmRuleConf;
+import io.holoinsight.server.common.service.AlarmMetricService;
+import io.holoinsight.server.common.EventBusHolder;
+import io.holoinsight.server.common.dao.mapper.AlarmHistoryMapper;
+import io.holoinsight.server.common.dao.entity.AlarmHistory;
+import io.holoinsight.server.common.dao.entity.AlarmMetric;
+import io.holoinsight.server.common.dao.entity.dto.AlarmRuleDTO;
+import io.holoinsight.server.common.dao.entity.dto.alarm.trigger.DataSource;
+import io.holoinsight.server.common.dao.entity.dto.alarm.trigger.Trigger;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,13 +57,14 @@ public class AlarmRuleUpdateListener {
     if (CollectionUtils.isEmpty(alarmRuleDTO.getRule())) {
       return;
     }
-    Rule rule = J.fromJson(J.toJson(alarmRuleDTO.getRule()), new TypeToken<Rule>() {}.getType());
+    AlarmRuleConf alarmRuleConf =
+        J.fromJson(J.toJson(alarmRuleDTO.getRule()), new TypeToken<AlarmRuleConf>() {}.getType());
 
-    if (CollectionUtils.isEmpty(rule.getTriggers())) {
+    if (CollectionUtils.isEmpty(alarmRuleConf.getTriggers())) {
       return;
     }
 
-    for (Trigger trigger : rule.getTriggers()) {
+    for (Trigger trigger : alarmRuleConf.getTriggers()) {
       if (CollectionUtils.isEmpty(trigger.getDatasources())) {
         continue;
       }

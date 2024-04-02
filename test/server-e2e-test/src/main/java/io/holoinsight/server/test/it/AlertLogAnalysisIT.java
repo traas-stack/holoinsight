@@ -4,27 +4,17 @@
 package io.holoinsight.server.test.it;
 
 import io.holoinsight.server.common.J;
-import io.holoinsight.server.home.facade.AlarmHistoryDetailDTO;
-import io.holoinsight.server.home.facade.AlarmRuleDTO;
-import io.holoinsight.server.home.facade.Rule;
-import io.holoinsight.server.home.facade.emuns.BoolOperationEnum;
-import io.holoinsight.server.home.facade.emuns.FunctionEnum;
-import io.holoinsight.server.home.facade.page.MonitorPageRequest;
-import io.holoinsight.server.home.facade.trigger.Trigger;
-import org.apache.commons.lang3.RandomStringUtils;
-import org.hamcrest.CustomMatcher;
-import org.hamcrest.Matchers;
-import org.hamcrest.core.Every;
-import org.json.JSONObject;
+import io.holoinsight.server.common.dao.entity.dto.alarm.AlarmRuleConf;
+import io.holoinsight.server.common.dao.emuns.BoolOperationEnum;
+import io.holoinsight.server.common.dao.emuns.FunctionEnum;
+import io.holoinsight.server.common.dao.entity.dto.alarm.trigger.Trigger;
 import org.junit.jupiter.api.Test;
 
-import java.time.Duration;
 import java.util.Collections;
 import java.util.Map;
 
 import static io.holoinsight.server.test.it.AlertCalculateIT.buildCompareConfig;
 import static io.holoinsight.server.test.it.AlertCalculateIT.buildDataSource;
-import static io.holoinsight.server.test.it.AlertCalculateIT.buildTimeFilter;
 
 /**
  * @author masaimu
@@ -110,10 +100,10 @@ public class AlertLogAnalysisIT extends BaseIT {
   }
 
   private Map<String, Object> buildLogAnalysisRule(String metricName) {
-    Rule rule = new Rule();
-    rule.setBoolOperation(BoolOperationEnum.AND);
-    rule.setTriggers(Collections.singletonList(buildLogAnalysisTrigger(metricName)));
-    return J.toMap(J.toJson(rule));
+    AlarmRuleConf alarmRuleConf = new AlarmRuleConf();
+    alarmRuleConf.setBoolOperation(BoolOperationEnum.AND);
+    alarmRuleConf.setTriggers(Collections.singletonList(buildLogAnalysisTrigger(metricName)));
+    return J.toMap(J.toJson(alarmRuleConf));
   }
 
   private Trigger buildLogAnalysisTrigger(String metricName) {

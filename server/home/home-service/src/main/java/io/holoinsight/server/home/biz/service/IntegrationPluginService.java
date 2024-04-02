@@ -6,8 +6,8 @@ package io.holoinsight.server.home.biz.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import io.holoinsight.server.home.dal.model.IntegrationPlugin;
 import io.holoinsight.server.home.dal.model.dto.IntegrationPluginDTO;
-import io.holoinsight.server.home.facade.page.MonitorPageRequest;
-import io.holoinsight.server.home.facade.page.MonitorPageResult;
+import io.holoinsight.server.common.MonitorPageRequest;
+import io.holoinsight.server.common.MonitorPageResult;
 
 import java.util.List;
 import java.util.Map;

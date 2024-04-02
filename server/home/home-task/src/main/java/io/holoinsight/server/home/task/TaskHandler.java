@@ -3,8 +3,8 @@
  */
 package io.holoinsight.server.home.task;
 
-import io.holoinsight.server.home.common.model.TaskEnum;
-import io.holoinsight.server.home.common.model.TaskEnum.TaskType;
+import io.holoinsight.server.common.model.TaskEnum;
+import io.holoinsight.server.common.model.TaskEnum.TaskType;
 import org.apache.commons.lang3.StringUtils;
 
 import java.lang.annotation.ElementType;

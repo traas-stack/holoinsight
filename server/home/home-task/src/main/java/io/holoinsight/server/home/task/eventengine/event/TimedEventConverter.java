@@ -4,7 +4,7 @@
 
 package io.holoinsight.server.home.task.eventengine.event;
 
-import io.holoinsight.server.home.dal.model.TimedEvent;
+import io.holoinsight.server.common.dao.entity.TimedEvent;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -5,8 +5,8 @@
 package io.holoinsight.server.home.alert.service.task;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import io.holoinsight.server.home.dal.mapper.AlarmRuleMapper;
-import io.holoinsight.server.home.dal.model.AlarmRule;
+import io.holoinsight.server.common.dao.mapper.AlarmRuleMapper;
+import io.holoinsight.server.common.dao.entity.AlarmRule;
 import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;

@@ -3,7 +3,7 @@
  */
 package io.holoinsight.server.home.dal.model.dto;
 
-import io.holoinsight.server.home.dal.model.AlarmMetric;
+import io.holoinsight.server.common.dao.entity.AlarmMetric;
 import io.holoinsight.server.home.dal.model.dto.conf.CustomPluginConf;
 import lombok.Data;
 

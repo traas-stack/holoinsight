@@ -14,18 +14,18 @@ import org.junit.jupiter.api.Test;
 
 import cn.hutool.json.JSONObject;
 import io.holoinsight.server.common.J;
-import io.holoinsight.server.home.facade.AlarmRuleDTO;
-import io.holoinsight.server.home.facade.Rule;
-import io.holoinsight.server.home.facade.TimeFilter;
-import io.holoinsight.server.home.facade.emuns.BoolOperationEnum;
-import io.holoinsight.server.home.facade.emuns.CompareOperationEnum;
-import io.holoinsight.server.home.facade.emuns.FunctionEnum;
-import io.holoinsight.server.home.facade.emuns.TimeFilterEnum;
-import io.holoinsight.server.home.facade.trigger.CompareConfig;
-import io.holoinsight.server.home.facade.trigger.CompareParam;
-import io.holoinsight.server.home.facade.trigger.DataSource;
-import io.holoinsight.server.home.facade.trigger.Filter;
-import io.holoinsight.server.home.facade.trigger.Trigger;
+import io.holoinsight.server.common.dao.entity.dto.AlarmRuleDTO;
+import io.holoinsight.server.common.dao.entity.dto.alarm.AlarmRuleConf;
+import io.holoinsight.server.common.dao.entity.dto.alarm.TimeFilter;
+import io.holoinsight.server.common.dao.emuns.BoolOperationEnum;
+import io.holoinsight.server.common.dao.emuns.CompareOperationEnum;
+import io.holoinsight.server.common.dao.emuns.FunctionEnum;
+import io.holoinsight.server.common.dao.emuns.TimeFilterEnum;
+import io.holoinsight.server.common.dao.entity.dto.alarm.trigger.CompareConfig;
+import io.holoinsight.server.common.dao.entity.dto.alarm.trigger.CompareParam;
+import io.holoinsight.server.common.dao.entity.dto.alarm.trigger.DataSource;
+import io.holoinsight.server.common.dao.entity.dto.alarm.trigger.Filter;
+import io.holoinsight.server.common.dao.entity.dto.alarm.trigger.Trigger;
 import io.restassured.response.Response;
 
 public class AlarmMetricFacadeIT extends BaseIT {
@@ -81,10 +81,10 @@ public class AlarmMetricFacadeIT extends BaseIT {
   }
 
   private Map<String, Object> buildRule() {
-    Rule rule = new Rule();
-    rule.setBoolOperation(BoolOperationEnum.AND);
-    rule.setTriggers(Collections.singletonList(buildTrigger()));
-    return J.toMap(J.toJson(rule));
+    AlarmRuleConf alarmRuleConf = new AlarmRuleConf();
+    alarmRuleConf.setBoolOperation(BoolOperationEnum.AND);
+    alarmRuleConf.setTriggers(Collections.singletonList(buildTrigger()));
+    return J.toMap(J.toJson(alarmRuleConf));
   }
 
   private Trigger buildTrigger() {

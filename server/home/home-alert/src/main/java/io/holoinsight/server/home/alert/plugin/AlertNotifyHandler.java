@@ -10,7 +10,7 @@ import io.holoinsight.server.home.alert.model.event.AlertNotifyRecordLatch;
 import io.holoinsight.server.home.alert.model.event.AlertNotifyRequest;
 import io.holoinsight.server.home.alert.service.event.AlertHandlerExecutor;
 import io.holoinsight.server.home.alert.service.event.RecordSucOrFailNotify;
-import io.holoinsight.server.home.facade.AlertNotifyRecordDTO;
+import io.holoinsight.server.common.dao.entity.dto.AlertNotifyRecordDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.CollectionUtils;

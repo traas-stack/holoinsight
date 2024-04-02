@@ -10,10 +10,10 @@ package io.holoinsight.server.home.alert.service.calculate;
 
 import io.holoinsight.server.home.alert.model.function.FunctionConfigParam;
 import io.holoinsight.server.home.alert.model.function.FunctionLogic;
-import io.holoinsight.server.home.facade.DataResult;
-import io.holoinsight.server.home.facade.emuns.FunctionEnum;
-import io.holoinsight.server.home.facade.trigger.CompareParam;
-import io.holoinsight.server.home.facade.trigger.TriggerResult;
+import io.holoinsight.server.common.dao.entity.dto.alarm.trigger.TriggerDataResult;
+import io.holoinsight.server.common.dao.emuns.FunctionEnum;
+import io.holoinsight.server.common.dao.entity.dto.alarm.trigger.CompareParam;
+import io.holoinsight.server.common.dao.entity.dto.alarm.trigger.TriggerResult;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
@@ -28,13 +28,14 @@ public class Step implements FunctionLogic {
     return FunctionEnum.Step;
   }
 
-  public TriggerResult invoke(DataResult dataResult, FunctionConfigParam functionConfigParam) {
+  public TriggerResult invoke(TriggerDataResult triggerDataResult,
+      FunctionConfigParam functionConfigParam) {
     TriggerResult fr = new TriggerResult();
     fr.setHit(false);
     int triggerNum = 0;
 
     // 循环周期 (是否手动计算周期再循环)
-    for (Map.Entry<Long, Double> m : dataResult.getPoints().entrySet()) {
+    for (Map.Entry<Long, Double> m : triggerDataResult.getPoints().entrySet()) {
       // 循环条件
       boolean isTrigger = true;
       for (CompareParam cmp : functionConfigParam.getCmp()) {
@@ -49,10 +50,10 @@ public class Step implements FunctionLogic {
       }
     }
     if (triggerNum >= functionConfigParam.getDuration()) {
-      fr.setCurrentValue(dataResult.getPoints().get(functionConfigParam.getPeriod()));
+      fr.setCurrentValue(triggerDataResult.getPoints().get(functionConfigParam.getPeriod()));
       fr.setHit(true);
       fr.setCompareParam(functionConfigParam.getCmp());
-      fr.setTags(dataResult.getTags());
+      fr.setTags(triggerDataResult.getTags());
     }
     return fr;
   }

@@ -37,6 +37,10 @@ public class DateUtil {
   /** Constant <code>DAY=1000 * 60 * 60 * 24L</code> */
   public static final long DAY = 1000 * 60 * 60 * 24L;
 
+  public static String getDateOf_YYMMDD_Plus_HHMMSS(Date date) {
+    return getDate(date, "yyyy-MM-dd+HH:mm:ss");
+  }
+
   private static ThreadLocal<Map<String, DateFormat>> tsf =
       new ThreadLocal<Map<String, DateFormat>>();
 

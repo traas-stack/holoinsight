@@ -8,7 +8,7 @@ import io.holoinsight.server.common.J;
 import io.holoinsight.server.common.dao.entity.MetaDataDictValue;
 import io.holoinsight.server.common.service.SuperCacheService;
 import io.holoinsight.server.home.common.service.SpringContext;
-import io.holoinsight.server.home.common.util.scope.IdentityType;
+import io.holoinsight.server.common.scope.IdentityType;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.CollectionUtils;
 

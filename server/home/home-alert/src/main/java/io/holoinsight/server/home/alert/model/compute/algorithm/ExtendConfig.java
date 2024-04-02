@@ -4,9 +4,9 @@
 package io.holoinsight.server.home.alert.model.compute.algorithm;
 
 import io.holoinsight.server.home.alert.model.function.FunctionConfigAIParam;
-import io.holoinsight.server.home.facade.DataResult;
-import io.holoinsight.server.home.facade.trigger.DataSource;
-import io.holoinsight.server.home.facade.trigger.Filter;
+import io.holoinsight.server.common.dao.entity.dto.alarm.trigger.TriggerDataResult;
+import io.holoinsight.server.common.dao.entity.dto.alarm.trigger.DataSource;
+import io.holoinsight.server.common.dao.entity.dto.alarm.trigger.Filter;
 import lombok.Data;
 
 import java.util.ArrayList;
@@ -25,7 +25,7 @@ public class ExtendConfig {
 
   private Map<String, Map<Long, Double>> trendData;
 
-  public static ExtendConfig triggerConverter(DataResult dataResult,
+  public static ExtendConfig triggerConverter(TriggerDataResult triggerDataResult,
       FunctionConfigAIParam functionConfigAIParam) {
     ExtendConfig extendConfig = new ExtendConfig();
     if (functionConfigAIParam != null && functionConfigAIParam.getTrigger() != null) {
@@ -44,12 +44,12 @@ public class ExtendConfig {
       datasource.put("end", functionConfigAIParam.getPeriod());
       // 指定tag
       List<Filter> filters = new ArrayList<>();
-      for (String key : dataResult.getTags().keySet()) {
+      for (String key : triggerDataResult.getTags().keySet()) {
         Filter filter = new Filter();
         // 全值匹配
         filter.setType("literal");
         filter.setName(key);
-        filter.setValue(dataResult.getTags().get(key));
+        filter.setValue(triggerDataResult.getTags().get(key));
         filters.add(filter);
       }
       datasource.put("filters", filters);
@@ -60,7 +60,7 @@ public class ExtendConfig {
       dataInfo.put("datasources", datasources);
       extendConfig.setDataInfo(dataInfo);
 
-      trendData.put(triggetDataSource.getMetric(), dataResult.getPoints());
+      trendData.put(triggetDataSource.getMetric(), triggerDataResult.getPoints());
       extendConfig.setTrendData(trendData);
     }
     return extendConfig;

@@ -7,12 +7,12 @@ import io.holoinsight.server.home.alert.common.G;
 import io.holoinsight.server.home.alert.model.compute.ComputeTaskPackage;
 import io.holoinsight.server.home.alert.service.data.AlarmLoadData;
 import io.holoinsight.server.home.common.service.QueryClientService;
-import io.holoinsight.server.home.facade.DataResult;
-import io.holoinsight.server.home.facade.InspectConfig;
-import io.holoinsight.server.home.facade.emuns.PeriodType;
-import io.holoinsight.server.home.facade.trigger.DataSource;
-import io.holoinsight.server.home.facade.trigger.Filter;
-import io.holoinsight.server.home.facade.trigger.Trigger;
+import io.holoinsight.server.common.dao.entity.dto.alarm.trigger.TriggerDataResult;
+import io.holoinsight.server.common.dao.entity.dto.InspectConfig;
+import io.holoinsight.server.common.dao.emuns.PeriodType;
+import io.holoinsight.server.common.dao.entity.dto.alarm.trigger.DataSource;
+import io.holoinsight.server.common.dao.entity.dto.alarm.trigger.Filter;
+import io.holoinsight.server.common.dao.entity.dto.alarm.trigger.Trigger;
 import io.holoinsight.server.query.grpc.QueryProto;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -39,9 +39,9 @@ public class RuleAlarmLoadData implements AlarmLoadData {
   private QueryClientService queryClientService;
 
   @Override
-  public List<DataResult> queryDataResult(ComputeTaskPackage computeTask,
+  public List<TriggerDataResult> queryDataResult(ComputeTaskPackage computeTask,
       InspectConfig inspectConfig, Trigger trigger) {
-    List<DataResult> dataResults = new ArrayList<>();
+    List<TriggerDataResult> triggerDataResults = new ArrayList<>();
     QueryProto.QueryResponse response = null;
     QueryProto.QueryRequest request = null;
     QueryProto.QueryRequest deltaRequest = null;
@@ -50,13 +50,13 @@ public class RuleAlarmLoadData implements AlarmLoadData {
       request = buildRequest(computeTask.getTimestamp(), inspectConfig.getTenant(), trigger);
       LOGGER.debug("{} alert query request {}", inspectConfig.getTraceId(), request.toString());
       response = queryClientService.queryData(request, "ALERT");
-      dataResults = merge(dataResults, response);
+      triggerDataResults = merge(triggerDataResults, response);
       long deltaTimestamp = getDeltaTimestamp(trigger.getPeriodType());
       if (deltaTimestamp > 0) {
         deltaRequest = buildRequest(computeTask.getTimestamp() - deltaTimestamp,
             inspectConfig.getTenant(), trigger);
         deltaResponse = queryClientService.queryData(deltaRequest, "ALERT");
-        dataResults = merge(dataResults, deltaResponse);
+        triggerDataResults = merge(triggerDataResults, deltaResponse);
       }
     } catch (Exception exception) {
       LOGGER.error(
@@ -64,7 +64,7 @@ public class RuleAlarmLoadData implements AlarmLoadData {
           inspectConfig.getTraceId(), G.get().toJson(request), G.get().toJson(response),
           G.get().toJson(deltaRequest), G.get().toJson(deltaResponse), exception);
     }
-    return dataResults;
+    return triggerDataResults;
   }
 
   private long getDeltaTimestamp(PeriodType periodType) {
@@ -75,25 +75,25 @@ public class RuleAlarmLoadData implements AlarmLoadData {
     }
   }
 
-  protected List<DataResult> merge(List<DataResult> dataResults,
+  protected List<TriggerDataResult> merge(List<TriggerDataResult> triggerDataResults,
       QueryProto.QueryResponse response) {
-    Map<String /* data result key */, DataResult> map = new HashMap<>();
-    if (!CollectionUtils.isEmpty(dataResults)) {
-      for (DataResult dataResult : dataResults) {
-        map.put(dataResult.getKey(), dataResult);
+    Map<String /* data result key */, TriggerDataResult> map = new HashMap<>();
+    if (!CollectionUtils.isEmpty(triggerDataResults)) {
+      for (TriggerDataResult triggerDataResult : triggerDataResults) {
+        map.put(triggerDataResult.getKey(), triggerDataResult);
       }
     }
     if (response != null && !CollectionUtils.isEmpty(response.getResultsList())) {
       for (QueryProto.Result result : response.getResultsList()) {
-        DataResult key = new DataResult();
+        TriggerDataResult key = new TriggerDataResult();
         key.setMetric(result.getMetric());
         key.setTags(result.getTagsMap());
-        DataResult dataResult = map.computeIfAbsent(key.getKey(), k -> key);
-        if (dataResult.getPoints() == null) {
-          dataResult.setPoints(new HashMap<>());
+        TriggerDataResult triggerDataResult = map.computeIfAbsent(key.getKey(), k -> key);
+        if (triggerDataResult.getPoints() == null) {
+          triggerDataResult.setPoints(new HashMap<>());
         }
         for (QueryProto.Point point : result.getPointsList()) {
-          dataResult.getPoints().put(point.getTimestamp(), point.getValue());
+          triggerDataResult.getPoints().put(point.getTimestamp(), point.getValue());
         }
       }
     }

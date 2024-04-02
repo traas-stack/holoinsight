@@ -3,13 +3,19 @@
  */
 package io.holoinsight.server.home.biz.common;
 
-import io.holoinsight.server.home.common.util.StringUtil;
-import io.holoinsight.server.home.dal.model.dto.conf.*;
+import io.holoinsight.server.home.dal.model.dto.conf.CollectMetric;
 import io.holoinsight.server.home.dal.model.dto.conf.CollectMetric.AfterFilter;
 import io.holoinsight.server.home.dal.model.dto.conf.CollectMetric.LogSampleRule;
 import io.holoinsight.server.home.dal.model.dto.conf.CollectMetric.Metric;
+import io.holoinsight.server.home.dal.model.dto.conf.CustomPluginConf;
 import io.holoinsight.server.home.dal.model.dto.conf.CustomPluginConf.ExtraConfig;
 import io.holoinsight.server.home.dal.model.dto.conf.CustomPluginConf.SplitCol;
+import io.holoinsight.server.home.dal.model.dto.conf.Filter;
+import io.holoinsight.server.home.dal.model.dto.conf.LogParse;
+import io.holoinsight.server.home.dal.model.dto.conf.LogPath;
+import io.holoinsight.server.home.dal.model.dto.conf.LogPattern;
+import io.holoinsight.server.home.dal.model.dto.conf.MultiLine;
+import io.holoinsight.server.home.dal.model.dto.conf.Rule;
 import io.holoinsight.server.home.dal.model.dto.conf.Translate.TranslateTransform;
 import io.holoinsight.server.registry.model.Elect;
 import io.holoinsight.server.registry.model.Elect.RefIndex;
@@ -49,7 +55,11 @@ import io.holoinsight.server.registry.model.Window;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.util.CollectionUtils;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  *
@@ -142,7 +152,7 @@ public class GaeaSqlTaskUtil {
     {
       Parse parse = new Parse();
 
-      if (StringUtil.isBlank(logParse.splitType)) {
+      if (StringUtils.isBlank(logParse.splitType)) {
         parse.setType("none");
       } else {
         switch (logParse.splitType) {

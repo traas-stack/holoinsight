@@ -6,9 +6,9 @@ package io.holoinsight.server.home.alert.service.data.load;
 import io.holoinsight.server.common.J;
 import io.holoinsight.server.home.alert.model.compute.ComputeTaskPackage;
 import io.holoinsight.server.home.common.service.QueryClientService;
-import io.holoinsight.server.home.facade.DataResult;
-import io.holoinsight.server.home.facade.InspectConfig;
-import io.holoinsight.server.home.facade.emuns.PeriodType;
+import io.holoinsight.server.common.dao.entity.dto.alarm.trigger.TriggerDataResult;
+import io.holoinsight.server.common.dao.entity.dto.InspectConfig;
+import io.holoinsight.server.common.dao.emuns.PeriodType;
 import io.holoinsight.server.query.grpc.QueryProto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,9 +33,9 @@ public class PqlAlarmLoadData {
   @Resource
   private QueryClientService queryClientService;
 
-  public List<DataResult> queryDataResult(ComputeTaskPackage computeTask,
+  public List<TriggerDataResult> queryDataResult(ComputeTaskPackage computeTask,
       InspectConfig inspectConfig) {
-    List<DataResult> dataResults = new ArrayList<>();
+    List<TriggerDataResult> triggerDataResults = new ArrayList<>();
     QueryProto.PqlRangeRequest pqlRangeRequest = QueryProto.PqlRangeRequest.newBuilder()
         .setTenant(inspectConfig.getTenant()).setStart(computeTask.getTimestamp())
         .setEnd(computeTask.getTimestamp() + 1L * PeriodType.MINUTE.intervalMillis() - 1L)
@@ -44,21 +44,21 @@ public class PqlAlarmLoadData {
     QueryProto.QueryResponse response = queryClientService.queryPqlRange(pqlRangeRequest);
     if (response != null) {
       for (QueryProto.Result result : response.getResultsList()) {
-        DataResult dataResult = new DataResult();
-        dataResult.setMetric(result.getMetric());
-        dataResult.setTags(result.getTagsMap());
+        TriggerDataResult triggerDataResult = new TriggerDataResult();
+        triggerDataResult.setMetric(result.getMetric());
+        triggerDataResult.setTags(result.getTagsMap());
         Map<Long, Double> points = new HashMap<>();
         for (QueryProto.Point point : result.getPointsList()) {
           Double value = Double.valueOf(point.getStrValue());
           points.put(point.getTimestamp(), value);
         }
-        dataResult.setPoints(points);
-        dataResults.add(dataResult);
+        triggerDataResult.setPoints(points);
+        triggerDataResults.add(triggerDataResult);
       }
 
     }
     LOGGER.info("query pql result from {} {} {}", computeTask.getTimestamp(),
-        inspectConfig.getPqlRule().getPql(), J.toJson(dataResults));
-    return dataResults;
+        inspectConfig.getPqlRule().getPql(), J.toJson(triggerDataResults));
+    return triggerDataResults;
   }
 }

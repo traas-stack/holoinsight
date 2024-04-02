@@ -13,12 +13,12 @@ import io.holoinsight.server.home.alert.model.compute.algorithm.ValueAlgorithmRe
 import io.holoinsight.server.home.alert.model.function.FunctionConfigAIParam;
 import io.holoinsight.server.home.alert.model.function.FunctionConfigParam;
 import io.holoinsight.server.home.alert.model.function.FunctionLogic;
-import io.holoinsight.server.home.facade.DataResult;
-import io.holoinsight.server.home.facade.emuns.FunctionEnum;
-import io.holoinsight.server.home.facade.emuns.PeriodType;
-import io.holoinsight.server.home.facade.trigger.RuleConfig;
-import io.holoinsight.server.home.facade.trigger.TriggerAIResult;
-import io.holoinsight.server.home.facade.trigger.TriggerResult;
+import io.holoinsight.server.common.dao.entity.dto.alarm.trigger.TriggerDataResult;
+import io.holoinsight.server.common.dao.emuns.FunctionEnum;
+import io.holoinsight.server.common.dao.emuns.PeriodType;
+import io.holoinsight.server.common.dao.entity.dto.alarm.trigger.RuleConfig;
+import io.holoinsight.server.common.dao.entity.dto.alarm.trigger.TriggerAIResult;
+import io.holoinsight.server.common.dao.entity.dto.alarm.trigger.TriggerResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -43,7 +43,8 @@ public class ValueUpAbnormalDetect implements FunctionLogic {
   }
 
   @Override
-  public TriggerResult invoke(DataResult dataResult, FunctionConfigParam functionConfigParam) {
+  public TriggerResult invoke(TriggerDataResult triggerDataResult,
+      FunctionConfigParam functionConfigParam) {
     FunctionConfigAIParam functionConfigAIParam = (FunctionConfigAIParam) functionConfigParam;
     TriggerAIResult triggerAIResult = new TriggerAIResult();
     ValueAlgorithmRequest valueAlgorithmRequest = new ValueAlgorithmRequest();
@@ -64,10 +65,10 @@ public class ValueUpAbnormalDetect implements FunctionLogic {
         .setDetectTime(functionConfigAIParam.getPeriod() + PeriodType.MINUTE.intervalMillis());
     valueAlgorithmRequest.setAlgorithmConfig(algorithmConfig);
     valueAlgorithmRequest
-        .setExtendConfig(ExtendConfig.triggerConverter(dataResult, functionConfigAIParam));
+        .setExtendConfig(ExtendConfig.triggerConverter(triggerDataResult, functionConfigAIParam));
     RuleConfig ruleConfig = functionConfigAIParam.getTrigger().getRuleConfig();
     if (ruleConfig == null) {
-      ruleConfig = RuleConfig.defaultUpConfig(dataResult.getMetric());
+      ruleConfig = RuleConfig.defaultUpConfig(triggerDataResult.getMetric());
     }
     valueAlgorithmRequest.setRuleConfig(ruleConfig);
     // Set the name of the algorithm interface

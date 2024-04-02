@@ -7,10 +7,10 @@ package io.holoinsight.server.home.biz.listener;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.google.common.eventbus.AllowConcurrentEvents;
 import com.google.common.eventbus.Subscribe;
-import io.holoinsight.server.home.common.util.EventBusHolder;
-import io.holoinsight.server.home.dal.mapper.AlarmHistoryDetailMapper;
-import io.holoinsight.server.home.dal.model.AlarmHistoryDetail;
-import io.holoinsight.server.home.facade.AlarmHistoryDTO;
+import io.holoinsight.server.common.EventBusHolder;
+import io.holoinsight.server.common.dao.mapper.AlarmHistoryDetailMapper;
+import io.holoinsight.server.common.dao.entity.AlarmHistoryDetail;
+import io.holoinsight.server.common.dao.entity.dto.AlarmHistoryDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 

@@ -3,7 +3,7 @@
  */
 package io.holoinsight.server.home.alert.model.event;
 
-import io.holoinsight.server.home.facade.AlertNotifyRecordDTO;
+import io.holoinsight.server.common.dao.entity.dto.AlertNotifyRecordDTO;
 import lombok.Data;
 import org.springframework.util.CollectionUtils;
 
