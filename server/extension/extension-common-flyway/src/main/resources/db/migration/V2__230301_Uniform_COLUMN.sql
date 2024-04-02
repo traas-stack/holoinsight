@@ -98,10 +98,10 @@ DELIMITER ;
   CALL Uniform_Holoinsight_Column("alarm_history","alarm_time","timestamp NULL DEFAULT NULL COMMENT 'The time of data detection'",1);
   CALL Uniform_Holoinsight_Column("alarm_history","recover_time","timestamp NULL DEFAULT NULL COMMENT 'The time of data detection passes'",1);
   CALL Uniform_Holoinsight_Column("alarm_history","duration","bigint DEFAULT NULL COMMENT 'Alert duration(ms)'",1);
-  CALL Uniform_Holoinsight_Column("alarm_history","unique_id","varchar(64) NOT NULL DEFAULT '-1' COMMENT 'Alarm alarmRuleConf type and alarm alarmRuleConf id'",1);
-  CALL Uniform_Holoinsight_Column("alarm_history","rule_name","varchar(256) NOT NULL COMMENT 'Alarm alarmRuleConf name'",1);
+  CALL Uniform_Holoinsight_Column("alarm_history","unique_id","varchar(64) NOT NULL DEFAULT '-1' COMMENT 'Alarm rule type and alarm rule id'",1);
+  CALL Uniform_Holoinsight_Column("alarm_history","rule_name","varchar(256) NOT NULL COMMENT 'Alarm rule name'",1);
   CALL Uniform_Holoinsight_Column("alarm_history","alarm_level","varchar(32) NOT NULL COMMENT 'Alarm level'",1);
-  CALL Uniform_Holoinsight_Column("alarm_history","trigger_content","varchar(256) DEFAULT NULL COMMENT 'The description of the alarm alarmRuleConf'",1);
+  CALL Uniform_Holoinsight_Column("alarm_history","trigger_content","varchar(256) DEFAULT NULL COMMENT 'The description of the alarm rule'",1);
   CALL Uniform_Holoinsight_Column("alarm_history","extra","longtext COMMENT 'Extra message'",1);
   CALL Uniform_Holoinsight_Column("alarm_history","tenant","varchar(255) DEFAULT NULL COMMENT 'Tenant'",1);
   CALL Uniform_Holoinsight_Column("alarm_history","source_type","varchar(64) DEFAULT NULL COMMENT 'Source type of alarm history'",1);
@@ -132,16 +132,16 @@ DELIMITER ;
   CALL Uniform_Holoinsight_Column("alarm_rule","id","bigint NOT NULL AUTO_INCREMENT COMMENT 'Data id'",1);
   CALL Uniform_Holoinsight_Column("alarm_rule","gmt_create","timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'Data creation time'",1);
   CALL Uniform_Holoinsight_Column("alarm_rule","gmt_modified","timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'Data modification time'",1);
-  CALL Uniform_Holoinsight_Column("alarm_rule","rule_name","varchar(256) NOT NULL COMMENT 'Alarm alarmRuleConf name'",1);
+  CALL Uniform_Holoinsight_Column("alarm_rule","rule_name","varchar(256) NOT NULL COMMENT 'Alarm rule name'",1);
   CALL Uniform_Holoinsight_Column("alarm_rule","rule_type","varchar(32) NOT NULL COMMENT 'AI or RULE'",1);
   CALL Uniform_Holoinsight_Column("alarm_rule","creator","varchar(64) DEFAULT NULL COMMENT 'Creator'",1);
   CALL Uniform_Holoinsight_Column("alarm_rule","modifier","varchar(64) DEFAULT NULL COMMENT 'Modifier'",1);
   CALL Uniform_Holoinsight_Column("alarm_rule","alarm_level","varchar(32) NOT NULL COMMENT 'Alarm level'",1);
-  CALL Uniform_Holoinsight_Column("alarm_rule","rule_describe","varchar(256) DEFAULT NULL COMMENT 'Alarm alarmRuleConf description'",1);
-  CALL Uniform_Holoinsight_Column("alarm_rule","alarmRuleConf","mediumtext NOT NULL COMMENT 'Alarm alarmRuleConf configuration'",1);
+  CALL Uniform_Holoinsight_Column("alarm_rule","rule_describe","varchar(256) DEFAULT NULL COMMENT 'Alarm rule description'",1);
+  CALL Uniform_Holoinsight_Column("alarm_rule","rule","mediumtext NOT NULL COMMENT 'Alarm rule configuration'",1);
   CALL Uniform_Holoinsight_Column("alarm_rule","pql","varchar(512) DEFAULT NULL COMMENT 'Pql content'",1);
   CALL Uniform_Holoinsight_Column("alarm_rule","time_filter","mediumtext NOT NULL COMMENT 'Effective time'",1);
-  CALL Uniform_Holoinsight_Column("alarm_rule","status","tinyint NOT NULL DEFAULT '1' COMMENT 'Whether the alarmRuleConf is effective'",1);
+  CALL Uniform_Holoinsight_Column("alarm_rule","status","tinyint NOT NULL DEFAULT '1' COMMENT 'Whether the rule is effective'",1);
   CALL Uniform_Holoinsight_Column("alarm_rule","is_merge","tinyint NOT NULL DEFAULT '1' COMMENT 'Whether the alarm is merged'",1);
   CALL Uniform_Holoinsight_Column("alarm_rule","merge_type","varchar(64) DEFAULT NULL  COMMENT 'Merge type'",1);
   CALL Uniform_Holoinsight_Column("alarm_rule","recover","tinyint NOT NULL DEFAULT '1' COMMENT 'Whether the recovery notification is enabled'",1);
@@ -149,8 +149,8 @@ DELIMITER ;
   CALL Uniform_Holoinsight_Column("alarm_rule","extra","longtext COMMENT 'Extra message'",1);
   CALL Uniform_Holoinsight_Column("alarm_rule","tenant","varchar(255) DEFAULT NULL COMMENT 'Tenant'",1);
   CALL Uniform_Holoinsight_Column("alarm_rule","alarm_content","varchar(255) DEFAULT NULL COMMENT 'Alarm content'",1);
-  CALL Uniform_Holoinsight_Column("alarm_rule","source_type","varchar(64) DEFAULT NULL COMMENT 'Source type of alarm alarmRuleConf'",1);
-  CALL Uniform_Holoinsight_Column("alarm_rule","source_id","bigint DEFAULT NULL COMMENT 'Source id of alarm alarmRuleConf'",1);
+  CALL Uniform_Holoinsight_Column("alarm_rule","source_type","varchar(64) DEFAULT NULL COMMENT 'Source type of alarm rule'",1);
+  CALL Uniform_Holoinsight_Column("alarm_rule","source_id","bigint DEFAULT NULL COMMENT 'Source id of alarm rule'",1);
   CALL Uniform_Holoinsight_Column("alarm_rule","env_type","varchar(255) DEFAULT NULL COMMENT 'Environment type'",1);
 
 -- ----------------------------
@@ -163,12 +163,12 @@ DELIMITER ;
   CALL Uniform_Holoinsight_Column("alarm_subscribe","modifier","varchar(64) DEFAULT NULL COMMENT 'Modifier'",1);
   CALL Uniform_Holoinsight_Column("alarm_subscribe","subscriber","varchar(128) DEFAULT NULL COMMENT 'User id of subscriber'",1);
   CALL Uniform_Holoinsight_Column("alarm_subscribe","group_id","bigint NOT NULL DEFAULT '-1' COMMENT 'Id of alarm group'",1);
-  CALL Uniform_Holoinsight_Column("alarm_subscribe","unique_id","varchar(64) NOT NULL DEFAULT '-1' COMMENT 'Alarm alarmRuleConf type and alarm alarmRuleConf id'",1);
+  CALL Uniform_Holoinsight_Column("alarm_subscribe","unique_id","varchar(64) NOT NULL DEFAULT '-1' COMMENT 'Alarm rule type and alarm rule id'",1);
   CALL Uniform_Holoinsight_Column("alarm_subscribe","notice_type","varchar(256) DEFAULT NULL COMMENT 'The way of notification'",1);
   CALL Uniform_Holoinsight_Column("alarm_subscribe","status","tinyint NOT NULL DEFAULT '1' COMMENT 'Status of subscriptions'",1);
   CALL Uniform_Holoinsight_Column("alarm_subscribe","tenant","varchar(255) DEFAULT NULL COMMENT 'Tenant'",1);
-  CALL Uniform_Holoinsight_Column("alarm_subscribe","source_type","varchar(64) DEFAULT NULL COMMENT 'Source type of alarm alarmRuleConf'",1);
-  CALL Uniform_Holoinsight_Column("alarm_subscribe","source_id","bigint DEFAULT NULL COMMENT 'Source id of alarm alarmRuleConf'",1);
+  CALL Uniform_Holoinsight_Column("alarm_subscribe","source_type","varchar(64) DEFAULT NULL COMMENT 'Source type of alarm rule'",1);
+  CALL Uniform_Holoinsight_Column("alarm_subscribe","source_id","bigint DEFAULT NULL COMMENT 'Source id of alarm rule'",1);
   CALL Uniform_Holoinsight_Column("alarm_subscribe","env_type","varchar(100) DEFAULT NULL COMMENT 'Environment type'",1);
 
 -- ----------------------------
@@ -546,7 +546,7 @@ DELIMITER ;
   CALL Uniform_Holoinsight_Column("position_biz_rule","response_type","varchar(64) NOT NULL COMMENT 'ModelMap indicates acquisition in modelmap, and Return indicates acquisition of return value'",1);
   CALL Uniform_Holoinsight_Column("position_biz_rule","response_property","varchar(64) DEFAULT NULL COMMENT 'The attribute taken from the modelmap, this field is only required when ModelMap is selected'",1);
   CALL Uniform_Holoinsight_Column("position_biz_rule","error_code_config","varchar(8192) NOT NULL COMMENT 'Error code'",1);
-  CALL Uniform_Holoinsight_Column("position_biz_rule","global_open","varchar(1) NOT NULL COMMENT 'Whether the alarmRuleConf takes effect globally: T indicates that the alarmRuleConf takes effect globally, and F indicates that the alarmRuleConf does not take effect globally'",1);
+  CALL Uniform_Holoinsight_Column("position_biz_rule","global_open","varchar(1) NOT NULL COMMENT 'Whether the rule takes effect globally: T indicates that the rule takes effect globally, and F indicates that the rule does not take effect globally'",1);
 
 -- ----------------------------
 -- Table structure for tenant

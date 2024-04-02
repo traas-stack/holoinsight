@@ -84,10 +84,10 @@ CREATE TABLE IF NOT EXISTS `alarm_history` (
   `alarm_time` timestamp NULL DEFAULT NULL COMMENT 'The time of data detection',
   `recover_time` timestamp NULL DEFAULT NULL COMMENT 'The time of data detection passes',
   `duration` bigint DEFAULT NULL COMMENT 'Alert duration(ms)',
-  `unique_id` varchar(64) NOT NULL DEFAULT '-1' COMMENT 'Alarm alarmRuleConf type and alarm alarmRuleConf id',
-  `rule_name` varchar(256) NOT NULL COMMENT 'Alarm alarmRuleConf name',
+  `unique_id` varchar(64) NOT NULL DEFAULT '-1' COMMENT 'Alarm rule type and alarm rule id',
+  `rule_name` varchar(256) NOT NULL COMMENT 'Alarm rule name',
   `alarm_level` varchar(32) NOT NULL COMMENT 'Alarm level',
-  `trigger_content` varchar(256) DEFAULT NULL COMMENT 'The description of the alarm alarmRuleConf',
+  `trigger_content` varchar(256) DEFAULT NULL COMMENT 'The description of the alarm rule',
   `extra` longtext COMMENT 'Extra message',
   `tenant` varchar(255) DEFAULT NULL COMMENT 'Tenant',
   `source_type` varchar(64) DEFAULT NULL COMMENT 'Source type of alarm history',
@@ -127,16 +127,16 @@ CREATE TABLE IF NOT EXISTS `alarm_rule` (
   `id` bigint NOT NULL AUTO_INCREMENT COMMENT 'Data id',
   `gmt_create` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'Data creation time',
   `gmt_modified` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'Data modification time',
-  `rule_name` varchar(256) NOT NULL COMMENT 'Alarm alarmRuleConf name',
+  `rule_name` varchar(256) NOT NULL COMMENT 'Alarm rule name',
   `rule_type` varchar(32) NOT NULL COMMENT 'AI or RULE',
   `creator` varchar(64) DEFAULT NULL COMMENT 'Creator',
   `modifier` varchar(64) DEFAULT NULL COMMENT 'Modifier',
   `alarm_level` varchar(32) NOT NULL COMMENT 'Alarm level',
-  `rule_describe` varchar(256) DEFAULT NULL COMMENT 'Alarm alarmRuleConf description',
-  `alarmRuleConf` mediumtext NOT NULL COMMENT 'Alarm alarmRuleConf configuration',
+  `rule_describe` varchar(256) DEFAULT NULL COMMENT 'Alarm rule description',
+  `rule` mediumtext NOT NULL COMMENT 'Alarm rule configuration',
   `pql` varchar(512) DEFAULT NULL COMMENT 'Pql content',
   `time_filter` mediumtext NOT NULL COMMENT 'Effective time',
-  `status` tinyint NOT NULL DEFAULT '1' COMMENT 'Whether the alarmRuleConf is effective',
+  `status` tinyint NOT NULL DEFAULT '1' COMMENT 'Whether the rule is effective',
   `is_merge` tinyint NOT NULL DEFAULT '1' COMMENT 'Whether the alarm is merged',
   `merge_type` varchar(64) DEFAULT NULL  COMMENT 'Merge type',
   `recover` tinyint NOT NULL DEFAULT '1' COMMENT 'Whether the recovery notification is enabled',
@@ -144,11 +144,11 @@ CREATE TABLE IF NOT EXISTS `alarm_rule` (
   `extra` longtext COMMENT 'Extra message',
   `tenant` varchar(255) DEFAULT NULL COMMENT 'Tenant',
   `alarm_content` varchar(255) DEFAULT NULL COMMENT 'Alarm content',
-  `source_type` varchar(64) DEFAULT NULL COMMENT 'Source type of alarm alarmRuleConf',
-  `source_id` bigint DEFAULT NULL COMMENT 'Source id of alarm alarmRuleConf',
+  `source_type` varchar(64) DEFAULT NULL COMMENT 'Source type of alarm rule',
+  `source_id` bigint DEFAULT NULL COMMENT 'Source id of alarm rule',
   `env_type` varchar(255) DEFAULT NULL COMMENT 'Environment type',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Alarm alarmRuleConf';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Alarm rule';
 
 -- ----------------------------
 -- Table structure for alarm_subscribe
@@ -161,12 +161,12 @@ CREATE TABLE IF NOT EXISTS `alarm_subscribe` (
   `modifier` varchar(64) DEFAULT NULL COMMENT 'Modifier',
   `subscriber` varchar(128) DEFAULT NULL COMMENT 'User id of subscriber',
   `group_id` bigint NOT NULL DEFAULT '-1' COMMENT 'Id of alarm group',
-  `unique_id` varchar(64) NOT NULL DEFAULT '-1' COMMENT 'Alarm alarmRuleConf type and alarm alarmRuleConf id',
+  `unique_id` varchar(64) NOT NULL DEFAULT '-1' COMMENT 'Alarm rule type and alarm rule id',
   `notice_type` varchar(256) DEFAULT NULL COMMENT 'The way of notification',
   `status` tinyint NOT NULL DEFAULT '1' COMMENT 'Status of subscriptions',
   `tenant` varchar(255) DEFAULT NULL COMMENT 'Tenant',
-  `source_type` varchar(64) DEFAULT NULL COMMENT 'Source type of alarm alarmRuleConf',
-  `source_id` bigint DEFAULT NULL COMMENT 'Source id of alarm alarmRuleConf',
+  `source_type` varchar(64) DEFAULT NULL COMMENT 'Source type of alarm rule',
+  `source_id` bigint DEFAULT NULL COMMENT 'Source id of alarm rule',
   `env_type` varchar(100) DEFAULT NULL COMMENT 'Environment type',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Alarm subscription';
@@ -651,7 +651,7 @@ CREATE TABLE IF NOT EXISTS `position_biz_rule` (
   `response_type` varchar(64) NOT NULL COMMENT 'ModelMap indicates acquisition in modelmap, and Return indicates acquisition of return value',
   `response_property` varchar(64) DEFAULT NULL COMMENT 'The attribute taken from the modelmap, this field is only required when ModelMap is selected',
   `error_code_config` varchar(8192) NOT NULL COMMENT 'Error code',
-  `global_open` varchar(1) NOT NULL COMMENT 'Whether the alarmRuleConf takes effect globally: T indicates that the alarmRuleConf takes effect globally, and F indicates that the alarmRuleConf does not take effect globally',
+  `global_open` varchar(1) NOT NULL COMMENT 'Whether the rule takes effect globally: T indicates that the rule takes effect globally, and F indicates that the rule does not take effect globally',
   PRIMARY KEY (`id`),
   UNIQUE KEY `uk_rule_teai` (`app_id`,`env_id`,`app_name`,`interface_name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='Problem Location Business Rules Table';
