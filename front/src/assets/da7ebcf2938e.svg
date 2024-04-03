@@ -17,7 +17,7 @@
             <stop stop-color="#338FFF" offset="100%"></stop>
         </radialGradient>
     </defs>
-    <g id="总览页优化" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+    <g id="总览页优化" stroke="none" stroke-width="1" fill="none" fill-alarmRuleConf="evenodd">
         <g id="Group-17-Copy" transform="translate(0.000000, 0.920331)">
             <mask id="mask-3" fill="white">
                 <use xlink:href="#path-2"></use>
@@ -34,7 +34,7 @@
                     <path d="M127.058824,161.599086 C145.868599,151.626337 160.267058,134.339462 166.533409,113.489435" id="Path" stroke="#60ACFF" stroke-width="1.5" fill="none" opacity="0.400000006"></path>
                     <path d="M149.263278,38.2410051 C144.899126,33.105697 139.925648,28.541912 134.460308,24.6716162" id="Shape" stroke="#60ACFF" stroke-width="2.5" fill="none" opacity="0.2"></path>
                     <path d="M148.029697,20.9708738 C142.073009,16.0687031 135.442993,11.907571 128.292404,8.63506568" id="Path" stroke="#60ACFF" stroke-width="2.5" fill="none" opacity="0.400000006"></path>
-                    <circle id="Oval" stroke="none" fill="url(#radialGradient-4)" fill-rule="evenodd" cx="90.0513992" cy="90.0513992" r="69.0805254"></circle>
+                    <circle id="Oval" stroke="none" fill="url(#radialGradient-4)" fill-alarmRuleConf="evenodd" cx="90.0513992" cy="90.0513992" r="69.0805254"></circle>
                     <circle id="Oval" stroke="#60ACFF" stroke-width="1" fill="none" opacity="0.400000006" cx="90.6681896" cy="90.6681896" r="49.9600228"></circle>
                     <path d="M80.1827527,143.388822 C83.425592,144.006129 86.7704682,144.328955 90.1895036,144.328955 L90.1895036,144.328955 C105.692797,144.328955 119.671316,137.69139 129.525985,127.058824" id="Path" stroke="#60ACFF" stroke-width="3.5" fill="none" opacity="0.400000006"></path>
                     <path d="M41.9417476,55.5111365 C38.1115175,61.0583258 35.1628114,67.2988439 33.3066819,74.0148487" id="Path" stroke="#60ACFF" stroke-width="2.5" fill="none" opacity="0.400000006"></path>
@@ -50,7 +50,7 @@
                     <circle id="Oval" stroke="#60ACFF" stroke-width="1" fill="none" opacity="0.200000003" cx="53.9338542" cy="53.6575017" r="53.0439749"></circle>
                     <path d="M8.24087884,62.2721154 C9.98287566,72.3686566 14.8596349,81.3641893 21.8102678,88.1773125" id="Path" stroke="#60ACFF" stroke-width="2.5" fill="none" opacity="0.200000003"></path>
                     <path d="M75.8228371,96.0883747 C86.991141,90.2070097 95.5402261,80.0121862 99.2608725,67.7160161" id="Path" stroke="#60ACFF" stroke-width="1.5" fill="none" opacity="0.200000003"></path>
-                    <circle id="Oval" stroke="none" fill="url(#radialGradient-4)" fill-rule="evenodd" opacity="0.600000024" cx="53.9338542" cy="53.6575017" r="40.7081668"></circle>
+                    <circle id="Oval" stroke="none" fill="url(#radialGradient-4)" fill-alarmRuleConf="evenodd" opacity="0.600000024" cx="53.9338542" cy="53.6575017" r="40.7081668"></circle>
                     <circle id="Oval" stroke="#60ACFF" stroke-width="1" fill="none" opacity="0.200000003" cx="54.7796272" cy="55.1833166" r="29.6059395"></circle>
                     <path d="M25.9146725,33.5897494 C23.7259696,36.918063 22.0409947,40.6623739 20.9803493,44.6919767" id="Path" stroke="#60ACFF" stroke-width="2.5" fill="none" opacity="0.200000003"></path>
                     <circle id="Oval" stroke="#60ACFF" stroke-width="0.5" fill="none" opacity="0.200000003" cx="54.7796272" cy="55.1833166" r="17.2701314"></circle>

@@ -3,6 +3,7 @@
  */
 package io.holoinsight.server.home.alert.service.calculate;
 
+import io.holoinsight.server.common.dao.entity.dto.alarm.AlarmRuleConf;
 import io.holoinsight.server.home.alert.model.compute.ComputeContext;
 import io.holoinsight.server.home.alert.model.compute.ComputeInfo;
 import io.holoinsight.server.home.alert.model.event.EventInfo;
@@ -10,16 +11,15 @@ import io.holoinsight.server.home.alert.model.function.FunctionConfigAIParam;
 import io.holoinsight.server.home.alert.model.function.FunctionConfigParam;
 import io.holoinsight.server.home.alert.model.function.FunctionLogic;
 import io.holoinsight.server.home.alert.service.event.RecordSucOrFailNotify;
-import io.holoinsight.server.home.facade.AlertNotifyRecordDTO;
-import io.holoinsight.server.home.facade.DataResult;
-import io.holoinsight.server.home.facade.InspectConfig;
-import io.holoinsight.server.home.facade.PqlRule;
-import io.holoinsight.server.home.facade.Rule;
-import io.holoinsight.server.home.facade.emuns.BoolOperationEnum;
-import io.holoinsight.server.home.facade.trigger.CompareConfig;
-import io.holoinsight.server.home.facade.trigger.DataSource;
-import io.holoinsight.server.home.facade.trigger.Trigger;
-import io.holoinsight.server.home.facade.trigger.TriggerResult;
+import io.holoinsight.server.common.dao.entity.dto.AlertNotifyRecordDTO;
+import io.holoinsight.server.common.dao.entity.dto.alarm.trigger.TriggerDataResult;
+import io.holoinsight.server.common.dao.entity.dto.InspectConfig;
+import io.holoinsight.server.common.dao.entity.dto.alarm.PqlRule;
+import io.holoinsight.server.common.dao.emuns.BoolOperationEnum;
+import io.holoinsight.server.common.dao.entity.dto.alarm.trigger.CompareConfig;
+import io.holoinsight.server.common.dao.entity.dto.alarm.trigger.DataSource;
+import io.holoinsight.server.common.dao.entity.dto.alarm.trigger.Trigger;
+import io.holoinsight.server.common.dao.entity.dto.alarm.trigger.TriggerResult;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -133,14 +133,14 @@ public class AbstractUniformInspectRunningRule {
     trigger.setDatasources(Collections.singletonList(dataSource));
 
     List<TriggerResult> resultList = new ArrayList<>();
-    for (DataResult dataResult : pqlRule.getDataResult()) {
+    for (TriggerDataResult triggerDataResult : pqlRule.getDataResult()) {
       TriggerResult triggerResult = new TriggerResult();
       triggerResult.setMetric(pqlRule.getPql());
       triggerResult.setHit(true);
-      triggerResult.setTags(dataResult.getTags());
-      if (!CollectionUtils.isEmpty(dataResult.getPoints())) {
-        triggerResult.setCurrentValue(dataResult.getPoints().get(period));
-        dataResult.getPoints().forEach(triggerResult::addValue);
+      triggerResult.setTags(triggerDataResult.getTags());
+      if (!CollectionUtils.isEmpty(triggerDataResult.getPoints())) {
+        triggerResult.setCurrentValue(triggerDataResult.getPoints().get(period));
+        triggerDataResult.getPoints().forEach(triggerResult::addValue);
       }
       triggerResult.setTriggerLevel(inspectConfig.getAlarmLevel());
       resultList.add(triggerResult);
@@ -157,20 +157,20 @@ public class AbstractUniformInspectRunningRule {
     List<TriggerResult> noEventGeneratedList = new ArrayList<>();// 不告警
     for (Trigger trigger : inspectConfig.getRule().getTriggers()) {
       // 后续考虑增加tags比较
-      List<DataResult> dataResultList = trigger.getDataResult();
-      if (CollectionUtils.isEmpty(dataResultList)) {
+      List<TriggerDataResult> triggerDataResultList = trigger.getDataResult();
+      if (CollectionUtils.isEmpty(triggerDataResultList)) {
         continue;
       }
-      int parallelSize = dataResultList.size();
+      int parallelSize = triggerDataResultList.size();
       ComputeInfo computeInfo = ComputeInfo.getComputeInfo(inspectConfig, period);
       List<TriggerResult> triggerResults = new CopyOnWriteArrayList<>();
       CountDownLatch latch = new CountDownLatch(parallelSize);
       logger.info("ALERT_CONCURRENT_MONITOR,size={},rule={}", parallelSize,
           inspectConfig.getUniqueId());
-      for (DataResult dataResult : dataResultList) {
+      for (TriggerDataResult triggerDataResult : triggerDataResultList) {
         ruleRunner.execute(() -> {
           try {
-            List<TriggerResult> ruleResults = apply(dataResult, computeInfo, trigger);
+            List<TriggerResult> ruleResults = apply(triggerDataResult, computeInfo, trigger);
             for (TriggerResult ruleResult : ruleResults) {
               if (ruleResult.isHit()) {
                 triggerResults.add(ruleResult);
@@ -189,14 +189,15 @@ public class AbstractUniformInspectRunningRule {
         triggerMap.put(trigger, triggerResults);
       }
     }
-    Rule rule = inspectConfig.getRule();
-    if ((BoolOperationEnum.AND.equals(rule.getBoolOperation())
-        && rule.getTriggers().size() == triggerMap.size())
-        || (BoolOperationEnum.OR.equals(rule.getBoolOperation()) && !triggerMap.isEmpty())) {
+    AlarmRuleConf alarmRuleConf = inspectConfig.getRule();
+    if ((BoolOperationEnum.AND.equals(alarmRuleConf.getBoolOperation())
+        && alarmRuleConf.getTriggers().size() == triggerMap.size())
+        || (BoolOperationEnum.OR.equals(alarmRuleConf.getBoolOperation())
+            && !triggerMap.isEmpty())) {
       EventInfo eventInfo = new EventInfo();
       eventInfo.setAlarmTriggerResults(triggerMap);
       eventInfo.setUniqueId(inspectConfig.getUniqueId());
-      eventInfo.setBoolOperation(rule.getBoolOperation());
+      eventInfo.setBoolOperation(alarmRuleConf.getBoolOperation());
       eventInfo.setAlarmTime(period);
       eventInfo.setIsRecover(false);
       eventInfo.setEnvType(inspectConfig.getEnvType());
@@ -218,12 +219,12 @@ public class AbstractUniformInspectRunningRule {
   /**
    * 执行规则
    *
-   * @param dataResult 数据结果
+   * @param triggerDataResult 数据结果
    * @param computeInfo 计算信息
    * @param trigger 触发
    * @return {@link TriggerResult}
    */
-  public List<TriggerResult> apply(DataResult dataResult, ComputeInfo computeInfo,
+  public List<TriggerResult> apply(TriggerDataResult triggerDataResult, ComputeInfo computeInfo,
       Trigger trigger) {
     FunctionLogic inspectFunction = FunctionManager.functionMap.get(trigger.getType());
     // 增加智能告警算法执行
@@ -233,9 +234,9 @@ public class AbstractUniformInspectRunningRule {
     List<TriggerResult> triggerResults = new ArrayList<>();
     List<FunctionConfigParam> functionConfigParams = buildFunctionConfigParam(computeInfo, trigger);
     for (FunctionConfigParam functionConfigParam : functionConfigParams) {
-      TriggerResult ruleResult = inspectFunction.invoke(dataResult, functionConfigParam);
-      ruleResult.setMetric(dataResult.getMetric());
-      ruleResult.setTags(dataResult.getTags());
+      TriggerResult ruleResult = inspectFunction.invoke(triggerDataResult, functionConfigParam);
+      ruleResult.setMetric(triggerDataResult.getMetric());
+      ruleResult.setTags(triggerDataResult.getTags());
       ruleResult.setCompareParam(functionConfigParam.getCmp());
       ruleResult.setTriggerContent(functionConfigParam.getTriggerContent());
       ruleResult.setTriggerLevel(functionConfigParam.getTriggerLevel());
@@ -244,9 +245,10 @@ public class AbstractUniformInspectRunningRule {
         break;
       }
     }
-    List<Long> nullValTimes = this.nullValueTracker.hasNullValue(dataResult, functionConfigParams);
+    List<Long> nullValTimes =
+        this.nullValueTracker.hasNullValue(triggerDataResult, functionConfigParams);
     if (!CollectionUtils.isEmpty(nullValTimes)) {
-      this.nullValueTracker.record(dataResult, trigger, nullValTimes, computeInfo);
+      this.nullValueTracker.record(triggerDataResult, trigger, nullValTimes, computeInfo);
     }
 
     return triggerResults;

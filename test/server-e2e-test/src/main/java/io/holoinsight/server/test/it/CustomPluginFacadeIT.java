@@ -9,7 +9,7 @@ import io.holoinsight.server.home.dal.model.dto.CustomPluginPeriodType;
 import io.holoinsight.server.home.dal.model.dto.CustomPluginStatus;
 import io.holoinsight.server.home.dal.model.dto.conf.CustomPluginConf;
 import io.holoinsight.server.home.dal.model.dto.conf.LogParse;
-import io.holoinsight.server.home.facade.page.MonitorPageRequest;
+import io.holoinsight.server.common.MonitorPageRequest;
 import io.restassured.response.Response;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.hamcrest.CustomMatcher;

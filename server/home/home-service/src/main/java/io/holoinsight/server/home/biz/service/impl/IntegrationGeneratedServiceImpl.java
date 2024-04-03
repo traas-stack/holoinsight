@@ -3,15 +3,14 @@
  */
 package io.holoinsight.server.home.biz.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import io.holoinsight.server.common.EventBusHolder;
 import io.holoinsight.server.home.biz.service.IntegrationGeneratedService;
-import io.holoinsight.server.home.common.util.EventBusHolder;
-import io.holoinsight.server.home.common.util.StringUtil;
 import io.holoinsight.server.home.dal.converter.IntegrationGeneratedConverter;
 import io.holoinsight.server.home.dal.mapper.IntegrationGeneratedMapper;
 import io.holoinsight.server.home.dal.model.IntegrationGenerated;
 import io.holoinsight.server.home.dal.model.dto.IntegrationGeneratedDTO;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -54,7 +53,7 @@ public class IntegrationGeneratedServiceImpl
   public IntegrationGeneratedDTO queryById(Long id, String tenant, String workspace) {
     QueryWrapper<IntegrationGenerated> wrapper = new QueryWrapper<>();
     wrapper.eq("tenant", tenant);
-    if (StringUtil.isNotBlank(workspace)) {
+    if (StringUtils.isNotBlank(workspace)) {
       wrapper.eq("workspace", workspace);
     }
     wrapper.eq("id", id);
@@ -86,7 +85,7 @@ public class IntegrationGeneratedServiceImpl
   public List<IntegrationGeneratedDTO> queryByName(String tenant, String workspace, String name) {
     Map<String, Object> map = new HashMap<>();
     map.put("tenant", tenant);
-    if (StringUtil.isNotBlank(workspace)) {
+    if (StringUtils.isNotBlank(workspace)) {
       map.put("workspace", workspace);
     }
     map.put("deleted", 0);

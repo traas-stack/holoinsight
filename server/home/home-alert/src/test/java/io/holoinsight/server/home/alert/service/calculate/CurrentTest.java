@@ -5,10 +5,10 @@
 package io.holoinsight.server.home.alert.service.calculate;
 
 import io.holoinsight.server.home.alert.model.function.FunctionConfigParam;
-import io.holoinsight.server.home.facade.DataResult;
-import io.holoinsight.server.home.facade.emuns.CompareOperationEnum;
-import io.holoinsight.server.home.facade.trigger.CompareParam;
-import io.holoinsight.server.home.facade.trigger.TriggerResult;
+import io.holoinsight.server.common.dao.entity.dto.alarm.trigger.TriggerDataResult;
+import io.holoinsight.server.common.dao.emuns.CompareOperationEnum;
+import io.holoinsight.server.common.dao.entity.dto.alarm.trigger.CompareParam;
+import io.holoinsight.server.common.dao.entity.dto.alarm.trigger.TriggerResult;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -24,13 +24,13 @@ public class CurrentTest {
 
   @Test
   public void testZeroFill() {
-    DataResult dataResult = new DataResult();
+    TriggerDataResult triggerDataResult = new TriggerDataResult();
     Map<Long, Double> points = new LinkedHashMap<>();
     points.put(1678079340000L, 0d);
     points.put(1678079400000L, 0d);
     points.put(1678079460000L, 0d);
     points.put(1678079580000L, 0d);
-    dataResult.setPoints(points);
+    triggerDataResult.setPoints(points);
 
     CompareParam compareParam = new CompareParam();
     compareParam.setCmpValue(0d);
@@ -43,24 +43,24 @@ public class CurrentTest {
     functionConfigParam.setCmp(Arrays.asList(compareParam));
 
     Current current = new Current();
-    TriggerResult triggerResult = current.invoke(dataResult, functionConfigParam);
+    TriggerResult triggerResult = current.invoke(triggerDataResult, functionConfigParam);
     Assert.assertFalse(triggerResult.isHit());
 
     functionConfigParam.setZeroFill(true);
-    triggerResult = current.invoke(dataResult, functionConfigParam);
+    triggerResult = current.invoke(triggerDataResult, functionConfigParam);
     Assert.assertTrue(triggerResult.isHit());
   }
 
   @Test
   public void testHit() {
-    DataResult dataResult = new DataResult();
+    TriggerDataResult triggerDataResult = new TriggerDataResult();
     Map<Long, Double> points = new LinkedHashMap<>();
     points.put(1678079340000L, 11d);
     points.put(1678079400000L, 13d);
     points.put(1678079460000L, 14d);
     points.put(1678079520000L, 14d);
     points.put(1678079580000L, 10d);
-    dataResult.setPoints(points);
+    triggerDataResult.setPoints(points);
 
     CompareParam compareParam = new CompareParam();
     compareParam.setCmpValue(10d);
@@ -72,20 +72,20 @@ public class CurrentTest {
     functionConfigParam.setCmp(Arrays.asList(compareParam));
 
     Current current = new Current();
-    TriggerResult triggerResult = current.invoke(dataResult, functionConfigParam);
+    TriggerResult triggerResult = current.invoke(triggerDataResult, functionConfigParam);
     Assert.assertTrue(triggerResult.isHit());
   }
 
   @Test
   public void testMiss() {
-    DataResult dataResult = new DataResult();
+    TriggerDataResult triggerDataResult = new TriggerDataResult();
     Map<Long, Double> points = new LinkedHashMap<>();
     points.put(1678079340000L, 11d);
     points.put(1678079400000L, 13d);
     points.put(1678079460000L, 14d);
     points.put(1678079520000L, 1d);
     points.put(1678079580000L, 10d);
-    dataResult.setPoints(points);
+    triggerDataResult.setPoints(points);
 
     CompareParam compareParam = new CompareParam();
     compareParam.setCmpValue(10d);
@@ -97,7 +97,7 @@ public class CurrentTest {
     functionConfigParam.setCmp(Arrays.asList(compareParam));
 
     Current current = new Current();
-    TriggerResult triggerResult = current.invoke(dataResult, functionConfigParam);
+    TriggerResult triggerResult = current.invoke(triggerDataResult, functionConfigParam);
     Assert.assertFalse(triggerResult.isHit());
   }
 }

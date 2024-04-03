@@ -4,10 +4,10 @@
 package io.holoinsight.server.home.alert.service.calculate;
 
 import io.holoinsight.server.home.alert.model.function.FunctionConfigParam;
-import io.holoinsight.server.home.facade.DataResult;
-import io.holoinsight.server.home.facade.emuns.CompareOperationEnum;
-import io.holoinsight.server.home.facade.trigger.CompareParam;
-import io.holoinsight.server.home.facade.trigger.TriggerResult;
+import io.holoinsight.server.common.dao.entity.dto.alarm.trigger.TriggerDataResult;
+import io.holoinsight.server.common.dao.emuns.CompareOperationEnum;
+import io.holoinsight.server.common.dao.entity.dto.alarm.trigger.CompareParam;
+import io.holoinsight.server.common.dao.entity.dto.alarm.trigger.TriggerResult;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -15,8 +15,8 @@ import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import static io.holoinsight.server.home.facade.emuns.PeriodType.HOUR;
-import static io.holoinsight.server.home.facade.emuns.PeriodType.WEEK;
+import static io.holoinsight.server.common.dao.emuns.PeriodType.HOUR;
+import static io.holoinsight.server.common.dao.emuns.PeriodType.WEEK;
 
 /**
  * @author masaimu
@@ -26,7 +26,7 @@ public class PeriodValueTest {
 
   @Test
   public void testHit() {
-    DataResult dataResult = new DataResult();
+    TriggerDataResult triggerDataResult = new TriggerDataResult();
     Map<Long, Double> points = new LinkedHashMap<>();
     points.put(1678079340000L, 11d);
     points.put(1678079400000L, 13d);
@@ -39,7 +39,7 @@ public class PeriodValueTest {
     points.put(1678079460000L - HOUR.intervalMillis(), 140d);
     points.put(1678079520000L - HOUR.intervalMillis(), 140d);
     points.put(1678079580000L - HOUR.intervalMillis(), 100d);
-    dataResult.setPoints(points);
+    triggerDataResult.setPoints(points);
 
     CompareParam compareParam = new CompareParam();
     compareParam.setCmpValue(-50d);
@@ -52,13 +52,13 @@ public class PeriodValueTest {
     functionConfigParam.setPeriodType(HOUR);
 
     PeriodValue periodValue = new PeriodValue();
-    TriggerResult triggerResult = periodValue.invoke(dataResult, functionConfigParam);
+    TriggerResult triggerResult = periodValue.invoke(triggerDataResult, functionConfigParam);
     Assert.assertTrue(triggerResult.isHit());
   }
 
   @Test
   public void testMiss() {
-    DataResult dataResult = new DataResult();
+    TriggerDataResult triggerDataResult = new TriggerDataResult();
     Map<Long, Double> points = new LinkedHashMap<>();
     points.put(1678079340000L, 11d);
     points.put(1678079400000L, 13d);
@@ -71,7 +71,7 @@ public class PeriodValueTest {
     points.put(1678079460000L - WEEK.intervalMillis(), 140d);
     points.put(1678079520000L - WEEK.intervalMillis(), 140d);
     points.put(1678079580000L - WEEK.intervalMillis(), 150d);
-    dataResult.setPoints(points);
+    triggerDataResult.setPoints(points);
 
     CompareParam compareParam = new CompareParam();
     compareParam.setCmpValue(-100d);
@@ -84,13 +84,13 @@ public class PeriodValueTest {
     functionConfigParam.setPeriodType(WEEK);
 
     PeriodValue periodValue = new PeriodValue();
-    TriggerResult triggerResult = periodValue.invoke(dataResult, functionConfigParam);
+    TriggerResult triggerResult = periodValue.invoke(triggerDataResult, functionConfigParam);
     Assert.assertFalse(triggerResult.isHit());
   }
 
   @Test
   public void testZeroFill() {
-    DataResult dataResult = new DataResult();
+    TriggerDataResult triggerDataResult = new TriggerDataResult();
     Map<Long, Double> points = new LinkedHashMap<>();
     points.put(1678079340000L, 11d);
     points.put(1678079400000L, 13d);
@@ -102,7 +102,7 @@ public class PeriodValueTest {
     points.put(1678079460000L - HOUR.intervalMillis(), 140d);
     points.put(1678079520000L - HOUR.intervalMillis(), 140d);
     points.put(1678079580000L - HOUR.intervalMillis(), 100d);
-    dataResult.setPoints(points);
+    triggerDataResult.setPoints(points);
 
     CompareParam compareParam = new CompareParam();
     compareParam.setCmpValue(-50d);
@@ -116,11 +116,11 @@ public class PeriodValueTest {
     functionConfigParam.setZeroFill(true);
 
     PeriodValue periodValue = new PeriodValue();
-    TriggerResult triggerResult = periodValue.invoke(dataResult, functionConfigParam);
+    TriggerResult triggerResult = periodValue.invoke(triggerDataResult, functionConfigParam);
     Assert.assertTrue(triggerResult.isHit());
 
     functionConfigParam.setZeroFill(false);
-    triggerResult = periodValue.invoke(dataResult, functionConfigParam);
+    triggerResult = periodValue.invoke(triggerDataResult, functionConfigParam);
     Assert.assertFalse(triggerResult.isHit());
   }
 

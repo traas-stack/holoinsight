@@ -3,28 +3,26 @@
  */
 package io.holoinsight.server.home.biz.service.agent;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.util.CollectionUtils;
-
 import com.google.protobuf.ProtocolStringList;
-
 import io.holoinsight.server.common.J;
+import io.holoinsight.server.common.MonitorException;
 import io.holoinsight.server.common.RetryUtils;
 import io.holoinsight.server.common.UtilMisc;
 import io.holoinsight.server.common.grpc.FileNode;
 import io.holoinsight.server.home.biz.service.TenantInitService;
 import io.holoinsight.server.home.common.service.RegistryService;
-import io.holoinsight.server.home.common.util.MonitorException;
-import io.holoinsight.server.home.common.util.StringUtil;
 import io.holoinsight.server.meta.common.model.QueryExample;
 import io.holoinsight.server.meta.facade.service.DataClientService;
 import io.holoinsight.server.registry.grpc.prod.PreviewFileResponse;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 /**
  *
@@ -115,19 +113,19 @@ public class AgentLogTailService {
 
     QueryExample queryExample = new QueryExample();
 
-    if (StringUtil.isNotBlank(agentParamRequest.ip)) {
+    if (StringUtils.isNotBlank(agentParamRequest.ip)) {
       queryExample.getParams().put("ip", agentParamRequest.ip);
     }
-    if (StringUtil.isNotBlank(agentParamRequest.hostname)) {
+    if (StringUtils.isNotBlank(agentParamRequest.hostname)) {
       queryExample.getParams().put("hostname", agentParamRequest.hostname);
     }
-    if (StringUtil.isNotBlank(agentParamRequest.app)) {
+    if (StringUtils.isNotBlank(agentParamRequest.app)) {
       queryExample.getParams().put("app", agentParamRequest.app);
     }
 
     if (!CollectionUtils.isEmpty(agentParamRequest.label)) {
       for (Map.Entry<String, String> entry : agentParamRequest.label.entrySet()) {
-        if (StringUtil.isBlank(entry.getValue()))
+        if (StringUtils.isBlank(entry.getValue()))
           continue;
         queryExample.getParams().put(entry.getKey(), entry.getValue());
       }

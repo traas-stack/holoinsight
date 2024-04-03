@@ -3,7 +3,7 @@
  */
 package io.holoinsight.server.home.biz.plugin.model;
 
-import io.holoinsight.server.home.facade.AlertNotifyRecordDTO;
+import io.holoinsight.server.common.dao.entity.dto.AlertNotifyRecordDTO;
 
 import java.util.HashMap;
 import java.util.Map;

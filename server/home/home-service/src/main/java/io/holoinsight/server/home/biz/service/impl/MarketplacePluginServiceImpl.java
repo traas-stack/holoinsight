@@ -3,17 +3,16 @@
  */
 package io.holoinsight.server.home.biz.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import io.holoinsight.server.common.MonitorPageRequest;
+import io.holoinsight.server.common.MonitorPageResult;
 import io.holoinsight.server.home.biz.service.MarketplacePluginService;
-import io.holoinsight.server.home.common.util.StringUtil;
 import io.holoinsight.server.home.dal.converter.MarketplacePluginConverter;
 import io.holoinsight.server.home.dal.mapper.MarketplacePluginMapper;
 import io.holoinsight.server.home.dal.model.MarketplacePlugin;
 import io.holoinsight.server.home.dal.model.dto.MarketplacePluginDTO;
-import io.holoinsight.server.home.facade.page.MonitorPageRequest;
-import io.holoinsight.server.home.facade.page.MonitorPageResult;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -113,11 +112,11 @@ public class MarketplacePluginServiceImpl extends
       wrapper.le("gmt_modified", marketplacePluginDTO.getGmtCreate());
     }
 
-    if (StringUtil.isNotBlank(marketplacePluginDTO.getCreator())) {
+    if (StringUtils.isNotBlank(marketplacePluginDTO.getCreator())) {
       wrapper.eq("creator", marketplacePluginDTO.getCreator().trim());
     }
 
-    if (StringUtil.isNotBlank(marketplacePluginDTO.getModifier())) {
+    if (StringUtils.isNotBlank(marketplacePluginDTO.getModifier())) {
       wrapper.eq("modifier", marketplacePluginDTO.getModifier().trim());
     }
 
@@ -125,7 +124,7 @@ public class MarketplacePluginServiceImpl extends
       wrapper.eq("id", marketplacePluginDTO.getId());
     }
 
-    if (StringUtil.isNotBlank(marketplacePluginDTO.getName())) {
+    if (StringUtils.isNotBlank(marketplacePluginDTO.getName())) {
       wrapper.like("name", marketplacePluginDTO.getName().trim());
     }
 
@@ -166,7 +165,7 @@ public class MarketplacePluginServiceImpl extends
   public List<MarketplacePluginDTO> getListByKeyword(String keyword, String tenant,
       String workspace) {
     QueryWrapper<MarketplacePlugin> wrapper = new QueryWrapper<>();
-    if (StringUtil.isNotBlank(tenant)) {
+    if (StringUtils.isNotBlank(tenant)) {
       wrapper.eq("tenant", tenant);
     }
     if (StringUtils.isNotBlank(workspace)) {
@@ -184,7 +183,7 @@ public class MarketplacePluginServiceImpl extends
       String workspace) {
     QueryWrapper<MarketplacePlugin> wrapper = new QueryWrapper<>();
     wrapper.select().like("name", name);
-    if (StringUtil.isNotBlank(tenant)) {
+    if (StringUtils.isNotBlank(tenant)) {
       wrapper.eq("tenant", tenant);
     }
     if (StringUtils.isNotBlank(workspace)) {

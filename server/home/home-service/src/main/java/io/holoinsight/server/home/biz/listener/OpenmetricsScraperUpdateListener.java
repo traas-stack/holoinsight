@@ -6,7 +6,7 @@ package io.holoinsight.server.home.biz.listener;
 import io.holoinsight.server.home.biz.common.GaeaConvertUtil;
 import io.holoinsight.server.home.biz.service.GaeaCollectConfigService;
 import io.holoinsight.server.home.biz.service.TenantInitService;
-import io.holoinsight.server.home.common.util.EventBusHolder;
+import io.holoinsight.server.common.EventBusHolder;
 import io.holoinsight.server.home.dal.model.dto.GaeaCollectConfigDTO;
 import io.holoinsight.server.home.dal.model.dto.OpenmetricsScraperDTO;
 import com.google.common.eventbus.AllowConcurrentEvents;

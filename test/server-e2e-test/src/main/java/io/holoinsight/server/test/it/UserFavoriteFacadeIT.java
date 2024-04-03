@@ -5,8 +5,8 @@ package io.holoinsight.server.test.it;
 
 import io.holoinsight.server.common.J;
 import io.holoinsight.server.home.dal.model.Folder;
-import io.holoinsight.server.home.dal.model.UserFavorite;
-import io.holoinsight.server.home.facade.page.MonitorPageRequest;
+import io.holoinsight.server.common.dao.entity.UserFavorite;
+import io.holoinsight.server.common.MonitorPageRequest;
 import io.restassured.response.Response;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.hamcrest.CustomMatcher;

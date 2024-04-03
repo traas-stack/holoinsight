@@ -3,18 +3,18 @@
  */
 package io.holoinsight.server.home.biz.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import io.holoinsight.server.common.EventBusHolder;
+import io.holoinsight.server.common.MonitorPageRequest;
+import io.holoinsight.server.common.MonitorPageResult;
 import io.holoinsight.server.home.biz.service.IntegrationProductService;
-import io.holoinsight.server.home.common.util.EventBusHolder;
-import io.holoinsight.server.home.common.util.StringUtil;
 import io.holoinsight.server.home.dal.converter.IntegrationProductConverter;
 import io.holoinsight.server.home.dal.mapper.IntegrationProductMapper;
 import io.holoinsight.server.home.dal.model.IntegrationProduct;
 import io.holoinsight.server.home.dal.model.dto.IntegrationProductDTO;
-import io.holoinsight.server.home.facade.page.MonitorPageRequest;
-import io.holoinsight.server.home.facade.page.MonitorPageResult;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -111,11 +111,11 @@ public class IntegrationProductServiceImpl extends
       wrapper.le("gmt_modified", integrationProductDTO.getGmtCreate());
     }
 
-    if (StringUtil.isNotBlank(integrationProductDTO.getCreator())) {
+    if (StringUtils.isNotBlank(integrationProductDTO.getCreator())) {
       wrapper.eq("creator", integrationProductDTO.getCreator().trim());
     }
 
-    if (StringUtil.isNotBlank(integrationProductDTO.getModifier())) {
+    if (StringUtils.isNotBlank(integrationProductDTO.getModifier())) {
       wrapper.eq("modifier", integrationProductDTO.getModifier().trim());
     }
 
@@ -123,7 +123,7 @@ public class IntegrationProductServiceImpl extends
       wrapper.eq("id", integrationProductDTO.getId());
     }
 
-    if (StringUtil.isNotBlank(integrationProductDTO.getName())) {
+    if (StringUtils.isNotBlank(integrationProductDTO.getName())) {
       wrapper.like("name", integrationProductDTO.getName().trim());
     }
 
@@ -153,7 +153,7 @@ public class IntegrationProductServiceImpl extends
   @Override
   public List<IntegrationProductDTO> getListByKeyword(String keyword, String tenant) {
     QueryWrapper<IntegrationProduct> wrapper = new QueryWrapper<>();
-    if (StringUtil.isNotBlank(tenant)) {
+    if (StringUtils.isNotBlank(tenant)) {
       wrapper.eq("tenant", tenant);
     }
     wrapper.eq("status", 1);

@@ -108,7 +108,7 @@ public class AesUtil {
       byte[] byteDecode = cipher.doFinal(byteContent);
       return new String(byteDecode, StandardCharsets.UTF_8);
     } catch (Exception e) {
-      log.error("aes decode failed with err:{}", e.getMessage());
+      log.error("aes decode failed with err:{}", e.getMessage(), e);
     }
     return null;
   }

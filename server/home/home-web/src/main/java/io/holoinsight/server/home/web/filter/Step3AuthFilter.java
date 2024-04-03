@@ -3,22 +3,21 @@
  */
 package io.holoinsight.server.home.web.filter;
 
-import io.holoinsight.server.home.common.util.MonitorException;
-import io.holoinsight.server.home.common.util.ResultCodeEnum;
-import io.holoinsight.server.home.common.util.scope.MonitorParams;
-import io.holoinsight.server.home.web.config.RestAuthUtil;
+import io.holoinsight.server.common.Debugger;
 import io.holoinsight.server.common.J;
-import io.holoinsight.server.home.biz.ula.ULAFacade;
+import io.holoinsight.server.common.MonitorException;
+import io.holoinsight.server.common.RequestContext;
+import io.holoinsight.server.common.RequestContext.Context;
+import io.holoinsight.server.common.ResultCodeEnum;
+import io.holoinsight.server.common.scope.IdentityType;
+import io.holoinsight.server.common.scope.MonitorAuth;
+import io.holoinsight.server.common.scope.MonitorCookieUtil;
+import io.holoinsight.server.common.scope.MonitorParams;
+import io.holoinsight.server.common.scope.MonitorScope;
+import io.holoinsight.server.common.scope.MonitorUser;
 import io.holoinsight.server.home.biz.common.MetaDictUtil;
-import io.holoinsight.server.home.common.util.Debugger;
-import io.holoinsight.server.home.common.util.StringUtil;
-import io.holoinsight.server.home.common.util.scope.IdentityType;
-import io.holoinsight.server.home.common.util.scope.MonitorAuth;
-import io.holoinsight.server.home.common.util.scope.MonitorCookieUtil;
-import io.holoinsight.server.home.common.util.scope.MonitorScope;
-import io.holoinsight.server.home.common.util.scope.MonitorUser;
-import io.holoinsight.server.home.common.util.scope.RequestContext;
-import io.holoinsight.server.home.common.util.scope.RequestContext.Context;
+import io.holoinsight.server.home.biz.ula.ULAFacade;
+import io.holoinsight.server.home.web.config.RestAuthUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -85,7 +84,7 @@ public class Step3AuthFilter implements Filter {
     if (IdentityType.OUTTOKEN.equals(mu.getIdentityType()) || MetaDictUtil.getUlaClose()) {
       String token = req.getHeader("apiToken");
       // 接口权限判定
-      if (!ulaFacade.authFunc(req) && StringUtil.isBlank(token)) {
+      if (!ulaFacade.authFunc(req) && StringUtils.isBlank(token)) {
         log.warn("{} authFunc check failed", RequestContext.getTrace());
         authFailedResponse(resp, HttpServletResponse.SC_FORBIDDEN, "权限不足，请联系账号管理员",
             ResultCodeEnum.AUTH_CHECK_ERROR);

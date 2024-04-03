@@ -8,17 +8,16 @@ import io.holoinsight.server.home.alert.common.G;
 import io.holoinsight.server.home.alert.model.event.AlertNotify;
 import io.holoinsight.server.home.alert.model.event.NotifyDataInfo;
 import io.holoinsight.server.home.alert.model.event.WebhookInfo;
-import io.holoinsight.server.home.dal.model.AlarmHistory;
-import io.holoinsight.server.home.dal.model.AlarmRule;
-import io.holoinsight.server.home.dal.model.AlarmWebhook;
-import io.holoinsight.server.home.dal.model.AlertmanagerWebhook;
-import io.holoinsight.server.home.facade.AlertRuleExtra;
-import io.holoinsight.server.home.facade.InspectConfig;
-import io.holoinsight.server.home.facade.PqlRule;
-import io.holoinsight.server.home.facade.Rule;
-import io.holoinsight.server.home.facade.TimeFilter;
-import io.holoinsight.server.home.facade.trigger.DataSource;
-import io.holoinsight.server.home.facade.trigger.Trigger;
+import io.holoinsight.server.common.dao.entity.AlarmHistory;
+import io.holoinsight.server.common.dao.entity.AlarmRule;
+import io.holoinsight.server.common.dao.entity.AlarmWebhook;
+import io.holoinsight.server.common.dao.entity.dto.AlertRuleExtra;
+import io.holoinsight.server.common.dao.entity.dto.InspectConfig;
+import io.holoinsight.server.common.dao.entity.dto.alarm.PqlRule;
+import io.holoinsight.server.common.dao.entity.dto.alarm.AlarmRuleConf;
+import io.holoinsight.server.common.dao.entity.dto.alarm.TimeFilter;
+import io.holoinsight.server.common.dao.entity.dto.alarm.trigger.DataSource;
+import io.holoinsight.server.common.dao.entity.dto.alarm.trigger.Trigger;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,7 +52,7 @@ public class DoConvert {
         inspectConfig.setIsPql(true);
         inspectConfig.setPqlRule(pqlRule);
       } else {
-        inspectConfig.setRule(G.get().fromJson(alarmRuleDO.getRule(), Rule.class));
+        inspectConfig.setRule(G.get().fromJson(alarmRuleDO.getRule(), AlarmRuleConf.class));
         inspectConfig.setIsPql(false);
         inspectConfig.setMetrics(getMetricsFromRule(inspectConfig.getRule()));
       }
@@ -73,12 +72,12 @@ public class DoConvert {
     return inspectConfig;
   }
 
-  private static List<String> getMetricsFromRule(Rule rule) {
+  private static List<String> getMetricsFromRule(AlarmRuleConf alarmRuleConf) {
     List<String> metrics = new ArrayList<>();
-    if (rule == null || CollectionUtils.isEmpty(rule.getTriggers())) {
+    if (alarmRuleConf == null || CollectionUtils.isEmpty(alarmRuleConf.getTriggers())) {
       return metrics;
     }
-    for (Trigger trigger : rule.getTriggers()) {
+    for (Trigger trigger : alarmRuleConf.getTriggers()) {
       if (CollectionUtils.isEmpty(trigger.getDatasources())) {
         continue;
       }

@@ -3,7 +3,7 @@
  */
 package io.holoinsight.server.home.alert.service.data;
 
-import io.holoinsight.server.home.facade.InspectConfig;
+import io.holoinsight.server.common.dao.entity.dto.InspectConfig;
 import lombok.Data;
 import org.springframework.stereotype.Service;
 

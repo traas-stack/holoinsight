@@ -3,12 +3,12 @@
  */
 package io.holoinsight.server.home.biz.ula;
 
-import io.holoinsight.server.home.common.util.scope.IdentityType;
-import io.holoinsight.server.home.common.util.scope.MonitorAuth;
-import io.holoinsight.server.home.common.util.scope.MonitorParams;
-import io.holoinsight.server.home.common.util.scope.MonitorScope;
-import io.holoinsight.server.home.common.util.scope.MonitorTenant;
-import io.holoinsight.server.home.common.util.scope.MonitorUser;
+import io.holoinsight.server.common.scope.IdentityType;
+import io.holoinsight.server.common.scope.MonitorAuth;
+import io.holoinsight.server.common.scope.MonitorParams;
+import io.holoinsight.server.common.scope.MonitorScope;
+import io.holoinsight.server.common.scope.MonitorTenant;
+import io.holoinsight.server.common.scope.MonitorUser;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;

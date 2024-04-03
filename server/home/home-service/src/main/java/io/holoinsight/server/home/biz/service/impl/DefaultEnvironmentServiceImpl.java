@@ -4,7 +4,7 @@
 package io.holoinsight.server.home.biz.service.impl;
 
 import io.holoinsight.server.home.biz.service.EnvironmentService;
-import io.holoinsight.server.home.common.model.TaskEnum;
+import io.holoinsight.server.common.model.TaskEnum;
 
 /**
  *

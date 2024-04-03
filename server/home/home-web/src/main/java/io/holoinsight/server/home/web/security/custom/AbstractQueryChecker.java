@@ -5,7 +5,7 @@ package io.holoinsight.server.home.web.security.custom;
 
 import io.holoinsight.server.common.J;
 import io.holoinsight.server.common.model.DataQueryRequest;
-import io.holoinsight.server.home.facade.trigger.Filter;
+import io.holoinsight.server.common.dao.entity.dto.alarm.trigger.Filter;
 import io.holoinsight.server.home.web.security.ApiSecurityService;
 import io.holoinsight.server.home.web.security.LevelAuthorizationCheck;
 import io.holoinsight.server.home.web.security.LevelAuthorizationCheckResult;

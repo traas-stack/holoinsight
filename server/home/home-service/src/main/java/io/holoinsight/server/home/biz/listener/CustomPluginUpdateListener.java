@@ -3,18 +3,20 @@
  */
 package io.holoinsight.server.home.biz.listener;
 
+import com.google.common.eventbus.AllowConcurrentEvents;
+import com.google.common.eventbus.Subscribe;
 import io.holoinsight.server.agg.v1.core.conf.AggTask;
+import io.holoinsight.server.common.EventBusHolder;
+import io.holoinsight.server.common.J;
+import io.holoinsight.server.common.dao.entity.dto.AggTaskV1DTO;
 import io.holoinsight.server.common.dao.entity.dto.MetricInfoDTO;
+import io.holoinsight.server.common.service.AggTaskV1Service;
 import io.holoinsight.server.common.service.MetricInfoService;
 import io.holoinsight.server.home.biz.common.AggTaskUtil;
 import io.holoinsight.server.home.biz.common.GaeaConvertUtil;
 import io.holoinsight.server.home.biz.common.GaeaSqlTaskUtil;
-import io.holoinsight.server.home.biz.service.AggTaskV1Service;
 import io.holoinsight.server.home.biz.service.GaeaCollectConfigService;
 import io.holoinsight.server.home.biz.service.TenantInitService;
-import io.holoinsight.server.home.common.util.EventBusHolder;
-import io.holoinsight.server.home.common.util.StringUtil;
-import io.holoinsight.server.home.dal.model.dto.AggTaskV1DTO;
 import io.holoinsight.server.home.dal.model.dto.CustomPluginDTO;
 import io.holoinsight.server.home.dal.model.dto.CustomPluginStatus;
 import io.holoinsight.server.home.dal.model.dto.GaeaCollectConfigDTO;
@@ -22,8 +24,6 @@ import io.holoinsight.server.home.dal.model.dto.conf.CollectMetric;
 import io.holoinsight.server.home.dal.model.dto.conf.CustomPluginConf;
 import io.holoinsight.server.home.dal.model.dto.conf.CustomPluginConf.SplitCol;
 import io.holoinsight.server.home.dal.model.dto.conf.LogPath;
-import com.google.common.eventbus.AllowConcurrentEvents;
-import com.google.common.eventbus.Subscribe;
 import io.holoinsight.server.registry.model.ExecuteRule;
 import io.holoinsight.server.registry.model.From;
 import io.holoinsight.server.registry.model.GroupBy;
@@ -33,6 +33,7 @@ import io.holoinsight.server.registry.model.SqlTask;
 import io.holoinsight.server.registry.model.Where;
 import io.holoinsight.server.registry.model.Window;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
@@ -98,7 +99,7 @@ public class CustomPluginUpdateListener {
         SqlTask sqlTask = buildSqlTask(logPaths, collectMetric, customPluginDTO);
 
         String name = collectMetric.name;
-        if (StringUtil.isNotBlank(collectMetric.tableName)) {
+        if (StringUtils.isNotBlank(collectMetric.tableName)) {
           name = collectMetric.tableName;
         }
         String tableName = String.format("%s_%s", name, customPluginDTO.id);
@@ -243,7 +244,7 @@ public class CustomPluginUpdateListener {
     for (Map.Entry<String, AggTask> entry : aggTasks.entrySet()) {
       AggTaskV1DTO aggTaskV1DTO = new AggTaskV1DTO();
       aggTaskV1DTO.setDeleted(false);
-      aggTaskV1DTO.setJson(entry.getValue());
+      aggTaskV1DTO.setJson(J.toJson(entry.getValue()));
       aggTaskV1DTO.setAggId(entry.getKey());
       aggTaskV1DTO.setVersion(1L);
       aggTaskV1DTO.setRefId("custom_" + customPluginDTO.getId());

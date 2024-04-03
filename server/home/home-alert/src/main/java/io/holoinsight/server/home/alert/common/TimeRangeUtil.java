@@ -3,9 +3,9 @@
  */
 package io.holoinsight.server.home.alert.common;
 
-import io.holoinsight.server.home.facade.emuns.PeriodType;
-import io.holoinsight.server.home.facade.trigger.DataSource;
-import io.holoinsight.server.home.facade.trigger.Trigger;
+import io.holoinsight.server.common.dao.emuns.PeriodType;
+import io.holoinsight.server.common.dao.entity.dto.alarm.trigger.DataSource;
+import io.holoinsight.server.common.dao.entity.dto.alarm.trigger.Trigger;
 import org.apache.commons.lang3.StringUtils;
 
 /**

@@ -20,11 +20,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
-import io.holoinsight.server.home.common.util.Debugger;
-import io.holoinsight.server.home.common.util.StringUtil;
+import io.holoinsight.server.common.Debugger;
 import io.holoinsight.server.home.task.AbstractMonitorTask;
 import io.holoinsight.server.home.task.MonitorTaskJob;
-import io.holoinsight.server.home.common.model.TaskEnum;
+import io.holoinsight.server.common.model.TaskEnum;
 import io.holoinsight.server.home.task.TaskHandler;
 import io.holoinsight.server.meta.facade.service.DataClientService;
 import lombok.extern.slf4j.Slf4j;
@@ -111,7 +110,7 @@ public class TenantAppMetaSyncTask extends AbstractMonitorTask {
     }
 
     fromDbServers.forEach(appModel -> {
-      if (StringUtil.isBlank(appModel.getApp()) || "-".equalsIgnoreCase(appModel.getApp())) {
+      if (StringUtils.isBlank(appModel.getApp()) || "-".equalsIgnoreCase(appModel.getApp())) {
         return;
       }
 

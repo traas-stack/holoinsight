@@ -3,8 +3,8 @@
  */
 package io.holoinsight.server.home.web.filter;
 
-import io.holoinsight.server.home.common.util.ResultCodeEnum;
-import io.holoinsight.server.home.common.util.scope.RequestContext;
+import io.holoinsight.server.common.ResultCodeEnum;
+import io.holoinsight.server.common.RequestContext;
 import io.holoinsight.server.home.web.common.ResponseUtil;
 import io.holoinsight.server.home.web.wrapper.CountServletResponseWrapper;
 import lombok.extern.slf4j.Slf4j;

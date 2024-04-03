@@ -31,8 +31,8 @@ import io.holoinsight.server.home.biz.service.MetaService;
 import io.holoinsight.server.home.biz.service.MetaService.AppModel;
 import io.holoinsight.server.home.biz.service.TenantInitService;
 import io.holoinsight.server.home.biz.service.TenantOpsService;
-import io.holoinsight.server.home.common.model.TaskEnum;
-import io.holoinsight.server.home.common.util.cache.local.CommonLocalCache;
+import io.holoinsight.server.common.model.TaskEnum;
+import io.holoinsight.server.common.cache.local.CommonLocalCache;
 import io.holoinsight.server.home.dal.converter.IntegrationGeneratedConverter;
 import io.holoinsight.server.home.dal.model.IntegrationGenerated;
 import io.holoinsight.server.home.dal.model.dto.CloudMonitorRange;
@@ -51,8 +51,8 @@ import io.holoinsight.server.meta.facade.service.DataClientService;
 
 import static io.holoinsight.server.home.biz.common.MetaDictKey.INTEGRATION_LOCAL_PRODUCT;
 import static io.holoinsight.server.home.biz.common.MetaDictType.INTEGRATION_CONFIG;
-import static io.holoinsight.server.home.common.util.cache.local.CacheConst.APP_META_KEY;
-import static io.holoinsight.server.home.common.util.cache.local.CacheConst.INTEGRATION_GENERATED_CACHE_KEY;
+import static io.holoinsight.server.common.cache.local.CacheConst.APP_META_KEY;
+import static io.holoinsight.server.common.cache.local.CacheConst.INTEGRATION_GENERATED_CACHE_KEY;
 
 /**
  *

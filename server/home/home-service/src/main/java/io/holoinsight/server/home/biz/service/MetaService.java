@@ -4,11 +4,10 @@
 
 package io.holoinsight.server.home.biz.service;
 
+import io.holoinsight.server.common.Debugger;
 import io.holoinsight.server.common.J;
 import io.holoinsight.server.common.dao.entity.Workspace;
 import io.holoinsight.server.common.service.WorkspaceService;
-import io.holoinsight.server.home.common.util.Debugger;
-import io.holoinsight.server.home.common.util.StringUtil;
 import io.holoinsight.server.meta.facade.service.DataClientService;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
@@ -122,7 +121,7 @@ public class MetaService {
       }
 
       String app = map.get(meta_app).toString();
-      if (StringUtil.isBlank(app) || "-".equalsIgnoreCase(app)) {
+      if (StringUtils.isBlank(app) || "-".equalsIgnoreCase(app)) {
         continue;
       }
       AppModel appModel = new AppModel();

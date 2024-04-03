@@ -4,7 +4,7 @@
 package io.holoinsight.server.home.alert.common;
 
 import io.holoinsight.server.common.J;
-import io.holoinsight.server.home.facade.DataResult;
+import io.holoinsight.server.common.dao.entity.dto.alarm.trigger.TriggerDataResult;
 
 import java.util.List;
 
@@ -14,8 +14,8 @@ import java.util.List;
  */
 public class AlarmContentGenerator {
 
-  public static String genPqlAlarmContent(String pql, List<DataResult> dataResult) {
-    return J.toJson(dataResult);
+  public static String genPqlAlarmContent(String pql, List<TriggerDataResult> triggerDataResult) {
+    return J.toJson(triggerDataResult);
   }
 
 }

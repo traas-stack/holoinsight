@@ -4,15 +4,26 @@
 package io.holoinsight.server.home.web.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import io.holoinsight.server.common.J;
-import io.holoinsight.server.common.JsonResult;
 import com.google.protobuf.InvalidProtocolBufferException;
 import com.google.protobuf.Message;
 import com.google.protobuf.util.JsonFormat;
+import io.holoinsight.server.common.J;
+import io.holoinsight.server.common.JsonResult;
 import io.holoinsight.server.common.LatchWork;
+import io.holoinsight.server.common.ManageCallback;
+import io.holoinsight.server.common.MonitorException;
+import io.holoinsight.server.common.RequestContext;
+import io.holoinsight.server.common.ResultCodeEnum;
 import io.holoinsight.server.common.UtilMisc;
 import io.holoinsight.server.common.dao.entity.MetricInfo;
 import io.holoinsight.server.common.dao.mapper.MetricInfoMapper;
+import io.holoinsight.server.common.model.DataQueryRequest;
+import io.holoinsight.server.common.model.DataQueryRequest.QueryDataSource;
+import io.holoinsight.server.common.model.DataQueryRequest.QueryFilter;
+import io.holoinsight.server.common.scope.AuthTargetType;
+import io.holoinsight.server.common.scope.MonitorScope;
+import io.holoinsight.server.common.scope.MonitorUser;
+import io.holoinsight.server.common.scope.PowerConstants;
 import io.holoinsight.server.common.service.SuperCacheService;
 import io.holoinsight.server.common.threadpool.CommonThreadPools;
 import io.holoinsight.server.home.biz.common.MetaDictUtil;
@@ -23,22 +34,10 @@ import io.holoinsight.server.home.common.service.query.QueryResponse;
 import io.holoinsight.server.home.common.service.query.QuerySchemaResponse;
 import io.holoinsight.server.home.common.service.query.Result;
 import io.holoinsight.server.home.common.service.query.ValueResult;
-import io.holoinsight.server.home.common.util.MonitorException;
-import io.holoinsight.server.home.common.util.ResultCodeEnum;
-import io.holoinsight.server.home.common.util.StringUtil;
-import io.holoinsight.server.home.common.util.scope.AuthTargetType;
-import io.holoinsight.server.home.common.util.scope.MonitorScope;
-import io.holoinsight.server.home.common.util.scope.MonitorUser;
-import io.holoinsight.server.home.common.util.scope.PowerConstants;
-import io.holoinsight.server.home.common.util.scope.RequestContext;
-import io.holoinsight.server.home.common.util.ManageCallback;
 import io.holoinsight.server.home.web.common.ParaCheckUtil;
 import io.holoinsight.server.home.web.common.PqlParser;
 import io.holoinsight.server.home.web.common.TokenUrls;
 import io.holoinsight.server.home.web.common.pql.PqlException;
-import io.holoinsight.server.common.model.DataQueryRequest;
-import io.holoinsight.server.common.model.DataQueryRequest.QueryDataSource;
-import io.holoinsight.server.common.model.DataQueryRequest.QueryFilter;
 import io.holoinsight.server.home.web.controller.model.DelTagReq;
 import io.holoinsight.server.home.web.controller.model.PqlInstanceRequest;
 import io.holoinsight.server.home.web.controller.model.PqlParseRequest;
@@ -610,13 +609,13 @@ public class QueryFacadeImpl extends BaseFacade {
       MonitorUser mu) {
     QueryProto.QueryRequest.Builder builder = QueryProto.QueryRequest.newBuilder();
     builder.setTenant(tenantInitService.getTsdbTenant(ms.getTenant()));
-    if (StringUtil.isNotBlank(request.getQuery())) {
+    if (StringUtils.isNotBlank(request.getQuery())) {
       builder.setQuery(request.getQuery());
     }
-    if (StringUtil.isNotBlank(request.getDownsample())) {
+    if (StringUtils.isNotBlank(request.getDownsample())) {
       builder.setDownsample(request.getDownsample());
     }
-    if (StringUtil.isNotBlank(request.getFillPolicy())) {
+    if (StringUtils.isNotBlank(request.getFillPolicy())) {
       builder.setFillPolicy(request.getFillPolicy());
     }
 

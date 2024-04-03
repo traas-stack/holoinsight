@@ -3,17 +3,17 @@
  */
 package io.holoinsight.server.home.biz.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import io.holoinsight.server.common.MonitorPageRequest;
+import io.holoinsight.server.common.MonitorPageResult;
 import io.holoinsight.server.home.biz.service.MarketplaceProductService;
-import io.holoinsight.server.home.common.util.StringUtil;
 import io.holoinsight.server.home.dal.converter.MarketplaceProductConverter;
 import io.holoinsight.server.home.dal.mapper.MarketplaceProductMapper;
 import io.holoinsight.server.home.dal.model.MarketplaceProduct;
 import io.holoinsight.server.home.dal.model.dto.MarketplaceProductDTO;
-import io.holoinsight.server.home.facade.page.MonitorPageRequest;
-import io.holoinsight.server.home.facade.page.MonitorPageResult;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -94,11 +94,11 @@ public class MarketplaceProductServiceImpl extends
       wrapper.le("gmt_modified", marketplaceProductDTO.getGmtCreate());
     }
 
-    if (StringUtil.isNotBlank(marketplaceProductDTO.getCreator())) {
+    if (StringUtils.isNotBlank(marketplaceProductDTO.getCreator())) {
       wrapper.eq("creator", marketplaceProductDTO.getCreator().trim());
     }
 
-    if (StringUtil.isNotBlank(marketplaceProductDTO.getModifier())) {
+    if (StringUtils.isNotBlank(marketplaceProductDTO.getModifier())) {
       wrapper.eq("modifier", marketplaceProductDTO.getModifier().trim());
     }
 
@@ -106,7 +106,7 @@ public class MarketplaceProductServiceImpl extends
       wrapper.eq("id", marketplaceProductDTO.getId());
     }
 
-    if (StringUtil.isNotBlank(marketplaceProductDTO.getName())) {
+    if (StringUtils.isNotBlank(marketplaceProductDTO.getName())) {
       wrapper.like("name", marketplaceProductDTO.getName().trim());
     }
 
@@ -137,7 +137,7 @@ public class MarketplaceProductServiceImpl extends
   @Override
   public List<MarketplaceProductDTO> getListByKeyword(String keyword, String tenant) {
     QueryWrapper<MarketplaceProduct> wrapper = new QueryWrapper<>();
-    if (StringUtil.isNotBlank(tenant)) {
+    if (StringUtils.isNotBlank(tenant)) {
       wrapper.eq("tenant", tenant);
     }
     wrapper.like("id", keyword).or().like("name", keyword);

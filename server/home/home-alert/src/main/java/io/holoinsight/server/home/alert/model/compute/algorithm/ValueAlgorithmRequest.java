@@ -3,7 +3,7 @@
  */
 package io.holoinsight.server.home.alert.model.compute.algorithm;
 
-import io.holoinsight.server.home.facade.trigger.RuleConfig;
+import io.holoinsight.server.common.dao.entity.dto.alarm.trigger.RuleConfig;
 import lombok.Data;
 
 /**

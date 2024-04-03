@@ -7,24 +7,25 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.google.common.reflect.TypeToken;
 import io.holoinsight.server.common.J;
 import io.holoinsight.server.common.dao.entity.MetricInfo;
-import io.holoinsight.server.home.common.service.RequestContextAdapter;
-import io.holoinsight.server.home.common.util.scope.RequestContext;
-import io.holoinsight.server.home.dal.mapper.AlarmRuleMapper;
-import io.holoinsight.server.home.dal.mapper.AlertTemplateMapper;
-import io.holoinsight.server.home.dal.model.AlarmRule;
-import io.holoinsight.server.home.dal.model.AlertTemplate;
-import io.holoinsight.server.home.facade.AlarmRuleDTO;
-import io.holoinsight.server.home.facade.AlertRuleExtra;
-import io.holoinsight.server.home.facade.AlertSilenceConfig;
-import io.holoinsight.server.home.facade.NotificationConfig;
-import io.holoinsight.server.home.facade.NotificationTemplate;
-import io.holoinsight.server.home.facade.Rule;
-import io.holoinsight.server.home.facade.TimeFilter;
-import io.holoinsight.server.home.facade.emuns.TimeFilterEnum;
-import io.holoinsight.server.home.facade.page.MonitorPageRequest;
-import io.holoinsight.server.home.facade.trigger.CompareConfig;
-import io.holoinsight.server.home.facade.trigger.DataSource;
-import io.holoinsight.server.home.facade.trigger.Trigger;
+import io.holoinsight.server.common.service.RequestContextAdapter;
+import io.holoinsight.server.common.RequestContext;
+import io.holoinsight.server.common.dao.mapper.AlarmRuleMapper;
+import io.holoinsight.server.common.dao.mapper.AlertTemplateMapper;
+import io.holoinsight.server.common.dao.entity.AlarmRule;
+import io.holoinsight.server.common.dao.entity.AlertTemplate;
+import io.holoinsight.server.common.dao.entity.dto.AlarmRuleDTO;
+import io.holoinsight.server.common.dao.entity.dto.AlertRuleExtra;
+import io.holoinsight.server.common.dao.entity.dto.AlertSilenceConfig;
+import io.holoinsight.server.common.dao.entity.dto.NotificationConfig;
+import io.holoinsight.server.common.dao.entity.dto.NotificationTemplate;
+import io.holoinsight.server.common.dao.entity.dto.alarm.AlarmRuleConf;
+import io.holoinsight.server.common.dao.entity.dto.alarm.TimeFilter;
+import io.holoinsight.server.common.dao.emuns.TimeFilterEnum;
+import io.holoinsight.server.common.MonitorPageRequest;
+import io.holoinsight.server.common.dao.entity.dto.alarm.trigger.CompareConfig;
+import io.holoinsight.server.common.dao.entity.dto.alarm.trigger.DataSource;
+import io.holoinsight.server.common.dao.entity.dto.alarm.trigger.Trigger;
+import io.holoinsight.server.home.web.common.ParaCheckUtil;
 import io.holoinsight.server.home.web.security.LevelAuthorizationCheckResult;
 import io.holoinsight.server.home.web.security.LevelAuthorizationMetaData;
 import lombok.extern.slf4j.Slf4j;
@@ -45,7 +46,6 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static io.holoinsight.server.home.facade.utils.ParaCheckUtil.sqlCnNameCheck;
 import static io.holoinsight.server.home.web.security.LevelAuthorizationCheckResult.failCheckResult;
 import static io.holoinsight.server.home.web.security.LevelAuthorizationCheckResult.successCheckResult;
 
@@ -259,7 +259,7 @@ public class AlarmRuleLevelAuthorizationChecker extends AbstractQueryChecker
     }
 
     if (StringUtils.isNotEmpty(alarmRuleDTO.getRuleDescribe())
-        && !sqlCnNameCheck(alarmRuleDTO.getRuleDescribe())) {
+        && !ParaCheckUtil.sqlCnNameCheck(alarmRuleDTO.getRuleDescribe())) {
       return failCheckResult(
           "invalid ruleDescribe %s, please use a-z A-Z 0-9 Chinese - _ , . : spaces ",
           alarmRuleDTO.getRuleDescribe());
@@ -275,7 +275,7 @@ public class AlarmRuleLevelAuthorizationChecker extends AbstractQueryChecker
 
     if (!CollectionUtils.isEmpty(alarmRuleDTO.getAlarmContent())) {
       for (String content : alarmRuleDTO.getAlarmContent()) {
-        if (!sqlCnNameCheck(content)) {
+        if (!ParaCheckUtil.sqlCnNameCheck(content)) {
           return failCheckResult("invalid content %s in alarmContent", content);
         }
       }
@@ -350,11 +350,11 @@ public class AlarmRuleLevelAuthorizationChecker extends AbstractQueryChecker
 
   private LevelAuthorizationCheckResult checkRule(Map<String, Object> ruleMap, String tenant,
       String workspace) {
-    Rule rule = J.fromJson(J.toJson(ruleMap), Rule.class);
-    if (CollectionUtils.isEmpty(rule.getTriggers())) {
+    AlarmRuleConf alarmRuleConf = J.fromJson(J.toJson(ruleMap), AlarmRuleConf.class);
+    if (CollectionUtils.isEmpty(alarmRuleConf.getTriggers())) {
       return successCheckResult();
     }
-    for (Trigger trigger : rule.getTriggers()) {
+    for (Trigger trigger : alarmRuleConf.getTriggers()) {
       if (!CollectionUtils.isEmpty(trigger.getDatasources())) {
         LevelAuthorizationCheckResult checkResult =
             checkDatasources(trigger.getDatasources(), tenant, workspace);
@@ -373,7 +373,7 @@ public class AlarmRuleLevelAuthorizationChecker extends AbstractQueryChecker
       }
 
       if (StringUtils.isNotEmpty(trigger.getTriggerContent())
-          && !sqlCnNameCheck(trigger.getTriggerContent())) {
+          && !ParaCheckUtil.sqlCnNameCheck(trigger.getTriggerContent())) {
         return failCheckResult("fail to check triggerContent %s", trigger.getTriggerContent());
       }
 
@@ -475,7 +475,7 @@ public class AlarmRuleLevelAuthorizationChecker extends AbstractQueryChecker
             config.getTriggerLevel());
       }
       if (StringUtils.isNotEmpty(config.getTriggerContent())
-          && !sqlCnNameCheck(config.getTriggerContent())) {
+          && !ParaCheckUtil.sqlCnNameCheck(config.getTriggerContent())) {
         return failCheckResult("fail to check triggerContent in compareConfigs %s",
             config.getTriggerContent());
       }

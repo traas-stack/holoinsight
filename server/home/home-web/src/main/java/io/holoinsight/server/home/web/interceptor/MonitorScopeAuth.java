@@ -3,8 +3,8 @@
  */
 package io.holoinsight.server.home.web.interceptor;
 
-import io.holoinsight.server.home.common.util.scope.AuthTargetType;
-import io.holoinsight.server.home.common.util.scope.PowerConstants;
+import io.holoinsight.server.common.scope.AuthTargetType;
+import io.holoinsight.server.common.scope.PowerConstants;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

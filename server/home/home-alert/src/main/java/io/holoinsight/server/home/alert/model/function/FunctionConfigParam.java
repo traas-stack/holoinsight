@@ -3,8 +3,8 @@
  */
 package io.holoinsight.server.home.alert.model.function;
 
-import io.holoinsight.server.home.facade.emuns.PeriodType;
-import io.holoinsight.server.home.facade.trigger.CompareParam;
+import io.holoinsight.server.common.dao.emuns.PeriodType;
+import io.holoinsight.server.common.dao.entity.dto.alarm.trigger.CompareParam;
 import lombok.Data;
 
 import java.util.List;

@@ -3,9 +3,9 @@
  */
 package io.holoinsight.server.home.alert.model.function;
 
-import io.holoinsight.server.home.facade.DataResult;
-import io.holoinsight.server.home.facade.emuns.FunctionEnum;
-import io.holoinsight.server.home.facade.trigger.TriggerResult;
+import io.holoinsight.server.common.dao.entity.dto.alarm.trigger.TriggerDataResult;
+import io.holoinsight.server.common.dao.emuns.FunctionEnum;
+import io.holoinsight.server.common.dao.entity.dto.alarm.trigger.TriggerResult;
 
 import java.io.Serializable;
 
@@ -19,10 +19,11 @@ public interface FunctionLogic extends Serializable {
 
   /**
    *
-   * @param dataResult
+   * @param triggerDataResult
    * @param functionConfigParam
    * @return
    */
-  TriggerResult invoke(DataResult dataResult, FunctionConfigParam functionConfigParam);
+  TriggerResult invoke(TriggerDataResult triggerDataResult,
+      FunctionConfigParam functionConfigParam);
 
 }

@@ -15,7 +15,7 @@ import io.holoinsight.server.home.alert.common.http.XHttpResponse;
 import io.holoinsight.server.home.alert.common.webhook.WebhookUtil;
 import io.holoinsight.server.home.alert.model.event.WebhookInfo;
 import io.holoinsight.server.home.common.service.query.WebhookResponse;
-import io.holoinsight.server.home.dal.model.dto.AlarmWebhookTestDTO;
+import io.holoinsight.server.common.dao.entity.dto.AlarmWebhookTestDTO;
 import lombok.Data;
 
 @Service

@@ -5,9 +5,9 @@ package io.holoinsight.server.home.biz.service.gpt;
 
 import com.alibaba.fastjson.JSON;
 import io.holoinsight.server.common.config.EnvironmentProperties;
-import io.holoinsight.server.home.common.util.http.HttpProxy;
-import io.holoinsight.server.home.common.util.http.XHttpRequest;
-import io.holoinsight.server.home.common.util.http.XHttpResponse;
+import io.holoinsight.server.home.common.http.HttpProxy;
+import io.holoinsight.server.home.common.http.XHttpRequest;
+import io.holoinsight.server.home.common.http.XHttpResponse;
 import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -3,15 +3,14 @@
  */
 package io.holoinsight.server.home.biz.service.impl;
 
-import io.holoinsight.server.home.biz.service.DashboardService;
-import io.holoinsight.server.home.common.util.StringUtil;
-import io.holoinsight.server.home.dal.mapper.DashboardMapper;
-import io.holoinsight.server.home.dal.model.Dashboard;
-import io.holoinsight.server.home.facade.page.MonitorPageRequest;
-import io.holoinsight.server.home.facade.page.MonitorPageResult;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import io.holoinsight.server.common.MonitorPageRequest;
+import io.holoinsight.server.common.MonitorPageResult;
+import io.holoinsight.server.home.biz.service.DashboardService;
+import io.holoinsight.server.home.dal.mapper.DashboardMapper;
+import io.holoinsight.server.home.dal.model.Dashboard;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
@@ -54,10 +53,10 @@ public class DashboardServiceImpl extends ServiceImpl<DashboardMapper, Dashboard
   @Override
   public List<Dashboard> getListByKeyword(String keyword, String tenant, String workspace) {
     QueryWrapper<Dashboard> wrapper = new QueryWrapper<>();
-    if (StringUtil.isNotBlank(tenant)) {
+    if (StringUtils.isNotBlank(tenant)) {
       wrapper.eq("tenant", tenant);
     }
-    if (StringUtil.isNotBlank(workspace)) {
+    if (StringUtils.isNotBlank(workspace)) {
       wrapper.eq("workspace", workspace);
     }
     wrapper.and(wa -> wa.like("id", keyword).or().like("title", keyword));
@@ -85,11 +84,11 @@ public class DashboardServiceImpl extends ServiceImpl<DashboardMapper, Dashboard
       wrapper.le("gmt_modified", dashboard.getGmtCreate());
     }
 
-    if (StringUtil.isNotBlank(dashboard.getCreator())) {
+    if (StringUtils.isNotBlank(dashboard.getCreator())) {
       wrapper.eq("creator", dashboard.getCreator().trim());
     }
 
-    if (StringUtil.isNotBlank(dashboard.getModifier())) {
+    if (StringUtils.isNotBlank(dashboard.getModifier())) {
       wrapper.eq("modifier", dashboard.getModifier().trim());
     }
 
@@ -101,15 +100,15 @@ public class DashboardServiceImpl extends ServiceImpl<DashboardMapper, Dashboard
       wrapper.eq("type", dashboard.getType());
     }
 
-    if (StringUtil.isNotBlank(dashboard.getTenant())) {
+    if (StringUtils.isNotBlank(dashboard.getTenant())) {
       wrapper.eq("tenant", dashboard.getTenant().trim());
     }
 
-    if (StringUtil.isNotBlank(dashboard.getWorkspace())) {
+    if (StringUtils.isNotBlank(dashboard.getWorkspace())) {
       wrapper.eq("workspace", dashboard.getWorkspace().trim());
     }
 
-    if (StringUtil.isNotBlank(dashboard.getTitle())) {
+    if (StringUtils.isNotBlank(dashboard.getTitle())) {
       wrapper.like("title", dashboard.getTitle().trim());
     }
 

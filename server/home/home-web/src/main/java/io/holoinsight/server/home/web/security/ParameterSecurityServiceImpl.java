@@ -4,7 +4,7 @@
 package io.holoinsight.server.home.web.security;
 
 import io.holoinsight.server.common.model.DataQueryRequest;
-import io.holoinsight.server.home.common.util.scope.MonitorUser;
+import io.holoinsight.server.common.scope.MonitorUser;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.Collections;

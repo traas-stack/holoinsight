@@ -5,9 +5,9 @@ package io.holoinsight.server.home.alert.service.calculate;
 
 import io.holoinsight.server.home.alert.model.compute.ComputeTaskPackage;
 import io.holoinsight.server.home.alert.model.event.EventInfo;
-import io.holoinsight.server.home.dal.mapper.AlarmHistoryMapper;
-import io.holoinsight.server.home.facade.AlertNotifyRecordDTO;
-import io.holoinsight.server.home.facade.InspectConfig;
+import io.holoinsight.server.common.dao.mapper.AlarmHistoryMapper;
+import io.holoinsight.server.common.dao.entity.dto.AlertNotifyRecordDTO;
+import io.holoinsight.server.common.dao.entity.dto.InspectConfig;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
