@@ -166,8 +166,7 @@ public class CeresdbxMetricStorage implements MetricStorage {
 
   @Override
   public List<Result> queryTags(QueryParam queryParam) {
-    List<Result> results = queryData(queryParam);
-    return results;
+    return queryData(queryParam);
   }
 
   @Override
@@ -230,7 +229,7 @@ public class CeresdbxMetricStorage implements MetricStorage {
   @Override
   public DetailResult queryDetail(QueryParam queryParam) {
     String sql = queryParam.getQl();
-    List<String> tables = null;
+    List<String> tables;
     if (StringUtils.isNotBlank(sql)) {
       SqlParser parser = SqlParserFactoryProvider.getSqlParserFactory().getParser(sql);
       tables = parser.tableNames();
@@ -321,13 +320,13 @@ public class CeresdbxMetricStorage implements MetricStorage {
           StatUtils.STORAGE_WRITE.add(StringsKey.of("CeresDBx", tenant, "N"),
               new long[] {1, oneBatch.size(), System.currentTimeMillis() - start});
           if (result != null && null != result.getErr()) {
-            LOGGER.error("save metrics:{} to CeresDBx error msg:{}", metrics,
+            LOGGER.error("save metrics:{},[{}] to CeresDBx error msg:{}", metrics, tenant,
                 result.getErr().getError());
           } else if (null != throwable) {
-            LOGGER.error("save metrics:{} to CeresDBx error msg:{}", metrics,
+            LOGGER.error("save metrics:{},[{}] to CeresDBx error msg:{}", metrics, tenant,
                 throwable.getMessage(), throwable);
           } else {
-            LOGGER.error("save metrics:{} to CeresDBx error", metrics);
+            LOGGER.error("save metrics:{},[{}] to CeresDBx error", metrics, tenant);
           }
         }
       });

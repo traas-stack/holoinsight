@@ -40,7 +40,6 @@
 		<module>../query/query-service</module>
 		<module>../query/query-bootstrap</module>
 		<module>../query/query-client</module>
-		<module>../query/query-dal</module>
 		<module>../query/query-server</module>
 		<module>../query/query-boot</module>
 		<module>../query/query-grpc-gen</module>
