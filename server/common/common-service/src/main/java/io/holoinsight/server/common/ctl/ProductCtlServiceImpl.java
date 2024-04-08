@@ -101,8 +101,7 @@ public class ProductCtlServiceImpl implements ProductCtlService {
 
   @Override
   public boolean productClosed(MonitorProductCode productCode, Map<String, String> tags) {
-    List<String> resourceKeys = superCacheService.getSc().getListValue("global_config",
-        "resource_keys", Collections.singletonList("tenant"));
+    List<String> resourceKeys = superCacheService.getSc().resourceKeys;
     if (!switchOn || productCode == null || resourceKeys == null || tags == null
         || productClosed == null) {
       return false;
@@ -119,8 +118,7 @@ public class ProductCtlServiceImpl implements ProductCtlService {
   public Map<String, Set<String>> productCtl(MonitorProductCode code, Map<String, String> tags,
       String action) throws Exception {
     Map<String, Set<String>> result = new HashMap<>();
-    List<String> resourceKeys = superCacheService.getSc().getListValue("global_config",
-        "resource_keys", Collections.singletonList("tenant"));
+    List<String> resourceKeys = superCacheService.getSc().resourceKeys;
     if (CollectionUtils.isEmpty(resourceKeys)) {
       throw new RuntimeException("resource keys not found for code : " + code.getCode());
     }
@@ -144,8 +142,7 @@ public class ProductCtlServiceImpl implements ProductCtlService {
   @Override
   public Map<String, Boolean> productStatus(Map<String, String> tags) throws Exception {
     Map<String, Boolean> closed = new HashMap<>();
-    List<String> resourceKeys = superCacheService.getSc().getListValue("global_config",
-        "resource_keys", Collections.singletonList("tenant"));
+    List<String> resourceKeys = superCacheService.getSc().resourceKeys;
     for (MonitorProductCode code : MonitorProductCode.values()) {
       if (CollectionUtils.isEmpty(resourceKeys)) {
         closed.put(code.getCode(), false);

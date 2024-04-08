@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -50,6 +51,10 @@ public class SuperCacheService extends ScheduleLoadTask {
     ProdLog.info("[SuperCache][expressionMetricList] size: " + sc.expressionMetricList.size());
 
     queryMetricInfoByPage(sc);
+    sc.resourceKeys =
+        sc.getListValue("global_config", "resource_keys", Collections.singletonList("tenant"));
+    sc.freePrefixes =
+        sc.getListValue("global_config", "free_metric_prefix", Collections.emptyList());
     this.sc = sc;
     ProdLog.info("[SuperCache] load end");
   }

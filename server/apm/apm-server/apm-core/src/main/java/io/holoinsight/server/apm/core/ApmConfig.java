@@ -31,5 +31,6 @@ public class ApmConfig extends AbstractConfig {
   @Data
   public static class Materialize {
     private Set<String> blacklist = new HashSet<>();
+    private Boolean traceWriteClose = Boolean.FALSE;
   }
 }

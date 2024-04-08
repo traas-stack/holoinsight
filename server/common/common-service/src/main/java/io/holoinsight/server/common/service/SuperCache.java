@@ -10,6 +10,7 @@ import io.holoinsight.server.common.dao.entity.MetricInfo;
 import io.holoinsight.server.query.grpc.QueryProto.QueryRequest;
 import org.apache.commons.lang3.StringUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -24,6 +25,9 @@ public class SuperCache {
   public Map<String, QueryRequest> expressionMetricList;
 
   public Map<String /* metric table */, MetricInfo> metricInfoMap;
+
+  public List<String> resourceKeys;
+  public List<String> freePrefixes;
 
   public String getStringValue(String type, String k) {
 
@@ -55,5 +59,21 @@ public class SuperCache {
       return defaultValues;
     }
     return J.fromJson(meta.getDictValue(), new TypeToken<List<String>>() {}.getType());
+  }
+
+  public Boolean getBooleanValue(String type, String k) {
+
+    Map<String, MetaDataDictValue> kMap = this.metaDataDictValueMap.get(type);
+
+    if (null == kMap) {
+      return Boolean.FALSE;
+    }
+
+    MetaDataDictValue meta = kMap.get(k);
+
+    if (null == meta || StringUtils.isBlank(meta.getDictValue())) {
+      return Boolean.FALSE;
+    }
+    return Boolean.parseBoolean(meta.getDictValue());
   }
 }
