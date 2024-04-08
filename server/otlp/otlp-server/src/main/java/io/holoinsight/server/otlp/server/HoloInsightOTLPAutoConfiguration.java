@@ -31,4 +31,9 @@ public class HoloInsightOTLPAutoConfiguration {
   public OTLPMetricsHandler otlpMetricsHandler() {
     return new ConsoleOTLPMetricsHandler();
   }
+
+  @Bean
+  public OtlpConfig otlpConfig() {
+    return new OtlpConfig();
+  }
 }

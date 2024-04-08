@@ -31,6 +31,7 @@ import io.holoinsight.server.otlp.core.OTLPTraceHandler;
 import io.opentelemetry.proto.collector.logs.v1.ExportLogsServiceRequest;
 import io.opentelemetry.proto.collector.metrics.v1.ExportMetricsServiceRequest;
 import io.opentelemetry.proto.collector.trace.v1.ExportTraceServiceRequest;
+import io.opentelemetry.proto.collector.trace.v1.ExportTraceServiceResponse;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -53,6 +54,8 @@ public class OTLPWebController {
   private OTLPTraceHandler otlpTraceHandler;
   @Autowired(required = false)
   private OTLPLogsHandler otlpLogsHandler;
+  @Autowired
+  private OtlpConfig otlpConfig;
 
   @PostMapping(value = "/metrics", consumes = {JSON, PROTOBUF})
   public ResponseEntity<?> metrics(HttpServletRequest httpRequest)
@@ -73,6 +76,13 @@ public class OTLPWebController {
       throws InvalidProtocolBufferException {
     if (otlpTraceHandler == null) {
       return ResponseEntity.internalServerError().body("traces unsupported");
+    }
+
+    if (!otlpConfig.getTrace().isEnabled()) {
+      String str = JsonFormat.printer().print(ExportTraceServiceResponse.getDefaultInstance());
+      return ResponseEntity.status(HttpStatus.OK) //
+          .contentType(MediaType.APPLICATION_JSON) //
+          .body(str); //
     }
 
     return handle("traces", //
