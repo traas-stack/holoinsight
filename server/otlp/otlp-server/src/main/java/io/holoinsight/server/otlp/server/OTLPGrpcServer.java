@@ -6,6 +6,7 @@ package io.holoinsight.server.otlp.server;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -44,9 +45,11 @@ public class OTLPGrpcServer {
   private OTLPTraceHandler otlpTraceHandler;
   @Autowired(required = false)
   private OTLPLogsHandler otlpLogsHandler;
-  private List<Server> servers = new ArrayList<>();
   @Autowired
-  private CommonThreadPools commonThreadPools;
+  private OtlpConfig otlpConfig;
+
+  private List<Server> servers = new ArrayList<>();
+  private ExecutorService es;
 
   @PostConstruct
   public void start() throws IOException {
@@ -56,8 +59,12 @@ public class OTLPGrpcServer {
   }
 
   private Server start(int port) throws IOException {
+    // otlp uses its own thread pool
+    int cpu = CommonThreadPools.cpu();
+    es = CommonThreadPools.executor(cpu * 2, cpu * 2, 0, 4096, "otlp-server-%d");
+
     ServerBuilder<?> sb = ServerBuilder.forPort(port) //
-        .executor(commonThreadPools.getRpcServer()) //
+        .executor(es) //
         .maxInboundMessageSize(100 * 1024 * 1024); //
 
     if (otlpMetricsHandler != null) {
@@ -75,6 +82,11 @@ public class OTLPGrpcServer {
         @Override
         public void export(ExportTraceServiceRequest request,
             StreamObserver<ExportTraceServiceResponse> o) {
+          if (!otlpConfig.getTrace().isEnabled()) {
+            log.warn("[otlp] trace is disabled, discard request");
+            o.onNext(ExportTraceServiceResponse.getDefaultInstance());
+            return;
+          }
           otlpTraceHandler.export(request, o);
         }
       });
@@ -104,6 +116,9 @@ public class OTLPGrpcServer {
   public void stop() {
     for (Server server : servers) {
       server.shutdown();
+    }
+    if (es != null) {
+      es.shutdown();
     }
   }
 }
