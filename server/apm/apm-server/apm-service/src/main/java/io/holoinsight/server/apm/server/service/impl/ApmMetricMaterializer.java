@@ -7,7 +7,6 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import io.holoinsight.server.apm.common.model.query.Duration;
 import io.holoinsight.server.apm.common.model.query.MetricValues;
 import io.holoinsight.server.apm.engine.postcal.MetricsManager;
-import io.holoinsight.server.apm.engine.storage.MetricStorage;
 import io.holoinsight.server.apm.server.service.MetricService;
 import io.holoinsight.server.common.dao.entity.TenantOps;
 import io.holoinsight.server.common.dao.mapper.TenantOpsMapper;
@@ -18,10 +17,13 @@ import org.apache.commons.lang3.concurrent.BasicThreadFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.PostConstruct;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.*;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -32,6 +34,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 @Component
 @Slf4j
+@Deprecated
 public class ApmMetricMaterializer {
 
   @Autowired
@@ -66,13 +69,13 @@ public class ApmMetricMaterializer {
       new ThreadPoolExecutor(4, 4, 60, TimeUnit.SECONDS, new LinkedBlockingQueue<>(4096),
           new BasicThreadFactory.Builder().namingPattern("apm-materialize-executor-%d").build());
 
-  @PostConstruct
-  public void start() {
-    long now = System.currentTimeMillis();
-    long nextPeriod = now / INTERVAL * INTERVAL + INTERVAL;
-    long wait = nextPeriod - now + DELAY;
-    SCHEDULER.scheduleAtFixedRate(this::materialize, wait, INTERVAL, TimeUnit.MILLISECONDS);
-  }
+  // @PostConstruct
+  // public void start() {
+  // long now = System.currentTimeMillis();
+  // long nextPeriod = now / INTERVAL * INTERVAL + INTERVAL;
+  // long wait = nextPeriod - now + DELAY;
+  // SCHEDULER.scheduleAtFixedRate(this::materialize, wait, INTERVAL, TimeUnit.MILLISECONDS);
+  // }
 
   private void materialize() {
     long now = System.currentTimeMillis();
