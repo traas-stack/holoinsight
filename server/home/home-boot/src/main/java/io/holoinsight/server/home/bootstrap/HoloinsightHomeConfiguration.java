@@ -19,6 +19,7 @@ import io.holoinsight.server.home.alert.plugin.DefaultGatewayService;
 import io.holoinsight.server.home.alert.plugin.GatewayService;
 import io.holoinsight.server.home.alert.service.event.AlertNotifyChainBuilder;
 import io.holoinsight.server.home.alert.service.event.DefaultAlertNotifyChainBuilder;
+import io.holoinsight.server.home.biz.access.MonitorAccessService;
 import io.holoinsight.server.home.biz.plugin.DefaultMarketplaceProductHandler;
 import io.holoinsight.server.home.biz.plugin.MarketplaceProductHandler;
 import io.holoinsight.server.home.biz.plugin.MetricInfoCheckService;
@@ -130,5 +131,10 @@ public class HoloinsightHomeConfiguration {
   @Bean
   public ApiSecurityService apiSecurityService() {
     return new ApiSecurityServiceImpl();
+  }
+
+  @Bean
+  public MonitorAccessService monitorAccessService() {
+    return new MonitorAccessService();
   }
 }

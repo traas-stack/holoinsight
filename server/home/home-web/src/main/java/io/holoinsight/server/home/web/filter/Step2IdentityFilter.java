@@ -28,6 +28,7 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.List;
 
 import static io.holoinsight.server.home.web.common.ResponseUtil.authFailedResponse;
 
@@ -151,8 +152,7 @@ public class Step2IdentityFilter implements Filter {
 
   public boolean tokenCheck(String token, HttpServletRequest req, HttpServletResponse resp)
       throws IOException {
-    if (!TokenUrlFactoryHolder.checkIsExist(req.getServletPath())
-        && !MetaDictUtil.getTokenUrlWriteList().contains(req.getServletPath())) {
+    if (invalidReqServletPath(req)) {
       authFailedResponse(resp, HttpServletResponse.SC_UNAUTHORIZED,
           req.getServletPath() + " is not open, please connect monitor admin, " + token,
           ResultCodeEnum.AUTH_CHECK_ERROR);
@@ -165,6 +165,23 @@ public class Step2IdentityFilter implements Filter {
           req.getServletPath() + ", token expired, " + token, ResultCodeEnum.API_TOKEN_INVALID);
       log.error(req.getServletPath() + ", token expired, " + token);
       return false;
+    }
+    return true;
+  }
+
+  private boolean invalidReqServletPath(HttpServletRequest req) {
+    String servletPath = req.getServletPath();
+    if (TokenUrlFactoryHolder.checkIsExist(servletPath)) {
+      return false;
+    }
+    if (MetaDictUtil.getTokenUrlWriteList().contains(servletPath)) {
+      return false;
+    }
+    List<String> whitePrefixList = MetaDictUtil.getTokenUrlWhitePrefixList();
+    for (String prefix : whitePrefixList) {
+      if (servletPath.startsWith(prefix)) {
+        return false;
+      }
     }
     return true;
   }

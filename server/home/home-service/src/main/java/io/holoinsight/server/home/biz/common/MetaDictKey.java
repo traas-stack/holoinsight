@@ -13,6 +13,7 @@ public class MetaDictKey {
   public static final String ULA_HOST = "ula_host";
   public static final String LOG_TIME_LAYOUT = "log_time_layout";
   public static final String TOKEN_URL_WRITE_LIST = "token_url_write_list";
+  public static final String TOKEN_URL_WHITE_PREFIX_LIST = "token_url_white_prefix_list";
   public static final String TOKEN_URL_NO_AUTH = "token_url_no_auth";
   public static final String RESOURCE_KEYS = "resource_keys";
   public static final String IS_APM_MATERIALIZED = "is_apm_materialized";
