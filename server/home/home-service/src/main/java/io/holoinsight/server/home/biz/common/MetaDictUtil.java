@@ -143,6 +143,14 @@ public class MetaDictUtil {
     return value;
   }
 
+  public static List<String> getTokenUrlWhitePrefixList() {
+    List<String> value = MetaDictUtil.getValue(MetaDictType.GLOBAL_CONFIG,
+        MetaDictKey.TOKEN_URL_WHITE_PREFIX_LIST, new TypeToken<List<String>>() {});
+    if (CollectionUtils.isEmpty(value))
+      return new ArrayList<>();
+    return value;
+  }
+
   public static List<String> getTokenUrlNoAuth() {
     List<String> value = MetaDictUtil.getValue(MetaDictType.GLOBAL_CONFIG,
         MetaDictKey.TOKEN_URL_NO_AUTH, new TypeToken<List<String>>() {});

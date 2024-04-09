@@ -3,12 +3,29 @@
  */
 package io.holoinsight.server.home.web.controller;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-
+import io.holoinsight.server.common.J;
+import io.holoinsight.server.common.JsonResult;
+import io.holoinsight.server.common.ManageCallback;
+import io.holoinsight.server.common.MonitorException;
+import io.holoinsight.server.common.MonitorPageRequest;
+import io.holoinsight.server.common.MonitorPageResult;
+import io.holoinsight.server.common.RequestContext;
+import io.holoinsight.server.common.SSRFUtils;
+import io.holoinsight.server.common.dao.entity.AlarmWebhook;
+import io.holoinsight.server.common.dao.entity.dto.AlarmWebhookDTO;
+import io.holoinsight.server.common.dao.entity.dto.AlarmWebhookTestDTO;
+import io.holoinsight.server.common.scope.AuthTargetType;
+import io.holoinsight.server.common.scope.MonitorScope;
+import io.holoinsight.server.common.scope.MonitorUser;
+import io.holoinsight.server.common.scope.PowerConstants;
+import io.holoinsight.server.common.service.AlertWebhookService;
+import io.holoinsight.server.common.service.UserOpLogService;
+import io.holoinsight.server.home.alert.service.AlertService;
+import io.holoinsight.server.home.common.service.query.WebhookResponse;
+import io.holoinsight.server.home.dal.model.OpType;
+import io.holoinsight.server.home.web.common.ParaCheckUtil;
+import io.holoinsight.server.home.web.interceptor.MonitorScopeAuth;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
@@ -21,29 +38,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import io.holoinsight.server.common.J;
-import io.holoinsight.server.common.JsonResult;
-import io.holoinsight.server.home.alert.service.AlertService;
-import io.holoinsight.server.common.service.AlertWebhookService;
-import io.holoinsight.server.common.service.UserOpLogService;
-import io.holoinsight.server.home.common.service.query.WebhookResponse;
-import io.holoinsight.server.common.MonitorException;
-import io.holoinsight.server.common.SSRFUtils;
-import io.holoinsight.server.common.scope.AuthTargetType;
-import io.holoinsight.server.common.scope.MonitorScope;
-import io.holoinsight.server.common.scope.MonitorUser;
-import io.holoinsight.server.common.scope.PowerConstants;
-import io.holoinsight.server.common.RequestContext;
-import io.holoinsight.server.common.dao.entity.AlarmWebhook;
-import io.holoinsight.server.home.dal.model.OpType;
-import io.holoinsight.server.common.dao.entity.dto.AlarmWebhookDTO;
-import io.holoinsight.server.common.dao.entity.dto.AlarmWebhookTestDTO;
-import io.holoinsight.server.common.MonitorPageRequest;
-import io.holoinsight.server.common.MonitorPageResult;
-import io.holoinsight.server.common.ManageCallback;
-import io.holoinsight.server.home.web.common.ParaCheckUtil;
-import io.holoinsight.server.home.web.interceptor.MonitorScopeAuth;
-import lombok.extern.slf4j.Slf4j;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * @author wangsiyuan
@@ -93,11 +92,11 @@ public class AlarmWebhookFacadeImpl extends BaseFacade {
         alarmWebhookDTO.setGmtCreate(new Date());
         alarmWebhookDTO.setGmtModified(new Date());
 
-        JsonResult<WebhookResponse> test = test(transformTestDTO(alarmWebhookDTO));
-        if (!test.isSuccess()) {
-          throw new MonitorException(
-              "Debugging failed. Please check whether the input parameters are correct");
-        }
+        // JsonResult<WebhookResponse> test = test(transformTestDTO(alarmWebhookDTO));
+        // if (!test.isSuccess()) {
+        // throw new MonitorException(
+        // "Debugging failed. Please check whether the input parameters are correct");
+        // }
 
         Long id = alarmWebhookService.save(alarmWebhookDTO).getId();
 
@@ -153,11 +152,11 @@ public class AlarmWebhookFacadeImpl extends BaseFacade {
         }
         alarmWebhookDTO.setGmtModified(new Date());
 
-        JsonResult<WebhookResponse> test = test(transformTestDTO(alarmWebhookDTO));
-        if (!test.isSuccess()) {
-          throw new MonitorException(
-              "Debugging failed. Please check whether the input parameters are correct");
-        }
+        // JsonResult<WebhookResponse> test = test(transformTestDTO(alarmWebhookDTO));
+        // if (!test.isSuccess()) {
+        // throw new MonitorException(
+        // "Debugging failed. Please check whether the input parameters are correct");
+        // }
 
         boolean save = alarmWebhookService.updateById(alarmWebhookDTO);
         userOpLogService.append("alarm_webhook", alarmWebhookDTO.getId(), OpType.UPDATE,

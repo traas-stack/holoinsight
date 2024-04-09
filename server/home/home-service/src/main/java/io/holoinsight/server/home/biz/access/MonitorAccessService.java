@@ -27,11 +27,10 @@ import java.nio.charset.StandardCharsets;
  * @version 1.0: MonitorAccessService.java, v 0.1 2022年06月10日 10:23 上午 jinsong.yjs Exp $
  */
 @Slf4j
-@Component
 public class MonitorAccessService {
 
   @Autowired
-  private AccessConfigService accessConfigService;
+  protected AccessConfigService accessConfigService;
 
   /**
    * 申请token，如果入参非法报错
