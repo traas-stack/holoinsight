@@ -3,9 +3,7 @@
  */
 package io.holoinsight.server.home.web.security.custom;
 
-import io.holoinsight.server.home.web.security.LevelAuthorizationCheck;
 import io.holoinsight.server.home.web.security.LevelAuthorizationCheckResult;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.util.CollectionUtils;
 
@@ -21,8 +19,12 @@ import static io.holoinsight.server.home.web.security.LevelAuthorizationCheckRes
 public interface AbstractResourceChecker {
 
   default LevelAuthorizationCheckResult checkIdNotNull(List<String> parameters) {
-    if (CollectionUtils.isEmpty(parameters) || !StringUtils.isNumeric(parameters.get(0))) {
-      return failCheckResult("parameters %s is empty or is not numeric.", parameters);
+    if (CollectionUtils.isEmpty(parameters)) {
+      return failCheckResult("parameters %s is empty.", parameters);
+    }
+
+    if (!StringUtils.isNumeric(parameters.get(0))) {
+      return failCheckResult("parameters %s is not numeric.", parameters.get(0));
     }
     return successCheckResult();
   }

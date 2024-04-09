@@ -164,7 +164,8 @@ public class AlarmRuleLevelAuthorizationChecker extends AbstractQueryChecker
 
   private LevelAuthorizationCheckResult checkIdsExists(List<String> parameters, String tenant,
       String workspace) {
-    String[] idArray = StringUtils.split(parameters.get(0), ",");
+    String st = parameters.get(0);
+    String[] idArray = StringUtils.split(st.substring(1, st.length() - 1), ",");
     for (String id : idArray) {
       LevelAuthorizationCheckResult checkResult =
           checkIdExists(Collections.singletonList(id), tenant, workspace);
