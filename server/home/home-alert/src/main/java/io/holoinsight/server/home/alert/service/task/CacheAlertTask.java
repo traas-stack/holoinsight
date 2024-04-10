@@ -230,10 +230,11 @@ public class CacheAlertTask {
     int retry = 0;
     while (retry++ < 3 && CollectionUtils.isEmpty(alarmRules)) {
       List<AlarmRule> ruleAlerts =
-          getAlertRule("rule", this.rulePageNum.get(), this.rulePageSize.get());
-      List<AlarmRule> aiAlerts = getAlertRule("ai", this.aiPageNum.get(), this.aiPageSize.get());
+          getAlertRule("rule", this.rulePageNum.get(), this.rulePageSize.get(), (byte) 1);
+      List<AlarmRule> aiAlerts =
+          getAlertRule("ai", this.aiPageNum.get(), this.aiPageSize.get(), (byte) 1);
       List<AlarmRule> pqlAlerts =
-          getAlertRule("pql", this.pqlPageNum.get(), this.pqlPageSize.get());
+          getAlertRule("pql", this.pqlPageNum.get(), this.pqlPageSize.get(), (byte) 1);
       if (!CollectionUtils.isEmpty(ruleAlerts)) {
         alarmRules.addAll(ruleAlerts);
       }
@@ -248,7 +249,7 @@ public class CacheAlertTask {
     return alarmRules;
   }
 
-  private List<AlarmRule> getAlertRule(String ruleType, int pageNum, int pageSize) {
+  private List<AlarmRule> getAlertRule(String ruleType, int pageNum, int pageSize, byte status) {
     if (pageSize <= 0) {
       return Collections.emptyList();
     }
@@ -256,6 +257,7 @@ public class CacheAlertTask {
     QueryWrapper<AlarmRule> condition = new QueryWrapper<>();
     condition.orderByDesc("id");
     condition.eq("rule_type", ruleType);
+    condition.eq("status", status);
     condition.last("limit " + pageSize + " offset " + pageNum);
     List<AlarmRule> alarmRuleDOS = alarmRuleDOMapper.selectList(condition);
     LOGGER.info("TASK_GET_MONITOR,ruleType={},pageNum={},pageSize={},size={}", ruleType, pageNum,

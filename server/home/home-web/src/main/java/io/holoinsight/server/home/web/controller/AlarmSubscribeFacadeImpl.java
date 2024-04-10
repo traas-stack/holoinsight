@@ -4,6 +4,8 @@
 package io.holoinsight.server.home.web.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import io.holoinsight.server.common.J;
+import io.holoinsight.server.common.scope.IdentityType;
 import io.holoinsight.server.common.service.RequestContextAdapter;
 import io.holoinsight.server.common.MonitorException;
 import io.holoinsight.server.common.ResultCodeEnum;
@@ -211,6 +213,10 @@ public class AlarmSubscribeFacadeImpl extends BaseFacade {
   private Boolean checkMembers(AlarmSubscribeDTO alarmSubscribeDTO) {
     MonitorScope ms = RequestContext.getContext().ms;
     MonitorUser mu = RequestContext.getContext().mu;
+    if (mu.getIdentityType() == IdentityType.OUTTOKEN) {
+      log.warn("skip members check process for {}.", J.toJson(mu));
+      return true;
+    }
     if (null == alarmSubscribeDTO || CollectionUtils.isEmpty(alarmSubscribeDTO.getAlarmSubscribe()))
       return true;
     List<AlarmSubscribeInfo> alarmSubscribes = alarmSubscribeDTO.getAlarmSubscribe();
