@@ -113,9 +113,9 @@ public class CoordinatorService {
 
   protected void calculateSelectRange(int realOrder) {
     double realSize = orderMap.getRealSize().doubleValue();
-    double ruleSize = this.cacheAlertTask.ruleSize("rule").doubleValue();
-    double aiSize = this.cacheAlertTask.ruleSize("ai").doubleValue();
-    double pqlSize = this.cacheAlertTask.ruleSize("pql").doubleValue();
+    double ruleSize = this.cacheAlertTask.ruleSize("rule", (byte) 1).doubleValue();
+    double aiSize = this.cacheAlertTask.ruleSize("ai", (byte) 1).doubleValue();
+    double pqlSize = this.cacheAlertTask.ruleSize("pql", (byte) 1).doubleValue();
     // 领取任务，[(order-1)*(ruleSize/realSize), order*(ruleSize/realSize))
     log.info("gossip order realOrder {}, realSize {}, ruleSize {}, aiSize {}, pqlSize {}",
         realOrder, realSize, ruleSize, aiSize, pqlSize);

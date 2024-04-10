@@ -219,9 +219,10 @@ public class CacheAlertTask {
     return status != null && status;
   }
 
-  public Integer ruleSize(String ruleType) {
+  public Integer ruleSize(String ruleType, byte status) {
     QueryWrapper<AlarmRule> queryWrapper = new QueryWrapper<>();
     queryWrapper.eq("rule_type", ruleType);
+    queryWrapper.eq("status", status);
     return this.alarmRuleDOMapper.selectCount(queryWrapper).intValue();
   }
 
