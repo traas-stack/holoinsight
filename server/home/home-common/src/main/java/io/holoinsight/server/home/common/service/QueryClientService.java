@@ -94,17 +94,15 @@ public class QueryClientService {
     return response;
   }
 
-  public QueryDetailResponse queryDetail(QueryProto.QueryRequest request) {
+  public QueryDetailResponse queryDetail(QueryProto.QueryRequest request, String tableName) {
     Debugger.print("QueryService", "query, request: " + J.toJson(request));
     long start = System.currentTimeMillis();
 
     QueryProto.QueryDetailResponse res = queryServiceBlockingStub.queryDetailData(request);
 
-    log.info("step4 result {}", J.toJson(res));
-
     int pointSize = getPointSizeFromResp(res);
-    log.info("HOME_QUERY_STAT from[API_DETAIL] invoke[1], cost[{}], pointSize[{}]",
-        System.currentTimeMillis() - start, pointSize);
+    log.info("HOME_QUERY_STAT from[API_DETAIL] invoke[1], cost[{}], pointSize[{}], table={},",
+        System.currentTimeMillis() - start, pointSize, tableName);
 
     Debugger.print("QueryService", "query, response: " + J.toJson(res));
 
