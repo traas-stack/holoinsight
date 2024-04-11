@@ -142,3 +142,18 @@ services:
     extends:
       file: ../demo/docker-compose.yaml
       service: demo-redis
+  kafka:
+    extends:
+      file: ../common/base.yaml
+      service: kafka
+    healthcheck:
+      test: [ "CMD", "timeout", "1", "bash", "-c", "cat < /dev/null > /dev/tcp/127.0.0.1/9092" ]
+      interval: 3s
+      retries: 300
+      timeout: 10s
+  kafka-ui:
+    extends:
+      file: ../common/base.yaml
+      service: kafka-ui
+    depends_on:
+    - kafka

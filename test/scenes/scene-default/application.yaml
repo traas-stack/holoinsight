@@ -7,7 +7,7 @@ spring:
 
 holoinsight:
   roles:
-    active: query,registry,gateway,home,meta,apm
+    active: query,registry,gateway,home,meta,apm,agg-dispatcher,agg-executor
   metric:
     storage:
       type: ceresdbx
@@ -32,3 +32,7 @@ holoinsight:
       port: 9200
   security:
     whiteHosts: server
+  agg:
+    kafkaBootstrapServers: kafka:9092
+    topic: aggv1
+    consumerGroupId: "x1"

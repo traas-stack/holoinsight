@@ -77,8 +77,8 @@ services:
       retries: 300
       timeout: 10s
     ports:
-      - 11800
-      - 5001
+    - 11800
+    - 5001
     volumes:
     - ./collector-config.yml:/config/config.yml
   agent-image:
@@ -111,9 +111,9 @@ services:
   tatris:
     image: ${tatris_image:-tatrisio/tatris:latest}
     volumes:
-      - /usr/share/zoneinfo/Asia/Shanghai:/etc/localtime:ro
+    - /usr/share/zoneinfo/Asia/Shanghai:/etc/localtime:ro
     ports:
-      - 6060
+    - 6060
     healthcheck:
       test: [ "CMD", "timeout", "1", "bash", "-c", "cat < /dev/null > /dev/tcp/127.0.0.1/6060" ]
       interval: 1s
@@ -136,4 +136,30 @@ services:
   # web terminal
   ttyd:
     image: tsl0922/ttyd
-    entrypoint: ["true"]
+    entrypoint: [ "true" ]
+  kafka:
+    image: bitnami/kafka:3.5.0
+    environment:
+      KAFKA_CFG_NODE_ID: "0"
+      KAFKA_CFG_PROCESS_ROLES: controller,broker
+      KAFKA_CFG_LISTENERS: PLAINTEXT://:9092,CONTROLLER://:9093
+      KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT
+      KAFKA_CFG_CONTROLLER_QUORUM_VOTERS: 0@kafka:9093
+      KAFKA_CFG_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_CFG_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+      KAFKA_CFG_AUTO_CREATE_TOPICS_ENABLE: "true"
+      ALLOW_PLAINTEXT_LISTENER: "yes"
+      #KAFKA_HEAP_OPTS: "-Xmx1024m -Xms1024m"
+    ports:
+    - 9092
+    volumes:
+    - ./kafka_init.sh:/docker-entrypoint-initdb.d/kafka_init.sh
+  kafka-ui:
+    image: provectuslabs/kafka-ui
+    environment:
+      KAFKA_CLUSTERS_0_NAME: test
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:9092
+    ports:
+    - 8080
+    profiles:
+    - debug

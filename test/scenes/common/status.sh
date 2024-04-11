@@ -37,6 +37,16 @@ if echo "$ps" | grep grafana >/dev/null; then
   Grafana_Web_UI\t  http://$ip:`get_port grafana 3000`"
 fi
 
+if echo "$ps" | grep kafka >/dev/null; then
+  source="$source
+  Kafka\t  $ip:`get_port kafka 9092`"
+fi
+
+if echo "$ps" | grep kafka-ui >/dev/null; then
+  source="$source
+  Kafka_Web_UI\t  http://$ip:`get_port kafka-ui 8080`"
+fi
+
 #echo "$source" | column -t | sed '1{p;s/./-/g}'
 #echo
 echo "$source" | ../common/utils/prettytable/prettytable.sh 2
