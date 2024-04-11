@@ -11,7 +11,7 @@ holoinsight:
   roles:
     active: agg-executor
   agg:
-    kafkaBootstrapServers: 127.0.0.1:9092
+    kafkaBootstrapServers: kafka:9092
     topic: aggv1
     consumerGroupId: "x1"
 

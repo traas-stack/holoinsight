@@ -265,6 +265,30 @@
 			</Policies>
 		</RollingFile>
 
+
+		<RollingFile name="AGG" fileName="${LOG_PATH}/agg/agg.log"
+		             filePattern="${LOG_PATH}/agg/agg.log.%i" immediateFlush="true">
+			<DefaultRolloverStrategy max="1"/>
+			<PatternLayout charset="utf-8">
+				<pattern>%d %-5p [%t] %c{1.} - %m%n</pattern>
+			</PatternLayout>
+			<LevelRangeFilter maxLevel="INFO" minLevel="WARN" onMatch="ACCEPT" onMismatch="DENY"/>
+			<Policies>
+				<SizeBasedTriggeringPolicy size="2GB"/>
+			</Policies>
+		</RollingFile>
+
+		<RollingFile name="AGG-ERROR" fileName="${LOG_PATH}/agg/agg-error.log"
+		             filePattern="${LOG_PATH}/agg/agg-error.log.%i" immediateFlush="true">
+			<DefaultRolloverStrategy max="1"/>
+			<PatternLayout charset="utf-8">
+				<pattern>%d %-5p [%t] %c{1.} - %m%n</pattern>
+			</PatternLayout>
+			<Policies>
+				<SizeBasedTriggeringPolicy size="2GB"/>
+			</Policies>
+		</RollingFile>
+
 	</Appenders>
 
 	<Loggers>
@@ -309,6 +333,10 @@
 		</Logger>
 		<Logger name="AGENT_EVENT_UP" additivity="false" level="INFO">
 			<Appender-Ref ref="AGENT_EVENT_UP"/>
+		</Logger>
+		<Logger name="io.holoinsight.server.agg" additivity="false" level="INFO">
+			<Appender-Ref ref="AGG"/>
+			<Appender-Ref ref="AGG-ERROR" level="ERROR"/>
 		</Logger>
 		<Root level="INFO">
 			<Appender-Ref level="INFO" ref="ROOT-APPENDER"/>
