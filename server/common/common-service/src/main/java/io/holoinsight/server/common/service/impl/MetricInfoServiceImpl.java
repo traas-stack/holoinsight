@@ -7,6 +7,8 @@ package io.holoinsight.server.common.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.google.gson.reflect.TypeToken;
+import io.holoinsight.server.common.J;
+import io.holoinsight.server.common.MD5Hash;
 import io.holoinsight.server.common.cache.local.CacheConst;
 import io.holoinsight.server.common.cache.local.CommonLocalCache;
 import io.holoinsight.server.common.dao.converter.MetricInfoConverter;
@@ -147,7 +149,8 @@ public class MetricInfoServiceImpl extends ServiceImpl<MetricInfoMapper, MetricI
 
   @Override
   public MetricInfoDTO queryByMetric(String metric) {
-    Object o = CommonLocalCache.get(CacheConst.METRIC_INFO_CACHE_KEY);
+    String cacheKey = CacheConst.METRIC_INFO_CACHE_KEY + "@" + metric;
+    Object o = CommonLocalCache.get(cacheKey);
     if (null != o) {
       return (MetricInfoDTO) o;
     }
@@ -159,7 +162,7 @@ public class MetricInfoServiceImpl extends ServiceImpl<MetricInfoMapper, MetricI
 
     if (null == metricInfoDTO)
       return null;
-    CommonLocalCache.put(CacheConst.METRIC_INFO_CACHE_KEY, metricInfoDTO, 10, TimeUnit.MINUTES);
+    CommonLocalCache.put(cacheKey, metricInfoDTO, 10, TimeUnit.MINUTES);
     return metricInfoDTO;
   }
 
