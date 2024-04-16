@@ -139,6 +139,8 @@ message StatisticRequest {
   int64 start = 2;
   int64 end = 3;
   repeated string groups = 4;
+  map<string, string> whites = 5;
+  map<string, string> blacks = 6;
 }
 
 message QueryTraceRequest {

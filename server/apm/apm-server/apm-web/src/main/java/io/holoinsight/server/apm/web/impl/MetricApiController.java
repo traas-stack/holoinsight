@@ -10,6 +10,9 @@ import io.holoinsight.server.apm.server.service.MetricService;
 import io.holoinsight.server.apm.web.MetricApi;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
+import org.elasticsearch.index.query.QueryBuilder;
+import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.index.query.TermQueryBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 
@@ -82,8 +85,8 @@ public class MetricApiController implements MetricApi {
 
   @Override
   public ResponseEntity<StatisticDataList> statistic(StatisticRequest request) throws Exception {
-    return ResponseEntity.ok(
-        metricService.statistic(request.getStart(), request.getEnd(), request.getGroups(), null));
+    return ResponseEntity.ok(metricService.statistic(request.getStart(), request.getEnd(),
+        request.getGroups(), request.getWhites(), request.getBlacks(), null));
   }
 
 }

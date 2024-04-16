@@ -3,9 +3,8 @@
  */
 package io.holoinsight.server.home.web.security;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import io.holoinsight.server.common.dao.entity.MetricInfo;
-import io.holoinsight.server.common.dao.mapper.MetricInfoMapper;
+import io.holoinsight.server.common.dao.entity.dto.MetricInfoDTO;
+import io.holoinsight.server.common.service.MetricInfoService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -19,7 +18,7 @@ import java.util.Map;
 public class ApiSecurityServiceImpl implements ApiSecurityService {
 
   @Autowired
-  private MetricInfoMapper metricInfoMapper;
+  private MetricInfoService metricInfoService;
 
   @Override
   public boolean checkMetricTenantAndWorkspace(String metricTable, String tenant,
@@ -43,7 +42,7 @@ public class ApiSecurityServiceImpl implements ApiSecurityService {
     if (StringUtils.isEmpty(metricTable)) {
       return false;
     }
-    MetricInfo metricInfo = getMetricInfo(metricTable);
+    MetricInfoDTO metricInfo = getMetricInfo(metricTable);
     if (metricInfo == null) {
       return false;
     }
@@ -51,14 +50,10 @@ public class ApiSecurityServiceImpl implements ApiSecurityService {
   }
 
   @Override
-  public MetricInfo getMetricInfo(String metricTable) {
+  public MetricInfoDTO getMetricInfo(String metricTable) {
     if (StringUtils.isEmpty(metricTable)) {
       return null;
     }
-    QueryWrapper<MetricInfo> queryWrapper = new QueryWrapper<>();
-    queryWrapper.eq("metric_table", metricTable);
-    queryWrapper.eq("deleted", 0);
-    queryWrapper.last("LIMIT 1");
-    return this.metricInfoMapper.selectOne(queryWrapper);
+    return metricInfoService.queryByMetric(metricTable);
   }
 }

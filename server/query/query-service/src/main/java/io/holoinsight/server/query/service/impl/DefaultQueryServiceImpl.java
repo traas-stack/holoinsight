@@ -413,6 +413,8 @@ public class DefaultQueryServiceImpl implements QueryService {
       queryTraceRequest.setTenant(request.getTenant());
       queryTraceRequest.setStart(request.getStart());
       queryTraceRequest.setEnd(request.getEnd());
+      queryTraceRequest.setWhites(request.getWhitesMap());
+      queryTraceRequest.setBlacks(request.getBlacksMap());
       queryTraceRequest.setGroups(request.getGroupsList());
       Call<StatisticDataList> call = apmAPI.statistic(queryTraceRequest);
       Response<StatisticDataList> statisticDataRsp = call.execute();

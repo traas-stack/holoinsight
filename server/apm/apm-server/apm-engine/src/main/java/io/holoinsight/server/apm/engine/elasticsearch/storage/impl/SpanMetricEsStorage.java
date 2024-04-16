@@ -17,24 +17,49 @@ import io.holoinsight.server.apm.engine.model.SpanDO;
 import io.holoinsight.server.apm.engine.postcal.MetricDefine;
 import io.holoinsight.server.apm.engine.postcal.PostCalMetricStorage;
 import io.opentelemetry.proto.trace.v1.Status;
+import lombok.extern.slf4j.Slf4j;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
-import org.elasticsearch.index.query.*;
-import org.elasticsearch.search.aggregations.*;
+import org.elasticsearch.index.query.BoolQueryBuilder;
+import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.index.query.RangeQueryBuilder;
+import org.elasticsearch.index.query.TermQueryBuilder;
+import org.elasticsearch.index.query.TermsQueryBuilder;
+import org.elasticsearch.search.aggregations.Aggregation;
+import org.elasticsearch.search.aggregations.AggregationBuilder;
+import org.elasticsearch.search.aggregations.AggregationBuilders;
+import org.elasticsearch.search.aggregations.Aggregations;
+import org.elasticsearch.search.aggregations.Aggregator;
 import org.elasticsearch.search.aggregations.bucket.filter.Filter;
-import org.elasticsearch.search.aggregations.bucket.histogram.*;
-import org.elasticsearch.search.aggregations.bucket.terms.*;
-import org.elasticsearch.search.aggregations.metrics.*;
+import org.elasticsearch.search.aggregations.bucket.histogram.DateHistogramAggregationBuilder;
+import org.elasticsearch.search.aggregations.bucket.histogram.DateHistogramInterval;
+import org.elasticsearch.search.aggregations.bucket.histogram.ExtendedBounds;
+import org.elasticsearch.search.aggregations.bucket.histogram.Histogram;
+import org.elasticsearch.search.aggregations.bucket.histogram.ParsedDateHistogram;
+import org.elasticsearch.search.aggregations.bucket.terms.ParsedTerms;
+import org.elasticsearch.search.aggregations.bucket.terms.Terms;
+import org.elasticsearch.search.aggregations.bucket.terms.TermsAggregationBuilder;
+import org.elasticsearch.search.aggregations.metrics.NumericMetricsAggregation;
+import org.elasticsearch.search.aggregations.metrics.ParsedPercentiles;
+import org.elasticsearch.search.aggregations.metrics.Percentile;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.Assert;
+import org.springframework.util.CollectionUtils;
 
 import java.io.IOException;
 import java.time.ZonedDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.TreeMap;
 
+@Slf4j
 public class SpanMetricEsStorage extends PostCalMetricStorage {
 
   private static final int AGG_TERM_MAX_SIZE = 100;
@@ -172,14 +197,24 @@ public class SpanMetricEsStorage extends PostCalMetricStorage {
   }
 
   public StatisticDataList statistic(long startTime, long endTime, List<String> groups,
-      List<AggregationBuilder> aggregations) throws IOException {
-
+      Map<String, String> whites, Map<String, String> blacks, List<AggregationBuilder> aggregations)
+      throws IOException {
+    log.info("[apmMetering],statistic,{},{},{},{},{},{}", startTime, endTime, groups, whites,
+        blacks, aggregations);
     Assert.notEmpty(groups, "statistic groups must be specified");
-
     List<StatisticData> result = new ArrayList<>();
-
     BoolQueryBuilder queryBuilder = QueryBuilders.boolQuery()
         .must(QueryBuilders.rangeQuery(timeSeriesField()).gte(startTime).lte(endTime));
+    if (!CollectionUtils.isEmpty(whites)) {
+      for (Entry<String, String> entry : whites.entrySet()) {
+        queryBuilder.must(QueryBuilders.termQuery(entry.getKey(), entry.getValue()));
+      }
+    }
+    if (!CollectionUtils.isEmpty(blacks)) {
+      for (Entry<String, String> entry : blacks.entrySet()) {
+        queryBuilder.mustNot(QueryBuilders.termQuery(entry.getKey(), entry.getValue()));
+      }
+    }
 
     TermsAggregationBuilder aggregationBuilder =
         AggregationBuilders.terms(groups.get(0)).field(groups.get(0)).size(10000);
