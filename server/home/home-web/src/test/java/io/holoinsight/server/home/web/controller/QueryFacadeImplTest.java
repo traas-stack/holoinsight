@@ -4,15 +4,13 @@
 package io.holoinsight.server.home.web.controller;
 
 import io.holoinsight.server.common.J;
-import io.holoinsight.server.common.dao.entity.MetricInfo;
+import io.holoinsight.server.common.dao.entity.dto.MetricInfoDTO;
 import io.holoinsight.server.common.model.DataQueryRequest;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.Arrays;
-
-import static org.junit.Assert.*;
 
 /**
  * @author masaimu
@@ -26,8 +24,8 @@ public class QueryFacadeImplTest {
         "{\"start\":1691644303000,\"end\":1691647903000,\"name\":\"a\",\"metric\":\"k8s_pod_mem_util\",\"groupBy\":[\"app\",\"hostname\",\"workspace\",\"pod\",\"ip\",\"namespace\"],\"filters\":[{\"type\":\"literal_or\",\"name\":\"app\",\"value\":\"holoinsight-server|aaaaa\"},{\"type\":\"literal\",\"name\":\"应用ID\",\"value\":\"111111111\"},{\"type\":\"literal\",\"name\":\"fake应用ID\",\"value\":\"22222222\"}]}";
     DataQueryRequest.QueryDataSource queryDataSource =
         J.fromJson(json, DataQueryRequest.QueryDataSource.class);
-    MetricInfo metricInfo = new MetricInfo();
-    metricInfo.setTags(J.toJson(Arrays.asList("app", "应用ID")));
+    MetricInfoDTO metricInfo = new MetricInfoDTO();
+    metricInfo.setTags(Arrays.asList("app", "应用ID"));
     QueryFacadeImpl queryFacade = new QueryFacadeImpl();
     queryFacade.parseQl(queryDataSource, metricInfo);
     System.out.println(queryDataSource.ql);
@@ -38,8 +36,8 @@ public class QueryFacadeImplTest {
     json =
         "{\"start\":1691644303000,\"end\":1691647903000,\"name\":\"a\",\"metric\":\"k8s_pod_mem_util\",\"groupBy\":[\"app\",\"hostname\",\"workspace\",\"pod\",\"ip\",\"namespace\"],\"filters\":[{\"type\":\"literal_or\",\"name\":\"app\",\"value\":\"holoinsight-server|aaaaa\"},{\"type\":\"literal\",\"name\":\"应用ID\",\"value\":\"111111111\"},{\"type\":\"literal\",\"name\":\"fake应用ID\",\"value\":\"22222222\"}],\"select\":{\"app\":null,\"dd\":\"distinct(`aaa`)\"}}";
     queryDataSource = J.fromJson(json, DataQueryRequest.QueryDataSource.class);
-    metricInfo = new MetricInfo();
-    metricInfo.setTags(J.toJson(Arrays.asList("app", "应用ID")));
+    metricInfo = new MetricInfoDTO();
+    metricInfo.setTags(Arrays.asList("app", "应用ID"));
     queryFacade = new QueryFacadeImpl();
     queryFacade.parseQl(queryDataSource, metricInfo);
     System.out.println(queryDataSource.ql);
@@ -55,8 +53,8 @@ public class QueryFacadeImplTest {
     json =
         "{\"start\":1691644303000,\"end\":1691647903000,\"name\":\"a\",\"metric\":\"k8s_pod_mem_util\",\"groupBy\":[\"app\",\"hostname\",\"workspace\",\"pod\",\"ip\",\"namespace\"],\"filters\":[{\"type\":\"literal_or\",\"name\":\"app\",\"value\":\"holoinsight-server|aaaaa\"},{\"type\":\"literal\",\"name\":\"应用ID\",\"value\":\"111111111\"},{\"type\":\"literal\",\"name\":\"fake应用ID\",\"value\":\"22222222\"}],\"select\":{\"app\":null,\"dd\":\"distinct(`aaa`)\", \"period\":null}}";
     queryDataSource = J.fromJson(json, DataQueryRequest.QueryDataSource.class);
-    metricInfo = new MetricInfo();
-    metricInfo.setTags(J.toJson(Arrays.asList("app", "应用ID")));
+    metricInfo = new MetricInfoDTO();
+    metricInfo.setTags(Arrays.asList("app", "应用ID"));
     queryFacade = new QueryFacadeImpl();
     System.out.println(queryDataSource.ql);
     Assert.assertTrue(StringUtils.equals(

@@ -6,7 +6,13 @@ package io.holoinsight.server.common.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.google.gson.reflect.TypeToken;
+import io.holoinsight.server.common.J;
+import io.holoinsight.server.common.MD5Hash;
+import io.holoinsight.server.common.cache.local.CacheConst;
+import io.holoinsight.server.common.cache.local.CommonLocalCache;
 import io.holoinsight.server.common.dao.converter.MetricInfoConverter;
+import io.holoinsight.server.common.dao.entity.ApiKey;
 import io.holoinsight.server.common.dao.entity.MetricInfo;
 import io.holoinsight.server.common.dao.entity.dto.MetricInfoDTO;
 import io.holoinsight.server.common.dao.mapper.MetricInfoMapper;
@@ -14,6 +20,7 @@ import io.holoinsight.server.common.service.MetricInfoService;
 import io.holoinsight.server.query.grpc.QueryProto;
 import io.holoinsight.server.query.grpc.QueryProto.QueryRequest;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.ibatis.cache.CacheKey;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -23,6 +30,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author jsy1001de
@@ -67,7 +75,7 @@ public class MetricInfoServiceImpl extends ServiceImpl<MetricInfoMapper, MetricI
   }
 
   @Override
-  public List<MetricInfo> queryListByWorkspace(String workspace) {
+  public List<MetricInfoDTO> queryListByWorkspace(String workspace) {
     Map<String, Object> columnMap = new HashMap<>();
     columnMap.put("workspace", workspace);
     columnMap.put("deleted", 0);
@@ -75,7 +83,7 @@ public class MetricInfoServiceImpl extends ServiceImpl<MetricInfoMapper, MetricI
     if (CollectionUtils.isEmpty(metricInfos)) {
       return null;
     }
-    return metricInfos;
+    return metricInfoConverter.dosToDTOs(metricInfos);
   }
 
   @Override
@@ -128,8 +136,6 @@ public class MetricInfoServiceImpl extends ServiceImpl<MetricInfoMapper, MetricI
     List<MetricInfo> metricInfos = listByMap(columnMap);
     if (CollectionUtils.isEmpty(metricInfos)) {
       Map<String, Object> newColumnMap = new HashMap<>();
-      // newColumnMap.put("tenant", "-");
-      // newColumnMap.put("workspace", "-");
       newColumnMap.put("metric_table", metric);
       newColumnMap.put("deleted", 0);
       List<MetricInfo> globalMetrics = listByMap(newColumnMap);
@@ -139,6 +145,25 @@ public class MetricInfoServiceImpl extends ServiceImpl<MetricInfoMapper, MetricI
       return metricInfoConverter.doToDTO(globalMetrics.get(0));
     }
     return metricInfoConverter.doToDTO(metricInfos.get(0));
+  }
+
+  @Override
+  public MetricInfoDTO queryByMetric(String metric) {
+    String cacheKey = CacheConst.METRIC_INFO_CACHE_KEY + "@" + metric;
+    Object o = CommonLocalCache.get(cacheKey);
+    if (null != o) {
+      return (MetricInfoDTO) o;
+    }
+    QueryWrapper<MetricInfo> wrapper = new QueryWrapper<>();
+    wrapper.eq("metric_table", metric);
+    wrapper.eq("deleted", 0);
+    wrapper.last("LIMIT 1");
+    MetricInfoDTO metricInfoDTO = metricInfoConverter.doToDTO(this.getOne(wrapper));
+
+    if (null == metricInfoDTO)
+      return null;
+    CommonLocalCache.put(cacheKey, metricInfoDTO, 10, TimeUnit.MINUTES);
+    return metricInfoDTO;
   }
 
   @Override

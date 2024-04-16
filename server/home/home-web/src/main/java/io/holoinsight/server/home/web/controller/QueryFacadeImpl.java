@@ -16,7 +16,7 @@ import io.holoinsight.server.common.RequestContext;
 import io.holoinsight.server.common.ResultCodeEnum;
 import io.holoinsight.server.common.UtilMisc;
 import io.holoinsight.server.common.dao.entity.MetricInfo;
-import io.holoinsight.server.common.dao.mapper.MetricInfoMapper;
+import io.holoinsight.server.common.dao.entity.dto.MetricInfoDTO;
 import io.holoinsight.server.common.model.DataQueryRequest;
 import io.holoinsight.server.common.model.DataQueryRequest.QueryDataSource;
 import io.holoinsight.server.common.model.DataQueryRequest.QueryFilter;
@@ -24,6 +24,7 @@ import io.holoinsight.server.common.scope.AuthTargetType;
 import io.holoinsight.server.common.scope.MonitorScope;
 import io.holoinsight.server.common.scope.MonitorUser;
 import io.holoinsight.server.common.scope.PowerConstants;
+import io.holoinsight.server.common.service.MetricInfoService;
 import io.holoinsight.server.common.service.SuperCacheService;
 import io.holoinsight.server.common.threadpool.CommonThreadPools;
 import io.holoinsight.server.home.biz.common.MetaDictUtil;
@@ -63,7 +64,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -103,8 +103,9 @@ public class QueryFacadeImpl extends BaseFacade {
 
   @Autowired
   private ParameterSecurityService parameterSecurityService;
-  @Resource
-  private MetricInfoMapper metricInfoMapper;
+
+  @Autowired
+  private MetricInfoService metricInfoService;
 
   @PostMapping
   @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.VIEW)
@@ -282,9 +283,9 @@ public class QueryFacadeImpl extends BaseFacade {
       @Override
       public void doManage() {
         if (useGlobalMetricInfo(metric)) {
-          MetricInfo metricInfo = getGlobalMetricInfo(metric);
+          MetricInfoDTO metricInfo = getGlobalMetricInfo(metric);
           if (metricInfo != null) {
-            List<String> tags = getTagsFromMetricInfo(metricInfo);
+            List<String> tags = metricInfo.getTags();
             KeyResult keyResult = new KeyResult();
             keyResult.setMetric(metric);
             keyResult.setTags(tags);
@@ -304,9 +305,9 @@ public class QueryFacadeImpl extends BaseFacade {
         }
 
         QueryProto.QueryRequest.Builder requestBuilder = QueryProto.QueryRequest.newBuilder();
-        MetricInfo metricInfo = getMetricInfo(metric);
+        MetricInfoDTO metricInfo = getMetricInfo(metric);
         requestBuilder.setTenant(tenantInitService.getTsdbTenant(ms.getTenant(), metricInfo));
-        if (isCeresdb4Storage(metricInfo)) {
+        if (isCeresDB4Storage(metricInfo)) {
           builder.setQl("DESCRIBE " + metric);
         }
 
@@ -333,16 +334,12 @@ public class QueryFacadeImpl extends BaseFacade {
     return J.toList(tags);
   }
 
-  private MetricInfo getGlobalMetricInfo(String metric) {
+  private MetricInfoDTO getGlobalMetricInfo(String metric) {
     QueryWrapper<MetricInfo> queryWrapper = new QueryWrapper<>();
     queryWrapper.eq("tenant", GLOBAL_TENANT);
     queryWrapper.eq("workspace", GLOBAL_WORKSPACE);
     queryWrapper.eq("metric_table", metric);
-    List<MetricInfo> metricInfos = metricInfoMapper.selectList(queryWrapper);
-    if (CollectionUtils.isEmpty(metricInfos)) {
-      return null;
-    }
-    return metricInfos.get(0);
+    return metricInfoService.queryByMetric(GLOBAL_TENANT, GLOBAL_WORKSPACE, metric);
   }
 
   private boolean useGlobalMetricInfo(String metric) {
@@ -634,8 +631,8 @@ public class QueryFacadeImpl extends BaseFacade {
         d.start -= 60000L;
       }
       d.setQl(null);
-      MetricInfo metricInfo = getMetricInfo(d.getMetric());
-      if (isCeresdb4Storage(metricInfo)) {
+      MetricInfoDTO metricInfo = getMetricInfo(d.getMetric());
+      if (isCeresDB4Storage(metricInfo)) {
         parseQl(d, metricInfo);
         builder.setTenant(tenantInitService.getTsdbTenant(ms.getTenant(), metricInfo));
       }
@@ -662,11 +659,11 @@ public class QueryFacadeImpl extends BaseFacade {
 
   private String getTimestampName(QueryDataSource d) {
     String timestampName = "period";
-    MetricInfo metricInfo = this.superCacheService.getSc().metricInfoMap.get(d.metric);
-    if (metricInfo == null || StringUtils.isEmpty(metricInfo.getExtInfo())) {
+    MetricInfoDTO metricInfo = metricInfoService.queryByMetric(d.metric);
+    if (metricInfo == null || null == metricInfo.getExtInfo()) {
       return timestampName;
     }
-    Map<String, Object> metricInfoExtInfo = J.toMap(metricInfo.getExtInfo());
+    Map<String, Object> metricInfoExtInfo = metricInfo.getExtInfo();
     Map<String, Object> tableSchema = (Map<String, Object>) metricInfoExtInfo.get("tableSchema");
     if (CollectionUtils.isEmpty(tableSchema)) {
       return timestampName;
@@ -685,9 +682,9 @@ public class QueryFacadeImpl extends BaseFacade {
     return timestampName;
   }
 
-  protected void parseQl(QueryDataSource d, MetricInfo metricInfo) {
+  protected void parseQl(QueryDataSource d, MetricInfoDTO metricInfo) {
     String timestampName = getTimestampName(d);
-    Set<String> tags = new HashSet<>(J.toList(metricInfo.getTags()));
+    Set<String> tags = new HashSet<>(metricInfo.getTags());
     StringBuilder select = new StringBuilder("select ");
     List<String> gbList = parseGroupby(d, tags, timestampName);
     List<String> selects = new ArrayList<>();
@@ -830,23 +827,19 @@ public class QueryFacadeImpl extends BaseFacade {
     }
   }
 
-  private MetricInfo getMetricInfo(String metric) {
-    if (CollectionUtils.isEmpty(this.superCacheService.getSc().metricInfoMap)
-        || StringUtils.isEmpty(metric)) {
+  private MetricInfoDTO getMetricInfo(String metric) {
+    if (StringUtils.isEmpty(metric)) {
       return null;
     }
-    return this.superCacheService.getSc().metricInfoMap.get(metric);
+    return metricInfoService.queryByMetric(metric);
   }
 
-  private boolean isCeresdb4Storage(MetricInfo metricInfo) {
+  private boolean isCeresDB4Storage(MetricInfoDTO metricInfo) {
     if (metricInfo == null) {
       return false;
     }
-    if (StringUtils.isNotEmpty(metricInfo.getStorageTenant())
-        && StringUtils.equals(metricInfo.getStorageTenant(), "ceresdb4")) {
-      return true;
-    }
-    return false;
+    return StringUtils.isNotEmpty(metricInfo.getStorageTenant())
+        && StringUtils.equals(metricInfo.getStorageTenant(), "ceresdb4");
   }
 
 

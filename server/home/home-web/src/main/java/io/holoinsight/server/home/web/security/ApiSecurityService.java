@@ -4,6 +4,7 @@
 package io.holoinsight.server.home.web.security;
 
 import io.holoinsight.server.common.dao.entity.MetricInfo;
+import io.holoinsight.server.common.dao.entity.dto.MetricInfoDTO;
 
 import java.util.List;
 import java.util.Map;
@@ -23,6 +24,6 @@ public interface ApiSecurityService {
 
   boolean isGlobalMetric(String metricTable);
 
-  MetricInfo getMetricInfo(String metricTable);
+  MetricInfoDTO getMetricInfo(String metricTable);
 
 }

@@ -2349,7 +2349,10 @@ public final class QueryProto {
         maybeForceBuilderInitialization();
       }
 
-      private void maybeForceBuilderInitialization() {}
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders) {
+        }
+      }
 
       @java.lang.Override
       public Builder clear() {
@@ -6413,7 +6416,10 @@ public final class QueryProto {
         maybeForceBuilderInitialization();
       }
 
-      private void maybeForceBuilderInitialization() {}
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders) {
+        }
+      }
 
       @java.lang.Override
       public Builder clear() {
@@ -7258,7 +7264,10 @@ public final class QueryProto {
         maybeForceBuilderInitialization();
       }
 
-      private void maybeForceBuilderInitialization() {}
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders) {
+        }
+      }
 
       @java.lang.Override
       public Builder clear() {
@@ -8143,6 +8152,7 @@ public final class QueryProto {
       public io.holoinsight.server.query.grpc.QueryProto.QueryResponse buildPartial() {
         io.holoinsight.server.query.grpc.QueryProto.QueryResponse result =
             new io.holoinsight.server.query.grpc.QueryProto.QueryResponse(this);
+        int from_bitField0_ = bitField0_;
         if (resultsBuilder_ == null) {
           if (((bitField0_ & 0x00000001) != 0)) {
             results_ = java.util.Collections.unmodifiableList(results_);
@@ -9206,6 +9216,7 @@ public final class QueryProto {
       public io.holoinsight.server.query.grpc.QueryProto.Result buildPartial() {
         io.holoinsight.server.query.grpc.QueryProto.Result result =
             new io.holoinsight.server.query.grpc.QueryProto.Result(this);
+        int from_bitField0_ = bitField0_;
         result.metric_ = metric_;
         result.tags_ = internalGetTags();
         result.tags_.makeImmutable();
@@ -9420,7 +9431,7 @@ public final class QueryProto {
       }
 
       private com.google.protobuf.MapField<java.lang.String, java.lang.String> internalGetMutableTags() {
-        onChanged();
+        onChanged();;
         if (tags_ == null) {
           tags_ = com.google.protobuf.MapField.newMapField(TagsDefaultEntryHolder.defaultEntry);
         }
@@ -10245,7 +10256,10 @@ public final class QueryProto {
         maybeForceBuilderInitialization();
       }
 
-      private void maybeForceBuilderInitialization() {}
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders) {
+        }
+      }
 
       @java.lang.Override
       public Builder clear() {
@@ -10983,6 +10997,7 @@ public final class QueryProto {
       public io.holoinsight.server.query.grpc.QueryProto.QuerySchemaResponse buildPartial() {
         io.holoinsight.server.query.grpc.QueryProto.QuerySchemaResponse result =
             new io.holoinsight.server.query.grpc.QueryProto.QuerySchemaResponse(this);
+        int from_bitField0_ = bitField0_;
         if (resultsBuilder_ == null) {
           if (((bitField0_ & 0x00000001) != 0)) {
             results_ = java.util.Collections.unmodifiableList(results_);
@@ -11840,7 +11855,10 @@ public final class QueryProto {
         maybeForceBuilderInitialization();
       }
 
-      private void maybeForceBuilderInitialization() {}
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders) {
+        }
+      }
 
       @java.lang.Override
       public Builder clear() {
@@ -11875,6 +11893,7 @@ public final class QueryProto {
       public io.holoinsight.server.query.grpc.QueryProto.KeysResult buildPartial() {
         io.holoinsight.server.query.grpc.QueryProto.KeysResult result =
             new io.holoinsight.server.query.grpc.QueryProto.KeysResult(this);
+        int from_bitField0_ = bitField0_;
         result.metric_ = metric_;
         if (((bitField0_ & 0x00000001) != 0)) {
           keys_ = keys_.getUnmodifiableView();
@@ -12636,6 +12655,7 @@ public final class QueryProto {
       public io.holoinsight.server.query.grpc.QueryProto.QueryMetricsResponse buildPartial() {
         io.holoinsight.server.query.grpc.QueryProto.QueryMetricsResponse result =
             new io.holoinsight.server.query.grpc.QueryProto.QueryMetricsResponse(this);
+        int from_bitField0_ = bitField0_;
         if (resultsBuilder_ == null) {
           if (((bitField0_ & 0x00000001) != 0)) {
             results_ = java.util.Collections.unmodifiableList(results_);
@@ -13392,7 +13412,10 @@ public final class QueryProto {
         maybeForceBuilderInitialization();
       }
 
-      private void maybeForceBuilderInitialization() {}
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders) {
+        }
+      }
 
       @java.lang.Override
       public Builder clear() {
@@ -14292,7 +14315,10 @@ public final class QueryProto {
         maybeForceBuilderInitialization();
       }
 
-      private void maybeForceBuilderInitialization() {}
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders) {
+        }
+      }
 
       @java.lang.Override
       public Builder clear() {
@@ -15722,7 +15748,10 @@ public final class QueryProto {
         maybeForceBuilderInitialization();
       }
 
-      private void maybeForceBuilderInitialization() {}
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders) {
+        }
+      }
 
       @java.lang.Override
       public Builder clear() {
@@ -16597,6 +16626,72 @@ public final class QueryProto {
      * @return The bytes of the groups at the given index.
      */
     com.google.protobuf.ByteString getGroupsBytes(int index);
+
+    /**
+     * <code>map&lt;string, string&gt; whites = 5;</code>
+     */
+    int getWhitesCount();
+
+    /**
+     * <code>map&lt;string, string&gt; whites = 5;</code>
+     */
+    boolean containsWhites(java.lang.String key);
+
+    /**
+     * Use {@link #getWhitesMap()} instead.
+     */
+    @java.lang.Deprecated
+    java.util.Map<java.lang.String, java.lang.String> getWhites();
+
+    /**
+     * <code>map&lt;string, string&gt; whites = 5;</code>
+     */
+    java.util.Map<java.lang.String, java.lang.String> getWhitesMap();
+
+    /**
+     * <code>map&lt;string, string&gt; whites = 5;</code>
+     */
+
+    java.lang.String getWhitesOrDefault(java.lang.String key, java.lang.String defaultValue);
+
+    /**
+     * <code>map&lt;string, string&gt; whites = 5;</code>
+     */
+
+    java.lang.String getWhitesOrThrow(java.lang.String key);
+
+    /**
+     * <code>map&lt;string, string&gt; blacks = 6;</code>
+     */
+    int getBlacksCount();
+
+    /**
+     * <code>map&lt;string, string&gt; blacks = 6;</code>
+     */
+    boolean containsBlacks(java.lang.String key);
+
+    /**
+     * Use {@link #getBlacksMap()} instead.
+     */
+    @java.lang.Deprecated
+    java.util.Map<java.lang.String, java.lang.String> getBlacks();
+
+    /**
+     * <code>map&lt;string, string&gt; blacks = 6;</code>
+     */
+    java.util.Map<java.lang.String, java.lang.String> getBlacksMap();
+
+    /**
+     * <code>map&lt;string, string&gt; blacks = 6;</code>
+     */
+
+    java.lang.String getBlacksOrDefault(java.lang.String key, java.lang.String defaultValue);
+
+    /**
+     * <code>map&lt;string, string&gt; blacks = 6;</code>
+     */
+
+    java.lang.String getBlacksOrThrow(java.lang.String key);
   }
   /**
    * Protobuf type {@code io.holoinsight.server.query.grpc.StatisticRequest}
@@ -16671,6 +16766,30 @@ public final class QueryProto {
               groups_.add(s);
               break;
             }
+            case 42: {
+              if (!((mutable_bitField0_ & 0x00000002) != 0)) {
+                whites_ =
+                    com.google.protobuf.MapField.newMapField(WhitesDefaultEntryHolder.defaultEntry);
+                mutable_bitField0_ |= 0x00000002;
+              }
+              com.google.protobuf.MapEntry<java.lang.String, java.lang.String> whites__ =
+                  input.readMessage(WhitesDefaultEntryHolder.defaultEntry.getParserForType(),
+                      extensionRegistry);
+              whites_.getMutableMap().put(whites__.getKey(), whites__.getValue());
+              break;
+            }
+            case 50: {
+              if (!((mutable_bitField0_ & 0x00000004) != 0)) {
+                blacks_ =
+                    com.google.protobuf.MapField.newMapField(BlacksDefaultEntryHolder.defaultEntry);
+                mutable_bitField0_ |= 0x00000004;
+              }
+              com.google.protobuf.MapEntry<java.lang.String, java.lang.String> blacks__ =
+                  input.readMessage(BlacksDefaultEntryHolder.defaultEntry.getParserForType(),
+                      extensionRegistry);
+              blacks_.getMutableMap().put(blacks__.getKey(), blacks__.getValue());
+              break;
+            }
             default: {
               if (!parseUnknownField(input, unknownFields, extensionRegistry, tag)) {
                 done = true;
@@ -16694,6 +16813,19 @@ public final class QueryProto {
 
     public static final com.google.protobuf.Descriptors.Descriptor getDescriptor() {
       return io.holoinsight.server.query.grpc.QueryProto.internal_static_io_holoinsight_server_query_grpc_StatisticRequest_descriptor;
+    }
+
+    @SuppressWarnings({"rawtypes"})
+    @java.lang.Override
+    protected com.google.protobuf.MapField internalGetMapField(int number) {
+      switch (number) {
+        case 5:
+          return internalGetWhites();
+        case 6:
+          return internalGetBlacks();
+        default:
+          throw new RuntimeException("Invalid map field number: " + number);
+      }
     }
 
     @java.lang.Override
@@ -16810,6 +16942,172 @@ public final class QueryProto {
       return groups_.getByteString(index);
     }
 
+    public static final int WHITES_FIELD_NUMBER = 5;
+
+    private static final class WhitesDefaultEntryHolder {
+      static final com.google.protobuf.MapEntry<java.lang.String, java.lang.String> defaultEntry =
+          com.google.protobuf.MapEntry.<java.lang.String, java.lang.String>newDefaultInstance(
+              io.holoinsight.server.query.grpc.QueryProto.internal_static_io_holoinsight_server_query_grpc_StatisticRequest_WhitesEntry_descriptor,
+              com.google.protobuf.WireFormat.FieldType.STRING, "",
+              com.google.protobuf.WireFormat.FieldType.STRING, "");
+    }
+
+    private com.google.protobuf.MapField<java.lang.String, java.lang.String> whites_;
+
+    private com.google.protobuf.MapField<java.lang.String, java.lang.String> internalGetWhites() {
+      if (whites_ == null) {
+        return com.google.protobuf.MapField.emptyMapField(WhitesDefaultEntryHolder.defaultEntry);
+      }
+      return whites_;
+    }
+
+    public int getWhitesCount() {
+      return internalGetWhites().getMap().size();
+    }
+
+    /**
+     * <code>map&lt;string, string&gt; whites = 5;</code>
+     */
+
+    @java.lang.Override
+    public boolean containsWhites(java.lang.String key) {
+      if (key == null) {
+        throw new java.lang.NullPointerException();
+      }
+      return internalGetWhites().getMap().containsKey(key);
+    }
+
+    /**
+     * Use {@link #getWhitesMap()} instead.
+     */
+    @java.lang.Override
+    @java.lang.Deprecated
+    public java.util.Map<java.lang.String, java.lang.String> getWhites() {
+      return getWhitesMap();
+    }
+
+    /**
+     * <code>map&lt;string, string&gt; whites = 5;</code>
+     */
+    @java.lang.Override
+
+    public java.util.Map<java.lang.String, java.lang.String> getWhitesMap() {
+      return internalGetWhites().getMap();
+    }
+
+    /**
+     * <code>map&lt;string, string&gt; whites = 5;</code>
+     */
+    @java.lang.Override
+
+    public java.lang.String getWhitesOrDefault(java.lang.String key,
+        java.lang.String defaultValue) {
+      if (key == null) {
+        throw new java.lang.NullPointerException();
+      }
+      java.util.Map<java.lang.String, java.lang.String> map = internalGetWhites().getMap();
+      return map.containsKey(key) ? map.get(key) : defaultValue;
+    }
+
+    /**
+     * <code>map&lt;string, string&gt; whites = 5;</code>
+     */
+    @java.lang.Override
+
+    public java.lang.String getWhitesOrThrow(java.lang.String key) {
+      if (key == null) {
+        throw new java.lang.NullPointerException();
+      }
+      java.util.Map<java.lang.String, java.lang.String> map = internalGetWhites().getMap();
+      if (!map.containsKey(key)) {
+        throw new java.lang.IllegalArgumentException();
+      }
+      return map.get(key);
+    }
+
+    public static final int BLACKS_FIELD_NUMBER = 6;
+
+    private static final class BlacksDefaultEntryHolder {
+      static final com.google.protobuf.MapEntry<java.lang.String, java.lang.String> defaultEntry =
+          com.google.protobuf.MapEntry.<java.lang.String, java.lang.String>newDefaultInstance(
+              io.holoinsight.server.query.grpc.QueryProto.internal_static_io_holoinsight_server_query_grpc_StatisticRequest_BlacksEntry_descriptor,
+              com.google.protobuf.WireFormat.FieldType.STRING, "",
+              com.google.protobuf.WireFormat.FieldType.STRING, "");
+    }
+
+    private com.google.protobuf.MapField<java.lang.String, java.lang.String> blacks_;
+
+    private com.google.protobuf.MapField<java.lang.String, java.lang.String> internalGetBlacks() {
+      if (blacks_ == null) {
+        return com.google.protobuf.MapField.emptyMapField(BlacksDefaultEntryHolder.defaultEntry);
+      }
+      return blacks_;
+    }
+
+    public int getBlacksCount() {
+      return internalGetBlacks().getMap().size();
+    }
+
+    /**
+     * <code>map&lt;string, string&gt; blacks = 6;</code>
+     */
+
+    @java.lang.Override
+    public boolean containsBlacks(java.lang.String key) {
+      if (key == null) {
+        throw new java.lang.NullPointerException();
+      }
+      return internalGetBlacks().getMap().containsKey(key);
+    }
+
+    /**
+     * Use {@link #getBlacksMap()} instead.
+     */
+    @java.lang.Override
+    @java.lang.Deprecated
+    public java.util.Map<java.lang.String, java.lang.String> getBlacks() {
+      return getBlacksMap();
+    }
+
+    /**
+     * <code>map&lt;string, string&gt; blacks = 6;</code>
+     */
+    @java.lang.Override
+
+    public java.util.Map<java.lang.String, java.lang.String> getBlacksMap() {
+      return internalGetBlacks().getMap();
+    }
+
+    /**
+     * <code>map&lt;string, string&gt; blacks = 6;</code>
+     */
+    @java.lang.Override
+
+    public java.lang.String getBlacksOrDefault(java.lang.String key,
+        java.lang.String defaultValue) {
+      if (key == null) {
+        throw new java.lang.NullPointerException();
+      }
+      java.util.Map<java.lang.String, java.lang.String> map = internalGetBlacks().getMap();
+      return map.containsKey(key) ? map.get(key) : defaultValue;
+    }
+
+    /**
+     * <code>map&lt;string, string&gt; blacks = 6;</code>
+     */
+    @java.lang.Override
+
+    public java.lang.String getBlacksOrThrow(java.lang.String key) {
+      if (key == null) {
+        throw new java.lang.NullPointerException();
+      }
+      java.util.Map<java.lang.String, java.lang.String> map = internalGetBlacks().getMap();
+      if (!map.containsKey(key)) {
+        throw new java.lang.IllegalArgumentException();
+      }
+      return map.get(key);
+    }
+
     private byte memoizedIsInitialized = -1;
 
     @java.lang.Override
@@ -16838,6 +17136,10 @@ public final class QueryProto {
       for (int i = 0; i < groups_.size(); i++) {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 4, groups_.getRaw(i));
       }
+      com.google.protobuf.GeneratedMessageV3.serializeStringMapTo(output, internalGetWhites(),
+          WhitesDefaultEntryHolder.defaultEntry, 5);
+      com.google.protobuf.GeneratedMessageV3.serializeStringMapTo(output, internalGetBlacks(),
+          BlacksDefaultEntryHolder.defaultEntry, 6);
       unknownFields.writeTo(output);
     }
 
@@ -16865,6 +17167,20 @@ public final class QueryProto {
         size += dataSize;
         size += 1 * getGroupsList().size();
       }
+      for (java.util.Map.Entry<java.lang.String, java.lang.String> entry : internalGetWhites()
+          .getMap().entrySet()) {
+        com.google.protobuf.MapEntry<java.lang.String, java.lang.String> whites__ =
+            WhitesDefaultEntryHolder.defaultEntry.newBuilderForType().setKey(entry.getKey())
+                .setValue(entry.getValue()).build();
+        size += com.google.protobuf.CodedOutputStream.computeMessageSize(5, whites__);
+      }
+      for (java.util.Map.Entry<java.lang.String, java.lang.String> entry : internalGetBlacks()
+          .getMap().entrySet()) {
+        com.google.protobuf.MapEntry<java.lang.String, java.lang.String> blacks__ =
+            BlacksDefaultEntryHolder.defaultEntry.newBuilderForType().setKey(entry.getKey())
+                .setValue(entry.getValue()).build();
+        size += com.google.protobuf.CodedOutputStream.computeMessageSize(6, blacks__);
+      }
       size += unknownFields.getSerializedSize();
       memoizedSize = size;
       return size;
@@ -16889,6 +17205,10 @@ public final class QueryProto {
         return false;
       if (!getGroupsList().equals(other.getGroupsList()))
         return false;
+      if (!internalGetWhites().equals(other.internalGetWhites()))
+        return false;
+      if (!internalGetBlacks().equals(other.internalGetBlacks()))
+        return false;
       if (!unknownFields.equals(other.unknownFields))
         return false;
       return true;
@@ -16910,6 +17230,14 @@ public final class QueryProto {
       if (getGroupsCount() > 0) {
         hash = (37 * hash) + GROUPS_FIELD_NUMBER;
         hash = (53 * hash) + getGroupsList().hashCode();
+      }
+      if (!internalGetWhites().getMap().isEmpty()) {
+        hash = (37 * hash) + WHITES_FIELD_NUMBER;
+        hash = (53 * hash) + internalGetWhites().hashCode();
+      }
+      if (!internalGetBlacks().getMap().isEmpty()) {
+        hash = (37 * hash) + BLACKS_FIELD_NUMBER;
+        hash = (53 * hash) + internalGetBlacks().hashCode();
       }
       hash = (29 * hash) + unknownFields.hashCode();
       memoizedHashCode = hash;
@@ -17024,6 +17352,30 @@ public final class QueryProto {
         return io.holoinsight.server.query.grpc.QueryProto.internal_static_io_holoinsight_server_query_grpc_StatisticRequest_descriptor;
       }
 
+      @SuppressWarnings({"rawtypes"})
+      protected com.google.protobuf.MapField internalGetMapField(int number) {
+        switch (number) {
+          case 5:
+            return internalGetWhites();
+          case 6:
+            return internalGetBlacks();
+          default:
+            throw new RuntimeException("Invalid map field number: " + number);
+        }
+      }
+
+      @SuppressWarnings({"rawtypes"})
+      protected com.google.protobuf.MapField internalGetMutableMapField(int number) {
+        switch (number) {
+          case 5:
+            return internalGetMutableWhites();
+          case 6:
+            return internalGetMutableBlacks();
+          default:
+            throw new RuntimeException("Invalid map field number: " + number);
+        }
+      }
+
       @java.lang.Override
       protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable internalGetFieldAccessorTable() {
         return io.holoinsight.server.query.grpc.QueryProto.internal_static_io_holoinsight_server_query_grpc_StatisticRequest_fieldAccessorTable
@@ -17042,7 +17394,10 @@ public final class QueryProto {
         maybeForceBuilderInitialization();
       }
 
-      private void maybeForceBuilderInitialization() {}
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders) {
+        }
+      }
 
       @java.lang.Override
       public Builder clear() {
@@ -17055,6 +17410,8 @@ public final class QueryProto {
 
         groups_ = com.google.protobuf.LazyStringArrayList.EMPTY;
         bitField0_ = (bitField0_ & ~0x00000001);
+        internalGetMutableWhites().clear();
+        internalGetMutableBlacks().clear();
         return this;
       }
 
@@ -17081,6 +17438,7 @@ public final class QueryProto {
       public io.holoinsight.server.query.grpc.QueryProto.StatisticRequest buildPartial() {
         io.holoinsight.server.query.grpc.QueryProto.StatisticRequest result =
             new io.holoinsight.server.query.grpc.QueryProto.StatisticRequest(this);
+        int from_bitField0_ = bitField0_;
         result.tenant_ = tenant_;
         result.start_ = start_;
         result.end_ = end_;
@@ -17089,6 +17447,10 @@ public final class QueryProto {
           bitField0_ = (bitField0_ & ~0x00000001);
         }
         result.groups_ = groups_;
+        result.whites_ = internalGetWhites();
+        result.whites_.makeImmutable();
+        result.blacks_ = internalGetBlacks();
+        result.blacks_.makeImmutable();
         onBuilt();
         return result;
       }
@@ -17160,6 +17522,8 @@ public final class QueryProto {
           }
           onChanged();
         }
+        internalGetMutableWhites().mergeFrom(other.internalGetWhites());
+        internalGetMutableBlacks().mergeFrom(other.internalGetBlacks());
         this.mergeUnknownFields(other.unknownFields);
         onChanged();
         return this;
@@ -17465,6 +17829,270 @@ public final class QueryProto {
         ensureGroupsIsMutable();
         groups_.add(value);
         onChanged();
+        return this;
+      }
+
+      private com.google.protobuf.MapField<java.lang.String, java.lang.String> whites_;
+
+      private com.google.protobuf.MapField<java.lang.String, java.lang.String> internalGetWhites() {
+        if (whites_ == null) {
+          return com.google.protobuf.MapField.emptyMapField(WhitesDefaultEntryHolder.defaultEntry);
+        }
+        return whites_;
+      }
+
+      private com.google.protobuf.MapField<java.lang.String, java.lang.String> internalGetMutableWhites() {
+        onChanged();;
+        if (whites_ == null) {
+          whites_ = com.google.protobuf.MapField.newMapField(WhitesDefaultEntryHolder.defaultEntry);
+        }
+        if (!whites_.isMutable()) {
+          whites_ = whites_.copy();
+        }
+        return whites_;
+      }
+
+      public int getWhitesCount() {
+        return internalGetWhites().getMap().size();
+      }
+
+      /**
+       * <code>map&lt;string, string&gt; whites = 5;</code>
+       */
+
+      @java.lang.Override
+      public boolean containsWhites(java.lang.String key) {
+        if (key == null) {
+          throw new java.lang.NullPointerException();
+        }
+        return internalGetWhites().getMap().containsKey(key);
+      }
+
+      /**
+       * Use {@link #getWhitesMap()} instead.
+       */
+      @java.lang.Override
+      @java.lang.Deprecated
+      public java.util.Map<java.lang.String, java.lang.String> getWhites() {
+        return getWhitesMap();
+      }
+
+      /**
+       * <code>map&lt;string, string&gt; whites = 5;</code>
+       */
+      @java.lang.Override
+
+      public java.util.Map<java.lang.String, java.lang.String> getWhitesMap() {
+        return internalGetWhites().getMap();
+      }
+
+      /**
+       * <code>map&lt;string, string&gt; whites = 5;</code>
+       */
+      @java.lang.Override
+
+      public java.lang.String getWhitesOrDefault(java.lang.String key,
+          java.lang.String defaultValue) {
+        if (key == null) {
+          throw new java.lang.NullPointerException();
+        }
+        java.util.Map<java.lang.String, java.lang.String> map = internalGetWhites().getMap();
+        return map.containsKey(key) ? map.get(key) : defaultValue;
+      }
+
+      /**
+       * <code>map&lt;string, string&gt; whites = 5;</code>
+       */
+      @java.lang.Override
+
+      public java.lang.String getWhitesOrThrow(java.lang.String key) {
+        if (key == null) {
+          throw new java.lang.NullPointerException();
+        }
+        java.util.Map<java.lang.String, java.lang.String> map = internalGetWhites().getMap();
+        if (!map.containsKey(key)) {
+          throw new java.lang.IllegalArgumentException();
+        }
+        return map.get(key);
+      }
+
+      public Builder clearWhites() {
+        internalGetMutableWhites().getMutableMap().clear();
+        return this;
+      }
+
+      /**
+       * <code>map&lt;string, string&gt; whites = 5;</code>
+       */
+
+      public Builder removeWhites(java.lang.String key) {
+        if (key == null) {
+          throw new java.lang.NullPointerException();
+        }
+        internalGetMutableWhites().getMutableMap().remove(key);
+        return this;
+      }
+
+      /**
+       * Use alternate mutation accessors instead.
+       */
+      @java.lang.Deprecated
+      public java.util.Map<java.lang.String, java.lang.String> getMutableWhites() {
+        return internalGetMutableWhites().getMutableMap();
+      }
+
+      /**
+       * <code>map&lt;string, string&gt; whites = 5;</code>
+       */
+      public Builder putWhites(java.lang.String key, java.lang.String value) {
+        if (key == null) {
+          throw new java.lang.NullPointerException();
+        }
+        if (value == null) {
+          throw new java.lang.NullPointerException();
+        }
+        internalGetMutableWhites().getMutableMap().put(key, value);
+        return this;
+      }
+
+      /**
+       * <code>map&lt;string, string&gt; whites = 5;</code>
+       */
+
+      public Builder putAllWhites(java.util.Map<java.lang.String, java.lang.String> values) {
+        internalGetMutableWhites().getMutableMap().putAll(values);
+        return this;
+      }
+
+      private com.google.protobuf.MapField<java.lang.String, java.lang.String> blacks_;
+
+      private com.google.protobuf.MapField<java.lang.String, java.lang.String> internalGetBlacks() {
+        if (blacks_ == null) {
+          return com.google.protobuf.MapField.emptyMapField(BlacksDefaultEntryHolder.defaultEntry);
+        }
+        return blacks_;
+      }
+
+      private com.google.protobuf.MapField<java.lang.String, java.lang.String> internalGetMutableBlacks() {
+        onChanged();;
+        if (blacks_ == null) {
+          blacks_ = com.google.protobuf.MapField.newMapField(BlacksDefaultEntryHolder.defaultEntry);
+        }
+        if (!blacks_.isMutable()) {
+          blacks_ = blacks_.copy();
+        }
+        return blacks_;
+      }
+
+      public int getBlacksCount() {
+        return internalGetBlacks().getMap().size();
+      }
+
+      /**
+       * <code>map&lt;string, string&gt; blacks = 6;</code>
+       */
+
+      @java.lang.Override
+      public boolean containsBlacks(java.lang.String key) {
+        if (key == null) {
+          throw new java.lang.NullPointerException();
+        }
+        return internalGetBlacks().getMap().containsKey(key);
+      }
+
+      /**
+       * Use {@link #getBlacksMap()} instead.
+       */
+      @java.lang.Override
+      @java.lang.Deprecated
+      public java.util.Map<java.lang.String, java.lang.String> getBlacks() {
+        return getBlacksMap();
+      }
+
+      /**
+       * <code>map&lt;string, string&gt; blacks = 6;</code>
+       */
+      @java.lang.Override
+
+      public java.util.Map<java.lang.String, java.lang.String> getBlacksMap() {
+        return internalGetBlacks().getMap();
+      }
+
+      /**
+       * <code>map&lt;string, string&gt; blacks = 6;</code>
+       */
+      @java.lang.Override
+
+      public java.lang.String getBlacksOrDefault(java.lang.String key,
+          java.lang.String defaultValue) {
+        if (key == null) {
+          throw new java.lang.NullPointerException();
+        }
+        java.util.Map<java.lang.String, java.lang.String> map = internalGetBlacks().getMap();
+        return map.containsKey(key) ? map.get(key) : defaultValue;
+      }
+
+      /**
+       * <code>map&lt;string, string&gt; blacks = 6;</code>
+       */
+      @java.lang.Override
+
+      public java.lang.String getBlacksOrThrow(java.lang.String key) {
+        if (key == null) {
+          throw new java.lang.NullPointerException();
+        }
+        java.util.Map<java.lang.String, java.lang.String> map = internalGetBlacks().getMap();
+        if (!map.containsKey(key)) {
+          throw new java.lang.IllegalArgumentException();
+        }
+        return map.get(key);
+      }
+
+      public Builder clearBlacks() {
+        internalGetMutableBlacks().getMutableMap().clear();
+        return this;
+      }
+
+      /**
+       * <code>map&lt;string, string&gt; blacks = 6;</code>
+       */
+
+      public Builder removeBlacks(java.lang.String key) {
+        if (key == null) {
+          throw new java.lang.NullPointerException();
+        }
+        internalGetMutableBlacks().getMutableMap().remove(key);
+        return this;
+      }
+
+      /**
+       * Use alternate mutation accessors instead.
+       */
+      @java.lang.Deprecated
+      public java.util.Map<java.lang.String, java.lang.String> getMutableBlacks() {
+        return internalGetMutableBlacks().getMutableMap();
+      }
+
+      /**
+       * <code>map&lt;string, string&gt; blacks = 6;</code>
+       */
+      public Builder putBlacks(java.lang.String key, java.lang.String value) {
+        if (key == null) {
+          throw new java.lang.NullPointerException();
+        }
+        if (value == null) {
+          throw new java.lang.NullPointerException();
+        }
+        internalGetMutableBlacks().getMutableMap().put(key, value);
+        return this;
+      }
+
+      /**
+       * <code>map&lt;string, string&gt; blacks = 6;</code>
+       */
+
+      public Builder putAllBlacks(java.util.Map<java.lang.String, java.lang.String> values) {
+        internalGetMutableBlacks().getMutableMap().putAll(values);
         return this;
       }
 
@@ -18943,7 +19571,10 @@ public final class QueryProto {
         maybeForceBuilderInitialization();
       }
 
-      private void maybeForceBuilderInitialization() {}
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders) {
+        }
+      }
 
       @java.lang.Override
       public Builder clear() {
@@ -20142,7 +20773,7 @@ public final class QueryProto {
       }
 
       private com.google.protobuf.MapField<java.lang.String, java.lang.String> internalGetMutableTags() {
-        onChanged();
+        onChanged();;
         if (tags_ == null) {
           tags_ = com.google.protobuf.MapField.newMapField(TagsDefaultEntryHolder.defaultEntry);
         }
@@ -20717,6 +21348,7 @@ public final class QueryProto {
       public io.holoinsight.server.query.grpc.QueryProto.TraceBrief buildPartial() {
         io.holoinsight.server.query.grpc.QueryProto.TraceBrief result =
             new io.holoinsight.server.query.grpc.QueryProto.TraceBrief(this);
+        int from_bitField0_ = bitField0_;
         if (tracesBuilder_ == null) {
           if (((bitField0_ & 0x00000001) != 0)) {
             traces_ = java.util.Collections.unmodifiableList(traces_);
@@ -21910,7 +22542,10 @@ public final class QueryProto {
         maybeForceBuilderInitialization();
       }
 
-      private void maybeForceBuilderInitialization() {}
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders) {
+        }
+      }
 
       @java.lang.Override
       public Builder clear() {
@@ -21955,6 +22590,7 @@ public final class QueryProto {
       public io.holoinsight.server.query.grpc.QueryProto.BasicTrace buildPartial() {
         io.holoinsight.server.query.grpc.QueryProto.BasicTrace result =
             new io.holoinsight.server.query.grpc.QueryProto.BasicTrace(this);
+        int from_bitField0_ = bitField0_;
         if (((bitField0_ & 0x00000001) != 0)) {
           serviceNames_ = serviceNames_.getUnmodifiableView();
           bitField0_ = (bitField0_ & ~0x00000001);
@@ -23160,6 +23796,7 @@ public final class QueryProto {
       public io.holoinsight.server.query.grpc.QueryProto.Trace buildPartial() {
         io.holoinsight.server.query.grpc.QueryProto.Trace result =
             new io.holoinsight.server.query.grpc.QueryProto.Trace(this);
+        int from_bitField0_ = bitField0_;
         if (spansBuilder_ == null) {
           if (((bitField0_ & 0x00000001) != 0)) {
             spans_ = java.util.Collections.unmodifiableList(spans_);
@@ -23976,6 +24613,7 @@ public final class QueryProto {
       public io.holoinsight.server.query.grpc.QueryProto.TraceTreeList buildPartial() {
         io.holoinsight.server.query.grpc.QueryProto.TraceTreeList result =
             new io.holoinsight.server.query.grpc.QueryProto.TraceTreeList(this);
+        int from_bitField0_ = bitField0_;
         if (traceTreeBuilder_ == null) {
           if (((bitField0_ & 0x00000001) != 0)) {
             traceTree_ = java.util.Collections.unmodifiableList(traceTree_);
@@ -24971,6 +25609,7 @@ public final class QueryProto {
       public io.holoinsight.server.query.grpc.QueryProto.TraceTree buildPartial() {
         io.holoinsight.server.query.grpc.QueryProto.TraceTree result =
             new io.holoinsight.server.query.grpc.QueryProto.TraceTree(this);
+        int from_bitField0_ = bitField0_;
         if (spanBuilder_ == null) {
           result.span_ = span_;
         } else {
@@ -27169,6 +27808,7 @@ public final class QueryProto {
       public io.holoinsight.server.query.grpc.QueryProto.Span buildPartial() {
         io.holoinsight.server.query.grpc.QueryProto.Span result =
             new io.holoinsight.server.query.grpc.QueryProto.Span(this);
+        int from_bitField0_ = bitField0_;
         result.traceId_ = traceId_;
         result.spanId_ = spanId_;
         result.parentSpanId_ = parentSpanId_;
@@ -29624,7 +30264,10 @@ public final class QueryProto {
         maybeForceBuilderInitialization();
       }
 
-      private void maybeForceBuilderInitialization() {}
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders) {
+        }
+      }
 
       @java.lang.Override
       public Builder clear() {
@@ -30399,6 +31042,7 @@ public final class QueryProto {
       public io.holoinsight.server.query.grpc.QueryProto.LogEntity buildPartial() {
         io.holoinsight.server.query.grpc.QueryProto.LogEntity result =
             new io.holoinsight.server.query.grpc.QueryProto.LogEntity(this);
+        int from_bitField0_ = bitField0_;
         result.time_ = time_;
         if (dataBuilder_ == null) {
           if (((bitField0_ & 0x00000001) != 0)) {
@@ -31329,7 +31973,10 @@ public final class QueryProto {
         maybeForceBuilderInitialization();
       }
 
-      private void maybeForceBuilderInitialization() {}
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders) {
+        }
+      }
 
       @java.lang.Override
       public Builder clear() {
@@ -32777,7 +33424,10 @@ public final class QueryProto {
         maybeForceBuilderInitialization();
       }
 
-      private void maybeForceBuilderInitialization() {}
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders) {
+        }
+      }
 
       @java.lang.Override
       public Builder clear() {
@@ -33571,7 +34221,7 @@ public final class QueryProto {
       }
 
       private com.google.protobuf.MapField<java.lang.String, java.lang.String> internalGetMutableTermParams() {
-        onChanged();
+        onChanged();;
         if (termParams_ == null) {
           termParams_ =
               com.google.protobuf.MapField.newMapField(TermParamsDefaultEntryHolder.defaultEntry);
@@ -34828,7 +35478,10 @@ public final class QueryProto {
         maybeForceBuilderInitialization();
       }
 
-      private void maybeForceBuilderInitialization() {}
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders) {
+        }
+      }
 
       @java.lang.Override
       public Builder clear() {
@@ -35683,7 +36336,7 @@ public final class QueryProto {
       }
 
       private com.google.protobuf.MapField<java.lang.String, java.lang.String> internalGetMutableTermParams() {
-        onChanged();
+        onChanged();;
         if (termParams_ == null) {
           termParams_ =
               com.google.protobuf.MapField.newMapField(TermParamsDefaultEntryHolder.defaultEntry);
@@ -36338,7 +36991,10 @@ public final class QueryProto {
         maybeForceBuilderInitialization();
       }
 
-      private void maybeForceBuilderInitialization() {}
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders) {
+        }
+      }
 
       @java.lang.Override
       public Builder clear() {
@@ -37171,7 +37827,10 @@ public final class QueryProto {
         maybeForceBuilderInitialization();
       }
 
-      private void maybeForceBuilderInitialization() {}
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders) {
+        }
+      }
 
       @java.lang.Override
       public Builder clear() {
@@ -37961,6 +38620,7 @@ public final class QueryProto {
       public io.holoinsight.server.query.grpc.QueryProto.QueryMetaResponse buildPartial() {
         io.holoinsight.server.query.grpc.QueryProto.QueryMetaResponse result =
             new io.holoinsight.server.query.grpc.QueryProto.QueryMetaResponse(this);
+        int from_bitField0_ = bitField0_;
         if (mataBuilder_ == null) {
           if (((bitField0_ & 0x00000001) != 0)) {
             mata_ = java.util.Collections.unmodifiableList(mata_);
@@ -38863,7 +39523,10 @@ public final class QueryProto {
         maybeForceBuilderInitialization();
       }
 
-      private void maybeForceBuilderInitialization() {}
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders) {
+        }
+      }
 
       @java.lang.Override
       public Builder clear() {
@@ -39750,6 +40413,7 @@ public final class QueryProto {
       public io.holoinsight.server.query.grpc.QueryProto.QueryVirtualComponentResponse buildPartial() {
         io.holoinsight.server.query.grpc.QueryProto.QueryVirtualComponentResponse result =
             new io.holoinsight.server.query.grpc.QueryProto.QueryVirtualComponentResponse(this);
+        int from_bitField0_ = bitField0_;
         if (componentBuilder_ == null) {
           if (((bitField0_ & 0x00000001) != 0)) {
             component_ = java.util.Collections.unmodifiableList(component_);
@@ -40791,7 +41455,10 @@ public final class QueryProto {
         maybeForceBuilderInitialization();
       }
 
-      private void maybeForceBuilderInitialization() {}
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders) {
+        }
+      }
 
       @java.lang.Override
       public Builder clear() {
@@ -41793,6 +42460,7 @@ public final class QueryProto {
       public io.holoinsight.server.query.grpc.QueryProto.QuerySlowSqlResponse buildPartial() {
         io.holoinsight.server.query.grpc.QueryProto.QuerySlowSqlResponse result =
             new io.holoinsight.server.query.grpc.QueryProto.QuerySlowSqlResponse(this);
+        int from_bitField0_ = bitField0_;
         if (slowSqlBuilder_ == null) {
           if (((bitField0_ & 0x00000001) != 0)) {
             slowSql_ = java.util.Collections.unmodifiableList(slowSql_);
@@ -42873,7 +43541,10 @@ public final class QueryProto {
         maybeForceBuilderInitialization();
       }
 
-      private void maybeForceBuilderInitialization() {}
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders) {
+        }
+      }
 
       @java.lang.Override
       public Builder clear() {
@@ -44404,7 +45075,10 @@ public final class QueryProto {
         maybeForceBuilderInitialization();
       }
 
-      private void maybeForceBuilderInitialization() {}
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders) {
+        }
+      }
 
       @java.lang.Override
       public Builder clear() {
@@ -45821,6 +46495,7 @@ public final class QueryProto {
       public io.holoinsight.server.query.grpc.QueryProto.Topology buildPartial() {
         io.holoinsight.server.query.grpc.QueryProto.Topology result =
             new io.holoinsight.server.query.grpc.QueryProto.Topology(this);
+        int from_bitField0_ = bitField0_;
         if (nodeBuilder_ == null) {
           if (((bitField0_ & 0x00000001) != 0)) {
             node_ = java.util.Collections.unmodifiableList(node_);
@@ -46880,7 +47555,10 @@ public final class QueryProto {
         maybeForceBuilderInitialization();
       }
 
-      private void maybeForceBuilderInitialization() {}
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders) {
+        }
+      }
 
       @java.lang.Override
       public Builder clear() {
@@ -46913,6 +47591,7 @@ public final class QueryProto {
       public io.holoinsight.server.query.grpc.QueryProto.TraceIds buildPartial() {
         io.holoinsight.server.query.grpc.QueryProto.TraceIds result =
             new io.holoinsight.server.query.grpc.QueryProto.TraceIds(this);
+        int from_bitField0_ = bitField0_;
         if (((bitField0_ & 0x00000001) != 0)) {
           traceId_ = traceId_.getUnmodifiableView();
           bitField0_ = (bitField0_ & ~0x00000001);
@@ -47768,7 +48447,10 @@ public final class QueryProto {
         maybeForceBuilderInitialization();
       }
 
-      private void maybeForceBuilderInitialization() {}
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders) {
+        }
+      }
 
       @java.lang.Override
       public Builder clear() {
@@ -47801,6 +48483,7 @@ public final class QueryProto {
       public io.holoinsight.server.query.grpc.QueryProto.StatisticData buildPartial() {
         io.holoinsight.server.query.grpc.QueryProto.StatisticData result =
             new io.holoinsight.server.query.grpc.QueryProto.StatisticData(this);
+        int from_bitField0_ = bitField0_;
         result.resources_ = internalGetResources();
         result.resources_.makeImmutable();
         result.datas_ = internalGetDatas();
@@ -47898,7 +48581,7 @@ public final class QueryProto {
       }
 
       private com.google.protobuf.MapField<java.lang.String, java.lang.String> internalGetMutableResources() {
-        onChanged();
+        onChanged();;
         if (resources_ == null) {
           resources_ =
               com.google.protobuf.MapField.newMapField(ResourcesDefaultEntryHolder.defaultEntry);
@@ -48031,7 +48714,7 @@ public final class QueryProto {
       }
 
       private com.google.protobuf.MapField<java.lang.String, java.lang.Double> internalGetMutableDatas() {
-        onChanged();
+        onChanged();;
         if (datas_ == null) {
           datas_ = com.google.protobuf.MapField.newMapField(DatasDefaultEntryHolder.defaultEntry);
         }
@@ -48605,6 +49288,7 @@ public final class QueryProto {
       public io.holoinsight.server.query.grpc.QueryProto.StatisticDataList buildPartial() {
         io.holoinsight.server.query.grpc.QueryProto.StatisticDataList result =
             new io.holoinsight.server.query.grpc.QueryProto.StatisticDataList(this);
+        int from_bitField0_ = bitField0_;
         if (statisticDataBuilder_ == null) {
           if (((bitField0_ & 0x00000001) != 0)) {
             statisticData_ = java.util.Collections.unmodifiableList(statisticData_);
@@ -49466,7 +50150,10 @@ public final class QueryProto {
         maybeForceBuilderInitialization();
       }
 
-      private void maybeForceBuilderInitialization() {}
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders) {
+        }
+      }
 
       @java.lang.Override
       public Builder clear() {
@@ -49498,6 +50185,7 @@ public final class QueryProto {
       public io.holoinsight.server.query.grpc.QueryProto.CommonMapTypeData buildPartial() {
         io.holoinsight.server.query.grpc.QueryProto.CommonMapTypeData result =
             new io.holoinsight.server.query.grpc.QueryProto.CommonMapTypeData(this);
+        int from_bitField0_ = bitField0_;
         result.data_ = internalGetData();
         result.data_.makeImmutable();
         onBuilt();
@@ -49593,7 +50281,7 @@ public final class QueryProto {
       }
 
       private com.google.protobuf.MapField<java.lang.String, java.lang.String> internalGetMutableData() {
-        onChanged();
+        onChanged();;
         if (data_ == null) {
           data_ = com.google.protobuf.MapField.newMapField(DataDefaultEntryHolder.defaultEntry);
         }
@@ -50174,6 +50862,7 @@ public final class QueryProto {
       public io.holoinsight.server.query.grpc.QueryProto.CommonMapTypeDataList buildPartial() {
         io.holoinsight.server.query.grpc.QueryProto.CommonMapTypeDataList result =
             new io.holoinsight.server.query.grpc.QueryProto.CommonMapTypeDataList(this);
+        int from_bitField0_ = bitField0_;
         if (commonMapTypeDataBuilder_ == null) {
           if (((bitField0_ & 0x00000001) != 0)) {
             commonMapTypeData_ = java.util.Collections.unmodifiableList(commonMapTypeData_);
@@ -51005,6 +51694,7 @@ public final class QueryProto {
       public io.holoinsight.server.query.grpc.QueryProto.QueryDetailResponse buildPartial() {
         io.holoinsight.server.query.grpc.QueryProto.QueryDetailResponse result =
             new io.holoinsight.server.query.grpc.QueryProto.QueryDetailResponse(this);
+        int from_bitField0_ = bitField0_;
         if (resultsBuilder_ == null) {
           if (((bitField0_ & 0x00000001) != 0)) {
             results_ = java.util.Collections.unmodifiableList(results_);
@@ -52106,6 +52796,7 @@ public final class QueryProto {
       public io.holoinsight.server.query.grpc.QueryProto.DetailResult buildPartial() {
         io.holoinsight.server.query.grpc.QueryProto.DetailResult result =
             new io.holoinsight.server.query.grpc.QueryProto.DetailResult(this);
+        int from_bitField0_ = bitField0_;
         if (((bitField0_ & 0x00000001) != 0)) {
           tables_ = tables_.getUnmodifiableView();
           bitField0_ = (bitField0_ & ~0x00000001);
@@ -53288,6 +53979,7 @@ public final class QueryProto {
       public io.holoinsight.server.query.grpc.QueryProto.DetailRow buildPartial() {
         io.holoinsight.server.query.grpc.QueryProto.DetailRow result =
             new io.holoinsight.server.query.grpc.QueryProto.DetailRow(this);
+        int from_bitField0_ = bitField0_;
         if (valuesBuilder_ == null) {
           if (((bitField0_ & 0x00000001) != 0)) {
             values_ = java.util.Collections.unmodifiableList(values_);
@@ -54312,7 +55004,10 @@ public final class QueryProto {
         maybeForceBuilderInitialization();
       }
 
-      private void maybeForceBuilderInitialization() {}
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders) {
+        }
+      }
 
       @java.lang.Override
       public Builder clear() {
@@ -55415,7 +56110,10 @@ public final class QueryProto {
         maybeForceBuilderInitialization();
       }
 
-      private void maybeForceBuilderInitialization() {}
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders) {
+        }
+      }
 
       @java.lang.Override
       public Builder clear() {
@@ -55453,6 +56151,7 @@ public final class QueryProto {
       public io.holoinsight.server.query.grpc.QueryProto.QueryEventRequest buildPartial() {
         io.holoinsight.server.query.grpc.QueryProto.QueryEventRequest result =
             new io.holoinsight.server.query.grpc.QueryProto.QueryEventRequest(this);
+        int from_bitField0_ = bitField0_;
         result.tenant_ = tenant_;
         result.start_ = start_;
         result.end_ = end_;
@@ -55717,7 +56416,7 @@ public final class QueryProto {
       }
 
       private com.google.protobuf.MapField<java.lang.String, java.lang.String> internalGetMutableTermParams() {
-        onChanged();
+        onChanged();;
         if (termParams_ == null) {
           termParams_ =
               com.google.protobuf.MapField.newMapField(TermParamsDefaultEntryHolder.defaultEntry);
@@ -56292,6 +56991,7 @@ public final class QueryProto {
       public io.holoinsight.server.query.grpc.QueryProto.QueryEventResponse buildPartial() {
         io.holoinsight.server.query.grpc.QueryProto.QueryEventResponse result =
             new io.holoinsight.server.query.grpc.QueryProto.QueryEventResponse(this);
+        int from_bitField0_ = bitField0_;
         if (eventBuilder_ == null) {
           if (((bitField0_ & 0x00000001) != 0)) {
             event_ = java.util.Collections.unmodifiableList(event_);
@@ -57459,7 +58159,10 @@ public final class QueryProto {
         maybeForceBuilderInitialization();
       }
 
-      private void maybeForceBuilderInitialization() {}
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders) {
+        }
+      }
 
       @java.lang.Override
       public Builder clear() {
@@ -57501,6 +58204,7 @@ public final class QueryProto {
       public io.holoinsight.server.query.grpc.QueryProto.Event buildPartial() {
         io.holoinsight.server.query.grpc.QueryProto.Event result =
             new io.holoinsight.server.query.grpc.QueryProto.Event(this);
+        int from_bitField0_ = bitField0_;
         result.tenant_ = tenant_;
         result.id_ = id_;
         result.name_ = name_;
@@ -57979,7 +58683,7 @@ public final class QueryProto {
       }
 
       private com.google.protobuf.MapField<java.lang.String, java.lang.String> internalGetMutableTags() {
-        onChanged();
+        onChanged();;
         if (tags_ == null) {
           tags_ = com.google.protobuf.MapField.newMapField(TagsDefaultEntryHolder.defaultEntry);
         }
@@ -58185,6 +58889,10 @@ public final class QueryProto {
   private static final com.google.protobuf.GeneratedMessageV3.FieldAccessorTable internal_static_io_holoinsight_server_query_grpc_PqlRangeRequest_fieldAccessorTable;
   private static final com.google.protobuf.Descriptors.Descriptor internal_static_io_holoinsight_server_query_grpc_StatisticRequest_descriptor;
   private static final com.google.protobuf.GeneratedMessageV3.FieldAccessorTable internal_static_io_holoinsight_server_query_grpc_StatisticRequest_fieldAccessorTable;
+  private static final com.google.protobuf.Descriptors.Descriptor internal_static_io_holoinsight_server_query_grpc_StatisticRequest_WhitesEntry_descriptor;
+  private static final com.google.protobuf.GeneratedMessageV3.FieldAccessorTable internal_static_io_holoinsight_server_query_grpc_StatisticRequest_WhitesEntry_fieldAccessorTable;
+  private static final com.google.protobuf.Descriptors.Descriptor internal_static_io_holoinsight_server_query_grpc_StatisticRequest_BlacksEntry_descriptor;
+  private static final com.google.protobuf.GeneratedMessageV3.FieldAccessorTable internal_static_io_holoinsight_server_query_grpc_StatisticRequest_BlacksEntry_fieldAccessorTable;
   private static final com.google.protobuf.Descriptors.Descriptor internal_static_io_holoinsight_server_query_grpc_QueryTraceRequest_descriptor;
   private static final com.google.protobuf.GeneratedMessageV3.FieldAccessorTable internal_static_io_holoinsight_server_query_grpc_QueryTraceRequest_fieldAccessorTable;
   private static final com.google.protobuf.Descriptors.Descriptor internal_static_io_holoinsight_server_query_grpc_QueryTraceRequest_TagsEntry_descriptor;
@@ -58318,198 +59026,211 @@ public final class QueryProto {
         + "\n\017PqlRangeRequest\022\016\n\006tenant\030\001 \001(\t\022\r\n\005que"
         + "ry\030\002 \001(\t\022\r\n\005start\030\003 \001(\003\022\013\n\003end\030\004 \001(\003\022\014\n\004"
         + "step\030\005 \001(\003\022\017\n\007timeout\030\006 \001(\t\022\r\n\005delta\030\007 \001"
-        + "(\t\022\020\n\010fillZero\030\010 \001(\010\"N\n\020StatisticRequest"
-        + "\022\016\n\006tenant\030\001 \001(\t\022\r\n\005start\030\002 \001(\003\022\013\n\003end\030\003"
-        + " \001(\003\022\016\n\006groups\030\004 \003(\t\"\365\004\n\021QueryTraceReque"
-        + "st\022\016\n\006tenant\030\001 \001(\t\022\030\n\013serviceName\030\002 \001(\tH"
-        + "\000\210\001\001\022 \n\023serviceInstanceName\030\003 \001(\tH\001\210\001\001\022\020"
-        + "\n\010traceIds\030\004 \003(\t\022\031\n\014endpointName\030\005 \001(\tH\002"
-        + "\210\001\001\022\022\n\005start\030\006 \001(\003H\003\210\001\001\022\020\n\003end\030\007 \001(\003H\004\210\001"
-        + "\001\022\035\n\020minTraceDuration\030\010 \001(\005H\005\210\001\001\022\035\n\020maxT"
-        + "raceDuration\030\t \001(\005H\006\210\001\001\022\027\n\ntraceState\030\n "
-        + "\001(\tH\007\210\001\001\022\027\n\nqueryOrder\030\013 \001(\tH\010\210\001\001\022\024\n\007pag"
-        + "eNum\030\014 \001(\005H\t\210\001\001\022\025\n\010pageSize\030\r \001(\005H\n\210\001\001\022K"
-        + "\n\004tags\030\016 \003(\0132=.io.holoinsight.server.que"
-        + "ry.grpc.QueryTraceRequest.TagsEntry\032+\n\tT"
-        + "agsEntry\022\013\n\003key\030\001 \001(\t\022\r\n\005value\030\002 \001(\t:\0028\001"
-        + "B\016\n\014_serviceNameB\026\n\024_serviceInstanceName"
-        + "B\017\n\r_endpointNameB\010\n\006_startB\006\n\004_endB\023\n\021_"
-        + "minTraceDurationB\023\n\021_maxTraceDurationB\r\n"
-        + "\013_traceStateB\r\n\013_queryOrderB\n\n\010_pageNumB"
-        + "\013\n\t_pageSize\"J\n\nTraceBrief\022<\n\006traces\030\001 \003"
-        + "(\0132,.io.holoinsight.server.query.grpc.Ba"
-        + "sicTrace\"\233\001\n\nBasicTrace\022\024\n\014serviceNames\030"
-        + "\001 \003(\t\022\034\n\024serviceInstanceNames\030\002 \003(\t\022\025\n\re"
-        + "ndpointNames\030\003 \003(\t\022\020\n\010duration\030\004 \001(\005\022\r\n\005"
-        + "start\030\005 \001(\003\022\017\n\007isError\030\006 \001(\010\022\020\n\010traceIds"
-        + "\030\007 \003(\t\">\n\005Trace\0225\n\005spans\030\001 \003(\0132&.io.holo"
-        + "insight.server.query.grpc.Span\"O\n\rTraceT"
-        + "reeList\022>\n\ttraceTree\030\001 \003(\0132+.io.holoinsi"
-        + "ght.server.query.grpc.TraceTree\"\266\001\n\tTrac"
-        + "eTree\0224\n\004span\030\001 \001(\0132&.io.holoinsight.ser"
-        + "ver.query.grpc.Span\022=\n\010children\030\002 \003(\0132+."
-        + "io.holoinsight.server.query.grpc.TraceTr"
-        + "ee\0224\n\004mesh\030\003 \001(\0132&.io.holoinsight.server"
-        + ".query.grpc.Span\"\302\003\n\004Span\022\017\n\007traceId\030\001 \001"
-        + "(\t\022\016\n\006spanId\030\002 \001(\t\022\024\n\014parentSpanId\030\003 \001(\t"
-        + "\0223\n\004refs\030\004 \003(\0132%.io.holoinsight.server.q"
-        + "uery.grpc.Ref\022\023\n\013serviceCode\030\005 \001(\t\022\033\n\023se"
-        + "rviceInstanceName\030\006 \001(\t\022\021\n\tstartTime\030\007 \001"
-        + "(\003\022\017\n\007endTime\030\010 \001(\003\022\024\n\014endpointName\030\t \001("
-        + "\t\022\014\n\004type\030\n \001(\t\022\014\n\004peer\030\013 \001(\t\022\021\n\tcompone"
-        + "nt\030\014 \001(\t\022\017\n\007isError\030\r \001(\010\022\r\n\005layer\030\016 \001(\t"
-        + "\0228\n\004tags\030\017 \003(\0132*.io.holoinsight.server.q"
-        + "uery.grpc.KeyValue\0229\n\004logs\030\020 \003(\0132+.io.ho"
-        + "loinsight.server.query.grpc.LogEntity\022\016\n"
-        + "\006isRoot\030\021 \001(\010\022\016\n\006isMesh\030\022 \001(\010\"&\n\010KeyValu"
-        + "e\022\013\n\003key\030\001 \001(\t\022\r\n\005value\030\002 \001(\t\"S\n\tLogEnti"
-        + "ty\022\014\n\004time\030\001 \001(\003\0228\n\004data\030\002 \003(\0132*.io.holo"
-        + "insight.server.query.grpc.KeyValue\":\n\003Re"
-        + "f\022\017\n\007traceId\030\001 \001(\t\022\024\n\014parentSpanId\030\002 \001(\t"
-        + "\022\014\n\004type\030\004 \001(\t\"\212\003\n\020QueryMetaRequest\022\016\n\006t"
-        + "enant\030\001 \001(\t\022\030\n\013serviceName\030\002 \001(\tH\000\210\001\001\022\031\n"
-        + "\014endpointName\030\003 \001(\tH\001\210\001\001\022\024\n\007address\030\004 \001("
-        + "\tH\002\210\001\001\022\r\n\005start\030\005 \001(\003\022\013\n\003end\030\006 \001(\003\022\024\n\007is"
-        + "Entry\030\007 \001(\010H\003\210\001\001\022\023\n\013traceIdSize\030\010 \001(\003\022\020\n"
-        + "\010category\030\t \001(\t\022V\n\ntermParams\030\n \003(\0132B.io"
-        + ".holoinsight.server.query.grpc.QueryMeta"
-        + "Request.TermParamsEntry\0321\n\017TermParamsEnt"
-        + "ry\022\013\n\003key\030\001 \001(\t\022\r\n\005value\030\002 \001(\t:\0028\001B\016\n\014_s"
-        + "erviceNameB\017\n\r_endpointNameB\n\n\010_addressB"
-        + "\n\n\010_isEntry\"\263\003\n\024QueryTopologyRequest\022\016\n\006"
-        + "tenant\030\001 \001(\t\022\r\n\005start\030\002 \001(\003\022\013\n\003end\030\003 \001(\003"
-        + "\022\030\n\013serviceName\030\004 \001(\tH\000\210\001\001\022 \n\023serviceIns"
-        + "tanceName\030\005 \001(\tH\001\210\001\001\022\031\n\014endpointName\030\006 \001"
-        + "(\tH\002\210\001\001\022\024\n\007address\030\007 \001(\tH\003\210\001\001\022\022\n\005depth\030\010"
-        + " \001(\005H\004\210\001\001\022\020\n\010category\030\t \001(\t\022Z\n\ntermParam"
-        + "s\030\n \003(\0132F.io.holoinsight.server.query.gr"
-        + "pc.QueryTopologyRequest.TermParamsEntry\032"
-        + "1\n\017TermParamsEntry\022\013\n\003key\030\001 \001(\t\022\r\n\005value"
-        + "\030\002 \001(\t:\0028\001B\016\n\014_serviceNameB\026\n\024_serviceIn"
-        + "stanceNameB\017\n\r_endpointNameB\n\n\010_addressB"
-        + "\010\n\006_depth\"\211\001\n\016ResponseMetric\022\022\n\navgLaten"
-        + "cy\030\001 \001(\001\022\022\n\np95Latency\030\002 \001(\001\022\022\n\np99Laten"
-        + "cy\030\003 \001(\001\022\022\n\ntotalCount\030\004 \001(\005\022\022\n\nerrorCou"
-        + "nt\030\005 \001(\005\022\023\n\013successRate\030\006 \001(\001\"V\n\004Meta\022\014\n"
-        + "\004name\030\001 \001(\t\022@\n\006metric\030\002 \001(\01320.io.holoins"
-        + "ight.server.query.grpc.ResponseMetric\"I\n"
-        + "\021QueryMetaResponse\0224\n\004mata\030\001 \003(\0132&.io.ho"
-        + "loinsight.server.query.grpc.Meta\"s\n\020Virt"
-        + "ualComponent\022\017\n\007address\030\001 \001(\t\022\014\n\004type\030\002 "
-        + "\001(\t\022@\n\006metric\030\003 \001(\01320.io.holoinsight.ser"
-        + "ver.query.grpc.ResponseMetric\"f\n\035QueryVi"
-        + "rtualComponentResponse\022E\n\tcomponent\030\001 \003("
-        + "\01322.io.holoinsight.server.query.grpc.Vir"
-        + "tualComponent\"w\n\007SlowSql\022\017\n\007address\030\001 \001("
-        + "\t\022\023\n\013serviceName\030\002 \001(\t\022\021\n\tstatement\030\003 \001("
-        + "\t\022\017\n\007latency\030\004 \001(\005\022\021\n\tstartTime\030\005 \001(\003\022\017\n"
-        + "\007traceId\030\006 \001(\t\"R\n\024QuerySlowSqlResponse\022:"
-        + "\n\007slowSql\030\001 \003(\0132).io.holoinsight.server."
-        + "query.grpc.SlowSql\"\225\001\n\004Node\022\n\n\002id\030\001 \001(\t\022"
-        + "\014\n\004name\030\002 \001(\t\022\014\n\004type\030\003 \001(\t\022\016\n\006isReal\030\004 "
-        + "\001(\010\022\023\n\013serviceName\030\005 \001(\t\022@\n\006metric\030\006 \001(\013"
-        + "20.io.holoinsight.server.query.grpc.Resp"
-        + "onseMetric\"\320\001\n\004Call\022\n\n\002id\030\001 \001(\t\022\020\n\010sourc"
-        + "eId\030\002 \001(\t\022\022\n\nsourceName\030\003 \001(\t\022\016\n\006destId\030"
-        + "\004 \001(\t\022\020\n\010destName\030\005 \001(\t\022\031\n\021sourceService"
-        + "Name\030\006 \001(\t\022\027\n\017destServiceName\030\007 \001(\t\022@\n\006m"
-        + "etric\030\010 \001(\01320.io.holoinsight.server.quer"
-        + "y.grpc.ResponseMetric\"v\n\010Topology\0224\n\004nod"
-        + "e\030\001 \003(\0132&.io.holoinsight.server.query.gr"
-        + "pc.Node\0224\n\004call\030\002 \003(\0132&.io.holoinsight.s"
-        + "erver.query.grpc.Call\"\033\n\010TraceIds\022\017\n\007tra"
-        + "ceId\030\001 \003(\t\"\215\002\n\rStatisticData\022Q\n\tresource"
-        + "s\030\001 \003(\0132>.io.holoinsight.server.query.gr"
-        + "pc.StatisticData.ResourcesEntry\022I\n\005datas"
-        + "\030\002 \003(\0132:.io.holoinsight.server.query.grp"
-        + "c.StatisticData.DatasEntry\0320\n\016ResourcesE"
-        + "ntry\022\013\n\003key\030\001 \001(\t\022\r\n\005value\030\002 \001(\t:\0028\001\032,\n\n"
-        + "DatasEntry\022\013\n\003key\030\001 \001(\t\022\r\n\005value\030\002 \001(\001:\002"
-        + "8\001\"[\n\021StatisticDataList\022F\n\rstatisticData"
-        + "\030\001 \003(\0132/.io.holoinsight.server.query.grp"
-        + "c.StatisticData\"\215\001\n\021CommonMapTypeData\022K\n"
-        + "\004data\030\001 \003(\0132=.io.holoinsight.server.quer"
-        + "y.grpc.CommonMapTypeData.DataEntry\032+\n\tDa"
-        + "taEntry\022\013\n\003key\030\001 \001(\t\022\r\n\005value\030\002 \001(\t:\0028\001\""
-        + "g\n\025CommonMapTypeDataList\022N\n\021commonMapTyp"
-        + "eData\030\001 \003(\01323.io.holoinsight.server.quer"
-        + "y.grpc.CommonMapTypeData\"V\n\023QueryDetailR"
-        + "esponse\022?\n\007results\030\001 \003(\0132..io.holoinsigh"
-        + "t.server.query.grpc.DetailResult\"w\n\014Deta"
-        + "ilResult\022\016\n\006tables\030\001 \003(\t\022\013\n\003sql\030\002 \001(\t\022\017\n"
-        + "\007headers\030\003 \003(\t\0229\n\004rows\030\004 \003(\0132+.io.holoin"
-        + "sight.server.query.grpc.DetailRow\"J\n\tDet"
-        + "ailRow\022=\n\006values\030\001 \003(\0132-.io.holoinsight."
-        + "server.query.grpc.DetailValue\"\277\001\n\013Detail"
-        + "Value\022\014\n\004type\030\001 \001(\t\022\025\n\010strValue\030\002 \001(\tH\000\210"
-        + "\001\001\022\026\n\tboolValue\030\003 \001(\010H\001\210\001\001\022\030\n\013doubleValu"
-        + "e\030\004 \001(\001H\002\210\001\001\022\033\n\016timestampValue\030\005 \001(\003H\003\210\001"
-        + "\001B\013\n\t_strValueB\014\n\n_boolValueB\016\n\014_doubleV"
-        + "alueB\021\n\017_timestampValue\"\313\001\n\021QueryEventRe"
-        + "quest\022\016\n\006tenant\030\001 \001(\t\022\r\n\005start\030\002 \001(\003\022\013\n\003"
-        + "end\030\003 \001(\003\022W\n\ntermParams\030\004 \003(\0132C.io.holoi"
-        + "nsight.server.query.grpc.QueryEventReque"
-        + "st.TermParamsEntry\0321\n\017TermParamsEntry\022\013\n"
-        + "\003key\030\001 \001(\t\022\r\n\005value\030\002 \001(\t:\0028\001\"L\n\022QueryEv"
-        + "entResponse\0226\n\005event\030\001 \003(\0132\'.io.holoinsi"
-        + "ght.server.query.grpc.Event\"\300\001\n\005Event\022\016\n"
-        + "\006tenant\030\001 \001(\t\022\n\n\002id\030\002 \001(\t\022\014\n\004name\030\003 \001(\t\022"
-        + "\014\n\004type\030\004 \001(\t\022\021\n\ttimestamp\030\005 \001(\003\022?\n\004tags"
-        + "\030\006 \003(\01321.io.holoinsight.server.query.grp"
-        + "c.Event.TagsEntry\032+\n\tTagsEntry\022\013\n\003key\030\001 "
-        + "\001(\t\022\r\n\005value\030\002 \001(\t:\0028\0012\210\026\n\014QueryService\022"
-        + "l\n\tQueryData\022..io.holoinsight.server.que"
-        + "ry.grpc.QueryRequest\032/.io.holoinsight.se"
-        + "rver.query.grpc.QueryResponse\022l\n\tQueryTa"
-        + "gs\022..io.holoinsight.server.query.grpc.Qu"
-        + "eryRequest\032/.io.holoinsight.server.query"
-        + ".grpc.QueryResponse\022t\n\013QuerySchema\022..io."
-        + "holoinsight.server.query.grpc.QueryReque" + "st\0325.io.holoinsight.server.query.grpc.Qu"
-        + "erySchemaResponse\022}\n\014QueryMetrics\0225.io.h"
-        + "oloinsight.server.query.grpc.QueryMetric" + "sRequest\0326.io.holoinsight.server.query.g"
-        + "rpc.QueryMetricsResponse\022m\n\nDeleteKeys\022."
-        + ".io.holoinsight.server.query.grpc.QueryR" + "equest\032/.io.holoinsight.server.query.grp"
-        + "c.QueryResponse\022w\n\017pqlInstantQuery\0223.io."
-        + "holoinsight.server.query.grpc.PqlInstant" + "Request\032/.io.holoinsight.server.query.gr"
-        + "pc.QueryResponse\022s\n\rpqlRangeQuery\0221.io.h"
-        + "oloinsight.server.query.grpc.PqlRangeReq" + "uest\032/.io.holoinsight.server.query.grpc."
-        + "QueryResponse\022u\n\020QueryBasicTraces\0223.io.h"
-        + "oloinsight.server.query.grpc.QueryTraceR" + "equest\032,.io.holoinsight.server.query.grp"
-        + "c.TraceBrief\022j\n\nQueryTrace\0223.io.holoinsi"
-        + "ght.server.query.grpc.QueryTraceRequest\032"
-        + "\'.io.holoinsight.server.query.grpc.Trace"
-        + "\022v\n\016QueryTraceTree\0223.io.holoinsight.serv"
-        + "er.query.grpc.QueryTraceRequest\032/.io.hol" + "oinsight.server.query.grpc.TraceTreeList"
-        + "\022t\n\014BillingTrace\0223.io.holoinsight.server"
-        + ".query.grpc.QueryTraceRequest\032/.io.holoi"
-        + "nsight.server.query.grpc.StatisticData\022{"
-        + "\n\020QueryServiceList\0222.io.holoinsight.serv"
-        + "er.query.grpc.QueryMetaRequest\0323.io.holo" + "insight.server.query.grpc.QueryMetaRespo"
-        + "nse\022|\n\021QueryEndpointList\0222.io.holoinsigh"
-        + "t.server.query.grpc.QueryMetaRequest\0323.i" + "o.holoinsight.server.query.grpc.QueryMet"
-        + "aResponse\022\203\001\n\030QueryServiceInstanceList\0222"
-        + ".io.holoinsight.server.query.grpc.QueryM" + "etaRequest\0323.io.holoinsight.server.query"
-        + ".grpc.QueryMetaResponse\022\211\001\n\022QueryCompone"
-        + "ntList\0222.io.holoinsight.server.query.grp"
-        + "c.QueryMetaRequest\032?.io.holoinsight.serv" + "er.query.grpc.QueryVirtualComponentRespo"
-        + "nse\022x\n\026QueryComponentTraceIds\0222.io.holoi"
-        + "nsight.server.query.grpc.QueryMetaReques" + "t\032*.io.holoinsight.server.query.grpc.Tra"
-        + "ceIds\022s\n\rQueryTopology\0226.io.holoinsight."
-        + "server.query.grpc.QueryTopologyRequest\032*" + ".io.holoinsight.server.query.grpc.Topolo"
-        + "gy\022~\n\020QuerySlowSqlList\0222.io.holoinsight."
-        + "server.query.grpc.QueryMetaRequest\0326.io." + "holoinsight.server.query.grpc.QuerySlowS"
-        + "qlResponse\022y\n\016StatisticTrace\0222.io.holoin"
-        + "sight.server.query.grpc.StatisticRequest" + "\0323.io.holoinsight.server.query.grpc.Stat"
-        + "isticDataList\022\204\001\n\025QueryServiceErrorList\022"
-        + "2.io.holoinsight.server.query.grpc.Query" + "MetaRequest\0327.io.holoinsight.server.quer"
-        + "y.grpc.CommonMapTypeDataList\022\206\001\n\027QuerySe"
-        + "rviceErrorDetail\0222.io.holoinsight.server"
-        + ".query.grpc.QueryMetaRequest\0327.io.holoin" + "sight.server.query.grpc.CommonMapTypeDat"
-        + "aList\022x\n\017QueryDetailData\022..io.holoinsigh"
-        + "t.server.query.grpc.QueryRequest\0325.io.ho" + "loinsight.server.query.grpc.QueryDetailR"
-        + "esponse\022x\n\013QueryEvents\0223.io.holoinsight."
-        + "server.query.grpc.QueryEventRequest\0324.io" + ".holoinsight.server.query.grpc.QueryEven"
-        + "tResponseB\"\n io.holoinsight.server.query" + ".grpcb\006proto3"};
+        + "(\t\022\020\n\010fillZero\030\010 \001(\010\"\314\002\n\020StatisticReques"
+        + "t\022\016\n\006tenant\030\001 \001(\t\022\r\n\005start\030\002 \001(\003\022\013\n\003end\030"
+        + "\003 \001(\003\022\016\n\006groups\030\004 \003(\t\022N\n\006whites\030\005 \003(\0132>."
+        + "io.holoinsight.server.query.grpc.Statist"
+        + "icRequest.WhitesEntry\022N\n\006blacks\030\006 \003(\0132>."
+        + "io.holoinsight.server.query.grpc.Statist"
+        + "icRequest.BlacksEntry\032-\n\013WhitesEntry\022\013\n\003"
+        + "key\030\001 \001(\t\022\r\n\005value\030\002 \001(\t:\0028\001\032-\n\013BlacksEn"
+        + "try\022\013\n\003key\030\001 \001(\t\022\r\n\005value\030\002 \001(\t:\0028\001\"\365\004\n\021"
+        + "QueryTraceRequest\022\016\n\006tenant\030\001 \001(\t\022\030\n\013ser"
+        + "viceName\030\002 \001(\tH\000\210\001\001\022 \n\023serviceInstanceNa"
+        + "me\030\003 \001(\tH\001\210\001\001\022\020\n\010traceIds\030\004 \003(\t\022\031\n\014endpo"
+        + "intName\030\005 \001(\tH\002\210\001\001\022\022\n\005start\030\006 \001(\003H\003\210\001\001\022\020"
+        + "\n\003end\030\007 \001(\003H\004\210\001\001\022\035\n\020minTraceDuration\030\010 \001"
+        + "(\005H\005\210\001\001\022\035\n\020maxTraceDuration\030\t \001(\005H\006\210\001\001\022\027"
+        + "\n\ntraceState\030\n \001(\tH\007\210\001\001\022\027\n\nqueryOrder\030\013 "
+        + "\001(\tH\010\210\001\001\022\024\n\007pageNum\030\014 \001(\005H\t\210\001\001\022\025\n\010pageSi"
+        + "ze\030\r \001(\005H\n\210\001\001\022K\n\004tags\030\016 \003(\0132=.io.holoins"
+        + "ight.server.query.grpc.QueryTraceRequest"
+        + ".TagsEntry\032+\n\tTagsEntry\022\013\n\003key\030\001 \001(\t\022\r\n\005"
+        + "value\030\002 \001(\t:\0028\001B\016\n\014_serviceNameB\026\n\024_serv"
+        + "iceInstanceNameB\017\n\r_endpointNameB\010\n\006_sta"
+        + "rtB\006\n\004_endB\023\n\021_minTraceDurationB\023\n\021_maxT"
+        + "raceDurationB\r\n\013_traceStateB\r\n\013_queryOrd"
+        + "erB\n\n\010_pageNumB\013\n\t_pageSize\"J\n\nTraceBrie"
+        + "f\022<\n\006traces\030\001 \003(\0132,.io.holoinsight.serve"
+        + "r.query.grpc.BasicTrace\"\233\001\n\nBasicTrace\022\024"
+        + "\n\014serviceNames\030\001 \003(\t\022\034\n\024serviceInstanceN"
+        + "ames\030\002 \003(\t\022\025\n\rendpointNames\030\003 \003(\t\022\020\n\010dur"
+        + "ation\030\004 \001(\005\022\r\n\005start\030\005 \001(\003\022\017\n\007isError\030\006 "
+        + "\001(\010\022\020\n\010traceIds\030\007 \003(\t\">\n\005Trace\0225\n\005spans\030"
+        + "\001 \003(\0132&.io.holoinsight.server.query.grpc"
+        + ".Span\"O\n\rTraceTreeList\022>\n\ttraceTree\030\001 \003("
+        + "\0132+.io.holoinsight.server.query.grpc.Tra"
+        + "ceTree\"\266\001\n\tTraceTree\0224\n\004span\030\001 \001(\0132&.io."
+        + "holoinsight.server.query.grpc.Span\022=\n\010ch"
+        + "ildren\030\002 \003(\0132+.io.holoinsight.server.que"
+        + "ry.grpc.TraceTree\0224\n\004mesh\030\003 \001(\0132&.io.hol"
+        + "oinsight.server.query.grpc.Span\"\302\003\n\004Span"
+        + "\022\017\n\007traceId\030\001 \001(\t\022\016\n\006spanId\030\002 \001(\t\022\024\n\014par"
+        + "entSpanId\030\003 \001(\t\0223\n\004refs\030\004 \003(\0132%.io.holoi"
+        + "nsight.server.query.grpc.Ref\022\023\n\013serviceC"
+        + "ode\030\005 \001(\t\022\033\n\023serviceInstanceName\030\006 \001(\t\022\021"
+        + "\n\tstartTime\030\007 \001(\003\022\017\n\007endTime\030\010 \001(\003\022\024\n\014en"
+        + "dpointName\030\t \001(\t\022\014\n\004type\030\n \001(\t\022\014\n\004peer\030\013"
+        + " \001(\t\022\021\n\tcomponent\030\014 \001(\t\022\017\n\007isError\030\r \001(\010"
+        + "\022\r\n\005layer\030\016 \001(\t\0228\n\004tags\030\017 \003(\0132*.io.holoi"
+        + "nsight.server.query.grpc.KeyValue\0229\n\004log"
+        + "s\030\020 \003(\0132+.io.holoinsight.server.query.gr"
+        + "pc.LogEntity\022\016\n\006isRoot\030\021 \001(\010\022\016\n\006isMesh\030\022"
+        + " \001(\010\"&\n\010KeyValue\022\013\n\003key\030\001 \001(\t\022\r\n\005value\030\002"
+        + " \001(\t\"S\n\tLogEntity\022\014\n\004time\030\001 \001(\003\0228\n\004data\030"
+        + "\002 \003(\0132*.io.holoinsight.server.query.grpc"
+        + ".KeyValue\":\n\003Ref\022\017\n\007traceId\030\001 \001(\t\022\024\n\014par"
+        + "entSpanId\030\002 \001(\t\022\014\n\004type\030\004 \001(\t\"\212\003\n\020QueryM"
+        + "etaRequest\022\016\n\006tenant\030\001 \001(\t\022\030\n\013serviceNam"
+        + "e\030\002 \001(\tH\000\210\001\001\022\031\n\014endpointName\030\003 \001(\tH\001\210\001\001\022"
+        + "\024\n\007address\030\004 \001(\tH\002\210\001\001\022\r\n\005start\030\005 \001(\003\022\013\n\003"
+        + "end\030\006 \001(\003\022\024\n\007isEntry\030\007 \001(\010H\003\210\001\001\022\023\n\013trace"
+        + "IdSize\030\010 \001(\003\022\020\n\010category\030\t \001(\t\022V\n\ntermPa"
+        + "rams\030\n \003(\0132B.io.holoinsight.server.query"
+        + ".grpc.QueryMetaRequest.TermParamsEntry\0321"
+        + "\n\017TermParamsEntry\022\013\n\003key\030\001 \001(\t\022\r\n\005value\030"
+        + "\002 \001(\t:\0028\001B\016\n\014_serviceNameB\017\n\r_endpointNa"
+        + "meB\n\n\010_addressB\n\n\010_isEntry\"\263\003\n\024QueryTopo"
+        + "logyRequest\022\016\n\006tenant\030\001 \001(\t\022\r\n\005start\030\002 \001"
+        + "(\003\022\013\n\003end\030\003 \001(\003\022\030\n\013serviceName\030\004 \001(\tH\000\210\001"
+        + "\001\022 \n\023serviceInstanceName\030\005 \001(\tH\001\210\001\001\022\031\n\014e"
+        + "ndpointName\030\006 \001(\tH\002\210\001\001\022\024\n\007address\030\007 \001(\tH"
+        + "\003\210\001\001\022\022\n\005depth\030\010 \001(\005H\004\210\001\001\022\020\n\010category\030\t \001"
+        + "(\t\022Z\n\ntermParams\030\n \003(\0132F.io.holoinsight."
+        + "server.query.grpc.QueryTopologyRequest.T"
+        + "ermParamsEntry\0321\n\017TermParamsEntry\022\013\n\003key"
+        + "\030\001 \001(\t\022\r\n\005value\030\002 \001(\t:\0028\001B\016\n\014_serviceNam"
+        + "eB\026\n\024_serviceInstanceNameB\017\n\r_endpointNa"
+        + "meB\n\n\010_addressB\010\n\006_depth\"\211\001\n\016ResponseMet"
+        + "ric\022\022\n\navgLatency\030\001 \001(\001\022\022\n\np95Latency\030\002 "
+        + "\001(\001\022\022\n\np99Latency\030\003 \001(\001\022\022\n\ntotalCount\030\004 "
+        + "\001(\005\022\022\n\nerrorCount\030\005 \001(\005\022\023\n\013successRate\030\006"
+        + " \001(\001\"V\n\004Meta\022\014\n\004name\030\001 \001(\t\022@\n\006metric\030\002 \001"
+        + "(\01320.io.holoinsight.server.query.grpc.Re"
+        + "sponseMetric\"I\n\021QueryMetaResponse\0224\n\004mat"
+        + "a\030\001 \003(\0132&.io.holoinsight.server.query.gr"
+        + "pc.Meta\"s\n\020VirtualComponent\022\017\n\007address\030\001"
+        + " \001(\t\022\014\n\004type\030\002 \001(\t\022@\n\006metric\030\003 \001(\01320.io."
+        + "holoinsight.server.query.grpc.ResponseMe"
+        + "tric\"f\n\035QueryVirtualComponentResponse\022E\n"
+        + "\tcomponent\030\001 \003(\01322.io.holoinsight.server"
+        + ".query.grpc.VirtualComponent\"w\n\007SlowSql\022"
+        + "\017\n\007address\030\001 \001(\t\022\023\n\013serviceName\030\002 \001(\t\022\021\n"
+        + "\tstatement\030\003 \001(\t\022\017\n\007latency\030\004 \001(\005\022\021\n\tsta"
+        + "rtTime\030\005 \001(\003\022\017\n\007traceId\030\006 \001(\t\"R\n\024QuerySl"
+        + "owSqlResponse\022:\n\007slowSql\030\001 \003(\0132).io.holo"
+        + "insight.server.query.grpc.SlowSql\"\225\001\n\004No"
+        + "de\022\n\n\002id\030\001 \001(\t\022\014\n\004name\030\002 \001(\t\022\014\n\004type\030\003 \001"
+        + "(\t\022\016\n\006isReal\030\004 \001(\010\022\023\n\013serviceName\030\005 \001(\t\022"
+        + "@\n\006metric\030\006 \001(\01320.io.holoinsight.server."
+        + "query.grpc.ResponseMetric\"\320\001\n\004Call\022\n\n\002id"
+        + "\030\001 \001(\t\022\020\n\010sourceId\030\002 \001(\t\022\022\n\nsourceName\030\003"
+        + " \001(\t\022\016\n\006destId\030\004 \001(\t\022\020\n\010destName\030\005 \001(\t\022\031"
+        + "\n\021sourceServiceName\030\006 \001(\t\022\027\n\017destService"
+        + "Name\030\007 \001(\t\022@\n\006metric\030\010 \001(\01320.io.holoinsi"
+        + "ght.server.query.grpc.ResponseMetric\"v\n\010"
+        + "Topology\0224\n\004node\030\001 \003(\0132&.io.holoinsight."
+        + "server.query.grpc.Node\0224\n\004call\030\002 \003(\0132&.i"
+        + "o.holoinsight.server.query.grpc.Call\"\033\n\010"
+        + "TraceIds\022\017\n\007traceId\030\001 \003(\t\"\215\002\n\rStatisticD"
+        + "ata\022Q\n\tresources\030\001 \003(\0132>.io.holoinsight."
+        + "server.query.grpc.StatisticData.Resource"
+        + "sEntry\022I\n\005datas\030\002 \003(\0132:.io.holoinsight.s"
+        + "erver.query.grpc.StatisticData.DatasEntr"
+        + "y\0320\n\016ResourcesEntry\022\013\n\003key\030\001 \001(\t\022\r\n\005valu"
+        + "e\030\002 \001(\t:\0028\001\032,\n\nDatasEntry\022\013\n\003key\030\001 \001(\t\022\r"
+        + "\n\005value\030\002 \001(\001:\0028\001\"[\n\021StatisticDataList\022F"
+        + "\n\rstatisticData\030\001 \003(\0132/.io.holoinsight.s"
+        + "erver.query.grpc.StatisticData\"\215\001\n\021Commo"
+        + "nMapTypeData\022K\n\004data\030\001 \003(\0132=.io.holoinsi"
+        + "ght.server.query.grpc.CommonMapTypeData."
+        + "DataEntry\032+\n\tDataEntry\022\013\n\003key\030\001 \001(\t\022\r\n\005v"
+        + "alue\030\002 \001(\t:\0028\001\"g\n\025CommonMapTypeDataList\022"
+        + "N\n\021commonMapTypeData\030\001 \003(\01323.io.holoinsi"
+        + "ght.server.query.grpc.CommonMapTypeData\""
+        + "V\n\023QueryDetailResponse\022?\n\007results\030\001 \003(\0132"
+        + "..io.holoinsight.server.query.grpc.Detai"
+        + "lResult\"w\n\014DetailResult\022\016\n\006tables\030\001 \003(\t\022"
+        + "\013\n\003sql\030\002 \001(\t\022\017\n\007headers\030\003 \003(\t\0229\n\004rows\030\004 "
+        + "\003(\0132+.io.holoinsight.server.query.grpc.D"
+        + "etailRow\"J\n\tDetailRow\022=\n\006values\030\001 \003(\0132-."
+        + "io.holoinsight.server.query.grpc.DetailV"
+        + "alue\"\277\001\n\013DetailValue\022\014\n\004type\030\001 \001(\t\022\025\n\010st"
+        + "rValue\030\002 \001(\tH\000\210\001\001\022\026\n\tboolValue\030\003 \001(\010H\001\210\001"
+        + "\001\022\030\n\013doubleValue\030\004 \001(\001H\002\210\001\001\022\033\n\016timestamp"
+        + "Value\030\005 \001(\003H\003\210\001\001B\013\n\t_strValueB\014\n\n_boolVa"
+        + "lueB\016\n\014_doubleValueB\021\n\017_timestampValue\"\313"
+        + "\001\n\021QueryEventRequest\022\016\n\006tenant\030\001 \001(\t\022\r\n\005"
+        + "start\030\002 \001(\003\022\013\n\003end\030\003 \001(\003\022W\n\ntermParams\030\004"
+        + " \003(\0132C.io.holoinsight.server.query.grpc."
+        + "QueryEventRequest.TermParamsEntry\0321\n\017Ter"
+        + "mParamsEntry\022\013\n\003key\030\001 \001(\t\022\r\n\005value\030\002 \001(\t"
+        + ":\0028\001\"L\n\022QueryEventResponse\0226\n\005event\030\001 \003("
+        + "\0132\'.io.holoinsight.server.query.grpc.Eve"
+        + "nt\"\300\001\n\005Event\022\016\n\006tenant\030\001 \001(\t\022\n\n\002id\030\002 \001(\t"
+        + "\022\014\n\004name\030\003 \001(\t\022\014\n\004type\030\004 \001(\t\022\021\n\ttimestam"
+        + "p\030\005 \001(\003\022?\n\004tags\030\006 \003(\01321.io.holoinsight.s"
+        + "erver.query.grpc.Event.TagsEntry\032+\n\tTags"
+        + "Entry\022\013\n\003key\030\001 \001(\t\022\r\n\005value\030\002 \001(\t:\0028\0012\210\026"
+        + "\n\014QueryService\022l\n\tQueryData\022..io.holoins"
+        + "ight.server.query.grpc.QueryRequest\032/.io" + ".holoinsight.server.query.grpc.QueryResp"
+        + "onse\022l\n\tQueryTags\022..io.holoinsight.serve"
+        + "r.query.grpc.QueryRequest\032/.io.holoinsig"
+        + "ht.server.query.grpc.QueryResponse\022t\n\013Qu"
+        + "erySchema\022..io.holoinsight.server.query."
+        + "grpc.QueryRequest\0325.io.holoinsight.serve"
+        + "r.query.grpc.QuerySchemaResponse\022}\n\014Quer"
+        + "yMetrics\0225.io.holoinsight.server.query.g"
+        + "rpc.QueryMetricsRequest\0326.io.holoinsight"
+        + ".server.query.grpc.QueryMetricsResponse\022"
+        + "m\n\nDeleteKeys\022..io.holoinsight.server.qu"
+        + "ery.grpc.QueryRequest\032/.io.holoinsight.s"
+        + "erver.query.grpc.QueryResponse\022w\n\017pqlIns"
+        + "tantQuery\0223.io.holoinsight.server.query."
+        + "grpc.PqlInstantRequest\032/.io.holoinsight."
+        + "server.query.grpc.QueryResponse\022s\n\rpqlRa"
+        + "ngeQuery\0221.io.holoinsight.server.query.g"
+        + "rpc.PqlRangeRequest\032/.io.holoinsight.ser"
+        + "ver.query.grpc.QueryResponse\022u\n\020QueryBas"
+        + "icTraces\0223.io.holoinsight.server.query.g"
+        + "rpc.QueryTraceRequest\032,.io.holoinsight.s"
+        + "erver.query.grpc.TraceBrief\022j\n\nQueryTrac"
+        + "e\0223.io.holoinsight.server.query.grpc.Que"
+        + "ryTraceRequest\032\'.io.holoinsight.server.q"
+        + "uery.grpc.Trace\022v\n\016QueryTraceTree\0223.io.h"
+        + "oloinsight.server.query.grpc.QueryTraceR" + "equest\032/.io.holoinsight.server.query.grp"
+        + "c.TraceTreeList\022t\n\014BillingTrace\0223.io.hol"
+        + "oinsight.server.query.grpc.QueryTraceReq" + "uest\032/.io.holoinsight.server.query.grpc."
+        + "StatisticData\022{\n\020QueryServiceList\0222.io.h"
+        + "oloinsight.server.query.grpc.QueryMetaRe" + "quest\0323.io.holoinsight.server.query.grpc"
+        + ".QueryMetaResponse\022|\n\021QueryEndpointList\022"
+        + "2.io.holoinsight.server.query.grpc.Query" + "MetaRequest\0323.io.holoinsight.server.quer"
+        + "y.grpc.QueryMetaResponse\022\203\001\n\030QueryServic"
+        + "eInstanceList\0222.io.holoinsight.server.qu"
+        + "ery.grpc.QueryMetaRequest\0323.io.holoinsig"
+        + "ht.server.query.grpc.QueryMetaResponse\022\211"
+        + "\001\n\022QueryComponentList\0222.io.holoinsight.s"
+        + "erver.query.grpc.QueryMetaRequest\032?.io.h" + "oloinsight.server.query.grpc.QueryVirtua"
+        + "lComponentResponse\022x\n\026QueryComponentTrac"
+        + "eIds\0222.io.holoinsight.server.query.grpc."
+        + "QueryMetaRequest\032*.io.holoinsight.server"
+        + ".query.grpc.TraceIds\022s\n\rQueryTopology\0226."
+        + "io.holoinsight.server.query.grpc.QueryTo" + "pologyRequest\032*.io.holoinsight.server.qu"
+        + "ery.grpc.Topology\022~\n\020QuerySlowSqlList\0222."
+        + "io.holoinsight.server.query.grpc.QueryMe" + "taRequest\0326.io.holoinsight.server.query."
+        + "grpc.QuerySlowSqlResponse\022y\n\016StatisticTr"
+        + "ace\0222.io.holoinsight.server.query.grpc.S"
+        + "tatisticRequest\0323.io.holoinsight.server."
+        + "query.grpc.StatisticDataList\022\204\001\n\025QuerySe"
+        + "rviceErrorList\0222.io.holoinsight.server.q"
+        + "uery.grpc.QueryMetaRequest\0327.io.holoinsi" + "ght.server.query.grpc.CommonMapTypeDataL"
+        + "ist\022\206\001\n\027QueryServiceErrorDetail\0222.io.hol"
+        + "oinsight.server.query.grpc.QueryMetaRequ" + "est\0327.io.holoinsight.server.query.grpc.C"
+        + "ommonMapTypeDataList\022x\n\017QueryDetailData\022"
+        + "..io.holoinsight.server.query.grpc.Query" + "Request\0325.io.holoinsight.server.query.gr"
+        + "pc.QueryDetailResponse\022x\n\013QueryEvents\0223."
+        + "io.holoinsight.server.query.grpc.QueryEv" + "entRequest\0324.io.holoinsight.server.query"
+        + ".grpc.QueryEventResponseB\"\n io.holoinsig" + "ht.server.query.grpcb\006proto3"};
     descriptor = com.google.protobuf.Descriptors.FileDescriptor.internalBuildGeneratedFileFrom(
         descriptorData, new com.google.protobuf.Descriptors.FileDescriptor[] {
             com.google.protobuf.AnyProto.getDescriptor(),});
@@ -58612,7 +59333,21 @@ public final class QueryProto {
     internal_static_io_holoinsight_server_query_grpc_StatisticRequest_fieldAccessorTable =
         new com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
             internal_static_io_holoinsight_server_query_grpc_StatisticRequest_descriptor,
-            new java.lang.String[] {"Tenant", "Start", "End", "Groups",});
+            new java.lang.String[] {"Tenant", "Start", "End", "Groups", "Whites", "Blacks",});
+    internal_static_io_holoinsight_server_query_grpc_StatisticRequest_WhitesEntry_descriptor =
+        internal_static_io_holoinsight_server_query_grpc_StatisticRequest_descriptor
+            .getNestedTypes().get(0);
+    internal_static_io_holoinsight_server_query_grpc_StatisticRequest_WhitesEntry_fieldAccessorTable =
+        new com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+            internal_static_io_holoinsight_server_query_grpc_StatisticRequest_WhitesEntry_descriptor,
+            new java.lang.String[] {"Key", "Value",});
+    internal_static_io_holoinsight_server_query_grpc_StatisticRequest_BlacksEntry_descriptor =
+        internal_static_io_holoinsight_server_query_grpc_StatisticRequest_descriptor
+            .getNestedTypes().get(1);
+    internal_static_io_holoinsight_server_query_grpc_StatisticRequest_BlacksEntry_fieldAccessorTable =
+        new com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+            internal_static_io_holoinsight_server_query_grpc_StatisticRequest_BlacksEntry_descriptor,
+            new java.lang.String[] {"Key", "Value",});
     internal_static_io_holoinsight_server_query_grpc_QueryTraceRequest_descriptor =
         getDescriptor().getMessageTypes().get(15);
     internal_static_io_holoinsight_server_query_grpc_QueryTraceRequest_fieldAccessorTable =

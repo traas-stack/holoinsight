@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.google.common.reflect.TypeToken;
 import io.holoinsight.server.common.J;
 import io.holoinsight.server.common.dao.entity.MetricInfo;
+import io.holoinsight.server.common.dao.entity.dto.MetricInfoDTO;
 import io.holoinsight.server.common.service.RequestContextAdapter;
 import io.holoinsight.server.common.RequestContext;
 import io.holoinsight.server.common.dao.mapper.AlarmRuleMapper;
@@ -455,11 +456,11 @@ public class AlarmRuleLevelAuthorizationChecker extends AbstractQueryChecker
   }
 
   private LevelAuthorizationCheckResult checkGroupBy(String metric, List<String> groupBys) {
-    MetricInfo metricInfo = apiSecurityService.getMetricInfo(metric);
+    MetricInfoDTO metricInfo = apiSecurityService.getMetricInfo(metric);
     if (metricInfo == null) {
       return failCheckResult("metricInfo is null for metric %s", metric);
     }
-    List<String> tags = J.toList(metricInfo.getTags());
+    List<String> tags = metricInfo.getTags();
     for (String groupBy : groupBys) {
       if (!tags.contains(groupBy)) {
         return failCheckResult("groupby %s cannot be found in %s", groupBy, metricInfo.getTags());

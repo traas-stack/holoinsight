@@ -8,6 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
+import java.util.Map;
 
 @Data
 @AllArgsConstructor
@@ -17,4 +18,6 @@ public class StatisticRequest {
   private long start;
   private long end;
   private List<String> groups;
+  private Map<String, String> whites;
+  private Map<String, String> blacks;
 }

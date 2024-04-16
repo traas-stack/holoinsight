@@ -6,11 +6,9 @@ package io.holoinsight.server.common.service;
 import com.google.gson.reflect.TypeToken;
 import io.holoinsight.server.common.J;
 import io.holoinsight.server.common.dao.entity.MetaDataDictValue;
-import io.holoinsight.server.common.dao.entity.MetricInfo;
 import io.holoinsight.server.query.grpc.QueryProto.QueryRequest;
 import org.apache.commons.lang3.StringUtils;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -23,8 +21,6 @@ public class SuperCache {
 
   public Map<String /* type */, Map<String /* k */, MetaDataDictValue>> metaDataDictValueMap;
   public Map<String, QueryRequest> expressionMetricList;
-
-  public Map<String /* metric table */, MetricInfo> metricInfoMap;
 
   public List<String> resourceKeys;
   public List<String> freePrefixes;
