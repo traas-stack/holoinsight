@@ -3,6 +3,25 @@
  */
 package io.holoinsight.server.agg.v1.executor.executor;
 
+import com.xzchaoo.commons.stat.StringsKey;
+import io.holoinsight.server.agg.v1.core.Utils;
+import io.holoinsight.server.agg.v1.core.conf.AggTaskValueTypes;
+import io.holoinsight.server.agg.v1.core.data.AggTaskKey;
+import io.holoinsight.server.agg.v1.core.executor.CompletenessService;
+import io.holoinsight.server.agg.v1.core.executor.state.OffsetInfo;
+import io.holoinsight.server.agg.v1.core.executor.state.PartitionStateStore;
+import io.holoinsight.server.agg.v1.executor.output.AsyncOutput;
+import io.holoinsight.server.agg.v1.executor.service.IAggTaskService;
+import io.holoinsight.server.agg.v1.executor.state.AggTaskState;
+import io.holoinsight.server.agg.v1.executor.state.PartitionState;
+import io.holoinsight.server.agg.v1.executor.state.StateUtils;
+import io.holoinsight.server.agg.v1.executor.utils.LastRun;
+import io.holoinsight.server.agg.v1.pb.AggProtos;
+import io.holoinsight.server.common.stat.StatUtils;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.kafka.clients.consumer.ConsumerRecord;
+import org.apache.kafka.common.TopicPartition;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -13,24 +32,6 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.RecursiveTask;
 import java.util.concurrent.TimeUnit;
-
-import org.apache.kafka.clients.consumer.ConsumerRecord;
-import org.apache.kafka.common.TopicPartition;
-
-import io.holoinsight.server.agg.v1.core.Utils;
-import io.holoinsight.server.agg.v1.core.conf.AggTaskValueTypes;
-import io.holoinsight.server.agg.v1.core.data.AggTaskKey;
-import io.holoinsight.server.agg.v1.core.executor.CompletenessService;
-import io.holoinsight.server.agg.v1.executor.output.AsyncOutput;
-import io.holoinsight.server.agg.v1.executor.service.IAggTaskService;
-import io.holoinsight.server.agg.v1.executor.state.AggTaskState;
-import io.holoinsight.server.agg.v1.core.executor.state.OffsetInfo;
-import io.holoinsight.server.agg.v1.executor.state.PartitionState;
-import io.holoinsight.server.agg.v1.core.executor.state.PartitionStateStore;
-import io.holoinsight.server.agg.v1.executor.state.StateUtils;
-import io.holoinsight.server.agg.v1.executor.utils.LastRun;
-import io.holoinsight.server.agg.v1.pb.AggProtos;
-import lombok.extern.slf4j.Slf4j;
 
 /**
  * 负责一个 partition 数据的消费, 对该实例的所有调用一定是串行的, 因此它不用考虑并发问题
@@ -103,6 +104,8 @@ public class PartitionProcessor {
         new HashMap<>();
 
     for (ConsumerRecord<AggTaskKey, AggProtos.AggTaskValue> cr : records) {
+      StatUtils.KAFKA_CONSUME.set(StringsKey.of(cr.topic(), String.valueOf(cr.partition())),
+          new long[] {cr.offset()});
       state.setOffset(cr.offset());
       AggProtos.AggTaskValue aggTaskValue = cr.value();
 

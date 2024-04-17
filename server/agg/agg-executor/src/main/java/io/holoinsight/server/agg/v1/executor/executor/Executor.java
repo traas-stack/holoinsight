@@ -57,8 +57,8 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 public class Executor {
-  private static final int ERROR_SLEEP = 1000;
-  private static final Duration POLL_TIMEOUT = Duration.ofSeconds(3);
+  public static final int ERROR_SLEEP = 1000;
+  public static final Duration POLL_TIMEOUT = Duration.ofSeconds(3);
   private static final Duration MAX_WINDOW = Duration.ofMinutes(1);
   private static final long UPDATE_LATEST_OFFSET_INTERVAL = 10_000L;
 

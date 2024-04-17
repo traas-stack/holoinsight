@@ -3,6 +3,27 @@
  */
 package io.holoinsight.server.agg.v1.executor.output;
 
+import com.xzchaoo.commons.stat.StringsKey;
+import io.holoinsight.server.agg.v1.core.AggProperties;
+import io.holoinsight.server.agg.v1.core.Utils;
+import io.holoinsight.server.agg.v1.core.executor.output.BatchSerdes;
+import io.holoinsight.server.agg.v1.core.executor.output.XOutput;
+import io.holoinsight.server.common.stat.StatUtils;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.kafka.clients.consumer.ConsumerConfig;
+import org.apache.kafka.clients.consumer.ConsumerRecord;
+import org.apache.kafka.clients.consumer.ConsumerRecords;
+import org.apache.kafka.clients.consumer.CooperativeStickyAssignor;
+import org.apache.kafka.clients.consumer.KafkaConsumer;
+import org.apache.kafka.clients.producer.KafkaProducer;
+import org.apache.kafka.clients.producer.ProducerConfig;
+import org.apache.kafka.clients.producer.ProducerRecord;
+import org.apache.kafka.common.errors.WakeupException;
+import org.apache.kafka.common.serialization.Serdes;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -13,29 +34,6 @@ import java.util.Properties;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
-
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
-
-import io.holoinsight.server.agg.v1.core.executor.output.BatchSerdes;
-import io.holoinsight.server.agg.v1.core.executor.output.XOutput;
-import org.apache.kafka.clients.consumer.ConsumerConfig;
-import org.apache.kafka.clients.consumer.ConsumerRecord;
-import org.apache.kafka.clients.consumer.ConsumerRecords;
-import org.apache.kafka.clients.consumer.CooperativeStickyAssignor;
-import org.apache.kafka.clients.consumer.KafkaConsumer;
-import org.apache.kafka.clients.producer.Callback;
-import org.apache.kafka.clients.producer.KafkaProducer;
-import org.apache.kafka.clients.producer.ProducerConfig;
-import org.apache.kafka.clients.producer.ProducerRecord;
-import org.apache.kafka.clients.producer.RecordMetadata;
-import org.apache.kafka.common.errors.WakeupException;
-import org.apache.kafka.common.serialization.Serdes;
-import org.springframework.beans.factory.annotation.Autowired;
-
-import io.holoinsight.server.agg.v1.core.AggProperties;
-import io.holoinsight.server.agg.v1.core.Utils;
-import lombok.extern.slf4j.Slf4j;
 
 /**
  * <p>
@@ -148,6 +146,8 @@ public class AsyncOutput {
     long time1 = System.currentTimeMillis();
 
     for (ConsumerRecord<Integer, XOutput.Batch> cr : crs) {
+      StatUtils.KAFKA_CONSUME.set(StringsKey.of(cr.topic(), String.valueOf(cr.partition())),
+          new long[] {cr.offset()});
       write0(cr.value());
     }
 
@@ -197,13 +197,16 @@ public class AsyncOutput {
 
     int random = ThreadLocalRandom.current().nextInt();
     ProducerRecord<Integer, XOutput.Batch> r = new ProducerRecord<>(outputTopic, random, batch);
-    producer.send(r, new Callback() {
-      @Override
-      public void onCompletion(RecordMetadata metadata, Exception e) {
-        if (e != null) {
-          log.error("[output] agg=[{}] ts=[{}] write batch error", batch.key,
-              Utils.formatTime(batch.window.timestamp), e);
-        }
+    producer.send(r, (metadata, e) -> {
+      if (e != null) {
+        log.error("[output] agg=[{}] ts=[{}] write batch error", batch.key,
+            Utils.formatTime(batch.window.timestamp), e);
+        StatUtils.KAFKA_SEND.add(StringsKey.of(r.topic(), "ERROR"),
+            new long[] {1, batch.getGroups().size()});
+      } else if (metadata != null) {
+        StatUtils.KAFKA_SEND.set(
+            StringsKey.of(r.topic(), "SUCCESS", String.valueOf(metadata.partition())),
+            new long[] {metadata.hasOffset() ? metadata.offset() : 0});
       }
     });
   }
