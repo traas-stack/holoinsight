@@ -11,6 +11,8 @@ import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
 import io.holoinsight.server.common.J;
+import io.holoinsight.server.common.dao.entity.MetaDimData;
+import io.holoinsight.server.common.service.MetaDimDataService;
 import io.holoinsight.server.common.service.SuperCacheService;
 import io.holoinsight.server.meta.common.model.QueryExample;
 import io.holoinsight.server.meta.core.common.DimForkJoinPool;
@@ -18,8 +20,6 @@ import io.holoinsight.server.meta.core.common.FilterUtil;
 import io.holoinsight.server.meta.core.service.SqlDataCoreService;
 import io.holoinsight.server.meta.core.service.bitmap.condition.MetaCondition;
 import io.holoinsight.server.meta.core.service.bitmap.execption.NotForeignKeyException;
-import io.holoinsight.server.meta.dal.service.mapper.MetaDataMapper;
-import io.holoinsight.server.meta.dal.service.model.MetaDataDO;
 import org.apache.commons.lang3.concurrent.BasicThreadFactory;
 import org.apache.commons.lang3.time.StopWatch;
 import org.slf4j.Logger;
@@ -28,7 +28,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -64,8 +68,9 @@ public class BitmapDataCoreService extends SqlDataCoreService {
   @Autowired
   private MetaCptCenter metaCptCenter;
 
-  public BitmapDataCoreService(MetaDataMapper metaDataMapper, SuperCacheService superCacheService) {
-    super(metaDataMapper, superCacheService);
+  public BitmapDataCoreService(MetaDimDataService metaDimDataService,
+      SuperCacheService superCacheService) {
+    super(metaDimDataService, superCacheService);
     logger.info("meta service initialized, engine=bitmap");
   }
 
@@ -77,7 +82,7 @@ public class BitmapDataCoreService extends SqlDataCoreService {
             table, new Date(start), new Date(end), true)));
   }
 
-  private List<MetaDataDO> loadFromDB(String tableName, long version) {
+  private List<MetaDimData> loadFromDB(String tableName, long version) {
     return queryTableChangedMeta(tableName, new Date(0), new Date(version), false);
   }
 
@@ -94,7 +99,7 @@ public class BitmapDataCoreService extends SqlDataCoreService {
     return foreignKeys.getOrDefault(tableName, new HashMap<>()).get(field);
   }
 
-  private List<MetaDataRow> fromMetaDatas(List<MetaDataDO> metaDatas) {
+  private List<MetaDataRow> fromMetaDatas(List<MetaDimData> metaDatas) {
     return DimForkJoinPool.get().submit(() -> metaDatas.parallelStream().map(metaData -> {
       Map<String, Object> values = J.toMap(metaData.getJson());
       values.put(UK_FIELD, metaData.getUk());

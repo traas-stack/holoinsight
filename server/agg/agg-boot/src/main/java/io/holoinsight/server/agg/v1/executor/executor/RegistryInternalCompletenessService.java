@@ -10,8 +10,8 @@ import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import io.holoinsight.server.agg.v1.executor.CompletenessService;
-import io.holoinsight.server.agg.v1.executor.ExpectedCompleteness;
+import io.holoinsight.server.agg.v1.core.executor.CompletenessService;
+import io.holoinsight.server.agg.v1.core.executor.ExpectedCompleteness;
 import io.holoinsight.server.meta.common.model.QueryExample;
 import io.holoinsight.server.registry.core.collecttarget.CollectTargetKey;
 import io.holoinsight.server.registry.core.collecttarget.CollectTargetStorage;

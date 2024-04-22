@@ -5,8 +5,8 @@ package io.holoinsight.server.agg.v1.executor.executor;
 
 import java.util.ArrayList;
 
-import io.holoinsight.server.agg.v1.executor.CompletenessService;
-import io.holoinsight.server.agg.v1.executor.ExpectedCompleteness;
+import io.holoinsight.server.agg.v1.core.executor.CompletenessService;
+import io.holoinsight.server.agg.v1.core.executor.ExpectedCompleteness;
 
 /**
  * <p>

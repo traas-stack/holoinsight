@@ -3,7 +3,7 @@
  */
 package io.holoinsight.server.agg.v1.executor.executor;
 
-import io.holoinsight.server.agg.v1.executor.state.OffsetInfo;
+import io.holoinsight.server.agg.v1.core.executor.state.OffsetInfo;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 

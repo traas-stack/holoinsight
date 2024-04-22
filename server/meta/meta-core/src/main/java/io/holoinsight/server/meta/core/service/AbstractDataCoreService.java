@@ -3,15 +3,15 @@
  */
 package io.holoinsight.server.meta.core.service;
 
-import io.holoinsight.server.meta.dal.service.MetaTableService;
 import io.holoinsight.server.common.MD5Hash;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -27,8 +27,15 @@ public abstract class AbstractDataCoreService implements DBCoreService {
 
   public static final Logger logger = LoggerFactory.getLogger(AbstractDataCoreService.class);
 
-  @Autowired
-  private MetaTableService metaTableService;
+  private static final Map<String, List<String>> ukMaps = new HashMap<>();
+
+  static {
+    ukMaps.put("container", Arrays.asList("name", "namespace"));
+    ukMaps.put("pod", Arrays.asList("name", "namespace"));
+    ukMaps.put("node", Collections.singletonList("name"));
+    ukMaps.put("vm", Collections.singletonList("ip"));
+    ukMaps.put("node_tenant", Collections.singletonList("_uk"));
+  }
 
   @Override
   public void startBuildIndex() {
@@ -38,7 +45,7 @@ public abstract class AbstractDataCoreService implements DBCoreService {
   public List<Map<String, Object>> addUkValues(String tableName, List<Map<String, Object>> rows) {
 
     List<Map<String, Object>> filterRows = new ArrayList<>();
-    Map<String, List<String>> ukMaps = metaTableService.getUksForCache(tableName);
+    Map<String, List<String>> ukMaps = getUks(tableName);
 
     for (Map<String, Object> row : rows) {
 
@@ -76,7 +83,7 @@ public abstract class AbstractDataCoreService implements DBCoreService {
 
   public List<String> getUks(String tableName, List<Map<String, Object>> rows) {
 
-    Map<String, List<String>> ukMaps = metaTableService.getUksForCache(tableName);
+    Map<String, List<String>> ukMaps = getUks(tableName);
 
     List<String> uniqueKeys = new ArrayList<>();
     for (Map<String, Object> row : rows) {
@@ -109,5 +116,16 @@ public abstract class AbstractDataCoreService implements DBCoreService {
     }
 
     return uniqueKeys;
+  }
+
+  public Map<String, List<String>> getUks(String tableName) {
+
+    if (tableName.endsWith("_app")) {
+      Map<String, List<String>> appParam = new HashMap<>();
+      appParam.put("app", Arrays.asList("app", "_workspace"));
+      return appParam;
+    }
+
+    return ukMaps;
   }
 }

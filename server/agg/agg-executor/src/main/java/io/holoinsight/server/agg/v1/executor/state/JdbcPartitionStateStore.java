@@ -9,6 +9,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import io.holoinsight.server.agg.v1.core.executor.state.OffsetInfo;
+import io.holoinsight.server.agg.v1.core.executor.state.PartitionStateStore;
 import org.apache.kafka.common.TopicPartition;
 import org.springframework.beans.factory.annotation.Autowired;
 

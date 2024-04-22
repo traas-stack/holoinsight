@@ -13,6 +13,8 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 
+import io.holoinsight.server.agg.v1.core.executor.state.OffsetInfo;
+import io.holoinsight.server.agg.v1.core.executor.state.PartitionStateStore;
 import org.apache.kafka.common.TopicPartition;
 
 import com.alibaba.fastjson.JSON;

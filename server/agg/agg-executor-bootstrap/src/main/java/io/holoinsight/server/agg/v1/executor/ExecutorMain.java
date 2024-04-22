@@ -3,6 +3,7 @@
  */
 package io.holoinsight.server.agg.v1.executor;
 
+import io.holoinsight.server.agg.v1.core.executor.CompletenessService;
 import io.holoinsight.server.agg.v1.executor.executor.RegistryHttpCompletenessService;
 
 import org.springframework.boot.WebApplicationType;

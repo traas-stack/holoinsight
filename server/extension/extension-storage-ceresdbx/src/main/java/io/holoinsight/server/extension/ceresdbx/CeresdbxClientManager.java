@@ -3,13 +3,6 @@
  */
 package io.holoinsight.server.extension.ceresdbx;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.concurrent.ConcurrentHashMap;
-
-import javax.annotation.PostConstruct;
-
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import io.ceresdb.CeresDBClient;
@@ -20,13 +13,17 @@ import io.ceresdb.rpc.RpcOptions.LimitKind;
 import io.holoinsight.server.common.J;
 import io.holoinsight.server.common.dao.entity.TenantOps;
 import io.holoinsight.server.common.dao.mapper.TenantOpsMapper;
-import lombok.AllArgsConstructor;
-import lombok.Data;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.util.Assert;
+
+import javax.annotation.PostConstruct;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * <p>
@@ -104,12 +101,4 @@ public class CeresdbxClientManager {
   private String configKey(String host, int port, String user, String accessKey) {
     return host + port + user + accessKey;
   }
-}
-
-
-@AllArgsConstructor
-@Data
-class CeresDBxClientInstance {
-  private final String configKey;
-  private final CeresDBClient ceresDBClient;
 }

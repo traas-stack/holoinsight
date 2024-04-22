@@ -1,13 +1,12 @@
 /*
  * Copyright 2022 Holoinsight Project Authors. Licensed under Apache-2.0.
  */
-package io.holoinsight.server.agg.v1.executor.output;
+package io.holoinsight.server.agg.v1.core.executor.output;
 
 import java.util.Map;
 
+import io.holoinsight.server.agg.v1.core.executor.FixedSizeTags;
 import org.apache.commons.text.lookup.StringLookup;
-
-import io.holoinsight.server.agg.v1.executor.executor.FixedSizeTags;
 
 /**
  * <p>

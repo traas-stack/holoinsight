@@ -7,22 +7,27 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import io.holoinsight.server.common.J;
 import io.holoinsight.server.common.Pair;
-import io.holoinsight.server.common.dao.entity.MetaDataDictValue;
+import io.holoinsight.server.common.dao.entity.MetaDimData;
+import io.holoinsight.server.common.service.MetaDimDataService;
 import io.holoinsight.server.common.service.SuperCacheService;
 import io.holoinsight.server.meta.common.model.QueryExample;
 import io.holoinsight.server.meta.common.util.ConstModel;
 import io.holoinsight.server.meta.core.common.FilterUtil;
-import io.holoinsight.server.meta.dal.service.mapper.MetaDataMapper;
-import io.holoinsight.server.meta.dal.service.model.MetaDataDO;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.StopWatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.CollectionUtils;
 
-import java.util.*;
-import java.util.concurrent.ScheduledThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 import java.util.function.Consumer;
 
 /**
@@ -36,66 +41,71 @@ public abstract class SqlDataCoreService extends AbstractDataCoreService {
 
   public static final int BATCH_INSERT_SIZE = 5;
   public static final int LIMIT = 1000;
-  public static final int PERIOD = 10;
-  public static final int CLEAN_TASK_PERIOD = 3600;
-  protected MetaDataMapper metaDataMapper;
+  // public static final int CLEAN_TASK_PERIOD = 3600;
+  protected MetaDimDataService metaDimDataService;
   protected SuperCacheService superCacheService;
 
-  private static final long DEFAULT_DEL_DURATION = 3 * 24 * 60 * 60 * 1000;
-  public static final ScheduledThreadPoolExecutor cleanMeatExecutor =
-      new ScheduledThreadPoolExecutor(2, r -> new Thread(r, "meta-clean-scheduler"));
+  // private static final long DEFAULT_DEL_DURATION = 3 * 24 * 60 * 60 * 1000;
+  // public static final ScheduledThreadPoolExecutor cleanMeatExecutor =
+  // new ScheduledThreadPoolExecutor(2, r -> new Thread(r, "meta-clean-scheduler"));
 
-  private void cleanMeta() {
-    StopWatch stopWatch = StopWatch.createStarted();
-    try {
-      long cleanMetaDataDuration = getCleanMetaDataDuration();
-      long end = System.currentTimeMillis() - cleanMetaDataDuration;
-      logger.info("[META-CLEAN] the cleaning task will clean up the data before {}", end);
-      Integer count = metaDataMapper.cleanMetaData(new Date(end));
-      logger.info("[META-CLEAN] cleaned up {} pieces of data before {}, cost: {}", count, end,
-          stopWatch.getTime());
-    } catch (Exception e) {
-      logger.error("[META-CLEAN] an exception occurred in the cleanup task", e);
-    }
-  }
+  // private void cleanMeta() {
+  // StopWatch stopWatch = StopWatch.createStarted();
+  // try {
+  // long cleanMetaDataDuration = getCleanMetaDataDuration();
+  // long end = System.currentTimeMillis() - cleanMetaDataDuration;
+  // logger.info("[META-CLEAN] the cleaning task will clean up the data before {}", end);
+  // Integer count = metaDimDataService.cleanMetaData(new Date(end));
+  // logger.info("[META-CLEAN] cleaned up {} pieces of data before {}, cost: {}", count, end,
+  // stopWatch.getTime());
+  // } catch (Exception e) {
+  // logger.error("[META-CLEAN] an exception occurred in the cleanup task", e);
+  // }
+  // }
 
-  public SqlDataCoreService(MetaDataMapper metaDataMapper, SuperCacheService superCacheService) {
-    this.metaDataMapper = metaDataMapper;
+  public SqlDataCoreService(MetaDimDataService metaDimDataService,
+      SuperCacheService superCacheService) {
+    this.metaDimDataService = metaDimDataService;
     this.superCacheService = superCacheService;
-    int initialDelay = new Random().nextInt(CLEAN_TASK_PERIOD);
-    logger.info("[META-CLEAN] clean task will scheduled after {}", initialDelay);
-    cleanMeatExecutor.scheduleAtFixedRate(this::cleanMeta, initialDelay, CLEAN_TASK_PERIOD,
-        TimeUnit.SECONDS);
+
+
+    //
+    // int initialDelay = new Random().nextInt(CLEAN_TASK_PERIOD);
+    // logger.info("[META-CLEAN] clean task will scheduled after {}", initialDelay);
+    // cleanMeatExecutor.scheduleAtFixedRate(this::cleanMeta, initialDelay, CLEAN_TASK_PERIOD,
+    // TimeUnit.SECONDS);
   }
 
-  protected Integer queryChangedMeta(Date start, Date end, Boolean containDeleted,
-      Consumer<List<MetaDataDO>> listConsumer) {
-    int offset = 0;
+  public Integer queryChangedMeta(Date start, Date end, Boolean containDeleted,
+      Consumer<List<MetaDimData>> listConsumer) {
+    int pageNum = 1;
     int count = 0;
     while (true) {
-      List<MetaDataDO> metaDataList =
-          metaDataMapper.queryChangedMeta(start, end, containDeleted, offset, LIMIT);
-      offset += LIMIT;
+      List<MetaDimData> metaDataList =
+          metaDimDataService.queryChangedMeta(start, end, containDeleted, pageNum, LIMIT);
+      // offset += LIMIT;
       if (metaDataList.isEmpty()) {
         break;
       }
       count += metaDataList.size();
+      pageNum++;
       listConsumer.accept(metaDataList);
     }
     return count;
   }
 
-  protected List<MetaDataDO> queryTableChangedMeta(String tableName, Date start, Date end,
+  public List<MetaDimData> queryTableChangedMeta(String tableName, Date start, Date end,
       Boolean containDeleted) {
-    int offset = 0;
-    List<MetaDataDO> result = new ArrayList<>();
+    int pageNum = 1;
+    List<MetaDimData> result = new ArrayList<>();
     while (true) {
-      List<MetaDataDO> metaDataList = metaDataMapper.queryTableChangedMeta(tableName, start, end,
-          containDeleted, offset, LIMIT);
-      offset += LIMIT;
+      List<MetaDimData> metaDataList = metaDimDataService.queryTableChangedMeta(tableName, start,
+          end, containDeleted, pageNum, LIMIT);
+      // offset += LIMIT;
       if (metaDataList.isEmpty()) {
         break;
       }
+      pageNum++;
       result.addAll(metaDataList);
     }
     return result;
@@ -115,8 +125,8 @@ public abstract class SqlDataCoreService extends AbstractDataCoreService {
         String uk = item.get(ConstModel.default_pk).toString();
         ukToUpdateOrInsertRow.put(uk, item);
       });
-      List<MetaDataDO> metaDataList =
-          metaDataMapper.selectByUks(tableName, ukToUpdateOrInsertRow.keySet());
+      List<MetaDimData> metaDataList =
+          metaDimDataService.selectByUks(tableName, ukToUpdateOrInsertRow.keySet());
       Pair<Integer, Integer> sameAndExistSize;
       if (!CollectionUtils.isEmpty(metaDataList)) {
         sameAndExistSize = doUpdate(tableName, metaDataList, ukToUpdateOrInsertRow);
@@ -137,16 +147,16 @@ public abstract class SqlDataCoreService extends AbstractDataCoreService {
     }
   }
 
-  private Integer doInsert(String tableName,
+  public Integer doInsert(String tableName,
       Map<String, Map<String, Object>> ukToUpdateOrInsertRow) {
     if (ukToUpdateOrInsertRow.isEmpty()) {
       return 0;
     }
     List<String> addedUks = Lists.newArrayList();
-    List<MetaDataDO> metaDataList = Lists.newArrayList();
+    List<MetaDimData> metaDataList = Lists.newArrayList();
     ukToUpdateOrInsertRow.forEach((uk, row) -> {
       addedUks.add(uk);
-      MetaDataDO metaData = new MetaDataDO();
+      MetaDimData metaData = new MetaDimData();
       metaData.setUk(uk);
       metaData.setTableName(tableName);
       metaData.setDeleted(0);
@@ -161,25 +171,25 @@ public abstract class SqlDataCoreService extends AbstractDataCoreService {
     });
     if (!CollectionUtils.isEmpty(metaDataList)) {
       Lists.partition(metaDataList, BATCH_INSERT_SIZE)
-          .forEach(list -> metaDataMapper.batchInsertOrUpdate(list));
+          .forEach(list -> metaDimDataService.batchInsertOrUpdate(tableName, list));
     }
     logger.info("[insertOrUpdate] insert finish, uks:{}", addedUks);
     return addedUks.size();
   }
 
-  private Pair<Integer, Integer> doUpdate(String tableName, List<MetaDataDO> metaDataList,
+  public Pair<Integer, Integer> doUpdate(String tableName, List<MetaDimData> metaDataList,
       Map<String, Map<String, Object>> ukToUpdateOrInsertRow) {
     int existUkSize = 0;
     int sameUkSize = 0;
-    for (MetaDataDO metaData : metaDataList) {
+    for (MetaDimData metaData : metaDataList) {
       String uk = metaData.getUk();
       existUkSize++;
       Map<String, Object> updateOrInsertRow = ukToUpdateOrInsertRow.remove(uk);
-      List<Map<String, Object>> cachedRows = queryByPks(tableName, Collections.singletonList(uk));
+      Map<String, Object> cachedRows = getMetaByCacheUk(tableName, uk);
       Pair<Boolean, Object> sameWithDbAnnotations =
           sameWithDbAnnotations(metaData, updateOrInsertRow);
-      if (!CollectionUtils.isEmpty(cachedRows)
-          && sameWithCache(updateOrInsertRow, cachedRows.get(0)) && sameWithDbAnnotations.left()) {
+      if (!CollectionUtils.isEmpty(cachedRows) && sameWithCache(updateOrInsertRow, cachedRows)
+          && sameWithDbAnnotations.left()) {
         sameUkSize++;
         continue;
       }
@@ -191,14 +201,22 @@ public abstract class SqlDataCoreService extends AbstractDataCoreService {
         }
       }
       Map<String, Object> sourceRow = J.toMap(metaData.getJson());
+      assert sourceRow != null;
       sourceRow.putAll(updateOrInsertRow);
       metaData.setJson(J.toJson(sourceRow));
       metaData.setGmtModified(new Date());
-      metaDataMapper.updateByUk(tableName, metaData);
+      metaDimDataService.updateByUk(tableName, metaData);
     }
     logger.info("[insertOrUpdate] update finish, update existUkSize:{}, sameUkSize:{}", existUkSize,
         sameUkSize);
     return new Pair<>(sameUkSize, existUkSize);
+  }
+
+  public Map<String, Object> getMetaByCacheUk(String tableName, String uk) {
+    List<Map<String, Object>> maps = queryByPks(tableName, Collections.singletonList(uk));
+    if (CollectionUtils.isEmpty(maps))
+      return null;
+    return maps.get(0);
   }
 
   /**
@@ -207,7 +225,7 @@ public abstract class SqlDataCoreService extends AbstractDataCoreService {
    * @param updateOrInsertRow
    * @return
    */
-  private Pair<Boolean, Object> sameWithDbAnnotations(MetaDataDO metaData,
+  public Pair<Boolean, Object> sameWithDbAnnotations(MetaDimData metaData,
       Map<String, Object> updateOrInsertRow) {
     Object annotations = updateOrInsertRow.remove(ConstModel.ANNOTATIONS);
     Map<String, Object> extraMap = null;
@@ -221,7 +239,7 @@ public abstract class SqlDataCoreService extends AbstractDataCoreService {
     return new Pair<>(false, annotations);
   }
 
-  private boolean sameWithCache(Map<String, Object> updateOrInsertRow,
+  public boolean sameWithCache(Map<String, Object> updateOrInsertRow,
       Map<String, Object> cachedRow) {
     if (CollectionUtils.isEmpty(cachedRow)) {
       return false;
@@ -299,25 +317,25 @@ public abstract class SqlDataCoreService extends AbstractDataCoreService {
       return 0;
     }
     StopWatch stopWatch = StopWatch.createStarted();
-    Integer count = metaDataMapper.softDeleteByUks(tableName, default_pks, new Date());
+    Integer count = metaDimDataService.softDeleteByUks(tableName, default_pks, new Date());
     logger.info("[batchDeleteByPk] finish, table={}, deleteCount={}, cost={}", tableName, count,
         stopWatch.getTime());
     return count;
   }
 
-  private long getCleanMetaDataDuration() {
-    Map<String, Map<String, MetaDataDictValue>> metaDataDictValueMap =
-        superCacheService.getSc().metaDataDictValueMap;
-    Map<String, MetaDataDictValue> indexKeyMaps = metaDataDictValueMap.get(ConstModel.META_CONFIG);
-    if (CollectionUtils.isEmpty(indexKeyMaps)) {
-      return DEFAULT_DEL_DURATION;
-    }
-    MetaDataDictValue metaDataDictValue = indexKeyMaps.get(ConstModel.CLEAN_META_DURATION_HOURS);
-    if (Objects.isNull(metaDataDictValue)) {
-      return DEFAULT_DEL_DURATION;
-    }
-    int durationHours = Integer.parseInt(metaDataDictValue.getDictValue());
-    return durationHours * 60L * 60 * 1000;
-  }
+  // private long getCleanMetaDataDuration() {
+  // Map<String, Map<String, MetaDataDictValue>> metaDataDictValueMap =
+  // superCacheService.getSc().metaDataDictValueMap;
+  // Map<String, MetaDataDictValue> indexKeyMaps = metaDataDictValueMap.get(ConstModel.META_CONFIG);
+  // if (CollectionUtils.isEmpty(indexKeyMaps)) {
+  // return DEFAULT_DEL_DURATION;
+  // }
+  // MetaDataDictValue metaDataDictValue = indexKeyMaps.get(ConstModel.CLEAN_META_DURATION_HOURS);
+  // if (Objects.isNull(metaDataDictValue)) {
+  // return DEFAULT_DEL_DURATION;
+  // }
+  // int durationHours = Integer.parseInt(metaDataDictValue.getDictValue());
+  // return durationHours * 60L * 60 * 1000;
+  // }
 
 }

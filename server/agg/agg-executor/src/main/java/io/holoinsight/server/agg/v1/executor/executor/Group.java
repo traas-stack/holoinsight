@@ -13,6 +13,7 @@ import io.holoinsight.server.agg.v1.core.conf.OutputField;
 import io.holoinsight.server.agg.v1.core.conf.OutputItem;
 import io.holoinsight.server.agg.v1.core.conf.SelectItem;
 import io.holoinsight.server.agg.v1.core.data.DataAccessor;
+import io.holoinsight.server.agg.v1.core.executor.FixedSizeTags;
 import io.holoinsight.server.agg.v1.pb.AggProtos;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;

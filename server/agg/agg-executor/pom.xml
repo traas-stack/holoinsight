@@ -13,11 +13,11 @@
 	<artifactId>agg-executor</artifactId>
 
 	<dependencies>
-		<dependency>
-			<groupId>io.holoinsight.server</groupId>
-			<artifactId>agg-executor-api</artifactId>
-			<version>${project.version}</version>
-		</dependency>
+<!--		<dependency>-->
+<!--			<groupId>io.holoinsight.server</groupId>-->
+<!--			<artifactId>agg-executor-api</artifactId>-->
+<!--			<version>${project.version}</version>-->
+<!--		</dependency>-->
 		<dependency>
 			<groupId>io.holoinsight.server</groupId>
 			<artifactId>agg-core</artifactId>

@@ -12,7 +12,7 @@ import io.holoinsight.server.agg.v1.core.conf.AggFunc;
 import io.holoinsight.server.agg.v1.core.conf.SelectItem;
 import io.holoinsight.server.agg.v1.core.data.DataAccessor;
 import io.holoinsight.server.agg.v1.core.data.LogSamples;
-import io.holoinsight.server.agg.v1.executor.output.PercentileFinalValues;
+import io.holoinsight.server.agg.v1.core.executor.output.PercentileFinalValues;
 import io.holoinsight.server.agg.v1.executor.state.LogSamplesState;
 import io.holoinsight.server.common.JsonUtils;
 import lombok.Data;

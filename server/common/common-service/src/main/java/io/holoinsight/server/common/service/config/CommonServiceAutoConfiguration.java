@@ -22,6 +22,7 @@ import io.holoinsight.server.common.service.ClusterService;
 import io.holoinsight.server.common.service.ClusterTaskService;
 import io.holoinsight.server.common.service.MetaDataDictValueService;
 import io.holoinsight.server.common.service.MetaDictValueService;
+import io.holoinsight.server.common.service.MetaDimDataService;
 import io.holoinsight.server.common.service.MetricInfoService;
 import io.holoinsight.server.common.service.MonitorInstanceService;
 import io.holoinsight.server.common.service.SuperCacheService;
@@ -46,6 +47,7 @@ import io.holoinsight.server.common.service.impl.ApiKeyServiceImpl;
 import io.holoinsight.server.common.service.impl.ClusterServiceImpl;
 import io.holoinsight.server.common.service.impl.ClusterTaskServiceImpl;
 import io.holoinsight.server.common.service.impl.MetaDataDictValueServiceImpl;
+import io.holoinsight.server.common.service.impl.MetaDimDataServiceImpl;
 import io.holoinsight.server.common.service.impl.MetricInfoServiceImpl;
 import io.holoinsight.server.common.service.impl.MonitorInstanceServiceImpl;
 import io.holoinsight.server.common.service.impl.TenantServiceImpl;
@@ -223,5 +225,9 @@ public class CommonServiceAutoConfiguration {
     return new ClusterTaskServiceImpl();
   }
 
-
+  @Bean
+  @ConditionalOnMissingBean
+  public MetaDimDataService metaDimDataService() {
+    return new MetaDimDataServiceImpl();
+  }
 }

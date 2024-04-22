@@ -20,7 +20,7 @@ import io.holoinsight.server.agg.v1.core.conf.AggFunc;
 import io.holoinsight.server.agg.v1.core.conf.AggTask;
 import io.holoinsight.server.agg.v1.core.data.AggTaskKey;
 import io.holoinsight.server.agg.v1.core.data.LogSamples;
-import io.holoinsight.server.agg.v1.executor.executor.FixedSizeTags;
+import io.holoinsight.server.agg.v1.core.executor.FixedSizeTags;
 import io.holoinsight.server.agg.v1.executor.executor.Group;
 import io.holoinsight.server.agg.v1.executor.executor.GroupField;
 import io.holoinsight.server.agg.v1.executor.executor.HllState;

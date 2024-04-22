@@ -5,6 +5,8 @@ package io.holoinsight.server.agg.v1.executor.output;
 
 import java.util.Map;
 
+import io.holoinsight.server.agg.v1.core.executor.output.AggStringLookup;
+import io.holoinsight.server.agg.v1.core.executor.output.XOutput;
 import org.apache.commons.text.StringSubstitutor;
 
 import io.holoinsight.server.agg.v1.core.Utils;

@@ -1,7 +1,7 @@
 /*
  * Copyright 2022 Holoinsight Project Authors. Licensed under Apache-2.0.
  */
-package io.holoinsight.server.agg.v1.executor.executor;
+package io.holoinsight.server.agg.v1.core.executor;
 
 import io.holoinsight.server.agg.v1.core.data.DataAccessor;
 

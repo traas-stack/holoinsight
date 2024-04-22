@@ -8,6 +8,7 @@ import java.util.Map;
 
 import com.alibaba.fastjson.annotation.JSONField;
 
+import io.holoinsight.server.agg.v1.core.executor.FixedSizeTags;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.Getter;

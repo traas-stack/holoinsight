@@ -15,8 +15,8 @@ import com.alibaba.fastjson.JSONObject;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 
-import io.holoinsight.server.agg.v1.executor.CompletenessService;
-import io.holoinsight.server.agg.v1.executor.ExpectedCompleteness;
+import io.holoinsight.server.agg.v1.core.executor.CompletenessService;
+import io.holoinsight.server.agg.v1.core.executor.ExpectedCompleteness;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
