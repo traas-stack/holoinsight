@@ -23,11 +23,6 @@
 			<artifactId>meta-proto</artifactId>
 			<version>${project.version}</version>
 		</dependency>
-<!--		<dependency>-->
-<!--			<groupId>io.holoinsight.server</groupId>-->
-<!--			<artifactId>meta-dal</artifactId>-->
-<!--			<version>${project.version}</version>-->
-<!--		</dependency>-->
 		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-lang3</artifactId>

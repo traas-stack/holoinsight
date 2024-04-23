@@ -18,7 +18,9 @@ import org.springframework.util.CollectionUtils;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * @author jsy1001de
@@ -30,15 +32,15 @@ public class LogPluginUtil {
   public static void addSpmCols(CustomPluginConf conf) {
 
     Boolean spm = checkSpmConditions(conf);
+    Set<String> spmSets =
+        new HashSet<>(Arrays.asList("total", "success", "fail", "cost", "successPercent"));
 
     List<CollectMetric> newCollectMetrics = new ArrayList<>();
-    int cols = 0;
     if (!CollectionUtils.isEmpty(conf.collectMetrics)) {
       for (CollectMetric collectMetric : conf.collectMetrics) {
         if (null == collectMetric.spm || Boolean.FALSE == collectMetric.spm) {
-          if (spm == Boolean.TRUE
-              && Arrays.asList("total", "success", "fail", "cost", "successPercent")
-                  .contains(collectMetric.tableName)) {
+          if (spm == Boolean.TRUE && spmSets.contains(collectMetric.tableName)) {
+            spmSets.remove(collectMetric.tableName);
             continue;
           }
           newCollectMetrics.add(collectMetric);
@@ -49,12 +51,11 @@ public class LogPluginUtil {
           continue;
         }
         newCollectMetrics.add(collectMetric);
-        cols++;
       }
     }
 
     // add spm metrics
-    if (spm == Boolean.TRUE && cols == 0) {
+    if (spm == Boolean.TRUE && !spmSets.isEmpty()) {
       SpmCols spmCols = conf.spmCols;
 
       List<String> tags = new ArrayList<>();
@@ -67,15 +68,27 @@ public class LogPluginUtil {
         });
       }
 
-      newCollectMetrics.add(genTotalCollectMetric(spmCols, tags));
-      newCollectMetrics.add(genSuccessCollectMetric(spmCols, tags));
-      newCollectMetrics.add(genFailCollectMetric(spmCols, tags));
-      newCollectMetrics.add(genCostCollectMetric(spmCols, tags));
-      newCollectMetrics.add(genSuccessPercentCollectMetric(tags));
+      for (String apmMetric : spmSets) {
+        switch (apmMetric) {
+          case "total":
+            newCollectMetrics.add(genTotalCollectMetric(spmCols, tags));
+            break;
+          case "success":
+            newCollectMetrics.add(genSuccessCollectMetric(spmCols, tags));
+            break;
+          case "fail":
+            newCollectMetrics.add(genFailCollectMetric(spmCols, tags));
+            break;
+          case "cost":
+            newCollectMetrics.add(genCostCollectMetric(spmCols, tags));
+            break;
+          case "successPercent":
+            newCollectMetrics.add(genSuccessPercentCollectMetric(tags));
+            break;
+        }
+      }
     }
-
     conf.setCollectMetrics(newCollectMetrics);
-
   }
 
 
