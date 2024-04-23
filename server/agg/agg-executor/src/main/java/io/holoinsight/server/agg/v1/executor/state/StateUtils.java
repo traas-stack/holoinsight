@@ -17,7 +17,7 @@ import com.esotericsoftware.kryo.serializers.CompatibleFieldSerializer;
 import com.google.common.base.Preconditions;
 
 import io.holoinsight.server.agg.v1.core.data.AggTaskKey;
-import io.holoinsight.server.agg.v1.executor.executor.FixedSizeTags;
+import io.holoinsight.server.agg.v1.core.executor.FixedSizeTags;
 import io.holoinsight.server.agg.v1.executor.executor.Group;
 import io.holoinsight.server.agg.v1.executor.executor.GroupField;
 import lombok.extern.slf4j.Slf4j;

@@ -17,6 +17,8 @@ import java.util.concurrent.TimeUnit;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
+import io.holoinsight.server.agg.v1.core.executor.output.BatchSerdes;
+import io.holoinsight.server.agg.v1.core.executor.output.XOutput;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;

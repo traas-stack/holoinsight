@@ -11,7 +11,7 @@ import java.util.function.Consumer;
 
 import io.holoinsight.server.agg.v1.core.conf.AggTaskVersion;
 import io.holoinsight.server.agg.v1.core.data.AggTaskKey;
-import io.holoinsight.server.agg.v1.executor.executor.FixedSizeTags;
+import io.holoinsight.server.agg.v1.core.executor.FixedSizeTags;
 import io.holoinsight.server.agg.v1.executor.executor.XAggTask;
 import lombok.Data;
 import lombok.NoArgsConstructor;

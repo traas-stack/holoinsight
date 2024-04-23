@@ -4,6 +4,7 @@
 package io.holoinsight.server.agg.v1.executor.executor;
 
 import io.holoinsight.server.agg.v1.core.conf.SelectItem;
+import io.holoinsight.server.agg.v1.core.executor.XWhere;
 import lombok.Data;
 
 /**

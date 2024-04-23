@@ -1,7 +1,7 @@
 /*
  * Copyright 2022 Holoinsight Project Authors. Licensed under Apache-2.0.
  */
-package io.holoinsight.server.agg.v1.executor.output;
+package io.holoinsight.server.agg.v1.core.executor.output;
 
 import java.util.ArrayList;
 import java.util.HashMap;

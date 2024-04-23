@@ -15,6 +15,7 @@ import java.util.stream.Collectors;
 
 import javax.annotation.Nullable;
 
+import io.holoinsight.server.agg.v1.core.executor.FixedSizeTags;
 import org.apache.commons.collections4.MapUtils;
 
 import io.holoinsight.server.agg.v1.core.Utils;
@@ -30,11 +31,11 @@ import io.holoinsight.server.agg.v1.core.conf.OutputItem;
 import io.holoinsight.server.agg.v1.core.data.AggTaskKey;
 import io.holoinsight.server.agg.v1.core.data.InDataNodeDataAccessor;
 import io.holoinsight.server.agg.v1.core.data.TableRowDataAccessor;
-import io.holoinsight.server.agg.v1.executor.CompletenessService;
-import io.holoinsight.server.agg.v1.executor.ExpectedCompleteness;
+import io.holoinsight.server.agg.v1.core.executor.CompletenessService;
+import io.holoinsight.server.agg.v1.core.executor.ExpectedCompleteness;
 import io.holoinsight.server.agg.v1.executor.output.AsyncOutput;
-import io.holoinsight.server.agg.v1.executor.output.MergedCompleteness;
-import io.holoinsight.server.agg.v1.executor.output.XOutput;
+import io.holoinsight.server.agg.v1.core.executor.output.MergedCompleteness;
+import io.holoinsight.server.agg.v1.core.executor.output.XOutput;
 import io.holoinsight.server.agg.v1.executor.state.AggTaskState;
 import io.holoinsight.server.agg.v1.executor.state.AggWindowState;
 import io.holoinsight.server.agg.v1.pb.AggProtos;

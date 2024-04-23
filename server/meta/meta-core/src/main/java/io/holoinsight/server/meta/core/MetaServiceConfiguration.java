@@ -3,10 +3,10 @@
  */
 package io.holoinsight.server.meta.core;
 
+import io.holoinsight.server.common.service.MetaDimDataService;
 import io.holoinsight.server.common.service.SuperCacheService;
 import io.holoinsight.server.meta.core.service.bitmap.BitmapDataCoreService;
 import io.holoinsight.server.meta.core.service.hashmap.HashMapDataCoreService;
-import io.holoinsight.server.meta.dal.service.mapper.MetaDataMapper;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -26,18 +26,21 @@ public class MetaServiceConfiguration {
   @Autowired
   private SuperCacheService superCacheService;
 
+  @Autowired
+  private MetaDimDataService metaDimDataService;
+
   @Bean("hashMapDataCoreService")
   @ConditionalOnProperty(value = "holoinsight.meta.db_data_mode", havingValue = "mysql")
-  public HashMapDataCoreService hashMapDataCoreService(MetaDataMapper metaDataMapper,
+  public HashMapDataCoreService hashMapDataCoreService(MetaDimDataService metaDimDataService,
       SuperCacheService superCacheService) {
-    return new HashMapDataCoreService(metaDataMapper, superCacheService);
+    return new HashMapDataCoreService(metaDimDataService, superCacheService);
   }
 
   @Bean("bitmapDataCoreService")
   @ConditionalOnProperty(value = "holoinsight.meta.db_data_mode", havingValue = "mysql")
-  public BitmapDataCoreService bitmapDataCoreService(MetaDataMapper metaDataMapper,
+  public BitmapDataCoreService bitmapDataCoreService(MetaDimDataService metaDimDataService,
       SuperCacheService superCacheService) {
-    return new BitmapDataCoreService(metaDataMapper, superCacheService);
+    return new BitmapDataCoreService(metaDimDataService, superCacheService);
   }
 
   @Bean

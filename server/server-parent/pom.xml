@@ -14,7 +14,6 @@
 		<module>../common/common-dao-gen</module>
 
 		<module>../registry/registry-model</module>
-		<module>../registry/registry-dao-gen</module>
 		<module>../registry/registry-grpc-gen</module>
 		<module>../registry/registry-core</module>
 		<module>../registry/registry-boot</module>
@@ -25,12 +24,11 @@
 		<module>../meta/meta-proto</module>
 		<module>../meta/meta-common</module>
 		<module>../meta/meta-facade</module>
-		<module>../meta/meta-dal</module>
+<!--		<module>../meta/meta-dal</module>-->
 		<module>../meta/meta-core</module>
 		<module>../meta/meta-boot</module>
 		<module>../meta/meta-bootstrap</module>
 
-		<module>../gateway/gateway-dao-gen</module>
 		<module>../gateway/gateway-grpc-gen</module>
 		<module>../gateway/gateway-core</module>
 		<module>../gateway/gateway-boot</module>
@@ -74,7 +72,6 @@
 		<module>../agg/agg-dispatcher</module>
 		<module>../agg/agg-executor</module>
 		<module>../agg/agg-boot</module>
-		<module>../agg/agg-executor-api</module>
 		<module>../otlp/otlp-core</module>
 		<module>../otlp/otlp-server</module>
 	</modules>
