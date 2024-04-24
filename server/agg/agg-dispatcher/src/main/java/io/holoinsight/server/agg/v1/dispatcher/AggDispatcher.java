@@ -3,27 +3,9 @@
  */
 package io.holoinsight.server.agg.v1.dispatcher;
 
-import java.time.Duration;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
-
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.kafka.clients.producer.KafkaProducer;
-import org.apache.kafka.clients.producer.ProducerConfig;
-import org.apache.kafka.clients.producer.ProducerRecord;
-import org.jetbrains.annotations.NotNull;
-import org.springframework.beans.factory.annotation.Autowired;
-
 import com.google.common.collect.Maps;
 import com.google.protobuf.ByteString;
 import com.xzchaoo.commons.stat.StringsKey;
-
 import io.holoinsight.server.agg.v1.core.AggProperties;
 import io.holoinsight.server.agg.v1.core.conf.AggTask;
 import io.holoinsight.server.agg.v1.core.conf.PartitionKey;
@@ -34,17 +16,32 @@ import io.holoinsight.server.agg.v1.core.kafka.KafkaProducerHealthChecker;
 import io.holoinsight.server.agg.v1.pb.AggProtos;
 import io.holoinsight.server.apm.engine.model.SpanDO;
 import io.holoinsight.server.common.auth.AuthInfo;
+import io.holoinsight.server.common.stat.StatUtils;
 import io.holoinsight.server.common.threadpool.CommonThreadPools;
 import io.holoinsight.server.extension.model.Record;
 import io.holoinsight.server.extension.model.Row;
 import io.holoinsight.server.extension.model.Table;
-import io.holoinsight.server.gateway.core.utils.StatUtils;
 import io.holoinsight.server.gateway.grpc.DataNode;
 import io.holoinsight.server.gateway.grpc.Point;
 import io.holoinsight.server.gateway.grpc.WriteMetricsRequestV1;
 import io.holoinsight.server.gateway.grpc.WriteMetricsRequestV4;
 import io.holoinsight.server.registry.grpc.agent.ReportEventRequest;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.kafka.clients.producer.KafkaProducer;
+import org.apache.kafka.clients.producer.ProducerConfig;
+import org.apache.kafka.clients.producer.ProducerRecord;
+import org.jetbrains.annotations.NotNull;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
+import java.time.Duration;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
 
 /**
  * This class is responsible for emitting elements to be aggregated.
@@ -301,17 +298,18 @@ public class AggDispatcher {
   }
 
   private boolean send(AggTaskKey key, AggProtos.AggTaskValue value) {
+    String topic = aggProperties.getTopic();
     if (!kafkaProducerHealthChecker.isHealthy()) {
       int count = value.getInDataNodesCount();
       if (value.hasDataTable()) {
         count += value.getDataTable().getRowCount();
       }
-      StatUtils.KAFKA_SEND.add(StringsKey.of("discard"), new long[] {1, count});
+      StatUtils.KAFKA_SEND.add(StringsKey.of(topic, "DISCARD"), new long[] {1, count});
       return false;
     }
 
     ProducerRecord<AggTaskKey, AggProtos.AggTaskValue> record =
-        new ProducerRecord<>(aggProperties.getTopic(), key, value);
+        new ProducerRecord<>(topic, key, value);
 
     // When kafka is unhealthy, the calling to `KafkaProducer.send` itself will block at waiting for
     // metadata.
@@ -319,13 +317,18 @@ public class AggDispatcher {
     // In any case, we'd better have a health check for kafka and fail quickly in unhealthy
     // situations instead of blocking. (Although this will occasionally lose some data)
     kafkaProducer.send(record, (metadata, exception) -> {
+      int count = value.getInDataNodesCount();
+      if (value.hasDataTable()) {
+        count += value.getDataTable().getRowCount();
+      }
       if (exception != null) {
-        int count = value.getInDataNodesCount();
-        if (value.hasDataTable()) {
-          count += value.getDataTable().getRowCount();
-        }
         log.error("[agg] [{}] write kafka error, metric=[{}] size=[{}]", //
             key, value.getMetric(), count, exception);
+        StatUtils.KAFKA_SEND.add(StringsKey.of(topic, "ERROR"), new long[] {1, count});
+      } else if (metadata != null) {
+        StatUtils.KAFKA_SEND.set(
+            StringsKey.of(topic, "SUCCESS", String.valueOf(metadata.partition())),
+            new long[] {metadata.hasOffset() ? metadata.offset() : 0});
       }
     });
     return true;

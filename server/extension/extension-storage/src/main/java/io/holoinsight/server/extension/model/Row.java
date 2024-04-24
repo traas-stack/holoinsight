@@ -22,4 +22,11 @@ public class Row {
   private List<String> tagValues;
   // TODO field type is always Double ???
   private List<Double> fieldValues;
+
+  public String getTagValue(int index) {
+    if (tagValues == null || index < 0 || index >= tagValues.size()) {
+      return "";
+    }
+    return tagValues.get(index);
+  }
 }

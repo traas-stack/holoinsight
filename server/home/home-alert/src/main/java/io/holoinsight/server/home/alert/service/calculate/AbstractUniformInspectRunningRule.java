@@ -154,7 +154,7 @@ public class AbstractUniformInspectRunningRule {
       List<AlertNotifyRecordDTO> alertNotifyRecordDTOList) throws InterruptedException {
 
     Map<Trigger, List<TriggerResult>> triggerMap = new HashMap<>();// 告警
-    List<TriggerResult> noEventGeneratedList = new ArrayList<>();// 不告警
+    // List<TriggerResult> noEventGeneratedList = new ArrayList<>();// 不告警
     for (Trigger trigger : inspectConfig.getRule().getTriggers()) {
       // 后续考虑增加tags比较
       List<TriggerDataResult> triggerDataResultList = trigger.getDataResult();
@@ -176,9 +176,9 @@ public class AbstractUniformInspectRunningRule {
                 triggerResults.add(ruleResult);
               }
             }
-            if (!CollectionUtils.isEmpty(ruleResults)) {
-              noEventGeneratedList.addAll(ruleResults);
-            }
+            // if (!CollectionUtils.isEmpty(ruleResults)) {
+            // noEventGeneratedList.addAll(ruleResults);
+            // }
           } finally {
             latch.countDown();
           }
@@ -210,7 +210,7 @@ public class AbstractUniformInspectRunningRule {
     AlertNotifyRecordDTO alertNotifyRecordDTO = inspectConfig.getAlertNotifyRecord();
     if (Objects.nonNull(alertNotifyRecordDTO)) {
       RecordSucOrFailNotify.alertNotifyNoEventGenerated("no alarm event generated",
-          ALERT_TASK_COMPUTE, "run rule", alertNotifyRecordDTO, noEventGeneratedList);
+          ALERT_TASK_COMPUTE, "run rule", alertNotifyRecordDTO, Collections.emptyList());
       alertNotifyRecordDTOList.add(alertNotifyRecordDTO);
     }
     return null;
