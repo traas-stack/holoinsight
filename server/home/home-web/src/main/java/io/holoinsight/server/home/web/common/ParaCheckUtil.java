@@ -32,8 +32,9 @@ public class ParaCheckUtil {
   private static final Pattern PATTERN_CLUSTER = Pattern.compile("^[a-z][a-z0-9\\-]{1,20}");
 
   private static final Pattern PATTERN_APPLICATION = Pattern.compile("^[a-z]{1,20}");
-  private static Pattern PATTERN_CN_SQL =
-      Pattern.compile("^[\\u00b7A-Za-z0-9\\u4e00-\\u9fa5\\u3000-\\u303f\\uFF0C\\-_ ,|:\\.]*$");
+
+  private static Pattern PATTERN_CN_SQL = Pattern.compile(
+      "^[\\u00b7A-Za-z0-9\\u4e00-\\u9fa5\\u3000-\\u303f\\uFF0C\\-_ （：。&）()@《》<>“”‘’\\[\\]{}【】/%,|:.]*$");
   private static Pattern PATTERN_SQL =
       Pattern.compile("^[\\u00b7A-Za-z0-9\\u4e00-\\u9fa5\\-_ ,|:\\.]*$");
   private static Pattern PATTERN_STRICT_SQL =
