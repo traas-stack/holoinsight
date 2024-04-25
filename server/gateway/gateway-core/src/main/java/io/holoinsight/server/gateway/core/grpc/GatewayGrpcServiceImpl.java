@@ -131,12 +131,6 @@ public class GatewayGrpcServiceImpl extends GatewayServiceGrpc.GatewayServiceImp
 
     List<WriteMetricsParam.Point> points = new ArrayList<>(request.getPointCount());
     for (Point p : request.getPointList()) {
-
-      // if (!productCtlService.isMetricInWhiteList(p.getMetricName())
-      // && productCtlService.productClosed(MonitorProductCode.METRIC, p.getTagsMap())) {
-      // continue;
-      // }
-
       p = gatewayHookManager.processV1(authInfo, p);
       if (p == null) {
         continue;
@@ -187,10 +181,7 @@ public class GatewayGrpcServiceImpl extends GatewayServiceGrpc.GatewayServiceImp
         for (int i = 0; i < header.getTagKeysCount(); i++) {
           tags.put(header.getTagKeys(i), row.getTagValues(i));
         }
-        // if (!productCtlService.isMetricInWhiteList(header.getMetricName())
-        // && productCtlService.productClosed(MonitorProductCode.METRIC, tags)) {
-        // continue;
-        // }
+
         wmpp.setTimeStamp(row.getTimestamp());
         wmpp.setTags(tags);
         for (DataNode dataNode : row.getValueValuesList()) {

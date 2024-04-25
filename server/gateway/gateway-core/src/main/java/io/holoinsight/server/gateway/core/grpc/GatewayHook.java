@@ -18,7 +18,7 @@ import io.holoinsight.server.gateway.grpc.WriteMetricsRequestV4;
  */
 public interface GatewayHook {
   /**
-   * writeMetricsV1 hook
+   * writeMetricsV1 hook system metric
    *
    * @param authInfo
    * @param request
@@ -26,7 +26,7 @@ public interface GatewayHook {
   void writeMetricsV1(AuthInfo authInfo, WriteMetricsRequestV1 request);
 
   /**
-   * writeMetricsV4 hook
+   * writeMetricsV4 hook log metric
    *
    * @param authInfo
    * @param request

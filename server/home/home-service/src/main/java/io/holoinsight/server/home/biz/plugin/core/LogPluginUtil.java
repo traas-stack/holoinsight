@@ -50,6 +50,7 @@ public class LogPluginUtil {
         if (spm == Boolean.FALSE) {
           continue;
         }
+        spmSets.remove(collectMetric.tableName);
         newCollectMetrics.add(collectMetric);
       }
     }
