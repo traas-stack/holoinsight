@@ -3,8 +3,11 @@
  */
 package io.holoinsight.server.home.alert.service.calculate;
 
-
-import io.holoinsight.server.home.alert.common.G;
+import io.holoinsight.server.common.J;
+import io.holoinsight.server.common.dao.emuns.FunctionEnum;
+import io.holoinsight.server.common.dao.entity.dto.alarm.trigger.TriggerAIResult;
+import io.holoinsight.server.common.dao.entity.dto.alarm.trigger.TriggerDataResult;
+import io.holoinsight.server.common.dao.entity.dto.alarm.trigger.TriggerResult;
 import io.holoinsight.server.home.alert.model.compute.algorithm.anomaly.AlgorithmConfig;
 import io.holoinsight.server.home.alert.model.compute.algorithm.anomaly.AnomalyAlgorithmRequest;
 import io.holoinsight.server.home.alert.model.compute.algorithm.anomaly.AnomalyAlgorithmResponse;
@@ -12,10 +15,6 @@ import io.holoinsight.server.home.alert.model.compute.algorithm.anomaly.RuleConf
 import io.holoinsight.server.home.alert.model.function.FunctionConfigAIParam;
 import io.holoinsight.server.home.alert.model.function.FunctionConfigParam;
 import io.holoinsight.server.home.alert.model.function.FunctionLogic;
-import io.holoinsight.server.common.dao.entity.dto.alarm.trigger.TriggerDataResult;
-import io.holoinsight.server.common.dao.emuns.FunctionEnum;
-import io.holoinsight.server.common.dao.entity.dto.alarm.trigger.TriggerAIResult;
-import io.holoinsight.server.common.dao.entity.dto.alarm.trigger.TriggerResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -63,10 +62,10 @@ public class AnomalyDownAbnormalDetect implements FunctionLogic {
     // Set the name of the algorithm interface
     String algoUrl = url + "/anomaly_detect";
     // Call algorithm interface
-    String abnormalResult = AlgorithmHttp.invokeAlgorithm(algoUrl, G.get().toJson(algorithmRequest),
+    String abnormalResult = AlgorithmHttp.invokeAlgorithm(algoUrl, J.toJson(algorithmRequest),
         functionConfigParam.getTraceId());
     AnomalyAlgorithmResponse anomalyAlgorithmResponse =
-        G.get().fromJson(abnormalResult, AnomalyAlgorithmResponse.class);
+        J.fromJson(abnormalResult, AnomalyAlgorithmResponse.class);
     if (anomalyAlgorithmResponse != null && anomalyAlgorithmResponse.getIsSuccessful()
         && anomalyAlgorithmResponse.getIsException()) {
       triggerAIResult.setHit(true);

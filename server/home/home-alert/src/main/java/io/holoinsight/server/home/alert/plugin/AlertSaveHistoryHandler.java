@@ -7,9 +7,19 @@ package io.holoinsight.server.home.alert.plugin;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import io.holoinsight.server.common.J;
+import io.holoinsight.server.common.dao.entity.AlarmHistory;
+import io.holoinsight.server.common.dao.entity.AlarmHistoryDetail;
+import io.holoinsight.server.common.dao.entity.dto.AlertHistoryDetailExtra;
+import io.holoinsight.server.common.dao.entity.dto.AlertHistoryExtra;
+import io.holoinsight.server.common.dao.entity.dto.AlertNotifyRecordDTO;
+import io.holoinsight.server.common.dao.entity.dto.AlertSilenceConfig;
 import io.holoinsight.server.common.dao.entity.dto.InspectConfig;
+import io.holoinsight.server.common.dao.entity.dto.alarm.trigger.DataSource;
+import io.holoinsight.server.common.dao.entity.dto.alarm.trigger.Trigger;
+import io.holoinsight.server.common.dao.entity.dto.alarm.trigger.TriggerDataResult;
+import io.holoinsight.server.common.dao.mapper.AlarmHistoryDetailMapper;
+import io.holoinsight.server.common.dao.mapper.AlarmHistoryMapper;
 import io.holoinsight.server.home.alert.common.AlarmContentGenerator;
-import io.holoinsight.server.home.alert.common.G;
 import io.holoinsight.server.home.alert.common.TimeRangeUtil;
 import io.holoinsight.server.home.alert.model.event.AlertNotify;
 import io.holoinsight.server.home.alert.model.event.NotifyDataInfo;
@@ -17,17 +27,6 @@ import io.holoinsight.server.home.alert.service.converter.DoConvert;
 import io.holoinsight.server.home.alert.service.event.AlertHandlerExecutor;
 import io.holoinsight.server.home.alert.service.event.RecordSucOrFailNotify;
 import io.holoinsight.server.home.common.service.QueryClientService;
-import io.holoinsight.server.common.dao.mapper.AlarmHistoryDetailMapper;
-import io.holoinsight.server.common.dao.mapper.AlarmHistoryMapper;
-import io.holoinsight.server.common.dao.entity.AlarmHistory;
-import io.holoinsight.server.common.dao.entity.AlarmHistoryDetail;
-import io.holoinsight.server.common.dao.entity.dto.AlertHistoryExtra;
-import io.holoinsight.server.common.dao.entity.dto.AlertNotifyRecordDTO;
-import io.holoinsight.server.common.dao.entity.dto.AlertSilenceConfig;
-import io.holoinsight.server.common.dao.entity.dto.alarm.trigger.TriggerDataResult;
-import io.holoinsight.server.common.dao.entity.dto.AlertHistoryDetailExtra;
-import io.holoinsight.server.common.dao.entity.dto.alarm.trigger.DataSource;
-import io.holoinsight.server.common.dao.entity.dto.alarm.trigger.Trigger;
 import io.holoinsight.server.query.grpc.QueryProto;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -323,7 +322,7 @@ public class AlertSaveHistoryHandler implements AlertHandlerExecutor {
             alertHistory.setRuleName(alertNotify.getRuleName());
             alertHistory.setAlarmLevel(alertNotify.getAlarmLevel());
             // 设置最新的触发条件
-            Set<String> triggerList = G.get().fromJson(alertHistory.getTriggerContent(), Set.class);
+            Set<String> triggerList = J.fromJson(alertHistory.getTriggerContent(), Set.class);
             List<NotifyDataInfo> notifyDataInfos = new ArrayList<>();
             alertNotify.getNotifyDataInfos().forEach((key, value) -> {
               notifyDataInfos.addAll(value);
@@ -334,7 +333,7 @@ public class AlertSaveHistoryHandler implements AlertHandlerExecutor {
                 .filter(trigger -> !triggerList.contains(trigger)).collect(Collectors.toSet());
             if (!triggerListNew.isEmpty()) {
               triggerList.addAll(triggerListNew);
-              alertHistory.setTriggerContent(G.get().toJson(triggerList));
+              alertHistory.setTriggerContent(J.toJson(triggerList));
             }
             if (hasSilenceConfig(alertNotify)) {
               AlertHistoryExtra alertHistoryExtra = getAlertHistoryExtra(alertHistory.getExtra());
@@ -486,7 +485,7 @@ public class AlertSaveHistoryHandler implements AlertHandlerExecutor {
     alarmHistoryDetail.setDatasource(alertNotify.getPqlRule().getPql());
     List<Map<String, String>> tagList = alertNotify.getPqlRule().getDataResult().stream()
         .map(TriggerDataResult::getTags).collect(Collectors.toList());
-    alarmHistoryDetail.setTags(G.get().toJson(tagList));
+    alarmHistoryDetail.setTags(J.toJson(tagList));
     alarmHistoryDetail.setAlarmContent(AlarmContentGenerator.genPqlAlarmContent(
         alertNotify.getPqlRule().getPql(), alertNotify.getPqlRule().getDataResult()));
     alarmHistoryDetailDOMapper.insert(alarmHistoryDetail);
@@ -510,8 +509,8 @@ public class AlertSaveHistoryHandler implements AlertHandlerExecutor {
       alarmHistoryDetail.setTenant(alertNotify.getTenant());
       alarmHistoryDetail.setGmtCreate(new Date());
       alarmHistoryDetail.setEnvType(alertNotify.getEnvType());
-      alarmHistoryDetail.setDatasource(G.get().toJson(trigger));
-      alarmHistoryDetail.setTags(G.get().toJson(tagList));
+      alarmHistoryDetail.setDatasource(J.toJson(trigger));
+      alarmHistoryDetail.setTags(J.toJson(tagList));
       alarmHistoryDetail.setWorkspace(alertNotify.getWorkspace());
       String alarmContentJson = getAlertContentJsonList(notifyDataInfoList);
       alarmHistoryDetail.setAlarmContent(alarmContentJson);

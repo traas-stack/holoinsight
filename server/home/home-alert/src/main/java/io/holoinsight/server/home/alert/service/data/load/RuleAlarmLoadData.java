@@ -3,16 +3,16 @@
  */
 package io.holoinsight.server.home.alert.service.data.load;
 
-import io.holoinsight.server.home.alert.common.G;
-import io.holoinsight.server.home.alert.model.compute.ComputeTaskPackage;
-import io.holoinsight.server.home.alert.service.data.AlarmLoadData;
-import io.holoinsight.server.home.common.service.QueryClientService;
-import io.holoinsight.server.common.dao.entity.dto.alarm.trigger.TriggerDataResult;
-import io.holoinsight.server.common.dao.entity.dto.InspectConfig;
+import io.holoinsight.server.common.J;
 import io.holoinsight.server.common.dao.emuns.PeriodType;
+import io.holoinsight.server.common.dao.entity.dto.InspectConfig;
 import io.holoinsight.server.common.dao.entity.dto.alarm.trigger.DataSource;
 import io.holoinsight.server.common.dao.entity.dto.alarm.trigger.Filter;
 import io.holoinsight.server.common.dao.entity.dto.alarm.trigger.Trigger;
+import io.holoinsight.server.common.dao.entity.dto.alarm.trigger.TriggerDataResult;
+import io.holoinsight.server.home.alert.model.compute.ComputeTaskPackage;
+import io.holoinsight.server.home.alert.service.data.AlarmLoadData;
+import io.holoinsight.server.home.common.service.QueryClientService;
 import io.holoinsight.server.query.grpc.QueryProto;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -61,8 +61,8 @@ public class RuleAlarmLoadData implements AlarmLoadData {
     } catch (Exception exception) {
       LOGGER.error(
           "{} QueryData Exception Request:{} Response:{} DeltaRequest:{} DeltaResponse: {}",
-          inspectConfig.getTraceId(), G.get().toJson(request), G.get().toJson(response),
-          G.get().toJson(deltaRequest), G.get().toJson(deltaResponse), exception);
+          inspectConfig.getTraceId(), J.toJson(request), J.toJson(response), J.toJson(deltaRequest),
+          J.toJson(deltaResponse), exception);
     }
     return triggerDataResults;
   }

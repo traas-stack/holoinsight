@@ -4,16 +4,15 @@
 package io.holoinsight.server.home.alert.service.event.alertManagerEvent;
 
 import io.holoinsight.server.common.J;
+import io.holoinsight.server.common.dao.entity.dto.alarm.TemplateValue;
+import io.holoinsight.server.common.model.HoloinsightAlertInternalException;
 import io.holoinsight.server.home.alert.common.AlarmConstant;
 import io.holoinsight.server.home.alert.common.AlarmRegexUtil;
-import io.holoinsight.server.home.alert.common.G;
 import io.holoinsight.server.home.alert.common.ObjectToMapUtil;
 import io.holoinsight.server.home.alert.model.event.AlertNotify;
 import io.holoinsight.server.home.alert.model.event.ElementSpiEnum;
 import io.holoinsight.server.home.alert.service.event.AlertHandlerExecutor;
 import io.holoinsight.server.home.alert.service.event.element.ElementSpiServiceFactory;
-import io.holoinsight.server.common.model.HoloinsightAlertInternalException;
-import io.holoinsight.server.common.dao.entity.dto.alarm.TemplateValue;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -65,7 +64,7 @@ public class AlertManagerBuildMsgHandler implements AlertHandlerExecutor {
           alarmNotify.getMsgList().add(markDownMsg);
         });
       });
-      LOGGER.info("AlertManagerBuildMsgHandler SUCCESS {} ", G.get().toJson(alarmNotifies));
+      LOGGER.info("AlertManagerBuildMsgHandler SUCCESS {} ", J.toJson(alarmNotifies));
     } catch (Exception e) {
       LOGGER.error("AlertManagerBuildMsgHandler Exception", e);
     }

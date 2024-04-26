@@ -1,7 +1,7 @@
 /*
  * Copyright 2022 Holoinsight Project Authors. Licensed under Apache-2.0.
  */
-package io.holoinsight.server.home.alert.common.http;
+package io.holoinsight.server.common.http;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.Header;

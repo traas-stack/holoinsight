@@ -3,9 +3,9 @@
  */
 package io.holoinsight.server.home.alert.service.event.alertManagerEvent;
 
-import io.holoinsight.server.home.alert.common.G;
-import io.holoinsight.server.home.alert.common.http.XHttpResponse;
-import io.holoinsight.server.home.alert.common.webhook.WebhookUtil;
+import io.holoinsight.server.common.J;
+import io.holoinsight.server.common.http.XHttpResponse;
+import io.holoinsight.server.home.alert.common.WebhookUtil;
 import io.holoinsight.server.home.alert.model.event.AlertNotify;
 import io.holoinsight.server.home.alert.service.event.AlertHandlerExecutor;
 import org.slf4j.Logger;
@@ -34,12 +34,12 @@ public class AlertManagerSendMsgHandler implements AlertHandlerExecutor {
         if (alarmNotify.getWebhookInfos() != null) {
           alarmNotify.getWebhookInfos().forEach(webhookInfo -> {
             XHttpResponse xHttpResponse = WebhookUtil.sendWebhook(webhookInfo);
-            LOGGER.info("XHttpResponse: {} ", G.get().toJson(xHttpResponse));
+            LOGGER.info("XHttpResponse: {} ", J.toJson(xHttpResponse));
           });
         }
       });
 
-      LOGGER.info("AlarmSendWebhook SUCCESS {} ", G.get().toJson(alarmNotifies));
+      LOGGER.info("AlarmSendWebhook SUCCESS {} ", J.toJson(alarmNotifies));
     } catch (Exception e) {
       LOGGER.error("AlarmSendWebhook Exception", e);
     }
@@ -48,7 +48,7 @@ public class AlertManagerSendMsgHandler implements AlertHandlerExecutor {
     try {
       alarmNotifies.forEach(alarmNotify -> {
       });
-      LOGGER.info("AlarmSendMsgHandler SUCCESS {} ", G.get().toJson(alarmNotifies));
+      LOGGER.info("AlarmSendMsgHandler SUCCESS {} ", J.toJson(alarmNotifies));
     } catch (Exception e) {
       LOGGER.error("AlarmSendMsgHandler Exception", e);
     }
