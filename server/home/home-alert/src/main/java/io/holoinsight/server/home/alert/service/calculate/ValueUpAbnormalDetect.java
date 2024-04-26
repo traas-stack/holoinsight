@@ -3,8 +3,13 @@
  */
 package io.holoinsight.server.home.alert.service.calculate;
 
-
-import io.holoinsight.server.home.alert.common.G;
+import io.holoinsight.server.common.J;
+import io.holoinsight.server.common.dao.emuns.FunctionEnum;
+import io.holoinsight.server.common.dao.emuns.PeriodType;
+import io.holoinsight.server.common.dao.entity.dto.alarm.trigger.RuleConfig;
+import io.holoinsight.server.common.dao.entity.dto.alarm.trigger.TriggerAIResult;
+import io.holoinsight.server.common.dao.entity.dto.alarm.trigger.TriggerDataResult;
+import io.holoinsight.server.common.dao.entity.dto.alarm.trigger.TriggerResult;
 import io.holoinsight.server.home.alert.model.compute.algorithm.AlgorithmConfig;
 import io.holoinsight.server.home.alert.model.compute.algorithm.DatasourceConfig;
 import io.holoinsight.server.home.alert.model.compute.algorithm.ExtendConfig;
@@ -13,12 +18,6 @@ import io.holoinsight.server.home.alert.model.compute.algorithm.ValueAlgorithmRe
 import io.holoinsight.server.home.alert.model.function.FunctionConfigAIParam;
 import io.holoinsight.server.home.alert.model.function.FunctionConfigParam;
 import io.holoinsight.server.home.alert.model.function.FunctionLogic;
-import io.holoinsight.server.common.dao.entity.dto.alarm.trigger.TriggerDataResult;
-import io.holoinsight.server.common.dao.emuns.FunctionEnum;
-import io.holoinsight.server.common.dao.emuns.PeriodType;
-import io.holoinsight.server.common.dao.entity.dto.alarm.trigger.RuleConfig;
-import io.holoinsight.server.common.dao.entity.dto.alarm.trigger.TriggerAIResult;
-import io.holoinsight.server.common.dao.entity.dto.alarm.trigger.TriggerResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -74,10 +73,10 @@ public class ValueUpAbnormalDetect implements FunctionLogic {
     // Set the name of the algorithm interface
     String algoUrl = url + "/serving";
     // Call algorithm interface
-    String abnormalResult = AlgorithmHttp.invokeAlgorithm(algoUrl,
-        G.get().toJson(valueAlgorithmRequest), functionConfigParam.getTraceId());
+    String abnormalResult = AlgorithmHttp.invokeAlgorithm(algoUrl, J.toJson(valueAlgorithmRequest),
+        functionConfigParam.getTraceId());
     ValueAlgorithmResponse valueAlgorithmResponse =
-        G.get().fromJson(abnormalResult, ValueAlgorithmResponse.class);
+        J.fromJson(abnormalResult, ValueAlgorithmResponse.class);
     if (valueAlgorithmResponse != null && valueAlgorithmResponse.getIsException()) {
       triggerAIResult.setHit(true);
       triggerAIResult

@@ -4,20 +4,19 @@
 package io.holoinsight.server.home.alert.service.converter;
 
 import io.holoinsight.server.common.J;
-import io.holoinsight.server.home.alert.common.G;
-import io.holoinsight.server.home.alert.model.event.AlertNotify;
-import io.holoinsight.server.home.alert.model.event.NotifyDataInfo;
-import io.holoinsight.server.home.alert.model.event.WebhookInfo;
 import io.holoinsight.server.common.dao.entity.AlarmHistory;
 import io.holoinsight.server.common.dao.entity.AlarmRule;
 import io.holoinsight.server.common.dao.entity.AlarmWebhook;
 import io.holoinsight.server.common.dao.entity.dto.AlertRuleExtra;
 import io.holoinsight.server.common.dao.entity.dto.InspectConfig;
-import io.holoinsight.server.common.dao.entity.dto.alarm.PqlRule;
 import io.holoinsight.server.common.dao.entity.dto.alarm.AlarmRuleConf;
+import io.holoinsight.server.common.dao.entity.dto.alarm.PqlRule;
 import io.holoinsight.server.common.dao.entity.dto.alarm.TimeFilter;
 import io.holoinsight.server.common.dao.entity.dto.alarm.trigger.DataSource;
 import io.holoinsight.server.common.dao.entity.dto.alarm.trigger.Trigger;
+import io.holoinsight.server.home.alert.model.event.AlertNotify;
+import io.holoinsight.server.home.alert.model.event.NotifyDataInfo;
+import io.holoinsight.server.home.alert.model.event.WebhookInfo;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,11 +51,11 @@ public class DoConvert {
         inspectConfig.setIsPql(true);
         inspectConfig.setPqlRule(pqlRule);
       } else {
-        inspectConfig.setRule(G.get().fromJson(alarmRuleDO.getRule(), AlarmRuleConf.class));
+        inspectConfig.setRule(J.fromJson(alarmRuleDO.getRule(), AlarmRuleConf.class));
         inspectConfig.setIsPql(false);
         inspectConfig.setMetrics(getMetricsFromRule(inspectConfig.getRule()));
       }
-      inspectConfig.setTimeFilter(G.get().fromJson(alarmRuleDO.getTimeFilter(), TimeFilter.class));
+      inspectConfig.setTimeFilter(J.fromJson(alarmRuleDO.getTimeFilter(), TimeFilter.class));
       inspectConfig.setStatus(alarmRuleDO.getStatus() != 0);
       inspectConfig.setIsMerge(alarmRuleDO.getIsMerge() != 0);
       inspectConfig.setRecover(alarmRuleDO.getRecover() != 0);
@@ -67,7 +66,7 @@ public class DoConvert {
         inspectConfig.setAlertSilenceConfig(alertRuleExtra.alertSilenceConfig);
       }
     } catch (Exception e) {
-      LOGGER.error("fail to convert alarmRule {}", G.get().toJson(alarmRuleDO), e);
+      LOGGER.error("fail to convert alarmRule {}", J.toJson(alarmRuleDO), e);
     }
     return inspectConfig;
   }
@@ -110,7 +109,7 @@ public class DoConvert {
         notifyDataInfos.addAll(value);
       });
       notifyDataInfos.forEach(e -> triggerContent.add(e.getTriggerContent()));
-      alarmHistory.setTriggerContent(G.get().toJson(triggerContent));
+      alarmHistory.setTriggerContent(J.toJson(triggerContent));
     }
     alarmHistory.setGmtCreate(new Date());
     alarmHistory.setAlarmTime(new Date(alertNotify.getAlarmTime()));

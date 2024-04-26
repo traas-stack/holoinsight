@@ -1,13 +1,12 @@
 /*
  * Copyright 2022 Holoinsight Project Authors. Licensed under Apache-2.0.
  */
-package io.holoinsight.server.home.alert.common.webhook;
+package io.holoinsight.server.home.alert.common;
 
-
-import io.holoinsight.server.home.alert.common.G;
-import io.holoinsight.server.home.alert.common.http.HttpProxy;
-import io.holoinsight.server.home.alert.common.http.XHttpRequest;
-import io.holoinsight.server.home.alert.common.http.XHttpResponse;
+import io.holoinsight.server.common.J;
+import io.holoinsight.server.common.http.HttpProxy;
+import io.holoinsight.server.common.http.XHttpRequest;
+import io.holoinsight.server.common.http.XHttpResponse;
 import io.holoinsight.server.home.alert.model.event.WebhookInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,29 +37,29 @@ public class WebhookUtil {
       switch (webhookInfo.getRequestType().toUpperCase()) {
         case "POST":
           xHttpRequest = XHttpRequest.post(webhookInfo.getRequestUrl(),
-              G.get().fromJson(webhookInfo.getRequestHeaders(), Map.class), UTF_8.name(), 60000,
+              J.fromJson(webhookInfo.getRequestHeaders(), Map.class), UTF_8.name(), 60000,
               webhookInfo.getWebhookMsg().getBytes(UTF_8), CONTENT_TYPE_UTF_8);
           break;
         case "GET":
           xHttpRequest = XHttpRequest.get(webhookInfo.getRequestUrl(), null,
-              G.get().fromJson(webhookInfo.getRequestHeaders(), Map.class), UTF_8.name(), 60000);
+              J.fromJson(webhookInfo.getRequestHeaders(), Map.class), UTF_8.name(), 60000);
           break;
         case "PUT":
           xHttpRequest = XHttpRequest.put(webhookInfo.getRequestUrl(),
-              G.get().fromJson(webhookInfo.getRequestHeaders(), Map.class), UTF_8.name(), null,
+              J.fromJson(webhookInfo.getRequestHeaders(), Map.class), UTF_8.name(), null,
               CONTENT_TYPE_UTF_8, 60000);
           break;
         case "DELETE":
           xHttpRequest = XHttpRequest.delete(webhookInfo.getRequestUrl(),
-              G.get().fromJson(webhookInfo.getRequestHeaders(), Map.class), UTF_8.name(), 60000);
+              J.fromJson(webhookInfo.getRequestHeaders(), Map.class), UTF_8.name(), 60000);
           break;
         default:
           xHttpRequest = XHttpRequest.get(webhookInfo.getRequestUrl(), null,
-              G.get().fromJson(webhookInfo.getRequestHeaders(), Map.class), UTF_8.name(), 60000);
+              J.fromJson(webhookInfo.getRequestHeaders(), Map.class), UTF_8.name(), 60000);
       }
       return HttpProxy.request(xHttpRequest);
     } catch (Exception e) {
-      LOGGER.error("SendWebhook Exception WebhookInfo:{}", G.get().toJson(webhookInfo), e);
+      LOGGER.error("SendWebhook Exception WebhookInfo:{}", J.toJson(webhookInfo), e);
       return null;
     }
   }
@@ -70,25 +69,25 @@ public class WebhookUtil {
     switch (webhookInfo.getRequestType().toUpperCase()) {
       case "POST":
         xHttpRequest = XHttpRequest.post(webhookInfo.getRequestUrl(),
-            G.get().fromJson(webhookInfo.getRequestHeaders(), Map.class), UTF_8.name(), 60000,
+            J.fromJson(webhookInfo.getRequestHeaders(), Map.class), UTF_8.name(), 60000,
             webhookInfo.getWebhookMsg().getBytes(UTF_8), CONTENT_TYPE_UTF_8);
         break;
       case "GET":
         xHttpRequest = XHttpRequest.get(webhookInfo.getRequestUrl(), null,
-            G.get().fromJson(webhookInfo.getRequestHeaders(), Map.class), UTF_8.name(), 60000);
+            J.fromJson(webhookInfo.getRequestHeaders(), Map.class), UTF_8.name(), 60000);
         break;
       case "PUT":
         xHttpRequest = XHttpRequest.put(webhookInfo.getRequestUrl(),
-            G.get().fromJson(webhookInfo.getRequestHeaders(), Map.class), UTF_8.name(), null,
+            J.fromJson(webhookInfo.getRequestHeaders(), Map.class), UTF_8.name(), null,
             CONTENT_TYPE_UTF_8, 60000);
         break;
       case "DELETE":
         xHttpRequest = XHttpRequest.delete(webhookInfo.getRequestUrl(),
-            G.get().fromJson(webhookInfo.getRequestHeaders(), Map.class), UTF_8.name(), 60000);
+            J.fromJson(webhookInfo.getRequestHeaders(), Map.class), UTF_8.name(), 60000);
         break;
       default:
         xHttpRequest = XHttpRequest.get(webhookInfo.getRequestUrl(), null,
-            G.get().fromJson(webhookInfo.getRequestHeaders(), Map.class), UTF_8.name(), 60000);
+            J.fromJson(webhookInfo.getRequestHeaders(), Map.class), UTF_8.name(), 60000);
     }
     return HttpProxy.request(xHttpRequest);
   }

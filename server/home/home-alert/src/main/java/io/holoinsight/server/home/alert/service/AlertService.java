@@ -8,11 +8,11 @@ import static io.holoinsight.server.home.alert.service.event.alertManagerEvent.A
 import java.util.Collections;
 import java.util.Map;
 
+import io.holoinsight.server.common.http.XHttpResponse;
 import org.springframework.stereotype.Service;
 
 import io.holoinsight.server.common.J;
-import io.holoinsight.server.home.alert.common.http.XHttpResponse;
-import io.holoinsight.server.home.alert.common.webhook.WebhookUtil;
+import io.holoinsight.server.home.alert.common.WebhookUtil;
 import io.holoinsight.server.home.alert.model.event.WebhookInfo;
 import io.holoinsight.server.home.common.service.query.WebhookResponse;
 import io.holoinsight.server.common.dao.entity.dto.AlarmWebhookTestDTO;

@@ -4,9 +4,13 @@
 package io.holoinsight.server.home.alert.service.calculate;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import io.holoinsight.server.common.J;
+import io.holoinsight.server.common.dao.entity.AlarmHistory;
+import io.holoinsight.server.common.dao.entity.dto.AlertNotifyRecordDTO;
 import io.holoinsight.server.common.dao.entity.dto.InspectConfig;
+import io.holoinsight.server.common.dao.mapper.AlarmHistoryMapper;
+import io.holoinsight.server.common.model.HoloinsightAlertIllegalArgumentException;
 import io.holoinsight.server.home.alert.common.AlertStat;
-import io.holoinsight.server.home.alert.common.G;
 import io.holoinsight.server.home.alert.model.compute.ComputeContext;
 import io.holoinsight.server.home.alert.model.compute.ComputeTaskPackage;
 import io.holoinsight.server.home.alert.model.event.AlertNotify;
@@ -16,10 +20,6 @@ import io.holoinsight.server.home.alert.service.data.CacheData;
 import io.holoinsight.server.home.alert.service.event.AlertEventService;
 import io.holoinsight.server.home.alert.service.event.RecordSucOrFailNotify;
 import io.holoinsight.server.home.alert.service.task.AlarmTaskExecutor;
-import io.holoinsight.server.common.model.HoloinsightAlertIllegalArgumentException;
-import io.holoinsight.server.common.dao.mapper.AlarmHistoryMapper;
-import io.holoinsight.server.common.dao.entity.AlarmHistory;
-import io.holoinsight.server.common.dao.entity.dto.AlertNotifyRecordDTO;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -184,8 +184,7 @@ public class AlertTaskCompute implements AlarmTaskExecutor<ComputeTaskPackage> {
             if (LOGGER.isDebugEnabled()) {
               LOGGER.debug("{} {} {} calculate package {} ,eventList: {}",
                   computeTaskPackage.getTraceId(), inspectConfig.getTraceId(),
-                  inspectConfig.getUniqueId(), G.get().toJson(inspectConfig),
-                  G.get().toJson(eventInfo));
+                  inspectConfig.getUniqueId(), J.toJson(inspectConfig), J.toJson(eventInfo));
             }
             String result = eventInfo == null ? "N" : "Y";
             LOGGER.info("{} {} {} calculate result: {}", computeTaskPackage.getTraceId(),

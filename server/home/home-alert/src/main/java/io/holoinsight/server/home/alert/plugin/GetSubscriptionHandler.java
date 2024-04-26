@@ -7,29 +7,28 @@ package io.holoinsight.server.home.alert.plugin;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.google.common.reflect.TypeToken;
 import io.holoinsight.server.common.J;
-import io.holoinsight.server.common.dao.entity.dto.InspectConfig;
-import io.holoinsight.server.home.alert.common.G;
-import io.holoinsight.server.home.alert.model.event.AlertNotify;
-import io.holoinsight.server.home.alert.model.event.NotifyDataInfo;
-import io.holoinsight.server.home.alert.model.event.WebhookInfo;
-import io.holoinsight.server.home.alert.service.converter.DoConvert;
-import io.holoinsight.server.home.alert.service.event.AlertHandlerExecutor;
-import io.holoinsight.server.home.alert.service.event.RecordSucOrFailNotify;
-import io.holoinsight.server.common.service.RequestContextAdapter;
-import io.holoinsight.server.common.dao.mapper.AlarmBlockMapper;
-import io.holoinsight.server.common.dao.mapper.AlarmDingDingRobotMapper;
-import io.holoinsight.server.common.dao.mapper.AlarmGroupMapper;
-import io.holoinsight.server.common.dao.mapper.AlarmSubscribeMapper;
-import io.holoinsight.server.common.dao.mapper.AlarmWebhookMapper;
 import io.holoinsight.server.common.dao.entity.AlarmBlock;
 import io.holoinsight.server.common.dao.entity.AlarmDingDingRobot;
 import io.holoinsight.server.common.dao.entity.AlarmGroup;
 import io.holoinsight.server.common.dao.entity.AlarmSubscribe;
 import io.holoinsight.server.common.dao.entity.AlarmWebhook;
 import io.holoinsight.server.common.dao.entity.dto.AlertSilenceConfig;
-import io.holoinsight.server.common.dao.entity.dto.alarm.trigger.TriggerDataResult;
+import io.holoinsight.server.common.dao.entity.dto.InspectConfig;
 import io.holoinsight.server.common.dao.entity.dto.alarm.PqlRule;
 import io.holoinsight.server.common.dao.entity.dto.alarm.trigger.Trigger;
+import io.holoinsight.server.common.dao.entity.dto.alarm.trigger.TriggerDataResult;
+import io.holoinsight.server.common.dao.mapper.AlarmBlockMapper;
+import io.holoinsight.server.common.dao.mapper.AlarmDingDingRobotMapper;
+import io.holoinsight.server.common.dao.mapper.AlarmGroupMapper;
+import io.holoinsight.server.common.dao.mapper.AlarmSubscribeMapper;
+import io.holoinsight.server.common.dao.mapper.AlarmWebhookMapper;
+import io.holoinsight.server.common.service.RequestContextAdapter;
+import io.holoinsight.server.home.alert.model.event.AlertNotify;
+import io.holoinsight.server.home.alert.model.event.NotifyDataInfo;
+import io.holoinsight.server.home.alert.model.event.WebhookInfo;
+import io.holoinsight.server.home.alert.service.converter.DoConvert;
+import io.holoinsight.server.home.alert.service.event.AlertHandlerExecutor;
+import io.holoinsight.server.home.alert.service.event.RecordSucOrFailNotify;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -83,7 +82,7 @@ public class GetSubscriptionHandler implements AlertHandlerExecutor {
     try {
 
       Map<String, List<AlarmWebhook>> alertWebhookMap = getWebhookMap(alertNotifies);
-      LOGGER.info("AlertWebhookMap SUCCESS {} ", G.get().toJson(alertWebhookMap));
+      LOGGER.info("AlertWebhookMap SUCCESS {} ", J.toJson(alertWebhookMap));
 
       handleBlock(alertNotifies);
 
@@ -101,7 +100,7 @@ public class GetSubscriptionHandler implements AlertHandlerExecutor {
           List<AlarmSubscribe> alertSubscribeList =
               alarmSubscribeDOMapper.selectList(alertSubscribeQueryWrapper);
           LOGGER.info("{} GetSubscription_SUCCESS {} {} ", alertNotify.getTraceId(),
-              alertNotify.getUniqueId(), G.get().toJson(alertSubscribeList));
+              alertNotify.getUniqueId(), J.toJson(alertSubscribeList));
 
           InspectConfig inspectConfig = alertNotify.getRuleConfig();
           if (keepSilence(alertNotify.notifyRecover(), inspectConfig.getAlertSilenceConfig(),
@@ -121,7 +120,7 @@ public class GetSubscriptionHandler implements AlertHandlerExecutor {
                 LOGGER.warn("{} invalid noticeTypeStr {}", alertNotify.getTraceId(), noticeTypeStr);
                 continue;
               }
-              List<String> noticeTypeList = G.parseList(noticeTypeStr, String.class);
+              List<String> noticeTypeList = J.parseList(noticeTypeStr, String.class);
               for (String noticeType : noticeTypeList) {
                 switch (noticeType) {
                   case "dingDing":
@@ -137,7 +136,7 @@ public class GetSubscriptionHandler implements AlertHandlerExecutor {
                         break;
                       }
                       Map<String, List<String>> map =
-                          G.get().fromJson(alarmGroup.getGroupInfo(), Map.class);
+                          J.fromJson(alarmGroup.getGroupInfo(), Map.class);
                       personList = map.get("person");
                     } else if (alertSubscribe.getSubscriber() != null) {
                       String userId = alertSubscribe.getSubscriber();
@@ -161,7 +160,7 @@ public class GetSubscriptionHandler implements AlertHandlerExecutor {
                       AlarmGroup alarmGroup = alarmGroupDOMapper.selectOne(wrapper);
                       if (StringUtils.isNotBlank(alarmGroup.getGroupInfo())) {
                         Map<String, List<String>> map =
-                            G.get().fromJson(alarmGroup.getGroupInfo(), Map.class);
+                            J.fromJson(alarmGroup.getGroupInfo(), Map.class);
                         List<String> ddRobotIds = map.get("ding_ding_robot");
                         if (!CollectionUtils.isEmpty(ddRobotIds)) {
                           for (String id : ddRobotIds) {
@@ -179,7 +178,7 @@ public class GetSubscriptionHandler implements AlertHandlerExecutor {
                         webhookInfos.add(DoConvert.alertWebhookDoConverter(alertWebhook));
                       }
                       LOGGER.info("{} webhookInfos is {}.", alertNotify.getTraceId(),
-                          G.get().toJson(webhookInfos));
+                          J.toJson(webhookInfos));
                     } else {
                       LOGGER.info("{} alert is recover.", alertNotify.getTraceId());
                     }
@@ -273,7 +272,7 @@ public class GetSubscriptionHandler implements AlertHandlerExecutor {
       }
 
       Map<String, String> tagMap =
-          G.get().fromJson(alertBlock.getTags(), new TypeToken<Map<String, String>>() {}.getType());
+          J.fromJson(alertBlock.getTags(), new TypeToken<Map<String, String>>() {}.getType());
 
       if (!CollectionUtils.isEmpty(tagMap)) {
         if (alertNotify.isPqlNotify()) {
@@ -354,8 +353,7 @@ public class GetSubscriptionHandler implements AlertHandlerExecutor {
       webhookInfos.addAll(alertWebhookList.stream().map(DoConvert::alertWebhookDoConverter)
           .collect(Collectors.toList()));
     }
-    LOGGER.info("{} global webhookInfos is {}.", alertNotify.getTraceId(),
-        G.get().toJson(webhookInfos));
+    LOGGER.info("{} global webhookInfos is {}.", alertNotify.getTraceId(), J.toJson(webhookInfos));
     alertNotify.getWebhookInfos().addAll(webhookInfos);
   }
 
