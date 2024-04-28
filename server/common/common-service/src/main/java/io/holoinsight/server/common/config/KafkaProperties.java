@@ -24,4 +24,6 @@ public class KafkaProperties {
   private String consumerGroupId = "x1";
 
   private boolean enable = false;
+  private String topic = "aggv1";
+  private String producerCompressionType = "lz4";
 }
