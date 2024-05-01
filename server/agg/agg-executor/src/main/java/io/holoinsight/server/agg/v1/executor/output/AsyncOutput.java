@@ -177,12 +177,13 @@ public class AsyncOutput {
         // TODO ignore some un-retryable errors
         log.error("[output] [{}] ts=[{}] output error", batch.key,
             Utils.formatTime(batch.window.timestamp), e);
-        try {
-          Thread.sleep(1000);
-        } catch (InterruptedException ex) {
-          Thread.currentThread().interrupt();
-          break;
-        }
+        break; // TODO：retry?
+        // try {
+        // Thread.sleep(1000);
+        // } catch (InterruptedException ex) {
+        // Thread.currentThread().interrupt();
+        // break;
+        // }
       }
     }
   }

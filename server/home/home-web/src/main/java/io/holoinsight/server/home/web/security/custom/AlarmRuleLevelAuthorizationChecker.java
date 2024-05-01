@@ -92,7 +92,7 @@ public class AlarmRuleLevelAuthorizationChecker extends AbstractQueryChecker
       new HashSet<>(Arrays.asList("app", "cache", "log", "oss", "trace", "system", "metric",
           "service", "function", "pg", "mongodb", "db", "miniProgram", "mysql"));
   private static final Set<String> products = new HashSet<>(Arrays.asList("JVM", "Function",
-      "OceanBase", "Tbase", "PortCheck", "System", "MiniProgram", "Spanner", "IoT"));
+      "OceanBase", "Tbase", "PortCheck", "System", "MiniProgram", "Spanner", "IoT", "APM"));
 
   @Override
   public LevelAuthorizationCheckResult check(LevelAuthorizationMetaData levelAuthMetaData,
