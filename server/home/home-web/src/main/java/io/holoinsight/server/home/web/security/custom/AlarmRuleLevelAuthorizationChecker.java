@@ -6,26 +6,25 @@ package io.holoinsight.server.home.web.security.custom;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.google.common.reflect.TypeToken;
 import io.holoinsight.server.common.J;
-import io.holoinsight.server.common.dao.entity.MetricInfo;
-import io.holoinsight.server.common.dao.entity.dto.MetricInfoDTO;
-import io.holoinsight.server.common.service.RequestContextAdapter;
+import io.holoinsight.server.common.MonitorPageRequest;
 import io.holoinsight.server.common.RequestContext;
-import io.holoinsight.server.common.dao.mapper.AlarmRuleMapper;
-import io.holoinsight.server.common.dao.mapper.AlertTemplateMapper;
+import io.holoinsight.server.common.dao.emuns.TimeFilterEnum;
 import io.holoinsight.server.common.dao.entity.AlarmRule;
 import io.holoinsight.server.common.dao.entity.AlertTemplate;
 import io.holoinsight.server.common.dao.entity.dto.AlarmRuleDTO;
 import io.holoinsight.server.common.dao.entity.dto.AlertRuleExtra;
 import io.holoinsight.server.common.dao.entity.dto.AlertSilenceConfig;
+import io.holoinsight.server.common.dao.entity.dto.MetricInfoDTO;
 import io.holoinsight.server.common.dao.entity.dto.NotificationConfig;
 import io.holoinsight.server.common.dao.entity.dto.NotificationTemplate;
 import io.holoinsight.server.common.dao.entity.dto.alarm.AlarmRuleConf;
 import io.holoinsight.server.common.dao.entity.dto.alarm.TimeFilter;
-import io.holoinsight.server.common.dao.emuns.TimeFilterEnum;
-import io.holoinsight.server.common.MonitorPageRequest;
 import io.holoinsight.server.common.dao.entity.dto.alarm.trigger.CompareConfig;
 import io.holoinsight.server.common.dao.entity.dto.alarm.trigger.DataSource;
 import io.holoinsight.server.common.dao.entity.dto.alarm.trigger.Trigger;
+import io.holoinsight.server.common.dao.mapper.AlarmRuleMapper;
+import io.holoinsight.server.common.dao.mapper.AlertTemplateMapper;
+import io.holoinsight.server.common.service.RequestContextAdapter;
 import io.holoinsight.server.home.web.common.ParaCheckUtil;
 import io.holoinsight.server.home.web.security.LevelAuthorizationCheckResult;
 import io.holoinsight.server.home.web.security.LevelAuthorizationMetaData;
@@ -86,13 +85,14 @@ public class AlarmRuleLevelAuthorizationChecker extends AbstractQueryChecker
 
   private static final Set<String> silenceModes =
       new HashSet<>(Arrays.asList("default", "gradual", "fixed"));
-  private static final Set<String> aggregators = new HashSet<>(Arrays.asList("sum", "avg", "mix",
-      "max", "count", "none", "SUM", "AVG", "MIX", "MAX", "COUNT", "NONE"));
+  private static final Set<String> aggregators = new HashSet<>(Arrays.asList("sum", "avg", "min",
+      "max", "count", "none", "SUM", "AVG", "MIN", "MAX", "COUNT", "NONE"));
   private static final Set<String> metricTypes =
       new HashSet<>(Arrays.asList("app", "cache", "log", "oss", "trace", "system", "metric",
           "service", "function", "pg", "mongodb", "db", "miniProgram", "mysql"));
-  private static final Set<String> products = new HashSet<>(Arrays.asList("JVM", "Function",
-      "OceanBase", "Tbase", "PortCheck", "System", "MiniProgram", "Spanner", "IoT", "APM"));
+  private static final Set<String> products = new HashSet<>(
+      Arrays.asList("JVM", "Function", "OceanBase", "Tbase", "PortCheck", "System", "MiniProgram",
+          "Spanner", "IoT", "APM", "Mysql", "SLB", "SOFAMQX", "Postgres", "Gateway"));
 
   @Override
   public LevelAuthorizationCheckResult check(LevelAuthorizationMetaData levelAuthMetaData,

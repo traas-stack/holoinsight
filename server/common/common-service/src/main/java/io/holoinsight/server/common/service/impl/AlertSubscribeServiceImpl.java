@@ -6,16 +6,16 @@ package io.holoinsight.server.common.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import io.holoinsight.server.common.dao.converter.AlarmSubscribeConverter;
-import io.holoinsight.server.common.dao.mapper.AlarmSubscribeMapper;
 import io.holoinsight.server.common.dao.entity.AlarmSubscribe;
 import io.holoinsight.server.common.dao.entity.dto.AlarmSubscribeDTO;
 import io.holoinsight.server.common.dao.entity.dto.AlarmSubscribeInfo;
+import io.holoinsight.server.common.dao.mapper.AlarmSubscribeMapper;
 import io.holoinsight.server.common.service.AlertSubscribeService;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
-import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -32,11 +32,9 @@ import java.util.stream.Collectors;
 public class AlertSubscribeServiceImpl extends ServiceImpl<AlarmSubscribeMapper, AlarmSubscribe>
     implements AlertSubscribeService {
 
-  @Resource
+  @Autowired
   private AlarmSubscribeConverter alarmSubscribeConverter;
 
-  @Resource
-  private AlarmSubscribeMapper alarmSubscribeMapper;
 
   public Boolean saveDataBatch(AlarmSubscribeDTO alarmSubscribeDTO, String creator, String tenant,
       String workspace) {
@@ -56,7 +54,9 @@ public class AlertSubscribeServiceImpl extends ServiceImpl<AlarmSubscribeMapper,
         alarmSubscribeInfo.stream().map(AlarmSubscribeInfo::getId).collect(Collectors.toList());
     ids.removeAll(updateIds);
     // 删除
-    this.removeBatchByIds(ids);
+    if (!CollectionUtils.isEmpty(ids)) {
+      ids.forEach(id -> this.baseMapper.deleteById(id));
+    }
 
     List<AlarmSubscribe> alarmSubscribeList = new ArrayList<>();
     alarmSubscribeDTO.getAlarmSubscribe().forEach(e -> {
@@ -88,7 +88,7 @@ public class AlertSubscribeServiceImpl extends ServiceImpl<AlarmSubscribeMapper,
       String uniqueId) {
     AlarmSubscribeDTO alarmSubscribeDTO = new AlarmSubscribeDTO();
     alarmSubscribeDTO.setUniqueId(uniqueId);
-    List<AlarmSubscribe> list = this.alarmSubscribeMapper.selectList(queryWrapper);
+    List<AlarmSubscribe> list = this.baseMapper.selectList(queryWrapper);
     if (!CollectionUtils.isEmpty(list)) {
       alarmSubscribeDTO.setEnvType(list.get(0).getEnvType());
     }
@@ -98,7 +98,7 @@ public class AlertSubscribeServiceImpl extends ServiceImpl<AlarmSubscribeMapper,
 
   @Override
   public List<AlarmSubscribeInfo> queryByMap(QueryWrapper<AlarmSubscribe> queryWrapper) {
-    List<AlarmSubscribe> list = this.alarmSubscribeMapper.selectList(queryWrapper);
+    List<AlarmSubscribe> list = this.baseMapper.selectList(queryWrapper);
     return alarmSubscribeConverter.dosToDTOs(list);
   }
 
