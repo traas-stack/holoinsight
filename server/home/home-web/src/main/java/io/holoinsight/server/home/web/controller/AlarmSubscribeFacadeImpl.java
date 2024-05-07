@@ -106,10 +106,10 @@ public class AlarmSubscribeFacadeImpl extends BaseFacade {
         ParaCheckUtil.checkParaNotNull(alarmSubscribeDTO, "alarmSubscribeDTO");
         MonitorScope ms = RequestContext.getContext().ms;
         MonitorUser mu = RequestContext.getContext().mu;
-        if (StringUtils.isNotEmpty(alarmSubscribeDTO.getUniqueId())) {
+        String uniqueId = alarmSubscribeDTO.getUniqueId();
+        if (StringUtils.isNotEmpty(uniqueId)) {
           ParaCheckUtil.checkParaBoolean(
-              parameterSecurityService.checkRuleTenantAndWorkspace(alarmSubscribeDTO.getUniqueId(),
-                  tenant(), workspace()),
+              parameterSecurityService.checkRuleTenantAndWorkspace(uniqueId, tenant(), workspace()),
               "uniqueId do not belong to this tenant " + tenant() + " or workspace " + workspace());
         }
         if (!CollectionUtils.isEmpty(alarmSubscribeDTO.getAlarmSubscribe())) {

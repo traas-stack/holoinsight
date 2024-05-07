@@ -3,14 +3,16 @@
  */
 package io.holoinsight.server.home.biz.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import io.holoinsight.server.common.MD5Hash;
 import io.holoinsight.server.home.biz.service.GaeaCollectConfigService;
 import io.holoinsight.server.home.dal.converter.GaeaCollectConfigConverter;
 import io.holoinsight.server.home.dal.mapper.GaeaCollectConfigMapper;
 import io.holoinsight.server.home.dal.model.GaeaCollectConfig;
 import io.holoinsight.server.home.dal.model.dto.GaeaCollectConfigDTO;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.mapstruct.factory.Mappers;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,6 +39,20 @@ public class GaeaCollectConfigServiceImpl extends
   @Override
   public GaeaCollectConfigDTO findById(Long id) {
     return gaeaCollectConfigConverter.doToDTO(getById(id));
+  }
+
+  @Override
+  public GaeaCollectConfigDTO findByTableName(String tenant, String workspace, String tableName) {
+    QueryWrapper<GaeaCollectConfig> wrapper = new QueryWrapper<>();
+
+    wrapper.eq("tenant", tenant);
+    if (StringUtils.isNotBlank(workspace)) {
+      wrapper.eq("workspace", workspace);
+    }
+    wrapper.eq("table_name", tableName);
+    wrapper.eq("deleted", 0);
+    wrapper.last("LIMIT 1");
+    return gaeaCollectConfigConverter.doToDTO(this.getOne(wrapper));
   }
 
   @Override

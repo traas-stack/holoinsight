@@ -74,6 +74,7 @@ public class AggDispatcher {
     properties.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, AggValuesSerdes.S.class.getName());
     properties.put(ProducerConfig.BATCH_SIZE_CONFIG, 64 * 1024);
     properties.put(ProducerConfig.LINGER_MS_CONFIG, 100);
+    properties.put(ProducerConfig.MAX_REQUEST_SIZE_CONFIG, 2097152);
     properties.put(ProducerConfig.MAX_BLOCK_MS_CONFIG, 3000);
     properties.put(ProducerConfig.COMPRESSION_TYPE_CONFIG,
         aggProperties.getProducerCompressionType());

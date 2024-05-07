@@ -18,6 +18,8 @@ public interface GaeaCollectConfigService extends IService<GaeaCollectConfig> {
 
   GaeaCollectConfigDTO findById(Long id);
 
+  GaeaCollectConfigDTO findByTableName(String tenant, String workspace, String tableName);
+
   List<GaeaCollectConfigDTO> findByRefId(String refId);
 
   GaeaCollectConfigDTO upsert(GaeaCollectConfigDTO gaeaCollectConfigDTO);
