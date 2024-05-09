@@ -3,6 +3,7 @@
  */
 package io.holoinsight.server.extension.ceresdbx;
 
+import io.holoinsight.server.common.config.EnvironmentProperties;
 import io.holoinsight.server.common.dao.mapper.TenantOpsMapper;
 import io.holoinsight.server.extension.MetricMeterService;
 import io.holoinsight.server.extension.MetricStorage;
@@ -24,8 +25,9 @@ import org.springframework.context.annotation.Import;
 public class HoloinsightCeresdbxConfiguration {
 
   @Bean
-  public CeresdbxClientManager ceresdbxClientManager(TenantOpsMapper tenantOpsMapper) {
-    return new CeresdbxClientManager(tenantOpsMapper);
+  public CeresdbxClientManager ceresdbxClientManager(TenantOpsMapper tenantOpsMapper,
+      EnvironmentProperties environmentProperties) {
+    return new CeresdbxClientManager(tenantOpsMapper, environmentProperties);
   }
 
   @Bean
