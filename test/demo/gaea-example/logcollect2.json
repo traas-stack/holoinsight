@@ -1,0 +1,46 @@
+//from agent log to sls from local collect
+{
+  "select": {
+  },
+  "from": {
+    "type": "log",
+    "log": {
+      "path": [
+        {
+          "type": "path",
+          "pattern": "/home/admin/logs/spring.log"
+        }
+      ],
+      "charset": "utf-8",
+      "time": {
+        "type": "auto"
+      }
+    }
+  },
+  "groupBy": {
+    "groups": [
+      {
+        "name": "value",
+        "elect": {
+          "type": "line"
+        }
+      }
+    ],
+    "details": {
+      "enabled": true
+    }
+  },
+  "window": {
+    "interval": 60000
+  },
+  "output": {
+    "type": "sls",
+    "sls": {
+      "endpoint": "test",
+      "project": "test",
+      "logstore": "test",
+      "ak": "test",
+      "sk": "test"
+    }
+  }
+}

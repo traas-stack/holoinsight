@@ -56,7 +56,7 @@ public abstract class AbstractDataCoreService implements DBCoreService {
 
       // 所有元数据都需要 关键字 _type
       if (!row.containsKey(default_type)) {
-        logger.info("[addUkValues] has not _type, table={}, row={}.", tableName, row.toString());
+        logger.info("[addUkValues] has not _type, table={}, row={}.", tableName, row);
         continue;
       }
 

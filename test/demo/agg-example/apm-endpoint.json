@@ -1,0 +1,116 @@
+{
+  "aggId": "apm_endpoint",
+  "version": 1,
+  "partitionKeys": [],
+  "select": {
+    "items": [
+      {
+        "agg": {
+          "type": "HLL"
+        },
+        "elect": {
+          "metric": "_span",
+          "field": "trace_id"
+        },
+        "as": "cpm"
+      },
+      {
+        "agg": {
+          "type": "AVG"
+        },
+        "elect": {
+          "metric": "_span",
+          "field": "latency"
+        },
+        "as": "resp_time"
+      },
+      {
+        "agg": {
+          "type": "PERCENTILE"
+        },
+        "elect": {
+          "metric": "_span",
+          "field": "latency"
+        },
+        "as": "percentile"
+      },
+      {
+        "agg": {
+          "type": "HLL"
+        },
+        "elect": {
+          "metric": "_span",
+          "field": "trace_id"
+        },
+        "where": {
+          "simple": {
+            "trace_status": [
+              "2"
+            ]
+          }
+        },
+        "as": "cpm_fail"
+      }
+    ]
+  },
+  "from": {
+    "type": "metrics",
+    "metrics": {
+      "metrics": [
+        "_span"
+      ]
+    }
+  },
+  "where": {
+  },
+  "groupBy": {
+    "keyLimit": 1000,
+    "items": [
+      {
+        "tag": "resource.tenant",
+        "as": "tenant"
+      },
+      {
+        "tag": "resource.service.name",
+        "as": "serviceName"
+      },
+      {
+        "tag": "name",
+        "as": "endpointName"
+      }
+    ]
+  },
+  "window": {
+    "interval": 60000
+  },
+  "output": {
+    "items": [
+      {
+        "type": "TSDB",
+        "name": "apm_endpoint_${field}",
+        "fields": [
+          {
+            "name": "cpm",
+            "expression": "cpm"
+          },
+          {
+            "name": "resp_time",
+            "expression": "resp_time"
+          },
+          {
+            "name": "percentile",
+            "expression": "percentile",
+            "type": "PERCENTILE"
+          },
+          {
+            "name": "cpm_fail",
+            "expression": "cpm_fail"
+          }
+        ]
+      }
+    ]
+  },
+  "extension": {
+    "debug": false
+  }
+}
