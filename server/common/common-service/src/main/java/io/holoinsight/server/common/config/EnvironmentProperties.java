@@ -18,4 +18,5 @@ public class EnvironmentProperties {
   private String userCenter;
   private String location;
   private String gptUrl;
+  private String zone;
 }

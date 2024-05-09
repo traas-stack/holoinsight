@@ -11,6 +11,7 @@ import io.ceresdb.options.CeresDBOptions;
 import io.ceresdb.rpc.RpcOptions;
 import io.ceresdb.rpc.RpcOptions.LimitKind;
 import io.holoinsight.server.common.J;
+import io.holoinsight.server.common.config.EnvironmentProperties;
 import io.holoinsight.server.common.dao.entity.TenantOps;
 import io.holoinsight.server.common.dao.mapper.TenantOpsMapper;
 import org.apache.commons.lang3.StringUtils;
@@ -38,10 +39,14 @@ public class CeresdbxClientManager {
 
   private TenantOpsMapper tenantOpsMapper;
 
+  private EnvironmentProperties environmentProperties;
+
   private Map<String, CeresDBxClientInstance> instances = new ConcurrentHashMap<>();
 
-  public CeresdbxClientManager(TenantOpsMapper tenantOpsMapper) {
+  public CeresdbxClientManager(TenantOpsMapper tenantOpsMapper,
+      EnvironmentProperties environmentProperties) {
     this.tenantOpsMapper = tenantOpsMapper;
+    this.environmentProperties = environmentProperties;
   }
 
   @PostConstruct
@@ -65,7 +70,7 @@ public class CeresdbxClientManager {
         String database = (String) ceresdbConfig.get("database");
         Object portObj = ceresdbConfig.get("port");
         int port = Double.valueOf(String.valueOf(portObj)).intValue();
-        String newConfigKey = configKey(address, port, accessUser, accessKey);
+        String newConfigKey = configKey(fixAddress(address), port, accessUser, accessKey);
         CeresDBxClientInstance clientInstance = instances.get(tenant);
         if (clientInstance == null
             || !StringUtils.equals(clientInstance.getConfigKey(), newConfigKey)) {
@@ -87,6 +92,15 @@ public class CeresdbxClientManager {
         }
       }
     }
+  }
+
+  private String fixAddress(String address) {
+    if (StringUtils.indexOfIgnoreCase(address, "${zone}") != -1) {
+      String zoneAddress =
+          StringUtils.replaceIgnoreCase(address, "${zone}", this.environmentProperties.getZone());
+      return zoneAddress;
+    }
+    return address;
   }
 
   public CeresDBClient getClient(String tenant) {
