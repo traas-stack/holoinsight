@@ -41,39 +41,14 @@ public abstract class SqlDataCoreService extends AbstractDataCoreService {
 
   public static final int BATCH_INSERT_SIZE = 5;
   public static final int LIMIT = 1000;
-  // public static final int CLEAN_TASK_PERIOD = 3600;
   protected MetaDimDataService metaDimDataService;
   protected SuperCacheService superCacheService;
 
-  // private static final long DEFAULT_DEL_DURATION = 3 * 24 * 60 * 60 * 1000;
-  // public static final ScheduledThreadPoolExecutor cleanMeatExecutor =
-  // new ScheduledThreadPoolExecutor(2, r -> new Thread(r, "meta-clean-scheduler"));
-
-  // private void cleanMeta() {
-  // StopWatch stopWatch = StopWatch.createStarted();
-  // try {
-  // long cleanMetaDataDuration = getCleanMetaDataDuration();
-  // long end = System.currentTimeMillis() - cleanMetaDataDuration;
-  // logger.info("[META-CLEAN] the cleaning task will clean up the data before {}", end);
-  // Integer count = metaDimDataService.cleanMetaData(new Date(end));
-  // logger.info("[META-CLEAN] cleaned up {} pieces of data before {}, cost: {}", count, end,
-  // stopWatch.getTime());
-  // } catch (Exception e) {
-  // logger.error("[META-CLEAN] an exception occurred in the cleanup task", e);
-  // }
-  // }
 
   public SqlDataCoreService(MetaDimDataService metaDimDataService,
       SuperCacheService superCacheService) {
     this.metaDimDataService = metaDimDataService;
     this.superCacheService = superCacheService;
-
-
-    //
-    // int initialDelay = new Random().nextInt(CLEAN_TASK_PERIOD);
-    // logger.info("[META-CLEAN] clean task will scheduled after {}", initialDelay);
-    // cleanMeatExecutor.scheduleAtFixedRate(this::cleanMeta, initialDelay, CLEAN_TASK_PERIOD,
-    // TimeUnit.SECONDS);
   }
 
   public Integer queryChangedMeta(Date start, Date end, Boolean containDeleted,
@@ -127,6 +102,7 @@ public abstract class SqlDataCoreService extends AbstractDataCoreService {
       });
       List<MetaDimData> metaDataList =
           metaDimDataService.selectByUks(tableName, ukToUpdateOrInsertRow.keySet());
+      logger.info("selectByUks, table={}, metaDataList={}", tableName, metaDataList.size());
       Pair<Integer, Integer> sameAndExistSize;
       if (!CollectionUtils.isEmpty(metaDataList)) {
         sameAndExistSize = doUpdate(tableName, metaDataList, ukToUpdateOrInsertRow);
@@ -184,7 +160,7 @@ public abstract class SqlDataCoreService extends AbstractDataCoreService {
     for (MetaDimData metaData : metaDataList) {
       String uk = metaData.getUk();
       existUkSize++;
-      Map<String, Object> updateOrInsertRow = ukToUpdateOrInsertRow.remove(uk);
+      Map<String, Object> updateOrInsertRow = ukToUpdateOrInsertRow.get(uk);
       Map<String, Object> cachedRows = getMetaByCacheUk(tableName, uk);
       Pair<Boolean, Object> sameWithDbAnnotations =
           sameWithDbAnnotations(metaData, updateOrInsertRow);

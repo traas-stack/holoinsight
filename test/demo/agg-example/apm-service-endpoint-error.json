@@ -1,0 +1,68 @@
+{
+  "aggId": "apm_service_endpoint_error",
+  "version": 1,
+  "partitionKeys": [],
+  "select": {
+    "items": [
+      {
+        "agg": {
+          "type": "COUNT"
+        },
+        "elect": {
+          "metric": "_span",
+          "field": ""
+        },
+        "as": "cpm"
+      }
+    ]
+  },
+  "from": {
+    "type": "metrics",
+    "metrics": {
+      "metrics": [
+        "_span_service_error"
+      ]
+    }
+  },
+  "where": {
+  },
+  "groupBy": {
+    "keyLimit": 1000,
+    "items": [
+      {
+        "tag": "resource.tenant",
+        "as": "tenant"
+      },
+      {
+        "tag": "resource.service.name",
+        "as": "service_name"
+      },
+      {
+        "tag": "error_kind"
+      },
+      {
+        "tag": "endpoint_name"
+      }
+    ]
+  },
+  "window": {
+    "interval": 60000
+  },
+  "output": {
+    "items": [
+      {
+        "type": "TSDB",
+        "name": "apm_service_endpoint_error_${field}",
+        "fields": [
+          {
+            "name": "cpm",
+            "expression": "cpm"
+          }
+        ]
+      }
+    ]
+  },
+  "extension": {
+    "debug": false
+  }
+}

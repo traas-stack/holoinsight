@@ -114,7 +114,7 @@ public class FilterUtil {
 
 
   public static <R> List<R> filterData(Collection<Map<String, Object>> items,
-      Map<String, Map<String, Object>> filters, Function<Map, R> func) {
+      Map<String, Map<String, Object>> filters, Function<Map<String, Object>, R> func) {
     Map<String, Object> eqFilters = filters.get(EQ_FILTERS_KEY);
     Stream<Map<String, Object>> dataStream = items.stream();
     if (eqFilters != null) {

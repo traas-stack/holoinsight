@@ -5,7 +5,6 @@
 package io.holoinsight.server.home.task.crawler;
 
 import io.holoinsight.server.common.dao.entity.MetricInfo;
-import io.holoinsight.server.home.dal.model.dto.IntegrationProductDTO;
 import io.holoinsight.server.home.task.AbstractMetricCrawlerBuilder;
 import io.holoinsight.server.home.task.MetricCrawler;
 import lombok.extern.slf4j.Slf4j;
@@ -29,10 +28,11 @@ import static io.holoinsight.server.home.task.MetricCrawlerConstant.NUMBER_UNIT;
 @Slf4j
 @MetricCrawler(code = "io.holoinsight.plugin.ApmPlugin")
 public class ApmMetricCrawlerBuilder extends AbstractMetricCrawlerBuilder {
-  @Override
-  public List<MetricInfo> buildEntity(IntegrationProductDTO integrationProduct) {
-    List<MetricInfo> metricInfoList = new ArrayList<>();
 
+  @Override
+  protected List<MetricInfo> getMetricInfoList(String metric, List<String> tags,
+      MetricInfo metricInfoTemplate) {
+    List<MetricInfo> metricInfoList = new ArrayList<>();
     metricInfoList.add(genMetricInfo(GLOBAL_TENANT, GLOBAL_WORKSPACE, GLOBAL_ORGANIZATION, "apm",
         "Endpoint", "endpoint_cpm", "apm_endpoint_cpm", "endpoint calls per minute", NUMBER_UNIT,
         60, Arrays.asList("endpointName", "serviceName")));
@@ -81,11 +81,5 @@ public class ApmMetricCrawlerBuilder extends AbstractMetricCrawlerBuilder {
         Arrays.asList("source_service_name", "dest_service_name", "component", "type")));
 
     return metricInfoList;
-  }
-
-  @Override
-  protected List<MetricInfo> getMetricInfoList(String metric, List<String> tags,
-      MetricInfo metricInfoTemplate) {
-    return null;
   }
 }

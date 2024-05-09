@@ -1,0 +1,78 @@
+{
+  "aggId": "loganalysis",
+  "version": 1,
+  "partitionKeys": [],
+  "select": {
+    "items": [
+      {
+        "agg": {
+          "type": "COUNT"
+        },
+        "elect": {
+          "metric": "logmonitor_test",
+          "field": ""
+        },
+        "as": "count"
+      },
+      {
+        "agg": {
+          "type": "LOGANALYSIS_MERGE"
+        },
+        "elect": {
+          "metric": "logmonitor_test_analysis",
+          "field": "value"
+        },
+        "as": "merged"
+      }
+    ]
+  },
+  "from": {
+    "type": "config",
+    "metrics": {
+      "metrics": [
+        "logmonitor_test",
+        "logmonitor_test_analysis"
+      ]
+    },
+    "configs": {
+      "tableNames": ["test_analysis"]
+    }
+  },
+  "where": {
+  },
+  "groupBy": {
+    "keyLimit": 1000,
+    "items": [
+      {
+        "tag": "serviceName"
+      },
+      {
+        "tag": "eventName"
+      }
+    ]
+  },
+  "window": {
+    "interval": 60000
+  },
+  "output": {
+    "items": [
+      {
+        "type": "TSDB",
+        "name": "loganalysis_${field}",
+        "fields": [
+          {
+            "name": "count",
+            "expression": "count"
+          },
+          {
+            "name": "merged3",
+            "expression": "merged"
+          }
+        ]
+      }
+    ]
+  },
+  "extension": {
+    "debug": false
+  }
+}
