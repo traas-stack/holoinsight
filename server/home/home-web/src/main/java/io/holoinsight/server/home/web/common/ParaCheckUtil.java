@@ -33,16 +33,16 @@ public class ParaCheckUtil {
 
   private static final Pattern PATTERN_APPLICATION = Pattern.compile("^[a-z]{1,20}");
 
-  private static Pattern PATTERN_CN_SQL = Pattern.compile(
+  private final static Pattern PATTERN_CN_SQL = Pattern.compile(
       "^[\\u00b7A-Za-z0-9\\u4e00-\\u9fa5\\u3000-\\u303f\\uFF0C\\-_ （：。&）()@《》<>“”‘’\\[\\]{}【】/%,|:.]*$");
-  private static Pattern PATTERN_SQL =
+  private final static Pattern PATTERN_SQL =
       Pattern.compile("^[\\u00b7A-Za-z0-9\\u4e00-\\u9fa5\\-_ ,|:\\.]*$");
-  private static Pattern PATTERN_STRICT_SQL =
+  private final static Pattern PATTERN_STRICT_SQL =
       Pattern.compile("^[\\u00b7A-Za-z0-9\\u4e00-\\u9fa5\\-_,|\\.]*$");
-  private static final Pattern PATTERN_AIG_NAME =
-      Pattern.compile("^[a-z]{1,20}-[a-z][a-z0-9]{0,27}");
+  private final static Pattern PATTERN_UNICODE = Pattern.compile("\\\\u[0-9a-f]{4}");
 
-  private static Pattern uniCodePattern = Pattern.compile("\\\\u[0-9a-f]{4}");
+  private final static Pattern PATTERN_SPECIAL_CHAR = Pattern
+      .compile("[ `~!@#$%^&*()+=|{}':;',\\[\\].<>/?~！@#￥%……&*（）——+|{}【】‘；：”“’。，、？]|\n|\r|\t");
 
   /**
    * Check whether the object param is null.
@@ -77,7 +77,6 @@ public class ParaCheckUtil {
    * Check whether the string param is blank.
    *
    * @param param
-   * @param errorMsg
    */
   public static void checkParaNotBlank(String param, String errorKey) {
     if (StringUtils.isBlank(param)) {
@@ -125,9 +124,7 @@ public class ParaCheckUtil {
   }
 
   public static void checkParaSpecialChar(String str, String errorMsg) {
-    String regEx = "[ `~!@#$%^&*()+=|{}':;',\\[\\].<>/?~！@#￥%……&*（）——+|{}【】‘；：”“’。，、？]|\n|\r|\t";
-    Pattern p = Pattern.compile(regEx);
-    Matcher m = p.matcher(str);
+    Matcher m = PATTERN_SPECIAL_CHAR.matcher(str);
     if (m.find()) {
       throw new MonitorException(ResultCodeEnum.PARAMETER_ILLEGAL,
           "the " + errorMsg + " parameter cannot be special char");
@@ -192,7 +189,7 @@ public class ParaCheckUtil {
   private static boolean unicodeCheck(String param) {
     // unicode encoding check
     int start = 0;
-    Matcher uniCodeMatcher = uniCodePattern.matcher(param);
+    Matcher uniCodeMatcher = PATTERN_UNICODE.matcher(param);
     while (uniCodeMatcher.find(start)) {
       start = uniCodeMatcher.end();
       String keyword = uniCodeMatcher.group(0);
@@ -237,10 +234,7 @@ public class ParaCheckUtil {
   public static boolean sqlNameCheck(String param) {
     Matcher commonAllowed = PATTERN_SQL.matcher(param);
     if (commonAllowed.find()) {
-      if (!unicodeCheck(param)) {
-        return false;
-      }
-      return true;
+      return unicodeCheck(param);
     }
     return false;
   }

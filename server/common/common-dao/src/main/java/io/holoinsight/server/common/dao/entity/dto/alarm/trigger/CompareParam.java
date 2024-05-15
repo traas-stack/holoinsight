@@ -19,4 +19,6 @@ public class CompareParam {
 
   @JsonPropertyDescription("Alarm trigger threshold")
   Double cmpValue;
+
+  String unit;
 }
