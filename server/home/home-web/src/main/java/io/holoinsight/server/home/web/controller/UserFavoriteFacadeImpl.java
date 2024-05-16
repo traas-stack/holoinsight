@@ -97,7 +97,7 @@ public class UserFavoriteFacadeImpl extends BaseFacade {
   @PostMapping("/create")
   @ResponseBody
   @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.EDIT)
-  public JsonResult<UserFavorite> save(@RequestBody UserFavorite userFavorite) {
+  public JsonResult<UserFavorite> create(@RequestBody UserFavorite userFavorite) {
     final JsonResult<UserFavorite> result = new JsonResult<>();
     facadeTemplate.manage(result, new ManageCallback() {
       @Override

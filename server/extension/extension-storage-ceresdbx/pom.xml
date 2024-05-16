@@ -30,6 +30,11 @@
 			<version>1.0.3</version>
 		</dependency>
 		<dependency>
+ 			<groupId>io.ceresdb</groupId>
+ 			<artifactId>horaedb-all</artifactId>
+ 			<version>2.0.0-fix2</version>
+		</dependency>
+		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-context</artifactId>
 		</dependency>

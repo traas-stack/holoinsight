@@ -108,11 +108,11 @@ public class CeresdbxClientManager {
       tenant = "dev";
     }
     CeresDBxClientInstance ceresDBxClientInstance = instances.get(tenant);
-    Assert.notNull(ceresDBxClientInstance, "CeresDBx instance not found for tenant: " + tenant);
-    return ceresDBxClientInstance.getCeresDBClient();
+    // Assert.notNull(ceresDBxClientInstance, "CeresDBx instance not found for tenant: " + tenant);
+    return ceresDBxClientInstance == null ? null : ceresDBxClientInstance.getCeresDBClient();
   }
 
-  private String configKey(String host, int port, String user, String accessKey) {
+  protected static String configKey(String host, int port, String user, String accessKey) {
     return host + port + user + accessKey;
   }
 }

@@ -31,6 +31,12 @@ public class HoloinsightCeresdbxConfiguration {
   }
 
   @Bean
+  public HoraedbClientManager horaedbClientManager(TenantOpsMapper tenantOpsMapper,
+      EnvironmentProperties environmentProperties) {
+    return new HoraedbClientManager(tenantOpsMapper, environmentProperties);
+  }
+
+  @Bean
   public MetricStorage ceresdbxMetricStorage(CeresdbxClientManager ceresdbxClientManager,
       @Autowired(required = false) PqlQueryService pqlQueryService) {
     return new CeresdbxMetricStorage(ceresdbxClientManager, pqlQueryService);
