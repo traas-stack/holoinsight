@@ -65,7 +65,7 @@ public class AlarmWebhookFacadeImpl extends BaseFacade {
   @PostMapping("/create")
   @ResponseBody
   @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.EDIT)
-  public JsonResult<Long> save(@RequestBody AlarmWebhookDTO alarmWebhookDTO) {
+  public JsonResult<Long> create(@RequestBody AlarmWebhookDTO alarmWebhookDTO) {
     final JsonResult<Long> result = new JsonResult<>();
     facadeTemplate.manage(result, new ManageCallback() {
       @Override

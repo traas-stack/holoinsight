@@ -126,7 +126,7 @@ public class FolderFacadeImpl extends BaseFacade {
   @PostMapping("/create")
   @ResponseBody
   @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.EDIT)
-  public JsonResult<Folder> save(@RequestBody Folder folder) {
+  public JsonResult<Folder> create(@RequestBody Folder folder) {
     final JsonResult<Folder> result = new JsonResult<>();
     facadeTemplate.manage(result, new ManageCallback() {
       @Override

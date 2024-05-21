@@ -102,10 +102,10 @@ public class AlarmGroupFacadeImpl extends BaseFacade {
     }
 
     ParaCheckUtil.checkParaId(alarmGroup.getId());
-    return save(alarmGroup, true);
+    return create(alarmGroup, true);
   }
 
-  public JsonResult<Long> save(AlarmGroupDTO alarmGroup, boolean needCheckUser) {
+  public JsonResult<Long> create(AlarmGroupDTO alarmGroup, boolean needCheckUser) {
     final JsonResult<Long> result = new JsonResult<>();
     facadeTemplate.manage(result, new ManageCallback() {
       @Override

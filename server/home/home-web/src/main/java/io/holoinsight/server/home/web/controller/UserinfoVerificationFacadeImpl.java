@@ -63,7 +63,7 @@ public class UserinfoVerificationFacadeImpl extends BaseFacade {
   @PostMapping("/create")
   @ResponseBody
   @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.EDIT)
-  public JsonResult<Long> save(@RequestBody UserinfoVerification userinfoVerification) {
+  public JsonResult<Long> create(@RequestBody UserinfoVerification userinfoVerification) {
     String requestId = UUID.randomUUID().toString();
     final JsonResult<Long> result = new JsonResult<>();
     try {

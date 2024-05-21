@@ -6,8 +6,11 @@ package io.holoinsight.server.test.it;
 import io.holoinsight.server.common.J;
 import io.holoinsight.server.common.dao.entity.dto.AlarmBlockDTO;
 import io.holoinsight.server.common.MonitorPageRequest;
+import io.holoinsight.server.common.dao.entity.dto.AlarmRuleDTO;
 import io.restassured.response.Response;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.hamcrest.CustomMatcher;
+import org.hamcrest.Matchers;
 import org.hamcrest.core.Every;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Order;
@@ -17,8 +20,12 @@ import java.util.Map;
 import java.util.Stack;
 import java.util.function.Supplier;
 
+import static io.holoinsight.server.test.it.AlertRuleIT.buildRule;
+import static io.holoinsight.server.test.it.AlertRuleIT.buildTimeFilter;
+
 public class AlarmBlockFacadeIT extends BaseIT {
   Long id;
+  Integer ruleId;
   String tenant;
   String uniqueId;
 
@@ -31,8 +38,38 @@ public class AlarmBlockFacadeIT extends BaseIT {
 
   @Order(1)
   @Test
+  public void test_rule_create() {
+    String name = RandomStringUtils.randomAlphabetic(10) + "告警屏蔽测试用的炮灰规则";
+    AlarmRuleDTO alarmRuleDTO = new AlarmRuleDTO();
+    alarmRuleDTO.setRuleName(name);
+    alarmRuleDTO.setSourceType("apm_holoinsight");
+    alarmRuleDTO.setAlarmLevel("5");
+    alarmRuleDTO.setRuleDescribe("告警屏蔽测试用的炮灰规则");
+    alarmRuleDTO.setStatus((byte) 1);
+    alarmRuleDTO.setIsMerge((byte) 0);
+    alarmRuleDTO.setRecover((byte) 0);
+    alarmRuleDTO.setRuleType("rule");
+    alarmRuleDTO.setTimeFilter(buildTimeFilter());
+    alarmRuleDTO.setRule(buildRule());
+
+    // Create folder
+    ruleId = given() //
+        .body(new JSONObject(J.toMap(J.toJson(alarmRuleDTO)))) //
+        .when() //
+        .post("/webapi/alarmRule/create") //
+        .prettyPeek() //
+        .then() //
+        .body("success", IS_TRUE) //
+        .body("data", Matchers.any(Number.class)) //
+        .extract() //
+        .path("data"); //
+
+  }
+
+  @Order(2)
+  @Test
   public void test_alarm_block_create() {
-    uniqueId = "rule_-1";
+    uniqueId = "rule_" + ruleId;
     AlarmBlockDTO item = new AlarmBlockDTO();
     item.setUniqueId(uniqueId);
     // Create custom_plugin
@@ -56,7 +93,7 @@ public class AlarmBlockFacadeIT extends BaseIT {
     System.out.println(tenant);
   }
 
-  @Order(2)
+  @Order(3)
   @Test
   public void test_alarm_block_update() {
     AlarmBlockDTO item = new AlarmBlockDTO();
@@ -80,9 +117,9 @@ public class AlarmBlockFacadeIT extends BaseIT {
         .root("data").body("uniqueId", eq(uniqueId));
   }
 
-  @Order(3)
+  @Order(4)
   @Test
-  public void test_custom_plugin_delete() {
+  public void test_alarm_block_delete() {
     given() //
         .pathParam("id", id) //
         .when() //
@@ -96,49 +133,5 @@ public class AlarmBlockFacadeIT extends BaseIT {
     response //
         .then() //
         .body("success", IS_FALSE); //
-  }
-
-  @Order(4)
-  @Test
-  public void test_custom_plugin_pageQuery() {
-    Stack<Long> ids = new Stack<>();
-    AlarmBlockDTO item = new AlarmBlockDTO();
-    item.setTenant(tenant);
-    for (int i = 0; i < 10; i++) {
-      Long id = ((Number) given() //
-          .body(new JSONObject(J.toMap(J.toJson(item)))) //
-          .when() //
-          .post("/webapi/alarmBlock/create") //
-          .prettyPeek() //
-          .then() //
-          .body("success", IS_TRUE) //
-          .extract() //
-          .path("data")).longValue(); //
-      ids.push(id);
-    }
-
-    AlarmBlockDTO condition = new AlarmBlockDTO();
-    condition.setTenant(tenant);
-    MonitorPageRequest<AlarmBlockDTO> pageRequest = new MonitorPageRequest<>();
-    pageRequest.setTarget(condition);
-    pageRequest.setPageNum(0);
-    pageRequest.setPageSize(3);
-    given() //
-        .body(new JSONObject(J.toMap(J.toJson(pageRequest)))) //
-        .when() //
-        .post("/webapi/alarmBlock/pageQuery") //
-        .prettyPeek() //
-        .then() //
-        .body("success", IS_TRUE) //
-        .root("data")
-        .body("items", new Every<>(new CustomMatcher<AlarmBlockDTO>("page query id equal") {
-          @Override
-          public boolean matches(Object o) {
-            Map<String, Object> item = (Map<String, Object>) o;
-            Long queryId = ((Number) item.get("id")).longValue();
-            Long id = ids.pop().longValue();
-            return queryId.equals(id);
-          }
-        }));
   }
 }

@@ -154,7 +154,7 @@ public class CustomPluginFacadeImpl extends BaseFacade {
   @PostMapping("/create")
   @ResponseBody
   @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.EDIT)
-  public JsonResult<CustomPluginDTO> save(@RequestBody CustomPluginDTO customPluginDTO) {
+  public JsonResult<CustomPluginDTO> create(@RequestBody CustomPluginDTO customPluginDTO) {
     final JsonResult<CustomPluginDTO> result = new JsonResult<>();
     facadeTemplate.manage(result, new ManageCallback() {
       @Override

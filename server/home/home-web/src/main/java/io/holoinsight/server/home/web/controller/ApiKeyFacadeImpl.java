@@ -116,7 +116,7 @@ public class ApiKeyFacadeImpl extends BaseFacade {
   @PostMapping("/create")
   @ResponseBody
   @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.EDIT)
-  public JsonResult<ApiKey> save(@RequestBody ApiKey apiKey) {
+  public JsonResult<ApiKey> create(@RequestBody ApiKey apiKey) {
     final JsonResult<ApiKey> result = new JsonResult<>();
     facadeTemplate.manage(result, new ManageCallback() {
       @Override

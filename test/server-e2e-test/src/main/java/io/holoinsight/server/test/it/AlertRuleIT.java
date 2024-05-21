@@ -391,14 +391,14 @@ public class AlertRuleIT extends BaseIT {
     return Arrays.asList(compareConfig1, compareConfig2);
   }
 
-  private Map<String, Object> buildRule() {
+  protected static Map<String, Object> buildRule() {
     AlarmRuleConf alarmRuleConf = new AlarmRuleConf();
     alarmRuleConf.setBoolOperation(BoolOperationEnum.AND);
     alarmRuleConf.setTriggers(Collections.singletonList(buildTrigger()));
     return J.toMap(J.toJson(alarmRuleConf));
   }
 
-  private Trigger buildTrigger() {
+  protected static Trigger buildTrigger() {
     Trigger trigger = new Trigger();
     trigger.setZeroFill(true);
     trigger.setQuery("a");
@@ -413,7 +413,7 @@ public class AlertRuleIT extends BaseIT {
     return trigger;
   }
 
-  private DataSource buildDataSource() {
+  protected static DataSource buildDataSource() {
     Filter filter = new Filter();
     filter.setName("app");
     filter.setType("literal_or");
@@ -429,21 +429,21 @@ public class AlertRuleIT extends BaseIT {
     return dataSource;
   }
 
-  private CompareConfig buildCompareConfig() {
+  protected static CompareConfig buildCompareConfig() {
     CompareConfig compareConfig = new CompareConfig();
     compareConfig.setTriggerLevel("4");
     compareConfig.setCompareParam(Collections.singletonList(buildCompareParam()));
     return compareConfig;
   }
 
-  private CompareParam buildCompareParam() {
+  protected static CompareParam buildCompareParam() {
     CompareParam param = new CompareParam();
     param.setCmp(CompareOperationEnum.GTE);
     param.setCmpValue(0d);
     return param;
   }
 
-  private Map<String, Object> buildTimeFilter() {
+  protected static Map<String, Object> buildTimeFilter() {
     TimeFilter timeFilter = new TimeFilter();
     timeFilter.setModel(TimeFilterEnum.DAY.getDesc());
     timeFilter.setFrom("00:00:00");
