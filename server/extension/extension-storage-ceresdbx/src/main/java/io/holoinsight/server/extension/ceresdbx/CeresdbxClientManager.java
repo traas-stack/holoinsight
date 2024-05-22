@@ -70,7 +70,8 @@ public class CeresdbxClientManager {
         String database = (String) ceresdbConfig.get("database");
         Object portObj = ceresdbConfig.get("port");
         int port = Double.valueOf(String.valueOf(portObj)).intValue();
-        String newConfigKey = configKey(fixAddress(address), port, accessUser, accessKey);
+        address = fixAddress(address);
+        String newConfigKey = configKey(address, port, accessUser, accessKey);
         CeresDBxClientInstance clientInstance = instances.get(tenant);
         if (clientInstance == null
             || !StringUtils.equals(clientInstance.getConfigKey(), newConfigKey)) {
