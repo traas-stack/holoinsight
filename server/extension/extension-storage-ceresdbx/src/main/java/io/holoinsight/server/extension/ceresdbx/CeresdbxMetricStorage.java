@@ -22,6 +22,7 @@ import io.ceresdb.common.parser.SqlParserFactoryProvider;
 import io.holoinsight.server.common.J;
 import io.holoinsight.server.extension.MetricMeterService;
 import io.holoinsight.server.extension.model.DetailResult;
+import io.holoinsight.server.extension.model.PqlLabelParam;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -224,6 +225,33 @@ public class CeresdbxMetricStorage implements MetricStorage {
       return Lists.newArrayList();
     }
     return pqlQueryService.queryRange(pqlParam);
+  }
+
+  @Override
+  public List<Map<String, String>> pqlSeriesQuery(PqlLabelParam pqlLabelParam) {
+    if (Objects.isNull(pqlQueryService)) {
+      LOGGER.warn("[CeresDB] pqlSeriesQuery is null");
+      return Lists.newArrayList();
+    }
+    return pqlQueryService.querySeries(pqlLabelParam);
+  }
+
+  @Override
+  public List<String> pqlLabelsQuery(PqlLabelParam pqlLabelParam) {
+    if (Objects.isNull(pqlQueryService)) {
+      LOGGER.warn("[CeresDB] pqlLabelsQuery is null");
+      return Lists.newArrayList();
+    }
+    return pqlQueryService.queryLabels(pqlLabelParam);
+  }
+
+  @Override
+  public List<String> pqlLabelValueQuery(PqlLabelParam pqlLabelParam) {
+    if (Objects.isNull(pqlQueryService)) {
+      LOGGER.warn("[CeresDB] pqlLabelValueQuery is null");
+      return Lists.newArrayList();
+    }
+    return pqlQueryService.queryLabelValues(pqlLabelParam);
   }
 
   @Override

@@ -13,7 +13,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 
-import static io.holoinsight.server.home.task.MetricCrawlerConstant.*;
+import static io.holoinsight.server.common.model.MetricCrawlerConstant.*;
 
 /**
  * @author jsy1001de

@@ -3,7 +3,10 @@
  */
 package io.holoinsight.server.home.biz.plugin.core;
 
+import com.google.gson.reflect.TypeToken;
+import io.holoinsight.server.common.J;
 import io.holoinsight.server.common.dao.entity.dto.MetricInfoDTO;
+import io.holoinsight.server.common.model.MetricCrawlerConstant;
 import io.holoinsight.server.common.service.MetricInfoService;
 import io.holoinsight.server.home.biz.common.GaeaConvertUtil;
 import io.holoinsight.server.home.biz.common.GaeaSqlTaskUtil;
@@ -13,12 +16,9 @@ import io.holoinsight.server.home.dal.model.dto.IntegrationPluginDTO;
 import io.holoinsight.server.home.dal.model.dto.conf.CollectMetric;
 import io.holoinsight.server.home.dal.model.dto.conf.CustomPluginConf;
 import io.holoinsight.server.home.dal.model.dto.conf.CustomPluginConf.ExtraConfig;
-import io.holoinsight.server.home.dal.model.dto.conf.CustomPluginConf.SplitCol;
 import io.holoinsight.server.home.dal.model.dto.conf.Filter;
 import io.holoinsight.server.home.dal.model.dto.conf.LogParse;
 import io.holoinsight.server.home.dal.model.dto.conf.LogPath;
-import io.holoinsight.server.common.J;
-import com.google.gson.reflect.TypeToken;
 import io.holoinsight.server.registry.model.From;
 import io.holoinsight.server.registry.model.GroupBy;
 import io.holoinsight.server.registry.model.Output;
@@ -205,10 +205,11 @@ public class LogPlugin extends AbstractLocalIntegrationPlugin<LogPlugin> {
         metricInfoDTO.setWorkspace("-");
         metricInfoDTO.setOrganization("-");
         metricInfoDTO.setProduct(product);
-
+        metricInfoDTO.setUnit(MetricCrawlerConstant.NUMBER_UNIT);
         metricInfoDTO.setMetricType("logdefault");
         if (Boolean.TRUE == conf.spm && collectMetric.tableName.contains("successPercent")) {
           metricInfoDTO.setMetricType("logspm");
+          metricInfoDTO.setUnit(MetricCrawlerConstant.PERCENT_UNIT);
         } else if (collectMetric.checkLogPattern()) {
           metricInfoDTO.setMetricType("logpattern");
         } else if (collectMetric.checkLogSample()) {
@@ -219,10 +220,10 @@ public class LogPlugin extends AbstractLocalIntegrationPlugin<LogPlugin> {
             getMetricName(product.toLowerCase(), item, collectMetric.getTableName()));
         metricInfoDTO.setDeleted(deleted);
         metricInfoDTO.setDescription(collectMetric.tableName);
-        metricInfoDTO.setUnit("number");
+
         metricInfoDTO.setPeriod(periodType.dataUnitMs / 1000);
 
-        List<String> tags = new ArrayList<>(Arrays.asList("ip", "hostname", "namespace"));
+        List<String> tags = new ArrayList<>(Arrays.asList("ip", "hostname", "app"));
         if (!CollectionUtils.isEmpty(collectMetric.tags)) {
           tags.addAll(collectMetric.tags);
         }

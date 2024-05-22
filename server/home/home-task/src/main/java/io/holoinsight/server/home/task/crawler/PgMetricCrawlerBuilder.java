@@ -13,10 +13,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static io.holoinsight.server.home.task.MetricCrawlerConstant.GLOBAL_ORGANIZATION;
-import static io.holoinsight.server.home.task.MetricCrawlerConstant.GLOBAL_TENANT;
-import static io.holoinsight.server.home.task.MetricCrawlerConstant.GLOBAL_WORKSPACE;
-import static io.holoinsight.server.home.task.MetricCrawlerConstant.NUMBER_UNIT;
+import static io.holoinsight.server.common.model.MetricCrawlerConstant.BYTES_UNIT;
+import static io.holoinsight.server.common.model.MetricCrawlerConstant.GLOBAL_ORGANIZATION;
+import static io.holoinsight.server.common.model.MetricCrawlerConstant.GLOBAL_TENANT;
+import static io.holoinsight.server.common.model.MetricCrawlerConstant.GLOBAL_WORKSPACE;
+import static io.holoinsight.server.common.model.MetricCrawlerConstant.MS_UNIT;
+import static io.holoinsight.server.common.model.MetricCrawlerConstant.NUMBER_UNIT;
+import static io.holoinsight.server.common.model.MetricCrawlerConstant.PERCENT_UNIT;
 
 /**
  * @author masaimu
@@ -45,7 +48,7 @@ public class PgMetricCrawlerBuilder extends AbstractMetricCrawlerBuilder {
     metricInfoList.add(genMetricInfo(GLOBAL_TENANT, GLOBAL_WORKSPACE, GLOBAL_ORGANIZATION, "pg",
         "Connections", "transaction_wraparound_percent_towards_wraparound",
         "ccp_transaction_wraparound_percent_towards_wraparound",
-        "transaction wraparound percent towards wraparound", NUMBER_UNIT, 60, tags));
+        "transaction wraparound percent towards wraparound", PERCENT_UNIT, 60, tags));
 
     metricInfoList.add(genMetricInfo(GLOBAL_TENANT, GLOBAL_WORKSPACE, GLOBAL_ORGANIZATION, "pg",
         "Cache_Hit_Ratio", "stat_database_blks_hit", "ccp_stat_database_blks_hit",
@@ -67,15 +70,15 @@ public class PgMetricCrawlerBuilder extends AbstractMetricCrawlerBuilder {
 
     metricInfoList.add(genMetricInfo(GLOBAL_TENANT, GLOBAL_WORKSPACE, GLOBAL_ORGANIZATION, "pg",
         "database_size", "database_size_bytes", "ccp_database_size_bytes", "database_size_bytes",
-        NUMBER_UNIT, 60, tags));
+        BYTES_UNIT, 60, tags));
     metricInfoList.add(genMetricInfo(GLOBAL_TENANT, GLOBAL_WORKSPACE, GLOBAL_ORGANIZATION, "pg",
         "Query_Duration", "pg_stat_statements_total_mean_exec_time_ms",
         "ccp_pg_stat_statements_total_mean_exec_time_ms",
-        "pg_stat_statements_total_mean_exec_time_ms", NUMBER_UNIT, 60, tags));
+        "pg_stat_statements_total_mean_exec_time_ms", MS_UNIT, 60, tags));
     metricInfoList.add(genMetricInfo(GLOBAL_TENANT, GLOBAL_WORKSPACE, GLOBAL_ORGANIZATION, "pg",
         "Query_Duration", "pg_stat_statements_top_max_exec_time_ms",
         "ccp_pg_stat_statements_top_max_exec_time_ms", "pg_stat_statements_top_max_exec_time_ms",
-        NUMBER_UNIT, 60, tags));
+        MS_UNIT, 60, tags));
     metricInfoList.add(genMetricInfo(GLOBAL_TENANT, GLOBAL_WORKSPACE, GLOBAL_ORGANIZATION, "pg",
         "Row_activity", "stat_database_tup_fetched", "ccp_stat_database_tup_fetched",
         "stat_database_tup_fetched", NUMBER_UNIT, 60, tags));
@@ -93,7 +96,7 @@ public class PgMetricCrawlerBuilder extends AbstractMetricCrawlerBuilder {
         "stat_database_tup_returned", NUMBER_UNIT, 60, tags));
     metricInfoList.add(genMetricInfo(GLOBAL_TENANT, GLOBAL_WORKSPACE, GLOBAL_ORGANIZATION, "pg",
         "WAL", "wal_activity_total_size_bytes", "ccp_wal_activity_total_size_bytes",
-        "wal_activity_total_size_bytes", NUMBER_UNIT, 60, tags));
+        "wal_activity_total_size_bytes", BYTES_UNIT, 60, tags));
     metricInfoList.add(genMetricInfo(GLOBAL_TENANT, GLOBAL_WORKSPACE, GLOBAL_ORGANIZATION, "pg",
         "Locks", "stat_database_deadlocks", "ccp_stat_database_deadlocks",
         "stat_database_deadlocks", NUMBER_UNIT, 60, tags));
@@ -134,19 +137,19 @@ public class PgMetricCrawlerBuilder extends AbstractMetricCrawlerBuilder {
             "nodemx_mem_limit", "ccp_nodemx_mem_limit", "nodemx_mem_limit", NUMBER_UNIT, 60, tags));
     metricInfoList.add(genMetricInfo(GLOBAL_TENANT, GLOBAL_WORKSPACE, GLOBAL_ORGANIZATION, "pg",
         "MEM", "nodemx_mem_usage_in_bytes", "ccp_nodemx_mem_usage_in_bytes",
-        "nodemx_mem_usage_in_bytes", NUMBER_UNIT, 60, tags));
+        "nodemx_mem_usage_in_bytes", BYTES_UNIT, 60, tags));
     metricInfoList
         .add(genMetricInfo(GLOBAL_TENANT, GLOBAL_WORKSPACE, GLOBAL_ORGANIZATION, "pg", "MEM",
             "nodemx_mem_limit", "ccp_nodemx_mem_limit", "nodemx_mem_limit", NUMBER_UNIT, 60, tags));
     metricInfoList.add(genMetricInfo(GLOBAL_TENANT, GLOBAL_WORKSPACE, GLOBAL_ORGANIZATION, "pg",
         "MEM", "nodemx_mem_usage_in_bytes", "ccp_nodemx_mem_usage_in_bytes",
-        "nodemx_mem_usage_in_bytes", NUMBER_UNIT, 60, tags));
+        "nodemx_mem_usage_in_bytes", BYTES_UNIT, 60, tags));
     metricInfoList.add(genMetricInfo(GLOBAL_TENANT, GLOBAL_WORKSPACE, GLOBAL_ORGANIZATION, "pg",
         "Network", "nodemx_network_rx_bytes", "ccp_nodemx_network_rx_bytes",
-        "nodemx_network_rx_bytes", NUMBER_UNIT, 60, tags));
+        "nodemx_network_rx_bytes", BYTES_UNIT, 60, tags));
     metricInfoList.add(genMetricInfo(GLOBAL_TENANT, GLOBAL_WORKSPACE, GLOBAL_ORGANIZATION, "pg",
         "Network", "nodemx_network_tx_bytes", "ccp_nodemx_network_tx_bytes",
-        "nodemx_network_tx_bytes", NUMBER_UNIT, 60, tags));
+        "nodemx_network_tx_bytes", BYTES_UNIT, 60, tags));
 
 
     return metricInfoList;

@@ -14,10 +14,12 @@ import java.util.Objects;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.gson.Gson;
+import io.holoinsight.server.extension.model.PqlLabelParam;
 import io.holoinsight.server.extension.model.PqlParam;
 import io.holoinsight.server.extension.model.QueryResult;
 import io.holoinsight.server.extension.model.QueryResult.Result;
 import io.holoinsight.server.extension.promql.model.Endpoint;
+import io.holoinsight.server.extension.promql.model.PqlLabelResult;
 import io.holoinsight.server.extension.promql.model.PqlResult;
 import io.holoinsight.server.extension.promql.model.PqlResult.Data;
 import io.holoinsight.server.extension.promql.utils.HttpClientUtils;
@@ -40,6 +42,9 @@ public class HttpPqlQueryService implements PqlQueryService {
   public static final String SUCCESS = "success";
   public static final String DEFAULT_TENANT = "default";
   public static final String API_V1_QUERY_RANGE = "api/v1/query_range";
+  public static final String API_V1_QUERY_SERIES = "api/v1/series";
+  public static final String API_V1_QUERY_LABELS = "api/v1/labels";
+  public static final String API_V1_QUERY_LABEL_VALUES = "api/v1/label/%s/values";
   public static final String API_V1_QUERY = "api/v1/query";
   private Map<String, Endpoint> endpoints;
 
@@ -66,13 +71,8 @@ public class HttpPqlQueryService implements PqlQueryService {
 
   private Map<String, Object> parasParam(PqlParam pqlParam) {
     HashMap<String, Object> params = Maps.newHashMap();
-    try {
-      params.put("query", URLEncoder.encode(pqlParam.getQuery(), "UTF-8"));
-    } catch (UnsupportedEncodingException e) {
-      LOGGER.error("[PqlRemoteQuery] encode pql query param error , pql : {}", pqlParam.getQuery(),
-          e);
-      throw new RuntimeException("encode pql query param error");
-    }
+
+    params.put("query", pqlParam.getQuery());
     long time = pqlParam.getTime();
     if (time > 0) {
       params.put("time", unixTimestamp(time));
@@ -83,7 +83,7 @@ public class HttpPqlQueryService implements PqlQueryService {
       params.put("timeout", Integer.parseInt(timeout));
     }
     if (pqlParam.getStep() > 0) {
-      params.put("step", pqlParam.getStep());
+      params.put("step", pqlParam.getStep() / 1000);
     }
     if (pqlParam.getStart() > 0) {
       params.put("start", unixTimestamp(pqlParam.getStart()));
@@ -153,11 +153,11 @@ public class HttpPqlQueryService implements PqlQueryService {
     return point;
   }
 
-  private static double unixTimestamp(long ms) {
+  private static long unixTimestamp(long ms) {
     if (ms == 0) {
       ms = System.currentTimeMillis();
     }
-    return (double) ms / 1000;
+    return ms / 1000;
   }
 
   @Override
@@ -170,6 +170,96 @@ public class HttpPqlQueryService implements PqlQueryService {
     }
     String body = HttpClientUtils.get(endpoint, API_V1_QUERY_RANGE, parasParam(pqlParam));
     return toResult(pqlParam, body);
+  }
+
+  @Override
+  public List<Map<String, String>> querySeries(PqlLabelParam pqlLabelParam) {
+    String tenant = pqlLabelParam.getTenant();
+    Endpoint endpoint = getEndpoint(tenant);
+    if (Objects.isNull(endpoint)) {
+      LOGGER.error("[PqlRemoteQuery] queryRange error, tenant {} endpoint is not exists", tenant);
+      return Lists.newArrayList();
+    }
+    String body =
+        HttpClientUtils.get(endpoint, API_V1_QUERY_SERIES, parasLabelParam(pqlLabelParam));
+    List<Map<String, String>> results = Lists.newArrayList();
+    if (StringUtils.isBlank(body)) {
+      return results;
+    }
+    PqlLabelResult<List<Map<String, String>>> pqlResult =
+        new Gson().fromJson(body, PqlLabelResult.class);
+    if (!StringUtils.equalsIgnoreCase(SUCCESS, pqlResult.getStatus())) {
+      LOGGER.error("[PqlRemoteQuery] exec pql series: {} error, body:{}", pqlLabelParam, body);
+      return results;
+    }
+
+    return pqlResult.getData();
+  }
+
+  @Override
+  public List<String> queryLabels(PqlLabelParam pqlLabelParam) {
+    String tenant = pqlLabelParam.getTenant();
+    Endpoint endpoint = getEndpoint(tenant);
+    if (Objects.isNull(endpoint)) {
+      LOGGER.error("[PqlRemoteQuery] queryRange error, tenant {} endpoint is not exists", tenant);
+      return Lists.newArrayList();
+    }
+    String body =
+        HttpClientUtils.get(endpoint, API_V1_QUERY_LABELS, parasLabelParam(pqlLabelParam));
+    List<String> results = Lists.newArrayList();
+    if (StringUtils.isBlank(body)) {
+      return results;
+    }
+    PqlLabelResult<List<String>> pqlResult = new Gson().fromJson(body, PqlLabelResult.class);
+    if (!StringUtils.equalsIgnoreCase(SUCCESS, pqlResult.getStatus())) {
+      LOGGER.error("[PqlRemoteQuery] exec pql series: {} error, body:{}", pqlLabelParam, body);
+      return results;
+    }
+
+    return pqlResult.getData();
+  }
+
+  @Override
+  public List<String> queryLabelValues(PqlLabelParam pqlLabelParam) {
+    String tenant = pqlLabelParam.getTenant();
+    Endpoint endpoint = getEndpoint(tenant);
+    if (Objects.isNull(endpoint)) {
+      LOGGER.error("[PqlRemoteQuery] queryRange error, tenant {} endpoint is not exists", tenant);
+      return Lists.newArrayList();
+    }
+    String body = HttpClientUtils.get(endpoint,
+        String.format(API_V1_QUERY_LABEL_VALUES, pqlLabelParam.getLabelName()),
+        parasLabelParam(pqlLabelParam));
+    List<String> results = Lists.newArrayList();
+    if (StringUtils.isBlank(body)) {
+      return results;
+    }
+    PqlLabelResult<List<String>> pqlResult = new Gson().fromJson(body, PqlLabelResult.class);
+    if (!StringUtils.equalsIgnoreCase(SUCCESS, pqlResult.getStatus())) {
+      LOGGER.error("[PqlRemoteQuery] exec pql series: {} error, body:{}", pqlLabelParam, body);
+      return results;
+    }
+
+    return pqlResult.getData();
+  }
+
+
+  private Map<String, Object> parasLabelParam(PqlLabelParam pqlLabelParam) {
+    HashMap<String, Object> params = Maps.newHashMap();
+
+    if (pqlLabelParam.getStart() > 0) {
+      params.put("start", unixTimestamp(pqlLabelParam.getStart()));
+    }
+    if (pqlLabelParam.getEnd() > 0) {
+      params.put("end", unixTimestamp(pqlLabelParam.getEnd()));
+    }
+
+    if (null != pqlLabelParam.getMatch()) {
+      for (String ma : pqlLabelParam.getMatch()) {
+        params.put("match[]", ma);
+      }
+    }
+    return params;
   }
 
   public void addEndpoints(String tenant, Endpoint endpoint) {

@@ -4,7 +4,9 @@
 package io.holoinsight.server.extension.promql;
 
 import java.util.List;
+import java.util.Map;
 
+import io.holoinsight.server.extension.model.PqlLabelParam;
 import io.holoinsight.server.extension.model.PqlParam;
 import io.holoinsight.server.extension.model.QueryResult.Result;
 
@@ -32,4 +34,10 @@ public interface PqlQueryService {
    * @return
    */
   List<Result> queryRange(PqlParam pqlParam);
+
+  List<Map<String, String>> querySeries(PqlLabelParam pqlLabelParam);
+
+  List<String> queryLabels(PqlLabelParam pqlLabelParam);
+
+  List<String> queryLabelValues(PqlLabelParam pqlLabelParam);
 }

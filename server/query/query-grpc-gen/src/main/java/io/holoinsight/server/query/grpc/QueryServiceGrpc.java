@@ -1,6 +1,3 @@
-/*
- * Copyright 2022 Holoinsight Project Authors. Licensed under Apache-2.0.
- */
 package io.holoinsight.server.query.grpc;
 
 import static io.grpc.MethodDescriptor.generateFullMethodName;
@@ -225,6 +222,98 @@ public final class QueryServiceGrpc {
       }
     }
     return getPqlRangeQueryMethod;
+  }
+
+  private static volatile io.grpc.MethodDescriptor<io.holoinsight.server.query.grpc.QueryProto.PqlLabelRequest, io.holoinsight.server.query.grpc.QueryProto.QuerySeriesResponse> getPqlSeriesQueryMethod;
+
+  @io.grpc.stub.annotations.RpcMethod(fullMethodName = SERVICE_NAME + '/' + "pqlSeriesQuery",
+      requestType = io.holoinsight.server.query.grpc.QueryProto.PqlLabelRequest.class,
+      responseType = io.holoinsight.server.query.grpc.QueryProto.QuerySeriesResponse.class,
+      methodType = io.grpc.MethodDescriptor.MethodType.UNARY)
+  public static io.grpc.MethodDescriptor<io.holoinsight.server.query.grpc.QueryProto.PqlLabelRequest, io.holoinsight.server.query.grpc.QueryProto.QuerySeriesResponse> getPqlSeriesQueryMethod() {
+    io.grpc.MethodDescriptor<io.holoinsight.server.query.grpc.QueryProto.PqlLabelRequest, io.holoinsight.server.query.grpc.QueryProto.QuerySeriesResponse> getPqlSeriesQueryMethod;
+    if ((getPqlSeriesQueryMethod = QueryServiceGrpc.getPqlSeriesQueryMethod) == null) {
+      synchronized (QueryServiceGrpc.class) {
+        if ((getPqlSeriesQueryMethod = QueryServiceGrpc.getPqlSeriesQueryMethod) == null) {
+          QueryServiceGrpc.getPqlSeriesQueryMethod = getPqlSeriesQueryMethod =
+              io.grpc.MethodDescriptor.<io.holoinsight.server.query.grpc.QueryProto.PqlLabelRequest, io.holoinsight.server.query.grpc.QueryProto.QuerySeriesResponse>newBuilder()
+                  .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
+                  .setFullMethodName(generateFullMethodName(SERVICE_NAME, "pqlSeriesQuery"))
+                  .setSampledToLocalTracing(true)
+                  .setRequestMarshaller(io.grpc.protobuf.ProtoUtils
+                      .marshaller(io.holoinsight.server.query.grpc.QueryProto.PqlLabelRequest
+                          .getDefaultInstance()))
+                  .setResponseMarshaller(io.grpc.protobuf.ProtoUtils
+                      .marshaller(io.holoinsight.server.query.grpc.QueryProto.QuerySeriesResponse
+                          .getDefaultInstance()))
+                  .setSchemaDescriptor(new QueryServiceMethodDescriptorSupplier("pqlSeriesQuery"))
+                  .build();
+        }
+      }
+    }
+    return getPqlSeriesQueryMethod;
+  }
+
+  private static volatile io.grpc.MethodDescriptor<io.holoinsight.server.query.grpc.QueryProto.PqlLabelRequest, io.holoinsight.server.query.grpc.QueryProto.QueryLabelsResponse> getPqlLabelsQueryMethod;
+
+  @io.grpc.stub.annotations.RpcMethod(fullMethodName = SERVICE_NAME + '/' + "pqlLabelsQuery",
+      requestType = io.holoinsight.server.query.grpc.QueryProto.PqlLabelRequest.class,
+      responseType = io.holoinsight.server.query.grpc.QueryProto.QueryLabelsResponse.class,
+      methodType = io.grpc.MethodDescriptor.MethodType.UNARY)
+  public static io.grpc.MethodDescriptor<io.holoinsight.server.query.grpc.QueryProto.PqlLabelRequest, io.holoinsight.server.query.grpc.QueryProto.QueryLabelsResponse> getPqlLabelsQueryMethod() {
+    io.grpc.MethodDescriptor<io.holoinsight.server.query.grpc.QueryProto.PqlLabelRequest, io.holoinsight.server.query.grpc.QueryProto.QueryLabelsResponse> getPqlLabelsQueryMethod;
+    if ((getPqlLabelsQueryMethod = QueryServiceGrpc.getPqlLabelsQueryMethod) == null) {
+      synchronized (QueryServiceGrpc.class) {
+        if ((getPqlLabelsQueryMethod = QueryServiceGrpc.getPqlLabelsQueryMethod) == null) {
+          QueryServiceGrpc.getPqlLabelsQueryMethod = getPqlLabelsQueryMethod =
+              io.grpc.MethodDescriptor.<io.holoinsight.server.query.grpc.QueryProto.PqlLabelRequest, io.holoinsight.server.query.grpc.QueryProto.QueryLabelsResponse>newBuilder()
+                  .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
+                  .setFullMethodName(generateFullMethodName(SERVICE_NAME, "pqlLabelsQuery"))
+                  .setSampledToLocalTracing(true)
+                  .setRequestMarshaller(io.grpc.protobuf.ProtoUtils
+                      .marshaller(io.holoinsight.server.query.grpc.QueryProto.PqlLabelRequest
+                          .getDefaultInstance()))
+                  .setResponseMarshaller(io.grpc.protobuf.ProtoUtils
+                      .marshaller(io.holoinsight.server.query.grpc.QueryProto.QueryLabelsResponse
+                          .getDefaultInstance()))
+                  .setSchemaDescriptor(new QueryServiceMethodDescriptorSupplier("pqlLabelsQuery"))
+                  .build();
+        }
+      }
+    }
+    return getPqlLabelsQueryMethod;
+  }
+
+  private static volatile io.grpc.MethodDescriptor<io.holoinsight.server.query.grpc.QueryProto.PqlLabelRequest, io.holoinsight.server.query.grpc.QueryProto.QueryLabelsResponse> getPqlLabelValuesQueryMethod;
+
+  @io.grpc.stub.annotations.RpcMethod(fullMethodName = SERVICE_NAME + '/' + "pqlLabelValuesQuery",
+      requestType = io.holoinsight.server.query.grpc.QueryProto.PqlLabelRequest.class,
+      responseType = io.holoinsight.server.query.grpc.QueryProto.QueryLabelsResponse.class,
+      methodType = io.grpc.MethodDescriptor.MethodType.UNARY)
+  public static io.grpc.MethodDescriptor<io.holoinsight.server.query.grpc.QueryProto.PqlLabelRequest, io.holoinsight.server.query.grpc.QueryProto.QueryLabelsResponse> getPqlLabelValuesQueryMethod() {
+    io.grpc.MethodDescriptor<io.holoinsight.server.query.grpc.QueryProto.PqlLabelRequest, io.holoinsight.server.query.grpc.QueryProto.QueryLabelsResponse> getPqlLabelValuesQueryMethod;
+    if ((getPqlLabelValuesQueryMethod = QueryServiceGrpc.getPqlLabelValuesQueryMethod) == null) {
+      synchronized (QueryServiceGrpc.class) {
+        if ((getPqlLabelValuesQueryMethod =
+            QueryServiceGrpc.getPqlLabelValuesQueryMethod) == null) {
+          QueryServiceGrpc.getPqlLabelValuesQueryMethod = getPqlLabelValuesQueryMethod =
+              io.grpc.MethodDescriptor.<io.holoinsight.server.query.grpc.QueryProto.PqlLabelRequest, io.holoinsight.server.query.grpc.QueryProto.QueryLabelsResponse>newBuilder()
+                  .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
+                  .setFullMethodName(generateFullMethodName(SERVICE_NAME, "pqlLabelValuesQuery"))
+                  .setSampledToLocalTracing(true)
+                  .setRequestMarshaller(io.grpc.protobuf.ProtoUtils
+                      .marshaller(io.holoinsight.server.query.grpc.QueryProto.PqlLabelRequest
+                          .getDefaultInstance()))
+                  .setResponseMarshaller(io.grpc.protobuf.ProtoUtils
+                      .marshaller(io.holoinsight.server.query.grpc.QueryProto.QueryLabelsResponse
+                          .getDefaultInstance()))
+                  .setSchemaDescriptor(
+                      new QueryServiceMethodDescriptorSupplier("pqlLabelValuesQuery"))
+                  .build();
+        }
+      }
+    }
+    return getPqlLabelValuesQueryMethod;
   }
 
   private static volatile io.grpc.MethodDescriptor<io.holoinsight.server.query.grpc.QueryProto.QueryTraceRequest, io.holoinsight.server.query.grpc.QueryProto.TraceBrief> getQueryBasicTracesMethod;
@@ -828,6 +917,31 @@ public final class QueryServiceGrpc {
 
     /**
      */
+    public void pqlSeriesQuery(io.holoinsight.server.query.grpc.QueryProto.PqlLabelRequest request,
+        io.grpc.stub.StreamObserver<io.holoinsight.server.query.grpc.QueryProto.QuerySeriesResponse> responseObserver) {
+      io.grpc.stub.ServerCalls.asyncUnimplementedUnaryCall(getPqlSeriesQueryMethod(),
+          responseObserver);
+    }
+
+    /**
+     */
+    public void pqlLabelsQuery(io.holoinsight.server.query.grpc.QueryProto.PqlLabelRequest request,
+        io.grpc.stub.StreamObserver<io.holoinsight.server.query.grpc.QueryProto.QueryLabelsResponse> responseObserver) {
+      io.grpc.stub.ServerCalls.asyncUnimplementedUnaryCall(getPqlLabelsQueryMethod(),
+          responseObserver);
+    }
+
+    /**
+     */
+    public void pqlLabelValuesQuery(
+        io.holoinsight.server.query.grpc.QueryProto.PqlLabelRequest request,
+        io.grpc.stub.StreamObserver<io.holoinsight.server.query.grpc.QueryProto.QueryLabelsResponse> responseObserver) {
+      io.grpc.stub.ServerCalls.asyncUnimplementedUnaryCall(getPqlLabelValuesQueryMethod(),
+          responseObserver);
+    }
+
+    /**
+     */
     public void queryBasicTraces(
         io.holoinsight.server.query.grpc.QueryProto.QueryTraceRequest request,
         io.grpc.stub.StreamObserver<io.holoinsight.server.query.grpc.QueryProto.TraceBrief> responseObserver) {
@@ -988,6 +1102,15 @@ public final class QueryServiceGrpc {
           .addMethod(getPqlRangeQueryMethod(), io.grpc.stub.ServerCalls.asyncUnaryCall(
               new MethodHandlers<io.holoinsight.server.query.grpc.QueryProto.PqlRangeRequest, io.holoinsight.server.query.grpc.QueryProto.QueryResponse>(
                   this, METHODID_PQL_RANGE_QUERY)))
+          .addMethod(getPqlSeriesQueryMethod(), io.grpc.stub.ServerCalls.asyncUnaryCall(
+              new MethodHandlers<io.holoinsight.server.query.grpc.QueryProto.PqlLabelRequest, io.holoinsight.server.query.grpc.QueryProto.QuerySeriesResponse>(
+                  this, METHODID_PQL_SERIES_QUERY)))
+          .addMethod(getPqlLabelsQueryMethod(), io.grpc.stub.ServerCalls.asyncUnaryCall(
+              new MethodHandlers<io.holoinsight.server.query.grpc.QueryProto.PqlLabelRequest, io.holoinsight.server.query.grpc.QueryProto.QueryLabelsResponse>(
+                  this, METHODID_PQL_LABELS_QUERY)))
+          .addMethod(getPqlLabelValuesQueryMethod(), io.grpc.stub.ServerCalls.asyncUnaryCall(
+              new MethodHandlers<io.holoinsight.server.query.grpc.QueryProto.PqlLabelRequest, io.holoinsight.server.query.grpc.QueryProto.QueryLabelsResponse>(
+                  this, METHODID_PQL_LABEL_VALUES_QUERY)))
           .addMethod(getQueryBasicTracesMethod(), io.grpc.stub.ServerCalls.asyncUnaryCall(
               new MethodHandlers<io.holoinsight.server.query.grpc.QueryProto.QueryTraceRequest, io.holoinsight.server.query.grpc.QueryProto.TraceBrief>(
                   this, METHODID_QUERY_BASIC_TRACES)))
@@ -1112,6 +1235,34 @@ public final class QueryServiceGrpc {
         io.grpc.stub.StreamObserver<io.holoinsight.server.query.grpc.QueryProto.QueryResponse> responseObserver) {
       io.grpc.stub.ClientCalls.asyncUnaryCall(
           getChannel().newCall(getPqlRangeQueryMethod(), getCallOptions()), request,
+          responseObserver);
+    }
+
+    /**
+     */
+    public void pqlSeriesQuery(io.holoinsight.server.query.grpc.QueryProto.PqlLabelRequest request,
+        io.grpc.stub.StreamObserver<io.holoinsight.server.query.grpc.QueryProto.QuerySeriesResponse> responseObserver) {
+      io.grpc.stub.ClientCalls.asyncUnaryCall(
+          getChannel().newCall(getPqlSeriesQueryMethod(), getCallOptions()), request,
+          responseObserver);
+    }
+
+    /**
+     */
+    public void pqlLabelsQuery(io.holoinsight.server.query.grpc.QueryProto.PqlLabelRequest request,
+        io.grpc.stub.StreamObserver<io.holoinsight.server.query.grpc.QueryProto.QueryLabelsResponse> responseObserver) {
+      io.grpc.stub.ClientCalls.asyncUnaryCall(
+          getChannel().newCall(getPqlLabelsQueryMethod(), getCallOptions()), request,
+          responseObserver);
+    }
+
+    /**
+     */
+    public void pqlLabelValuesQuery(
+        io.holoinsight.server.query.grpc.QueryProto.PqlLabelRequest request,
+        io.grpc.stub.StreamObserver<io.holoinsight.server.query.grpc.QueryProto.QueryLabelsResponse> responseObserver) {
+      io.grpc.stub.ClientCalls.asyncUnaryCall(
+          getChannel().newCall(getPqlLabelValuesQueryMethod(), getCallOptions()), request,
           responseObserver);
     }
 
@@ -1342,6 +1493,30 @@ public final class QueryServiceGrpc {
 
     /**
      */
+    public io.holoinsight.server.query.grpc.QueryProto.QuerySeriesResponse pqlSeriesQuery(
+        io.holoinsight.server.query.grpc.QueryProto.PqlLabelRequest request) {
+      return io.grpc.stub.ClientCalls.blockingUnaryCall(getChannel(), getPqlSeriesQueryMethod(),
+          getCallOptions(), request);
+    }
+
+    /**
+     */
+    public io.holoinsight.server.query.grpc.QueryProto.QueryLabelsResponse pqlLabelsQuery(
+        io.holoinsight.server.query.grpc.QueryProto.PqlLabelRequest request) {
+      return io.grpc.stub.ClientCalls.blockingUnaryCall(getChannel(), getPqlLabelsQueryMethod(),
+          getCallOptions(), request);
+    }
+
+    /**
+     */
+    public io.holoinsight.server.query.grpc.QueryProto.QueryLabelsResponse pqlLabelValuesQuery(
+        io.holoinsight.server.query.grpc.QueryProto.PqlLabelRequest request) {
+      return io.grpc.stub.ClientCalls.blockingUnaryCall(getChannel(),
+          getPqlLabelValuesQueryMethod(), getCallOptions(), request);
+    }
+
+    /**
+     */
     public io.holoinsight.server.query.grpc.QueryProto.TraceBrief queryBasicTraces(
         io.holoinsight.server.query.grpc.QueryProto.QueryTraceRequest request) {
       return io.grpc.stub.ClientCalls.blockingUnaryCall(getChannel(), getQueryBasicTracesMethod(),
@@ -1541,6 +1716,30 @@ public final class QueryServiceGrpc {
 
     /**
      */
+    public com.google.common.util.concurrent.ListenableFuture<io.holoinsight.server.query.grpc.QueryProto.QuerySeriesResponse> pqlSeriesQuery(
+        io.holoinsight.server.query.grpc.QueryProto.PqlLabelRequest request) {
+      return io.grpc.stub.ClientCalls.futureUnaryCall(
+          getChannel().newCall(getPqlSeriesQueryMethod(), getCallOptions()), request);
+    }
+
+    /**
+     */
+    public com.google.common.util.concurrent.ListenableFuture<io.holoinsight.server.query.grpc.QueryProto.QueryLabelsResponse> pqlLabelsQuery(
+        io.holoinsight.server.query.grpc.QueryProto.PqlLabelRequest request) {
+      return io.grpc.stub.ClientCalls.futureUnaryCall(
+          getChannel().newCall(getPqlLabelsQueryMethod(), getCallOptions()), request);
+    }
+
+    /**
+     */
+    public com.google.common.util.concurrent.ListenableFuture<io.holoinsight.server.query.grpc.QueryProto.QueryLabelsResponse> pqlLabelValuesQuery(
+        io.holoinsight.server.query.grpc.QueryProto.PqlLabelRequest request) {
+      return io.grpc.stub.ClientCalls.futureUnaryCall(
+          getChannel().newCall(getPqlLabelValuesQueryMethod(), getCallOptions()), request);
+    }
+
+    /**
+     */
     public com.google.common.util.concurrent.ListenableFuture<io.holoinsight.server.query.grpc.QueryProto.TraceBrief> queryBasicTraces(
         io.holoinsight.server.query.grpc.QueryProto.QueryTraceRequest request) {
       return io.grpc.stub.ClientCalls.futureUnaryCall(
@@ -1675,22 +1874,25 @@ public final class QueryServiceGrpc {
   private static final int METHODID_DELETE_KEYS = 4;
   private static final int METHODID_PQL_INSTANT_QUERY = 5;
   private static final int METHODID_PQL_RANGE_QUERY = 6;
-  private static final int METHODID_QUERY_BASIC_TRACES = 7;
-  private static final int METHODID_QUERY_TRACE = 8;
-  private static final int METHODID_QUERY_TRACE_TREE = 9;
-  private static final int METHODID_BILLING_TRACE = 10;
-  private static final int METHODID_QUERY_SERVICE_LIST = 11;
-  private static final int METHODID_QUERY_ENDPOINT_LIST = 12;
-  private static final int METHODID_QUERY_SERVICE_INSTANCE_LIST = 13;
-  private static final int METHODID_QUERY_COMPONENT_LIST = 14;
-  private static final int METHODID_QUERY_COMPONENT_TRACE_IDS = 15;
-  private static final int METHODID_QUERY_TOPOLOGY = 16;
-  private static final int METHODID_QUERY_SLOW_SQL_LIST = 17;
-  private static final int METHODID_STATISTIC_TRACE = 18;
-  private static final int METHODID_QUERY_SERVICE_ERROR_LIST = 19;
-  private static final int METHODID_QUERY_SERVICE_ERROR_DETAIL = 20;
-  private static final int METHODID_QUERY_DETAIL_DATA = 21;
-  private static final int METHODID_QUERY_EVENTS = 22;
+  private static final int METHODID_PQL_SERIES_QUERY = 7;
+  private static final int METHODID_PQL_LABELS_QUERY = 8;
+  private static final int METHODID_PQL_LABEL_VALUES_QUERY = 9;
+  private static final int METHODID_QUERY_BASIC_TRACES = 10;
+  private static final int METHODID_QUERY_TRACE = 11;
+  private static final int METHODID_QUERY_TRACE_TREE = 12;
+  private static final int METHODID_BILLING_TRACE = 13;
+  private static final int METHODID_QUERY_SERVICE_LIST = 14;
+  private static final int METHODID_QUERY_ENDPOINT_LIST = 15;
+  private static final int METHODID_QUERY_SERVICE_INSTANCE_LIST = 16;
+  private static final int METHODID_QUERY_COMPONENT_LIST = 17;
+  private static final int METHODID_QUERY_COMPONENT_TRACE_IDS = 18;
+  private static final int METHODID_QUERY_TOPOLOGY = 19;
+  private static final int METHODID_QUERY_SLOW_SQL_LIST = 20;
+  private static final int METHODID_STATISTIC_TRACE = 21;
+  private static final int METHODID_QUERY_SERVICE_ERROR_LIST = 22;
+  private static final int METHODID_QUERY_SERVICE_ERROR_DETAIL = 23;
+  private static final int METHODID_QUERY_DETAIL_DATA = 24;
+  private static final int METHODID_QUERY_EVENTS = 25;
 
   private static final class MethodHandlers<Req, Resp>
       implements io.grpc.stub.ServerCalls.UnaryMethod<Req, Resp>,
@@ -1740,6 +1942,21 @@ public final class QueryServiceGrpc {
           serviceImpl.pqlRangeQuery(
               (io.holoinsight.server.query.grpc.QueryProto.PqlRangeRequest) request,
               (io.grpc.stub.StreamObserver<io.holoinsight.server.query.grpc.QueryProto.QueryResponse>) responseObserver);
+          break;
+        case METHODID_PQL_SERIES_QUERY:
+          serviceImpl.pqlSeriesQuery(
+              (io.holoinsight.server.query.grpc.QueryProto.PqlLabelRequest) request,
+              (io.grpc.stub.StreamObserver<io.holoinsight.server.query.grpc.QueryProto.QuerySeriesResponse>) responseObserver);
+          break;
+        case METHODID_PQL_LABELS_QUERY:
+          serviceImpl.pqlLabelsQuery(
+              (io.holoinsight.server.query.grpc.QueryProto.PqlLabelRequest) request,
+              (io.grpc.stub.StreamObserver<io.holoinsight.server.query.grpc.QueryProto.QueryLabelsResponse>) responseObserver);
+          break;
+        case METHODID_PQL_LABEL_VALUES_QUERY:
+          serviceImpl.pqlLabelValuesQuery(
+              (io.holoinsight.server.query.grpc.QueryProto.PqlLabelRequest) request,
+              (io.grpc.stub.StreamObserver<io.holoinsight.server.query.grpc.QueryProto.QueryLabelsResponse>) responseObserver);
           break;
         case METHODID_QUERY_BASIC_TRACES:
           serviceImpl.queryBasicTraces(
@@ -1885,10 +2102,11 @@ public final class QueryServiceGrpc {
               .addMethod(getQueryDataMethod()).addMethod(getQueryTagsMethod())
               .addMethod(getQuerySchemaMethod()).addMethod(getQueryMetricsMethod())
               .addMethod(getDeleteKeysMethod()).addMethod(getPqlInstantQueryMethod())
-              .addMethod(getPqlRangeQueryMethod()).addMethod(getQueryBasicTracesMethod())
-              .addMethod(getQueryTraceMethod()).addMethod(getQueryTraceTreeMethod())
-              .addMethod(getBillingTraceMethod()).addMethod(getQueryServiceListMethod())
-              .addMethod(getQueryEndpointListMethod())
+              .addMethod(getPqlRangeQueryMethod()).addMethod(getPqlSeriesQueryMethod())
+              .addMethod(getPqlLabelsQueryMethod()).addMethod(getPqlLabelValuesQueryMethod())
+              .addMethod(getQueryBasicTracesMethod()).addMethod(getQueryTraceMethod())
+              .addMethod(getQueryTraceTreeMethod()).addMethod(getBillingTraceMethod())
+              .addMethod(getQueryServiceListMethod()).addMethod(getQueryEndpointListMethod())
               .addMethod(getQueryServiceInstanceListMethod())
               .addMethod(getQueryComponentListMethod()).addMethod(getQueryComponentTraceIdsMethod())
               .addMethod(getQueryTopologyMethod()).addMethod(getQuerySlowSqlListMethod())

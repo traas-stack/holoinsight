@@ -73,6 +73,18 @@ message QueryResponse {
   repeated Result results = 1;
 }
 
+message QuerySeriesResponse {
+  repeated SeriesResult results = 1;
+}
+
+message QueryLabelsResponse {
+  repeated string results = 1;
+}
+
+message SeriesResult {
+  map<string, string> result = 1;
+}
+
 message Result {
   string metric = 1;
   map<string, string> tags = 2;
@@ -132,6 +144,21 @@ message PqlRangeRequest {
   string delta = 7;
   // 是否补零
   bool fillZero = 8;
+}
+
+message PqlLabelRequest {
+  // 租户
+  string tenant = 1;
+  // metricName
+  optional string metric = 2;
+  //labelName
+  optional string labelName = 3;
+  // match
+  repeated string match = 4;
+  // 起始时间
+  int64  start = 5;
+  // 截止时间
+  int64 end = 6;
 }
 
 message StatisticRequest {
@@ -395,6 +422,12 @@ service QueryService {
   rpc pqlInstantQuery(PqlInstantRequest) returns (QueryResponse);
 
   rpc pqlRangeQuery(PqlRangeRequest) returns (QueryResponse);
+
+  rpc pqlSeriesQuery(PqlLabelRequest) returns (QuerySeriesResponse);
+
+  rpc pqlLabelsQuery(PqlLabelRequest) returns (QueryLabelsResponse);
+
+  rpc pqlLabelValuesQuery(PqlLabelRequest) returns (QueryLabelsResponse);
 
   rpc QueryBasicTraces(QueryTraceRequest) returns (TraceBrief);
 
