@@ -5,12 +5,15 @@ package io.holoinsight.server.extension;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import io.holoinsight.server.extension.model.DetailResult;
+import io.holoinsight.server.extension.model.PqlLabelParam;
 import io.holoinsight.server.extension.model.PqlParam;
 import io.holoinsight.server.extension.model.QueryMetricsParam;
 import io.holoinsight.server.extension.model.QueryParam;
 import io.holoinsight.server.extension.model.QueryResult;
+import io.holoinsight.server.extension.model.QueryResult.Result;
 import io.holoinsight.server.extension.model.WriteMetricsParam;
 import reactor.core.publisher.Mono;
 
@@ -59,6 +62,21 @@ public class NoopMetricStorage implements MetricStorage {
   @Override
   public List<QueryResult.Result> pqlRangeQuery(PqlParam pqlParam) {
     return Collections.emptyList();
+  }
+
+  @Override
+  public List<Map<String, String>> pqlSeriesQuery(PqlLabelParam pqlLabelParam) {
+    return null;
+  }
+
+  @Override
+  public List<String> pqlLabelsQuery(PqlLabelParam pqlLabelParam) {
+    return null;
+  }
+
+  @Override
+  public List<String> pqlLabelValueQuery(PqlLabelParam pqlLabelParam) {
+    return null;
   }
 
   @Override

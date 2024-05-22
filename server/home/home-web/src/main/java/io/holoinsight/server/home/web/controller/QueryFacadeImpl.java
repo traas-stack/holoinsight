@@ -25,7 +25,6 @@ import io.holoinsight.server.common.scope.MonitorScope;
 import io.holoinsight.server.common.scope.MonitorUser;
 import io.holoinsight.server.common.scope.PowerConstants;
 import io.holoinsight.server.common.service.MetricInfoService;
-import io.holoinsight.server.common.service.SuperCacheService;
 import io.holoinsight.server.common.threadpool.CommonThreadPools;
 import io.holoinsight.server.home.biz.common.MetaDictUtil;
 import io.holoinsight.server.home.biz.service.TenantInitService;
@@ -75,10 +74,10 @@ import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
+import static io.holoinsight.server.common.model.MetricCrawlerConstant.GLOBAL_TENANT;
+import static io.holoinsight.server.common.model.MetricCrawlerConstant.GLOBAL_WORKSPACE;
 import static io.holoinsight.server.home.biz.common.MetaDictKey.SCHEMA_METRIC_TABLE_PREFIX;
 import static io.holoinsight.server.home.biz.common.MetaDictType.GLOBAL_CONFIG;
-import static io.holoinsight.server.home.task.MetricCrawlerConstant.GLOBAL_TENANT;
-import static io.holoinsight.server.home.task.MetricCrawlerConstant.GLOBAL_WORKSPACE;
 
 @RestController
 @RequestMapping("/webapi/v1/query")
@@ -97,9 +96,6 @@ public class QueryFacadeImpl extends BaseFacade {
 
   @Autowired
   private TenantInitService tenantInitService;
-
-  @Autowired
-  private SuperCacheService superCacheService;
 
   @Autowired
   private ParameterSecurityService parameterSecurityService;

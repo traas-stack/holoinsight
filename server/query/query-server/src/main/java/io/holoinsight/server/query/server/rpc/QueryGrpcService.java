@@ -119,6 +119,42 @@ public class QueryGrpcService extends QueryServiceGrpc.QueryServiceImplBase {
   }
 
   @Override
+  public void pqlSeriesQuery(QueryProto.PqlLabelRequest request,
+      StreamObserver<QueryProto.QuerySeriesResponse> responseObserver) {
+    try {
+      responseObserver.onNext(queryService.pqlSeriesQuery(request));
+      responseObserver.onCompleted();
+    } catch (Throwable t) {
+      responseObserver.onError(
+          Status.INTERNAL.withCause(t).withDescription(t.getMessage()).asRuntimeException());
+    }
+  }
+
+  @Override
+  public void pqlLabelsQuery(QueryProto.PqlLabelRequest request,
+      StreamObserver<QueryProto.QueryLabelsResponse> responseObserver) {
+    try {
+      responseObserver.onNext(queryService.pqlLabelsQuery(request));
+      responseObserver.onCompleted();
+    } catch (Throwable t) {
+      responseObserver.onError(
+          Status.INTERNAL.withCause(t).withDescription(t.getMessage()).asRuntimeException());
+    }
+  }
+
+  @Override
+  public void pqlLabelValuesQuery(QueryProto.PqlLabelRequest request,
+      StreamObserver<QueryProto.QueryLabelsResponse> responseObserver) {
+    try {
+      responseObserver.onNext(queryService.pqlLabelValuesQuery(request));
+      responseObserver.onCompleted();
+    } catch (Throwable t) {
+      responseObserver.onError(
+          Status.INTERNAL.withCause(t).withDescription(t.getMessage()).asRuntimeException());
+    }
+  }
+
+  @Override
   public void queryBasicTraces(QueryProto.QueryTraceRequest request,
       StreamObserver<QueryProto.TraceBrief> responseObserver) {
     try {

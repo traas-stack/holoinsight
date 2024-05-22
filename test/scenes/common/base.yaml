@@ -30,7 +30,7 @@ services:
     profiles:
     - debug
   ceresdb:
-    image: ${ceresdb_image:-ceresdb/ceresdb-server:v1.0.0}
+    image: ${ceresdb_image:-ceresdb/ceresdb-server:latest}
     volumes:
     - ./ceresdb_entrypoint.sh:/entrypoint.sh
     restart: always

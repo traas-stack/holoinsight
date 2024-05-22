@@ -4,8 +4,10 @@
 package io.holoinsight.server.extension;
 
 import java.util.List;
+import java.util.Map;
 
 import io.holoinsight.server.extension.model.DetailResult;
+import io.holoinsight.server.extension.model.PqlLabelParam;
 import io.holoinsight.server.extension.model.QueryMetricsParam;
 import io.holoinsight.server.extension.model.QueryResult.Result;
 import io.holoinsight.server.extension.model.WriteMetricsParam;
@@ -34,6 +36,12 @@ public interface MetricStorage {
   List<Result> pqlInstantQuery(PqlParam pqlParam);
 
   List<Result> pqlRangeQuery(PqlParam pqlParam);
+
+  List<Map<String, String>> pqlSeriesQuery(PqlLabelParam pqlLabelParam);
+
+  List<String> pqlLabelsQuery(PqlLabelParam pqlLabelParam);
+
+  List<String> pqlLabelValueQuery(PqlLabelParam pqlLabelParam);
 
   DetailResult queryDetail(QueryParam queryParam);
 

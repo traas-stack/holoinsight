@@ -19,10 +19,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import static io.holoinsight.server.home.task.MetricCrawlerConstant.GLOBAL_ORGANIZATION;
-import static io.holoinsight.server.home.task.MetricCrawlerConstant.GLOBAL_TENANT;
-import static io.holoinsight.server.home.task.MetricCrawlerConstant.GLOBAL_WORKSPACE;
-import static io.holoinsight.server.home.task.MetricCrawlerConstant.NUMBER_UNIT;
+import static io.holoinsight.server.common.model.MetricCrawlerConstant.GLOBAL_ORGANIZATION;
+import static io.holoinsight.server.common.model.MetricCrawlerConstant.GLOBAL_TENANT;
+import static io.holoinsight.server.common.model.MetricCrawlerConstant.GLOBAL_WORKSPACE;
+import static io.holoinsight.server.common.model.MetricCrawlerConstant.NUMBER_UNIT;
 
 /**
  * @author jsy1001de

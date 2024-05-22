@@ -26,6 +26,15 @@ public interface QueryService {
 
   QueryProto.QueryResponse pqlRangeQuery(QueryProto.PqlRangeRequest request) throws QueryException;
 
+  QueryProto.QuerySeriesResponse pqlSeriesQuery(QueryProto.PqlLabelRequest request)
+      throws QueryException;
+
+  QueryProto.QueryLabelsResponse pqlLabelsQuery(QueryProto.PqlLabelRequest request)
+      throws QueryException;
+
+  QueryProto.QueryLabelsResponse pqlLabelValuesQuery(QueryProto.PqlLabelRequest request)
+      throws QueryException;
+
   QueryProto.TraceBrief queryBasicTraces(QueryProto.QueryTraceRequest request)
       throws QueryException;
 

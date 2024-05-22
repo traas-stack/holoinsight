@@ -44,6 +44,7 @@ import io.holoinsight.server.common.ProtoJsonUtils;
 import io.holoinsight.server.common.service.SuperCacheService;
 import io.holoinsight.server.extension.MetricStorage;
 import io.holoinsight.server.extension.model.DetailResult;
+import io.holoinsight.server.extension.model.PqlLabelParam;
 import io.holoinsight.server.extension.model.PqlParam;
 import io.holoinsight.server.extension.model.QueryMetricsParam;
 import io.holoinsight.server.extension.model.QueryParam;
@@ -54,6 +55,10 @@ import io.holoinsight.server.query.common.convertor.ApmConvertor;
 import io.holoinsight.server.query.grpc.QueryProto;
 import io.holoinsight.server.query.grpc.QueryProto.Point.Builder;
 import io.holoinsight.server.query.grpc.QueryProto.PqlInstantRequest;
+import io.holoinsight.server.query.grpc.QueryProto.PqlLabelRequest;
+import io.holoinsight.server.query.grpc.QueryProto.QueryLabelsResponse;
+import io.holoinsight.server.query.grpc.QueryProto.QuerySeriesResponse;
+import io.holoinsight.server.query.grpc.QueryProto.SeriesResult;
 import io.holoinsight.server.query.service.QueryException;
 import io.holoinsight.server.query.service.QueryService;
 import io.holoinsight.server.query.service.analysis.AggCenter;
@@ -234,7 +239,7 @@ public class DefaultQueryServiceImpl implements QueryService {
       resultBuilder.putAllTags(result.getTags());
       for (Point point : result.getPoints()) {
         Builder pointBuilder = QueryProto.Point.newBuilder().setTimestamp(point.getTimestamp())
-            .setValue(point.getValue());
+            .setValue(point.getValue()).setStrValue(point.getStrValue());
         resultBuilder.addPoints(pointBuilder.build());
       }
     }
@@ -249,6 +254,19 @@ public class DefaultQueryServiceImpl implements QueryService {
     pqlParam.setTime(request.getTime());
     pqlParam.setTimeout(request.getTimeout());
     pqlParam.setDelta(request.getDelta());
+    return pqlParam;
+  }
+
+  private PqlLabelParam transToPqlParam(PqlLabelRequest request) {
+    PqlLabelParam pqlParam = new PqlLabelParam();
+    pqlParam.setTenant(request.getTenant());
+    if (!CollectionUtils.isEmpty(request.getMatchList())) {
+      pqlParam.setMatch(request.getMatchList());
+    }
+    pqlParam.setStart(request.getStart());
+    pqlParam.setEnd(request.getEnd());
+    pqlParam.setMetric(request.getMetric());
+    pqlParam.setLabelName(request.getLabelName());
     return pqlParam;
   }
 
@@ -268,18 +286,45 @@ public class DefaultQueryServiceImpl implements QueryService {
   public QueryProto.QueryResponse pqlRangeQuery(QueryProto.PqlRangeRequest request)
       throws QueryException {
     QueryProto.QueryResponse.Builder builder = QueryProto.QueryResponse.newBuilder();
-    List<Result> pqlResult = metricStorage.pqlInstantQuery(transToPqlParam(request));
+    List<Result> pqlResult = metricStorage.pqlRangeQuery(transToPqlParam(request));
     for (Result result : pqlResult) {
       QueryProto.Result.Builder resultBuilder = QueryProto.Result.newBuilder();
       resultBuilder.setMetric(result.getMetric());
       resultBuilder.putAllTags(result.getTags());
       for (Point point : result.getPoints()) {
         Builder pointBuilder = QueryProto.Point.newBuilder().setTimestamp(point.getTimestamp())
-            .setStrValue(point.getStrValue());
+            .setValue(point.getValue()).setStrValue(point.getStrValue());
         resultBuilder.addPoints(pointBuilder.build());
       }
       builder.addResults(resultBuilder.build());
     }
+    return builder.build();
+  }
+
+  @Override
+  public QuerySeriesResponse pqlSeriesQuery(PqlLabelRequest request) throws QueryException {
+    QueryProto.QuerySeriesResponse.Builder builder = QueryProto.QuerySeriesResponse.newBuilder();
+    List<Map<String, String>> pqlResult = metricStorage.pqlSeriesQuery(transToPqlParam(request));
+    for (Map<String, String> result : pqlResult) {
+      SeriesResult.Builder seriesBuilder = SeriesResult.newBuilder().putAllResult(result);
+      builder.addResults(seriesBuilder.build());
+    }
+    return builder.build();
+  }
+
+  @Override
+  public QueryLabelsResponse pqlLabelsQuery(PqlLabelRequest request) throws QueryException {
+    QueryProto.QueryLabelsResponse.Builder builder = QueryProto.QueryLabelsResponse.newBuilder();
+    List<String> pqlResult = metricStorage.pqlLabelsQuery(transToPqlParam(request));
+    builder.addAllResults(pqlResult);
+    return builder.build();
+  }
+
+  @Override
+  public QueryLabelsResponse pqlLabelValuesQuery(PqlLabelRequest request) throws QueryException {
+    QueryProto.QueryLabelsResponse.Builder builder = QueryProto.QueryLabelsResponse.newBuilder();
+    List<String> pqlResult = metricStorage.pqlLabelValueQuery(transToPqlParam(request));
+    builder.addAllResults(pqlResult);
     return builder.build();
   }
 
