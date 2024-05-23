@@ -267,8 +267,8 @@ public class CeresdbxMetricStorage implements MetricStorage {
     }
   }
 
-  private DetailResult transToDetailResult(QueryParam queryParam, String[] header, List<Row> rows,
-      List<String> tables) {
+  public static DetailResult transToDetailResult(QueryParam queryParam, String[] header,
+      List<Row> rows, List<String> tables) {
     DetailResult detailResult = DetailResult.empty();
     if (header == null || header.length == 0) {
       return detailResult;
@@ -414,7 +414,7 @@ public class CeresdbxMetricStorage implements MetricStorage {
     return tagsToResult;
   }
 
-  private String[] getHeader(Row row) {
+  public static String[] getHeader(Row row) {
     List<Column> columns = row.getColumns();
     String[] headers = new String[columns.size()];
     for (int i = 0; i < columns.size(); i++) {
