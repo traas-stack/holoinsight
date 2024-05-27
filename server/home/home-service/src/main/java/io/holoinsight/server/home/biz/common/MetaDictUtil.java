@@ -6,14 +6,13 @@ package io.holoinsight.server.home.biz.common;
 import com.google.gson.reflect.TypeToken;
 import io.holoinsight.server.common.J;
 import io.holoinsight.server.common.dao.entity.MetaDataDictValue;
+import io.holoinsight.server.common.scope.IdentityType;
 import io.holoinsight.server.common.service.SuperCacheService;
 import io.holoinsight.server.home.common.service.SpringContext;
-import io.holoinsight.server.common.scope.IdentityType;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -120,15 +119,6 @@ public class MetaDictUtil {
     return value;
   }
 
-  public static Boolean isApmMaterialized() {
-
-    Boolean value = MetaDictUtil.getValue(MetaDictType.GLOBAL_CONFIG,
-        MetaDictKey.IS_APM_MATERIALIZED, new TypeToken<Boolean>() {});
-    if (null == value) {
-      return false;
-    }
-    return value;
-  }
 
   public static List<String /* 任务名 */> getIgnoreTasks() {
     return MetaDictUtil.getValue(MetaDictType.MANAGE_TASK, MetaDictKey.IGNORE_TASK_LIST,
@@ -156,14 +146,6 @@ public class MetaDictUtil {
         MetaDictKey.TOKEN_URL_NO_AUTH, new TypeToken<List<String>>() {});
     if (CollectionUtils.isEmpty(value))
       return new ArrayList<>();
-    return value;
-  }
-
-  public static List<String> getResourceKeys() {
-    List<String> value = MetaDictUtil.getValue(MetaDictType.GLOBAL_CONFIG,
-        MetaDictKey.RESOURCE_KEYS, new TypeToken<List<String>>() {});
-    if (CollectionUtils.isEmpty(value))
-      return Collections.singletonList("tenant");
     return value;
   }
 

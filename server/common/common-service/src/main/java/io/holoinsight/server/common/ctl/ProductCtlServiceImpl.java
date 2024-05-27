@@ -37,7 +37,7 @@ public class ProductCtlServiceImpl implements ProductCtlService {
 
   protected static final String RS_DELIMITER = "_";
 
-  @Scheduled(initialDelay = 10000L, fixedRate = 10000L)
+  @Scheduled(initialDelay = 10000L, fixedDelay = 30000L)
   private void refresh() {
     List<MonitorInstance> monitorInstances = monitorInstanceService.list();
 
