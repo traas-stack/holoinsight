@@ -15,8 +15,6 @@ public class MetaDictKey {
   public static final String TOKEN_URL_WRITE_LIST = "token_url_write_list";
   public static final String TOKEN_URL_WHITE_PREFIX_LIST = "token_url_white_prefix_list";
   public static final String TOKEN_URL_NO_AUTH = "token_url_no_auth";
-  public static final String RESOURCE_KEYS = "resource_keys";
-  public static final String IS_APM_MATERIALIZED = "is_apm_materialized";
   public static final String DISPLAY_MENU_APM = "display_menu_apm";
 
   public static final String AGENT_INSTALL_HOST = "agentInstallHost";
@@ -55,7 +53,6 @@ public class MetaDictKey {
   public static final String MNP_ANTLOG_URL = "mnp_antlog_url";
   public static final String SYSTEM_NOTICE = "system_notice";
 
-  public static final String METERING_LOG_OPEN = "metering_log_open";
   public static final String METERING_HOLOINSIGHT_SUBMIT_OPEN = "metering_holoinsight_submit_open";
   public static final String INTEGRATION_LOCAL_PRODUCT = "integration_local_product";
   public static final String NETWORK_MODE = "networkMode";

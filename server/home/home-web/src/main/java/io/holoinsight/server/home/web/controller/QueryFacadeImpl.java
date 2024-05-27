@@ -645,8 +645,7 @@ public class QueryFacadeImpl extends BaseFacade {
       if (!aBoolean) {
         throw new MonitorException("workspace is illegal");
       }
-      datasourceBuilder
-          .setApmMaterialized(d.isApmMaterialized() || MetaDictUtil.isApmMaterialized());
+      datasourceBuilder.setApmMaterialized(d.isApmMaterialized());
       builder.addDatasources(datasourceBuilder);
     });
 
