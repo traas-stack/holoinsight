@@ -70,4 +70,9 @@ public class ParameterSecurityServiceImpl implements ParameterSecurityService {
       String workspace) {
     return true;
   }
+
+  @Override
+  public boolean checkTenant(String target, String tenant) {
+    return StringUtils.equals(target, tenant);
+  }
 }

@@ -11,6 +11,7 @@ import io.holoinsight.server.common.MonitorException;
 import io.holoinsight.server.common.ResultCodeEnum;
 import io.holoinsight.server.common.dao.entity.AlarmSubscribe;
 import io.holoinsight.server.common.dao.entity.dto.AlarmSubscribeInfo;
+import io.holoinsight.server.home.web.security.LevelAuthorizationAccess;
 import io.holoinsight.server.home.web.security.ParameterSecurityService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -60,15 +61,15 @@ public class AlarmSubscribeFacadeImpl extends BaseFacade {
   @Autowired
   private ParameterSecurityService parameterSecurityService;
 
+  @LevelAuthorizationAccess(paramConfigs = {"PARAMETER" + ":$!uniqueId"},
+      levelAuthorizationCheckeClass = "io.holoinsight.server.home.web.security.custom.AlarmSubscribeFacadeImplChecker")
   @GetMapping(value = "/queryByUniqueId/{uniqueId}")
   @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.VIEW)
   public JsonResult<AlarmSubscribeDTO> queryByUniqueId(@PathVariable("uniqueId") String uniqueId) {
     final JsonResult<AlarmSubscribeDTO> result = new JsonResult<>();
     facadeTemplate.manage(result, new ManageCallback() {
       @Override
-      public void checkParameter() {
-        ParaCheckUtil.checkParaNotBlank(uniqueId, "uniqueId");
-      }
+      public void checkParameter() {}
 
       @Override
       public void doManage() {
@@ -84,6 +85,8 @@ public class AlarmSubscribeFacadeImpl extends BaseFacade {
     return result;
   }
 
+  @LevelAuthorizationAccess(paramConfigs = {"PARAMETER" + ":$!alarmSubscribeDTO"},
+      levelAuthorizationCheckeClass = "io.holoinsight.server.home.web.security.custom.AlarmSubscribeFacadeImplChecker")
   @PostMapping("/submit")
   @ResponseBody
   @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.EDIT)
@@ -102,50 +105,7 @@ public class AlarmSubscribeFacadeImpl extends BaseFacade {
     final JsonResult<Boolean> result = new JsonResult<>();
     facadeTemplate.manage(result, new ManageCallback() {
       @Override
-      public void checkParameter() {
-        ParaCheckUtil.checkParaNotNull(alarmSubscribeDTO, "alarmSubscribeDTO");
-        MonitorScope ms = RequestContext.getContext().ms;
-        MonitorUser mu = RequestContext.getContext().mu;
-        String uniqueId = alarmSubscribeDTO.getUniqueId();
-        if (StringUtils.isNotEmpty(uniqueId)) {
-          ParaCheckUtil.checkParaBoolean(
-              parameterSecurityService.checkRuleTenantAndWorkspace(uniqueId, tenant(), workspace()),
-              "uniqueId do not belong to this tenant " + tenant() + " or workspace " + workspace());
-        }
-        if (!CollectionUtils.isEmpty(alarmSubscribeDTO.getAlarmSubscribe())) {
-          for (AlarmSubscribeInfo alarmSubscribeInfo : alarmSubscribeDTO.getAlarmSubscribe()) {
-            if (StringUtils.isNotEmpty(alarmSubscribeInfo.getUniqueId())) {
-              ParaCheckUtil.checkParaBoolean(
-                  parameterSecurityService.checkRuleTenantAndWorkspace(
-                      alarmSubscribeInfo.getUniqueId(), tenant(), workspace()),
-                  "uniqueId do not belong to this tenant " + tenant() + " or workspace "
-                      + workspace());
-            }
-            if (CollectionUtils.isEmpty(alarmSubscribeInfo.getNoticeType())) {
-              continue;
-            }
-            if (alarmSubscribeInfo.getNoticeType().contains("dingding")
-                || alarmSubscribeInfo.getNoticeType().contains("sms")
-                || alarmSubscribeInfo.getNoticeType().contains("phone")
-                || alarmSubscribeInfo.getNoticeType().contains("email")) {
-              ParaCheckUtil.checkParaBoolean(parameterSecurityService.checkUserTenantAndWorkspace(
-                  alarmSubscribeInfo.getSubscriber(), mu), "invalid subscriber");
-            }
-            if (alarmSubscribeInfo.getNoticeType().contains("dingDingRobot")) {
-              ParaCheckUtil.checkParaBoolean(parameterSecurityService.checkGroupTenantAndWorkspace(
-                  alarmSubscribeInfo.getGroupId(), ms.getTenant(),
-                  requestContextAdapter.getWorkspace(true)), "invalid subscriber");
-            }
-
-            if (null != alarmSubscribeInfo.getId()) {
-              AlarmSubscribe byId = alarmSubscribeService.getById(alarmSubscribeInfo.getId());
-              if (null == byId) {
-                throw new MonitorException(ResultCodeEnum.CANNOT_FIND_RECORD, "id not existed");
-              }
-            }
-          }
-        }
-      }
+      public void checkParameter() {}
 
       @Override
       public void doManage() {
@@ -163,15 +123,15 @@ public class AlarmSubscribeFacadeImpl extends BaseFacade {
     return result;
   }
 
+  @LevelAuthorizationAccess(paramConfigs = {"PARAMETER" + ":$!uniqueId"},
+      levelAuthorizationCheckeClass = "io.holoinsight.server.home.web.security.custom.AlarmSubscribeFacadeImplChecker")
   @GetMapping(value = "/querySubUsers/{uniqueId}")
   @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.VIEW)
   public JsonResult<List<MonitorUser>> querySubUsers(@PathVariable("uniqueId") String uniqueId) {
     final JsonResult<List<MonitorUser>> result = new JsonResult<>();
     facadeTemplate.manage(result, new ManageCallback() {
       @Override
-      public void checkParameter() {
-        ParaCheckUtil.checkParaNotBlank(uniqueId, "uniqueId");
-      }
+      public void checkParameter() {}
 
       @Override
       public void doManage() {
