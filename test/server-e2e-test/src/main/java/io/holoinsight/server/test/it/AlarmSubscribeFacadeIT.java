@@ -4,9 +4,12 @@
 package io.holoinsight.server.test.it;
 
 import io.holoinsight.server.common.J;
+import io.holoinsight.server.common.dao.entity.dto.AlarmRuleDTO;
 import io.holoinsight.server.common.dao.entity.dto.AlarmSubscribeDTO;
 import io.holoinsight.server.common.dao.entity.dto.AlarmSubscribeInfo;
 import io.restassured.response.Response;
+import org.apache.commons.lang3.RandomStringUtils;
+import org.hamcrest.Matchers;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Order;
@@ -16,11 +19,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
 
+import static io.holoinsight.server.test.it.AlertRuleIT.buildRule;
+import static io.holoinsight.server.test.it.AlertRuleIT.buildTimeFilter;
+
 
 public class AlarmSubscribeFacadeIT extends BaseIT {
 
   String uniqueId;
   String tenant;
+  Integer ruleId;
   Supplier<Response> queryByUniqueId = () -> given() //
       .pathParam("uniqueId", uniqueId) //
       .when() //
@@ -33,9 +40,39 @@ public class AlarmSubscribeFacadeIT extends BaseIT {
 
   @Order(1)
   @Test
+  public void test_rule_create() {
+    String name = RandomStringUtils.randomAlphabetic(10) + "告警订阅测试用的炮灰规则";
+    AlarmRuleDTO alarmRuleDTO = new AlarmRuleDTO();
+    alarmRuleDTO.setRuleName(name);
+    alarmRuleDTO.setSourceType("apm_holoinsight");
+    alarmRuleDTO.setAlarmLevel("5");
+    alarmRuleDTO.setRuleDescribe("告警订阅测试用的炮灰规则");
+    alarmRuleDTO.setStatus((byte) 1);
+    alarmRuleDTO.setIsMerge((byte) 0);
+    alarmRuleDTO.setRecover((byte) 0);
+    alarmRuleDTO.setRuleType("rule");
+    alarmRuleDTO.setTimeFilter(buildTimeFilter());
+    alarmRuleDTO.setRule(buildRule());
+
+    // Create folder
+    ruleId = given() //
+        .body(new JSONObject(J.toMap(J.toJson(alarmRuleDTO)))) //
+        .when() //
+        .post("/webapi/alarmRule/create") //
+        .prettyPeek() //
+        .then() //
+        .body("success", IS_TRUE) //
+        .body("data", Matchers.any(Number.class)) //
+        .extract() //
+        .path("data"); //
+
+  }
+
+  @Order(2)
+  @Test
   public void test_alert_manager_webhook_create() {
     AlarmSubscribeDTO item = new AlarmSubscribeDTO();
-    uniqueId = "1";
+    uniqueId = "rule_" + ruleId;
     item.setUniqueId(uniqueId);
     List<AlarmSubscribeInfo> alarmSubscribe = new ArrayList<>();
     AlarmSubscribeInfo alarmSubscribeInfo = new AlarmSubscribeInfo();
@@ -64,7 +101,7 @@ public class AlarmSubscribeFacadeIT extends BaseIT {
     tenant = tenantJson.getString("tenant");
   }
 
-  @Order(2)
+  @Order(3)
   @Test
   public void test_query_sub_users() {
     Response res = querySubUsers.get();
