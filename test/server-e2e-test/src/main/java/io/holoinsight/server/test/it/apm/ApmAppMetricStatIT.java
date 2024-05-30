@@ -50,4 +50,24 @@ public class ApmAppMetricStatIT extends BaseIT {
           }
         });
   }
+
+  @Test
+  public void test_serviceInstanceList() {
+    await() //
+        .untilNoException(() -> {
+
+          long now = System.currentTimeMillis();
+          JSONObject body = json() //
+              .put("start", now - 10 * 60 * 1000L) //
+              .put("end", now) //
+              .put("tenant", "default").put("serviceName", "demo-server");
+
+          ValidatableResponse resp = given() //
+              .body(body) //
+              .when() //
+              .post("/webapi/v1/trace/query/serviceInstanceList") //
+              .then() //
+              .isSuccess().body("data.size()", gt(0));
+        });
+  }
 }
