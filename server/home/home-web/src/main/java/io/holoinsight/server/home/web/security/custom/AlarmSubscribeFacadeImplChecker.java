@@ -10,12 +10,14 @@ import io.holoinsight.server.common.dao.entity.AlarmDingDingRobot;
 import io.holoinsight.server.common.dao.entity.AlarmGroup;
 import io.holoinsight.server.common.dao.entity.AlarmRule;
 import io.holoinsight.server.common.dao.entity.AlarmSubscribe;
+import io.holoinsight.server.common.dao.entity.AlarmWebhook;
 import io.holoinsight.server.common.dao.entity.dto.AlarmSubscribeDTO;
 import io.holoinsight.server.common.dao.entity.dto.AlarmSubscribeInfo;
 import io.holoinsight.server.common.dao.mapper.AlarmDingDingRobotMapper;
 import io.holoinsight.server.common.dao.mapper.AlarmGroupMapper;
 import io.holoinsight.server.common.dao.mapper.AlarmRuleMapper;
 import io.holoinsight.server.common.dao.mapper.AlarmSubscribeMapper;
+import io.holoinsight.server.common.dao.mapper.AlarmWebhookMapper;
 import io.holoinsight.server.common.scope.MonitorUser;
 import io.holoinsight.server.common.service.RequestContextAdapter;
 import io.holoinsight.server.home.web.security.LevelAuthorizationCheck;
@@ -59,6 +61,8 @@ public class AlarmSubscribeFacadeImplChecker
   private AlarmRuleMapper alarmRuleMapper;
   @Resource
   private AlarmDingDingRobotMapper dingDingRobotMapper;
+  @Resource
+  private AlarmWebhookMapper webhookMapper;
 
   private static final Set<String> Notice_Type_Set =
       new HashSet<>(Arrays.asList("dingding", "sms", "phone", "email", "dingDingRobot"));
@@ -172,11 +176,18 @@ public class AlarmSubscribeFacadeImplChecker
         }
 
         if (alarmSubscribeInfo.getGroupId() != null && alarmSubscribeInfo.getGroupId() > 0) {
-          QueryWrapper<AlarmGroup> queryWrapper = new QueryWrapper<>();
-          queryWrapper.eq("id", alarmSubscribeInfo.getGroupId());
-          requestContextAdapter.queryWrapperTenantAdapt(queryWrapper, tenant, simpleWorkspace);
-          List<AlarmGroup> existedAlarmGroups = this.alarmGroupMapper.selectList(queryWrapper);
-          if (CollectionUtils.isEmpty(existedAlarmGroups)) {
+          boolean validGroupId;
+          if (isWebhookNoticeType(alarmSubscribeInfo.getNoticeType())) {
+            validGroupId = checkWebhook(alarmSubscribeInfo.getGroupId(), tenant);
+          } else {
+            QueryWrapper<AlarmGroup> queryWrapper = new QueryWrapper<>();
+            queryWrapper.eq("id", alarmSubscribeInfo.getGroupId());
+            requestContextAdapter.queryWrapperTenantAdapt(queryWrapper, tenant, simpleWorkspace);
+            List<AlarmGroup> existedAlarmGroups = this.alarmGroupMapper.selectList(queryWrapper);
+            validGroupId = !CollectionUtils.isEmpty(existedAlarmGroups);
+          }
+
+          if (!validGroupId) {
             return failCheckResult("invalid AlarmGroup id %s, for tenant %s, workspace %s",
                 alarmSubscribeInfo.getGroupId(), tenant, simpleWorkspace);
           }
@@ -196,6 +207,23 @@ public class AlarmSubscribeFacadeImplChecker
     }
 
     return successCheckResult();
+  }
+
+  private boolean checkWebhook(Long groupId, String tenant) {
+
+    QueryWrapper<AlarmWebhook> queryWrapper = new QueryWrapper<>();
+    queryWrapper.eq("id", groupId);
+    this.requestContextAdapter.queryWrapperTenantAdapt(queryWrapper, tenant);
+
+    List<AlarmWebhook> webhooks = this.webhookMapper.selectList(queryWrapper);
+    return !CollectionUtils.isEmpty(webhooks);
+  }
+
+  private boolean isWebhookNoticeType(List<String> noticeType) {
+    if (CollectionUtils.isEmpty(noticeType)) {
+      return false;
+    }
+    return noticeType.contains("webhook");
   }
 
   private boolean checkDingRobotSubscriber(String dingRobotId, String tenant,
