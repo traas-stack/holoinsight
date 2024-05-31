@@ -65,7 +65,7 @@ public class AlarmSubscribeFacadeImplChecker
   private AlarmWebhookMapper webhookMapper;
 
   private static final Set<String> Notice_Type_Set =
-      new HashSet<>(Arrays.asList("dingding", "sms", "phone", "email", "dingDingRobot"));
+      new HashSet<>(Arrays.asList("dingding", "sms", "phone", "email", "dingDingRobot", "webhook"));
 
 
   @Override
