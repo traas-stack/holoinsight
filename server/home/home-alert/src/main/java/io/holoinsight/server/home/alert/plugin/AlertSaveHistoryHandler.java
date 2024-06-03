@@ -187,6 +187,7 @@ public class AlertSaveHistoryHandler implements AlertHandlerExecutor {
           alertNotify.setLogSample(logs);
         }
       }
+      LOGGER.debug("{} alertNotify LogSample {}", alertNotify.getTraceId(), alertNotify.getLogSample());
     }
   }
 
@@ -259,6 +260,7 @@ public class AlertSaveHistoryHandler implements AlertHandlerExecutor {
           alertNotify.setLogAnalysis(logs);
         }
       }
+      LOGGER.debug("{} alertNotify LogAnalysis {}", alertNotify.getTraceId(), alertNotify.getLogAnalysis());
     }
   }
 
