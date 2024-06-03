@@ -159,12 +159,10 @@ public class AlertSaveHistoryHandler implements AlertHandlerExecutor {
           QueryProto.QueryResponse response =
               this.queryClientService.queryData(queryRequest, "LOG_ALERT");
           if (response != null && !CollectionUtils.isEmpty(response.getResultsList())) {
-            LOGGER.debug("{} log sample result {} request {}", alertNotify.getTraceId(),
-                response, queryRequest);
+            LOGGER.debug("{} log sample result {} request {}", alertNotify.getTraceId(), response,
+                queryRequest);
             for (QueryProto.Result result : response.getResultsList()) {
-              Map<String, String> tagMap = result.getTagsMap();
               List<QueryProto.Point> points = result.getPointsList();
-              LOGGER.debug("{} tagMap {} ", alertNotify.getTraceId(), tagMap);
               if (CollectionUtils.isEmpty(points)) {
                 continue;
               }
@@ -174,8 +172,6 @@ public class AlertSaveHistoryHandler implements AlertHandlerExecutor {
                   continue;
                 }
                 long timestamp = point.getTimestamp();
-                LOGGER.debug("{} alertTime {} timestamp {}", alertNotify.getTraceId(),
-                        alertTime, timestamp);
                 if (alertTime == null || alertTime < timestamp) {
                   // Logs outside the time window
                   continue;
@@ -190,7 +186,6 @@ public class AlertSaveHistoryHandler implements AlertHandlerExecutor {
           alertNotify.setLogSample(logs);
         }
       }
-      LOGGER.debug("{} alertNotify LogSample {}", alertNotify.getTraceId(), alertNotify.getLogSample());
     }
   }
 
@@ -263,7 +258,6 @@ public class AlertSaveHistoryHandler implements AlertHandlerExecutor {
           alertNotify.setLogAnalysis(logs);
         }
       }
-      LOGGER.debug("{} alertNotify LogAnalysis {}", alertNotify.getTraceId(), alertNotify.getLogAnalysis());
     }
   }
 
