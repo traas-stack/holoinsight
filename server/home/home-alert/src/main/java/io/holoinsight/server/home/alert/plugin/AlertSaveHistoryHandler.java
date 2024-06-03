@@ -159,12 +159,11 @@ public class AlertSaveHistoryHandler implements AlertHandlerExecutor {
           QueryProto.QueryResponse response =
               this.queryClientService.queryData(queryRequest, "LOG_ALERT");
           if (response != null && !CollectionUtils.isEmpty(response.getResultsList())) {
-            LOGGER.debug("{} log sample result {} request {}", alertNotify.getTraceId(),
-                J.toJson(response.getResultsList()), J.toJson(queryRequest));
+            LOGGER.debug("{} log sample result {} request {}", alertNotify.getTraceId(), response,
+                queryRequest);
             for (QueryProto.Result result : response.getResultsList()) {
-              Map<String, String> tagMap = result.getTagsMap();
               List<QueryProto.Point> points = result.getPointsList();
-              if (CollectionUtils.isEmpty(tagMap) || CollectionUtils.isEmpty(points)) {
+              if (CollectionUtils.isEmpty(points)) {
                 continue;
               }
 
