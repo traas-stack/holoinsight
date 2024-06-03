@@ -165,7 +165,7 @@ public class AlertSaveHistoryHandler implements AlertHandlerExecutor {
               Map<String, String> tagMap = result.getTagsMap();
               List<QueryProto.Point> points = result.getPointsList();
               LOGGER.debug("{} tagMap {} ", alertNotify.getTraceId(), tagMap);
-              if (CollectionUtils.isEmpty(tagMap) || CollectionUtils.isEmpty(points)) {
+              if (CollectionUtils.isEmpty(points)) {
                 continue;
               }
 
