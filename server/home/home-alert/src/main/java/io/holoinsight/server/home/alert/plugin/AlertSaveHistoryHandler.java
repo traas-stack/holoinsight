@@ -268,9 +268,9 @@ public class AlertSaveHistoryHandler implements AlertHandlerExecutor {
     long end = TimeRangeUtil.getEndTimestamp(alarmTime, dataSource);
     String metric = dataSource.getMetric() + "_logsamples";
 
-    QueryProto.Datasource.Builder builder = QueryProto.Datasource.newBuilder().setStart(start)
-        .setEnd(end).setMetric(metric).addAllFilters(filterConvert(dataSource.getFilters()))
-        .setAggregator("sample").addAllGroupBy(Collections.singletonList("app"));
+    QueryProto.Datasource.Builder builder =
+        QueryProto.Datasource.newBuilder().setStart(start).setEnd(end).setMetric(metric)
+            .addAllFilters(filterConvert(dataSource.getFilters())).setAggregator("sample");
     return builder.build();
   }
 
