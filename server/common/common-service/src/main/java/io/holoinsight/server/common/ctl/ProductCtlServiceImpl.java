@@ -8,11 +8,13 @@ import io.holoinsight.server.common.J;
 import io.holoinsight.server.common.dao.entity.MetaDataDictValue;
 import io.holoinsight.server.common.dao.entity.MonitorInstance;
 import io.holoinsight.server.common.dao.entity.MonitorInstanceCfg;
+import io.holoinsight.server.common.dao.entity.dto.MonitorInstanceDTO;
 import io.holoinsight.server.common.service.MonitorInstanceService;
 import io.holoinsight.server.common.service.SuperCacheService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.time.StopWatch;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 
@@ -37,15 +39,15 @@ public class ProductCtlServiceImpl implements ProductCtlService {
 
   protected static final String RS_DELIMITER = "_";
 
-  @Scheduled(initialDelay = 10000L, fixedDelay = 30000L)
+  @Scheduled(initialDelay = 10000L, fixedDelay = 60000L)
   private void refresh() {
-    List<MonitorInstance> monitorInstances = monitorInstanceService.list();
+
+    StopWatch stopWatch = StopWatch.createStarted();
+    List<MonitorInstanceDTO> monitorInstances = monitorInstanceService.listAllValid();
 
     Map<String, Set<String>> dbProductClosed = new HashMap<>();
-    for (MonitorInstance monitorInstance : monitorInstances) {
-      MonitorInstanceCfg cfg =
-          J.get().fromJson(monitorInstance.getConfig(), MonitorInstanceCfg.class);
-      cfg.getClosed().forEach((code, closed) -> {
+    for (MonitorInstanceDTO monitorInstance : monitorInstances) {
+      monitorInstance.getConfig().getClosed().forEach((code, closed) -> {
         if (closed) {
           dbProductClosed.computeIfAbsent(monitorInstance.getInstance(), k -> new HashSet<>())
               .add(code);
@@ -71,8 +73,9 @@ public class ProductCtlServiceImpl implements ProductCtlService {
       // This catch statement is intentionally empty
     }
 
-    log.info("[product_ctl] refresh closed products, switchOn={}, closed={}, metricWhiteList={}",
-        switchOn, productClosed, metricWhitePrefixes);
+    log.info(
+        "[product_ctl] refresh closed products, switchOn={}, closed={}, cost={}, metricWhiteList={}",
+        switchOn, productClosed.size(), stopWatch.getTime(), metricWhitePrefixes);
   }
 
   @Override

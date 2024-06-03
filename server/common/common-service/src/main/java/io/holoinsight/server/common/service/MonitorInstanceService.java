@@ -5,12 +5,15 @@ package io.holoinsight.server.common.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import io.holoinsight.server.common.dao.entity.MonitorInstance;
+import io.holoinsight.server.common.dao.entity.dto.MonitorInstanceDTO;
 
 import java.util.List;
 
 public interface MonitorInstanceService extends IService<MonitorInstance> {
 
   List<MonitorInstance> listValid();
+
+  List<MonitorInstanceDTO> listAllValid();
 
   List<MonitorInstance> queryByInstance(String instance);
 

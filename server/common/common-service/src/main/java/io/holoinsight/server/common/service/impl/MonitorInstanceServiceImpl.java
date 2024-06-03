@@ -5,9 +5,12 @@ package io.holoinsight.server.common.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import io.holoinsight.server.common.dao.converter.MonitorInstanceConfigConverter;
 import io.holoinsight.server.common.dao.entity.MonitorInstance;
+import io.holoinsight.server.common.dao.entity.dto.MonitorInstanceDTO;
 import io.holoinsight.server.common.dao.mapper.MonitorInstanceMapper;
 import io.holoinsight.server.common.service.MonitorInstanceService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
@@ -19,11 +22,23 @@ import java.util.Map;
 public class MonitorInstanceServiceImpl extends ServiceImpl<MonitorInstanceMapper, MonitorInstance>
     implements MonitorInstanceService {
 
+
+  @Autowired
+  private MonitorInstanceConfigConverter monitorInstanceConfigConverter;
+
+
   @Override
   public List<MonitorInstance> listValid() {
     Map<String, Object> cols = new HashMap<>();
     cols.put("deleted", 0);
     return listByMap(cols);
+  }
+
+  @Override
+  public List<MonitorInstanceDTO> listAllValid() {
+    Map<String, Object> cols = new HashMap<>();
+    cols.put("deleted", 0);
+    return monitorInstanceConfigConverter.dosToDTOs(listByMap(cols));
   }
 
   @Override
