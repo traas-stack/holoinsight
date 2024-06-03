@@ -160,10 +160,11 @@ public class AlertSaveHistoryHandler implements AlertHandlerExecutor {
               this.queryClientService.queryData(queryRequest, "LOG_ALERT");
           if (response != null && !CollectionUtils.isEmpty(response.getResultsList())) {
             LOGGER.debug("{} log sample result {} request {}", alertNotify.getTraceId(),
-                J.toJson(response.getResultsList()), J.toJson(queryRequest));
+                response, queryRequest);
             for (QueryProto.Result result : response.getResultsList()) {
               Map<String, String> tagMap = result.getTagsMap();
               List<QueryProto.Point> points = result.getPointsList();
+              LOGGER.debug("{} tagMap {} ", alertNotify.getTraceId(), tagMap);
               if (CollectionUtils.isEmpty(tagMap) || CollectionUtils.isEmpty(points)) {
                 continue;
               }
@@ -173,6 +174,8 @@ public class AlertSaveHistoryHandler implements AlertHandlerExecutor {
                   continue;
                 }
                 long timestamp = point.getTimestamp();
+                LOGGER.debug("{} alertTime {} timestamp {}", alertNotify.getTraceId(),
+                        alertTime, timestamp);
                 if (alertTime == null || alertTime < timestamp) {
                   // Logs outside the time window
                   continue;
