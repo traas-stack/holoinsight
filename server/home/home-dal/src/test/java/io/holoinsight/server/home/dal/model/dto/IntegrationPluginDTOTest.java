@@ -17,8 +17,8 @@ public class IntegrationPluginDTOTest {
   @Test
   public void testGet() {
     IntegrationPluginDTO.DataRange dataRange = new IntegrationPluginDTO.DataRange();
-    dataRange.extraMap.put("testExtra", "extraValue");
-    dataRange.valuesMap.put("valueKey", "value");
+    dataRange.getExtraMap().put("testExtra", "extraValue");
+    dataRange.getValuesMap().put("valueKey", "value");
     Assert.assertEquals(dataRange.getExtra("testExtra"), "extraValue");
     Assert.assertEquals(dataRange.get("valueKey"), "value");
   }
