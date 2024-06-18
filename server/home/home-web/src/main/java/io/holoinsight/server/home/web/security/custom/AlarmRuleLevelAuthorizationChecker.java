@@ -512,9 +512,9 @@ public class AlarmRuleLevelAuthorizationChecker extends AbstractQueryChecker
 
   private LevelAuthorizationCheckResult checkExtra(AlertRuleExtra extra, String tenant,
       String workspace) {
-    if (StringUtils.isNotEmpty(extra.sourceLink)) {
-      return failCheckResult("sourceLink %s should be empty", extra.sourceLink);
-    }
+    // if (StringUtils.isNotEmpty(extra.sourceLink)) {
+    // return failCheckResult("sourceLink %s should be empty", extra.sourceLink);
+    // }
     // if (StringUtils.isNotEmpty(extra.md5)) {
     // return failCheckResult("md5 %s should be empty", extra.md5);
     // }
