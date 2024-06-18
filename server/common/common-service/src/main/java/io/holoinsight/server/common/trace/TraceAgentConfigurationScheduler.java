@@ -6,6 +6,8 @@ package io.holoinsight.server.common.trace;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import io.holoinsight.server.common.Const;
+import io.holoinsight.server.common.dao.entity.dto.TraceAgentConfigurationDTO;
+import io.holoinsight.server.common.service.TraceAgentConfigurationService;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,7 +35,7 @@ public class TraceAgentConfigurationScheduler {
   @Autowired
   private TraceAgentConfigurationService traceAgentConfigurationService;
 
-  public Cache<String, TraceAgentConfiguration> cache;
+  public Cache<String, TraceAgentConfigurationDTO> cache;
 
   /**
    * <p>
@@ -53,9 +55,9 @@ public class TraceAgentConfigurationScheduler {
   @Scheduled(cron = "*/30 * * * * *")
   private void updateCache() {
     try {
-      List<TraceAgentConfiguration> allFromDB = traceAgentConfigurationService.getALLFromDB();
+      List<TraceAgentConfigurationDTO> allFromDB = traceAgentConfigurationService.getALLFromDB();
       cache.cleanUp();
-      for (TraceAgentConfiguration agentConfiguration : allFromDB) {
+      for (TraceAgentConfigurationDTO agentConfiguration : allFromDB) {
         cache.put(agentConfiguration.getCacheKey(), agentConfiguration);
       }
     } catch (Exception e) {
@@ -68,13 +70,13 @@ public class TraceAgentConfigurationScheduler {
    * getValue.
    * </p>
    */
-  public TraceAgentConfiguration getValue(String cacheKey) {
+  public TraceAgentConfigurationDTO getValue(String cacheKey) {
     return cache.getIfPresent(cacheKey);
   }
 
-  public TraceAgentConfiguration getValue(String tenant, String service,
+  public TraceAgentConfigurationDTO getValue(String tenant, String service,
       Map<String, String> extendInfo) {
-    TraceAgentConfiguration configuration =
+    TraceAgentConfigurationDTO configuration =
         this.getValue(this.cacheKey(tenant, service, extendInfo));
     // If the service configuration is empty, get the tenant configuration
     if (configuration == null) {
@@ -107,12 +109,5 @@ public class TraceAgentConfigurationScheduler {
     };
   }
 
-  /**
-   * <p>
-   * Getter for the field <code>cache</code>.
-   * </p>
-   */
-  public Cache<String, TraceAgentConfiguration> getCache() {
-    return cache;
-  }
+
 }

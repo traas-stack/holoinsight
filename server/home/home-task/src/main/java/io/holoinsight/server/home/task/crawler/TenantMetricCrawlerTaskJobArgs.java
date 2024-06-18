@@ -5,7 +5,7 @@
 package io.holoinsight.server.home.task.crawler;
 
 import io.holoinsight.server.common.dao.entity.MetricInfo;
-import io.holoinsight.server.home.dal.model.dto.IntegrationProductDTO;
+import io.holoinsight.server.common.dao.entity.dto.IntegrationProductDTO;
 
 import java.util.List;
 

@@ -4,10 +4,9 @@
 
 package io.holoinsight.server.home.dal.model.dto;
 
+import io.holoinsight.server.common.dao.entity.dto.IntegrationPluginDTO;
 import org.junit.Assert;
 import org.junit.Test;
-
-import static org.junit.Assert.*;
 
 /**
  * @author masaimu

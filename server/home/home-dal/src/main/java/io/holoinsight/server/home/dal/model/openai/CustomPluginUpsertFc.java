@@ -8,7 +8,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.module.jsonSchema.JsonSchema;
 import com.fasterxml.jackson.module.jsonSchema.JsonSchemaGenerator;
 import io.holoinsight.server.common.J;
-import io.holoinsight.server.home.dal.model.dto.CustomPluginPeriodType;
+import io.holoinsight.server.common.dao.emuns.CustomPluginPeriodType;
 import lombok.Data;
 
 import java.util.Arrays;

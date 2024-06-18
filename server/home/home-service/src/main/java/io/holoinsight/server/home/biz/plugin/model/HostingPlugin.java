@@ -3,7 +3,7 @@
  */
 package io.holoinsight.server.home.biz.plugin.model;
 
-import io.holoinsight.server.home.dal.model.dto.IntegrationPluginDTO;
+import io.holoinsight.server.common.dao.entity.dto.IntegrationPluginDTO;
 
 /**
  * @author masaimu

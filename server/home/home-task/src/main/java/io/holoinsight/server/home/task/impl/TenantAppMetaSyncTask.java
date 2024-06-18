@@ -14,7 +14,7 @@ import io.holoinsight.server.common.MD5Hash;
 import io.holoinsight.server.common.dao.entity.TenantOps;
 import io.holoinsight.server.home.biz.service.MetaService;
 import io.holoinsight.server.home.biz.service.MetaService.AppModel;
-import io.holoinsight.server.home.biz.service.TenantOpsService;
+import io.holoinsight.server.common.service.TenantOpsService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

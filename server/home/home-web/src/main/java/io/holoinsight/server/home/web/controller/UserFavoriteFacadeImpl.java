@@ -4,9 +4,9 @@
 package io.holoinsight.server.home.web.controller;
 
 import io.holoinsight.server.home.biz.service.CustomPluginService;
-import io.holoinsight.server.home.biz.service.DashboardService;
-import io.holoinsight.server.home.biz.service.FolderService;
-import io.holoinsight.server.home.biz.service.IntegrationProductService;
+import io.holoinsight.server.common.service.DashboardService;
+import io.holoinsight.server.common.service.FolderService;
+import io.holoinsight.server.common.service.IntegrationProductService;
 import io.holoinsight.server.home.biz.service.TenantInitService;
 import io.holoinsight.server.common.service.UserFavoriteService;
 import io.holoinsight.server.common.service.UserOpLogService;
@@ -18,12 +18,12 @@ import io.holoinsight.server.common.scope.MonitorScope;
 import io.holoinsight.server.common.scope.MonitorUser;
 import io.holoinsight.server.common.scope.PowerConstants;
 import io.holoinsight.server.common.RequestContext;
-import io.holoinsight.server.home.dal.model.Dashboard;
-import io.holoinsight.server.home.dal.model.Folder;
+import io.holoinsight.server.common.dao.entity.Dashboard;
+import io.holoinsight.server.common.dao.entity.Folder;
 import io.holoinsight.server.home.dal.model.OpType;
 import io.holoinsight.server.common.dao.entity.UserFavorite;
 import io.holoinsight.server.home.dal.model.dto.CustomPluginDTO;
-import io.holoinsight.server.home.dal.model.dto.IntegrationProductDTO;
+import io.holoinsight.server.common.dao.entity.dto.IntegrationProductDTO;
 import io.holoinsight.server.common.MonitorPageRequest;
 import io.holoinsight.server.common.MonitorPageResult;
 import io.holoinsight.server.common.ManageCallback;

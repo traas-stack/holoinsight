@@ -7,7 +7,7 @@ package io.holoinsight.server.home.task.crawler;
 import com.google.gson.reflect.TypeToken;
 import io.holoinsight.server.common.J;
 import io.holoinsight.server.common.dao.entity.MetricInfo;
-import io.holoinsight.server.home.dal.model.dto.IntegrationMetricDTO;
+import io.holoinsight.server.common.dao.entity.dto.IntegrationMetricDTO;
 import io.holoinsight.server.home.task.AbstractMetricCrawlerBuilder;
 import io.holoinsight.server.home.task.MetricCrawler;
 import lombok.extern.slf4j.Slf4j;

@@ -107,7 +107,7 @@ public class CustomPluginUpdateListener {
 
         if (null != collectMetric.getCalculate() && Boolean.TRUE == collectMetric.getCalculate()) {
           AggTask aggTask = buildAggTask(collectMetric, customPluginDTO);
-          aggTaskMaps.put(collectMetric.logCalculate.aggTableName, aggTask);
+          aggTaskMaps.put(collectMetric.targetTable, aggTask);
         }
       }
 
@@ -278,10 +278,12 @@ public class CustomPluginUpdateListener {
     List<CollectMetric> collectMetrics = conf.getCollectMetrics();
 
     for (CollectMetric collectMetric : collectMetrics) {
-      saveMetricByCollectMetric(customPluginDTO, collectMetric, conf.spm, false);
+      Boolean isAgg = Boolean.FALSE;
       if (null != collectMetric.getCalculate() && Boolean.TRUE == collectMetric.getCalculate()) {
-        saveMetricByCollectMetric(customPluginDTO, collectMetric, conf.spm, true);
+        isAgg = Boolean.TRUE;
       }
+      saveMetricByCollectMetric(customPluginDTO, collectMetric, conf.spm, isAgg);
+
     }
   }
 
@@ -290,9 +292,6 @@ public class CustomPluginUpdateListener {
       CollectMetric collectMetric, Boolean isSpm, Boolean isAgg) {
     String tableName = collectMetric.getTableName();
     String targetTable = collectMetric.getTargetTable();
-    if (isAgg) {
-      targetTable = collectMetric.logCalculate.getAggTableName();
-    }
 
     try {
       MetricInfoDTO metricInfoDTO = new MetricInfoDTO();
@@ -324,10 +323,10 @@ public class CustomPluginUpdateListener {
       metricInfoDTO.setPeriod(customPluginDTO.getPeriodType().dataUnitMs / 1000);
 
       List<String> tags = new ArrayList<>(Arrays.asList("ip", "hostname", "namespace"));
-      if (!isAgg && !CollectionUtils.isEmpty(collectMetric.tags)) {
+      if (!CollectionUtils.isEmpty(collectMetric.tags)) {
         tags.addAll(collectMetric.tags);
       }
-      if (!isAgg && !CollectionUtils.isEmpty(collectMetric.refTags)) {
+      if (!CollectionUtils.isEmpty(collectMetric.refTags)) {
         tags.addAll(collectMetric.refTags);
       }
       metricInfoDTO.setTags(tags);

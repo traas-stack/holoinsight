@@ -4,7 +4,7 @@
 package io.holoinsight.server.home.biz.plugin.model;
 
 import io.holoinsight.server.home.biz.plugin.AbstractHostingAlertPlugin;
-import io.holoinsight.server.home.dal.model.dto.IntegrationPluginDTO;
+import io.holoinsight.server.common.dao.entity.dto.IntegrationPluginDTO;
 import io.holoinsight.server.common.dao.entity.dto.AlarmRuleDTO;
 import org.springframework.stereotype.Component;
 

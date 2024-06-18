@@ -5,7 +5,7 @@ package io.holoinsight.server.test.it;
 
 import io.holoinsight.server.common.J;
 import io.holoinsight.server.home.dal.model.dto.CustomPluginDTO;
-import io.holoinsight.server.home.dal.model.dto.CustomPluginPeriodType;
+import io.holoinsight.server.common.dao.emuns.CustomPluginPeriodType;
 import io.holoinsight.server.home.dal.model.dto.CustomPluginStatus;
 import io.holoinsight.server.home.dal.model.dto.conf.CustomPluginConf;
 import io.holoinsight.server.home.dal.model.dto.conf.LogParse;

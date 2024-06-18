@@ -70,13 +70,10 @@ public class CollectMetric implements Serializable {
   public Integer sampleMaxLength = 4096;
 
   /****************************** 预计算 ******************************/
-  // pre calculate, 是否开启预计算
+  // pre calculate, 是否开启预计算, 开启后单机明细数据不存储
   public Boolean calculate;
 
   public LogCalculate logCalculate;
-
-  // 单机明细数据是否存储
-  public Boolean notStorage;
 
   @Data
   public static class Metric implements Serializable {
@@ -122,10 +119,6 @@ public class CollectMetric implements Serializable {
   @Data
   public static class LogCalculate {
 
-    /**
-     * agg 预聚合指标表名称，非前端传入，是后端自动生成
-     */
-    public String aggTableName;
 
     public FillZero fillZero;
 

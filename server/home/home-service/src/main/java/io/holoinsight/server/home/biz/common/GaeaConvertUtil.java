@@ -3,9 +3,9 @@
  */
 package io.holoinsight.server.home.biz.common;
 
+import io.holoinsight.server.common.dao.entity.GaeaCollectRange;
 import io.holoinsight.server.home.biz.plugin.config.MetaLabel;
-import io.holoinsight.server.home.dal.model.dto.CloudMonitorRange;
-import io.holoinsight.server.home.dal.model.dto.GaeaCollectConfigDTO.GaeaCollectRange;
+import io.holoinsight.server.common.dao.entity.CloudMonitorRange;
 import org.springframework.util.CollectionUtils;
 
 import java.util.Collections;

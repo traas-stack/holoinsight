@@ -4,17 +4,17 @@
 package io.holoinsight.server.home.web.controller;
 
 import io.holoinsight.server.home.biz.common.MetaDictUtil;
-import io.holoinsight.server.home.biz.service.DisplayMenuService;
-import io.holoinsight.server.home.biz.service.IntegrationGeneratedService;
+import io.holoinsight.server.common.service.DisplayMenuService;
+import io.holoinsight.server.common.service.IntegrationGeneratedService;
 import io.holoinsight.server.common.MonitorException;
 import io.holoinsight.server.common.ResultCodeEnum;
 import io.holoinsight.server.common.scope.AuthTargetType;
 import io.holoinsight.server.common.scope.MonitorScope;
 import io.holoinsight.server.common.scope.PowerConstants;
 import io.holoinsight.server.common.RequestContext;
-import io.holoinsight.server.home.dal.model.IntegrationGenerated;
-import io.holoinsight.server.home.dal.model.dto.DisplayMenuConfig;
-import io.holoinsight.server.home.dal.model.dto.DisplayMenuDTO;
+import io.holoinsight.server.common.dao.entity.IntegrationGenerated;
+import io.holoinsight.server.common.dao.entity.dto.DisplayMenuConfig;
+import io.holoinsight.server.common.dao.entity.dto.DisplayMenuDTO;
 import io.holoinsight.server.common.ManageCallback;
 import io.holoinsight.server.home.web.common.ParaCheckUtil;
 import io.holoinsight.server.home.web.interceptor.MonitorScopeAuth;

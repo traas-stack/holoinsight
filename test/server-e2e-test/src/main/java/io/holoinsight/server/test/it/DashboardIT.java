@@ -5,7 +5,7 @@
 package io.holoinsight.server.test.it;
 
 import io.holoinsight.server.common.J;
-import io.holoinsight.server.home.dal.model.Dashboard;
+import io.holoinsight.server.common.dao.entity.Dashboard;
 import io.holoinsight.server.common.MonitorPageRequest;
 import io.restassured.response.Response;
 import org.apache.commons.lang3.RandomStringUtils;

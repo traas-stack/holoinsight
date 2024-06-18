@@ -171,6 +171,10 @@ public class GatewayGrpcServiceImpl extends GatewayServiceGrpc.GatewayServiceImp
         continue;
       }
 
+      if (tr.getRefCollectKey() == "") {
+        continue;
+      }
+
       WriteMetricsRequestV4.Table table = tr.getTable();
       WriteMetricsRequestV4.Header header = table.getHeader();
 

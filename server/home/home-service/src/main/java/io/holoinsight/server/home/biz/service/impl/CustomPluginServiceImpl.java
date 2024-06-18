@@ -222,11 +222,6 @@ public class CustomPluginServiceImpl extends ServiceImpl<CustomPluginMapper, Cus
           tableName = collectMetric.name;
         }
         collectMetric.targetTable = tenantInitService.getLogMonitorMetricTable(tableName);
-        if (null != collectMetric.getCalculate() && Boolean.TRUE == collectMetric.getCalculate()) {
-          String aggTableName = collectMetric.tableName + "_agg_" + customPluginDTO.id;
-          collectMetric.logCalculate.aggTableName =
-              tenantInitService.getLogMonitorMetricTable(aggTableName);
-        }
       });
     }
     return customPluginDTO;
@@ -245,13 +240,6 @@ public class CustomPluginServiceImpl extends ServiceImpl<CustomPluginMapper, Cus
               tableName = collectMetric.name;
             }
             collectMetric.targetTable = tenantInitService.getLogMonitorMetricTable(tableName);
-
-            if (null != collectMetric.getCalculate()
-                && Boolean.TRUE == collectMetric.getCalculate()) {
-              String aggTableName = collectMetric.tableName + "_agg_" + customPluginDTO.id;
-              collectMetric.logCalculate.aggTableName =
-                  tenantInitService.getLogMonitorMetricTable(aggTableName);
-            }
           });
         }
       });

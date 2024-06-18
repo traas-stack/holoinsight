@@ -4,7 +4,7 @@
 package io.holoinsight.server.test.it;
 
 import io.holoinsight.server.common.J;
-import io.holoinsight.server.home.dal.model.dto.IntegrationPluginDTO;
+import io.holoinsight.server.common.dao.entity.dto.IntegrationPluginDTO;
 import io.restassured.response.Response;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.json.JSONObject;

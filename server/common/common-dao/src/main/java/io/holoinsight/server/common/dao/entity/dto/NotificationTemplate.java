@@ -27,34 +27,16 @@ public class NotificationTemplate {
   public LinkedHashMap<String /* alias */, String /* tagk */> tagMap = new LinkedHashMap<>();
   public String text;
 
-  public static NotificationTemplate defaultWebhookTemplate() {
-    NotificationTemplate template = new NotificationTemplate();
-    template.fieldMap = new LinkedHashMap<>();
-    template.fieldMap.put("uniqueId", AlertTemplateField.uniqueId);
-    template.fieldMap.put("ruleId", AlertTemplateField.ruleId);
-    template.fieldMap.put("ruleName", AlertTemplateField.ruleName);
-    template.fieldMap.put("alarmTime", AlertTemplateField.DATE);
-    template.fieldMap.put("alarmLevel", AlertTemplateField.ALERT_PRIORITY);
-    template.fieldMap.put("alarmContent", AlertTemplateField.EVENT_MSG);
-    template.fieldMap.put("alarmTenant", AlertTemplateField.TENANT);
-    template.fieldMap.put("metric", AlertTemplateField.ALERT_METRIC);
-    template.fieldMap.put("alarmTags", AlertTemplateField.ALERT_SCOPE);
-    template.fieldMap.put("aggregationNum", AlertTemplateField.aggregationNum);
-    template.fieldMap.put("alarmUrl", AlertTemplateField.ruleUrl);
-    template.fieldMap.put("link", AlertTemplateField.LINK);
-    template.text = template.getTemplateJson();
-    return template;
-  }
 
   public static NotificationTemplate defaultDingtalkTemplate() {
     NotificationTemplate template = new NotificationTemplate();
     template.fieldMap = new LinkedHashMap<>();
-    template.fieldMap.put("告警规则名称", AlertTemplateField.ruleName);
+    template.fieldMap.put("告警规则名称", AlertTemplateField.RULE_NAME);
     template.fieldMap.put("告警严重度", AlertTemplateField.ALERT_PRIORITY);
     template.fieldMap.put("告警内容", AlertTemplateField.EVENT_MSG);
     template.fieldMap.put("告警对象", AlertTemplateField.ALERT_SCOPE);
     template.fieldMap.put("告警首次触发时间", AlertTemplateField.ALERT_START_TIME);
-    template.fieldMap.put("此次评估触发时间", AlertTemplateField.alarmTime);
+    template.fieldMap.put("此次评估触发时间", AlertTemplateField.DATE);
     template.fieldMap.put("告警触发数值", AlertTemplateField.ALERT_VALUE);
     template.fieldMap.put("日志内容", AlertTemplateField.LOG_CONTENT);
     template.text = template.getTemplateJson();
@@ -64,7 +46,7 @@ public class NotificationTemplate {
   public static NotificationTemplate defaultMiniappDingtalkTemplate(TemplateValue templateValue) {
     NotificationTemplate template = new NotificationTemplate();
     template.fieldMap = new LinkedHashMap<>();
-    template.fieldMap.put("告警规则名称", AlertTemplateField.ruleName);
+    template.fieldMap.put("告警规则名称", AlertTemplateField.RULE_NAME);
     template.fieldMap.put("PID", AlertTemplateField.PID);
     template.fieldMap.put("租户名", AlertTemplateField.TENANT_NAME);
     template.fieldMap.put("小程序名", AlertTemplateField.WORKSPACE_NAME);
@@ -72,9 +54,9 @@ public class NotificationTemplate {
     template.fieldMap.put("告警内容", AlertTemplateField.EVENT_MSG);
     template.fieldMap.put("告警对象", AlertTemplateField.ALERT_SCOPE);
     template.fieldMap.put("告警首次触发时间", AlertTemplateField.ALERT_START_TIME);
-    template.fieldMap.put("此次评估触发时间", AlertTemplateField.alarmTime);
+    template.fieldMap.put("此次评估触发时间", AlertTemplateField.DATE);
     template.fieldMap.put("告警触发数值", AlertTemplateField.ALERT_VALUE);
-    template.fieldMap.put("聚合条数", AlertTemplateField.aggregationNum);
+    template.fieldMap.put("聚合条数", AlertTemplateField.AGGREGATION_NUM);
     template.fieldMap.put("告警来源", AlertTemplateField.SOURCE_TYPE);
     if (templateValue != null && StringUtils.isNotEmpty(templateValue.getLogContent())) {
       template.fieldMap.put("日志内容", AlertTemplateField.LOG_CONTENT);
@@ -142,10 +124,14 @@ public class NotificationTemplate {
     switch (field) {
       case ALERT_TRACE_ID:
         return templateValue.getAlarmTraceId();
+      case ALERT_HISTORY_ID:
+        return String.valueOf(templateValue.getAlarmHistoryId());
       case ALERT_ID:
         return String.valueOf(templateValue.getAlarmHistoryDetailId());
+      case ALERT_RULE_ID:
       case ruleId:
         return templateValue.getRuleId();
+      case ALERT_RULE_UNIQUE_ID:
       case uniqueId:
         return templateValue.getUniqueId();
       case ALERT_METRIC:
@@ -170,6 +156,7 @@ public class NotificationTemplate {
         return getAlertValue(templateValue.getAlertValue());
       case ALERT_TITLE:
         return buildAlertTitle(templateValue.getRuleConfig());
+      case RULE_NAME:
       case ruleName:
         return templateValue.getRuleName();
       case ALERT_TYPE:
@@ -195,8 +182,8 @@ public class NotificationTemplate {
         return templateValue.getAlertIp();
       case ALERT_ATTACHMENTS:
         return buildAttachments();
-      // case LINK:
-      // return link;
+      case LINK:
+        // return link;
       case ruleUrl:
         return templateValue.getRuleUrl();
       case TENANT:
@@ -204,6 +191,7 @@ public class NotificationTemplate {
         return templateValue.getTenant();
       case WORKSPACE:
         return templateValue.getWorkspace();
+      case AGGREGATION_NUM:
       case aggregationNum:
         return templateValue.getAggregationNum();
       case ALERT_TRIGGER_CONDITION:

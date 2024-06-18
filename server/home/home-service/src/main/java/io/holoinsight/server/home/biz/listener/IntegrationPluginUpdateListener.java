@@ -11,7 +11,7 @@ import io.holoinsight.server.home.biz.service.TenantInitService;
 import io.holoinsight.server.home.biz.service.openai.OpenAiService;
 import io.holoinsight.server.common.EventBusHolder;
 import io.holoinsight.server.home.dal.model.dto.GaeaCollectConfigDTO;
-import io.holoinsight.server.home.dal.model.dto.IntegrationPluginDTO;
+import io.holoinsight.server.common.dao.entity.dto.IntegrationPluginDTO;
 import com.google.common.eventbus.AllowConcurrentEvents;
 import com.google.common.eventbus.Subscribe;
 import lombok.extern.slf4j.Slf4j;
@@ -22,8 +22,8 @@ import javax.annotation.PostConstruct;
 import java.util.ArrayList;
 import java.util.List;
 
-import static io.holoinsight.server.home.biz.service.impl.IntegrationPluginServiceImpl.checkActionType;
-import static io.holoinsight.server.home.biz.service.impl.IntegrationPluginServiceImpl.isClassicPlugin;
+import static io.holoinsight.server.common.service.impl.IntegrationPluginServiceImpl.checkActionType;
+import static io.holoinsight.server.common.service.impl.IntegrationPluginServiceImpl.isClassicPlugin;
 
 /**
  * @author xiangwanpeng
@@ -56,7 +56,7 @@ public class IntegrationPluginUpdateListener {
         integrationPluginDTO.getId());
     try {
       boolean needUpsertGaea = isClassicPlugin(integrationPluginDTO.getProduct())
-          || checkActionType(integrationPluginDTO, null, this.pluginRepository);
+          || checkActionType(integrationPluginDTO, null);
       if (needUpsertGaea) {
         List<Long> upsert = upsertGaea(integrationPluginDTO);
         notify(upsert);
