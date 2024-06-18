@@ -146,7 +146,7 @@ public class AggTaskUtil {
 
     OutputItem outputItem = new OutputItem();
     outputItem.setType(OUTPUT_STORAGE_ENGINE);
-    outputItem.setName(collectMetric.getLogCalculate().getAggTableName());
+    outputItem.setName(collectMetric.getTargetTable());
 
     List<OutputField> fields = new ArrayList<>();
     OutputField outputField = new OutputField();

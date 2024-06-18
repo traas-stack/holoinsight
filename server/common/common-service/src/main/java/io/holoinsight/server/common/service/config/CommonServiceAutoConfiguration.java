@@ -20,14 +20,27 @@ import io.holoinsight.server.common.service.AlertmanagerWebhookService;
 import io.holoinsight.server.common.service.ApiKeyService;
 import io.holoinsight.server.common.service.ClusterService;
 import io.holoinsight.server.common.service.ClusterTaskService;
+import io.holoinsight.server.common.service.DashboardService;
+import io.holoinsight.server.common.service.DisplayMenuService;
+import io.holoinsight.server.common.service.DisplayTemplateService;
+import io.holoinsight.server.common.service.FolderService;
+import io.holoinsight.server.common.service.IntegrationGeneratedService;
+import io.holoinsight.server.common.service.IntegrationPluginService;
+import io.holoinsight.server.common.service.IntegrationProductService;
+import io.holoinsight.server.common.service.MarketplacePluginService;
+import io.holoinsight.server.common.service.MarketplaceProductService;
 import io.holoinsight.server.common.service.MetaDataDictValueService;
 import io.holoinsight.server.common.service.MetaDictValueService;
 import io.holoinsight.server.common.service.MetaDimDataService;
+import io.holoinsight.server.common.service.MetaTableService;
 import io.holoinsight.server.common.service.MetricInfoService;
 import io.holoinsight.server.common.service.MonitorInstanceService;
 import io.holoinsight.server.common.service.SuperCacheService;
+import io.holoinsight.server.common.service.TenantOpsService;
 import io.holoinsight.server.common.service.TenantService;
 import io.holoinsight.server.common.service.TimedEventService;
+import io.holoinsight.server.common.service.TraceAgentConfPropService;
+import io.holoinsight.server.common.service.TraceAgentConfigurationService;
 import io.holoinsight.server.common.service.UserFavoriteService;
 import io.holoinsight.server.common.service.UserOpLogService;
 import io.holoinsight.server.common.service.UserinfoService;
@@ -46,12 +59,25 @@ import io.holoinsight.server.common.service.impl.AlertmanagerWebhookServiceImpl;
 import io.holoinsight.server.common.service.impl.ApiKeyServiceImpl;
 import io.holoinsight.server.common.service.impl.ClusterServiceImpl;
 import io.holoinsight.server.common.service.impl.ClusterTaskServiceImpl;
+import io.holoinsight.server.common.service.impl.DashboardServiceImpl;
+import io.holoinsight.server.common.service.impl.DisplayMenuServiceImpl;
+import io.holoinsight.server.common.service.impl.DisplayTemplateServiceImpl;
+import io.holoinsight.server.common.service.impl.FolderServiceImpl;
+import io.holoinsight.server.common.service.impl.IntegrationGeneratedServiceImpl;
+import io.holoinsight.server.common.service.impl.IntegrationPluginServiceImpl;
+import io.holoinsight.server.common.service.impl.IntegrationProductServiceImpl;
+import io.holoinsight.server.common.service.impl.MarketplacePluginServiceImpl;
+import io.holoinsight.server.common.service.impl.MarketplaceProductServiceImpl;
 import io.holoinsight.server.common.service.impl.MetaDataDictValueServiceImpl;
 import io.holoinsight.server.common.service.impl.MetaDimDataServiceImpl;
+import io.holoinsight.server.common.service.impl.MetaTableServiceImpl;
 import io.holoinsight.server.common.service.impl.MetricInfoServiceImpl;
 import io.holoinsight.server.common.service.impl.MonitorInstanceServiceImpl;
+import io.holoinsight.server.common.service.impl.TenantOpsServiceImpl;
 import io.holoinsight.server.common.service.impl.TenantServiceImpl;
 import io.holoinsight.server.common.service.impl.TimedEventServiceImpl;
+import io.holoinsight.server.common.service.impl.TraceAgentConfPropServiceImpl;
+import io.holoinsight.server.common.service.impl.TraceAgentConfigurationServiceImpl;
 import io.holoinsight.server.common.service.impl.UserFavoriteServiceImpl;
 import io.holoinsight.server.common.service.impl.UserOpLogServiceImpl;
 import io.holoinsight.server.common.service.impl.UserinfoServiceImpl;
@@ -229,5 +255,83 @@ public class CommonServiceAutoConfiguration {
   @ConditionalOnMissingBean
   public MetaDimDataService metaDimDataService() {
     return new MetaDimDataServiceImpl();
+  }
+
+  @Bean
+  @ConditionalOnMissingBean
+  public DashboardService dashboardService() {
+    return new DashboardServiceImpl();
+  }
+
+  @Bean
+  @ConditionalOnMissingBean
+  public DisplayMenuService displayMenuService() {
+    return new DisplayMenuServiceImpl();
+  }
+
+  @Bean
+  @ConditionalOnMissingBean
+  public DisplayTemplateService displayTemplateService() {
+    return new DisplayTemplateServiceImpl();
+  }
+
+  @Bean
+  @ConditionalOnMissingBean
+  public FolderService folderService() {
+    return new FolderServiceImpl();
+  }
+
+  @Bean
+  @ConditionalOnMissingBean
+  public IntegrationGeneratedService integrationGeneratedService() {
+    return new IntegrationGeneratedServiceImpl();
+  }
+
+  @Bean
+  @ConditionalOnMissingBean
+  public IntegrationPluginService integrationPluginService() {
+    return new IntegrationPluginServiceImpl();
+  }
+
+  @Bean
+  @ConditionalOnMissingBean
+  public IntegrationProductService integrationProductService() {
+    return new IntegrationProductServiceImpl();
+  }
+
+  @Bean
+  @ConditionalOnMissingBean
+  public MarketplacePluginService marketplacePluginService() {
+    return new MarketplacePluginServiceImpl();
+  }
+
+  @Bean
+  @ConditionalOnMissingBean
+  public MarketplaceProductService marketplaceProductService() {
+    return new MarketplaceProductServiceImpl();
+  }
+
+  @Bean
+  @ConditionalOnMissingBean
+  public TraceAgentConfigurationService traceAgentConfigurationService() {
+    return new TraceAgentConfigurationServiceImpl();
+  }
+
+  @Bean
+  @ConditionalOnMissingBean
+  public TraceAgentConfPropService traceAgentConfPropService() {
+    return new TraceAgentConfPropServiceImpl();
+  }
+
+  @Bean
+  @ConditionalOnMissingBean
+  public MetaTableService metaTableService() {
+    return new MetaTableServiceImpl();
+  }
+
+  @Bean
+  @ConditionalOnMissingBean
+  public TenantOpsService tenantOpsService() {
+    return new TenantOpsServiceImpl();
   }
 }

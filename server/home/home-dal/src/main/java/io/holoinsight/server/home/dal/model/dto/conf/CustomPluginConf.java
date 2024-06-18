@@ -3,7 +3,7 @@
  */
 package io.holoinsight.server.home.dal.model.dto.conf;
 
-import io.holoinsight.server.home.dal.model.dto.CloudMonitorRange;
+import io.holoinsight.server.common.dao.entity.CloudMonitorRange;
 import lombok.Data;
 
 import java.io.Serializable;

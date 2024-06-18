@@ -3,15 +3,15 @@
  */
 package io.holoinsight.server.home.biz.plugin.core;
 
+import io.holoinsight.server.common.dao.entity.GaeaCollectRange;
 import io.holoinsight.server.home.biz.plugin.config.CollectType;
 import io.holoinsight.server.home.biz.plugin.model.Plugin;
 import io.holoinsight.server.home.biz.plugin.model.PluginType;
-import io.holoinsight.server.home.biz.service.IntegrationProductService;
+import io.holoinsight.server.common.service.IntegrationProductService;
 import io.holoinsight.server.home.biz.service.MetaService;
 import io.holoinsight.server.home.biz.service.TenantInitService;
-import io.holoinsight.server.home.dal.model.dto.CloudMonitorRange;
-import io.holoinsight.server.home.dal.model.dto.GaeaCollectConfigDTO.GaeaCollectRange;
-import io.holoinsight.server.home.dal.model.dto.IntegrationPluginDTO;
+import io.holoinsight.server.common.dao.entity.CloudMonitorRange;
+import io.holoinsight.server.common.dao.entity.dto.IntegrationPluginDTO;
 import io.holoinsight.server.registry.model.integration.GaeaTask;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

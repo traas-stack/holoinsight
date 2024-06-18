@@ -9,7 +9,7 @@ import io.holoinsight.server.common.service.MetricInfoService;
 import io.holoinsight.server.home.biz.plugin.core.LogPluginUtil;
 import io.holoinsight.server.common.service.AlarmMetricService;
 import io.holoinsight.server.home.biz.service.CustomPluginService;
-import io.holoinsight.server.home.biz.service.FolderService;
+import io.holoinsight.server.common.service.FolderService;
 import io.holoinsight.server.home.biz.service.TenantInitService;
 import io.holoinsight.server.common.service.UserOpLogService;
 import io.holoinsight.server.common.MonitorException;
@@ -21,7 +21,7 @@ import io.holoinsight.server.common.scope.MonitorUser;
 import io.holoinsight.server.common.scope.PowerConstants;
 import io.holoinsight.server.common.RequestContext;
 import io.holoinsight.server.common.dao.entity.AlarmMetric;
-import io.holoinsight.server.home.dal.model.Folder;
+import io.holoinsight.server.common.dao.entity.Folder;
 import io.holoinsight.server.home.dal.model.OpType;
 import io.holoinsight.server.home.dal.model.dto.CustomPluginDTO;
 import io.holoinsight.server.home.dal.model.dto.conf.CollectMetric;
@@ -276,6 +276,19 @@ public class CustomPluginFacadeImpl extends BaseFacade {
         if (null == customPluginDTO) {
           throw new MonitorException(ResultCodeEnum.CANNOT_FIND_RECORD, "can not find record");
         }
+
+        if (!CollectionUtils.isEmpty(customPluginDTO.getConf().collectMetrics)) {
+          List<AlarmMetric> alarmMetrics = new ArrayList<>();
+          for (CollectMetric collectMetric : customPluginDTO.getConf().collectMetrics) {
+            List<AlarmMetric> db = alarmMetricService.queryByMetric(collectMetric.getTargetTable(),
+                ms.getTenant(), ms.getWorkspace());
+            if (!CollectionUtils.isEmpty(db)) {
+              alarmMetrics.addAll(db);
+            }
+          }
+          customPluginDTO.setAlarmMetrics(alarmMetrics);
+        }
+
         JsonResult.createSuccessResult(result, customPluginDTO);
       }
     });

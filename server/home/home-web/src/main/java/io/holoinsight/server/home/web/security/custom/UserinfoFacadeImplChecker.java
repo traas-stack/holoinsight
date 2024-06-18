@@ -8,14 +8,15 @@ import com.google.common.reflect.TypeToken;
 import io.holoinsight.server.common.J;
 import io.holoinsight.server.common.MonitorPageRequest;
 import io.holoinsight.server.common.RequestContext;
-import io.holoinsight.server.common.dao.entity.dto.AlarmBlockDTO;
+import io.holoinsight.server.common.dao.entity.Userinfo;
+import io.holoinsight.server.common.dao.entity.UserinfoVerification;
 import io.holoinsight.server.common.dao.entity.dto.UserinfoDTO;
+import io.holoinsight.server.common.dao.mapper.UserinfoMapper;
+import io.holoinsight.server.common.dao.mapper.UserinfoVerificationMapper;
 import io.holoinsight.server.common.scope.MonitorScope;
 import io.holoinsight.server.common.scope.MonitorUser;
 import io.holoinsight.server.common.service.RequestContextAdapter;
 import io.holoinsight.server.home.biz.ula.ULAFacade;
-import io.holoinsight.server.home.dal.mapper.UserinfoVerificationMapper;
-import io.holoinsight.server.home.dal.model.UserinfoVerification;
 import io.holoinsight.server.home.web.security.LevelAuthorizationCheck;
 import io.holoinsight.server.home.web.security.LevelAuthorizationCheckResult;
 import io.holoinsight.server.home.web.security.LevelAuthorizationMetaData;
@@ -27,7 +28,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
-import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
@@ -48,6 +48,9 @@ public class UserinfoFacadeImplChecker implements AbstractResourceChecker, Level
   private ULAFacade ulaFacade;
   @Resource
   private UserinfoVerificationMapper verificationMapper;
+
+  @Autowired
+  private UserinfoMapper userinfoMapper;
 
   @Override
   public LevelAuthorizationCheckResult check(LevelAuthorizationMetaData levelAuthMetaData,
@@ -189,10 +192,10 @@ public class UserinfoFacadeImplChecker implements AbstractResourceChecker, Level
 
   @Override
   public LevelAuthorizationCheckResult checkIdExists(Long id, String tenant, String workspace) {
-    QueryWrapper<UserinfoVerification> queryWrapper = new QueryWrapper<>();
+    QueryWrapper<Userinfo> queryWrapper = new QueryWrapper<>();
     queryWrapper.eq("id", id);
     requestContextAdapter.queryWrapperTenantAdapt(queryWrapper, tenant, workspace);
-    List<UserinfoVerification> list = this.verificationMapper.selectList(queryWrapper);
+    List<Userinfo> list = this.userinfoMapper.selectList(queryWrapper);
     if (CollectionUtils.isEmpty(list)) {
       return failCheckResult("invalid UserinfoVerification id %d", id);
     }

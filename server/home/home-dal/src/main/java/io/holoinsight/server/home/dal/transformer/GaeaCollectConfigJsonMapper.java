@@ -4,8 +4,8 @@
 package io.holoinsight.server.home.dal.transformer;
 
 import io.holoinsight.server.common.J;
-import io.holoinsight.server.registry.model.integration.GaeaTask;
 import com.google.gson.reflect.TypeToken;
+import io.holoinsight.server.registry.model.integration.GaeaTask;
 
 import java.lang.reflect.Type;
 

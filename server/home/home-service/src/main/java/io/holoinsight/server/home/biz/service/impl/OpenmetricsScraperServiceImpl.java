@@ -15,7 +15,7 @@ import io.holoinsight.server.home.biz.service.OpenmetricsScraperService;
 import io.holoinsight.server.home.dal.converter.OpenmetricsScraperConverter;
 import io.holoinsight.server.home.dal.mapper.OpenmetricsScraperMapper;
 import io.holoinsight.server.home.dal.model.OpenmetricsScraper;
-import io.holoinsight.server.home.dal.model.dto.CloudMonitorRange;
+import io.holoinsight.server.common.dao.entity.CloudMonitorRange;
 import io.holoinsight.server.home.dal.model.dto.OpenmetricsScraperDTO;
 import io.holoinsight.server.registry.model.OpenmetricsScraperTask;
 import org.apache.commons.lang3.StringUtils;

@@ -3,10 +3,10 @@
  */
 package io.holoinsight.server.home.web.controller;
 
-import io.holoinsight.server.home.biz.service.MarketplaceProductService;
+import io.holoinsight.server.common.service.MarketplaceProductService;
 import io.holoinsight.server.common.scope.AuthTargetType;
 import io.holoinsight.server.common.scope.PowerConstants;
-import io.holoinsight.server.home.dal.model.dto.MarketplaceProductDTO;
+import io.holoinsight.server.common.dao.entity.dto.MarketplaceProductDTO;
 import io.holoinsight.server.common.ManageCallback;
 import io.holoinsight.server.home.web.interceptor.MonitorScopeAuth;
 import io.holoinsight.server.common.JsonResult;

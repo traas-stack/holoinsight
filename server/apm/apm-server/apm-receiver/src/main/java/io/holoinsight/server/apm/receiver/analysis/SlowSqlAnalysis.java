@@ -6,7 +6,7 @@ package io.holoinsight.server.apm.receiver.analysis;
 import io.holoinsight.server.apm.common.constants.Const;
 import io.holoinsight.server.apm.common.utils.TimeUtils;
 import io.holoinsight.server.apm.engine.model.SlowSqlDO;
-import io.holoinsight.server.common.trace.TraceAgentConfiguration;
+import io.holoinsight.server.common.dao.entity.dto.TraceAgentConfigurationDTO;
 import io.holoinsight.server.common.trace.TraceAgentConfigurationScheduler;
 import io.opentelemetry.proto.trace.v1.Span;
 import io.opentelemetry.semconv.resource.attributes.ResourceAttributes;
@@ -46,10 +46,10 @@ public class SlowSqlAnalysis {
         - TimeUtils.unixNano2MS(span.getStartTimeUnixNano());
     long slowSqlThreshold = Const.SLOW_SQL_THRESHOLD;
     // Get slow sql dynamic threshold from cache
-    TraceAgentConfiguration configuration =
+    TraceAgentConfigurationDTO configuration =
         agentConfigurationScheduler.getValue(tenant, service, getExtendInfo(spanAttrMap));
     if (configuration != null) {
-      slowSqlThreshold = Long.parseLong(configuration.getConfiguration()
+      slowSqlThreshold = Long.parseLong((String) configuration.getConfiguration()
           .getOrDefault(Const.SLOW_SQL_THRESHOLD_CONFIG, String.valueOf(slowSqlThreshold)));
     }
     if (latency < slowSqlThreshold) {

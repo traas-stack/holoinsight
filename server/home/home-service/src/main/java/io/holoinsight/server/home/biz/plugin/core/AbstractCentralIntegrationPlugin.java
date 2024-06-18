@@ -3,10 +3,10 @@
  */
 package io.holoinsight.server.home.biz.plugin.core;
 
+import io.holoinsight.server.common.dao.entity.GaeaCollectRange;
 import io.holoinsight.server.home.biz.common.GaeaConvertUtil;
 import io.holoinsight.server.home.biz.plugin.config.CollectType;
-import io.holoinsight.server.home.dal.model.dto.GaeaCollectConfigDTO.GaeaCollectRange;
-import io.holoinsight.server.home.dal.model.dto.IntegrationPluginDTO;
+import io.holoinsight.server.common.dao.entity.dto.IntegrationPluginDTO;
 import io.holoinsight.server.registry.model.ExecuteRule;
 
 import java.util.Map;

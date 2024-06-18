@@ -4,7 +4,7 @@
 package io.holoinsight.server.test.it;
 
 import io.holoinsight.server.common.J;
-import io.holoinsight.server.home.dal.model.UserinfoVerification;
+import io.holoinsight.server.common.dao.entity.UserinfoVerification;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;

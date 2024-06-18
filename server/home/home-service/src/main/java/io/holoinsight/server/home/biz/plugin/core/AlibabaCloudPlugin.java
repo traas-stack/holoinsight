@@ -5,11 +5,11 @@ package io.holoinsight.server.home.biz.plugin.core;
 
 import com.google.gson.reflect.TypeToken;
 import io.holoinsight.server.common.J;
+import io.holoinsight.server.common.dao.entity.GaeaCollectRange;
 import io.holoinsight.server.home.biz.common.MetaDictUtil;
 import io.holoinsight.server.home.biz.plugin.model.PluginModel;
-import io.holoinsight.server.home.dal.model.dto.CloudMonitorRange;
-import io.holoinsight.server.home.dal.model.dto.GaeaCollectConfigDTO.GaeaCollectRange;
-import io.holoinsight.server.home.dal.model.dto.IntegrationPluginDTO;
+import io.holoinsight.server.common.dao.entity.CloudMonitorRange;
+import io.holoinsight.server.common.dao.entity.dto.IntegrationPluginDTO;
 import io.holoinsight.server.registry.model.integration.alicloud.AliCloudTask;
 import io.holoinsight.server.registry.model.integration.alicloud.AlicloudConf;
 import io.holoinsight.server.registry.model.integration.alicloud.NameMetrics;

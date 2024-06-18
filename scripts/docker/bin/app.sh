@@ -44,7 +44,7 @@ fi
 
 
 # GC
-JAVA_OPTS="$JAVA_OPTS -XX:CMSInitiatingOccupancyFraction=65 -XX:+UseParNewGC -XX:+UseConcMarkSweepGC -XX:+CMSClassUnloadingEnabled -XX:+CMSParallelRemarkEnabled -XX:+UseCMSInitiatingOccupancyOnly -XX:+CMSScavengeBeforeRemark -XX:CMSMaxAbortablePrecleanTime=5000 -XX:CMSScheduleRemarkEdenPenetration=50 -XX:+CMSParallelInitialMarkEnabled -XX:PermSize=256m -XX:MaxPermSize=256m -XX:MetaspaceSize=256m -XX:MaxMetaspaceSize=256m -XX:+UseCMSCompactAtFullCollection -XX:CMSFullGCsBeforeCompaction=3"
+JAVA_OPTS="$JAVA_OPTS -XX:CMSInitiatingOccupancyFraction=75 -XX:+UseParNewGC -XX:+UseConcMarkSweepGC -XX:+CMSClassUnloadingEnabled -XX:+CMSParallelRemarkEnabled -XX:+UseCMSInitiatingOccupancyOnly -XX:+CMSScavengeBeforeRemark -XX:CMSMaxAbortablePrecleanTime=5000 -XX:CMSScheduleRemarkEdenPenetration=50 -XX:+CMSParallelInitialMarkEnabled -XX:PermSize=256m -XX:MaxPermSize=256m -XX:MetaspaceSize=256m -XX:MaxMetaspaceSize=256m -XX:+UseCMSCompactAtFullCollection -XX:CMSFullGCsBeforeCompaction=3"
 JAVA_OPTS="$JAVA_OPTS -Xloggc:/home/admin/logs/gc.log -XX:+PrintGCDetails -XX:+PrintGCDateStamps -XX:+PrintAdaptiveSizePolicy -XX:+PrintTenuringDistribution -XX:+UseGCLogFileRotation -XX:NumberOfGCLogFiles=10 -XX:GCLogFileSize=100m -verbose:gc -XX:+DisableExplicitGC"
 
 # other

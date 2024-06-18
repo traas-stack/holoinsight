@@ -8,7 +8,7 @@ import com.google.gson.reflect.TypeToken;
 import io.holoinsight.server.common.J;
 import io.holoinsight.server.common.dao.entity.MetricInfo;
 import io.holoinsight.server.home.biz.common.MetaDictUtil;
-import io.holoinsight.server.home.dal.model.dto.IntegrationProductDTO;
+import io.holoinsight.server.common.dao.entity.dto.IntegrationProductDTO;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.CollectionUtils;

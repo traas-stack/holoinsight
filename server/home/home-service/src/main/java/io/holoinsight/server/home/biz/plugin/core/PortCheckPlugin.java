@@ -10,7 +10,7 @@ import io.holoinsight.server.home.biz.plugin.config.PortCheckPluginConfig;
 import io.holoinsight.server.home.biz.plugin.model.PluginModel;
 import io.holoinsight.server.home.biz.plugin.model.PluginType;
 import io.holoinsight.server.home.biz.service.TenantInitService;
-import io.holoinsight.server.home.dal.model.dto.IntegrationPluginDTO;
+import io.holoinsight.server.common.dao.entity.dto.IntegrationPluginDTO;
 import io.holoinsight.server.registry.model.integration.IntegrationTransForm;
 import io.holoinsight.server.registry.model.integration.portcheck.PortCheckTask;
 import io.holoinsight.server.common.J;

@@ -6,6 +6,7 @@ package io.holoinsight.server.home.dal.model.dto;
 import java.util.Date;
 import java.util.List;
 
+import io.holoinsight.server.common.dao.entity.CloudMonitorRange;
 import io.holoinsight.server.registry.model.OpenmetricsScraperTask;
 import lombok.Data;
 

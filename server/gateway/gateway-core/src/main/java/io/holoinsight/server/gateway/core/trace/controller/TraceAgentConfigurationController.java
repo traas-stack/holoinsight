@@ -4,7 +4,7 @@
 package io.holoinsight.server.gateway.core.trace.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.holoinsight.server.common.trace.TraceAgentConfiguration;
+import io.holoinsight.server.common.dao.entity.dto.TraceAgentConfigurationDTO;
 import io.holoinsight.server.common.trace.TraceAgentConfigurationScheduler;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -42,7 +42,8 @@ public class TraceAgentConfigurationController {
    */
   @PostMapping("/query")
   @ResponseBody
-  public TraceAgentConfiguration getAgentConfiguration(@RequestBody Map<String, String> request) {
+  public TraceAgentConfigurationDTO getAgentConfiguration(
+      @RequestBody Map<String, String> request) {
     String tenant = request.get("tenant");
     String service = request.get("service");
     Map<String, String> extendMap = new HashMap<>();

@@ -4,20 +4,17 @@
 package io.holoinsight.server.test.it;
 
 import io.holoinsight.server.common.J;
-import io.holoinsight.server.home.dal.model.Folder;
+import io.holoinsight.server.common.dao.entity.Folder;
 import io.holoinsight.server.home.web.controller.model.FolderRequest;
 import io.holoinsight.server.home.web.controller.model.FolderRequestCmd;
 import io.restassured.response.Response;
 import org.apache.commons.lang3.RandomStringUtils;
-import org.hamcrest.CustomMatcher;
-import org.hamcrest.core.Every;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.function.Supplier;
 
 public class FolderFacadeIT extends BaseIT {

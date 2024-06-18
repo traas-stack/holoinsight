@@ -5,7 +5,7 @@ package io.holoinsight.server.home.biz.plugin.core;
 
 import io.holoinsight.server.home.biz.plugin.config.BasePluginConfig;
 import io.holoinsight.server.home.biz.plugin.model.PluginModel;
-import io.holoinsight.server.home.dal.model.dto.IntegrationPluginDTO;
+import io.holoinsight.server.common.dao.entity.dto.IntegrationPluginDTO;
 import io.holoinsight.server.registry.model.integration.jvm.JvmTask;
 import io.holoinsight.server.common.J;
 import com.google.gson.reflect.TypeToken;

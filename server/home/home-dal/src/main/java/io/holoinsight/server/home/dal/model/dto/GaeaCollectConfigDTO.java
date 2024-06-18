@@ -3,6 +3,7 @@
  */
 package io.holoinsight.server.home.dal.model.dto;
 
+import io.holoinsight.server.common.dao.entity.GaeaCollectRange;
 import io.holoinsight.server.registry.model.integration.GaeaTask;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -10,7 +11,6 @@ import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -31,6 +31,7 @@ public class GaeaCollectConfigDTO {
   public String tableName;
 
   public Boolean deleted;
+  public Boolean storage;
   public Long version;
 
   public String type;
@@ -44,26 +45,5 @@ public class GaeaCollectConfigDTO {
 
   public Date gmtModified;
 
-  @Data
-  @NoArgsConstructor
-  @AllArgsConstructor
-  public static class GaeaCollectRange extends CollectRange {
-    public String type;
-    public CloudMonitorRange cloudmonitor;
-
-    public boolean isEqual(GaeaCollectRange originalRecord) {
-      if ((originalRecord == null)
-          || (this.cloudmonitor == null && originalRecord.cloudmonitor != null)
-          || (this.cloudmonitor != null && originalRecord.cloudmonitor == null)) {
-        return false;
-      }
-      return this.cloudmonitor.isEqual(originalRecord.cloudmonitor);
-    }
-  }
-
-  public static abstract class CollectRange implements Serializable {
-    private static final long serialVersionUID = -2140563386879600142L;
-
-  }
 
 }

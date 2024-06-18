@@ -3,8 +3,8 @@
  */
 package io.holoinsight.server.home.dal.mapper;
 
-import io.holoinsight.server.home.dal.model.GaeaCollectConfig;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import io.holoinsight.server.home.dal.model.GaeaCollectConfig;
 
 /**
  *
