@@ -7,14 +7,14 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import io.holoinsight.server.common.EventBusHolder;
-import io.holoinsight.server.common.service.AlarmHistoryService;
-import io.holoinsight.server.common.service.RequestContextAdapter;
-import io.holoinsight.server.common.dao.converter.AlarmHistoryConverter;
-import io.holoinsight.server.common.dao.mapper.AlarmHistoryMapper;
-import io.holoinsight.server.common.dao.entity.AlarmHistory;
-import io.holoinsight.server.common.dao.entity.dto.AlarmHistoryDTO;
 import io.holoinsight.server.common.MonitorPageRequest;
 import io.holoinsight.server.common.MonitorPageResult;
+import io.holoinsight.server.common.dao.converter.AlarmHistoryConverter;
+import io.holoinsight.server.common.dao.entity.AlarmHistory;
+import io.holoinsight.server.common.dao.entity.dto.AlarmHistoryDTO;
+import io.holoinsight.server.common.dao.mapper.AlarmHistoryMapper;
+import io.holoinsight.server.common.service.AlarmHistoryService;
+import io.holoinsight.server.common.service.RequestContextAdapter;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -122,6 +122,7 @@ public class AlarmHistoryServiceImpl extends ServiceImpl<AlarmHistoryMapper, Ala
     if (alarmHistory.getRecoverTime() == null) {
       if (alarmHistory.getDuration() != null && alarmHistory.getDuration() == 0) {
         wrapper.isNull("recover_time");
+        wrapper.eq("deleted", false);
       }
     } else if (alarmHistory.getDuration() != null && alarmHistory.getDuration() == 1) {
       wrapper.isNotNull("recover_time");

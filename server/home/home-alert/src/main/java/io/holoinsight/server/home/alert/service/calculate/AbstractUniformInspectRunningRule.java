@@ -3,7 +3,16 @@
  */
 package io.holoinsight.server.home.alert.service.calculate;
 
+import io.holoinsight.server.common.dao.emuns.BoolOperationEnum;
+import io.holoinsight.server.common.dao.entity.dto.AlertNotifyRecordDTO;
+import io.holoinsight.server.common.dao.entity.dto.InspectConfig;
 import io.holoinsight.server.common.dao.entity.dto.alarm.AlarmRuleConf;
+import io.holoinsight.server.common.dao.entity.dto.alarm.PqlRule;
+import io.holoinsight.server.common.dao.entity.dto.alarm.trigger.CompareConfig;
+import io.holoinsight.server.common.dao.entity.dto.alarm.trigger.DataSource;
+import io.holoinsight.server.common.dao.entity.dto.alarm.trigger.Trigger;
+import io.holoinsight.server.common.dao.entity.dto.alarm.trigger.TriggerDataResult;
+import io.holoinsight.server.common.dao.entity.dto.alarm.trigger.TriggerResult;
 import io.holoinsight.server.home.alert.model.compute.ComputeContext;
 import io.holoinsight.server.home.alert.model.compute.ComputeInfo;
 import io.holoinsight.server.home.alert.model.event.EventInfo;
@@ -11,15 +20,6 @@ import io.holoinsight.server.home.alert.model.function.FunctionConfigAIParam;
 import io.holoinsight.server.home.alert.model.function.FunctionConfigParam;
 import io.holoinsight.server.home.alert.model.function.FunctionLogic;
 import io.holoinsight.server.home.alert.service.event.RecordSucOrFailNotify;
-import io.holoinsight.server.common.dao.entity.dto.AlertNotifyRecordDTO;
-import io.holoinsight.server.common.dao.entity.dto.alarm.trigger.TriggerDataResult;
-import io.holoinsight.server.common.dao.entity.dto.InspectConfig;
-import io.holoinsight.server.common.dao.entity.dto.alarm.PqlRule;
-import io.holoinsight.server.common.dao.emuns.BoolOperationEnum;
-import io.holoinsight.server.common.dao.entity.dto.alarm.trigger.CompareConfig;
-import io.holoinsight.server.common.dao.entity.dto.alarm.trigger.DataSource;
-import io.holoinsight.server.common.dao.entity.dto.alarm.trigger.Trigger;
-import io.holoinsight.server.common.dao.entity.dto.alarm.trigger.TriggerResult;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -155,6 +155,9 @@ public class AbstractUniformInspectRunningRule {
 
     Map<Trigger, List<TriggerResult>> triggerMap = new HashMap<>();// 告警
     // List<TriggerResult> noEventGeneratedList = new ArrayList<>();// 不告警
+    if (inspectConfig == null || inspectConfig.getRule() == null) {
+      return null;
+    }
     for (Trigger trigger : inspectConfig.getRule().getTriggers()) {
       // 后续考虑增加tags比较
       List<TriggerDataResult> triggerDataResultList = trigger.getDataResult();
