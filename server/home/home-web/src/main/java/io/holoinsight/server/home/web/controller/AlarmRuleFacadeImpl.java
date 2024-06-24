@@ -107,7 +107,7 @@ public class AlarmRuleFacadeImpl extends BaseFacade {
         String tenant = tenant();
         String workspace = workspace();
         MonitorUser mu = RequestContext.getContext().mu;
-        if (null != mu && StringUtils.isBlank(alarmRuleDTO.getCreator())) {
+        if (null != mu) {
           alarmRuleDTO.setCreator(mu.getLoginName());
         }
         if (StringUtils.isNotEmpty(tenant)) {

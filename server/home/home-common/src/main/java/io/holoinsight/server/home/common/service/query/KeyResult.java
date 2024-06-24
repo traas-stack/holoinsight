@@ -16,4 +16,5 @@ public class KeyResult {
 
   private String metric;
   private List<String> tags;
+  private String unit;
 }

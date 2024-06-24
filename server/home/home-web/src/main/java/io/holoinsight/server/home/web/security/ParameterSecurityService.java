@@ -38,4 +38,6 @@ public interface ParameterSecurityService {
   boolean checkRelateId(String relateId, String relateType, String tenant, String workspace);
 
   boolean checkTenant(String target, String tenant);
+
+  boolean checkSourceId(Long sourceId, String sourceType, String tenant, String workspace);
 }

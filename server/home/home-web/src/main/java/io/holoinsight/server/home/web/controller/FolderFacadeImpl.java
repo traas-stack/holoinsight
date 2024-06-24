@@ -68,11 +68,12 @@ public class FolderFacadeImpl extends BaseFacade {
   @PostMapping("/update")
   @ResponseBody
   @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.EDIT)
-  public JsonResult<Object> update(@RequestBody Folder folder) {
+  public JsonResult<Folder> update(@RequestBody Folder folder) {
     final JsonResult<Folder> result = new JsonResult<>();
     facadeTemplate.manage(result, new ManageCallback() {
       @Override
       public void checkParameter() {
+        log.info("update Folder req {}", J.toJson(folder));
         MonitorScope ms = RequestContext.getContext().ms;
         ParaCheckUtil.checkParaNotNull(folder.id, "id");
         ParaCheckUtil.checkParaNotNull(folder.parentFolderId, "parentFolderId");
@@ -120,7 +121,7 @@ public class FolderFacadeImpl extends BaseFacade {
       }
     });
 
-    return JsonResult.createSuccessResult(true);
+    return result;
   }
 
   @PostMapping("/create")
@@ -131,6 +132,7 @@ public class FolderFacadeImpl extends BaseFacade {
     facadeTemplate.manage(result, new ManageCallback() {
       @Override
       public void checkParameter() {
+        log.info("create Folder req {}", J.toJson(folder));
         ParaCheckUtil.checkParaNotNull(folder.parentFolderId, "parentFolderId");
         ParaCheckUtil.checkParaNotBlank(folder.name, "name");
         ParaCheckUtil.checkParaId(folder.getId());
