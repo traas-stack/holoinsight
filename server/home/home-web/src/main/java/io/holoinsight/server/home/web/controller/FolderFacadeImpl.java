@@ -73,6 +73,7 @@ public class FolderFacadeImpl extends BaseFacade {
     facadeTemplate.manage(result, new ManageCallback() {
       @Override
       public void checkParameter() {
+
         log.info("update Folder req {}", J.toJson(folder));
         MonitorScope ms = RequestContext.getContext().ms;
         ParaCheckUtil.checkParaNotNull(folder.id, "id");
@@ -113,6 +114,7 @@ public class FolderFacadeImpl extends BaseFacade {
         }
         update.setGmtModified(new Date());
         folderService.updateById(update);
+        result.setData(update);
 
         assert mu != null;
         userOpLogService.append("folder", folder.getId(), OpType.UPDATE, mu.getLoginName(),

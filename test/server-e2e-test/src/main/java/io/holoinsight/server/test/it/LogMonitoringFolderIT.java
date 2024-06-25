@@ -118,6 +118,7 @@ public class LogMonitoringFolderIT extends BaseIT {
             .put("tenant", tenant)) //
         .when() //
         .post("/webapi/folder/update") //
+        .prettyPeek() //
         .then() //
         .body("success", IS_TRUE); //
 
