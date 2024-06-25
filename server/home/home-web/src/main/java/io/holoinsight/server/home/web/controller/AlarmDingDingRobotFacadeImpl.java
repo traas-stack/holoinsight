@@ -67,6 +67,7 @@ public class AlarmDingDingRobotFacadeImpl extends BaseFacade {
         if (null != mu) {
           alarmDingDingRobotDTO.setCreator(mu.getLoginName());
         }
+        alarmDingDingRobotDTO.setModifier(null);
         if (null != ms && !StringUtils.isEmpty(ms.tenant)) {
           alarmDingDingRobotDTO.setTenant(ms.tenant);
         }

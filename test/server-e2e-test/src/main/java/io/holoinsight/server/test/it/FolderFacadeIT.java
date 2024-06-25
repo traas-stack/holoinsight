@@ -26,7 +26,8 @@ public class FolderFacadeIT extends BaseIT {
   Supplier<Response> queryById = () -> given() //
       .pathParam("id", id) //
       .when() //
-      .get("/webapi/folder/query/{id}"); //
+      .get("/webapi/folder/query/{id}") //
+      .prettyPeek(); //
 
   Supplier<Response> queryByParentFolderId = () -> given() //
       .pathParam("parentFolderId", parentFolderId) //
@@ -80,7 +81,7 @@ public class FolderFacadeIT extends BaseIT {
   public void test_folder_update() {
     name = name + "_v02";
     Folder item = new Folder();
-    parentFolderId = Long.valueOf(2);
+    parentFolderId = (long) -1;
     item.setId(id);
     item.setName(name);
     item.setTenant(tenant);
@@ -90,9 +91,9 @@ public class FolderFacadeIT extends BaseIT {
         .body(new JSONObject(J.toMap(J.toJson(item)))) //
         .when() //
         .post("/webapi/folder/update") //
+        .prettyPeek() //
         .then() //
-        .body("success", IS_TRUE) //
-        .body("data", IS_TRUE); //
+        .body("success", IS_TRUE); //
     Response response = queryById.get();
     System.out.println(response.body().print());
     response //

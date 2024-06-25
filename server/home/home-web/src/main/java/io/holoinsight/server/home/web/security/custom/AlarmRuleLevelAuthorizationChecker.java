@@ -25,9 +25,12 @@ import io.holoinsight.server.common.dao.entity.dto.alarm.trigger.Trigger;
 import io.holoinsight.server.common.dao.mapper.AlarmRuleMapper;
 import io.holoinsight.server.common.dao.mapper.AlertTemplateMapper;
 import io.holoinsight.server.common.service.RequestContextAdapter;
+import io.holoinsight.server.home.dal.mapper.CustomPluginMapper;
+import io.holoinsight.server.home.dal.model.CustomPlugin;
 import io.holoinsight.server.home.web.common.ParaCheckUtil;
 import io.holoinsight.server.home.web.security.LevelAuthorizationCheckResult;
 import io.holoinsight.server.home.web.security.LevelAuthorizationMetaData;
+import io.holoinsight.server.home.web.security.ParameterSecurityService;
 import lombok.extern.slf4j.Slf4j;
 import org.aopalliance.intercept.MethodInvocation;
 import org.apache.commons.lang3.StringUtils;
@@ -66,6 +69,8 @@ public class AlarmRuleLevelAuthorizationChecker extends AbstractQueryChecker
   private AlertTemplateMapper alertTemplateMapper;
   @Autowired
   private AlarmHistoryFacadeImplChecker historyFacadeImplChecker;
+  @Autowired
+  private ParameterSecurityService parameterSecurityService;
   private static final Pattern timePattern =
       Pattern.compile("^(?:[01]\\d|2[0-3]):(?:[0-5]\\d):(?:[0-5]\\d)$");
 
@@ -81,7 +86,7 @@ public class AlarmRuleLevelAuthorizationChecker extends AbstractQueryChecker
       new HashSet<>(Arrays.asList("custom", "cloudbase", "log", "hosting_system", "hosting_port",
           "hosting_tbase", "hosting_spanner", "hosting_ob", "hosting_apm_ai", "hosting_spanner_ai",
           "hosting_ob_ai", "hosting_tbase_ai", "hosting_system_ai", "hosting_disk", "iot",
-          "miniapp", "antiTemplate", "template", "hosting"));
+          "miniapp", "antiTemplate", "template", "hosting", "template_default", "template_update"));
 
   private static final Set<String> silenceModes =
       new HashSet<>(Arrays.asList("default", "gradual", "fixed"));
@@ -347,7 +352,19 @@ public class AlarmRuleLevelAuthorizationChecker extends AbstractQueryChecker
       return failCheckResult("invalid alertTemplateUuid %s", alarmRuleDTO.getAlertTemplateUuid());
     }
 
+    if (alarmRuleDTO.getSourceId() != null && !checkSourceId(alarmRuleDTO.getSourceId(),
+        alarmRuleDTO.getSourceType(), tenant, workspace)) {
+      return failCheckResult("invalid source id %s", String.valueOf(alarmRuleDTO.getSourceId()));
+    }
+
     return successCheckResult();
+  }
+
+  private boolean checkSourceId(Long sourceId, String sourceType, String tenant, String workspace) {
+    if (StringUtils.isEmpty(sourceType)) {
+      return false;
+    }
+    return this.parameterSecurityService.checkSourceId(sourceId, sourceType, tenant, workspace);
   }
 
   private LevelAuthorizationCheckResult checkRule(Map<String, Object> ruleMap, String tenant,

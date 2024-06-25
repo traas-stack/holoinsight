@@ -75,4 +75,9 @@ public class ParameterSecurityServiceImpl implements ParameterSecurityService {
   public boolean checkTenant(String target, String tenant) {
     return StringUtils.equals(target, tenant);
   }
+
+  @Override
+  public boolean checkSourceId(Long sourceId, String sourceType, String tenant, String workspace) {
+    return true;
+  }
 }

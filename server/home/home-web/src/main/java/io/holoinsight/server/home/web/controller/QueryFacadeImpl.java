@@ -283,6 +283,7 @@ public class QueryFacadeImpl extends BaseFacade {
           if (metricInfo != null) {
             List<String> tags = metricInfo.getTags();
             KeyResult keyResult = new KeyResult();
+            keyResult.setUnit(metricInfo.getUnit());
             keyResult.setMetric(metric);
             keyResult.setTags(tags);
             result.setData(keyResult);
