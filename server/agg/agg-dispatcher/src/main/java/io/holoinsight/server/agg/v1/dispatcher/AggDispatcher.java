@@ -167,10 +167,7 @@ public class AggDispatcher {
           }
           aggTaskValue.addInDataNodes(b);
         }
-        if (send(aggKey, aggTaskValue.build())) {
-          StatUtils.KAFKA_SEND.add(StringsKey.of("v4"),
-              new long[] {1, aggTaskValue.getInDataNodesCount()});
-        }
+        send(aggKey, aggTaskValue.build());
       }
     }
   }
@@ -208,11 +205,7 @@ public class AggDispatcher {
         }
 
         AggProtos.AggTaskValue taskValue = aggTaskValue.build();
-
-        if (send(aggTaskKey, taskValue)) {
-          StatUtils.KAFKA_SEND.add(StringsKey.of("v1"),
-              new long[] {1, taskValue.getInDataNodesCount()});
-        }
+        send(aggTaskKey, taskValue);
       }
     }
   }
@@ -288,9 +281,7 @@ public class AggDispatcher {
 
     for (AggTask aggTask : aggTasks) {
       AggTaskKey aggTaskKey = new AggTaskKey(authInfo.getTenant(), aggTask.getAggId());
-      if (send(aggTaskKey, aggTaskValue)) {
-        StatUtils.KAFKA_SEND.add(StringsKey.of("detail"), new long[] {1, table.getRows().size()});
-      }
+      send(aggTaskKey, aggTaskValue);
     }
   }
 
@@ -305,7 +296,8 @@ public class AggDispatcher {
       if (value.hasDataTable()) {
         count += value.getDataTable().getRowCount();
       }
-      StatUtils.KAFKA_SEND.add(StringsKey.of(topic, "DISCARD"), new long[] {1, count});
+      StatUtils.KAFKA_SEND.add(StringsKey.of(topic, "DISCARD", "unknownPartition"),
+          new long[] {1, count, 0});
       return false;
     }
 
@@ -325,11 +317,12 @@ public class AggDispatcher {
       if (exception != null) {
         log.error("[agg] [{}] write kafka error, metric=[{}] size=[{}]", //
             key, value.getMetric(), count, exception);
-        StatUtils.KAFKA_SEND.add(StringsKey.of(topic, "ERROR"), new long[] {1, count});
+        StatUtils.KAFKA_SEND.add(StringsKey.of(topic, "ERROR", "unknownPartition"),
+            new long[] {1, count, 0});
       } else if (metadata != null) {
         StatUtils.KAFKA_SEND.set(
             StringsKey.of(topic, "SUCCESS", String.valueOf(metadata.partition())),
-            new long[] {metadata.hasOffset() ? metadata.offset() : 0});
+            new long[] {1, count, metadata.hasOffset() ? metadata.offset() : 0});
       }
     });
     return true;
@@ -377,8 +370,6 @@ public class AggDispatcher {
         if (aggTask.getExtension().isDebug()) {
           log.info("send to kafka {} {}", aggTaskKey.getAggId(), taskValue.getInDataNodesCount());
         }
-        StatUtils.KAFKA_SEND.add(StringsKey.of("v1"),
-            new long[] {1, taskValue.getInDataNodesCount()});
       }
     }
   }
@@ -429,8 +420,6 @@ public class AggDispatcher {
         if (aggTask.getExtension().isDebug()) {
           log.info("send to kafka {} {}", aggTaskKey.getAggId(), taskValue.getInDataNodesCount());
         }
-        StatUtils.KAFKA_SEND.add(StringsKey.of("v1"),
-            new long[] {1, taskValue.getInDataNodesCount()});
       }
     }
 

@@ -3,6 +3,33 @@
  */
 package io.holoinsight.server.registry.core.template;
 
+import com.google.common.collect.Maps;
+import com.xzchaoo.commons.basic.concurrent.DynamicScheduledExecutorService;
+import com.xzchaoo.commons.basic.concurrent.OneThreadFactory;
+import com.xzchaoo.commons.basic.dispose.Disposable;
+import com.xzchaoo.commons.stat.Measurement;
+import com.xzchaoo.commons.stat.StringsKey;
+import io.holoinsight.server.common.MetricsUtils;
+import io.holoinsight.server.common.dao.entity.GaeaCollectConfigDO;
+import io.holoinsight.server.common.dao.entity.GaeaCollectConfigDOExample;
+import io.holoinsight.server.common.dao.mapper.GaeaCollectConfigDOMapper;
+import io.holoinsight.server.registry.core.collecttarget.CollectTargetMaintainer;
+import io.holoinsight.server.registry.core.utils.BoundedSchedulers;
+import lombok.val;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionDefinition;
+import org.springframework.transaction.support.DefaultTransactionDefinition;
+import org.springframework.transaction.support.TransactionTemplate;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
+
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -16,36 +43,6 @@ import java.util.Set;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
-
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
-
-import io.holoinsight.server.common.dao.entity.GaeaCollectConfigDO;
-import io.holoinsight.server.common.dao.entity.GaeaCollectConfigDOExample;
-import io.holoinsight.server.common.dao.mapper.GaeaCollectConfigDOMapper;
-import io.holoinsight.server.registry.core.collecttarget.CollectTargetMaintainer;
-import io.holoinsight.server.registry.core.utils.BoundedSchedulers;
-import io.holoinsight.server.common.MetricsUtils;
-import lombok.val;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
-
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.TransactionDefinition;
-import org.springframework.transaction.support.DefaultTransactionDefinition;
-import org.springframework.transaction.support.TransactionTemplate;
-
-import com.google.common.collect.Maps;
-import com.xzchaoo.commons.basic.concurrent.DynamicScheduledExecutorService;
-import com.xzchaoo.commons.basic.concurrent.OneThreadFactory;
-import com.xzchaoo.commons.basic.dispose.Disposable;
-import com.xzchaoo.commons.stat.Measurement;
-import com.xzchaoo.commons.stat.StringsKey;
 
 /**
  * 负责将 CollectConfig 同步到内存里
@@ -585,7 +582,7 @@ public class CollectTemplateSyncer {
       return null;
     }
 
-    Map<String, CollectConfigDelta> groups = toGroups(configDos, true);
+    Map<String /* tableName */, CollectConfigDelta> groups = toGroups(configDos, true);
 
     List<String> retryTableNames = new ArrayList<>();
     for (Map.Entry<String, CollectConfigDelta> e : groups.entrySet()) {
@@ -736,8 +733,8 @@ public class CollectTemplateSyncer {
     return templateDeltas;
   }
 
-  private Map<String, CollectConfigDelta> toGroups(List<GaeaCollectConfigDO> configDos,
-      boolean warnNotExistDelete) {
+  private Map<String /* tableName */, CollectConfigDelta> toGroups(
+      List<GaeaCollectConfigDO> configDos, boolean warnNotExistDelete) {
     Map<String, CollectConfigDelta> groups = Maps.newHashMapWithExpectedSize(configDos.size() / 2);
 
     for (GaeaCollectConfigDO gcc : configDos) {
