@@ -202,12 +202,12 @@ public class AsyncOutput {
       if (e != null) {
         log.error("[output] agg=[{}] ts=[{}] write batch error", batch.key,
             Utils.formatTime(batch.window.timestamp), e);
-        StatUtils.KAFKA_SEND.add(StringsKey.of(r.topic(), "ERROR"),
-            new long[] {1, batch.getGroups().size()});
+        StatUtils.KAFKA_SEND.add(StringsKey.of(r.topic(), "ERROR", "unknownPartition"),
+            new long[] {1, batch.getGroups().size(), 0});
       } else if (metadata != null) {
         StatUtils.KAFKA_SEND.set(
             StringsKey.of(r.topic(), "SUCCESS", String.valueOf(metadata.partition())),
-            new long[] {metadata.hasOffset() ? metadata.offset() : 0});
+            new long[] {1, batch.getGroups().size(), metadata.hasOffset() ? metadata.offset() : 0});
       }
     });
   }
