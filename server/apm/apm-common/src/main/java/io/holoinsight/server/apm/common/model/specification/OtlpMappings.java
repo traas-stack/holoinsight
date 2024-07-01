@@ -39,6 +39,7 @@ public class OtlpMappings {
     spanMappings.put("start_time", "start_time");
     spanMappings.put("end_time", "end_time");
     OTLP_SW_MAPPINGS.put("holoinsight-span", spanMappings);
+    OTLP_SW_MAPPINGS.put("holoinsight_span", spanMappings);
   }
 
   /**
