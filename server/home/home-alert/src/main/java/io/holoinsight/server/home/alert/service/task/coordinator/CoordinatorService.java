@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.google.common.reflect.TypeToken;
 import io.holoinsight.server.common.AddressUtil;
 import io.holoinsight.server.common.J;
+import io.holoinsight.server.common.Pair;
 import io.holoinsight.server.home.alert.service.task.CacheAlertTask;
 import io.holoinsight.server.home.alert.service.task.coordinator.server.NettyServer;
 import io.holoinsight.server.home.biz.common.MetaDictUtil;
@@ -54,22 +55,30 @@ public class CoordinatorService {
    *
    * @return
    */
-  public int getOrder() {
+  public Pair<Integer /* order */, Integer /* total */> getOrder() {
     long minuteBefore = System.currentTimeMillis() - 60_000L;
     QueryWrapper<Cluster> condition = new QueryWrapper<>();
     condition.eq("role", this.role);
     condition.ge("last_heartbeat_time", minuteBefore);
 
+    int total = -1;
+    int order = -1;
     List<Cluster> clusters = this.clusterMapper.selectList(condition);
+
+    if (CollectionUtils.isEmpty(clusters)) {
+      return new Pair<>(order, total);
+    } else {
+      total = clusters.size();
+    }
 
     clusters.sort(Comparator.comparing(Cluster::getIp));
     String myIp = AddressUtil.getLocalHostIPV4();
     log.info("get order by my ip {} in {}", myIp, J.toJson(clusters));
     this.otherMembers = new ArrayList<>();
-    int order = -1;
+
     List<String> blackList = getBlackServerList();
     if (!CollectionUtils.isEmpty(blackList) && blackList.contains(myIp)) {
-      return order;
+      return new Pair<>(order, total);
     }
     for (int i = 0; i < clusters.size(); i++) {
       Cluster cluster = clusters.get(i);
@@ -79,7 +88,7 @@ public class CoordinatorService {
         this.otherMembers.add(cluster.getIp());
       }
     }
-    return order;
+    return new Pair<>(order, total);
   }
 
   private List<String> getBlackServerList() {
@@ -91,7 +100,9 @@ public class CoordinatorService {
   }
 
   public void spread(long heartbeat) {
-    int order = getOrder();
+    Pair<Integer /* order */, Integer /* total */> pair = getOrder();
+    int order = pair.getLeft();
+    int total = pair.getRight();
     if (order < 0) {
       log.info("fail to get order, give up allocating task.");
       return;
@@ -108,11 +119,18 @@ public class CoordinatorService {
     if (realOrder < 0) {
       return;
     }
-    calculateSelectRange(realOrder);
+    calculateSelectRange(realOrder, total);
   }
 
-  protected void calculateSelectRange(int realOrder) {
+  protected void calculateSelectRange(int realOrder, int total) {
     double realSize = orderMap.getRealSize().doubleValue();
+    if (total > 2 && realSize <= ((double) total / 2)) {
+      log.warn("TASK_ASSIGN_CRITICAL,realSize={},total={}", realSize, total);
+      this.cacheAlertTask.setEnable(false);
+      return;
+    } else {
+      this.cacheAlertTask.setEnable(true);
+    }
     double ruleSize = this.cacheAlertTask.ruleSize("rule", (byte) 1).doubleValue();
     double aiSize = this.cacheAlertTask.ruleSize("ai", (byte) 1).doubleValue();
     double pqlSize = this.cacheAlertTask.ruleSize("pql", (byte) 1).doubleValue();
