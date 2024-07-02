@@ -54,9 +54,9 @@ public class CoordinatorServiceTest {
   }
 
   private void order(CoordinatorService service) {
-    service.calculateSelectRange(0);
-    service.calculateSelectRange(1);
-    service.calculateSelectRange(2);
+    service.calculateSelectRange(0, 3);
+    service.calculateSelectRange(1, 3);
+    service.calculateSelectRange(2, 3);
     Mockito.verify(service.cacheAlertTask, Mockito.times(3))
         .setRulePageNum(rulePageNumArgument.capture());
     List<Integer> rulePageNums = rulePageNumArgument.getAllValues();

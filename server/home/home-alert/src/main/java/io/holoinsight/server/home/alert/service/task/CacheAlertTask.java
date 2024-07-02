@@ -33,6 +33,7 @@ import java.util.UUID;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -54,6 +55,7 @@ public class CacheAlertTask {
   protected final AtomicInteger aiPageNum = new AtomicInteger();
   protected final AtomicInteger pqlPageSize = new AtomicInteger();
   protected final AtomicInteger pqlPageNum = new AtomicInteger();
+  protected final AtomicBoolean enable = new AtomicBoolean(true);
 
   @Resource
   protected AlarmRuleMapper alarmRuleDOMapper;
@@ -77,6 +79,10 @@ public class CacheAlertTask {
 
   private void getAlarmTaskCache() {
     try {
+      if (!enable.get()) {
+        LOGGER.warn("alert cache task has been closed.");
+        return;
+      }
       loadLogMetric();
       LOGGER.info("complete to loadLogMetric, logPatternCache size {} logSampleCache size {}",
           logPatternCache.size(), logSampleCache.size());
@@ -288,5 +294,9 @@ public class CacheAlertTask {
 
   public void setPqlPageNum(int num) {
     this.pqlPageNum.set(num);
+  }
+
+  public void setEnable(boolean enable) {
+    this.enable.set(enable);
   }
 }
