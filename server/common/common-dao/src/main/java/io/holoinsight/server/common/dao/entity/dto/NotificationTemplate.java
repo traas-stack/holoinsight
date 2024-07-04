@@ -58,6 +58,7 @@ public class NotificationTemplate {
     template.fieldMap.put("告警触发数值", AlertTemplateField.ALERT_VALUE);
     template.fieldMap.put("聚合条数", AlertTemplateField.AGGREGATION_NUM);
     template.fieldMap.put("告警来源", AlertTemplateField.SOURCE_TYPE);
+    template.fieldMap.put("链接", AlertTemplateField.ruleUrl);
     if (templateValue != null && StringUtils.isNotEmpty(templateValue.getLogContent())) {
       template.fieldMap.put("日志内容", AlertTemplateField.LOG_CONTENT);
     }
@@ -90,7 +91,7 @@ public class NotificationTemplate {
     msg.append("## ").append(textTitle).append("  \n\n\n  ");
     for (Map.Entry<String, AlertTemplateField> entry : this.fieldMap.entrySet()) {
       AlertTemplateField field = entry.getValue();
-      if (field == AlertTemplateField.LINK || field == AlertTemplateField.ruleUrl) {
+      if (field == AlertTemplateField.LINK) {
         continue;
       } else if (field == AlertTemplateField.ALERT_SCOPE || field == AlertTemplateField.alarmTags) {
         msg.append(String.format("- **%s**:  \n\n  ", entry.getKey()));
@@ -185,7 +186,7 @@ public class NotificationTemplate {
       case LINK:
         // return link;
       case ruleUrl:
-        return templateValue.getRuleUrl();
+        return buildRuleUrl(templateValue.getRuleUrl(), tagMarkdown);
       case TENANT:
       case tenant:
         return templateValue.getTenant();
@@ -200,6 +201,13 @@ public class NotificationTemplate {
         return templateValue.getLogContent();
     }
     return StringUtils.EMPTY;
+  }
+
+  private String buildRuleUrl(String ruleUrl, boolean tagMarkdown) {
+    if (tagMarkdown) {
+      return "[告警规则链接](http://roar.alibaba-inc.com/urlRoute.jsp?url=" + ruleUrl + ")";
+    }
+    return ruleUrl;
   }
 
   private String buildTagValue(String alarmTags, boolean tagMarkdown) {
