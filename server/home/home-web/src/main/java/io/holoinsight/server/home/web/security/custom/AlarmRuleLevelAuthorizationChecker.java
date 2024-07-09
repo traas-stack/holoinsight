@@ -93,8 +93,9 @@ public class AlarmRuleLevelAuthorizationChecker extends AbstractQueryChecker
       new HashSet<>(Arrays.asList("default", "gradual", "fixed"));
   private static final Set<String> aggregators = new HashSet<>(Arrays.asList("sum", "avg", "min",
       "max", "count", "none", "SUM", "AVG", "MIN", "MAX", "COUNT", "NONE"));
-  private static final Set<String> defaultMetricTypes =
-      new HashSet<>(Arrays.asList("message", "loadbalancing"));
+  private static final Set<String> defaultMetricTypes = new HashSet<>(
+      Arrays.asList("app", "cache", "log", "oss", "trace", "system", "metric", "service",
+          "function", "pg", "mongodb", "db", "miniProgram", "mysql", "message", "loadbalancing"));
   // private static final Set<String> products = new HashSet<>(
   // Arrays.asList("JVM", "Function", "OceanBase", "Tbase", "PortCheck", "System", "MiniProgram",
   // "Spanner", "IoT", "APM", "Mysql", "SLB", "SOFAMQX", "Postgres", "Gateway"));
@@ -423,12 +424,9 @@ public class AlarmRuleLevelAuthorizationChecker extends AbstractQueryChecker
 
   private LevelAuthorizationCheckResult checkDatasources(List<DataSource> datasources,
       String tenant, String workspace) {
-    Set<String> metricTypes = this.superCacheService.getSc().metricTypes;
     Set<String> products = this.superCacheService.getSc().integrationProducts;
     for (DataSource dataSource : datasources) {
       if (StringUtils.isNotEmpty(dataSource.getMetricType())
-          && !CollectionUtils.isEmpty(metricTypes)
-          && !metricTypes.contains(dataSource.getMetricType())
           && !defaultMetricTypes.contains(dataSource.getMetricType())) {
         return failCheckResult("invalid metric type %s", dataSource.getMetricType());
       }
