@@ -11,6 +11,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  *
@@ -24,6 +25,10 @@ public class SuperCache {
 
   public List<String> resourceKeys;
   public List<String> freePrefixes;
+
+  public Set<String> metricTypes;
+
+  public Set<String> integrationProducts;
 
   public String getStringValue(String type, String k) {
 

@@ -4,10 +4,10 @@
 package io.holoinsight.server.common.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import io.holoinsight.server.common.dao.entity.AlarmRule;
-import io.holoinsight.server.common.dao.entity.dto.AlarmRuleDTO;
 import io.holoinsight.server.common.MonitorPageRequest;
 import io.holoinsight.server.common.MonitorPageResult;
+import io.holoinsight.server.common.dao.entity.AlarmRule;
+import io.holoinsight.server.common.dao.entity.dto.AlarmRuleDTO;
 
 import java.util.List;
 
@@ -22,6 +22,12 @@ public interface AlertRuleService extends IService<AlarmRule> {
   Boolean updateById(AlarmRuleDTO alarmRuleDTO);
 
   Boolean deleteById(Long id);
+
+  Long save(AlarmRuleDTO alarmRuleDTO, boolean busPost);
+
+  Boolean updateById(AlarmRuleDTO alarmRuleDTO, boolean busPost);
+
+  Boolean deleteById(Long id, boolean busPost);
 
   AlarmRuleDTO queryById(Long id, String tenant, String workspace);
 

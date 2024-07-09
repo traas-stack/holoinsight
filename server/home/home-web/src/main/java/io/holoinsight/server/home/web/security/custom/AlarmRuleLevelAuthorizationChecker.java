@@ -25,8 +25,7 @@ import io.holoinsight.server.common.dao.entity.dto.alarm.trigger.Trigger;
 import io.holoinsight.server.common.dao.mapper.AlarmRuleMapper;
 import io.holoinsight.server.common.dao.mapper.AlertTemplateMapper;
 import io.holoinsight.server.common.service.RequestContextAdapter;
-import io.holoinsight.server.home.dal.mapper.CustomPluginMapper;
-import io.holoinsight.server.home.dal.model.CustomPlugin;
+import io.holoinsight.server.common.service.SuperCacheService;
 import io.holoinsight.server.home.web.common.ParaCheckUtil;
 import io.holoinsight.server.home.web.security.LevelAuthorizationCheckResult;
 import io.holoinsight.server.home.web.security.LevelAuthorizationMetaData;
@@ -71,6 +70,8 @@ public class AlarmRuleLevelAuthorizationChecker extends AbstractQueryChecker
   private AlarmHistoryFacadeImplChecker historyFacadeImplChecker;
   @Autowired
   private ParameterSecurityService parameterSecurityService;
+  @Autowired
+  private SuperCacheService superCacheService;
   private static final Pattern timePattern =
       Pattern.compile("^(?:[01]\\d|2[0-3]):(?:[0-5]\\d):(?:[0-5]\\d)$");
 
@@ -92,12 +93,11 @@ public class AlarmRuleLevelAuthorizationChecker extends AbstractQueryChecker
       new HashSet<>(Arrays.asList("default", "gradual", "fixed"));
   private static final Set<String> aggregators = new HashSet<>(Arrays.asList("sum", "avg", "min",
       "max", "count", "none", "SUM", "AVG", "MIN", "MAX", "COUNT", "NONE"));
-  private static final Set<String> metricTypes =
-      new HashSet<>(Arrays.asList("app", "cache", "log", "oss", "trace", "system", "metric",
-          "service", "function", "pg", "mongodb", "db", "miniProgram", "mysql"));
-  private static final Set<String> products = new HashSet<>(
-      Arrays.asList("JVM", "Function", "OceanBase", "Tbase", "PortCheck", "System", "MiniProgram",
-          "Spanner", "IoT", "APM", "Mysql", "SLB", "SOFAMQX", "Postgres", "Gateway"));
+  private static final Set<String> defaultMetricTypes =
+      new HashSet<>(Arrays.asList("message", "loadbalancing"));
+  // private static final Set<String> products = new HashSet<>(
+  // Arrays.asList("JVM", "Function", "OceanBase", "Tbase", "PortCheck", "System", "MiniProgram",
+  // "Spanner", "IoT", "APM", "Mysql", "SLB", "SOFAMQX", "Postgres", "Gateway"));
 
   @Override
   public LevelAuthorizationCheckResult check(LevelAuthorizationMetaData levelAuthMetaData,
@@ -423,12 +423,16 @@ public class AlarmRuleLevelAuthorizationChecker extends AbstractQueryChecker
 
   private LevelAuthorizationCheckResult checkDatasources(List<DataSource> datasources,
       String tenant, String workspace) {
+    Set<String> metricTypes = this.superCacheService.getSc().metricTypes;
+    Set<String> products = this.superCacheService.getSc().integrationProducts;
     for (DataSource dataSource : datasources) {
       if (StringUtils.isNotEmpty(dataSource.getMetricType())
-          && !metricTypes.contains(dataSource.getMetricType())) {
+          && !CollectionUtils.isEmpty(metricTypes)
+          && !metricTypes.contains(dataSource.getMetricType())
+          && !defaultMetricTypes.contains(dataSource.getMetricType())) {
         return failCheckResult("invalid metric type %s", dataSource.getMetricType());
       }
-      if (StringUtils.isNotEmpty(dataSource.getProduct())
+      if (StringUtils.isNotEmpty(dataSource.getProduct()) && !CollectionUtils.isEmpty(products)
           && !products.contains(dataSource.getProduct())) {
         return failCheckResult("invalid product %s", dataSource.getProduct());
       }

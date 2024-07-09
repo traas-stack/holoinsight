@@ -3,22 +3,6 @@
  */
 package io.holoinsight.server.registry.core.grpc;
 
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
 import com.google.common.hash.Hasher;
 import com.google.common.hash.Hashing;
 import com.google.protobuf.ByteString;
@@ -27,7 +11,6 @@ import com.xzchaoo.commons.basic.Ack;
 import com.xzchaoo.commons.stat.StatAccumulator;
 import com.xzchaoo.commons.stat.Stats;
 import com.xzchaoo.commons.stat.StringsKey;
-
 import io.grpc.Status;
 import io.grpc.StatusException;
 import io.grpc.StatusRuntimeException;
@@ -74,7 +57,22 @@ import io.holoinsight.server.registry.grpc.agent.RegistryServiceForAgentGrpc;
 import io.holoinsight.server.registry.grpc.agent.ReportEventRequest;
 import io.holoinsight.server.registry.grpc.agent.SendAgentHeartbeatRequest;
 import io.holoinsight.server.registry.grpc.agent.SendAgentHeartbeatResponse;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
+
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -91,6 +89,8 @@ public class RegistryServiceForAgentImpl
       MetricsUtils.SM1S.create("grpc.agent.heartbeat");
   private static final StatAccumulator<StringsKey> AGENT_PULLCONFIG_STAT =
       MetricsUtils.SM.create("agent.pullconfig.stat");
+  private static final StatAccumulator<StringsKey> AGENTID_PULLCONFIG_STAT =
+      MetricsUtils.SM.create("agentId.pullconfig.stat");
   @Autowired
   private ServerStreamManager serverStreamManager;
   @Autowired
@@ -432,6 +432,7 @@ public class RegistryServiceForAgentImpl
     LOGGER.info("agent={} keys={} missDim={} tasks={}", request.getAgentId(), keys.size(), missDim,
         count);
     AGENT_PULLCONFIG_STAT.add(StringsKey.of(agent.getTenant()), new long[] {1, count});
+    AGENTID_PULLCONFIG_STAT.add(StringsKey.of(agent.getId()), new long[] {1, count});
     return respB.build();
   }
 

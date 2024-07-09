@@ -3,12 +3,22 @@
  */
 package io.holoinsight.server.common.service;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import io.holoinsight.server.common.config.ProdLog;
 import io.holoinsight.server.common.config.ScheduleLoadTask;
+import io.holoinsight.server.common.dao.entity.IntegrationProduct;
+import io.holoinsight.server.common.dao.entity.MetricInfo;
+import io.holoinsight.server.common.dao.mapper.IntegrationProductMapper;
+import io.holoinsight.server.common.dao.mapper.MetricInfoMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.CollectionUtils;
 
+import javax.annotation.Resource;
 import java.util.Collections;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  *
@@ -24,6 +34,10 @@ public class SuperCacheService extends ScheduleLoadTask {
 
   @Autowired
   private MetricInfoService metricInfoService;
+  @Resource
+  private MetricInfoMapper metricInfoMapper;
+  @Resource
+  private IntegrationProductMapper integrationProductMapper;
 
   public SuperCache getSc() {
     return sc;
@@ -42,8 +56,35 @@ public class SuperCacheService extends ScheduleLoadTask {
         sc.getListValue("global_config", "resource_keys", Collections.singletonList("tenant"));
     sc.freePrefixes =
         sc.getListValue("global_config", "free_metric_prefix", Collections.emptyList());
+    sc.metricTypes = queryMetricTypes();
+    sc.integrationProducts = queryIntegrationProducts();
     this.sc = sc;
     ProdLog.info("[SuperCache] load end");
+  }
+
+  private Set<String> queryIntegrationProducts() {
+    QueryWrapper<IntegrationProduct> queryWrapper = new QueryWrapper<>();
+    queryWrapper.select("DISTINCT name");
+    List<IntegrationProduct> integrationProducts =
+        this.integrationProductMapper.selectList(queryWrapper);
+    if (CollectionUtils.isEmpty(integrationProducts)) {
+      return Collections.emptySet();
+    }
+    return integrationProducts.stream() //
+        .map(IntegrationProduct::getName) //
+        .collect(Collectors.toSet());
+  }
+
+  private Set<String> queryMetricTypes() {
+    QueryWrapper<MetricInfo> queryWrapper = new QueryWrapper<>();
+    queryWrapper.select("DISTINCT metric_type");
+    List<MetricInfo> metricInfoList = this.metricInfoMapper.selectList(queryWrapper);
+    if (CollectionUtils.isEmpty(metricInfoList)) {
+      return Collections.emptySet();
+    }
+    return metricInfoList.stream() //
+        .map(MetricInfo::getMetricType) //
+        .collect(Collectors.toSet());
   }
 
   @Override
