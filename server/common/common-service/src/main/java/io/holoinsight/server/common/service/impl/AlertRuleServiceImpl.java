@@ -9,21 +9,21 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import io.holoinsight.server.common.EventBusHolder;
 import io.holoinsight.server.common.J;
 import io.holoinsight.server.common.MD5Hash;
+import io.holoinsight.server.common.MonitorPageRequest;
+import io.holoinsight.server.common.MonitorPageResult;
 import io.holoinsight.server.common.dao.converter.AlarmRuleConverter;
+import io.holoinsight.server.common.dao.entity.AlarmBlock;
+import io.holoinsight.server.common.dao.entity.AlarmRule;
+import io.holoinsight.server.common.dao.entity.dto.AlarmRuleDTO;
+import io.holoinsight.server.common.dao.entity.dto.AlertRuleExtra;
 import io.holoinsight.server.common.dao.entity.dto.alarm.AlarmRuleConf;
 import io.holoinsight.server.common.dao.entity.dto.alarm.trigger.DataSource;
 import io.holoinsight.server.common.dao.entity.dto.alarm.trigger.Filter;
 import io.holoinsight.server.common.dao.entity.dto.alarm.trigger.Trigger;
 import io.holoinsight.server.common.dao.mapper.AlarmRuleMapper;
-import io.holoinsight.server.common.dao.entity.AlarmBlock;
-import io.holoinsight.server.common.dao.entity.AlarmRule;
-import io.holoinsight.server.common.dao.entity.dto.AlarmRuleDTO;
-import io.holoinsight.server.common.dao.entity.dto.AlertRuleExtra;
 import io.holoinsight.server.common.service.AlertBlockService;
 import io.holoinsight.server.common.service.AlertRuleService;
 import io.holoinsight.server.common.service.RequestContextAdapter;
-import io.holoinsight.server.common.MonitorPageRequest;
-import io.holoinsight.server.common.MonitorPageResult;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
@@ -57,29 +57,50 @@ public class AlertRuleServiceImpl extends ServiceImpl<AlarmRuleMapper, AlarmRule
 
   @Override
   public Long save(AlarmRuleDTO alarmRuleDTO) {
-    genMd5(alarmRuleDTO);
-    AlarmRule alarmRule = alarmRuleConverter.dtoToDO(alarmRuleDTO);
-    this.save(alarmRule);
-    EventBusHolder.post(alarmRuleConverter.doToDTO(alarmRule));
-    return alarmRule.getId();
+    return save(alarmRuleDTO, true);
   }
 
   @Override
   public Boolean updateById(AlarmRuleDTO alarmRuleDTO) {
-    genMd5(alarmRuleDTO);
-    AlarmRule alarmRule = alarmRuleConverter.dtoToDO(alarmRuleDTO);
-    EventBusHolder.post(alarmRuleDTO);
-    return this.updateById(alarmRule);
+    return updateById(alarmRuleDTO, true);
   }
 
   @Override
   public Boolean deleteById(Long id) {
+    return deleteById(id, true);
+  }
+
+  @Override
+  public Long save(AlarmRuleDTO alarmRuleDTO, boolean busPost) {
+    genMd5(alarmRuleDTO);
+    AlarmRule alarmRule = alarmRuleConverter.dtoToDO(alarmRuleDTO);
+    this.save(alarmRule);
+    if (busPost) {
+      EventBusHolder.post(alarmRuleConverter.doToDTO(alarmRule));
+    }
+    return alarmRule.getId();
+  }
+
+  @Override
+  public Boolean updateById(AlarmRuleDTO alarmRuleDTO, boolean busPost) {
+    genMd5(alarmRuleDTO);
+    AlarmRule alarmRule = alarmRuleConverter.dtoToDO(alarmRuleDTO);
+    if (busPost) {
+      EventBusHolder.post(alarmRuleDTO);
+    }
+    return this.updateById(alarmRule);
+  }
+
+  @Override
+  public Boolean deleteById(Long id, boolean busPost) {
     AlarmRule alarmRule = getById(id);
     if (null == alarmRule) {
       return true;
     }
     alarmRule.setStatus((byte) 0);
-    EventBusHolder.post(alarmRuleConverter.doToDTO(alarmRule));
+    if (busPost) {
+      EventBusHolder.post(alarmRuleConverter.doToDTO(alarmRule));
+    }
     return this.removeById(id);
   }
 
