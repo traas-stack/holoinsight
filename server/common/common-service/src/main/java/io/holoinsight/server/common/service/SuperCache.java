@@ -26,8 +26,6 @@ public class SuperCache {
   public List<String> resourceKeys;
   public List<String> freePrefixes;
 
-  public Set<String> metricTypes;
-
   public Set<String> integrationProducts;
 
   public String getStringValue(String type, String k) {

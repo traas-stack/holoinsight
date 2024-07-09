@@ -56,7 +56,6 @@ public class SuperCacheService extends ScheduleLoadTask {
         sc.getListValue("global_config", "resource_keys", Collections.singletonList("tenant"));
     sc.freePrefixes =
         sc.getListValue("global_config", "free_metric_prefix", Collections.emptyList());
-    sc.metricTypes = queryMetricTypes();
     sc.integrationProducts = queryIntegrationProducts();
     this.sc = sc;
     ProdLog.info("[SuperCache] load end");
@@ -72,18 +71,6 @@ public class SuperCacheService extends ScheduleLoadTask {
     }
     return integrationProducts.stream() //
         .map(IntegrationProduct::getName) //
-        .collect(Collectors.toSet());
-  }
-
-  private Set<String> queryMetricTypes() {
-    QueryWrapper<MetricInfo> queryWrapper = new QueryWrapper<>();
-    queryWrapper.select("DISTINCT metric_type");
-    List<MetricInfo> metricInfoList = this.metricInfoMapper.selectList(queryWrapper);
-    if (CollectionUtils.isEmpty(metricInfoList)) {
-      return Collections.emptySet();
-    }
-    return metricInfoList.stream() //
-        .map(MetricInfo::getMetricType) //
         .collect(Collectors.toSet());
   }
 
