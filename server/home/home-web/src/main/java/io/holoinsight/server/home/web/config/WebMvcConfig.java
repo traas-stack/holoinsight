@@ -4,8 +4,11 @@
 package io.holoinsight.server.home.web.config;
 
 import io.holoinsight.server.home.web.interceptor.MonitorScopeAuthInterceptor;
+import io.holoinsight.server.home.web.security.LevelAuthorizationAccess;
+import io.holoinsight.server.home.web.security.LevelAuthorizationInterceptor;
 import org.springframework.aop.aspectj.AspectJExpressionPointcut;
 import org.springframework.aop.support.DefaultPointcutAdvisor;
+import org.springframework.aop.support.annotation.AnnotationMatchingPointcut;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.converter.HttpMessageConverter;
@@ -55,6 +58,20 @@ public class WebMvcConfig implements WebMvcConfigurer {
         .setExpression("@annotation(io.holoinsight.server.home.web.interceptor.MonitorScopeAuth)");
     advisor.setPointcut(pointcut);
     return advisor;
+  }
+
+  @Bean("levelAuthPointcutAdvisor")
+  public DefaultPointcutAdvisor defaultPointcutAdvisor3() {
+
+    DefaultPointcutAdvisor advisor = new DefaultPointcutAdvisor(
+        AnnotationMatchingPointcut.forMethodAnnotation(LevelAuthorizationAccess.class),
+        levelAuthorizationInterceptor());
+    return advisor;
+  }
+
+  @Bean
+  public LevelAuthorizationInterceptor levelAuthorizationInterceptor() {
+    return new LevelAuthorizationInterceptor();
   }
 
   @Bean

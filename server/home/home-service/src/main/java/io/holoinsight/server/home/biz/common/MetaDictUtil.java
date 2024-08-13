@@ -5,14 +5,15 @@ package io.holoinsight.server.home.biz.common;
 
 import com.google.gson.reflect.TypeToken;
 import io.holoinsight.server.common.J;
+import io.holoinsight.server.common.dao.entity.MetaDataDictValue;
+import io.holoinsight.server.common.scope.IdentityType;
 import io.holoinsight.server.common.service.SuperCacheService;
 import io.holoinsight.server.home.common.service.SpringContext;
-import io.holoinsight.server.home.common.util.scope.IdentityType;
-import io.holoinsight.server.common.dao.entity.MetaDataDictValue;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -54,20 +55,6 @@ public class MetaDictUtil {
     return convertValue(meta.getDictValue(), resultClass);
   }
 
-  public static MetaDataDictValue getMetaData(String type, String k) {
-
-    SuperCacheService superCacheService = SpringContext.getBean(SuperCacheService.class);
-    Map<String, Map<String, MetaDataDictValue>> metaDataDictValueMap =
-        superCacheService.getSc().metaDataDictValueMap;
-    Map<String, MetaDataDictValue> kMap = metaDataDictValueMap.get(type);
-
-    if (null == kMap) {
-      return null;
-    }
-    return kMap.get(k);
-  }
-
-
   public static String getStringValue(String type, String k) {
 
     SuperCacheService superCacheService = SpringContext.getBean(SuperCacheService.class);
@@ -85,6 +72,13 @@ public class MetaDictUtil {
       return null;
     }
     return meta.getDictValue();
+  }
+
+  public static List<String> getList(String type, String key) {
+    List<String> value = MetaDictUtil.getValue(type, key, new TypeToken<List<String>>() {});
+    if (CollectionUtils.isEmpty(value))
+      return new ArrayList<>();
+    return value;
   }
 
   public static String getUlaType() {
@@ -115,16 +109,16 @@ public class MetaDictUtil {
     return value;
   }
 
+  public static Boolean isDefaultApmDisplayMenu() {
 
-  public static Boolean isApmMaterialized() {
-
-    Boolean value = MetaDictUtil.getValue(MetaDictType.GLOBAL_CONFIG,
-        MetaDictKey.IS_APM_MATERIALIZED, new TypeToken<Boolean>() {});
+    Boolean value = MetaDictUtil.getValue(MetaDictType.GLOBAL_CONFIG, MetaDictKey.DISPLAY_MENU_APM,
+        new TypeToken<Boolean>() {});
     if (null == value) {
       return false;
     }
     return value;
   }
+
 
   public static List<String /* 任务名 */> getIgnoreTasks() {
     return MetaDictUtil.getValue(MetaDictType.MANAGE_TASK, MetaDictKey.IGNORE_TASK_LIST,
@@ -139,21 +133,19 @@ public class MetaDictUtil {
     return value;
   }
 
-  public static Boolean isLogMeteringOpen() {
-    Boolean value = MetaDictUtil.getValue(MetaDictType.GLOBAL_CONFIG, MetaDictKey.METERING_LOG_OPEN,
-        new TypeToken<Boolean>() {});
-    if (null == value) {
-      return false;
-    }
+  public static List<String> getTokenUrlWhitePrefixList() {
+    List<String> value = MetaDictUtil.getValue(MetaDictType.GLOBAL_CONFIG,
+        MetaDictKey.TOKEN_URL_WHITE_PREFIX_LIST, new TypeToken<List<String>>() {});
+    if (CollectionUtils.isEmpty(value))
+      return new ArrayList<>();
     return value;
   }
 
-  public static Boolean isMeteringCloudrunLogSubmitOpen() {
-    Boolean value = MetaDictUtil.getValue(MetaDictType.GLOBAL_CONFIG,
-        MetaDictKey.METERING_CLOUDRUN_LOG_SUBMIT_OPEN, new TypeToken<Boolean>() {});
-    if (null == value) {
-      return false;
-    }
+  public static List<String> getTokenUrlNoAuth() {
+    List<String> value = MetaDictUtil.getValue(MetaDictType.GLOBAL_CONFIG,
+        MetaDictKey.TOKEN_URL_NO_AUTH, new TypeToken<List<String>>() {});
+    if (CollectionUtils.isEmpty(value))
+      return new ArrayList<>();
     return value;
   }
 
@@ -163,6 +155,14 @@ public class MetaDictUtil {
     if (null == value) {
       return false;
     }
+    return value;
+  }
+
+  public static Map<String, String> getLogTimeLayoutMap() {
+    Map<String, String> value = MetaDictUtil.getValue(MetaDictType.GLOBAL_CONFIG,
+        MetaDictKey.LOG_TIME_LAYOUT, new TypeToken<Map<String, String>>() {});
+    if (CollectionUtils.isEmpty(value))
+      return new HashMap<>();
     return value;
   }
 }

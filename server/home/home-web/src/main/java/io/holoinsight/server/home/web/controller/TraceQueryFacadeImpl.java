@@ -4,23 +4,28 @@
 package io.holoinsight.server.home.web.controller;
 
 import io.holoinsight.server.apm.common.model.query.Endpoint;
+import io.holoinsight.server.common.event.Event;
 import io.holoinsight.server.apm.common.model.query.QueryTraceRequest;
 import io.holoinsight.server.apm.common.model.query.Service;
 import io.holoinsight.server.apm.common.model.query.ServiceInstance;
 import io.holoinsight.server.apm.common.model.query.SlowSql;
 import io.holoinsight.server.apm.common.model.query.Topology;
 import io.holoinsight.server.apm.common.model.query.TraceBrief;
+import io.holoinsight.server.apm.common.model.query.TraceTree;
 import io.holoinsight.server.apm.common.model.query.VirtualComponent;
 import io.holoinsight.server.apm.common.model.specification.sw.Trace;
 import io.holoinsight.server.common.JsonResult;
 import io.holoinsight.server.home.biz.service.TenantInitService;
 import io.holoinsight.server.home.common.service.QueryClientService;
-import io.holoinsight.server.home.common.util.MonitorException;
-import io.holoinsight.server.home.common.util.scope.MonitorScope;
-import io.holoinsight.server.home.common.util.scope.RequestContext;
-import io.holoinsight.server.home.web.common.ManageCallback;
+import io.holoinsight.server.common.MonitorException;
+import io.holoinsight.server.common.scope.AuthTargetType;
+import io.holoinsight.server.common.scope.MonitorScope;
+import io.holoinsight.server.common.scope.PowerConstants;
+import io.holoinsight.server.common.RequestContext;
+import io.holoinsight.server.common.ManageCallback;
 import io.holoinsight.server.home.web.common.ParaCheckUtil;
 import io.holoinsight.server.home.web.common.TokenUrls;
+import io.holoinsight.server.home.web.interceptor.MonitorScopeAuth;
 import io.holoinsight.server.query.grpc.QueryProto;
 import io.holoinsight.server.query.grpc.QueryProto.QueryMetaRequest.Builder;
 import io.holoinsight.server.query.grpc.QueryProto.QueryTopologyRequest;
@@ -50,6 +55,7 @@ public class TraceQueryFacadeImpl extends BaseFacade {
 
 
   @PostMapping(value = "/query/basic")
+  @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.VIEW)
   public JsonResult<TraceBrief> queryBasicTraces(@RequestBody QueryTraceRequest request) {
 
     final JsonResult<TraceBrief> result = new JsonResult<>();
@@ -82,6 +88,7 @@ public class TraceQueryFacadeImpl extends BaseFacade {
   }
 
   @PostMapping(value = "/query")
+  @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.VIEW)
   public JsonResult<Trace> queryTrace(@RequestBody QueryTraceRequest request) {
 
     final JsonResult<Trace> result = new JsonResult<>();
@@ -113,7 +120,41 @@ public class TraceQueryFacadeImpl extends BaseFacade {
     return result;
   }
 
+  @PostMapping(value = "/query/traceTree")
+  @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.VIEW)
+  public JsonResult<List<TraceTree>> queryTraceTree(@RequestBody QueryTraceRequest request) {
+
+    final JsonResult<List<TraceTree>> result = new JsonResult<>();
+
+    facadeTemplate.manage(result, new ManageCallback() {
+      @Override
+      public void checkParameter() {
+        ParaCheckUtil.checkParaNotNull(request, "request");
+        ParaCheckUtil.checkParaNotNull(request.getTenant(), "tenant");
+        ParaCheckUtil.checkEquals(request.getTenant(), RequestContext.getContext().ms.getTenant(),
+            "tenant is illegal");
+        MonitorScope ms = RequestContext.getContext().ms;
+        Boolean aBoolean =
+            tenantInitService.checkTraceTags(ms.getTenant(), ms.getWorkspace(), request.getTags());
+        if (!aBoolean) {
+          throw new MonitorException("tags params is illegal");
+        }
+      }
+
+      @Override
+      public void doManage() {
+        request.setTenant(
+            tenantInitService.getTraceTenant(RequestContext.getContext().ms.getTenant()));
+        List<TraceTree> traceTreeList = queryClientService.queryTraceTree(request);
+        JsonResult.createSuccessResult(result, traceTreeList);
+      }
+    });
+
+    return result;
+  }
+
   @PostMapping(value = "/query/serviceList")
+  @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.VIEW)
   public JsonResult<List<Service>> queryServiceList(
       @RequestBody QueryProto.QueryMetaRequest request) {
 
@@ -159,6 +200,7 @@ public class TraceQueryFacadeImpl extends BaseFacade {
   }
 
   @PostMapping(value = "/query/endpointList")
+  @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.VIEW)
   public JsonResult<List<Endpoint>> queryEndpointList(
       @RequestBody QueryProto.QueryMetaRequest request) {
 
@@ -194,6 +236,7 @@ public class TraceQueryFacadeImpl extends BaseFacade {
   }
 
   @PostMapping(value = "/query/serviceInstanceList")
+  @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.VIEW)
   public JsonResult<List<ServiceInstance>> queryServiceInstanceList(
       @RequestBody QueryProto.QueryMetaRequest request) {
 
@@ -236,6 +279,7 @@ public class TraceQueryFacadeImpl extends BaseFacade {
    * @return
    */
   @PostMapping(value = "/query/componentList")
+  @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.VIEW)
   public JsonResult<List<VirtualComponent>> queryComponentList(
       @RequestBody QueryProto.QueryMetaRequest request) {
 
@@ -273,6 +317,7 @@ public class TraceQueryFacadeImpl extends BaseFacade {
   }
 
   @PostMapping(value = "/query/componentTraceIds")
+  @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.VIEW)
   public JsonResult<List<String>> queryComponentTraceIds(
       @RequestBody QueryProto.QueryMetaRequest request) {
 
@@ -315,6 +360,7 @@ public class TraceQueryFacadeImpl extends BaseFacade {
    * @return
    */
   @PostMapping(value = "/query/topology")
+  @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.VIEW)
   public JsonResult<Topology> queryTenantTopology(
       @RequestBody QueryProto.QueryTopologyRequest request) {
 
@@ -357,6 +403,7 @@ public class TraceQueryFacadeImpl extends BaseFacade {
    * @return
    */
   @PostMapping(value = "/slowSql")
+  @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.VIEW)
   public JsonResult<List<SlowSql>> querySlowSqlList(
       @RequestBody QueryProto.QueryMetaRequest request) {
 
@@ -397,6 +444,7 @@ public class TraceQueryFacadeImpl extends BaseFacade {
    * @return
    */
   @PostMapping(value = "/serviceErrorList")
+  @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.VIEW)
   public JsonResult<List<Map<String, String>>> queryServiceErrorList(
       @RequestBody QueryProto.QueryMetaRequest request) {
 
@@ -437,6 +485,7 @@ public class TraceQueryFacadeImpl extends BaseFacade {
    * @return
    */
   @PostMapping(value = "/serviceErrorDetail")
+  @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.VIEW)
   public JsonResult<List<Map<String, String>>> queryServiceErrorDetail(
       @RequestBody QueryProto.QueryMetaRequest request) {
     final JsonResult<List<Map<String, String>>> result = new JsonResult<>();
@@ -463,6 +512,38 @@ public class TraceQueryFacadeImpl extends BaseFacade {
         List<Map<String, String>> serviceErrorDetail =
             queryClientService.queryServiceErrorDetail(builder.build());
         JsonResult.createSuccessResult(result, serviceErrorDetail);
+      }
+    });
+
+    return result;
+  }
+
+  @PostMapping(value = "/events")
+  @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.VIEW)
+  public JsonResult<List<Event>> queryEvents(@RequestBody QueryProto.QueryEventRequest request) {
+    final JsonResult<List<Event>> result = new JsonResult<>();
+    facadeTemplate.manage(result, new ManageCallback() {
+      @Override
+      public void checkParameter() {
+        ParaCheckUtil.checkParaNotNull(request, "request");
+        ParaCheckUtil.checkParaNotNull(request.getTenant(), "tenant");
+        ParaCheckUtil.checkEquals(request.getTenant(), RequestContext.getContext().ms.getTenant(),
+            "tenant is illegal");
+        MonitorScope ms = RequestContext.getContext().ms;
+        Boolean aBoolean = tenantInitService.checkTraceParams(ms.getTenant(), ms.getWorkspace(),
+            request.getTermParamsMap());
+        if (!aBoolean) {
+          throw new MonitorException("term params is illegal");
+        }
+      }
+
+      @Override
+      public void doManage() {
+        QueryProto.QueryEventRequest.Builder builder = request.toBuilder();
+        builder.setTenant(
+            tenantInitService.getTraceTenant(RequestContext.getContext().ms.getTenant()));
+        List<Event> events = queryClientService.queryEvents(builder.build());
+        JsonResult.createSuccessResult(result, events);
       }
     });
 

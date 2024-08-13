@@ -7,7 +7,6 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import lombok.Data;
 
-import javax.persistence.Id;
 import java.util.Date;
 
 /**
@@ -18,7 +17,6 @@ import java.util.Date;
 @Data
 public class GaeaCollectConfig {
 
-  @Id
   @TableId(type = IdType.AUTO)
   public Long id;
 

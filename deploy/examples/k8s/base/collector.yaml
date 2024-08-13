@@ -15,6 +15,9 @@ data:
         holoinsight_server:
           http:
             endpoint: gateway:8080
+      holoinsight_datadog:
+        endpoint: 0.0.0.0:5001
+        read_timeout: 60s
     
     exporters:
       otlp:
@@ -36,7 +39,7 @@ data:
       extensions: [pprof, health_check, http_forwarder_auth]
       pipelines:
         traces:
-          receivers: [holoinsight_skywalking]
+          receivers: [holoinsight_skywalking, holoinsight_datadog]
           exporters: [otlp]
           processors: [batch]
 ---

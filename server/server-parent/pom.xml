@@ -14,7 +14,6 @@
 		<module>../common/common-dao-gen</module>
 
 		<module>../registry/registry-model</module>
-		<module>../registry/registry-dao-gen</module>
 		<module>../registry/registry-grpc-gen</module>
 		<module>../registry/registry-core</module>
 		<module>../registry/registry-boot</module>
@@ -25,12 +24,10 @@
 		<module>../meta/meta-proto</module>
 		<module>../meta/meta-common</module>
 		<module>../meta/meta-facade</module>
-		<module>../meta/meta-dal</module>
 		<module>../meta/meta-core</module>
 		<module>../meta/meta-boot</module>
 		<module>../meta/meta-bootstrap</module>
 
-		<module>../gateway/gateway-dao-gen</module>
 		<module>../gateway/gateway-grpc-gen</module>
 		<module>../gateway/gateway-core</module>
 		<module>../gateway/gateway-boot</module>
@@ -40,7 +37,6 @@
 		<module>../query/query-service</module>
 		<module>../query/query-bootstrap</module>
 		<module>../query/query-client</module>
-		<module>../query/query-dal</module>
 		<module>../query/query-server</module>
 		<module>../query/query-boot</module>
 		<module>../query/query-grpc-gen</module>
@@ -58,8 +54,6 @@
 		<module>../home/home-alert</module>
 		<module>../home/home-dal</module>
 		<module>../home/home-common</module>
-		<module>../home/home-facade</module>
-		<module>../home/home-proto</module>
 		<module>../home/home-bootstrap</module>
 		<module>../home/home-boot</module>
 		<module>../home/home-service</module>
@@ -72,6 +66,13 @@
 		<module>../extension/extension-storage-remote-promql</module>
 
 		<module>../../test/server-e2e-test</module>
+		<module>../agg/agg-core</module>
+		<module>../agg/agg-executor-bootstrap</module>
+		<module>../agg/agg-dispatcher</module>
+		<module>../agg/agg-executor</module>
+		<module>../agg/agg-boot</module>
+		<module>../otlp/otlp-core</module>
+		<module>../otlp/otlp-server</module>
 	</modules>
 
 	<parent>
@@ -113,6 +114,12 @@
 				<groupId>com.squareup.okhttp3</groupId>
 				<artifactId>okhttp</artifactId>
 				<version>4.1.1</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.apache.kafka</groupId>
+				<artifactId>kafka-clients</artifactId>
+				<version>3.5.1</version>
 			</dependency>
 
 		</dependencies>

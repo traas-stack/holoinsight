@@ -13,11 +13,12 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 
-import static io.holoinsight.server.home.task.MetricCrawlerConstant.BYTES_UNIT;
-import static io.holoinsight.server.home.task.MetricCrawlerConstant.GLOBAL_ORGANIZATION;
-import static io.holoinsight.server.home.task.MetricCrawlerConstant.GLOBAL_TENANT;
-import static io.holoinsight.server.home.task.MetricCrawlerConstant.GLOBAL_WORKSPACE;
-import static io.holoinsight.server.home.task.MetricCrawlerConstant.NUMBER_UNIT;
+import static io.holoinsight.server.common.model.MetricCrawlerConstant.BYTES_UNIT;
+import static io.holoinsight.server.common.model.MetricCrawlerConstant.GLOBAL_ORGANIZATION;
+import static io.holoinsight.server.common.model.MetricCrawlerConstant.GLOBAL_TENANT;
+import static io.holoinsight.server.common.model.MetricCrawlerConstant.GLOBAL_WORKSPACE;
+import static io.holoinsight.server.common.model.MetricCrawlerConstant.NUMBER_UNIT;
+import static io.holoinsight.server.common.model.MetricCrawlerConstant.SEC_UNIT;
 
 /**
  * @author jsy1001de
@@ -29,17 +30,18 @@ import static io.holoinsight.server.home.task.MetricCrawlerConstant.NUMBER_UNIT;
 public class JvmMetricCrawlerBuilder extends AbstractMetricCrawlerBuilder {
 
   @Override
-  protected List<MetricInfo> getMetricInfoList(String metric, List<String> tags) {
+  protected List<MetricInfo> getMetricInfoList(String metric, List<String> tags,
+      MetricInfo metricInfoTemplate) {
     List<MetricInfo> metricInfoList = new ArrayList<>();
 
     metricInfoList.add(genMetricInfo(GLOBAL_TENANT, GLOBAL_WORKSPACE, GLOBAL_ORGANIZATION, "jvm",
         "GC", "ygc_count", "jvm_ygc_count", "ygc count", NUMBER_UNIT, 60, tags));
     metricInfoList.add(genMetricInfo(GLOBAL_TENANT, GLOBAL_WORKSPACE, GLOBAL_ORGANIZATION, "jvm",
-        "GC", "ygc_time", "jvm_ygc_time", "ygc time", NUMBER_UNIT, 60, tags));
+        "GC", "ygc_time", "jvm_ygc_time", "ygc time", SEC_UNIT, 60, tags));
     metricInfoList.add(genMetricInfo(GLOBAL_TENANT, GLOBAL_WORKSPACE, GLOBAL_ORGANIZATION, "jvm",
         "GC", "fgc_count", "jvm_fgc_count", "fgc count", NUMBER_UNIT, 60, tags));
     metricInfoList.add(genMetricInfo(GLOBAL_TENANT, GLOBAL_WORKSPACE, GLOBAL_ORGANIZATION, "jvm",
-        "GC", "fgc_time", "jvm_fgc_time", "fgc time", NUMBER_UNIT, 60, tags));
+        "GC", "fgc_time", "jvm_fgc_time", "fgc time", SEC_UNIT, 60, tags));
     metricInfoList.add(genMetricInfo(GLOBAL_TENANT, GLOBAL_WORKSPACE, GLOBAL_ORGANIZATION, "jvm",
         "Occupancy", "eden_used", "jvm_eden_used", "eden used", BYTES_UNIT, 60, tags));
     metricInfoList.add(genMetricInfo(GLOBAL_TENANT, GLOBAL_WORKSPACE, GLOBAL_ORGANIZATION, "jvm",
@@ -61,7 +63,7 @@ public class JvmMetricCrawlerBuilder extends AbstractMetricCrawlerBuilder {
         "Occupancy", "safepoints", "jvm_safepoints", "safepoints count", NUMBER_UNIT, 60, tags));
     metricInfoList
         .add(genMetricInfo(GLOBAL_TENANT, GLOBAL_WORKSPACE, GLOBAL_ORGANIZATION, "jvm", "Occupancy",
-            "safepoint_time", "jvm_safepoint_time", "safepoints time", NUMBER_UNIT, 60, tags));
+            "safepoint_time", "jvm_safepoint_time", "safepoints time", SEC_UNIT, 60, tags));
     metricInfoList.add(genMetricInfo(GLOBAL_TENANT, GLOBAL_WORKSPACE, GLOBAL_ORGANIZATION, "jvm",
         "Occupancy", "safepoint_sync_time", "jvm_safepoint_sync_time", "safepoint sync time",
         NUMBER_UNIT, 60, tags));

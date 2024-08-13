@@ -4,21 +4,23 @@
 package io.holoinsight.server.home.alert.service.event.alertManagerEvent;
 
 import io.holoinsight.server.common.J;
+import io.holoinsight.server.common.dao.entity.dto.alarm.TemplateValue;
+import io.holoinsight.server.common.model.HoloinsightAlertInternalException;
 import io.holoinsight.server.home.alert.common.AlarmConstant;
 import io.holoinsight.server.home.alert.common.AlarmRegexUtil;
-import io.holoinsight.server.home.alert.common.G;
 import io.holoinsight.server.home.alert.common.ObjectToMapUtil;
 import io.holoinsight.server.home.alert.model.event.AlertNotify;
 import io.holoinsight.server.home.alert.model.event.ElementSpiEnum;
 import io.holoinsight.server.home.alert.service.event.AlertHandlerExecutor;
 import io.holoinsight.server.home.alert.service.event.element.ElementSpiServiceFactory;
-import io.holoinsight.server.home.facade.TemplateValue;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -62,7 +64,7 @@ public class AlertManagerBuildMsgHandler implements AlertHandlerExecutor {
           alarmNotify.getMsgList().add(markDownMsg);
         });
       });
-      LOGGER.info("AlertManagerBuildMsgHandler SUCCESS {} ", G.get().toJson(alarmNotifies));
+      LOGGER.info("AlertManagerBuildMsgHandler SUCCESS {} ", J.toJson(alarmNotifies));
     } catch (Exception e) {
       LOGGER.error("AlertManagerBuildMsgHandler Exception", e);
     }
@@ -77,15 +79,17 @@ public class AlertManagerBuildMsgHandler implements AlertHandlerExecutor {
     try {
       // 实体转换为map
       Map<String, String> map = ObjectToMapUtil.generateObjectToStringMap(values);
-      content = buildMsgWithMap(template, map);
+      map.put("alarmLevel", values.getAlarmLevel() == null ? "" : values.getAlarmLevel().getDesc());
+      content = buildMsgWithMap(template, map, Collections.emptyList());
     } catch (Exception e) {
-
+      // This catch statement is intentionally empty
     }
     // 模板参数全局替换
     return content;
   }
 
-  public static String buildMsgWithMap(String template, Map<String, String> map) {
+  public static String buildMsgWithMap(String template, Map<String, String> map,
+      List<String> notNullList) {
     // 标签内文本转换
     template = appendElementMsg(template, map);
     // 获取模板中所有需要替换参数
@@ -97,7 +101,28 @@ public class AlertManagerBuildMsgHandler implements AlertHandlerExecutor {
         realMap.put(key, value);
       }
     });
+    checkNotNullValue(realMap, notNullList);
     return replaceAllTemplateParam(template, realMap);
+  }
+
+  private static void checkNotNullValue(Map<String, String> realMap, List<String> notNullList) {
+    if (CollectionUtils.isEmpty(notNullList)) {
+      return;
+    }
+    if (CollectionUtils.isEmpty(realMap)) {
+      throw new HoloinsightAlertInternalException(
+          "Can not pass the not-null template field check for realMap is empty.");
+    }
+    for (String key : notNullList) {
+      if (realMap.containsKey(key)) {
+        String value = realMap.get(key);
+        if (StringUtils.isEmpty(value) || value.startsWith("${")) {
+          throw new HoloinsightAlertInternalException(
+              "Can not pass the not-null template field check " + J.toJson(realMap) + " for key "
+                  + key);
+        }
+      }
+    }
   }
 
   private static String appendElementMsg(String template, Map<String, String> map) {

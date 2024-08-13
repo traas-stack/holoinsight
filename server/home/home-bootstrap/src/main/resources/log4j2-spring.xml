@@ -219,7 +219,7 @@
         <AsyncLogger name="io.holoinsight.server.home.web.aop.DALLogAspect" additivity="false" level="info">
             <AppenderRef ref="APP-DAL-APPENDER"/>
         </AsyncLogger>
-        <AsyncLogger name="io.holoinsight.server.home.common.util.Debugger" additivity="false" level="info">
+        <AsyncLogger name="io.holoinsight.server.common.Debugger" additivity="false" level="info">
             <AppenderRef ref="APP-DEBUG-APPENDER"/>
         </AsyncLogger>
         <AsyncLogger name="io.holoinsight.server.home.web.filter.Step4AccessLogFilter" additivity="false" level="info">

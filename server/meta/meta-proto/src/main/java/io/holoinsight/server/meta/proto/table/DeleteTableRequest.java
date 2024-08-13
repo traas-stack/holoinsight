@@ -396,10 +396,7 @@ public final class DeleteTableRequest extends com.google.protobuf.GeneratedMessa
       maybeForceBuilderInitialization();
     }
 
-    private void maybeForceBuilderInitialization() {
-      if (com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders) {
-      }
-    }
+    private void maybeForceBuilderInitialization() {}
 
     public Builder clear() {
       super.clear();
@@ -768,4 +765,3 @@ public final class DeleteTableRequest extends com.google.protobuf.GeneratedMessa
   }
 
 }
-

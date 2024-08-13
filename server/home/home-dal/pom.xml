@@ -29,6 +29,11 @@
             <artifactId>spring-data-commons</artifactId>
         </dependency>
         <dependency>
+            <groupId>com.fasterxml.jackson.module</groupId>
+            <artifactId>jackson-module-jsonSchema</artifactId>
+            <version>2.14.2</version>
+        </dependency>
+        <dependency>
             <groupId>org.mapstruct</groupId>
             <artifactId>mapstruct</artifactId>
         </dependency>
@@ -39,12 +44,12 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>home-facade</artifactId>
+            <artifactId>registry-model</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>registry-model</artifactId>
+            <artifactId>agg-core</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

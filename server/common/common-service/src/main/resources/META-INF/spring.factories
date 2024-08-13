@@ -1,1 +1,1 @@
-org.springframework.boot.autoconfigure.EnableAutoConfiguration=io.holoinsight.server.common.hook.CommonHooksAutoConfiguration
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=io.holoinsight.server.common.hook.CommonHooksAutoConfiguration,io.holoinsight.server.common.event.EventAutoConfiguration

@@ -6,14 +6,14 @@ package io.holoinsight.server.home.web.controller;
 import io.holoinsight.server.common.J;
 import io.holoinsight.server.common.JsonResult;
 import io.holoinsight.server.home.biz.ula.ULAFacade;
-import io.holoinsight.server.home.common.util.Debugger;
-import io.holoinsight.server.home.common.util.scope.AuthTargetType;
-import io.holoinsight.server.home.common.util.scope.MonitorAuth;
-import io.holoinsight.server.home.common.util.scope.MonitorScope;
-import io.holoinsight.server.home.common.util.scope.MonitorUser;
-import io.holoinsight.server.home.common.util.scope.PowerConstants;
-import io.holoinsight.server.home.common.util.scope.RequestContext;
-import io.holoinsight.server.home.web.common.ManageCallback;
+import io.holoinsight.server.common.Debugger;
+import io.holoinsight.server.common.scope.AuthTargetType;
+import io.holoinsight.server.common.scope.MonitorAuth;
+import io.holoinsight.server.common.scope.MonitorScope;
+import io.holoinsight.server.common.scope.MonitorUser;
+import io.holoinsight.server.common.scope.PowerConstants;
+import io.holoinsight.server.common.RequestContext;
+import io.holoinsight.server.common.ManageCallback;
 import io.holoinsight.server.home.web.interceptor.MonitorScopeAuth;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,8 +57,10 @@ public class UserFacadeImpl extends BaseFacade {
 
         MonitorUser mu = RequestContext.getContext().mu;
         MonitorAuth ma = RequestContext.getContext().ma;
+        MonitorScope ms = RequestContext.getContext().ms;
         Map<String, Object> resultObj = new HashMap<>();
         resultObj.put("user", mu);
+        resultObj.put("scope", ms);
         resultObj.put("tPowers", ma.getTenantViewPowerList());
         resultObj.put("tenants", ulaFacade.getCurrentULA().getUserTenants(mu));
         Debugger.print("UserFacadeImpl", "getCurrentUser: " + J.toJson(resultObj));
@@ -85,7 +87,7 @@ public class UserFacadeImpl extends BaseFacade {
       public void doManage() {
         MonitorUser mu = RequestContext.getContext().mu;
         MonitorScope ms = RequestContext.getContext().ms;
-        JsonResult.createSuccessResult(result, ulaFacade.getCurrentULA().getUsers(mu, ms));
+        JsonResult.createSuccessResult(result, ulaFacade.getUsers(mu, ms));
       }
     });
 
@@ -106,7 +108,7 @@ public class UserFacadeImpl extends BaseFacade {
 
       @Override
       public void doManage() {
-        JsonResult.createSuccessResult(result, ulaFacade.getCurrentULA().getByLoginName(loginName));
+        JsonResult.createSuccessResult(result, ulaFacade.getByLoginName(loginName));
       }
     });
 
@@ -127,7 +129,7 @@ public class UserFacadeImpl extends BaseFacade {
 
       @Override
       public void doManage() {
-        JsonResult.createSuccessResult(result, ulaFacade.getCurrentULA().getByUserId(userId));
+        JsonResult.createSuccessResult(result, ulaFacade.getByUserId(userId));
       }
     });
 

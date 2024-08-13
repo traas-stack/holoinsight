@@ -3,11 +3,15 @@
  */
 package io.holoinsight.server.common.service;
 
+import com.google.gson.reflect.TypeToken;
+import io.holoinsight.server.common.J;
 import io.holoinsight.server.common.dao.entity.MetaDataDictValue;
-import io.holoinsight.server.common.dao.entity.Tenant;
+import io.holoinsight.server.query.grpc.QueryProto.QueryRequest;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  *
@@ -17,8 +21,58 @@ import java.util.Map;
 public class SuperCache {
 
   public Map<String /* type */, Map<String /* k */, MetaDataDictValue>> metaDataDictValueMap;
+  public Map<String, QueryRequest> expressionMetricList;
 
-  public Map<String, List<String>> tenantWorkspaceMaps;
+  public List<String> resourceKeys;
+  public List<String> freePrefixes;
 
-  public Map<String, Tenant> tenantMap;
+  public Set<String> integrationProducts;
+
+  public String getStringValue(String type, String k) {
+
+    Map<String, MetaDataDictValue> kMap = this.metaDataDictValueMap.get(type);
+
+    if (null == kMap) {
+      return null;
+    }
+
+    MetaDataDictValue meta = kMap.get(k);
+
+    if (null == meta) {
+      return null;
+    }
+    return meta.getDictValue();
+  }
+
+  public List<String> getListValue(String type, String k, List<String> defaultValues) {
+
+    Map<String, MetaDataDictValue> kMap = this.metaDataDictValueMap.get(type);
+
+    if (null == kMap) {
+      return defaultValues;
+    }
+
+    MetaDataDictValue meta = kMap.get(k);
+
+    if (null == meta || StringUtils.isBlank(meta.getDictValue())) {
+      return defaultValues;
+    }
+    return J.fromJson(meta.getDictValue(), new TypeToken<List<String>>() {}.getType());
+  }
+
+  public Boolean getBooleanValue(String type, String k) {
+
+    Map<String, MetaDataDictValue> kMap = this.metaDataDictValueMap.get(type);
+
+    if (null == kMap) {
+      return Boolean.FALSE;
+    }
+
+    MetaDataDictValue meta = kMap.get(k);
+
+    if (null == meta || StringUtils.isBlank(meta.getDictValue())) {
+      return Boolean.FALSE;
+    }
+    return Boolean.parseBoolean(meta.getDictValue());
+  }
 }

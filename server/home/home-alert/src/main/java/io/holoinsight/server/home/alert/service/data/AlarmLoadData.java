@@ -4,9 +4,9 @@
 package io.holoinsight.server.home.alert.service.data;
 
 import io.holoinsight.server.home.alert.model.compute.ComputeTaskPackage;
-import io.holoinsight.server.home.facade.DataResult;
-import io.holoinsight.server.home.facade.InspectConfig;
-import io.holoinsight.server.home.facade.trigger.Trigger;
+import io.holoinsight.server.common.dao.entity.dto.alarm.trigger.TriggerDataResult;
+import io.holoinsight.server.common.dao.entity.dto.InspectConfig;
+import io.holoinsight.server.common.dao.entity.dto.alarm.trigger.Trigger;
 
 import java.util.List;
 
@@ -16,6 +16,6 @@ import java.util.List;
  */
 public interface AlarmLoadData {
 
-  List<DataResult> queryDataResult(ComputeTaskPackage computeTask, InspectConfig inspectConfig,
-      Trigger trigger);
+  List<TriggerDataResult> queryDataResult(ComputeTaskPackage computeTask,
+      InspectConfig inspectConfig, Trigger trigger);
 }

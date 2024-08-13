@@ -3,11 +3,10 @@
  */
 package io.holoinsight.server.home.web.filter;
 
-import io.holoinsight.server.home.common.util.scope.RequestContext;
+import io.holoinsight.server.common.ResultCodeEnum;
+import io.holoinsight.server.common.RequestContext;
 import io.holoinsight.server.home.web.common.ResponseUtil;
 import io.holoinsight.server.home.web.wrapper.CountServletResponseWrapper;
-import io.holoinsight.server.common.J;
-import io.holoinsight.server.common.JsonResult;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -60,7 +59,8 @@ public class Step4AccessLogFilter implements Filter {
     try {
       filterChain.doFilter(req, responseWrapper);
     } catch (Exception e) {
-      ResponseUtil.authFailedResponse(resp, HttpStatus.BAD_REQUEST.value(), e.getMessage());
+      ResponseUtil.authFailedResponse(resp, HttpStatus.BAD_REQUEST.value(), e.getMessage(),
+          ResultCodeEnum.MONITOR_SYSTEM_ERROR);
       logger.error(e.getMessage(), e);
     }
     StringBuilder builder = new StringBuilder();

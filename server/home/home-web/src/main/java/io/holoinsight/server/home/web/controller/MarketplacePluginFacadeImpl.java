@@ -4,23 +4,23 @@
 package io.holoinsight.server.home.web.controller;
 
 import io.holoinsight.server.home.biz.plugin.MarketplaceProductHandler;
-import io.holoinsight.server.home.biz.service.AlertWebhookService;
-import io.holoinsight.server.home.biz.service.MarketplacePluginService;
-import io.holoinsight.server.home.biz.service.MarketplaceProductService;
-import io.holoinsight.server.home.biz.service.UserOpLogService;
-import io.holoinsight.server.home.common.util.MonitorException;
-import io.holoinsight.server.home.common.util.ResultCodeEnum;
-import io.holoinsight.server.home.common.util.scope.AuthTargetType;
-import io.holoinsight.server.home.common.util.scope.MonitorCookieUtil;
-import io.holoinsight.server.home.common.util.scope.MonitorScope;
-import io.holoinsight.server.home.common.util.scope.MonitorUser;
-import io.holoinsight.server.home.common.util.scope.PowerConstants;
-import io.holoinsight.server.home.common.util.scope.RequestContext;
+import io.holoinsight.server.common.service.AlertWebhookService;
+import io.holoinsight.server.common.service.MarketplacePluginService;
+import io.holoinsight.server.common.service.MarketplaceProductService;
+import io.holoinsight.server.common.service.UserOpLogService;
+import io.holoinsight.server.common.MonitorException;
+import io.holoinsight.server.common.ResultCodeEnum;
+import io.holoinsight.server.common.scope.AuthTargetType;
+import io.holoinsight.server.common.scope.MonitorCookieUtil;
+import io.holoinsight.server.common.scope.MonitorScope;
+import io.holoinsight.server.common.scope.MonitorUser;
+import io.holoinsight.server.common.scope.PowerConstants;
+import io.holoinsight.server.common.RequestContext;
 import io.holoinsight.server.home.dal.model.OpType;
-import io.holoinsight.server.home.dal.model.dto.AlarmWebhookDTO;
-import io.holoinsight.server.home.dal.model.dto.MarketplacePluginDTO;
-import io.holoinsight.server.home.dal.model.dto.MarketplaceProductDTO;
-import io.holoinsight.server.home.web.common.ManageCallback;
+import io.holoinsight.server.common.dao.entity.dto.AlarmWebhookDTO;
+import io.holoinsight.server.common.dao.entity.dto.MarketplacePluginDTO;
+import io.holoinsight.server.common.dao.entity.dto.MarketplaceProductDTO;
+import io.holoinsight.server.common.ManageCallback;
 import io.holoinsight.server.home.web.common.ParaCheckUtil;
 import io.holoinsight.server.home.web.interceptor.MonitorScopeAuth;
 import io.holoinsight.server.common.J;
@@ -182,7 +182,7 @@ public class MarketplacePluginFacadeImpl extends BaseFacade {
   }
 
   @GetMapping(value = "/install/{id}")
-  @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.VIEW)
+  @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.EDIT)
   public JsonResult<MarketplacePluginDTO> install(@PathVariable("id") Long id) {
     final JsonResult<MarketplacePluginDTO> result = new JsonResult<>();
     facadeTemplate.manage(result, new ManageCallback() {

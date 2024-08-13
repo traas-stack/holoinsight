@@ -46,17 +46,17 @@ public class CoordinatorServiceTest {
     service.orderMap = Mockito.mock(OrderMap.class);
     Mockito.when(service.orderMap.getRealSize()).thenReturn(3);
     service.cacheAlertTask = Mockito.mock(CacheAlertTask.class);
-    Mockito.when(service.cacheAlertTask.ruleSize("ai")).thenReturn(73);
-    Mockito.when(service.cacheAlertTask.ruleSize("rule")).thenReturn(43);
-    Mockito.when(service.cacheAlertTask.ruleSize("pql")).thenReturn(1);
+    Mockito.when(service.cacheAlertTask.ruleSize("ai", (byte) 1)).thenReturn(73);
+    Mockito.when(service.cacheAlertTask.ruleSize("rule", (byte) 1)).thenReturn(43);
+    Mockito.when(service.cacheAlertTask.ruleSize("pql", (byte) 1)).thenReturn(1);
 
     order(service);
   }
 
   private void order(CoordinatorService service) {
-    service.calculateSelectRange(0);
-    service.calculateSelectRange(1);
-    service.calculateSelectRange(2);
+    service.calculateSelectRange(0, 3);
+    service.calculateSelectRange(1, 3);
+    service.calculateSelectRange(2, 3);
     Mockito.verify(service.cacheAlertTask, Mockito.times(3))
         .setRulePageNum(rulePageNumArgument.capture());
     List<Integer> rulePageNums = rulePageNumArgument.getAllValues();

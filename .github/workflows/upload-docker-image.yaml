@@ -1,0 +1,33 @@
+name: Upload docker image
+
+on:
+  push:
+    branches: [ "main" ]
+  workflow_dispatch: { }
+
+concurrency:
+  group: holoinsight-agent-upload-docker-image
+  cancel-in-progress: true
+
+jobs:
+  upload-docker-image:
+    runs-on: ubuntu-latest
+    if: (github.repository == 'traas-stack/holoinsight')
+    steps:
+    - uses: actions/checkout@v3
+    - name: Set up JDK 8
+      uses: actions/setup-java@v3
+      with:
+        java-version: '8'
+        distribution: 'temurin'
+        cache: maven
+    - name: Login to Docker Hub
+      uses: docker/login-action@v2
+      with:
+        username: ${{ secrets.DOCKERHUB_USERNAME }}
+        password: ${{ secrets.DOCKERHUB_TOKEN }}
+    - name: Upload HoloInsight Docker Image
+      shell: bash
+      run: |
+        docker buildx create --use
+        tag=latest ./scripts/docker/buildx.sh

@@ -3,26 +3,6 @@
  */
 package io.holoinsight.server.registry.core.agent;
 
-import java.time.Duration;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.TimeUnit;
-
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
-
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DuplicateKeyException;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.google.common.collect.Maps;
 import com.xzchaoo.commons.basic.Ack;
 import com.xzchaoo.commons.basic.Acks;
@@ -31,22 +11,40 @@ import com.xzchaoo.commons.batchprocessor.DrainLoopBatchProcessor;
 import com.xzchaoo.commons.batchprocessor.Flusher;
 import com.xzchaoo.commons.stat.StatAccumulator;
 import com.xzchaoo.commons.stat.StringsKey;
-
 import io.holoinsight.server.common.JsonUtils;
+import io.holoinsight.server.common.MetricsUtils;
 import io.holoinsight.server.common.NetUtils;
 import io.holoinsight.server.common.auth.AuthInfo;
 import io.holoinsight.server.common.dao.entity.GaeaAgentDO;
 import io.holoinsight.server.common.dao.entity.GaeaAgentDOExample;
 import io.holoinsight.server.common.dao.mapper.GaeaAgentDOMapper;
+import io.holoinsight.server.common.event.EventBusHolder;
 import io.holoinsight.server.common.threadpool.CommonThreadPools;
 import io.holoinsight.server.meta.common.model.QueryExample;
 import io.holoinsight.server.meta.facade.model.MetaType;
 import io.holoinsight.server.meta.facade.service.AgentHeartBeatService;
 import io.holoinsight.server.meta.facade.service.DataClientService;
-import io.holoinsight.server.registry.core.utils.EventBusHolder;
-import io.holoinsight.server.common.MetricsUtils;
 import io.holoinsight.server.registry.grpc.agent.AgentK8sInfo;
 import io.holoinsight.server.registry.grpc.agent.RegisterAgentRequest;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DuplicateKeyException;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
+import java.time.Duration;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 /**
  * <p>
@@ -60,6 +58,8 @@ public class AgentService {
   private static final Logger LOGGER = LoggerFactory.getLogger("AGENT");
   private static final StatAccumulator<StringsKey> AGENT_HEARTBEAT_STAT =
       MetricsUtils.SM.create("agent.heartbeat");
+  private static final StatAccumulator<StringsKey> AGENTID_HEARTBEAT_STAT =
+      MetricsUtils.SM.create("agentId.heartbeat");
 
   @Autowired
   private GaeaAgentDOMapper mapper;
@@ -107,6 +107,11 @@ public class AgentService {
     long end = System.currentTimeMillis();
 
     AGENT_HEARTBEAT_STAT.add(StringsKey.EMPTY, new long[] {1, count, end - begin});
+    if (CollectionUtils.isNotEmpty(agentIds)) {
+      for (String agentId : agentIds) {
+        AGENTID_HEARTBEAT_STAT.add(StringsKey.of(agentId), new long[] {1});
+      }
+    }
   }
 
   @PreDestroy

@@ -9,6 +9,7 @@ import io.holoinsight.server.apm.common.model.query.BasicTrace;
 import io.holoinsight.server.apm.common.model.query.Pagination;
 import io.holoinsight.server.apm.common.model.query.QueryOrder;
 import io.holoinsight.server.apm.common.model.query.TraceBrief;
+import io.holoinsight.server.apm.common.model.query.TraceTree;
 import io.holoinsight.server.apm.common.model.specification.OtlpMappings;
 import io.holoinsight.server.apm.common.model.specification.otel.Event;
 import io.holoinsight.server.apm.common.model.specification.otel.KeyValue;
@@ -89,9 +90,9 @@ public class SpanEsStorage extends RecordEsStorage<SpanDO> implements SpanStorag
       BasicTrace basicTrace = new BasicTrace();
       basicTrace.setStart(spanEsDO.getStartTime());
       basicTrace.getServiceNames()
-          .add(spanEsDO.getTags().get(SpanDO.resource(SpanDO.SERVICE_NAME)));
+          .add(spanEsDO.getTags().get(SpanDO.resource(SpanDO.SERVICE_NAME)).toString());
       basicTrace.getServiceInstanceNames().add(spanEsDO.getTags()
-          .getOrDefault(SpanDO.resource(SpanDO.SERVICE_INSTANCE_NAME), Const.UNKNOWN));
+          .getOrDefault(SpanDO.resource(SpanDO.SERVICE_INSTANCE_NAME), Const.UNKNOWN).toString());
       basicTrace.getEndpointNames().add(spanEsDO.getName());
       basicTrace.setDuration(spanEsDO.getLatency());
       basicTrace.setError(spanEsDO.getTraceStatus() == StatusCode.ERROR.getCode());
@@ -101,34 +102,22 @@ public class SpanEsStorage extends RecordEsStorage<SpanDO> implements SpanStorag
     return traceBrief;
   }
 
+  /**
+   *
+   * @param tenant
+   * @param start
+   * @param end
+   * @param traceId
+   * @param tags
+   * @return the span list, the front end needs to build a trace tree based on the relationship
+   *         between spanId and parentSpanId
+   * @throws IOException
+   */
   @Override
   public Trace queryTrace(String tenant, long start, long end, String traceId, List<Tag> tags)
       throws IOException {
     Trace trace = new Trace();
-
-    SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
-
-    searchSourceBuilder.query(buildQuery(tenant, null, null, null,
-        Collections.singletonList(traceId), 0, 0, null, start, end, tags, this.timeSeriesField()));
-
-    searchSourceBuilder.size(SPAN_QUERY_MAX_SIZE);
-    SearchRequest searchRequest =
-        new SearchRequest(new String[] {SpanDO.INDEX_NAME}, searchSourceBuilder);
-    SearchResponse searchResponse = client().search(searchRequest, RequestOptions.DEFAULT);
-    List<SpanDO> spanRecords = new ArrayList<>();
-    for (org.elasticsearch.search.SearchHit hit : searchResponse.getHits().getHits()) {
-      String hitJson = hit.getSourceAsString();
-      SpanDO spanEsDO = ApmGsonUtils.apmGson().fromJson(hitJson, SpanDO.class);
-      spanRecords.add(spanEsDO);
-    }
-
-    if (!spanRecords.isEmpty()) {
-      for (SpanDO spanEsDO : spanRecords) {
-        if (nonNull(spanEsDO)) {
-          trace.getSpans().add(buildSpan(spanEsDO));
-        }
-      }
-    }
+    trace.setSpans(querySpan(tenant, start, end, traceId, tags));
 
     List<Span> sortedSpans = new LinkedList<>();
     if (CollectionUtils.isNotEmpty(trace.getSpans())) {
@@ -153,6 +142,70 @@ public class SpanEsStorage extends RecordEsStorage<SpanDO> implements SpanStorag
     return trace;
   }
 
+  /**
+   * First find the root node of the trace tree (there may be multiple root nodes), and then build
+   * the trace tree from the root node
+   * 
+   * @param tenant
+   * @param start
+   * @param end
+   * @param traceId
+   * @param tags
+   * @return the tree trace structure, the front end only needs to render, no need to build a tree
+   *         relationship
+   * @throws Exception
+   */
+  @Override
+  public List<TraceTree> queryTraceTree(String tenant, long start, long end, String traceId,
+      List<Tag> tags) throws Exception {
+    List<TraceTree> result = new ArrayList<>();
+    List<Span> spans = querySpan(tenant, start, end, traceId, tags);
+    if (CollectionUtils.isNotEmpty(spans)) {
+      List<Span> rootSpans = findRoot1(spans);
+      if (CollectionUtils.isNotEmpty(rootSpans)) {
+        rootSpans.forEach(span -> {
+          TraceTree root = new TraceTree();
+          root.setSpan(span);
+          List<TraceTree> children = new ArrayList<>();
+          root.setChildren(children);
+          findChildren1(spans, span, root, children);
+          result.add(root);
+        });
+      }
+    }
+    return result;
+  }
+
+  private List<Span> querySpan(String tenant, long start, long end, String traceId, List<Tag> tags)
+      throws IOException {
+    List<Span> spans = new ArrayList<>();
+
+    SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
+
+    searchSourceBuilder.query(buildQuery(tenant, null, null, null,
+        Collections.singletonList(traceId), 0, 0, null, start, end, tags, this.timeSeriesField()));
+
+    searchSourceBuilder.size(SPAN_QUERY_MAX_SIZE);
+    SearchRequest searchRequest =
+        new SearchRequest(new String[] {SpanDO.INDEX_NAME}, searchSourceBuilder);
+    SearchResponse searchResponse = client().search(searchRequest, RequestOptions.DEFAULT);
+    List<SpanDO> spanRecords = new ArrayList<>();
+    for (org.elasticsearch.search.SearchHit hit : searchResponse.getHits().getHits()) {
+      String hitJson = hit.getSourceAsString();
+      SpanDO spanEsDO = ApmGsonUtils.apmGson().fromJson(hitJson, SpanDO.class);
+      spanRecords.add(spanEsDO);
+    }
+
+    if (!spanRecords.isEmpty()) {
+      for (SpanDO spanEsDO : spanRecords) {
+        if (nonNull(spanEsDO)) {
+          spans.add(buildSpan(spanEsDO));
+        }
+      }
+    }
+    return spans;
+  }
+
   private Span buildSpan(SpanDO spanEsDO) {
     Span span = new Span();
     span.setTraceId(spanEsDO.getTraceId());
@@ -161,7 +214,6 @@ public class SpanEsStorage extends RecordEsStorage<SpanDO> implements SpanStorag
     span.setStartTime(spanEsDO.getStartTime());
     span.setEndTime(spanEsDO.getEndTime());
     span.setError(spanEsDO.getTraceStatus() == StatusCode.ERROR.getCode());
-    span.setLayer(spanEsDO.getTags().get(SpanDO.attributes(SpanDO.SPANLAYER)));
     String kind = spanEsDO.getKind();
     if (StringUtils.equals(kind, SpanKind.SERVER.name())
         || StringUtils.equals(kind, SpanKind.CONSUMER.name())) {
@@ -172,14 +224,22 @@ public class SpanEsStorage extends RecordEsStorage<SpanDO> implements SpanStorag
     } else {
       span.setType("Local");
     }
-
-    span.setPeer(spanEsDO.getTags().get(SpanDO.attributes(SpanDO.NET_PEER_NAME)));
+    Object spanLayer = spanEsDO.getTags().get(SpanDO.attributes(SpanDO.SPANLAYER));
+    if (spanLayer != null) {
+      span.setLayer(spanLayer.toString());
+    }
+    Object netPeerName = spanEsDO.getTags().get(SpanDO.attributes(SpanDO.NET_PEER_NAME));
+    if (netPeerName != null) {
+      span.setPeer(netPeerName.toString());
+    }
+    Object serviceInstanceName =
+        spanEsDO.getTags().get(SpanDO.resource(SpanDO.SERVICE_INSTANCE_NAME));
+    if (serviceInstanceName != null) {
+      span.setServiceInstanceName(serviceInstanceName.toString());
+    }
 
     span.setEndpointName(spanEsDO.getName());
-
-    span.setServiceCode(spanEsDO.getTags().get(SpanDO.resource(SpanDO.SERVICE_NAME)));
-    span.setServiceInstanceName(
-        spanEsDO.getTags().get(SpanDO.resource(SpanDO.SERVICE_INSTANCE_NAME)));
+    span.setServiceCode(spanEsDO.getTags().get(SpanDO.resource(SpanDO.SERVICE_NAME)).toString());
 
     // TODO: 2022/9/20
     // span.setComponent(getComponentLibraryCatalogService().getComponentName(spanObject.getComponentId()));
@@ -210,8 +270,14 @@ public class SpanEsStorage extends RecordEsStorage<SpanDO> implements SpanStorag
 
     spanEsDO.getTags().forEach((tagk, tagv) -> {
       io.holoinsight.server.apm.common.model.specification.sw.KeyValue keyValue =
-          new io.holoinsight.server.apm.common.model.specification.sw.KeyValue(tagk, tagv);
+          new io.holoinsight.server.apm.common.model.specification.sw.KeyValue(tagk,
+              tagv.toString());
       span.getTags().add(keyValue);
+      // mesh span
+      if (SpanDO.attributes(Const.MOSN_ATTR).equals(keyValue.getKey())
+          && "true".equals(keyValue.getValue())) {
+        span.setMesh(true);
+      }
     });
     Collections.sort(span.getTags(), (o1, o2) -> StringUtils.compare(o1.getKey(), o2.getKey()));
 
@@ -264,6 +330,115 @@ public class SpanEsStorage extends RecordEsStorage<SpanDO> implements SpanStorag
         findChildren(spans, span, childrenSpan);
       }
     });
+  }
+
+  /**
+   * Find all the root nodes of the trace tree. Since sofatracer may report some special spans
+   * (spanId==parentSpanId), special processing is required
+   * 
+   * @param spans
+   * @return
+   */
+  private List<Span> findRoot1(List<Span> spans) {
+    List<Span> rootSpans = new ArrayList<>();
+    ListIterator<Span> iterator = spans.listIterator(spans.size());
+    while (iterator.hasPrevious()) {
+      Span span = iterator.previous();
+      if (span.isMesh()) {
+        continue;
+      }
+      String spanId = span.getSpanId();
+      String parentSpanId = span.getParentSpanId();
+
+      boolean hasParent = false;
+      if (!StringUtils.isEmpty(parentSpanId)) {
+        for (Span subSpan : spans) {
+          if (!subSpan.isMesh() && subSpan.getSpanId().equals(parentSpanId)
+              && !subSpan.equals(span)) {
+            hasParent = true;
+            // if find parent, quick exit
+            break;
+          }
+        }
+      }
+
+      if (!hasParent) {
+        // sofatracer mq/rpc server span(parentSpanId == spanId)
+        if (spanId.equals(parentSpanId) && parentSpanId.contains(".")) {
+          parentSpanId = parentSpanId.substring(0, parentSpanId.lastIndexOf("."));
+          span.setParentSpanId(parentSpanId);
+          iterator.remove();
+          iterator.add(span);
+          continue;
+        }
+        // rootSpan.parentSpanId == ""
+        if (StringUtils.isEmpty(parentSpanId)) {
+          span.setRoot(true);
+          rootSpans.add(span);
+        } else {
+          // sofatracer may be missing span, supplement the missing span until the root span
+          Span missingSpan = new Span();
+          missingSpan.setSpanId(parentSpanId);
+          missingSpan.setTraceId(span.getTraceId());
+          missingSpan.setEndpointName(Const.NOT_APPLICABLE);
+          missingSpan.setParentSpanId("");
+          missingSpan.setType("");
+          // sofatracer spanId -> parentSpanId: 0.1.1 -> 0.1
+          if (parentSpanId.contains(".")) {
+            missingSpan.setParentSpanId(parentSpanId.substring(0, parentSpanId.lastIndexOf(".")));
+          }
+          iterator.add(missingSpan);
+        }
+      }
+    }
+
+    rootSpans.sort(Comparator.comparing(Span::getStartTime));
+    return rootSpans;
+  }
+
+  /**
+   * Recursively build a trace tree starting from the root node
+   * 
+   * @param spans
+   * @param parentSpan
+   * @param children
+   */
+  private void findChildren1(List<Span> spans, Span parentSpan, TraceTree parentTree,
+      List<TraceTree> children) {
+    long parentStartTime = Long.MAX_VALUE;
+    long parentEndTime = Long.MIN_VALUE;
+
+    ListIterator<Span> iterator = spans.listIterator(spans.size());
+    while (iterator.hasPrevious()) {
+      Span span = iterator.previous();
+      // find mesh span
+      if (span.isMesh() && parentSpan.getSpanId().equals(span.getSpanId())
+          && parentSpan.getParentSpanId().equals(span.getParentSpanId())
+          && parentSpan.getType().equals(span.getType())) {
+        parentTree.setMesh(span);
+      }
+
+      if (!span.isMesh() && !span.equals(parentSpan)
+          && span.getParentSpanId().equals(parentSpan.getSpanId())) {
+        TraceTree child = new TraceTree();
+        child.setSpan(span);
+        children.add(child);
+        List<TraceTree> newChildren = new ArrayList<>();
+        child.setChildren(newChildren);
+
+        findChildren1(spans, span, child, newChildren);
+
+        parentStartTime = Math.min(parentStartTime, span.getStartTime());
+        parentEndTime = Math.max(parentEndTime, span.getEndTime());
+      }
+    }
+
+    // The missing span needs to fill in the start and end time,
+    // and the front-end drawing time axis depends on the time field
+    if (Const.NOT_APPLICABLE.equals(parentSpan.getEndpointName())) {
+      parentSpan.setStartTime(parentStartTime);
+      parentSpan.setEndTime(parentEndTime);
+    }
   }
 
   public static BoolQueryBuilder buildQuery(final String tenant, String serviceName,

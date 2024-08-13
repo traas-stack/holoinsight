@@ -3,6 +3,8 @@
  */
 package io.holoinsight.server.apm.engine.elasticsearch.installer;
 
+import org.elasticsearch.common.settings.Settings;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -15,8 +17,11 @@ public class IndexStructures {
 
   private final Map<String, Mappings> structures;
 
+  private final Map<String, Settings> settingsMap;
+
   public IndexStructures() {
     this.structures = new HashMap<>();
+    this.settingsMap = new HashMap<>();
   }
 
   public Mappings getMapping(String tableName) {
@@ -24,6 +29,10 @@ public class IndexStructures {
         structures.containsKey(tableName) ? structures.get(tableName).getProperties()
             : new HashMap<>();
     return Mappings.builder().properties(properties).build();
+  }
+
+  public Settings getSettings(String tableName) {
+    return settingsMap.getOrDefault(tableName, Settings.EMPTY);
   }
 
   /**
@@ -42,6 +51,13 @@ public class IndexStructures {
     }
   }
 
+  public void putSettings(String tableName, Settings settings) {
+    if (Objects.isNull(settings) || settings.isEmpty()) {
+      return;
+    }
+    settingsMap.put(tableName, settings);
+  }
+
   /**
    * Returns mappings with fields that not exist in the input mappings. The input mappings should be
    * history mapping from current index. Do not return _source config to avoid current index update
@@ -51,7 +67,7 @@ public class IndexStructures {
     if (!structures.containsKey(tableName)) {
       return new Mappings();
     }
-    Map<String, Object> properties = mappings.getProperties();
+    mappings.getProperties();
     Map<String, Object> diffProperties = structures.get(tableName).diffFields(mappings);
     return Mappings.builder().properties(diffProperties).build();
   }

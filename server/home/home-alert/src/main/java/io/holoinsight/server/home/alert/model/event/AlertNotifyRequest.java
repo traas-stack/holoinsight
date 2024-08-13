@@ -4,9 +4,11 @@
 
 package io.holoinsight.server.home.alert.model.event;
 
-import io.holoinsight.server.home.facade.AlertRuleExtra;
-import io.holoinsight.server.home.facade.InspectConfig;
-import io.holoinsight.server.home.facade.trigger.Trigger;
+import io.holoinsight.server.common.dao.entity.dto.AlertNotifyRecordDTO;
+import io.holoinsight.server.common.dao.entity.dto.AlertRuleExtra;
+import io.holoinsight.server.common.dao.entity.dto.InspectConfig;
+import io.holoinsight.server.common.dao.entity.dto.NotificationTemplate;
+import io.holoinsight.server.common.dao.entity.dto.alarm.trigger.Trigger;
 import lombok.Data;
 
 import java.util.List;
@@ -54,6 +56,8 @@ public class AlertNotifyRequest {
 
   private AlertRuleExtra alertRuleExtra;
 
+  private NotificationTemplate notificationTemplate;
+
   public Long alarmHistoryId;
 
   public Long alarmHistoryDetailId;
@@ -64,7 +68,17 @@ public class AlertNotifyRequest {
 
   private String alertServer;
 
+  private String alertIp;
+
+  private String pid;
+
   // log analysis content
   private List<String> logAnalysis;
+
+  private List<String> logSample;
+
+  private AlertNotifyRecordDTO alertNotifyRecord;
+
+  private boolean notifyRecover;
 
 }

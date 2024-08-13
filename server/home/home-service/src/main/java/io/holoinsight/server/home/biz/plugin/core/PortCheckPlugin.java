@@ -3,11 +3,14 @@
  */
 package io.holoinsight.server.home.biz.plugin.core;
 
+import io.holoinsight.server.home.biz.common.MetaDictKey;
+import io.holoinsight.server.home.biz.common.MetaDictType;
+import io.holoinsight.server.home.biz.common.MetaDictUtil;
 import io.holoinsight.server.home.biz.plugin.config.PortCheckPluginConfig;
 import io.holoinsight.server.home.biz.plugin.model.PluginModel;
 import io.holoinsight.server.home.biz.plugin.model.PluginType;
 import io.holoinsight.server.home.biz.service.TenantInitService;
-import io.holoinsight.server.home.dal.model.dto.IntegrationPluginDTO;
+import io.holoinsight.server.common.dao.entity.dto.IntegrationPluginDTO;
 import io.holoinsight.server.registry.model.integration.IntegrationTransForm;
 import io.holoinsight.server.registry.model.integration.portcheck.PortCheckTask;
 import io.holoinsight.server.common.J;
@@ -75,6 +78,12 @@ public class PortCheckPlugin extends AbstractLocalIntegrationPlugin<PortCheckPlu
           portCheckTask.networkMode = config.getNetworkMode();
         }
 
+        if (StringUtils.isNotBlank(
+            MetaDictUtil.getStringValue(MetaDictType.GLOBAL_CONFIG, MetaDictKey.NETWORK_MODE))) {
+          portCheckTask.networkMode =
+              MetaDictUtil.getStringValue(MetaDictType.GLOBAL_CONFIG, MetaDictKey.NETWORK_MODE);
+        }
+
         ExecuteRule executeRule = new ExecuteRule();
         executeRule.setType("fixedRate");
         executeRule.setFixedRate(60000);
@@ -88,19 +97,13 @@ public class PortCheckPlugin extends AbstractLocalIntegrationPlugin<PortCheckPlu
       {
         portCheckPlugin.tenant = integrationPluginDTO.tenant;
         portCheckPlugin.name = integrationPluginDTO.product.toLowerCase();
-        portCheckPlugin.metricName =
-            String.join("_", integrationPluginDTO.product.toLowerCase(), "tcp_ping");
         portCheckPlugin.gaeaTableName = integrationPluginDTO.name + "_" + i++;
-
         portCheckPlugin.collectRange =
-            tenantInitService.getCollectMonitorRange(integrationPluginDTO.getTenant() + "_server",
-                integrationPluginDTO.getWorkspace(), config.range, config.getMetaLabel());
-
+            getGaeaCollectRange(integrationPluginDTO, config.range, config.metaLabel);
         portCheckPlugin.portCheckTask = portCheckTask;
         portCheckPlugin.collectPlugin = "dialcheck";
 
       }
-
 
       portCheckPlugins.add(portCheckPlugin);
     }

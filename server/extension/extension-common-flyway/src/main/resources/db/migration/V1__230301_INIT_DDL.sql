@@ -525,6 +525,7 @@ CREATE TABLE IF NOT EXISTS `integration_product` (
 CREATE TABLE IF NOT EXISTS `marketplace_plugin` (
   `id` bigint NOT NULL AUTO_INCREMENT COMMENT 'Data id',
   `tenant` varchar(255) NOT NULL COMMENT 'Relate tenant code',
+  `workspace` varchar(100) NOT NULL COMMENT 'Plugin workspace',
   `name` varchar(100) NOT NULL COMMENT 'Plugin name',
   `product` varchar(100) NOT NULL COMMENT 'Product name',
   `status` tinyint DEFAULT NULL COMMENT 'Status',
@@ -533,6 +534,7 @@ CREATE TABLE IF NOT EXISTS `marketplace_plugin` (
   `json` longtext COMMENT 'Config meta',
   `creator` varchar(100) NOT NULL COMMENT 'Create user',
   `modifier` varchar(100) NOT NULL COMMENT 'Modified user',
+  `version` varchar(45) DEFAULT NULL COMMENT 'Product version',
   `gmt_create` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'Data creation time',
   `gmt_modified` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'Data modification time',
   PRIMARY KEY (`id`),
@@ -552,6 +554,7 @@ CREATE TABLE IF NOT EXISTS `marketplace_product` (
   `feature` longtext COMMENT 'Product feature list',
   `status` tinyint DEFAULT NULL COMMENT 'Status',
   `type` varchar(150) DEFAULT NULL COMMENT 'Type',
+  `version` varchar(45) DEFAULT NULL COMMENT 'Product version',
   `gmt_create` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'Data creation time',
   `gmt_modified` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'Data modification time',
   `creator` varchar(100) NOT NULL COMMENT 'Create user',

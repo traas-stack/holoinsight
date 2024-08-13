@@ -4,17 +4,14 @@
 package io.holoinsight.server.home.web.controller;
 
 import io.holoinsight.server.home.biz.service.TenantInitService;
-import io.holoinsight.server.home.common.util.MonitorException;
-import io.holoinsight.server.home.common.util.scope.AuthTargetType;
-import io.holoinsight.server.home.common.util.scope.MonitorScope;
-import io.holoinsight.server.home.common.util.scope.MonitorUser;
-import io.holoinsight.server.home.common.util.scope.PowerConstants;
-import io.holoinsight.server.home.common.util.scope.RequestContext;
-import io.holoinsight.server.home.common.util.scope.RequestContext.Context;
-import io.holoinsight.server.home.web.common.ManageCallback;
+import io.holoinsight.server.common.MonitorException;
+import io.holoinsight.server.common.scope.AuthTargetType;
+import io.holoinsight.server.common.scope.MonitorScope;
+import io.holoinsight.server.common.scope.PowerConstants;
+import io.holoinsight.server.common.RequestContext;
+import io.holoinsight.server.common.ManageCallback;
 import io.holoinsight.server.home.web.common.ParaCheckUtil;
 import io.holoinsight.server.home.web.interceptor.MonitorScopeAuth;
-import io.holoinsight.server.common.J;
 import io.holoinsight.server.common.JsonResult;
 import io.holoinsight.server.meta.common.model.QueryExample;
 import io.holoinsight.server.meta.facade.service.DataClientService;
@@ -28,10 +25,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -70,7 +65,7 @@ public class MetaFacadeImpl extends BaseFacade {
         queryExample.getParams().putAll(condition);
         MonitorScope ms = RequestContext.getContext().ms;
         Map<String, String> conditions =
-            tenantInitService.getTenantWorkspaceMetaConditions(ms.getWorkspace());
+            tenantInitService.getTenantWorkspaceMetaConditions(ms.getTenant(), ms.getWorkspace());
         if (!CollectionUtils.isEmpty(conditions)) {
           queryExample.getParams().putAll(conditions);
         }
@@ -104,6 +99,11 @@ public class MetaFacadeImpl extends BaseFacade {
         MonitorScope ms = RequestContext.getContext().ms;
         if (StringUtils.isNotBlank(ms.getWorkspace())) {
           queryExample.getParams().put("_workspace", ms.getWorkspace());
+        }
+        Map<String, String> conditions = tenantInitService
+            .getTenantServerWorkspaceMetaConditions(ms.getTenant(), ms.getWorkspace());
+        if (!CollectionUtils.isEmpty(conditions)) {
+          queryExample.getParams().putAll(conditions);
         }
 
         List<Map<String, Object>> list = dataClientService
@@ -141,7 +141,7 @@ public class MetaFacadeImpl extends BaseFacade {
         }
         MonitorScope ms = RequestContext.getContext().ms;
         Map<String, String> conditions =
-            tenantInitService.getTenantWorkspaceMetaConditions(ms.getWorkspace());
+            tenantInitService.getTenantWorkspaceMetaConditions(ms.getTenant(), ms.getWorkspace());
         if (!CollectionUtils.isEmpty(conditions)) {
           conditions.forEach((k, v) -> queryExample.getParams().put(k, v));
         }

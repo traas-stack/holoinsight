@@ -6,7 +6,7 @@ package io.holoinsight.server.home.biz.listener;
 import io.holoinsight.server.home.biz.common.GaeaConvertUtil;
 import io.holoinsight.server.home.biz.service.GaeaCollectConfigService;
 import io.holoinsight.server.home.biz.service.TenantInitService;
-import io.holoinsight.server.home.common.util.EventBusHolder;
+import io.holoinsight.server.common.EventBusHolder;
 import io.holoinsight.server.home.dal.model.dto.GaeaCollectConfigDTO;
 import io.holoinsight.server.home.dal.model.dto.OpenmetricsScraperDTO;
 import com.google.common.eventbus.AllowConcurrentEvents;
@@ -47,6 +47,8 @@ public class OpenmetricsScraperUpdateListener {
     task.setScrapeInterval(openmetricsScraperDTO.getScrapeInterval());
     task.setScrapeTimeout(openmetricsScraperDTO.getScrapeTimeout());
     task.setScrapePort(openmetricsScraperDTO.getPort());
+    task.setRelabelConfigs(openmetricsScraperDTO.getRelabelConfigs());
+    task.setMetricRelabelConfigs(openmetricsScraperDTO.getMetricRelabelConfigs());
 
     // List<String> targets = new ArrayList<>();
     //// 暂时 mock 一下
@@ -67,7 +69,7 @@ public class OpenmetricsScraperUpdateListener {
         GaeaConvertUtil.convertCollectRange(openmetricsScraperDTO.getCollectRanges());
     gaeaCollectConfigDTO.executorSelector = convertExecutorSelector();
 
-    GaeaCollectConfigDTO upsert = gaeaCollectConfigService.upsert(gaeaCollectConfigDTO);
+    gaeaCollectConfigService.upsert(gaeaCollectConfigDTO);
   }
 
   private Map<String, Object> convertExecutorSelector() {

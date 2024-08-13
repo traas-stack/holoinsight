@@ -3,7 +3,7 @@
  */
 package io.holoinsight.server.home.biz.service;
 
-import io.holoinsight.server.home.common.model.TaskEnum;
+import io.holoinsight.server.common.model.TaskEnum;
 
 /**
  *

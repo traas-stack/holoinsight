@@ -4,22 +4,23 @@
 package io.holoinsight.server.home.web.controller;
 
 import io.holoinsight.server.common.dao.entity.dto.MetricInfoDTO;
+import io.holoinsight.server.common.scope.AuthTargetType;
+import io.holoinsight.server.common.scope.MonitorCookieUtil;
+import io.holoinsight.server.common.scope.PowerConstants;
 import io.holoinsight.server.common.service.MetricInfoService;
-import io.holoinsight.server.home.biz.service.IntegrationPluginService;
-import io.holoinsight.server.home.biz.service.IntegrationProductService;
+import io.holoinsight.server.common.service.IntegrationPluginService;
+import io.holoinsight.server.common.service.IntegrationProductService;
 import io.holoinsight.server.home.common.service.QueryClientService;
 import io.holoinsight.server.home.common.service.query.QueryResponse;
 import io.holoinsight.server.home.common.service.query.Result;
-import io.holoinsight.server.home.common.util.MonitorException;
-import io.holoinsight.server.home.common.util.ResultCodeEnum;
-import io.holoinsight.server.home.common.util.scope.*;
-import io.holoinsight.server.home.dal.model.dto.IntegrationMetricDTO;
-import io.holoinsight.server.home.dal.model.dto.IntegrationMetricsDTO;
-import io.holoinsight.server.home.dal.model.dto.IntegrationPluginDTO;
-import io.holoinsight.server.home.dal.model.dto.IntegrationProductDTO;
-import io.holoinsight.server.home.web.common.ManageCallback;
+import io.holoinsight.server.common.MonitorException;
+import io.holoinsight.server.common.ResultCodeEnum;
+import io.holoinsight.server.common.dao.entity.dto.IntegrationMetricDTO;
+import io.holoinsight.server.common.dao.entity.dto.IntegrationMetricsDTO;
+import io.holoinsight.server.common.dao.entity.dto.IntegrationPluginDTO;
+import io.holoinsight.server.common.dao.entity.dto.IntegrationProductDTO;
+import io.holoinsight.server.common.ManageCallback;
 import io.holoinsight.server.home.web.common.ParaCheckUtil;
-import io.holoinsight.server.home.web.common.TokenUrls;
 import io.holoinsight.server.home.web.interceptor.MonitorScopeAuth;
 import io.holoinsight.server.common.JsonResult;
 import io.holoinsight.server.query.grpc.QueryProto;
@@ -44,7 +45,6 @@ import java.util.stream.Collectors;
  */
 @RestController
 @RequestMapping("/webapi/integration/product")
-@TokenUrls("/webapi/integration/product/create")
 public class IntegrationProductFacadeImpl extends BaseFacade {
 
   @Autowired
@@ -100,8 +100,11 @@ public class IntegrationProductFacadeImpl extends BaseFacade {
 
       @Override
       public void doManage() {
+        Map<String, Object> columnMap = new HashMap<>();
+        columnMap.put("status", 1);
+        columnMap.put("name", name);
         List<IntegrationProductDTO> integrationProductDTOs =
-            integrationProductService.findByMap(Collections.singletonMap("name", name));
+            integrationProductService.findByMap(columnMap);
         if (!CollectionUtils.isEmpty(integrationProductDTOs)) {
           integrationProductDTOs.forEach(integrationProductDTO -> {
             List<MetricInfoDTO> metricInfoDTOS = metricInfoService.queryListByTenantProduct(null,
@@ -121,8 +124,11 @@ public class IntegrationProductFacadeImpl extends BaseFacade {
   @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.VIEW)
   public JsonResult<Map<String, Boolean>> dataReceived() {
     final JsonResult<Map<String, Boolean>> result = new JsonResult<>();
-    List<IntegrationPluginDTO> integrationPluginDTOs = integrationPluginService
-        .findByMap(Collections.singletonMap("tenant", MonitorCookieUtil.getTenantOrException()));
+    Map<String, Object> columnMap = new HashMap<>();
+    columnMap.put("status", 1);
+    columnMap.put("tenant", MonitorCookieUtil.getTenantOrException());
+    List<IntegrationPluginDTO> integrationPluginDTOs =
+        integrationPluginService.findByMap(columnMap);
     facadeTemplate.manage(result, new ManageCallback() {
       @Override
       public void checkParameter() {}
@@ -148,7 +154,7 @@ public class IntegrationProductFacadeImpl extends BaseFacade {
             }
             List<String> metricNames =
                 metrics.getSubMetrics().values().stream().flatMap(v -> v.stream())
-                    .map(IntegrationMetricDTO::getName).collect(Collectors.toList());;
+                    .map(IntegrationMetricDTO::getName).collect(Collectors.toList());
             Collections.shuffle(metricNames);
             List<String> sampleNames = metricNames.subList(0, Math.min(metricNames.size(), 10));
             QueryProto.QueryRequest.Builder builder =
@@ -181,8 +187,10 @@ public class IntegrationProductFacadeImpl extends BaseFacade {
 
       @Override
       public void doManage() {
+        Map<String, Object> columnMap = new HashMap<>();
+        columnMap.put("status", 1);
         List<IntegrationProductDTO> integrationProductDTOs =
-            integrationProductService.findByMap(Collections.emptyMap());
+            integrationProductService.findByMap(columnMap);
 
         if (!CollectionUtils.isEmpty(integrationProductDTOs)) {
           integrationProductDTOs.forEach(integrationProductDTO -> {

@@ -104,6 +104,9 @@ public class From {
     public static class LogPath {
       /**
        * path/glob/regexp/format. 推荐 path > format > glob > regexp. 注意regexp和glob可能会导致多个文件.
+       * <ul>
+       * <li>container: container output, stdout and stderr mixed together</li>
+       * </ul>
        */
       private String type;
       /**

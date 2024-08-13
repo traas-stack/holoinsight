@@ -5,20 +5,20 @@ package io.holoinsight.server.home.web.controller;
 
 import io.holoinsight.server.common.J;
 import io.holoinsight.server.common.JsonResult;
-import io.holoinsight.server.home.biz.service.AlertmanagerWebhookService;
-import io.holoinsight.server.home.biz.service.UserOpLogService;
-import io.holoinsight.server.home.common.util.scope.AuthTargetType;
-import io.holoinsight.server.home.common.util.scope.MonitorScope;
-import io.holoinsight.server.home.common.util.scope.MonitorUser;
-import io.holoinsight.server.home.common.util.scope.PowerConstants;
-import io.holoinsight.server.home.common.util.scope.RequestContext;
-import io.holoinsight.server.home.dal.converter.AlertmanagerWebhookConverter;
-import io.holoinsight.server.home.dal.model.AlertmanagerWebhook;
+import io.holoinsight.server.common.service.AlertmanagerWebhookService;
+import io.holoinsight.server.common.service.UserOpLogService;
+import io.holoinsight.server.common.scope.AuthTargetType;
+import io.holoinsight.server.common.scope.MonitorScope;
+import io.holoinsight.server.common.scope.MonitorUser;
+import io.holoinsight.server.common.scope.PowerConstants;
+import io.holoinsight.server.common.RequestContext;
+import io.holoinsight.server.common.dao.converter.AlertmanagerWebhookConverter;
+import io.holoinsight.server.common.dao.entity.AlertmanagerWebhook;
 import io.holoinsight.server.home.dal.model.OpType;
-import io.holoinsight.server.home.dal.model.dto.AlertmanagerWebhookDTO;
-import io.holoinsight.server.home.facade.page.MonitorPageRequest;
-import io.holoinsight.server.home.facade.page.MonitorPageResult;
-import io.holoinsight.server.home.web.common.ManageCallback;
+import io.holoinsight.server.common.dao.entity.dto.AlertmanagerWebhookDTO;
+import io.holoinsight.server.common.MonitorPageRequest;
+import io.holoinsight.server.common.MonitorPageResult;
+import io.holoinsight.server.common.ManageCallback;
 import io.holoinsight.server.home.web.common.ParaCheckUtil;
 import io.holoinsight.server.home.web.interceptor.MonitorScopeAuth;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -67,28 +67,9 @@ public class AlertmanagerWebhookImpl extends BaseFacade {
     return result;
   }
 
-  // @GetMapping
-  // public JsonResult<Object> index(@RequestParam(value = "pageNum", defaultValue="1") Integer
-  // pageNum, @RequestParam(value = "pageSize", defaultValue="10") Integer pageSize) {
-  // MonitorScope ms = RequestContext.getContext().ms;
-  //
-  // Page<AlertmanagerWebhook> page = new Page<>(pageNum, pageSize);
-  // QueryWrapper<AlertmanagerWebhook> wrapper = new QueryWrapper<>();
-  // wrapper.eq("tenant", ms.getTenant());
-  // alertmanagerWebhookService.page(page, wrapper);
-  //
-  // MonitorPageResult<AlertmanagerWebhookDTO> result = new MonitorPageResult<>();
-  //
-  // result.setItems(alertmanagerWebhookConverter.dosToDTOs(page.getRecords()));
-  // result.setPageNum(pageNum);
-  // result.setPageSize(pageSize);
-  // result.setTotalCount(page.getTotal());
-  // result.setTotalPage(page.getPages());
-  //
-  // return JsonResult.createSuccessResult(result);
-  // }
 
   @GetMapping("/{id}")
+  @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.VIEW)
   public JsonResult<Object> get(@PathVariable("id") Long id) {
     MonitorScope ms = RequestContext.getContext().ms;
 
@@ -102,6 +83,7 @@ public class AlertmanagerWebhookImpl extends BaseFacade {
   }
 
   @PostMapping
+  @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.EDIT)
   public JsonResult<Object> create(@RequestBody AlertmanagerWebhookDTO alertmanagerWebhookDTO) {
     MonitorScope ms = RequestContext.getContext().ms;
     MonitorUser mu = RequestContext.getContext().mu;
@@ -124,6 +106,7 @@ public class AlertmanagerWebhookImpl extends BaseFacade {
   }
 
   @PostMapping("/update/{id}")
+  @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.EDIT)
   public JsonResult<AlertmanagerWebhookDTO> update(@PathVariable("id") Long id,
       @RequestBody AlertmanagerWebhookDTO alertmanagerWebhookDTO) {
 
@@ -167,6 +150,7 @@ public class AlertmanagerWebhookImpl extends BaseFacade {
   }
 
   @PostMapping("/delete/{id}")
+  @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.EDIT)
   public JsonResult<Object> delete(@PathVariable("id") Long id) {
     MonitorScope ms = RequestContext.getContext().ms;
 

@@ -6,9 +6,9 @@ package io.holoinsight.server.test.it;
 
 import com.google.gson.reflect.TypeToken;
 import io.holoinsight.server.common.J;
-import io.holoinsight.server.home.dal.model.dto.CloudMonitorRange;
+import io.holoinsight.server.common.dao.entity.CloudMonitorRange;
 import io.holoinsight.server.home.dal.model.dto.OpenmetricsScraperDTO;
-import io.holoinsight.server.home.facade.page.MonitorPageRequest;
+import io.holoinsight.server.common.MonitorPageRequest;
 import io.restassured.response.Response;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.json.JSONObject;

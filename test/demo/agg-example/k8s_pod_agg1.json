@@ -1,0 +1,69 @@
+{
+  "aggId": "k8s_pod_cpu_util",
+  "version": 1,
+  "partitionKeys": [],
+  "select": {
+    "items": [
+      {
+        "agg": {
+          "type": "COUNT"
+        },
+        "elect": {
+          "metric": "k8s_pod_cpu_util"
+        },
+        "as": "count"
+      }
+    ]
+  },
+  "from": {
+    "type": "metrics",
+    "metrics": {
+      "metrics": [
+        "k8s_pod_cpu_util"
+      ]
+    },
+    "completeness": {
+      "mode": "DATA",
+      "dimTable": "%s_server",
+      "groupBy": {
+        "items": [
+          {
+            "tag": "serviceName",
+            "as": "serviceName"
+          }
+        ]
+      },
+      "keepTargetKeys": [
+        "namespace",
+        "podName"
+      ]
+    }
+  },
+  "where": {
+  },
+  "groupBy": {
+    "keyLimit": 10000,
+    "items": [
+      {
+        "tag": "serviceName"
+      }
+    ]
+  },
+  "window": {
+    "interval": 5000
+  },
+  "output": {
+    "items": [
+      {
+        "type": "TSDB",
+        "name": "k8s_pod_${field}_agg",
+        "fields": [
+          {
+            "name": "count",
+            "expression": "count"
+          }
+        ]
+      }
+    ]
+  }
+}

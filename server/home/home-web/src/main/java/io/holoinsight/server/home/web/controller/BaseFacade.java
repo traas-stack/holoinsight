@@ -3,8 +3,10 @@
  */
 package io.holoinsight.server.home.web.controller;
 
-import io.holoinsight.server.home.web.common.FacadeTemplate;
 import io.holoinsight.server.common.JsonResult;
+import io.holoinsight.server.common.service.RequestContextAdapter;
+import io.holoinsight.server.common.FacadeTemplate;
+import io.holoinsight.server.common.RequestContext;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.FastDateFormat;
@@ -18,6 +20,7 @@ import org.springframework.web.bind.annotation.InitBinder;
 
 import java.beans.PropertyEditorSupport;
 import java.util.Date;
+import java.util.UUID;
 
 /**
  *
@@ -30,6 +33,8 @@ public class BaseFacade {
 
   @Autowired
   public FacadeTemplate facadeTemplate;
+  @Autowired
+  protected RequestContextAdapter requestContextAdapter;
 
   private static DatePropertyEditorSupport dateEditorSupport = new DatePropertyEditorSupport();
 
@@ -43,8 +48,7 @@ public class BaseFacade {
   public ResponseEntity<JsonResult> handleException(Throwable e) {
     log.error(e.getMessage(), e);
     JsonResult jsonResult = new JsonResult();
-    JsonResult.fillFailResultTo(jsonResult, String.valueOf(HttpStatus.BAD_REQUEST.value()),
-        e.getMessage());
+    JsonResult.fillFailResultTo(jsonResult, HttpStatus.BAD_REQUEST.name(), e.getMessage());
     return new ResponseEntity<>(jsonResult, HttpStatus.BAD_REQUEST);
   }
 
@@ -88,6 +92,22 @@ public class BaseFacade {
       this.setValue(value);
     }
 
+  }
+
+  protected String createUuid() {
+    return UUID.randomUUID().toString().replace("-", "");
+  }
+
+  protected String tenant() {
+    return this.requestContextAdapter.getTenantFromContext(RequestContext.getContext());
+  }
+
+  protected String workspace() {
+    return this.requestContextAdapter.getWorkspaceFromContext(RequestContext.getContext());
+  }
+
+  protected String simpleWorkspace() {
+    return this.requestContextAdapter.getSimpleWorkspaceFromContext(RequestContext.getContext());
   }
 
 }

@@ -3,11 +3,12 @@
  */
 package io.holoinsight.server.home.biz.ula;
 
-import io.holoinsight.server.home.common.util.scope.IdentityType;
-import io.holoinsight.server.home.common.util.scope.MonitorAuth;
-import io.holoinsight.server.home.common.util.scope.MonitorScope;
-import io.holoinsight.server.home.common.util.scope.MonitorTenant;
-import io.holoinsight.server.home.common.util.scope.MonitorUser;
+import io.holoinsight.server.common.scope.IdentityType;
+import io.holoinsight.server.common.scope.MonitorAuth;
+import io.holoinsight.server.common.scope.MonitorParams;
+import io.holoinsight.server.common.scope.MonitorScope;
+import io.holoinsight.server.common.scope.MonitorTenant;
+import io.holoinsight.server.common.scope.MonitorUser;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -53,7 +54,7 @@ public interface ULA {
    * AUTH
    */
   // 查看一个租户下的权限
-  MonitorAuth getUserPowerPkg(MonitorUser user, MonitorScope ms);
+  MonitorAuth getUserPowerPkg(HttpServletRequest req, MonitorUser user, MonitorScope ms);
 
   // 是否是super用户
   void checkSuper(MonitorUser user) throws Throwable;
@@ -67,7 +68,8 @@ public interface ULA {
   String authTokenName();
 
   // 权限
-  Boolean checkWorkspace(HttpServletRequest request, MonitorUser user, MonitorScope ms);
+  Boolean checkWorkspace(HttpServletRequest request, MonitorUser user, MonitorScope ms,
+      MonitorParams mp);
 
   Boolean authFunc(HttpServletRequest request);
 
@@ -75,5 +77,7 @@ public interface ULA {
   String authApplyUrl();
 
   MonitorScope getMonitorScope(HttpServletRequest req, MonitorUser mu);
+
+  MonitorParams getMonitorParams(HttpServletRequest req, MonitorUser mu);
 
 }

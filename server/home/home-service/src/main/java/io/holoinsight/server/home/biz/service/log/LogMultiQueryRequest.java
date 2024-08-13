@@ -46,6 +46,11 @@ public class LogMultiQueryRequest {
    */
   private Integer defaultLineCount = 500;
 
+  /**
+   * order by time
+   */
+  private Boolean isReverse = true;
+
   @Data
   public static class SingleAppLogQuery {
 

@@ -419,7 +419,6 @@ public final class Log extends com.google.protobuf.GeneratedMessageV3 implements
     public io.holoinsight.server.apm.grpc.trace.Log buildPartial() {
       io.holoinsight.server.apm.grpc.trace.Log result =
           new io.holoinsight.server.apm.grpc.trace.Log(this);
-      int from_bitField0_ = bitField0_;
       result.time_ = time_;
       if (dataBuilder_ == null) {
         if (((bitField0_ & 0x00000001) != 0)) {
@@ -956,4 +955,3 @@ public final class Log extends com.google.protobuf.GeneratedMessageV3 implements
   }
 
 }
-

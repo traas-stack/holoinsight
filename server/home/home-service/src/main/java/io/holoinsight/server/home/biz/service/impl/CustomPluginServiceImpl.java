@@ -3,19 +3,18 @@
  */
 package io.holoinsight.server.home.biz.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import io.holoinsight.server.common.EventBusHolder;
+import io.holoinsight.server.common.MonitorPageRequest;
+import io.holoinsight.server.common.MonitorPageResult;
 import io.holoinsight.server.home.biz.service.CustomPluginService;
 import io.holoinsight.server.home.biz.service.TenantInitService;
-import io.holoinsight.server.home.common.util.EventBusHolder;
-import io.holoinsight.server.home.common.util.StringUtil;
 import io.holoinsight.server.home.dal.converter.CustomPluginConverter;
 import io.holoinsight.server.home.dal.mapper.CustomPluginMapper;
 import io.holoinsight.server.home.dal.model.CustomPlugin;
 import io.holoinsight.server.home.dal.model.dto.CustomPluginDTO;
-import io.holoinsight.server.home.facade.page.MonitorPageRequest;
-import io.holoinsight.server.home.facade.page.MonitorPageResult;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -126,11 +125,11 @@ public class CustomPluginServiceImpl extends ServiceImpl<CustomPluginMapper, Cus
       wrapper.le("gmt_modified", customPluginDTO.getGmtCreate());
     }
 
-    if (StringUtil.isNotBlank(customPluginDTO.getCreator())) {
+    if (StringUtils.isNotBlank(customPluginDTO.getCreator())) {
       wrapper.eq("creator", customPluginDTO.getCreator().trim());
     }
 
-    if (StringUtil.isNotBlank(customPluginDTO.getModifier())) {
+    if (StringUtils.isNotBlank(customPluginDTO.getModifier())) {
       wrapper.eq("modifier", customPluginDTO.getModifier().trim());
     }
 
@@ -138,7 +137,7 @@ public class CustomPluginServiceImpl extends ServiceImpl<CustomPluginMapper, Cus
       wrapper.eq("id", customPluginDTO.getId());
     }
 
-    if (StringUtil.isNotBlank(customPluginDTO.getTenant())) {
+    if (StringUtils.isNotBlank(customPluginDTO.getTenant())) {
       wrapper.eq("tenant", customPluginDTO.getTenant().trim());
     }
 
@@ -146,7 +145,7 @@ public class CustomPluginServiceImpl extends ServiceImpl<CustomPluginMapper, Cus
       wrapper.eq("workspace", customPluginDTO.getWorkspace());
     }
 
-    if (StringUtil.isNotBlank(customPluginDTO.getName())) {
+    if (StringUtils.isNotBlank(customPluginDTO.getName())) {
       wrapper.like("name", customPluginDTO.getName().trim());
     }
 
@@ -154,7 +153,7 @@ public class CustomPluginServiceImpl extends ServiceImpl<CustomPluginMapper, Cus
       wrapper.eq("period_type", customPluginDTO.getPeriodType().name());
     }
 
-    if (StringUtil.isNotBlank(customPluginDTO.getPluginType())) {
+    if (StringUtils.isNotBlank(customPluginDTO.getPluginType())) {
       wrapper.eq("plugin_type", customPluginDTO.getPluginType().trim());
     }
 
@@ -186,18 +185,15 @@ public class CustomPluginServiceImpl extends ServiceImpl<CustomPluginMapper, Cus
   @Override
   public List<CustomPluginDTO> getListByKeyword(String keyword, String tenant, String workspace) {
     QueryWrapper<CustomPlugin> wrapper = new QueryWrapper<>();
-    if (StringUtil.isNotBlank(tenant)) {
+    if (StringUtils.isNotBlank(tenant)) {
       wrapper.eq("tenant", tenant);
     }
 
     if (StringUtils.isNotBlank(workspace)) {
       wrapper.eq("workspace", workspace);
     }
-    wrapper.like("id", keyword).or().like("name", keyword);
+    wrapper.and(wa -> wa.like("id", keyword).or().like("name", keyword));
     wrapper.last("LIMIT 10");
-    // Page<CustomPlugin> page = new Page<>(1, 20);
-    // page = page(page, wrapper);
-
     return dosToDTOs(baseMapper.selectList(wrapper));
   }
 
@@ -222,7 +218,7 @@ public class CustomPluginServiceImpl extends ServiceImpl<CustomPluginMapper, Cus
         && !CollectionUtils.isEmpty(customPluginDTO.getConf().collectMetrics)) {
       customPluginDTO.getConf().collectMetrics.forEach(collectMetric -> {
         String tableName = collectMetric.tableName + "_" + customPluginDTO.id;
-        if (StringUtil.isNotBlank(collectMetric.name)) {
+        if (StringUtils.isNotBlank(collectMetric.name)) {
           tableName = collectMetric.name;
         }
         collectMetric.targetTable = tenantInitService.getLogMonitorMetricTable(tableName);
@@ -240,7 +236,7 @@ public class CustomPluginServiceImpl extends ServiceImpl<CustomPluginMapper, Cus
             && !CollectionUtils.isEmpty(customPluginDTO.getConf().collectMetrics)) {
           customPluginDTO.getConf().collectMetrics.forEach(collectMetric -> {
             String tableName = collectMetric.tableName + "_" + customPluginDTO.id;
-            if (StringUtil.isNotBlank(collectMetric.name)) {
+            if (StringUtils.isNotBlank(collectMetric.name)) {
               tableName = collectMetric.name;
             }
             collectMetric.targetTable = tenantInitService.getLogMonitorMetricTable(tableName);

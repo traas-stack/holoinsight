@@ -6,6 +6,7 @@ package io.holoinsight.server.apm.engine.elasticsearch.ttl;
 import io.holoinsight.server.apm.common.constants.Const;
 import io.holoinsight.server.apm.common.model.storage.Model;
 import io.holoinsight.server.apm.core.ttl.DataCleaner;
+import io.holoinsight.server.apm.engine.elasticsearch.HoloinsightEsConfiguration;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -30,13 +31,15 @@ public class EsDataCleaner implements DataCleaner {
 
   @Autowired
   private RestHighLevelClient esClient;
+  @Autowired
+  private HoloinsightEsConfiguration esConfiguration;
 
   protected RestHighLevelClient client() {
     return esClient;
   }
 
   protected long ttl(Model model) {
-    return model.getTtl();
+    return model.getTtl() != 0 ? model.getTtl() : esConfiguration.getTtl() * 60000L * 60 * 24;
   }
 
   @Override

@@ -4,20 +4,20 @@
 package io.holoinsight.server.test.it;
 
 import io.holoinsight.server.common.J;
-import io.holoinsight.server.home.facade.AlarmHistoryDTO;
-import io.holoinsight.server.home.facade.AlarmRuleDTO;
-import io.holoinsight.server.home.facade.Rule;
-import io.holoinsight.server.home.facade.TimeFilter;
-import io.holoinsight.server.home.facade.emuns.BoolOperationEnum;
-import io.holoinsight.server.home.facade.emuns.CompareOperationEnum;
-import io.holoinsight.server.home.facade.emuns.FunctionEnum;
-import io.holoinsight.server.home.facade.emuns.PeriodType;
-import io.holoinsight.server.home.facade.emuns.TimeFilterEnum;
-import io.holoinsight.server.home.facade.page.MonitorPageRequest;
-import io.holoinsight.server.home.facade.trigger.CompareConfig;
-import io.holoinsight.server.home.facade.trigger.CompareParam;
-import io.holoinsight.server.home.facade.trigger.DataSource;
-import io.holoinsight.server.home.facade.trigger.Trigger;
+import io.holoinsight.server.common.dao.entity.dto.AlarmHistoryDTO;
+import io.holoinsight.server.common.dao.entity.dto.AlarmRuleDTO;
+import io.holoinsight.server.common.dao.entity.dto.alarm.AlarmRuleConf;
+import io.holoinsight.server.common.dao.entity.dto.alarm.TimeFilter;
+import io.holoinsight.server.common.dao.emuns.BoolOperationEnum;
+import io.holoinsight.server.common.dao.emuns.CompareOperationEnum;
+import io.holoinsight.server.common.dao.emuns.FunctionEnum;
+import io.holoinsight.server.common.dao.emuns.PeriodType;
+import io.holoinsight.server.common.dao.emuns.TimeFilterEnum;
+import io.holoinsight.server.common.MonitorPageRequest;
+import io.holoinsight.server.common.dao.entity.dto.alarm.trigger.CompareConfig;
+import io.holoinsight.server.common.dao.entity.dto.alarm.trigger.CompareParam;
+import io.holoinsight.server.common.dao.entity.dto.alarm.trigger.DataSource;
+import io.holoinsight.server.common.dao.entity.dto.alarm.trigger.Trigger;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.hamcrest.Matchers;
 import org.json.JSONObject;
@@ -229,10 +229,10 @@ public class AlertCalculateIT extends BaseIT {
 
 
   private Map<String, Object> buildPeriodAbsRule() {
-    Rule rule = new Rule();
-    rule.setBoolOperation(BoolOperationEnum.AND);
-    rule.setTriggers(Collections.singletonList(buildPeriodAbsTrigger()));
-    return J.toMap(J.toJson(rule));
+    AlarmRuleConf alarmRuleConf = new AlarmRuleConf();
+    alarmRuleConf.setBoolOperation(BoolOperationEnum.AND);
+    alarmRuleConf.setTriggers(Collections.singletonList(buildPeriodAbsTrigger()));
+    return J.toMap(J.toJson(alarmRuleConf));
   }
 
   private Trigger buildPeriodAbsTrigger() {
@@ -251,10 +251,10 @@ public class AlertCalculateIT extends BaseIT {
   }
 
   private Map<String, Object> buildPeriodRateRule() {
-    Rule rule = new Rule();
-    rule.setBoolOperation(BoolOperationEnum.AND);
-    rule.setTriggers(Collections.singletonList(buildPeriodRateTrigger()));
-    return J.toMap(J.toJson(rule));
+    AlarmRuleConf alarmRuleConf = new AlarmRuleConf();
+    alarmRuleConf.setBoolOperation(BoolOperationEnum.AND);
+    alarmRuleConf.setTriggers(Collections.singletonList(buildPeriodRateTrigger()));
+    return J.toMap(J.toJson(alarmRuleConf));
   }
 
   private Trigger buildPeriodRateTrigger() {
@@ -273,10 +273,10 @@ public class AlertCalculateIT extends BaseIT {
   }
 
   private Map<String, Object> buildPeriodValueRule() {
-    Rule rule = new Rule();
-    rule.setBoolOperation(BoolOperationEnum.AND);
-    rule.setTriggers(Collections.singletonList(buildPeriodValueTrigger()));
-    return J.toMap(J.toJson(rule));
+    AlarmRuleConf alarmRuleConf = new AlarmRuleConf();
+    alarmRuleConf.setBoolOperation(BoolOperationEnum.AND);
+    alarmRuleConf.setTriggers(Collections.singletonList(buildPeriodValueTrigger()));
+    return J.toMap(J.toJson(alarmRuleConf));
   }
 
   private Trigger buildPeriodValueTrigger() {
@@ -295,10 +295,10 @@ public class AlertCalculateIT extends BaseIT {
   }
 
   private Map<String, Object> buildCurrentRule() {
-    Rule rule = new Rule();
-    rule.setBoolOperation(BoolOperationEnum.AND);
-    rule.setTriggers(Collections.singletonList(buildCurrentTrigger()));
-    return J.toMap(J.toJson(rule));
+    AlarmRuleConf alarmRuleConf = new AlarmRuleConf();
+    alarmRuleConf.setBoolOperation(BoolOperationEnum.AND);
+    alarmRuleConf.setTriggers(Collections.singletonList(buildCurrentTrigger()));
+    return J.toMap(J.toJson(alarmRuleConf));
   }
 
   private Trigger buildCurrentTrigger() {

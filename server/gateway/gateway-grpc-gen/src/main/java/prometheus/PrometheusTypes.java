@@ -727,8 +727,8 @@ public final class PrometheusTypes {
       }
 
       private void maybeForceBuilderInitialization() {
-        if (com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders) {
-        }
+        // if (com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders) {
+        // }
       }
 
       @java.lang.Override
@@ -1588,8 +1588,8 @@ public final class PrometheusTypes {
       }
 
       private void maybeForceBuilderInitialization() {
-        if (com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders) {
-        }
+        // if (com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders) {
+        // }
       }
 
       @java.lang.Override
@@ -2365,7 +2365,6 @@ public final class PrometheusTypes {
       @java.lang.Override
       public prometheus.PrometheusTypes.Exemplar buildPartial() {
         prometheus.PrometheusTypes.Exemplar result = new prometheus.PrometheusTypes.Exemplar(this);
-        int from_bitField0_ = bitField0_;
         if (labelsBuilder_ == null) {
           if (((bitField0_ & 0x00000001) != 0)) {
             labels_ = java.util.Collections.unmodifiableList(labels_);
@@ -3597,7 +3596,6 @@ public final class PrometheusTypes {
       public prometheus.PrometheusTypes.TimeSeries buildPartial() {
         prometheus.PrometheusTypes.TimeSeries result =
             new prometheus.PrometheusTypes.TimeSeries(this);
-        int from_bitField0_ = bitField0_;
         if (labelsBuilder_ == null) {
           if (((bitField0_ & 0x00000001) != 0)) {
             labels_ = java.util.Collections.unmodifiableList(labels_);
@@ -5055,8 +5053,8 @@ public final class PrometheusTypes {
       }
 
       private void maybeForceBuilderInitialization() {
-        if (com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders) {
-        }
+        // if (com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders) {
+        // }
       }
 
       @java.lang.Override
@@ -5781,7 +5779,6 @@ public final class PrometheusTypes {
       @java.lang.Override
       public prometheus.PrometheusTypes.Labels buildPartial() {
         prometheus.PrometheusTypes.Labels result = new prometheus.PrometheusTypes.Labels(this);
-        int from_bitField0_ = bitField0_;
         if (labelsBuilder_ == null) {
           if (((bitField0_ & 0x00000001) != 0)) {
             labels_ = java.util.Collections.unmodifiableList(labels_);
@@ -6781,8 +6778,8 @@ public final class PrometheusTypes {
       }
 
       private void maybeForceBuilderInitialization() {
-        if (com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders) {
-        }
+        // if (com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders) {
+        // }
       }
 
       @java.lang.Override
@@ -7884,8 +7881,8 @@ public final class PrometheusTypes {
       }
 
       private void maybeForceBuilderInitialization() {
-        if (com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders) {
-        }
+        // if (com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders) {
+        // }
       }
 
       @java.lang.Override
@@ -7931,7 +7928,6 @@ public final class PrometheusTypes {
       public prometheus.PrometheusTypes.ReadHints buildPartial() {
         prometheus.PrometheusTypes.ReadHints result =
             new prometheus.PrometheusTypes.ReadHints(this);
-        int from_bitField0_ = bitField0_;
         result.stepMs_ = stepMs_;
         result.func_ = func_;
         result.startMs_ = startMs_;
@@ -9145,8 +9141,8 @@ public final class PrometheusTypes {
       }
 
       private void maybeForceBuilderInitialization() {
-        if (com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders) {
-        }
+        // if (com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders) {
+        // }
       }
 
       @java.lang.Override
@@ -10092,7 +10088,6 @@ public final class PrometheusTypes {
       public prometheus.PrometheusTypes.ChunkedSeries buildPartial() {
         prometheus.PrometheusTypes.ChunkedSeries result =
             new prometheus.PrometheusTypes.ChunkedSeries(this);
-        int from_bitField0_ = bitField0_;
         if (labelsBuilder_ == null) {
           if (((bitField0_ & 0x00000001) != 0)) {
             labels_ = java.util.Collections.unmodifiableList(labels_);

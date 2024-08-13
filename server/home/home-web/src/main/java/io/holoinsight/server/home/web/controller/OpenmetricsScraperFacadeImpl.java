@@ -6,17 +6,17 @@ package io.holoinsight.server.home.web.controller;
 import io.holoinsight.server.common.J;
 import io.holoinsight.server.common.JsonResult;
 import io.holoinsight.server.home.biz.service.OpenmetricsScraperService;
-import io.holoinsight.server.home.biz.service.UserOpLogService;
-import io.holoinsight.server.home.common.util.MonitorException;
-import io.holoinsight.server.home.common.util.scope.AuthTargetType;
-import io.holoinsight.server.home.common.util.scope.MonitorScope;
-import io.holoinsight.server.home.common.util.scope.PowerConstants;
-import io.holoinsight.server.home.common.util.scope.RequestContext;
+import io.holoinsight.server.common.service.UserOpLogService;
+import io.holoinsight.server.common.MonitorException;
+import io.holoinsight.server.common.scope.AuthTargetType;
+import io.holoinsight.server.common.scope.MonitorScope;
+import io.holoinsight.server.common.scope.PowerConstants;
+import io.holoinsight.server.common.RequestContext;
 import io.holoinsight.server.home.dal.model.OpType;
 import io.holoinsight.server.home.dal.model.dto.OpenmetricsScraperDTO;
-import io.holoinsight.server.home.facade.page.MonitorPageRequest;
-import io.holoinsight.server.home.facade.page.MonitorPageResult;
-import io.holoinsight.server.home.web.common.ManageCallback;
+import io.holoinsight.server.common.MonitorPageRequest;
+import io.holoinsight.server.common.MonitorPageResult;
+import io.holoinsight.server.common.ManageCallback;
 import io.holoinsight.server.home.web.common.ParaCheckUtil;
 import io.holoinsight.server.home.web.interceptor.MonitorScopeAuth;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -63,6 +63,7 @@ public class OpenmetricsScraperFacadeImpl extends BaseFacade {
   }
 
   @GetMapping("/{id}")
+  @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.VIEW)
   public JsonResult<OpenmetricsScraperDTO> get(@PathVariable("id") Long id) {
     MonitorScope ms = RequestContext.getContext().ms;
     JsonResult<OpenmetricsScraperDTO> result = new JsonResult<>();
@@ -77,6 +78,7 @@ public class OpenmetricsScraperFacadeImpl extends BaseFacade {
   }
 
   @PostMapping("/create")
+  @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.EDIT)
   public JsonResult<OpenmetricsScraperDTO> create(
       @RequestBody OpenmetricsScraperDTO openmetricsScraperDTO) {
 
@@ -89,6 +91,7 @@ public class OpenmetricsScraperFacadeImpl extends BaseFacade {
         ParaCheckUtil.checkParaNotNull(openmetricsScraperDTO.getScrapeInterval(), "interval");
         ParaCheckUtil.checkParaNotNull(openmetricsScraperDTO.getScrapeTimeout(), "timeout");
         ParaCheckUtil.checkParaNotNull(openmetricsScraperDTO.getMetricsPath(), "metricPath");
+        ParaCheckUtil.checkParaId(openmetricsScraperDTO.getId());
       }
 
       @Override
@@ -112,6 +115,7 @@ public class OpenmetricsScraperFacadeImpl extends BaseFacade {
   }
 
   @PostMapping("/update/{id}")
+  @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.EDIT)
   public JsonResult<OpenmetricsScraperDTO> update(@PathVariable("id") Long id,
       @RequestBody OpenmetricsScraperDTO openmetricsScraperDTO) {
 
@@ -166,6 +170,7 @@ public class OpenmetricsScraperFacadeImpl extends BaseFacade {
   }
 
   @PostMapping("/delete/{id}")
+  @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.EDIT)
   public JsonResult<Boolean> delete(@PathVariable("id") Long id) {
 
     final JsonResult<Boolean> result = new JsonResult<>();

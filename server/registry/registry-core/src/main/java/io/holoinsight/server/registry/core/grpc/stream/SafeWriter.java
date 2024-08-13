@@ -62,6 +62,7 @@ public class SafeWriter {
         try {
           writer.onCompleted();
         } catch (Throwable e) {
+          // This catch statement is intentionally empty
         }
       }
     });

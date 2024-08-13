@@ -5,7 +5,7 @@ package io.holoinsight.server.home.alert.service.calculate;
 
 
 import io.holoinsight.server.home.alert.model.function.FunctionLogic;
-import io.holoinsight.server.home.facade.emuns.FunctionEnum;
+import io.holoinsight.server.common.dao.emuns.FunctionEnum;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.stereotype.Service;
 

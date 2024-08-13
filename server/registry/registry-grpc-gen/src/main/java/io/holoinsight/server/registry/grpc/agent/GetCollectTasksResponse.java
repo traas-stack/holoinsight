@@ -748,10 +748,7 @@ public final class GetCollectTasksResponse extends com.google.protobuf.Generated
       maybeForceBuilderInitialization();
     }
 
-    private void maybeForceBuilderInitialization() {
-      if (com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders) {
-      }
-    }
+    private void maybeForceBuilderInitialization() {}
 
     @java.lang.Override
     public Builder clear() {
@@ -791,7 +788,6 @@ public final class GetCollectTasksResponse extends com.google.protobuf.Generated
     public io.holoinsight.server.registry.grpc.agent.GetCollectTasksResponse buildPartial() {
       io.holoinsight.server.registry.grpc.agent.GetCollectTasksResponse result =
           new io.holoinsight.server.registry.grpc.agent.GetCollectTasksResponse(this);
-      int from_bitField0_ = bitField0_;
       if (headerBuilder_ == null) {
         result.header_ = header_;
       } else {
@@ -1025,7 +1021,7 @@ public final class GetCollectTasksResponse extends com.google.protobuf.Generated
     }
 
     private com.google.protobuf.MapField<java.lang.String, io.holoinsight.server.registry.grpc.agent.CollectConfigsBucket> internalGetMutableBuckets() {
-      onChanged();;
+      onChanged();
       if (buckets_ == null) {
         buckets_ = com.google.protobuf.MapField.newMapField(BucketsDefaultEntryHolder.defaultEntry);
       }
@@ -1194,7 +1190,7 @@ public final class GetCollectTasksResponse extends com.google.protobuf.Generated
     }
 
     private com.google.protobuf.MapField<java.lang.String, io.holoinsight.server.registry.grpc.agent.CollectConfig> internalGetMutableCollectConfigs() {
-      onChanged();;
+      onChanged();
       if (collectConfigs_ == null) {
         collectConfigs_ =
             com.google.protobuf.MapField.newMapField(CollectConfigsDefaultEntryHolder.defaultEntry);
@@ -1357,7 +1353,7 @@ public final class GetCollectTasksResponse extends com.google.protobuf.Generated
     }
 
     private com.google.protobuf.MapField<java.lang.String, io.holoinsight.server.registry.grpc.agent.CollectTarget> internalGetMutableCollectTargets() {
-      onChanged();;
+      onChanged();
       if (collectTargets_ == null) {
         collectTargets_ =
             com.google.protobuf.MapField.newMapField(CollectTargetsDefaultEntryHolder.defaultEntry);
@@ -1559,4 +1555,3 @@ public final class GetCollectTasksResponse extends com.google.protobuf.Generated
   }
 
 }
-

@@ -3,20 +3,25 @@
  */
 package io.holoinsight.server.home.web.controller;
 
-import io.holoinsight.server.home.biz.service.AlertRuleService;
+import io.holoinsight.server.common.dao.entity.dto.MetricInfoDTO;
+import io.holoinsight.server.common.service.MetricInfoService;
+import io.holoinsight.server.common.service.AlertRuleService;
 import io.holoinsight.server.home.biz.service.CustomPluginService;
-import io.holoinsight.server.home.biz.service.DashboardService;
-import io.holoinsight.server.home.biz.service.FolderService;
+import io.holoinsight.server.common.service.DashboardService;
+import io.holoinsight.server.common.service.FolderService;
 import io.holoinsight.server.home.biz.service.TenantInitService;
-import io.holoinsight.server.home.common.util.CommonThreadPool;
-import io.holoinsight.server.home.common.util.scope.MonitorScope;
-import io.holoinsight.server.home.common.util.scope.RequestContext;
-import io.holoinsight.server.home.dal.model.Folder;
+import io.holoinsight.server.common.CommonThreadPool;
+import io.holoinsight.server.common.scope.AuthTargetType;
+import io.holoinsight.server.common.scope.MonitorScope;
+import io.holoinsight.server.common.scope.PowerConstants;
+import io.holoinsight.server.common.RequestContext;
+import io.holoinsight.server.common.dao.entity.Folder;
 import io.holoinsight.server.home.dal.model.dto.CustomPluginDTO;
-import io.holoinsight.server.home.web.common.ManageCallback;
+import io.holoinsight.server.common.ManageCallback;
 import io.holoinsight.server.home.web.common.ParaCheckUtil;
 import io.holoinsight.server.common.J;
 import io.holoinsight.server.common.JsonResult;
+import io.holoinsight.server.home.web.interceptor.MonitorScopeAuth;
 import io.holoinsight.server.meta.common.model.QueryExample;
 import io.holoinsight.server.meta.facade.service.DataClientService;
 import lombok.extern.slf4j.Slf4j;
@@ -35,6 +40,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Future;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /**
  *
@@ -61,6 +67,9 @@ public class SearchFacadeImpl extends BaseFacade {
   private AlertRuleService alarmRuleService;
 
   @Autowired
+  private MetricInfoService metricInfoService;
+
+  @Autowired
   private DataClientService dataClientService;
 
   @Autowired
@@ -68,6 +77,7 @@ public class SearchFacadeImpl extends BaseFacade {
 
   @ResponseBody
   @PostMapping(value = "/queryByKeyword")
+  @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.VIEW)
   public JsonResult<Object> query(@RequestBody QueryKeywordReq req) {
 
     final JsonResult<Object> result = new JsonResult<>();
@@ -85,33 +95,40 @@ public class SearchFacadeImpl extends BaseFacade {
         MonitorScope ms = RequestContext.getContext().ms;
         final String tenant = ms.tenant;
         final String workspace = ms.workspace;
+        final String environment = ms.getEnvironment();
 
         List<SearchKeywordRet> ret = new ArrayList<>();
         List<Future<SearchKeywordRet>> futures = new ArrayList<>();
-        futures.add(queryThreadPool.submit(() -> {
-          log.info(">>>>>, " + tenant + ", ..... , " + workspace);
-          return searchLogEntity(req.keyword, tenant, workspace);
-        }));
-
-        futures.add(queryThreadPool.submit(() -> {
-          return searchFolderEntity(req.keyword, tenant, workspace);
-        }));
 
         futures.add(queryThreadPool.submit(() -> {
           return searchDashboardEntity(req.keyword, tenant, workspace);
         }));
 
         futures.add(queryThreadPool.submit(() -> {
-          return searchInfraEntity(req.keyword, tenant, workspace);
-        }));
-
-        futures.add(queryThreadPool.submit(() -> {
-          return searchAppEntity(req.keyword, tenant, workspace);
-        }));
-
-        futures.add(queryThreadPool.submit(() -> {
           return searchAlarmEntity(req.keyword, tenant, workspace);
         }));
+
+        if (environment.equalsIgnoreCase("SERVER")) {
+          futures.add(queryThreadPool.submit(() -> {
+            return searchLogEntity(req.keyword, tenant, workspace);
+          }));
+
+          futures.add(queryThreadPool.submit(() -> {
+            return searchFolderEntity(req.keyword, tenant, workspace);
+          }));
+
+          futures.add(queryThreadPool.submit(() -> {
+            return searchInfraEntity(req.keyword, tenant, workspace);
+          }));
+
+          futures.add(queryThreadPool.submit(() -> {
+            return searchAppEntity(req.keyword, tenant, workspace);
+          }));
+
+          futures.add(queryThreadPool.submit(() -> {
+            return searchLogMetricEntity(req.keyword, tenant, workspace);
+          }));
+        }
 
         // 多线程
         for (Future<SearchKeywordRet> future : futures) {
@@ -134,6 +151,7 @@ public class SearchFacadeImpl extends BaseFacade {
 
   @ResponseBody
   @PostMapping(value = "/configSearch")
+  @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.VIEW)
   public JsonResult<Object> configSearch(@RequestBody QueryKeywordReq req) {
 
     final JsonResult<Object> result = new JsonResult<>();
@@ -208,13 +226,11 @@ public class SearchFacadeImpl extends BaseFacade {
   public SearchKeywordRet searchInfraEntity(String keyword, String tenant, String workspace) {
 
     QueryExample queryExample = new QueryExample();
-    // queryExample.getParams().put("ip",
-    // Pattern.compile(String.format("^.*%s.*$", keyword), Pattern.CASE_INSENSITIVE));
     queryExample.getParams().put("hostname",
         Pattern.compile(String.format("^.*%s.*$", keyword), Pattern.CASE_INSENSITIVE));
     if (StringUtils.isNotBlank(workspace)) {
       Map<String, String> conditions =
-          tenantInitService.getTenantWorkspaceMetaConditions(workspace);
+          tenantInitService.getTenantWorkspaceMetaConditions(tenant, workspace);
       if (!CollectionUtils.isEmpty(conditions)) {
         conditions.forEach((k, v) -> queryExample.getParams().put(k, v));
       }
@@ -243,6 +259,15 @@ public class SearchFacadeImpl extends BaseFacade {
   public SearchKeywordRet searchAlarmEntity(String keyword, String tenant, String workspace) {
 
     return genSearchResult("alarm", alarmRuleService.getListByKeyword(keyword, tenant, workspace));
+  }
+
+  public SearchKeywordRet searchLogMetricEntity(String keyword, String tenant, String workspace) {
+    List<MetricInfoDTO> listByKeyword =
+        metricInfoService.getListByKeyword(keyword, tenant, workspace);
+    List<MetricInfoDTO> logList =
+        listByKeyword.stream().filter(item -> item.getProduct().equalsIgnoreCase("logmonitor"))
+            .collect(Collectors.toList());
+    return genSearchResult("logMetric", logList);
   }
 
   public SearchKeywordRet genSearchResult(String type, List<?> datas) {

@@ -10,6 +10,7 @@ import com.google.common.collect.Lists;
 import com.google.protobuf.MessageOrBuilder;
 import io.holoinsight.server.apm.common.model.query.Duration;
 import io.holoinsight.server.apm.common.model.query.Endpoint;
+import io.holoinsight.server.common.event.Event;
 import io.holoinsight.server.apm.common.model.query.MetricValue;
 import io.holoinsight.server.apm.common.model.query.MetricValues;
 import io.holoinsight.server.apm.common.model.query.Pagination;
@@ -21,6 +22,7 @@ import io.holoinsight.server.apm.common.model.query.QueryServiceInstanceRequest;
 import io.holoinsight.server.apm.common.model.query.QueryServiceRequest;
 import io.holoinsight.server.apm.common.model.query.QueryTopologyRequest;
 import io.holoinsight.server.apm.common.model.query.QueryTraceRequest;
+import io.holoinsight.server.apm.common.model.query.Request;
 import io.holoinsight.server.apm.common.model.query.Service;
 import io.holoinsight.server.apm.common.model.query.ServiceInstance;
 import io.holoinsight.server.apm.common.model.query.SlowSql;
@@ -29,6 +31,7 @@ import io.holoinsight.server.apm.common.model.query.StatisticDataList;
 import io.holoinsight.server.apm.common.model.query.StatisticRequest;
 import io.holoinsight.server.apm.common.model.query.Topology;
 import io.holoinsight.server.apm.common.model.query.TraceBrief;
+import io.holoinsight.server.apm.common.model.query.TraceTree;
 import io.holoinsight.server.apm.common.model.query.VirtualComponent;
 import io.holoinsight.server.apm.common.model.specification.OtlpMappings;
 import io.holoinsight.server.apm.common.model.specification.sw.Trace;
@@ -36,8 +39,12 @@ import io.holoinsight.server.apm.common.model.specification.sw.TraceState;
 import io.holoinsight.server.apm.common.utils.GsonUtils;
 import io.holoinsight.server.apm.engine.postcal.MetricDefine;
 import io.holoinsight.server.common.DurationUtil;
+import io.holoinsight.server.common.J;
 import io.holoinsight.server.common.ProtoJsonUtils;
+import io.holoinsight.server.common.service.SuperCacheService;
 import io.holoinsight.server.extension.MetricStorage;
+import io.holoinsight.server.extension.model.DetailResult;
+import io.holoinsight.server.extension.model.PqlLabelParam;
 import io.holoinsight.server.extension.model.PqlParam;
 import io.holoinsight.server.extension.model.QueryMetricsParam;
 import io.holoinsight.server.extension.model.QueryParam;
@@ -48,6 +55,10 @@ import io.holoinsight.server.query.common.convertor.ApmConvertor;
 import io.holoinsight.server.query.grpc.QueryProto;
 import io.holoinsight.server.query.grpc.QueryProto.Point.Builder;
 import io.holoinsight.server.query.grpc.QueryProto.PqlInstantRequest;
+import io.holoinsight.server.query.grpc.QueryProto.PqlLabelRequest;
+import io.holoinsight.server.query.grpc.QueryProto.QueryLabelsResponse;
+import io.holoinsight.server.query.grpc.QueryProto.QuerySeriesResponse;
+import io.holoinsight.server.query.grpc.QueryProto.SeriesResult;
 import io.holoinsight.server.query.service.QueryException;
 import io.holoinsight.server.query.service.QueryService;
 import io.holoinsight.server.query.service.analysis.AggCenter;
@@ -89,6 +100,9 @@ public class DefaultQueryServiceImpl implements QueryService {
   @Autowired
   private ApmClient apmClient;
 
+  @Autowired
+  private SuperCacheService superCacheService;
+
   private LoadingCache<String, Map<String, MetricDefine>> apmMetrics =
       CacheBuilder.newBuilder().expireAfterWrite(60, TimeUnit.SECONDS)
           .build(new CacheLoader<String, Map<String, MetricDefine>>() {
@@ -109,9 +123,9 @@ public class DefaultQueryServiceImpl implements QueryService {
       String fillPolicy = request.getFillPolicy();
       if (StringUtils.isBlank(query)
           || datasources.stream().anyMatch(ds -> query.equals(ds.getName()))) {
-        return simpleQuery(tenant, datasources);
+        return simpleQuery(request, tenant, datasources);
       } else {
-        return complexQuery(tenant, query, query, downsample, fillPolicy, datasources);
+        return complexQuery(request, tenant, query, query, downsample, fillPolicy, datasources);
       }
     }, "queryData", request);
   }
@@ -163,6 +177,9 @@ public class DefaultQueryServiceImpl implements QueryService {
           QueryParam queryParam = new QueryParam();
           queryParam.setMetric(ds.getMetric());
           queryParam.setTenant(request.getTenant());
+          if (StringUtils.isNotEmpty(ds.getQl())) {
+            queryParam.setQl(ds.getQl());
+          }
           Result result = metricStorage.querySchema(queryParam);
           Map<String, String> tags = result.getTags();
           keys.put(ds.getMetric(), tags.keySet());
@@ -213,8 +230,7 @@ public class DefaultQueryServiceImpl implements QueryService {
   }
 
   @Override
-  public QueryProto.QueryResponse pqlInstantQuery(QueryProto.PqlInstantRequest request)
-      throws QueryException {
+  public QueryProto.QueryResponse pqlInstantQuery(PqlInstantRequest request) throws QueryException {
     QueryProto.QueryResponse.Builder builder = QueryProto.QueryResponse.newBuilder();
     List<Result> pqlResult = metricStorage.pqlInstantQuery(transToPqlParam(request));
     QueryProto.Result.Builder resultBuilder = QueryProto.Result.newBuilder();
@@ -223,7 +239,7 @@ public class DefaultQueryServiceImpl implements QueryService {
       resultBuilder.putAllTags(result.getTags());
       for (Point point : result.getPoints()) {
         Builder pointBuilder = QueryProto.Point.newBuilder().setTimestamp(point.getTimestamp())
-            .setValue(point.getValue());
+            .setValue(point.getValue()).setStrValue(point.getStrValue());
         resultBuilder.addPoints(pointBuilder.build());
       }
     }
@@ -238,6 +254,19 @@ public class DefaultQueryServiceImpl implements QueryService {
     pqlParam.setTime(request.getTime());
     pqlParam.setTimeout(request.getTimeout());
     pqlParam.setDelta(request.getDelta());
+    return pqlParam;
+  }
+
+  private PqlLabelParam transToPqlParam(PqlLabelRequest request) {
+    PqlLabelParam pqlParam = new PqlLabelParam();
+    pqlParam.setTenant(request.getTenant());
+    if (!CollectionUtils.isEmpty(request.getMatchList())) {
+      pqlParam.setMatch(request.getMatchList());
+    }
+    pqlParam.setStart(request.getStart());
+    pqlParam.setEnd(request.getEnd());
+    pqlParam.setMetric(request.getMetric());
+    pqlParam.setLabelName(request.getLabelName());
     return pqlParam;
   }
 
@@ -257,18 +286,45 @@ public class DefaultQueryServiceImpl implements QueryService {
   public QueryProto.QueryResponse pqlRangeQuery(QueryProto.PqlRangeRequest request)
       throws QueryException {
     QueryProto.QueryResponse.Builder builder = QueryProto.QueryResponse.newBuilder();
-    List<Result> pqlResult = metricStorage.pqlInstantQuery(transToPqlParam(request));
+    List<Result> pqlResult = metricStorage.pqlRangeQuery(transToPqlParam(request));
     for (Result result : pqlResult) {
       QueryProto.Result.Builder resultBuilder = QueryProto.Result.newBuilder();
       resultBuilder.setMetric(result.getMetric());
       resultBuilder.putAllTags(result.getTags());
       for (Point point : result.getPoints()) {
         Builder pointBuilder = QueryProto.Point.newBuilder().setTimestamp(point.getTimestamp())
-            .setStrValue(point.getStrValue());
+            .setValue(point.getValue()).setStrValue(point.getStrValue());
         resultBuilder.addPoints(pointBuilder.build());
       }
       builder.addResults(resultBuilder.build());
     }
+    return builder.build();
+  }
+
+  @Override
+  public QuerySeriesResponse pqlSeriesQuery(PqlLabelRequest request) throws QueryException {
+    QueryProto.QuerySeriesResponse.Builder builder = QueryProto.QuerySeriesResponse.newBuilder();
+    List<Map<String, String>> pqlResult = metricStorage.pqlSeriesQuery(transToPqlParam(request));
+    for (Map<String, String> result : pqlResult) {
+      SeriesResult.Builder seriesBuilder = SeriesResult.newBuilder().putAllResult(result);
+      builder.addResults(seriesBuilder.build());
+    }
+    return builder.build();
+  }
+
+  @Override
+  public QueryLabelsResponse pqlLabelsQuery(PqlLabelRequest request) throws QueryException {
+    QueryProto.QueryLabelsResponse.Builder builder = QueryProto.QueryLabelsResponse.newBuilder();
+    List<String> pqlResult = metricStorage.pqlLabelsQuery(transToPqlParam(request));
+    builder.addAllResults(pqlResult);
+    return builder.build();
+  }
+
+  @Override
+  public QueryLabelsResponse pqlLabelValuesQuery(PqlLabelRequest request) throws QueryException {
+    QueryProto.QueryLabelsResponse.Builder builder = QueryProto.QueryLabelsResponse.newBuilder();
+    List<String> pqlResult = metricStorage.pqlLabelValueQuery(transToPqlParam(request));
+    builder.addAllResults(pqlResult);
     return builder.build();
   }
 
@@ -320,6 +376,7 @@ public class DefaultQueryServiceImpl implements QueryService {
       Assert.isTrue(!request.getTraceIdsList().isEmpty(), "trace id should be set!");
       ApmAPI apmAPI = apmClient.getClient(request.getTenant());
       QueryTraceRequest queryTraceRequest = new QueryTraceRequest();
+      queryTraceRequest.setDuration(new Duration(request.getStart(), request.getEnd(), null));
       queryTraceRequest.setTenant(request.getTenant());
       queryTraceRequest.setTraceIds(request.getTraceIdsList());
       queryTraceRequest.setTags(ApmConvertor.convertTagsMap(request.getTagsMap()));
@@ -330,6 +387,26 @@ public class DefaultQueryServiceImpl implements QueryService {
       }
       return ApmConvertor.convertTrace(traceRsp.body());
     }, "queryTrace", request);
+  }
+
+  @Override
+  public QueryProto.TraceTreeList queryTraceTree(QueryProto.QueryTraceRequest request)
+      throws QueryException {
+    return wrap(() -> {
+      Assert.isTrue(!request.getTraceIdsList().isEmpty(), "trace id should be set!");
+      ApmAPI apmAPI = apmClient.getClient(request.getTenant());
+      QueryTraceRequest queryTraceRequest = new QueryTraceRequest();
+      queryTraceRequest.setDuration(new Duration(request.getStart(), request.getEnd(), null));
+      queryTraceRequest.setTenant(request.getTenant());
+      queryTraceRequest.setTraceIds(request.getTraceIdsList());
+      queryTraceRequest.setTags(ApmConvertor.convertTagsMap(request.getTagsMap()));
+      Call<List<TraceTree>> call = apmAPI.queryTraceTree(queryTraceRequest);
+      Response<List<TraceTree>> traceRsp = call.execute();
+      if (!traceRsp.isSuccessful()) {
+        throw new QueryException(traceRsp.errorBody().string());
+      }
+      return ApmConvertor.convertTraceTree(traceRsp.body());
+    }, "queryTraceTree", request);
   }
 
   @Override
@@ -381,6 +458,8 @@ public class DefaultQueryServiceImpl implements QueryService {
       queryTraceRequest.setTenant(request.getTenant());
       queryTraceRequest.setStart(request.getStart());
       queryTraceRequest.setEnd(request.getEnd());
+      queryTraceRequest.setWhites(request.getWhitesMap());
+      queryTraceRequest.setBlacks(request.getBlacksMap());
       queryTraceRequest.setGroups(request.getGroupsList());
       Call<StatisticDataList> call = apmAPI.statistic(queryTraceRequest);
       Response<StatisticDataList> statisticDataRsp = call.execute();
@@ -721,11 +800,59 @@ public class DefaultQueryServiceImpl implements QueryService {
     }, "queryServiceErrorDetail", request);
   }
 
-  private QueryProto.QueryResponse simpleQuery(String tenant,
+  @Override
+  public QueryProto.QueryDetailResponse queryDetailData(QueryProto.QueryRequest request)
+      throws QueryException {
+    return wrap(() -> {
+      List<QueryProto.Datasource> datasources = request.getDatasourcesList();
+      Assert.notEmpty(datasources, "datasources are empty");
+      String tenant = request.getTenant();
+
+      List<QueryProto.QueryDetailResponse> rsps = new ArrayList<>(datasources.size());
+      for (QueryProto.Datasource datasource : datasources) {
+        QueryProto.QueryDetailResponse.Builder queryResponseBuilder =
+            queryDetail(tenant, datasource);
+        rsps.add(queryResponseBuilder.build());
+      }
+      List<QueryProto.DetailResult> results =
+          rsps.stream().flatMap(rsp -> rsp.getResultsList().stream()).collect(Collectors.toList());
+      return QueryProto.QueryDetailResponse.newBuilder().addAllResults(results).build();
+    }, "queryDetailData", request);
+  }
+
+  @Override
+  public QueryProto.QueryEventResponse queryEvents(QueryProto.QueryEventRequest request)
+      throws QueryException {
+    return wrap(() -> {
+      ApmAPI apmAPI = apmClient.getClient(request.getTenant());
+
+      Request queryRequest = new Request();
+      queryRequest.setTenant(request.getTenant());
+      queryRequest.setStartTime(request.getStart());
+      queryRequest.setEndTime(request.getEnd());
+      if (request.getTermParamsMap() != null) {
+        queryRequest.setTermParams(request.getTermParamsMap());
+      }
+
+      Call<List<Event>> events = apmAPI.queryEvents(queryRequest);
+      Response<List<Event>> listResponse = events.execute();
+      if (!listResponse.isSuccessful()) {
+        throw new QueryException(listResponse.errorBody().string());
+      }
+      QueryProto.QueryEventResponse.Builder builder = QueryProto.QueryEventResponse.newBuilder();
+      listResponse.body().forEach(data -> {
+        builder.addEvent(ApmConvertor.convertEvent(data));
+      });
+
+      return builder.build();
+    }, "queryEvents", request);
+  }
+
+  private QueryProto.QueryResponse simpleQuery(QueryProto.QueryRequest request, String tenant,
       List<QueryProto.Datasource> datasources) throws QueryException {
     List<QueryProto.QueryResponse> rsps = new ArrayList<>(datasources.size());
     for (QueryProto.Datasource datasource : datasources) {
-      QueryProto.QueryResponse.Builder queryResponseBuilder = queryDs(tenant, datasource);
+      QueryProto.QueryResponse.Builder queryResponseBuilder = queryDs(request, tenant, datasource);
       rsps.add(queryResponseBuilder.build());
     }
     List<QueryProto.Result> results =
@@ -733,9 +860,9 @@ public class DefaultQueryServiceImpl implements QueryService {
     return QueryProto.QueryResponse.newBuilder().addAllResults(results).build();
   }
 
-  private QueryProto.QueryResponse complexQuery(String tenant, String expression, String as,
-      String downsample, String fillPolicy, List<QueryProto.Datasource> datasources)
-      throws QueryException {
+  private QueryProto.QueryResponse complexQuery(QueryProto.QueryRequest request, String tenant,
+      String expression, String as, String downsample, String fillPolicy,
+      List<QueryProto.Datasource> datasources) throws QueryException {
     List<String> queryExprs = Lists.newArrayList(StringUtils.split(expression, ","));
     List<String> queryAs = Lists.newArrayList(StringUtils.split(as, ","));
     Map<String, String> asMap = new HashMap<>();
@@ -752,7 +879,7 @@ public class DefaultQueryServiceImpl implements QueryService {
     Map<String, List<QueryProto.Result>> resultMap = new HashMap<>();
     for (QueryProto.Datasource datasource : datasources) {
       String dsName = datasource.getName();
-      List<QueryProto.Result> rspResults = queryDs(tenant, datasource).getResultsList();
+      List<QueryProto.Result> rspResults = queryDs(request, tenant, datasource).getResultsList();
       resultMap.put(dsName, rspResults);
     }
 
@@ -812,7 +939,7 @@ public class DefaultQueryServiceImpl implements QueryService {
         }).collect(Collectors.toList());
         try {
           Double rpnResult = rpnResolver.calByInfix(rpnArgs);
-          QueryProto.Point.Builder pointBuilder = QueryProto.Point.newBuilder();
+          Builder pointBuilder = QueryProto.Point.newBuilder();
           pointBuilder.setTimestamp(timestamp).setValue(rpnResult);
           QueryProto.Point point = pointBuilder.build();
           resultBuilder.addPoints(point);
@@ -826,16 +953,48 @@ public class DefaultQueryServiceImpl implements QueryService {
     return results;
   }
 
-  protected QueryProto.QueryResponse.Builder queryDs(String tenant,
+  protected QueryProto.QueryResponse.Builder queryDs(QueryProto.QueryRequest request, String tenant,
       QueryProto.Datasource datasource) throws QueryException {
     MetricDefine apmMetric = this.apmMetrics.getUnchecked(tenant).get(datasource.getMetric());
-    if (apmMetric != null) {
+    // virtual metric
+    if (superCacheService.getSc() != null && superCacheService.getSc().expressionMetricList != null
+        && superCacheService.getSc().expressionMetricList.containsKey(datasource.getMetric())) {
+      QueryProto.QueryRequest.Builder template =
+          superCacheService.getSc().expressionMetricList.get(datasource.getMetric()).toBuilder();
+      return queryVirtual(template, request, tenant, datasource);
+    } else if (apmMetric != null) {
       return queryApm(tenant, datasource, apmMetric);
     } else if (AggCenter.isAggregator(datasource.getAggregator())) {
       return analysis(tenant, datasource);
     } else {
       return queryMetricStore(tenant, datasource);
     }
+  }
+
+  private QueryProto.QueryResponse.Builder queryVirtual(QueryProto.QueryRequest.Builder template,
+      QueryProto.QueryRequest request, String tenant, QueryProto.Datasource datasource)
+      throws QueryException {
+    template.setTenant(tenant);
+    if (StringUtils.isNotBlank(datasource.getDownsample())) {
+      template.setDownsample(datasource.getDownsample());
+    }
+    for (QueryProto.Datasource.Builder dsTemplate : template.getDatasourcesBuilderList()) {
+      dsTemplate.setStart(datasource.getStart());
+      dsTemplate.setEnd(datasource.getEnd());
+      if (CollectionUtils.isNotEmpty(datasource.getFiltersList())) {
+        dsTemplate.clearFilters().addAllFilters(datasource.getFiltersList());
+      }
+      dsTemplate.setDownsample(datasource.getDownsample());
+      dsTemplate.setSlidingWindow(datasource.getSlidingWindow());
+      if (CollectionUtils.isNotEmpty(datasource.getGroupByList())) {
+        dsTemplate.clearGroupBy().addAllGroupBy(datasource.getGroupByList());
+      }
+    }
+    QueryProto.QueryResponse.Builder rspBuilder = queryData(template.build()).toBuilder();
+    for (QueryProto.Result.Builder resultBuilder : rspBuilder.getResultsBuilderList()) {
+      resultBuilder.setMetric(request.getQuery());
+    }
+    return rspBuilder;
   }
 
   private QueryProto.QueryResponse.Builder queryApm(String tenant, QueryProto.Datasource datasource,
@@ -964,18 +1123,16 @@ public class DefaultQueryServiceImpl implements QueryService {
   private QueryProto.QueryResponse.Builder queryMetricStore(String tenant,
       QueryProto.Datasource datasource) {
     QueryParam param = QueryStorageUtils.convertToQueryParam(tenant, datasource);
-    List<io.holoinsight.server.extension.model.QueryResult.Result> results =
-        metricStorage.queryData(param);
+    List<Result> results = metricStorage.queryData(param);
 
     QueryProto.QueryResponse.Builder builder = QueryProto.QueryResponse.newBuilder();
-    for (io.holoinsight.server.extension.model.QueryResult.Result result : results) {
+    for (Result result : results) {
       QueryProto.Result.Builder resultBuilder = QueryProto.Result.newBuilder();
       resultBuilder.setMetric(
           StringUtils.isNotEmpty(datasource.getName()) ? datasource.getName() : result.getMetric())
           .putAllTags(result.getTags());
-      for (io.holoinsight.server.extension.model.QueryResult.Point point : result.getPoints()) {
-        QueryProto.Point.Builder pointBuilder =
-            QueryProto.Point.newBuilder().setTimestamp(point.getTimestamp());
+      for (Point point : result.getPoints()) {
+        Builder pointBuilder = QueryProto.Point.newBuilder().setTimestamp(point.getTimestamp());
 
         if (point.getStrValue() != null) {
           pointBuilder.setStrValue(String.valueOf(point.getStrValue()));
@@ -996,14 +1153,84 @@ public class DefaultQueryServiceImpl implements QueryService {
     return builder;
   }
 
+  private QueryProto.QueryDetailResponse.Builder queryDetail(String tenant,
+      QueryProto.Datasource datasource) {
+    QueryParam param = QueryStorageUtils.convertToQueryParam(tenant, datasource);
+    DetailResult detailResult = metricStorage.queryDetail(param);
+    QueryProto.QueryDetailResponse.Builder builder = QueryProto.QueryDetailResponse.newBuilder();
+    QueryProto.DetailResult.Builder detailResultBuilder = QueryProto.DetailResult.newBuilder();
+    if (detailResult == null || detailResult.isEmpty()) {
+      log.info("detailResult is empty for {}", J.toJson(datasource));
+      return builder;
+    }
+    detailResultBuilder.addAllHeaders(detailResult.getHeaders()) //
+        .addAllTables(detailResult.getTables()) //
+        .setSql(detailResult.getSql());
+    for (DetailResult.DetailRow detailRow : detailResult.getPoints()) {
+      if (CollectionUtils.isEmpty(detailRow.getValues())) {
+        continue;
+      }
+      QueryProto.DetailRow.Builder resultBuilder = QueryProto.DetailRow.newBuilder();
+      for (DetailResult.Value value : detailRow.getValues()) {
+        QueryProto.DetailValue.Builder valueBuilder = QueryProto.DetailValue.newBuilder();
+        valueBuilder.setType(value.getType().name());
+        switch (value.getType()) {
+          case String:
+            valueBuilder.setStrValue(getStrValue(value.getValue()));
+            break;
+          case Timestamp:
+            valueBuilder.setTimestampValue(getLongValue(value.getValue()));
+            break;
+          case Double:
+            valueBuilder.setDoubleValue(getDoubleValue(value.getValue()));
+            break;
+          case Boolean:
+            valueBuilder.setBoolValue(getBoolValue(value.getValue()));
+            break;
+        }
+        resultBuilder.addValues(valueBuilder.build());
+      }
+      detailResultBuilder.addRows(resultBuilder.build());
+    }
+    builder.addResults(detailResultBuilder.build());
+    return builder;
+  }
+
+  private boolean getBoolValue(Object value) {
+    if (value instanceof Boolean) {
+      return (boolean) value;
+    }
+    return false;
+  }
+
+  private double getDoubleValue(Object value) {
+    if (value instanceof Number) {
+      return ((Number) value).doubleValue();
+    }
+    return 0;
+  }
+
+  private long getLongValue(Object value) {
+    if (value instanceof Number) {
+      return ((Number) value).longValue();
+    }
+    return 0L;
+  }
+
+  private String getStrValue(Object value) {
+    if (value instanceof String) {
+      return (String) value;
+    }
+    return StringUtils.EMPTY;
+  }
+
   private QueryProto.QueryResponse.Builder analysis(String tenant,
       QueryProto.Datasource datasource) {
 
     QueryParam queryParam = QueryStorageUtils.convertToQueryParam(tenant, datasource);
     queryParam.setAggregator("none");
 
-    List<io.holoinsight.server.extension.model.QueryResult.Result> results =
-        metricStorage.queryData(queryParam);
+    List<Result> results = metricStorage.queryData(queryParam);
 
     QueryProto.QueryResponse.Builder builder = QueryProto.QueryResponse.newBuilder();
     Map<Map<String, String>, QueryProto.Result.Builder> tagsResults = new HashMap<>();
@@ -1044,8 +1271,8 @@ public class DefaultQueryServiceImpl implements QueryService {
                 .setMetric(StringUtils.isNotEmpty(datasource.getName()) ? datasource.getName()
                     : datasource.getMetric())
                 .putAllTags(tags));
-        QueryProto.Point.Builder pointBuilder = QueryProto.Point.newBuilder()
-            .setTimestamp(timestamp).setStrValue(GsonUtils.toJson(vals.get().getRight()));
+        Builder pointBuilder = QueryProto.Point.newBuilder().setTimestamp(timestamp)
+            .setStrValue(GsonUtils.toJson(vals.get().getRight()));
         resultBuilder.addPoints(pointBuilder);
       });
     });
@@ -1056,15 +1283,15 @@ public class DefaultQueryServiceImpl implements QueryService {
   private void fillData(QueryProto.QueryResponse.Builder rspBuilder, long start, long end,
       String downsample, String fillPolicy) {
     rspBuilder.getResultsBuilderList().forEach(resultBuilder -> {
-      List<QueryProto.Point.Builder> pointBuilders = resultBuilder.getPointsBuilderList();
-      Map<Long, QueryProto.Point.Builder> timePointMap = new TreeMap<>(pointBuilders.stream()
-          .collect(Collectors.toMap(QueryProto.Point.Builder::getTimestamp, Function.identity())));
+      List<Builder> pointBuilders = resultBuilder.getPointsBuilderList();
+      Map<Long, Builder> timePointMap = new TreeMap<>(pointBuilders.stream()
+          .collect(Collectors.toMap(Builder::getTimestamp, Function.identity())));
       long sample = DurationUtil.parse(downsample).toMillis();
       for (long period =
           start % sample == 0 ? start : start / sample * sample + sample; period <= end; period +=
               sample) {
         if (!timePointMap.containsKey(period)) {
-          QueryProto.Point.Builder builder = QueryProto.Point.newBuilder().setTimestamp(period);
+          Builder builder = QueryProto.Point.newBuilder().setTimestamp(period);
           Object filledVal = QueryStorageUtils.convertFillPolocy(fillPolicy);
           if (filledVal instanceof Number) {
             builder.setValue(((Number) filledVal).doubleValue());
@@ -1084,9 +1311,8 @@ public class DefaultQueryServiceImpl implements QueryService {
     try {
       List<QueryProto.Result> pbResults = new ArrayList<>();
       QueryParam param = QueryStorageUtils.convertToQueryParam(tenant, datasource);
-      List<io.holoinsight.server.extension.model.QueryResult.Result> results =
-          metricStorage.queryTags(param);
-      for (io.holoinsight.server.extension.model.QueryResult.Result result : results) {
+      List<Result> results = metricStorage.queryTags(param);
+      for (Result result : results) {
         pbResults.add(QueryStorageUtils.convertToPb(result));
       }
       return pbResults;

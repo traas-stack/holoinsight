@@ -4,14 +4,11 @@
 package io.holoinsight.server.home.alert.service.calculate;
 
 import io.holoinsight.server.home.alert.model.function.FunctionConfigParam;
-import io.holoinsight.server.home.alert.model.function.FunctionLogic;
-import io.holoinsight.server.home.facade.DataResult;
-import io.holoinsight.server.home.facade.emuns.FunctionEnum;
-import io.holoinsight.server.home.facade.trigger.CompareParam;
-import io.holoinsight.server.home.facade.trigger.TriggerResult;
+import io.holoinsight.server.common.dao.entity.dto.alarm.trigger.TriggerDataResult;
+import io.holoinsight.server.common.dao.emuns.FunctionEnum;
+import io.holoinsight.server.common.dao.entity.dto.alarm.trigger.CompareParam;
+import io.holoinsight.server.common.dao.entity.dto.alarm.trigger.TriggerResult;
 import org.springframework.stereotype.Service;
-
-import java.util.Map;
 
 /**
  * @author masaimu
@@ -25,8 +22,9 @@ public class PeriodRate extends BaseFunction {
   }
 
   @Override
-  public TriggerResult invoke(DataResult dataResult, FunctionConfigParam functionConfigParam) {
-    return doInvoke(dataResult, functionConfigParam);
+  public TriggerResult invoke(TriggerDataResult triggerDataResult,
+      FunctionConfigParam functionConfigParam) {
+    return doInvoke(triggerDataResult, functionConfigParam);
   }
 
   @Override

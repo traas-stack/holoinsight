@@ -3,10 +3,22 @@
  */
 package io.holoinsight.server.home.web.controller;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
+import io.holoinsight.server.common.JsonResult;
+import io.holoinsight.server.home.biz.common.MetaDictKey;
+import io.holoinsight.server.home.biz.common.MetaDictType;
+import io.holoinsight.server.home.biz.common.MetaDictUtil;
+import io.holoinsight.server.common.service.ApiKeyService;
+import io.holoinsight.server.home.biz.service.agent.AgentLogTailService;
+import io.holoinsight.server.home.biz.service.agent.AgentParamRequest;
+import io.holoinsight.server.common.MonitorException;
+import io.holoinsight.server.common.scope.AuthTargetType;
+import io.holoinsight.server.common.scope.MonitorScope;
+import io.holoinsight.server.common.scope.PowerConstants;
+import io.holoinsight.server.common.RequestContext;
+import io.holoinsight.server.common.dao.entity.ApiKey;
+import io.holoinsight.server.common.ManageCallback;
+import io.holoinsight.server.home.web.common.ParaCheckUtil;
+import io.holoinsight.server.home.web.interceptor.MonitorScopeAuth;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,19 +28,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import io.holoinsight.server.common.JsonResult;
-import io.holoinsight.server.home.biz.common.MetaDictKey;
-import io.holoinsight.server.home.biz.common.MetaDictType;
-import io.holoinsight.server.home.biz.common.MetaDictUtil;
-import io.holoinsight.server.home.biz.service.ApiKeyService;
-import io.holoinsight.server.home.biz.service.agent.AgentLogTailService;
-import io.holoinsight.server.home.biz.service.agent.AgentParamRequest;
-import io.holoinsight.server.home.common.util.MonitorException;
-import io.holoinsight.server.home.common.util.scope.MonitorScope;
-import io.holoinsight.server.home.common.util.scope.RequestContext;
-import io.holoinsight.server.home.dal.model.ApiKey;
-import io.holoinsight.server.home.web.common.ManageCallback;
-import io.holoinsight.server.home.web.common.ParaCheckUtil;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  *
@@ -47,6 +49,7 @@ public class AgentFacadeImpl extends BaseFacade {
 
   @ResponseBody
   @GetMapping(value = "/vmAgent")
+  @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.VIEW)
   public JsonResult<Map<String, Object>> vmAgent() {
     String tenant = RequestContext.getContext().ms.getTenant();
     Map<String, Object> conditions = new HashMap<>();
@@ -79,31 +82,9 @@ public class AgentFacadeImpl extends BaseFacade {
     return JsonResult.createSuccessResult(sysMap);
   }
 
-  @ResponseBody
-  @GetMapping(value = "/traceAgent")
-  public JsonResult<Map<String, Object>> traceAgent() {
-    String tenant = RequestContext.getContext().ms.getTenant();
-    Map<String, Object> conditions = new HashMap<>();
-    conditions.put("tenant", tenant);
-    conditions.put("status", true);
-    List<ApiKey> apiKeys = apiKeyService.listByMap(conditions);
-
-    Map<String, Object> sysMap = new HashMap<>();
-
-    if (CollectionUtils.isEmpty(apiKeys)) {
-      sysMap.put("apiKey", "");
-    } else {
-      sysMap.put("apiKey", apiKeys.get(0).getApiKey());
-    }
-    sysMap.put("collectorHost",
-        MetaDictUtil.getStringValue(MetaDictType.TRACE_AGENT_CONFIG, MetaDictKey.COLLECTOR_HOST));
-    sysMap.put("traceInstallDocument", MetaDictUtil.getStringValue(MetaDictType.TRACE_AGENT_CONFIG,
-        MetaDictKey.TRACE_INSTALL_DOCUMENT));
-    return JsonResult.createSuccessResult(sysMap);
-  }
-
   @PostMapping(value = "/listFiles")
   @ResponseBody
+  @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.VIEW)
   public JsonResult<Map<String, Object>> listFiles(
       @RequestBody AgentParamRequest agentParamRequest) {
 
@@ -133,6 +114,7 @@ public class AgentFacadeImpl extends BaseFacade {
 
   @PostMapping(value = "/previewFile")
   @ResponseBody
+  @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.VIEW)
   public JsonResult<Map<String, Object>> previewFile(
       @RequestBody AgentParamRequest agentParamRequest) {
     final JsonResult<Map<String, Object>> result = new JsonResult<>();
@@ -161,6 +143,7 @@ public class AgentFacadeImpl extends BaseFacade {
 
   @PostMapping(value = "/inspect")
   @ResponseBody
+  @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.VIEW)
   public JsonResult<Map<String, Object>> inspect(@RequestBody AgentParamRequest agentParamRequest) {
     final JsonResult<Map<String, Object>> result = new JsonResult<>();
     facadeTemplate.manage(result, new ManageCallback() {

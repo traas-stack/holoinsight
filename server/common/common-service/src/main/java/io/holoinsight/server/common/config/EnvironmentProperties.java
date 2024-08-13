@@ -16,4 +16,7 @@ import lombok.Data;
 public class EnvironmentProperties {
   private String deploymentSite;
   private String userCenter;
+  private String location;
+  private String gptUrl;
+  private String zone;
 }

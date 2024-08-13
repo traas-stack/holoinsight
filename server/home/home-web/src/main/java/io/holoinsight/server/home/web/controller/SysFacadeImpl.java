@@ -7,9 +7,9 @@ import io.holoinsight.server.common.JsonResult;
 import io.holoinsight.server.common.config.EnvironmentProperties;
 import io.holoinsight.server.home.biz.ula.ULAFacade;
 import io.holoinsight.server.home.biz.common.MetaDictUtil;
-import io.holoinsight.server.home.common.util.GlobalFlag;
-import io.holoinsight.server.home.common.util.scope.AuthTargetType;
-import io.holoinsight.server.home.common.util.scope.PowerConstants;
+import io.holoinsight.server.common.GlobalFlag;
+import io.holoinsight.server.common.scope.AuthTargetType;
+import io.holoinsight.server.common.scope.PowerConstants;
 import io.holoinsight.server.home.web.common.TokenUrls;
 import io.holoinsight.server.home.web.interceptor.MonitorScopeAuth;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,6 +55,7 @@ public class SysFacadeImpl extends BaseFacade {
     sysMap.put("site", this.environmentProperties.getDeploymentSite());
     sysMap.put("authApplyUrl", ulaFacade.getCurrentULA().authApplyUrl());
     sysMap.put("systemNotice", MetaDictUtil.getSystemNotice());
+    sysMap.put("logTimeLayout", MetaDictUtil.getLogTimeLayoutMap());
     return JsonResult.createSuccessResult(sysMap);
   }
 

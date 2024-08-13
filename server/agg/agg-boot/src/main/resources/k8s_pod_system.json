@@ -1,0 +1,287 @@
+{
+  "aggId": "k8s_pod_system",
+  "version": 1,
+  "partitionKeys": [],
+  "select": {
+    "items": [
+      {
+        "agg": {
+          "type": "COUNT"
+        },
+        "elect": "k8s_pod_cpu_util.value",
+        "as": "count"
+      },
+      {
+        "agg": {
+          "type": "AVG"
+        },
+        "elect": "k8s_pod_cpu_util.value",
+        "as": "cpu_util"
+      },
+      {
+        "agg": {
+          "type": "MAX"
+        },
+        "elect": "k8s_pod_cpu_util.value",
+        "as": "cpu_util_max"
+      },
+      {
+        "agg": {
+          "type": "AVG"
+        },
+        "elect": "k8s_pod_cpu_user.value",
+        "as": "cpu_user"
+      },
+      {
+        "agg": {
+          "type": "AVG"
+        },
+        "elect": "k8s_pod_cpu_sys.value",
+        "as": "cpu_sys"
+      },
+      {
+        "agg": {
+          "type": "AVG"
+        },
+        "elect": "k8s_pod_mem_util.value",
+        "as": "mem_util"
+      },
+      {
+        "agg": {
+          "type": "AVG"
+        },
+        "elect": "k8s_pod_load_load1.value",
+        "as": "load1"
+      },
+      {
+        "agg": {
+          "type": "AVG"
+        },
+        "elect": "k8s_pod_load_load5.value",
+        "as": "load5"
+      },
+      {
+        "agg": {
+          "type": "AVG"
+        },
+        "elect": "k8s_pod_load_load15.value",
+        "as": "load15"
+      },
+      {
+        "agg": {
+          "type": "SUM"
+        },
+        "elect": "k8s_pod_tcp_established.value",
+        "as": "tcp_established"
+      },
+      {
+        "agg": {
+          "type": "SUM"
+        },
+        "elect": "k8s_pod_traffic_bytin.value",
+        "as": "traffic_bytin"
+      },
+      {
+        "agg": {
+          "type": "SUM"
+        },
+        "elect": "k8s_pod_traffic_bytout.value",
+        "as": "traffic_bytout"
+      },
+      {
+        "agg": {
+          "type": "TOPN",
+          "topn": {
+            "orderBy": "value",
+            "desc": true,
+            "limit": 20
+          }
+        },
+        "elect": "k8s_pod_cpu_util.value",
+        "as": "cpu_util_topn"
+      },
+      {
+        "agg": {
+          "type": "TOPN",
+          "topn": {
+            "orderBy": "value",
+            "desc": true,
+            "limit": 20
+          }
+        },
+        "elect": "k8s_pod_mem_util.value",
+        "as": "mem_util_topn"
+      },
+      {
+        "agg": {
+          "type": "TOPN",
+          "topn": {
+            "orderBy": "value",
+            "desc": true,
+            "limit": 20
+          }
+        },
+        "elect": "k8s_pod_load_load1.value",
+        "as": "load1_topn"
+      },
+      {
+        "agg": {
+          "type": "TOPN",
+          "topn": {
+            "orderBy": "value",
+            "desc": true,
+            "limit": 20
+          }
+        },
+        "elect": "k8s_pod_traffic_bytin.value",
+        "as": "traffic_bytin_topn"
+      },
+      {
+        "agg": {
+          "type": "TOPN",
+          "topn": {
+            "orderBy": "value",
+            "desc": true,
+            "limit": 20
+          }
+        },
+        "elect": "k8s_pod_traffic_bytout.value",
+        "as": "traffic_bytout_topn"
+      }
+    ]
+  },
+  "from": {
+    "type": "metrics",
+    "metrics": {
+      "metrics": [
+        "k8s_pod_cpu_util",
+        "k8s_pod_cpu_user",
+        "k8s_pod_cpu_sys",
+        "k8s_pod_mem_util",
+        "k8s_pod_load_load1",
+        "k8s_pod_load_load5",
+        "k8s_pod_load_load15",
+        "k8s_pod_tcp_established",
+        "k8s_pod_traffic_bytin",
+        "k8s_pod_traffic_bytout"
+      ]
+    },
+    "completeness": {
+      "mode": "DATA",
+      "dimTable": "%s_server",
+      "groupBy": {
+        "items": [
+          {
+            "tag": "app",
+            "as": "app"
+          },
+          {
+            "tag": "_cluster",
+            "as": "cluster"
+          }
+        ]
+      },
+      "keepTargetKeys": [
+        "namespace",
+        "name"
+      ]
+    }
+  },
+  "where": {
+  },
+  "groupBy": {
+    "keyLimit": 1000,
+    "items": [
+      {
+        "tag": "tenant"
+      },
+      {
+        "tag": "workspace"
+      },
+      {
+        "tag": "app"
+      }
+    ]
+  },
+  "window": {
+    "interval": 60000
+  },
+  "output": {
+    "items": [
+      {
+        "type": "TSDB",
+        "name": "k8s_pod_%s_agg",
+        "fields": [
+          {
+            "name": "cpu_util",
+            "expression": "cpu_util"
+          },
+          {
+            "name": "cpu_util_max",
+            "expression": "cpu_util_max"
+          },
+          {
+            "name": "mem_util",
+            "expression": "mem_util"
+          },
+          {
+            "name": "cpu_user",
+            "expression": "cpu_user"
+          },
+          {
+            "name": "cpu_sys",
+            "expression": "cpu_sys"
+          },
+          {
+            "name": "load_load1",
+            "expression": "load1"
+          },
+          {
+            "name": "load_load5",
+            "expression": "load5"
+          },
+          {
+            "name": "load_load15",
+            "expression": "load15"
+          },
+          {
+            "name": "tcp_established",
+            "expression": "tcp_established"
+          },
+          {
+            "name": "traffic_bytin",
+            "expression": "traffic_bytin"
+          },
+          {
+            "name": "traffic_bytout",
+            "expression": "traffic_bytout"
+          },
+          {
+            "name": "count",
+            "expression": "count"
+          },
+          {
+            "name": "cpu_util_topn",
+            "expression": "cpu_util_topn"
+          },
+          {
+            "name": "mem_util_topn",
+            "expression": "mem_util_topn"
+          },
+          {
+            "name": "load1_topn",
+            "expression": "load1_topn"
+          },
+          {
+            "name": "traffic_bytin_topn",
+            "expression": "traffic_bytin_topn"
+          },
+          {
+            "name": "traffic_bytout_topn",
+            "expression": "traffic_bytout_topn"
+          }
+        ]
+      }
+    ]
+  }
+}

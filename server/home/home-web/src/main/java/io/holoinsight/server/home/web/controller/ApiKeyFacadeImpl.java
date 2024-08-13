@@ -3,19 +3,19 @@
  */
 package io.holoinsight.server.home.web.controller;
 
-import io.holoinsight.server.home.biz.service.ApiKeyService;
-import io.holoinsight.server.home.biz.service.UserOpLogService;
-import io.holoinsight.server.home.common.util.MonitorException;
-import io.holoinsight.server.home.common.util.ResultCodeEnum;
-import io.holoinsight.server.home.common.util.scope.AuthTargetType;
-import io.holoinsight.server.home.common.util.scope.MonitorCookieUtil;
-import io.holoinsight.server.home.common.util.scope.MonitorScope;
-import io.holoinsight.server.home.common.util.scope.MonitorUser;
-import io.holoinsight.server.home.common.util.scope.PowerConstants;
-import io.holoinsight.server.home.common.util.scope.RequestContext;
-import io.holoinsight.server.home.dal.model.ApiKey;
+import io.holoinsight.server.common.service.ApiKeyService;
+import io.holoinsight.server.common.service.UserOpLogService;
+import io.holoinsight.server.common.MonitorException;
+import io.holoinsight.server.common.ResultCodeEnum;
+import io.holoinsight.server.common.scope.AuthTargetType;
+import io.holoinsight.server.common.scope.MonitorCookieUtil;
+import io.holoinsight.server.common.scope.MonitorScope;
+import io.holoinsight.server.common.scope.MonitorUser;
+import io.holoinsight.server.common.scope.PowerConstants;
+import io.holoinsight.server.common.RequestContext;
+import io.holoinsight.server.common.dao.entity.ApiKey;
 import io.holoinsight.server.home.dal.model.OpType;
-import io.holoinsight.server.home.web.common.ManageCallback;
+import io.holoinsight.server.common.ManageCallback;
 import io.holoinsight.server.home.web.common.ParaCheckUtil;
 import io.holoinsight.server.home.web.interceptor.MonitorScopeAuth;
 import io.holoinsight.server.common.J;
@@ -116,13 +116,14 @@ public class ApiKeyFacadeImpl extends BaseFacade {
   @PostMapping("/create")
   @ResponseBody
   @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.EDIT)
-  public JsonResult<ApiKey> save(@RequestBody ApiKey apiKey) {
+  public JsonResult<ApiKey> create(@RequestBody ApiKey apiKey) {
     final JsonResult<ApiKey> result = new JsonResult<>();
     facadeTemplate.manage(result, new ManageCallback() {
       @Override
       public void checkParameter() {
         ParaCheckUtil.checkParaNotNull(apiKey.name, "name");
         ParaCheckUtil.checkParaNotNull(apiKey.status, "status");
+        ParaCheckUtil.checkParaId(apiKey.getId());
       }
 
       @Override

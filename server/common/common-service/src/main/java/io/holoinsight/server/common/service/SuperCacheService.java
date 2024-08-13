@@ -3,18 +3,22 @@
  */
 package io.holoinsight.server.common.service;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import io.holoinsight.server.common.config.ProdLog;
 import io.holoinsight.server.common.config.ScheduleLoadTask;
-import io.holoinsight.server.common.dao.entity.Tenant;
-import io.holoinsight.server.common.dao.entity.Workspace;
+import io.holoinsight.server.common.dao.entity.IntegrationProduct;
+import io.holoinsight.server.common.dao.entity.MetricInfo;
+import io.holoinsight.server.common.dao.mapper.IntegrationProductMapper;
+import io.holoinsight.server.common.dao.mapper.MetricInfoMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
 
-import java.util.ArrayList;
-import java.util.HashMap;
+import javax.annotation.Resource;
+import java.util.Collections;
 import java.util.List;
-import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  *
@@ -29,10 +33,11 @@ public class SuperCacheService extends ScheduleLoadTask {
   private MetaDictValueService metaDictValueService;
 
   @Autowired
-  private TenantService tenantService;
-
-  @Autowired
-  private WorkspaceService workspaceService;
+  private MetricInfoService metricInfoService;
+  @Resource
+  private MetricInfoMapper metricInfoMapper;
+  @Resource
+  private IntegrationProductMapper integrationProductMapper;
 
   public SuperCache getSc() {
     return sc;
@@ -43,53 +48,40 @@ public class SuperCacheService extends ScheduleLoadTask {
     ProdLog.info("[SuperCache] load start");
     SuperCache sc = new SuperCache();
     sc.metaDataDictValueMap = metaDictValueService.getMetaDictValue();
-    sc.tenantMap = genTenantMaps();
-    sc.tenantWorkspaceMaps = genTenantWorkspaceMaps();
+    ProdLog.info("[SuperCache][metaDataDictValueMap] size: " + sc.metaDataDictValueMap.size());
+    sc.expressionMetricList = metricInfoService.querySpmList();
+    ProdLog.info("[SuperCache][expressionMetricList] size: " + sc.expressionMetricList.size());
+
+    sc.resourceKeys =
+        sc.getListValue("global_config", "resource_keys", Collections.singletonList("tenant"));
+    sc.freePrefixes =
+        sc.getListValue("global_config", "free_metric_prefix", Collections.emptyList());
+    sc.integrationProducts = queryIntegrationProducts();
     this.sc = sc;
     ProdLog.info("[SuperCache] load end");
   }
 
-  private Map<String, Tenant> genTenantMaps() {
-    Map<String, Tenant> map = new HashMap<>();
-    List<Tenant> tenants = tenantService.list();
-
-    if (CollectionUtils.isEmpty(tenants)) {
-      return map;
+  private Set<String> queryIntegrationProducts() {
+    QueryWrapper<IntegrationProduct> queryWrapper = new QueryWrapper<>();
+    queryWrapper.select("DISTINCT name");
+    List<IntegrationProduct> integrationProducts =
+        this.integrationProductMapper.selectList(queryWrapper);
+    if (CollectionUtils.isEmpty(integrationProducts)) {
+      return Collections.emptySet();
     }
-
-    tenants.forEach(tenant -> {
-      map.put(tenant.getCode(), tenant);
-    });
-
-    return map;
-  }
-
-  private Map<String, List<String>> genTenantWorkspaceMaps() {
-    Map<String, List<String>> listMap = new HashMap<>();
-    List<Workspace> workspaces = workspaceService.list();
-
-    if (CollectionUtils.isEmpty(workspaces)) {
-      return listMap;
-    }
-
-    workspaces.forEach(workspace -> {
-      if (!listMap.containsKey(workspace.getTenant())) {
-        listMap.put(workspace.getTenant(), new ArrayList<>());
-      }
-
-      listMap.get(workspace.getTenant()).add(workspace.getName());
-    });
-
-    return listMap;
+    return integrationProducts.stream() //
+        .map(IntegrationProduct::getName) //
+        .collect(Collectors.toSet());
   }
 
   @Override
   public int periodInSeconds() {
-    return 10;
+    return 60;
   }
 
   @Override
   public String getTaskName() {
     return "SuperCacheService";
   }
+
 }

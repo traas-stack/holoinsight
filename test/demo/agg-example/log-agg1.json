@@ -1,0 +1,91 @@
+{
+  "id": 0,
+  "version": 0,
+  "partitionKeys": [
+
+  ],
+  "select": {
+    "items": [
+      {
+        "agg": {
+          "type": "SUM"
+        },
+        "elect": {
+          "metric": "logmonitor_count",
+          "field": "value"
+        },
+        "as": "logmonitor_count"
+      }
+    ]
+  },
+  "from": {
+    "type": "metrics",
+    "configs": {
+      "tableNames": [
+        "count"
+      ]
+    },
+    "metrics": {
+      "metrics": [
+        "logmonitor_count"
+      ]
+    },
+    "completeness": {
+      "mode": "COMPLETENESS_INFO",
+      "dimTable": "%s_server",
+      "targetKey": "hostname",
+      "groupBy": {
+        "items": [
+          {
+            "tag": "serviceName",
+            "defaultValue": "-",
+            "as": "serviceName"
+          }
+        ],
+        "keyLimit": 1000
+      }
+    }
+  },
+  "where": {
+
+  },
+  "groupBy": {
+    "items": [
+      {
+        "tag": "serviceName",
+        "defaultValue": "-"
+      }
+    ],
+    "keyLimit": 100000
+  },
+  "window": {
+    "interval": 60000,
+    "previewEmitInterval": 60000
+  },
+  "output": {
+    "items": [
+      {
+        "type": "TSDB",
+        "name": "logmonitor_count_agg",
+        "fields": [
+          {
+            "name": "logmonitor_count",
+            "expression": "logmonitor_count"
+          }
+        ],
+        "params": {
+
+        }
+      }
+    ],
+    "preview": false
+  },
+  "state": {
+    "enabled": false
+  },
+  "fillZero": {
+    "enabled": false,
+    "keyLimit": 1000,
+    "expireTime": 86400000
+  }
+}

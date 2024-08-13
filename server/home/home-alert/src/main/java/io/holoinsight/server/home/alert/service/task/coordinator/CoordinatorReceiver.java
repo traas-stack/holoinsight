@@ -82,7 +82,6 @@ public class CoordinatorReceiver extends ChannelInboundHandlerAdapter {
     if (msgArr.length < 5) {
       throw new RuntimeException("invalid msg length " + msgArr.length);
     }
-    String periodId = msgArr[1];
     Long heartbeat = Long.valueOf(msgArr[2]);
     long curPeriod = curPeriod();
 

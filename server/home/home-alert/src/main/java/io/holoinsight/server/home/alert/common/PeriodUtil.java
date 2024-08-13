@@ -3,7 +3,7 @@
  */
 package io.holoinsight.server.home.alert.common;
 
-import io.holoinsight.server.home.facade.emuns.PeriodType;
+import io.holoinsight.server.common.dao.emuns.PeriodType;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
@@ -20,7 +20,7 @@ import java.util.List;
 public class PeriodUtil implements Serializable {
 
   public static List<Range> toRanges(PeriodType periodType, List<Long> periods) {
-    if (periods.size() == 0) {
+    if (periods.isEmpty()) {
       return Collections.emptyList();
     }
     // 排序
@@ -45,7 +45,7 @@ public class PeriodUtil implements Serializable {
   }
 
   public static List<Range> toRanges(PeriodType periodType, List<Long> periods, int tagsSize) {
-    if (periods.size() == 0) {
+    if (periods.isEmpty()) {
       return Collections.emptyList();
     }
     if (periods.size() * tagsSize < 86400) {

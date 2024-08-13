@@ -5,8 +5,8 @@
 package io.holoinsight.server.test.it;
 
 import io.holoinsight.server.common.J;
-import io.holoinsight.server.home.dal.model.dto.AlarmDingDingRobotDTO;
-import io.holoinsight.server.home.facade.page.MonitorPageRequest;
+import io.holoinsight.server.common.dao.entity.dto.AlarmDingDingRobotDTO;
+import io.holoinsight.server.common.MonitorPageRequest;
 import io.restassured.response.Response;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.hamcrest.CustomMatcher;
@@ -51,6 +51,7 @@ public class AlertDingDingRobotIT extends BaseIT {
         .body(new JSONObject(J.toMap(J.toJson(item)))) //
         .when() //
         .post("/webapi/alarmDingDingRobot/create") //
+        .prettyPeek() //
         .then() //
         .body("success", IS_TRUE) //
         .extract() //
@@ -80,6 +81,7 @@ public class AlertDingDingRobotIT extends BaseIT {
         .body(new JSONObject(J.toMap(J.toJson(item)))) //
         .when() //
         .post("/webapi/alarmDingDingRobot/update") //
+        .prettyPeek() //
         .then() //
         .body("success", IS_TRUE) //
         .body("data", IS_TRUE); //

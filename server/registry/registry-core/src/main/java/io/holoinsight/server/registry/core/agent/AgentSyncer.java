@@ -20,7 +20,7 @@ import io.holoinsight.server.common.dao.entity.GaeaAgentDOExample;
 import io.holoinsight.server.common.dao.mapper.GaeaAgentDOMapper;
 import io.holoinsight.server.registry.core.utils.BoundedSchedulers;
 import io.holoinsight.server.registry.core.utils.Dict;
-import io.holoinsight.server.registry.core.utils.EventBusHolder;
+import io.holoinsight.server.common.event.EventBusHolder;
 import lombok.Data;
 import reactor.core.publisher.Mono;
 
@@ -211,10 +211,12 @@ public class AgentSyncer {
     List<GaeaAgentDO> gas = mapper.selectByExampleWithBLOBs(example);
     long dbEnd = System.currentTimeMillis();
     if (gas.isEmpty()) {
-      LOGGER.info("delta sync success, range=[{}, {}) empty, dbCost=[{}]", //
-          SDF.format(begin), //
-          SDF.format(end), //
-          dbEnd - dbBegin); //
+      synchronized (SDF) {
+        LOGGER.info("delta sync success, range=[{}, {}) empty, dbCost=[{}]", //
+            SDF.format(begin), //
+            SDF.format(end), //
+            dbEnd - dbBegin);
+      }
       return;
     }
 
@@ -240,9 +242,11 @@ public class AgentSyncer {
       }
     }
 
-    LOGGER.info("delta sync success, range=[{}, {}) add=[{}] update=[{}] del=[{}] dbCost=[{}]",
-        SDF.format(begin), //
-        SDF.format(end), add, update, del, dbEnd - dbBegin);
+    synchronized (SDF) {
+      LOGGER.info("delta sync success, range=[{}, {}) add=[{}] update=[{}] del=[{}] dbCost=[{}]",
+          SDF.format(begin), //
+          SDF.format(end), add, update, del, dbEnd - dbBegin);
+    }
   }
 
   private void initLoad0() {

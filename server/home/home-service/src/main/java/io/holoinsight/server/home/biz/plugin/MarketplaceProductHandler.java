@@ -3,8 +3,8 @@
  */
 package io.holoinsight.server.home.biz.plugin;
 
-import io.holoinsight.server.home.dal.model.dto.MarketplacePluginDTO;
-import io.holoinsight.server.home.dal.model.dto.MarketplaceProductDTO;
+import io.holoinsight.server.common.dao.entity.dto.MarketplacePluginDTO;
+import io.holoinsight.server.common.dao.entity.dto.MarketplaceProductDTO;
 
 /**
  * @author masaimu

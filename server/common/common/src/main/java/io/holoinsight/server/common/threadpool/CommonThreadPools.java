@@ -145,7 +145,7 @@ public class CommonThreadPools {
     }
   }
 
-  private static int cpu() {
+  public static int cpu() {
     // You will get wrong cpu count when running in virtualization environment, such as 'docker'.
     // You should pass an env 'CPU' to use as available cpu count.
     // Otherwise, you will get many threads in pool.
@@ -156,7 +156,7 @@ public class CommonThreadPools {
     return Runtime.getRuntime().availableProcessors();
   }
 
-  private static ExecutorService executor(int min, int max, int keepalive, int queue,
+  public static ExecutorService executor(int min, int max, int keepalive, int queue,
       String nameFormat) {
     ThreadFactory tf = new ThreadFactoryBuilder() //
         .setNameFormat(nameFormat) //

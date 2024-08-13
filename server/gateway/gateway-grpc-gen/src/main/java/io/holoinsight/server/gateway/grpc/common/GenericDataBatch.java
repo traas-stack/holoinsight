@@ -376,7 +376,6 @@ public final class GenericDataBatch extends com.google.protobuf.GeneratedMessage
     public io.holoinsight.server.gateway.grpc.common.GenericDataBatch buildPartial() {
       io.holoinsight.server.gateway.grpc.common.GenericDataBatch result =
           new io.holoinsight.server.gateway.grpc.common.GenericDataBatch(this);
-      int from_bitField0_ = bitField0_;
       if (dataBuilder_ == null) {
         if (((bitField0_ & 0x00000001) != 0)) {
           data_ = java.util.Collections.unmodifiableList(data_);
@@ -790,4 +789,3 @@ public final class GenericDataBatch extends com.google.protobuf.GeneratedMessage
   }
 
 }
-

@@ -296,10 +296,7 @@ public final class HelloResponse extends com.google.protobuf.GeneratedMessageV3 
       maybeForceBuilderInitialization();
     }
 
-    private void maybeForceBuilderInitialization() {
-      if (com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders) {
-      }
-    }
+    private void maybeForceBuilderInitialization() {}
 
     public Builder clear() {
       super.clear();
@@ -516,4 +513,3 @@ public final class HelloResponse extends com.google.protobuf.GeneratedMessageV3 
   }
 
 }
-

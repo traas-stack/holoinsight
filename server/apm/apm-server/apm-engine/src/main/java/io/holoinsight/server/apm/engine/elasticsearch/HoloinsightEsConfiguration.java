@@ -6,6 +6,7 @@ package io.holoinsight.server.apm.engine.elasticsearch;
 import io.holoinsight.server.apm.engine.elasticsearch.installer.EsModelInstaller;
 import io.holoinsight.server.apm.engine.elasticsearch.storage.impl.EndpointEsStorage;
 import io.holoinsight.server.apm.engine.elasticsearch.storage.impl.EndpointRelationEsStorage;
+import io.holoinsight.server.apm.engine.elasticsearch.storage.impl.EventEsStorage;
 import io.holoinsight.server.apm.engine.elasticsearch.storage.impl.NetworkAddressMappingEsStorage;
 import io.holoinsight.server.apm.engine.elasticsearch.storage.impl.ServiceErrorEsStorage;
 import io.holoinsight.server.apm.engine.elasticsearch.storage.impl.ServiceInstanceEsStorage;
@@ -14,7 +15,6 @@ import io.holoinsight.server.apm.engine.elasticsearch.storage.impl.ServiceOvervi
 import io.holoinsight.server.apm.engine.elasticsearch.storage.impl.ServiceRelationEsStorage;
 import io.holoinsight.server.apm.engine.elasticsearch.storage.impl.SlowSqlEsStorage;
 import io.holoinsight.server.apm.engine.elasticsearch.storage.impl.SpanEsStorage;
-import io.holoinsight.server.apm.engine.elasticsearch.storage.impl.SpanMetricEsStorage;
 import io.holoinsight.server.apm.engine.elasticsearch.storage.impl.TopologyEsStorage;
 import io.holoinsight.server.apm.engine.elasticsearch.storage.impl.VirtualComponentEsStorage;
 import io.holoinsight.server.apm.engine.elasticsearch.ttl.EsDataCleaner;
@@ -58,6 +58,9 @@ public class HoloinsightEsConfiguration {
 
   private String user;
   private String password;
+  private int shards = 5;
+  private int replicas = 1;
+  private int ttl = 7; // unit: day
 
   @Bean("elasticsearchClient")
   @Primary
@@ -94,12 +97,6 @@ public class HoloinsightEsConfiguration {
   @Primary
   public SpanEsStorage spanEsStorage() {
     return new SpanEsStorage();
-  }
-
-  @Bean("spanMetricEsStorage")
-  @Primary
-  public SpanMetricEsStorage spanMetricEsStorage() {
-    return new SpanMetricEsStorage();
   }
 
   @Bean("endpointRelationEsStorage")
@@ -168,4 +165,9 @@ public class HoloinsightEsConfiguration {
     return new VirtualComponentEsStorage();
   }
 
+  @Bean("eventEsStorage")
+  @Primary
+  public EventEsStorage eventEsStorage() {
+    return new EventEsStorage();
+  }
 }

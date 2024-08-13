@@ -4,13 +4,10 @@ spring:
     username: holoinsight
     password: holoinsight
     driver-class-name: com.mysql.cj.jdbc.Driver
-  data:
-    mongodb:
-      uri: mongodb://holoinsight:holoinsight@mongo:27017/holoinsight?keepAlive=true&maxIdleTimeMS=1500000&maxWaitTime=120000&connectTimeout=10000&socketTimeout=10000&socketKeepAlive=true&retryWrites=true
 
 holoinsight:
   roles:
-    active: query,registry,gateway,home,meta,apm
+    active: query,registry,gateway,home,meta,apm,agg-dispatcher,agg-executor
   metric:
     storage:
       type: ceresdbx
@@ -27,10 +24,15 @@ holoinsight:
     active: trace
   meta:
     database: holoinsight
+    db_data_mode: mysql
   storage:
     elasticsearch:
       enable: true
-      hosts: tatris
-      port: 6060
+      hosts: es
+      port: 9200
   security:
     whiteHosts: server
+  agg:
+    kafkaBootstrapServers: kafka:9092
+    topic: aggv1
+    consumerGroupId: "x1"

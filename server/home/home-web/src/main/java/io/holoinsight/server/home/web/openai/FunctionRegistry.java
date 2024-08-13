@@ -6,8 +6,9 @@ package io.holoinsight.server.home.web.openai;
 import com.unfbx.chatgpt.entity.chat.Functions;
 import com.unfbx.chatgpt.entity.chat.Parameters;
 import io.holoinsight.server.common.J;
-import io.holoinsight.server.home.facade.openai.AlarmRuleFc;
-import io.holoinsight.server.home.facade.openai.CustomPluginFc;
+import io.holoinsight.server.home.dal.model.openai.AlarmRuleFc;
+import io.holoinsight.server.home.dal.model.openai.CustomPluginFc;
+import io.holoinsight.server.home.dal.model.openai.CustomPluginUpsertFc;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -39,6 +40,11 @@ public class FunctionRegistry {
     return this.customPluginFcService.queryCustomPlugin(paramMap);
   }
 
+  public String createCustomPlugin(Map<String, Object> paramMap) {
+    log.info("createCustomPlugin paramMap {}", J.toJson(paramMap));
+    return this.customPluginFcService.createCustomPlugin(paramMap);
+  }
+
 
   public List<Functions> getFunctions() {
     Functions createAlertRule = Functions.builder() //
@@ -53,6 +59,12 @@ public class FunctionRegistry {
         .parameters(J.fromJson(CustomPluginFc.getJsonSchema(), Parameters.class)) //
         .build();
 
-    return Arrays.asList(createAlertRule, queryCustomPlugin);
+    Functions createCustomPlugin = Functions.builder() //
+        .name("createCustomPlugin") //
+        .description("Create log monitoring configuration") //
+        .parameters(J.fromJson(CustomPluginUpsertFc.getJsonSchema(), Parameters.class)) //
+        .build();
+
+    return Arrays.asList(createAlertRule, queryCustomPlugin, createCustomPlugin);
   }
 }

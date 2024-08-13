@@ -3,14 +3,13 @@
  */
 package io.holoinsight.server.home.alert.plugin;
 
-import io.holoinsight.server.common.service.FuseProtector;
 import io.holoinsight.server.home.biz.plugin.model.ChainPlugin;
 import io.holoinsight.server.home.biz.plugin.model.PluginContext;
 import io.holoinsight.server.home.biz.plugin.model.PluginModel;
 import io.holoinsight.server.home.biz.plugin.model.PluginType;
 import io.holoinsight.server.home.biz.plugin.model.ScheduleTimeEnum;
 import io.holoinsight.server.home.biz.plugin.model.WaitPlugin;
-import io.holoinsight.server.home.common.exception.HoloinsightAlertIllegalArgumentException;
+import io.holoinsight.server.common.model.HoloinsightAlertIllegalArgumentException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -18,7 +17,6 @@ import org.springframework.util.CollectionUtils;
 
 import java.util.List;
 
-import static io.holoinsight.server.common.service.FuseProtector.NORMAL_NotifyChain;
 
 /**
  * 通知流程
@@ -104,7 +102,6 @@ public class NotifyChain extends ChainPlugin implements Runnable {
   public void run() {
     try {
       handle();
-      FuseProtector.voteComplete(NORMAL_NotifyChain);
     } catch (HoloinsightAlertIllegalArgumentException e) {
       LOGGER.error(
           "[HoloinsightAlertIllegalArgumentException][1] {} fail to handle notify chain for {}",
@@ -112,7 +109,10 @@ public class NotifyChain extends ChainPlugin implements Runnable {
     } catch (Throwable e) {
       LOGGER.error("[HoloinsightAlertInternalException][1] {} fail to handle notify chain for {}",
           this.traceId, e.getMessage(), e);
-      FuseProtector.voteNormalError(NORMAL_NotifyChain, e.getMessage());
+    } finally {
+      if (context != null && context.latch != null) {
+        context.latch.countDown();
+      }
     }
   }
 

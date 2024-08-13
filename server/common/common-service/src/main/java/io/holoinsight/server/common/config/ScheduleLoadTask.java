@@ -3,7 +3,6 @@
  */
 package io.holoinsight.server.common.config;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.concurrent.BasicThreadFactory;
 
 import java.util.ArrayList;
@@ -48,18 +47,6 @@ public abstract class ScheduleLoadTask implements Runnable {
 
     scheduledExecutor.scheduleAtFixedRate(task, task.periodInSeconds(), task.periodInSeconds(),
         TimeUnit.SECONDS);
-  }
-
-  public static synchronized void drmTrigger(String taskName) throws Exception {
-    for (ScheduleLoadTask task : REGISTERED_TASK) {
-      if (StringUtils.isBlank(taskName) || task.getTaskName().equals(taskName)) {
-        ProdLog.info("[ScheduleLoadTask] " + task.getTaskName() + " drmTrigger start");
-        final long start = System.currentTimeMillis();
-        task.load();
-        ProdLog.info("[ScheduleLoadTask] " + task.getTaskName() + " drmTrigger end, cost="
-            + (System.currentTimeMillis() - start));
-      }
-    }
   }
 
   @Override

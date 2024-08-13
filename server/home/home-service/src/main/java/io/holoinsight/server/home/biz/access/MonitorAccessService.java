@@ -6,10 +6,10 @@ package io.holoinsight.server.home.biz.access;
 import com.alibaba.fastjson.JSON;
 import io.holoinsight.server.home.biz.access.model.MonitorAccessConfig;
 import io.holoinsight.server.home.biz.access.model.MonitorTokenData;
-import io.holoinsight.server.home.common.util.scope.MonitorScope;
-import io.holoinsight.server.home.common.util.scope.MonitorUser;
-import io.holoinsight.server.home.common.util.scope.RequestContext;
-import io.holoinsight.server.home.common.util.scope.RequestContext.Context;
+import io.holoinsight.server.common.scope.MonitorScope;
+import io.holoinsight.server.common.scope.MonitorUser;
+import io.holoinsight.server.common.RequestContext;
+import io.holoinsight.server.common.RequestContext.Context;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.lang3.StringUtils;
@@ -27,11 +27,10 @@ import java.nio.charset.StandardCharsets;
  * @version 1.0: MonitorAccessService.java, v 0.1 2022年06月10日 10:23 上午 jinsong.yjs Exp $
  */
 @Slf4j
-@Component
 public class MonitorAccessService {
 
   @Autowired
-  private AccessConfigService accessConfigService;
+  protected AccessConfigService accessConfigService;
 
   /**
    * 申请token，如果入参非法报错
@@ -95,10 +94,14 @@ public class MonitorAccessService {
     final MonitorTokenData tokenData = check(token);
 
     if (System.currentTimeMillis() - tokenData.time <= expireInSecond * 1000) {
+      MonitorAccessConfig monitorAccessConfig =
+          accessConfigService.getAccessConfigDOMap().get(tokenData.accessKey);
+
       MonitorScope monitorScope = new MonitorScope();
       monitorScope.tenant = tokenData.tenant;
       monitorScope.accessId = tokenData.accessId;
       monitorScope.accessKey = tokenData.accessKey;
+      monitorScope.accessConfig = monitorAccessConfig;
       Context c = new Context(monitorScope);
       RequestContext.setContext(c);
       req.setAttribute(MonitorUser.MONITOR_USER, MonitorUser.newTokenUser(tokenData.accessKey));
@@ -118,8 +121,10 @@ public class MonitorAccessService {
 
     MonitorScope monitorScope = new MonitorScope();
     monitorScope.tenant = monitorAccessConfig.getTenant();
+    monitorScope.workspace = monitorAccessConfig.getWorkspace();
     monitorScope.accessId = monitorAccessConfig.getAccessId();
     monitorScope.accessKey = monitorAccessConfig.getAccessKey();
+    monitorScope.accessConfig = monitorAccessConfig;
     Context c = new Context(monitorScope);
     RequestContext.setContext(c);
 

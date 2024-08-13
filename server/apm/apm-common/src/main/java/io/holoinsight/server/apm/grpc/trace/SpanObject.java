@@ -1073,7 +1073,6 @@ public final class SpanObject extends com.google.protobuf.GeneratedMessageV3 imp
     public io.holoinsight.server.apm.grpc.trace.SpanObject buildPartial() {
       io.holoinsight.server.apm.grpc.trace.SpanObject result =
           new io.holoinsight.server.apm.grpc.trace.SpanObject(this);
-      int from_bitField0_ = bitField0_;
       result.spanId_ = spanId_;
       result.parentSpanId_ = parentSpanId_;
       result.startTime_ = startTime_;
@@ -3107,4 +3106,3 @@ public final class SpanObject extends com.google.protobuf.GeneratedMessageV3 imp
   }
 
 }
-

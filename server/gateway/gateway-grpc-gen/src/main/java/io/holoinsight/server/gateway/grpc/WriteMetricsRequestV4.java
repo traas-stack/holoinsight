@@ -215,6 +215,65 @@ public final class WriteMetricsRequestV4 extends com.google.protobuf.GeneratedMe
      * <code>.io.holoinsight.server.gateway.grpc.WriteMetricsRequestV4.Table table = 4;</code>
      */
     io.holoinsight.server.gateway.grpc.WriteMetricsRequestV4.TableOrBuilder getTableOrBuilder();
+
+    /**
+     * <code>map&lt;string, string&gt; extension = 5;</code>
+     */
+    int getExtensionCount();
+
+    /**
+     * <code>map&lt;string, string&gt; extension = 5;</code>
+     */
+    boolean containsExtension(java.lang.String key);
+
+    /**
+     * Use {@link #getExtensionMap()} instead.
+     */
+    @java.lang.Deprecated
+    java.util.Map<java.lang.String, java.lang.String> getExtension();
+
+    /**
+     * <code>map&lt;string, string&gt; extension = 5;</code>
+     */
+    java.util.Map<java.lang.String, java.lang.String> getExtensionMap();
+
+    /**
+     * <code>map&lt;string, string&gt; extension = 5;</code>
+     */
+
+    java.lang.String getExtensionOrDefault(java.lang.String key, java.lang.String defaultValue);
+
+    /**
+     * <code>map&lt;string, string&gt; extension = 5;</code>
+     */
+
+    java.lang.String getExtensionOrThrow(java.lang.String key);
+
+    /**
+     * <code>int64 timestamp = 6;</code>
+     * 
+     * @return The timestamp.
+     */
+    long getTimestamp();
+
+    /**
+     * <code>.io.holoinsight.server.gateway.grpc.WriteMetricsRequestV4.Completeness completeness = 7;</code>
+     * 
+     * @return Whether the completeness field is set.
+     */
+    boolean hasCompleteness();
+
+    /**
+     * <code>.io.holoinsight.server.gateway.grpc.WriteMetricsRequestV4.Completeness completeness = 7;</code>
+     * 
+     * @return The completeness.
+     */
+    io.holoinsight.server.gateway.grpc.WriteMetricsRequestV4.Completeness getCompleteness();
+
+    /**
+     * <code>.io.holoinsight.server.gateway.grpc.WriteMetricsRequestV4.Completeness completeness = 7;</code>
+     */
+    io.holoinsight.server.gateway.grpc.WriteMetricsRequestV4.CompletenessOrBuilder getCompletenessOrBuilder();
   }
   /**
    * <pre>
@@ -257,6 +316,7 @@ public final class WriteMetricsRequestV4 extends com.google.protobuf.GeneratedMe
       if (extensionRegistry == null) {
         throw new java.lang.NullPointerException();
       }
+      int mutable_bitField0_ = 0;
       com.google.protobuf.UnknownFieldSet.Builder unknownFields =
           com.google.protobuf.UnknownFieldSet.newBuilder();
       try {
@@ -301,6 +361,39 @@ public final class WriteMetricsRequestV4 extends com.google.protobuf.GeneratedMe
 
               break;
             }
+            case 42: {
+              if (!((mutable_bitField0_ & 0x00000001) != 0)) {
+                extension_ = com.google.protobuf.MapField
+                    .newMapField(ExtensionDefaultEntryHolder.defaultEntry);
+                mutable_bitField0_ |= 0x00000001;
+              }
+              com.google.protobuf.MapEntry<java.lang.String, java.lang.String> extension__ =
+                  input.readMessage(ExtensionDefaultEntryHolder.defaultEntry.getParserForType(),
+                      extensionRegistry);
+              extension_.getMutableMap().put(extension__.getKey(), extension__.getValue());
+              break;
+            }
+            case 48: {
+
+              timestamp_ = input.readInt64();
+              break;
+            }
+            case 58: {
+              io.holoinsight.server.gateway.grpc.WriteMetricsRequestV4.Completeness.Builder subBuilder =
+                  null;
+              if (completeness_ != null) {
+                subBuilder = completeness_.toBuilder();
+              }
+              completeness_ = input.readMessage(
+                  io.holoinsight.server.gateway.grpc.WriteMetricsRequestV4.Completeness.parser(),
+                  extensionRegistry);
+              if (subBuilder != null) {
+                subBuilder.mergeFrom(completeness_);
+                completeness_ = subBuilder.buildPartial();
+              }
+
+              break;
+            }
             default: {
               if (!parseUnknownField(input, unknownFields, extensionRegistry, tag)) {
                 done = true;
@@ -321,6 +414,17 @@ public final class WriteMetricsRequestV4 extends com.google.protobuf.GeneratedMe
 
     public static final com.google.protobuf.Descriptors.Descriptor getDescriptor() {
       return io.holoinsight.server.gateway.grpc.GatewayProtos.internal_static_io_holoinsight_server_gateway_grpc_WriteMetricsRequestV4_TaskResult_descriptor;
+    }
+
+    @SuppressWarnings({"rawtypes"})
+    @java.lang.Override
+    protected com.google.protobuf.MapField internalGetMapField(int number) {
+      switch (number) {
+        case 5:
+          return internalGetExtension();
+        default:
+          throw new RuntimeException("Invalid map field number: " + number);
+      }
     }
 
     @java.lang.Override
@@ -517,6 +621,136 @@ public final class WriteMetricsRequestV4 extends com.google.protobuf.GeneratedMe
       return getTable();
     }
 
+    public static final int EXTENSION_FIELD_NUMBER = 5;
+
+    private static final class ExtensionDefaultEntryHolder {
+      static final com.google.protobuf.MapEntry<java.lang.String, java.lang.String> defaultEntry =
+          com.google.protobuf.MapEntry.<java.lang.String, java.lang.String>newDefaultInstance(
+              io.holoinsight.server.gateway.grpc.GatewayProtos.internal_static_io_holoinsight_server_gateway_grpc_WriteMetricsRequestV4_TaskResult_ExtensionEntry_descriptor,
+              com.google.protobuf.WireFormat.FieldType.STRING, "",
+              com.google.protobuf.WireFormat.FieldType.STRING, "");
+    }
+
+    private com.google.protobuf.MapField<java.lang.String, java.lang.String> extension_;
+
+    private com.google.protobuf.MapField<java.lang.String, java.lang.String> internalGetExtension() {
+      if (extension_ == null) {
+        return com.google.protobuf.MapField.emptyMapField(ExtensionDefaultEntryHolder.defaultEntry);
+      }
+      return extension_;
+    }
+
+    public int getExtensionCount() {
+      return internalGetExtension().getMap().size();
+    }
+
+    /**
+     * <code>map&lt;string, string&gt; extension = 5;</code>
+     */
+
+    @java.lang.Override
+    public boolean containsExtension(java.lang.String key) {
+      if (key == null) {
+        throw new java.lang.NullPointerException();
+      }
+      return internalGetExtension().getMap().containsKey(key);
+    }
+
+    /**
+     * Use {@link #getExtensionMap()} instead.
+     */
+    @java.lang.Override
+    @java.lang.Deprecated
+    public java.util.Map<java.lang.String, java.lang.String> getExtension() {
+      return getExtensionMap();
+    }
+
+    /**
+     * <code>map&lt;string, string&gt; extension = 5;</code>
+     */
+    @java.lang.Override
+
+    public java.util.Map<java.lang.String, java.lang.String> getExtensionMap() {
+      return internalGetExtension().getMap();
+    }
+
+    /**
+     * <code>map&lt;string, string&gt; extension = 5;</code>
+     */
+    @java.lang.Override
+
+    public java.lang.String getExtensionOrDefault(java.lang.String key,
+        java.lang.String defaultValue) {
+      if (key == null) {
+        throw new java.lang.NullPointerException();
+      }
+      java.util.Map<java.lang.String, java.lang.String> map = internalGetExtension().getMap();
+      return map.containsKey(key) ? map.get(key) : defaultValue;
+    }
+
+    /**
+     * <code>map&lt;string, string&gt; extension = 5;</code>
+     */
+    @java.lang.Override
+
+    public java.lang.String getExtensionOrThrow(java.lang.String key) {
+      if (key == null) {
+        throw new java.lang.NullPointerException();
+      }
+      java.util.Map<java.lang.String, java.lang.String> map = internalGetExtension().getMap();
+      if (!map.containsKey(key)) {
+        throw new java.lang.IllegalArgumentException();
+      }
+      return map.get(key);
+    }
+
+    public static final int TIMESTAMP_FIELD_NUMBER = 6;
+    private long timestamp_;
+
+    /**
+     * <code>int64 timestamp = 6;</code>
+     * 
+     * @return The timestamp.
+     */
+    @java.lang.Override
+    public long getTimestamp() {
+      return timestamp_;
+    }
+
+    public static final int COMPLETENESS_FIELD_NUMBER = 7;
+    private io.holoinsight.server.gateway.grpc.WriteMetricsRequestV4.Completeness completeness_;
+
+    /**
+     * <code>.io.holoinsight.server.gateway.grpc.WriteMetricsRequestV4.Completeness completeness = 7;</code>
+     * 
+     * @return Whether the completeness field is set.
+     */
+    @java.lang.Override
+    public boolean hasCompleteness() {
+      return completeness_ != null;
+    }
+
+    /**
+     * <code>.io.holoinsight.server.gateway.grpc.WriteMetricsRequestV4.Completeness completeness = 7;</code>
+     * 
+     * @return The completeness.
+     */
+    @java.lang.Override
+    public io.holoinsight.server.gateway.grpc.WriteMetricsRequestV4.Completeness getCompleteness() {
+      return completeness_ == null
+          ? io.holoinsight.server.gateway.grpc.WriteMetricsRequestV4.Completeness
+              .getDefaultInstance()
+          : completeness_;
+    }
+
+    /**
+     * <code>.io.holoinsight.server.gateway.grpc.WriteMetricsRequestV4.Completeness completeness = 7;</code>
+     */
+    @java.lang.Override
+    public io.holoinsight.server.gateway.grpc.WriteMetricsRequestV4.CompletenessOrBuilder getCompletenessOrBuilder() {
+      return getCompleteness();
+    }
+
     private byte memoizedIsInitialized = -1;
 
     @java.lang.Override
@@ -545,6 +779,14 @@ public final class WriteMetricsRequestV4 extends com.google.protobuf.GeneratedMe
       if (table_ != null) {
         output.writeMessage(4, getTable());
       }
+      com.google.protobuf.GeneratedMessageV3.serializeStringMapTo(output, internalGetExtension(),
+          ExtensionDefaultEntryHolder.defaultEntry, 5);
+      if (timestamp_ != 0L) {
+        output.writeInt64(6, timestamp_);
+      }
+      if (completeness_ != null) {
+        output.writeMessage(7, getCompleteness());
+      }
       unknownFields.writeTo(output);
     }
 
@@ -566,6 +808,19 @@ public final class WriteMetricsRequestV4 extends com.google.protobuf.GeneratedMe
       }
       if (table_ != null) {
         size += com.google.protobuf.CodedOutputStream.computeMessageSize(4, getTable());
+      }
+      for (java.util.Map.Entry<java.lang.String, java.lang.String> entry : internalGetExtension()
+          .getMap().entrySet()) {
+        com.google.protobuf.MapEntry<java.lang.String, java.lang.String> extension__ =
+            ExtensionDefaultEntryHolder.defaultEntry.newBuilderForType().setKey(entry.getKey())
+                .setValue(entry.getValue()).build();
+        size += com.google.protobuf.CodedOutputStream.computeMessageSize(5, extension__);
+      }
+      if (timestamp_ != 0L) {
+        size += com.google.protobuf.CodedOutputStream.computeInt64Size(6, timestamp_);
+      }
+      if (completeness_ != null) {
+        size += com.google.protobuf.CodedOutputStream.computeMessageSize(7, getCompleteness());
       }
       size += unknownFields.getSerializedSize();
       memoizedSize = size;
@@ -595,6 +850,16 @@ public final class WriteMetricsRequestV4 extends com.google.protobuf.GeneratedMe
         if (!getTable().equals(other.getTable()))
           return false;
       }
+      if (!internalGetExtension().equals(other.internalGetExtension()))
+        return false;
+      if (getTimestamp() != other.getTimestamp())
+        return false;
+      if (hasCompleteness() != other.hasCompleteness())
+        return false;
+      if (hasCompleteness()) {
+        if (!getCompleteness().equals(other.getCompleteness()))
+          return false;
+      }
       if (!unknownFields.equals(other.unknownFields))
         return false;
       return true;
@@ -616,6 +881,16 @@ public final class WriteMetricsRequestV4 extends com.google.protobuf.GeneratedMe
       if (hasTable()) {
         hash = (37 * hash) + TABLE_FIELD_NUMBER;
         hash = (53 * hash) + getTable().hashCode();
+      }
+      if (!internalGetExtension().getMap().isEmpty()) {
+        hash = (37 * hash) + EXTENSION_FIELD_NUMBER;
+        hash = (53 * hash) + internalGetExtension().hashCode();
+      }
+      hash = (37 * hash) + TIMESTAMP_FIELD_NUMBER;
+      hash = (53 * hash) + com.google.protobuf.Internal.hashLong(getTimestamp());
+      if (hasCompleteness()) {
+        hash = (37 * hash) + COMPLETENESS_FIELD_NUMBER;
+        hash = (53 * hash) + getCompleteness().hashCode();
       }
       hash = (29 * hash) + unknownFields.hashCode();
       memoizedHashCode = hash;
@@ -734,6 +1009,26 @@ public final class WriteMetricsRequestV4 extends com.google.protobuf.GeneratedMe
         return io.holoinsight.server.gateway.grpc.GatewayProtos.internal_static_io_holoinsight_server_gateway_grpc_WriteMetricsRequestV4_TaskResult_descriptor;
       }
 
+      @SuppressWarnings({"rawtypes"})
+      protected com.google.protobuf.MapField internalGetMapField(int number) {
+        switch (number) {
+          case 5:
+            return internalGetExtension();
+          default:
+            throw new RuntimeException("Invalid map field number: " + number);
+        }
+      }
+
+      @SuppressWarnings({"rawtypes"})
+      protected com.google.protobuf.MapField internalGetMutableMapField(int number) {
+        switch (number) {
+          case 5:
+            return internalGetMutableExtension();
+          default:
+            throw new RuntimeException("Invalid map field number: " + number);
+        }
+      }
+
       @java.lang.Override
       protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable internalGetFieldAccessorTable() {
         return io.holoinsight.server.gateway.grpc.GatewayProtos.internal_static_io_holoinsight_server_gateway_grpc_WriteMetricsRequestV4_TaskResult_fieldAccessorTable
@@ -753,10 +1048,7 @@ public final class WriteMetricsRequestV4 extends com.google.protobuf.GeneratedMe
         maybeForceBuilderInitialization();
       }
 
-      private void maybeForceBuilderInitialization() {
-        if (com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders) {
-        }
-      }
+      private void maybeForceBuilderInitialization() {}
 
       @java.lang.Override
       public Builder clear() {
@@ -772,6 +1064,15 @@ public final class WriteMetricsRequestV4 extends com.google.protobuf.GeneratedMe
         } else {
           table_ = null;
           tableBuilder_ = null;
+        }
+        internalGetMutableExtension().clear();
+        timestamp_ = 0L;
+
+        if (completenessBuilder_ == null) {
+          completeness_ = null;
+        } else {
+          completeness_ = null;
+          completenessBuilder_ = null;
         }
         return this;
       }
@@ -807,6 +1108,14 @@ public final class WriteMetricsRequestV4 extends com.google.protobuf.GeneratedMe
           result.table_ = table_;
         } else {
           result.table_ = tableBuilder_.build();
+        }
+        result.extension_ = internalGetExtension();
+        result.extension_.makeImmutable();
+        result.timestamp_ = timestamp_;
+        if (completenessBuilder_ == null) {
+          result.completeness_ = completeness_;
+        } else {
+          result.completeness_ = completenessBuilder_.build();
         }
         onBuilt();
         return result;
@@ -876,6 +1185,13 @@ public final class WriteMetricsRequestV4 extends com.google.protobuf.GeneratedMe
         if (other.hasTable()) {
           mergeTable(other.getTable());
         }
+        internalGetMutableExtension().mergeFrom(other.internalGetExtension());
+        if (other.getTimestamp() != 0L) {
+          setTimestamp(other.getTimestamp());
+        }
+        if (other.hasCompleteness()) {
+          mergeCompleteness(other.getCompleteness());
+        }
         this.mergeUnknownFields(other.unknownFields);
         onChanged();
         return this;
@@ -903,6 +1219,8 @@ public final class WriteMetricsRequestV4 extends com.google.protobuf.GeneratedMe
         }
         return this;
       }
+
+      private int bitField0_;
 
       private java.lang.Object key_ = "";
 
@@ -1371,6 +1689,309 @@ public final class WriteMetricsRequestV4 extends com.google.protobuf.GeneratedMe
           table_ = null;
         }
         return tableBuilder_;
+      }
+
+      private com.google.protobuf.MapField<java.lang.String, java.lang.String> extension_;
+
+      private com.google.protobuf.MapField<java.lang.String, java.lang.String> internalGetExtension() {
+        if (extension_ == null) {
+          return com.google.protobuf.MapField
+              .emptyMapField(ExtensionDefaultEntryHolder.defaultEntry);
+        }
+        return extension_;
+      }
+
+      private com.google.protobuf.MapField<java.lang.String, java.lang.String> internalGetMutableExtension() {
+        onChanged();
+        if (extension_ == null) {
+          extension_ =
+              com.google.protobuf.MapField.newMapField(ExtensionDefaultEntryHolder.defaultEntry);
+        }
+        if (!extension_.isMutable()) {
+          extension_ = extension_.copy();
+        }
+        return extension_;
+      }
+
+      public int getExtensionCount() {
+        return internalGetExtension().getMap().size();
+      }
+
+      /**
+       * <code>map&lt;string, string&gt; extension = 5;</code>
+       */
+
+      @java.lang.Override
+      public boolean containsExtension(java.lang.String key) {
+        if (key == null) {
+          throw new java.lang.NullPointerException();
+        }
+        return internalGetExtension().getMap().containsKey(key);
+      }
+
+      /**
+       * Use {@link #getExtensionMap()} instead.
+       */
+      @java.lang.Override
+      @java.lang.Deprecated
+      public java.util.Map<java.lang.String, java.lang.String> getExtension() {
+        return getExtensionMap();
+      }
+
+      /**
+       * <code>map&lt;string, string&gt; extension = 5;</code>
+       */
+      @java.lang.Override
+
+      public java.util.Map<java.lang.String, java.lang.String> getExtensionMap() {
+        return internalGetExtension().getMap();
+      }
+
+      /**
+       * <code>map&lt;string, string&gt; extension = 5;</code>
+       */
+      @java.lang.Override
+
+      public java.lang.String getExtensionOrDefault(java.lang.String key,
+          java.lang.String defaultValue) {
+        if (key == null) {
+          throw new java.lang.NullPointerException();
+        }
+        java.util.Map<java.lang.String, java.lang.String> map = internalGetExtension().getMap();
+        return map.containsKey(key) ? map.get(key) : defaultValue;
+      }
+
+      /**
+       * <code>map&lt;string, string&gt; extension = 5;</code>
+       */
+      @java.lang.Override
+
+      public java.lang.String getExtensionOrThrow(java.lang.String key) {
+        if (key == null) {
+          throw new java.lang.NullPointerException();
+        }
+        java.util.Map<java.lang.String, java.lang.String> map = internalGetExtension().getMap();
+        if (!map.containsKey(key)) {
+          throw new java.lang.IllegalArgumentException();
+        }
+        return map.get(key);
+      }
+
+      public Builder clearExtension() {
+        internalGetMutableExtension().getMutableMap().clear();
+        return this;
+      }
+
+      /**
+       * <code>map&lt;string, string&gt; extension = 5;</code>
+       */
+
+      public Builder removeExtension(java.lang.String key) {
+        if (key == null) {
+          throw new java.lang.NullPointerException();
+        }
+        internalGetMutableExtension().getMutableMap().remove(key);
+        return this;
+      }
+
+      /**
+       * Use alternate mutation accessors instead.
+       */
+      @java.lang.Deprecated
+      public java.util.Map<java.lang.String, java.lang.String> getMutableExtension() {
+        return internalGetMutableExtension().getMutableMap();
+      }
+
+      /**
+       * <code>map&lt;string, string&gt; extension = 5;</code>
+       */
+      public Builder putExtension(java.lang.String key, java.lang.String value) {
+        if (key == null) {
+          throw new java.lang.NullPointerException();
+        }
+        if (value == null) {
+          throw new java.lang.NullPointerException();
+        }
+        internalGetMutableExtension().getMutableMap().put(key, value);
+        return this;
+      }
+
+      /**
+       * <code>map&lt;string, string&gt; extension = 5;</code>
+       */
+
+      public Builder putAllExtension(java.util.Map<java.lang.String, java.lang.String> values) {
+        internalGetMutableExtension().getMutableMap().putAll(values);
+        return this;
+      }
+
+      private long timestamp_;
+
+      /**
+       * <code>int64 timestamp = 6;</code>
+       * 
+       * @return The timestamp.
+       */
+      @java.lang.Override
+      public long getTimestamp() {
+        return timestamp_;
+      }
+
+      /**
+       * <code>int64 timestamp = 6;</code>
+       * 
+       * @param value The timestamp to set.
+       * @return This builder for chaining.
+       */
+      public Builder setTimestamp(long value) {
+
+        timestamp_ = value;
+        onChanged();
+        return this;
+      }
+
+      /**
+       * <code>int64 timestamp = 6;</code>
+       * 
+       * @return This builder for chaining.
+       */
+      public Builder clearTimestamp() {
+
+        timestamp_ = 0L;
+        onChanged();
+        return this;
+      }
+
+      private io.holoinsight.server.gateway.grpc.WriteMetricsRequestV4.Completeness completeness_;
+      private com.google.protobuf.SingleFieldBuilderV3<io.holoinsight.server.gateway.grpc.WriteMetricsRequestV4.Completeness, io.holoinsight.server.gateway.grpc.WriteMetricsRequestV4.Completeness.Builder, io.holoinsight.server.gateway.grpc.WriteMetricsRequestV4.CompletenessOrBuilder> completenessBuilder_;
+
+      /**
+       * <code>.io.holoinsight.server.gateway.grpc.WriteMetricsRequestV4.Completeness completeness = 7;</code>
+       * 
+       * @return Whether the completeness field is set.
+       */
+      public boolean hasCompleteness() {
+        return completenessBuilder_ != null || completeness_ != null;
+      }
+
+      /**
+       * <code>.io.holoinsight.server.gateway.grpc.WriteMetricsRequestV4.Completeness completeness = 7;</code>
+       * 
+       * @return The completeness.
+       */
+      public io.holoinsight.server.gateway.grpc.WriteMetricsRequestV4.Completeness getCompleteness() {
+        if (completenessBuilder_ == null) {
+          return completeness_ == null
+              ? io.holoinsight.server.gateway.grpc.WriteMetricsRequestV4.Completeness
+                  .getDefaultInstance()
+              : completeness_;
+        } else {
+          return completenessBuilder_.getMessage();
+        }
+      }
+
+      /**
+       * <code>.io.holoinsight.server.gateway.grpc.WriteMetricsRequestV4.Completeness completeness = 7;</code>
+       */
+      public Builder setCompleteness(
+          io.holoinsight.server.gateway.grpc.WriteMetricsRequestV4.Completeness value) {
+        if (completenessBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          completeness_ = value;
+          onChanged();
+        } else {
+          completenessBuilder_.setMessage(value);
+        }
+
+        return this;
+      }
+
+      /**
+       * <code>.io.holoinsight.server.gateway.grpc.WriteMetricsRequestV4.Completeness completeness = 7;</code>
+       */
+      public Builder setCompleteness(
+          io.holoinsight.server.gateway.grpc.WriteMetricsRequestV4.Completeness.Builder builderForValue) {
+        if (completenessBuilder_ == null) {
+          completeness_ = builderForValue.build();
+          onChanged();
+        } else {
+          completenessBuilder_.setMessage(builderForValue.build());
+        }
+
+        return this;
+      }
+
+      /**
+       * <code>.io.holoinsight.server.gateway.grpc.WriteMetricsRequestV4.Completeness completeness = 7;</code>
+       */
+      public Builder mergeCompleteness(
+          io.holoinsight.server.gateway.grpc.WriteMetricsRequestV4.Completeness value) {
+        if (completenessBuilder_ == null) {
+          if (completeness_ != null) {
+            completeness_ = io.holoinsight.server.gateway.grpc.WriteMetricsRequestV4.Completeness
+                .newBuilder(completeness_).mergeFrom(value).buildPartial();
+          } else {
+            completeness_ = value;
+          }
+          onChanged();
+        } else {
+          completenessBuilder_.mergeFrom(value);
+        }
+
+        return this;
+      }
+
+      /**
+       * <code>.io.holoinsight.server.gateway.grpc.WriteMetricsRequestV4.Completeness completeness = 7;</code>
+       */
+      public Builder clearCompleteness() {
+        if (completenessBuilder_ == null) {
+          completeness_ = null;
+          onChanged();
+        } else {
+          completeness_ = null;
+          completenessBuilder_ = null;
+        }
+
+        return this;
+      }
+
+      /**
+       * <code>.io.holoinsight.server.gateway.grpc.WriteMetricsRequestV4.Completeness completeness = 7;</code>
+       */
+      public io.holoinsight.server.gateway.grpc.WriteMetricsRequestV4.Completeness.Builder getCompletenessBuilder() {
+
+        onChanged();
+        return getCompletenessFieldBuilder().getBuilder();
+      }
+
+      /**
+       * <code>.io.holoinsight.server.gateway.grpc.WriteMetricsRequestV4.Completeness completeness = 7;</code>
+       */
+      public io.holoinsight.server.gateway.grpc.WriteMetricsRequestV4.CompletenessOrBuilder getCompletenessOrBuilder() {
+        if (completenessBuilder_ != null) {
+          return completenessBuilder_.getMessageOrBuilder();
+        } else {
+          return completeness_ == null
+              ? io.holoinsight.server.gateway.grpc.WriteMetricsRequestV4.Completeness
+                  .getDefaultInstance()
+              : completeness_;
+        }
+      }
+
+      /**
+       * <code>.io.holoinsight.server.gateway.grpc.WriteMetricsRequestV4.Completeness completeness = 7;</code>
+       */
+      private com.google.protobuf.SingleFieldBuilderV3<io.holoinsight.server.gateway.grpc.WriteMetricsRequestV4.Completeness, io.holoinsight.server.gateway.grpc.WriteMetricsRequestV4.Completeness.Builder, io.holoinsight.server.gateway.grpc.WriteMetricsRequestV4.CompletenessOrBuilder> getCompletenessFieldBuilder() {
+        if (completenessBuilder_ == null) {
+          completenessBuilder_ =
+              new com.google.protobuf.SingleFieldBuilderV3<io.holoinsight.server.gateway.grpc.WriteMetricsRequestV4.Completeness, io.holoinsight.server.gateway.grpc.WriteMetricsRequestV4.Completeness.Builder, io.holoinsight.server.gateway.grpc.WriteMetricsRequestV4.CompletenessOrBuilder>(
+                  getCompleteness(), getParentForChildren(), isClean());
+          completeness_ = null;
+        }
+        return completenessBuilder_;
       }
 
       @java.lang.Override
@@ -1981,7 +2602,6 @@ public final class WriteMetricsRequestV4 extends com.google.protobuf.GeneratedMe
       public io.holoinsight.server.gateway.grpc.WriteMetricsRequestV4.Table buildPartial() {
         io.holoinsight.server.gateway.grpc.WriteMetricsRequestV4.Table result =
             new io.holoinsight.server.gateway.grpc.WriteMetricsRequestV4.Table(this);
-        int from_bitField0_ = bitField0_;
         if (headerBuilder_ == null) {
           result.header_ = header_;
         } else {
@@ -3195,10 +3815,7 @@ public final class WriteMetricsRequestV4 extends com.google.protobuf.GeneratedMe
         maybeForceBuilderInitialization();
       }
 
-      private void maybeForceBuilderInitialization() {
-        if (com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders) {
-        }
-      }
+      private void maybeForceBuilderInitialization() {}
 
       @java.lang.Override
       public Builder clear() {
@@ -3235,7 +3852,6 @@ public final class WriteMetricsRequestV4 extends com.google.protobuf.GeneratedMe
       public io.holoinsight.server.gateway.grpc.WriteMetricsRequestV4.Header buildPartial() {
         io.holoinsight.server.gateway.grpc.WriteMetricsRequestV4.Header result =
             new io.holoinsight.server.gateway.grpc.WriteMetricsRequestV4.Header(this);
-        int from_bitField0_ = bitField0_;
         result.metricName_ = metricName_;
         if (((bitField0_ & 0x00000001) != 0)) {
           tagKeys_ = tagKeys_.getUnmodifiableView();
@@ -4279,7 +4895,6 @@ public final class WriteMetricsRequestV4 extends com.google.protobuf.GeneratedMe
       public io.holoinsight.server.gateway.grpc.WriteMetricsRequestV4.Row buildPartial() {
         io.holoinsight.server.gateway.grpc.WriteMetricsRequestV4.Row result =
             new io.holoinsight.server.gateway.grpc.WriteMetricsRequestV4.Row(this);
-        int from_bitField0_ = bitField0_;
         result.timestamp_ = timestamp_;
         if (((bitField0_ & 0x00000001) != 0)) {
           tagValues_ = tagValues_.getUnmodifiableView();
@@ -4876,6 +5491,829 @@ public final class WriteMetricsRequestV4 extends com.google.protobuf.GeneratedMe
 
   }
 
+  public interface CompletenessOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:io.holoinsight.server.gateway.grpc.WriteMetricsRequestV4.Completeness)
+      com.google.protobuf.MessageOrBuilder {
+
+    /**
+     * <code>bool ok = 1;</code>
+     * 
+     * @return The ok.
+     */
+    boolean getOk();
+
+    /**
+     * <code>map&lt;string, string&gt; extension = 2;</code>
+     */
+    int getExtensionCount();
+
+    /**
+     * <code>map&lt;string, string&gt; extension = 2;</code>
+     */
+    boolean containsExtension(java.lang.String key);
+
+    /**
+     * Use {@link #getExtensionMap()} instead.
+     */
+    @java.lang.Deprecated
+    java.util.Map<java.lang.String, java.lang.String> getExtension();
+
+    /**
+     * <code>map&lt;string, string&gt; extension = 2;</code>
+     */
+    java.util.Map<java.lang.String, java.lang.String> getExtensionMap();
+
+    /**
+     * <code>map&lt;string, string&gt; extension = 2;</code>
+     */
+
+    java.lang.String getExtensionOrDefault(java.lang.String key, java.lang.String defaultValue);
+
+    /**
+     * <code>map&lt;string, string&gt; extension = 2;</code>
+     */
+
+    java.lang.String getExtensionOrThrow(java.lang.String key);
+  }
+  /**
+   * Protobuf type {@code io.holoinsight.server.gateway.grpc.WriteMetricsRequestV4.Completeness}
+   */
+  public static final class Completeness extends com.google.protobuf.GeneratedMessageV3 implements
+      // @@protoc_insertion_point(message_implements:io.holoinsight.server.gateway.grpc.WriteMetricsRequestV4.Completeness)
+      CompletenessOrBuilder {
+    private static final long serialVersionUID = 0L;
+
+    // Use Completeness.newBuilder() to construct.
+    private Completeness(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+      super(builder);
+    }
+
+    private Completeness() {}
+
+    @java.lang.Override
+    @SuppressWarnings({"unused"})
+    protected java.lang.Object newInstance(UnusedPrivateParameter unused) {
+      return new Completeness();
+    }
+
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet getUnknownFields() {
+      return this.unknownFields;
+    }
+
+    private Completeness(com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      this();
+      if (extensionRegistry == null) {
+        throw new java.lang.NullPointerException();
+      }
+      int mutable_bitField0_ = 0;
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            case 8: {
+
+              ok_ = input.readBool();
+              break;
+            }
+            case 18: {
+              if (!((mutable_bitField0_ & 0x00000001) != 0)) {
+                extension_ = com.google.protobuf.MapField
+                    .newMapField(ExtensionDefaultEntryHolder.defaultEntry);
+                mutable_bitField0_ |= 0x00000001;
+              }
+              com.google.protobuf.MapEntry<java.lang.String, java.lang.String> extension__ =
+                  input.readMessage(ExtensionDefaultEntryHolder.defaultEntry.getParserForType(),
+                      extensionRegistry);
+              extension_.getMutableMap().put(extension__.getKey(), extension__.getValue());
+              break;
+            }
+            default: {
+              if (!parseUnknownField(input, unknownFields, extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(e).setUnfinishedMessage(this);
+      } finally {
+        this.unknownFields = unknownFields.build();
+        makeExtensionsImmutable();
+      }
+    }
+
+    public static final com.google.protobuf.Descriptors.Descriptor getDescriptor() {
+      return io.holoinsight.server.gateway.grpc.GatewayProtos.internal_static_io_holoinsight_server_gateway_grpc_WriteMetricsRequestV4_Completeness_descriptor;
+    }
+
+    @SuppressWarnings({"rawtypes"})
+    @java.lang.Override
+    protected com.google.protobuf.MapField internalGetMapField(int number) {
+      switch (number) {
+        case 2:
+          return internalGetExtension();
+        default:
+          throw new RuntimeException("Invalid map field number: " + number);
+      }
+    }
+
+    @java.lang.Override
+    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable internalGetFieldAccessorTable() {
+      return io.holoinsight.server.gateway.grpc.GatewayProtos.internal_static_io_holoinsight_server_gateway_grpc_WriteMetricsRequestV4_Completeness_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              io.holoinsight.server.gateway.grpc.WriteMetricsRequestV4.Completeness.class,
+              io.holoinsight.server.gateway.grpc.WriteMetricsRequestV4.Completeness.Builder.class);
+    }
+
+    public static final int OK_FIELD_NUMBER = 1;
+    private boolean ok_;
+
+    /**
+     * <code>bool ok = 1;</code>
+     * 
+     * @return The ok.
+     */
+    @java.lang.Override
+    public boolean getOk() {
+      return ok_;
+    }
+
+    public static final int EXTENSION_FIELD_NUMBER = 2;
+
+    private static final class ExtensionDefaultEntryHolder {
+      static final com.google.protobuf.MapEntry<java.lang.String, java.lang.String> defaultEntry =
+          com.google.protobuf.MapEntry.<java.lang.String, java.lang.String>newDefaultInstance(
+              io.holoinsight.server.gateway.grpc.GatewayProtos.internal_static_io_holoinsight_server_gateway_grpc_WriteMetricsRequestV4_Completeness_ExtensionEntry_descriptor,
+              com.google.protobuf.WireFormat.FieldType.STRING, "",
+              com.google.protobuf.WireFormat.FieldType.STRING, "");
+    }
+
+    private com.google.protobuf.MapField<java.lang.String, java.lang.String> extension_;
+
+    private com.google.protobuf.MapField<java.lang.String, java.lang.String> internalGetExtension() {
+      if (extension_ == null) {
+        return com.google.protobuf.MapField.emptyMapField(ExtensionDefaultEntryHolder.defaultEntry);
+      }
+      return extension_;
+    }
+
+    public int getExtensionCount() {
+      return internalGetExtension().getMap().size();
+    }
+
+    /**
+     * <code>map&lt;string, string&gt; extension = 2;</code>
+     */
+
+    @java.lang.Override
+    public boolean containsExtension(java.lang.String key) {
+      if (key == null) {
+        throw new java.lang.NullPointerException();
+      }
+      return internalGetExtension().getMap().containsKey(key);
+    }
+
+    /**
+     * Use {@link #getExtensionMap()} instead.
+     */
+    @java.lang.Override
+    @java.lang.Deprecated
+    public java.util.Map<java.lang.String, java.lang.String> getExtension() {
+      return getExtensionMap();
+    }
+
+    /**
+     * <code>map&lt;string, string&gt; extension = 2;</code>
+     */
+    @java.lang.Override
+
+    public java.util.Map<java.lang.String, java.lang.String> getExtensionMap() {
+      return internalGetExtension().getMap();
+    }
+
+    /**
+     * <code>map&lt;string, string&gt; extension = 2;</code>
+     */
+    @java.lang.Override
+
+    public java.lang.String getExtensionOrDefault(java.lang.String key,
+        java.lang.String defaultValue) {
+      if (key == null) {
+        throw new java.lang.NullPointerException();
+      }
+      java.util.Map<java.lang.String, java.lang.String> map = internalGetExtension().getMap();
+      return map.containsKey(key) ? map.get(key) : defaultValue;
+    }
+
+    /**
+     * <code>map&lt;string, string&gt; extension = 2;</code>
+     */
+    @java.lang.Override
+
+    public java.lang.String getExtensionOrThrow(java.lang.String key) {
+      if (key == null) {
+        throw new java.lang.NullPointerException();
+      }
+      java.util.Map<java.lang.String, java.lang.String> map = internalGetExtension().getMap();
+      if (!map.containsKey(key)) {
+        throw new java.lang.IllegalArgumentException();
+      }
+      return map.get(key);
+    }
+
+    private byte memoizedIsInitialized = -1;
+
+    @java.lang.Override
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized == 1)
+        return true;
+      if (isInitialized == 0)
+        return false;
+
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    @java.lang.Override
+    public void writeTo(com.google.protobuf.CodedOutputStream output) throws java.io.IOException {
+      if (ok_ != false) {
+        output.writeBool(1, ok_);
+      }
+      com.google.protobuf.GeneratedMessageV3.serializeStringMapTo(output, internalGetExtension(),
+          ExtensionDefaultEntryHolder.defaultEntry, 2);
+      unknownFields.writeTo(output);
+    }
+
+    @java.lang.Override
+    public int getSerializedSize() {
+      int size = memoizedSize;
+      if (size != -1)
+        return size;
+
+      size = 0;
+      if (ok_ != false) {
+        size += com.google.protobuf.CodedOutputStream.computeBoolSize(1, ok_);
+      }
+      for (java.util.Map.Entry<java.lang.String, java.lang.String> entry : internalGetExtension()
+          .getMap().entrySet()) {
+        com.google.protobuf.MapEntry<java.lang.String, java.lang.String> extension__ =
+            ExtensionDefaultEntryHolder.defaultEntry.newBuilderForType().setKey(entry.getKey())
+                .setValue(entry.getValue()).build();
+        size += com.google.protobuf.CodedOutputStream.computeMessageSize(2, extension__);
+      }
+      size += unknownFields.getSerializedSize();
+      memoizedSize = size;
+      return size;
+    }
+
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
+      if (obj == this) {
+        return true;
+      }
+      if (!(obj instanceof io.holoinsight.server.gateway.grpc.WriteMetricsRequestV4.Completeness)) {
+        return super.equals(obj);
+      }
+      io.holoinsight.server.gateway.grpc.WriteMetricsRequestV4.Completeness other =
+          (io.holoinsight.server.gateway.grpc.WriteMetricsRequestV4.Completeness) obj;
+
+      if (getOk() != other.getOk())
+        return false;
+      if (!internalGetExtension().equals(other.internalGetExtension()))
+        return false;
+      if (!unknownFields.equals(other.unknownFields))
+        return false;
+      return true;
+    }
+
+    @java.lang.Override
+    public int hashCode() {
+      if (memoizedHashCode != 0) {
+        return memoizedHashCode;
+      }
+      int hash = 41;
+      hash = (19 * hash) + getDescriptor().hashCode();
+      hash = (37 * hash) + OK_FIELD_NUMBER;
+      hash = (53 * hash) + com.google.protobuf.Internal.hashBoolean(getOk());
+      if (!internalGetExtension().getMap().isEmpty()) {
+        hash = (37 * hash) + EXTENSION_FIELD_NUMBER;
+        hash = (53 * hash) + internalGetExtension().hashCode();
+      }
+      hash = (29 * hash) + unknownFields.hashCode();
+      memoizedHashCode = hash;
+      return hash;
+    }
+
+    public static io.holoinsight.server.gateway.grpc.WriteMetricsRequestV4.Completeness parseFrom(
+        java.nio.ByteBuffer data) throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+
+    public static io.holoinsight.server.gateway.grpc.WriteMetricsRequestV4.Completeness parseFrom(
+        java.nio.ByteBuffer data, com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+
+    public static io.holoinsight.server.gateway.grpc.WriteMetricsRequestV4.Completeness parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+
+    public static io.holoinsight.server.gateway.grpc.WriteMetricsRequestV4.Completeness parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+
+    public static io.holoinsight.server.gateway.grpc.WriteMetricsRequestV4.Completeness parseFrom(
+        byte[] data) throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+
+    public static io.holoinsight.server.gateway.grpc.WriteMetricsRequestV4.Completeness parseFrom(
+        byte[] data, com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+
+    public static io.holoinsight.server.gateway.grpc.WriteMetricsRequestV4.Completeness parseFrom(
+        java.io.InputStream input) throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3.parseWithIOException(PARSER, input);
+    }
+
+    public static io.holoinsight.server.gateway.grpc.WriteMetricsRequestV4.Completeness parseFrom(
+        java.io.InputStream input, com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3.parseWithIOException(PARSER, input,
+          extensionRegistry);
+    }
+
+    public static io.holoinsight.server.gateway.grpc.WriteMetricsRequestV4.Completeness parseDelimitedFrom(
+        java.io.InputStream input) throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3.parseDelimitedWithIOException(PARSER, input);
+    }
+
+    public static io.holoinsight.server.gateway.grpc.WriteMetricsRequestV4.Completeness parseDelimitedFrom(
+        java.io.InputStream input, com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3.parseDelimitedWithIOException(PARSER, input,
+          extensionRegistry);
+    }
+
+    public static io.holoinsight.server.gateway.grpc.WriteMetricsRequestV4.Completeness parseFrom(
+        com.google.protobuf.CodedInputStream input) throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3.parseWithIOException(PARSER, input);
+    }
+
+    public static io.holoinsight.server.gateway.grpc.WriteMetricsRequestV4.Completeness parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry) throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3.parseWithIOException(PARSER, input,
+          extensionRegistry);
+    }
+
+    @java.lang.Override
+    public Builder newBuilderForType() {
+      return newBuilder();
+    }
+
+    public static Builder newBuilder() {
+      return DEFAULT_INSTANCE.toBuilder();
+    }
+
+    public static Builder newBuilder(
+        io.holoinsight.server.gateway.grpc.WriteMetricsRequestV4.Completeness prototype) {
+      return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+    }
+
+    @java.lang.Override
+    public Builder toBuilder() {
+      return this == DEFAULT_INSTANCE ? new Builder() : new Builder().mergeFrom(this);
+    }
+
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+
+    /**
+     * Protobuf type {@code io.holoinsight.server.gateway.grpc.WriteMetricsRequestV4.Completeness}
+     */
+    public static final class Builder
+        extends com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
+        // @@protoc_insertion_point(builder_implements:io.holoinsight.server.gateway.grpc.WriteMetricsRequestV4.Completeness)
+        io.holoinsight.server.gateway.grpc.WriteMetricsRequestV4.CompletenessOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor getDescriptor() {
+        return io.holoinsight.server.gateway.grpc.GatewayProtos.internal_static_io_holoinsight_server_gateway_grpc_WriteMetricsRequestV4_Completeness_descriptor;
+      }
+
+      @SuppressWarnings({"rawtypes"})
+      protected com.google.protobuf.MapField internalGetMapField(int number) {
+        switch (number) {
+          case 2:
+            return internalGetExtension();
+          default:
+            throw new RuntimeException("Invalid map field number: " + number);
+        }
+      }
+
+      @SuppressWarnings({"rawtypes"})
+      protected com.google.protobuf.MapField internalGetMutableMapField(int number) {
+        switch (number) {
+          case 2:
+            return internalGetMutableExtension();
+          default:
+            throw new RuntimeException("Invalid map field number: " + number);
+        }
+      }
+
+      @java.lang.Override
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable internalGetFieldAccessorTable() {
+        return io.holoinsight.server.gateway.grpc.GatewayProtos.internal_static_io_holoinsight_server_gateway_grpc_WriteMetricsRequestV4_Completeness_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                io.holoinsight.server.gateway.grpc.WriteMetricsRequestV4.Completeness.class,
+                io.holoinsight.server.gateway.grpc.WriteMetricsRequestV4.Completeness.Builder.class);
+      }
+
+      // Construct using
+      // io.holoinsight.server.gateway.grpc.WriteMetricsRequestV4.Completeness.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+
+      private Builder(com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+
+      private void maybeForceBuilderInitialization() {}
+
+      @java.lang.Override
+      public Builder clear() {
+        super.clear();
+        ok_ = false;
+
+        internalGetMutableExtension().clear();
+        return this;
+      }
+
+      @java.lang.Override
+      public com.google.protobuf.Descriptors.Descriptor getDescriptorForType() {
+        return io.holoinsight.server.gateway.grpc.GatewayProtos.internal_static_io_holoinsight_server_gateway_grpc_WriteMetricsRequestV4_Completeness_descriptor;
+      }
+
+      @java.lang.Override
+      public io.holoinsight.server.gateway.grpc.WriteMetricsRequestV4.Completeness getDefaultInstanceForType() {
+        return io.holoinsight.server.gateway.grpc.WriteMetricsRequestV4.Completeness
+            .getDefaultInstance();
+      }
+
+      @java.lang.Override
+      public io.holoinsight.server.gateway.grpc.WriteMetricsRequestV4.Completeness build() {
+        io.holoinsight.server.gateway.grpc.WriteMetricsRequestV4.Completeness result =
+            buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      @java.lang.Override
+      public io.holoinsight.server.gateway.grpc.WriteMetricsRequestV4.Completeness buildPartial() {
+        io.holoinsight.server.gateway.grpc.WriteMetricsRequestV4.Completeness result =
+            new io.holoinsight.server.gateway.grpc.WriteMetricsRequestV4.Completeness(this);
+        result.ok_ = ok_;
+        result.extension_ = internalGetExtension();
+        result.extension_.makeImmutable();
+        onBuilt();
+        return result;
+      }
+
+      @java.lang.Override
+      public Builder clone() {
+        return super.clone();
+      }
+
+      @java.lang.Override
+      public Builder setField(com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.setField(field, value);
+      }
+
+      @java.lang.Override
+      public Builder clearField(com.google.protobuf.Descriptors.FieldDescriptor field) {
+        return super.clearField(field);
+      }
+
+      @java.lang.Override
+      public Builder clearOneof(com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+        return super.clearOneof(oneof);
+      }
+
+      @java.lang.Override
+      public Builder setRepeatedField(com.google.protobuf.Descriptors.FieldDescriptor field,
+          int index, java.lang.Object value) {
+        return super.setRepeatedField(field, index, value);
+      }
+
+      @java.lang.Override
+      public Builder addRepeatedField(com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.addRepeatedField(field, value);
+      }
+
+      @java.lang.Override
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof io.holoinsight.server.gateway.grpc.WriteMetricsRequestV4.Completeness) {
+          return mergeFrom(
+              (io.holoinsight.server.gateway.grpc.WriteMetricsRequestV4.Completeness) other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(
+          io.holoinsight.server.gateway.grpc.WriteMetricsRequestV4.Completeness other) {
+        if (other == io.holoinsight.server.gateway.grpc.WriteMetricsRequestV4.Completeness
+            .getDefaultInstance())
+          return this;
+        if (other.getOk() != false) {
+          setOk(other.getOk());
+        }
+        internalGetMutableExtension().mergeFrom(other.internalGetExtension());
+        this.mergeUnknownFields(other.unknownFields);
+        onChanged();
+        return this;
+      }
+
+      @java.lang.Override
+      public final boolean isInitialized() {
+        return true;
+      }
+
+      @java.lang.Override
+      public Builder mergeFrom(com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry) throws java.io.IOException {
+        io.holoinsight.server.gateway.grpc.WriteMetricsRequestV4.Completeness parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (io.holoinsight.server.gateway.grpc.WriteMetricsRequestV4.Completeness) e
+              .getUnfinishedMessage();
+          throw e.unwrapIOException();
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
+          }
+        }
+        return this;
+      }
+
+      private int bitField0_;
+
+      private boolean ok_;
+
+      /**
+       * <code>bool ok = 1;</code>
+       * 
+       * @return The ok.
+       */
+      @java.lang.Override
+      public boolean getOk() {
+        return ok_;
+      }
+
+      /**
+       * <code>bool ok = 1;</code>
+       * 
+       * @param value The ok to set.
+       * @return This builder for chaining.
+       */
+      public Builder setOk(boolean value) {
+
+        ok_ = value;
+        onChanged();
+        return this;
+      }
+
+      /**
+       * <code>bool ok = 1;</code>
+       * 
+       * @return This builder for chaining.
+       */
+      public Builder clearOk() {
+
+        ok_ = false;
+        onChanged();
+        return this;
+      }
+
+      private com.google.protobuf.MapField<java.lang.String, java.lang.String> extension_;
+
+      private com.google.protobuf.MapField<java.lang.String, java.lang.String> internalGetExtension() {
+        if (extension_ == null) {
+          return com.google.protobuf.MapField
+              .emptyMapField(ExtensionDefaultEntryHolder.defaultEntry);
+        }
+        return extension_;
+      }
+
+      private com.google.protobuf.MapField<java.lang.String, java.lang.String> internalGetMutableExtension() {
+        onChanged();
+        if (extension_ == null) {
+          extension_ =
+              com.google.protobuf.MapField.newMapField(ExtensionDefaultEntryHolder.defaultEntry);
+        }
+        if (!extension_.isMutable()) {
+          extension_ = extension_.copy();
+        }
+        return extension_;
+      }
+
+      public int getExtensionCount() {
+        return internalGetExtension().getMap().size();
+      }
+
+      /**
+       * <code>map&lt;string, string&gt; extension = 2;</code>
+       */
+
+      @java.lang.Override
+      public boolean containsExtension(java.lang.String key) {
+        if (key == null) {
+          throw new java.lang.NullPointerException();
+        }
+        return internalGetExtension().getMap().containsKey(key);
+      }
+
+      /**
+       * Use {@link #getExtensionMap()} instead.
+       */
+      @java.lang.Override
+      @java.lang.Deprecated
+      public java.util.Map<java.lang.String, java.lang.String> getExtension() {
+        return getExtensionMap();
+      }
+
+      /**
+       * <code>map&lt;string, string&gt; extension = 2;</code>
+       */
+      @java.lang.Override
+
+      public java.util.Map<java.lang.String, java.lang.String> getExtensionMap() {
+        return internalGetExtension().getMap();
+      }
+
+      /**
+       * <code>map&lt;string, string&gt; extension = 2;</code>
+       */
+      @java.lang.Override
+
+      public java.lang.String getExtensionOrDefault(java.lang.String key,
+          java.lang.String defaultValue) {
+        if (key == null) {
+          throw new java.lang.NullPointerException();
+        }
+        java.util.Map<java.lang.String, java.lang.String> map = internalGetExtension().getMap();
+        return map.containsKey(key) ? map.get(key) : defaultValue;
+      }
+
+      /**
+       * <code>map&lt;string, string&gt; extension = 2;</code>
+       */
+      @java.lang.Override
+
+      public java.lang.String getExtensionOrThrow(java.lang.String key) {
+        if (key == null) {
+          throw new java.lang.NullPointerException();
+        }
+        java.util.Map<java.lang.String, java.lang.String> map = internalGetExtension().getMap();
+        if (!map.containsKey(key)) {
+          throw new java.lang.IllegalArgumentException();
+        }
+        return map.get(key);
+      }
+
+      public Builder clearExtension() {
+        internalGetMutableExtension().getMutableMap().clear();
+        return this;
+      }
+
+      /**
+       * <code>map&lt;string, string&gt; extension = 2;</code>
+       */
+
+      public Builder removeExtension(java.lang.String key) {
+        if (key == null) {
+          throw new java.lang.NullPointerException();
+        }
+        internalGetMutableExtension().getMutableMap().remove(key);
+        return this;
+      }
+
+      /**
+       * Use alternate mutation accessors instead.
+       */
+      @java.lang.Deprecated
+      public java.util.Map<java.lang.String, java.lang.String> getMutableExtension() {
+        return internalGetMutableExtension().getMutableMap();
+      }
+
+      /**
+       * <code>map&lt;string, string&gt; extension = 2;</code>
+       */
+      public Builder putExtension(java.lang.String key, java.lang.String value) {
+        if (key == null) {
+          throw new java.lang.NullPointerException();
+        }
+        if (value == null) {
+          throw new java.lang.NullPointerException();
+        }
+        internalGetMutableExtension().getMutableMap().put(key, value);
+        return this;
+      }
+
+      /**
+       * <code>map&lt;string, string&gt; extension = 2;</code>
+       */
+
+      public Builder putAllExtension(java.util.Map<java.lang.String, java.lang.String> values) {
+        internalGetMutableExtension().getMutableMap().putAll(values);
+        return this;
+      }
+
+      @java.lang.Override
+      public final Builder setUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.setUnknownFields(unknownFields);
+      }
+
+      @java.lang.Override
+      public final Builder mergeUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.mergeUnknownFields(unknownFields);
+      }
+
+
+      // @@protoc_insertion_point(builder_scope:io.holoinsight.server.gateway.grpc.WriteMetricsRequestV4.Completeness)
+    }
+
+    // @@protoc_insertion_point(class_scope:io.holoinsight.server.gateway.grpc.WriteMetricsRequestV4.Completeness)
+    private static final io.holoinsight.server.gateway.grpc.WriteMetricsRequestV4.Completeness DEFAULT_INSTANCE;
+    static {
+      DEFAULT_INSTANCE =
+          new io.holoinsight.server.gateway.grpc.WriteMetricsRequestV4.Completeness();
+    }
+
+    public static io.holoinsight.server.gateway.grpc.WriteMetricsRequestV4.Completeness getDefaultInstance() {
+      return DEFAULT_INSTANCE;
+    }
+
+    private static final com.google.protobuf.Parser<Completeness> PARSER =
+        new com.google.protobuf.AbstractParser<Completeness>() {
+          @java.lang.Override
+          public Completeness parsePartialFrom(com.google.protobuf.CodedInputStream input,
+              com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+              throws com.google.protobuf.InvalidProtocolBufferException {
+            return new Completeness(input, extensionRegistry);
+          }
+        };
+
+    public static com.google.protobuf.Parser<Completeness> parser() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<Completeness> getParserForType() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public io.holoinsight.server.gateway.grpc.WriteMetricsRequestV4.Completeness getDefaultInstanceForType() {
+      return DEFAULT_INSTANCE;
+    }
+
+  }
+
   public static final int HEADER_FIELD_NUMBER = 1;
   private io.holoinsight.server.gateway.grpc.common.CommonRequestHeader header_;
 
@@ -5216,7 +6654,6 @@ public final class WriteMetricsRequestV4 extends com.google.protobuf.GeneratedMe
     public io.holoinsight.server.gateway.grpc.WriteMetricsRequestV4 buildPartial() {
       io.holoinsight.server.gateway.grpc.WriteMetricsRequestV4 result =
           new io.holoinsight.server.gateway.grpc.WriteMetricsRequestV4(this);
-      int from_bitField0_ = bitField0_;
       if (headerBuilder_ == null) {
         result.header_ = header_;
       } else {
@@ -5774,4 +7211,3 @@ public final class WriteMetricsRequestV4 extends com.google.protobuf.GeneratedMe
   }
 
 }
-

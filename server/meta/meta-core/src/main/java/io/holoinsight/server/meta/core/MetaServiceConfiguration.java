@@ -3,13 +3,12 @@
  */
 package io.holoinsight.server.meta.core;
 
-import com.mongodb.client.MongoDatabase;
+import io.holoinsight.server.common.service.MetaDimDataService;
 import io.holoinsight.server.common.service.SuperCacheService;
-import io.holoinsight.server.meta.core.service.DBCoreService;
-import io.holoinsight.server.meta.core.service.MongoDataCoreService;
-import io.holoinsight.server.meta.core.service.SqlDataCoreService;
-import io.holoinsight.server.meta.dal.service.mapper.MetaDataMapper;
+import io.holoinsight.server.meta.core.service.bitmap.BitmapDataCoreService;
+import io.holoinsight.server.meta.core.service.hashmap.HashMapDataCoreService;
 import org.mybatis.spring.annotation.MapperScan;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
@@ -24,18 +23,24 @@ import org.springframework.context.annotation.Configuration;
 @MapperScan(basePackages = {"io.holoinsight.server.meta.dal.service.mapper"})
 public class MetaServiceConfiguration {
 
-  @Bean("mongoDataCoreService")
-  @ConditionalOnProperty(value = "holoinsight.meta.db_data_mode", havingValue = "mongodb",
-      matchIfMissing = true)
-  public DBCoreService MongoDataCoreService(MongoDatabase mongoDatabase) {
-    return new MongoDataCoreService(mongoDatabase);
+  @Autowired
+  private SuperCacheService superCacheService;
+
+  @Autowired
+  private MetaDimDataService metaDimDataService;
+
+  @Bean("hashMapDataCoreService")
+  @ConditionalOnProperty(value = "holoinsight.meta.db_data_mode", havingValue = "mysql")
+  public HashMapDataCoreService hashMapDataCoreService(MetaDimDataService metaDimDataService,
+      SuperCacheService superCacheService) {
+    return new HashMapDataCoreService(metaDimDataService, superCacheService);
   }
 
-  @Bean("sqlDataCoreService")
-  // @ConditionalOnProperty(value = "holoinsight.meta.db_data_mode", havingValue = "mysql")
-  public DBCoreService SqlDataCoreService(MetaDataMapper metaDataMapper,
+  @Bean("bitmapDataCoreService")
+  @ConditionalOnProperty(value = "holoinsight.meta.db_data_mode", havingValue = "mysql")
+  public BitmapDataCoreService bitmapDataCoreService(MetaDimDataService metaDimDataService,
       SuperCacheService superCacheService) {
-    return new SqlDataCoreService(metaDataMapper, superCacheService);
+    return new BitmapDataCoreService(metaDimDataService, superCacheService);
   }
 
   @Bean

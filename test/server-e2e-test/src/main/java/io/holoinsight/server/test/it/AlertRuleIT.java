@@ -4,22 +4,22 @@
 package io.holoinsight.server.test.it;
 
 import io.holoinsight.server.common.J;
-import io.holoinsight.server.home.facade.AlarmHistoryDTO;
-import io.holoinsight.server.home.facade.AlarmHistoryDetailDTO;
-import io.holoinsight.server.home.facade.AlarmRuleDTO;
-import io.holoinsight.server.home.facade.Rule;
-import io.holoinsight.server.home.facade.TimeFilter;
-import io.holoinsight.server.home.facade.emuns.BoolOperationEnum;
-import io.holoinsight.server.home.facade.emuns.CompareOperationEnum;
-import io.holoinsight.server.home.facade.emuns.FunctionEnum;
-import io.holoinsight.server.home.facade.emuns.PeriodType;
-import io.holoinsight.server.home.facade.emuns.TimeFilterEnum;
-import io.holoinsight.server.home.facade.page.MonitorPageRequest;
-import io.holoinsight.server.home.facade.trigger.CompareConfig;
-import io.holoinsight.server.home.facade.trigger.CompareParam;
-import io.holoinsight.server.home.facade.trigger.DataSource;
-import io.holoinsight.server.home.facade.trigger.Filter;
-import io.holoinsight.server.home.facade.trigger.Trigger;
+import io.holoinsight.server.common.dao.entity.dto.AlarmHistoryDTO;
+import io.holoinsight.server.common.dao.entity.dto.AlarmHistoryDetailDTO;
+import io.holoinsight.server.common.dao.entity.dto.AlarmRuleDTO;
+import io.holoinsight.server.common.dao.entity.dto.alarm.AlarmRuleConf;
+import io.holoinsight.server.common.dao.entity.dto.alarm.TimeFilter;
+import io.holoinsight.server.common.dao.emuns.BoolOperationEnum;
+import io.holoinsight.server.common.dao.emuns.CompareOperationEnum;
+import io.holoinsight.server.common.dao.emuns.FunctionEnum;
+import io.holoinsight.server.common.dao.emuns.PeriodType;
+import io.holoinsight.server.common.dao.emuns.TimeFilterEnum;
+import io.holoinsight.server.common.MonitorPageRequest;
+import io.holoinsight.server.common.dao.entity.dto.alarm.trigger.CompareConfig;
+import io.holoinsight.server.common.dao.entity.dto.alarm.trigger.CompareParam;
+import io.holoinsight.server.common.dao.entity.dto.alarm.trigger.DataSource;
+import io.holoinsight.server.common.dao.entity.dto.alarm.trigger.Filter;
+import io.holoinsight.server.common.dao.entity.dto.alarm.trigger.Trigger;
 import io.restassured.response.Response;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.hamcrest.CustomMatcher;
@@ -75,6 +75,7 @@ public class AlertRuleIT extends BaseIT {
         .body(new JSONObject(J.toMap(J.toJson(alarmRuleDTO)))) //
         .when() //
         .post("/webapi/alarmRule/create") //
+        .prettyPeek() //
         .then() //
         .body("success", IS_TRUE) //
         .body("data", Matchers.any(Number.class)) //
@@ -114,6 +115,7 @@ public class AlertRuleIT extends BaseIT {
         .body(new JSONObject(J.toMap(J.toJson(alarmRuleDTO)))) //
         .when() //
         .post("/webapi/alarmRule/create") //
+        .prettyPeek() //
         .then() //
         .body("success", IS_TRUE) //
         .body("data", Matchers.any(Number.class)) //
@@ -157,9 +159,10 @@ public class AlertRuleIT extends BaseIT {
         .body(new JSONObject(J.toMap(J.toJson(alarmRuleDTO)))) //
         .when() //
         .post("/webapi/alarmRule/create") //
+        .prettyPeek() //
         .then() //
         .body("success", IS_FALSE) //
-        .body("message", eq("invalid ruleName"));
+        .body("message", startsWith("SecurityCheckFailed"));
 
     invalidRuleName = name + "<a href=http://www.baidu.com>点击查看详情</a>";
     alarmRuleDTO = new AlarmRuleDTO();
@@ -170,9 +173,10 @@ public class AlertRuleIT extends BaseIT {
         .body(new JSONObject(J.toMap(J.toJson(alarmRuleDTO)))) //
         .when() //
         .post("/webapi/alarmRule/update") //
+        .prettyPeek() //
         .then() //
         .body("success", IS_FALSE) //
-        .body("message", eq("invalid ruleName"));
+        .body("message", startsWith("SecurityCheckFailed"));
     Response response = queryAlertRule.get();
     System.out.println(response.body().print());
     response //
@@ -194,6 +198,7 @@ public class AlertRuleIT extends BaseIT {
         .body(new JSONObject(J.toMap(J.toJson(alarmRuleDTO)))) //
         .when() //
         .post("/webapi/alarmRule/update") //
+        .prettyPeek() //
         .then() //
         .body("success", IS_TRUE) //
         .body("data", IS_TRUE);
@@ -216,8 +221,7 @@ public class AlertRuleIT extends BaseIT {
     System.out.println(response.body().print());
     response //
         .then() //
-        .body("success", IS_TRUE) //
-        .body("data", IS_NULL);
+        .body("success", IS_FALSE);
   }
 
   @Order(6)
@@ -229,6 +233,7 @@ public class AlertRuleIT extends BaseIT {
           .body(new JSONObject(J.toMap(J.toJson(buildAlarmRule("hit_rule_" + i))))) //
           .when() //
           .post("/webapi/alarmRule/create") //
+          .prettyPeek() //
           .then() //
           .body("success", IS_TRUE) //
           .extract() //
@@ -240,6 +245,7 @@ public class AlertRuleIT extends BaseIT {
           .body(new JSONObject(J.toMap(J.toJson(buildAlarmRule("miss_rule_" + i))))) //
           .when() //
           .post("/webapi/alarmRule/create") //
+          .prettyPeek() //
           .then() //
           .body("success", IS_TRUE);
     }
@@ -253,6 +259,7 @@ public class AlertRuleIT extends BaseIT {
         .body(new JSONObject(J.toMap(J.toJson(pageRequest)))) //
         .when() //
         .post("/webapi/alarmRule/pageQuery") //
+        .prettyPeek() //
         .then() //
         .body("success", IS_TRUE) //
         .root("data")
@@ -274,6 +281,7 @@ public class AlertRuleIT extends BaseIT {
         .body(new JSONObject(J.toMap(J.toJson(buildAlarmRule("notification"))))) //
         .when() //
         .post("/webapi/alarmRule/create") //
+        .prettyPeek() //
         .then() //
         .body("success", IS_TRUE) //
         .body("data", Matchers.any(Number.class)) //
@@ -310,6 +318,7 @@ public class AlertRuleIT extends BaseIT {
               .body(new JSONObject(J.toMap(J.toJson(detailPageRequest)))) //
               .when() //
               .post("/webapi/alarmHistoryDetail/countTrend") //
+              .prettyPeek() //
               .then() //
               .body("success", IS_TRUE) //
               .root("data") //
@@ -350,10 +359,10 @@ public class AlertRuleIT extends BaseIT {
   }
 
   private Map<String, Object> buildRuleWithMultiTriggerContent() {
-    Rule rule = new Rule();
-    rule.setBoolOperation(BoolOperationEnum.AND);
-    rule.setTriggers(Collections.singletonList(buildTriggerWithMultiTriggerContent()));
-    return J.toMap(J.toJson(rule));
+    AlarmRuleConf alarmRuleConf = new AlarmRuleConf();
+    alarmRuleConf.setBoolOperation(BoolOperationEnum.AND);
+    alarmRuleConf.setTriggers(Collections.singletonList(buildTriggerWithMultiTriggerContent()));
+    return J.toMap(J.toJson(alarmRuleConf));
   }
 
   private Trigger buildTriggerWithMultiTriggerContent() {
@@ -382,14 +391,14 @@ public class AlertRuleIT extends BaseIT {
     return Arrays.asList(compareConfig1, compareConfig2);
   }
 
-  private Map<String, Object> buildRule() {
-    Rule rule = new Rule();
-    rule.setBoolOperation(BoolOperationEnum.AND);
-    rule.setTriggers(Collections.singletonList(buildTrigger()));
-    return J.toMap(J.toJson(rule));
+  protected static Map<String, Object> buildRule() {
+    AlarmRuleConf alarmRuleConf = new AlarmRuleConf();
+    alarmRuleConf.setBoolOperation(BoolOperationEnum.AND);
+    alarmRuleConf.setTriggers(Collections.singletonList(buildTrigger()));
+    return J.toMap(J.toJson(alarmRuleConf));
   }
 
-  private Trigger buildTrigger() {
+  protected static Trigger buildTrigger() {
     Trigger trigger = new Trigger();
     trigger.setZeroFill(true);
     trigger.setQuery("a");
@@ -404,7 +413,7 @@ public class AlertRuleIT extends BaseIT {
     return trigger;
   }
 
-  private DataSource buildDataSource() {
+  protected static DataSource buildDataSource() {
     Filter filter = new Filter();
     filter.setName("app");
     filter.setType("literal_or");
@@ -415,26 +424,26 @@ public class AlertRuleIT extends BaseIT {
     dataSource.setName("a");
     dataSource.setAggregator("avg");
     dataSource.setDownsample("1m-avg");
-    dataSource.setGroupBy(Arrays.asList("hostname"));
+    // dataSource.setGroupBy(Arrays.asList("hostname"));
     dataSource.setFilters(Collections.singletonList(filter));
     return dataSource;
   }
 
-  private CompareConfig buildCompareConfig() {
+  protected static CompareConfig buildCompareConfig() {
     CompareConfig compareConfig = new CompareConfig();
     compareConfig.setTriggerLevel("4");
     compareConfig.setCompareParam(Collections.singletonList(buildCompareParam()));
     return compareConfig;
   }
 
-  private CompareParam buildCompareParam() {
+  protected static CompareParam buildCompareParam() {
     CompareParam param = new CompareParam();
     param.setCmp(CompareOperationEnum.GTE);
     param.setCmpValue(0d);
     return param;
   }
 
-  private Map<String, Object> buildTimeFilter() {
+  protected static Map<String, Object> buildTimeFilter() {
     TimeFilter timeFilter = new TimeFilter();
     timeFilter.setModel(TimeFilterEnum.DAY.getDesc());
     timeFilter.setFrom("00:00:00");

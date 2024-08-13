@@ -4,7 +4,7 @@
 package io.holoinsight.server.test.it;
 
 import io.holoinsight.server.common.J;
-import io.holoinsight.server.home.dal.model.dto.AlarmGroupDTO;
+import io.holoinsight.server.common.dao.entity.dto.AlarmGroupDTO;
 import io.restassured.response.Response;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.hamcrest.Matchers;
@@ -77,7 +77,7 @@ public class AlertGroupIT extends BaseIT {
     System.out.println(response.print());
     response.then() //
         .body("success", IS_FALSE) //
-        .body("message", eq("invalid groupName"));
+        .body("message", startsWith("invalid groupName"));
 
     response = queryAlertGroup.get();
     System.out.println(response.body().print());

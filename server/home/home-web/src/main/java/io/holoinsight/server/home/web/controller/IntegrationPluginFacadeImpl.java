@@ -3,23 +3,21 @@
  */
 package io.holoinsight.server.home.web.controller;
 
-import io.holoinsight.server.home.common.util.StringUtil;
-import io.holoinsight.server.home.web.common.TokenUrls;
 import io.holoinsight.server.common.J;
 import io.holoinsight.server.common.JsonResult;
-import io.holoinsight.server.home.biz.service.IntegrationPluginService;
-import io.holoinsight.server.home.biz.service.UserOpLogService;
-import io.holoinsight.server.home.common.util.MonitorException;
-import io.holoinsight.server.home.common.util.ResultCodeEnum;
-import io.holoinsight.server.home.common.util.scope.AuthTargetType;
-import io.holoinsight.server.home.common.util.scope.MonitorCookieUtil;
-import io.holoinsight.server.home.common.util.scope.MonitorScope;
-import io.holoinsight.server.home.common.util.scope.MonitorUser;
-import io.holoinsight.server.home.common.util.scope.PowerConstants;
-import io.holoinsight.server.home.common.util.scope.RequestContext;
+import io.holoinsight.server.common.ManageCallback;
+import io.holoinsight.server.common.MonitorException;
+import io.holoinsight.server.common.RequestContext;
+import io.holoinsight.server.common.ResultCodeEnum;
+import io.holoinsight.server.common.scope.AuthTargetType;
+import io.holoinsight.server.common.scope.MonitorCookieUtil;
+import io.holoinsight.server.common.scope.MonitorScope;
+import io.holoinsight.server.common.scope.MonitorUser;
+import io.holoinsight.server.common.scope.PowerConstants;
+import io.holoinsight.server.common.service.UserOpLogService;
+import io.holoinsight.server.common.service.IntegrationPluginService;
 import io.holoinsight.server.home.dal.model.OpType;
-import io.holoinsight.server.home.dal.model.dto.IntegrationPluginDTO;
-import io.holoinsight.server.home.web.common.ManageCallback;
+import io.holoinsight.server.common.dao.entity.dto.IntegrationPluginDTO;
 import io.holoinsight.server.home.web.common.ParaCheckUtil;
 import io.holoinsight.server.home.web.interceptor.MonitorScopeAuth;
 import org.apache.commons.lang3.StringUtils;
@@ -44,7 +42,6 @@ import java.util.Map;
  */
 @RestController
 @RequestMapping("/webapi/integration/plugin")
-@TokenUrls("/webapi/integration/plugin")
 public class IntegrationPluginFacadeImpl extends BaseFacade {
 
   @Autowired
@@ -56,7 +53,8 @@ public class IntegrationPluginFacadeImpl extends BaseFacade {
   @PostMapping("/update")
   @ResponseBody
   @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.EDIT)
-  public JsonResult<Object> update(@RequestBody IntegrationPluginDTO integrationPluginDTO) {
+  public JsonResult<IntegrationPluginDTO> update(
+      @RequestBody IntegrationPluginDTO integrationPluginDTO) {
     final JsonResult<IntegrationPluginDTO> result = new JsonResult<>();
     facadeTemplate.manage(result, new ManageCallback() {
       @Override
@@ -94,7 +92,7 @@ public class IntegrationPluginFacadeImpl extends BaseFacade {
         }
         IntegrationPluginDTO update =
             integrationPluginService.updateByRequest(integrationPluginDTO);
-
+        JsonResult.createSuccessResult(result, update);
         assert mu != null;
         userOpLogService.append("integration_plugin", update.getId(), OpType.UPDATE,
             mu.getLoginName(), ms.getTenant(), ms.getWorkspace(), J.toJson(integrationPluginDTO),
@@ -103,7 +101,7 @@ public class IntegrationPluginFacadeImpl extends BaseFacade {
       }
     });
 
-    return JsonResult.createSuccessResult(true);
+    return result;
   }
 
   @DeleteMapping(value = "/delete/{id}")
@@ -139,7 +137,7 @@ public class IntegrationPluginFacadeImpl extends BaseFacade {
   @PostMapping("/create")
   @ResponseBody
   @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.EDIT)
-  public JsonResult<IntegrationPluginDTO> save(
+  public JsonResult<IntegrationPluginDTO> create(
       @RequestBody IntegrationPluginDTO integrationPluginDTO) {
     final JsonResult<IntegrationPluginDTO> result = new JsonResult<>();
     facadeTemplate.manage(result, new ManageCallback() {
@@ -150,6 +148,7 @@ public class IntegrationPluginFacadeImpl extends BaseFacade {
         ParaCheckUtil.checkParaNotNull(integrationPluginDTO.type, "type");
         ParaCheckUtil.checkParaNotBlank(integrationPluginDTO.json, "json");
         // ParaCheckUtil.checkParaNotNull(integrationPluginDTO.status);
+        ParaCheckUtil.checkParaId(integrationPluginDTO.getId());
       }
 
       @Override
@@ -163,7 +162,7 @@ public class IntegrationPluginFacadeImpl extends BaseFacade {
           integrationPluginDTO.setCreator(mu.getLoginName());
           integrationPluginDTO.setModifier(mu.getLoginName());
         }
-        if (null != ms && !StringUtil.isBlank(ms.workspace)) {
+        if (null != ms && !StringUtils.isBlank(ms.workspace)) {
           integrationPluginDTO.setWorkspace(ms.workspace);
         }
         integrationPluginDTO.setStatus(true);
@@ -223,7 +222,7 @@ public class IntegrationPluginFacadeImpl extends BaseFacade {
         Map<String, Object> params = new HashMap<>();
         params.put("tenant", MonitorCookieUtil.getTenantOrException());
         params.put("product", name);
-        if (null != ms && !StringUtil.isBlank(ms.workspace)) {
+        if (null != ms && !StringUtils.isBlank(ms.workspace)) {
           params.put("workspace", ms.workspace);
         }
         List<IntegrationPluginDTO> integrationPluginDTOs =

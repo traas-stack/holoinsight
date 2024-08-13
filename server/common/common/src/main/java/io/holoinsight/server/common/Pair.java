@@ -3,6 +3,7 @@
  */
 package io.holoinsight.server.common;
 
+import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
@@ -18,6 +19,7 @@ import java.io.Serializable;
  */
 @EqualsAndHashCode
 @ToString
+@Data
 public class Pair<L, R> implements Serializable {
 
   private static final long serialVersionUID = -1292525629741844984L;
@@ -60,5 +62,4 @@ public class Pair<L, R> implements Serializable {
   public R right() {
     return right;
   }
-
 }

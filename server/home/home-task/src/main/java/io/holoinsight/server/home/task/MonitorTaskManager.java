@@ -5,16 +5,16 @@ package io.holoinsight.server.home.task;
 
 import io.holoinsight.server.common.AddressUtil;
 import io.holoinsight.server.common.J;
-import io.holoinsight.server.home.biz.common.MetaDictUtil;
-import io.holoinsight.server.home.biz.service.ClusterService;
-import io.holoinsight.server.home.biz.service.ClusterTaskService;
-import io.holoinsight.server.home.biz.service.impl.ClusterTaskServiceImpl;
-import io.holoinsight.server.home.common.util.CLUSTER_ROLE_CONST;
-import io.holoinsight.server.home.common.util.Debugger;
 import io.holoinsight.server.common.config.ProdLog;
 import io.holoinsight.server.common.config.ScheduleLoadTask;
-import io.holoinsight.server.home.dal.model.ClusterTask;
-import io.holoinsight.server.home.dal.model.dto.ClusterDTO;
+import io.holoinsight.server.home.biz.common.MetaDictUtil;
+import io.holoinsight.server.common.service.ClusterService;
+import io.holoinsight.server.common.service.ClusterTaskService;
+import io.holoinsight.server.common.service.impl.ClusterTaskServiceImpl;
+import io.holoinsight.server.common.model.CLUSTER_ROLE_CONST;
+import io.holoinsight.server.common.Debugger;
+import io.holoinsight.server.common.dao.entity.ClusterTask;
+import io.holoinsight.server.common.dao.entity.dto.ClusterDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -22,7 +22,6 @@ import org.springframework.util.CollectionUtils;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  *
@@ -31,7 +30,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 @Service
 public class MonitorTaskManager extends ScheduleLoadTask {
-  private static AtomicBoolean STARTED = new AtomicBoolean(false);
 
   @Autowired
   private ClusterTaskService clusterTaskService;
@@ -40,13 +38,13 @@ public class MonitorTaskManager extends ScheduleLoadTask {
   private ClusterService clusterService;
 
   @Override
-  public void load() throws Exception {
+  public void load() {
     try {
       // 这里任务周期
       long current = System.currentTimeMillis();
       current = current - current % 1000;
       // 强制执行时间比下发时间延后一秒，避免任务来不及执行
-      long period = current + 1000L;
+      long period = current;
 
       List<ClusterDTO> clusters =
           clusterService.getClusterAliveSortedByRole(CLUSTER_ROLE_CONST.PROD);
@@ -82,6 +80,9 @@ public class MonitorTaskManager extends ScheduleLoadTask {
     try {
 
       for (AbstractMonitorTask task : TaskFactoryHolder.taskFactoryMap.values()) {
+        if (!task.needRun()) {
+          continue;
+        }
         String taskId = task.getTaskId();
         long taskPeriod = task.getTaskPeriod(); // 任务周期
 
@@ -107,7 +108,7 @@ public class MonitorTaskManager extends ScheduleLoadTask {
         ct.setGmtCreate(new Date());
         ct.setGmtModified(new Date());
         cts.add(ct);
-        ProdLog.info("task detail:" + ct.toString());
+        ProdLog.info("task detail:" + ct);
       }
 
       if (!CollectionUtils.isEmpty(cts)) {
@@ -161,19 +162,16 @@ public class MonitorTaskManager extends ScheduleLoadTask {
         continue;
       }
 
-      task.getCorePool().submit(new Runnable() {
-        @Override
-        public void run() {
-          try {
-            task.CORE_JOBS.incrementAndGet();
-            taskJobBuild(task, period, ct);
-            clusterTaskService.doneTask(ct, true, null);
-          } catch (Throwable e) {
-            ProdLog.error(task.getTaskId() + "-" + period + ", build jobs error", e);
-            clusterTaskService.doneTask(ct, false, e.getMessage());
-          } finally {
-            task.CORE_JOBS.decrementAndGet();
-          }
+      task.getCorePool().submit(() -> {
+        try {
+          task.CORE_JOBS.incrementAndGet();
+          taskJobBuild(task, period, ct);
+          clusterTaskService.doneTask(ct, true, null);
+        } catch (Throwable e) {
+          ProdLog.error(task.getTaskId() + "-" + period + ", build jobs error", e);
+          clusterTaskService.doneTask(ct, false, e.getMessage());
+        } finally {
+          task.CORE_JOBS.decrementAndGet();
         }
       });
     }
@@ -195,30 +193,26 @@ public class MonitorTaskManager extends ScheduleLoadTask {
     }
     for (MonitorTaskJob job : jobs) {
       try {
-        task.getPool().submit(new Runnable() {
-          @Override
-          public void run() {
-            task.RUNNING_JOBS.incrementAndGet(); // 增加一个Job
-            long s = System.currentTimeMillis();
-            long end;
-            try {
-              job.run();
-              end = System.currentTimeMillis();
-              ProdLog.monitor("TASK_MANAGER", task.getTaskId(), job.id(), "Y", "", true, end - s,
-                  1);
-              ProdLog.info(task.getTaskId() + "-" + period + "-" + job.id()
-                  + ", work success, cost:" + (end - s));
-            } catch (Throwable e) {
-              end = System.currentTimeMillis();
-              ProdLog.monitor("TASK_MANAGER", task.getTaskId(), job.id(), "N", "", false, end - s,
-                  1);
-              ProdLog.error(task.getTaskId() + "-" + period + "-" + job.id()
-                  + ", work failed, cost:" + (end - s), e);
-            } finally {
-              // 计数减1,Job
-              task.RUNNING_JOBS.decrementAndGet();
-              ProdLog.info(task.getTaskId() + "-" + period + ", close job:" + job.id());
-            }
+        task.getPool().submit(() -> {
+          task.RUNNING_JOBS.incrementAndGet(); // 增加一个Job
+          long s1 = System.currentTimeMillis();
+          long end;
+          try {
+            job.run();
+            end = System.currentTimeMillis();
+            ProdLog.monitor("TASK_MANAGER", task.getTaskId(), job.id(), "Y", "", true, end - s1, 1);
+            ProdLog.info(task.getTaskId() + "-" + period + "-" + job.id() + ", work success, cost:"
+                + (end - s1));
+          } catch (Throwable e) {
+            end = System.currentTimeMillis();
+            ProdLog.monitor("TASK_MANAGER", task.getTaskId(), job.id(), "N", "", false, end - s1,
+                1);
+            ProdLog.error(task.getTaskId() + "-" + period + "-" + job.id() + ", work failed, cost:"
+                + (end - s1), e);
+          } finally {
+            // 计数减1,Job
+            task.RUNNING_JOBS.decrementAndGet();
+            ProdLog.info(task.getTaskId() + "-" + period + ", close job:" + job.id());
           }
         });
       } catch (Exception e) {

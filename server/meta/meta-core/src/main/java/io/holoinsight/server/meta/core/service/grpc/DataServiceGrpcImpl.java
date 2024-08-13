@@ -3,48 +3,23 @@
  */
 package io.holoinsight.server.meta.core.service.grpc;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Random;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
-import java.util.function.Supplier;
-
-import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.google.gson.reflect.TypeToken;
 import io.grpc.stub.StreamObserver;
 import io.holoinsight.server.common.J;
 import io.holoinsight.server.common.Pair;
-import io.holoinsight.server.common.dao.entity.MetaDataDictValue;
-import io.holoinsight.server.common.service.SuperCacheService;
 import io.holoinsight.server.meta.common.model.QueryExample;
-import io.holoinsight.server.meta.common.util.ConstModel;
 import io.holoinsight.server.meta.common.util.ConstPool;
 import io.holoinsight.server.meta.common.util.RetryPolicy;
-import io.holoinsight.server.meta.core.service.DBCoreService;
-import io.holoinsight.server.meta.proto.data.BatchDeleteByPkRequest;
-import io.holoinsight.server.meta.proto.data.DataBaseResponse;
-import io.holoinsight.server.meta.proto.data.DataHello;
-import io.holoinsight.server.meta.proto.data.DataServiceGrpc;
-import io.holoinsight.server.meta.proto.data.DeleteDataByExampleRequest;
-import io.holoinsight.server.meta.proto.data.InsertOrUpdateRequest;
-import io.holoinsight.server.meta.proto.data.QueryDataByExampleRequest;
-import io.holoinsight.server.meta.proto.data.QueryDataByPksRequest;
-import io.holoinsight.server.meta.proto.data.QueryDataByTableRequest;
-import io.holoinsight.server.meta.proto.data.QueryDataByTableRowsRequest;
-import io.holoinsight.server.meta.proto.data.QueryDataResponse;
+import io.holoinsight.server.meta.core.service.DBCoreServiceSwitcher;
+import io.holoinsight.server.meta.proto.data.*;
 import org.apache.commons.lang3.time.StopWatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.util.CollectionUtils;
+
+import java.util.*;
+import java.util.function.Supplier;
 
 /**
  * @author jsy1001de
@@ -53,21 +28,9 @@ import org.springframework.util.CollectionUtils;
 @Service
 public class DataServiceGrpcImpl extends DataServiceGrpc.DataServiceImplBase {
   private static final Logger logger = LoggerFactory.getLogger(DataServiceGrpcImpl.class);
-  @Autowired
-  @Qualifier("mongoDataCoreService")
-  private DBCoreService mongoDataCoreService;
 
   @Autowired
-  @Qualifier("sqlDataCoreService")
-  private DBCoreService sqlDataCoreService;
-
-  @Autowired
-  private SuperCacheService superCacheService;
-
-  private ThreadPoolExecutor writeMysqlExecutor = new ThreadPoolExecutor(3, 3, 0, TimeUnit.MINUTES, //
-      new ArrayBlockingQueue<>(65536), //
-      new ThreadFactoryBuilder().setNameFormat("meta-mysql-%d").build(), //
-      new ThreadPoolExecutor.AbortPolicy());
+  private DBCoreServiceSwitcher dbCoreServiceSwitcher;
 
   @Override
   public void insertOrUpdate(InsertOrUpdateRequest request,
@@ -81,10 +44,8 @@ public class DataServiceGrpcImpl extends DataServiceGrpc.DataServiceImplBase {
     DataBaseResponse.Builder builder = DataBaseResponse.newBuilder();
     try {
       Pair<Integer, Integer> insertOrUpdate = tryUntilSuccess(
-          () -> mongoDataCoreService.insertOrUpdate(tableName, rows), "insertOrUpdate", 0);
-      if (writeMysqlEnable()) {
-        writeMysqlExecutor.execute(() -> sqlDataCoreService.insertOrUpdate(tableName, rows));
-      }
+          () -> dbCoreServiceSwitcher.dbCoreService().insertOrUpdate(tableName, rows),
+          "insertOrUpdate", 0);
       builder.setSuccess(true).setRowsJson(String.format("insertCount: %s, updateCount: %s",
           insertOrUpdate.left(), insertOrUpdate.right()));
       logger.info("DimWriterGrpcBackend,insert,Y,{},{},{},{},{},{},", stopWatch.getTime(),
@@ -107,10 +68,10 @@ public class DataServiceGrpcImpl extends DataServiceGrpc.DataServiceImplBase {
     String tableName = request.getTableName();
     List<String> pkVals =
         J.fromJson(request.getPkValsJson(), new TypeToken<List<String>>() {}.getType());
-    DBCoreService coreService = getDbCoreService();
     stopWatch.start();
     List<Map<String, Object>> rows =
-        tryUntilSuccess(() -> coreService.queryByPks(tableName, pkVals), "queryDataByPks", 0);
+        tryUntilSuccess(() -> dbCoreServiceSwitcher.dbCoreService().queryByPks(tableName, pkVals),
+            "queryDataByPks", 0);
     stopWatch.stop();
     try {
       logger.info("DimWriterGrpcBackend,queryDataByPks,Y,{},{},{},{},{},{},", stopWatch.getTime(),
@@ -128,25 +89,15 @@ public class DataServiceGrpcImpl extends DataServiceGrpc.DataServiceImplBase {
     o.onCompleted();
   }
 
-  private DBCoreService getDbCoreService() {
-    DBCoreService coreService;
-    if (readMysqlEnable()) {
-      coreService = sqlDataCoreService;
-    } else {
-      coreService = mongoDataCoreService;
-    }
-    return coreService;
-  }
-
   @Override
   public void queryDataByTableStream(QueryDataByTableRequest request,
       io.grpc.stub.StreamObserver<QueryDataResponse> o) {
     StopWatch stopWatch = StopWatch.createStarted();
     String tableName = request.getTableName();
     List<Map<String, Object>> rows;
-    DBCoreService coreService = getDbCoreService();
     try {
-      rows = tryUntilSuccess(() -> coreService.queryByTable(tableName), "queryByTable", 0);
+      rows = tryUntilSuccess(() -> dbCoreServiceSwitcher.dbCoreService().queryByTable(tableName),
+          "queryByTable", 0);
       Iterator<Map<String, Object>> it = rows.iterator();
       int total = 0;
       int count = 0;
@@ -187,8 +138,9 @@ public class DataServiceGrpcImpl extends DataServiceGrpc.DataServiceImplBase {
     String pkRows = request.getPkRows();
     List<String> rowVals = J.toList(pkRows);
     try {
-      DBCoreService coreService = getDbCoreService();
-      rows = tryUntilSuccess(() -> coreService.queryByTable(tableName, rowVals), "queryByTable", 0);
+      rows = tryUntilSuccess(
+          () -> dbCoreServiceSwitcher.dbCoreService().queryByTable(tableName, rowVals),
+          "queryByTable", 0);
       Iterator<Map<String, Object>> it = rows.iterator();
       int total = 0;
       int count = 0;
@@ -228,13 +180,8 @@ public class DataServiceGrpcImpl extends DataServiceGrpc.DataServiceImplBase {
     List<String> pkVals = J.toList(pkValsJson);
     DataBaseResponse.Builder builder = DataBaseResponse.newBuilder();
     try {
-      Long deleteCount = tryUntilSuccess(
-          () -> mongoDataCoreService.batchDeleteByPk(request.getTableName(), pkVals),
-          "batchDeleteByPk", 0);
-      if (writeMysqlEnable()) {
-        writeMysqlExecutor
-            .execute(() -> sqlDataCoreService.batchDeleteByPk(request.getTableName(), pkVals));
-      }
+      Long deleteCount = tryUntilSuccess(() -> dbCoreServiceSwitcher.dbCoreService()
+          .batchDeleteByPk(request.getTableName(), pkVals), "batchDeleteByPk", 0);
       logger.info("DimWriterGrpcBackend,batchDeleteByPk,Y,{},{},{},{},{},{},{},",
           stopWatch.getTime(), request.getTableName(), pkVals.size(), 0, request.getFromApp(),
           request.getFromIp(), deleteCount);
@@ -260,10 +207,8 @@ public class DataServiceGrpcImpl extends DataServiceGrpc.DataServiceImplBase {
     DataBaseResponse.Builder builder = DataBaseResponse.newBuilder();
     try {
       Long deleteCount = tryUntilSuccess(
-          () -> mongoDataCoreService.deleteByExample(tableName, example), "deleteByExample", 0);
-      if (writeMysqlEnable()) {
-        writeMysqlExecutor.execute(() -> sqlDataCoreService.deleteByExample(tableName, example));
-      }
+          () -> dbCoreServiceSwitcher.dbCoreService().deleteByExample(tableName, example),
+          "deleteByExample", 0);
       logger.info("DimWriterGrpcBackend,deleteByExample,Y,{},{},{},{},{},{},{},",
           stopWatch.getTime(), tableName, 0, 0, request.getFromApp(), request.getFromIp(),
           deleteCount);
@@ -290,10 +235,8 @@ public class DataServiceGrpcImpl extends DataServiceGrpc.DataServiceImplBase {
     DataBaseResponse.Builder builder = DataBaseResponse.newBuilder();
     try {
       Long deleteCount = tryUntilSuccess(
-          () -> mongoDataCoreService.deleteByRowMap(tableName, example), "deleteByRowMap", 0);
-      if (writeMysqlEnable()) {
-        writeMysqlExecutor.execute(() -> sqlDataCoreService.deleteByRowMap(tableName, example));
-      }
+          () -> dbCoreServiceSwitcher.dbCoreService().deleteByRowMap(tableName, example),
+          "deleteByRowMap", 0);
       logger.info("DimWriterGrpcBackend,deleteByRowMap,Y,{},{},{},{},{},{},{},",
           stopWatch.getTime(), tableName, 0, 0, request.getFromApp(), request.getFromIp(),
           deleteCount);
@@ -319,9 +262,9 @@ public class DataServiceGrpcImpl extends DataServiceGrpc.DataServiceImplBase {
     List<Map<String, Object>> rows;
     QueryDataResponse.Builder builder = QueryDataResponse.newBuilder();
     try {
-      DBCoreService coreService = getDbCoreService();
-      rows = tryUntilSuccess(() -> coreService.queryByExample(tableName, example), "queryByExample",
-          0);
+      rows = tryUntilSuccess(
+          () -> dbCoreServiceSwitcher.dbCoreService().queryByExample(tableName, example),
+          "queryByExample", 0);
       logger.info("DimWriterGrpcBackend,queryByExample,Y,{},{},{},{},{},{},", stopWatch.getTime(),
           tableName, 0, rows.size(), request.getFromApp(), request.getFromIp());
       builder.setSuccess(true);
@@ -347,9 +290,9 @@ public class DataServiceGrpcImpl extends DataServiceGrpc.DataServiceImplBase {
     List<Map<String, Object>> rows;
     QueryDataResponse.Builder builder = QueryDataResponse.newBuilder();
     try {
-      DBCoreService coreService = getDbCoreService();
-      rows = tryUntilSuccess(() -> coreService.fuzzyByExample(tableName, example), "fuzzyByExample",
-          0);
+      rows = tryUntilSuccess(
+          () -> dbCoreServiceSwitcher.dbCoreService().fuzzyByExample(tableName, example),
+          "fuzzyByExample", 0);
       logger.info("DimWriterGrpcBackend,fuzzyByExample,Y,{},{},{},{},{},{},", stopWatch.getTime(),
           tableName, 0, rows.size(), request.getFromApp(), request.getFromIp());
       builder.setSuccess(true);
@@ -374,8 +317,8 @@ public class DataServiceGrpcImpl extends DataServiceGrpc.DataServiceImplBase {
     QueryExample example = J.json2Bean(exampleJson, QueryExample.class);
     List<Map<String, Object>> rows;
     try {
-      DBCoreService coreService = getDbCoreService();
-      rows = tryUntilSuccess(() -> coreService.queryByExample(tableName, example),
+      rows = tryUntilSuccess(
+          () -> dbCoreServiceSwitcher.dbCoreService().queryByExample(tableName, example),
           "queryByExampleStream", 0);
       Iterator<Map<String, Object>> it = rows.iterator();
       int count = 0;
@@ -450,34 +393,6 @@ public class DataServiceGrpcImpl extends DataServiceGrpc.DataServiceImplBase {
       T t = tryUntilSuccess(supplier, desc, i + 1);
       return t;
     }
-  }
-
-  private boolean readMysqlEnable() {
-    Map<String, Map<String, MetaDataDictValue>> metaDataDictValueMap =
-        superCacheService.getSc().metaDataDictValueMap;
-    Map<String, MetaDataDictValue> indexKeyMaps = metaDataDictValueMap.get(ConstModel.META_CONFIG);
-    if (CollectionUtils.isEmpty(indexKeyMaps)) {
-      return false;
-    }
-    MetaDataDictValue metaDataDictValue = indexKeyMaps.get(ConstModel.READ_MYSQL_ENABLE);
-    if (Objects.isNull(metaDataDictValue)) {
-      return false;
-    }
-    return "true".equalsIgnoreCase(metaDataDictValue.getDictValue());
-  }
-
-  private boolean writeMysqlEnable() {
-    Map<String, Map<String, MetaDataDictValue>> metaDataDictValueMap =
-        superCacheService.getSc().metaDataDictValueMap;
-    Map<String, MetaDataDictValue> indexKeyMaps = metaDataDictValueMap.get(ConstModel.META_CONFIG);
-    if (CollectionUtils.isEmpty(indexKeyMaps)) {
-      return false;
-    }
-    MetaDataDictValue metaDataDictValue = indexKeyMaps.get(ConstModel.WRITE_MYSQL_ENABLE);
-    if (Objects.isNull(metaDataDictValue)) {
-      return false;
-    }
-    return "true".equalsIgnoreCase(metaDataDictValue.getDictValue());
   }
 
 }

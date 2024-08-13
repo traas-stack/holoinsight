@@ -6,6 +6,7 @@ package io.holoinsight.server.home.web.common;
 import io.holoinsight.server.common.J;
 import io.holoinsight.server.common.JsonResult;
 import io.holoinsight.server.common.JsonUtils;
+import io.holoinsight.server.common.ResultCodeEnum;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 
@@ -33,11 +34,12 @@ public class ResponseUtil {
     }
   }
 
-  public static void authFailedResponse(HttpServletResponse resp, int status, String errorMsg)
-      throws IOException {
+  public static void authFailedResponse(HttpServletResponse resp, int status, String errorMsg,
+      ResultCodeEnum resultCodeEnum) throws IOException {
     resp.setContentType(MediaType.APPLICATION_JSON_VALUE);
     resp.setStatus(status);
-    JsonUtils.writeValue(resp.getWriter(), JsonResult.createFailResult(errorMsg));
+    JsonUtils.writeValue(resp.getWriter(),
+        JsonResult.createFailResult(errorMsg, resultCodeEnum.getResultCode()));
   }
 
 }

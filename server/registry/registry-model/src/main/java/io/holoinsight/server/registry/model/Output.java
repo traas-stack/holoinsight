@@ -3,6 +3,7 @@
  */
 package io.holoinsight.server.registry.model;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -22,6 +23,7 @@ public class Output {
    */
   private String type;
   private Gateway gateway;
+  private SLSGateway sls;
 
   @ToString
   @Getter
@@ -31,5 +33,17 @@ public class Output {
      * 如果非空则优先使用该字段作为metricName
      */
     private String metricName;
+  }
+
+  @ToString
+  @Getter
+  @Setter
+  @AllArgsConstructor
+  public static class SLSGateway {
+    private String endpoint;
+    private String project;
+    private String logstore;
+    private String ak;
+    private String sk;
   }
 }

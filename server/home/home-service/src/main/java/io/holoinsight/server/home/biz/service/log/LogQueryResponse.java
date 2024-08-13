@@ -33,4 +33,6 @@ public class LogQueryResponse {
    * query end time :s
    */
   private Integer to;
+
+  private String whereQuery;
 }

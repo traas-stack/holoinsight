@@ -3,19 +3,21 @@
  */
 package io.holoinsight.server.home.web.filter;
 
-import io.holoinsight.server.home.web.config.RestAuthUtil;
+import io.holoinsight.server.common.Debugger;
 import io.holoinsight.server.common.J;
-import io.holoinsight.server.home.biz.ula.ULAFacade;
+import io.holoinsight.server.common.MonitorException;
+import io.holoinsight.server.common.RequestContext;
+import io.holoinsight.server.common.RequestContext.Context;
+import io.holoinsight.server.common.ResultCodeEnum;
+import io.holoinsight.server.common.scope.IdentityType;
+import io.holoinsight.server.common.scope.MonitorAuth;
+import io.holoinsight.server.common.scope.MonitorCookieUtil;
+import io.holoinsight.server.common.scope.MonitorParams;
+import io.holoinsight.server.common.scope.MonitorScope;
+import io.holoinsight.server.common.scope.MonitorUser;
 import io.holoinsight.server.home.biz.common.MetaDictUtil;
-import io.holoinsight.server.home.common.util.Debugger;
-import io.holoinsight.server.home.common.util.StringUtil;
-import io.holoinsight.server.home.common.util.scope.IdentityType;
-import io.holoinsight.server.home.common.util.scope.MonitorAuth;
-import io.holoinsight.server.home.common.util.scope.MonitorCookieUtil;
-import io.holoinsight.server.home.common.util.scope.MonitorScope;
-import io.holoinsight.server.home.common.util.scope.MonitorUser;
-import io.holoinsight.server.home.common.util.scope.RequestContext;
-import io.holoinsight.server.home.common.util.scope.RequestContext.Context;
+import io.holoinsight.server.home.biz.ula.ULAFacade;
+import io.holoinsight.server.home.web.config.RestAuthUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,7 +60,7 @@ public class Step3AuthFilter implements Filter {
       next = auth(req, resp);
     } catch (Throwable e) {
       authFailedResponse(resp, HttpServletResponse.SC_FORBIDDEN,
-          "auth check error, " + e.getMessage());
+          "auth check error, " + e.getMessage(), ResultCodeEnum.MONITOR_SYSTEM_ERROR);
       log.error("{} auth check error, auth info: {}", RequestContext.getTrace(),
           J.toJson(J.toJson(RequestContext.getContext())), e);
       return;
@@ -72,7 +74,8 @@ public class Step3AuthFilter implements Filter {
 
   public boolean auth(HttpServletRequest req, HttpServletResponse resp) throws Throwable {
 
-    if (RestAuthUtil.singleton.isNoAuthRequest(req) || !RestAuthUtil.singleton.isAuthRequest(req)) {
+    if (RestAuthUtil.singleton.isNoAuthRequest(req) || !RestAuthUtil.singleton.isAuthRequest(req)
+        || MetaDictUtil.getTokenUrlNoAuth().contains(req.getServletPath())) {
       return true;
     }
     MonitorUser mu = (MonitorUser) req.getAttribute(MonitorUser.MONITOR_USER);
@@ -81,9 +84,10 @@ public class Step3AuthFilter implements Filter {
     if (IdentityType.OUTTOKEN.equals(mu.getIdentityType()) || MetaDictUtil.getUlaClose()) {
       String token = req.getHeader("apiToken");
       // 接口权限判定
-      if (!ulaFacade.authFunc(req) && StringUtil.isBlank(token)) {
+      if (!ulaFacade.authFunc(req) && StringUtils.isBlank(token)) {
         log.warn("{} authFunc check failed", RequestContext.getTrace());
-        authFailedResponse(resp, HttpServletResponse.SC_FORBIDDEN, "权限不足，请联系账号管理员");
+        authFailedResponse(resp, HttpServletResponse.SC_FORBIDDEN, "权限不足，请联系账号管理员",
+            ResultCodeEnum.AUTH_CHECK_ERROR);
         return false;
       }
       Context c = new Context(RequestContext.getContext().ms, mu, new MonitorAuth(),
@@ -94,6 +98,7 @@ public class Step3AuthFilter implements Filter {
 
     // 获取一个用户的权限包
     MonitorScope ms = ulaFacade.getMonitorScope(req, mu);
+    MonitorParams mp = ulaFacade.getMonitorParams(req, mu);
     MonitorAuth ma = null;
 
     try {
@@ -102,45 +107,63 @@ public class Step3AuthFilter implements Filter {
         // 用户 cookies 里面拥有该租户权限，此时默认返回 true
         Set<String> tenantMaps = ma.hasTenantViewPowerList();
         Set<String> workspaceMaps = ma.hasWsViewPowerList();
+        boolean checkCache = false;
         if (StringUtils.isBlank(ms.getWorkspace()) && CollectionUtils.isEmpty(workspaceMaps)
             && tenantMaps.contains(ms.getTenant())) {
           req.setAttribute(MonitorAuth.MONITOR_AUTH, ma);
-          return true;
+          checkCache = true;
         } else if (StringUtils.isNotBlank(ms.getWorkspace()) && tenantMaps.contains(ms.getTenant())
             && workspaceMaps.contains(ms.getWorkspace())) {
           req.setAttribute(MonitorAuth.MONITOR_AUTH, ma);
+          checkCache = true;
+        }
+        if (checkCache) {
+          ulaFacade.checkWorkspace(req, mu, ms, mp);
           return true;
         }
       }
-      ma = ulaFacade.getUserPowerPkg(mu, ms);
-      ulaFacade.checkWorkspace(req, mu, ms);
+      ma = ulaFacade.getUserPowerPkg(req, mu, ms);
+      ulaFacade.checkWorkspace(req, mu, ms, mp);
       if (null == ma || CollectionUtils.isEmpty(ma.powerConstants)
           || CollectionUtils.isEmpty(ma.getTenantViewPowerList())) {
         log.error("check tenant auth failed, " + J.toJson(ma));
-        authFailedResponse(resp, HttpServletResponse.SC_FORBIDDEN, "check tenant auth failed");
+        authFailedResponse(resp, HttpServletResponse.SC_FORBIDDEN, "check tenant auth failed",
+            ResultCodeEnum.AUTH_CHECK_ERROR);
         return false;
       }
 
       if (!ma.getTenantViewPowerList().containsKey(ms.getTenant())) {
         log.error("check tenant " + ms.getTenant() + " is not auth, " + J.toJson(ma));
         authFailedResponse(resp, HttpServletResponse.SC_FORBIDDEN,
-            "check tenant " + ms.getTenant() + " is not auth");
+            "check tenant " + ms.getTenant() + " is not auth", ResultCodeEnum.AUTH_CHECK_ERROR);
         return false;
       }
 
       MonitorCookieUtil.addMonitorAuthCookie(ma, resp);
       MonitorCookieUtil.addUserCookie(mu, resp);
       // 放到线程上下文中
+    } catch (MonitorException me) {
+      log.error("auth failed by exception", me);
+      if (me.getResultCode() == ResultCodeEnum.NO_LOGIN_AUTH) {
+        authFailedResponse(resp, HttpServletResponse.SC_UNAUTHORIZED, me.getMessage(),
+            ResultCodeEnum.NO_LOGIN_AUTH);
+      } else if (me.getResultCode() == ResultCodeEnum.DOWNSTREAM_SYSTEM_ERROR) {
+        authFailedResponse(resp, HttpServletResponse.SC_FORBIDDEN, me.getMessage(),
+            ResultCodeEnum.DOWNSTREAM_AUTH_SYSTEM_ERROR);
+      } else {
+        authFailedResponse(resp, HttpServletResponse.SC_FORBIDDEN,
+            "auth failed by exception, " + me.getMessage(),
+            ResultCodeEnum.MONITOR_AUTH_SYSTEM_ERROR);
+      }
     } catch (Throwable e) {
       log.error("auth failed by cookie", e);
       authFailedResponse(resp, HttpServletResponse.SC_FORBIDDEN,
-          "auth failed by cookie, " + e.getMessage());
+          "auth failed by cookie, " + e.getMessage(), ResultCodeEnum.MONITOR_SYSTEM_ERROR);
       return false;
     } finally {
-      Context c = new Context(ms, mu, ma);
-      Debugger.print("Step3AuthFilter", "MS: " + J.toJson(ms));
-      Debugger.print("Step3AuthFilter", "MU: " + J.toJson(mu));
-      Debugger.print("Step3AuthFilter", "MA: " + J.toJson(ma));
+      Context c = new Context(ms, mu, ma, mp);
+      Debugger.print("Step3AuthFilter",
+          "MS: " + J.toJson(ms) + ", MU: " + J.toJson(mu) + ", MA: " + J.toJson(ma));
       RequestContext.setContext(c);
     }
     return true;

@@ -3,7 +3,7 @@
  */
 package io.holoinsight.server.home.biz.plugin.model;
 
-import io.holoinsight.server.home.dal.model.dto.IntegrationConfig;
+import io.holoinsight.server.common.dao.entity.dto.IntegrationConfig;
 import io.holoinsight.server.home.dal.model.dto.conf.CustomPluginConf;
 import lombok.Data;
 import lombok.EqualsAndHashCode;

@@ -39,4 +39,9 @@ public class LogContextRequest {
    * query context
    */
   private Map<String, String> context;
+
+  /**
+   * type
+   */
+  private String type;
 }

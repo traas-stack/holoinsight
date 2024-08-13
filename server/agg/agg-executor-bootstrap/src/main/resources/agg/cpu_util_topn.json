@@ -1,0 +1,58 @@
+{
+  "aggId": "k8s_pod_cpu_util_topn",
+  "version": 1,
+  "select": {
+    "items": [
+      {
+        "agg": {
+          "type": "TOPN",
+          "topn": {
+            "orderBy": "value",
+            "desc": true,
+            "limit": 1
+          }
+        },
+        "elect": "k8s_pod_cpu_util.value",
+        "as": "topn"
+      }
+    ]
+  },
+  "from": {
+    "type": "metrics",
+    "metrics": {
+      "metrics": [
+        "k8s_pod_cpu_util"
+      ]
+    }
+  },
+  "where": {},
+  "groupBy": {
+    "items": [
+      {
+        "tag": "tenant"
+      },
+      {
+        "tag": "workspace"
+      },
+      {
+        "tag": "app"
+      }
+    ]
+  },
+  "window": {
+    "interval": 60000
+  },
+  "output": {
+    "items": [
+      {
+        "type": "console",
+        "fields": [
+          {
+            "name": "topn",
+            "expression": "topn"
+          }
+        ]
+      }
+    ]
+  }
+}

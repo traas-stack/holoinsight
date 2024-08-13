@@ -237,12 +237,40 @@
 						<groupId>org.slf4j</groupId>
 						<artifactId>com.springsource.slf4j.api</artifactId>
 					</exclusion>
+					<exclusion>
+						<groupId>net.jpountz.lz4</groupId>
+						<artifactId>lz4</artifactId>
+					</exclusion>
 				</exclusions>
 			</dependency>
 			<dependency>
 				<groupId>org.xerial.snappy</groupId>
 				<artifactId>snappy-java</artifactId>
 				<version>1.1.8.4</version>
+			</dependency>
+
+			<dependency>
+				<groupId>net.agkn</groupId>
+				<artifactId>hll</artifactId>
+				<version>1.6.0</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.apache.commons</groupId>
+				<artifactId>commons-text</artifactId>
+				<version>1.10.0</version>
+			</dependency>
+
+			<dependency>
+				<groupId>io.opentelemetry.proto</groupId>
+				<artifactId>opentelemetry-proto</artifactId>
+				<version>1.0.0-alpha</version>
+			</dependency>
+
+			<dependency>
+				<groupId>com.esotericsoftware</groupId>
+				<artifactId>kryo</artifactId>
+				<version>5.5.0</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>

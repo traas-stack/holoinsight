@@ -63,7 +63,8 @@ public class MetricServiceImpl implements MetricService {
 
   @Override
   public StatisticDataList statistic(long startTime, long endTime, List<String> groups,
-      List<AggregationBuilder> aggregations) throws Exception {
-    return metricStorage.statistic(startTime, endTime, groups, aggregations);
+      Map<String, String> whites, Map<String, String> blacks, List<AggregationBuilder> aggregations)
+      throws Exception {
+    return metricStorage.statistic(startTime, endTime, groups, whites, blacks, aggregations);
   }
 }

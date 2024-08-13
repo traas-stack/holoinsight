@@ -3,12 +3,10 @@
  */
 package io.holoinsight.server.gateway.bootstrap;
 
-import io.holoinsight.server.common.threadpool.CommonThreadPools;
 import io.holoinsight.server.common.ContextHolder;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.annotation.Bean;
 
 /**
  * <p>

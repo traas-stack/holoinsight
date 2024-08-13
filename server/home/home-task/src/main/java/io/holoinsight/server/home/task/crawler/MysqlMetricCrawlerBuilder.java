@@ -7,7 +7,7 @@ package io.holoinsight.server.home.task.crawler;
 import com.google.gson.reflect.TypeToken;
 import io.holoinsight.server.common.J;
 import io.holoinsight.server.common.dao.entity.MetricInfo;
-import io.holoinsight.server.home.dal.model.dto.IntegrationMetricDTO;
+import io.holoinsight.server.common.dao.entity.dto.IntegrationMetricDTO;
 import io.holoinsight.server.home.task.AbstractMetricCrawlerBuilder;
 import io.holoinsight.server.home.task.MetricCrawler;
 import lombok.extern.slf4j.Slf4j;
@@ -19,10 +19,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import static io.holoinsight.server.home.task.MetricCrawlerConstant.GLOBAL_ORGANIZATION;
-import static io.holoinsight.server.home.task.MetricCrawlerConstant.GLOBAL_TENANT;
-import static io.holoinsight.server.home.task.MetricCrawlerConstant.GLOBAL_WORKSPACE;
-import static io.holoinsight.server.home.task.MetricCrawlerConstant.NUMBER_UNIT;
+import static io.holoinsight.server.common.model.MetricCrawlerConstant.GLOBAL_ORGANIZATION;
+import static io.holoinsight.server.common.model.MetricCrawlerConstant.GLOBAL_TENANT;
+import static io.holoinsight.server.common.model.MetricCrawlerConstant.GLOBAL_WORKSPACE;
+import static io.holoinsight.server.common.model.MetricCrawlerConstant.NUMBER_UNIT;
 
 /**
  * @author jsy1001de
@@ -33,7 +33,8 @@ import static io.holoinsight.server.home.task.MetricCrawlerConstant.NUMBER_UNIT;
 @MetricCrawler(code = "io.holoinsight.plugin.MysqlPlugin")
 public class MysqlMetricCrawlerBuilder extends AbstractMetricCrawlerBuilder {
   @Override
-  protected List<MetricInfo> getMetricInfoList(String metric, List<String> tags) {
+  protected List<MetricInfo> getMetricInfoList(String metric, List<String> tags,
+      MetricInfo metricInfoTemplate) {
 
     List<MetricInfo> metricInfoList = new ArrayList<>();
     Map<String, List<IntegrationMetricDTO>> listMap = J.fromJson(metricData,

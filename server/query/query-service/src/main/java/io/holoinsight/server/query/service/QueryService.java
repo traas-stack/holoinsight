@@ -26,10 +26,22 @@ public interface QueryService {
 
   QueryProto.QueryResponse pqlRangeQuery(QueryProto.PqlRangeRequest request) throws QueryException;
 
+  QueryProto.QuerySeriesResponse pqlSeriesQuery(QueryProto.PqlLabelRequest request)
+      throws QueryException;
+
+  QueryProto.QueryLabelsResponse pqlLabelsQuery(QueryProto.PqlLabelRequest request)
+      throws QueryException;
+
+  QueryProto.QueryLabelsResponse pqlLabelValuesQuery(QueryProto.PqlLabelRequest request)
+      throws QueryException;
+
   QueryProto.TraceBrief queryBasicTraces(QueryProto.QueryTraceRequest request)
       throws QueryException;
 
   QueryProto.Trace queryTrace(QueryProto.QueryTraceRequest request) throws QueryException;
+
+  QueryProto.TraceTreeList queryTraceTree(QueryProto.QueryTraceRequest request)
+      throws QueryException;
 
   QueryProto.StatisticData billingTrace(QueryProto.QueryTraceRequest request) throws QueryException;
 
@@ -60,5 +72,11 @@ public interface QueryService {
       throws QueryException;
 
   QueryProto.CommonMapTypeDataList queryServiceErrorDetail(QueryProto.QueryMetaRequest request)
+      throws QueryException;
+
+  QueryProto.QueryDetailResponse queryDetailData(QueryProto.QueryRequest request)
+      throws QueryException;
+
+  QueryProto.QueryEventResponse queryEvents(QueryProto.QueryEventRequest request)
       throws QueryException;
 }

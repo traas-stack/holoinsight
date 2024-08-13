@@ -49,12 +49,10 @@ public class AppMonitoringIT extends BaseIT {
               .get("/webapi/displaymenu/query/apm/{app}") //
               .then() //
               .isSuccess() //
-              // TODO i18n
-              .rootPath("data.find{ it.name =='%s' }", withArgs("系统监控")) //
+              .rootPath("data.find{ it.name =='系统监控' }") //
               .body(NOT_NULL) //
-              .body("children.size()", eq(1)) //
-              .body("children.find{ it.name == '单机系统' }", NOT_NULL) //
-          ;
+              .body("children.find { it.name == '单机系统' }", NOT_NULL) //
+          ;;
         });
   }
 

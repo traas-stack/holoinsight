@@ -3,7 +3,7 @@
  */
 package io.holoinsight.server.home.biz.plugin.config;
 
-import io.holoinsight.server.home.dal.model.dto.CustomPluginPeriodType;
+import io.holoinsight.server.common.dao.emuns.CustomPluginPeriodType;
 import lombok.Data;
 
 /**

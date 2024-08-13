@@ -120,7 +120,7 @@ const calcuRuler: any = {
     dm: '求和',
   }),
 };
-type TriggerType = 'rule' | 'ai' | 'pql';
+type TriggerType = 'alarmRuleConf' | 'ai' | 'pql';
 const Detail: React.FC = (props: any) => {
   //@ts-ignore
   const { initialState } = useModel('@@initialState');
@@ -130,7 +130,7 @@ const Detail: React.FC = (props: any) => {
   const [proForm] = Form.useForm();
   const settingFormRef = React.createRef<FormInstance>();
   const formRef = React.createRef<FormInstance>();
-  const triggerType: TriggerType = Form.useWatch('triggerType', form) || 'rule';
+  const triggerType: TriggerType = Form.useWatch('triggerType', form) || 'alarmRuleConf';
   let hookFormRef = useRef<HTMLFormElement>(null);
   const [status, setStatus] = useState<any>([]); //  保存 or 编辑 状态
   const [showGroup, setShowGroup] = useState([]); //  集群显示的ID的list
@@ -165,7 +165,7 @@ const Detail: React.FC = (props: any) => {
     id: 'holoinsight.pages.alarm.Detail.RuleManagement',
     dm: '规则管理',
   })
-  const urlListUrl = changeBreadcrumb ? '/user/alarmsub' : '/alarm/rule'
+  const urlListUrl = changeBreadcrumb ? '/user/alarmsub' : '/alarm/alarmRuleConf'
   const urlList = [
     {
       name: `${from === 'log'
@@ -242,7 +242,7 @@ const Detail: React.FC = (props: any) => {
                 downsample: '1', //目前先默认写死1
               };
             }
-            if (triggerType === 'rule') {
+            if (triggerType === 'alarmRuleConf') {
               const newCompareConfigs = item.compareConfigs.map((m: any, n: number) => {
                 const compareParam: any = [];
                 if (m.cmp) {
@@ -281,10 +281,10 @@ const Detail: React.FC = (props: any) => {
         );
 
         const downRequest = id ? alarmRuleUpdate : alarmRuleCreate;
-        res.ruleType = 'rule';
+        res.ruleType = 'alarmRuleConf';
         res.timeFilter = timeFilter;
         res.tenant=initialState?.currentTenant
-        res.rule = {
+        res.alarmRuleConf = {
           boolOperation: res.boolOperation,
           triggers: newTriggers,
         };
@@ -314,7 +314,7 @@ const Detail: React.FC = (props: any) => {
           res = {
             ...res,
             triggers: undefined,
-            rule: {},
+            alarmRuleConf: {},
             triggerType: 'pql',
             ruleType: 'pql',
           };
@@ -432,8 +432,8 @@ const Detail: React.FC = (props: any) => {
           setSelectValue(res?.timeFilter?.model === 'weeks' ? 'weeks' : 'days');
           res.timeFilterValue =
             res?.timeFilter?.model === 'weeks' ? 'weeks' : 'days';
-          res.boolOperation = res?.rule?.boolOperation;
-          res.triggers = res?.rule?.triggers;
+          res.boolOperation = res?.alarmRuleConf?.boolOperation;
+          res.triggers = res?.alarmRuleConf?.triggers;
           res.weeksDay = res?.timeFilter?.weeks;
           res.dayTime = [
             moment(res?.timeFilter?.from, 'HH:mm:ss'),
@@ -521,7 +521,7 @@ const Detail: React.FC = (props: any) => {
           reuqestBackTagArr(newTagsObj);
           setShowGroup(showGroupArr);
           if (!res.triggerType) {
-            res.triggerType = res.ruleType || 'rule';
+            res.triggerType = res.ruleType || 'alarmRuleConf';
           }
           const backTemplate = res?.extra?.notificationConfig?.dingtalkTemplate?.fieldMap;
           if (Object.keys(backTemplate || {}).length) {
@@ -1033,7 +1033,7 @@ const Detail: React.FC = (props: any) => {
         >
           <Form.Item
             name="triggerType"
-            initialValue={'rule'}
+            initialValue={'alarmRuleConf'}
             label={$i18n.get({
               id: 'holoinsight.pages.alarm.Detail.TriggerType',
               dm: '触发类型',
@@ -1060,7 +1060,7 @@ const Detail: React.FC = (props: any) => {
                 form.setFieldValue('triggers', newData);
               }}
             >
-              <Option value="rule">
+              <Option value="alarmRuleConf">
                 {$i18n.get({
                   id: 'holoinsight.pages.alarm.Detail.CustomThreshold',
                   dm: '自定义阈值',
@@ -1134,7 +1134,7 @@ const Detail: React.FC = (props: any) => {
                           />
 
                           <Row className="alarm-condition">
-                            {triggerType === 'rule' && <CommonTriggerList
+                            {triggerType === 'alarmRuleConf' && <CommonTriggerList
                               fieldAll={fieldAll}
                               moreCondition={moreCondition}
                               numberCp={numberCp}

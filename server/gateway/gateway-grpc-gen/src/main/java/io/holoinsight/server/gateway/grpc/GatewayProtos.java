@@ -47,12 +47,18 @@ public final class GatewayProtos {
   static final com.google.protobuf.GeneratedMessageV3.FieldAccessorTable internal_static_io_holoinsight_server_gateway_grpc_WriteMetricsRequestV4_fieldAccessorTable;
   static final com.google.protobuf.Descriptors.Descriptor internal_static_io_holoinsight_server_gateway_grpc_WriteMetricsRequestV4_TaskResult_descriptor;
   static final com.google.protobuf.GeneratedMessageV3.FieldAccessorTable internal_static_io_holoinsight_server_gateway_grpc_WriteMetricsRequestV4_TaskResult_fieldAccessorTable;
+  static final com.google.protobuf.Descriptors.Descriptor internal_static_io_holoinsight_server_gateway_grpc_WriteMetricsRequestV4_TaskResult_ExtensionEntry_descriptor;
+  static final com.google.protobuf.GeneratedMessageV3.FieldAccessorTable internal_static_io_holoinsight_server_gateway_grpc_WriteMetricsRequestV4_TaskResult_ExtensionEntry_fieldAccessorTable;
   static final com.google.protobuf.Descriptors.Descriptor internal_static_io_holoinsight_server_gateway_grpc_WriteMetricsRequestV4_Table_descriptor;
   static final com.google.protobuf.GeneratedMessageV3.FieldAccessorTable internal_static_io_holoinsight_server_gateway_grpc_WriteMetricsRequestV4_Table_fieldAccessorTable;
   static final com.google.protobuf.Descriptors.Descriptor internal_static_io_holoinsight_server_gateway_grpc_WriteMetricsRequestV4_Header_descriptor;
   static final com.google.protobuf.GeneratedMessageV3.FieldAccessorTable internal_static_io_holoinsight_server_gateway_grpc_WriteMetricsRequestV4_Header_fieldAccessorTable;
   static final com.google.protobuf.Descriptors.Descriptor internal_static_io_holoinsight_server_gateway_grpc_WriteMetricsRequestV4_Row_descriptor;
   static final com.google.protobuf.GeneratedMessageV3.FieldAccessorTable internal_static_io_holoinsight_server_gateway_grpc_WriteMetricsRequestV4_Row_fieldAccessorTable;
+  static final com.google.protobuf.Descriptors.Descriptor internal_static_io_holoinsight_server_gateway_grpc_WriteMetricsRequestV4_Completeness_descriptor;
+  static final com.google.protobuf.GeneratedMessageV3.FieldAccessorTable internal_static_io_holoinsight_server_gateway_grpc_WriteMetricsRequestV4_Completeness_fieldAccessorTable;
+  static final com.google.protobuf.Descriptors.Descriptor internal_static_io_holoinsight_server_gateway_grpc_WriteMetricsRequestV4_Completeness_ExtensionEntry_descriptor;
+  static final com.google.protobuf.GeneratedMessageV3.FieldAccessorTable internal_static_io_holoinsight_server_gateway_grpc_WriteMetricsRequestV4_Completeness_ExtensionEntry_fieldAccessorTable;
   static final com.google.protobuf.Descriptors.Descriptor internal_static_io_holoinsight_server_gateway_grpc_WriteMetricsResponse_descriptor;
   static final com.google.protobuf.GeneratedMessageV3.FieldAccessorTable internal_static_io_holoinsight_server_gateway_grpc_WriteMetricsResponse_fieldAccessorTable;
 
@@ -112,43 +118,53 @@ public final class GatewayProtos {
         + "\013\n\003key\030\001 \001(\t\022\027\n\017ref_collect_key\030\002 \001(\t\022\026\n"
         + "\016ref_target_key\030\003 \001(\t\022N\n\005batch\030\004 \001(\0132?.i"
         + "o.holoinsight.server.gateway.grpc.WriteM"
-        + "etricsRequestV2.Batch\"\273\005\n\025WriteMetricsRe"
+        + "etricsRequestV2.Batch\"\377\010\n\025WriteMetricsRe"
         + "questV4\022N\n\006header\030\001 \001(\0132>.io.holoinsight"
         + ".server.gateway.grpc.common.CommonReques"
         + "tHeader\022U\n\007results\030\002 \003(\0132D.io.holoinsigh"
         + "t.server.gateway.grpc.WriteMetricsReques"
-        + "tV4.TaskResult\032\232\001\n\nTaskResult\022\013\n\003key\030\001 \001"
+        + "tV4.TaskResult\032\245\003\n\nTaskResult\022\013\n\003key\030\001 \001"
         + "(\t\022\027\n\017ref_collect_key\030\002 \001(\t\022\026\n\016ref_targe"
         + "t_key\030\003 \001(\t\022N\n\005table\030\004 \001(\0132?.io.holoinsi"
         + "ght.server.gateway.grpc.WriteMetricsRequ"
-        + "estV4.Table\032\246\001\n\005Table\022P\n\006header\030\001 \001(\0132@."
-        + "io.holoinsight.server.gateway.grpc.Write"
-        + "MetricsRequestV4.Header\022K\n\004rows\030\002 \003(\0132=."
-        + "io.holoinsight.server.gateway.grpc.Write"
-        + "MetricsRequestV4.Row\032C\n\006Header\022\023\n\013metric"
-        + "_name\030\001 \001(\t\022\020\n\010tag_keys\030\002 \003(\t\022\022\n\nvalue_k"
-        + "eys\030\003 \003(\t\032p\n\003Row\022\021\n\ttimestamp\030\001 \001(\003\022\022\n\nt"
-        + "ag_values\030\002 \003(\t\022B\n\014value_values\030\003 \003(\0132,."
-        + "io.holoinsight.server.gateway.grpc.DataN"
-        + "ode\"g\n\024WriteMetricsResponse\022O\n\006header\030\001 "
-        + "\001(\0132?.io.holoinsight.server.gateway.grpc"
-        + ".common.CommonResponseHeader2\221\006\n\016Gateway"
-        + "Service\0228\n\004ping\022\026.google.protobuf.Empty\032"
-        + "\026.google.protobuf.Empty\"\000\022\224\001\n\023get_contro"
-        + "l_configs\022<.io.holoinsight.server.gatewa"
-        + "y.grpc.GetControlConfigsRequest\032=.io.hol" + "oinsight.server.gateway.grpc.GetControlC"
-        + "onfigsResponse\"\000\022\211\001\n\020write_metrics_v1\0229."
-        + "io.holoinsight.server.gateway.grpc.Write" + "MetricsRequestV1\0328.io.holoinsight.server"
-        + ".gateway.grpc.WriteMetricsResponse\"\000\022\211\001\n"
-        + "\020write_metrics_v2\0229.io.holoinsight.serve"
-        + "r.gateway.grpc.WriteMetricsRequestV2\0328.i" + "o.holoinsight.server.gateway.grpc.WriteM"
-        + "etricsResponse\"\000\022\211\001\n\020write_metrics_v3\0229."
-        + "io.holoinsight.server.gateway.grpc.Write" + "MetricsRequestV3\0328.io.holoinsight.server"
-        + ".gateway.grpc.WriteMetricsResponse\"\000\022\211\001\n"
-        + "\020write_metrics_v4\0229.io.holoinsight.serve"
-        + "r.gateway.grpc.WriteMetricsRequestV4\0328.i" + "o.holoinsight.server.gateway.grpc.WriteM"
-        + "etricsResponse\"\000B5\n\"io.holoinsight.serve"
-        + "r.gateway.grpcB\rGatewayProtosP\001b\006proto3"};
+        + "estV4.Table\022f\n\textension\030\005 \003(\0132S.io.holo"
+        + "insight.server.gateway.grpc.WriteMetrics"
+        + "RequestV4.TaskResult.ExtensionEntry\022\021\n\tt"
+        + "imestamp\030\006 \001(\003\022\\\n\014completeness\030\007 \001(\0132F.i"
+        + "o.holoinsight.server.gateway.grpc.WriteM"
+        + "etricsRequestV4.Completeness\0320\n\016Extensio"
+        + "nEntry\022\013\n\003key\030\001 \001(\t\022\r\n\005value\030\002 \001(\t:\0028\001\032\246"
+        + "\001\n\005Table\022P\n\006header\030\001 \001(\0132@.io.holoinsigh"
+        + "t.server.gateway.grpc.WriteMetricsReques"
+        + "tV4.Header\022K\n\004rows\030\002 \003(\0132=.io.holoinsigh"
+        + "t.server.gateway.grpc.WriteMetricsReques"
+        + "tV4.Row\032C\n\006Header\022\023\n\013metric_name\030\001 \001(\t\022\020"
+        + "\n\010tag_keys\030\002 \003(\t\022\022\n\nvalue_keys\030\003 \003(\t\032p\n\003"
+        + "Row\022\021\n\ttimestamp\030\001 \001(\003\022\022\n\ntag_values\030\002 \003"
+        + "(\t\022B\n\014value_values\030\003 \003(\0132,.io.holoinsigh"
+        + "t.server.gateway.grpc.DataNode\032\266\001\n\014Compl"
+        + "eteness\022\n\n\002ok\030\001 \001(\010\022h\n\textension\030\002 \003(\0132U"
+        + ".io.holoinsight.server.gateway.grpc.Writ" + "eMetricsRequestV4.Completeness.Extension"
+        + "Entry\0320\n\016ExtensionEntry\022\013\n\003key\030\001 \001(\t\022\r\n\005"
+        + "value\030\002 \001(\t:\0028\001\"g\n\024WriteMetricsResponse\022"
+        + "O\n\006header\030\001 \001(\0132?.io.holoinsight.server."
+        + "gateway.grpc.common.CommonResponseHeader"
+        + "2\221\006\n\016GatewayService\0228\n\004ping\022\026.google.pro"
+        + "tobuf.Empty\032\026.google.protobuf.Empty\"\000\022\224\001"
+        + "\n\023get_control_configs\022<.io.holoinsight.s"
+        + "erver.gateway.grpc.GetControlConfigsRequ" + "est\032=.io.holoinsight.server.gateway.grpc"
+        + ".GetControlConfigsResponse\"\000\022\211\001\n\020write_m"
+        + "etrics_v1\0229.io.holoinsight.server.gatewa"
+        + "y.grpc.WriteMetricsRequestV1\0328.io.holoin" + "sight.server.gateway.grpc.WriteMetricsRe"
+        + "sponse\"\000\022\211\001\n\020write_metrics_v2\0229.io.holoi"
+        + "nsight.server.gateway.grpc.WriteMetricsR" + "equestV2\0328.io.holoinsight.server.gateway"
+        + ".grpc.WriteMetricsResponse\"\000\022\211\001\n\020write_m"
+        + "etrics_v3\0229.io.holoinsight.server.gatewa"
+        + "y.grpc.WriteMetricsRequestV3\0328.io.holoin" + "sight.server.gateway.grpc.WriteMetricsRe"
+        + "sponse\"\000\022\211\001\n\020write_metrics_v4\0229.io.holoi"
+        + "nsight.server.gateway.grpc.WriteMetricsR" + "equestV4\0328.io.holoinsight.server.gateway"
+        + ".grpc.WriteMetricsResponse\"\000B5\n\"io.holoi"
+        + "nsight.server.gateway.grpcB\rGatewayProto" + "sP\001b\006proto3"};
     descriptor = com.google.protobuf.Descriptors.FileDescriptor.internalBuildGeneratedFileFrom(
         descriptorData,
         new com.google.protobuf.Descriptors.FileDescriptor[] {
@@ -257,7 +273,15 @@ public final class GatewayProtos {
     internal_static_io_holoinsight_server_gateway_grpc_WriteMetricsRequestV4_TaskResult_fieldAccessorTable =
         new com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
             internal_static_io_holoinsight_server_gateway_grpc_WriteMetricsRequestV4_TaskResult_descriptor,
-            new java.lang.String[] {"Key", "RefCollectKey", "RefTargetKey", "Table",});
+            new java.lang.String[] {"Key", "RefCollectKey", "RefTargetKey", "Table", "Extension",
+                "Timestamp", "Completeness",});
+    internal_static_io_holoinsight_server_gateway_grpc_WriteMetricsRequestV4_TaskResult_ExtensionEntry_descriptor =
+        internal_static_io_holoinsight_server_gateway_grpc_WriteMetricsRequestV4_TaskResult_descriptor
+            .getNestedTypes().get(0);
+    internal_static_io_holoinsight_server_gateway_grpc_WriteMetricsRequestV4_TaskResult_ExtensionEntry_fieldAccessorTable =
+        new com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+            internal_static_io_holoinsight_server_gateway_grpc_WriteMetricsRequestV4_TaskResult_ExtensionEntry_descriptor,
+            new java.lang.String[] {"Key", "Value",});
     internal_static_io_holoinsight_server_gateway_grpc_WriteMetricsRequestV4_Table_descriptor =
         internal_static_io_holoinsight_server_gateway_grpc_WriteMetricsRequestV4_descriptor
             .getNestedTypes().get(1);
@@ -279,6 +303,20 @@ public final class GatewayProtos {
         new com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
             internal_static_io_holoinsight_server_gateway_grpc_WriteMetricsRequestV4_Row_descriptor,
             new java.lang.String[] {"Timestamp", "TagValues", "ValueValues",});
+    internal_static_io_holoinsight_server_gateway_grpc_WriteMetricsRequestV4_Completeness_descriptor =
+        internal_static_io_holoinsight_server_gateway_grpc_WriteMetricsRequestV4_descriptor
+            .getNestedTypes().get(4);
+    internal_static_io_holoinsight_server_gateway_grpc_WriteMetricsRequestV4_Completeness_fieldAccessorTable =
+        new com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+            internal_static_io_holoinsight_server_gateway_grpc_WriteMetricsRequestV4_Completeness_descriptor,
+            new java.lang.String[] {"Ok", "Extension",});
+    internal_static_io_holoinsight_server_gateway_grpc_WriteMetricsRequestV4_Completeness_ExtensionEntry_descriptor =
+        internal_static_io_holoinsight_server_gateway_grpc_WriteMetricsRequestV4_Completeness_descriptor
+            .getNestedTypes().get(0);
+    internal_static_io_holoinsight_server_gateway_grpc_WriteMetricsRequestV4_Completeness_ExtensionEntry_fieldAccessorTable =
+        new com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+            internal_static_io_holoinsight_server_gateway_grpc_WriteMetricsRequestV4_Completeness_ExtensionEntry_descriptor,
+            new java.lang.String[] {"Key", "Value",});
     internal_static_io_holoinsight_server_gateway_grpc_WriteMetricsResponse_descriptor =
         getDescriptor().getMessageTypes().get(8);
     internal_static_io_holoinsight_server_gateway_grpc_WriteMetricsResponse_fieldAccessorTable =

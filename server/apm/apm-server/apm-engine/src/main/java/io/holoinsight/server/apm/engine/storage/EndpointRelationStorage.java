@@ -5,9 +5,6 @@ package io.holoinsight.server.apm.engine.storage;
 
 import io.holoinsight.server.apm.engine.model.EndpointRelationDO;
 
-import java.io.IOException;
-import java.util.List;
-
 public interface EndpointRelationStorage extends WritableStorage<EndpointRelationDO> {
 
 }

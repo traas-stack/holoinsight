@@ -3,30 +3,37 @@
  */
 package io.holoinsight.server.home.web.controller;
 
-import io.holoinsight.server.home.biz.service.AlarmHistoryDetailService;
-import io.holoinsight.server.home.biz.service.AlarmMetricService;
+import io.holoinsight.server.common.UtilMisc;
+import io.holoinsight.server.common.dao.entity.dto.MetricInfoDTO;
+import io.holoinsight.server.common.service.MetricInfoService;
+import io.holoinsight.server.home.biz.plugin.core.LogPluginUtil;
+import io.holoinsight.server.common.service.AlarmMetricService;
 import io.holoinsight.server.home.biz.service.CustomPluginService;
-import io.holoinsight.server.home.biz.service.UserOpLogService;
-import io.holoinsight.server.home.common.util.MonitorException;
-import io.holoinsight.server.home.common.util.ResultCodeEnum;
-import io.holoinsight.server.home.common.util.scope.AuthTargetType;
-import io.holoinsight.server.home.common.util.scope.MonitorCookieUtil;
-import io.holoinsight.server.home.common.util.scope.MonitorScope;
-import io.holoinsight.server.home.common.util.scope.MonitorUser;
-import io.holoinsight.server.home.common.util.scope.PowerConstants;
-import io.holoinsight.server.home.common.util.scope.RequestContext;
-import io.holoinsight.server.home.dal.model.AlarmMetric;
+import io.holoinsight.server.common.service.FolderService;
+import io.holoinsight.server.home.biz.service.TenantInitService;
+import io.holoinsight.server.common.service.UserOpLogService;
+import io.holoinsight.server.common.MonitorException;
+import io.holoinsight.server.common.ResultCodeEnum;
+import io.holoinsight.server.common.scope.AuthTargetType;
+import io.holoinsight.server.common.scope.MonitorCookieUtil;
+import io.holoinsight.server.common.scope.MonitorScope;
+import io.holoinsight.server.common.scope.MonitorUser;
+import io.holoinsight.server.common.scope.PowerConstants;
+import io.holoinsight.server.common.RequestContext;
+import io.holoinsight.server.common.dao.entity.AlarmMetric;
+import io.holoinsight.server.common.dao.entity.Folder;
 import io.holoinsight.server.home.dal.model.OpType;
 import io.holoinsight.server.home.dal.model.dto.CustomPluginDTO;
 import io.holoinsight.server.home.dal.model.dto.conf.CollectMetric;
-import io.holoinsight.server.home.facade.page.MonitorPageRequest;
-import io.holoinsight.server.home.facade.page.MonitorPageResult;
-import io.holoinsight.server.home.web.common.ManageCallback;
+import io.holoinsight.server.common.MonitorPageRequest;
+import io.holoinsight.server.common.MonitorPageResult;
+import io.holoinsight.server.common.ManageCallback;
 import io.holoinsight.server.home.web.common.ParaCheckUtil;
 import io.holoinsight.server.home.web.controller.model.LogSplitReq;
 import io.holoinsight.server.home.web.interceptor.MonitorScopeAuth;
 import io.holoinsight.server.common.J;
 import io.holoinsight.server.common.JsonResult;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
@@ -55,6 +62,7 @@ import java.util.regex.Pattern;
  */
 @RestController
 @RequestMapping("/webapi/customPlugin")
+@Slf4j
 public class CustomPluginFacadeImpl extends BaseFacade {
 
   @Autowired
@@ -64,11 +72,16 @@ public class CustomPluginFacadeImpl extends BaseFacade {
   private UserOpLogService userOpLogService;
 
   @Autowired
+  private FolderService folderService;
+
+  @Autowired
   private AlarmMetricService alarmMetricService;
 
   @Autowired
-  private AlarmHistoryDetailService alarmHistoryDetailService;
+  private MetricInfoService metricInfoService;
 
+  @Autowired
+  private TenantInitService tenantInitService;
 
   @PostMapping("/update")
   @ResponseBody
@@ -79,7 +92,6 @@ public class CustomPluginFacadeImpl extends BaseFacade {
       @Override
       public void checkParameter() {
         ParaCheckUtil.checkParaNotNull(customPluginDTO.id, "id");
-        // ParaCheckUtil.checkParaNotBlank(customPluginDTO.tenant);
         ParaCheckUtil.checkParaNotNull(customPluginDTO.parentFolderId, "parentFolderId");
         ParaCheckUtil.checkParaNotBlank(customPluginDTO.name, "name");
         ParaCheckUtil.checkParaNotBlank(customPluginDTO.pluginType, "pluginType");
@@ -91,6 +103,21 @@ public class CustomPluginFacadeImpl extends BaseFacade {
         MonitorScope ms = RequestContext.getContext().ms;
         ParaCheckUtil.checkEquals(customPluginDTO.getTenant(), ms.getTenant(), "tenant is illegal");
 
+        Boolean aBoolean = tenantInitService.checkCustomPluginLogConfParams(ms.getTenant(),
+            ms.getWorkspace(), customPluginDTO);
+        if (!aBoolean) {
+          throw new MonitorException("collectRange illegal");
+        }
+        checkParentFolderId(customPluginDTO);
+      }
+
+      @Override
+      public void doManage() {
+        LogPluginUtil.addSpmCols(customPluginDTO.conf);
+
+        MonitorScope ms = RequestContext.getContext().ms;
+        MonitorUser mu = RequestContext.getContext().mu;
+
         CustomPluginDTO item = customPluginService.queryById(customPluginDTO.getId(),
             ms.getTenant(), ms.getWorkspace());
 
@@ -100,20 +127,14 @@ public class CustomPluginFacadeImpl extends BaseFacade {
         if (!item.getTenant().equalsIgnoreCase(customPluginDTO.getTenant())) {
           throw new MonitorException("the tenant parameter is invalid");
         }
-      }
 
-      @Override
-      public void doManage() {
-
-        MonitorScope ms = RequestContext.getContext().ms;
-        MonitorUser mu = RequestContext.getContext().mu;
         if (null != mu) {
           customPluginDTO.setModifier(mu.getLoginName());
         }
-        if (null != ms && !StringUtils.isEmpty(ms.tenant)) {
+        if (!StringUtils.isEmpty(ms.tenant)) {
           customPluginDTO.setTenant(ms.tenant);
         }
-        if (null != ms && !StringUtils.isEmpty(ms.workspace)) {
+        if (!StringUtils.isEmpty(ms.workspace)) {
           customPluginDTO.setWorkspace(ms.workspace);
         }
         customPluginDTO.setGmtModified(new Date());
@@ -121,7 +142,7 @@ public class CustomPluginFacadeImpl extends BaseFacade {
         JsonResult.createSuccessResult(result, update);
         assert mu != null;
         userOpLogService.append("custom_plugin", update.getId(), OpType.UPDATE, mu.getLoginName(),
-            ms.getTenant(), ms.getWorkspace(), J.toJson(customPluginDTO), J.toJson(update), null,
+            ms.getTenant(), ms.getWorkspace(), J.toJson(item), J.toJson(update), null,
             "custom_plugin_update");
 
       }
@@ -133,7 +154,7 @@ public class CustomPluginFacadeImpl extends BaseFacade {
   @PostMapping("/create")
   @ResponseBody
   @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.EDIT)
-  public JsonResult<CustomPluginDTO> save(@RequestBody CustomPluginDTO customPluginDTO) {
+  public JsonResult<CustomPluginDTO> create(@RequestBody CustomPluginDTO customPluginDTO) {
     final JsonResult<CustomPluginDTO> result = new JsonResult<>();
     facadeTemplate.manage(result, new ManageCallback() {
       @Override
@@ -144,10 +165,20 @@ public class CustomPluginFacadeImpl extends BaseFacade {
         ParaCheckUtil.checkParaNotNull(customPluginDTO.status, "status");
         ParaCheckUtil.checkParaNotNull(customPluginDTO.periodType, "periodType");
         ParaCheckUtil.checkParaNotNull(customPluginDTO.conf, "conf");
+        ParaCheckUtil.checkParaId(customPluginDTO.getId());
+        MonitorScope ms = RequestContext.getContext().ms;
+        Boolean aBoolean = tenantInitService.checkCustomPluginLogConfParams(ms.getTenant(),
+            ms.getWorkspace(), customPluginDTO);
+        if (!aBoolean) {
+          throw new MonitorException("collectRange illegal");
+        }
+        checkParentFolderId(customPluginDTO);
       }
 
       @Override
       public void doManage() {
+        LogPluginUtil.addSpmCols(customPluginDTO.conf);
+
         MonitorScope ms = RequestContext.getContext().ms;
         MonitorUser mu = RequestContext.getContext().mu;
         if (null != mu) {
@@ -186,6 +217,7 @@ public class CustomPluginFacadeImpl extends BaseFacade {
       public void checkParameter() {
         ParaCheckUtil.checkParaNotNull(customPluginDTO.id, "id");
         ParaCheckUtil.checkParaNotNull(customPluginDTO.parentFolderId, "parentFolderId");
+        checkParentFolderId(customPluginDTO);
       }
 
       @Override
@@ -244,6 +276,19 @@ public class CustomPluginFacadeImpl extends BaseFacade {
         if (null == customPluginDTO) {
           throw new MonitorException(ResultCodeEnum.CANNOT_FIND_RECORD, "can not find record");
         }
+
+        if (!CollectionUtils.isEmpty(customPluginDTO.getConf().collectMetrics)) {
+          List<AlarmMetric> alarmMetrics = new ArrayList<>();
+          for (CollectMetric collectMetric : customPluginDTO.getConf().collectMetrics) {
+            List<AlarmMetric> db = alarmMetricService.queryByMetric(collectMetric.getTargetTable(),
+                ms.getTenant(), ms.getWorkspace());
+            if (!CollectionUtils.isEmpty(db)) {
+              alarmMetrics.addAll(db);
+            }
+          }
+          customPluginDTO.setAlarmMetrics(alarmMetrics);
+        }
+
         JsonResult.createSuccessResult(result, customPluginDTO);
       }
     });
@@ -267,12 +312,32 @@ public class CustomPluginFacadeImpl extends BaseFacade {
         if (null == byId) {
           throw new MonitorException(ResultCodeEnum.CANNOT_FIND_RECORD, "can not find record");
         }
+
+        List<MetricInfoDTO> metricInfoDTOS = metricInfoService.queryListByRef(ms.getTenant(),
+            ms.getWorkspace(), "logmonitor", String.valueOf(byId.getId()));
+        if (!CollectionUtils.isEmpty(metricInfoDTOS)) {
+          boolean checkHasAlarmMetric = false;
+
+          for (MetricInfoDTO metricInfoDTO : metricInfoDTOS) {
+            List<AlarmMetric> alarmMetrics = alarmMetricService
+                .queryByMetric(metricInfoDTO.getMetricTable(), ms.getTenant(), ms.getWorkspace());
+            if (!CollectionUtils.isEmpty(alarmMetrics)) {
+              checkHasAlarmMetric = true;
+              break;
+            }
+          }
+
+          if (checkHasAlarmMetric) {
+            throw new MonitorException(ResultCodeEnum.CANNOT_FIND_RECORD,
+                "This log configuration is associated with the alarm rule configuration. Delete the alarm rule first");
+          }
+        }
+
         customPluginService.deleteById(id);
         JsonResult.createSuccessResult(result, null);
         userOpLogService.append("custom_plugin", byId.getId(), OpType.DELETE,
             RequestContext.getContext().mu.getLoginName(), ms.getTenant(), ms.getWorkspace(),
             J.toJson(byId), null, null, "custom_plugin_delete");
-
       }
     });
     return result;
@@ -401,6 +466,7 @@ public class CustomPluginFacadeImpl extends BaseFacade {
 
   @ResponseBody
   @RequestMapping(value = "/log/presplit", method = RequestMethod.POST)
+  @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.VIEW)
   public JsonResult<Object> presplit(@RequestBody LogSplitReq req) {
 
     final JsonResult<Object> result = new JsonResult<>();
@@ -441,8 +507,13 @@ public class CustomPluginFacadeImpl extends BaseFacade {
   }
 
   public List<String[]> presplitRegexp(List<String> sampleLogs, String expression) {
+
     List<String[]> strings = new ArrayList<>();
     sampleLogs.forEach(log -> {
+      boolean b = UtilMisc.validateWithTimeout(expression, log, 1000);
+      if (!b) {
+        throw new MonitorException("regex expression invalid");
+      }
       Pattern pattern = Pattern.compile(expression);
 
       Matcher matcher = pattern.matcher(log);
@@ -464,4 +535,19 @@ public class CustomPluginFacadeImpl extends BaseFacade {
     return strings;
   }
 
+
+
+  private void checkParentFolderId(CustomPluginDTO customPluginDTO) {
+    if (customPluginDTO.parentFolderId == -1) {
+      return;
+    }
+
+    // check tenant
+    MonitorScope ms = RequestContext.getContext().ms;
+    Folder folder = folderService.queryById(customPluginDTO.getParentFolderId(), ms.getTenant(),
+        ms.getWorkspace());
+    if (null == folder) {
+      throw new MonitorException(ResultCodeEnum.PARAMETER_ILLEGAL, "parentFolderId illegal");
+    }
+  }
 }

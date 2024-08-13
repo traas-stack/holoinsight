@@ -13,10 +13,11 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 
-import static io.holoinsight.server.home.task.MetricCrawlerConstant.GLOBAL_ORGANIZATION;
-import static io.holoinsight.server.home.task.MetricCrawlerConstant.GLOBAL_TENANT;
-import static io.holoinsight.server.home.task.MetricCrawlerConstant.GLOBAL_WORKSPACE;
-import static io.holoinsight.server.home.task.MetricCrawlerConstant.NUMBER_UNIT;
+import static io.holoinsight.server.common.model.MetricCrawlerConstant.GLOBAL_ORGANIZATION;
+import static io.holoinsight.server.common.model.MetricCrawlerConstant.GLOBAL_TENANT;
+import static io.holoinsight.server.common.model.MetricCrawlerConstant.GLOBAL_WORKSPACE;
+import static io.holoinsight.server.common.model.MetricCrawlerConstant.MS_UNIT;
+import static io.holoinsight.server.common.model.MetricCrawlerConstant.NUMBER_UNIT;
 
 /**
  * @author jsy1001de
@@ -28,7 +29,8 @@ import static io.holoinsight.server.home.task.MetricCrawlerConstant.NUMBER_UNIT;
 public class PortCheckMetricCrawlerBuilder extends AbstractMetricCrawlerBuilder {
 
   @Override
-  protected List<MetricInfo> getMetricInfoList(String metric, List<String> tags) {
+  protected List<MetricInfo> getMetricInfoList(String metric, List<String> tags,
+      MetricInfo metricInfoTemplate) {
     List<MetricInfo> metricInfoList = new ArrayList<>();
 
     metricInfoList.add(genMetricInfo(GLOBAL_TENANT, GLOBAL_WORKSPACE, GLOBAL_ORGANIZATION,
@@ -36,7 +38,7 @@ public class PortCheckMetricCrawlerBuilder extends AbstractMetricCrawlerBuilder 
     metricInfoList.add(genMetricInfo(GLOBAL_TENANT, GLOBAL_WORKSPACE, GLOBAL_ORGANIZATION,
         "portcheck", "check", "down", "portcheck_down", "down count", NUMBER_UNIT, 60, tags));
     metricInfoList.add(genMetricInfo(GLOBAL_TENANT, GLOBAL_WORKSPACE, GLOBAL_ORGANIZATION,
-        "portcheck", "check", "cost", "portcheck_cost", "cost time(ms)", NUMBER_UNIT, 60, tags));
+        "portcheck", "check", "cost", "portcheck_cost", "cost time(ms)", MS_UNIT, 60, tags));
 
     return metricInfoList;
   }

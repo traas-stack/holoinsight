@@ -93,11 +93,6 @@ jobs:
         it:
         - test: AuthIT
           scene: scene-default
-        # override scene-default with mongo_image=mongo:5
-        - test: AuthIT
-          scene: scene-default
-          env: |
-            COMPOSE_mongo_image=mongo:5
         - test: LogMonitoringFolderIT
           scene: scene-default
         - test: MetaVMIT
@@ -139,6 +134,40 @@ jobs:
         - test: LogMonitoringAnalysisIT
           scene: scene-default
         - test: AlertLogAnalysisIT
+          scene: scene-default
+        - test: CustomPluginFacadeIT
+          scene: scene-default
+        - test: FolderFacadeIT
+          scene: scene-default
+        - test: AlertTemplateFacadeIT
+          scene: scene-default
+        - test: AlarmBlockFacadeIT
+          scene: scene-default
+        - test: AlarmMetricFacadeIT
+          scene: scene-default
+        - test: AlarmSubscribeFacadeIT
+          scene: scene-default
+        - test: AlertManagerWebhookIT
+          scene: scene-default
+        - test: ApiKeyFacadeIT
+          scene: scene-default
+        - test: DefaultTenantFacadeIT
+          scene: scene-default
+        - test: DisplayMenuFacadeIT
+          scene: scene-default
+        - test: DisplayTemplateFacadeIT
+          scene: scene-default
+        - test: InitFacadeIT
+          scene: scene-default
+        - test: IntegrationGeneratedFacadeIT
+          scene: scene-default
+        - test: IntegrationPluginFacadeIT
+          scene: scene-default
+        - test: IntegrationProductFacadeIT
+          scene: scene-default
+        - test: UserFavoriteFacadeIT
+          scene: scene-default
+        - test: UserinfoVerificationFacadeIT
           scene: scene-default
     steps:
     - uses: actions/checkout@v3

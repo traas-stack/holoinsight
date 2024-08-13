@@ -67,7 +67,7 @@ public class IfElementHandler implements IElementHandler, InitializingBean {
             newElement.append(content);
           }
         } catch (Exception e) {
-
+          // This catch statement is intentionally empty
         }
       }
     }

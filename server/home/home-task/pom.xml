@@ -30,5 +30,9 @@
             <artifactId>netty</artifactId>
             <version>3.6.0.Final</version>
         </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+        </dependency>
     </dependencies>
 </project>

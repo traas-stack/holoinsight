@@ -40,7 +40,7 @@ public class LogCountRequest {
   /**
    * log path
    */
-  private String path;
+  private String logPath;
 
   /**
    * hostname or podname list
@@ -51,4 +51,9 @@ public class LogCountRequest {
    * query context
    */
   private Map<String, String> context = new HashMap<>();
+
+  /**
+   * type
+   */
+  private String type;
 }

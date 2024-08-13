@@ -491,10 +491,7 @@ public final class NotifyCollectConfigUpdatedRequest extends com.google.protobuf
       maybeForceBuilderInitialization();
     }
 
-    private void maybeForceBuilderInitialization() {
-      if (com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders) {
-      }
-    }
+    private void maybeForceBuilderInitialization() {}
 
     @java.lang.Override
     public Builder clear() {
@@ -537,7 +534,6 @@ public final class NotifyCollectConfigUpdatedRequest extends com.google.protobuf
     public io.holoinsight.server.registry.grpc.prod.NotifyCollectConfigUpdatedRequest buildPartial() {
       io.holoinsight.server.registry.grpc.prod.NotifyCollectConfigUpdatedRequest result =
           new io.holoinsight.server.registry.grpc.prod.NotifyCollectConfigUpdatedRequest(this);
-      int from_bitField0_ = bitField0_;
       if (headerBuilder_ == null) {
         result.header_ = header_;
       } else {
@@ -1113,4 +1109,3 @@ public final class NotifyCollectConfigUpdatedRequest extends com.google.protobuf
   }
 
 }
-

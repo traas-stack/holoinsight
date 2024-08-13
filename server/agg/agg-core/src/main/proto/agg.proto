@@ -1,0 +1,87 @@
+syntax = "proto3";
+
+package io.holoinsight.server.agg.v1.pb;
+
+option java_multiple_files = false;
+option java_package = "io.holoinsight.server.agg.v1.pb";
+option java_outer_classname = "AggProtos";
+
+
+// agg task key
+message AggTaskKey {
+  string tenant = 1;
+  // agg id
+  string aggId = 2;
+  // agg partition
+  string partition = 3;
+}
+
+// agg task value
+message AggTaskValue {
+  // 0: agg data
+  // 1: update event timestamp event
+  int32 type = 1;
+
+  // when type == 1
+  int64 timestamp = 2;
+
+  // when type == 0
+  repeated InDataNode inDataNodes = 3;
+
+  // metric name for inDataNodes
+  string metric = 4;
+
+  map<string, string> extension = 5;
+
+  Table data_table = 6;
+}
+
+message Table {
+  string name = 1;
+  int64 timestamp = 2;
+  Header header = 3;
+  repeated Row row = 4;
+
+  message Header{
+    repeated string tag_keys = 1;
+    repeated string field_keys = 2;
+  }
+
+  message Row{
+    int64 timestamp = 1;
+    repeated string tag_values = 2;
+    repeated BasicField field_values = 3;
+  }
+}
+
+// point to agg
+message InDataNode {
+  // 0: single float64 value metric
+  // 1: single string value metric
+  int32 type = 1;
+  // timestamp for this point
+  int64 timestamp = 2;
+  // tags for this point
+  map<string, string> tags = 3;
+
+  int32 count = 4;
+
+  // when type == 0
+  double float64Value = 5;
+  // when type == 1
+  bytes bytesValue = 6;
+
+  map<string, BasicField> fields = 7;
+}
+
+message BasicField {
+  // 0: single float64 value metric
+  // 1: single string value metric
+  int32 type = 1;
+
+  int32 count = 2;
+  // when type == 0
+  double float64Value = 3;
+  // when type == 1
+  bytes bytesValue = 4;
+}

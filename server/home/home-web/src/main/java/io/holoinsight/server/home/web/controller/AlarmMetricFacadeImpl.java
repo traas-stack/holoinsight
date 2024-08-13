@@ -5,13 +5,15 @@
 package io.holoinsight.server.home.web.controller;
 
 import io.holoinsight.server.common.JsonResult;
-import io.holoinsight.server.home.biz.service.AlarmMetricService;
-import io.holoinsight.server.home.common.util.scope.AuthTargetType;
-import io.holoinsight.server.home.common.util.scope.MonitorScope;
-import io.holoinsight.server.home.common.util.scope.PowerConstants;
-import io.holoinsight.server.home.common.util.scope.RequestContext;
-import io.holoinsight.server.home.dal.model.AlarmMetric;
-import io.holoinsight.server.home.web.common.ManageCallback;
+import io.holoinsight.server.common.dao.entity.dto.MetricInfoDTO;
+import io.holoinsight.server.common.service.MetricInfoService;
+import io.holoinsight.server.common.service.AlarmMetricService;
+import io.holoinsight.server.common.scope.AuthTargetType;
+import io.holoinsight.server.common.scope.MonitorScope;
+import io.holoinsight.server.common.scope.PowerConstants;
+import io.holoinsight.server.common.RequestContext;
+import io.holoinsight.server.common.dao.entity.AlarmMetric;
+import io.holoinsight.server.common.ManageCallback;
 import io.holoinsight.server.home.web.common.ParaCheckUtil;
 import io.holoinsight.server.home.web.interceptor.MonitorScopeAuth;
 import org.apache.commons.lang3.StringUtils;
@@ -23,7 +25,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author jsy1001de
@@ -35,6 +39,9 @@ public class AlarmMetricFacadeImpl extends BaseFacade {
 
   @Autowired
   private AlarmMetricService alarmMetricService;
+
+  @Autowired
+  private MetricInfoService metricInfoService;
 
   @GetMapping(value = "/{metric}")
   @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.VIEW)
@@ -60,6 +67,46 @@ public class AlarmMetricFacadeImpl extends BaseFacade {
         }
 
         JsonResult.createSuccessResult(result, alarmMetrics);
+      }
+    });
+    return result;
+  }
+
+  @GetMapping(value = "/relate/{ruleId}")
+  @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.VIEW)
+  public JsonResult<Map<String, List<String>>> queryMetricByRuleId(
+      @PathVariable("ruleId") Long ruleId) {
+    final JsonResult<Map<String, List<String>>> result = new JsonResult<>();
+    facadeTemplate.manage(result, new ManageCallback() {
+      @Override
+      public void checkParameter() {
+        ParaCheckUtil.checkParaNotNull(ruleId, "ruleId");
+      }
+
+      @Override
+      public void doManage() {
+        MonitorScope ms = RequestContext.getContext().ms;
+        Map<String, List<String>> refMaps = new HashMap<>();
+
+        List<AlarmMetric> metrics =
+            alarmMetricService.queryByRuleId(ruleId, ms.getTenant(), ms.getWorkspace());
+        if (CollectionUtils.isEmpty(metrics)) {
+          JsonResult.createSuccessResult(result, refMaps);
+          return;
+        }
+
+        for (AlarmMetric alarmMetric : metrics) {
+          MetricInfoDTO metricInfoDTO = metricInfoService.queryByMetric(alarmMetric.getTenant(),
+              alarmMetric.getWorkspace(), alarmMetric.getMetricTable());
+          if (null == metricInfoDTO || StringUtils.isBlank(metricInfoDTO.getRef()))
+            continue;
+          if (!refMaps.containsKey(metricInfoDTO.getProduct())) {
+            refMaps.put(metricInfoDTO.getProduct(), new ArrayList<>());
+          }
+          refMaps.get(metricInfoDTO.getProduct()).add(metricInfoDTO.getRef());
+        }
+
+        JsonResult.createSuccessResult(result, refMaps);
       }
     });
     return result;

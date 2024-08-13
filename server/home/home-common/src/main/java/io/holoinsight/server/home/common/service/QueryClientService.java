@@ -4,20 +4,25 @@
 package io.holoinsight.server.home.common.service;
 
 import io.holoinsight.server.apm.common.model.query.Endpoint;
+import io.holoinsight.server.common.event.Event;
 import io.holoinsight.server.apm.common.model.query.QueryTraceRequest;
 import io.holoinsight.server.apm.common.model.query.ServiceInstance;
 import io.holoinsight.server.apm.common.model.query.SlowSql;
 import io.holoinsight.server.apm.common.model.query.Topology;
 import io.holoinsight.server.apm.common.model.query.TraceBrief;
+import io.holoinsight.server.apm.common.model.query.TraceTree;
 import io.holoinsight.server.apm.common.model.query.VirtualComponent;
 import io.holoinsight.server.apm.common.model.specification.sw.Trace;
 import io.holoinsight.server.common.J;
+import io.holoinsight.server.common.service.RequestContextAdapter;
 import io.holoinsight.server.home.common.service.query.KeyResult;
+import io.holoinsight.server.home.common.service.query.QueryDetailResponse;
+import io.holoinsight.server.home.common.service.query.QueryDetailResponse.DetailResult;
 import io.holoinsight.server.home.common.service.query.QueryResponse;
 import io.holoinsight.server.home.common.service.query.QuerySchemaResponse;
 import io.holoinsight.server.home.common.service.query.Result;
 import io.holoinsight.server.home.common.service.query.ValueResult;
-import io.holoinsight.server.home.common.util.Debugger;
+import io.holoinsight.server.common.Debugger;
 import io.holoinsight.server.query.common.convertor.ApmConvertor;
 import io.holoinsight.server.query.grpc.QueryProto;
 import io.holoinsight.server.query.grpc.QueryProto.Datasource;
@@ -51,7 +56,8 @@ public class QueryClientService {
     Debugger.print("QueryService", "query, request: " + J.toJson(request));
     long start = System.currentTimeMillis();
 
-    QueryProto.QueryResponse res = queryServiceBlockingStub.queryData(request);
+    QueryProto.QueryResponse res =
+        queryServiceBlockingStub.withMaxInboundMessageSize(4194304 * 100).queryData(request);
 
     int pointSize = getPointSizeFromResp(res);
     log.info("HOME_QUERY_STAT from[API] invoke[1], cost[{}], pointSize[{}]",
@@ -77,6 +83,62 @@ public class QueryClientService {
         Object[] value = new Object[] {p.getTimestamp(),
             p.getValue() != 0 || StringUtils.isBlank(p.getStrValue()) ? String.valueOf(p.getValue())
                 : p.getStrValue()};
+        values.add(value);
+      }
+      r.setValues(values);
+      results.add(r);
+    }
+
+    response.setResults(results);
+
+    return response;
+  }
+
+  public QueryDetailResponse queryDetail(QueryProto.QueryRequest request, String tableName) {
+    Debugger.print("QueryService", "query, request: " + J.toJson(request));
+    long start = System.currentTimeMillis();
+
+    QueryProto.QueryDetailResponse res = queryServiceBlockingStub.queryDetailData(request);
+
+    int pointSize = getPointSizeFromResp(res);
+    log.info("HOME_QUERY_STAT from[API_DETAIL] invoke[1], cost[{}], pointSize[{}], table={},",
+        System.currentTimeMillis() - start, pointSize, tableName);
+
+    Debugger.print("QueryService", "query, response: " + J.toJson(res));
+
+    QueryDetailResponse response = new QueryDetailResponse();
+    List<DetailResult> results = new ArrayList<>();
+
+    for (QueryProto.DetailResult result : res.getResultsList()) {
+      DetailResult r = new DetailResult();
+      r.setTables(result.getTablesList());
+      r.setHeaders(result.getHeadersList());
+
+      List<Object[]> values = new ArrayList<>();
+      if (CollectionUtils.isEmpty(r.getHeaders())) {
+        log.warn("headers is empty for {}", J.toJson(result));
+        continue;
+      }
+      int column = r.getHeaders().size();
+      for (QueryProto.DetailRow row : result.getRowsList()) {
+        Object[] value = new Object[column];
+        for (int i = 0; i < column; i++) {
+          QueryProto.DetailValue detailValue = row.getValues(i);
+          switch (detailValue.getType()) {
+            case "String":
+              value[i] = detailValue.getStrValue();
+              break;
+            case "Timestamp":
+              value[i] = detailValue.getTimestampValue();
+              break;
+            case "Double":
+              value[i] = detailValue.getDoubleValue();
+              break;
+            case "Boolean":
+              value[i] = detailValue.getBoolValue();
+              break;
+          }
+        }
         values.add(value);
       }
       r.setValues(values);
@@ -225,6 +287,12 @@ public class QueryClientService {
     return ApmConvertor.convertTrace(trace);
   }
 
+  public List<TraceTree> queryTraceTree(QueryTraceRequest request) {
+    QueryProto.TraceTreeList traceTreeList =
+        queryServiceBlockingStub.queryTraceTree(convertRequest(request));
+    return ApmConvertor.convertTraceTree(traceTreeList);
+  }
+
   public List<io.holoinsight.server.apm.common.model.query.Service> queryServiceList(
       QueryProto.QueryMetaRequest request) {
     QueryProto.QueryMetaResponse queryMetaResponse =
@@ -309,6 +377,16 @@ public class QueryClientService {
     return result;
   }
 
+  public List<Event> queryEvents(QueryProto.QueryEventRequest request) {
+    QueryProto.QueryEventResponse queryEventResponse =
+        queryServiceBlockingStub.queryEvents(request);
+    List<Event> result = new ArrayList<>(queryEventResponse.getEventCount());
+    queryEventResponse.getEventList().forEach(event -> {
+      result.add(ApmConvertor.deConvertEvent(event));
+    });
+    return result;
+  }
+
   private QueryProto.QueryTraceRequest convertRequest(QueryTraceRequest request) {
     QueryProto.QueryTraceRequest.Builder requestBuilder =
         QueryProto.QueryTraceRequest.newBuilder().setTenant(request.getTenant());
@@ -348,13 +426,14 @@ public class QueryClientService {
     return requestBuilder.build();
   }
 
-  public QueryProto.QueryResponse queryData(QueryProto.QueryRequest request) {
+  public QueryProto.QueryResponse queryData(QueryProto.QueryRequest request, String source) {
 
     QueryProto.QueryRequest queryRequest = this.requestContextAdapter.requestAdapte(request);
     long start = System.currentTimeMillis();
-    QueryProto.QueryResponse response = queryServiceBlockingStub.queryData(queryRequest);
+    QueryProto.QueryResponse response =
+        queryServiceBlockingStub.withMaxInboundMessageSize(4194304 * 100).queryData(queryRequest);
     int pointSize = getPointSizeFromResp(response);
-    log.info("HOME_QUERY_STAT from[ALERT] invoke[1], cost[{}], pointSize[{}]",
+    log.info("HOME_QUERY_STAT from[{}] invoke[1], cost[{}], pointSize[{}]", source,
         System.currentTimeMillis() - start, pointSize);
     return response;
   }
@@ -384,6 +463,21 @@ public class QueryClientService {
     List<QueryProto.Result> results = response.getResultsList();
     for (QueryProto.Result result : results) {
       size += result.getPointsCount();
+    }
+    return size;
+  }
+
+  private int getPointSizeFromResp(QueryProto.QueryDetailResponse response) {
+    int size = 0;
+    if (response == null || response.getResultsCount() == 0) {
+      return size;
+    }
+
+    List<QueryProto.DetailResult> results = response.getResultsList();
+    for (QueryProto.DetailResult result : results) {
+      for (QueryProto.DetailRow row : result.getRowsList()) {
+        size += row.getValuesCount();
+      }
     }
     return size;
   }

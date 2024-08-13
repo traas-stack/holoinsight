@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration debug="true" status="INFO" shutdownHook="disable">
+
+	<Properties>
+		<Property name="LOG_PATH">${sys:logging.path:-./logs}/holoinsight-computing</Property>
+	</Properties>
+
+	<Appenders>
+		<RollingFile name="ERROR-APPENDER" fileName="${LOG_PATH}/common-error.log"
+		             filePattern="${LOG_PATH}/common-error.log.%i" immediateFlush="true">
+			<!-- only print error log -->
+			<DefaultRolloverStrategy max="2"/>
+			<PatternLayout charset="utf-8">
+				<pattern>%d %-5p [%t] %c{1.} - %m%n</pattern>
+			</PatternLayout>
+			<Policies>
+				<SizeBasedTriggeringPolicy size="1GB"/>
+			</Policies>
+			<ThresholdFilter level="ERROR" onMatch="ACCEPT" onMismatch="DENY"/>
+		</RollingFile>
+
+		<RollingFile name="ROOT-APPENDER" fileName="${LOG_PATH}/common-default.log"
+		             filePattern="${LOG_PATH}/common-default.log.%d{yyyy-MM-dd}.%i" immediateFlush="true">
+			<DefaultRolloverStrategy max="7">
+				<Delete basePath="${LOG_PATH}" maxDepth="1">
+					<IfAny>
+						<IfAccumulatedFileCount exceeds="10"/>
+						<IfAccumulatedFileSize exceeds="10GB"/>
+						<IfLastModified age="2d"/>
+					</IfAny>
+					<IfFileName glob="common-default.log.*"/>
+				</Delete>
+			</DefaultRolloverStrategy>
+			<LevelRangeFilter maxLevel="DEBUG" minLevel="WARN" onMatch="ACCEPT" onMismatch="DENY"/>
+			<PatternLayout charset="utf-8">
+				<pattern>%d %-5p [%t] %c{1.} - %m%n</pattern>
+			</PatternLayout>
+			<Policies>
+				<SizeBasedTriggeringPolicy size="2GB"/>
+			</Policies>
+		</RollingFile>
+	</Appenders>
+
+	<Loggers>
+		<Root level="INFO">
+			<Appender-Ref level="INFO" ref="ROOT-APPENDER"/>
+			<Appender-Ref level="ERROR" ref="ERROR-APPENDER"/>
+		</Root>
+	</Loggers>
+
+</Configuration>

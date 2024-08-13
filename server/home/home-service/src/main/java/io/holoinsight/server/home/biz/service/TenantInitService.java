@@ -4,9 +4,14 @@
 package io.holoinsight.server.home.biz.service;
 
 import io.holoinsight.server.apm.common.model.specification.sw.Tag;
+import io.holoinsight.server.common.dao.entity.dto.MetricInfoDTO;
 import io.holoinsight.server.common.dao.entity.dto.TenantOpsStorage;
 import io.holoinsight.server.home.biz.plugin.config.MetaLabel;
-import io.holoinsight.server.home.dal.model.dto.CloudMonitorRange;
+import io.holoinsight.server.common.scope.MonitorScope;
+import io.holoinsight.server.common.scope.MonitorUser;
+import io.holoinsight.server.common.dao.entity.CloudMonitorRange;
+import io.holoinsight.server.home.dal.model.dto.CustomPluginDTO;
+import io.holoinsight.server.common.dao.entity.dto.IntegrationGeneratedDTO;
 import io.holoinsight.server.query.grpc.QueryProto.QueryFilter;
 
 import java.util.List;
@@ -53,13 +58,16 @@ public interface TenantInitService {
 
   /**
    * get actual tsdb tenant for request tenant and metric
-   * 
+   *
    * @param tenant
    * @return
    */
   String getTsdbTenant(String tenant);
 
-  Boolean checkConditions(String workspace, String metric, List<QueryFilter> filters);
+  String getTsdbTenant(String tenant, MetricInfoDTO metricInfo);
+
+  Boolean checkConditions(String tenant, String workspace, String environment, String metric,
+      List<QueryFilter> filters, MonitorScope ms, MonitorUser mu);
 
 
   /**
@@ -68,7 +76,9 @@ public interface TenantInitService {
    * @param workspace
    * @return
    */
-  Map<String, String> getTenantWorkspaceMetaConditions(String workspace);
+  Map<String, String> getTenantWorkspaceMetaConditions(String tenant, String workspace);
+
+  Map<String, String> getTenantServerWorkspaceMetaConditions(String tenant, String workspace);
 
   /**
    * add query filters by workspace
@@ -76,7 +86,8 @@ public interface TenantInitService {
    * @param workspace
    * @return
    */
-  List<QueryFilter> getTenantFilters(String workspace);
+  List<QueryFilter> getTenantFilters(String tenant, String workspace, String environment,
+      String metric);
 
   /**
    * logmonitor metric table
@@ -87,12 +98,24 @@ public interface TenantInitService {
   String getLogMonitorMetricTable(String tableName);
 
 
-  CloudMonitorRange getCollectMonitorRange(String table, String workspace, List<String> strings,
-      MetaLabel metaLabel);
+  CloudMonitorRange getCollectMonitorRange(String table, String tenant, String workspace,
+      List<String> strings, MetaLabel metaLabel);
 
-  Boolean checkCookie(String tenant, String workspace);
+  Boolean checkCookie(String tenant, String workspace, String environment);
 
   Boolean checkTraceTags(String tenant, String workspace, List<Tag> tags);
 
   Boolean checkTraceParams(String tenant, String workspace, Map<String, String> paramsMap);
+
+  List<IntegrationGeneratedDTO> getExtraGeneratedLists();
+
+  Boolean checkIntegrationWorkspace(String workspace);
+
+  Boolean checkCustomPluginLogConfParams(String tenant, String workspace,
+      CustomPluginDTO customPluginDTO);
+
+  List<String> getAggCompletenessTags();
+
+  List<String> getAggDefaultGroupByTags();
+
 }

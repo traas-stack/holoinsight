@@ -3,17 +3,17 @@
  */
 package io.holoinsight.server.home.web.controller;
 
-import io.holoinsight.server.home.biz.service.UserOpLogService;
-import io.holoinsight.server.home.common.util.MonitorException;
-import io.holoinsight.server.home.common.util.ResultCodeEnum;
-import io.holoinsight.server.home.common.util.page.MonitorTimePageRequest;
-import io.holoinsight.server.home.common.util.scope.AuthTargetType;
-import io.holoinsight.server.home.common.util.scope.MonitorScope;
-import io.holoinsight.server.home.common.util.scope.PowerConstants;
-import io.holoinsight.server.home.common.util.scope.RequestContext;
-import io.holoinsight.server.home.dal.model.UserOpLog;
-import io.holoinsight.server.home.facade.page.MonitorPageResult;
-import io.holoinsight.server.home.web.common.ManageCallback;
+import io.holoinsight.server.common.service.UserOpLogService;
+import io.holoinsight.server.common.MonitorException;
+import io.holoinsight.server.common.ResultCodeEnum;
+import io.holoinsight.server.common.MonitorTimePageRequest;
+import io.holoinsight.server.common.scope.AuthTargetType;
+import io.holoinsight.server.common.scope.MonitorScope;
+import io.holoinsight.server.common.scope.PowerConstants;
+import io.holoinsight.server.common.RequestContext;
+import io.holoinsight.server.common.dao.entity.UserOpLog;
+import io.holoinsight.server.common.MonitorPageResult;
+import io.holoinsight.server.common.ManageCallback;
 import io.holoinsight.server.home.web.common.ParaCheckUtil;
 import io.holoinsight.server.home.web.interceptor.MonitorScopeAuth;
 import io.holoinsight.server.common.JsonResult;
@@ -84,9 +84,9 @@ public class UserOpLogFacadeImpl extends BaseFacade {
         if (null != ms && !StringUtils.isBlank(ms.tenant)) {
           userOpLogRequest.getTarget().setTenant(ms.tenant);
         }
-        if (null != ms && !StringUtils.isBlank(ms.workspace)) {
-          userOpLogRequest.getTarget().setWorkspace(ms.workspace);
-        }
+        // if (null != ms && !StringUtils.isBlank(ms.workspace)) {
+        // userOpLogRequest.getTarget().setWorkspace(ms.workspace);
+        // }
         JsonResult.createSuccessResult(result, userOpLogService.getListByPage(userOpLogRequest));
       }
     });

@@ -1,0 +1,42 @@
+//from sls to sls from central collect
+{
+  "select": {
+
+  },
+  "from": {
+    "type": "log",
+    "log": {
+      "path": [
+        {
+          "type": "sls"
+        }
+      ]
+    }
+  },
+  "groupBy": {
+    "groups": [
+      {
+        "name": "value",
+        "elect": {
+          "type": "line"
+        }
+      }
+    ],
+    "details": {
+      "enabled": true
+    }
+  },
+  "window": {
+    "interval": 60000
+  },
+  "output": {
+    "type": "sls",
+    "sls": {
+      "endpoint": "test",
+      "project": "test",
+      "logstore": "test",
+      "ak": "test",
+      "sk": "test"
+    }
+  }
+}

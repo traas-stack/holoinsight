@@ -9,7 +9,22 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.ApplicationArguments;
+import org.springframework.boot.ApplicationRunner;
+import org.springframework.core.annotation.Order;
+import org.springframework.stereotype.Component;
+
+import com.xzchaoo.commons.stat.Measurement;
+import com.xzchaoo.commons.stat.StringsKey;
+
+import io.holoinsight.server.common.MetricsUtils;
 import io.holoinsight.server.common.auth.ApikeyService;
+import io.holoinsight.server.common.event.EventBusHolder;
+import io.holoinsight.server.common.event.ModuleInitEvent;
 import io.holoinsight.server.common.threadpool.CommonThreadPools;
 import io.holoinsight.server.meta.facade.service.DataClientService;
 import io.holoinsight.server.registry.core.agent.Agent;
@@ -21,20 +36,8 @@ import io.holoinsight.server.registry.core.grpc.RegistryServerForAgent;
 import io.holoinsight.server.registry.core.template.CollectTemplate;
 import io.holoinsight.server.registry.core.template.CollectTemplateSyncer;
 import io.holoinsight.server.registry.core.template.TemplateStorage;
-import io.holoinsight.server.common.MetricsUtils;
 import io.prometheus.client.Gauge;
 import reactor.core.publisher.Mono;
-
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.ApplicationArguments;
-import org.springframework.boot.ApplicationRunner;
-import org.springframework.stereotype.Component;
-
-import com.xzchaoo.commons.stat.Measurement;
-import com.xzchaoo.commons.stat.StringsKey;
 
 /**
  * <p>
@@ -43,6 +46,7 @@ import com.xzchaoo.commons.stat.StringsKey;
  * @author zzhb101
  */
 @Component
+@Order(100)
 public class InitRunner implements ApplicationRunner {
   private static final Logger LOGGER = LoggerFactory.getLogger(InitRunner.class);
   @Autowired
@@ -91,6 +95,7 @@ public class InitRunner implements ApplicationRunner {
     long end = System.currentTimeMillis();
     LOGGER.info("biz init cost=[{}]", end - begin);
     startStat();
+    EventBusHolder.INSTANCE.post(new ModuleInitEvent("registry"));
   }
 
   private void warmUpDataClientService(DataClientService dataClientService) {
@@ -100,6 +105,7 @@ public class InitRunner implements ApplicationRunner {
         dataClientService.queryAll("anything");
         break;
       } catch (Throwable ignored) {
+        // This catch statement is intentionally empty
       }
     }
   }

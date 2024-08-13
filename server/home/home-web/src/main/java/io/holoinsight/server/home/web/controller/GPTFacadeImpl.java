@@ -12,9 +12,11 @@ import com.unfbx.chatgpt.entity.chat.FunctionCall;
 import com.unfbx.chatgpt.entity.chat.Message;
 import io.holoinsight.server.common.J;
 import io.holoinsight.server.common.JsonResult;
-import io.holoinsight.server.home.common.util.scope.AuthTargetType;
-import io.holoinsight.server.home.common.util.scope.PowerConstants;
-import io.holoinsight.server.home.web.common.TokenUrls;
+import io.holoinsight.server.home.biz.service.gpt.GptService;
+import io.holoinsight.server.common.scope.AuthTargetType;
+import io.holoinsight.server.common.scope.PowerConstants;
+import io.holoinsight.server.common.ManageCallback;
+import io.holoinsight.server.home.web.common.ParaCheckUtil;
 import io.holoinsight.server.home.web.interceptor.MonitorScopeAuth;
 import io.holoinsight.server.home.web.openai.FunctionRegistry;
 import io.holoinsight.server.home.biz.service.openai.OpenAiService;
@@ -40,7 +42,6 @@ import java.util.UUID;
 @Slf4j
 @RestController
 @RequestMapping("/webapi/gpt")
-@TokenUrls("/webapi/gpt")
 public class GPTFacadeImpl extends BaseFacade {
 
   @Autowired
@@ -48,6 +49,9 @@ public class GPTFacadeImpl extends BaseFacade {
 
   @Autowired
   private OpenAiService openAiService;
+
+  @Autowired
+  private GptService gptService;
 
   @PostMapping("/console")
   @ResponseBody
@@ -115,4 +119,52 @@ public class GPTFacadeImpl extends BaseFacade {
     return JsonResult.createSuccessResult(response.getChoices().get(0).getMessage().getContent());
 
   }
+
+  @PostMapping("/task/submit")
+  @ResponseBody
+  @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.EDIT)
+  public JsonResult<Map<String, Object>> submit(@RequestBody Map<String, Object> request) {
+
+    final JsonResult<Map<String, Object>> result = new JsonResult<>();
+    facadeTemplate.manage(result, new ManageCallback() {
+      @Override
+      public void checkParameter() {
+        ParaCheckUtil.checkParaNotEmpty(request, "request");
+      }
+
+      @Override
+      public void doManage() {
+        String str = gptService.submit(request, UUID.randomUUID().toString());
+        Map<String, Object> ren = J.toMap(str);
+        if (ren != null) {
+          ren.remove("ip");
+        }
+        JsonResult.createSuccessResult(result, ren);
+      }
+    });
+
+    return result;
+  }
+
+  @PostMapping("/qa/save")
+  @ResponseBody
+  @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.EDIT)
+  public JsonResult<String> qaSave(@RequestBody List<Map<String, Object>> request) {
+    final JsonResult<String> result = new JsonResult<>();
+    facadeTemplate.manage(result, new ManageCallback() {
+      @Override
+      public void checkParameter() {
+        ParaCheckUtil.checkParaNotEmpty(request, "request");
+      }
+
+      @Override
+      public void doManage() {
+        String str = gptService.save(request, UUID.randomUUID().toString());
+        JsonResult.createSuccessResult(result, str);
+      }
+    });
+
+    return result;
+  }
+
 }

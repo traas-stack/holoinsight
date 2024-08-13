@@ -4,12 +4,15 @@
 package io.holoinsight.server.home.alert.model.event;
 
 import io.holoinsight.server.common.AddressUtil;
-import io.holoinsight.server.home.facade.InspectConfig;
-import io.holoinsight.server.home.facade.PqlRule;
-import io.holoinsight.server.home.facade.TemplateValue;
-import io.holoinsight.server.home.facade.emuns.AlertLevel;
-import io.holoinsight.server.home.facade.trigger.Trigger;
-import io.holoinsight.server.home.facade.trigger.TriggerResult;
+import io.holoinsight.server.common.J;
+import io.holoinsight.server.home.alert.service.event.RecordSucOrFailNotify;
+import io.holoinsight.server.common.dao.entity.dto.AlertNotifyRecordDTO;
+import io.holoinsight.server.common.dao.entity.dto.InspectConfig;
+import io.holoinsight.server.common.dao.entity.dto.alarm.PqlRule;
+import io.holoinsight.server.common.dao.entity.dto.alarm.TemplateValue;
+import io.holoinsight.server.common.dao.emuns.AlertLevel;
+import io.holoinsight.server.common.dao.entity.dto.alarm.trigger.Trigger;
+import io.holoinsight.server.common.dao.entity.dto.alarm.trigger.TriggerResult;
 import lombok.Data;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -23,6 +26,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * @author wangsiyuan
@@ -56,6 +60,8 @@ public class AlertNotify {
 
   private Boolean isRecover;
 
+  private boolean recoverNotify;
+
   private List<SubscriptionInfo> subscriptionInfos;
 
   private List<UserInfo> userInfos;
@@ -85,6 +91,8 @@ public class AlertNotify {
 
   private String alertServer;
 
+  private String alertIp;
+
   private String envType;
 
   private String sourceType;
@@ -92,32 +100,59 @@ public class AlertNotify {
   // log analysis content
   private List<String> logAnalysis;
 
-  public static AlertNotify eventInfoConvert(EventInfo eventInfo, InspectConfig inspectConfig) {
+  private List<String> logSample;
+
+  private AlertNotifyRecordDTO alertNotifyRecord;
+
+  private boolean alertRecord;
+
+  public static AlertNotify eventInfoConvert(EventInfo eventInfo, InspectConfig inspectConfig,
+      List<AlertNotifyRecordDTO> alertNotifyRecordDTOS) {
     AlertNotify alertNotify = new AlertNotify();
-    BeanUtils.copyProperties(inspectConfig, alertNotify);
-    BeanUtils.copyProperties(eventInfo, alertNotify);
-    if (!eventInfo.getIsRecover()) {
+    try {
+      BeanUtils.copyProperties(inspectConfig, alertNotify);
+      BeanUtils.copyProperties(eventInfo, alertNotify);
+      if (inspectConfig.getRecover() != null) {
+        alertNotify.setRecoverNotify(inspectConfig.getRecover());
+      }
       alertNotify.setIsPql(inspectConfig.getIsPql() != null && inspectConfig.getIsPql());
-      Map<Trigger, List<NotifyDataInfo>> notifyDataInfoMap = new HashMap<>();
-      eventInfo.getAlarmTriggerResults().forEach((trigger, resultList) -> {
-        List<NotifyDataInfo> notifyDataInfos = new ArrayList<>();
-        resultList.forEach(result -> {
-          NotifyDataInfo notifyDataInfo = new NotifyDataInfo();
-          notifyDataInfo.setMetric(result.getMetric());
-          notifyDataInfo.setTags(result.getTags());
-          notifyDataInfo.setCurrentValue(result.getCurrentValue());
-          notifyDataInfo.setTriggerContent(result.getTriggerContent());
-          notifyDataInfos.add(notifyDataInfo);
+      if (!eventInfo.getIsRecover()) {
+        Map<Trigger, List<NotifyDataInfo>> notifyDataInfoMap = new HashMap<>();
+        eventInfo.getAlarmTriggerResults().forEach((trigger, resultList) -> {
+          List<NotifyDataInfo> notifyDataInfos = new ArrayList<>();
+          resultList.forEach(result -> {
+            NotifyDataInfo notifyDataInfo = new NotifyDataInfo();
+            notifyDataInfo.setMetric(result.getMetric());
+            notifyDataInfo.setTags(result.getTags());
+            notifyDataInfo.setCurrentValue(result.getCurrentValue());
+            notifyDataInfo.setTriggerContent(result.getTriggerContent());
+            notifyDataInfos.add(notifyDataInfo);
+          });
+          notifyDataInfoMap.put(trigger, notifyDataInfos);
         });
-        notifyDataInfoMap.put(trigger, notifyDataInfos);
-      });
-      alertNotify.setNotifyDataInfos(notifyDataInfoMap);
-      alertNotify.setAggregationNum(notifyDataInfoMap.size());
+        // add alert trigger result for record
+        if (!CollectionUtils.isEmpty(alertNotifyRecordDTOS)) {
+          for (AlertNotifyRecordDTO alertNotifyRecord : alertNotifyRecordDTOS) {
+            if (Objects.equals(alertNotifyRecord.getUniqueId(), alertNotify.getUniqueId())) {
+              alertNotifyRecord.setTriggerResult(J.toJson(notifyDataInfoMap.values()));
+              alertNotify.setAlertNotifyRecord(alertNotifyRecord);
+              break;
+            }
+          }
+        }
+        alertNotify.setNotifyDataInfos(notifyDataInfoMap);
+        alertNotify.setAggregationNum(notifyDataInfoMap.size());
+      }
       alertNotify.setEnvType(eventInfo.getEnvType());
       // 对于平台消费侧，可能需要知道完整的告警规则
       alertNotify.setRuleConfig(inspectConfig);
       tryFixAlertLevel(alertNotify, eventInfo.getAlarmTriggerResults());
-      alertNotify.setAlertServer(AddressUtil.getHostAddress());
+      alertNotify.setAlertServer(AddressUtil.getLocalHostName());
+      alertNotify.setAlertIp(AddressUtil.getHostAddress());
+    } catch (Exception e) {
+      RecordSucOrFailNotify.alertNotifyProcessFail("event convert alert notify exception" + e,
+          "alert task compute", "event convert alert notify", alertNotify.getAlertNotifyRecord());
+      throw e;
     }
     return alertNotify;
   }
@@ -151,5 +186,19 @@ public class AlertNotify {
     templateValue.setAlarmLevel(AlertLevel.getByCode(alertNotify.getAlarmLevel()));
     templateValues.add(templateValue);
     return templateValues;
+  }
+
+  public boolean notifyRecover() {
+    if (isRecover == null) {
+      return false;
+    }
+    return isRecover && recoverNotify;
+  }
+
+  public boolean nonNotifyRecover() {
+    if (isRecover == null) {
+      return false;
+    }
+    return isRecover && !recoverNotify;
   }
 }

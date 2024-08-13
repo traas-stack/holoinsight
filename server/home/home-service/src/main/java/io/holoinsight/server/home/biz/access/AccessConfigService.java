@@ -6,8 +6,8 @@ package io.holoinsight.server.home.biz.access;
 import com.alibaba.fastjson.JSON;
 import io.holoinsight.server.home.biz.access.model.AccessConfig;
 import io.holoinsight.server.home.biz.access.model.MonitorAccessConfig;
-import io.holoinsight.server.home.biz.service.ApiKeyService;
-import io.holoinsight.server.home.dal.model.ApiKey;
+import io.holoinsight.server.common.service.ApiKeyService;
+import io.holoinsight.server.common.dao.entity.ApiKey;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -76,11 +76,13 @@ public class AccessConfigService {
 
       currentAccess.setAccessAll(accessConfig.isAccessAll());
       currentAccess.setAccessRange(accessConfig.getAccessRange());
+      currentAccess.setAccessUrl(accessConfig.getAccessUrl());
       currentAccess.setMetricQps(accessConfig.getMetricQps());
       currentAccess.setMetaQps(accessConfig.getMetaQps());
       currentAccess.setDpsLimit(accessConfig.getDpsLimit());
       currentAccess.setTagsLimit(accessConfig.getTagsLimit());
       currentAccess.setUserRate(accessConfig.getUserRate());
+      currentAccess.setWorkspace(accessConfig.getWorkspace());
 
       monitorAccessConfigMap.put(t.getApiKey(), currentAccess);
 

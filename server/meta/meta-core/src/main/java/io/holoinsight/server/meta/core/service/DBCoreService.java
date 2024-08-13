@@ -16,6 +16,8 @@ import java.util.Map;
  */
 public interface DBCoreService {
 
+  void startBuildIndex();
+
   Pair<Integer, Integer> insertOrUpdate(String tableName, List<Map<String, Object>> rows);
 
   List<Map<String, Object>> queryByTable(String tableName);

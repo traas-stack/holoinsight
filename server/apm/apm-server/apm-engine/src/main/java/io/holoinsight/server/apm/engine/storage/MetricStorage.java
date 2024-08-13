@@ -26,6 +26,7 @@ public interface MetricStorage extends ReadableStorage {
       TraceState traceState, long start, long end, List<Tag> tags) throws Exception;
 
   StatisticDataList statistic(long startTime, long endTime, List<String> groups,
-      List<AggregationBuilder> aggregations) throws Exception;
+      Map<String, String> whites, Map<String, String> blacks, List<AggregationBuilder> aggregations)
+      throws Exception;
 
 }

@@ -27,6 +27,7 @@ public class TemplateService {
     try {
       return templateStorage.get(Long.parseLong(t));
     } catch (NumberFormatException ignored) {
+      // This catch statement is intentionally empty
     }
 
     Set<Long> ids = templateStorage.get(t);

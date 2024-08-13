@@ -4,17 +4,22 @@
 
 package io.holoinsight.server.home.biz.listener;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.google.common.eventbus.AllowConcurrentEvents;
 import com.google.common.eventbus.Subscribe;
 import com.google.gson.reflect.TypeToken;
+import io.holoinsight.server.common.EventBusHolder;
 import io.holoinsight.server.common.J;
-import io.holoinsight.server.home.biz.service.AlarmMetricService;
-import io.holoinsight.server.home.common.util.EventBusHolder;
-import io.holoinsight.server.home.dal.model.AlarmMetric;
-import io.holoinsight.server.home.facade.AlarmRuleDTO;
-import io.holoinsight.server.home.facade.Rule;
-import io.holoinsight.server.home.facade.trigger.DataSource;
-import io.holoinsight.server.home.facade.trigger.Trigger;
+import io.holoinsight.server.common.dao.entity.AlarmHistory;
+import io.holoinsight.server.common.dao.entity.AlarmMetric;
+import io.holoinsight.server.common.dao.entity.AlarmRule;
+import io.holoinsight.server.common.dao.entity.dto.AlarmRuleDTO;
+import io.holoinsight.server.common.dao.entity.dto.alarm.AlarmRuleConf;
+import io.holoinsight.server.common.dao.entity.dto.alarm.trigger.DataSource;
+import io.holoinsight.server.common.dao.entity.dto.alarm.trigger.Trigger;
+import io.holoinsight.server.common.dao.mapper.AlarmHistoryMapper;
+import io.holoinsight.server.common.dao.mapper.AlarmRuleMapper;
+import io.holoinsight.server.common.service.AlarmMetricService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +27,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.Resource;
+import java.util.List;
 
 /**
  * @author jsy1001de
@@ -33,6 +40,10 @@ public class AlarmRuleUpdateListener {
 
   @Autowired
   private AlarmMetricService alarmMetricService;
+  @Resource
+  private AlarmHistoryMapper alarmHistoryMapper;
+  @Resource
+  private AlarmRuleMapper alarmRuleMapper;
 
   @PostConstruct
   void register() {
@@ -43,16 +54,28 @@ public class AlarmRuleUpdateListener {
   @AllowConcurrentEvents
   public void onEvent(AlarmRuleDTO alarmRuleDTO) {
 
+    log.info("AlarmRuleUpdateListener status {} bool {}", alarmRuleDTO.getStatus(),
+        alarmRuleDTO.getStatus() == 0);
+    if (alarmRuleDTO.getStatus() == 0) {
+      AlarmRule alarmRule = alarmRuleMapper.selectById(alarmRuleDTO.getId());
+      if (alarmRule == null) {
+        log.error("cannot find alarm rule for id {}", alarmRuleDTO.getId());
+        return;
+      }
+      deleteAlarmHistory(alarmRuleDTO.getId(), alarmRule.getRuleType());
+    }
+
     if (CollectionUtils.isEmpty(alarmRuleDTO.getRule())) {
       return;
     }
-    Rule rule = J.fromJson(J.toJson(alarmRuleDTO.getRule()), new TypeToken<Rule>() {}.getType());
+    AlarmRuleConf alarmRuleConf =
+        J.fromJson(J.toJson(alarmRuleDTO.getRule()), new TypeToken<AlarmRuleConf>() {}.getType());
 
-    if (CollectionUtils.isEmpty(rule.getTriggers())) {
+    if (CollectionUtils.isEmpty(alarmRuleConf.getTriggers())) {
       return;
     }
 
-    for (Trigger trigger : rule.getTriggers()) {
+    for (Trigger trigger : alarmRuleConf.getTriggers()) {
       if (CollectionUtils.isEmpty(trigger.getDatasources())) {
         continue;
       }
@@ -79,5 +102,25 @@ public class AlarmRuleUpdateListener {
         }
       }
     }
+  }
+
+  private void deleteAlarmHistory(Long alarmRuleId, String ruleType) {
+    QueryWrapper<AlarmHistory> queryWrapper = new QueryWrapper<>();
+    queryWrapper.eq("unique_id", String.join("_", ruleType, String.valueOf(alarmRuleId)));
+    List<AlarmHistory> alarmHistoryList = this.alarmHistoryMapper.selectList(queryWrapper);
+    log.info("select history empty {}, unique_id {}", CollectionUtils.isEmpty(alarmHistoryList),
+        String.join("_", ruleType, String.valueOf(alarmRuleId)));
+    if (CollectionUtils.isEmpty(alarmHistoryList)) {
+      return;
+    }
+    int count = 0;
+    for (AlarmHistory alarmHistory : alarmHistoryList) {
+      AlarmHistory deletingHistory = new AlarmHistory();
+      deletingHistory.setId(alarmHistory.getId());
+      deletingHistory.setDeleted(true);
+      count += this.alarmHistoryMapper.updateById(deletingHistory);
+    }
+    log.info("need mark deleting alert history size {}, real deleted size {}",
+        alarmHistoryList.size(), count);
   }
 }

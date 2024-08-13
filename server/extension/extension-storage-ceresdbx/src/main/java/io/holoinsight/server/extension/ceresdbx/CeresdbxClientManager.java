@@ -3,13 +3,6 @@
  */
 package io.holoinsight.server.extension.ceresdbx;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.concurrent.ConcurrentHashMap;
-
-import javax.annotation.PostConstruct;
-
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import io.ceresdb.CeresDBClient;
@@ -18,15 +11,20 @@ import io.ceresdb.options.CeresDBOptions;
 import io.ceresdb.rpc.RpcOptions;
 import io.ceresdb.rpc.RpcOptions.LimitKind;
 import io.holoinsight.server.common.J;
+import io.holoinsight.server.common.config.EnvironmentProperties;
 import io.holoinsight.server.common.dao.entity.TenantOps;
 import io.holoinsight.server.common.dao.mapper.TenantOpsMapper;
-import lombok.AllArgsConstructor;
-import lombok.Data;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.util.Assert;
+
+import javax.annotation.PostConstruct;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * <p>
@@ -41,10 +39,14 @@ public class CeresdbxClientManager {
 
   private TenantOpsMapper tenantOpsMapper;
 
+  private EnvironmentProperties environmentProperties;
+
   private Map<String, CeresDBxClientInstance> instances = new ConcurrentHashMap<>();
 
-  public CeresdbxClientManager(TenantOpsMapper tenantOpsMapper) {
+  public CeresdbxClientManager(TenantOpsMapper tenantOpsMapper,
+      EnvironmentProperties environmentProperties) {
     this.tenantOpsMapper = tenantOpsMapper;
+    this.environmentProperties = environmentProperties;
   }
 
   @PostConstruct
@@ -68,6 +70,7 @@ public class CeresdbxClientManager {
         String database = (String) ceresdbConfig.get("database");
         Object portObj = ceresdbConfig.get("port");
         int port = Double.valueOf(String.valueOf(portObj)).intValue();
+        address = fixAddress(address);
         String newConfigKey = configKey(address, port, accessUser, accessKey);
         CeresDBxClientInstance clientInstance = instances.get(tenant);
         if (clientInstance == null
@@ -92,24 +95,24 @@ public class CeresdbxClientManager {
     }
   }
 
+  private String fixAddress(String address) {
+    if (StringUtils.indexOfIgnoreCase(address, "${zone}") != -1) {
+      String zoneAddress =
+          StringUtils.replaceIgnoreCase(address, "${zone}", this.environmentProperties.getZone());
+      return zoneAddress;
+    }
+    return address;
+  }
+
   public CeresDBClient getClient(String tenant) {
     if (StringUtils.isBlank(tenant)) {
       tenant = "dev";
     }
     CeresDBxClientInstance ceresDBxClientInstance = instances.get(tenant);
-    Assert.notNull(ceresDBxClientInstance, "CeresDBx instance not found for tenant: " + tenant);
-    return ceresDBxClientInstance.getCeresDBClient();
+    return ceresDBxClientInstance == null ? null : ceresDBxClientInstance.getCeresDBClient();
   }
 
-  private String configKey(String host, int port, String user, String accessKey) {
+  public static String configKey(String host, int port, String user, String accessKey) {
     return host + port + user + accessKey;
   }
-}
-
-
-@AllArgsConstructor
-@Data
-class CeresDBxClientInstance {
-  private final String configKey;
-  private final CeresDBClient ceresDBClient;
 }

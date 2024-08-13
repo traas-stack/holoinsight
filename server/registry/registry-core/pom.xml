@@ -20,7 +20,7 @@
 		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>registry-dao-gen</artifactId>
+			<artifactId>common-dao-gen</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
@@ -89,6 +89,10 @@
 		<dependency>
 			<groupId>io.grpc</groupId>
 			<artifactId>grpc-netty-shaded</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.aliyun.openservices</groupId>
+			<artifactId>aliyun-log</artifactId>
 		</dependency>
 	</dependencies>
 

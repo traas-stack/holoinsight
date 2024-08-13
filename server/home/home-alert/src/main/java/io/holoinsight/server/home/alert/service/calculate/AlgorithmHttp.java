@@ -3,9 +3,9 @@
  */
 package io.holoinsight.server.home.alert.service.calculate;
 
-import io.holoinsight.server.home.alert.common.http.HttpProxy;
-import io.holoinsight.server.home.alert.common.http.XHttpRequest;
-import io.holoinsight.server.home.alert.common.http.XHttpResponse;
+import io.holoinsight.server.common.http.HttpProxy;
+import io.holoinsight.server.common.http.XHttpRequest;
+import io.holoinsight.server.common.http.XHttpResponse;
 import org.apache.http.client.config.RequestConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

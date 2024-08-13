@@ -8,19 +8,19 @@ import io.holoinsight.server.common.J;
 import io.holoinsight.server.common.JsonResult;
 import io.holoinsight.server.common.dao.entity.MetaDataDictValue;
 import io.holoinsight.server.common.dao.mapper.MetaDataDictValueMapper;
-import io.holoinsight.server.home.biz.service.UserOpLogService;
-import io.holoinsight.server.home.biz.service.UserinfoVerificationService;
-import io.holoinsight.server.home.common.util.MonitorException;
-import io.holoinsight.server.home.common.util.scope.AuthTargetType;
-import io.holoinsight.server.home.common.util.scope.MonitorScope;
-import io.holoinsight.server.home.common.util.scope.MonitorUser;
-import io.holoinsight.server.home.common.util.scope.PowerConstants;
-import io.holoinsight.server.home.common.util.scope.RequestContext;
-import io.holoinsight.server.home.dal.mapper.UserinfoVerificationMapper;
+import io.holoinsight.server.common.service.UserOpLogService;
+import io.holoinsight.server.common.service.UserinfoVerificationService;
+import io.holoinsight.server.common.MonitorException;
+import io.holoinsight.server.common.scope.AuthTargetType;
+import io.holoinsight.server.common.scope.MonitorScope;
+import io.holoinsight.server.common.scope.MonitorUser;
+import io.holoinsight.server.common.scope.PowerConstants;
+import io.holoinsight.server.common.RequestContext;
+import io.holoinsight.server.common.dao.mapper.UserinfoVerificationMapper;
 import io.holoinsight.server.home.dal.model.OpType;
-import io.holoinsight.server.home.dal.model.UserinfoVerification;
-import io.holoinsight.server.home.facade.emuns.PeriodType;
-import io.holoinsight.server.home.web.common.ManageCallback;
+import io.holoinsight.server.common.dao.entity.UserinfoVerification;
+import io.holoinsight.server.common.dao.emuns.PeriodType;
+import io.holoinsight.server.common.ManageCallback;
 import io.holoinsight.server.home.web.common.ParaCheckUtil;
 import io.holoinsight.server.home.web.interceptor.MonitorScopeAuth;
 import lombok.extern.slf4j.Slf4j;
@@ -63,7 +63,7 @@ public class UserinfoVerificationFacadeImpl extends BaseFacade {
   @PostMapping("/create")
   @ResponseBody
   @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.EDIT)
-  public JsonResult<Long> save(@RequestBody UserinfoVerification userinfoVerification) {
+  public JsonResult<Long> create(@RequestBody UserinfoVerification userinfoVerification) {
     String requestId = UUID.randomUUID().toString();
     final JsonResult<Long> result = new JsonResult<>();
     try {
@@ -75,6 +75,7 @@ public class UserinfoVerificationFacadeImpl extends BaseFacade {
           ParaCheckUtil.checkParaNotBlank(userinfoVerification.getContentType(), "contentType");
           ParaCheckUtil.checkInvalidUserinfoVerificationContentType(
               userinfoVerification.getContentType(), "invalid contentType");
+          ParaCheckUtil.checkParaId(userinfoVerification.getId());
         }
 
         @Override
@@ -159,6 +160,7 @@ public class UserinfoVerificationFacadeImpl extends BaseFacade {
       metaDataDictValue.setCreator("userinfo_verification");
       metaDataDictValue.setModifier("userinfo_verification");
       metaDataDictValue.setGmtCreate(new Date());
+      metaDataDictValue.setGmtModified(new Date());
       metaDataDictValue.setDictDesc(tenant + "day verification count");
       metaDataDictValueMapper.insert(metaDataDictValue);
     } else {

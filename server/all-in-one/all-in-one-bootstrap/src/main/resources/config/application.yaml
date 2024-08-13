@@ -6,9 +6,6 @@ spring:
     username: holoinsight
     password: holoinsight
     driver-class-name: com.mysql.cj.jdbc.Driver
-  data:
-    mongodb:
-      uri: mongodb://holoinsight:holoinsight@127.0.0.1:27017/holoinsight?keepAlive=true&maxIdleTimeMS=1500000&maxWaitTime=120000&connectTimeout=10000&socketTimeout=10000&socketKeepAlive=true&retryWrites=true
   jackson:
     time-zone: Asia/Shanghai
     date-format: yyyy-MM-dd HH:mm:ss
@@ -59,9 +56,7 @@ holoinsight:
   meta:
     database: holoinsight
     domain: 127.0.0.1
-    db_data_mode: mongodb
-    mongodb_config:
-      key-need-convert: false
+    db_data_mode: mysql
   registry:
     meta:
       vip: 127.0.0.1
@@ -79,7 +74,7 @@ management:
     web:
       base-path: /internal/api/actuator
       exposure:
-        include: prometheus,health
+        include: prometheus,health,metrics
   endpoint:
     health:
       show-details: always

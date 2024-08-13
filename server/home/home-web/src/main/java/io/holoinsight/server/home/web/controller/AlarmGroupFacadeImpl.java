@@ -3,25 +3,28 @@
  */
 package io.holoinsight.server.home.web.controller;
 
-import io.holoinsight.server.home.biz.service.AlertGroupService;
-import io.holoinsight.server.home.biz.service.UserOpLogService;
+import io.holoinsight.server.common.service.AlertGroupService;
+import io.holoinsight.server.common.service.UserOpLogService;
 import io.holoinsight.server.home.biz.ula.ULAFacade;
-import io.holoinsight.server.home.common.util.MonitorException;
-import io.holoinsight.server.home.common.util.scope.AuthTargetType;
-import io.holoinsight.server.home.common.util.scope.MonitorScope;
-import io.holoinsight.server.home.common.util.scope.MonitorUser;
-import io.holoinsight.server.home.common.util.scope.PowerConstants;
-import io.holoinsight.server.home.common.util.scope.RequestContext;
+import io.holoinsight.server.common.service.RequestContextAdapter;
+import io.holoinsight.server.common.MonitorException;
+import io.holoinsight.server.common.scope.AuthTargetType;
+import io.holoinsight.server.common.scope.MonitorCookieUtil;
+import io.holoinsight.server.common.scope.MonitorScope;
+import io.holoinsight.server.common.scope.MonitorUser;
+import io.holoinsight.server.common.scope.PowerConstants;
+import io.holoinsight.server.common.RequestContext;
 import io.holoinsight.server.home.dal.model.OpType;
-import io.holoinsight.server.home.dal.model.dto.AlarmGroupDTO;
-import io.holoinsight.server.home.facade.page.MonitorPageRequest;
-import io.holoinsight.server.home.facade.page.MonitorPageResult;
-import io.holoinsight.server.home.web.common.ManageCallback;
+import io.holoinsight.server.common.dao.entity.dto.AlarmGroupDTO;
+import io.holoinsight.server.common.MonitorPageRequest;
+import io.holoinsight.server.common.MonitorPageResult;
+import io.holoinsight.server.common.ManageCallback;
 import io.holoinsight.server.home.web.common.ParaCheckUtil;
 import io.holoinsight.server.home.web.common.TokenUrls;
 import io.holoinsight.server.home.web.interceptor.MonitorScopeAuth;
 import io.holoinsight.server.common.J;
 import io.holoinsight.server.common.JsonResult;
+import io.holoinsight.server.home.web.security.ParameterSecurityService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
@@ -58,6 +61,10 @@ public class AlarmGroupFacadeImpl extends BaseFacade {
   @Autowired
   private ULAFacade ulaFacade;
 
+  @Autowired
+  private RequestContextAdapter requestContextAdapter;
+  @Autowired
+  private ParameterSecurityService parameterSecurityService;
 
   @PostMapping("/pageQuery")
   @ResponseBody
@@ -73,10 +80,9 @@ public class AlarmGroupFacadeImpl extends BaseFacade {
 
       @Override
       public void doManage() {
-        MonitorScope ms = RequestContext.getContext().ms;
-        if (null != ms && !StringUtils.isEmpty(ms.tenant)) {
-          pageRequest.getTarget().setTenant(ms.tenant);
-        }
+        String tenant = MonitorCookieUtil.getTenantOrException();
+        pageRequest.getTarget().setTenant(tenant);
+        pageRequest.getTarget().setWorkspace(requestContextAdapter.getWorkspace(true));
         JsonResult.createSuccessResult(result, alarmGroupService.getListByPage(pageRequest));
       }
     });
@@ -95,16 +101,27 @@ public class AlarmGroupFacadeImpl extends BaseFacade {
       return jsonResult;
     }
 
-    return save(alarmGroup);
+    ParaCheckUtil.checkParaId(alarmGroup.getId());
+    return create(alarmGroup, true);
   }
 
-  public JsonResult<Long> save(AlarmGroupDTO alarmGroup) {
+  public JsonResult<Long> create(AlarmGroupDTO alarmGroup, boolean needCheckUser) {
     final JsonResult<Long> result = new JsonResult<>();
     facadeTemplate.manage(result, new ManageCallback() {
       @Override
       public void checkParameter() {
         ParaCheckUtil.checkParaNotBlank(alarmGroup.getGroupName(), "groupName");
-        ParaCheckUtil.checkInvalidCharacter(alarmGroup.getGroupName(), "invalid groupName");
+        ParaCheckUtil.checkInvalidCharacter(alarmGroup.getGroupName(),
+            "invalid groupName, please use a-z A-Z 0-9 Chinese - _ , . spaces");
+        List<String> persons = alarmGroup.getUserList();
+        MonitorUser mu = RequestContext.getContext().mu;
+        if (!CollectionUtils.isEmpty(persons) && needCheckUser) {
+          for (String person : persons) {
+            ParaCheckUtil.checkParaBoolean(
+                parameterSecurityService.checkUserTenantAndWorkspace(person, mu),
+                "invalid alarm group person");
+          }
+        }
       }
 
       @Override
@@ -117,6 +134,7 @@ public class AlarmGroupFacadeImpl extends BaseFacade {
         if (null != ms && !StringUtils.isEmpty(ms.tenant)) {
           alarmGroup.setTenant(ms.tenant);
         }
+        alarmGroup.setWorkspace(requestContextAdapter.getWorkspace(true));
         alarmGroup.setGmtCreate(new Date());
         alarmGroup.setGmtModified(new Date());
         Long rtn = alarmGroupService.save(alarmGroup);
@@ -143,10 +161,10 @@ public class AlarmGroupFacadeImpl extends BaseFacade {
       return jsonResult;
     }
 
-    return update(alarmGroup);
+    return update(alarmGroup, true);
   }
 
-  public JsonResult<Boolean> update(AlarmGroupDTO alarmGroup) {
+  public JsonResult<Boolean> update(AlarmGroupDTO alarmGroup, boolean needCheckUser) {
     final JsonResult<Boolean> result = new JsonResult<>();
     facadeTemplate.manage(result, new ManageCallback() {
       @Override
@@ -156,7 +174,17 @@ public class AlarmGroupFacadeImpl extends BaseFacade {
         ParaCheckUtil.checkEquals(alarmGroup.getTenant(),
             RequestContext.getContext().ms.getTenant(), "tenant is illegal");
         if (StringUtils.isNotBlank(alarmGroup.getGroupName())) {
-          ParaCheckUtil.checkInvalidCharacter(alarmGroup.getGroupName(), "invalid groupName");
+          ParaCheckUtil.checkInvalidCharacter(alarmGroup.getGroupName(),
+              "invalid groupName, please use a-z A-Z 0-9 Chinese - _ , . spaces");
+        }
+        List<String> persons = alarmGroup.getUserList();
+        MonitorUser mu = RequestContext.getContext().mu;
+        if (!CollectionUtils.isEmpty(persons) && needCheckUser) {
+          for (String person : persons) {
+            ParaCheckUtil.checkParaBoolean(
+                parameterSecurityService.checkUserTenantAndWorkspace(person, mu),
+                "invalid alarm group person");
+          }
         }
       }
 
@@ -164,7 +192,7 @@ public class AlarmGroupFacadeImpl extends BaseFacade {
       public void doManage() {
 
         AlarmGroupDTO item = alarmGroupService.queryById(alarmGroup.getId(),
-            RequestContext.getContext().ms.getTenant());
+            RequestContext.getContext().ms.getTenant(), requestContextAdapter.getWorkspace(true));
         if (null == item) {
           throw new MonitorException("cannot find record: " + alarmGroup.getId());
         }
@@ -193,7 +221,7 @@ public class AlarmGroupFacadeImpl extends BaseFacade {
 
   @GetMapping("/query/{id}")
   @ResponseBody
-  @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.EDIT)
+  @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.VIEW)
   public JsonResult<AlarmGroupDTO> queryById(@PathVariable("id") Long id) {
     final JsonResult<AlarmGroupDTO> result = new JsonResult<>();
     facadeTemplate.manage(result, new ManageCallback() {
@@ -205,8 +233,8 @@ public class AlarmGroupFacadeImpl extends BaseFacade {
       @Override
       public void doManage() {
 
-        AlarmGroupDTO save =
-            alarmGroupService.queryById(id, RequestContext.getContext().ms.getTenant());
+        AlarmGroupDTO save = alarmGroupService.queryById(id,
+            RequestContext.getContext().ms.getTenant(), requestContextAdapter.getWorkspace(true));
         JsonResult.createSuccessResult(result, save);
       }
     });
@@ -228,8 +256,9 @@ public class AlarmGroupFacadeImpl extends BaseFacade {
       public void doManage() {
         MonitorScope ms = RequestContext.getContext().ms;
         boolean rtn = false;
-        AlarmGroupDTO alarmGroup = alarmGroupService.queryById(id, ms.getTenant());
-        if (alarmGroup != null) {
+        AlarmGroupDTO alarmGroup = alarmGroupService.queryById(id, ms.getTenant(),
+            requestContextAdapter.getWorkspace(true));
+        if (alarmGroup != null && StringUtils.equals(alarmGroup.getTenant(), ms.getTenant())) {
           rtn = alarmGroupService.removeById(id);
         }
 

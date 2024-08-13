@@ -6,26 +6,26 @@ package io.holoinsight.server.home.web.controller;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import io.holoinsight.server.common.J;
 import io.holoinsight.server.common.JsonResult;
-import io.holoinsight.server.home.biz.service.UserOpLogService;
-import io.holoinsight.server.home.common.util.MonitorException;
-import io.holoinsight.server.home.common.util.scope.AuthTargetType;
-import io.holoinsight.server.home.common.util.scope.MonitorScope;
-import io.holoinsight.server.home.common.util.scope.MonitorUser;
-import io.holoinsight.server.home.common.util.scope.PowerConstants;
-import io.holoinsight.server.home.common.util.scope.RequestContext;
-import io.holoinsight.server.home.dal.converter.UserinfoConverter;
-import io.holoinsight.server.home.dal.mapper.UserinfoMapper;
-import io.holoinsight.server.home.dal.mapper.UserinfoVerificationMapper;
+import io.holoinsight.server.common.service.UserOpLogService;
+import io.holoinsight.server.home.biz.ula.ULAFacade;
+import io.holoinsight.server.common.MonitorException;
+import io.holoinsight.server.common.scope.AuthTargetType;
+import io.holoinsight.server.common.scope.MonitorScope;
+import io.holoinsight.server.common.scope.MonitorUser;
+import io.holoinsight.server.common.scope.PowerConstants;
+import io.holoinsight.server.common.RequestContext;
+import io.holoinsight.server.common.dao.converter.UserinfoConverter;
+import io.holoinsight.server.common.dao.mapper.UserinfoMapper;
+import io.holoinsight.server.common.dao.mapper.UserinfoVerificationMapper;
 import io.holoinsight.server.home.dal.model.OpType;
-import io.holoinsight.server.home.dal.model.Userinfo;
-import io.holoinsight.server.home.dal.model.UserinfoVerification;
-import io.holoinsight.server.home.facade.UserinfoDTO;
-import io.holoinsight.server.home.facade.page.MonitorPageRequest;
-import io.holoinsight.server.home.facade.page.MonitorPageResult;
-import io.holoinsight.server.home.web.common.ManageCallback;
-import io.holoinsight.server.home.web.common.ParaCheckUtil;
-import io.holoinsight.server.home.web.common.TokenUrls;
+import io.holoinsight.server.common.dao.entity.Userinfo;
+import io.holoinsight.server.common.dao.entity.UserinfoVerification;
+import io.holoinsight.server.common.dao.entity.dto.UserinfoDTO;
+import io.holoinsight.server.common.MonitorPageRequest;
+import io.holoinsight.server.common.MonitorPageResult;
+import io.holoinsight.server.common.ManageCallback;
 import io.holoinsight.server.home.web.interceptor.MonitorScopeAuth;
+import io.holoinsight.server.home.web.security.LevelAuthorizationAccess;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,6 +43,7 @@ import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 /**
@@ -52,7 +53,6 @@ import java.util.UUID;
 @Slf4j
 @RestController
 @RequestMapping("/webapi/userinfo")
-@TokenUrls("/webapi/userinfo/query")
 public class UserinfoFacadeImpl extends BaseFacade {
 
   @Resource
@@ -66,21 +66,21 @@ public class UserinfoFacadeImpl extends BaseFacade {
   @Autowired
   private UserOpLogService userOpLogService;
 
+  @Autowired
+  private ULAFacade ulaFacade;
+
+  @LevelAuthorizationAccess(paramConfigs = {"PARAMETER" + ":$!userinfoDTO"},
+      levelAuthorizationCheckeClass = "io.holoinsight.server.home.web.security.custom.UserinfoFacadeImplChecker")
   @PostMapping("/create")
   @ResponseBody
   @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.EDIT)
-  public JsonResult<Long> save(@RequestBody UserinfoDTO userinfoDTO) {
+  public JsonResult<Long> create(@RequestBody UserinfoDTO userinfoDTO) {
     String requestId = UUID.randomUUID().toString();
     final JsonResult<Long> result = new JsonResult<>();
     try {
       facadeTemplate.manage(result, new ManageCallback() {
         @Override
-        public void checkParameter() {
-          ParaCheckUtil.checkParaNotBlank(userinfoDTO.getNickname(), "nickname");
-          if (StringUtils.isNotBlank(userinfoDTO.getNickname())) {
-            ParaCheckUtil.checkInvalidCharacter(userinfoDTO.getNickname(), "invalid nickname");
-          }
-        }
+        public void checkParameter() {}
 
         @Override
         public void doManage() {
@@ -147,6 +147,8 @@ public class UserinfoFacadeImpl extends BaseFacade {
     }
   }
 
+  @LevelAuthorizationAccess(paramConfigs = {"PARAMETER" + ":$!userinfoDTO"},
+      levelAuthorizationCheckeClass = "io.holoinsight.server.home.web.security.custom.UserinfoFacadeImplChecker")
   @PostMapping("/update")
   @ResponseBody
   @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.EDIT)
@@ -156,20 +158,11 @@ public class UserinfoFacadeImpl extends BaseFacade {
     try {
       facadeTemplate.manage(result, new ManageCallback() {
         @Override
-        public void checkParameter() {
-          ParaCheckUtil.checkParaNotNull(userinfoDTO.getId(), "id");
-
-          if (StringUtils.isNotBlank(userinfoDTO.getTenant())) {
-            ParaCheckUtil.checkEquals(userinfoDTO.getTenant(),
-                RequestContext.getContext().ms.getTenant(), "tenant is illegal");
-          }
-          if (StringUtils.isNotBlank(userinfoDTO.getNickname())) {
-            ParaCheckUtil.checkInvalidCharacter(userinfoDTO.getNickname(), "invalid nickname");
-          }
-        }
+        public void checkParameter() {}
 
         @Override
         public void doManage() {
+
           MonitorScope ms = RequestContext.getContext().ms;
           QueryWrapper<Userinfo> queryWrapper = new QueryWrapper<>();
           queryWrapper.eq("id", userinfoDTO.getId());
@@ -231,9 +224,11 @@ public class UserinfoFacadeImpl extends BaseFacade {
     return false;
   }
 
+  @LevelAuthorizationAccess(paramConfigs = {"PARAMETER" + ":$!id"},
+      levelAuthorizationCheckeClass = "io.holoinsight.server.home.web.security.custom.UserinfoFacadeImplChecker")
   @GetMapping("/query/{id}")
   @ResponseBody
-  @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.EDIT)
+  @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.VIEW)
   public JsonResult<UserinfoDTO> queryById(@PathVariable("id") Long id) {
 
     final JsonResult<UserinfoDTO> result = new JsonResult<>();
@@ -241,9 +236,7 @@ public class UserinfoFacadeImpl extends BaseFacade {
     try {
       facadeTemplate.manage(result, new ManageCallback() {
         @Override
-        public void checkParameter() {
-          ParaCheckUtil.checkParaNotNull(id, "id");
-        }
+        public void checkParameter() {}
 
         @Override
         public void doManage() {
@@ -276,6 +269,8 @@ public class UserinfoFacadeImpl extends BaseFacade {
     return result;
   }
 
+  @LevelAuthorizationAccess(paramConfigs = {"PARAMETER" + ":$!id"},
+      levelAuthorizationCheckeClass = "io.holoinsight.server.home.web.security.custom.UserinfoFacadeImplChecker")
   @DeleteMapping(value = "/delete/{id}")
   @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.EDIT)
   public JsonResult<Boolean> deleteById(@PathVariable("id") Long id) {
@@ -285,9 +280,7 @@ public class UserinfoFacadeImpl extends BaseFacade {
     try {
       facadeTemplate.manage(result, new ManageCallback() {
         @Override
-        public void checkParameter() {
-          ParaCheckUtil.checkParaNotNull(id, "id");
-        }
+        public void checkParameter() {}
 
         @Override
         public void doManage() {
@@ -331,6 +324,8 @@ public class UserinfoFacadeImpl extends BaseFacade {
     return result;
   }
 
+  @LevelAuthorizationAccess(paramConfigs = {"PARAMETER" + ":$!pageRequest"},
+      levelAuthorizationCheckeClass = "io.holoinsight.server.home.web.security.custom.UserinfoFacadeImplChecker")
   @PostMapping("/pageQuery")
   @ResponseBody
   @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.VIEW)
@@ -341,9 +336,7 @@ public class UserinfoFacadeImpl extends BaseFacade {
     try {
       facadeTemplate.manage(result, new ManageCallback() {
         @Override
-        public void checkParameter() {
-          ParaCheckUtil.checkParaNotNull(pageRequest.getTarget(), "target");
-        }
+        public void checkParameter() {}
 
         @Override
         public void doManage() {
@@ -407,5 +400,22 @@ public class UserinfoFacadeImpl extends BaseFacade {
       queryWrapper.eq("workspace", target.getWorkspace());
     }
     return queryWrapper;
+  }
+
+  private boolean checkMembers(List<String> uidList) {
+    if (CollectionUtils.isEmpty(uidList)) {
+      return true;
+    }
+    MonitorScope ms = RequestContext.getContext().ms;
+    MonitorUser mu = RequestContext.getContext().mu;
+
+    Set<String> userIds = ulaFacade.getCurrentULA().getUserIds(mu, ms);
+
+    for (String uid : uidList) {
+      if (!userIds.contains(uid)) {
+        return false;
+      }
+    }
+    return true;
   }
 }

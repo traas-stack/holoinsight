@@ -64,6 +64,14 @@ public class RPCTrafficSourceBuilder extends EndpointSourceBuilder {
   }
 
   public ServiceRelation toServiceRelation() {
+    if (StringUtils.isEmpty(sourceServiceName) || StringUtils.isEmpty(destServiceName)) {
+      log.debug(
+          "[apm] build service relation error, sourceServiceName or destServiceName is empty, traceId: {},"
+              + " sourceServiceName: {}, destServiceName: {}",
+          traceId, sourceServiceName, destServiceName);
+      return null;
+    }
+
     ServiceRelation serviceRelation = serviceRelation();
     setServiceRelation(serviceRelation);
     serviceRelation.prepare();
@@ -97,9 +105,10 @@ public class RPCTrafficSourceBuilder extends EndpointSourceBuilder {
   }
 
   public ServiceInstanceRelation toServiceInstanceRelation() {
-    if (StringUtils.isEmpty(sourceServiceInstanceName)
+    if (StringUtils.isEmpty(sourceServiceName) || StringUtils.isEmpty(destServiceName)
+        || StringUtils.isEmpty(sourceServiceInstanceName)
         || StringUtils.isEmpty(destServiceInstanceName)) {
-      log.warn(
+      log.debug(
           "[apm] build service instance relation error, sourceServiceInstanceName or destServiceInstanceName is empty, traceId: {},"
               + " sourceServiceName: {}, destServiceName: {}"
               + " sourceServiceInstanceName: {}, destServiceInstanceName: {}",
@@ -146,8 +155,9 @@ public class RPCTrafficSourceBuilder extends EndpointSourceBuilder {
   }
 
   public EndpointRelation toEndpointRelation() {
-    if (StringUtils.isEmpty(sourceEndpointName) || StringUtils.isEmpty(destEndpointName)) {
-      log.warn(
+    if (StringUtils.isEmpty(sourceServiceName) || StringUtils.isEmpty(destServiceName)
+        || StringUtils.isEmpty(sourceEndpointName) || StringUtils.isEmpty(destEndpointName)) {
+      log.debug(
           "[apm] build endpoint relation error, sourceEndpointName or destEndpointName is empty, traceId: {},"
               + " sourceServiceName: {}, destServiceName: {}"
               + " sourceEndpointName: {}, destEndpointName: {}",

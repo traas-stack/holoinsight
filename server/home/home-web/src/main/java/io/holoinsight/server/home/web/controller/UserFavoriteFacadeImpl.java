@@ -4,32 +4,39 @@
 package io.holoinsight.server.home.web.controller;
 
 import io.holoinsight.server.home.biz.service.CustomPluginService;
-import io.holoinsight.server.home.biz.service.DashboardService;
-import io.holoinsight.server.home.biz.service.FolderService;
-import io.holoinsight.server.home.biz.service.UserFavoriteService;
-import io.holoinsight.server.home.biz.service.UserOpLogService;
-import io.holoinsight.server.home.common.util.MonitorException;
-import io.holoinsight.server.home.common.util.ResultCodeEnum;
-import io.holoinsight.server.home.common.util.StringUtil;
-import io.holoinsight.server.home.common.util.scope.AuthTargetType;
-import io.holoinsight.server.home.common.util.scope.MonitorScope;
-import io.holoinsight.server.home.common.util.scope.MonitorUser;
-import io.holoinsight.server.home.common.util.scope.PowerConstants;
-import io.holoinsight.server.home.common.util.scope.RequestContext;
-import io.holoinsight.server.home.dal.model.Dashboard;
-import io.holoinsight.server.home.dal.model.Folder;
+import io.holoinsight.server.common.service.DashboardService;
+import io.holoinsight.server.common.service.FolderService;
+import io.holoinsight.server.common.service.IntegrationProductService;
+import io.holoinsight.server.home.biz.service.TenantInitService;
+import io.holoinsight.server.common.service.UserFavoriteService;
+import io.holoinsight.server.common.service.UserOpLogService;
+import io.holoinsight.server.common.service.RequestContextAdapter;
+import io.holoinsight.server.common.MonitorException;
+import io.holoinsight.server.common.ResultCodeEnum;
+import io.holoinsight.server.common.scope.AuthTargetType;
+import io.holoinsight.server.common.scope.MonitorScope;
+import io.holoinsight.server.common.scope.MonitorUser;
+import io.holoinsight.server.common.scope.PowerConstants;
+import io.holoinsight.server.common.RequestContext;
+import io.holoinsight.server.common.dao.entity.Dashboard;
+import io.holoinsight.server.common.dao.entity.Folder;
 import io.holoinsight.server.home.dal.model.OpType;
-import io.holoinsight.server.home.dal.model.UserFavorite;
+import io.holoinsight.server.common.dao.entity.UserFavorite;
 import io.holoinsight.server.home.dal.model.dto.CustomPluginDTO;
-import io.holoinsight.server.home.facade.page.MonitorPageRequest;
-import io.holoinsight.server.home.facade.page.MonitorPageResult;
-import io.holoinsight.server.home.web.common.ManageCallback;
+import io.holoinsight.server.common.dao.entity.dto.IntegrationProductDTO;
+import io.holoinsight.server.common.MonitorPageRequest;
+import io.holoinsight.server.common.MonitorPageResult;
+import io.holoinsight.server.common.ManageCallback;
 import io.holoinsight.server.home.web.common.ParaCheckUtil;
 import io.holoinsight.server.home.web.controller.model.FavRequest;
 import io.holoinsight.server.home.web.interceptor.MonitorScopeAuth;
 import io.holoinsight.server.common.J;
 import io.holoinsight.server.common.JsonResult;
+import io.holoinsight.server.home.web.security.ParameterSecurityService;
+import io.holoinsight.server.meta.common.model.QueryExample;
+import io.holoinsight.server.meta.facade.service.DataClientService;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -61,6 +68,15 @@ public class UserFavoriteFacadeImpl extends BaseFacade {
   private UserFavoriteService userFavoriteService;
 
   @Autowired
+  private DataClientService dataClientService;
+
+  @Autowired
+  private TenantInitService tenantInitService;
+
+  @Autowired
+  private IntegrationProductService integrationProductService;
+
+  @Autowired
   private CustomPluginService customPluginService;
 
   @Autowired
@@ -72,10 +88,16 @@ public class UserFavoriteFacadeImpl extends BaseFacade {
   @Autowired
   private UserOpLogService userOpLogService;
 
+  @Autowired
+  private ParameterSecurityService parameterSecurityService;
+
+  @Autowired
+  private RequestContextAdapter requestContextAdapter;
+
   @PostMapping("/create")
   @ResponseBody
   @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.EDIT)
-  public JsonResult<UserFavorite> save(@RequestBody UserFavorite userFavorite) {
+  public JsonResult<UserFavorite> create(@RequestBody UserFavorite userFavorite) {
     final JsonResult<UserFavorite> result = new JsonResult<>();
     facadeTemplate.manage(result, new ManageCallback() {
       @Override
@@ -110,15 +132,55 @@ public class UserFavoriteFacadeImpl extends BaseFacade {
             break;
           case "infra":
           case "app":
+            QueryExample queryExample = new QueryExample();
+            Map<String, Object> map = new HashMap<>();
+            if (userFavorite.type.equalsIgnoreCase("infra")) {
+              map.put("hostname", userFavorite.name);
+              queryExample.setParams(map);
+              Map<String, String> conditions = tenantInitService
+                  .getTenantWorkspaceMetaConditions(ms.getTenant(), ms.getWorkspace());
+              if (!CollectionUtils.isEmpty(conditions)) {
+                queryExample.getParams().putAll(conditions);
+              }
+              List<Map<String, Object>> list = dataClientService.queryByExample(
+                  tenantInitService.getTenantServerTable(ms.getTenant()), queryExample);
+              if (CollectionUtils.isEmpty(list)) {
+                throw new MonitorException(String.format("can not find record, %s-%s",
+                    userFavorite.type, userFavorite.relateId));
+              }
+            } else {
+              map.put("app", userFavorite.name);
+              if (StringUtils.isNotBlank(ms.getWorkspace())) {
+                queryExample.getParams().put("_workspace", ms.getWorkspace());
+              }
+              List<Map<String, Object>> list = dataClientService.queryByExample(
+                  tenantInitService.getTenantAppTable(ms.getTenant()), queryExample);
+              if (CollectionUtils.isEmpty(list)) {
+                throw new MonitorException(String.format("can not find record, %s-%s",
+                    userFavorite.type, userFavorite.relateId));
+              }
+            }
+            break;
           case "integration":
-            // did not need check
-            log.info("can not find record, {}, {}", userFavorite.type, userFavorite.relateId);
+            IntegrationProductDTO byName =
+                integrationProductService.findByName(userFavorite.relateId);
+            if (null == byName) {
+              throw new MonitorException(String.format("can not find record, %s-%s",
+                  userFavorite.type, userFavorite.relateId));
+            }
+            break;
+          case "miniapp":
+            if (!parameterSecurityService.checkRelateId(userFavorite.getRelateId(),
+                userFavorite.getType(), ms.getTenant(), ms.getWorkspace())) {
+              throw new MonitorException(String.format("invalid miniapp appId, %s-%s",
+                  userFavorite.type, userFavorite.relateId));
+            }
             break;
           default:
             throw new MonitorException(String.format("can not find record, %s-%s",
                 userFavorite.type, userFavorite.relateId));
         }
-
+        ParaCheckUtil.checkParaId(userFavorite.getId());
       }
 
       @Override
@@ -128,10 +190,10 @@ public class UserFavoriteFacadeImpl extends BaseFacade {
         if (null != mu) {
           userFavorite.setUserLoginName(mu.getLoginName());
         }
-        if (null != ms && !StringUtil.isBlank(ms.tenant)) {
+        if (null != ms && !StringUtils.isBlank(ms.tenant)) {
           userFavorite.setTenant(ms.tenant);
         }
-        if (null != ms && !StringUtil.isBlank(ms.workspace)) {
+        if (null != ms && !StringUtils.isBlank(ms.workspace)) {
           userFavorite.setWorkspace(ms.workspace);
         }
         userFavorite.setGmtCreate(new Date());
@@ -219,7 +281,7 @@ public class UserFavoriteFacadeImpl extends BaseFacade {
         MonitorScope ms = RequestContext.getContext().ms;
         MonitorUser mu = RequestContext.getContext().mu;
 
-        if (StringUtil.isBlank(favRequest.getUserLoginName())) {
+        if (StringUtils.isBlank(favRequest.getUserLoginName())) {
           favRequest.setUserLoginName(mu.getLoginName());
         }
 
@@ -257,11 +319,16 @@ public class UserFavoriteFacadeImpl extends BaseFacade {
       @Override
       public void doManage() {
         MonitorScope ms = RequestContext.getContext().ms;
-        if (null != ms && !StringUtil.isBlank(ms.tenant)) {
+        if (null != ms && !StringUtils.isBlank(ms.tenant)) {
           userFavoriteRequest.getTarget().setTenant(ms.tenant);
         }
-        if (null != ms && !StringUtil.isBlank(ms.workspace)) {
+        if (null != ms && !StringUtils.isBlank(ms.workspace)) {
           userFavoriteRequest.getTarget().setWorkspace(ms.workspace);
+        }
+        if (StringUtils.isEmpty(userFavoriteRequest.getTarget().getUserLoginName())) {
+          if (StringUtils.isNotEmpty(requestContextAdapter.getLoginName())) {
+            userFavoriteRequest.getTarget().setUserLoginName(requestContextAdapter.getLoginName());
+          }
         }
         JsonResult.createSuccessResult(result,
             userFavoriteService.getListByPage(userFavoriteRequest));
@@ -302,7 +369,7 @@ public class UserFavoriteFacadeImpl extends BaseFacade {
             case "folder":
               folders.add(userFavorite.getRelateId());
               break;
-            case "dashobard":
+            case "dashboard":
               dashboards.add(userFavorite.getRelateId());
               break;
             case "logmonitor":
@@ -349,7 +416,7 @@ public class UserFavoriteFacadeImpl extends BaseFacade {
               }
 
               break;
-            case "dashobard":
+            case "dashboard":
               if (dashboardMaps.containsKey(userFavorite.getRelateId())) {
                 userFavorite.setName(dashboardMaps.get(userFavorite.getRelateId()));
               }

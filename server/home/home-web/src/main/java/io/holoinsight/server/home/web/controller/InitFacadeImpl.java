@@ -14,7 +14,10 @@ import java.util.UUID;
 
 import javax.servlet.http.HttpServletResponse;
 
+import io.holoinsight.server.common.scope.AuthTargetType;
+import io.holoinsight.server.common.scope.PowerConstants;
 import io.holoinsight.server.home.web.common.ParaCheckUtil;
+import io.holoinsight.server.home.web.interceptor.MonitorScopeAuth;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
@@ -31,21 +34,21 @@ import io.holoinsight.server.common.dao.entity.TenantOps;
 import io.holoinsight.server.common.dao.entity.dto.TenantOpsDTO;
 import io.holoinsight.server.common.dao.entity.dto.TenantOpsStorage;
 import io.holoinsight.server.common.dao.entity.dto.TenantOpsStorage.StorageMetric;
-import io.holoinsight.server.home.biz.service.ApiKeyService;
-import io.holoinsight.server.home.biz.service.MetaTableService;
+import io.holoinsight.server.common.service.ApiKeyService;
+import io.holoinsight.server.common.service.MetaTableService;
 import io.holoinsight.server.home.biz.service.TenantInitService;
-import io.holoinsight.server.home.biz.service.TenantOpsService;
-import io.holoinsight.server.home.common.util.Debugger;
-import io.holoinsight.server.home.common.util.scope.MonitorCookieUtil;
-import io.holoinsight.server.home.common.util.scope.MonitorScope;
-import io.holoinsight.server.home.common.util.scope.MonitorUser;
-import io.holoinsight.server.home.common.util.scope.RequestContext;
-import io.holoinsight.server.home.dal.model.ApiKey;
-import io.holoinsight.server.home.dal.model.dto.MetaTableDTO;
-import io.holoinsight.server.home.dal.model.dto.MetaTableDTO.TableStatus;
-import io.holoinsight.server.home.dal.model.dto.meta.MetaTableCol;
-import io.holoinsight.server.home.dal.model.dto.meta.MetaTableConfig;
-import io.holoinsight.server.home.web.common.ManageCallback;
+import io.holoinsight.server.common.service.TenantOpsService;
+import io.holoinsight.server.common.Debugger;
+import io.holoinsight.server.common.scope.MonitorCookieUtil;
+import io.holoinsight.server.common.scope.MonitorScope;
+import io.holoinsight.server.common.scope.MonitorUser;
+import io.holoinsight.server.common.RequestContext;
+import io.holoinsight.server.common.dao.entity.ApiKey;
+import io.holoinsight.server.common.dao.entity.dto.MetaTableDTO;
+import io.holoinsight.server.common.dao.entity.dto.MetaTableDTO.TableStatus;
+import io.holoinsight.server.common.dao.entity.dto.meta.MetaTableCol;
+import io.holoinsight.server.common.dao.entity.dto.meta.MetaTableConfig;
+import io.holoinsight.server.common.ManageCallback;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -114,6 +117,7 @@ public class InitFacadeImpl extends BaseFacade {
   @GetMapping(value = "/tenantSwitch/{tenant}")
   public JsonResult<Boolean> tenantSwitch(@PathVariable("tenant") String tenant,
       @RequestParam(value = "workspace", required = false) String workspace,
+      @RequestParam(value = "environment", required = false) String environment,
       HttpServletResponse response) {
 
     final JsonResult<Boolean> result = new JsonResult<>();
@@ -121,13 +125,14 @@ public class InitFacadeImpl extends BaseFacade {
       @Override
       public void checkParameter() {
         ParaCheckUtil.checkParaNotNull(tenant, "tenant");
-        tenantInitService.checkCookie(tenant, workspace);
+        tenantInitService.checkCookie(tenant, workspace, environment);
       }
 
       @Override
       public void doManage() {
         MonitorCookieUtil.addTenantCookie(tenant, response);
         MonitorCookieUtil.addTenantWorkspaceCookie(workspace, response);
+        MonitorCookieUtil.addTenantEnvironmentCookie(environment, response);
         JsonResult.createSuccessResult(result, true);
       }
     });
@@ -137,6 +142,7 @@ public class InitFacadeImpl extends BaseFacade {
 
   @ResponseBody
   @GetMapping(value = "/tenant")
+  @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.EDIT)
   public JsonResult<Boolean> sys() {
 
     final JsonResult<Boolean> result = new JsonResult<>();

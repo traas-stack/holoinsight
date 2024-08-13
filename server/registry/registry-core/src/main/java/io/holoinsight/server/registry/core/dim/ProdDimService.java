@@ -9,10 +9,6 @@ import java.util.Map;
 
 import javax.annotation.PostConstruct;
 
-import io.holoinsight.server.meta.common.model.QueryExample;
-import io.holoinsight.server.meta.facade.service.DataClientService;
-import lombok.Data;
-
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.slf4j.Logger;
@@ -22,6 +18,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import com.google.common.collect.Maps;
 import com.xzchaoo.commons.caffeine.SafeCaffeine;
+
+import io.holoinsight.server.meta.common.model.QueryExample;
+import io.holoinsight.server.meta.facade.service.DataClientService;
+import lombok.Data;
 
 /**
  * <p>
@@ -81,6 +81,10 @@ public class ProdDimService {
             LOGGER.error("load error {}", s);
           }
         }, 10_000);
+  }
+
+  public Map<String, Map<String, Object>> queryAll(String table) {
+    return this.queryAllCache.get(table);
   }
 
   public Map<String, Map<String, Object>> queryByExample(String table, QueryExample example) {

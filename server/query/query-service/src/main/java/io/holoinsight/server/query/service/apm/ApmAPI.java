@@ -4,6 +4,7 @@
 package io.holoinsight.server.query.service.apm;
 
 import io.holoinsight.server.apm.common.model.query.Endpoint;
+import io.holoinsight.server.common.event.Event;
 import io.holoinsight.server.apm.common.model.query.MetricValues;
 import io.holoinsight.server.apm.common.model.query.QueryComponentRequest;
 import io.holoinsight.server.apm.common.model.query.QueryEndpointRequest;
@@ -12,6 +13,7 @@ import io.holoinsight.server.apm.common.model.query.QueryServiceInstanceRequest;
 import io.holoinsight.server.apm.common.model.query.QueryServiceRequest;
 import io.holoinsight.server.apm.common.model.query.QueryTopologyRequest;
 import io.holoinsight.server.apm.common.model.query.QueryTraceRequest;
+import io.holoinsight.server.apm.common.model.query.Request;
 import io.holoinsight.server.apm.common.model.query.Service;
 import io.holoinsight.server.apm.common.model.query.ServiceInstance;
 import io.holoinsight.server.apm.common.model.query.SlowSql;
@@ -20,6 +22,7 @@ import io.holoinsight.server.apm.common.model.query.StatisticDataList;
 import io.holoinsight.server.apm.common.model.query.StatisticRequest;
 import io.holoinsight.server.apm.common.model.query.Topology;
 import io.holoinsight.server.apm.common.model.query.TraceBrief;
+import io.holoinsight.server.apm.common.model.query.TraceTree;
 import io.holoinsight.server.apm.common.model.query.VirtualComponent;
 import io.holoinsight.server.apm.common.model.specification.sw.Trace;
 import io.holoinsight.server.apm.engine.postcal.MetricDefine;
@@ -39,6 +42,9 @@ public interface ApmAPI {
 
   @POST("/cluster/api/v1/trace/query")
   Call<Trace> queryTrace(@Body QueryTraceRequest request);
+
+  @POST("/cluster/api/v1/trace/query/traceTree")
+  Call<List<TraceTree>> queryTraceTree(@Body QueryTraceRequest request);
 
   @POST("/cluster/api/v1/metric/billing")
   Call<StatisticData> billing(@Body QueryTraceRequest request);
@@ -111,4 +117,7 @@ public interface ApmAPI {
 
   @POST("/cluster/api/v1/service/query/serviceErrorDetail")
   Call<List<Map<String, String>>> queryServiceErrorDetail(@Body QueryServiceRequest request);
+
+  @POST("/cluster/api/v1/event/query")
+  Call<List<Event>> queryEvents(@Body Request request);
 }

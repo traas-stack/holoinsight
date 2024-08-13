@@ -1,0 +1,61 @@
+{
+  "name": "TODO",
+  "parentFolderId": -1,
+  "periodType": "MINUTE",
+  "pluginType": "custom",
+  "status": "ONLINE",
+  "conf": {
+    "whiteFilters": [
+      {
+        "type": "CONTAINS",
+        "rule": {
+        },
+        "values": [
+          "level=INFO"
+        ]
+      }
+    ],
+    "blackFilters": [],
+    "extraConfig": {
+      "keyCleanInterval": 0,
+      "maxKeySize": 20000,
+      "charset": "utf-8"
+    },
+    "logPaths": [
+      {
+        "path": "/home/admin/logs/holoinsight-server/test/1.log",
+        "type": "path"
+      }
+    ],
+    "logParse": {
+      "splitType": "LR",
+      "multiLine": {
+        "multi": false
+      }
+    },
+    "collectMetrics": [
+      {
+        "metricType": "count",
+        "tags": [],
+        "tableName": "linecount",
+        "metrics": [
+          {
+            "name": "value",
+            "func": "count"
+          }
+        ]
+      }
+    ],
+    "splitCols": [],
+    "collectRanges": {
+      "table": "default_server",
+      "condition": [
+        {
+          "app": [
+            "holoinsight-server-example"
+          ]
+        }
+      ]
+    }
+  }
+}

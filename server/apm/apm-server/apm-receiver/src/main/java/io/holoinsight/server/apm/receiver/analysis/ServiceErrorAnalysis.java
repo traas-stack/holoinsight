@@ -6,7 +6,6 @@ package io.holoinsight.server.apm.receiver.analysis;
 import io.holoinsight.server.apm.common.constants.Const;
 import io.holoinsight.server.apm.common.utils.TimeUtils;
 import io.holoinsight.server.apm.engine.model.ServiceErrorDO;
-import io.opentelemetry.proto.common.v1.AnyValue;
 import io.opentelemetry.proto.common.v1.KeyValue;
 import io.opentelemetry.proto.trace.v1.Span;
 import io.opentelemetry.semconv.resource.attributes.ResourceAttributes;
@@ -22,8 +21,8 @@ public class ServiceErrorAnalysis {
     return new ServiceErrorDO();
   }
 
-  public List<ServiceErrorDO> analysis(Span span, Map<String, AnyValue> spanAttrMap,
-      Map<String, AnyValue> resourceAttrMap) {
+  public List<ServiceErrorDO> analysis(Span span, Map<String, String> spanAttrMap,
+      Map<String, String> resourceAttrMap) {
     List<ServiceErrorDO> result = new ArrayList<>();
     if (span.getEventsList().size() > 0) {
       ServiceErrorDO errorInfo = serviceErrorDO();
@@ -43,15 +42,20 @@ public class ServiceErrorAnalysis {
   }
 
   public ServiceErrorDO setPublicAttrs(ServiceErrorDO errorInfo, Span span,
-      Map<String, AnyValue> spanAttrMap, Map<String, AnyValue> resourceAttrMap) {
-    errorInfo.setTenant(resourceAttrMap.get(Const.TENANT).getStringValue());
-    errorInfo.setServiceName(
-        resourceAttrMap.get(ResourceAttributes.SERVICE_NAME.getKey()).getStringValue());
+      Map<String, String> spanAttrMap, Map<String, String> resourceAttrMap) {
+    String realTraceId =
+        resourceAttrMap.containsKey(Const.REAL_TRACE_ID) ? resourceAttrMap.get(Const.REAL_TRACE_ID)
+            : Hex.encodeHexString(span.getTraceId().toByteArray());
+    String realSpanId =
+        spanAttrMap.containsKey(Const.REAL_SPAN_ID) ? spanAttrMap.get(Const.REAL_SPAN_ID)
+            : Hex.encodeHexString(span.getSpanId().toByteArray());
+    errorInfo.setSpanId(realSpanId);
+    errorInfo.setTraceId(realTraceId);
+    errorInfo.setTenant(resourceAttrMap.get(Const.TENANT));
+    errorInfo.setServiceName(resourceAttrMap.get(ResourceAttributes.SERVICE_NAME.getKey()));
     errorInfo.setEndpointName(span.getName());
-    errorInfo.setServiceInstanceName(
-        resourceAttrMap.get(Const.OTLP_RESOURCE_SERVICE_INSTANCE_NAME).getStringValue());
-    errorInfo.setSpanId(Hex.encodeHexString(span.getSpanId().toByteArray()));
-    errorInfo.setTraceId(Hex.encodeHexString(span.getTraceId().toByteArray()));
+    errorInfo
+        .setServiceInstanceName(resourceAttrMap.get(Const.OTLP_RESOURCE_SERVICE_INSTANCE_NAME));
     errorInfo.setStartTime(TimeUtils.unixNano2MS(span.getStartTimeUnixNano()));
     errorInfo.setTimestamp(TimeUtils.unixNano2MS(span.getEndTimeUnixNano()));
     long latency = TimeUtils.unixNano2MS(span.getEndTimeUnixNano())

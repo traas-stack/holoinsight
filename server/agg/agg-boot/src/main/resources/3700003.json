@@ -1,0 +1,118 @@
+{
+  "aggId": "a3700003",
+  "version": 1,
+  "partitionKeys": [],
+  "select": {
+    "items": [
+      {
+        "agg": {
+          "type": "SUM"
+        },
+        "elect": {
+          "metric": "logmonitor_sofatracer_spans_size_3700003",
+          "field": "value"
+        },
+        "as": "success",
+        "where": {
+          "simple": {
+            "result": [
+              "Y"
+            ]
+          }
+        }
+      },
+      {
+        "agg": {
+          "type": "SUM"
+        },
+        "elect": {
+          "metric": "logmonitor_sofatracer_spans_size_3700003",
+          "field": "value"
+        },
+        "as": "total"
+      },
+      {
+        "agg": {
+          "type": "SUM"
+        },
+        "elect": {
+          "metric": "logmonitor_sofatracer_spans_cost_3700003",
+          "field": "value"
+        },
+        "as": "costsum"
+      }
+    ]
+  },
+  "from": {
+    "type": "metrics",
+    "configs": {
+      "tableNames": [
+        "sofatracer_spans_size_3700003",
+        "sofatracer_spans_cost_3700003"
+      ]
+    },
+    "metrics": {
+      "metrics": [
+        "logmonitor_sofatracer_spans_size_3700003",
+        "logmonitor_sofatracer_spans_cost_3700003"
+      ]
+    },
+    "completeness": {
+      "mode": "COMPLETENESS_INFO",
+      "groupBy": {
+        "items": [
+          {
+            "tag": "_cluster",
+            "as": "cluster"
+          }
+        ]
+      },
+      "targetKey": "_uk",
+      "keepTargetKeys": [
+        "hostname"
+      ]
+    }
+  },
+  "where": {
+  },
+  "groupBy": {
+    "keyLimit": 1000,
+    "items": [
+      {
+        "tag": "tenant"
+      },
+      {
+        "tag": "workspace"
+      }
+    ]
+  },
+  "window": {
+    "interval": 60000
+  },
+  "output": {
+    "items": [
+      {
+        "type": "TSDB",
+        "name": "a3700003_%s_agg",
+        "fields": [
+          {
+            "name": "success",
+            "expression": "success"
+          },
+          {
+            "name": "total",
+            "expression": "total"
+          },
+          {
+            "name": "successRatio",
+            "expression": "success / total"
+          },
+          {
+            "name": "cost",
+            "expression": "costsum / total"
+          }
+        ]
+      }
+    ]
+  }
+}

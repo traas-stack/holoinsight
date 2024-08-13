@@ -5,10 +5,10 @@ package io.holoinsight.server.home.alert.service.calculate;
 
 import io.holoinsight.server.home.alert.model.function.FunctionConfigParam;
 import io.holoinsight.server.home.alert.model.function.FunctionLogic;
-import io.holoinsight.server.home.facade.DataResult;
-import io.holoinsight.server.home.facade.emuns.PeriodType;
-import io.holoinsight.server.home.facade.trigger.CompareParam;
-import io.holoinsight.server.home.facade.trigger.TriggerResult;
+import io.holoinsight.server.common.dao.entity.dto.alarm.trigger.TriggerDataResult;
+import io.holoinsight.server.common.dao.emuns.PeriodType;
+import io.holoinsight.server.common.dao.entity.dto.alarm.trigger.CompareParam;
+import io.holoinsight.server.common.dao.entity.dto.alarm.trigger.TriggerResult;
 
 import java.util.Map;
 
@@ -42,13 +42,18 @@ public abstract class BaseFunction implements FunctionLogic {
     return value;
   }
 
-  protected TriggerResult doInvoke(DataResult dataResult, FunctionConfigParam functionConfigParam) {
+  protected TriggerResult doInvoke(TriggerDataResult triggerDataResult,
+      FunctionConfigParam functionConfigParam) {
     TriggerResult result = new TriggerResult();
     result.setHit(false);
 
     long delta = getDelta(functionConfigParam.getPeriodType());
-    Map<Long, Double> points = dataResult.getPoints();
-    result.setCurrentValue(points.get(functionConfigParam.getPeriod()));
+    Map<Long, Double> points = triggerDataResult.getPoints();
+    Double currentValue = points.get(functionConfigParam.getPeriod());
+    if (currentValue == null && functionConfigParam.isZeroFill()) {
+      currentValue = 0d;
+    }
+    result.setCurrentValue(currentValue);
     long duration = functionConfigParam.getDuration();
     for (long i = 0; i < duration; i++) {
       long time = functionConfigParam.getPeriod() - i * 60000L;

@@ -3,8 +3,8 @@
  */
 package io.holoinsight.server.home.biz.service;
 
-import io.holoinsight.server.home.facade.page.MonitorPageRequest;
-import io.holoinsight.server.home.facade.page.MonitorPageResult;
+import io.holoinsight.server.common.MonitorPageRequest;
+import io.holoinsight.server.common.MonitorPageResult;
 import io.holoinsight.server.home.dal.model.CustomPlugin;
 import io.holoinsight.server.home.dal.model.dto.CustomPluginDTO;
 import com.baomidou.mybatisplus.extension.service.IService;

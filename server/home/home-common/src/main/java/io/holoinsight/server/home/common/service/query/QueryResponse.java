@@ -10,6 +10,20 @@ import java.util.List;
 @Data
 public class QueryResponse {
 
+  /**
+   * data
+   */
   private List<Result> results;
+
+  /**
+   * 齐全度
+   */
+  private List<Result> completes;
+
+  private String message;
+
+  private Boolean success = true;
+
+  private String errorCode;
 
 }

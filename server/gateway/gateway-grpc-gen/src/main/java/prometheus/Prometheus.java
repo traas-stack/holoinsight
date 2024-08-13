@@ -504,7 +504,6 @@ public final class Prometheus {
       @java.lang.Override
       public prometheus.Prometheus.WriteRequest buildPartial() {
         prometheus.Prometheus.WriteRequest result = new prometheus.Prometheus.WriteRequest(this);
-        int from_bitField0_ = bitField0_;
         if (timeseriesBuilder_ == null) {
           if (((bitField0_ & 0x00000001) != 0)) {
             timeseries_ = java.util.Collections.unmodifiableList(timeseries_);
@@ -1961,7 +1960,6 @@ public final class Prometheus {
       @java.lang.Override
       public prometheus.Prometheus.ReadRequest buildPartial() {
         prometheus.Prometheus.ReadRequest result = new prometheus.Prometheus.ReadRequest(this);
-        int from_bitField0_ = bitField0_;
         if (queriesBuilder_ == null) {
           if (((bitField0_ & 0x00000001) != 0)) {
             queries_ = java.util.Collections.unmodifiableList(queries_);
@@ -3072,7 +3070,6 @@ public final class Prometheus {
       @java.lang.Override
       public prometheus.Prometheus.ReadResponse buildPartial() {
         prometheus.Prometheus.ReadResponse result = new prometheus.Prometheus.ReadResponse(this);
-        int from_bitField0_ = bitField0_;
         if (resultsBuilder_ == null) {
           if (((bitField0_ & 0x00000001) != 0)) {
             results_ = java.util.Collections.unmodifiableList(results_);
@@ -4104,7 +4101,6 @@ public final class Prometheus {
       @java.lang.Override
       public prometheus.Prometheus.Query buildPartial() {
         prometheus.Prometheus.Query result = new prometheus.Prometheus.Query(this);
-        int from_bitField0_ = bitField0_;
         result.startTimestampMs_ = startTimestampMs_;
         result.endTimestampMs_ = endTimestampMs_;
         if (matchersBuilder_ == null) {
@@ -5160,7 +5156,6 @@ public final class Prometheus {
       @java.lang.Override
       public prometheus.Prometheus.QueryResult buildPartial() {
         prometheus.Prometheus.QueryResult result = new prometheus.Prometheus.QueryResult(this);
-        int from_bitField0_ = bitField0_;
         if (timeseriesBuilder_ == null) {
           if (((bitField0_ & 0x00000001) != 0)) {
             timeseries_ = java.util.Collections.unmodifiableList(timeseries_);
@@ -6099,7 +6094,6 @@ public final class Prometheus {
       public prometheus.Prometheus.ChunkedReadResponse buildPartial() {
         prometheus.Prometheus.ChunkedReadResponse result =
             new prometheus.Prometheus.ChunkedReadResponse(this);
-        int from_bitField0_ = bitField0_;
         if (chunkedSeriesBuilder_ == null) {
           if (((bitField0_ & 0x00000001) != 0)) {
             chunkedSeries_ = java.util.Collections.unmodifiableList(chunkedSeries_);

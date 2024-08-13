@@ -3,9 +3,12 @@
  */
 package io.holoinsight.server.home.dal.model.dto;
 
-import lombok.Data;
-
 import java.util.Date;
+import java.util.List;
+
+import io.holoinsight.server.common.dao.entity.CloudMonitorRange;
+import io.holoinsight.server.registry.model.OpenmetricsScraperTask;
+import lombok.Data;
 
 @Data
 public class OpenmetricsScraperDTO {
@@ -19,7 +22,8 @@ public class OpenmetricsScraperDTO {
   private String port;
   private String scrapeInterval;
   private String scrapeTimeout;
-
+  private List<OpenmetricsScraperTask.RelabelConfig> relabelConfigs;
+  private List<OpenmetricsScraperTask.RelabelConfig> metricRelabelConfigs;
   private CloudMonitorRange collectRanges;
 
 
@@ -42,5 +46,4 @@ public class OpenmetricsScraperDTO {
    * 修改者
    */
   private String modifier;
-
 }

@@ -3,31 +3,31 @@
  */
 package io.holoinsight.server.home.web.controller;
 
+import io.holoinsight.server.common.J;
+import io.holoinsight.server.common.JsonResult;
+import io.holoinsight.server.common.ManageCallback;
+import io.holoinsight.server.common.MonitorException;
+import io.holoinsight.server.common.RequestContext;
+import io.holoinsight.server.common.ResultCodeEnum;
+import io.holoinsight.server.common.scope.AuthTargetType;
+import io.holoinsight.server.common.scope.MonitorScope;
+import io.holoinsight.server.common.scope.MonitorUser;
+import io.holoinsight.server.common.scope.PowerConstants;
+import io.holoinsight.server.common.service.UserOpLogService;
 import io.holoinsight.server.home.biz.service.CustomPluginService;
-import io.holoinsight.server.home.biz.service.FolderService;
-import io.holoinsight.server.home.biz.service.UserOpLogService;
-import io.holoinsight.server.home.common.util.MonitorException;
-import io.holoinsight.server.home.common.util.ResultCodeEnum;
-import io.holoinsight.server.home.common.util.StringUtil;
-import io.holoinsight.server.home.common.util.scope.AuthTargetType;
-import io.holoinsight.server.home.common.util.scope.MonitorScope;
-import io.holoinsight.server.home.common.util.scope.MonitorUser;
-import io.holoinsight.server.home.common.util.scope.PowerConstants;
-import io.holoinsight.server.home.common.util.scope.RequestContext;
-import io.holoinsight.server.home.dal.model.Folder;
+import io.holoinsight.server.common.service.FolderService;
+import io.holoinsight.server.common.dao.entity.Folder;
 import io.holoinsight.server.home.dal.model.OpType;
 import io.holoinsight.server.home.dal.model.dto.CustomPluginDTO;
-import io.holoinsight.server.home.web.common.ManageCallback;
 import io.holoinsight.server.home.web.common.ParaCheckUtil;
 import io.holoinsight.server.home.web.controller.model.FolderPath;
 import io.holoinsight.server.home.web.controller.model.FolderPaths;
 import io.holoinsight.server.home.web.controller.model.FolderRequest;
 import io.holoinsight.server.home.web.controller.model.FolderRequestCmd;
 import io.holoinsight.server.home.web.interceptor.MonitorScopeAuth;
-import io.holoinsight.server.common.J;
-import io.holoinsight.server.common.JsonResult;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
@@ -68,11 +68,13 @@ public class FolderFacadeImpl extends BaseFacade {
   @PostMapping("/update")
   @ResponseBody
   @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.EDIT)
-  public JsonResult<Object> update(@RequestBody Folder folder) {
+  public JsonResult<Folder> update(@RequestBody Folder folder) {
     final JsonResult<Folder> result = new JsonResult<>();
     facadeTemplate.manage(result, new ManageCallback() {
       @Override
       public void checkParameter() {
+
+        log.info("update Folder req {}", J.toJson(folder));
         MonitorScope ms = RequestContext.getContext().ms;
         ParaCheckUtil.checkParaNotNull(folder.id, "id");
         ParaCheckUtil.checkParaNotNull(folder.parentFolderId, "parentFolderId");
@@ -88,6 +90,7 @@ public class FolderFacadeImpl extends BaseFacade {
         if (!item.getTenant().equalsIgnoreCase(folder.getTenant())) {
           throw new MonitorException("the tenant parameter is invalid");
         }
+        checkParentFolderId(folder);
       }
 
       @Override
@@ -103,14 +106,15 @@ public class FolderFacadeImpl extends BaseFacade {
         if (null != mu) {
           update.setModifier(mu.getLoginName());
         }
-        if (null != ms && !StringUtil.isBlank(ms.tenant)) {
+        if (null != ms && !StringUtils.isBlank(ms.tenant)) {
           update.setTenant(ms.tenant);
         }
-        if (null != ms && !StringUtil.isBlank(ms.workspace)) {
+        if (null != ms && !StringUtils.isBlank(ms.workspace)) {
           update.setWorkspace(ms.workspace);
         }
         update.setGmtModified(new Date());
         folderService.updateById(update);
+        result.setData(update);
 
         assert mu != null;
         userOpLogService.append("folder", folder.getId(), OpType.UPDATE, mu.getLoginName(),
@@ -119,19 +123,22 @@ public class FolderFacadeImpl extends BaseFacade {
       }
     });
 
-    return JsonResult.createSuccessResult(true);
+    return result;
   }
 
   @PostMapping("/create")
   @ResponseBody
   @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.EDIT)
-  public JsonResult<Folder> save(@RequestBody Folder folder) {
+  public JsonResult<Folder> create(@RequestBody Folder folder) {
     final JsonResult<Folder> result = new JsonResult<>();
     facadeTemplate.manage(result, new ManageCallback() {
       @Override
       public void checkParameter() {
+        log.info("create Folder req {}", J.toJson(folder));
         ParaCheckUtil.checkParaNotNull(folder.parentFolderId, "parentFolderId");
         ParaCheckUtil.checkParaNotBlank(folder.name, "name");
+        ParaCheckUtil.checkParaId(folder.getId());
+        checkParentFolderId(folder);
       }
 
       @Override
@@ -142,11 +149,11 @@ public class FolderFacadeImpl extends BaseFacade {
           folder.setCreator(mu.getLoginName());
           folder.setModifier(mu.getLoginName());
         }
-        if (null != ms && !StringUtil.isBlank(ms.tenant)) {
+        if (null != ms && !StringUtils.isBlank(ms.tenant)) {
           folder.setTenant(ms.tenant);
         }
 
-        if (null != ms && !StringUtil.isBlank(ms.workspace)) {
+        if (null != ms && !StringUtils.isBlank(ms.workspace)) {
           folder.setWorkspace(ms.workspace);
         }
         folder.setGmtCreate(new Date());
@@ -213,6 +220,9 @@ public class FolderFacadeImpl extends BaseFacade {
         }
 
         Folder byId = folderService.queryById(id, ms.getTenant(), ms.getWorkspace());
+        if (null == byId) {
+          throw new MonitorException(ResultCodeEnum.CANNOT_FIND_RECORD, "can not find record");
+        }
         folderService.removeById(id);
         JsonResult.createSuccessResult(result, null);
         userOpLogService.append("folder", byId.getId(), OpType.DELETE,
@@ -377,5 +387,19 @@ public class FolderFacadeImpl extends BaseFacade {
     }
     fps.paths.add(new FolderPath(f.getId(), f.getName()));
     return gogo(f.getParentFolderId(), fps);
+  }
+
+  private void checkParentFolderId(Folder folder) {
+    if (folder.parentFolderId == -1) {
+      return;
+    }
+
+    // check tenant
+    MonitorScope ms = RequestContext.getContext().ms;
+    Folder folderItem =
+        folderService.queryById(folder.getParentFolderId(), ms.getTenant(), ms.getWorkspace());
+    if (null == folderItem) {
+      throw new MonitorException(ResultCodeEnum.PARAMETER_ILLEGAL, "parentFolderId illegal");
+    }
   }
 }

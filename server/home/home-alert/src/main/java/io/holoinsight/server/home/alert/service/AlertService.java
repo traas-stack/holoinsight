@@ -5,16 +5,17 @@ package io.holoinsight.server.home.alert.service;
 
 import static io.holoinsight.server.home.alert.service.event.alertManagerEvent.AlertManagerBuildMsgHandler.buildMsgWithMap;
 
+import java.util.Collections;
 import java.util.Map;
 
+import io.holoinsight.server.common.http.XHttpResponse;
 import org.springframework.stereotype.Service;
 
 import io.holoinsight.server.common.J;
-import io.holoinsight.server.home.alert.common.http.XHttpResponse;
-import io.holoinsight.server.home.alert.common.webhook.WebhookUtil;
+import io.holoinsight.server.home.alert.common.WebhookUtil;
 import io.holoinsight.server.home.alert.model.event.WebhookInfo;
 import io.holoinsight.server.home.common.service.query.WebhookResponse;
-import io.holoinsight.server.home.dal.model.dto.AlarmWebhookTestDTO;
+import io.holoinsight.server.common.dao.entity.dto.AlarmWebhookTestDTO;
 import lombok.Data;
 
 @Service
@@ -41,7 +42,7 @@ public class AlertService {
     // 转换报文
     Map<String, String> valuesMap = J.fromJson(request.getTestBody(), Map.class);
     String webhookTemplate = request.getRequestBody();
-    String webhookMsg = buildMsgWithMap(webhookTemplate, valuesMap);
+    String webhookMsg = buildMsgWithMap(webhookTemplate, valuesMap, Collections.emptyList());
     // 发送webhook
     WebhookInfo webhookInfo = getWebhookInfo(request, webhookMsg);
     XHttpResponse xHttpResponse = WebhookUtil.sendWebhook(webhookInfo);

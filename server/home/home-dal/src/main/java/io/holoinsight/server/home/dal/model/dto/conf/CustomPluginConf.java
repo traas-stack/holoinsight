@@ -3,7 +3,7 @@
  */
 package io.holoinsight.server.home.dal.model.dto.conf;
 
-import io.holoinsight.server.home.dal.model.dto.CloudMonitorRange;
+import io.holoinsight.server.common.dao.entity.CloudMonitorRange;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -49,6 +49,10 @@ public class CustomPluginConf implements Serializable {
    */
   public List<SplitCol> splitCols;
 
+  public Boolean spm;
+
+  public SpmCols spmCols;
+
   /**
    * 监控指标定义
    */
@@ -70,6 +74,18 @@ public class CustomPluginConf implements Serializable {
   public static class ExtraConfig {
     public Integer keyCleanInterval = 0;
 
-    public Integer maxKeySize = 1000;
+    public Integer maxKeySize = 20000;
+
+    public String charset = "utf-8";
+
+    public Integer agentLimitKB = -1;
+  }
+
+  @Data
+  public static class SpmCols {
+    public String countKey;
+    public String costKey;
+    public String resultKey;
+    public List<String> successValue;
   }
 }

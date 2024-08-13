@@ -6,9 +6,9 @@ package io.holoinsight.server.home.task;
 
 import io.holoinsight.server.common.dao.entity.MetricInfo;
 import io.holoinsight.server.common.service.MetricInfoService;
-import io.holoinsight.server.home.biz.service.IntegrationProductService;
-import io.holoinsight.server.home.common.util.CommonThreadPool;
-import io.holoinsight.server.home.dal.model.dto.IntegrationProductDTO;
+import io.holoinsight.server.common.service.IntegrationProductService;
+import io.holoinsight.server.common.CommonThreadPool;
+import io.holoinsight.server.common.dao.entity.dto.IntegrationProductDTO;
 import io.holoinsight.server.home.task.crawler.TenantMetricCrawlerTaskJob;
 import io.holoinsight.server.home.task.crawler.TenantMetricCrawlerTaskJobArgs;
 import lombok.extern.slf4j.Slf4j;
@@ -21,8 +21,8 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executor;
 import java.util.concurrent.TimeUnit;
 
-import static io.holoinsight.server.home.task.MetricCrawlerConstant.GLOBAL_TENANT;
-import static io.holoinsight.server.home.task.MetricCrawlerConstant.GLOBAL_WORKSPACE;
+import static io.holoinsight.server.common.model.MetricCrawlerConstant.GLOBAL_TENANT;
+import static io.holoinsight.server.common.model.MetricCrawlerConstant.GLOBAL_WORKSPACE;
 
 /**
  * @author jsy1001de

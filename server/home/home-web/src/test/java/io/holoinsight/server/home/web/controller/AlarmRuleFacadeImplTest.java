@@ -4,17 +4,18 @@
 package io.holoinsight.server.home.web.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import io.holoinsight.server.home.biz.service.AlertGroupService;
-import io.holoinsight.server.home.biz.service.AlertRuleService;
-import io.holoinsight.server.home.biz.service.AlertSubscribeService;
-import io.holoinsight.server.home.common.util.scope.MonitorScope;
-import io.holoinsight.server.home.common.util.scope.MonitorUser;
-import io.holoinsight.server.home.common.util.scope.RequestContext;
-import io.holoinsight.server.home.dal.converter.AlarmRuleConverterImpl;
-import io.holoinsight.server.home.dal.model.AlarmRule;
-import io.holoinsight.server.home.dal.model.dto.AlarmGroupDTO;
-import io.holoinsight.server.home.dal.model.dto.AlarmSubscribeInfo;
-import io.holoinsight.server.home.facade.AlarmRuleDTO;
+import io.holoinsight.server.common.dao.converter.AlarmRuleConverterImpl;
+import io.holoinsight.server.common.service.AlertGroupService;
+import io.holoinsight.server.common.service.AlertRuleService;
+import io.holoinsight.server.common.service.AlertSubscribeService;
+import io.holoinsight.server.common.service.impl.RequestContextAdapterImpl;
+import io.holoinsight.server.common.scope.MonitorScope;
+import io.holoinsight.server.common.scope.MonitorUser;
+import io.holoinsight.server.common.RequestContext;
+import io.holoinsight.server.common.dao.entity.AlarmRule;
+import io.holoinsight.server.common.dao.entity.dto.AlarmGroupDTO;
+import io.holoinsight.server.common.dao.entity.dto.AlarmSubscribeInfo;
+import io.holoinsight.server.common.dao.entity.dto.AlarmRuleDTO;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -44,6 +45,7 @@ public class AlarmRuleFacadeImplTest {
     facade.alarmSubscribeService = Mockito.mock(AlertSubscribeService.class);
     facade.alarmRuleService = Mockito.mock(AlertRuleService.class);
     facade.alarmRuleConverter = new AlarmRuleConverterImpl();
+    facade.requestContextAdapter = new RequestContextAdapterImpl();
     MonitorUser mu = new MonitorUser();
     mu.setLoginName("test_loginName");
     mu.setUserId("test_userId");
@@ -67,7 +69,7 @@ public class AlarmRuleFacadeImplTest {
 
     Mockito.when(facade.alarmGroupService.getListByUserLike("test_userId", "test_tenant"))
         .thenReturn(Collections.singletonList(alarmGroupDTO));
-    Mockito.when(facade.alarmSubscribeService.queryByMap(Mockito.anyMap()))
+    Mockito.when(facade.alarmSubscribeService.queryByMap(Mockito.any()))
         .thenReturn(Collections.singletonList(alarmSubscribeInfo));
     Mockito.when(facade.alarmRuleService.list(Mockito.any()))
         .thenReturn(Collections.singletonList(alarmRule));
@@ -78,7 +80,8 @@ public class AlarmRuleFacadeImplTest {
 
   @Test
   public void testGetRuleListByGroup() {
-    List<AlarmRuleDTO> alarmRuleDTOList = facade.getRuleListByGroup(true);
+    List<AlarmRuleDTO> alarmRuleDTOList =
+        facade.getRuleListByGroup(true, "test_tenant", "workspace");
 
     Mockito.verify(facade.alarmRuleService).list(argument.capture());
     QueryWrapper<AlarmRule> queryWrapper = argument.getValue();
@@ -94,7 +97,7 @@ public class AlarmRuleFacadeImplTest {
 
   @Test
   public void testGetRuleListByGroup_false() {
-    facade.getRuleListByGroup(false);
+    facade.getRuleListByGroup(false, "test_tenant", "workspace");
     Mockito.verify(facade.alarmRuleService).list(argument.capture());
     QueryWrapper<AlarmRule> queryWrapper = argument.getValue();
     Assert.assertEquals("(id IN (#{ew.paramNameValuePairs.MPGENVAL1}))",
@@ -103,7 +106,8 @@ public class AlarmRuleFacadeImplTest {
 
   @Test
   public void testGetRuleListBySubscribe() {
-    List<AlarmRuleDTO> alarmRuleDTOList = facade.getRuleListBySubscribe(true);
+    List<AlarmRuleDTO> alarmRuleDTOList =
+        facade.getRuleListBySubscribe(true, "test_tenant", "workspace");
     Mockito.verify(facade.alarmRuleService).list(argument.capture());
     QueryWrapper<AlarmRule> queryWrapper = argument.getValue();
     Assert.assertEquals(
@@ -118,7 +122,8 @@ public class AlarmRuleFacadeImplTest {
 
   @Test
   public void testGetRuleListBySubscribe_false() {
-    List<AlarmRuleDTO> alarmRuleDTOList = facade.getRuleListBySubscribe(false);
+    List<AlarmRuleDTO> alarmRuleDTOList =
+        facade.getRuleListBySubscribe(false, "test_tenant", "workspace");
     Mockito.verify(facade.alarmRuleService).list(argument.capture());
     QueryWrapper<AlarmRule> queryWrapper = argument.getValue();
     Assert.assertEquals("(id IN (#{ew.paramNameValuePairs.MPGENVAL1}))",

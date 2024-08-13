@@ -35,6 +35,18 @@ public class QueryGrpcService extends QueryServiceGrpc.QueryServiceImplBase {
   }
 
   @Override
+  public void queryDetailData(QueryProto.QueryRequest request,
+      StreamObserver<QueryProto.QueryDetailResponse> responseObserver) {
+    try {
+      responseObserver.onNext(queryService.queryDetailData(request));
+      responseObserver.onCompleted();
+    } catch (Throwable t) {
+      responseObserver.onError(
+          Status.INTERNAL.withCause(t).withDescription(t.getMessage()).asRuntimeException());
+    }
+  }
+
+  @Override
   public void queryTags(QueryProto.QueryRequest request,
       StreamObserver<QueryProto.QueryResponse> responseObserver) {
     try {
@@ -107,6 +119,42 @@ public class QueryGrpcService extends QueryServiceGrpc.QueryServiceImplBase {
   }
 
   @Override
+  public void pqlSeriesQuery(QueryProto.PqlLabelRequest request,
+      StreamObserver<QueryProto.QuerySeriesResponse> responseObserver) {
+    try {
+      responseObserver.onNext(queryService.pqlSeriesQuery(request));
+      responseObserver.onCompleted();
+    } catch (Throwable t) {
+      responseObserver.onError(
+          Status.INTERNAL.withCause(t).withDescription(t.getMessage()).asRuntimeException());
+    }
+  }
+
+  @Override
+  public void pqlLabelsQuery(QueryProto.PqlLabelRequest request,
+      StreamObserver<QueryProto.QueryLabelsResponse> responseObserver) {
+    try {
+      responseObserver.onNext(queryService.pqlLabelsQuery(request));
+      responseObserver.onCompleted();
+    } catch (Throwable t) {
+      responseObserver.onError(
+          Status.INTERNAL.withCause(t).withDescription(t.getMessage()).asRuntimeException());
+    }
+  }
+
+  @Override
+  public void pqlLabelValuesQuery(QueryProto.PqlLabelRequest request,
+      StreamObserver<QueryProto.QueryLabelsResponse> responseObserver) {
+    try {
+      responseObserver.onNext(queryService.pqlLabelValuesQuery(request));
+      responseObserver.onCompleted();
+    } catch (Throwable t) {
+      responseObserver.onError(
+          Status.INTERNAL.withCause(t).withDescription(t.getMessage()).asRuntimeException());
+    }
+  }
+
+  @Override
   public void queryBasicTraces(QueryProto.QueryTraceRequest request,
       StreamObserver<QueryProto.TraceBrief> responseObserver) {
     try {
@@ -123,6 +171,18 @@ public class QueryGrpcService extends QueryServiceGrpc.QueryServiceImplBase {
       StreamObserver<QueryProto.Trace> responseObserver) {
     try {
       responseObserver.onNext(queryService.queryTrace(request));
+      responseObserver.onCompleted();
+    } catch (Throwable t) {
+      responseObserver.onError(
+          Status.INTERNAL.withCause(t).withDescription(t.getMessage()).asRuntimeException());
+    }
+  }
+
+  @Override
+  public void queryTraceTree(QueryProto.QueryTraceRequest request,
+      StreamObserver<QueryProto.TraceTreeList> responseObserver) {
+    try {
+      responseObserver.onNext(queryService.queryTraceTree(request));
       responseObserver.onCompleted();
     } catch (Throwable t) {
       responseObserver.onError(
@@ -243,6 +303,18 @@ public class QueryGrpcService extends QueryServiceGrpc.QueryServiceImplBase {
       StreamObserver<QueryProto.StatisticDataList> responseObserver) {
     try {
       responseObserver.onNext(queryService.statisticTrace(request));
+      responseObserver.onCompleted();
+    } catch (Throwable t) {
+      responseObserver.onError(
+          Status.INTERNAL.withCause(t).withDescription(t.getMessage()).asRuntimeException());
+    }
+  }
+
+  @Override
+  public void queryEvents(QueryProto.QueryEventRequest request,
+      StreamObserver<QueryProto.QueryEventResponse> responseObserver) {
+    try {
+      responseObserver.onNext(queryService.queryEvents(request));
       responseObserver.onCompleted();
     } catch (Throwable t) {
       responseObserver.onError(

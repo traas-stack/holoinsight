@@ -3,11 +3,12 @@
  */
 package io.holoinsight.server.registry.model;
 
-import java.util.List;
-
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+
+import java.util.List;
 
 /**
  * <p>
@@ -19,12 +20,21 @@ import lombok.ToString;
 @Getter
 @Setter
 public class GroupBy {
-  private int maxKeys;
+  private int maxKeySize;
   private List<Group> groups;
   /**
    * Log analysis conf
    */
   private LogAnalysis logAnalysis;
+  private Details details;
+
+  @ToString
+  @Getter
+  @Setter
+  @AllArgsConstructor
+  public static class Details {
+    private boolean enabled;
+  }
 
   @ToString
   @Getter
@@ -68,4 +78,5 @@ public class GroupBy {
      */
     private Where where;
   }
+
 }

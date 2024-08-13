@@ -83,6 +83,9 @@ public class QueryStorageUtils {
     }).collect(Collectors.toList()));
 
     param.setGroupBy(d.getGroupByList());
+    if (d.hasQl()) {
+      param.setQl(d.getQl());
+    }
 
     return param;
   }
