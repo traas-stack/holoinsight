@@ -98,7 +98,11 @@ public class AlarmRuleUpdateListener {
           alarmMetricService.save(alarmMetric);
         } else {
           alarmMetric.setId(db.getId());
-          alarmMetricService.updateById(alarmMetric);
+          if (alarmMetric.deleted) {
+            alarmMetricService.removeById(alarmMetric);
+          } else {
+            alarmMetricService.updateById(alarmMetric);
+          }
         }
       }
     }
