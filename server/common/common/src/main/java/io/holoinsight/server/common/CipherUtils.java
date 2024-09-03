@@ -28,7 +28,6 @@ public class CipherUtils {
   private static String seed;
 
   public static void setSeed(String str) {
-    log.info(">>>>"+ str);
     seed = str;
   }
 
