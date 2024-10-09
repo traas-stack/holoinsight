@@ -27,7 +27,7 @@ public class DBCoreServiceSwitcher {
   private SuperCacheService superCacheService;
 
   public DBCoreService dbCoreService() {
-    boolean metaIndexBitMapEnable = false;
+    boolean metaIndexBitMapEnable = true;
     try {
       MetaDataDictValue metaDataDictValue = superCacheService.getSc().metaDataDictValueMap
           .getOrDefault("global_config", new HashMap<>()).get("meta_index_bitmap_enable");

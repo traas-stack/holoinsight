@@ -81,25 +81,11 @@
 			<generatedKey column="id" sqlStatement="JDBC" identity="true"/>
 		</table>
 
-		<table tableName="gaea_master" domainObjectName="GaeaMasterDO" enableSelectByExample="true">
-			<generatedKey column="id" sqlStatement="JDBC" identity="true"/>
-		</table>
-
-		<table tableName="gaea_cluster_config" domainObjectName="GaeaClusterConfigDO" enableSelectByExample="true">
-			<generatedKey column="id" sqlStatement="JDBC" identity="true"/>
-		</table>
-
 		<table tableName="apikey" domainObjectName="ApikeyDO" enableSelectByExample="true">
 			<generatedKey column="id" sqlStatement="JDBC" identity="true"/>
 		</table>
 
 		<table tableName="tenant_ops" domainObjectName="TenantOpsDO" enableSelectByExample="true">
-		</table>
-
-		<table tableName="trace_agent_configuration" domainObjectName="TraceAgentConfigurationDO" enableSelectByExample="true">
-		</table>
-
-		<table tableName="trace_agent_configuration_properties" domainObjectName="TraceAgentConfPropDO" enableSelectByExample="true">
 		</table>
 
 		<table tableName="agg_task_v1" domainObjectName="AggTaskV1DO" enableSelectByExample="true">

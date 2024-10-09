@@ -7,9 +7,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import io.holoinsight.server.common.config.ProdLog;
 import io.holoinsight.server.common.config.ScheduleLoadTask;
 import io.holoinsight.server.common.dao.entity.IntegrationProduct;
-import io.holoinsight.server.common.dao.entity.MetricInfo;
 import io.holoinsight.server.common.dao.mapper.IntegrationProductMapper;
-import io.holoinsight.server.common.dao.mapper.MetricInfoMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
@@ -34,8 +32,6 @@ public class SuperCacheService extends ScheduleLoadTask {
 
   @Autowired
   private MetricInfoService metricInfoService;
-  @Resource
-  private MetricInfoMapper metricInfoMapper;
   @Resource
   private IntegrationProductMapper integrationProductMapper;
 
