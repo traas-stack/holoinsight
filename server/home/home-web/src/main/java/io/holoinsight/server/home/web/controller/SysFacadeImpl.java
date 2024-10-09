@@ -53,9 +53,10 @@ public class SysFacadeImpl extends BaseFacade {
     sysMap.put("authUrl", ulaFacade.getCurrentULA().getLoginUrl());
     sysMap.put("ula", ulaFacade.getCurrentULA().name());
     sysMap.put("site", this.environmentProperties.getDeploymentSite());
-    sysMap.put("authApplyUrl", ulaFacade.getCurrentULA().authApplyUrl());
+    //sysMap.put("authApplyUrl", ulaFacade.getCurrentULA().authApplyUrl());
     sysMap.put("systemNotice", MetaDictUtil.getSystemNotice());
     sysMap.put("logTimeLayout", MetaDictUtil.getLogTimeLayoutMap());
+    sysMap.put("agg", System.getenv("holoinsight.agg.enabled"));
     return JsonResult.createSuccessResult(sysMap);
   }
 
