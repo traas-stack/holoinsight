@@ -109,8 +109,10 @@ public class HashMapDataCoreService extends SqlDataCoreService {
   /** load meta data */
   private void sync() {
 
-    Boolean booleanValue = superCacheService.getSc().getBooleanValue("global_config", "hashmapDataSync");
-    if(null == booleanValue || Boolean.FALSE == booleanValue) return;
+    Boolean booleanValue =
+        superCacheService.getSc().getBooleanValue("global_config", "hashmapDataSync");
+    if (null == booleanValue || Boolean.FALSE == booleanValue)
+      return;
 
     StopWatch stopWatch = StopWatch.createStarted();
     long now = System.currentTimeMillis() / 1000 * 1000;
