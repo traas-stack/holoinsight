@@ -4,7 +4,6 @@
 package io.holoinsight.server.home.web.controller;
 
 import io.holoinsight.server.apm.common.model.query.Endpoint;
-import io.holoinsight.server.common.event.Event;
 import io.holoinsight.server.apm.common.model.query.QueryTraceRequest;
 import io.holoinsight.server.apm.common.model.query.Service;
 import io.holoinsight.server.apm.common.model.query.ServiceInstance;
@@ -15,17 +14,19 @@ import io.holoinsight.server.apm.common.model.query.TraceTree;
 import io.holoinsight.server.apm.common.model.query.VirtualComponent;
 import io.holoinsight.server.apm.common.model.specification.sw.Trace;
 import io.holoinsight.server.common.JsonResult;
-import io.holoinsight.server.home.biz.service.TenantInitService;
-import io.holoinsight.server.home.common.service.QueryClientService;
+import io.holoinsight.server.common.ManageCallback;
 import io.holoinsight.server.common.MonitorException;
+import io.holoinsight.server.common.RequestContext;
+import io.holoinsight.server.common.event.Event;
 import io.holoinsight.server.common.scope.AuthTargetType;
 import io.holoinsight.server.common.scope.MonitorScope;
 import io.holoinsight.server.common.scope.PowerConstants;
-import io.holoinsight.server.common.RequestContext;
-import io.holoinsight.server.common.ManageCallback;
+import io.holoinsight.server.home.biz.service.TenantInitService;
+import io.holoinsight.server.home.common.service.QueryClientService;
 import io.holoinsight.server.home.web.common.ParaCheckUtil;
 import io.holoinsight.server.home.web.common.TokenUrls;
 import io.holoinsight.server.home.web.interceptor.MonitorScopeAuth;
+import io.holoinsight.server.home.web.security.ParameterSecurityService;
 import io.holoinsight.server.query.grpc.QueryProto;
 import io.holoinsight.server.query.grpc.QueryProto.QueryMetaRequest.Builder;
 import io.holoinsight.server.query.grpc.QueryProto.QueryTopologyRequest;
@@ -53,6 +54,9 @@ public class TraceQueryFacadeImpl extends BaseFacade {
   @Autowired
   private TenantInitService tenantInitService;
 
+  @Autowired
+  private ParameterSecurityService parameterSecurityService;
+
 
   @PostMapping(value = "/query/basic")
   @MonitorScopeAuth(targetType = AuthTargetType.TENANT, needPower = PowerConstants.VIEW)
@@ -68,8 +72,8 @@ public class TraceQueryFacadeImpl extends BaseFacade {
         ParaCheckUtil.checkEquals(request.getTenant(), RequestContext.getContext().ms.getTenant(),
             "tenant is illegal");
         MonitorScope ms = RequestContext.getContext().ms;
-        Boolean aBoolean =
-            tenantInitService.checkTraceTags(ms.getTenant(), ms.getWorkspace(), request.getTags());
+        Boolean aBoolean = parameterSecurityService.checkTraceTags(ms.getTenant(),
+            ms.getWorkspace(), request.getTags());
         if (!aBoolean) {
           throw new MonitorException("tags params is illegal");
         }
@@ -101,8 +105,8 @@ public class TraceQueryFacadeImpl extends BaseFacade {
         ParaCheckUtil.checkEquals(request.getTenant(), RequestContext.getContext().ms.getTenant(),
             "tenant is illegal");
         MonitorScope ms = RequestContext.getContext().ms;
-        Boolean aBoolean =
-            tenantInitService.checkTraceTags(ms.getTenant(), ms.getWorkspace(), request.getTags());
+        Boolean aBoolean = parameterSecurityService.checkTraceTags(ms.getTenant(),
+            ms.getWorkspace(), request.getTags());
         if (!aBoolean) {
           throw new MonitorException("tags params is illegal");
         }
@@ -134,8 +138,8 @@ public class TraceQueryFacadeImpl extends BaseFacade {
         ParaCheckUtil.checkEquals(request.getTenant(), RequestContext.getContext().ms.getTenant(),
             "tenant is illegal");
         MonitorScope ms = RequestContext.getContext().ms;
-        Boolean aBoolean =
-            tenantInitService.checkTraceTags(ms.getTenant(), ms.getWorkspace(), request.getTags());
+        Boolean aBoolean = parameterSecurityService.checkTraceTags(ms.getTenant(),
+            ms.getWorkspace(), request.getTags());
         if (!aBoolean) {
           throw new MonitorException("tags params is illegal");
         }
@@ -168,8 +172,8 @@ public class TraceQueryFacadeImpl extends BaseFacade {
         ParaCheckUtil.checkEquals(request.getTenant(), RequestContext.getContext().ms.getTenant(),
             "tenant is illegal");
         MonitorScope ms = RequestContext.getContext().ms;
-        Boolean aBoolean = tenantInitService.checkTraceParams(ms.getTenant(), ms.getWorkspace(),
-            request.getTermParamsMap());
+        Boolean aBoolean = parameterSecurityService.checkTraceParams(ms.getTenant(),
+            ms.getWorkspace(), request.getTermParamsMap());
         if (!aBoolean) {
           throw new MonitorException("term params is illegal");
         }
@@ -215,8 +219,8 @@ public class TraceQueryFacadeImpl extends BaseFacade {
         ParaCheckUtil.checkEquals(request.getTenant(), RequestContext.getContext().ms.getTenant(),
             "tenant is illegal");
         MonitorScope ms = RequestContext.getContext().ms;
-        Boolean aBoolean = tenantInitService.checkTraceParams(ms.getTenant(), ms.getWorkspace(),
-            request.getTermParamsMap());
+        Boolean aBoolean = parameterSecurityService.checkTraceParams(ms.getTenant(),
+            ms.getWorkspace(), request.getTermParamsMap());
         if (!aBoolean) {
           throw new MonitorException("term params is illegal");
         }
@@ -251,8 +255,8 @@ public class TraceQueryFacadeImpl extends BaseFacade {
         ParaCheckUtil.checkEquals(request.getTenant(), RequestContext.getContext().ms.getTenant(),
             "tenant is illegal");
         MonitorScope ms = RequestContext.getContext().ms;
-        Boolean aBoolean = tenantInitService.checkTraceParams(ms.getTenant(), ms.getWorkspace(),
-            request.getTermParamsMap());
+        Boolean aBoolean = parameterSecurityService.checkTraceParams(ms.getTenant(),
+            ms.getWorkspace(), request.getTermParamsMap());
         if (!aBoolean) {
           throw new MonitorException("term params is illegal");
         }
@@ -295,8 +299,8 @@ public class TraceQueryFacadeImpl extends BaseFacade {
         ParaCheckUtil.checkEquals(request.getTenant(), RequestContext.getContext().ms.getTenant(),
             "tenant is illegal");
         MonitorScope ms = RequestContext.getContext().ms;
-        Boolean aBoolean = tenantInitService.checkTraceParams(ms.getTenant(), ms.getWorkspace(),
-            request.getTermParamsMap());
+        Boolean aBoolean = parameterSecurityService.checkTraceParams(ms.getTenant(),
+            ms.getWorkspace(), request.getTermParamsMap());
         if (!aBoolean) {
           throw new MonitorException("term params is illegal");
         }
@@ -333,8 +337,8 @@ public class TraceQueryFacadeImpl extends BaseFacade {
         ParaCheckUtil.checkEquals(request.getTenant(), RequestContext.getContext().ms.getTenant(),
             "tenant is illegal");
         MonitorScope ms = RequestContext.getContext().ms;
-        Boolean aBoolean = tenantInitService.checkTraceParams(ms.getTenant(), ms.getWorkspace(),
-            request.getTermParamsMap());
+        Boolean aBoolean = parameterSecurityService.checkTraceParams(ms.getTenant(),
+            ms.getWorkspace(), request.getTermParamsMap());
         if (!aBoolean) {
           throw new MonitorException("term params is illegal");
         }
@@ -375,8 +379,8 @@ public class TraceQueryFacadeImpl extends BaseFacade {
         ParaCheckUtil.checkEquals(request.getTenant(), RequestContext.getContext().ms.getTenant(),
             "tenant is illegal");
         MonitorScope ms = RequestContext.getContext().ms;
-        Boolean aBoolean = tenantInitService.checkTraceParams(ms.getTenant(), ms.getWorkspace(),
-            request.getTermParamsMap());
+        Boolean aBoolean = parameterSecurityService.checkTraceParams(ms.getTenant(),
+            ms.getWorkspace(), request.getTermParamsMap());
         if (!aBoolean) {
           throw new MonitorException("term params is illegal");
         }
@@ -417,8 +421,8 @@ public class TraceQueryFacadeImpl extends BaseFacade {
         ParaCheckUtil.checkEquals(request.getTenant(), RequestContext.getContext().ms.getTenant(),
             "tenant is illegal");
         MonitorScope ms = RequestContext.getContext().ms;
-        Boolean aBoolean = tenantInitService.checkTraceParams(ms.getTenant(), ms.getWorkspace(),
-            request.getTermParamsMap());
+        Boolean aBoolean = parameterSecurityService.checkTraceParams(ms.getTenant(),
+            ms.getWorkspace(), request.getTermParamsMap());
         if (!aBoolean) {
           throw new MonitorException("term params is illegal");
         }
@@ -457,8 +461,8 @@ public class TraceQueryFacadeImpl extends BaseFacade {
         ParaCheckUtil.checkEquals(request.getTenant(), RequestContext.getContext().ms.getTenant(),
             "tenant is illegal");
         MonitorScope ms = RequestContext.getContext().ms;
-        Boolean aBoolean = tenantInitService.checkTraceParams(ms.getTenant(), ms.getWorkspace(),
-            request.getTermParamsMap());
+        Boolean aBoolean = parameterSecurityService.checkTraceParams(ms.getTenant(),
+            ms.getWorkspace(), request.getTermParamsMap());
         if (!aBoolean) {
           throw new MonitorException("term params is illegal");
         }
@@ -497,8 +501,8 @@ public class TraceQueryFacadeImpl extends BaseFacade {
         ParaCheckUtil.checkEquals(request.getTenant(), RequestContext.getContext().ms.getTenant(),
             "tenant is illegal");
         MonitorScope ms = RequestContext.getContext().ms;
-        Boolean aBoolean = tenantInitService.checkTraceParams(ms.getTenant(), ms.getWorkspace(),
-            request.getTermParamsMap());
+        Boolean aBoolean = parameterSecurityService.checkTraceParams(ms.getTenant(),
+            ms.getWorkspace(), request.getTermParamsMap());
         if (!aBoolean) {
           throw new MonitorException("term params is illegal");
         }
@@ -530,8 +534,8 @@ public class TraceQueryFacadeImpl extends BaseFacade {
         ParaCheckUtil.checkEquals(request.getTenant(), RequestContext.getContext().ms.getTenant(),
             "tenant is illegal");
         MonitorScope ms = RequestContext.getContext().ms;
-        Boolean aBoolean = tenantInitService.checkTraceParams(ms.getTenant(), ms.getWorkspace(),
-            request.getTermParamsMap());
+        Boolean aBoolean = parameterSecurityService.checkTraceParams(ms.getTenant(),
+            ms.getWorkspace(), request.getTermParamsMap());
         if (!aBoolean) {
           throw new MonitorException("term params is illegal");
         }

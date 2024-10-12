@@ -3,36 +3,36 @@
  */
 package io.holoinsight.server.home.web.controller;
 
-import io.holoinsight.server.common.UtilMisc;
-import io.holoinsight.server.common.dao.entity.dto.MetricInfoDTO;
-import io.holoinsight.server.common.service.MetricInfoService;
-import io.holoinsight.server.home.biz.plugin.core.LogPluginUtil;
-import io.holoinsight.server.common.service.AlarmMetricService;
-import io.holoinsight.server.home.biz.service.CustomPluginService;
-import io.holoinsight.server.common.service.FolderService;
-import io.holoinsight.server.home.biz.service.TenantInitService;
-import io.holoinsight.server.common.service.UserOpLogService;
+import io.holoinsight.server.common.J;
+import io.holoinsight.server.common.JsonResult;
+import io.holoinsight.server.common.ManageCallback;
 import io.holoinsight.server.common.MonitorException;
+import io.holoinsight.server.common.MonitorPageRequest;
+import io.holoinsight.server.common.MonitorPageResult;
+import io.holoinsight.server.common.RequestContext;
 import io.holoinsight.server.common.ResultCodeEnum;
+import io.holoinsight.server.common.UtilMisc;
+import io.holoinsight.server.common.dao.entity.AlarmMetric;
+import io.holoinsight.server.common.dao.entity.Folder;
+import io.holoinsight.server.common.dao.entity.dto.MetricInfoDTO;
 import io.holoinsight.server.common.scope.AuthTargetType;
 import io.holoinsight.server.common.scope.MonitorCookieUtil;
 import io.holoinsight.server.common.scope.MonitorScope;
 import io.holoinsight.server.common.scope.MonitorUser;
 import io.holoinsight.server.common.scope.PowerConstants;
-import io.holoinsight.server.common.RequestContext;
-import io.holoinsight.server.common.dao.entity.AlarmMetric;
-import io.holoinsight.server.common.dao.entity.Folder;
+import io.holoinsight.server.common.service.AlarmMetricService;
+import io.holoinsight.server.common.service.FolderService;
+import io.holoinsight.server.common.service.MetricInfoService;
+import io.holoinsight.server.common.service.UserOpLogService;
+import io.holoinsight.server.home.biz.plugin.core.LogPluginUtil;
+import io.holoinsight.server.home.biz.service.CustomPluginService;
 import io.holoinsight.server.home.dal.model.OpType;
 import io.holoinsight.server.home.dal.model.dto.CustomPluginDTO;
 import io.holoinsight.server.home.dal.model.dto.conf.CollectMetric;
-import io.holoinsight.server.common.MonitorPageRequest;
-import io.holoinsight.server.common.MonitorPageResult;
-import io.holoinsight.server.common.ManageCallback;
 import io.holoinsight.server.home.web.common.ParaCheckUtil;
 import io.holoinsight.server.home.web.controller.model.LogSplitReq;
 import io.holoinsight.server.home.web.interceptor.MonitorScopeAuth;
-import io.holoinsight.server.common.J;
-import io.holoinsight.server.common.JsonResult;
+import io.holoinsight.server.home.web.security.ParameterSecurityService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -81,7 +81,7 @@ public class CustomPluginFacadeImpl extends BaseFacade {
   private MetricInfoService metricInfoService;
 
   @Autowired
-  private TenantInitService tenantInitService;
+  private ParameterSecurityService parameterSecurityService;
 
   @PostMapping("/update")
   @ResponseBody
@@ -103,7 +103,7 @@ public class CustomPluginFacadeImpl extends BaseFacade {
         MonitorScope ms = RequestContext.getContext().ms;
         ParaCheckUtil.checkEquals(customPluginDTO.getTenant(), ms.getTenant(), "tenant is illegal");
 
-        Boolean aBoolean = tenantInitService.checkCustomPluginLogConfParams(ms.getTenant(),
+        Boolean aBoolean = parameterSecurityService.checkCustomPluginLogConfParams(ms.getTenant(),
             ms.getWorkspace(), customPluginDTO);
         if (!aBoolean) {
           throw new MonitorException("collectRange illegal");
@@ -167,7 +167,7 @@ public class CustomPluginFacadeImpl extends BaseFacade {
         ParaCheckUtil.checkParaNotNull(customPluginDTO.conf, "conf");
         ParaCheckUtil.checkParaId(customPluginDTO.getId());
         MonitorScope ms = RequestContext.getContext().ms;
-        Boolean aBoolean = tenantInitService.checkCustomPluginLogConfParams(ms.getTenant(),
+        Boolean aBoolean = parameterSecurityService.checkCustomPluginLogConfParams(ms.getTenant(),
             ms.getWorkspace(), customPluginDTO);
         if (!aBoolean) {
           throw new MonitorException("collectRange illegal");

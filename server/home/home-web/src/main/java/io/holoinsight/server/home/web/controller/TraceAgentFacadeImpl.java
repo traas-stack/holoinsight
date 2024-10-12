@@ -4,28 +4,29 @@
 package io.holoinsight.server.home.web.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.holoinsight.server.common.AesUtil;
 import io.holoinsight.server.common.JsonResult;
-import io.holoinsight.server.home.biz.common.MetaDictKey;
-import io.holoinsight.server.home.biz.common.MetaDictType;
-import io.holoinsight.server.home.biz.common.MetaDictUtil;
-import io.holoinsight.server.common.service.ApiKeyService;
-import io.holoinsight.server.home.biz.service.TenantInitService;
-import io.holoinsight.server.common.service.TraceAgentConfPropService;
-import io.holoinsight.server.common.service.TraceAgentConfigurationService;
+import io.holoinsight.server.common.ManageCallback;
 import io.holoinsight.server.common.MonitorException;
-import io.holoinsight.server.common.scope.AuthTargetType;
-import io.holoinsight.server.common.scope.MonitorScope;
-import io.holoinsight.server.common.scope.MonitorUser;
-import io.holoinsight.server.common.scope.PowerConstants;
 import io.holoinsight.server.common.RequestContext;
 import io.holoinsight.server.common.dao.entity.ApiKey;
 import io.holoinsight.server.common.dao.entity.TraceAgentConfProp;
 import io.holoinsight.server.common.dao.entity.TraceAgentConfiguration;
-import io.holoinsight.server.common.AesUtil;
-import io.holoinsight.server.common.ManageCallback;
+import io.holoinsight.server.common.scope.AuthTargetType;
+import io.holoinsight.server.common.scope.MonitorScope;
+import io.holoinsight.server.common.scope.MonitorUser;
+import io.holoinsight.server.common.scope.PowerConstants;
+import io.holoinsight.server.common.service.ApiKeyService;
+import io.holoinsight.server.common.service.TraceAgentConfPropService;
+import io.holoinsight.server.common.service.TraceAgentConfigurationService;
+import io.holoinsight.server.home.biz.common.MetaDictKey;
+import io.holoinsight.server.home.biz.common.MetaDictType;
+import io.holoinsight.server.home.biz.common.MetaDictUtil;
+import io.holoinsight.server.home.biz.service.TenantInitService;
 import io.holoinsight.server.home.web.common.ParaCheckUtil;
 import io.holoinsight.server.home.web.config.TraceAuthEncryptConfiguration;
 import io.holoinsight.server.home.web.interceptor.MonitorScopeAuth;
+import io.holoinsight.server.home.web.security.ParameterSecurityService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
@@ -58,6 +59,9 @@ public class TraceAgentFacadeImpl extends BaseFacade {
   private TenantInitService tenantInitService;
 
   @Autowired
+  private ParameterSecurityService parameterSecurityService;
+
+  @Autowired
   private TraceAgentConfigurationService agentConfigurationService;
   @Autowired
   private TraceAgentConfPropService traceAgentConfPropService;
@@ -82,8 +86,8 @@ public class TraceAgentFacadeImpl extends BaseFacade {
       @Override
       public void checkParameter() {
         MonitorScope ms = RequestContext.getContext().ms;
-        Boolean aBoolean =
-            tenantInitService.checkTraceParams(ms.getTenant(), ms.getWorkspace(), extendInfo);
+        Boolean aBoolean = parameterSecurityService.checkTraceParams(ms.getTenant(),
+            ms.getWorkspace(), extendInfo);
         if (!aBoolean) {
           throw new MonitorException("term params is illegal");
         }
@@ -147,7 +151,7 @@ public class TraceAgentFacadeImpl extends BaseFacade {
             "tenant is illegal");
         MonitorScope ms = RequestContext.getContext().ms;
         Boolean aBoolean =
-            tenantInitService.checkTraceParams(ms.getTenant(), ms.getWorkspace(), request);
+            parameterSecurityService.checkTraceParams(ms.getTenant(), ms.getWorkspace(), request);
         if (!aBoolean) {
           throw new MonitorException("term params is illegal");
         }
@@ -192,7 +196,7 @@ public class TraceAgentFacadeImpl extends BaseFacade {
             "tenant is illegal");
         MonitorScope ms = RequestContext.getContext().ms;
         Boolean aBoolean =
-            tenantInitService.checkTraceParams(ms.getTenant(), ms.getWorkspace(), request);
+            parameterSecurityService.checkTraceParams(ms.getTenant(), ms.getWorkspace(), request);
         if (!aBoolean) {
           throw new MonitorException("term params is illegal");
         }

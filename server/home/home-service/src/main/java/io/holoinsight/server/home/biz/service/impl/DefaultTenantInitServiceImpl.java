@@ -3,17 +3,15 @@
  */
 package io.holoinsight.server.home.biz.service.impl;
 
-import io.holoinsight.server.apm.common.model.specification.sw.Tag;
+import io.holoinsight.server.common.dao.entity.CloudMonitorRange;
+import io.holoinsight.server.common.dao.entity.dto.IntegrationGeneratedDTO;
 import io.holoinsight.server.common.dao.entity.dto.MetricInfoDTO;
 import io.holoinsight.server.common.dao.entity.dto.TenantOpsStorage;
+import io.holoinsight.server.common.scope.MonitorScope;
+import io.holoinsight.server.common.scope.MonitorUser;
 import io.holoinsight.server.home.biz.common.GaeaConvertUtil;
 import io.holoinsight.server.home.biz.plugin.config.MetaLabel;
 import io.holoinsight.server.home.biz.service.TenantInitService;
-import io.holoinsight.server.common.scope.MonitorScope;
-import io.holoinsight.server.common.scope.MonitorUser;
-import io.holoinsight.server.common.dao.entity.CloudMonitorRange;
-import io.holoinsight.server.home.dal.model.dto.CustomPluginDTO;
-import io.holoinsight.server.common.dao.entity.dto.IntegrationGeneratedDTO;
 import io.holoinsight.server.query.grpc.QueryProto.QueryFilter;
 
 import java.util.ArrayList;
@@ -96,36 +94,12 @@ public class DefaultTenantInitServiceImpl implements TenantInitService {
     return GaeaConvertUtil.convertCloudMonitorRange(table, metaLabel, strings);
   }
 
-  @Override
-  public Boolean checkCookie(String tenant, String workspace, String environment) {
-    return Boolean.TRUE;
-  }
-
-  @Override
-  public Boolean checkTraceTags(String tenant, String workspace, List<Tag> tags) {
-    return Boolean.TRUE;
-  }
-
-  @Override
-  public Boolean checkTraceParams(String tenant, String workspace, Map<String, String> paramsMap) {
-    return Boolean.TRUE;
-  }
 
   @Override
   public List<IntegrationGeneratedDTO> getExtraGeneratedLists() {
     return new ArrayList<>();
   }
 
-  @Override
-  public Boolean checkIntegrationWorkspace(String workspace) {
-    return Boolean.TRUE;
-  }
-
-  @Override
-  public Boolean checkCustomPluginLogConfParams(String tenant, String workspace,
-      CustomPluginDTO customPluginDTO) {
-    return Boolean.TRUE;
-  }
 
   @Override
   public List<String> getAggCompletenessTags() {
@@ -137,4 +111,9 @@ public class DefaultTenantInitServiceImpl implements TenantInitService {
     return new ArrayList<>();
   }
 
+
+  @Override
+  public Boolean checkIntegrationWorkspace(String workspace) {
+    return Boolean.TRUE;
+  }
 }

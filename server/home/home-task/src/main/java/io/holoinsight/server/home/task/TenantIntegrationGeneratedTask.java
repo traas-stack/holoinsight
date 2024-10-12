@@ -3,19 +3,21 @@
  */
 package io.holoinsight.server.home.task;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.TimeUnit;
-
 import com.google.gson.reflect.TypeToken;
 import io.holoinsight.server.common.J;
 import io.holoinsight.server.common.MD5Hash;
+import io.holoinsight.server.common.cache.local.CommonLocalCache;
+import io.holoinsight.server.common.dao.converter.IntegrationGeneratedConverter;
+import io.holoinsight.server.common.dao.entity.CloudMonitorRange;
+import io.holoinsight.server.common.dao.entity.GaeaCollectRange;
+import io.holoinsight.server.common.dao.entity.IntegrationGenerated;
 import io.holoinsight.server.common.dao.entity.TenantOps;
+import io.holoinsight.server.common.dao.entity.dto.IntegrationGeneratedDTO;
+import io.holoinsight.server.common.dao.entity.dto.IntegrationPluginDTO;
+import io.holoinsight.server.common.model.TaskEnum;
+import io.holoinsight.server.common.service.IntegrationGeneratedService;
+import io.holoinsight.server.common.service.IntegrationPluginService;
+import io.holoinsight.server.common.service.TenantOpsService;
 import io.holoinsight.server.home.biz.common.MetaDictKey;
 import io.holoinsight.server.home.biz.common.MetaDictType;
 import io.holoinsight.server.home.biz.common.MetaDictUtil;
@@ -25,34 +27,30 @@ import io.holoinsight.server.home.biz.plugin.core.AbstractIntegrationPlugin;
 import io.holoinsight.server.home.biz.plugin.core.LogPlugin;
 import io.holoinsight.server.home.biz.plugin.model.Plugin;
 import io.holoinsight.server.home.biz.plugin.model.PluginType;
-import io.holoinsight.server.common.service.IntegrationGeneratedService;
-import io.holoinsight.server.common.service.IntegrationPluginService;
 import io.holoinsight.server.home.biz.service.MetaService;
 import io.holoinsight.server.home.biz.service.MetaService.AppModel;
 import io.holoinsight.server.home.biz.service.TenantInitService;
-import io.holoinsight.server.common.service.TenantOpsService;
-import io.holoinsight.server.common.model.TaskEnum;
-import io.holoinsight.server.common.cache.local.CommonLocalCache;
-import io.holoinsight.server.common.dao.converter.IntegrationGeneratedConverter;
-import io.holoinsight.server.common.dao.entity.IntegrationGenerated;
-import io.holoinsight.server.common.dao.entity.CloudMonitorRange;
-import io.holoinsight.server.common.dao.entity.GaeaCollectRange;
-import io.holoinsight.server.common.dao.entity.dto.IntegrationGeneratedDTO;
-import io.holoinsight.server.common.dao.entity.dto.IntegrationPluginDTO;
 import io.holoinsight.server.meta.common.model.QueryExample;
+import io.holoinsight.server.meta.facade.service.DataClientService;
 import lombok.extern.slf4j.Slf4j;
-
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
-import io.holoinsight.server.meta.facade.service.DataClientService;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
-import static io.holoinsight.server.home.biz.common.MetaDictKey.INTEGRATION_LOCAL_PRODUCT;
-import static io.holoinsight.server.home.biz.common.MetaDictType.INTEGRATION_CONFIG;
 import static io.holoinsight.server.common.cache.local.CacheConst.APP_META_KEY;
 import static io.holoinsight.server.common.cache.local.CacheConst.INTEGRATION_GENERATED_CACHE_KEY;
+import static io.holoinsight.server.home.biz.common.MetaDictKey.INTEGRATION_LOCAL_PRODUCT;
+import static io.holoinsight.server.home.biz.common.MetaDictType.INTEGRATION_CONFIG;
 
 /**
  *
