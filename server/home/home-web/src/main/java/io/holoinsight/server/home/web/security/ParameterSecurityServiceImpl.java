@@ -3,8 +3,10 @@
  */
 package io.holoinsight.server.home.web.security;
 
+import io.holoinsight.server.apm.common.model.specification.sw.Tag;
 import io.holoinsight.server.common.model.DataQueryRequest;
 import io.holoinsight.server.common.scope.MonitorUser;
+import io.holoinsight.server.home.dal.model.dto.CustomPluginDTO;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.Collections;
@@ -79,5 +81,39 @@ public class ParameterSecurityServiceImpl implements ParameterSecurityService {
   @Override
   public boolean checkSourceId(Long sourceId, String sourceType, String tenant, String workspace) {
     return true;
+  }
+
+
+  @Override
+  public Boolean checkAgentLogPath(String logpath) {
+    return Boolean.TRUE;
+  }
+
+  @Override
+  public Boolean checkAgentLogPathPrefix(String logpath) {
+    return Boolean.TRUE;
+  }
+
+
+  @Override
+  public Boolean checkCookie(String tenant, String workspace, String environment) {
+    return Boolean.TRUE;
+  }
+
+  @Override
+  public Boolean checkTraceTags(String tenant, String workspace, List<Tag> tags) {
+    return Boolean.TRUE;
+  }
+
+  @Override
+  public Boolean checkTraceParams(String tenant, String workspace, Map<String, String> paramsMap) {
+    return Boolean.TRUE;
+  }
+
+
+  @Override
+  public Boolean checkCustomPluginLogConfParams(String tenant, String workspace,
+      CustomPluginDTO customPluginDTO) {
+    return Boolean.TRUE;
   }
 }

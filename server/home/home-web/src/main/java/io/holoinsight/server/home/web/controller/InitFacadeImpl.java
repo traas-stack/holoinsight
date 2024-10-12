@@ -18,6 +18,7 @@ import io.holoinsight.server.common.scope.AuthTargetType;
 import io.holoinsight.server.common.scope.PowerConstants;
 import io.holoinsight.server.home.web.common.ParaCheckUtil;
 import io.holoinsight.server.home.web.interceptor.MonitorScopeAuth;
+import io.holoinsight.server.home.web.security.ParameterSecurityService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
@@ -77,6 +78,9 @@ public class InitFacadeImpl extends BaseFacade {
   @Autowired
   private TenantInitService tenantInitService;
 
+  @Autowired
+  private ParameterSecurityService parameterSecurityService;
+
   @ResponseBody
   @GetMapping(value = "/tenantCheck")
   public JsonResult<Boolean> tenantCheck() {
@@ -125,7 +129,7 @@ public class InitFacadeImpl extends BaseFacade {
       @Override
       public void checkParameter() {
         ParaCheckUtil.checkParaNotNull(tenant, "tenant");
-        tenantInitService.checkCookie(tenant, workspace, environment);
+        parameterSecurityService.checkCookie(tenant, workspace, environment);
       }
 
       @Override

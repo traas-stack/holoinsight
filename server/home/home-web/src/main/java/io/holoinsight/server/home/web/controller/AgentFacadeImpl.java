@@ -4,6 +4,7 @@
 package io.holoinsight.server.home.web.controller;
 
 import io.holoinsight.server.common.JsonResult;
+import io.holoinsight.server.common.ResultCodeEnum;
 import io.holoinsight.server.home.biz.common.MetaDictKey;
 import io.holoinsight.server.home.biz.common.MetaDictType;
 import io.holoinsight.server.home.biz.common.MetaDictUtil;
@@ -19,6 +20,7 @@ import io.holoinsight.server.common.dao.entity.ApiKey;
 import io.holoinsight.server.common.ManageCallback;
 import io.holoinsight.server.home.web.common.ParaCheckUtil;
 import io.holoinsight.server.home.web.interceptor.MonitorScopeAuth;
+import io.holoinsight.server.home.web.security.ParameterSecurityService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -46,6 +48,9 @@ public class AgentFacadeImpl extends BaseFacade {
 
   @Autowired
   private ApiKeyService apiKeyService;
+
+  @Autowired
+  private ParameterSecurityService parameterSecurityService;
 
   @ResponseBody
   @GetMapping(value = "/vmAgent")
@@ -93,6 +98,10 @@ public class AgentFacadeImpl extends BaseFacade {
       @Override
       public void checkParameter() {
         ParaCheckUtil.checkParaNotBlank(agentParamRequest.getLogpath(), "logpath");
+        if (!parameterSecurityService.checkAgentLogPathPrefix(agentParamRequest.getLogpath())) {
+          throw new MonitorException(
+              "the logPath " + agentParamRequest.getLogpath() + "must start with /home/admin/logs");
+        }
       }
 
       @Override
@@ -122,6 +131,10 @@ public class AgentFacadeImpl extends BaseFacade {
       @Override
       public void checkParameter() {
         ParaCheckUtil.checkParaNotBlank(agentParamRequest.getLogpath(), "logpath");
+        if (!parameterSecurityService.checkAgentLogPath(agentParamRequest.getLogpath())) {
+          throw new MonitorException(ResultCodeEnum.PARAMETER_ILLEGAL,
+              "the logPath " + agentParamRequest.getLogpath() + "must end with .log");
+        }
       }
 
       @Override
