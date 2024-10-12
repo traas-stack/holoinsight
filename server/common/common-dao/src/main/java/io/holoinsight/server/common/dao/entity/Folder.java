@@ -22,6 +22,10 @@ public class Folder {
   public String tenant;
   public String workspace;
   public Long parentFolderId;
+  public Boolean alarmed;
+  public Integer recentAlarm;
+  public Long alarmRrdTime;
+  public String recentAlarmHistoryId;
   public String creator;
   public String modifier;
 

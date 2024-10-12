@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import io.holoinsight.server.common.EventBusHolder;
+import io.holoinsight.server.common.J;
 import io.holoinsight.server.common.MonitorPageRequest;
 import io.holoinsight.server.common.MonitorPageResult;
 import io.holoinsight.server.common.dao.converter.AlarmHistoryConverter;
@@ -22,7 +23,10 @@ import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 @Service
 public class AlarmHistoryServiceImpl extends ServiceImpl<AlarmHistoryMapper, AlarmHistory>
@@ -55,6 +59,16 @@ public class AlarmHistoryServiceImpl extends ServiceImpl<AlarmHistoryMapper, Ala
     alarmHistory.setDeleted(true);
     EventBusHolder.post(alarmHistoryConverter.doToDTO(alarmHistory));
     return this.removeById(id);
+  }
+
+  @Override
+  public List<AlarmHistory> queryByTime(long from, long to) {
+    QueryWrapper<AlarmHistory> wrapper = new QueryWrapper<>();
+    wrapper.le("alarm_time", to);
+    wrapper.ge("alarm_time", from);
+    wrapper.eq("deleted", false);
+    List<AlarmHistory> alarmHistories = list(wrapper);
+    return alarmHistories;
   }
 
   @Override

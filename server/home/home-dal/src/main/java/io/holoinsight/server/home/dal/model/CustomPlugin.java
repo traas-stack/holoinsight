@@ -30,6 +30,14 @@ public class CustomPlugin {
 
   public String sampleLog;
 
+  public Boolean alarmed;
+
+  public Integer recentAlarm;
+
+  public Long alarmRrdTime;
+
+  public String recentAlarmHistoryId;
+
   public String creator;
 
   public String modifier;

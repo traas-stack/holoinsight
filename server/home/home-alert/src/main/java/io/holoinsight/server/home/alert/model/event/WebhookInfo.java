@@ -47,6 +47,11 @@ public class WebhookInfo implements Cloneable {
    */
   private String webhookMsg;
 
+  /**
+   * 回调类型
+   */
+  private Byte type;
+
   public WebhookInfo clone() {
     try {
       return (WebhookInfo) super.clone();
