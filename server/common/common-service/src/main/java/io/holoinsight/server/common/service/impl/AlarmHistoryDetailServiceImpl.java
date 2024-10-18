@@ -6,6 +6,7 @@ package io.holoinsight.server.common.service.impl;
 import io.holoinsight.server.common.DateUtil;
 import io.holoinsight.server.common.J;
 import io.holoinsight.server.common.dao.converter.AlarmHistoryDetailConverter;
+import io.holoinsight.server.common.dao.entity.AlarmHistory;
 import io.holoinsight.server.common.dao.mapper.AlarmHistoryDetailMapper;
 import io.holoinsight.server.common.dao.entity.AlarmHistoryDetail;
 import io.holoinsight.server.common.dao.entity.dto.AlarmHistoryDetailDTO;
@@ -121,5 +122,14 @@ public class AlarmHistoryDetailServiceImpl extends
     List<Map<String, Object>> list = listMaps(queryWrapper);
 
     return list;
+  }
+
+  @Override
+  public List<AlarmHistoryDetail> queryByTime(long from, long to) {
+    QueryWrapper<AlarmHistoryDetail> wrapper = new QueryWrapper<>();
+    wrapper.le("alarm_time", new Date(to));
+    wrapper.ge("alarm_time", new Date(from));
+    List<AlarmHistoryDetail> alarmHistoryDetails = list(wrapper);
+    return alarmHistoryDetails;
   }
 }

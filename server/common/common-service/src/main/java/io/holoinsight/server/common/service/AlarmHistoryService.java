@@ -25,4 +25,5 @@ public interface AlarmHistoryService extends IService<AlarmHistory> {
 
   Boolean deleteById(Long id);
 
+  List<AlarmHistory> queryByTime(long from, long to);
 }

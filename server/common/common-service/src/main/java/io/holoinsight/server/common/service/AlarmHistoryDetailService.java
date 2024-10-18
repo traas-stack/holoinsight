@@ -6,6 +6,7 @@ package io.holoinsight.server.common.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import io.holoinsight.server.common.MonitorPageRequest;
 import io.holoinsight.server.common.MonitorPageResult;
+import io.holoinsight.server.common.dao.entity.AlarmHistory;
 import io.holoinsight.server.common.dao.entity.AlarmHistoryDetail;
 import io.holoinsight.server.common.dao.entity.dto.AlarmHistoryDetailDTO;
 
@@ -23,5 +24,7 @@ public interface AlarmHistoryDetailService extends IService<AlarmHistoryDetail> 
       MonitorPageRequest<AlarmHistoryDetailDTO> pageRequest);
 
   List<Map<String, Object>> count(MonitorPageRequest<AlarmHistoryDetailDTO> pageRequest);
+
+  List<AlarmHistoryDetail> queryByTime(long from, long to);
 
 }
