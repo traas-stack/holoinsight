@@ -172,10 +172,23 @@ public class GetSubscriptionHandler implements AlertHandlerExecutor {
                     break;
                   case "webhook":
                     if (!alertNotify.getIsRecover()) {
-                      AlarmWebhook alertWebhook =
-                          alarmWebhookDOMapper.selectById(alertSubscribe.getGroupId());
-                      if (alertWebhook != null && alertWebhook.getStatus().equals((byte) 1)) {
-                        webhookInfos.add(DoConvert.alertWebhookDoConverter(alertWebhook));
+                      List<AlarmWebhook> alertWebhookList =
+                          getAllAlertWebHook(alertSubscribe.getTenant());
+                      List<Long> alertWebhookIdList = alertWebhookList.stream()
+                          .map(AlarmWebhook::getId).collect(Collectors.toList());
+                      if (!alertWebhookIdList.contains(alertSubscribe.getGroupId())) {
+                        AlarmWebhook alertWebhook =
+                            alarmWebhookDOMapper.selectById(alertSubscribe.getGroupId());
+                        if (alertWebhook != null) {
+                          alertWebhookList.add(alertWebhook);
+                        }
+                      }
+                      if (!CollectionUtils.isEmpty(alertWebhookList)) {
+                        for (AlarmWebhook webhook : alertWebhookList) {
+                          if (webhook != null && webhook.getStatus().equals((byte) 1)) {
+                            webhookInfos.add(DoConvert.alertWebhookDoConverter(webhook));
+                          }
+                        }
                       }
                       LOGGER.info("{} webhookInfos is {}.", alertNotify.getTraceId(),
                           J.toJson(webhookInfos));
@@ -228,6 +241,16 @@ public class GetSubscriptionHandler implements AlertHandlerExecutor {
           "[HoloinsightAlertInternalException][GetSubscriptionHandler][{}] fail to get_subscription for {}",
           alertNotifies.size(), e.getMessage(), e);
     }
+  }
+
+  public List<AlarmWebhook> getAllAlertWebHook(String tenant) {
+    QueryWrapper<AlarmWebhook> wrapper = new QueryWrapper<>();
+    if (StringUtils.isNotBlank(tenant)) {
+      wrapper.eq("tenant", tenant);
+    }
+    wrapper.eq("type", 1);
+    List<AlarmWebhook> alarmWebhookList = alarmWebhookDOMapper.selectList(wrapper);
+    return alarmWebhookList;
   }
 
   private boolean keepSilence(boolean notifyRecover, AlertSilenceConfig alertSilenceConfig,
