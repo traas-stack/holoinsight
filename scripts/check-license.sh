@@ -18,5 +18,3 @@ project_root=$(realpath "$script_dir/..")
 cd "$project_root" || exit 1
 
 mvn -T 1C -f server/server-parent/pom.xml license:check
-
-echo "许可证检查完成"
