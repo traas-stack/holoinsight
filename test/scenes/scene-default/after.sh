@@ -13,9 +13,9 @@ fi
 
 export ps=`docker-compose ps`
 
-server_container_name=`get_container server`
+server_container_name=`get_container default-server`
 
-echo [agent] install agent to server,demo-client,demo-server
+echo [agent] install agent to default-server,demo-client,demo-server
 target=$server_container_name ../common/copy-agent.sh
 target=`get_container demo-client` ../common/copy-agent.sh
 target=`get_container demo-server` ../common/copy-agent.sh
