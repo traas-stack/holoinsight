@@ -9,7 +9,7 @@
 name: E2E Test
 
 on:
-  pull_request_target:
+  pull_request:
     branches: [ "main" ]
   # https://docs.github.com/zh/actions/using-workflows/workflow-syntax-for-github-actions#onschedule
   # Automatically run tests every day at UTC 00:30 test before going to work(CST 08:30).
