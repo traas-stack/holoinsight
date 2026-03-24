@@ -6,7 +6,7 @@ package io.holoinsight.server.home.biz.plugin;
 import io.holoinsight.server.common.dao.entity.dto.MetricInfoDTO;
 import io.holoinsight.server.common.service.MetricInfoService;
 
-import javax.annotation.Resource;
+import jakarta.annotation.Resource;
 import java.util.List;
 
 /**

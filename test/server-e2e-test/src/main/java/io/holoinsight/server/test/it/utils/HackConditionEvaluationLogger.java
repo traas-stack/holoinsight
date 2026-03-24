@@ -19,7 +19,8 @@ import org.awaitility.core.IgnoredException;
 import org.awaitility.core.StartEvaluationEvent;
 import org.awaitility.core.TimeoutEvent;
 
-import manifold.ext.rt.api.Jailbreak;
+import java.lang.reflect.Field;
+
 
 /**
  * <p>
@@ -127,7 +128,7 @@ public class HackConditionEvaluationLogger implements ConditionEvaluationListene
    * 
    * @param te
    */
-  private void trimStackTrace(@Jailbreak Throwable te) {
+  private void trimStackTrace(Throwable te) {
     StackTraceElement[] stackTrace = te.getStackTrace();
     List<StackTraceElement> keep = new ArrayList<>();
     for (StackTraceElement e : stackTrace) {
@@ -138,8 +139,15 @@ public class HackConditionEvaluationLogger implements ConditionEvaluationListene
 
     stackTrace = keep.toArray(new StackTraceElement[0]);
     te.setStackTrace(stackTrace);
-    if (StringUtils.endsWith(te.detailMessage, "\n")) {
-      te.detailMessage = te.detailMessage.substring(0, te.detailMessage.length() - 1);
+    try {
+      Field detailMessageField = Throwable.class.getDeclaredField("detailMessage");
+      detailMessageField.setAccessible(true);
+      String detailMessage = (String) detailMessageField.get(te);
+      if (StringUtils.endsWith(detailMessage, "\n")) {
+        detailMessageField.set(te, detailMessage.substring(0, detailMessage.length() - 1));
+      }
+    } catch (ReflectiveOperationException ignored) {
+      // ignore if reflection fails
     }
   }
 }

@@ -12,7 +12,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-import javax.annotation.PreDestroy;
+import jakarta.annotation.PreDestroy;
 
 import io.holoinsight.server.common.JsonUtils;
 import io.holoinsight.server.common.dao.entity.GaeaAgentDO;

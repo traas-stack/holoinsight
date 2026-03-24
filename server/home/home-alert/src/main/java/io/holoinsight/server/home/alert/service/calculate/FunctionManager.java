@@ -9,7 +9,7 @@ import io.holoinsight.server.common.dao.emuns.FunctionEnum;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.Resource;
+import jakarta.annotation.Resource;
 import java.util.HashMap;
 import java.util.Map;
 

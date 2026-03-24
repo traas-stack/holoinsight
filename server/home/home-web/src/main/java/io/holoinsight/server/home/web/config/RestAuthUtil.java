@@ -3,7 +3,7 @@
  */
 package io.holoinsight.server.home.web.config;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;

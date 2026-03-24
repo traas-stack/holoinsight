@@ -3,8 +3,8 @@
  */
 package io.holoinsight.server.registry.core.agent;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.PreDestroy;
 
 import io.holoinsight.server.common.UpTime;
 import io.holoinsight.server.common.threadpool.CommonThreadPools;

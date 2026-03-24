@@ -10,7 +10,7 @@ import org.apache.velocity.app.Velocity;
 import org.springframework.core.MethodParameter;
 import org.springframework.core.ParameterNameDiscoverer;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import java.io.StringWriter;
 
 /**

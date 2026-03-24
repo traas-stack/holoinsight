@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletResponse;
 
 import io.holoinsight.server.common.scope.AuthTargetType;
 import io.holoinsight.server.common.scope.PowerConstants;

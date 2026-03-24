@@ -5,7 +5,7 @@ package io.holoinsight.server.common.flyway;
 
 import java.util.List;
 
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
 import javax.sql.DataSource;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;

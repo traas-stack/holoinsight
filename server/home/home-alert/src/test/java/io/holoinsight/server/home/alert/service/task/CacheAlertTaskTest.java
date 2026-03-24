@@ -14,6 +14,7 @@ import org.mockito.Captor;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -60,6 +61,9 @@ public class CacheAlertTaskTest {
     cacheAlertTask.setPqlPageSize(15);
 
     cacheAlertTask.alarmRuleDOMapper = Mockito.mock(AlarmRuleMapper.class);
+    // Return a non-empty list so the while-retry loop in getAlarmRuleListByPage only runs once
+    Mockito.when(cacheAlertTask.alarmRuleDOMapper.selectList(Mockito.any()))
+        .thenReturn(Collections.singletonList(new AlarmRule()));
     cacheAlertTask.getAlarmRuleListByPage();
     Mockito.verify(cacheAlertTask.alarmRuleDOMapper, Mockito.times(3))
         .selectList(ruleArgument.capture());
@@ -71,13 +75,13 @@ public class CacheAlertTaskTest {
     QueryWrapper<AlarmRule> pql = list.get(2);
 
     Assert.assertEquals("rule",
-        "WHERE (rule_type = #{ew.paramNameValuePairs.MPGENVAL1}) ORDER BY id DESC limit 13 offset 12",
+        "WHERE (rule_type = #{ew.paramNameValuePairs.MPGENVAL1} AND status = #{ew.paramNameValuePairs.MPGENVAL2}) ORDER BY id DESC limit 13 offset 12",
         rule.getCustomSqlSegment());
     Assert.assertEquals("ai",
-        "WHERE (rule_type = #{ew.paramNameValuePairs.MPGENVAL1}) ORDER BY id DESC limit 11 offset 10",
+        "WHERE (rule_type = #{ew.paramNameValuePairs.MPGENVAL1} AND status = #{ew.paramNameValuePairs.MPGENVAL2}) ORDER BY id DESC limit 11 offset 10",
         ai.getCustomSqlSegment());
     Assert.assertEquals("pql",
-        "WHERE (rule_type = #{ew.paramNameValuePairs.MPGENVAL1}) ORDER BY id DESC limit 15 offset 14",
+        "WHERE (rule_type = #{ew.paramNameValuePairs.MPGENVAL1} AND status = #{ew.paramNameValuePairs.MPGENVAL2}) ORDER BY id DESC limit 15 offset 14",
         pql.getCustomSqlSegment());
   }
 }

@@ -135,13 +135,53 @@ public class StateUtilsTest {
 
   @Test
   public void test2() throws IOException {
-    String b64 =
-        "H4sIAAAAAAAAAJ1UzW7TQBDeWTu/LUXiwBNwRJZ4AEShorRqKpBi1ENPSzxxlmy81u46TbmAeAGepXCERwDEE3Bpox4KVYQtRG7sOjRFqgRNfbDWntnv++bbmQWfxXHIdL9tmMF8wEYPh5iYkA9QGzaYyG5XYzFEpbk8BfKcDVmQGS6CDaZ722wCFDyLsHmUMmW4sUkGE5YUHpR/PUjT9O6BBxF2WSYKAC6DnhSSJ5rHPRNoVBY8sMnB8E6AI+xkRqpAOzXB/XNpY3BCd3gSyb1SquXu4/SC3j0bUgOmToCeaw0VYqmVwAp4Cyo45xxDZWbWSaxkllpEm1SYOXWZuCYHqUBrAuqcALH+0D7u50MmMszB322VsgRL4qBtFE/i9+BD/wD6b6H/zi59GB5A9hOMTE+hcjmt88Ujq8uW2eUootywOIfqbusKGOm6Q3DKalfdfQQ1Fh93ZJYUPfGNJ2lWCBm3mXMnd8U5R8ZQ/yd+Ryq0r6TrDmI9Sw7Bm4PobVTx2CGZ/XRMiAftp5/obUJvEtIk7nm1ugo1gDq44EbrI/3gQWPBejaEmB390o03L0tUUjumX+GM44v5iyN8/OQzJcSFobkgUSjTZMZkB0ofCj7ghVQRqgfTCqFVD2Z+vYalKwLjrTWpzabB77YpO1IX3C5nRZDJPQ9Go19/vgiB5QVJ1vkIozZ/gaFtumW4drntMjNpZoL5hBXgR1x3mIq2cL/lHECl5I8uF3aod3qoxmUf0Sr1aZ3SxgqsLKhz58KMWreFCJmK0eQKM41Hhj2zLWqPENz8Alz/f4tGzLCz22oLp36j2ag3qg2f0t9fcDurYAUAAA==";
-    byte[] bytes = Base64.getDecoder().decode(b64);
+    // Build a state, serialize it, then deserialize it and verify key fields.
+    // (Previously this test used a hardcoded Base64 string, but it became stale
+    // after FixedSizeTags was moved to a different package.)
+    PartitionState ps0 = new PartitionState();
+    ps0.setVersion(1);
+
+    AggTaskKey aggTaskKey = new AggTaskKey("default", "aggId", "ppp=1");
+    AggTaskState ats = new AggTaskState(aggTaskKey);
+    ps0.getAggTaskStates().put(aggTaskKey, ats);
+
+    AggWindowState aws = new AggWindowState();
+    aws.setTimestamp(7L);
+    ats.getAggWindowStateMap().put(7L, aws);
+
+    InputStream is =
+        getClass().getClassLoader().getResourceAsStream("agg/k8s_pod_system_5s.json");
+    AggTask at = JSON.parseObject(is, AggTask.class);
+    XAggTask aggTask = XParserUtils.parse(at);
+    aws.setAggTask(aggTask);
+
+    FixedSizeTags tags =
+        new FixedSizeTags(new String[] {"k1"}, new String[] {"v1"});
+    Group g = new Group();
+    g.setTags(tags);
+
+    GroupField gf = new GroupField();
+    gf.setAgg(new AggFunc("TOPN"));
+    gf.setInput(1);
+    AggFunc.TopnParams topnParams = new AggFunc.TopnParams();
+    topnParams.setOrderBy("value");
+    topnParams.setLimit(3);
+    gf.setTopn(new TopnState(topnParams));
+    gf.getTopn().getQ().add(new TopnState.CostItem(1, "xxx"));
+
+    g.setFields(new GroupField[] {gf});
+    aws.getGroupMap().put(tags, g);
+
+    byte[] bytes = StateUtils.serialize(ps0);
     PartitionState ps = StateUtils.deserialize(bytes);
     System.out.println(ps.getVersion());
+    Preconditions.checkArgument(ps.getVersion() == 1);
     System.out.println(ps.getAggTaskStates().values().iterator().next().getAggWindowStateMap()
-        .values().iterator().next().getGroupMap().values().iterator().next().getFields()[2]
+        .values().iterator().next().getGroupMap().values().iterator().next().getFields()[0]
             .getTopn().getParams().getOrderBy());
+    Preconditions.checkArgument("value".equals(
+        ps.getAggTaskStates().values().iterator().next().getAggWindowStateMap()
+            .values().iterator().next().getGroupMap().values().iterator().next().getFields()[0]
+                .getTopn().getParams().getOrderBy()));
   }
 }

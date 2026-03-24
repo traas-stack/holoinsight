@@ -6,8 +6,8 @@ package io.holoinsight.server.meta.core.service.grpc;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.PreDestroy;
 
 import io.grpc.Server;
 import io.grpc.ServerBuilder;

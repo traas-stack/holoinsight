@@ -7,7 +7,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
 
 import io.holoinsight.server.common.dao.entity.ApikeyDO;
 import io.holoinsight.server.common.dao.entity.ApikeyDOExample;

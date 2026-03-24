@@ -71,7 +71,7 @@ public class AlarmRuleFacadeImplTest {
         .thenReturn(Collections.singletonList(alarmGroupDTO));
     Mockito.when(facade.alarmSubscribeService.queryByMap(Mockito.any()))
         .thenReturn(Collections.singletonList(alarmSubscribeInfo));
-    Mockito.when(facade.alarmRuleService.list(Mockito.any()))
+    Mockito.when(facade.alarmRuleService.list(Mockito.<QueryWrapper<AlarmRule>>any()))
         .thenReturn(Collections.singletonList(alarmRule));
   }
 

@@ -78,17 +78,20 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>2.7.18</version>
+		<version>3.3.6</version>
 	</parent>
 
 	<properties>
-		<spring.boot.version>2.7.18</spring.boot.version>
+		<spring.boot.version>3.3.6</spring.boot.version>
 		<grpc.version>1.53.0</grpc.version>
 		<protobuf.version>3.25.5</protobuf.version>
 		<elasticsearch.version>7.17.24</elasticsearch.version>
 		<lombok.version>1.18.44</lombok.version>
 		<maven.compiler.proc>full</maven.compiler.proc>
 		<maven-compiler-plugin.version>3.13.0</maven-compiler-plugin.version>
+		<!-- Override Mockito and ByteBuddy versions for Java 25 support -->
+		<mockito.version>5.23.0</mockito.version>
+		<byte-buddy.version>1.18.7</byte-buddy.version>
 	</properties>
 
 	<dependencyManagement>
@@ -145,11 +148,17 @@
 			<artifactId>junit</artifactId>
 			<scope>test</scope>
 		</dependency>
-		<!-- javax.annotation.Generated was removed from JDK since JDK 9;
-		     required by gRPC generated code and Swagger codegen classes -->
+		<!-- jakarta.annotation is required by Spring Boot 3.x and new Jakarta EE code -->
+		<dependency>
+			<groupId>jakarta.annotation</groupId>
+			<artifactId>jakarta.annotation-api</artifactId>
+		</dependency>
+		<!-- javax.annotation-api is required by gRPC generated code and Swagger codegen classes
+		     that still reference javax.annotation.Generated -->
 		<dependency>
 			<groupId>javax.annotation</groupId>
 			<artifactId>javax.annotation-api</artifactId>
+			<version>1.3.2</version>
 		</dependency>
 	</dependencies>
 

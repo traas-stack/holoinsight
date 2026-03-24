@@ -5,7 +5,7 @@ package io.holoinsight.server.apm.web;
 
 import java.io.IOException;
 
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
 
 import io.grpc.Server;
 import io.grpc.ServerBuilder;

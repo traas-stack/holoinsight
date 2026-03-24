@@ -54,7 +54,7 @@
 		</dependency>
 		<dependency>
 			<artifactId>groovy</artifactId>
-			<groupId>org.codehaus.groovy</groupId>
+			<groupId>org.apache.groovy</groupId>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>

@@ -6,14 +6,14 @@ package io.holoinsight.server.home.web.security;
 import lombok.extern.slf4j.Slf4j;
 import org.aopalliance.intercept.MethodInvocation;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.core.LocalVariableTableParameterNameDiscoverer;
+import org.springframework.core.DefaultParameterNameDiscoverer;
 import org.springframework.core.ParameterNameDiscoverer;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
@@ -33,7 +33,7 @@ public class LevelAuthorizationMetadataSource {
   private List<ContentTargetCollector> contentTargetCollectorList =
       new ArrayList<ContentTargetCollector>();
   private ParameterNameDiscoverer parameterNameDiscoverer =
-      new LocalVariableTableParameterNameDiscoverer();
+      new DefaultParameterNameDiscoverer();
 
 
   public List<SecurityMetaData> getMetaDataList(MethodInvocation methodInvocation)

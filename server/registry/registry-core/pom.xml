@@ -55,7 +55,7 @@
 		</dependency>
 		<dependency>
 			<artifactId>groovy</artifactId>
-			<groupId>org.codehaus.groovy</groupId>
+			<groupId>org.apache.groovy</groupId>
 		</dependency>
 		<dependency>
 			<groupId>com.xzchaoo.commons</groupId>
