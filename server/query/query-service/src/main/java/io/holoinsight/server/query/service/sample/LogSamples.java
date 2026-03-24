@@ -5,7 +5,7 @@ package io.holoinsight.server.query.service.sample;
 
 import io.holoinsight.server.query.service.analysis.Mergeable;
 import lombok.Data;
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 
 import java.io.Serializable;
 import java.util.ArrayList;

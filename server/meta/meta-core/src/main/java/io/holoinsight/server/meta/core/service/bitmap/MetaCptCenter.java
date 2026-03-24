@@ -11,7 +11,7 @@ import io.holoinsight.server.meta.core.service.bitmap.condition.MetaCondition;
 import io.holoinsight.server.meta.core.service.bitmap.condition.OrCondition;
 import io.holoinsight.server.meta.core.service.bitmap.execption.NotForeignKeyException;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;

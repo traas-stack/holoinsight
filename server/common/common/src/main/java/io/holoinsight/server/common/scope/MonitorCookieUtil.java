@@ -179,12 +179,12 @@ public class MonitorCookieUtil {
     }
 
     deflater.end();
-    return new sun.misc.BASE64Encoder().encodeBuffer(outputStream.toByteArray());
+    return java.util.Base64.getEncoder().encodeToString(outputStream.toByteArray());
   }
 
   // 解压缩
   public static String unzipString(String zip) throws Exception {
-    byte[] decode = new sun.misc.BASE64Decoder().decodeBuffer(zip);
+    byte[] decode = java.util.Base64.getDecoder().decode(zip);
 
     Inflater inflater = new Inflater();
     inflater.setInput(decode);

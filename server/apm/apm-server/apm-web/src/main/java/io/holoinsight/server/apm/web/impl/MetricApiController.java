@@ -9,7 +9,7 @@ import io.holoinsight.server.apm.engine.postcal.MetricDefine;
 import io.holoinsight.server.apm.server.service.MetricService;
 import io.holoinsight.server.apm.web.MetricApi;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.index.query.TermQueryBuilder;

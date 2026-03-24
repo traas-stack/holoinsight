@@ -29,7 +29,7 @@ import io.holoinsight.server.query.grpc.QueryProto.Datasource;
 import io.holoinsight.server.query.grpc.QueryServiceGrpc;
 import lombok.extern.slf4j.Slf4j;
 import net.devh.boot.grpc.client.inject.GrpcClient;
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

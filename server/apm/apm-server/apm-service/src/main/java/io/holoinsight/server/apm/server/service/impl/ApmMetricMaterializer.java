@@ -12,7 +12,7 @@ import io.holoinsight.server.common.dao.entity.TenantOps;
 import io.holoinsight.server.common.dao.mapper.TenantOpsMapper;
 import io.holoinsight.server.extension.model.WriteMetricsParam;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.concurrent.BasicThreadFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;

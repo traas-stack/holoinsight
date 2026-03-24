@@ -197,11 +197,6 @@
 				<version>2.12.1</version>
 			</dependency>
 			<dependency>
-				<groupId>commons-collections</groupId>
-				<artifactId>commons-collections</artifactId>
-				<version>3.2.2</version>
-			</dependency>
-			<dependency>
 				<groupId>org.apache.commons</groupId>
 				<artifactId>commons-collections4</artifactId>
 				<version>4.4</version>
@@ -276,6 +271,12 @@
 				<groupId>com.esotericsoftware</groupId>
 				<artifactId>kryo</artifactId>
 				<version>5.5.0</version>
+			</dependency>
+
+			<dependency>
+				<groupId>mysql</groupId>
+				<artifactId>mysql-connector-java</artifactId>
+				<version>8.0.33</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>

@@ -26,7 +26,7 @@ import io.holoinsight.server.meta.facade.service.AgentHeartBeatService;
 import io.holoinsight.server.meta.facade.service.DataClientService;
 import io.holoinsight.server.registry.grpc.agent.AgentK8sInfo;
 import io.holoinsight.server.registry.grpc.agent.RegisterAgentRequest;
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -16,7 +16,7 @@ import io.holoinsight.server.common.dao.entity.dto.IntegrationPluginDTO;
 import io.holoinsight.server.registry.model.integration.GaeaTask;
 import io.holoinsight.server.registry.model.integration.mysql.MysqlConf;
 import io.holoinsight.server.registry.model.integration.mysql.MysqlTaskV2;
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 

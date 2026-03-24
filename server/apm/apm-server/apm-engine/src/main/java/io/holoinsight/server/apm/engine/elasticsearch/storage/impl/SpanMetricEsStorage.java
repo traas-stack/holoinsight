@@ -35,7 +35,7 @@ import org.elasticsearch.search.aggregations.Aggregator;
 import org.elasticsearch.search.aggregations.bucket.filter.Filter;
 import org.elasticsearch.search.aggregations.bucket.histogram.DateHistogramAggregationBuilder;
 import org.elasticsearch.search.aggregations.bucket.histogram.DateHistogramInterval;
-import org.elasticsearch.search.aggregations.bucket.histogram.ExtendedBounds;
+import org.elasticsearch.search.aggregations.bucket.histogram.LongBounds;
 import org.elasticsearch.search.aggregations.bucket.histogram.Histogram;
 import org.elasticsearch.search.aggregations.bucket.histogram.ParsedDateHistogram;
 import org.elasticsearch.search.aggregations.bucket.terms.ParsedTerms;
@@ -107,7 +107,7 @@ public class SpanMetricEsStorage extends PostCalMetricStorage {
     DateHistogramAggregationBuilder dateHistogramAggregationBuilder =
         AggregationBuilders.dateHistogram(timeSeriesField()).field(timeSeriesField())
             .fixedInterval(new DateHistogramInterval(duration.getStep())).minDocCount(1)
-            .extendedBounds(new ExtendedBounds(duration.getStart(), duration.getEnd()));
+.extendedBounds(new LongBounds(duration.getStart(), duration.getEnd()));
     AggregationBuilder parentAggregationBuilder = dateHistogramAggregationBuilder;
     if (groups != null) {
       for (String group : groups) {

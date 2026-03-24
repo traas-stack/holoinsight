@@ -222,7 +222,13 @@ public class Executor {
         return null;
       });
     }
-    threadpool.invokeAll(tasks);
+    try {
+      threadpool.invokeAll(tasks);
+    } catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      log.warn("[executor] [{}] invokeAll interrupted", index, e);
+      return;
+    }
 
 
     long time2 = System.currentTimeMillis();
